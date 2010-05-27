@@ -1,0 +1,47 @@
+<?php
+/**
+ * Show the users of the web site.
+ * @package views
+ */
+?>
+<h1>
+   User Management Module - Users
+</h1>
+
+
+<table class="sectiontable">
+<tr>
+	<th>Edit User</th>
+	<th>Change User Password</th>
+	<th>User Login</th>
+	<th>User Name</th>
+	<th>Country</th>
+	<th>Email</th>
+	<th>Role</th>
+	<th>Delete User</th>
+</tr>
+<?
+$i = 0;
+foreach($this->users as $user) {
+?>
+<tr class="sectiontableentry<?=$i % 2?>">
+	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-edit-user'), null, true)?>?userLogin=<?=$user->login;?>">Edit</a></td>
+	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-change-password'), null, true)?>?userLogin=<?=$user->login;?>">Change Password</a></td>
+	<td><?= $this->escape($user->login); ?></td>
+	<td><?= $this->escape($user->username); ?></td>
+	<td><?= $this->countries[$user->countryCode]; ?></td>
+	<td><?= $this->escape($user->email); ?></td>
+	<td><?= $this->escape($user->roleLabel); ?></td>
+	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('Are you sure?');">Delete</a></td>
+</tr>
+<?
+$i++;
+}
+?>
+</table>
+ 
+<p class="subTableLink">
+    <a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-create-user'), null, true) ?>">Create a new user</a>
+<p/>
+
+ 

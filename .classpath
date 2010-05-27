@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="service_interpolation/classes" path="service_interpolation/src"/>
+	<classpathentry kind="src" output="service_harmonization/classes" path="service_harmonization/test"/>
+	<classpathentry kind="src" output="service_harmonization/classes" path="service_harmonization/src"/>
+	<classpathentry kind="src" output="service_calculation/classes" path="service_calculation/src"/>
+	<classpathentry kind="src" output="service_interpolation/classes" path="service_interpolation/test"/>
+	<classpathentry kind="src" output="service_integration/classes" path="service_integration/test"/>
+	<classpathentry kind="src" output="service_common/classes" path="service_common/src"/>
+	<classpathentry kind="src" output="service_integration/classes" path="service_integration/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/libs_java"/>
+	<classpathentry kind="lib" path="/libs_java/lib/junit.jar" sourcepath="/libs_java/lib/junit-src.jar"/>
+	<classpathentry kind="lib" path="/libs_java/import/org/postgresql/postgresql-8.3-603.jdbc4.jar"/>
+	<classpathentry kind="lib" path="/libs_java/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="/libs_java/import/org/apache/log4j/log4j-1.2.14.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="/libs_java/import/com/sun/mail/mail.jar"/>
+	<classpathentry kind="lib" path="/libs_java/lib/dbunit/dbunit.jar"/>
+	<classpathentry kind="lib" path="service_common/lib/commons-fileupload-1.2.1.jar"/>
+	<classpathentry kind="lib" path="service_common/lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="service_common/lib/JRI.jar"/>
+	<classpathentry kind="output" path="service_integration/classes"/>
+</classpath>

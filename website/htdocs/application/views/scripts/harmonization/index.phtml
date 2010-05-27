@@ -1,0 +1,41 @@
+<?php
+/**
+ * Default view for the harmonization module.
+ * @package views
+ */
+?>
+
+<h1>
+   Data harmonization module
+</h1>
+
+<div class="left-column">
+<div class="moduletable_menu">
+
+<ul id="appmenu" class="menu">
+
+<?php
+$user_session = new Zend_Session_Namespace('user');
+$role = $user_session->role;
+if ($role->isEuropeLevel == '1') {
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'harmonization','action'=>'show-harmonized-history'), null, true) ?>">Show Harmonization History</a>
+</li>
+<?php } ?>
+
+<!-- 
+<li>
+<a href="<?= $this->url(array('controller'=>'harmonization','action'=>'show-configure-harmonization-page'), null, true) ?>">Configure the harmonization rules</a>
+</li>
+-->
+ 
+<li>
+<a href="<?= $this->url(array('controller'=>'harmonization','action'=>'show-harmonization-page'), null, true) ?>">Harmonize Data</a>
+</li>
+
+
+</ul>
+</div>
+</div>
+

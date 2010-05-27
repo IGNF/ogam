@@ -1,0 +1,6 @@
+RAW_DATA;Raw Data;Contains raw data
+HARMONIZED_DATA;Harmonized Data;Contains harmonized data
+AGGREGATED_DATA;Aggregated Data;Contains aggregated data
+METADATA;Metadata;Contains the tables describing the data
+WEBSITE;Website;Contains the tables used to operate the web site
+PUBLIC;Public;Contains the default PostgreSQL tables and PostGIS functions

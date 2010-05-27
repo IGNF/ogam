@@ -1,0 +1,1279 @@
+MAP
+
+#
+# Start of E-forest map file
+#
+NAME EFOREST_MAPSERVER
+STATUS ON
+SIZE 600 400
+SYMBOLSET "C:/workspace/Eforest/Mapserv/data/eforest.sym" 
+
+EXTENT 2460853 1070607 5537352 5031904
+
+UNITS meters
+SHAPEPATH "C:/workspace/Eforest/Mapserv/data/"
+IMAGECOLOR 255 255 255
+FONTSET "C:/workspace/Eforest/Mapserv/data/fonts/fonts.txt"
+
+CONFIG  "MS_ERRORFILE" "C:/workspace/Eforest/website/htdocs/application/logs/mapserver_eforest.log"
+DEBUG 5
+
+#
+# Start of web interface definition
+#
+WEB
+   LOG "C:/workspace/Eforest/website/htdocs/application/logs/mapserver_eforest.log"
+   METADATA
+   
+		WFS_TITLE   					"Eforest MapServer"  
+		WFS_SRS     					"EPSG:3035"
+		WFS_ABSTRACT   					"Eforest Data"  
+		WFS_MAXFEATURES    				"10"
+		WFS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/Eforest/Mapserv/eforest.map&"
+
+		WMS_TITLE 						"Eforest MapServer" 
+		WMS_ABSTRACT 					"Eforest Mapserver"
+		WMS_ACCESSCONSTRAINTS 			"none"
+		WMS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/Eforest/Mapserv/eforest.map&"
+		WMS_SRS    						"EPSG:3035"
+      
+      	"wcs_label"                    "Eforest MapServer"
+		"wcs_description"              "Eforest MapServer"
+		"wcs_onlineresource"           "http://localhost/eforest/" 
+		"wcs_fees"                     "none"
+		"wcs_accessconstraints"        "none"
+		"wcs_keywordlist"              "wcs,test"
+		"wcs_metadatalink_type"        "TC211"
+		"wcs_metadatalink_format"      "text/plain"
+    END
+END
+
+PROJECTION
+  "init=epsg:3035"
+END
+
+SCALEBAR
+	UNITS kilometers	
+	INTERVALS 1
+	SIZE 100 2
+	LABEL
+  		COLOR  0 0 0
+  		OUTLINECOLOR 255 255 255
+    END
+END
+
+OUTPUTFORMAT
+  NAME PNG
+  DRIVER "GD/PNG"
+  MIMETYPE "image/png"
+  IMAGEMODE RGBA
+  FORMATOPTION  INTERLACE=OFF
+  TRANSPARENT ON
+END
+
+OUTPUTFORMAT
+  NAME JPEG
+  DRIVER "GD/JPEG"
+  MIMETYPE "image/jpeg"
+  IMAGEMODE RGB
+  EXTENSION "jpg"
+  FORMATOPTION QUALITY=80 
+END
+
+#
+# Start of legend
+#
+LEGEND
+  KEYSIZE 18 12
+  LABEL
+    FONT arial_win
+    TYPE TRUETYPE 
+    ENCODING UTF-8
+    SIZE 10
+    COLOR 0 0 0
+  END
+END
+
+
+#
+# NUTS regions at 1 / 3 000 000 
+#
+LAYER  
+	NAME nuts_0
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM nuts_0 USING srid=3035"
+	CLASSITEM "cell_id"
+	LABELITEM "cell_id"
+	CLASS
+	      NAME 'Country'	
+	      OUTLINECOLOR 0 0 0      
+	      LABEL
+				COLOR  255 0 0
+				FONT arial_win
+				TYPE truetype
+				SIZE 8
+				POSITION AUTO          
+				PARTIALS FALSE
+				BUFFER 5
+				OUTLINECOLOR 255 255 255           
+	     END     
+    END
+    PROJECTION
+		    "init=epsg:3035"
+	END
+END
+
+
+#
+# INSPIRE GRID at 100k 
+#
+LAYER  
+	NAME grid_eu25_100k
+	TYPE POLYGON
+	STATUS ON 
+	# DATA "grid_eu25_100k/grid_eu25_etrs_laea_100k.shp"
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_100k USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 50k 
+#
+LAYER  
+	NAME grid_eu25_50k
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_50k USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 10k 
+#
+LAYER  
+	NAME grid_eu25_10k
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_10k USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Austria
+#
+LAYER  
+	NAME grid_eu25_1k_AT
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_14 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Belgium
+#
+LAYER  
+	NAME grid_eu25_1k_BE
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_2 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Cyprus
+#
+LAYER  
+	NAME grid_eu25_1k_CY
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_66 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Czech Republic
+#
+LAYER  
+	NAME grid_eu25_1k_CZ
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_58 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Denmark
+#
+LAYER  
+	NAME grid_eu25_1k_DK
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_8 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+
+#
+# INSPIRE GRID at 1k for Estonia
+#
+LAYER  
+	NAME grid_eu25_1k_EE
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_59 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+
+#
+# INSPIRE GRID at 1k for Finland
+#
+LAYER  
+	NAME grid_eu25_1k_FI
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_15 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for France
+#
+LAYER  
+	NAME grid_eu25_1k_FR
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_1 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Germany
+#
+LAYER  
+	NAME grid_eu25_1k_DE
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_4 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Greece
+#
+LAYER  
+	NAME grid_eu25_1k_GR
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_9 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Hungary
+#
+LAYER  
+	NAME grid_eu25_1k_HU
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_51 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Ireland
+#
+LAYER  
+	NAME grid_eu25_1k_IE
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_7 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Italy
+#
+LAYER  
+	NAME grid_eu25_1k_IT
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_5 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+
+#
+# INSPIRE GRID at 1k for Latvia
+#
+LAYER  
+	NAME grid_eu25_1k_LV
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_64 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Lithuania
+#
+LAYER  
+	NAME grid_eu25_1k_LT
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_56 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Luxembourg
+#
+LAYER  
+	NAME grid_eu25_1k_LU
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_12 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+
+#
+# INSPIRE GRID at 1k for Netherlands
+#
+LAYER  
+	NAME grid_eu25_1k_NL
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_3 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Norway
+#
+LAYER  
+	NAME grid_eu25_1k_NO
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_55 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Poland
+#
+LAYER  
+	NAME grid_eu25_1k_PL
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_53 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Portugal
+#
+LAYER  
+	NAME grid_eu25_1k_PT
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_10 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+
+
+#
+# INSPIRE GRID at 1k for Romania
+#
+LAYER  
+	NAME grid_eu25_1k_RO
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_52 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+
+#
+# INSPIRE GRID at 1k for Slovakia
+#
+LAYER  
+	NAME grid_eu25_1k_SK
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_54 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Slovenia
+#
+LAYER  
+	NAME grid_eu25_1k_SI
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_60 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Spain
+#
+LAYER  
+	NAME grid_eu25_1k_ES
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_11 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Sweden
+#
+LAYER  
+	NAME grid_eu25_1k_SE
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_13 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for Switzerland
+#
+LAYER  
+	NAME grid_eu25_1k_CH
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_50 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+#
+# INSPIRE GRID at 1k for United Kingdom
+#
+LAYER  
+	NAME grid_eu25_1k_UK
+	TYPE POLYGON
+	STATUS ON 
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM mapping.grid_eu25_1k_6 USING srid=3035"
+	CLASS
+		OUTLINECOLOR 255 0 0          
+	END
+END
+
+
+#
+# Forest / Non Forest Layer 
+#
+LAYER  
+	NAME forestmap
+	TYPE RASTER
+	STATUS ON 
+	TILEINDEX "fmap.shp"
+	TILEITEM "Location"
+	CLASS
+	    EXPRESSION "0"  # No Data
+    		STYLE
+      			COLOR 255 255 255
+      		END
+    	END
+	CLASS
+		NAME 'Forest'
+		EXPRESSION "1" #forest
+    		STYLE
+      			COLOR 60 104 35
+      		END
+    	END
+	CLASS
+		NAME 'Non-Forest'
+		EXPRESSION "2" #non-forest
+    		STYLE
+      			COLOR 255 255 255
+      		END
+    	END
+	CLASS
+		EXPRESSION "3" #cloud
+    		STYLE
+      			COLOR 255 255 255
+      		END
+    	END
+END
+
+
+
+#
+# Vector layer for plot locations
+#
+LAYER
+    NAME "result_locations"
+    TRANSPARENCY 80
+    TYPE POINT
+    STATUS ON
+    METADATA
+    	WFS_TITLE		   "Results"
+    	GML_FEATUREID      "oid" 
+    	GML_INCLUDE_ITEMS  "all"    
+    	"gml_groups"        	"display"
+		"gml_display_group" 	"country_code,plot_code" 	 	
+  	END
+  	DUMP TRUE 
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, country_code, plot_code, oid FROM result_location
+            WHERE GeometryType(the_geom) = 'POINT'
+              AND session_id = '%SESSION_ID%'
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+    
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Result location'
+      STYLE
+      	SIZE 3
+      	MINSIZE 1
+		MAXSIZE 8
+        COLOR 238 153 0
+        OUTLINECOLOR 238 153 0
+        SYMBOL "circle"
+      END
+    END
+END 
+
+#
+# Vector layer for all locations for all countries
+#
+LAYER
+    NAME "all_locations"
+    TRANSPARENCY 80
+    TYPE POINT
+    STATUS ON
+    
+    METADATA
+    	WFS_TITLE		   "All Plots"
+    	GML_FEATUREID      "oid" 
+    	GML_INCLUDE_ITEMS  "all"      	
+  	END
+  	DUMP TRUE 
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT transform(the_geom, 3035) as the_geom, country_code || '_' || plot_code as oid  
+            FROM location
+        ) as foo USING srid=3035
+    "
+    
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Plot location'
+      STYLE
+      	SIZE 3
+      	MINSIZE 1
+		MAXSIZE 5
+        COLOR 150 150 150
+        OUTLINECOLOR 150 150 150
+        SYMBOL "circle"
+      END
+    END
+END 
+
+#
+# Vector layer for all locations for one country
+#
+LAYER
+    NAME "all_locations_country"
+    TRANSPARENCY 80
+    TYPE POINT
+    STATUS ON
+    
+    METADATA
+    	WFS_TITLE		   "All Plots"
+    	GML_FEATUREID      "oid" 
+    	GML_INCLUDE_ITEMS  "all"      	
+  	END
+  	DUMP TRUE 
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT transform(the_geom, 3035) as the_geom, country_code || '_' || plot_code as oid  
+            FROM location
+            WHERE country_code = '%COUNTRY_CODE%'
+        ) as foo USING srid=3035
+    "
+    
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Plot location'
+      STYLE
+      	SIZE 3
+      	MINSIZE 1
+		MAXSIZE 5
+        COLOR 150 150 150
+        OUTLINECOLOR 150 150 150
+        SYMBOL "circle"
+      END
+    END
+END 
+
+#
+# Vector layer for all locations for all countries
+#
+LAYER
+    NAME "all_harmonized_locations"
+    TRANSPARENCY 80
+    TYPE POINT
+    STATUS ON
+    
+    METADATA
+    	WFS_TITLE		   "All Plots"
+    	GML_FEATUREID      "oid" 
+    	GML_INCLUDE_ITEMS  "all"      	
+  	END
+  	DUMP TRUE 
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, country_code || '_' || plot_code as oid  
+            FROM harmonized_location
+        ) as foo USING srid=3035
+    "
+    
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Plot location'
+      STYLE
+      	SIZE 3
+      	MINSIZE 1
+		MAXSIZE 5
+        COLOR 150 150 150
+        OUTLINECOLOR 150 150 150
+        SYMBOL "circle"
+      END
+    END
+END 
+
+#
+# Vector layer for all locations for one country
+#
+LAYER
+    NAME "all_harmonized_locations_country"
+    TRANSPARENCY 80
+    TYPE POINT
+    STATUS ON
+    
+    METADATA
+    	WFS_TITLE		   "All Plots"
+    	GML_FEATUREID      "oid" 
+    	GML_INCLUDE_ITEMS  "all"      	
+  	END
+  	DUMP TRUE 
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, country_code || '_' || plot_code as oid  
+            FROM harmonized_location
+            WHERE country_code = '%COUNTRY_CODE%'
+        ) as foo USING srid=3035
+    "
+    
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Plot location'
+      STYLE
+      	SIZE 3
+      	MINSIZE 1
+		MAXSIZE 5
+        COLOR 150 150 150
+        OUTLINECOLOR 150 150 150
+        SYMBOL "circle"
+      END
+    END
+END 
+
+#
+# Vector layer used to draw a single plot location on the detail view
+#
+LAYER
+    NAME "plot_location"
+    TRANSPARENCY 80
+    TYPE POINT
+    STATUS ON
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT transform(the_geom, 3035) as the_geom, country_code || '_' || plot_code as oid  
+            FROM location
+            WHERE plot_code = '%plot_code%'
+        ) as foo USING srid=3035
+    "
+    
+    CLASS
+      EXPRESSION ('%CLASS%' eq 'REDSTAR')
+      STYLE
+        SIZE 15
+        COLOR 255 255 255
+        OUTLINECOLOR 255 0 0
+        SYMBOL "square"
+      END
+    END
+    CLASS
+      NAME 'Plot location'
+      STYLE
+      	SIZE 10
+        COLOR 128 50 50
+        OUTLINECOLOR 128 50 50
+        SYMBOL "circle"
+      END
+    END
+END 
+
+#
+# Vector layer used to draw a single plot location on the detail view
+#
+LAYER
+    NAME "harmonized_plot_location"
+    TRANSPARENCY 80
+    TYPE POINT
+    STATUS ON
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, country_code || '_' || plot_code as oid  
+            FROM harmonized_location
+            WHERE plot_code = '%plot_code%'
+        ) as foo USING srid=3035
+    "
+    
+    CLASS
+      EXPRESSION ('%CLASS%' eq 'REDSTAR')
+      STYLE
+        SIZE 15
+        COLOR 255 255 255
+        OUTLINECOLOR 255 0 0
+        SYMBOL "square"
+      END
+    END
+    CLASS
+      NAME 'Plot location'
+      STYLE
+      	SIZE 10
+        COLOR 128 50 50
+        OUTLINECOLOR 128 50 50
+        SYMBOL "circle"
+      END
+    END
+END 
+
+
+#
+# Vector layer for aggregated results on the 50x50 grid
+#
+LAYER
+    NAME "aggregated_result_50"
+    TRANSPARENCY 80
+    TYPE POLYGON
+    STATUS ON
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT setSRID(the_geom, 3035) as the_geom, average_value, aggregated_result.cell_id as oid 
+            FROM aggregated_result
+            LEFT JOIN grid_eu25_50k ON (grid_eu25_50k.cell_id = aggregated_result.cell_id)
+            WHERE session_id = '%SESSION_ID%'
+        ) as foo USING UNIQUE oid USING srid=3035
+    "    
+END 
+
+
+#
+# Vector layer for aggregated results on the 100x100 grid
+#
+LAYER
+    NAME "aggregated_result_100"
+    TRANSPARENCY 80
+    TYPE POLYGON
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT setSRID(the_geom, 3035) as the_geom, average_value, aggregated_result.cell_id as oid 
+            FROM aggregated_result
+            LEFT JOIN grid_eu25_100k ON (grid_eu25_100k.cell_id = aggregated_result.cell_id)
+            WHERE session_id = '%SESSION_ID%'
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+END 
+
+
+#
+# Vector layer for aggregated results on the nuts0 grid
+#
+LAYER
+    NAME "aggregated_result_nuts0"
+    TRANSPARENCY 80
+    TYPE POLYGON
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, average_value, aggregated_result.cell_id as oid 
+            FROM aggregated_result
+            LEFT JOIN nuts_0 ON (nuts_0.cell_id = aggregated_result.cell_id)
+            WHERE session_id = '%SESSION_ID%'
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+END 
+
+
+LAYER
+    NAME "interpolation_result"
+    TRANSPARENCY 80
+    TYPE RASTER
+    STATUS ON
+    
+    METADATA
+    	WFS_TITLE		   "France"
+    	GML_FEATUREID      "gid" 
+    	GML_INCLUDE_ITEMS  "all"
+    	
+    	"wcs_label"           	"France IDW"  ### required
+    	"wcs_rangeset_name"   	"pixel"       ### required to support DescribeCoverage request
+    	"wcs_rangeset_label"  	"Basal Area"  ### required to support DescribeCoverage request      	
+    	"wcs_formats" 			"AAIGrid"
+    	"ows_srs"   			"EPSG:3035"
+    	"wcs_resolution" 		"1000 1000"
+  	END
+  	DUMP TRUE 
+	DATA "../generated_content/%SESSION_ID%_interpolation_result.asc"
+	PROJECTION
+      "init=epsg:3035"
+    END		
+END
+ 
+
+#
+# Layer for aggregated basal area by species on a 50x50 km grid
+#
+LAYER
+    NAME "basal_area_by_species_50"
+    TRANSPARENCY 80
+    TYPE POLYGON
+    STATUS ON
+    
+    METADATA
+    	WFS_TITLE		   		"BasalArea"
+    	"gml_include_items" 	"all"
+    	"gml_featureid"    		"cell_id" 
+  	END
+  	DUMP TRUE 
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER"   
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"    
+    DATA "the_geom FROM basal_area_by_species_50"
+    FILTER "species_code = '%tree_species%'"
+    CLASS
+      NAME 'Plot location'
+      STYLE
+      	SIZE 3
+      	MINSIZE 1
+		MAXSIZE 5
+        COLOR 128 50 50
+        OUTLINECOLOR 128 50 50
+      END
+    END
+END 
+
+#
+# SC3 Deliverable : Forest Plots
+#
+LAYER
+    NAME "sc3_forest_plot_layer"
+    TRANSPARENCY 80
+    TYPE POLYGON
+    CONNECTIONTYPE postgis
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, cell_id as oid 
+            FROM mapping.sc3_forest_plot_layer
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+    CLASS
+	NAME "Forest Plot"
+        STYLE
+		SIZE 3
+		COLOR 0 255 0
+		OUTLINECOLOR 0 255 0
+	END
+    END
+END 
+ 
+#
+# SC3 Deliverable : All Plots
+#
+LAYER
+    NAME "sc3_plot_layer"
+    TRANSPARENCY 80
+    TYPE POLYGON
+    CONNECTIONTYPE postgis
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, cell_attribut, cell_id as oid 
+            FROM sc3_plot_layer
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+    CLASSITEM "cell_attribut"
+    CLASS
+	NAME "NON FOREST"
+	EXPRESSION "1"
+	STYLE
+		SIZE 3
+		COLOR 120 120 120
+		OUTLINECOLOR 120 120 120
+	END
+    END
+    CLASS
+	NAME "FOREST"
+	EXPRESSION "2"
+	STYLE
+		SIZE 3
+		COLOR 0 255 0
+		OUTLINECOLOR 0 255 0
+	END
+    END
+    CLASS
+	NAME "FOREST & NON FOREST"
+	EXPRESSION "3"
+	STYLE
+		SIZE 3
+		COLOR 128 128 0
+		OUTLINECOLOR 128 128 0
+	END
+    END
+END 
+
+#
+# SC3 Deliverable : Tree species
+#
+LAYER
+    NAME "sc3_tree_species_group_all"
+    TRANSPARENCY 80
+    TYPE POLYGON
+    CONNECTIONTYPE postgis
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, cell_attribut, cell_id as oid 
+            FROM sc3_tree_species_group_all
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+    CLASSITEM "cell_attribut"
+    CLASS
+	NAME "CONIFEROUS"
+	EXPRESSION "1"
+	STYLE
+		SIZE 3
+		COLOR 0 128 128
+		OUTLINECOLOR 0 128 128
+	END
+    END
+    CLASS
+	NAME "BROADLEAVES"
+	EXPRESSION "2"
+	STYLE
+		SIZE 3
+		COLOR 0 255 0
+		OUTLINECOLOR 0 255 0
+	END
+    END
+    CLASS
+	NAME "NOT DEFINED"
+	EXPRESSION "3"
+	STYLE
+		SIZE 3
+		COLOR 255 128 0
+		OUTLINECOLOR 255 128 0
+	END
+    END
+END 
+
+
+#
+# SC3 Deliverable : Tree species for DBH = 2
+#
+LAYER
+    NAME "sc3_tree_species_group_dbh2"
+    TRANSPARENCY 80
+    TYPE POLYGON
+    CONNECTIONTYPE postgis
+    CONNECTION "user=eforest password=eforest dbname=efdac host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, cell_attribut, cell_id as oid 
+            FROM sc3_tree_species_group_dbh2
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+   CLASSITEM "cell_attribut"
+    CLASS
+	NAME "CONIFEROUS"
+	EXPRESSION "1"
+	STYLE
+		SIZE 3
+		COLOR 0 128 128
+		OUTLINECOLOR 0 128 128
+	END
+    END
+    CLASS
+	NAME "BROADLEAVES"
+	EXPRESSION "2"
+	STYLE
+		SIZE 3
+		COLOR 0 255 0
+		OUTLINECOLOR 0 255 0
+	END
+    END
+    CLASS
+	NAME "NOT DEFINED"
+	EXPRESSION "3"
+	STYLE
+		SIZE 3
+		COLOR 255 128 0
+		OUTLINECOLOR 255 128 0
+	END
+    END
+END
+
+
+#
+# Aggregation difference between raw calculation and Adrian algorithme
+#
+LAYER
+    NAME "diff"
+    TRANSPARENCY 80
+    TYPE POLYGON
+    CONNECTIONTYPE postgis
+    CONNECTION "user=eforest password=yC50zm9 dbname=efdac host=test-efdac.ifn.fr port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, diff, diff.cell_id as oid 
+            FROM tmp_aggregation.diff diff
+            LEFT JOIN mapping.grid_eu25_50k using (cell_id)
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+    CLASSITEM "diff"
+    CLASS
+		EXPRESSION ([diff] = 0)
+		STYLE
+			SIZE 3
+			COLOR 0 255 0
+			OUTLINECOLOR  0 255 0
+		END
+    END
+    CLASS
+		EXPRESSION ([diff] <= 1)
+		STYLE
+			SIZE 3
+			COLOR 100 255 0
+			OUTLINECOLOR  0 255 0
+		END
+    END
+    CLASS
+		EXPRESSION ([diff] <= 10)
+		STYLE
+			SIZE 3
+			COLOR  255 255 0
+			OUTLINECOLOR  100 255 0
+		END
+    END
+    CLASS
+		EXPRESSION ([diff] <= 30)
+		STYLE
+			SIZE 3
+			COLOR 255 128 0
+			OUTLINECOLOR 255 128 0
+		END
+    END
+    CLASS
+		EXPRESSION ([diff] > 30)
+		STYLE
+			SIZE 3
+			COLOR 255 0 0
+			OUTLINECOLOR 255 0 0
+		END
+    END
+END
+
+
+
+
+END # Map File

@@ -1,0 +1,26 @@
+<Context path="/EforestIntegrationService">
+  
+  <Resource name="jdbc/website" auth="Container" type="javax.sql.DataSource"
+               maxActive="20" maxIdle="10" maxWait="10000" validationQuery="SELECT 1"
+               username="eforest" password="eforest" driverClassName="org.postgresql.Driver"
+               url="jdbc:postgresql://localhost:5432/efdac"/>
+		
+  <Resource name="jdbc/metadata" auth="Container" type="javax.sql.DataSource"
+               maxActive="20" maxIdle="10" maxWait="10000" validationQuery="SELECT 1"
+               username="eforest" password="eforest" driverClassName="org.postgresql.Driver"
+               url="jdbc:postgresql://localhost:5432/efdac"/>
+               
+  <Resource name="jdbc/rawdata" auth="Container" type="javax.sql.DataSource"
+               maxActive="20" maxIdle="10" maxWait="10000" validationQuery="SELECT 1"
+               username="eforest" password="eforest" driverClassName="org.postgresql.Driver"
+               url="jdbc:postgresql://localhost:5432/efdac"/>		
+               
+  <Resource name="jdbc/harmonizeddata" auth="Container" type="javax.sql.DataSource"
+               maxActive="20" maxIdle="10" maxWait="10000" validationQuery="SELECT 1"
+               username="eforest" password="eforest" driverClassName="org.postgresql.Driver"
+               url="jdbc:postgresql://localhost:5432/efdac"/>	
+               
+               
+  <Resource name="mail/Session" auth="Container" type="javax.mail.Session" mail.smtp.host="populus"/>
+ 
+</Context>

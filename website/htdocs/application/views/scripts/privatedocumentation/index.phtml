@@ -1,0 +1,40 @@
+<?php
+/**
+ * Default view for the private documentation module.
+ * @package views
+ */
+?>
+
+<h1>
+   Private Project Documentation
+</h1>
+
+<div class="left-column">
+
+<div class="moduletable_menu">
+
+<ul id="appmenu" class="menu">
+<li>
+<a href="<?= $this->url(array('controller'=>'privatedocumentation','action'=>'documents'), null, true) ?>" class="pagelink" >Project documents</a>
+</li>
+
+<li>
+<a href="<?= $this->url(array('controller'=>'privatedocumentation','action'=>'meetings'), null, true) ?>" class="pagelink" >Project Meetings</a>
+</li>
+
+<li>
+<a href="<?= $this->url(array('controller'=>'privatedocumentation','action'=>'fileformat'), null, true) ?>" class="pagelink" >Data Submission Specifications</a>
+</li>
+
+<li>
+<a href="<?= $this->url(array('controller'=>'privatedocumentation','action'=>'manuals'), null, true) ?>" class="pagelink" >Manuals</a>
+</li>
+
+<li>
+<a href="<?= $this->url(array('controller'=>'privatedocumentation','action'=>'faq'), null, true) ?>" class="pagelink" >Frequently Asked Questions</a>
+</li>
+</ul>
+
+</div>
+
+</div>

@@ -1,0 +1,60 @@
+<?php
+/**
+ * Frequently Asked Questions
+ * @package views
+ */
+?>
+
+<h1>
+   Frequently Asked Questions
+</h1>
+
+<div class="content">
+<h2>
+How to convert the coordinates in decimals degrees?
+</h2>
+
+<ul>
+    <li>
+    You can use <a href="http://postgis.refractions.net/">PostGIS</a> if your data is in a PostgreSQL Database.
+    Here is an example of request :<br/>
+    <pre>
+    SELECT ST_X(g) AS x, ST_Y(g) AS y
+    FROM (
+    	SELECT ST_Transform(ST_GeomFromText('POINT ('|| X || ' ' || Y || ')', myESPGCODE), 4326) AS g
+    ) AS req;
+    </pre>
+    </li> 
+    
+    <li>
+    You can use the <a href="http://trac.osgeo.org/proj/">PROJ</a> library to convert coordinates (see <a href="http://pwet.fr/man/linux/commandes/cs2cs">cs2cs manual</a>).
+    </li>
+    
+    <li>
+    You can also use an open-source SIG like <a href="http://earth-info.nga.mil/GandG/geotrans/">GEOTRANS</a>, <a href="http://udig.refractions.net/">uDig</a> <a href="http://www.qgis.org/">Quantum GIS</a> or <a href="http://www.gvsig.gva.es/">gvSIG</a>
+    </li>
+</ul>
+
+
+<h2>
+I have the error message "Wrong column number" when uploading data.
+</h2>
+<p>
+The last column is often cut by Excel, as this last column is a comment, you can add some text (for example "-") to force Excel to generate the column.
+</p>
+
+
+<h2>Where can I find the INSPIRE reference grids?</h2>
+<p>
+You can find it here: <a href="http://eusoils.jrc.ec.europa.eu/library/reference_grids/">INSPIRE Reference Grids</a>
+</p>
+
+<h2>Where can I find the Flora Europea reference list of species</h2>
+<p>
+You can find it here: <a href="http://rbg-web2.rbge.org.uk/FE/fe.html">Flora Europea</a>
+</p>
+
+</div>
+
+
+

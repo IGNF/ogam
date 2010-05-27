@@ -1,0 +1,37 @@
+<?php
+/**
+ * Default view for the integration module.
+ * @package views
+ */
+?>
+
+<h1>
+   Data integration module
+</h1>
+
+<div class="left-column">
+<div class="moduletable_menu">
+
+<ul id="appmenu" class="menu">
+
+<?
+$user_session = new Zend_Session_Namespace('user');
+$role = $user_session->role;
+?>
+
+<li>
+<a href="<?= $this->url(array('controller'=>'integration','action'=>'show-plot-location-page'), null, true) ?>">Submit Plot Locations</a>
+</li>
+
+<li>
+<a href="<?= $this->url(array('controller'=>'integration','action'=>'show-strata-page'), null, true) ?>">Submit Strata</a>
+</li>
+
+<li>
+<a href="<?= $this->url(array('controller'=>'integration','action'=>'show-data-page'), null, true) ?>">Submit Forest Data</a>
+</li>
+
+</ul>
+</div>
+</div>
+

@@ -1,0 +1,3 @@
+Ce répertoire est partagé par les applications EFDAC et EDB.
+
+Tous les commits faits dans ce répertoire peuvent avoir des impacts sur plusieurs projets.

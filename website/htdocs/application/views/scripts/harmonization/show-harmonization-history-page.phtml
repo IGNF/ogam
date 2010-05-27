@@ -1,0 +1,88 @@
+<?php
+/**
+ * View for the harmonization process statistics.
+ * @package views
+ */
+?>
+<h1>
+   Harmonization Process History
+</h1>
+
+
+<table class="sectiontable">
+<tr>
+	<th>Process Id</th>
+	<th>Country Code</th>
+	<th>Dataset</th>
+	<th>Status</th>
+	<th>Date</th>
+</tr>
+
+<?
+
+
+
+$i = 0;
+foreach($this->harmonizations as $harmonizationProcess) {
+?>
+<tr class="sectiontableentry<?=$i % 2?>">
+	<td><?= $harmonizationProcess->harmonizationId ?></td>
+	<td><?= $this->countries[$harmonizationProcess->countryCode]; ?></td>
+	<td><?= $harmonizationProcess->datasetId ?></td>
+	<td><?= $harmonizationProcess->status ?>
+            <? if ($harmonizationProcess->status === "OK") : ?>
+                <img src='<?php echo PATH_BASE_URL; ?>/img/Green_tick.png' />
+            <?php elseif ($harmonizationProcess->status === "WARNING") : ?>
+                <img src='<?php echo PATH_BASE_URL; ?>/img/warning_orange.png' />
+            <?php elseif ($harmonizationProcess->status === "RUNNING") : ?>
+                <div class="tempStatusDiv" id="tempStatusDiv_<?php echo $harmonizationProcess->harmonizationId; ?>">
+                <img src='<?php echo PATH_BASE_URL."/img/loading.gif";?>' />
+                <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/extjs/ext-all.js"></script>
+                <script type="text/javascript">
+                Genapp.util.getStatus_<?php echo $harmonizationProcess->harmonizationId; ?> =  function (){
+                    Ext.Ajax.request({
+                       url: '<?php echo PATH_BASE_URL; ?>/Harmonization/get-harmonization-status',
+                       params:{
+                           DATASET_ID:'<?php echo $harmonizationProcess->datasetId; ?>',
+                           COUNTRY_CODE:'<?php echo $harmonizationProcess->countryCode; ?>',
+                           action:'status'                               
+                       },
+                       callback: function(options, success, response){
+                            var rp = Ext.decode(response.responseText);
+                            var src = '<?php echo PATH_BASE_URL; ?>/img/';
+                            switch(rp.status){
+                                case 'OK':
+                                case 'WARNING':
+                                case 'ERROR':
+                                case 'CRASH':
+                                    Ext.TaskMgr.stop(Genapp.util.getStatusTask_<?php echo $harmonizationProcess->harmonizationId; ?>);
+                                    location.reload();
+                                    break;
+                                case 'RUNNING':
+                                default:
+                                    return;
+                            }
+                       }
+                    });
+                }
+                // equivalent using TaskMgr
+                Genapp.util.getStatusTask_<?php echo $harmonizationProcess->harmonizationId; ?> = {
+                    run: Genapp.util.getStatus_<?php echo $harmonizationProcess->harmonizationId; ?>,
+                    interval: 2000
+                };
+                Ext.TaskMgr.start(Genapp.util.getStatusTask_<?php echo $harmonizationProcess->harmonizationId; ?>);
+                </script>
+                </div>
+            <?php else : //"ERROR" or "CRASH") ?>
+                <img src='<?= PATH_BASE_URL ?>/img/Red_x.png' />
+            <?php endif; ?></td>
+	<td><?= $harmonizationProcess->date ?></td>
+</tr>
+<?
+$i++;
+}
+?>
+</table>
+<p class="subTableLink">
+    <a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>">Back</a>
+</p>

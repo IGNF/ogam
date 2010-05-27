@@ -1,0 +1,125 @@
+<?php
+/**
+ * Default view for the web site (main page).
+ * @package views
+ */
+?>
+ <!--[if lte IE 6]>
+    <div style='border: 1px solid #F7941D; background: #FEEFDA; text-align: center; clear: both; height: 75px; position: relative;'>
+    <div style='position: absolute; right: 3px; top: 3px; font-family: courier new; font-weight: bold;'><a href='#' onclick='javascript:this.parentNode.parentNode.style.display="none"; return false;'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-cornerx.jpg' style='border: none;' alt='Close this notice'/></a></div>
+    <div style='width: 640px; margin: 0 auto; text-align: left; padding: 0; overflow: hidden; color: black;'>
+      <div style='width: 75px; float: left;'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-warning.jpg' alt='Warning!'/></div>
+      <div style='width: 275px; float: left; font-family: Arial, sans-serif;'>
+        <div style='font-size: 14px; font-weight: bold; margin-top: 12px;'>You are using an outdated browser</div>
+        <div style='font-size: 12px; margin-top: 6px; line-height: 12px;'>For a better experience using this site, please upgrade to a modern web browser.</div>
+      </div>
+      <div style='width: 75px; float: left;'><a href='http://www.firefox.com' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-firefox.jpg' style='border: none;' alt='Get Firefox 3.5'/></a></div>
+      <div style='width: 75px; float: left;'><a href='http://www.browserforthebetter.com/download.html' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-ie8.jpg' style='border: none;' alt='Get Internet Explorer 8'/></a></div>
+      <div style='width: 73px; float: left;'><a href='http://www.apple.com/safari/download/' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-safari.jpg' style='border: none;' alt='Get Safari 4'/></a></div>
+      <div style='float: left;'><a href='http://www.google.com/chrome' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-chrome.jpg' style='border: none;' alt='Get Google Chrome'/></a></div>
+    </div>
+    </div>
+    </br></br>
+<![endif]-->
+<h1>
+    Welcome to the E-forest web site !
+</h1>
+<?
+
+// Get the user permissions
+$userSession = new Zend_Session_Namespace('user');
+$permissions = $userSession->permissions;
+$role = $userSession->role;
+?>
+<div class="left-column">
+<?
+if (!empty($permissions)) {
+?>
+<div class="moduletable_menu">
+<h3>
+    Select a menu
+</h3>
+<ul id="appmenu" class="menu">
+
+
+<?
+if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'query'), null, true) ?>" class="pagelink" >Visualize Raw Data</a>
+</li>
+<?
+}
+if (!empty($permissions) && array_key_exists('OVERVIEW',$permissions) && $role->isEuropeLevel == '1') {
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'overview'), null, true) ?>">Overview</a>
+</li>
+<? 
+} 
+
+if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'integration'), null, true) ?>" class="pagelink" >Data Integration</a>
+</li>
+<?
+}
+ 
+if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" >Data Harmonization</a>
+</li>
+<?
+}
+
+if (!empty($permissions) && array_key_exists('DATA_QUERY_HARMONIZED',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'harmonizationquery'), null, true) ?>" class="pagelink" >Visualize Aggregated Data</a>
+</li>
+<?
+}
+ 
+if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" >User Administration</a>
+</li>
+<?
+}
+
+if (!empty($permissions) && array_key_exists('DOCUMENTATION',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'documentation'), null, true) ?>" class="pagelink" >Documentation</a>
+</li>
+<?
+}
+
+if (!empty($permissions) && array_key_exists('PRIVATE_DOCUMENTATION',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'privatedocumentation'), null, true) ?>" class="pagelink" >Private Documentation</a>
+</li>
+<?
+}
+$configuration = Zend_Registry::get("configuration");
+if($configuration->autoLogin == 1){
+?>
+<li>
+<a href="<?= PATH_BASE_URL.'/user/index'?>">Change login</a>
+</li>
+<li>
+<a href="<?= PATH_BASE_URL.'/user/logout'?>">Logout</a>
+</li>
+<?
+}
+?>
+</ul>
+</div>
+<?
+}
+?>
+</div>

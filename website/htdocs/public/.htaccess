@@ -1,0 +1,8 @@
+<IfModule !mod_rewrite.c>
+	LoadModule rewrite_module modules/mod_rewrite.so
+</IfModule>
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteBase /eforest/
+	RewriteRule !\.(js|ico|gif|jpg|jpeg|png|css|pdf|doc|ppt|csv|xls|xml)$ index.php
+</IfModule>
