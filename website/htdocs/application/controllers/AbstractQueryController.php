@@ -1378,10 +1378,13 @@ abstract class AbstractQueryController extends AbstractEforestController {
 						$formField = $metadata[$i];
 						if ($formField->type == "STRING") {
 							echo '"'.($value == null ? '' : $value).'";';
-						} elseif ($formField->type == "CODE") {
+						} else if ($formField->type == "CODE") {
 							// Manage code traduction
-							$label = empty($value) ? null : $traductions[$i][$value];
-							echo '"'.($label == null ? '' : $label).'";';
+							if (!empty($value) && !empty($traductions[$i][$value])) {
+								$label = $traductions[$i][$value];
+							} else {
+								$label = ''; 
+							}
 						} else {
 							echo $value.';';
 						}
