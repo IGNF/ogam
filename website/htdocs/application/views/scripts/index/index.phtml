@@ -98,13 +98,7 @@ if (!empty($permissions) && array_key_exists('DOCUMENTATION',$permissions)) {
 <?
 }
 
-if (!empty($permissions) && array_key_exists('PRIVATE_DOCUMENTATION',$permissions)) {	
-?>
-<li>
-<a href="<?= $this->url(array('controller'=>'privatedocumentation'), null, true) ?>" class="pagelink" >Private Documentation</a>
-</li>
-<?
-}
+
 $configuration = Zend_Registry::get("configuration");
 if($configuration->autoLogin == 1){
 ?>
