@@ -1,7 +1,3 @@
-RAW_DATA;STRATA_DATA;*;;The strata table has a separate submission system
 RAW_DATA;LOCATION_DATA;*;;The location table has a separate submission system
 RAW_DATA;PLOT_DATA;LOCATION_DATA;COUNTRY_CODE, PLOT_CODE;This table is the root of the raw_data schema
 RAW_DATA;SPECIES_DATA;PLOT_DATA;SUBMISSION_ID, COUNTRY_CODE, PLOT_CODE, CYCLE;The submission id must match
-HARMONIZED_DATA;HARMONIZED_LOCATION_DATA;*;;This table is the root of the harmonized schema
-HARMONIZED_DATA;HARMONIZED_PLOT_DATA;HARMONIZED_LOCATION_DATA;REQUEST_ID, COUNTRY_CODE, PLOT_CODE;The harmonized plot data table
-HARMONIZED_DATA;HARMONIZED_SPECIES_DATA;HARMONIZED_PLOT_DATA;REQUEST_ID, COUNTRY_CODE, PLOT_CODE, CYCLE;The harmonized species data table
