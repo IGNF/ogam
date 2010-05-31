@@ -93,7 +93,3 @@ alter table ROLE_TO_USER
 
       
       
-      
-      
-      
-GRANT ALL ON SCHEMA website TO eforest;

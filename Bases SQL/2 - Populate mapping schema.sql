@@ -159,7 +159,7 @@ INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('sc3_tree_
 --
 -- for nuts codes, see http://en.wikipedia.org/wiki/Nomenclature_of_Territorial_Units_for_Statistics 
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('999','Europe', 0, null);
-INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('1','France', 1, 0, 0, 'FR');
+INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('1','France', 1, 'FR');
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('2','Belgium', 3, 'BE');
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('3','Netherlands', 2, 'NL');
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('4','Germany', 2, 'DE');
@@ -274,32 +274,3 @@ set bb_xmin = bb_xmin + 500000,
     bb_xmax = bb_xmax + 500000,
     bb_ymax = bb_ymax + 2000000
 where code_country = '999';
-
-
---
--- Define the grids available for agregation
---
--- INSERT INTO grid_definition (grid_name, grid_label, grid_table, location_column, aggregation_layer_name, position) VALUES ('nuts0','Countries', 'nuts_0', 'cell_id_nuts0', 'aggregated_result_nuts0', 1);
-INSERT INTO grid_definition (grid_name, grid_label, grid_table, location_column, aggregation_layer_name, position) VALUES ('50x50','50 km x 50 km', 'grid_eu25_50k', 'cell_id_50', 'aggregated_result_50', 2);
-INSERT INTO grid_definition (grid_name, grid_label, grid_table, location_column, aggregation_layer_name, position) VALUES ('100x100','100 km x 100 km', 'grid_eu25_100k', 'cell_id_100', 'aggregated_result_100', 3);
-
-
-
---
--- Define the classes for raster data
---
-INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '-1', 'FFFFFF', '0'); -- lower limit
-INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '0', '004400', '0 - 10');
-INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '10', '006600', '10 - 20');
-INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '20', '009900', '20 - 30');
-INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '30', '00FF00', '&gt; 30');
-INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '50000', '000000', 'other'); -- upper limit
---
--- Define the classes for raster data
---
-INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 0, 0, 'FFFFFF', '0');
-INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 0, 10, '004400', '0 - 10');
-INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 10, 20, '006600', '10 - 20');
-INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 20, 30, '009900', '20 - 30');
-INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 30, 50000, '00FF00', '&gt; 30');
-

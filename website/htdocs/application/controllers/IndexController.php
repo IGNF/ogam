@@ -45,21 +45,5 @@ class IndexController extends Zend_Controller_Action {
 		 */
 	}
 
-	/**
-	 * Show the welcome page for english users.
-	 *
-	 * @return void
-	 */
-	public function welcomeAction() {
-		$this->render('welcome');
-	}
-
-	/**
-	 * Show the welcome page for english users.
-	 *
-	 * @return void
-	 */
-	public function welcomeFrAction() {
-		$this->render('welcome-fr');
-	}
+	
 }

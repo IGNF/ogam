@@ -174,7 +174,7 @@ CREATE TABLE grid_definition
   grid_label 			VARCHAR(100),  -- Label of the grid
   grid_table    		VARCHAR(50),  -- Name of PostGIS table containing the geometry
   location_column  		VARCHAR(50),  -- Name of the column of the location table containing the cell id
-  aggragation_layer_name VARCHAR(50),  -- Logical name of the mapserver layer corresponding to the aggregation
+  aggregation_layer_name VARCHAR(50),  -- Logical name of the mapserver layer corresponding to the aggregation
   position				INTEGER,
   PRIMARY KEY  (grid_name)
 ) WITHOUT OIDS;
@@ -232,5 +232,4 @@ CREATE TABLE CLASS_DEFINITION
 ) WITHOUT OIDS;
 
 
-GRANT ALL ON SCHEMA mapping TO eforest;
         

@@ -484,5 +484,3 @@ alter table FILE_FIELD
       
       
       
-      
-GRANT ALL ON SCHEMA metadata TO eforest;
