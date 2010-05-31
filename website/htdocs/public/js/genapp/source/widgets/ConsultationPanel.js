@@ -1626,20 +1626,22 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             try
             {
                 var response = Ext.decode(response.responseText);
-                if (Ext.isEmpty(response.success) || response.success == false || Ext.isEmpty(response.resultsbbox)) {
+                if (Ext.isEmpty(response.success) || response.success == false) {
                     if (!Ext.isEmpty(response.errorMsg)) {
                         throw(response.errorMsg);
                     }
                     throw('');
                 } else {
-                    this.mapPanel.resultsBBox = response.resultsbbox;
-                    if(this.autoZoomOnResultsFeatures == true){
-                        this.mapPanel.zoomOnBBox(response.resultsbbox);
-                        // Display the results layer
-                        this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
-                    }
+                	if (!Ext.isEmpty(response.resultsbbox)) {
+	                    this.mapPanel.resultsBBox = response.resultsbbox;
+	                    if (this.autoZoomOnResultsFeatures == true) {
+	                        this.mapPanel.zoomOnBBox(response.resultsbbox);
+	                        // Display the results layer
+	                        this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
+	                    }
+                	}
                 }
-            }catch(err){
+            } catch(err) {
                     var msg = 'An error occured during the bounding box request.';
                     if (!Ext.isEmpty(err)) {
                         msg += ' ' + err;

@@ -896,7 +896,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
     /**
      * Zoom on the results bounding box
      */
-    zoomOnResultsBBox: function(){
+    zoomOnResultsBBox: function() {
         this.zoomOnBBox(this.resultsBBox);
     },
 
