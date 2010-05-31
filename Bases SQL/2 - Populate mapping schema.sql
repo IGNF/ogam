@@ -22,57 +22,11 @@ INSERT INTO scales(scale) VALUES (100000);   --  100 K
 -- Define the layers
 INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('forestmap', 'Forest / Non Forest', 'forestmap', 1, 0, 0, 1, null, null, 'resize', 'PNG', null, 1, null, 0, 'NONE');
 INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('nuts_0', 'Country Boundaries', 'nuts_0', 1, 0, 0, 1, 60000000, 50000, 'resize', 'PNG', null, 1, null, 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25', 'INSPIRE Grid', null, 1, 0, 0, 0, null, null, null, null, null, 0, null, 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_10k', '10km x 10km', 'grid_eu25_10k', 1, 0, 0, 1, 5000000, null, null, 'PNG', null, 0, null, 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_50k', '50km x 50km', 'grid_eu25_50k', 1, 0, 0, 1, null, null, null, 'PNG', null, 0, null, 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_100k', '100km x 100km', 'grid_eu25_100k', 1, 0, 0, 1, null, null, null, 'PNG', null, 0, null, 0, 'NONE');
 INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('result_locations', 'Results', 'result_locations', 1, 0, 1, 0, null, null, null, 'PNG', null, 0, null, 0, 'REQUEST');
 INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('all_locations', 'Plot Locations', 'all_locations', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 0, 'NONE');
 INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('all_harmonized_locations', 'Plot Locations', 'all_harmonized_locations', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 0, 'NONE');
 INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('all_locations_country', 'Plot Locations', 'all_locations_country', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 0, 'NONE');
 INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('all_harmonized_locations_country', 'Plot Locations', 'all_harmonized_locations_country', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null,  0, 'NONE');
-
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('aggregated_result_50', 'Aggregation result', 'aggregated_result_50', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 1, 'AGGREGATION');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('aggregated_result_100', 'Aggregation result', 'aggregated_result_100', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 1, 'AGGREGATION');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('aggregated_result_nuts0', 'Aggregation result', 'aggregated_result_nuts0', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 1, 'AGGREGATION');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('interpolation_result', 'Interpolation result', 'interpolation_result', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 1, 'INTERPOLATION');
-
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_AT', '1km x 1km', 'grid_eu25_1k_AT', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '14', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_BE', '1km x 1km', 'grid_eu25_1k_BE', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '2', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_CY', '1km x 1km', 'grid_eu25_1k_CY', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '66', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_CZ', '1km x 1km', 'grid_eu25_1k_CZ', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '58', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_DK', '1km x 1km', 'grid_eu25_1k_DK', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '8', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_EE', '1km x 1km', 'grid_eu25_1k_EE', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '59', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_FI', '1km x 1km', 'grid_eu25_1k_FI', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '15', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_FR', '1km x 1km', 'grid_eu25_1k_FR', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '1', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_DE', '1km x 1km', 'grid_eu25_1k_DE', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '4', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_GR', '1km x 1km', 'grid_eu25_1k_GR', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '9', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_HU', '1km x 1km', 'grid_eu25_1k_HU', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '51', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_IE', '1km x 1km', 'grid_eu25_1k_IE', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '7', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_IT', '1km x 1km', 'grid_eu25_1k_IT', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '5', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_LV', '1km x 1km', 'grid_eu25_1k_LV', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '64', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_LT', '1km x 1km', 'grid_eu25_1k_LT', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '56', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_LU', '1km x 1km', 'grid_eu25_1k_LU', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '12', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_NL', '1km x 1km', 'grid_eu25_1k_NL', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '3', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_PL', '1km x 1km', 'grid_eu25_1k_PL', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '53', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_PT', '1km x 1km', 'grid_eu25_1k_PT', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '10', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_SK', '1km x 1km', 'grid_eu25_1k_SK', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '54', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_SI', '1km x 1km', 'grid_eu25_1k_SI', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '60', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_ES', '1km x 1km', 'grid_eu25_1k_ES', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '11', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_SE', '1km x 1km', 'grid_eu25_1k_SE', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '13', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_CH', '1km x 1km', 'grid_eu25_1k_CH', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '50', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_UK', '1km x 1km', 'grid_eu25_1k_UK', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '6', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_RO', '1km x 1km', 'grid_eu25_1k_RO', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '52', 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('grid_eu25_1k_NO', '1km x 1km', 'grid_eu25_1k_NO', 1, 0, 0, 0, 500000, null, null, 'PNG', null, 0, '55', 0, 'NONE');
-
-INSERT INTO layer_definition (layer_name, layer_label, mapserv_layers, istransparent, isbaselayer, isuntiled, iscached, maxscale, minscale, has_legend, transitioneffect, imageformat, opacity, country_code, has_sld, activate_type) VALUES ('SC3 deliverables', 'SC3 deliverables', NULL, 1, 0, 0, 0, NULL, NULL, 0, NULL, NULL, NULL, NULL, 0, 'NONE');
-INSERT INTO layer_definition (layer_name, layer_label, mapserv_layers, istransparent, isbaselayer, isuntiled, iscached, maxscale, minscale, has_legend, transitioneffect, imageformat, opacity, country_code, has_sld, activate_type) VALUES ('sc3_forest_plot_layer', 'Forest plot distribution', 'sc3_forest_plot_layer', 1, 0, 1, 0, NULL, NULL, 1, NULL, 'PNG', NULL, NULL, 0, 'NONE');
-INSERT INTO layer_definition (layer_name, layer_label, mapserv_layers, istransparent, isbaselayer, isuntiled, iscached, maxscale, minscale, has_legend, transitioneffect, imageformat, opacity, country_code, has_sld, activate_type) VALUES ('sc3_plot_layer', 'Plot distribution', 'sc3_plot_layer', 1, 0, 1, 0, NULL, NULL, 1, NULL, 'PNG', NULL, NULL, 0, 'NONE');
-INSERT INTO layer_definition (layer_name, layer_label, mapserv_layers, istransparent, isbaselayer, isuntiled, iscached, maxscale, minscale, has_legend, transitioneffect, imageformat, opacity, country_code, has_sld, activate_type) VALUES ('sc3_tree_species_group_all', 'Tree species group', 'sc3_tree_species_group_all', 1, 0, 1, 0, NULL, NULL, 1, NULL, 'PNG', NULL, NULL, 0, 'NONE');
-INSERT INTO layer_definition (layer_name, layer_label, mapserv_layers, istransparent, isbaselayer, isuntiled, iscached, maxscale, minscale, has_legend, transitioneffect, imageformat, opacity, country_code, has_sld, activate_type) VALUES ('sc3_tree_species_group_dbh2', 'Tree species group >=12cm', 'sc3_tree_species_group_dbh2', 1, 0, 1, 0, NULL, NULL, 1, NULL, 'PNG', NULL, NULL, 0, 'NONE');
-
--- INSERT INTO layer_definition (layer_name, layer_label, mapserv_layers, istransparent, isbaselayer, isuntiled, iscached, maxscale, minscale, has_legend, transitioneffect, imageformat, opacity, country_code, has_sld, activate_type) VALUES ('diff', 'Difference in aggregation', 'diff', 1, 0, 1, 0, NULL, NULL, 1, NULL, 'PNG', NULL, NULL, 0, 'NONE');
-
 
 
 --
@@ -85,73 +39,13 @@ INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disab
 INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (5, -1, 1, 0, 1, 0, 0, 'all_harmonized_locations_country',5);
 
 
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (10, -1, 0, 0, 0, 0, 1, 'grid_eu25',10); -- Category
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (11, 10, 1, 0, 0, 0, 0, 'grid_eu25_10k',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (12, 10, 1, 0, 0, 0, 0, 'grid_eu25_50k',2);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (13, 10, 1, 0, 0, 0, 0, 'grid_eu25_100k',3);
 INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (20, -1, 1, 1, 0, 0, 0, 'nuts_0',20);
 INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (30, -1, 1, 1, 0, 0, 0, 'forestmap',30);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (40, -1, 1, 0, 1, 0, 0, 'aggregated_result_50',6);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (41, -1, 1, 0, 1, 0, 0, 'aggregated_result_100',6);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (42, -1, 1, 0, 1, 0, 0, 'aggregated_result_nuts0',6);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (50, -1, 1, 0, 1, 0, 0, 'interpolation_result',7);
-
-
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (100, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_AT',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (101, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_BE',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (102, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_CY',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (103, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_CZ',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (104, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_DK',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (105, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_EE',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (106, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_FI',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (107, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_FR',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (108, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_DE',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (109, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_GR',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (110, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_HU',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (111, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_IE',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (112, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_IT',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (113, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_LV',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (114, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_LI',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (115, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_LU',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (117, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_NL',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (118, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_PL',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (119, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_PT',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (120, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_SK',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (121, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_SI',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (122, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_ES',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (123, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_SE',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (124, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_UK',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (125, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_CH',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (126, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_RO',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (127, 4, 1, 0, 0, 0, 0, 'grid_eu25_1k_NO',1);
-
-INSERT INTO legend (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (200, '-1', 0, 0, 0, 0, 1, 'SC3 deliverables', 200); -- Category
-INSERT INTO legend (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (201, '200', 1, 0, 0, 0, 0, 'sc3_forest_plot_layer', 1);
-INSERT INTO legend (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (202, '200', 1, 0, 0, 0, 0, 'sc3_plot_layer', 1);
-INSERT INTO legend (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (204, '200', 1, 0, 0, 0, 0, 'sc3_tree_species_group_all', 1);
-INSERT INTO legend (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (205, '200', 1, 0, 0, 0, 0, 'sc3_tree_species_group_dbh2', 1);
-
--- INSERT INTO legend (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (206, '200', 1, 0, 0, 0, 0, 'diff', 1);
 
 
 --
 -- Forbid some layers for some profiles
 --
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('all_locations', 'DATA_PROVIDER');  -- Should only see his own country plot locations
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('all_harmonized_locations', 'DATA_PROVIDER');  -- Should only see his own country plot locations
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('all_locations_country', 'ADMIN'); -- Can see all plot locations for all countries
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('all_locations_country', 'FRAMEWORK_MEMBER'); -- Can see all plot locations for all countries
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('all_harmonized_locations_country', 'ADMIN'); -- Can see all plot locations for all countries
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('all_harmonized_locations_country', 'FRAMEWORK_MEMBER'); -- Can see all plot locations for all countries
-
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('all_locations_country', 'JRC'); -- Can see all plot locations for all countries
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('all_harmonized_locations_country', 'JRC'); -- Can see all plot locations for all countries
-
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('SC3 deliverables', 'JRC');
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('sc3_forest_plot_layer', 'JRC');
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('sc3_plot_layer', 'JRC');
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('sc3_tree_species_group_all', 'JRC');
-INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('sc3_tree_species_group_dbh2', 'JRC');
 
 
 --
@@ -159,7 +53,7 @@ INSERT INTO layer_profile_restriction (layer_name, role_code) VALUES ('sc3_tree_
 --
 -- for nuts codes, see http://en.wikipedia.org/wiki/Nomenclature_of_Territorial_Units_for_Statistics 
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('999','Europe', 0, null);
-INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('1','France', 1, 'FR');
+INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('1','France', 1, 0, 0, 'FR');
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('2','Belgium', 3, 'BE');
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('3','Netherlands', 2, 'NL');
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('4','Germany', 2, 'DE');
@@ -274,3 +168,32 @@ set bb_xmin = bb_xmin + 500000,
     bb_xmax = bb_xmax + 500000,
     bb_ymax = bb_ymax + 2000000
 where code_country = '999';
+
+
+--
+-- Define the grids available for agregation
+--
+-- INSERT INTO grid_definition (grid_name, grid_label, grid_table, location_column, aggregation_layer_name, position) VALUES ('nuts0','Countries', 'nuts_0', 'cell_id_nuts0', 'aggregated_result_nuts0', 1);
+INSERT INTO grid_definition (grid_name, grid_label, grid_table, location_column, aggregation_layer_name, position) VALUES ('50x50','50 km x 50 km', 'grid_eu25_50k', 'cell_id_50', 'aggregated_result_50', 2);
+INSERT INTO grid_definition (grid_name, grid_label, grid_table, location_column, aggregation_layer_name, position) VALUES ('100x100','100 km x 100 km', 'grid_eu25_100k', 'cell_id_100', 'aggregated_result_100', 3);
+
+
+
+--
+-- Define the classes for raster data
+--
+INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '-1', 'FFFFFF', '0'); -- lower limit
+INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '0', '004400', '0 - 10');
+INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '10', '006600', '10 - 20');
+INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '20', '009900', '20 - 30');
+INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '30', '00FF00', '&gt; 30');
+INSERT INTO RASTER_CLASS_DEFINITION (DATA, VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', '50000', '000000', 'other'); -- upper limit
+--
+-- Define the classes for raster data
+--
+INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 0, 0, 'FFFFFF', '0');
+INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 0, 10, '004400', '0 - 10');
+INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 10, 20, '006600', '10 - 20');
+INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 20, 30, '009900', '20 - 30');
+INSERT INTO CLASS_DEFINITION (DATA, MIN_VALUE, MAX_VALUE, COLOR, LABEL) VALUES ('BASAL_AREA', 30, 50000, '00FF00', '&gt; 30');
+
