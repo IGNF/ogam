@@ -3,6 +3,6 @@
 </IfModule>
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	RewriteBase /OGAM/
+	RewriteBase /ogam/
 	RewriteRule !\.(js|ico|gif|jpg|jpeg|png|css|pdf|doc|ppt|csv|xls|xml)$ index.php
 </IfModule>
