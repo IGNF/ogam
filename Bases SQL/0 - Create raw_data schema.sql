@@ -92,6 +92,24 @@ SELECT AddGeometryColumn('raw_data','location','the_geom',4326,'POINT',2);
 CREATE INDEX IX_LOCATION_SPATIAL_INDEX ON raw_data.location USING GIST
             ( the_geom GIST_GEOMETRY_OPS );
             
+/*========================================================================*/
+/*	Add a trigger to fill the the_geom column of the location table       */
+/*========================================================================*/
+CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
+$BODY$
+BEGIN
+    NEW.the_geom = public.GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);
+    RETURN NEW;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE TRIGGER geom_trigger
+  BEFORE INSERT OR UPDATE
+  ON raw_data.LOCATION
+  FOR EACH ROW
+  EXECUTE PROCEDURE raw_data.geomfromcoordinate();
+            
             
 
 /*==============================================================*/
