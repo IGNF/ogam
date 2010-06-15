@@ -1,5 +1,10 @@
 <?php
 /**
+ * © French National Forest Inventory 
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ */ 
+
+/**
  * Represent a request format (an input file descriptor).
  * @package classes
  */

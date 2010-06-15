@@ -1,4 +1,8 @@
 <?php
+/**
+ * © French National Forest Inventory 
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ */ 
 require_once 'metadata/FileField.php';
 require_once 'metadata/FormField.php';
 require_once 'metadata/FormFormat.php';
@@ -91,9 +95,14 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @return Array[dataset_id => label]
 	 */
-	public function getDatasets() {
+	public function getDatasets($excludeLocation = true) {
 		$db = $this->getAdapter();
-		$req = "SELECT dataset_id as id, label, is_default FROM dataset WHERE dataset_id <> 'LOCATION' ORDER BY dataset_id";
+		$req = "SELECT dataset_id as id, label, is_default ";
+		$req .= " FROM dataset";
+		if ($excludeLocation) {
+			$req .= " WHERE dataset_id <> 'LOCATION'";
+		}
+		$req .= " ORDER BY dataset_id";
 
 		$this->logger->info('getDatasets : '.$req);
 
@@ -136,23 +145,27 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the list of requested fields for the file.
 	 *
-	 * @param String the JRC request identifier
-	 * @param String the country code
+	 * @param String the file format
 	 * @return Array[FormField]
 	 */
-	public function getFileFields($datasetID, $countryCode) {
+	public function getFileFields($fileFormat) {
 
 		$db = $this->getAdapter();
 
-		$this->logger->debug('getFileFields : '.$datasetID." - ".$countryCode);
+		$this->logger->debug('getFileFields : '.$fileFormat);
 
-		// Get the fields specified by the JRC Request
-		$req = "SELECT file_field.data as data, file_field.format as format, is_mandatory, data.label as label, data.definition as definition, mask "." FROM file_field "." LEFT JOIN data on (file_field.data = data.data)"." LEFT JOIN unit on (data.unit = unit.unit)"." WHERE format = ? "." ORDER BY position ASC";
+		// Get the fields specified by the format
+		$req = "SELECT file_field.data as data, file_field.format as format, is_mandatory, data.label as label, data.definition as definition, mask ";
+		$req .= " FROM file_field ";
+		$req .= " LEFT JOIN data on (file_field.data = data.data) ";
+		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
+		$req .= " WHERE format = ? ";
+		$req .= " ORDER BY position ASC";
 
 		$this->logger->info('getFileFields : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array($datasetID));
+		$select->execute(array($fileFormat));
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
@@ -164,6 +177,49 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$fileField->definition = $row['definition'];
 			$fileField->mask = $row['mask'];
 			$result[] = $fileField;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Get the list of table fields linked to a dataset.
+	 *
+	 * @param String the dataset identifier
+	 * @param String the schema identifier
+	 * @return Array[FormField]
+	 */
+	public function getTableFields($datasetID, $schema) {
+
+		$db = $this->getAdapter();
+
+		$this->logger->debug('getTableFields : '.$datasetID.'_'.$schema);
+
+		// Get the fields specified by the format
+		$req = "SELECT * ";
+		$req .= " FROM table_field ";
+		$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.field) ";
+		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
+		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
+		$req .= " WHERE dataset_fields.dataset_id = ? ";
+		$req .= " AND dataset_fields.schema_code = ? ";
+
+		$this->logger->info('getTableFields : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($datasetID, $schema));
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$tableField = new TableField();
+			$tableField->data = $row['data'];
+			$tableField->format = $row['format'];
+			$tableField->label = $row['label'];
+			$tableField->unit = $row['unit'];
+			$tableField->type = $row['type'];
+			$tableField->definition = $row['definition'];
+			$tableField->columnName = $row['column_name'];
+			$result[] = $tableField;
 		}
 
 		return $result;

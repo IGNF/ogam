@@ -1,4 +1,8 @@
 <?php
+/**
+ * © French National Forest Inventory 
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ */ 
 
 /**
  * This is the model for managing result locations (for the web mapping).

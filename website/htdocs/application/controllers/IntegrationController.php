@@ -1,4 +1,8 @@
 <?php
+/**
+ * © French National Forest Inventory 
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ */ 
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/models/integration_service/IntegrationService.php';
@@ -189,7 +193,7 @@ class IntegrationController extends AbstractEforestController {
 		$fieldsDesc = '';
 		if ($showDetail) {
 			// Get some more informations in the metadata base
-			$fields = $this->metadataModel->getFileFields('LOCATION_FILE', $locationSubmission->countryCode);
+			$fields = $this->metadataModel->getFileFields('LOCATION_FILE');
 			$fieldsDesc .= "The expected fields are: ";
 			foreach ($fields as $field) {
 				$fieldsDesc .= '<a href="#" title="';
@@ -292,7 +296,7 @@ class IntegrationController extends AbstractEforestController {
 		$fieldsDesc = '';
 		if ($showDetail) {
 			// Get some more informations in the metadata base
-			$fields = $this->metadataModel->getFileFields('STRATA_FILE', $strataSubmission->countryCode);
+			$fields = $this->metadataModel->getFileFields('STRATA_FILE');
 			$fieldsDesc .= "The expected fields are: ";
 			foreach ($fields as $field) {
 				$fieldsDesc .= '<a href="#" title="';
@@ -360,7 +364,7 @@ class IntegrationController extends AbstractEforestController {
 			$fieldsDesc = '';
 			if ($showDetail) {
 				// Get some more informations in the metadata base
-				$fields = $this->metadataModel->getFileFields($requestedFile->format, $submission->countryCode);
+				$fields = $this->metadataModel->getFileFields($requestedFile->format);
 				$fieldsDesc .= "The expected fields are: ";
 				foreach ($fields as $field) {
 					$fieldsDesc .= '<a href="#" title="';

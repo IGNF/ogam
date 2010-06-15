@@ -1,0 +1,30 @@
+<?php
+/**
+ * Default view for the data edition module.
+ * @package views
+ */
+?>
+
+<h1>
+   Data edition module
+</h1>
+
+<div class="left-column">
+<div class="moduletable_menu">
+
+<ul id="appmenu" class="menu">
+
+<?
+$user_session = new Zend_Session_Namespace('user');
+$role = $user_session->role;
+?>
+
+<li>
+<a href="<?= $this->url(array('controller'=>'dataedition','action'=>'show-select-dataset'), null, true) ?>">Add data</a>
+</li>
+
+
+</ul>
+</div>
+</div>
+

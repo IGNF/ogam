@@ -98,6 +98,13 @@ if (!empty($permissions) && array_key_exists('DOCUMENTATION',$permissions)) {
 <?
 }
 
+if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" >Data edition</a>
+</li>
+<?
+}
 
 $configuration = Zend_Registry::get("configuration");
 if($configuration->autoLogin == 1){

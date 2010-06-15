@@ -1,4 +1,8 @@
 <?php
+/**
+ * © French National Forest Inventory 
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ */ 
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/mapping/Layers.php';
 require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
