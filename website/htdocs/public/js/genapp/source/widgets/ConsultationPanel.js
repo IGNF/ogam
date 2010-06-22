@@ -1634,11 +1634,15 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                 } else {
                     if (!Ext.isEmpty(response.resultsbbox)) {
 	                    this.mapPanel.resultsBBox = response.resultsbbox;
-	                    if (this.autoZoomOnResultsFeatures == true) {
-	                        this.mapPanel.zoomOnBBox(response.resultsbbox);
-	                        // Display the results layer
-	                        this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
-	                    }
+                    } else {
+                        this.mapPanel.resultsBBox = null;
+                    }
+                    if (this.autoZoomOnResultsFeatures == true) {
+                        if (this.mapPanel.resultsBBox !== null) {
+                           this.mapPanel.zoomOnBBox(this.mapPanel.resultsBBox);
+                        }
+                        // Display the results layer
+                        this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
                     }
                 }
             } catch(err) {
