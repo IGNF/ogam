@@ -390,17 +390,12 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             if(record.data.is_default){
                 // if the field have multiple default values, duplicate the criteria
                 var criteria = record.data;
-                if (criteria.default_value.indexOf(';') != -1) {
-                	var defaultValues = criteria.default_value.split( ";" );
-                	for ( var i = 0; i < defaultValues.length; i++ ) {
-                		// clone the object
-                		var newRecord = record.copy();
-                		newRecord.data.default_value = defaultValues[i];
-                		this.items.push(this.form.getCriteriaConfig(newRecord.data));
-                	}                          	
-                } else {
-                	// else we simply add the element 
-                	this.items.push(this.form.getCriteriaConfig(criteria));
+                var defaultValues = criteria.default_value.split(';');
+                for (var i = 0; i < defaultValues.length; i++) {
+            		// clone the object
+            		var newRecord = record.copy();
+            		newRecord.data.default_value = defaultValues[i];
+            		this.items.push(this.form.getCriteriaConfig(newRecord.data));
                 }
             }
         },{form:this, items:items})
