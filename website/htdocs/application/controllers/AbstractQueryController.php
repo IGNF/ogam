@@ -1,12 +1,13 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/models/raw_data/Generic.php';
 require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
+require_once APPLICATION_PATH.'/models/website/PredefinedRequest.php';
 
 /**
  * AbstractQueryController is the controller that manages the query module.
@@ -51,6 +52,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->metadataModel = new Model_Metadata();
 		$this->genericModel = new Model_Generic();
 		$this->resultLocationModel = new Model_ResultLocation();
+		$this->predefinedRequestModel = new Model_PredefinedRequest();
 
 		// Reinit the activated layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
@@ -176,6 +178,89 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+	}
+
+	/**
+	 * AJAX function : Save the parameters of the current query as a new predefined request.
+	 *
+	 * @return JSON
+	 */
+	public function ajaxsavepredefinedrequestAction() {
+
+		$this->logger->debug('ajaxsavepredefinedrequest');
+		$json = "";
+
+		// Check the validity of the POST
+		if (!$this->getRequest()->isPost()) {
+			$this->logger->debug('form is not a POST');
+			return $this->_forward('index');
+		}
+
+		$datasetId = $this->getRequest()->getPost('datasetId');
+
+		try {
+			
+			
+			// Create the predefined request object
+			$predefinedRequest = new PredefinedRequest();
+			$predefinedRequest->datasetID = $datasetId;
+			$predefinedRequest->schemaCode = $this->schema;
+			$predefinedRequest->requestName = 'TEST REQUEST'; // TODO : get from FORM
+			$predefinedRequest->description = 'TEST REQUEST'; // TODO : get from FORM
+
+			// Parse the input parameters
+			foreach ($_POST as $inputName => $inputValues) {
+				if (strpos($inputName, "criteria__") === 0) {
+					
+					foreach ($inputValues as $inputValue) {
+					
+						// This is a criteria
+						$criteriaName = substr($inputName, strlen("criteria__"));
+						
+						$pos = strpos($criteriaName, "__");
+						$criteriaFormat = substr($criteriaName, 0, $pos);
+						$criteriaData = substr($criteriaName, $pos + 2);
+						
+						$field = new PredefinedField();
+						$field->format = $criteriaFormat;
+						$field->data = $criteriaData;
+						$field->value = $inputValue;
+						
+						$predefinedRequest->criteriaList[] = $field;					
+					}
+				}
+				if (strpos($inputName, "column__") === 0) {
+					
+					// This is a result column
+					$columnName = substr($inputName, strlen("column__"));
+					
+					$pos = strpos($columnName, "__");
+					$columnFormat = substr($columnName, 0, $pos);
+					$columnData = substr($columnName, $pos + 2);
+					
+					$field = new PredefinedField();
+					$field->format = $columnFormat;
+					$field->data = $columnData;
+										
+					$predefinedRequest->resultsList[] = $field;
+				}
+			}
+			
+			
+			// Save the request
+			$this->predefinedRequestModel->savePredefinedRequest($predefinedRequest);
+			
+		} catch (Exception $e) {
+			$this->logger->err('Error while getting result : '.$e);
+			$json = "{success:false,errorMessage:'".json_encode($e->getMessage())."'}";
+		}
+
+		echo $json;
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+
 	}
 
 	/**
@@ -943,7 +1028,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			if ($this->schema == 'HARMONIZED_DATA' && array_key_exists('DATA_INTERPOLATION', $permissions)) {
 				$this->view->hideInterpolationMenuItem = 'false';
 			}
-			
+
 		}
 		$this->_helper->layout()->disableLayout();
 		$this->render('grid-parameters');
@@ -1387,7 +1472,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 							if (!empty($value) && !empty($traductions[$i][$value])) {
 								$label = $traductions[$i][$value];
 							} else {
-								$label = ''; 
+								$label = '';
 							}
 						} else {
 							echo $value.';';
