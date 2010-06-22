@@ -258,7 +258,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Construct a criteria for the record
+     * Construct a criteria from the record
      * @param {Ext.data.Record} record The criteria combobox record to add
      * @hide
      */
@@ -384,11 +384,24 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * Construct the default criteria
      * @return {Array} An array of the default criteria config
      */
-    getDefaultCriteriaConfig : function(){
+    getDefaultCriteriaConfig : function() {
         var items = [];
         this.criteriaDS.each(function(record){
             if(record.data.is_default){
-                this.items.push(this.form.getCriteriaConfig(record.data));
+                // if the field have multiple default values, duplicate the criteria
+                var criteria = record.data;
+                if (criteria.default_value.indexOf(';') != -1) {
+                	var defaultValues = criteria.default_value.split( ";" );
+                	for ( var i = 0; i < defaultValues.length; i++ ) {
+                		// clone the object
+                		var newRecord = record.copy();
+                		newRecord.data.default_value = defaultValues[i];
+                		this.items.push(this.form.getCriteriaConfig(newRecord.data));
+                	}                          	
+                } else {
+                	// else we simply add the element 
+                	this.items.push(this.form.getCriteriaConfig(criteria));
+                }
             }
         },{form:this, items:items})
         return items;
@@ -493,7 +506,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
     /**
      * Adds all the columns of a column panel
      */
-    addAllColumns: function(){
+    addAllColumns: function() {
         this.columnsDS.each( 
             function(record){
                 this.addColumn(null, record);
@@ -505,7 +518,8 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
     /**
      * Adds all the columns of a column panel
      */
-    removeAllColumns: function(){
+    removeAllColumns: function() {
         this.columnsPanel.removeAll();
     }
+
 });

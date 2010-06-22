@@ -61,7 +61,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 		// Save the request results criterias
 		$resultCriterias = $predefinedRequest->criteriaList;
 		foreach ($resultCriterias as $resultCriteria) {
-			$req = " INSERT INTO predefined_request_criteria_parameter (request_name, format, data, parameter_value )";
+			$req = " INSERT INTO predefined_request_criteria_parameter (request_name, format, data, value )";
 			$req .= " VALUES (?, ?, ?, ?)";
 
 			$this->logger->info('savePredefinedRequest : '.$req);
@@ -130,7 +130,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 			$field = new PredefinedField();
 			$field->format = $result['format'];
 			$field->data = $result['data'];
-			$field->value = $result['parameter_value'];
+			$field->value = $result['value'];
 			
 			$request->criteriaList[$field->format.'__'.$field->data] = $field;
 		}	

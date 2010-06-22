@@ -292,7 +292,11 @@ abstract class AbstractQueryController extends AbstractEforestController {
 						$field->data = $criteriaData;
 						$field->value = $inputValue;
 
-						$predefinedRequest->criteriaList[] = $field;
+						if (isset($predefinedRequest->criteriaList[$criteriaFormat.'__'.$criteriaData])) {
+							$predefinedRequest->criteriaList[$criteriaFormat.'__'.$criteriaData]->value .= ";".$field->value;
+						} else {
+							$predefinedRequest->criteriaList[$criteriaFormat.'__'.$criteriaData] = $field;
+						}
 					}
 				}
 				if (strpos($inputName, "column__") === 0) {
@@ -308,7 +312,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 					$field->format = $columnFormat;
 					$field->data = $columnData;
 
-					$predefinedRequest->resultsList[] = $field;
+					$predefinedRequest->resultsList[$columnFormat.'__'.$columnData] = $field;
 				}
 			}
 

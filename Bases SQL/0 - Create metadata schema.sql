@@ -79,7 +79,7 @@ COMMENT ON COLUMN FORM_FIELD.INPUT_TYPE IS 'The input type associed with this fi
 COMMENT ON COLUMN FORM_FIELD.POSITION IS 'The position of this field in the form';
 COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_CRITERIA IS 'Is this field selected by default as a criteria?';
 COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_RESULT IS 'Is this field selected by default as a result?';
-COMMENT ON COLUMN FORM_FIELD.DEFAULT_VALUE IS 'The default value for the criteria';
+COMMENT ON COLUMN FORM_FIELD.DEFAULT_VALUE IS 'The default value for the criteria (multiple values are separated by a semicolon)';
 
 /*==============================================================*/
 /* Table : TABLE_FIELD                                          */
