@@ -156,12 +156,16 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
             // because Ext does not clean everything (mapWindow still instanceof Ext.Window):
             this.mapWindow.on('destroy', function(){
                 delete this.mapWindow;
+                if(this.submitRequest == true){
+                    Ext.getCmp('consultation_panel').submitRequest();
+                    this.submitRequest = false;
+                }
             }, this);
             this.mapPanel.on('afterinit', function(mapPanel){
                 var consultationPanel = Ext.getCmp('consultation_panel');
                 mapPanel.map.setCenter(consultationPanel.mapPanel.map.getCenter());
                 mapPanel.map.zoomTo(consultationPanel.mapPanel.map.getZoom() - this.mapWindowMinZoomLevel);
-                mapPanel.enableLayersAndLegends(['result_locations'],true, true);
+                mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
             }, this);
         }
         this.mapWindow.show();
@@ -175,11 +179,11 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
     onWindowValidate: function (search){
         var value = this.mapPanel.vectorLayer.features.length ? this.mapPanel.wktFormat.write(this.mapPanel.vectorLayer.features[0]) : '';
         this.setValue(value);
+        if (search == true) {
+            this.submitRequest = true;
+        }
         this.mapWindow.destroy();
         this.el.highlight();
-        if (search == true) {
-            Ext.getCmp('consultation_panel').submitRequest();
-        }
     }
 });
 Ext.reg('geometryfield', Genapp.form.GeometryField);

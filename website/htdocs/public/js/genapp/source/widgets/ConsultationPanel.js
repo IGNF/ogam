@@ -1632,14 +1632,14 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                     }
                     throw('');
                 } else {
-                	if (!Ext.isEmpty(response.resultsbbox)) {
+                    if (!Ext.isEmpty(response.resultsbbox)) {
 	                    this.mapPanel.resultsBBox = response.resultsbbox;
 	                    if (this.autoZoomOnResultsFeatures == true) {
 	                        this.mapPanel.zoomOnBBox(response.resultsbbox);
 	                        // Display the results layer
 	                        this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
 	                    }
-                	}
+                    }
                 }
             } catch(err) {
                     var msg = 'An error occured during the bounding box request.';

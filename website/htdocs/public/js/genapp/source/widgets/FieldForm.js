@@ -450,9 +450,9 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 autoEl:{
                     tag:'span',
                     cls: 'columnLabel',
-                    'ext:qtitle':record.label.replace("'","&#39;"),
+                    'ext:qtitle':this.htmlStringFormat(record.label),
                     'ext:qwidth':200,
-                    'ext:qtip':record.definition.replace("'","&#39;"),
+                    'ext:qtip':this.htmlStringFormat(record.definition),
                     html:record.label
                 }
             },{
@@ -462,6 +462,18 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             }]
         };
         return field;
+    },
+
+    /**
+     * Format the string in html
+     * @param {String} value The string to format
+     * @return {String} The formated string
+     * @hide
+     */
+    htmlStringFormat : function(value){
+        value = value.replace(new  RegExp("'", "g"),"&#39;");
+        value = value.replace(new  RegExp("\"", "g"),"&#34;");
+        return value;
     },
 
     /**

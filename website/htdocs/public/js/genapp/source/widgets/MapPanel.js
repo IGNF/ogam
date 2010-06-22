@@ -328,6 +328,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                             success :function(response, options){
                                 var layersObject = Ext.decode(response.responseText);
                                 this.layersList = [];
+                                this.layersActivation = {}; // Avoid a conflict between the geometryField mapPanel and the consultation mapPanel
                                 for ( var i = 0; i < layersObject.layers.length; i++) {
                                     var newLayer;
                                     if(layersObject.layers[i].untiled){
@@ -357,7 +358,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                                     if(layersObject.layers[i].hasLegend){
                                         var legend = cmp.ownerCt.items.get(1).items.get(1).add(
                                             new Ext.BoxComponent({
-                                                id:layersObject.layers[i].name,
+                                                id:this.id + layersObject.layers[i].name,
                                                 autoEl: {
                                                     tag :'div',
                                                     children:[{
@@ -896,7 +897,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
     /**
      * Zoom on the results bounding box
      */
-    zoomOnResultsBBox: function() {
+    zoomOnResultsBBox: function(){
         this.zoomOnBBox(this.resultsBBox);
     },
 
@@ -1017,12 +1018,13 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                     if (uncheck == true) {
                         this.layertree.setNodeChecked(nodeId,false);
                     }
+                    var node = this.layertree.getNodeById(nodeId);
                     if (hide == true) {
-                        this.layertree.getNodeById(nodeId).getUI().hide();
+                        node.getUI().hide();
                     }
-                    this.layertree.getNodeById(nodeId).disable();
+                    node.disable();
                     if (setForceDisable != false) {
-                        this.layertree.getNodeById(nodeId).forceDisable = true;
+                        node.forceDisable = true;
                     }
                     /*var layers = this.layertree.nodeIdToLayers[nodeId];
                     layers[0].display(false);*/
@@ -1065,7 +1067,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      */
     setLegendsVisible: function(layerNames, visible){
         for(i = 0; i<layerNames.length ;i++){
-            var legendCmp = this.legendPanel.findById(layerNames[i]);
+            var legendCmp = this.legendPanel.findById(this.id + layerNames[i]);
             if(!Ext.isEmpty(legendCmp)){
                 if (visible == true) {
                     var layers = this.map.getLayersByName(layerNames[i]);

@@ -120,7 +120,7 @@ if(Genapp.MapPanel){
         navigationControlTitle:"Déplacer la carte",
         selectFeatureControlTitle:"Sélectionner la géométrie",
         invalidWKTMsg:"La géométrie ne peut être affichée",
-        zoomToFeaturesControlTitle:"Zoomer sur la géométrie",
+        zoomToFeaturesControlTitle:"Zoomer sur la sélection",
         drawFeatureControlTitle:"Dessiner un polygone",
         modifyFeatureControlTitle:"Modifier la géométrie",
         tbarDeleteFeatureButtonTooltip:"Effacer la géométrie",

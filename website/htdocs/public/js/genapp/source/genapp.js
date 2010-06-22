@@ -1,7 +1,15 @@
 Genapp.buildApplication = function(config){
 
     // Activate the tooltips system
+    // Init the singleton.  Any tag-based quick tips will start working.
     Ext.QuickTips.init();
+
+    // Apply a set of config properties to the singleton
+    Ext.apply(Ext.QuickTips.getQuickTip(), {
+        showDelay: 250,
+        dismissDelay: 0,
+        trackMouse: true
+    });
 
     // Turn on validation errors beside the field globally
     Ext.form.Field.prototype.msgTarget = 'side';
