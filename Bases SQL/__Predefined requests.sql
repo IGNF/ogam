@@ -25,7 +25,7 @@ REQUEST_NAME           VARCHAR(50)          not null,
 FORMAT         		   VARCHAR(36)          not null,
 DATA                   VARCHAR(36)          not null,
 PARAMETER_VALUE        VARCHAR(50)          not null,
-constraint PK_PREDEFINED_REQUEST_CRITERIA_PARAMETER primary key (REQUEST_NAME, FORMAT, DATA)
+constraint PK_PREDEFINED_REQUEST_CRITERIA_PARAMETER primary key (REQUEST_NAME, FORMAT, DATA, PARAMETER_VALUE)
 );
 
 /*==============================================================*/

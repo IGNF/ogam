@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'metadata/FileField.php';
 require_once 'metadata/FormField.php';
 require_once 'metadata/FormFormat.php';
@@ -241,11 +241,23 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		if (empty($cachedResult)) {
 
 			$db = $this->getAdapter();
-			$req = " SELECT distinct form_format.format, form_format.label, form_format.definition, position "." FROM ( "."       SELECT DISTINCT field_mapping.src_format as format "."       FROM dataset "."       LEFT JOIN dataset_fields USING (dataset_id) "."       LEFT JOIN field_mapping ON ( "."                      dataset_fields.format = field_mapping.dst_format "."                      AND dataset_fields.data = field_mapping.dst_data "."                      AND field_mapping.mapping_type = 'FORM') "."       WHERE src_format IS NOT NULL"."       AND schema_code = ?";
+			$req = " SELECT distinct form_format.format, form_format.label, form_format.definition, position ";
+			$req .= " FROM ( ";
+			$req .= "       SELECT DISTINCT field_mapping.src_format as format ";
+			$req .= "       FROM dataset ";
+			$req .= "       LEFT JOIN dataset_fields USING (dataset_id) ";
+			$req .= "       LEFT JOIN field_mapping ON ( ";
+			$req .= "                      dataset_fields.format = field_mapping.dst_format ";
+			$req .= "                      AND dataset_fields.data = field_mapping.dst_data ";
+			$req .= "                      AND field_mapping.mapping_type = 'FORM') ";
+			$req .= "       WHERE src_format IS NOT NULL";
+			$req .= "       AND schema_code = ?";
 			if (!empty($datasetId)) {
 				$req .= " AND dataset_id = ?";
 			}
-			$req .= "      ) as foo "."      LEFT JOIN form_format on (form_format.format = foo.format) "."      ORDER BY position";
+			$req .= "      ) as foo ";
+			$req .= "      LEFT JOIN form_format on (form_format.format = foo.format) ";
+			$req .= "      ORDER BY position";
 
 			$this->logger->info('getForms : '.$req);
 
@@ -337,14 +349,18 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 			// If a dataset has been selected, filter the available options
 			if (!empty($dataset)) {
-				$req = $req." AND (foo.data IN ( "." SELECT data "." FROM dataset_fields "." WHERE dataset_id = ? "." ) )";
+				$req .= " AND (foo.data IN ( ";
+				$req .= " SELECT data ";
+				$req .= " FROM dataset_fields ";
+				$req .= " WHERE dataset_id = ? ";
+				$req .= " ) )";
 				$param[] = $dataset;
 			}
 
 			// Check the schema code
-			$req = $req." AND schema_code = '".$schema."' ";
+			$req .= " AND schema_code = '".$schema."' ";
 
-			$req = $req." ORDER BY foo.position";
+			$req .= " ORDER BY foo.position";
 
 			$this->logger->info('getFormFields : '.$req);
 
@@ -439,7 +455,11 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getOptions($data) {
 		$db = $this->getAdapter();
-		$req = " SELECT mode.code, mode.label "." FROM data "." LEFT JOIN mode USING (unit) "." WHERE data.data = ? "." ORDER BY position";
+		$req = " SELECT mode.code, mode.label ";
+		$req .= " FROM data ";
+		$req .= " LEFT JOIN mode USING (unit) ";
+		$req .= " WHERE data.data = ? ";
+		$req .= " ORDER BY position";
 
 		$this->logger->info('getOptions : '.$req);
 
@@ -515,7 +535,15 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTableColumnsForDisplay($format) {
 		$db = $this->getAdapter();
-		$req = " SELECT field_mapping.src_data, field_mapping.src_format, field_mapping.dst_data, field_mapping.dst_format, table_field.column_name, data.label, data.definition, unit.type, unit.unit "." FROM table_field "." LEFT JOIN field_mapping on (field_mapping.dst_format = table_field.format AND field_mapping.dst_data = table_field.data) "." LEFT JOIN form_field on (field_mapping.src_format = form_field.format AND field_mapping.src_data = form_field.data) "." LEFT JOIN data on (table_field.data = data.data)"." LEFT JOIN unit on (data.unit = unit.unit)"." WHERE table_field.format = ? "." AND mapping_type = 'FORM' "." AND form_field.is_result = '1'";
+		$req = " SELECT field_mapping.src_data, field_mapping.src_format, field_mapping.dst_data, field_mapping.dst_format, table_field.column_name, data.label, data.definition, unit.type, unit.unit ";
+		$req .= " FROM table_field ";
+		$req .= " LEFT JOIN field_mapping on (field_mapping.dst_format = table_field.format AND field_mapping.dst_data = table_field.data) ";
+		$req .= " LEFT JOIN form_field on (field_mapping.src_format = form_field.format AND field_mapping.src_data = form_field.data) ";
+		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
+		$req .= " LEFT JOIN unit on (data.unit = unit.unit)";
+		$req .= " WHERE table_field.format = ? ";
+		$req .= " AND mapping_type = 'FORM' ";
+		$req .= " AND form_field.is_result = '1'";
 
 		$this->logger->info('getTableColumnsForDisplay : '.$req);
 

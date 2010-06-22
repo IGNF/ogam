@@ -27,6 +27,16 @@ class FormFormat {
 	var $definition;
 	
 	/**
+	 * The list of result columns.
+	 */
+	var $resultsList = array();
+
+	/**
+	 * The list of criteria columns.
+	 */
+	var $criteriaList = array();
+	
+	/**
 	 * Serialize the object as a JSON string
 	 * 
 	 * @return a JSON string

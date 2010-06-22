@@ -95,23 +95,72 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	}
 
 	/**
-	 * AJAX function : Get the list of available forms for the dataset
+	 * AJAX function : Get the list of available forms and criterias form a saved request.
 	 */
-	public function ajaxgetformsAction() {
-		$this->logger->debug('ajaxgetformsAction');
+	public function ajaxgetpredefinedrequestAction() {
+		$this->logger->debug('ajaxgetpredefinedrequest');
 
-		$datasetId = $this->getRequest()->getPost('datasetId');
-		$this->logger->debug('datasetId : '.$datasetId, $this->schema);
+		// TODO $requestName = $this->getRequest()->getPost('requestName');
+		$requestName = 'TEST REQUEST';
 
-		$forms = $this->metadataModel->getForms($datasetId, $this->schema);
+		// Get the saved values for the forms
+		$savedRequest = $this->predefinedRequestModel->getPredefinedRequest($requestName);
+
+		// Get the default values for the forms
+		$forms = $this->metadataModel->getForms($savedRequest->datasetID, $savedRequest->schemaCode);
+		foreach ($forms as $form) {
+			// Fill each form with the list of criterias and results
+			$form->criteriaList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'criteria');
+			$form->resultsList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'result');
+		}
+
+		// Update the default values with the saved values.
+		$this->logger->debug('ajaxgetpredefinedrequest : '.print_r($savedRequest, true));
+
+		// Update the default values with the saved values.
+		foreach ($forms as $form) {
+			foreach ($form->criteriaList as $criteria) {
+				$criteria->isDefaultCriteria = '0';
+				$criteria->defaultValue = '';
+
+				if (array_key_exists($criteria->format.'__'.$criteria->data, $savedRequest->criteriaList)) {
+					$criteria->isDefaultCriteria = '1';
+					$criteria->defaultValue = $savedRequest->criteriaList[$criteria->format.'__'.$criteria->data]->value;
+				}
+			}
+
+			foreach ($form->resultsList as $result) {
+				$result->isDefaultResult = '0';
+
+				if (array_key_exists($result->format.'__'.$result->data, $savedRequest->resultsList)) {
+					$result->isDefaultResult = '1';
+				}
+			}
+		}
+
+		// Generate the JSON string
+		echo $this->_generateFormsJSON($savedRequest->datasetID, $forms);
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of result and criteria columns.
+	 *
+	 * @param $datasetId the dataset identifier
+	 * @param $forms the list of FormFormat elements
+	 */
+	private function _generateFormsJSON($datasetId, $forms) {
 
 		$json = '{success:true,data:[';
 
 		foreach ($forms as $form) {
 			// Add the criteria
 			$json .= "{".$form->toJSON().',criteria:[';
-			$criteria = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'criteria');
-			foreach ($criteria as $field) {
+			foreach ($form->criteriaList as $field) {
 				$json .= '{'.$field->toCriteriaJSON();
 				// For the SELECT field, get the list of options
 				if ($field->type == "CODE") {
@@ -130,16 +179,15 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				}
 				$json .= '},';
 			}
-			if (count($criteria) > 0) {
+			if (count($form->criteriaList) > 0) {
 				$json = substr($json, 0, -1);
 			}
 			// Add the columns
 			$json .= '],columns:[';
-			$columns = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'result');
-			foreach ($columns as $field) {
+			foreach ($form->resultsList as $field) {
 				$json .= '{'.$field->toResultJSON().'},';
 			}
-			if (count($columns) > 0) {
+			if (count($form->resultsList) > 0) {
 				$json = substr($json, 0, -1);
 			}
 			$json .= ']},';
@@ -149,7 +197,26 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 		$json = $json.']}';
 
-		echo $json;
+		return $json;
+	}
+
+	/**
+	 * AJAX function : Get the list of available forms and criterias for the dataset
+	 */
+	public function ajaxgetformsAction() {
+		$this->logger->debug('ajaxgetformsAction');
+
+		$datasetId = $this->getRequest()->getPost('datasetId');
+		$this->logger->debug('datasetId : '.$datasetId, $this->schema);
+
+		$forms = $this->metadataModel->getForms($datasetId, $this->schema);
+		foreach ($forms as $form) {
+			// Fill each form with the list of criterias and results
+			$form->criteriaList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'criteria');
+			$form->resultsList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'result');
+		}
+
+		echo $this->_generateFormsJSON($datasetId, $forms);
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -199,8 +266,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$datasetId = $this->getRequest()->getPost('datasetId');
 
 		try {
-			
-			
+
 			// Create the predefined request object
 			$predefinedRequest = new PredefinedRequest();
 			$predefinedRequest->datasetID = $datasetId;
@@ -211,45 +277,44 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			// Parse the input parameters
 			foreach ($_POST as $inputName => $inputValues) {
 				if (strpos($inputName, "criteria__") === 0) {
-					
+
 					foreach ($inputValues as $inputValue) {
-					
+
 						// This is a criteria
 						$criteriaName = substr($inputName, strlen("criteria__"));
-						
+
 						$pos = strpos($criteriaName, "__");
 						$criteriaFormat = substr($criteriaName, 0, $pos);
 						$criteriaData = substr($criteriaName, $pos + 2);
-						
+
 						$field = new PredefinedField();
 						$field->format = $criteriaFormat;
 						$field->data = $criteriaData;
 						$field->value = $inputValue;
-						
-						$predefinedRequest->criteriaList[] = $field;					
+
+						$predefinedRequest->criteriaList[] = $field;
 					}
 				}
 				if (strpos($inputName, "column__") === 0) {
-					
+
 					// This is a result column
 					$columnName = substr($inputName, strlen("column__"));
-					
+
 					$pos = strpos($columnName, "__");
 					$columnFormat = substr($columnName, 0, $pos);
 					$columnData = substr($columnName, $pos + 2);
-					
+
 					$field = new PredefinedField();
 					$field->format = $columnFormat;
 					$field->data = $columnData;
-										
+
 					$predefinedRequest->resultsList[] = $field;
 				}
 			}
-			
-			
+
 			// Save the request
 			$this->predefinedRequestModel->savePredefinedRequest($predefinedRequest);
-			
+
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : '.$e);
 			$json = "{success:false,errorMessage:'".json_encode($e->getMessage())."'}";
