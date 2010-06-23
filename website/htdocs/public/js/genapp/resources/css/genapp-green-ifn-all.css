@@ -303,7 +303,8 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 
 .ext-ie .x-toolbar {position:static;}
 .ext-ie .x-toolbar table {float:left;}
-.ext-ie .x-paging-info {position:static;float:right;margin-top:5px;margin-right:5px;}
+.ext-ie .x-paging-info {position:static;float:right;margin-top:5px;margin-right:5px;}*/
+.ext-ie .x-toolbar-cell .x-form-text {position:static;}
 /*************************************************************************************************/
 
 /***** Date Range Picker *********************************************************************/

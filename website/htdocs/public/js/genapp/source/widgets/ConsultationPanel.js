@@ -1329,11 +1329,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                 var readerFieldsConf;
                 for(var i=0; i<columns.length;i++){
                     columnConf = {
-                        header:columns[i].label,
+                        header:Genapp.util.htmlStringFormat(columns[i].label),
                         sortable:true,
                         dataIndex:columns[i].name,
                         width:100,
-                        tooltip:columns[i].definition,
+                        tooltip:Genapp.util.htmlStringFormat(columns[i].definition),
                         hidden:columns[i].hidden
                     };
                     readerFieldsConf = {

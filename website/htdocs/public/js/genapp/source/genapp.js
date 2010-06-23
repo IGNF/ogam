@@ -25,3 +25,13 @@ Genapp.buildApplication = function(config){
 
     Genapp.consultationPanel = new Genapp.ConsultationPanel(config);
 };
+/**
+ * Format the string in html
+ * @param {String} value The string to format
+ * @return {String} The formated string
+ */
+Genapp.util.htmlStringFormat = function(value){
+    value = value.replace(new  RegExp("'", "g"),"&#39;");
+    value = value.replace(new  RegExp("\"", "g"),"&#34;");
+    return value;
+};

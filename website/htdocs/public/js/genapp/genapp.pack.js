@@ -1,7 +1,15 @@
 Genapp.buildApplication = function(config){
 
     // Activate the tooltips system
+    // Init the singleton.  Any tag-based quick tips will start working.
     Ext.QuickTips.init();
+
+    // Apply a set of config properties to the singleton
+    Ext.apply(Ext.QuickTips.getQuickTip(), {
+        showDelay: 250,
+        dismissDelay: 0,
+        trackMouse: true
+    });
 
     // Turn on validation errors beside the field globally
     Ext.form.Field.prototype.msgTarget = 'side';
@@ -1715,20 +1723,26 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             try
             {
                 var response = Ext.decode(response.responseText);
-                if (Ext.isEmpty(response.success) || response.success == false || Ext.isEmpty(response.resultsbbox)) {
+                if (Ext.isEmpty(response.success) || response.success == false) {
                     if (!Ext.isEmpty(response.errorMsg)) {
                         throw(response.errorMsg);
                     }
                     throw('');
                 } else {
-                    this.mapPanel.resultsBBox = response.resultsbbox;
-                    if(this.autoZoomOnResultsFeatures == true){
-                        this.mapPanel.zoomOnBBox(response.resultsbbox);
+                    if (!Ext.isEmpty(response.resultsbbox)) {
+	                    this.mapPanel.resultsBBox = response.resultsbbox;
+                    } else {
+                        this.mapPanel.resultsBBox = null;
+                    }
+                    if (this.autoZoomOnResultsFeatures == true) {
+                        if (this.mapPanel.resultsBBox !== null) {
+                           this.mapPanel.zoomOnBBox(this.mapPanel.resultsBBox);
+                        }
                         // Display the results layer
                         this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
                     }
                 }
-            }catch(err){
+            } catch(err) {
                     var msg = 'An error occured during the bounding box request.';
                     if (!Ext.isEmpty(err)) {
                         msg += ' ' + err;
@@ -2584,9 +2598,9 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 autoEl:{
                     tag:'span',
                     cls: 'columnLabel',
-                    'ext:qtitle':record.label.replace("'","&#39;"),
+                    'ext:qtitle':this.htmlStringFormat(record.label),
                     'ext:qwidth':200,
-                    'ext:qtip':record.definition.replace("'","&#39;"),
+                    'ext:qtip':this.htmlStringFormat(record.definition),
                     html:record.label
                 }
             },{
@@ -2596,6 +2610,18 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             }]
         };
         return field;
+    },
+
+    /**
+     * Format the string in html
+     * @param {String} value The string to format
+     * @return {String} The formated string
+     * @hide
+     */
+    htmlStringFormat : function(value){
+        value = value.replace(new  RegExp("'", "g"),"&#39;");
+        value = value.replace(new  RegExp("\"", "g"),"&#34;");
+        return value;
     },
 
     /**
@@ -2960,6 +2986,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                             success :function(response, options){
                                 var layersObject = Ext.decode(response.responseText);
                                 this.layersList = [];
+                                this.layersActivation = {}; // Avoid a conflict between the geometryField mapPanel and the consultation mapPanel
                                 for ( var i = 0; i < layersObject.layers.length; i++) {
                                     var newLayer;
                                     if(layersObject.layers[i].untiled){
@@ -2989,7 +3016,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                                     if(layersObject.layers[i].hasLegend){
                                         var legend = cmp.ownerCt.items.get(1).items.get(1).add(
                                             new Ext.BoxComponent({
-                                                id:layersObject.layers[i].name,
+                                                id:this.id + layersObject.layers[i].name,
                                                 autoEl: {
                                                     tag :'div',
                                                     children:[{
@@ -3649,12 +3676,13 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                     if (uncheck == true) {
                         this.layertree.setNodeChecked(nodeId,false);
                     }
+                    var node = this.layertree.getNodeById(nodeId);
                     if (hide == true) {
-                        this.layertree.getNodeById(nodeId).getUI().hide();
+                        node.getUI().hide();
                     }
-                    this.layertree.getNodeById(nodeId).disable();
+                    node.disable();
                     if (setForceDisable != false) {
-                        this.layertree.getNodeById(nodeId).forceDisable = true;
+                        node.forceDisable = true;
                     }
                     /*var layers = this.layertree.nodeIdToLayers[nodeId];
                     layers[0].display(false);*/
@@ -3697,7 +3725,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      */
     setLegendsVisible: function(layerNames, visible){
         for(i = 0; i<layerNames.length ;i++){
-            var legendCmp = this.legendPanel.findById(layerNames[i]);
+            var legendCmp = this.legendPanel.findById(this.id + layerNames[i]);
             if(!Ext.isEmpty(legendCmp)){
                 if (visible == true) {
                     var layers = this.map.getLayersByName(layerNames[i]);
@@ -4457,12 +4485,16 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
             // because Ext does not clean everything (mapWindow still instanceof Ext.Window):
             this.mapWindow.on('destroy', function(){
                 delete this.mapWindow;
+                if(this.submitRequest == true){
+                    Ext.getCmp('consultation_panel').submitRequest();
+                    this.submitRequest = false;
+                }
             }, this);
             this.mapPanel.on('afterinit', function(mapPanel){
                 var consultationPanel = Ext.getCmp('consultation_panel');
                 mapPanel.map.setCenter(consultationPanel.mapPanel.map.getCenter());
                 mapPanel.map.zoomTo(consultationPanel.mapPanel.map.getZoom() - this.mapWindowMinZoomLevel);
-                mapPanel.enableLayersAndLegends(['result_locations'],true, true);
+                mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
             }, this);
         }
         this.mapWindow.show();
@@ -4476,11 +4508,11 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
     onWindowValidate: function (search){
         var value = this.mapPanel.vectorLayer.features.length ? this.mapPanel.wktFormat.write(this.mapPanel.vectorLayer.features[0]) : '';
         this.setValue(value);
+        if (search == true) {
+            this.submitRequest = true;
+        }
         this.mapWindow.destroy();
         this.el.highlight();
-        if (search == true) {
-            Ext.getCmp('consultation_panel').submitRequest();
-        }
     }
 });
 Ext.reg('geometryfield', Genapp.form.GeometryField);/**
@@ -6331,23 +6363,4 @@ Ext.DatePicker.prototype.update = function(date, forceRefresh){
             }
         }
     }
-};// Default parameters
-if(Genapp.ConsultationPanel){
-    Ext.apply(Genapp.ConsultationPanel.prototype, {
-        hideDetails : false, // Display the link result to details
-        hideMapDetails : false,  // Display the link map to details
-        hideCsvExportButton : Genapp.grid.hideExportCSV, // Set the property to the value of Genapp.grid.hideExportCSV
-        hideAggregationCsvExportMenuItem : Genapp.grid.hideAggregationCsvExportMenuItem,
-        hideAggregationButton : Genapp.grid.hideAggregationButton,
-        hideInterpolationButton : Genapp.grid.hideInterpolationMenuItem,
-        // Reduction of the application size in function of the web site margins
-        widthToSubstract:120,
-        heightToSubstract:210,
-        datasetPanelTitle:'JRC request'
-    });
-}
-if(Genapp.DetailsPanel){
-    Ext.apply(Genapp.DetailsPanel.prototype, {
-        headerWidth : 90
-    });
-}
+};
