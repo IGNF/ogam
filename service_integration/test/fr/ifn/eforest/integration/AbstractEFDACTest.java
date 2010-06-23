@@ -18,7 +18,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 
-import fr.ifn.commons.jdbc.pool.JNDIUnitTestHelper;
+import fr.ifn.eforest.common.util.JNDIUnitTestHelper;
 
 /**
  * Mother classe for the EFDAC service test classes.

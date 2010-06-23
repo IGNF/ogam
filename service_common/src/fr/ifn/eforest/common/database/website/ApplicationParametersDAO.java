@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.commons.db.LocalCache;
+import fr.ifn.eforest.common.util.LocalCache;
 
 /**
  * Data Access Object used to access the application parameters.

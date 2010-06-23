@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.commons.db.SqlStateSQL99;
+import fr.ifn.eforest.common.util.SqlStateSQL99;
 import fr.ifn.eforest.common.business.checks.CheckException;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
 import static fr.ifn.eforest.common.business.UnitTypes.*;

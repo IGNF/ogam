@@ -24,7 +24,7 @@
 	<!-- *** A modifier en fonction du répertoire d'installation de Tomcat *** -->
 	<property name="deploy.dir" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5/webapps" />
 
-	<property name="classpath" value="${lib.dir}/commons-fileupload-1.2.1.jar;${lib.dir}/JRI.jar;${java.io.tmpdir}dist/libs_java/fr.ifn.commons.jar;${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar;${libraries.dir}/lib/servlet-api.jar;${libraries.dir}/lib/junit.jar;${libraries.dir}/import/org/postgresql/postgresql-8.3-603.jdbc4.jar;${libraries.dir}/lib/dbunit/dbunit.jar;${libraries.dir}/import/com/sun/mail/mail.jar" />
+	<property name="classpath" value="${lib.dir}/commons-fileupload-1.2.1.jar;${lib.dir}/JRI.jar;${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar;${libraries.dir}/lib/servlet-api.jar;${libraries.dir}/lib/junit.jar;${libraries.dir}/import/org/postgresql/postgresql-8.3-603.jdbc4.jar;${libraries.dir}/lib/dbunit/dbunit.jar;${libraries.dir}/import/com/sun/mail/mail.jar" />
 
 	<!-- Définition de tâches externes  -->
 	<taskdef name="javancss" classname="javancss.JavancssAntTask" classpath="${libraries.dir}/lib/javancss.jar;${libraries.dir}/lib/ccl.jar;${libraries.dir}/libs java/lib/jhbasic.jar" />

@@ -4,7 +4,7 @@ import javax.mail.Session;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.commons.mail.Emailer;
+import fr.ifn.eforest.common.util.Emailer;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.integration.database.rawdata.SubmissionData;
 import fr.ifn.eforest.common.database.website.ApplicationParametersDAO;

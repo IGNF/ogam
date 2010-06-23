@@ -11,8 +11,8 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.commons.util.SIGUtils;
-import fr.ifn.commons.util.SynchronizedDateFormat;
+import fr.ifn.eforest.common.util.SIGUtils;
+import fr.ifn.eforest.common.util.SynchronizedDateFormat;
 import fr.ifn.eforest.common.business.Data;
 import fr.ifn.eforest.common.business.Formats;
 import fr.ifn.eforest.common.business.UnitTypes;

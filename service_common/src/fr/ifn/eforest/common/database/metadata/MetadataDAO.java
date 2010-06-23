@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.commons.db.LocalCache;
+import fr.ifn.eforest.common.util.LocalCache;
 import fr.ifn.eforest.common.business.MappingTypes;
 
 /**

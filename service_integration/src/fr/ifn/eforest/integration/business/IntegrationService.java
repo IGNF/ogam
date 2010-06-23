@@ -13,8 +13,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.commons.csv.CSVFile;
-import fr.ifn.commons.csv.LineInfo;
+import fr.ifn.eforest.common.util.CSVFile;
+import fr.ifn.eforest.common.util.LineInfo;
 import fr.ifn.eforest.common.business.AbstractThread;
 import fr.ifn.eforest.common.business.Data;
 import fr.ifn.eforest.common.business.GenericMapper;

@@ -6,8 +6,8 @@ import java.io.FileWriter;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.commons.process.ExecLauncher;
-import fr.ifn.commons.process.ProcessInfo;
+import fr.ifn.eforest.common.util.ExecLauncher;
+import fr.ifn.eforest.common.util.ProcessInfo;
 import fr.ifn.eforest.common.business.AbstractService;
 import fr.ifn.eforest.common.database.website.ApplicationParametersDAO;
 import fr.ifn.eforest.interpolation.dabatase.raw_data.InterpolationDAO;

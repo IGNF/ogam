@@ -12,7 +12,7 @@
 	<property name="classes.dir" value="./classes" />
 	<property name="lib.dir" value="./lib" />
 
-	<property name="classpath" value="${lib.dir}/commons-fileupload-1.2.1.jar;${java.io.tmpdir}dist/libs_java/fr.ifn.commons.jar;${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar;${libraries.dir}/lib/servlet-api.jar;" />
+	<property name="classpath" value="${lib.dir}/commons-fileupload-1.2.1.jar;${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar;${libraries.dir}/lib/servlet-api.jar;${libraries.dir}/import/com/sun/mail/mail.jar;" />
 
 
 
