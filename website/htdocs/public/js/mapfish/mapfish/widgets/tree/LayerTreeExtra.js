@@ -120,7 +120,7 @@ mapfish.widgets.LayerTree.MenuFeatures = {
             value += olLayers[i].opacity == null ? 1.0 : olLayers[i].opacity;
         }
         value = value / olLayers.length;
-        return new Ext.menu.Adapter(new Ext.Slider({
+        return new Ext.Slider({
             width: 200,
             value: value * 100,
             listeners: {
@@ -130,7 +130,7 @@ mapfish.widgets.LayerTree.MenuFeatures = {
                     }
                 }
             }
-        }));
+        });
     },
 
     remove: function(layerTree, node, olLayers) {

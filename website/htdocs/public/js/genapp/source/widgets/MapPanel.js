@@ -597,30 +597,25 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                     for (var i = 0; i < this.map.layers.length; i++){
                         this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
                     }
-                    /*this.layertree.getRootNode().eachChild(
-                        function(child) {
-                            if(child.hidden || child.disabled){
-                                var layers = this.layertree.nodeIdToLayers[child.id];
-                                if(!Ext.isEmpty(layers)){
-                                    layers[0].display(false);
-                                }
-                            }
-                        },this
-                    );*/
                 },
                 scope:this
             },
-            plugins : [{init: function(layerTree){
-                layerTree.getRootNode().cascade(
-                    function(child) {
-                        if(child.attributes.disabled == true){
-                            child.forceDisable = true;
-                        }else{
-                            child.forceDisable = false;
-                        }
-                    }
-                );
-            }}],
+            plugins : [
+               {
+                	init: function(layerTree) {
+                		layerTree.getRootNode().cascade(
+	                    function(child) {
+	                        if(child.attributes.disabled == true){
+	                            child.forceDisable = true;
+	                        }else{
+	                            child.forceDisable = false;
+	                        }
+	                    }
+                		);
+                	}
+                },
+                mapfish.widgets.LayerTree.createContextualMenuPlugin(['opacitySlide'])                
+                ],
             ascending : false
         });
         // Move the vector layer above all others
