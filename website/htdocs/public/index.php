@@ -21,8 +21,9 @@ set_include_path(
 // This is a nifty trick that allows ZF to load classes automatically so
 // that you don't have to litter your code with 'include' or 'require'
 // statements.
-require_once "Zend/Loader.php";
-Zend_Loader::registerAutoload();
+require_once "Zend/Loader/Autoloader.php";
+$autoloader = Zend_Loader_Autoloader::getInstance();
+$autoloader->setFallbackAutoloader(true); 
 
 // Step 3: REQUIRE APPLICATION BOOTSTRAP: Perform application-specific setup
 // This allows you to setup the MVC environment to utilize. Later you 
