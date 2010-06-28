@@ -1473,31 +1473,33 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->logger->debug('Expected lines : '.$total);
 
 		if ($sql == null) {
-			echo('// No Data');
+			$this->_print('// No Data');
 		} else if ($total > 65535) {
-			echo('// Too many result lines');
+			$this->_print('// Too many result lines');
 		} else {
 
 			// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
-			echo(chr(0xEF));
-			echo(chr(0xBB));
-			echo(chr(0xBF));
+			if($configuration->charset == 'UTF-8'){
+    		    echo(chr(0xEF));
+    			echo(chr(0xBB));
+    			echo(chr(0xBF));
+			}
 
 			// Retrive the metadata
 			$metadata = $websiteSession->metadata;
 			$traductions = $websiteSession->traductions;
 
 			// Display the default message
-			echo('// *************************************************')."\n";
-			echo('// Data Export')."\n";
-			echo('// *************************************************')."\n\n";
+			$this->_print('// *************************************************'."\n");
+			$this->_print('// Data Export'."\n");
+			$this->_print('// *************************************************'."\n\n");
 
 			// Export the column names
-			echo '// ';
+			$this->_print('// ');
 			foreach ($metadata as $column) {
-				echo $column->label.';';
+				$this->_print($column->label.';');
 			}
-			echo "\n";
+			$this->_print("\n");
 
 			// Get the order parameters
 			$sort = $this->getRequest()->getPost('sort');
@@ -1564,6 +1566,17 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
+
+	/**
+	 * Convert and display the UTF-8 encoded string to the configured charset
+	 * @param $output The string to encode and to display
+	 */
+    private function _print($output)
+    {
+        //Zend_Registry::get('logger')->debug('!!! ob_get_length : ' .ob_get_length());
+        $configuration = Zend_Registry::get("configuration");
+        echo iconv("UTF-8",$configuration->charset,$output);
+    }
 
 	/**
 	 * AJAX function : Return the results features bounding box in order to zoom on the features.
