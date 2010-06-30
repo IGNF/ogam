@@ -24,6 +24,16 @@ Genapp.buildApplication = function(config){
     Ext.Ajax.timeout = 480000;    
 
     Genapp.consultationPanel = new Genapp.ConsultationPanel(config);
+};
+/**
+ * Format the string in html
+ * @param {String} value The string to format
+ * @return {String} The formated string
+ */
+Genapp.util.htmlStringFormat = function(value){
+    value = value.replace(new  RegExp("'", "g"),"&#39;");
+    value = value.replace(new  RegExp("\"", "g"),"&#34;");
+    return value;
 };OpenLayers.Handler.FeatureInfo = OpenLayers.Class.create();
 OpenLayers.Handler.FeatureInfo.prototype = 
   OpenLayers.Class.inherit( OpenLayers.Handler, {
@@ -1426,11 +1436,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                 var readerFieldsConf;
                 for(var i=0; i<columns.length;i++){
                     columnConf = {
-                        header:columns[i].label,
+                        header:Genapp.util.htmlStringFormat(columns[i].label),
                         sortable:true,
                         dataIndex:columns[i].name,
                         width:100,
-                        tooltip:columns[i].definition,
+                        tooltip:Genapp.util.htmlStringFormat(columns[i].definition),
                         hidden:columns[i].hidden
                     };
                     readerFieldsConf = {
@@ -2406,7 +2416,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Construct a criteria for the record
+     * Construct a criteria from the record
      * @param {Ext.data.Record} record The criteria combobox record to add
      * @hide
      */
@@ -2532,11 +2542,21 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * Construct the default criteria
      * @return {Array} An array of the default criteria config
      */
-    getDefaultCriteriaConfig : function(){
+    getDefaultCriteriaConfig : function() {
         var items = [];
         this.criteriaDS.each(function(record){
             if(record.data.is_default){
-                this.items.push(this.form.getCriteriaConfig(record.data));
+                // if the field have multiple default values, duplicate the criteria
+                var defaultValue = record.data.default_value;
+                if(!Ext.isEmpty(defaultValue)){
+                    var defaultValues = defaultValue.split(';');
+                    for (var i = 0; i < defaultValues.length; i++) {
+                        // clone the object
+                        var newRecord = record.copy();
+                        newRecord.data.default_value = defaultValues[i];
+                        this.items.push(this.form.getCriteriaConfig(newRecord.data));
+                    }
+                }
             }
         },{form:this, items:items})
         return items;
@@ -2598,9 +2618,9 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 autoEl:{
                     tag:'span',
                     cls: 'columnLabel',
-                    'ext:qtitle':this.htmlStringFormat(record.label),
+                    'ext:qtitle':Genapp.util.htmlStringFormat(record.label),
                     'ext:qwidth':200,
-                    'ext:qtip':this.htmlStringFormat(record.definition),
+                    'ext:qtip':Genapp.util.htmlStringFormat(record.definition),
                     html:record.label
                 }
             },{
@@ -2610,18 +2630,6 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             }]
         };
         return field;
-    },
-
-    /**
-     * Format the string in html
-     * @param {String} value The string to format
-     * @return {String} The formated string
-     * @hide
-     */
-    htmlStringFormat : function(value){
-        value = value.replace(new  RegExp("'", "g"),"&#39;");
-        value = value.replace(new  RegExp("\"", "g"),"&#34;");
-        return value;
     },
 
     /**
@@ -2641,7 +2649,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
     /**
      * Adds all the columns of a column panel
      */
-    addAllColumns: function(){
+    addAllColumns: function() {
         this.columnsDS.each( 
             function(record){
                 this.addColumn(null, record);
@@ -2653,9 +2661,10 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
     /**
      * Adds all the columns of a column panel
      */
-    removeAllColumns: function(){
+    removeAllColumns: function() {
         this.columnsPanel.removeAll();
     }
+
 });/**
  * Panel containing the dynamic map.
  * <p>
@@ -3255,30 +3264,25 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                     for (var i = 0; i < this.map.layers.length; i++){
                         this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
                     }
-                    /*this.layertree.getRootNode().eachChild(
-                        function(child) {
-                            if(child.hidden || child.disabled){
-                                var layers = this.layertree.nodeIdToLayers[child.id];
-                                if(!Ext.isEmpty(layers)){
-                                    layers[0].display(false);
-                                }
-                            }
-                        },this
-                    );*/
                 },
                 scope:this
             },
-            plugins : [{init: function(layerTree){
-                layerTree.getRootNode().cascade(
-                    function(child) {
-                        if(child.attributes.disabled == true){
-                            child.forceDisable = true;
-                        }else{
-                            child.forceDisable = false;
-                        }
-                    }
-                );
-            }}],
+            plugins : [
+               {
+                	init: function(layerTree) {
+                		layerTree.getRootNode().cascade(
+	                    function(child) {
+	                        if(child.attributes.disabled == true){
+	                            child.forceDisable = true;
+	                        }else{
+	                            child.forceDisable = false;
+	                        }
+	                    }
+                		);
+                	}
+                },
+                mapfish.widgets.LayerTree.createContextualMenuPlugin(['opacitySlide'])                
+                ],
             ascending : false
         });
         // Move the vector layer above all others
