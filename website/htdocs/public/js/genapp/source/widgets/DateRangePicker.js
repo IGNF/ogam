@@ -7,6 +7,9 @@
  * @param {Object} config The config object
  * @xtype daterangepicker
  */
+
+Ext.namespace('Genapp');
+
 Genapp.DateRangePicker = Ext.extend(Ext.Panel, {
     /**
      * @cfg {String/Object} layout
