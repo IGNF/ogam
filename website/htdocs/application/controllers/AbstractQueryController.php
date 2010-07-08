@@ -115,9 +115,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 
 		// Update the default values with the saved values.
-		$this->logger->debug('ajaxgetpredefinedrequest : '.print_r($savedRequest, true));
-
-		// Update the default values with the saved values.
 		foreach ($forms as $form) {
 			foreach ($form->criteriaList as $criteria) {
 				$criteria->isDefaultCriteria = '0';
