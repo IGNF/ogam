@@ -23,7 +23,7 @@ Genapp.buildApplication = function(config){
     // Set the default timeout for AJAX calls
     Ext.Ajax.timeout = 480000;    
 
-    Genapp.consultationPanel = new Genapp.ConsultationPanel(config);
+    Genapp.cardPanel = new Genapp.CardPanel(config);
 };
 /**
  * Format the string in html

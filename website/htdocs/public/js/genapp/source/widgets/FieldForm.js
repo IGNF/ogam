@@ -29,28 +29,23 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      */
     criteriaPanelTbarLabel:'Criteria',
     /**
-     * @cfg {String} criteriaPanelTbarComboEmptyText
-     * The criteria Panel Tbar Combo Empty Text (defaults to <tt>'Select...'</tt>)
-     */
-    criteriaPanelTbarComboEmptyText:'Select...',
-    /**
      * @cfg {String} criteriaPanelTbarComboLoadingText
      * The criteria Panel Tbar Combo Loading Text (defaults to <tt>'searching...'</tt>)
      */
     criteriaPanelTbarComboLoadingText:'searching...',
     /**
-     * @cfg {String} criteriaPanelTbarLabel
-     * The criteria Panel Tbar Label (defaults to <tt>'Columns'</tt>)
+     * @cfg {String} columnsPanelTbarLabel
+     * The columns Panel Tbar Label (defaults to <tt>'Columns'</tt>)
      */
     columnsPanelTbarLabel:'Columns',
     /**
-     * @cfg {String} criteriaPanelTbarComboEmptyText
-     * The criteria Panel Tbar Combo Empty Text (defaults to <tt>'Select...'</tt>)
+     * @cfg {String} columnsPanelTbarComboEmptyText
+     * The columns Panel Tbar Combo Empty Text (defaults to <tt>'Select...'</tt>)
      */
     columnsPanelTbarComboEmptyText:'Select...',
     /**
-     * @cfg {String} criteriaPanelTbarComboLoadingText
-     * The criteria Panel Tbar Combo Loading Text (defaults to <tt>'searching...'</tt>)
+     * @cfg {String} columnsPanelTbarComboLoadingText
+     * The columns Panel Tbar Combo Loading Text (defaults to <tt>'searching...'</tt>)
      */
     columnsPanelTbarComboLoadingText:'searching...',
     /**
@@ -63,11 +58,6 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * The columns Panel Tbar Remove All Button Tooltip (defaults to <tt>'Remove all the columns'</tt>)
      */
     columnsPanelTbarRemoveAllButtonTooltip:'Remove all the columns',
-    /**
-     * @cfg {String} dateFormat
-     * The date format for the date fields (defaults to <tt>'Y/m/d'</tt>)
-     */
-    dateFormat:'Y/m/d',
 
     // private
     initComponent : function() {
@@ -253,131 +243,8 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             combo.collapse();
         }
         // Add the field
-        this.criteriaPanel.add(this.getCriteriaConfig(record.data));
+        this.criteriaPanel.add(this.getCriteriaConfig(record.data), false, this.criteriaPanel);
         this.criteriaPanel.doLayout();
-    },
-
-    /**
-     * Construct a criteria from the record
-     * @param {Ext.data.Record} record The criteria combobox record to add
-     * @hide
-     */
-    getCriteriaConfig : function(record){
-        var field = {};
-        // Setup the name of the field
-        var subName = 'criteria__' + record.name;
-        var i = 0;
-        var foundComponents;
-        do {
-            field.name = field.hiddenName = subName + '[' + i++ + ']';
-            if(this.criteriaPanel){ // The panel is rendered
-                foundComponents = this.criteriaPanel.find('name', field.name).length;
-            }else{
-                break;
-            }
-        }
-        while (foundComponents !== 0);
-
-        // Creates the ext field config
-        switch(record.inputType){
-            case 'SELECT':  // The input type SELECT correspond generally to a data type CODE
-                field.xtype = 'combo';
-                field.hiddenName = field.name;
-                field.triggerAction = 'all';
-                field.typeAhead = true;
-                field.mode = 'local';
-                field.displayField = 'label';
-                field.valueField  = 'code';
-                field.emptyText = this.criteriaPanelTbarComboEmptyText;
-                field.disableKeyFilter = true;
-                field.store = new Ext.data.ArrayStore({
-                    fields:['code','label'],
-                    data : record.params.options
-                });
-                break;
-            case 'DATE': // The input type DATE correspond generally to a data type DATE
-                field.xtype = 'daterangefield';
-                field.format = this.dateFormat;
-                break;
-            case 'NUMERIC': // The input type NUMERIC correspond generally to a data type NUMERIC or RANGE
-                field.xtype = 'numberrangefield';
-                
-                // If RANGE we set the min and max values
-                if (record.type=='RANGE') {
-                    field.minValue = record.params.min;
-                    field.maxValue = record.params.max;
-                }
-                // IF INTEGER we remove the decimals
-                if (record.type=='INTEGER') {
-                    field.allowDecimals = false;
-                    field.decimalPrecision = 0;
-                }
-                break;
-            case 'CHECKBOX':
-                 field.xtype = 'switch_checkbox';
-                 field.ctCls = 'improvedCheckbox';
-                 if(!Ext.isEmpty(record.default_value)){
-                    field.inputValue = '1';
-                 }
-                 //field.boxLabel = record.label;
-                 break;
-            case 'RADIO':
-            case 'TEXT':
-                switch(record.type){
-                    // TODO : BOOLEAN, COORDINATE
-                    case 'INTEGER':
-                        field.xtype  = 'numberfield';
-                        field.allowDecimals = false;
-                        break;
-                    case 'NUMERIC':
-                        field.xtype  = 'numberfield';
-                        break;
-                    default : // STRING
-                        field.xtype  = 'textfield';
-                        break;
-                }
-                break;
-            case 'GEOM':
-                field.xtype = 'geometryfield';
-                break;
-            default: 
-                field.xtype  = 'field';
-            break;
-        }
-        if(!Ext.isEmpty(record.default_value)){
-            field.value = record.default_value;
-        }
-        field.fieldLabel = record.label;
-        field.listeners = {
-            'render':function(cmp){
-                // Add the bin
-                var binCt = Ext.get('x-form-el-' + cmp.id).parent();
-                var labelDiv = binCt.child('.x-form-item-label');
-                labelDiv.set({
-                    'ext:qtitle':record.label,
-                    'ext:qwidth':200,
-                    'ext:qtip':record.definition
-                });
-                labelDiv.addClass('labelNextBin');
-                var binDiv = binCt.createChild({
-                    tag: "div",
-                    cls: "filterBin"
-                }, labelDiv);
-                binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
-                binDiv.on(
-                    'click',
-                    function(event,el,options){
-                        this.criteriaPanel.remove(cmp);
-                    },
-                    this,
-                    {
-                        single:true
-                    }
-                );
-            },
-            scope:this
-        };
-        return field;
     },
 
     /**
@@ -396,7 +263,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                         // clone the object
                         var newRecord = record.copy();
                         newRecord.data.default_value = defaultValues[i];
-                        this.items.push(this.form.getCriteriaConfig(newRecord.data));
+                        this.items.push(this.form.getCriteriaConfig(newRecord.data, false, this.criteriaPanel));
                     }
                 }
             }
@@ -507,4 +374,163 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
         this.columnsPanel.removeAll();
     }
 
+});
+
+Ext.apply(Genapp.FieldForm.prototype, {
+    /**
+     * @cfg {String} criteriaPanelTbarComboEmptyText
+     * The criteria Panel Tbar Combo Empty Text (defaults to <tt>'Select...'</tt>)
+     */
+    criteriaPanelTbarComboEmptyText:'Select...',
+
+    /**
+     * @cfg {String} dateFormat
+     * The date format for the date fields (defaults to <tt>'Y/m/d'</tt>)
+     */
+    dateFormat:'Y/m/d',
+
+    /**
+     * Construct a criteria from the record
+     * @param {Ext.data.Record} record The criteria combobox record to add
+     * @param {Boolean} hideBin True to hide the bin
+     * @hide
+     */
+    getCriteriaConfig : function(record, hideBin, criteriaPanel){
+        // If the field have multiple default values, duplicate the criteria
+        if(!Ext.isEmpty(record.default_value) && record.default_value.indexOf(';') != -1){
+            var fields = [];
+            var defaultValues = record.default_value.split(';');
+            for (var i = 0; i < defaultValues.length; i++) {
+                record.default_value = defaultValues[i];
+                fields.push(Genapp.FieldForm.prototype.getCriteriaConfig(record, hideBin, criteriaPanel));
+            }
+            return fields;
+        }
+        var field = {};
+        field.name = 'criteria__' + record.name;
+
+        // Creates the ext field config
+        switch(record.inputType){
+            case 'SELECT':  // The input type SELECT correspond generally to a data type CODE
+                field.xtype = 'combo';
+                field.hiddenName = field.name;
+                field.triggerAction = 'all';
+                field.typeAhead = true;
+                field.mode = 'local';
+                field.displayField = 'label';
+                field.valueField  = 'code';
+                field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
+                field.disableKeyFilter = true;
+                field.store = new Ext.data.ArrayStore({
+                    fields:['code','label'],
+                    data : record.params.options
+                });
+                break;
+            case 'DATE': // The input type DATE correspond generally to a data type DATE
+                field.xtype = 'daterangefield';
+                field.format = Genapp.FieldForm.prototype.dateFormat;
+                break;
+            case 'NUMERIC': // The input type NUMERIC correspond generally to a data type NUMERIC or RANGE
+                field.xtype = 'numberrangefield';
+                
+                // If RANGE we set the min and max values
+                if (record.type=='RANGE') {
+                    field.minValue = record.params.min;
+                    field.maxValue = record.params.max;
+                }
+                // IF INTEGER we remove the decimals
+                if (record.type=='INTEGER') {
+                    field.allowDecimals = false;
+                    field.decimalPrecision = 0;
+                }
+                break;
+            case 'CHECKBOX':
+                 field.xtype = 'switch_checkbox';
+                 field.ctCls = 'improvedCheckbox';
+                 if(!Ext.isEmpty(record.default_value)){
+                    field.inputValue = '1';
+                 }
+                 //field.boxLabel = record.label;
+                 break;
+            case 'RADIO':
+            case 'TEXT':
+                switch(record.type){
+                    // TODO : BOOLEAN, COORDINATE
+                    case 'INTEGER':
+                        field.xtype  = 'numberfield';
+                        field.allowDecimals = false;
+                        break;
+                    case 'NUMERIC':
+                        field.xtype  = 'numberfield';
+                        break;
+                    default : // STRING
+                        field.xtype  = 'textfield';
+                        break;
+                }
+                break;
+            case 'GEOM':
+                field.xtype = 'geometryfield';
+                break;
+            default: 
+                field.xtype  = 'field';
+            break;
+        }
+        if(!Ext.isEmpty(record.default_value)){
+            field.value = record.default_value;
+        }
+        if(!Ext.isEmpty(record.fixed)){
+            field.disabled = record.fixed;
+        }
+        field.fieldLabel = record.label;
+        
+        field.listeners = {
+            'beforerender':function(cmp){
+                // Setup the name of the field
+                var subName = cmp.name;
+                var i = 0;
+                var foundComponents;
+                var tmpName = '';
+                do {
+                    tmpName = subName + '[' + i++ + ']';
+                    if(criteriaPanel){ // The panel is rendered
+                        foundComponents = criteriaPanel.find('name', tmpName).length;
+                    }else{
+                        break;
+                    }
+                }
+                while (foundComponents !== 0 && i<10);
+                cmp.name = cmp.hiddenName = tmpName;
+            },
+            scope:this
+        };
+        if (!hideBin) {
+            field.listeners.render = function(cmp){
+                // Add the bin
+                var binCt = Ext.get('x-form-el-' + cmp.id).parent();
+                var labelDiv = binCt.child('.x-form-item-label');
+                labelDiv.set({
+                    'ext:qtitle':record.label,
+                    'ext:qwidth':200,
+                    'ext:qtip':record.definition
+                });
+                labelDiv.addClass('labelNextBin');
+                var binDiv = binCt.createChild({
+                    tag: "div",
+                    cls: "filterBin"
+                }, labelDiv);
+                binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
+                binDiv.on(
+                    'click',
+                    function(event,el,options){
+                        criteriaPanel.remove(cmp);
+                    },
+                    this,
+                    {
+                        single:true
+                    }
+                );
+            };
+        }
+        return field;
+    }
 });

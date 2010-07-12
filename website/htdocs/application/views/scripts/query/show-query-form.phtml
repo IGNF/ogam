@@ -26,9 +26,12 @@
 
 <!-- Debug mode start -->
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/genapp.js"></script>
-<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/ConsultationPanel.js"></script>
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/FieldForm.js"></script>
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/MapPanel.js"></script>
+<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/ConsultationPanel.js"></script>
+<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/extjsux/rowExpander/RowExpander.js"></script>
+<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/PredefinedRequestPanel.js"></script>
+<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/CardPanel.js"></script>
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/DetailsPanel.js"></script>
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/form/DateRangeField.js"></script>
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/menu/DateRangeMenu.js"></script>
@@ -76,7 +79,7 @@
     	Genapp.base_url = "<?=PATH_BASE_URL?>/";
     	Genapp.ajax_query_url = "<?=PATH_BASE_URL?>/query/";
     	Genapp.buildApplication();
-        Genapp.consultationPanel.on('resizewrapper',Genapp.util.resizeWrapper);
+    	Genapp.cardPanel.on('resizewrapper',Genapp.util.resizeWrapper);
     });
 </script>
 

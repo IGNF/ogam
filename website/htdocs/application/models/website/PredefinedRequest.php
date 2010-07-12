@@ -31,7 +31,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 
 		// Save the request
-		$req = " INSERT INTO predefined_request (request_name, schema_code, dataset_id, description )";
+		$req = " INSERT INTO predefined_request (request_name, schema_code, dataset_id, definition )";
 		$req .= " VALUES (?, ?, ?, ?)";
 
 		$this->logger->info('savePredefinedRequest : '.$req);
@@ -41,7 +41,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 			$predefinedRequest->requestName,
 			$predefinedRequest->schemaCode,
 			$predefinedRequest->datasetID,
-			$predefinedRequest->description));
+			$predefinedRequest->definition));
 
 		// Save the request results columns
 		$resultColumns = $predefinedRequest->resultsList;
@@ -100,7 +100,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 
 		$request = new PredefinedRequest();
 		$request->requestName = $requestName;
-		$request->description = $result['description'];
+		$request->definition = $result['definition'];
 		$request->datasetID = $result['dataset_id'];
 		$request->schemaCode = $result['schema_code'];
 		
@@ -140,4 +140,42 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 
 	}
 
+	/**
+     * Get a predefined request List.
+     */
+    public function getPredefinedRequestList() {
+        $db = $this->getAdapter();
+
+        // Get the request
+        $req = " SELECT pr.request_name, label, definition, click, date, criteria_hint, group_name, dataset_id FROM predefined_request pr JOIN predefined_request_group_asso prga ON pr.request_name = prga.request_name";
+
+        $this->logger->info('getPredefinedRequestList : '.$req);
+
+        $query = $db->prepare($req);
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+
+    /**
+     * Get the criteria of a predefined request.
+     */
+    public function getPredefinedRequestCriteria($requestName) {
+        $db = $this->getAdapter();
+
+        // Get the request
+        $req = " SELECT  format || '__' || data as name, format, data, value, fixed, input_type, type, data.label, data.definition
+FROM predefined_request_criteria_parameter
+JOIN form_field using (data, format)
+JOIN data using (data)
+JOIN unit using (unit)
+WHERE request_name = ?";
+
+        $this->logger->info('getPredefinedRequestCriteria : '.$req);
+
+        $query = $db->prepare($req);
+        $query->execute(array($requestName));
+
+        return $query->fetchAll();
+    }
 }

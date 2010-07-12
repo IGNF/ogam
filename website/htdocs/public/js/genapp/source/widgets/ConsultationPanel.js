@@ -37,19 +37,6 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      */
     border :false,
     /**
-     * @cfg {Mixed} renderTo
-     * Specify the id of the element, a DOM element or an existing Element that this component will be rendered into.
-     * Notes :
-     * When using this config, a call to render() is not required.
-     * Do not use this option if the Component is to be a child item of
-     * a {@link Ext.Container Container}. It is the responsibility of the
-     * {@link Ext.Container Container}'s {@link Ext.Container#layout layout manager}
-     * to render its child items (Default to 'page').
-     *
-     * See {@link #render} also.
-     */
-    renderTo:'page',
-    /**
      * @cfg {String} id
      * <p>The <b>unique</b> id of this component (defaults to 'consultation_panel').
      * You should assign an id if you need to be able to access the component later and you do
@@ -112,6 +99,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * if true hide the user manual link (defaults to true).
      */
     hideUserManualLink : true,
+    /**
+     * @cfg {Boolean} hidePredefinedRequestButton
+     * if true hide the predefined request button (defaults to true).
+     */
+    hidePredefinedRequestButton : true,
     /**
      * @cfg {String} userManualLinkHref
      * The user Manual Link Href (defaults to <tt>'Genapp.base_url + 'pdf/User_Manual.pdf''</tt>)
@@ -213,6 +205,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      */
     queryPanelCancelButtonText: "Cancel",
     /**
+     * @cfg {String} queryPanelPredefinedRequestButtonText
+     * The query Panel Predefined Request Button Text (defaults to <tt>'Predefined Requests'</tt>)
+     */
+    queryPanelPredefinedRequestButtonText: "Predefined Requests",
+    /**
      * @cfg {String} queryPanelResetButtonText
      * The query Panel Reset Button Text (defaults to <tt>'Reset'</tt>)
      */
@@ -227,6 +224,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * The query Panel Cancel Button Tooltip (defaults to <tt>'Cancel the request'</tt>)
      */
     queryPanelCancelButtonTooltip:"Cancel the request",
+    /**
+     * @cfg {String} queryPanelPredefinedRequestButtonTooltip
+     * The query Panel Predefined Request Button Tooltip (defaults to <tt>'Go to the predefined request page'</tt>)
+     */
+    queryPanelPredefinedRequestButtonTooltip:"Go to the predefined request page",
     /**
      * @cfg {String} queryPanelResetButtonTooltip
      * The query Panel Reset Button Tooltip (defaults to <tt>'Reset the request'</tt>)
@@ -381,38 +383,19 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * True to zoom automatically on the results features
      */
     autoZoomOnResultsFeatures: false,
+    /**
+     * @cfg {Boolean} launchRequestOnPredefinedRequestLoad
+     * True to launch the request on a prefefined request load (default to true)
+     */
+    launchRequestOnPredefinedRequestLoad: true,
+    /**
+     * @cfg {Boolean} collapseQueryPanelOnPredefinedRequestLoad
+     * True to collapse the query panel on a prefefined request load (default to true)
+     */
+    collapseQueryPanelOnPredefinedRequestLoad: true,
 
     // private
     initComponent : function() {
-        this.addEvents(
-            /**
-             * @event resizewrapper
-             * Fires after the Panel has been resized to resize the container (div html) of this consultation panel if exist.
-             * This event is not the same that the 'bodyresize' event.
-             * @param {Ext.Panel} p the Panel which has been resized.
-             * @param {Number} width The Panel's new width.
-             * @param {Number} height The Panel's new height.
-             */
-            'resizewrapper'
-        );
-
-        Ext.getBody().addClass(this.localeCls);
-
-        this.height = Ext.getBody().getViewSize().height - this.heightToSubstract;
-        this.width = Ext.getBody().getViewSize().width - this.widthToSubstract;
-
-        Ext.EventManager.onWindowResize(
-            function(w, h){
-                var newSize = {
-                        width:Ext.getBody().getViewSize().width - this.widthToSubstract,
-                        height:Ext.getBody().getViewSize().height - this.heightToSubstract
-                };
-                this.setSize(newSize);
-                this.fireEvent('resizewrapper', newSize.width, newSize.height);
-            },
-            this
-        );
-
         /**
          * The dataset Data Store.
          * @property datasetDS
@@ -428,7 +411,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                         for(i = 0; i<records.length; i++){
                             if(records[i].data.is_default === '1'){
                                 this.datasetComboBox.setValue(records[i].data.id);
-                                this.updateFormsPanel(records[i].data.id);
+                                this.updateDatasetFormsPanel(records[i].data.id);
                                 break;
                             }
                         }
@@ -463,7 +446,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             listeners : {
             'select' : {
                 fn : function(combo, record, index) {
-                        this.updateFormsPanel(record.data.id);
+                        this.updateDatasetFormsPanel(record.data.id);
                     },
                     scope :this
                 }
@@ -478,9 +461,10 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         this.datasetPanel = new Ext.Panel( {
             region :'north',
             layout: 'form',
-            height:60,
+            autoHeight: true,
             frame:true,
-            margins:'5 0 5 0',
+            margins:'10 0 5 0',
+            cls: 'genapp_query_panel_dataset_panel',
             title : this.datasetPanelTitle,
             items : this.datasetComboBox
         });
@@ -969,12 +953,8 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         );
 
         this.queryPanelPinned = true;
-        /**
-         * The query form panel contains the dataset list and the corresponding forms.
-         * @property queryPanel
-         * @type Ext.FormPanel
-         */
-        this.queryPanel = new Ext.FormPanel( {
+
+        var queryPanelConfig = {
             region :'west',
             title :this.queryPanelTitle,
             collapsible : true,
@@ -984,6 +964,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             width :370,
             frame:true,
             layout:'border',
+            cls: 'genapp_query_panel',
             items : [ this.datasetPanel, this.formsPanel ],
             tools:[{
                 id:'pin',
@@ -1034,7 +1015,30 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                 scope: this,
                 handler: this.submitRequest
             }]
-        });
+        };
+
+        if (!this.hidePredefinedRequestButton) {
+            queryPanelConfig.tbar = {
+                cls: 'genapp_query_panel_tbar',
+                items:[{
+                    xtype: 'tbbutton',
+                    text: this.queryPanelPredefinedRequestButtonText,
+                    tooltipType: 'title',
+                    tooltip: this.queryPanelPredefinedRequestButtonTooltip,
+                    scope: this,
+                    handler: function(b,e){
+                        Genapp.cardPanel.getLayout().setActiveItem('predefined_request');
+                    }
+                }]
+            };
+        }
+
+        /**
+         * The query form panel contains the dataset list and the corresponding forms.
+         * @property queryPanel
+         * @type Ext.FormPanel
+         */
+        this.queryPanel = new Ext.FormPanel(queryPanelConfig);
 
         // Add the layers and legends vertical label
         if(!this.hideRequestVerticalLabel){
@@ -1116,10 +1120,10 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * Update the Forms Panel by adding the Panel corresponding to the selected dataset
      * @param {Object} response The XMLHttpRequest object containing the response data.
      * @param {Object} options The parameter to the request call.
-     * @param {String} dataset The datasetId
+     * @param {Object} apiParams The api parameters
      * @hide
      */
-    updateWestPanels : function(response, opts, datasetId) {
+    updateWestPanels : function(response, opts, apiParams) {
         var forms = Ext.decode(response.responseText);
         // Removes the loading message
         this.formsPanel.body.update();
@@ -1131,7 +1135,6 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                     new Genapp.FieldForm({
                         title: forms.data[i].label,
                         id: forms.data[i].id,
-                        datasetId: datasetId,
                         criteria: forms.data[i].criteria,
                         columns: forms.data[i].columns
                     })
@@ -1139,6 +1142,12 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             }
         }
         this.formsPanel.doLayout();
+        if (apiParams.collapseQueryPanel == true) {
+            this.queryPanel.collapse();
+        }
+        if (apiParams.launchRequest == true) {
+            this.submitRequest();
+        }
     },
 
     /**
@@ -1159,9 +1168,9 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
 
         var stringFormat = '';
         if(!this.hideDetails){
-            stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.consultationPanel.openDetails(\'{0}\', \'getdetails\');"></div>';
+            stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPanel.openDetails(\'{0}\', \'getdetails\');"></div>';
         }
-        stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.consultationPanel.displayLocation(\'{0}\',\'{1}\');"></div>';
+        stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.cardPanel.consultationPanel.displayLocation(\'{0}\',\'{1}\');"></div>';
 
         return String.format(stringFormat, record.data.id, record.data.location_centroid);
     },
@@ -1212,7 +1221,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * Reset the current ajax request (submit or load)
      */
     resetRequest : function(){
-        this.updateFormsPanel(this.datasetComboBox.getValue());
+        this.updateDatasetFormsPanel(this.datasetComboBox.getValue());
     },
 
     /**
@@ -1469,20 +1478,51 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
 
     /**
      * Updates the FormsPanel body
-     * @param {String} the dataset identifier
+     * @param {Object} requestParams The parameters for the ajax request
+     * @param {Object} apiParams The api parameters
      */
-    updateFormsPanel : function(datasetId) {
+    updateFormsPanel : function(requestParams,apiParams) {
         this.formsPanel.removeAll(true);
         this.formsPanel.getUpdater().showLoading();
         Ext.Ajax.request({
             url: Genapp.ajax_query_url + 'ajaxgetforms',
-            success: this.updateWestPanels.createDelegate(this,[datasetId],true),
+            success: this.updateWestPanels.createDelegate(this,[apiParams],true),
             method: 'POST',
-            params: {
-        		datasetId: datasetId
-            },
+            params: requestParams,
             scope :this
         });
+    },
+
+    /**
+     * Update the forms panel for a predefined request
+     * @param {String} requestName The request name
+     */
+    updatePredefinedRequestFormsPanel : function(requestName) {
+        this.updateFormsPanel({
+            requestName: requestName
+        },{
+            'launchRequest': this.launchRequestOnPredefinedRequestLoad,
+            'collapseQueryPanel': this.collapseQueryPanelOnPredefinedRequestLoad
+        });
+    },
+
+    /**
+     * Update the forms panel for a datasetId
+     * @param {String} datasetId The dataset ID
+     */
+    updateDatasetFormsPanel : function(datasetId) {
+        this.updateFormsPanel({
+            datasetId: datasetId
+        });
+    },
+
+    /**
+     * Load a predefined request into the request panel
+     * @param {Object} A object containing the predefined request data
+     */
+    loadRequest : function(request) {
+        this.datasetComboBox.setValue(request.datasetId);
+        this.updatePredefinedRequestFormsPanel(request.name);
     },
 
     /**

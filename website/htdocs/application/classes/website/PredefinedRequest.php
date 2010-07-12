@@ -18,9 +18,9 @@ class PredefinedRequest {
 	var $requestName;
 	
 	/**
-	 * The request description.
+	 * The request definition.
 	 */
-	var $description;
+	var $definition;
 
 	/**
 	 * The dataset identifier.
