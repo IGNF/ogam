@@ -7,7 +7,7 @@ if(Genapp.ConsultationPanel){
         hideAggregationCsvExportMenuItem : true,
         hideAggregationButton : true,
         hideInterpolationButton : true,
-        hidePredefinedRequestButton : false,
+        hidePredefinedRequestButton : true,
         widthToSubstract:120,
         heightToSubstract:210
     });
