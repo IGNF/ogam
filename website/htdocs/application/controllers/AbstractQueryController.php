@@ -141,93 +141,90 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 	}
 
-   /**
-     * AJAX function : Get the list of available predefined requests.
-     */
-    public function ajaxgetpredefinedrequestlistAction() {
-        $this->logger->debug('ajaxgetpredefinedrequestlist');
+	/**
+	 * AJAX function : Get the list of available predefined requests.
+	 */
+	public function ajaxgetpredefinedrequestlistAction() {
+		$this->logger->debug('ajaxgetpredefinedrequestlist');
 
-        // Get the predefined values for the forms
-        $predefinedRequestList = $this->predefinedRequestModel->getPredefinedRequestList();
+		// Get the predefined values for the forms
+		$predefinedRequestList = $this->predefinedRequestModel->getPredefinedRequestList();
 
-        // Generate the JSON string
-        $total = count($predefinedRequestList);
-        echo '{success:true, total:'.$total.',rows:[';
+		// Generate the JSON string
+		$total = count($predefinedRequestList);
+		echo '{success:true, total:'.$total.',rows:[';
 
-        for($i=0;$i<$total;$i++){
-            $json = '[';
-            foreach($predefinedRequestList[$i] as $value){
-                $json .= json_encode($value).',';
-            }
-            if (strlen($json) > 1) {
-                $json = substr($json, 0, -1);
-            }
-            if($i != ($total - 1)){
-                echo $json .'],';
-            }else{
-                echo $json .']';
-            }
-        }
-        echo ']}';
+		for ($i = 0; $i < $total; $i++) {
+			$json = '[';
+			foreach ($predefinedRequestList[$i] as $value) {
+				$json .= json_encode($value).',';
+			}
+			if (strlen($json) > 1) {
+				$json = substr($json, 0, -1);
+			}
+			if ($i != ($total - 1)) {
+				echo $json.'],';
+			} else {
+				echo $json.']';
+			}
+		}
+		echo ']}';
 
-        // No View, we send directly the JSON
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender();
-    }
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+	}
 
-   /**
-     * AJAX function : Get the criteria of a predefined requests.
-     */
-    public function ajaxgetpredefinedrequestcriteriaAction() {
-        $this->logger->debug('ajaxgetpredefinedrequestcriteria');
+	/**
+	 * AJAX function : Get the criteria of a predefined requests.
+	 */
+	public function ajaxgetpredefinedrequestcriteriaAction() {
+		$this->logger->debug('ajaxgetpredefinedrequestcriteria');
 
-        $requestName = $this->_getParam('request_name');
+		$requestName = $this->_getParam('request_name');
 
-        // Get the predefined values for the forms
-        $predefinedRequestCriteria = $this->predefinedRequestModel->getPredefinedRequestCriteria($requestName);
+		// Get the predefined values for the forms
+		$predefinedRequestCriterias = $this->predefinedRequestModel->getPredefinedRequestCriteria($requestName);
 
-        // Generate the JSON string
-        $total = count($predefinedRequestCriteria);
-        echo '{success:true, criteria:[';
+		// Generate the JSON string
+		$total = count($predefinedRequestCriterias);
+		echo '{success:true, criteria:[';
 
-        for($i=0;$i<$total;$i++){
-            $criteria = $predefinedRequestCriteria[$i];
-            $json = '[';
-            foreach($criteria as $value){
-                $json .= json_encode($value).',';
-            }
-            // For the SELECT field, get the list of options
-            if ($criteria['type'] == "CODE") {
-                $options = $this->metadataModel->getOptions($criteria['data']);
-                $json .= '{options:[';
-                foreach ($options as $option) {
-                    $json .= '["'.$option->code.'","'.$option->label.'"],';
-                }
-                $json = substr($json, 0, -1);
-                $json .= ']}';
-            }
-            // For the RANGE field, get the min and max values
-            else if ($criteria['type'] == "RANGE") {
-                $range = $this->metadataModel->getRange($criteria['data']);
-                $json .= '{min:'.$range->min.',max:'.$range->max.'}';
-            } else {
-                $json .= '{}';
-            }
-            /*if (strlen($json) > 1) {
-                $json = substr($json, 0, -1);
-            }*/
-            if($i != ($total - 1)){
-                echo $json .'],';
-            }else{
-                echo $json .']';
-            }
-        }
-        echo ']}';
+		for ($i = 0; $i < $total; $i++) {
+			$criteria = $predefinedRequestCriterias[$i];
+			$json = '[';
+			foreach ($criteria as $value) {
+				$json .= json_encode($value).',';
+			}
+			// For the SELECT field, get the list of options
+			if ($criteria['type'] == "CODE") {
+				$options = $this->metadataModel->getOptions($criteria['data']);
+				$json .= '{options:[';
+				foreach ($options as $option) {
+					$json .= '["'.$option->code.'","'.$option->label.'"],';
+				}
+				$json = substr($json, 0, -1);
+				$json .= ']}';
+			}
+			// For the RANGE field, get the min and max values
+			else if ($criteria['type'] == "RANGE") {
+				$range = $this->metadataModel->getRange($criteria['data']);
+				$json .= '{min:'.$range->min.',max:'.$range->max.'}';
+			} else {
+				$json .= '{}';
+			}
+			if ($i != ($total - 1)) {
+				echo $json.'],';
+			} else {
+				echo $json.']';
+			}
+		}
+		echo ']}';
 
-        // No View, we send directly the JSON
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender();
-    }
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+	}
 
 	/**
 	 * Generate the JSON structure corresponding to a list of result and criteria columns.
@@ -292,22 +289,22 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$requestName = $this->getRequest()->getPost('requestName');
 		$this->logger->debug('datasetId : '.$datasetId, $this->schema);
 		$this->logger->debug('requestName : '.$requestName, $this->schema);
-		
+
 		if (!empty($requestName)) {
-		    $this->_ajaxgetpredefinedrequest($requestName);
+			$this->_ajaxgetpredefinedrequest($requestName);
 		} else {
-    		$forms = $this->metadataModel->getForms($datasetId, $this->schema);
-    		foreach ($forms as $form) {
-    			// Fill each form with the list of criterias and results
-    			$form->criteriaList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'criteria');
-    			$form->resultsList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'result');
-    		}
-    
-    		echo $this->_generateFormsJSON($datasetId, $forms);
-    
-    		// No View, we send directly the JSON
-    		$this->_helper->layout()->disableLayout();
-    		$this->_helper->viewRenderer->setNoRender();
+			$forms = $this->metadataModel->getForms($datasetId, $this->schema);
+			foreach ($forms as $form) {
+				// Fill each form with the list of criterias and results
+				$form->criteriaList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'criteria');
+				$form->resultsList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'result');
+			}
+
+			echo $this->_generateFormsJSON($datasetId, $forms);
+
+			// No View, we send directly the JSON
+			$this->_helper->layout()->disableLayout();
+			$this->_helper->viewRenderer->setNoRender();
 		}
 	}
 
@@ -1567,10 +1564,10 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		} else {
 
 			// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
-			if($configuration->charset == 'UTF-8'){
-    		    echo(chr(0xEF));
-    			echo(chr(0xBB));
-    			echo(chr(0xBF));
+			if ($configuration->charset == 'UTF-8') {
+				echo(chr(0xEF));
+				echo(chr(0xBB));
+				echo(chr(0xBF));
 			}
 
 			// Retrive the metadata
@@ -1659,12 +1656,11 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 * Convert and display the UTF-8 encoded string to the configured charset
 	 * @param $output The string to encode and to display
 	 */
-    private function _print($output)
-    {
-        //Zend_Registry::get('logger')->debug('!!! ob_get_length : ' .ob_get_length());
-        $configuration = Zend_Registry::get("configuration");
-        echo iconv("UTF-8",$configuration->charset,$output);
-    }
+	private function _print($output) {
+		//Zend_Registry::get('logger')->debug('!!! ob_get_length : ' .ob_get_length());
+		$configuration = Zend_Registry::get("configuration");
+		echo iconv("UTF-8", $configuration->charset, $output);
+	}
 
 	/**
 	 * AJAX function : Return the results features bounding box in order to zoom on the features.
