@@ -243,7 +243,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             combo.collapse();
         }
         // Add the field
-        this.criteriaPanel.add(this.getCriteriaConfig(record.data), false, this.criteriaPanel);
+        this.criteriaPanel.add(this.getCriteriaConfig(record.data, false, this.criteriaPanel));
         this.criteriaPanel.doLayout();
     },
 
@@ -259,11 +259,16 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 var defaultValue = record.data.default_value;
                 if(!Ext.isEmpty(defaultValue)){
                     var defaultValues = defaultValue.split(';');
+                    var criteriaValuesEmpty = Ext.isEmpty(this.form.criteriaValues);
                     for (var i = 0; i < defaultValues.length; i++) {
                         // clone the object
                         var newRecord = record.copy();
-                        var fieldValue = this.form.criteriaValues['criteria__'+newRecord.data.name+'['+i+']'];
-                        newRecord.data.default_value = Ext.isEmpty(fieldValue) ? defaultValues[i] : fieldValue;
+                        if(criteriaValuesEmpty){
+                            newRecord.data.default_value = defaultValues[i];
+                        }else{
+                            var fieldValue = this.form.criteriaValues['criteria__'+newRecord.data.name+'['+i+']'];
+                            newRecord.data.default_value = Ext.isEmpty(fieldValue) ? defaultValues[i] : fieldValue;
+                        }
                         this.items.push(this.form.getCriteriaConfig(newRecord.data, false, this.criteriaPanel));
                     }
                 }

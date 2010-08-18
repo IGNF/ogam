@@ -1121,6 +1121,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * @param {Object} response The XMLHttpRequest object containing the response data.
      * @param {Object} options The parameter to the request call.
      * @param {Object} apiParams The api parameters
+     * @param {Object} criteriaValues The criteria values
      * @hide
      */
     updateWestPanels : function(response, opts, apiParams, criteriaValues) {
@@ -1143,11 +1144,13 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             }
         }
         this.formsPanel.doLayout();
-        if (apiParams.collapseQueryPanel == true) {
-            this.queryPanel.collapse();
-        }
-        if (apiParams.launchRequest == true) {
-            this.submitRequest();
+        if(!Ext.isEmpty(apiParams)){
+            if (apiParams.collapseQueryPanel == true) {
+                this.queryPanel.collapse();
+            }
+            if (apiParams.launchRequest == true) {
+                this.submitRequest();
+            }
         }
     },
 
@@ -1481,6 +1484,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * Updates the FormsPanel body
      * @param {Object} requestParams The parameters for the ajax request
      * @param {Object} apiParams The api parameters
+     * @param {Object} criteriaValues The criteria values
      */
     updateFormsPanel : function(requestParams, apiParams, criteriaValues) {
         this.formsPanel.removeAll(true);
@@ -1497,6 +1501,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     /**
      * Update the forms panel for a predefined request
      * @param {String} requestName The request name
+     * @param {Object} criteriaValues The criteria values
      */
     updatePredefinedRequestFormsPanel : function(requestName, criteriaValues) {
         this.updateFormsPanel(
