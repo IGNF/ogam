@@ -1123,7 +1123,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * @param {Object} apiParams The api parameters
      * @hide
      */
-    updateWestPanels : function(response, opts, apiParams) {
+    updateWestPanels : function(response, opts, apiParams, criteriaValues) {
         var forms = Ext.decode(response.responseText);
         // Removes the loading message
         this.formsPanel.body.update();
@@ -1136,6 +1136,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                         title: forms.data[i].label,
                         id: forms.data[i].id,
                         criteria: forms.data[i].criteria,
+                        criteriaValues: criteriaValues,
                         columns: forms.data[i].columns
                     })
                 );
@@ -1481,12 +1482,12 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * @param {Object} requestParams The parameters for the ajax request
      * @param {Object} apiParams The api parameters
      */
-    updateFormsPanel : function(requestParams,apiParams) {
+    updateFormsPanel : function(requestParams, apiParams, criteriaValues) {
         this.formsPanel.removeAll(true);
         this.formsPanel.getUpdater().showLoading();
         Ext.Ajax.request({
             url: Genapp.ajax_query_url + 'ajaxgetforms',
-            success: this.updateWestPanels.createDelegate(this,[apiParams],true),
+            success: this.updateWestPanels.createDelegate(this,[apiParams, criteriaValues],true),
             method: 'POST',
             params: requestParams,
             scope :this
@@ -1497,13 +1498,16 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * Update the forms panel for a predefined request
      * @param {String} requestName The request name
      */
-    updatePredefinedRequestFormsPanel : function(requestName) {
-        this.updateFormsPanel({
-            requestName: requestName
-        },{
-            'launchRequest': this.launchRequestOnPredefinedRequestLoad,
-            'collapseQueryPanel': this.collapseQueryPanelOnPredefinedRequestLoad
-        });
+    updatePredefinedRequestFormsPanel : function(requestName, criteriaValues) {
+        this.updateFormsPanel(
+            {
+                requestName: requestName
+            },{
+                'launchRequest': this.launchRequestOnPredefinedRequestLoad,
+                'collapseQueryPanel': this.collapseQueryPanelOnPredefinedRequestLoad
+            },
+            criteriaValues
+        );
     },
 
     /**
@@ -1522,7 +1526,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      */
     loadRequest : function(request) {
         this.datasetComboBox.setValue(request.datasetId);
-        this.updatePredefinedRequestFormsPanel(request.name);
+        this.updatePredefinedRequestFormsPanel(request.name, request.fieldValues);
     },
 
     /**

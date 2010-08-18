@@ -186,9 +186,16 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     this.launchRequestButton = new Ext.Button({
                         text:'Launch the request',
                         handler:function(b,e){
+                            // Get the selected request and the new criteria values
+                            var selectedRequestData = this.grid.getSelectionModel().getSelected().data;
+                            var fieldValues = this.requestCriteriaCardPanel.getComponent(selectedRequestData.name).getForm().getValues(); // getFieldValues() doesn't work like expected with the checkbox
+                            // Load and launch the request
                             var consultationPanel = Ext.getCmp('consultation_panel');
-                            var selectedRequest = this.grid.getSelectionModel().getSelected();
-                            consultationPanel.loadRequest({datasetId:selectedRequest.data.datasetId, name:selectedRequest.data.name});
+                            consultationPanel.loadRequest({
+                                datasetId:selectedRequestData.datasetId,
+                                name:selectedRequestData.name,
+                                fieldValues:fieldValues
+                            });
                             Genapp.cardPanel.getLayout().setActiveItem('consultation_panel');
                         },
                         scope:this
@@ -269,7 +276,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                             'name',
                             'format',
                             'data',
-                            'default_value',//value
+                            'default_value', // value
                             'fixed',
                             'inputType',
                             'type',
@@ -280,10 +287,9 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     });
                     var result = myReader.readRecords(Ext.decode(response.responseText));
                     var requestCriteriaPanel = new Ext.form.FormPanel({
-                        layout: 'form',
                         itemId: rec.data.name,
                         labelWidth: 120,
-                        autoHeight: true, // Needed for IE7
+                        autoHeight: true, // Necessary for IE7
                         defaults: {
                             labelStyle: 'padding: 0; margin-top:3px', 
                             width: 180

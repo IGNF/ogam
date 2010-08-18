@@ -262,7 +262,8 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                     for (var i = 0; i < defaultValues.length; i++) {
                         // clone the object
                         var newRecord = record.copy();
-                        newRecord.data.default_value = defaultValues[i];
+                        var fieldValue = this.form.criteriaValues['criteria__'+newRecord.data.name+'['+i+']'];
+                        newRecord.data.default_value = Ext.isEmpty(fieldValue) ? defaultValues[i] : fieldValue;
                         this.items.push(this.form.getCriteriaConfig(newRecord.data, false, this.criteriaPanel));
                     }
                 }
@@ -397,7 +398,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
      */
     getCriteriaConfig : function(record, hideBin, criteriaPanel){
         // If the field have multiple default values, duplicate the criteria
-        if(!Ext.isEmpty(record.default_value) && record.default_value.indexOf(';') != -1){
+        if(!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') != -1){
             var fields = [];
             var defaultValues = record.default_value.split(';');
             for (var i = 0; i < defaultValues.length; i++) {
@@ -447,8 +448,16 @@ Ext.apply(Genapp.FieldForm.prototype, {
             case 'CHECKBOX':
                  field.xtype = 'switch_checkbox';
                  field.ctCls = 'improvedCheckbox';
-                 if(!Ext.isEmpty(record.default_value)){
-                    field.inputValue = '1';
+                 switch(record.default_value){
+                     case 1:
+                     case '1':
+                     case true:
+                     case 'true':
+                         field.inputValue = '1';
+                         break;
+                     default:
+                         field.inputValue = '0';
+                     break;
                  }
                  //field.boxLabel = record.label;
                  break;
