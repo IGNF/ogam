@@ -39,4 +39,7 @@ input.x-form-checkbox
 .x-sm-form-check-innerwrap{
     margin-top:5px;
 }
+.ext-ie7 .x-sm-form-check-innerwrap{
+     position: static !important;	
+}
 /*************************************************************************************************/

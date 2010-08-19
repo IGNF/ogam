@@ -107,7 +107,6 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             hideMode:'offsets',
             labelWidth:120,
             cls:'genapp-query-criteria-panel',
-            bodyStyle: 'padding:0px 5px;',
             defaults: {
                 labelStyle: 'padding: 0; margin-top:3px', 
                 width: 180
@@ -162,6 +161,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             layout:'form',
             hidden:Ext.isEmpty(this.columns) ? true:false,
             hideMode:'offsets',
+            cls:'genapp-query-columns-panel',
             items: this.getDefaultColumnsConfig(),
             tbar: [
                {

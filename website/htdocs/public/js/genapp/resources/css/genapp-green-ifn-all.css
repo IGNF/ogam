@@ -209,6 +209,13 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 
 /***** Criteria Form Panel Body ************************************************************************/
 
+.ext-ie7 .genapp-query-criteria-panel .x-panel-body{
+    display:inline;
+    zoom:0;
+}
+.ext-ie7 .genapp-query-criteria-panel .x-panel-tbar{
+    display:inline;
+}
 .genapp-query-criteria-panel .x-form-item {
     margin:3px 0;
     font-size:11px;
@@ -230,7 +237,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     cursor:pointer;
     height:12px;
     width:12px;
-    margin: 4px 5px 0px 0px;
+    margin: 4px 5px 0px 5px;
     float:left;
     position:relative;
     z-index:2;
@@ -250,6 +257,13 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 
 /***** Column Form Panel Body ************************************************************************/
 
+.ext-ie7 .genapp-query-columns-panel .x-panel-body{
+    display:inline;
+    zoom:0;
+}
+.ext-ie7 .genapp-query-columns-panel .x-panel-tbar{
+    display:inline;
+}
 .columnLabelBin{
     cursor:pointer;
     display:inline !important;
