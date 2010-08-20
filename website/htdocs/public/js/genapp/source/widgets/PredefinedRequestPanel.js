@@ -306,7 +306,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     });
                     for(var i = 0; i < result.records.length; i++){
                         // Add the field
-                        requestCriteriaPanel.add(Genapp.FieldForm.prototype.getCriteriaConfig(result.records[i].data, true, requestCriteriaPanel));
+                        requestCriteriaPanel.add(Genapp.FieldForm.prototype.getCriteriaConfig(result.records[i].data, true));
                     }
                     this.requestCriteriaCardPanel.add(requestCriteriaPanel);
                     this.showCriteriaPanel(rec.data.name);

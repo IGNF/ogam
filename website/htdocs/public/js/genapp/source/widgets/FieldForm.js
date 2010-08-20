@@ -111,6 +111,18 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 labelStyle: 'padding: 0; margin-top:3px', 
                 width: 180
             },
+            listeners:{
+                'add': function(criteriaPanel, cmp, index){ // For IE7 layout
+                    if(index == 0){
+                        var className = 'first-child';
+                        if (cmp.rendered) {
+                            cmp.getEl().addClass(className);
+                        } else {
+                            cmp.itemCls ? cmp.itemCls += ' ' + className : cmp.itemCls = className;
+                        }
+                    }
+                }
+            },
             items:  this.getDefaultCriteriaConfig(),
             tbar: [
                 {
@@ -243,7 +255,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             combo.collapse();
         }
         // Add the field
-        this.criteriaPanel.add(this.getCriteriaConfig(record.data, false, this.criteriaPanel));
+        this.criteriaPanel.add(this.getCriteriaConfig(record.data, false));
         this.criteriaPanel.doLayout();
     },
 
@@ -269,7 +281,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                             var fieldValue = this.form.criteriaValues['criteria__'+newRecord.data.name+'['+i+']'];
                             newRecord.data.default_value = Ext.isEmpty(fieldValue) ? defaultValues[i] : fieldValue;
                         }
-                        this.items.push(this.form.getCriteriaConfig(newRecord.data, false, this.criteriaPanel));
+                        this.items.push(this.form.getCriteriaConfig(newRecord.data, false));
                     }
                 }
             }
@@ -401,14 +413,14 @@ Ext.apply(Genapp.FieldForm.prototype, {
      * @param {Boolean} hideBin True to hide the bin
      * @hide
      */
-    getCriteriaConfig : function(record, hideBin, criteriaPanel){
+    getCriteriaConfig : function(record, hideBin){
         // If the field have multiple default values, duplicate the criteria
         if(!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') != -1){
             var fields = [];
             var defaultValues = record.default_value.split(';');
             for (var i = 0; i < defaultValues.length; i++) {
                 record.default_value = defaultValues[i];
-                fields.push(Genapp.FieldForm.prototype.getCriteriaConfig(record, hideBin, criteriaPanel));
+                fields.push(Genapp.FieldForm.prototype.getCriteriaConfig(record, hideBin));
             }
             return fields;
         }
@@ -419,6 +431,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
         switch(record.inputType){
             case 'SELECT':  // The input type SELECT correspond generally to a data type CODE
                 field.xtype = 'combo';
+                field.itemCls = 'trigger-field'; // For IE7 layout
                 field.hiddenName = field.name;
                 field.triggerAction = 'all';
                 field.typeAhead = true;
@@ -434,11 +447,12 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 break;
             case 'DATE': // The input type DATE correspond generally to a data type DATE
                 field.xtype = 'daterangefield';
+                field.itemCls = 'trigger-field'; // For IE7 layout
                 field.format = Genapp.FieldForm.prototype.dateFormat;
                 break;
             case 'NUMERIC': // The input type NUMERIC correspond generally to a data type NUMERIC or RANGE
                 field.xtype = 'numberrangefield';
-                
+                field.itemCls = 'trigger-field'; // For IE7 layout
                 // If RANGE we set the min and max values
                 if (record.type=='RANGE') {
                     field.minValue = record.params.min;
@@ -484,6 +498,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 break;
             case 'GEOM':
                 field.xtype = 'geometryfield';
+                field.itemCls = 'trigger-field'; // For IE7 layout
                 break;
             default: 
                 field.xtype  = 'field';
@@ -504,13 +519,10 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 var i = 0;
                 var foundComponents;
                 var tmpName = '';
+                var criteriaPanel = cmp.ownerCt;
                 do {
                     tmpName = subName + '[' + i++ + ']';
-                    if(criteriaPanel){ // The panel is rendered
-                        foundComponents = criteriaPanel.find('name', tmpName).length;
-                    }else{
-                        break;
-                    }
+                    foundComponents = criteriaPanel.find('name', tmpName).length;
                 }
                 while (foundComponents !== 0 && i<10);
                 cmp.name = cmp.hiddenName = tmpName;
@@ -536,7 +548,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 binDiv.on(
                     'click',
                     function(event,el,options){
-                        criteriaPanel.remove(cmp);
+                        cmp.ownerCt.remove(cmp);
                     },
                     this,
                     {

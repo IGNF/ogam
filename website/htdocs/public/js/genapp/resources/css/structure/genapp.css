@@ -210,8 +210,8 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 /***** Criteria Form Panel Body ************************************************************************/
 
 .ext-ie7 .genapp-query-criteria-panel .x-panel-body{
-    display:inline;
-    zoom:0;
+    display:inline; /* To collapse correctly the panel if empty */
+    zoom:0; /* To collapse correctly the panel if empty */
 }
 .ext-ie7 .genapp-query-criteria-panel .x-panel-tbar{
     display:inline;
@@ -220,8 +220,14 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     margin:3px 0;
     font-size:11px;
 }
-.genapp-query-column-item{
-    margin: 5px 0;
+.ext-ie7 .genapp-query-criteria-panel .x-form-item {
+    margin:0 0 3px 0 !important;
+}
+.ext-ie7 .genapp-query-criteria-panel .trigger-field {
+    margin:0 !important;
+}
+.ext-ie7 .genapp-query-criteria-panel .first-child {
+	margin-top:5px !important;
 }
 .filterDateSelect{
     float: left;
@@ -258,8 +264,8 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 /***** Column Form Panel Body ************************************************************************/
 
 .ext-ie7 .genapp-query-columns-panel .x-panel-body{
-    display:inline;
-    zoom:0;
+    display:inline; /* To collapse correctly the panel if empty */
+    zoom:0; /* To collapse correctly the panel if empty */
 }
 .ext-ie7 .genapp-query-columns-panel .x-panel-tbar{
     display:inline;
@@ -271,6 +277,9 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 .columnLabel{
     display:inline !important;
+}
+.genapp-query-column-item{
+    margin: 5px 0;
 }
 /*************************************************************************************************/
 
@@ -328,6 +337,12 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .ext-ie .x-toolbar table {float:left;}
 .ext-ie .x-paging-info {position:static;float:right;margin-top:5px;margin-right:5px;}*/
 .ext-ie .x-toolbar-cell .x-form-text {position:static;}
+.ext-ie7 .x-form-text{
+	margin:0;
+}
+.ext-ie7 .x-small-editor .x-form-text{
+    margin:0 !important;
+}
 /*************************************************************************************************/
 
 /***** Date Range Picker *********************************************************************/
