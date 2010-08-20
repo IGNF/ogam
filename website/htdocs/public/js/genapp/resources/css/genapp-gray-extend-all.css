@@ -342,18 +342,10 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 .ext-ie7 .x-small-editor .x-form-text{
     margin:0 !important;
-}/*
-.ext-ie7 .x-form-item{
-    zoom:0;
-    display:inline;
 }
-.ext-ie7 .x-form-element{
-    display:inline;
+.ext-ie7 .x-tip .x-tip-header{
+	display: inline; /* to hide the empty header div */
 }
-.ext-ie7 .x-form-field-wrap{
-	zoom:0;
-	display:inline;
-}*/
 /*************************************************************************************************/
 
 /***** Date Range Picker *********************************************************************/

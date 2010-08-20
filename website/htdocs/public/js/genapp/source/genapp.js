@@ -12,7 +12,7 @@ Genapp.buildApplication = function(config){
     });
 
     // Turn on validation errors beside the field globally
-    Ext.form.Field.prototype.msgTarget = 'side';
+    Ext.form.Field.prototype.msgTarget = 'qtip'; // The side option poses problems rendering in IE7
 
     // Set the form label separator
     Ext.layout.FormLayout.prototype.labelSeparator = ' :';
