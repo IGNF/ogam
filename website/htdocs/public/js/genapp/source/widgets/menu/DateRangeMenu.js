@@ -16,13 +16,13 @@ Genapp.menu.DateRangeMenu = Ext.extend( Ext.menu.DateMenu, {
      * @cfg {String/Object} layout
      * Specify the layout manager class for this container either as an Object or as a String.
      * See {@link Ext.Container#layout layout manager} also.
-     * Default to 'auto'.
+     * Default to 'table'.
      * Note: The layout 'menu' doesn't work on FF3.5,
      * the rangePicker items are not rendered 
      * because the rangePicker is hidden... 
      * But it's working on IE ???
      */
-    layout:'auto', 
+    layout:'table', 
     /**
      * @cfg {String} cls
      * An optional extra CSS class that will be added to this component's Element (defaults to 'x-date-range-menu').

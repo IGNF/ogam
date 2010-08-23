@@ -15,30 +15,9 @@ Genapp.DateRangePicker = Ext.extend(Ext.Panel, {
      * @cfg {String/Object} layout
      * Specify the layout manager class for this container either as an Object or as a String.
      * See {@link Ext.Container#layout layout manager} also.
-     * Default to 'hbox'.
+     * Default to 'column'.
      */
-    layout: 'hbox',
-    /**
-     * @cfg {Object} layoutConfig
-     * This is a config object containing properties specific to the chosen {@link #layout} if
-     * {@link #layout} has been specified as a string.
-     * Default to '{
-            defaultMargins : {left:5,top:5,right:0,bottom:5}
-        }'
-     */
-    layoutConfig: {
-        defaultMargins : {left:5,top:5,right:0,bottom:5}
-    },
-    /**
-     * @cfg {Number} height
-     * The height of this component in pixels (defaults to 203).
-     */
-    height:203,
-    /**
-     * @cfg {Number} width
-     * The width of this component in pixels (defaults to 369).
-     */
-    width:369,
+    layout: 'column',
     /**
      * @cfg {String} cls
      * An optional extra CSS class that will be added to this component's Element (defaults to 'x-menu-date-range-item').
@@ -92,9 +71,14 @@ Genapp.DateRangePicker = Ext.extend(Ext.Panel, {
              */
             this.startDatePicker = new Ext.DatePicker(Ext.apply({
                 internalRender: this.strict || !Ext.isIE,
-                ctCls: 'x-menu-date-item'
+                ctCls: 'x-menu-date-item',
+                columnWidth: .5
                 }, this.initialConfig)
-            ),
+            ),{
+                xtype:'spacer',
+                width:5,
+                html:'&nbsp;' // For FF and IE8
+            },
             /**
              * The end date picker (The right picker).
              * @property endDatePicker
@@ -102,7 +86,8 @@ Genapp.DateRangePicker = Ext.extend(Ext.Panel, {
              */
             this.endDatePicker = new Ext.DatePicker(Ext.apply({
                 internalRender: this.strict || !Ext.isIE,
-                ctCls: 'x-menu-date-item'
+                ctCls: 'x-menu-date-item',
+                columnWidth: .5
                 }, this.initialConfig)
             )
         ];
@@ -154,10 +139,6 @@ Genapp.DateRangePicker = Ext.extend(Ext.Panel, {
                     handler:this.onOkButtonPress.createDelegate(this)
                 }]
             });
-            this.height = this.height + 28;
-        }
-        if(this.showToday){
-            this.height = this.height + 31;
         }
 
         Genapp.DateRangePicker.superclass.initComponent.call(this);

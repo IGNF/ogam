@@ -367,13 +367,13 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .x-date-range-menu .x-menu-list {
     padding:0;
 }
-.x-menu-date-range-item .x-panel-btns{
+.x-menu-date-range-item .x-panel-btns {
     padding:0;
 }
-.x-menu-date-range-item .x-panel-btns .x-date-bottom{
+.x-menu-date-range-item .x-panel-btns .x-date-bottom {
     padding:0;
 }
-.ext-ie .x-menu-date-range-item .x-panel-btns .x-date-bottom{
+.ext-ie .x-menu-date-range-item .x-panel-btns .x-date-bottom {
     margin: 0 0 -1px;
 }
 .x-menu-date-range-item .x-panel-tbar-noheader .x-toolbar, .x-panel-mc .x-panel-tbar .x-toolbar {
@@ -383,10 +383,12 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     border-width:0;
 }
 .x-menu-date-range-item .x-panel-body {
-    border-width:1px 0 0;
+    border-width:0;
+    margin: 5px;
 }
-.ext-ie .x-menu-date-range-item  .x-panel-fbar{
-    width:100% !important;
+.x-date-mp {
+    border-top-style: solid;
+    border-top-width: 1px;
 }
 /*************************************************************************************************/
 

@@ -177,7 +177,7 @@
 /*************************************************************************************************/
 
 /***** Date Range Picker *********************************************************************/
-.x-menu-date-range-item .x-panel-body{
+.x-menu-date-range-item, .x-menu-date-range-item .x-panel-body{
     background-color: #EFEFEF;
 }
 .x-menu-plain .x-date-picker {
@@ -185,6 +185,9 @@
 }
 .x-date-range-menu {
     border-color:#898989 !important;
+}
+.x-date-mp {
+    border-color:#D0D0D0;
 }
 /*************************************************************************************************/
 
