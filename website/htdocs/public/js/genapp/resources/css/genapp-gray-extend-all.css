@@ -352,7 +352,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 
 .x-menu-plain .x-date-picker {
     border-style: none solid solid;
-    border-width: 0 1px;
+    border-width: 0 1px 1px;
 }
 .x-menu-date-range-item-range-date-button {
     margin-left:82px;
@@ -487,8 +487,14 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     height:16px !important;
     width:298px !important;
 }
-.genapp-predefined-request-east-panel fieldset{
+.genapp-predefined-request-east-panel fieldset {
     border:1px solid #DEDEDE;
+}
+h4.genapp-predefined-request-grid-panel-description-title {
+    margin: 5px 0 0 30px;
+}
+p.genapp-predefined-request-grid-panel-description-text {
+	margin: 5px 0 10px 30px;
 }
 /*************************************************************************************************//***** Form Panel Toolbars **********************************************************************************/
 .genapp-tb-btn .x-btn-mc .x-btn-text{
@@ -725,5 +731,8 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 
 .genapp-request-criteria-panel-criteria-hint {
     font-style: italic;
+}
+.genapp-predefined-request-grid-panel-description-title {
+	font-weight: bold;
 }
 /*************************************************************************************************/

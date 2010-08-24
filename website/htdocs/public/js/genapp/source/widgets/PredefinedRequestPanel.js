@@ -66,6 +66,71 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
      * The consultation Button Tooltip (defaults to <tt>'Go to the consultation page'</tt>)
      */
     consultationButtonTooltip:"Go to the consultation page",
+    /**
+     * @cfg {String} descriptionTitle
+     * The description Title (defaults to <tt>''</tt>)
+     */
+    descriptionTitle:"",
+    /**
+     * @cfg {String} nameColumnHeader
+     * The name Column Header (defaults to <tt>'Name'</tt>)
+     */
+    nameColumnHeader: "Name",
+    /**
+     * @cfg {String} labelColumnHeader
+     * The label Column Header (defaults to <tt>'Label'</tt>)
+     */
+    labelColumnHeader: "Label",
+    /**
+     * @cfg {String} descriptionColumnHeader
+     * The description Column Header (defaults to <tt>'Description'</tt>)
+     */
+    descriptionColumnHeader: "Description",
+    /**
+     * @cfg {String} dateColumnHeader
+     * The date Column Header (defaults to <tt>'Date'</tt>)
+     */
+    dateColumnHeader: "Date",
+    /**
+     * @cfg {String} clickColumnHeader
+     * The click Column Header (defaults to <tt>'Click(s)'</tt>)
+     */
+    clickColumnHeader: "Click(s)",
+    /**
+     * @cfg {String} groupColumnHeader
+     * The group Column Header (defaults to <tt>'Group'</tt>)
+     */
+    groupColumnHeader: "Group",
+    /**
+     * @cfg {String} groupTextTpl
+     * The group Text Tpl (defaults to <tt>'{group} ({[values.rs.length]})'</tt>)
+     */
+    groupTextTpl:"{group} ({[values.rs.length]})",
+    /**
+     * @cfg {String} resetButtonText
+     * The reset Button Text (defaults to <tt>'Reset'</tt>)
+     */
+    resetButtonText:"Reset",
+    /**
+     * @cfg {String} launchRequestButtonText
+     * The launch Request Button Text (defaults to <tt>'Launch the request'</tt>)
+     */
+    launchRequestButtonText:"Launch the request",
+    /**
+     * @cfg {String} loadingText
+     * The loading Text (defaults to <tt>'Loading...'</tt>)
+     */
+    loadingText:"Loading...",
+    /**
+     * @cfg {String} defaultCardPanelText
+     * The default Card Panel Text (defaults to <tt>'Please select a request...'</tt>)
+     */
+    defaultCardPanelText:"Please select a request...",
+    /**
+     * @cfg {String} criteriaPanelTitle
+     * The criteria Panel Title (defaults to <tt>'Request criteria'</tt>)
+     */
+    criteriaPanelTitle:"Request criteria",
 
     // private
     initComponent : function() {
@@ -101,12 +166,19 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
         });
 
         /**
+         * Setup the grid row expander template
+         */
+        var gridRowExpanderTemplate = [];
+        if(!Ext.isEmpty(this.descriptionTitle)){
+            gridRowExpanderTemplate.push('<h4 class="genapp-predefined-request-grid-panel-description-title">' + this.descriptionTitle + ':</h4>');
+        }
+        gridRowExpanderTemplate.push('<p class="genapp-predefined-request-grid-panel-description-text">{definition}</p>');
+
+        /**
          * The grid row expander
          */
         var gridRowExpander = new Ext.ux.grid.RowExpander({
-            tpl : new Ext.Template(
-                '<p><b>Request description:</b> {definition}</p>'
-            )
+            tpl : new Ext.Template(gridRowExpanderTemplate)
         });
 
         /**
@@ -118,12 +190,12 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             },
             columns:[
                 //gridRowExpander, // Show a expand/collapse tools for each row
-                {id: 'name', header: "Name", dataIndex: 'name', width:30},
-                {header: "Label", dataIndex: 'label'},
-                {header: "Description", dataIndex: 'definition', hidden: true},
-                {header: "Date", dataIndex: 'date', format: 'Y/m/d', xtype:'datecolumn', width:20},
-                {header: "Click", dataIndex: 'click', width:10},
-                {header: "Group", dataIndex: 'group', hidden: true}
+                {id: 'name', header: this.nameColumnHeader, dataIndex: 'name', width:30, hidden: true},
+                {header: this.labelColumnHeader, dataIndex: 'label'},
+                {header: this.descriptionColumnHeader, dataIndex: 'definition', hidden: true},
+                {header: this.dateColumnHeader, dataIndex: 'date', format: 'Y/m/d', xtype:'datecolumn', width:20},
+                {header: this.clickColumnHeader, dataIndex: 'click', width:10},
+                {header: this.groupColumnHeader, dataIndex: 'group', hidden: true}
             ]
         });
 
@@ -146,7 +218,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             cm: colModel,
             view: new Ext.grid.GroupingView({
                 forceFit:true,
-                groupTextTpl: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? "Items" : "Item"]})'
+                groupTextTpl: this.groupTextTpl
             }),
             sm: new Ext.grid.RowSelectionModel({
                 singleSelect: true,
@@ -176,7 +248,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 cls: 'genapp-predefined-request-criteria-panel-footerTBar',
                 items: [
                     this.resetButton = new Ext.Button({
-                        text:'Reset',
+                        text:this.resetButtonText,
                         handler:function(b,e){
                             var selectedRequest = this.grid.getSelectionModel().getSelected();
                             this.requestCriteriaCardPanel.getComponent(selectedRequest.data.name).getForm().reset();
@@ -184,7 +256,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                         scope:this
                     }),
                     this.launchRequestButton = new Ext.Button({
-                        text:'Launch the request',
+                        text: this.launchRequestButtonText,
                         handler:function(b,e){
                             // Get the selected request and the new criteria values
                             var selectedRequestData = this.grid.getSelectionModel().getSelected().data;
@@ -207,14 +279,14 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 autoEl: {
                     tag: 'div',
                     cls: 'loading-indicator',
-                    html: 'Loading...'
+                    html: this.loadingText
                 }
             },{
                 xtype: 'box',
                 autoEl: {
                     tag: 'div',
                     cls: 'genapp-predefined-request-criteria-panel-intro',
-                    html: 'Please select a request...'
+                    html: this.defaultCardPanelText
                 }
             }]
         });
@@ -329,7 +401,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
      * @param {String} requestName The request name
      */
     showCriteriaPanel : function(requestName){
-        this.requestCriteriaCardPanel.setTitle('Request criteria');
+        this.requestCriteriaCardPanel.setTitle(this.criteriaPanelTitle);
         this.requestCriteriaCardPanelFooterTBar.show();
         this.requestCriteriaCardPanel.getLayout().setActiveItem(requestName);
     }

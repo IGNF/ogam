@@ -49,9 +49,11 @@ if(Genapp.ConsultationPanel){
         queryPanelPinToolQtip: "Annuler la fermeture automatique de l'onglet",
         queryPanelUnpinToolQtip:"Activer la fermeture automatique de l'onglet",
         queryPanelCancelButtonText: "Annuler",
+        queryPanelPredefinedRequestButtonText: "Requêtes prédéfinies",
         queryPanelResetButtonText:"Réinitialiser",
         queryPanelSearchButtonText:"Rechercher",
         queryPanelCancelButtonTooltip:"Annuler la requête",
+        queryPanelPredefinedRequestButtonTooltip:"Ouvrir la page des requêtes prédéfinies",
         queryPanelResetButtonTooltip:"Réinitialiser la requête",
         queryPanelSearchButtonTooltip:"Lancer la requête",
         detailsPanelCtTitle:"Détails",
@@ -132,7 +134,6 @@ if(Genapp.MapPanel){
         featureInfoControlTitle:"Voir les informations sur le point"
     });
 }
-
 if(Genapp.NumberRangePicker){
     Ext.apply(Genapp.NumberRangePicker.prototype, {
         minFieldLabel:"Min",
@@ -140,17 +141,28 @@ if(Genapp.NumberRangePicker){
         okButtonText:"ok"
     });
 }
-
 if(OpenLayers.Handler.FeatureInfo.prototype){
     Ext.apply(OpenLayers.Handler.FeatureInfo.prototype, {
         alertErrorTitle:"Erreur :",
         alertRequestFailedMsg:"Désolé, la demande d'informations sur la géométrie a échoué..."
     });
 }
-
 if(Genapp.PredefinedRequestPanel){
 	Ext.apply(Genapp.PredefinedRequestPanel.prototype, {
 		title:"Requêtes prédéfinies",
-		consultationButtonTooltip:"Consultation"
+		consultationButtonText:"Consultation",
+		consultationButtonTooltip:"Ouvrir la page de consultation",
+	    descriptionTitle:"",
+	    nameColumnHeader:"Identifiant",
+	    labelColumnHeader:"Libellé",
+	    descriptionColumnHeader:"Description",
+	    dateColumnHeader:"Date",
+	    clickColumnHeader:"Clique(s)",
+	    groupColumnHeader:"Groupe",
+	    resetButtonText:"Réinitialiser",
+	    launchRequestButtonText:"Lancer la requête",
+	    loadingText:"Chargement...",
+	    defaultCardPanelText:"Veuillez sélectionner une requête...",
+	    criteriaPanelTitle:"Critères de la requête :"
     });
 }
