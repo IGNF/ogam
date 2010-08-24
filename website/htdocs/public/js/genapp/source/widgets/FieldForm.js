@@ -112,16 +112,31 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 width: 180
             },
             listeners:{
-                'add': function(criteriaPanel, cmp, index){ // For IE7 layout
-                    if(index == 0){
-                        var className = 'first-child';
-                        if (cmp.rendered) {
-                            cmp.getEl().addClass(className);
-                        } else {
-                            cmp.itemCls ? cmp.itemCls += ' ' + className : cmp.itemCls = className;
+                'add': function(container, cmp, index){
+                    if(container.defaultType === 'panel') { // The add event is not only called for the items
+                        // Add a class to the first child for IE7 layout
+                        if(index == 0){
+                            var className = 'first-child';
+                            if (cmp.rendered) {
+                                cmp.getEl().addClass(className);
+                            } else {
+                                cmp.itemCls ? cmp.itemCls += ' ' + className : cmp.itemCls = className;
+                            }
                         }
-                    }
-                }
+                        // Setup the name of the field
+                        var subName = cmp.name;
+                        var i = 0;
+                        var foundComponents;
+                        var tmpName = '';
+                        var criteriaPanel = cmp.ownerCt;
+                        do {
+                            tmpName = subName + '[' + i++ + ']';
+                        }
+                        while (criteriaPanel.items.findIndex('name',tmpName) !== -1);
+                        cmp.name = cmp.hiddenName = tmpName;
+                    }          
+                },
+                scope: this
             },
             items:  this.getDefaultCriteriaConfig(),
             tbar: [
@@ -511,50 +526,36 @@ Ext.apply(Genapp.FieldForm.prototype, {
             field.disabled = record.fixed;
         }
         field.fieldLabel = record.label;
-        
-        field.listeners = {
-            'beforerender':function(cmp){
-                // Setup the name of the field
-                var subName = cmp.name;
-                var i = 0;
-                var foundComponents;
-                var tmpName = '';
-                var criteriaPanel = cmp.ownerCt;
-                do {
-                    tmpName = subName + '[' + i++ + ']';
-                    foundComponents = criteriaPanel.find('name', tmpName).length;
-                }
-                while (foundComponents !== 0 && i<10);
-                cmp.name = cmp.hiddenName = tmpName;
-            },
-            scope:this
-        };
+
         if (!hideBin) {
-            field.listeners.render = function(cmp){
-                // Add the bin
-                var binCt = Ext.get('x-form-el-' + cmp.id).parent();
-                var labelDiv = binCt.child('.x-form-item-label');
-                labelDiv.set({
-                    'ext:qtitle':record.label,
-                    'ext:qwidth':200,
-                    'ext:qtip':record.definition
-                });
-                labelDiv.addClass('labelNextBin');
-                var binDiv = binCt.createChild({
-                    tag: "div",
-                    cls: "filterBin"
-                }, labelDiv);
-                binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
-                binDiv.on(
-                    'click',
-                    function(event,el,options){
-                        cmp.ownerCt.remove(cmp);
-                    },
-                    this,
-                    {
-                        single:true
-                    }
-                );
+            field.listeners = {
+                'render':function(cmp){
+                    // Add the bin
+                    var binCt = Ext.get('x-form-el-' + cmp.id).parent();
+                    var labelDiv = binCt.child('.x-form-item-label');
+                    labelDiv.set({
+                        'ext:qtitle':record.label,
+                        'ext:qwidth':200,
+                        'ext:qtip':record.definition
+                    });
+                    labelDiv.addClass('labelNextBin');
+                    var binDiv = binCt.createChild({
+                        tag: "div",
+                        cls: "filterBin"
+                    }, labelDiv);
+                    binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
+                    binDiv.on(
+                        'click',
+                        function(event,el,options){
+                            cmp.ownerCt.remove(cmp);
+                        },
+                        this,
+                        {
+                            single:true
+                        }
+                    );
+                },
+                scope:this
             };
         }
         return field;
