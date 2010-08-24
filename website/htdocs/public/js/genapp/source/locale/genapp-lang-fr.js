@@ -132,6 +132,7 @@ if(Genapp.MapPanel){
         featureInfoControlTitle:"Voir les informations sur le point"
     });
 }
+
 if(Genapp.NumberRangePicker){
     Ext.apply(Genapp.NumberRangePicker.prototype, {
         minFieldLabel:"Min",
@@ -139,9 +140,17 @@ if(Genapp.NumberRangePicker){
         okButtonText:"ok"
     });
 }
+
 if(OpenLayers.Handler.FeatureInfo.prototype){
     Ext.apply(OpenLayers.Handler.FeatureInfo.prototype, {
         alertErrorTitle:"Erreur :",
         alertRequestFailedMsg:"Désolé, la demande d'informations sur la géométrie a échoué..."
+    });
+}
+
+if(Genapp.PredefinedRequestPanel){
+	Ext.apply(Genapp.PredefinedRequestPanel.prototype, {
+		title:"Requêtes prédéfinies",
+		consultationButtonTooltip:"Consultation"
     });
 }
