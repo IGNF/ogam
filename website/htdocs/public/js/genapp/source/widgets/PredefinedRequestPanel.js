@@ -112,10 +112,20 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
      */
     resetButtonText:"Reset",
     /**
+     * @cfg {String} resetButtonTooltip
+     * The reset Button Tooltip (defaults to <tt>'Reset the form with the default values'</tt>)
+     */
+    resetButtonTooltip:"Reset the form with the default values",
+    /**
      * @cfg {String} launchRequestButtonText
      * The launch Request Button Text (defaults to <tt>'Launch the request'</tt>)
      */
     launchRequestButtonText:"Launch the request",
+    /**
+     * @cfg {String} launchRequestButtonTooltip
+     * The launch Request Button Tooltip (defaults to <tt>'Launch the request in the consultation page'</tt>)
+     */
+    launchRequestButtonTooltip:"Launch the request in the consultation page",
     /**
      * @cfg {String} loadingText
      * The loading Text (defaults to <tt>'Loading...'</tt>)
@@ -126,6 +136,11 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
      * The default Card Panel Text (defaults to <tt>'Please select a request...'</tt>)
      */
     defaultCardPanelText:"Please select a request...",
+    /**
+     * @cfg {String} defaultErrorCardPanelText
+     * The default Error Card Panel Text (defaults to <tt>'Sorry, the loading failed...'</tt>)
+     */
+    defaultErrorCardPanelText:"Sorry, the loading failed...",
     /**
      * @cfg {String} criteriaPanelTitle
      * The criteria Panel Title (defaults to <tt>'Request criteria'</tt>)
@@ -237,7 +252,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             cls: 'genapp-predefined-request-criteria-card-panel',
             layout: 'card',
             autoScroll: true,
-            activeItem: 1,
+            activeItem: 2,
             labelWidth: 90,
             title:' ', // Without space the title div is not rendered, so it's not possible to change it later
             defaults: {width: 140, border:false},
@@ -249,6 +264,10 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 items: [
                     this.resetButton = new Ext.Button({
                         text:this.resetButtonText,
+                        tooltip: {
+                            text: this.resetButtonTooltip,
+                            width: 100
+                        },
                         handler:function(b,e){
                             var selectedRequest = this.grid.getSelectionModel().getSelected();
                             this.requestCriteriaCardPanel.getComponent(selectedRequest.data.name).getForm().reset();
@@ -257,6 +276,10 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     }),
                     this.launchRequestButton = new Ext.Button({
                         text: this.launchRequestButtonText,
+                        tooltip: {
+                            text: this.launchRequestButtonTooltip,
+                            width: 100
+                        },
                         handler:function(b,e){
                             // Get the selected request and the new criteria values
                             var selectedRequestData = this.grid.getSelectionModel().getSelected().data;
@@ -280,6 +303,13 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     tag: 'div',
                     cls: 'loading-indicator',
                     html: this.loadingText
+                }
+            },{
+                xtype: 'box',
+                autoEl: {
+                    tag: 'div',
+                    cls: 'genapp-predefined-request-criteria-panel-error-msg',
+                    html: this.defaultErrorCardPanelText
                 }
             },{
                 xtype: 'box',
@@ -311,8 +341,10 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 },{
                     xtype: 'tbbutton',
                     text: this.consultationButtonText,
-                    tooltipType: 'title',
-                    tooltip: this.consultationButtonTooltip,
+                    tooltip: {
+                        text: this.consultationButtonTooltip,
+                        width: 100
+                    },
                     scope: this,
                     handler: function(b,e){
                         Genapp.cardPanel.getLayout().setActiveItem('consultation_panel');
@@ -385,7 +417,9 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     this.requestCriteriaCardPanel.doLayout();
                 },
                 failure: function(response, opts) {
-                    console.log('server-side failure with status code ' + response.status);
+                    console.log('Request failure: ' + response.statusText);
+                    console.log('Response:', response, 'Options:', opts);
+                    this.requestCriteriaCardPanel.getLayout().setActiveItem(1);
                 },
                 params: { request_name: rec.data.name },
                 scope:this

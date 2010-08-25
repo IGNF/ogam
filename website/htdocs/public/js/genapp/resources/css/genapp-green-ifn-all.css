@@ -479,7 +479,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .genapp-predefined-request-criteria-panel-footerTBar {
     padding:10px 0px 0;
 }
-.genapp-predefined-request-criteria-panel-intro {
+.genapp-predefined-request-criteria-panel-intro, .genapp-predefined-request-criteria-panel-error-msg {
     padding:7px 0 0;
 }
 .genapp-predefined-request-criteria-card-panel .loading-indicator {

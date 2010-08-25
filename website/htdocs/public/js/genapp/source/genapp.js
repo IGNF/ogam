@@ -21,7 +21,8 @@ Genapp.buildApplication = function(config){
     Ext.BLANK_IMAGE_URL = Genapp.base_url + "/img/s.gif";
     
     // Set the default timeout for AJAX calls
-    Ext.Ajax.timeout = 480000;    
+    // The JS timeout must be inferior or equal to the PHP execution time to avoid the not catchable php timeout fatal error
+    Ext.Ajax.timeout = 30000;
 
     Genapp.cardPanel = new Genapp.CardPanel(config);
 };

@@ -160,9 +160,12 @@ if(Genapp.PredefinedRequestPanel){
 	    clickColumnHeader:"Clique(s)",
 	    groupColumnHeader:"Groupe",
 	    resetButtonText:"Réinitialiser",
+	    resetButtonTooltip:"Réinitialiser le formulaire avec les valeurs par défaut",
 	    launchRequestButtonText:"Lancer la requête",
+	    launchRequestButtonTooltip:"Lancer la requête dans la page de consultation",
 	    loadingText:"Chargement...",
 	    defaultCardPanelText:"Veuillez sélectionner une requête...",
+	    defaultErrorCardPanelText:"Désolé, le chargement a échoué...",
 	    criteriaPanelTitle:"Critères de la requête :"
     });
 }
