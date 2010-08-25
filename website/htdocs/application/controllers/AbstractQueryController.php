@@ -100,6 +100,9 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	public function _ajaxgetpredefinedrequest($requestName) {
 		$this->logger->debug('_ajaxgetpredefinedrequest');
 
+		// Increment of one the request clicks number
+		$this->predefinedRequestModel->updateClick($requestName);
+
 		// Get the saved values for the forms
 		$savedRequest = $this->predefinedRequestModel->getPredefinedRequest($requestName);
 

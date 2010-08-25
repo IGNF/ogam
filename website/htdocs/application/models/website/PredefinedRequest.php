@@ -77,6 +77,23 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Increment of one the clicks number
+     *
+     * @param String the name of the request
+	 */
+	public function updateClick($requestName) {
+        $db = $this->getAdapter();
+
+        // Get the request
+        $req = " UPDATE predefined_request SET click = click+1 WHERE request_name = ?";
+        
+        $this->logger->info('updateClick : '.$req);
+
+        $query = $db->prepare($req);
+        $query->execute(array($requestName));
+	}
+	
+	/**
 	 * Get a predefined request.
 	 *
 	 * @param String the name of the request

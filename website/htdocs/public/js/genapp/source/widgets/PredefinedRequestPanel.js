@@ -173,7 +173,6 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
         var gridStore = new Ext.data.GroupingStore({
             reader: gridReader,
             autoDestroy: true,
-            autoLoad: true,
             url: Genapp.ajax_query_url + 'ajaxgetpredefinedrequestlist',
             remoteSort: true,
             sortInfo:{field: 'name', direction: "ASC"},
@@ -355,6 +354,28 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
         });
 
         this.items = [this.grid,this.eastPanel];
+        this.listeners = {
+            'activate': function(){
+                var selectedRecord = this.grid.getSelectionModel().getSelected();
+                this.grid.getStore().reload({
+                    callback: function(records, options, success) {
+                        if (success) {
+                            if (!Ext.isEmpty(selectedRecord)) {
+                                var indexToSelect = this.grid.getStore().findExact('name',selectedRecord.data.name);
+                                this.grid.getSelectionModel().selectRow(indexToSelect);
+                                this.grid.plugins.expandRow(indexToSelect);
+                            }
+                        } else {
+                            console.log('Request failure: ');
+                            console.log('records:', records, 'options:', options);
+                            this.requestCriteriaCardPanel.getLayout().setActiveItem(1);
+                        }
+                    },
+                    scope: this
+                });                    
+            },
+            scope: this
+        }
 
         Genapp.PredefinedRequestPanel.superclass.initComponent.call(this);
     },
