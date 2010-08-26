@@ -164,6 +164,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
            {name: 'date', type: 'date', dateFormat: 'Y-m-d'},
            {name: 'criteria_hint', type: 'string'},
            {name: 'group_name', type: 'string'},
+           {name: 'group_label', type: 'string'},
            {name: 'dataset_id', type: 'string'}
         ]);
 
@@ -208,8 +209,13 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 {header: this.labelColumnHeader, dataIndex: 'label'},
                 {header: this.descriptionColumnHeader, dataIndex: 'definition', hidden: true},
                 {header: this.dateColumnHeader, dataIndex: 'date', format: 'Y/m/d', xtype:'datecolumn', width:20},
-                {header: this.clickColumnHeader, dataIndex: 'click', width:10},
-                {header: this.groupColumnHeader, dataIndex: 'group_name', hidden: true}
+                {header: this.clickColumnHeader, dataIndex: 'click', width:10, hidden: true},
+                {header: this.groupColumnHeader, dataIndex: 'group_name', hidden: true, 
+                	groupRenderer: function(v, unused, r, rowIndex, colIndex, ds) {
+                		return r.data.group_label;
+                	}
+                },
+                {header: this.groupColumnHeader, dataIndex: 'group_label', hidden: true}
             ]
         });
 
