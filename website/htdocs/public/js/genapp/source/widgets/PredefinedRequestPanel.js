@@ -209,7 +209,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 {header: this.labelColumnHeader, dataIndex: 'label'},
                 {header: this.descriptionColumnHeader, dataIndex: 'definition', hidden: true},
                 {header: this.dateColumnHeader, dataIndex: 'date', format: 'Y/m/d', xtype:'datecolumn', width:20},
-                {header: this.clickColumnHeader, dataIndex: 'click', width:10, hidden: true},
+                {header: this.clickColumnHeader, dataIndex: 'click', width:10},
                 {header: this.groupColumnHeader, dataIndex: 'group_name', hidden: true, 
                 	groupRenderer: function(v, unused, r, rowIndex, colIndex, ds) {
                 		return r.data.group_label;
