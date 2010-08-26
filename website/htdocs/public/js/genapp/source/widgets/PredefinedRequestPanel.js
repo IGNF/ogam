@@ -157,14 +157,14 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             root:'rows',
             totalProperty:'total'
             }, [
-           {name: 'name', type: 'string'},
+           {name: 'request_name', type: 'string'},
            {name: 'label', type: 'string'},
            {name: 'definition', type: 'string'},
            {name: 'click', type: 'int'},
            {name: 'date', type: 'date', dateFormat: 'Y-m-d'},
            {name: 'criteria_hint', type: 'string'},
-           {name: 'group', type: 'string'},
-           {name: 'datasetId', type: 'string'}
+           {name: 'group_name', type: 'string'},
+           {name: 'dataset_id', type: 'string'}
         ]);
 
         /**
@@ -175,8 +175,8 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             autoDestroy: true,
             url: Genapp.ajax_query_url + 'ajaxgetpredefinedrequestlist',
             remoteSort: true,
-            sortInfo:{field: 'name', direction: "ASC"},
-            groupField:'group'
+            sortInfo:{field: 'request_name', direction: "ASC"},
+            groupField:'group_name'
         });
 
         /**
@@ -204,12 +204,12 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             },
             columns:[
                 //gridRowExpander, // Show a expand/collapse tools for each row
-                {id: 'name', header: this.nameColumnHeader, dataIndex: 'name', width:30, hidden: true},
+                {id: 'request_name', header: this.nameColumnHeader, dataIndex: 'request_name', width:30, hidden: true},
                 {header: this.labelColumnHeader, dataIndex: 'label'},
                 {header: this.descriptionColumnHeader, dataIndex: 'definition', hidden: true},
                 {header: this.dateColumnHeader, dataIndex: 'date', format: 'Y/m/d', xtype:'datecolumn', width:20},
                 {header: this.clickColumnHeader, dataIndex: 'click', width:10},
-                {header: this.groupColumnHeader, dataIndex: 'group', hidden: true}
+                {header: this.groupColumnHeader, dataIndex: 'group_name', hidden: true}
             ]
         });
 
@@ -269,7 +269,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                         },
                         handler:function(b,e){
                             var selectedRequest = this.grid.getSelectionModel().getSelected();
-                            this.requestCriteriaCardPanel.getComponent(selectedRequest.data.name).getForm().reset();
+                            this.requestCriteriaCardPanel.getComponent(selectedRequest.data.request_name).getForm().reset();
                         },
                         scope:this
                     }),
@@ -282,12 +282,12 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                         handler:function(b,e){
                             // Get the selected request and the new criteria values
                             var selectedRequestData = this.grid.getSelectionModel().getSelected().data;
-                            var fieldValues = this.requestCriteriaCardPanel.getComponent(selectedRequestData.name).getForm().getValues(); // getFieldValues() doesn't work like expected with the checkbox
+                            var fieldValues = this.requestCriteriaCardPanel.getComponent(selectedRequestData.request_name).getForm().getValues(); // getFieldValues() doesn't work like expected with the checkbox
                             // Load and launch the request
                             var consultationPanel = Ext.getCmp('consultation_panel');
                             consultationPanel.loadRequest({
-                                datasetId:selectedRequestData.datasetId,
-                                name:selectedRequestData.name,
+                                datasetId:selectedRequestData.dataset_id,
+                                name:selectedRequestData.request_name,
                                 fieldValues:fieldValues
                             });
                             Genapp.cardPanel.getLayout().setActiveItem('consultation_panel');
@@ -361,7 +361,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     callback: function(records, options, success) {
                         if (success) {
                             if (!Ext.isEmpty(selectedRecord)) {
-                                var indexToSelect = this.grid.getStore().findExact('name',selectedRecord.data.name);
+                                var indexToSelect = this.grid.getStore().findExact('request_name',selectedRecord.data.request_name);
                                 this.grid.getSelectionModel().selectRow(indexToSelect);
                                 this.grid.plugins.expandRow(indexToSelect);
                             }
@@ -391,7 +391,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
         this.requestCriteriaCardPanel.setTitle('');
         this.requestCriteriaCardPanelFooterTBar.hide();
         this.requestCriteriaCardPanel.getLayout().setActiveItem(0);
-        if(Ext.isEmpty(this.requestCriteriaCardPanel.getComponent(rec.data.name))){
+        if(Ext.isEmpty(this.requestCriteriaCardPanel.getComponent(rec.data.request_name))){
             Ext.Ajax.request({
                 url: Genapp.ajax_query_url + 'ajaxgetpredefinedrequestcriteria',
                 success: function(response, opts) {
@@ -412,7 +412,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     });
                     var result = myReader.readRecords(Ext.decode(response.responseText));
                     var requestCriteriaPanel = new Ext.form.FormPanel({
-                        itemId: rec.data.name,
+                        itemId: rec.data.request_name,
                         labelWidth: 120,
                         autoHeight: true, // Necessary for IE7
                         defaults: {
@@ -434,7 +434,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                         requestCriteriaPanel.add(Genapp.FieldForm.prototype.getCriteriaConfig(result.records[i].data, true));
                     }
                     this.requestCriteriaCardPanel.add(requestCriteriaPanel);
-                    this.showCriteriaPanel(rec.data.name);
+                    this.showCriteriaPanel(rec.data.request_name);
                     this.requestCriteriaCardPanel.doLayout();
                 },
                 failure: function(response, opts) {
@@ -442,11 +442,11 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     console.log('Response:', response, 'Options:', opts);
                     this.requestCriteriaCardPanel.getLayout().setActiveItem(1);
                 },
-                params: { request_name: rec.data.name },
+                params: { request_name: rec.data.request_name },
                 scope:this
              });
         }else{
-            this.showCriteriaPanel(rec.data.name);
+            this.showCriteriaPanel(rec.data.request_name);
         }
     },
 

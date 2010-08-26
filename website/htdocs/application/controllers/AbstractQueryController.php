@@ -150,8 +150,11 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	public function ajaxgetpredefinedrequestlistAction() {
 		$this->logger->debug('ajaxgetpredefinedrequestlist');
 
+		$dir = $this->_getParam('dir');
+		$sort = $this->_getParam('sort');
+
 		// Get the predefined values for the forms
-		$predefinedRequestList = $this->predefinedRequestModel->getPredefinedRequestList();
+		$predefinedRequestList = $this->predefinedRequestModel->getPredefinedRequestList($dir, $sort);
 
 		// Generate the JSON string
 		$total = count($predefinedRequestList);

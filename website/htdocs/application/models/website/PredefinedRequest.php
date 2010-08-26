@@ -159,13 +159,27 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 	/**
 	 * Get a predefined request List.
 	 */
-	public function getPredefinedRequestList() {
+	public function getPredefinedRequestList($dir, $sort) {
 		$db = $this->getAdapter();
 
+		// Prevent the sql injections
+		$columnNames = array('request_name', 'label', 'definition', 'click', 'date', 'criteria_hint', 'group_name', 'dataset_id');
+		if (!in_array($sort, $columnNames, true)) {
+		    $sort = $columnNames[0];
+		}
+		$dirs = array(Zend_Db_Select::SQL_ASC, Zend_Db_Select::SQL_DESC);
+	    if (!in_array($dir, $dirs, true)) {
+            $dir = $dirs[0];
+        }
+
 		// Get the request
-		$req = " SELECT pr.request_name, label, definition, click, date, criteria_hint, group_name, dataset_id";
-		$req .= " FROM predefined_request pr ";
-		$req .= " JOIN predefined_request_group_asso prga ON pr.request_name = prga.request_name";
+		$req = " SELECT " . $columnNames[0];
+		for($i=1;$i<count($columnNames);$i++){
+		    $req .= ', ' . $columnNames[$i];
+		}
+		$req .= " FROM predefined_request";
+		$req .= " JOIN predefined_request_group_asso using(request_name)";
+		$req .= " ORDER BY $sort $dir";
 
 		$this->logger->info('getPredefinedRequestList : '.$req);
 
