@@ -75,7 +75,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 		}
 
 	}
-
+	
 	/**
 	 * Increment of one the clicks number
      *
@@ -173,12 +173,10 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
         }
 
 		// Get the request
-		$req = " SELECT " . $columnNames[0];
-		for($i=1;$i<count($columnNames);$i++){
-		    $req .= ', ' . $columnNames[$i];
-		}
-		$req .= " FROM predefined_request";
-		$req .= " JOIN predefined_request_group_asso using(request_name)";
+		$req = " SELECT pr.request_name, pr.label as label, pr.definition as definition, click, date, criteria_hint, prg.group_name as group_name, prg.label as group_label, dataset_id";
+		$req .= " FROM predefined_request pr ";
+		$req .= " JOIN predefined_request_group_asso prga using (request_name)";
+		$req .= " JOIN predefined_request_group prg using (group_name)";
 		$req .= " ORDER BY $sort $dir";
 
 		$this->logger->info('getPredefinedRequestList : '.$req);
