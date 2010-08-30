@@ -410,5 +410,62 @@ class MapController extends AbstractEforestController {
 
 		return $json;
 	}
+	
+/**
+	 * Show a PDF containing the map selected by the user.
+	 */
+	function ajaxgeneratemapAction() {
+
+		$this->logger->debug('ajaxgeneratemapAction');
+
+		// Get the map parameters
+		$xmin = $this->_getParam('x_min');
+		$ymin = $this->_getParam('y_min');
+		$xmax = $this->_getParam('x_max');
+		$ymax = $this->_getParam('y_max');
+		$layers = $this->_getParam('layers');
+
+		// Get the configuration values
+		$configuration = Zend_Registry::get("configuration");
+		$reportService_url = $configuration->reportGenerationService_url;
+		$mapReport = $configuration->mapReport;
+
+		// Calculate the Mapserver URL
+		$wmsURL = $configuration->mapserver_url;
+		$wmsURL .= "&SERVICE=WMS";
+		$wmsURL .= "&VERSION=1.1.1";
+		$wmsURL .= "&REQUEST=GetMap";
+		$wmsURL .= "&SESSION_ID=".session_id();
+		$wmsURL .= "&SRS=EPSG:".$configuration->srs_visualisation;
+		$wmsURL .= "&BBOX=".$xmin.",".$ymin.",".$xmax.",".$ymax;
+		$wmsURL .= "&LAYERS=".$layers;
+		// The WIDTH and HEIGHT parameters are defined inside the report
+
+		// Calculate the report URL
+		$reportUrl = $reportService_url."/run?__format=pdf&__report=report/".$mapReport;
+		$reportUrl = "&WMSURL=".urlencode($wmsURL);
+
+		$this->logger->debug('ajaxgeneratemap URL : '.$reportUrl);
+
+		// Set the header for a PDF output
+		header("Cache-control: private\n");
+		header("Content-Type: : application/pdf\n");
+		header("Content-transfer-encoding: binary\n");
+		header("Content-disposition: attachment; filename=Map.pdf");
+
+		// Launch the PDF generation
+		$handle = fopen($report_url, "rb");
+		if ($handle) {
+			while (!feof($handle)) {
+				echo fread($handle, 8192);
+			}
+			fclose($handle);
+		}
+
+		// No View, we send directly the output
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+
+	}
 
 }
