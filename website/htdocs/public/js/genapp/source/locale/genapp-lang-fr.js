@@ -49,7 +49,7 @@ if(Genapp.ConsultationPanel){
         queryPanelPinToolQtip: "Annuler la fermeture automatique de l'onglet",
         queryPanelUnpinToolQtip:"Activer la fermeture automatique de l'onglet",
         queryPanelCancelButtonText: "Annuler",
-        queryPanelPredefinedRequestButtonText: "Requêtes prédéfinies",
+        queryPanelPredefinedRequestButtonText: "Page découverte",
         queryPanelResetButtonText:"Réinitialiser",
         queryPanelSearchButtonText:"Rechercher",
         queryPanelCancelButtonTooltip:"Annuler la requête",
@@ -149,9 +149,9 @@ if(OpenLayers.Handler.FeatureInfo.prototype){
 }
 if(Genapp.PredefinedRequestPanel){
 	Ext.apply(Genapp.PredefinedRequestPanel.prototype, {
-		title:"Requêtes prédéfinies",
+		title:"Page découverte",
 		consultationButtonText:"Consultation",
-		consultationButtonTooltip:"Ouvrir la page de consultation",
+		consultationButtonTooltip:"Ouvre la page de consultation",
 	    descriptionTitle:"",
 	    nameColumnHeader:"Identifiant",
 	    labelColumnHeader:"Libellé",
@@ -159,13 +159,13 @@ if(Genapp.PredefinedRequestPanel){
 	    dateColumnHeader:"Date",
 	    clickColumnHeader:"Clique(s)",
 	    groupColumnHeader:"Groupe",
-	    resetButtonText:"Réinitialiser",
-	    resetButtonTooltip:"Réinitialiser le formulaire avec les valeurs par défaut",
-	    launchRequestButtonText:"Lancer la requête",
-	    launchRequestButtonTooltip:"Lancer la requête dans la page de consultation",
+	    resetButtonText:"Annuler",
+	    resetButtonTooltip:"Réinitialise le formulaire avec les valeurs par défaut",	    
+	    launchRequestButtonText:"OK",
+	    launchRequestButtonTooltip:"Lance la requête dans la page de consultation",
 	    loadingText:"Chargement...",
 	    defaultCardPanelText:"Veuillez sélectionner une requête...",
 	    defaultErrorCardPanelText:"Désolé, le chargement a échoué...",
-	    criteriaPanelTitle:"Critères de la requête :"
+	    criteriaPanelTitle:"Indiquez votre choix :"
     });
 }
