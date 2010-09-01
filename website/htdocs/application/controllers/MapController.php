@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/mapping/Layers.php';
 require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
@@ -144,25 +144,25 @@ class MapController extends AbstractEforestController {
 		// Build the base URL for cached tiles
 		$out = "{url_array_cached:[";
 		foreach ($tilecache_urls as $tilecache_url) {
-		    $out .= '"'.$tilecache_url . '&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap",';
-			}
-        // Remove the last comma
-		if(!empty($tilecache_urls)){
-            $out = substr($out, 0, -1);
+			$out .= '"'.$tilecache_url.'&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap",';
 		}
-		echo $out .'],';
+		// Remove the last comma
+		if (!empty($tilecache_urls)) {
+			$out = substr($out, 0, -1);
+		}
+		echo $out.'],';
 
 		// Build the base URL for mapserver tiles
 		$sessionId = session_id();
 		$out = "url_array_tiled:[";
 		foreach ($path_base_urls as $path_base_url) {
-		    $out .= '"' . $path_base_url . $proxyPath . "?sessionid=".$sessionId . '",'; // appel direct
-	    }
-        // Remove the last comma
-	    if(!empty($path_base_urls)){
-            $out = substr($out, 0, -1);
-	    }
-		echo $out . '],';
+			$out .= '"'.$path_base_url.$proxyPath."?sessionid=".$sessionId.'",'; // appel direct
+		}
+		// Remove the last comma
+		if (!empty($path_base_urls)) {
+			$out = substr($out, 0, -1);
+		}
+		echo $out.'],';
 
 		// For each available layer, build the corresponding URL and definition
 		$out = 'layers:[';
@@ -216,7 +216,7 @@ class MapController extends AbstractEforestController {
 			} else {
 				$out .= ", 'isHidden': false";
 			}
-			
+
 			// Disabled ?
 			if ($layer->isDisabled == 1) {
 				$out .= ", 'isDisabled': true";
@@ -224,14 +224,14 @@ class MapController extends AbstractEforestController {
 				$out .= ", 'isDisabled': false";
 			}
 
-		    // Checked ?
-            if ($layer->isChecked == 1) {
-                $out .= ", 'isChecked': true";
-            } else {
-                $out .= ", 'isChecked': false";
-            }
+			// Checked ?
+			if ($layer->isChecked == 1) {
+				$out .= ", 'isChecked': true";
+			} else {
+				$out .= ", 'isChecked': false";
+			}
 
-            $out .= ", 'activateType': '".$layer->activateType."'";
+			$out .= ", 'activateType': '".$layer->activateType."'";
 
 			// We will test this flag to know if we need to generate a SLD
 			if ($layer->hasSLD == 1) {
@@ -300,8 +300,8 @@ class MapController extends AbstractEforestController {
 		}
 
 		// Remove the last comma
-		if(!empty($layers)){
-		$out = substr($out, 0, -1);
+		if (!empty($layers)) {
+			$out = substr($out, 0, -1);
 		}
 
 		echo $out.']}';
@@ -353,7 +353,7 @@ class MapController extends AbstractEforestController {
 		// Get the list of active layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
 		$activatedLayers = $mappingSession->activatedLayers;
-		
+
 		$json = "";
 
 		// Iterate over each legend item
@@ -384,13 +384,13 @@ class MapController extends AbstractEforestController {
 			} else {
 				$json .= 'false, ';
 			}
-			
-		    $json .= 'disabled: ';
-            if ($legendItem->isDisabled == 1) {
-                $json .= 'true, ';
-            } else {
-                $json .= 'false, ';
-            }
+
+			$json .= 'disabled: ';
+			if ($legendItem->isDisabled == 1) {
+				$json .= 'true, ';
+			} else {
+				$json .= 'false, ';
+			}
 
 			// The item is a leaf
 			if ($legendItem->isLayer == 1) {
@@ -410,8 +410,8 @@ class MapController extends AbstractEforestController {
 
 		return $json;
 	}
-	
-/**
+
+	/**
 	 * Show a PDF containing the map selected by the user.
 	 */
 	function ajaxgeneratemapAction() {
