@@ -163,7 +163,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 
 		// Prevent the sql injections
-		$columnNames = array('request_name', 'label', 'definition', 'click', 'date', 'criteria_hint', 'group_name', 'dataset_id');
+		$columnNames = array('request_name', 'label', 'definition', 'click', 'date', 'criteria_hint', 'group_name', 'group_label', 'dataset_id');
 		if (!in_array($sort, $columnNames, true)) {
 		    $sort = $columnNames[0];
 		}
