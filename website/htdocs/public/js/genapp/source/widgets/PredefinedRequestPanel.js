@@ -97,10 +97,15 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
      */
     clickColumnHeader: "Click(s)",
     /**
-     * @cfg {String} groupColumnHeader
-     * The group Column Header (defaults to <tt>'Group'</tt>)
+     * @cfg {String} groupNameColumnHeader
+     * The group Name Column Header (defaults to <tt>'Group name'</tt>)
      */
-    groupColumnHeader: "Group",
+    groupNameColumnHeader: "Group name",
+    /**
+     * @cfg {String} groupLabelColumnHeader
+     * The group Label Column Header (defaults to <tt>'Group label'</tt>)
+     */
+    groupLabelColumnHeader: "Group label",
     /**
      * @cfg {String} groupTextTpl
      * The group Text Tpl (defaults to <tt>'{group} ({[values.rs.length]})'</tt>)
@@ -210,12 +215,12 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 {header: this.descriptionColumnHeader, dataIndex: 'definition', hidden: true},
                 {header: this.dateColumnHeader, dataIndex: 'date', format: 'Y/m/d', xtype:'datecolumn', width:20, hidden: true},
                 {header: this.clickColumnHeader, dataIndex: 'click', width:10, hidden: true},
-                {header: this.groupColumnHeader, dataIndex: 'group_name', hidden: true, 
+                {header: this.groupNameColumnHeader, dataIndex: 'group_name', hidden: true, 
                 	groupRenderer: function(v, unused, r, rowIndex, colIndex, ds) {
                 		return r.data.group_label;
                 	}
                 },
-                {header: this.groupColumnHeader, dataIndex: 'group_label', hidden: true}
+                {header: this.groupLabelColumnHeader, dataIndex: 'group_label', hidden: true}
             ]
         });
 
