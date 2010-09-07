@@ -41,6 +41,7 @@ if(Genapp.ConsultationPanel){
         csvExportButtonText: "Export CSV",
         aggregationButtonText: "Agrégation",
         interpolationButtonText: "Interpolation",
+        printMapButtonText: "Imprimer la carte",
         gridViewEmptyText : "Pas de résultat...",
         gridPanelTitle :"Résultats",
         gridPanelTabTip:"Les résultats de la requête",
