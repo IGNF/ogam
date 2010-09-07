@@ -1598,7 +1598,9 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      */
     printMap : function (button, event) {
         // Get the BBOX
-        var BBox = this.mapPanel.map.getExtent().toBBOX();
+        var center = this.mapPanel.map.center;
+        var zoom = this.mapPanel.map.zoom;
+        
         // Get the layers
         var activatedLayers = this.mapPanel.map.getLayersBy('visibility', true);
         var activatedLayersNames = '';
@@ -1608,15 +1610,15 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         	}
         }
         activatedLayersNames = activatedLayersNames.substr(0,activatedLayersNames.length - 1);
-        Ext.Ajax.request({
-            url: Genapp.base_url + 'map/ajaxgeneratemap',
+             Ext.Ajax.request({
+            url: Genapp.base_url + 'map/ajaxgeneratemap/',
             success: function(response, options){
             
             },
             failure: function(response, options){
             
             },
-            params: { bbox: BBox, layers: activatedLayersNames }
+            params: { center: center, zoom : zoom, layers: activatedLayersNames }
         });
     },
 
