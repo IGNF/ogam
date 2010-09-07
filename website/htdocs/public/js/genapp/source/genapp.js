@@ -36,3 +36,24 @@ Genapp.util.htmlStringFormat = function(value){
     value = value.replace(new  RegExp("\"", "g"),"&#34;");
     return value;
 };
+
+/**
+ * Create and submit a form
+ * @param {String} url The form url
+ * @param {object} params The form params
+ */
+Genapp.util.post = function(url, params) {
+    var temp=document.createElement("form");
+    temp.action=url;
+    temp.method="POST";
+    temp.style.display="none";
+    for(var x in params) {
+        var opt=document.createElement("textarea");
+        opt.name=x;
+        opt.value=params[x];
+        temp.appendChild(opt);
+    }
+    document.body.appendChild(temp);
+    temp.submit();
+    return temp;
+}

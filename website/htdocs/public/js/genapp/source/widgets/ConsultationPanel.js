@@ -1610,15 +1610,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         	}
         }
         activatedLayersNames = activatedLayersNames.substr(0,activatedLayersNames.length - 1);
-             Ext.Ajax.request({
-            url: Genapp.base_url + 'map/ajaxgeneratemap/',
-            success: function(response, options){
-            
-            },
-            failure: function(response, options){
-            
-            },
-            params: { center: center, zoom : zoom, layers: activatedLayersNames }
+
+        Genapp.util.post(Genapp.base_url + 'map/ajaxgeneratemap', {
+            center: center, 
+            zoom : zoom, 
+            layers: activatedLayersNames
         });
     },
 
