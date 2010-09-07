@@ -71,6 +71,9 @@
 .genapp-query-center-panel-aggregation-button-menu{
     background-image: none !important;
 }
+.x-btn button.genapp-query-center-panel-print-map-button-icon{
+    background-image: url(../images/printer.png);
+}
 /*************************************************************************************************/
 
 /***** Map Panel *********************************************************************************/

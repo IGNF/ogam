@@ -953,6 +953,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                 if(!this.hidePrintMapButton){
                     this.printMapButton = addTopButton({
                         xtype:'button',
+                        iconCls:'genapp-query-center-panel-print-map-button-icon',
                         text:this.printMapButtonText,
                         handler: this.printMap,
                         scope: this
