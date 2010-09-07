@@ -419,10 +419,7 @@ class MapController extends AbstractEforestController {
 		$this->logger->debug('ajaxgeneratemapAction');
 
 		// Get the map parameters
-		$xmin = $this->_getParam('x_min');
-		$ymin = $this->_getParam('y_min');
-		$xmax = $this->_getParam('x_max');
-		$ymax = $this->_getParam('y_max');
+		$bbox = $this->_getParam('bbox');
 		$layers = $this->_getParam('layers');
 
 		// Get the configuration values
@@ -437,7 +434,7 @@ class MapController extends AbstractEforestController {
 		$wmsURL .= "&REQUEST=GetMap";
 		$wmsURL .= "&SESSION_ID=".session_id();
 		$wmsURL .= "&SRS=EPSG:".$configuration->srs_visualisation;
-		$wmsURL .= "&BBOX=".$xmin.",".$ymin.",".$xmax.",".$ymax;
+		$wmsURL .= "&BBOX=".$bbox;
 		$wmsURL .= "&LAYERS=".$layers;
 		// The WIDTH and HEIGHT parameters are defined inside the report
 

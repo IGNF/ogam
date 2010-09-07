@@ -85,6 +85,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      */
     hideAggregationButton : false,
     /**
+     * @cfg {Boolean} hidePrintMapButton
+     * if true hide the Print Map Button (defaults to false).
+     */
+    hidePrintMapButton : false,
+    /**
      * @cfg {Boolean} hideDetails
      * if true hide the details button in the result panel (defaults to false).
      */
@@ -164,6 +169,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * The aggregation Button Text (defaults to <tt>'Aggregation'</tt>)
      */
     aggregationButtonText: 'Aggregation',
+    /**
+     * @cfg {String} printMapButtonText
+     * The print Map Button Text (defaults to <tt>'Print map'</tt>)
+     */
+    printMapButtonText: 'Print map',
     /**
      * @cfg {String} gridViewEmptyText
      * The grid View Empty Text (defaults to <tt>'No result...'</tt>)
@@ -378,6 +388,10 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * The interpolation button menu max distance text default value (default to 5000)
      */
     interpolationButtonMenuMaxDistanceTextDefaultValue: 5000,
+    /**
+     * @cfg {Ext.Button} mapPrintButton
+     * The map print button
+     */
     /**
      * @cfg {Boolean} autoZoomOnResultsFeatures
      * True to zoom automatically on the results features
@@ -945,6 +959,15 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                         })
                     });
                 }
+                if(!this.hidePrintMapButton){
+                    this.printMapButton = addTopButton({
+                        xtype:'button',
+                        text:this.printMapButtonText,
+                        disabled:true,
+                        handler: this.printMap,
+                        scope: this
+                    });
+                }
             },
             this,
             {
@@ -1253,6 +1276,9 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         if(!this.hideCsvExportButton){
             this.csvExportButton.disable();
         }
+        if(!this.hidePrintMapButton){
+            this.printMapButton.disable();
+        }
         // Hide the aggregated layer and legend
         this.mapPanel.disableLayersAndLegends(this.mapPanel.layersActivation['request'], true, false, true);
         this.mapPanel.disableLayersAndLegends(this.mapPanel.layersActivation['aggregation'], true, true, true);
@@ -1443,6 +1469,9 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                        if(!this.hideCsvExportButton){
                            this.csvExportButton.enable();
                        }
+                       if(!this.hidePrintMapButton){
+                           this.printMapButton.enable();
+                       }
                        this.gridPanel.syncSize(); //Bug in Ext 3.2.1 (The grid bottom tool bar disappear)
                     },
                     scope:this
@@ -1577,6 +1606,31 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         }else{
             launchCsvExport.call(this);
         }
+    },
+
+    /**
+     * Print the map
+     */
+    printMap : function (button, event) {
+        // Get the BBOX
+        var BBox = this.mapPanel.map.getExtent().toBBOX();
+        // Get the layers
+        var activatedLayers = this.mapPanel.map.getLayersBy('visibility', true);
+        var activatedLayersNames = '';
+        for (var i=0; i<activatedLayers.length; i++){
+            activatedLayersNames += activatedLayers[i].name + ',';
+        }
+        activatedLayersNames = activatedLayersNames.substr(0,activatedLayersNames.length - 1);
+        Ext.Ajax.request({
+            url: Genapp.base_url + 'map/ajaxgeneratemap',
+            success: function(response, options){
+            
+            },
+            failure: function(response, options){
+            
+            },
+            params: { bbox: BBox, layers: activatedLayersNames }
+        });
     },
 
     /**
