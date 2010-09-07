@@ -287,16 +287,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      * The alert Request Failed Msg (defaults to <tt>'Sorry, the request failed...'</tt>)
      */
     alertRequestFailedMsg:'Sorry, the request failed...',
-    /**
-     * @cfg {String} widthToSubstract
-     * The width to substract to the consultation panel (defaults to <tt>0</tt>)
-     */
-    widthToSubstract:0,
-    /**
-     * @cfg {String} heightToSubstract
-     * The height to substract to the consultation panel (defaults to <tt>0</tt>)
-     */
-    heightToSubstract:0,
+
     /**
      * @cfg {String} dateFormat
      * The date format for the date fields (defaults to <tt>'Y/m/d'</tt>)
