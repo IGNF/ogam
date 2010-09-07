@@ -489,7 +489,9 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
          * @type {OpenLayers.Layer.Vector}
          * @property vectorLayer
          */
-        this.vectorLayer = new OpenLayers.Layer.Vector("Vector Layer");
+        this.vectorLayer = new OpenLayers.Layer.Vector("Vector Layer", {
+        	printable : false // This layers is never printed
+        });
 
         //
         // Initialize the layers
@@ -498,7 +500,8 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
 
         // Add a base layer
         var baseLayer = new OpenLayers.Layer("Empty baselayer", {
-            isBaseLayer : true
+            isBaseLayer : true,
+            printable : false // This layers is never printed
         });
         this.map.addLayer(baseLayer);
 
