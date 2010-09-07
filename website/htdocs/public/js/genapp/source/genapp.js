@@ -26,6 +26,7 @@ Genapp.buildApplication = function(config){
 
     Genapp.cardPanel = new Genapp.CardPanel(config);
 };
+
 /**
  * Format the string in html
  * @param {String} value The string to format
@@ -47,7 +48,7 @@ Genapp.util.post = function(url, params) {
     temp.action=url;
     temp.method="POST";
     temp.style.display="none";
-    for(var x in params) {
+    for (var x in params) {
         var opt=document.createElement("textarea");
         opt.name=x;
         opt.value=params[x];
@@ -56,4 +57,4 @@ Genapp.util.post = function(url, params) {
     document.body.appendChild(temp);
     temp.submit();
     return temp;
-}
+};
