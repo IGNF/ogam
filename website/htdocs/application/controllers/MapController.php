@@ -446,7 +446,7 @@ class MapController extends AbstractEforestController {
 
 		// Set the header for a PDF output
 		header("Cache-control: private\n");
-		header("Content-Type: : application/pdf\n");
+		header("Content-Type: application/pdf\n");
 		header("Content-transfer-encoding: binary\n");
 		header("Content-disposition: attachment; filename=Map.pdf");
 
