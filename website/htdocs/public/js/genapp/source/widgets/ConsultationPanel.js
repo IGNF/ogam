@@ -1541,7 +1541,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
 
     /**
      * Load a predefined request into the request panel
-     * @param {Object} A object containing the predefined request data
+     * @param {Object} request A object containing the predefined request data
      */
     loadRequest : function(request) {
         this.datasetComboBox.setValue(request.datasetId);
@@ -1569,6 +1569,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
 
     /**
      * Export the data as a CSV file
+     * @param {String} actionName The name of the action to call
      */
     exportCSV : function (actionName) {
         var launchCsvExport = function(buttonId , text, opt){
@@ -1595,6 +1596,8 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
 
     /**
      * Print the map
+     * @param {Ext.Button} button The print map button
+     * @param {EventObject} event The click event
      */
     printMap : function (button, event) {
         // Get the BBOX
@@ -1620,6 +1623,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
 
     /**
      * Show the consultation page mask
+     * @param {Boolean} hideOnFocus True to hide the mask on window focus
      */
     showMask : function (hideOnFocus) {
         this.mask.show();
