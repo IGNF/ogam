@@ -592,7 +592,16 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             trackMouseOver:false,
             sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
             cm: new Ext.grid.ColumnModel({}),
-            bbar: this.pagingToolbar
+            bbar: this.pagingToolbar,
+            listeners:{
+                'activate': function (panel) {
+                    this.printMapButton.hide();
+                    this.interpolationButton.hide();
+                    this.aggregationButton.hide();
+                    this.csvExportButton.show();
+                },
+                scope: this
+            }
         });
 
         /**
@@ -600,7 +609,18 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
          * @property mapPanel
          * @type Genapp.MapPanel
          */
-        this.mapPanel = new Genapp.MapPanel({hideMapDetails: this.hideMapDetails});
+        this.mapPanel = new Genapp.MapPanel({
+            hideMapDetails: this.hideMapDetails,
+            listeners:{
+                'activate': function (panel) {
+                    this.printMapButton.show();
+                    this.interpolationButton.show();
+                    this.aggregationButton.show();
+                    this.csvExportButton.hide();
+                },
+                scope: this
+            }
+        });
 
         /**
          * The center panel containing the map and the grid panels.
