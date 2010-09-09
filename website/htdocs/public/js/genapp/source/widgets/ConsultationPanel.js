@@ -595,10 +595,18 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             bbar: this.pagingToolbar,
             listeners:{
                 'activate': function (panel) {
-                    this.printMapButton.hide();
-                    this.interpolationButton.hide();
-                    this.aggregationButton.hide();
-                    this.csvExportButton.show();
+                    if(!this.hideInterpolationButton){
+                        this.interpolationButton.hide();
+                    }
+                    if(!this.hideAggregationButton){
+                        this.aggregationButton.hide();
+                    }
+                    if(!this.hideCsvExportButton){
+                        this.csvExportButton.show();
+                    }
+                    if(!this.hidePrintMapButton){
+                        this.printMapButton.hide();
+                    }
                 },
                 scope: this
             }
@@ -613,10 +621,18 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             hideMapDetails: this.hideMapDetails,
             listeners:{
                 'activate': function (panel) {
-                    this.printMapButton.show();
-                    this.interpolationButton.show();
-                    this.aggregationButton.show();
-                    this.csvExportButton.hide();
+                    if(!this.hideInterpolationButton){
+                        this.interpolationButton.show();
+                    }
+                    if(!this.hideAggregationButton){
+                        this.aggregationButton.show();
+                    }
+                    if(!this.hideCsvExportButton){
+                        this.csvExportButton.hide();
+                    }
+                    if(!this.hidePrintMapButton){
+                        this.printMapButton.show();
+                    }
                 },
                 scope: this
             }
