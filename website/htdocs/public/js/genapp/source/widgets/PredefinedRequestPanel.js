@@ -274,9 +274,17 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 items: [
                     this.resetButton = new Ext.Button({
                         text:this.resetButtonText,
-                        tooltip: {
-                            text: this.resetButtonTooltip,
-                            width: 100
+                        listeners:{
+                            'render':function(cmp){
+                                new Ext.ToolTip({
+                                    anchor: 'left',
+                                    target: cmp.getEl(),
+                                    html:this.resetButtonTooltip,
+                                    showDelay: Ext.QuickTips.getQuickTip().showDelay,
+                                    dismissDelay: Ext.QuickTips.getQuickTip().dismissDelay
+                                });
+                            },
+                            scope:this
                         },
                         handler:function(b,e){
                             var selectedRequest = this.grid.getSelectionModel().getSelected();
@@ -286,9 +294,17 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     }),
                     this.launchRequestButton = new Ext.Button({
                         text: this.launchRequestButtonText,
-                        tooltip: {
-                            text: this.launchRequestButtonTooltip,
-                            width: 100
+                        listeners:{
+                            'render':function(cmp){
+                                new Ext.ToolTip({
+                                    anchor: 'left',
+                                    target: cmp.getEl(),
+                                    html:this.launchRequestButtonTooltip,
+                                    showDelay: Ext.QuickTips.getQuickTip().showDelay,
+                                    dismissDelay: Ext.QuickTips.getQuickTip().dismissDelay
+                                });
+                            },
+                            scope:this
                         },
                         handler:function(b,e){
                             // Get the selected request and the new criteria values
@@ -349,11 +365,19 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 items:[{
                     xtype: 'tbfill'
                 },{
-                    xtype: 'tbbutton',
+                    xtype: 'button',
                     text: this.consultationButtonText,
-                    tooltip: {
-                        text: this.consultationButtonTooltip,
-                        width: 100
+                    listeners:{
+                        'render':function(cmp){
+                            new Ext.ToolTip({
+                                anchor: 'left',
+                                target: cmp.getEl(),
+                                html:this.consultationButtonTooltip,
+                                showDelay: Ext.QuickTips.getQuickTip().showDelay,
+                                dismissDelay: Ext.QuickTips.getQuickTip().dismissDelay
+                            });
+                        },
+                        scope:this
                     },
                     scope: this,
                     handler: function(b,e){
@@ -383,7 +407,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                         }
                     },
                     scope: this
-                });                    
+                });
             },
             scope: this
         }
