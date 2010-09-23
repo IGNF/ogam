@@ -252,7 +252,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 					$options = $this->metadataModel->getOptions($field->data);
 					$json .= ',p:{options:[';
 					foreach ($options as $option) {
-						$json .= '["'.$option->code.'","'.$option->label.'"],';
+						$json .= '['.json_encode($option->code).','.json_encode($option->label).'],';
 					}
 					$json = substr($json, 0, -1);
 					$json .= ']}';
