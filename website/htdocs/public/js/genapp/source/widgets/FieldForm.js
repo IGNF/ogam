@@ -293,8 +293,16 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                         if(criteriaValuesEmpty){
                             newRecord.data.default_value = defaultValues[i];
                         }else{
-                            var fieldValue = this.form.criteriaValues['criteria__'+newRecord.data.name+'['+i+']'];
-                            newRecord.data.default_value = Ext.isEmpty(fieldValue) ? defaultValues[i] : fieldValue;
+                            var fieldValues = this.form.criteriaValues['criteria__'+newRecord.data.name];
+                            if(!Ext.isEmpty(fieldValues)){
+                                if(Ext.isArray(fieldValues)){
+                                    newRecord.data.default_value = fieldValues[i];
+                                }else{
+                                    newRecord.data.default_value = fieldValues;
+                                }
+                            }else{
+                                newRecord.data.default_value = defaultValues[i];
+                            }
                         }
                         this.items.push(this.form.getCriteriaConfig(newRecord.data, false));
                     }
