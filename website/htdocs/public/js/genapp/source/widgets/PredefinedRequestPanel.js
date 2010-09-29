@@ -97,6 +97,11 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
      */
     clickColumnHeader: "Click(s)",
     /**
+     * @cfg {String} positionColumnHeader
+     * The position Column Header (defaults to <tt>'Rank'</tt>)
+     */
+    positionColumnHeader: "Rank",
+    /**
      * @cfg {String} groupNameColumnHeader
      * The group Name Column Header (defaults to <tt>'Group name'</tt>)
      */
@@ -106,6 +111,11 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
      * The group Label Column Header (defaults to <tt>'Group label'</tt>)
      */
     groupLabelColumnHeader: "Group label",
+    /**
+     * @cfg {String} groupPositionColumnHeader
+     * The group Position Column Header (defaults to <tt>'Group Rank'</tt>)
+     */
+    groupPositionColumnHeader: "Group Rank",
     /**
      * @cfg {String} groupTextTpl
      * The group Text Tpl (defaults to <tt>'{group} ({[values.rs.length]})'</tt>)
@@ -168,8 +178,10 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
            {name: 'click', type: 'int'},
            {name: 'date', type: 'date', dateFormat: 'Y-m-d'},
            {name: 'criteria_hint', type: 'string'},
+           {name: 'position', type: 'int'},
            {name: 'group_name', type: 'string'},
            {name: 'group_label', type: 'string'},
+           {name: 'group_position', type: 'int'},
            {name: 'dataset_id', type: 'string'}
         ]);
 
@@ -180,9 +192,9 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             reader: gridReader,
             autoDestroy: true,
             url: Genapp.ajax_query_url + 'ajaxgetpredefinedrequestlist',
-            remoteSort: true,
-            sortInfo:{field: 'request_name', direction: "ASC"},
-            groupField:'group_name'
+            remoteSort: false,
+            sortInfo:{field: 'position', direction: "ASC"},
+            groupField:'group_position' // Note: This field is used to group the rows and to sort the groups too
         });
 
         /**
@@ -202,6 +214,22 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
         });
 
         /**
+         * Function used to format the grouping field value for display in the group
+         * 
+         * @param {Object} v The new value of the group field.
+         * @param {undefined} unused Unused parameter.
+         * @param {Ext.data.Record} r The Record providing the data for the row which caused group change.
+         * @param {Number} rowIndex The row index of the Record which caused group change.
+         * @param {Number} colIndex The column index of the group field.
+         * @param {Ext.data.Store} ds The Store which is providing the data Model.
+         * @param {String} dataName The dataName to display
+         * @returns {String} A string to display.
+         */
+        var groupRendererFct = function(v, unused, r, rowIndex, colIndex, ds, dataName) {
+            return r.data[dataName];
+        }
+
+        /**
          * The grid column model
          */
         var colModel = new Ext.grid.ColumnModel({
@@ -210,17 +238,19 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             },
             columns:[
                 //gridRowExpander, // Show a expand/collapse tools for each row
-                {id: 'request_name', header: this.nameColumnHeader, dataIndex: 'request_name', width:30, hidden: true},
-                {header: this.labelColumnHeader, dataIndex: 'label'},
-                {header: this.descriptionColumnHeader, dataIndex: 'definition', hidden: true},
-                {header: this.dateColumnHeader, dataIndex: 'date', format: 'Y/m/d', xtype:'datecolumn', width:20, hidden: true},
-                {header: this.clickColumnHeader, dataIndex: 'click', width:10, hidden: true},
+                {id: 'request_name', header: this.nameColumnHeader, dataIndex: 'request_name', width:30, groupable :false, hidden: true},
+                {header: this.labelColumnHeader, dataIndex: 'label', groupable :false},
+                {header: this.descriptionColumnHeader, dataIndex: 'definition', groupable :false, hidden: true},
+                {header: this.dateColumnHeader, dataIndex: 'date', format: 'Y/m/d', xtype:'datecolumn', width:20, groupable :false, hidden: true},
+                {header: this.clickColumnHeader, dataIndex: 'click', width:10, groupable :false, hidden: true},
+                {header: this.positionColumnHeader, dataIndex: 'position', width:10, groupable :false},
                 {header: this.groupNameColumnHeader, dataIndex: 'group_name', hidden: true, 
-                	groupRenderer: function(v, unused, r, rowIndex, colIndex, ds) {
-                		return r.data.group_label;
-                	}
+                    groupRenderer: groupRendererFct.createDelegate(this, ['group_label'], true)
                 },
-                {header: this.groupLabelColumnHeader, dataIndex: 'group_label', hidden: true}
+                {header: this.groupLabelColumnHeader, dataIndex: 'group_label', hidden: true},
+                {header: this.groupPositionColumnHeader, dataIndex: 'group_position', width:10,
+                    groupRenderer: groupRendererFct.createDelegate(this, ['group_label'], true)
+                }
             ]
         });
 
