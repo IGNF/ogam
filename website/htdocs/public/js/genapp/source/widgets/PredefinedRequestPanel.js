@@ -243,12 +243,12 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                 {header: this.descriptionColumnHeader, dataIndex: 'definition', groupable :false, hidden: true},
                 {header: this.dateColumnHeader, dataIndex: 'date', format: 'Y/m/d', xtype:'datecolumn', width:20, groupable :false, hidden: true},
                 {header: this.clickColumnHeader, dataIndex: 'click', width:10, groupable :false, hidden: true},
-                {header: this.positionColumnHeader, dataIndex: 'position', width:10, groupable :false},
+                {header: this.positionColumnHeader, dataIndex: 'position', width:10, groupable :false, hidden: true},
                 {header: this.groupNameColumnHeader, dataIndex: 'group_name', hidden: true, 
                     groupRenderer: groupRendererFct.createDelegate(this, ['group_label'], true)
                 },
                 {header: this.groupLabelColumnHeader, dataIndex: 'group_label', hidden: true},
-                {header: this.groupPositionColumnHeader, dataIndex: 'group_position', width:10,
+                {header: this.groupPositionColumnHeader, dataIndex: 'group_position', width:10, hidden: true,
                     groupRenderer: groupRendererFct.createDelegate(this, ['group_label'], true)
                 }
             ]
@@ -296,7 +296,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             labelWidth: 90,
             title:' ', // Without space the title div is not rendered, so it's not possible to change it later
             defaults: {width: 140, border:false},
-            width: 340, // Bug ext: The size must be specified to have a good render when the panel is not activated
+            width: 350, // Bug ext: The size must be specified to have a good render when the panel is not activated
             border: true,
             fbar: this.requestCriteriaCardPanelFooterTBar = new Ext.Toolbar({
                 hidden: true,
@@ -383,7 +383,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
          */
         this.eastPanel = new Ext.Panel({
             region: 'east',
-            width: '340px',
+            width: '350px',
             cls:'genapp-predefined-request-east-panel',
             margins:{
                 top: 5,
@@ -478,7 +478,7 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                     var result = myReader.readRecords(Ext.decode(response.responseText));
                     var requestCriteriaPanel = new Ext.form.FormPanel({
                         itemId: rec.data.request_name,
-                        labelWidth: 120,
+                        labelWidth: 130,
                         autoHeight: true, // Necessary for IE7
                         defaults: {
                             labelStyle: 'padding: 0; margin-top:3px', 
