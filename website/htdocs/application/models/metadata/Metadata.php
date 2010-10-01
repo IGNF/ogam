@@ -317,9 +317,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			}
 
 			// Select the list of available fields for the table (excepted the FK)
-			$req = " SELECT DISTINCT foo.data, data.label, input_type, data.definition, foo.position, unit.type as type, unit.unit as unit ".$modeColumns;
+			$req = " SELECT DISTINCT foo.data, data.label, input_type, data.definition, foo.position, unit.type as type, foo.decimals, unit.unit as unit ".$modeColumns;
 			$req .= " FROM ( ";
-			$req .= "    SELECT format, data, position, is_result, is_criteria, input_type".$modeColumns;
+			$req .= "    SELECT format, data, position, is_result, is_criteria, decimals, input_type".$modeColumns;
 			$req .= "    FROM form_field ";
 			$req .= ") as foo ";
 			$req .= " LEFT JOIN data using (data) ";
@@ -382,6 +382,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 				} else if ($mode == "criteria") {
 					$formField->isDefaultCriteria = $row['is_default_criteria'];
 					$formField->defaultValue = $row['default_value'];
+					$formField->decimals = $row['decimals'];
 				}
 				$result[] = $formField;
 			}
@@ -412,9 +413,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 			$this->logger->info('getFormField : '.$formFormat.", ".$formFieldName);
 			$db = $this->getAdapter();
-			$req = " SELECT data, data.label, input_type, data.definition, unit.type as type, unit.unit as unit ";
+			$req = " SELECT data, data.label, input_type, data.definition, unit.type as type, decimals, unit.unit as unit ";
 			$req .= " FROM ( ";
-			$req .= "    SELECT format, data, input_type ";
+			$req .= "    SELECT format, data, input_type, decimals ";
 			$req .= "    FROM form_field ";
 			$req .= "  ) as foo ";
 			$req .= " LEFT JOIN data using (data) ";
@@ -435,6 +436,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$formField->definition = $row['definition'];
 			$formField->type = $row['type'];
 			$formField->unit = $row['unit'];
+			$formField->decimals = $row['decimals'];
 
 			$this->logger->info('formField->format : '.$formField->format);
 

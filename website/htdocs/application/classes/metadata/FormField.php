@@ -1,8 +1,4 @@
 <?php
-/**
- * © French National Forest Inventory 
- * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
 require_once 'metadata/Field.php';
 
 /**
@@ -30,6 +26,11 @@ class FormField extends Field {
      * default value for the criteria
      */
     var $defaultValue;
+    
+    /**
+     * the number of decimals for a numeric value
+     */
+    var $decimals;
 
 	/**
 	 * Serialize the object as a JSON string
@@ -44,7 +45,8 @@ class FormField extends Field {
                 ',inputType:'.json_encode($this->inputType).
                 ',unit:'.json_encode($this->unit).
                 ',type:'.json_encode($this->type).
-                ',definition:'.json_encode($this->definition);
+                ',definition:'.json_encode($this->definition).
+				',decimals:'.json_encode($this->decimals);
 		return $return;
 	}
 
@@ -60,7 +62,8 @@ class FormField extends Field {
                 ',d:'.json_encode($this->type).
                 ',e:'.json_encode($this->definition).
                 ',f:'.$this->isDefaultCriteria.
-                ',g:'.json_encode($this->defaultValue);
+                ',g:'.json_encode($this->defaultValue).
+				',h:'.json_encode($this->decimals);
 		return $return;
 	}
 
