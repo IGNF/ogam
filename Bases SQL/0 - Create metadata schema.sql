@@ -68,6 +68,7 @@ POSITION             INT4                 null,
 IS_DEFAULT_CRITERIA  CHAR(1)              null,
 IS_DEFAULT_RESULT    CHAR(1)              null,
 DEFAULT_VALUE        VARCHAR(255)         null,
+DECIMALS       		 INT		          null,
 constraint PK_FORM_FIELD primary key (DATA, FORMAT)
 );
 
@@ -80,6 +81,7 @@ COMMENT ON COLUMN FORM_FIELD.POSITION IS 'The position of this field in the form
 COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_CRITERIA IS 'Is this field selected by default as a criteria?';
 COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_RESULT IS 'Is this field selected by default as a result?';
 COMMENT ON COLUMN FORM_FIELD.DEFAULT_VALUE IS 'The default value for the criteria (multiple values are separated by a semicolon)';
+COMMENT ON COLUMN FORM_FIELD.DECIMALS IS 'The number of decimals to be displayed for numeric values';
 
 /*==============================================================*/
 /* Table : TABLE_FIELD                                          */

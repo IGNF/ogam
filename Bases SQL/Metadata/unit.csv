@@ -1,33 +1,1 @@
-VARIABLE_NAME;STRING;A variable name;
-INT_VALUE;INTEGER;A integer value;
-FLOAT_VALUE;NUMERIC;A float value;
-TEXT_VALUE;STRING;A text value;
-CENTIMETRE;NUMERIC;cm;Centimetre
-NUTS_COUNTRY_CODE;CODE;The NUTS code of the country.;The NUTS code of the country.
-COUNTRY_CODE;CODE;The code of the country.;The code of the country.
-DATE;DATE;date ;Date type.
-DEGREE_MINUTE_SECOND;COORDINATE;Degree Minute and Second of a coordinate;The coordinate format is +/-DD.MM.SS, The datum used is WGS 84 and no map projection system is used.
-PERCENTAGE;RANGE;%;Percentage.
-PLOT_CODE;STRING;The code of the plot;The code of the plot (code used by the country)
-COMMENT;STRING;A  comment;
-REQUEST_ID;STRING;The identifier of a JRC Request;The identifier of a JRC Request
-SUBMISSION_ID;INTEGER;Submission identifier;An identifier of a submission
-GEOM;STRING;The geometrical position of a plot;Used only in database by PostGIS, this field is calculated
-M;NUMERIC;m;Meter
-M2;NUMERIC;m2;Square meter
-KM2;NUMERIC;km2;Square kilometer
-M3;NUMERIC;m3;Cubic meter
-REF_YEAR;INTEGER;Reference year;An identifier for a year of reference
-M2/HA;RANGE;Square meter per hectare;
-SPECIES_CODE;CODE;Tree species code;The code of the specie of the tree
-CYCLE;STRING;The cycle of inventory;
-CLUSTER_CODE;STRING;Identifier of a group of plots (free code);
-IS_PLOT_COORDINATES_DEGRADED;BOOLEAN;Are the plot coordinates degradated;True if the plot as real coordinates, false is the plot is the center of a grid cell
-IS_PARTITIONNING_PLOT;BOOLEAN;Is the plot based on subplots;
-IS_FOREST_PLOT;BOOLEAN;Is the plot inside a forest;
-DEGREE;RANGE;Degree, between 0 and 359;North=0
-DOMAIN_CODE;CODE;Domain code;The code of the domain of the value
-DBH_CLASS_CODE;CODE;DBH class code;The code of the Diameter Breast Height class
-INTERPOLATION_METHOD;CODE;Interpolation method;Interpolation method
-INTERPOLATION_GRID;CODE;Interpolation grid;Interpolation grid
-SPECIES_CLASS;CODE;Species class;Species class (conifers/broadleaves)
+VARIABLE_NAME;STRING;A variable name;INT_VALUE;INTEGER;A integer value;FLOAT_VALUE;NUMERIC;A float value;TEXT_VALUE;STRING;A text value;CENTIMETRE;NUMERIC;cm;CentimetreNUTS_COUNTRY_CODE;CODE;The NUTS code of the country.;The NUTS code of the country.COUNTRY_CODE;CODE;The code of the country.;The code of the country.DATE;DATE;date ;Date type.DEGREE_MINUTE_SECOND;COORDINATE;Degree Minute and Second of a coordinate;The coordinate format is +/-DD.MM.SS, The datum used is WGS 84 and no map projection system is used.PERCENTAGE;RANGE;%;Percentage.PLOT_CODE;STRING;The code of the plot;The code of the plot (code used by the country)COMMENT;STRING;A  comment;REQUEST_ID;STRING;The identifier of a JRC Request;The identifier of a JRC RequestSUBMISSION_ID;INTEGER;Submission identifier;An identifier of a submissionGEOM;STRING;The geometrical position of a plot;Used only in database by PostGIS, this field is calculatedM;NUMERIC;m;MeterM2;NUMERIC;m2;Square meterKM2;NUMERIC;km2;Square kilometerM3;NUMERIC;m3;Cubic meterREF_YEAR;INTEGER;Reference year;An identifier for a year of referenceM2/HA;RANGE;Square meter per hectare;SPECIES_CODE;CODE;Tree species code;The code of the specie of the treeCYCLE;STRING;The cycle of inventory;CLUSTER_CODE;STRING;Identifier of a group of plots (free code);IS_PLOT_COORDINATES_DEGRADED;BOOLEAN;Are the plot coordinates degradated;True if the plot as real coordinates, false is the plot is the center of a grid cellIS_PARTITIONNING_PLOT;BOOLEAN;Is the plot based on subplots;IS_FOREST_PLOT;BOOLEAN;Is the plot inside a forest;DEGREE;RANGE;Degree, between 0 and 359;North=0DOMAIN_CODE;CODE;Domain code;The code of the domain of the valueDBH_CLASS_CODE;CODE;DBH class code;The code of the Diameter Breast Height classINTERPOLATION_METHOD;CODE;Interpolation method;Interpolation methodINTERPOLATION_GRID;CODE;Interpolation grid;Interpolation gridSPECIES_CLASS;CODE;Species class;Species class (conifers/broadleaves)

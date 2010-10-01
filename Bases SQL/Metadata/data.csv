@@ -1,36 +1,1 @@
-VARIABLE_NAME;VARIABLE_NAME;A variable name;A variable name;;This data is only used as a table field descriptor
-INT_VALUE;INT_VALUE;A integer value;A integer value;;This data is only used as a table field descriptor
-FLOAT_VALUE;FLOAT_VALUE;A float value;A float value;;This data is only used as a table field descriptor
-TEXT_VALUE;TEXT_VALUE;A text value;A text value;;This data is only used as a table field descriptor
-COUNTRY_CODE;COUNTRY_CODE;Country;The code of the country;;
-NUTS_COUNTRY_CODE;NUTS_COUNTRY_CODE;Country;The NUTS code of the country ;;
-PLOT_CODE;PLOT_CODE;Plot code;The identifier of the plot for the country;;
-COMMENT;COMMENT;Comment;Add any comment (for exemple the real name of the tree species);;
-LATITUDE;DEGREE_MINUTE_SECOND;Latitude;The latitude of a plot;[+-]?[0-9]{1,2}[.][0-9]{1,2}[.][0-9]{1,2};
-LONGITUDE;DEGREE_MINUTE_SECOND;Longitude;The longitude of a plot;[+-]?[0-9]{1,2}[.][0-9]{1,2}[.][0-9]{1,2};
-REQUEST_ID;REQUEST_ID;Request ID;The identifier of a JRC Request;;
-SUBMISSION_ID;SUBMISSION_ID;Submission ID;The identifier of a submission;;
-THE_GEOM;GEOM;Polygon;The geometrical criteria intersected with the plot location;;
-REF_YEAR_BEGIN;REF_YEAR;Beginning year;Begin of the period of reference;;
-REF_YEAR_END;REF_YEAR;Ending year;End of the period of reference;;
-CYCLE;CYCLE;Time Period;The cycle of inventory or the inventory year;;
-CLUSTER_CODE;CLUSTER_CODE;Cluster code;The identifier of a group of plots;;
-IS_PLOT_COORDINATES_DEGRADED;IS_PLOT_COORDINATES_DEGRADED;Is plot coordinate;True if the plot has real coordinates, false is the plot is the center of a grid cell;;
-IS_PARTITIONNING_PLOT;IS_PARTITIONNING_PLOT;Is a partionning plot;True if the plot is a partionning plot;;
-IS_FOREST_PLOT;IS_FOREST_PLOT;Is a forest plot;True if the plot is a forest plot;;
-LINE_NUMBER;INT_VALUE;Line number;The line number in the CSV file;;This data is only used as a table field descriptor
-STATISTICAL_WEIGHT;FLOAT_VALUE;Statistical weight;Statistical Weight of the plot;;This weight is a coefficient that doesn't have any unit.
-DOMAIN_FOREST;DOMAIN_CODE;Domain forest;The domain forest identifies the domain (forest) from which the plot belongs to.;;
-DOMAIN_BASAL_AREA;DOMAIN_CODE;Domain basal area;The domain basal area identifies the domain (basal_area) from which the plot belongs to.;;
-DBH_CLASS;DBH_CLASS_CODE;BDH class code;Indicate if the DBH is above or under 12 centimeters;;The Diameter Breast Height represents the tree diameter at breast height 1,30m
-BASAL_AREA;M2/HA;Basal area;The basal area (in m2/ha);;The basal area (in m2/ha)
-SPECIES_CODE;SPECIES_CODE;Tree species;Tree species;;Tree species
-NATIONAL_SPECIES_CODE;TEXT_VALUE;National tree species;National Tree species;;National Tree species
-STRATUM_CODE;TEXT_VALUE;Stratum code;The identifier of the stratum;;
-TOTAL_STRATUM_AREA;KM2;Total stratum area;The total area of the stratum (in km2);;
-CELL_ID_NUTS0;TEXT_VALUE;Country identifier;The identifier of the country where the plot is located;;
-CELL_ID_10;TEXT_VALUE;10km x 10km cell identifier;The identifier of the 10kmx10km cell where the plot is located;;
-INTERPOLATION_METHOD;INTERPOLATION_METHOD;Interpolation method;Interpolation method;;
-INTERPOLATION_GRID;INTERPOLATION_GRID;Interpolation grid;Interpolation grid;;
-SPECIES_CLASS;SPECIES_CLASS;Species class;Species class (conifers/broadleaves);;
-INV_DATE;DATE;Inventory date;The inventory date;yyyy-MM-dd;The inventory date
+VARIABLE_NAME;VARIABLE_NAME;A variable name;A variable name;;This data is only used as a table field descriptorINT_VALUE;INT_VALUE;A integer value;A integer value;;This data is only used as a table field descriptorFLOAT_VALUE;FLOAT_VALUE;A float value;A float value;;This data is only used as a table field descriptorTEXT_VALUE;TEXT_VALUE;A text value;A text value;;This data is only used as a table field descriptorCOUNTRY_CODE;COUNTRY_CODE;Country;The code of the country;;NUTS_COUNTRY_CODE;NUTS_COUNTRY_CODE;Country;The NUTS code of the country ;;PLOT_CODE;PLOT_CODE;Plot code;The identifier of the plot for the country;;COMMENT;COMMENT;Comment;Add any comment (for exemple the real name of the tree species);;LATITUDE;DEGREE_MINUTE_SECOND;Latitude;The latitude of a plot;[+-]?[0-9]{1,2}[.][0-9]{1,2}[.][0-9]{1,2};LONGITUDE;DEGREE_MINUTE_SECOND;Longitude;The longitude of a plot;[+-]?[0-9]{1,2}[.][0-9]{1,2}[.][0-9]{1,2};REQUEST_ID;REQUEST_ID;Request ID;The identifier of a JRC Request;;SUBMISSION_ID;SUBMISSION_ID;Submission ID;The identifier of a submission;;THE_GEOM;GEOM;Polygon;The geometrical criteria intersected with the plot location;;REF_YEAR_BEGIN;REF_YEAR;Beginning year;Begin of the period of reference;;REF_YEAR_END;REF_YEAR;Ending year;End of the period of reference;;CYCLE;CYCLE;Time Period;The cycle of inventory or the inventory year;;CLUSTER_CODE;CLUSTER_CODE;Cluster code;The identifier of a group of plots;;IS_PLOT_COORDINATES_DEGRADED;IS_PLOT_COORDINATES_DEGRADED;Is plot coordinate;True if the plot has real coordinates, false is the plot is the center of a grid cell;;IS_PARTITIONNING_PLOT;IS_PARTITIONNING_PLOT;Is a partionning plot;True if the plot is a partionning plot;;IS_FOREST_PLOT;IS_FOREST_PLOT;Is a forest plot;True if the plot is a forest plot;;LINE_NUMBER;INT_VALUE;Line number;The line number in the CSV file;;This data is only used as a table field descriptorSTATISTICAL_WEIGHT;FLOAT_VALUE;Statistical weight;Statistical Weight of the plot;;This weight is a coefficient that doesn't have any unit.DOMAIN_FOREST;DOMAIN_CODE;Domain forest;The domain forest identifies the domain (forest) from which the plot belongs to.;;DOMAIN_BASAL_AREA;DOMAIN_CODE;Domain basal area;The domain basal area identifies the domain (basal_area) from which the plot belongs to.;;DBH_CLASS;DBH_CLASS_CODE;BDH class code;Indicate if the DBH is above or under 12 centimeters;;The Diameter Breast Height represents the tree diameter at breast height 1,30mBASAL_AREA;M2/HA;Basal area;The basal area (in m2/ha);;The basal area (in m2/ha)SPECIES_CODE;SPECIES_CODE;Tree species;Tree species;;Tree speciesNATIONAL_SPECIES_CODE;TEXT_VALUE;National tree species;National Tree species;;National Tree speciesSTRATUM_CODE;TEXT_VALUE;Stratum code;The identifier of the stratum;;TOTAL_STRATUM_AREA;KM2;Total stratum area;The total area of the stratum (in km2);;CELL_ID_NUTS0;TEXT_VALUE;Country identifier;The identifier of the country where the plot is located;;CELL_ID_10;TEXT_VALUE;10km x 10km cell identifier;The identifier of the 10kmx10km cell where the plot is located;;INTERPOLATION_METHOD;INTERPOLATION_METHOD;Interpolation method;Interpolation method;;INTERPOLATION_GRID;INTERPOLATION_GRID;Interpolation grid;Interpolation grid;;SPECIES_CLASS;SPECIES_CLASS;Species class;Species class (conifers/broadleaves);;INV_DATE;DATE;Inventory date;The inventory date;yyyy-MM-dd;The inventory date
