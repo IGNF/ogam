@@ -96,6 +96,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 	/**
 	 * AJAX function : Get the predefined request.
+	 *
+	 * @param String $requestName The request name
 	 */
 	public function _ajaxgetpredefinedrequest($requestName) {
 		$this->logger->debug('_ajaxgetpredefinedrequest');
@@ -235,8 +237,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	/**
 	 * Generate the JSON structure corresponding to a list of result and criteria columns.
 	 *
-	 * @param $datasetId the dataset identifier
-	 * @param $forms the list of FormFormat elements
+	 * @param String $datasetId the dataset identifier
+	 * @param Array[FormFormat] $forms the list of FormFormat elements
 	 */
 	private function _generateFormsJSON($datasetId, $forms) {
 
@@ -626,9 +628,9 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	/**
 	 * Generate the SQL request to get the detailed information about a plot or a line of result.
 	 *
-	 * @param $id The unique identifier of the plot or line (a concatenation of the primary keys of all involved tables)
-	 * @param $leafTable The leaf table
-	 * @param $mode if 'LINE', will generate a request corresponding to a single line of result
+	 * @param String $id The unique identifier of the plot or line (a concatenation of the primary keys of all involved tables)
+	 * @param String $leafTable The leaf table
+	 * @param String $mode if 'LINE', will generate a request corresponding to a single line of result
 	 *         else it will generate a SQL query with no where clause.
 	 */
 	private function _generateSQLDetailRequest($id, $leafTable, $mode = 'LINE') {
@@ -776,9 +778,9 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	/**
 	 * Generate the SQL request corresponding to a list of parameters
 	 *
-	 * $datasetId : The selected dataset
-	 * $criterias : The list of criterias with their value
-	 * $columns : The result columns to display
+	 * @param String $datasetId The selected dataset
+	 * @param Array[String => String] $criterias The list of criterias with their value
+	 * @param Array[String => String] $columns The result columns to display
 	 */
 	private function _generateSQLRequest($datasetId, $criterias, $columns) {
 
@@ -1378,8 +1380,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	/**
 	 * Get the details associed with a result line (clic on the "detail button").
 	 *
-	 * @param $id The identifier of the line
-	 * @param $leafTable The name of the lowest table in the hierarchy
+	 * @param String $id The identifier of the line
+	 * @param String $leafTable The name of the lowest table in the hierarchy
 	 * @return JSON representing the detail of the result line.
 	 */
 	public function getdetailsAction($id = null, $leafTable = null) {
@@ -1494,9 +1496,9 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	/**
 	 * Setup the BoundingBox.
 	 *
-	 * @param String the line containing the bounding box
-	 * @param Integer the minimum size of the bounding box
-	 * @return array the setup BoundingBox
+	 * @param String $line the line containing the bounding box
+	 * @param Integer $minSize the minimum size of the bounding box
+	 * @return Array the setup BoundingBox
 	 */
 	private function _setupBoundingBox($line, $minSize = 10000) {
 
