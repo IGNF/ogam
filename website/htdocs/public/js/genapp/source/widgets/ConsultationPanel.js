@@ -1,307 +1,321 @@
 /**
- * A ConsultationPanel correspond to the complete page for querying request results.
+ * A ConsultationPanel correspond to the complete page for querying request
+ * results.
  * 
  * @class Genapp.ConsultationPanel
  * @extends Ext.Panel
  * @constructor Create a new Consultation Panel
- * @param {Object} config The config object
+ * @param {Object}
+ *            config The config object
  * @xtype consultationpanel
  */
 Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     /**
-     * @cfg {String} region 
-     * Note: this config is only used when this BoxComponent is rendered
-     * by a Container which has been configured to use the {@link Ext.layout.BorderLayout BorderLayout}
-     * layout manager (eg. specifying layout:'border').
-     * See {@link Ext.layout.BorderLayout} also.
-     * Set by default to 'center'.
-     */
+	 * @cfg {String} region Note: this config is only used when this
+	 *      BoxComponent is rendered by a Container which has been configured to
+	 *      use the {@link Ext.layout.BorderLayout BorderLayout} layout manager
+	 *      (eg. specifying layout:'border'). See
+	 *      {@link Ext.layout.BorderLayout} also. Set by default to 'center'.
+	 */
     region :'center',
     /**
-     * @cfg {String/Object} layout
-     * Specify the layout manager class for this container either as an Object or as a String.
-     * See {@link Ext.Container#layout layout manager} also.
-     * Default to 'border'.
-     */
+	 * @cfg {String/Object} layout Specify the layout manager class for this
+	 *      container either as an Object or as a String. See
+	 *      {@link Ext.Container#layout layout manager} also. Default to
+	 *      'border'.
+	 */
     layout :'border',
     /**
-     * @cfg {String} cls
-     * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp_consultation_panel').
-     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
-     */
+	 * @cfg {String} cls An optional extra CSS class that will be added to this
+	 *      component's Element (defaults to 'genapp_consultation_panel'). This
+	 *      can be useful for adding customized styles to the component or any
+	 *      of its children using standard CSS rules.
+	 */
     cls:'genapp_consultation_panel',
     /**
-     * @cfg {Boolean} border
-     * True to display the borders of the panel's body element, false to hide them (defaults to false).  By default,
-     * the border is a 2px wide inset border, but this can be further altered by setting {@link #bodyBorder} to false.
-     */
+	 * @cfg {Boolean} border True to display the borders of the panel's body
+	 *      element, false to hide them (defaults to false). By default, the
+	 *      border is a 2px wide inset border, but this can be further altered
+	 *      by setting {@link #bodyBorder} to false.
+	 */
     border :false,
     /**
-     * @cfg {String} id
-     * <p>The <b>unique</b> id of this component (defaults to 'consultation_panel').
-     * You should assign an id if you need to be able to access the component later and you do
-     * not have an object reference available (e.g., using {@link Ext}.{@link Ext#getCmp getCmp}).</p>
-     * <p>Note that this id will also be used as the element id for the containing HTML element
-     * that is rendered to the page for this component. This allows you to write id-based CSS
-     * rules to style the specific instance of this component uniquely, and also to select
-     * sub-elements using this component's id as the parent.</p>
-     * <p><b>Note</b>: to avoid complications imposed by a unique <tt>id</tt> see <tt>{@link #itemId}</tt>.</p>
-     * <p><b>Note</b>: to access the container of an item see <tt>{@link #ownerCt}</tt>.</p>
-     */
+	 * @cfg {String} id
+	 *      <p>
+	 *      The <b>unique</b> id of this component (defaults to
+	 *      'consultation_panel'). You should assign an id if you need to be
+	 *      able to access the component later and you do not have an object
+	 *      reference available (e.g., using {@link Ext}.{@link Ext#getCmp getCmp}).
+	 *      </p>
+	 *      <p>
+	 *      Note that this id will also be used as the element id for the
+	 *      containing HTML element that is rendered to the page for this
+	 *      component. This allows you to write id-based CSS rules to style the
+	 *      specific instance of this component uniquely, and also to select
+	 *      sub-elements using this component's id as the parent.
+	 *      </p>
+	 *      <p>
+	 *      <b>Note</b>: to avoid complications imposed by a unique <tt>id</tt>
+	 *      see <tt>{@link #itemId}</tt>.
+	 *      </p>
+	 *      <p>
+	 *      <b>Note</b>: to access the container of an item see
+	 *      <tt>{@link #ownerCt}</tt>.
+	 *      </p>
+	 */
     id:'consultation_panel',
     /**
-     * @cfg {String} localeCls
-     * The locale css class (defaults to <tt>''</tt>).
-     */
+	 * @cfg {String} localeCls The locale css class (defaults to <tt>''</tt>).
+	 */
     localeCls :'',
     /**
-     * @cfg {Boolean} hideCsvExportAlert
-     * if true hide the csv export alert for IE (defaults to true).
-     */
+	 * @cfg {Boolean} hideCsvExportAlert if true hide the csv export alert for
+	 *      IE (defaults to true).
+	 */
     hideCsvExportAlert:false,
     /**
-     * @cfg {Boolean} hideCsvExportButton
-     * if true hide the csv export button (defaults to false).
-     */
+	 * @cfg {Boolean} hideCsvExportButton if true hide the csv export button
+	 *      (defaults to false).
+	 */
     hideCsvExportButton : false,
     /**
-     * @cfg {Boolean} hideGridCsvExportMenuItem
-     * if true hide the grid csv export menu item (defaults to false).
-     */
+	 * @cfg {Boolean} hideGridCsvExportMenuItem if true hide the grid csv export
+	 *      menu item (defaults to false).
+	 */
     hideGridCsvExportMenuItem : false,
     /**
-     * @cfg {Boolean} hideAggregationCsvExportMenuItem
-     * if true hide the aggregation csv export menu item (defaults to false).
-     */
+	 * @cfg {Boolean} hideAggregationCsvExportMenuItem if true hide the
+	 *      aggregation csv export menu item (defaults to false).
+	 */
     hideAggregationCsvExportMenuItem : false,
     /**
-     * @cfg {Boolean} hideInterpolationButton
-     * if true hide the interpolation button (defaults to false).
-     */
+	 * @cfg {Boolean} hideInterpolationButton if true hide the interpolation
+	 *      button (defaults to false).
+	 */
     hideInterpolationButton : false,
     /**
-     * @cfg {Boolean} hideAggregationButton
-     * if true hide the aggregation button (defaults to false).
-     */
+	 * @cfg {Boolean} hideAggregationButton if true hide the aggregation button
+	 *      (defaults to false).
+	 */
     hideAggregationButton : false,
     /**
-     * @cfg {Boolean} hidePrintMapButton
-     * if true hide the Print Map Button (defaults to false).
-     */
+	 * @cfg {Boolean} hidePrintMapButton if true hide the Print Map Button
+	 *      (defaults to false).
+	 */
     hidePrintMapButton : true,
     /**
-     * @cfg {Boolean} hideDetails
-     * if true hide the details button in the result panel (defaults to false).
-     */
+	 * @cfg {Boolean} hideDetails if true hide the details button in the result
+	 *      panel (defaults to false).
+	 */
     hideDetails : false,
     /**
-     * @cfg {Boolean} hideMapDetails
-     * if true hide the details button in map toolbar (defaults to false).
-     */
+	 * @cfg {Boolean} hideMapDetails if true hide the details button in map
+	 *      toolbar (defaults to false).
+	 */
     hideMapDetails : true,
     /**
-     * @cfg {Boolean} hideUserManualLink
-     * if true hide the user manual link (defaults to true).
-     */
+	 * @cfg {Boolean} hideUserManualLink if true hide the user manual link
+	 *      (defaults to true).
+	 */
     hideUserManualLink : true,
     /**
-     * @cfg {Boolean} hidePredefinedRequestButton
-     * if true hide the predefined request button (defaults to true).
-     */
+	 * @cfg {Boolean} hidePredefinedRequestButton if true hide the predefined
+	 *      request button (defaults to true).
+	 */
     hidePredefinedRequestButton : true,
     /**
-     * @cfg {String} userManualLinkHref
-     * The user Manual Link Href (defaults to <tt>'Genapp.base_url + 'pdf/User_Manual.pdf''</tt>)
-     */
+	 * @cfg {String} userManualLinkHref The user Manual Link Href (defaults to
+	 *      <tt>'Genapp.base_url + 'pdf/User_Manual.pdf''</tt>)
+	 */
     userManualLinkHref : Genapp.base_url + 'pdf/User_Manual.pdf',
     /**
-     * @cfg {String} userManualLinkText
-     * The user Manual LinkText (defaults to <tt>'User Manual'</tt>)
-     */
+	 * @cfg {String} userManualLinkText The user Manual LinkText (defaults to
+	 *      <tt>'User Manual'</tt>)
+	 */
     userManualLinkText : 'User Manual',
     /**
-     * @cfg {Boolean} hideDetailsVerticalLabel
-     * if true hide the details vertical label (defaults to false).
-     */
+	 * @cfg {Boolean} hideDetailsVerticalLabel if true hide the details vertical
+	 *      label (defaults to false).
+	 */
     hideDetailsVerticalLabel: false,
     /**
-     * @cfg {Boolean} showGridOnSubmit if true activate the Grid Panel
-     * on the form submit (defaults to false).
-     */
+	 * @cfg {Boolean} showGridOnSubmit if true activate the Grid Panel on the
+	 *      form submit (defaults to false).
+	 */
     showGridOnSubmit: false,
     /**
-     * @cfg {String} datasetComboBoxEmptyText
-     * The dataset Combo Box Empty Text (defaults to <tt>'Please select a dataset'</tt>)
-     */
+	 * @cfg {String} datasetComboBoxEmptyText The dataset Combo Box Empty Text
+	 *      (defaults to <tt>'Please select a dataset'</tt>)
+	 */
     datasetComboBoxEmptyText :"Please select a dataset...",
     /**
-     * @cfg {String} datasetPanelTitle
-     * The dataset Panel Title (defaults to <tt>'Dataset'</tt>)
-     */
+	 * @cfg {String} datasetPanelTitle The dataset Panel Title (defaults to
+	 *      <tt>'Dataset'</tt>)
+	 */
     datasetPanelTitle :'Dataset',
     /**
-     * @cfg {String} formsPanelTitle
-     * The forms Panel Title (defaults to <tt>'Forms Panel'</tt>)
-     */
+	 * @cfg {String} formsPanelTitle The forms Panel Title (defaults to
+	 *      <tt>'Forms Panel'</tt>)
+	 */
     formsPanelTitle :'Forms Panel',
     /**
-     * @cfg {String} csvExportButtonText
-     * The csv Export Button Text (defaults to <tt>'Export CSV'</tt>)
-     */
+	 * @cfg {String} csvExportButtonText The csv Export Button Text (defaults to
+	 *      <tt>'Export CSV'</tt>)
+	 */
     csvExportButtonText: 'Csv Export',
     /**
-     * @cfg {String} gridCsvExportMenuItemText
-     * The grid Csv Export Menu Item Text (defaults to <tt>'Results'</tt>)
-     */
+	 * @cfg {String} gridCsvExportMenuItemText The grid Csv Export Menu Item
+	 *      Text (defaults to <tt>'Results'</tt>)
+	 */
     gridCsvExportMenuItemText : 'Results',
     /**
-     * @cfg {String} aggregationCsvExportMenuItemText
-     * The aggregation Csv Export Menu Item Text (defaults to <tt>'Aggregation cells'</tt>)
-     */
+	 * @cfg {String} aggregationCsvExportMenuItemText The aggregation Csv Export
+	 *      Menu Item Text (defaults to <tt>'Aggregation cells'</tt>)
+	 */
     aggregationCsvExportMenuItemText : 'Aggregation cells',
     /**
-     * @cfg {String} interpolationButtonText
-     * The interpolation Button Text (defaults to <tt>'Interpolation'</tt>)
-     */
+	 * @cfg {String} interpolationButtonText The interpolation Button Text
+	 *      (defaults to <tt>'Interpolation'</tt>)
+	 */
     interpolationButtonText: 'Interpolation',
     /**
-     * @cfg {String} aggregationButtonText
-     * The aggregation Button Text (defaults to <tt>'Aggregation'</tt>)
-     */
+	 * @cfg {String} aggregationButtonText The aggregation Button Text (defaults
+	 *      to <tt>'Aggregation'</tt>)
+	 */
     aggregationButtonText: 'Aggregation',
     /**
-     * @cfg {String} printMapButtonText
-     * The print Map Button Text (defaults to <tt>'Print map'</tt>)
-     */
+	 * @cfg {String} printMapButtonText The print Map Button Text (defaults to
+	 *      <tt>'Print map'</tt>)
+	 */
     printMapButtonText: 'Print map',
     /**
-     * @cfg {String} gridViewEmptyText
-     * The grid View Empty Text (defaults to <tt>'No result...'</tt>)
-     */
+	 * @cfg {String} gridViewEmptyText The grid View Empty Text (defaults to
+	 *      <tt>'No result...'</tt>)
+	 */
     gridViewEmptyText : 'No result...',
     /**
-     * @cfg {String} gridPanelTitle
-     * The grid Panel Title (defaults to <tt>'Results'</tt>)
-     */
+	 * @cfg {String} gridPanelTitle The grid Panel Title (defaults to
+	 *      <tt>'Results'</tt>)
+	 */
     gridPanelTitle :'Results',
     /**
-     * @cfg {String} gridPanelTabTip
-     * The grid Panel Tab Tip (defaults to <tt>'The request's results'</tt>)
-     */
+	 * @cfg {String} gridPanelTabTip The grid Panel Tab Tip (defaults to
+	 *      <tt>'The request's results'</tt>)
+	 */
     gridPanelTabTip:'The request\'s results',
     /**
-     * @cfg {String} centerPanelTitle
-     * The center Panel Title (defaults to <tt>'Result Panel'</tt>)
-     */
+	 * @cfg {String} centerPanelTitle The center Panel Title (defaults to
+	 *      <tt>'Result Panel'</tt>)
+	 */
     centerPanelTitle:'Result Panel',
     /**
-     * @cfg {String} queryPanelTitle
-     * The query Panel Title (defaults to <tt>'Query Panel'</tt>)
-     */
+	 * @cfg {String} queryPanelTitle The query Panel Title (defaults to
+	 *      <tt>'Query Panel'</tt>)
+	 */
     queryPanelTitle: "Query Panel",
     /**
-     * @cfg {String} queryPanelPinToolQtip
-     * The query Panel Pin Tool Qtip (defaults to <tt>'Pin the panel'</tt>)
-     */
+	 * @cfg {String} queryPanelPinToolQtip The query Panel Pin Tool Qtip
+	 *      (defaults to <tt>'Pin the panel'</tt>)
+	 */
     queryPanelPinToolQtip: 'Pin the panel',
     /**
-     * @cfg {String} queryPanelUnpinToolQtip
-     * The query Panel Unpin Tool Qtip (defaults to <tt>'Unpin the panel'</tt>)
-     */
+	 * @cfg {String} queryPanelUnpinToolQtip The query Panel Unpin Tool Qtip
+	 *      (defaults to <tt>'Unpin the panel'</tt>)
+	 */
     queryPanelUnpinToolQtip:'Unpin the panel',
     /**
-     * @cfg {String} queryPanelCancelButtonText
-     * The query Panel Cancel Button Text (defaults to <tt>'Cancel'</tt>)
-     */
+	 * @cfg {String} queryPanelCancelButtonText The query Panel Cancel Button
+	 *      Text (defaults to <tt>'Cancel'</tt>)
+	 */
     queryPanelCancelButtonText: "Cancel",
     /**
-     * @cfg {String} queryPanelPredefinedRequestButtonText
-     * The query Panel Predefined Request Button Text (defaults to <tt>'Predefined Requests'</tt>)
-     */
+	 * @cfg {String} queryPanelPredefinedRequestButtonText The query Panel
+	 *      Predefined Request Button Text (defaults to
+	 *      <tt>'Predefined Requests'</tt>)
+	 */
     queryPanelPredefinedRequestButtonText: "Predefined Requests",
     /**
-     * @cfg {String} queryPanelResetButtonText
-     * The query Panel Reset Button Text (defaults to <tt>'Reset'</tt>)
-     */
+	 * @cfg {String} queryPanelResetButtonText The query Panel Reset Button Text
+	 *      (defaults to <tt>'Reset'</tt>)
+	 */
     queryPanelResetButtonText: "Reset",
     /**
-     * @cfg {String} queryPanelSearchButtonText
-     * The query Panel Search Button Text (defaults to <tt>'Search'</tt>)
-     */
+	 * @cfg {String} queryPanelSearchButtonText The query Panel Search Button
+	 *      Text (defaults to <tt>'Search'</tt>)
+	 */
     queryPanelSearchButtonText:"Search",
     /**
-     * @cfg {String} queryPanelCancelButtonTooltip
-     * The query Panel Cancel Button Tooltip (defaults to <tt>'Cancel the request'</tt>)
-     */
+	 * @cfg {String} queryPanelCancelButtonTooltip The query Panel Cancel Button
+	 *      Tooltip (defaults to <tt>'Cancel the request'</tt>)
+	 */
     queryPanelCancelButtonTooltip:"Cancel the request",
     /**
-     * @cfg {String} queryPanelPredefinedRequestButtonTooltip
-     * The query Panel Predefined Request Button Tooltip (defaults to <tt>'Go to the predefined request page'</tt>)
-     */
+	 * @cfg {String} queryPanelPredefinedRequestButtonTooltip The query Panel
+	 *      Predefined Request Button Tooltip (defaults to
+	 *      <tt>'Go to the predefined request page'</tt>)
+	 */
     queryPanelPredefinedRequestButtonTooltip:"Go to the predefined request page",
     /**
-     * @cfg {String} queryPanelResetButtonTooltip
-     * The query Panel Reset Button Tooltip (defaults to <tt>'Reset the request'</tt>)
-     */
+	 * @cfg {String} queryPanelResetButtonTooltip The query Panel Reset Button
+	 *      Tooltip (defaults to <tt>'Reset the request'</tt>)
+	 */
     queryPanelResetButtonTooltip:"Reset the request",
     /**
-     * @cfg {String} queryPanelSearchButtonTooltip
-     * The query Panel Search Button Tooltip (defaults to <tt>'Launch the request'</tt>)
-     */
+	 * @cfg {String} queryPanelSearchButtonTooltip The query Panel Search Button
+	 *      Tooltip (defaults to <tt>'Launch the request'</tt>)
+	 */
     queryPanelSearchButtonTooltip:"Launch the request",
     /**
-     * @cfg {String} detailsPanelCtTitle
-     * The details PanelCt Title (defaults to <tt>'Details'</tt>)
-     */
+	 * @cfg {String} detailsPanelCtTitle The details PanelCt Title (defaults to
+	 *      <tt>'Details'</tt>)
+	 */
     detailsPanelCtTitle:'Details',
     /**
-     * @cfg {String} detailsPanelCtPinToolQtip
-     * The details PanelCt Pin Tool Qtip (defaults to <tt>'Pin the panel'</tt>)
-     */
+	 * @cfg {String} detailsPanelCtPinToolQtip The details PanelCt Pin Tool Qtip
+	 *      (defaults to <tt>'Pin the panel'</tt>)
+	 */
     detailsPanelCtPinToolQtip: 'Pin the panel',
     /**
-     * @cfg {String} detailsPanelCtUnpinToolQtip
-     * The details PanelCt Unpin Tool Qtip (defaults to <tt>'Unpin the panel'</tt>)
-     */
+	 * @cfg {String} detailsPanelCtUnpinToolQtip The details PanelCt Unpin Tool
+	 *      Qtip (defaults to <tt>'Unpin the panel'</tt>)
+	 */
     detailsPanelCtUnpinToolQtip:'Unpin the panel',
     /**
-     * @cfg {Ext.LoadMask} mask
-     * The consultation page mask
-     */
+	 * @cfg {Ext.LoadMask} mask The consultation page mask
+	 */
     /**
-     * @cfg {Ext.LoadMask} mapMask
-     * The map Mask
-     */
+	 * @cfg {Ext.LoadMask} mapMask The map Mask
+	 */
     /**
-     * @cfg {String} mapMaskMsg
-     * The map Mask Msg (defaults to <tt>'Loading...'</tt>)
-     */
+	 * @cfg {String} mapMaskMsg The map Mask Msg (defaults to
+	 *      <tt>'Loading...'</tt>)
+	 */
     mapMaskMsg:"Loading...",
     /**
-     * @cfg {String} alertErrorTitle
-     * The alert Error Title (defaults to <tt>'Error :'</tt>)
-     */
+	 * @cfg {String} alertErrorTitle The alert Error Title (defaults to
+	 *      <tt>'Error :'</tt>)
+	 */
     alertErrorTitle:'Error :',
     /**
-     * @cfg {String} alertRequestFailedMsg
-     * The alert Request Failed Msg (defaults to <tt>'Sorry, the request failed...'</tt>)
-     */
+	 * @cfg {String} alertRequestFailedMsg The alert Request Failed Msg
+	 *      (defaults to <tt>'Sorry, the request failed...'</tt>)
+	 */
     alertRequestFailedMsg:'Sorry, the request failed...',
 
     /**
-     * @cfg {String} dateFormat
-     * The date format for the date fields (defaults to <tt>'Y/m/d'</tt>)
-     */
+	 * @cfg {String} dateFormat The date format for the date fields (defaults to
+	 *      <tt>'Y/m/d'</tt>)
+	 */
     dateFormat:'Y/m/d',
     /**
-     * @cfg {String} csvExportAlertTitle
-     * The export CSV alert title (defaults to <tt>'CSV exportation on IE'</tt>)
-     */
+	 * @cfg {String} csvExportAlertTitle The export CSV alert title (defaults to
+	 *      <tt>'CSV exportation on IE'</tt>)
+	 */
     csvExportAlertTitle:'CSV exportation on IE',
     /**
-     * @cfg {String} csvExportAlertMsg
-     * The export CSV alert message (defaults to <tt>'On IE you have to:<br> - Change the opening of a csv file.<br> - Change the security.'</tt>)
-     */
+	 * @cfg {String} csvExportAlertMsg The export CSV alert message (defaults to
+	 *      <tt>'On IE you have to:<br> - Change the opening of a csv file.<br> - Change the security.'</tt>)
+	 */
     csvExportAlertMsg:"<div><H2>For your comfort on Internet Explorer you can:</H2> \
         <H3>Disable confirmation for file downloads.</H3> \
         <ul> \
@@ -323,89 +337,85 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         <li>Uncheck 'Browse in same window'</li> \
         </ul></div>",
     /**
-     * @cfg {Ext.SplitButton} aggregationButton
-     * The aggregation button
-     */
+	 * @cfg {Ext.SplitButton} aggregationButton The aggregation button
+	 */
     /**
-     * @cfg {Ext.SplitButton} interpolationButton
-     * The interpolation button
-     */
+	 * @cfg {Ext.SplitButton} interpolationButton The interpolation button
+	 */
     /**
-     * @cfg {Ext.Button} csvExportButton
-     * The csv export button
-     */
+	 * @cfg {Ext.Button} csvExportButton The csv export button
+	 */
     /**
-     * @cfg {Ext.menu.Item} gridCsvExportMenuItem
-     * The grid csv export menu item
-     */
+	 * @cfg {Ext.menu.Item} gridCsvExportMenuItem The grid csv export menu item
+	 */
     /**
-     * @cfg {Ext.menu.Item} aggregationCsvExportMenuItem
-     * The aggregation csv export menu item
-     */
+	 * @cfg {Ext.menu.Item} aggregationCsvExportMenuItem The aggregation csv
+	 *      export menu item
+	 */
     /**
-     * @cfg {Ext.menu.Menu} aggregationButtonMenu
-     * The aggregation button menu
-     */
+	 * @cfg {Ext.menu.Menu} aggregationButtonMenu The aggregation button menu
+	 */
     /**
-     * @cfg {Ext.form.ComboBox} aggregationButtonMenuDataCombo
-     * The aggregation button menu data combo
-     */
+	 * @cfg {Ext.form.ComboBox} aggregationButtonMenuDataCombo The aggregation
+	 *      button menu data combo
+	 */
     /**
-     * @cfg {Ext.form.ComboBox} aggregationButtonMenuGridsCombo
-     * The aggregation button menu grids combo
-     */
+	 * @cfg {Ext.form.ComboBox} aggregationButtonMenuGridsCombo The aggregation
+	 *      button menu grids combo
+	 */
     /**
-     * @cfg {Ext.menu.Menu} interpolationButtonMenu
-     * The interpolation button menu
-     */
+	 * @cfg {Ext.menu.Menu} interpolationButtonMenu The interpolation button
+	 *      menu
+	 */
     /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuDataCombo
-     * The interpolation button menu data combo
-     */
+	 * @cfg {Ext.form.ComboBox} interpolationButtonMenuDataCombo The
+	 *      interpolation button menu data combo
+	 */
     /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuGridsCombo
-     * The interpolation button menu grids combo
-     */
+	 * @cfg {Ext.form.ComboBox} interpolationButtonMenuGridsCombo The
+	 *      interpolation button menu grids combo
+	 */
     /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuMethodsCombo
-     * The interpolation button menu methods combo
-     */
+	 * @cfg {Ext.form.ComboBox} interpolationButtonMenuMethodsCombo The
+	 *      interpolation button menu methods combo
+	 */
     /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuMaxDistanceText
-     * The interpolation button menu max distance text
-     */
+	 * @cfg {Ext.form.ComboBox} interpolationButtonMenuMaxDistanceText The
+	 *      interpolation button menu max distance text
+	 */
     /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuMaxDistanceTextDefaultValue
-     * The interpolation button menu max distance text default value (default to 5000)
-     */
+	 * @cfg {Ext.form.ComboBox}
+	 *      interpolationButtonMenuMaxDistanceTextDefaultValue The interpolation
+	 *      button menu max distance text default value (default to 5000)
+	 */
     interpolationButtonMenuMaxDistanceTextDefaultValue: 5000,
     /**
-     * @cfg {Ext.Button} mapPrintButton
-     * The map print button
-     */
+	 * @cfg {Ext.Button} mapPrintButton The map print button
+	 */
     /**
-     * @cfg {Boolean} autoZoomOnResultsFeatures
-     * True to zoom automatically on the results features
-     */
+	 * @cfg {Boolean} autoZoomOnResultsFeatures True to zoom automatically on
+	 *      the results features
+	 */
     autoZoomOnResultsFeatures: false,
     /**
-     * @cfg {Boolean} launchRequestOnPredefinedRequestLoad
-     * True to launch the request on a prefefined request load (default to true)
-     */
+	 * @cfg {Boolean} launchRequestOnPredefinedRequestLoad True to launch the
+	 *      request on a prefefined request load (default to true)
+	 */
     launchRequestOnPredefinedRequestLoad: true,
     /**
-     * @cfg {Boolean} collapseQueryPanelOnPredefinedRequestLoad
-     * True to collapse the query panel on a prefefined request load (default to true)
-     */
+	 * @cfg {Boolean} collapseQueryPanelOnPredefinedRequestLoad True to collapse
+	 *      the query panel on a prefefined request load (default to true)
+	 */
     collapseQueryPanelOnPredefinedRequestLoad: true,
 
     // private
     initComponent : function() {
         /**
-         * The dataset Data Store.
-         * @property datasetDS
-         * @type Ext.data.JsonStore
-         */
+		 * The dataset Data Store.
+		 * 
+		 * @property datasetDS
+		 * @type Ext.data.JsonStore
+		 */
         this.datasetDS = new Ext.data.JsonStore({
             url: Genapp.ajax_query_url + 'ajaxgetdatasets',
             method: 'POST',
@@ -427,10 +437,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         });
 
         /**
-         * The dataset ComboBox.
-         * @property datasetComboBox
-         * @type Ext.form.ComboBox
-         */
+		 * The dataset ComboBox.
+		 * 
+		 * @property datasetComboBox
+		 * @type Ext.form.ComboBox
+		 */
         this.datasetComboBox = new Ext.form.ComboBox( {
             name :'datasetId',
             hiddenName :'datasetId',
@@ -459,10 +470,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         });
 
         /**
-         * The dataset Panel.
-         * @property datasetPanel
-         * @type Ext.Panel
-         */
+		 * The dataset Panel.
+		 * 
+		 * @property datasetPanel
+		 * @type Ext.Panel
+		 */
         this.datasetPanel = new Ext.Panel( {
             region :'north',
             layout: 'form',
@@ -475,10 +487,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         });
 
         /**
-         * The forms panel containing the dynamic forms.
-         * @property formsPanel
-         * @type Ext.form.FieldSet
-         */
+		 * The forms panel containing the dynamic forms.
+		 * 
+		 * @property formsPanel
+		 * @type Ext.form.FieldSet
+		 */
         this.formsPanel = new Ext.form.FieldSet({
             layout :'auto',
             region :'center',
@@ -495,10 +508,12 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         });
 
         /**
-         * The grid data store array reader with a customized updateMetadata function.
-         * @property gridDSReader
-         * @type Ext.data.ArrayReader
-         */
+		 * The grid data store array reader with a customized updateMetadata
+		 * function.
+		 * 
+		 * @property gridDSReader
+		 * @type Ext.data.ArrayReader
+		 */
         this.gridDSReader = new Ext.data.ArrayReader();
 
         // Creates a reader metadata update function
@@ -510,10 +525,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         };
 
         /**
-         * The grid data store.
-         * @property gridDS
-         * @type Ext.data.Store
-         */
+		 * The grid data store.
+		 * 
+		 * @property gridDS
+		 * @type Ext.data.Store
+		 */
         this.gridDS = new Ext.data.Store({
             // store configs
             autoDestroy: true,
@@ -524,10 +540,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         });
 
         /**
-         * The grid paging toolbar with a customized reset function.
-         * @property pagingToolbar
-         * @type Ext.PagingToolbar
-         */
+		 * The grid paging toolbar with a customized reset function.
+		 * 
+		 * @property pagingToolbar
+		 * @type Ext.PagingToolbar
+		 */
         this.pagingToolbar = new Ext.PagingToolbar({
             pageSize: Genapp.grid.pagesize,
             store: this.gridDS,
@@ -557,10 +574,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         };
 
         /**
-         * The grid view with a customized reset function.
-         * @property gridView
-         * @type Ext.grid.GridView
-         */
+		 * The grid view with a customized reset function.
+		 * 
+		 * @property gridView
+		 * @type Ext.grid.GridView
+		 */
         this.gridView = new Ext.grid.GridView({
             autoFill:true,
             emptyText : this.gridViewEmptyText,
@@ -573,10 +591,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         };
 
         /**
-         * The grid panel displaying the request results.
-         * @property gridPanel
-         * @type Ext.grid.GridPanel
-         */
+		 * The grid panel displaying the request results.
+		 * 
+		 * @property gridPanel
+		 * @type Ext.grid.GridPanel
+		 */
         this.gridPanel = new Ext.grid.GridPanel({
             frame: true,
             tabTip: this.gridPanelTabTip,
@@ -613,10 +632,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         });
 
         /**
-         * The map panel.
-         * @property mapPanel
-         * @type Genapp.MapPanel
-         */
+		 * The map panel.
+		 * 
+		 * @property mapPanel
+		 * @type Genapp.MapPanel
+		 */
         this.mapPanel = new Genapp.MapPanel({
             hideMapDetails: this.hideMapDetails,
             listeners:{
@@ -639,10 +659,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         });
 
         /**
-         * The center panel containing the map and the grid panels.
-         * @property centerPanel
-         * @type Ext.TabPanel
-         */
+		 * The center panel containing the map and the grid panels.
+		 * 
+		 * @property centerPanel
+		 * @type Ext.TabPanel
+		 */
         this.centerPanel = new Ext.TabPanel( {
             activeItem: 0,
             frame:true,
@@ -676,9 +697,10 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                         tag: 'li',
                         cls: 'genapp-query-center-panel-tab-strip-top-button'
                     },true);
-                    //Set the ul dom to the size of the TabPanel instead of 5000px by default
+                    // Set the ul dom to the size of the TabPanel instead of
+					// 5000px by default
                     el.parent().setWidth('100%');
-                    //Stop the event propagation to avoid the TabPanel error
+                    // Stop the event propagation to avoid the TabPanel error
                     el.on('mousedown',Ext.emptyFn,null,{
                         stopPropagation:true
                     });
@@ -699,8 +721,9 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                                width:200
                            },
                            items: [
-                               // these items will render as dropdown menu items when the arrow is clicked:
-                               //{xtype: 'label', text:'Data:'},
+                               // these items will render as dropdown menu
+								// items when the arrow is clicked:
+                               // {xtype: 'label', text:'Data:'},
                                this.interpolationButtonMenuDataCombo = new Ext.form.ComboBox({
                                    xtype: 'combo',
                                    queryParam :'datasetId',
@@ -730,10 +753,13 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                                    },
                                    lastQuery: '',
                                    listeners: {
-                                       // delete the previous query in the beforequery event or set
-                                       // combo.lastQuery = null (this will reload the store the next time it expands)
+                                       // delete the previous query in the
+										// beforequery event or set
+                                       // combo.lastQuery = null (this will
+										// reload the store the next time it
+										// expands)
                                        beforequery: function(qe){
-                                           //delete qe.combo.lastQuery;
+                                           // delete qe.combo.lastQuery;
                                            qe.query = this.datasetComboBox.getValue();
                                            if(Ext.isEmpty(qe.query)){
                                                qe.cancel = true;
@@ -742,7 +768,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                                        scope:this
                                     }
                                 }),
-                               //{xtype: 'label', text:'Grid:'},
+                               // {xtype: 'label', text:'Grid:'},
                                 this.interpolationButtonMenuGridsCombo = new Ext.form.ComboBox({
                                    xtype: 'combo',
                                    store : new Ext.data.JsonStore( {
@@ -850,8 +876,9 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                                 width:200
                             },
                             items: [
-                                // these items will render as dropdown menu items when the arrow is clicked:
-                                //{xtype: 'label', text:'Data:'},
+                                // these items will render as dropdown menu
+								// items when the arrow is clicked:
+                                // {xtype: 'label', text:'Data:'},
                                 this.aggregationButtonMenuDataCombo = new Ext.form.ComboBox({
                                     xtype: 'combo',
                                     queryParam :'datasetId',
@@ -881,10 +908,13 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                                     },
                                     lastQuery: '',
                                     listeners: {
-                                        // delete the previous query in the beforequery event or set
-                                        // combo.lastQuery = null (this will reload the store the next time it expands)
+                                        // delete the previous query in the
+										// beforequery event or set
+                                        // combo.lastQuery = null (this will
+										// reload the store the next time it
+										// expands)
                                         beforequery: function(qe){
-                                            //delete qe.combo.lastQuery;
+                                            // delete qe.combo.lastQuery;
                                             qe.query = this.datasetComboBox.getValue();
                                             if(Ext.isEmpty(qe.query)){
                                                 qe.cancel = true;
@@ -893,7 +923,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                                         scope:this
                                      }
                                  }),
-                                //{xtype: 'label', text:'Grid:'},
+                                // {xtype: 'label', text:'Grid:'},
                                  this.aggregationButtonMenuGridsCombo = new Ext.form.ComboBox({
                                     xtype: 'combo',
                                     store : new Ext.data.JsonStore( {
@@ -1009,7 +1039,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             title :this.queryPanelTitle,
             collapsible : true,
             margins:'0 5 0 0',
-            //collapseMode :'mini',
+            // collapseMode :'mini',
             titleCollapse : true,
             width :370,
             frame:true,
@@ -1084,10 +1114,12 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         }
 
         /**
-         * The query form panel contains the dataset list and the corresponding forms.
-         * @property queryPanel
-         * @type Ext.FormPanel
-         */
+		 * The query form panel contains the dataset list and the corresponding
+		 * forms.
+		 * 
+		 * @property queryPanel
+		 * @type Ext.FormPanel
+		 */
         this.queryPanel = new Ext.FormPanel(queryPanelConfig);
 
         // Add the layers and legends vertical label
@@ -1096,10 +1128,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         }
 
         /**
-         * The details panel.
-         * @property detailsPanel
-         * @type Ext.TabPanel
-         */
+		 * The details panel.
+		 * 
+		 * @property detailsPanel
+		 * @type Ext.TabPanel
+		 */
         this.detailsPanel = new Ext.TabPanel({
             frame:true,
             plain:true,
@@ -1107,15 +1140,17 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             cls:'genapp-query-details-panel',
             scrollIncrement:91,
             scrollRepeatInterval:100,
-            idDelimiter:'___' // Avoid a conflict with the Genapp id separator('__')
+            idDelimiter:'___' // Avoid a conflict with the Genapp id
+								// separator('__')
         });
 
         this.detailsPanelPinned = true;
         /**
-         * The details panel container.
-         * @property detailsPanelCt
-         * @type Ext.Panel
-         */
+		 * The details panel container.
+		 * 
+		 * @property detailsPanelCt
+		 * @type Ext.Panel
+		 */
         this.detailsPanelCt = new Ext.Panel({
             region:'east',
             title:this.detailsPanelCtTitle,
@@ -1125,7 +1160,7 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             width:344,
             minWidth:200,
             collapsible : true,
-            //collapseMode :'mini',
+            // collapseMode :'mini',
             titleCollapse : true,
             collapsed:true,
             items: this.detailsPanel,
@@ -1167,13 +1202,20 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Update the Forms Panel by adding the Panel corresponding to the selected dataset
-     * @param {Object} response The XMLHttpRequest object containing the response data.
-     * @param {Object} options The parameter to the request call.
-     * @param {Object} apiParams The api parameters
-     * @param {Object} criteriaValues The criteria values
-     * @hide
-     */
+	 * Update the Forms Panel by adding the Panel corresponding to the selected
+	 * dataset
+	 * 
+	 * @param {Object}
+	 *            response The XMLHttpRequest object containing the response
+	 *            data.
+	 * @param {Object}
+	 *            options The parameter to the request call.
+	 * @param {Object}
+	 *            apiParams The api parameters
+	 * @param {Object}
+	 *            criteriaValues The criteria values
+	 * @hide
+	 */
     updateWestPanels : function(response, opts, apiParams, criteriaValues) {
         var forms = Ext.decode(response.responseText);
         // Removes the loading message
@@ -1205,19 +1247,29 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Renders for the left tools column cell
-     * @param {Object} value  The data value for the cell.
-     * @param {Object} metadata An object in which you may set the following attributes:
-     *      {String} css A CSS class name to add to the cell's TD element.
-     *      {String} attr : An HTML attribute definition string to apply to the data 
-     *      container element within the table cell (e.g. 'style="color:red;"').
-     * @param {Ext.data.record} record The {@link Ext.data.Record} from which the data was extracted.
-     * @param {Number} rowIndex  Row index
-     * @param {Number} colIndex Column index
-     * @param {Ext.data.Store} store The {@link Ext.data.Store} object from which the Record was extracted.
-     * @return {String} The html code for the column
-     * @hide
-     */
+	 * Renders for the left tools column cell
+	 * 
+	 * @param {Object}
+	 *            value The data value for the cell.
+	 * @param {Object}
+	 *            metadata An object in which you may set the following
+	 *            attributes: {String} css A CSS class name to add to the cell's
+	 *            TD element. {String} attr : An HTML attribute definition
+	 *            string to apply to the data container element within the table
+	 *            cell (e.g. 'style="color:red;"').
+	 * @param {Ext.data.record}
+	 *            record The {@link Ext.data.Record} from which the data was
+	 *            extracted.
+	 * @param {Number}
+	 *            rowIndex Row index
+	 * @param {Number}
+	 *            colIndex Column index
+	 * @param {Ext.data.Store}
+	 *            store The {@link Ext.data.Store} object from which the Record
+	 *            was extracted.
+	 * @return {String} The html code for the column
+	 * @hide
+	 */
     renderLeftTools : function (value, metadata, record, rowIndex, colIndex, store){
 
         var stringFormat = '';
@@ -1230,10 +1282,13 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Open the row details
-     * @param {String} id The details id
-     * @param {String} url The url to get the details
-     */
+	 * Open the row details
+	 * 
+	 * @param {String}
+	 *            id The details id
+	 * @param {String}
+	 *            url The url to get the details
+	 */
     openDetails : function(id, url){
         if(!Ext.isEmpty(id)){
             var consultationPanel = Ext.getCmp('consultation_panel');
@@ -1250,10 +1305,13 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Displays the location on the map
-     * @param {String} id The location id
-     * @param {String} wkt a point WKT to be displayed as a flag.
-     */
+	 * Displays the location on the map
+	 * 
+	 * @param {String}
+	 *            id The location id
+	 * @param {String}
+	 *            wkt a point WKT to be displayed as a flag.
+	 */
     displayLocation : function(id, wkt){
         var consultationPanel = Ext.getCmp('consultation_panel');
         consultationPanel.centerPanel.activate(consultationPanel.mapPanel);
@@ -1261,8 +1319,8 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Cancel the current ajax request (submit or load)
-     */
+	 * Cancel the current ajax request (submit or load)
+	 */
     cancelRequest : function(){
         if(this.requestConn && this.requestConn !== null){
             this.requestConn.abort();
@@ -1272,15 +1330,15 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Reset the current ajax request (submit or load)
-     */
+	 * Reset the current ajax request (submit or load)
+	 */
     resetRequest : function(){
         this.updateDatasetFormsPanel(this.datasetComboBox.getValue());
     },
 
     /**
-     * Submit the request and get the description of the result columns
-     */
+	 * Submit the request and get the description of the result columns
+	 */
     submitRequest : function(){
         // Disable the top buttons, reset the combos and force a reload
         if(!this.hideAggregationButton){
@@ -1314,7 +1372,8 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             this.mapResultLayers = [];
             for(var i = 0; i<rla.length;i++){
                 var layer = this.mapPanel.map.getLayersByName(rla[i])[0];
-                //The layer visibility must be set to true to handle the 'loadend' event
+                // The layer visibility must be set to true to handle the
+				// 'loadend' event
                 layer.events.register("loadend", this, function(info){
                     this.mapResultLayersLoadEnd[info.object.name] = 1;
                     // Hide the map mask if all the result layers are loaded
@@ -1410,21 +1469,22 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                             break;
                         case 'INTEGER':
                             columnConf.xtype='gridcolumn';
-                            //readerFieldsConf.type='int';
                             break;
                         case 'NUMERIC':
+                        	columnConf.xtype='numbercolumn';
+                        	if (columns[i].decimals) {
+                        		columnConf.format= this.numberPattern('.', columns[i].decimals);
+                        	}
+                        	break;
                         case 'RANGE':
                             columnConf.xtype='numbercolumn';
-                            //Commented because transforms the null value to 0.00
-                            //readerFieldsConf.type='float';
-                            
+                            if (columns[i].decimals) {
+                        		columnConf.format= this.numberPattern('.', columns[i].decimals);
+                        	}                       
                             break;
                         case 'DATE':
                             columnConf.xtype='datecolumn';
                             columnConf.format = this.dateFormat;
-                            //Commented because transforms the date to ''
-                            //readerFieldsConf.type='date';
-                            //readerFieldsConf.dateFormat = this.dateFormat;
                             break;
                         default:
                             columnConf.xtype='gridcolumn';
@@ -1442,7 +1502,8 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                     totalProperty:'total'
                 });
 
-                // The grid panel must be rendered and activated to resize correctly
+                // The grid panel must be rendered and activated to resize
+				// correctly
                 // the grid's view in proportion of the columns number
                 if(this.centerPanel.getActiveTab() instanceof Genapp.MapPanel){
                     this.centerPanel.activate(this.gridPanel);
@@ -1493,7 +1554,9 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                        if(!this.hideCsvExportButton){
                            this.csvExportButton.enable();
                        }
-                       this.gridPanel.syncSize(); //Bug in Ext 3.2.1 (The grid bottom tool bar disappear)
+                       this.gridPanel.syncSize(); // Bug in Ext 3.2.1 (The
+													// grid bottom tool bar
+													// disappear)
                     },
                     scope:this
                 });
@@ -1513,8 +1576,8 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Collapse the Query Form Panel if not pinned
-     */
+	 * Collapse the Query Form Panel if not pinned
+	 */
     collapseQueryPanel: function(){
         if(!this.queryPanelPinned){
             this.queryPanel.collapse();
@@ -1522,8 +1585,8 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Collapse the Details Panel if not pinned
-     */
+	 * Collapse the Details Panel if not pinned
+	 */
     collapseDetailsPanel: function(){
         if(!this.detailsPanelPinned){
             this.detailsPanel.ownerCt.collapse();
@@ -1531,11 +1594,15 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Updates the FormsPanel body
-     * @param {Object} requestParams The parameters for the ajax request
-     * @param {Object} apiParams The api parameters
-     * @param {Object} criteriaValues The criteria values
-     */
+	 * Updates the FormsPanel body
+	 * 
+	 * @param {Object}
+	 *            requestParams The parameters for the ajax request
+	 * @param {Object}
+	 *            apiParams The api parameters
+	 * @param {Object}
+	 *            criteriaValues The criteria values
+	 */
     updateFormsPanel : function(requestParams, apiParams, criteriaValues) {
         this.formsPanel.removeAll(true);
         this.formsPanel.getUpdater().showLoading();
@@ -1549,10 +1616,13 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Update the forms panel for a predefined request
-     * @param {String} requestName The request name
-     * @param {Object} criteriaValues The criteria values
-     */
+	 * Update the forms panel for a predefined request
+	 * 
+	 * @param {String}
+	 *            requestName The request name
+	 * @param {Object}
+	 *            criteriaValues The criteria values
+	 */
     updatePredefinedRequestFormsPanel : function(requestName, criteriaValues) {
         this.updateFormsPanel(
             {
@@ -1566,9 +1636,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Update the forms panel for a datasetId
-     * @param {String} datasetId The dataset ID
-     */
+	 * Update the forms panel for a datasetId
+	 * 
+	 * @param {String}
+	 *            datasetId The dataset ID
+	 */
     updateDatasetFormsPanel : function(datasetId) {
         this.updateFormsPanel({
             datasetId: datasetId
@@ -1576,17 +1648,19 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Load a predefined request into the request panel
-     * @param {Object} request A object containing the predefined request data
-     */
+	 * Load a predefined request into the request panel
+	 * 
+	 * @param {Object}
+	 *            request A object containing the predefined request data
+	 */
     loadRequest : function(request) {
         this.datasetComboBox.setValue(request.datasetId);
         this.updatePredefinedRequestFormsPanel(request.name, request.fieldValues);
     },
 
     /**
-     * Clears the grid
-     */
+	 * Clears the grid
+	 */
     clearGrid : function (){
         var gridDs = this.gridPanel.getStore();
         if(gridDs.getCount() != 0){
@@ -1597,16 +1671,18 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             // Remove the column headers
             this.gridPanel.getColumnModel().setConfig({});
             // Remove the horizontal scroll bar if present
-            this.gridPanel.getView().updateAllColumnWidths();//Bug Ext 3.0
+            this.gridPanel.getView().updateAllColumnWidths();// Bug Ext 3.0
             // Remove the emptyText message
             this.gridPanel.getView().reset();
         }
     },
 
     /**
-     * Export the data as a CSV file
-     * @param {String} actionName The name of the action to call
-     */
+	 * Export the data as a CSV file
+	 * 
+	 * @param {String}
+	 *            actionName The name of the action to call
+	 */
     exportCSV : function (actionName) {
         var launchCsvExport = function(buttonId , text, opt){
             this.showMask(true);
@@ -1631,10 +1707,13 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Print the map
-     * @param {Ext.Button} button The print map button
-     * @param {EventObject} event The click event
-     */
+	 * Print the map
+	 * 
+	 * @param {Ext.Button}
+	 *            button The print map button
+	 * @param {EventObject}
+	 *            event The click event
+	 */
     printMap : function (button, event) {
         // Get the BBOX
         var center = this.mapPanel.map.center;
@@ -1658,9 +1737,11 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Show the consultation page mask
-     * @param {Boolean} hideOnFocus True to hide the mask on window focus
-     */
+	 * Show the consultation page mask
+	 * 
+	 * @param {Boolean}
+	 *            hideOnFocus True to hide the mask on window focus
+	 */
     showMask : function (hideOnFocus) {
         this.mask.show();
         if(hideOnFocus){
@@ -1670,20 +1751,50 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             }).createDelegate(this);
         }
     },
+    
+    /**
+	 * Return the pattern used to format a number.
+	 * 
+	 * @param {String}
+	 *            decimalSeparator the decimal separator (default to',')
+	 * @param {Integer}
+	 *            decimalPrecision the decimal precision
+	 * @param {String}
+	 *            groupingSymbol the grouping separator (absent by default)
+	 */
+    numberPattern: function (decimalSeparator, decimalPrecision, groupingSymbol) {
+        // Building the number format pattern for use by ExtJS
+		// Ext.util.Format.number
+        var pattern = [];
+        pattern.push('0');
+        if (groupingSymbol) {
+        	pattern.push(groupingSymbol + '000');
+        }
+        if (decimalPrecision) {
+            pattern.push(decimalSeparator);
+            for (var i = 0; i < decimalPrecision; i++) {
+            	pattern.push('0');
+            }
+        }
+        return pattern.join('');
+    },
 
     /**
-     * Hide the consultation page mask
-     */
+	 * Hide the consultation page mask
+	 */
     hideMask : function () {
         this.mask.hide();
     },
 
     /**
-     * Add a vertical label to the collapsed panel
-     * @param {Object} the Ext.Panel
-     * @param {String} the css class
-     * @hide
-     */
+	 * Add a vertical label to the collapsed panel
+	 * 
+	 * @param {Object}
+	 *            the Ext.Panel
+	 * @param {String}
+	 *            the css class
+	 * @hide
+	 */
     addVerticalLabel : function (panel, cls){
         panel.on(
             'collapse',
@@ -1701,12 +1812,15 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Launch a ajax request to get the java service status
-     * 
-     * @param {String} serviceName The service name
-     * @param {String} callback A callback function to call when the status is equal to 'OK'
-     * @return {String} The status
-     */
+	 * Launch a ajax request to get the java service status
+	 * 
+	 * @param {String}
+	 *            serviceName The service name
+	 * @param {String}
+	 *            callback A callback function to call when the status is equal
+	 *            to 'OK'
+	 * @return {String} The status
+	 */
     getStatus : function (serviceName, callback){
         Ext.Ajax.request({
             url: Genapp.base_url + serviceName +'/ajax-get-status',
@@ -1745,8 +1859,8 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     },
 
     /**
-     * Launch a ajax request to get the bounding box of the result features.
-     */
+	 * Launch a ajax request to get the bounding box of the result features.
+	 */
     getResultsBBox: function(){
         Ext.Ajax.request({
             url: Genapp.ajax_query_url +'ajaxgetresultsbbox',
