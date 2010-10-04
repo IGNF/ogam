@@ -1472,13 +1472,13 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
                             break;
                         case 'NUMERIC':
                         	columnConf.xtype='numbercolumn';
-                        	if (columns[i].decimals) {
+                        	if (columns[i].decimals != null) {
                         		columnConf.format= this.numberPattern('.', columns[i].decimals);
                         	}
                         	break;
                         case 'RANGE':
                             columnConf.xtype='numbercolumn';
-                            if (columns[i].decimals) {
+                            if (columns[i].decimals != null) {
                         		columnConf.format= this.numberPattern('.', columns[i].decimals);
                         	}                       
                             break;
