@@ -334,6 +334,35 @@ COMMENT ON COLUMN TABLE_TREE.PARENT_TABLE IS 'The name of the parent table (shou
 COMMENT ON COLUMN TABLE_TREE.JOIN_KEY IS 'The list of table fields used to make the join between the table (separated by commas)';
 COMMENT ON COLUMN TABLE_TREE.COMMENT IS 'Any comment';
 
+
+
+
+
+/*==============================================================*/
+/* Table : MODE_TREE                                            */
+/*==============================================================*/
+create table MODE_TREE (
+UNIT                 VARCHAR(36)          not null,
+CODE                 VARCHAR(36)          not null,
+PARENT_CODE          VARCHAR(36)          null,
+LABEL                VARCHAR(60)          null,
+DEFINITION           VARCHAR(255)         null,
+POSITION			 INTEGER              null,
+__IS_LEAF			 CHAR(1)              null,
+constraint PK_MODE_TREE primary key (UNIT, CODE)
+);
+
+COMMENT ON COLUMN MODE_TREE.UNIT IS 'The unit';
+COMMENT ON COLUMN MODE_TREE.CODE IS 'The code of the mode';
+COMMENT ON COLUMN MODE_TREE.PARENT_CODE IS 'The parent code';
+COMMENT ON COLUMN MODE_TREE.LABEL IS 'The label';
+COMMENT ON COLUMN MODE_TREE.DEFINITION IS 'The definition of the mode';
+COMMENT ON COLUMN MODE_TREE.POSITION IS 'The position of the mode';
+COMMENT ON COLUMN MODE_TREE.__IS_LEAF IS 'Indicate if the node is a leaf (1 for true)';
+
+
+
+
 /*==============================================================*/
 /* Table : CHECKS                                               */
 /*==============================================================*/
