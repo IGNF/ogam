@@ -111,7 +111,7 @@
 	        <concat destfile="${cps.js.pack.path}">
 	            <fileset dir="${cps.src.dir}" 
 	            		 includes="**/*.js" 
-	                     excludes="**/locale/*,**/patch*.js"/>
+	                     excludes="**/locale/*,**/genapp.js"/>
 	            <fileset file="${src.dir}public/js/extjsux/basiccheckbox/BasicCheckBox.js" />
 	        	<fileset file="${src.dir}public/js/extjsux/datePatch/datePatchExtjs3.1.1.js" />
 	        	<fileset file="${cps.src.dir}/patch-eforest.js" />

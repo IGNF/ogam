@@ -28,10 +28,8 @@
       }
   </script>
   <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/extjs/adapter/ext/ext-base.js"></script>
+  <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/genapp.js"></script>
   <script type="text/javascript">
-      //Declare the Genapp namespace
-      Ext.namespace('Genapp.util');
-      Ext.namespace('Genapp.globalVars');
       //Defines the base URL for the scripts
      function sendMail(){
         pre='eforest';
@@ -89,20 +87,6 @@
 ?>
     </div>
 </div>
-
-<script type="text/javascript">
-    Genapp.util.resizeWrapper = function ()
-    {
-        var viewHeight = Ext.lib.Dom.getViewHeight() - 66;
-        var wrapper = window.document.getElementById('wrapper');
-        var inside = window.document.getElementById('inside');
-        if(inside.offsetHeight < viewHeight){
-            wrapper.style.height = viewHeight +'px';
-        }else{
-            wrapper.style.height = inside.offsetHeight +'px';
-        }
-    }
-</script>
 
 </div>
         <div class="main-body">

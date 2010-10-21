@@ -25,7 +25,6 @@
 < Production mode end --> 
 
 <!-- Debug mode start -->
-<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/genapp.js"></script>
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/FieldForm.js"></script>
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/MapPanel.js"></script>
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/widgets/ConsultationPanel.js"></script>
@@ -84,3 +83,10 @@
 </script>
 
 <div id='page'></div>
+
+<!-- Fields required for history management -->
+<form id="history-form" class="x-hidden">
+    <input type="hidden" id="x-history-field" />
+    <iframe id="x-history-frame"></iframe>
+</form>
+

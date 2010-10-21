@@ -104,6 +104,16 @@ Genapp.CardPanel = Ext.extend(Ext.Panel, {
                 this.consultationPanel = new Genapp.ConsultationPanel()
             ]
         }
+        if (Genapp.config.historicActivated) {
+            this.predefinedRequestPanel.addListener(
+                'activate',
+                Ext.History.add.createDelegate(Ext.History,['predefined_request'])
+            );
+            this.consultationPanel.addListener(
+                'activate',
+                Ext.History.add.createDelegate(Ext.History,['consultation_panel'])
+            );
+        }
 
         Genapp.CardPanel.superclass.initComponent.call(this);
     }

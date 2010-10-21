@@ -1,3 +1,15 @@
+// Declare the Genapp namespace
+Ext.namespace('Genapp.util'); // Contains few common useful functions
+Ext.namespace('Genapp.globalVars'); // ??
+Ext.namespace('Genapp.config'); // Contains the static config parameters used to initialize the application
+
+// Set the defaults config values
+Genapp.config.historicActivated = true; // TODO: create a config.js file ?
+
+/**
+ * Build the genapp application
+ * @param {object} config a config object
+ */
 Genapp.buildApplication = function(config){
 
     // Activate the tooltips system
@@ -25,6 +37,22 @@ Genapp.buildApplication = function(config){
     Ext.Ajax.timeout = 30000;
 
     Genapp.cardPanel = new Genapp.CardPanel(config);
+
+    if(Genapp.config.historicActivated){
+        // The only requirement for this to work is that you must have a hidden field and
+        // an iframe available in the page with ids corresponding to Ext.History.fieldId
+        // and Ext.History.iframeId.  See history.html for an example.
+        Ext.History.init();
+
+        Ext.History.on('change', function(token){
+            if(token){
+                Genapp.cardPanel.getLayout().setActiveItem(token);
+            }else{
+                // This is the initial default state.  Necessary if you navigate starting from the
+                // page without any existing history token params and go back to the start state.
+            }
+        });
+    }
 };
 
 /**
@@ -58,3 +86,18 @@ Genapp.util.post = function(url, params) {
     temp.submit();
     return temp;
 };
+
+/**
+ * Resize the wrapper accordingly to the windows size
+ */
+Genapp.util.resizeWrapper = function ()
+{
+    var viewHeight = Ext.lib.Dom.getViewHeight() - 66;
+    var wrapper = window.document.getElementById('wrapper');
+    var inside = window.document.getElementById('inside');
+    if(inside.offsetHeight < viewHeight){
+        wrapper.style.height = viewHeight +'px';
+    }else{
+        wrapper.style.height = inside.offsetHeight +'px';
+    }
+}
