@@ -1,3 +1,4 @@
+Genapp.config.localCls = 'fr';
 if(Genapp.form.DateRangeField){
     Ext.apply(Genapp.form.DateRangeField.prototype, {
         minText : "Les dates contenues dans ce champ doivent être égales ou postérieures au {0}",
@@ -33,7 +34,6 @@ if(Genapp.form.TwinNumberField){
 }
 if(Genapp.ConsultationPanel){
     Ext.apply(Genapp.ConsultationPanel.prototype, {
-        localeCls:'fr',
         userManualLinkText : 'Manuel utilisateur',
         datasetComboBoxEmptyText :"Sélectionnez un type de données",
         datasetPanelTitle :"Type de données",

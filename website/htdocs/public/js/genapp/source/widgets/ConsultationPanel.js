@@ -50,11 +50,6 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      */
     id:'consultation_panel',
     /**
-     * @cfg {String} localeCls
-     * The locale css class (defaults to <tt>''</tt>).
-     */
-    localeCls :'',
-    /**
      * @cfg {Boolean} hideCsvExportAlert
      * if true hide the csv export alert for IE (defaults to true).
      */

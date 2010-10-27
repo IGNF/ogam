@@ -53,11 +53,6 @@ Genapp.CardPanel = Ext.extend(Ext.Panel, {
      */
     renderTo:'page',
     /**
-     * @cfg {String} localeCls
-     * The locale css class (defaults to <tt>''</tt>).
-     */
-    localeCls :'',
-    /**
      * @cfg {String} widthToSubstract
      * The width to substract to the consultation panel (defaults to <tt>0</tt>)
      */
@@ -82,7 +77,6 @@ Genapp.CardPanel = Ext.extend(Ext.Panel, {
              */
             'resizewrapper'
         );
-        Ext.getBody().addClass(this.localeCls);
 
         this.height = Ext.getBody().getViewSize().height - this.heightToSubstract;
         this.width = Ext.getBody().getViewSize().width - this.widthToSubstract;
