@@ -34,6 +34,7 @@ if(Genapp.form.TwinNumberField){
 }
 if(Genapp.ConsultationPanel){
     Ext.apply(Genapp.ConsultationPanel.prototype, {
+        title: 'Consultation',
         userManualLinkText : 'Manuel utilisateur',
         datasetComboBoxEmptyText :"Sélectionnez un type de données",
         datasetPanelTitle :"Type de données",
@@ -50,11 +51,11 @@ if(Genapp.ConsultationPanel){
         queryPanelPinToolQtip: "Annuler la fermeture automatique de l'onglet",
         queryPanelUnpinToolQtip:"Activer la fermeture automatique de l'onglet",
         queryPanelCancelButtonText: "Annuler",
-        queryPanelPredefinedRequestButtonText: "Page découverte",
+        queryPanelPredefinedRequestSaveButtonText: "Sauvegarder la requête",
         queryPanelResetButtonText:"Réinitialiser",
         queryPanelSearchButtonText:"Rechercher",
         queryPanelCancelButtonTooltip:"Annuler la requête",
-        queryPanelPredefinedRequestButtonTooltip:"Ouvrir la page des requêtes prédéfinies",
+        queryPanelPredefinedRequestSaveButtonTooltip:"Ajouter la requête courante aux requêtes sauvegardées",
         queryPanelResetButtonTooltip:"Réinitialiser la requête",
         queryPanelSearchButtonTooltip:"Lancer la requête",
         detailsPanelCtTitle:"Détails",

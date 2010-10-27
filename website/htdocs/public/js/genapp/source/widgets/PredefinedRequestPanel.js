@@ -260,12 +260,12 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
          */
         this.grid = new Ext.grid.GridPanel({
             region:'center',
-            margins:{
+            /*margins:{
                 top: 5,
                 right: 5,
                 bottom: 5,
                 left: 5
-            },
+            },*/
             autoExpandColumn: 1,
             border: true,
             plugins: gridRowExpander,
@@ -347,7 +347,8 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
                                 name:selectedRequestData.request_name,
                                 fieldValues:fieldValues
                             });
-                            Genapp.cardPanel.getLayout().setActiveItem('consultation_panel');
+                            //Genapp.cardPanel.getLayout().setActiveItem('consultation_panel');
+                            Genapp.cardPanel.activate('consultation_panel');
                         },
                         scope:this
                     })
@@ -386,34 +387,10 @@ Genapp.PredefinedRequestPanel = Ext.extend(Ext.Panel, {
             width: '350px',
             cls:'genapp-predefined-request-east-panel',
             margins:{
-                top: 5,
-                right: 5,
-                bottom: 5,
+                top: 0,
+                right: 0,
+                bottom: 0,
                 left: 5
-            },
-            bbar: {
-                items:[{
-                    xtype: 'tbfill'
-                },{
-                    xtype: 'button',
-                    text: this.consultationButtonText,
-                    listeners:{
-                        'render':function(cmp){
-                            new Ext.ToolTip({
-                                anchor: 'left',
-                                target: cmp.getEl(),
-                                html:this.consultationButtonTooltip,
-                                showDelay: Ext.QuickTips.getQuickTip().showDelay,
-                                dismissDelay: Ext.QuickTips.getQuickTip().dismissDelay
-                            });
-                        },
-                        scope:this
-                    },
-                    scope: this,
-                    handler: function(b,e){
-                        Genapp.cardPanel.getLayout().setActiveItem('consultation_panel');
-                    }
-                }]
             },
             items: this.requestCriteriaCardPanel
         });

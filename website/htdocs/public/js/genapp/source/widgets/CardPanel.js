@@ -7,7 +7,7 @@
  * @param {Object} config The config object
  * @xtype cardpanel
  */
-Genapp.CardPanel = Ext.extend(Ext.Panel, {
+Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
     /**
      * @cfg {String/Object} layout
      * <p><b>*Important</b>: In order for child items to be correctly sized and
@@ -21,7 +21,13 @@ Genapp.CardPanel = Ext.extend(Ext.Panel, {
      * layout class corresponding to the <code>layout</code> specified.</p>
      * @hide
      */
-    layout:'card',
+    //layout:'card',
+    /**
+     * @cfg {String} cls
+     * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp_consultation_panel').
+     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
+     */
+    cls:'genapp-card-panel',
     /**
      * @cfg {String/Number} activeItem
      * A string component id or the numeric index of the component that should be initially activated within the

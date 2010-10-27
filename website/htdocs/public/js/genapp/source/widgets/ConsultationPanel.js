@@ -9,6 +9,25 @@
  */
 Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     /**
+     * @cfg {String} title
+     * The title text to be used as innerHTML (html tags are accepted) to display in the panel
+     * <code>{@link #header}</code> (defaults to ''). When a <code>title</code> is specified the
+     * <code>{@link #header}</code> element will automatically be created and displayed unless
+     * {@link #header} is explicitly set to <code>false</code>.  If you do not want to specify a
+     * <code>title</code> at config time, but you may want one later, you must either specify a non-empty
+     * <code>title</code> (a blank space ' ' will do) or <code>header:true</code> so that the container
+     * element will get created.
+     * Default to 'Predefined Request'.
+     */
+    title: 'Consultation',
+    /**
+     * @cfg {Boolean} frame
+     * <code>false</code> by default to render with plain 1px square borders. <code>true</code> to render with
+     * 9 elements, complete with custom rounded corners (also see {@link Ext.Element#boxWrap}).
+     * @hide
+     */
+    frame:true,
+    /**
      * @cfg {String} region 
      * Note: this config is only used when this BoxComponent is rendered
      * by a Container which has been configured to use the {@link Ext.layout.BorderLayout BorderLayout}
@@ -100,10 +119,10 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      */
     hideUserManualLink : true,
     /**
-     * @cfg {Boolean} hidePredefinedRequestButton
-     * if true hide the predefined request button (defaults to true).
+     * @cfg {Boolean} hidePredefinedRequestSaveButton
+     * if true hide the predefined request save button (defaults to true).
      */
-    hidePredefinedRequestButton : true,
+    hidePredefinedRequestSaveButton : true,
     /**
      * @cfg {String} userManualLinkHref
      * The user Manual Link Href (defaults to <tt>'Genapp.base_url + 'pdf/User_Manual.pdf''</tt>)
@@ -210,10 +229,10 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      */
     queryPanelCancelButtonText: "Cancel",
     /**
-     * @cfg {String} queryPanelPredefinedRequestButtonText
-     * The query Panel Predefined Request Button Text (defaults to <tt>'Predefined Requests'</tt>)
+     * @cfg {String} queryPanelPredefinedRequestSaveButtonText
+     * The query Panel Predefined Request Save Button Text (defaults to <tt>'Save the request'</tt>)
      */
-    queryPanelPredefinedRequestButtonText: "Predefined Requests",
+    queryPanelPredefinedRequestSaveButtonText: "Save the request",
     /**
      * @cfg {String} queryPanelResetButtonText
      * The query Panel Reset Button Text (defaults to <tt>'Reset'</tt>)
@@ -230,10 +249,10 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
      */
     queryPanelCancelButtonTooltip:"Cancel the request",
     /**
-     * @cfg {String} queryPanelPredefinedRequestButtonTooltip
-     * The query Panel Predefined Request Button Tooltip (defaults to <tt>'Go to the predefined request page'</tt>)
+     * @cfg {String} queryPanelPredefinedRequestSaveButtonTooltip
+     * The query Panel Predefined Request Save Button Tooltip (defaults to <tt>'Add the current request to the predefined requests'</tt>)
      */
-    queryPanelPredefinedRequestButtonTooltip:"Go to the predefined request page",
+    queryPanelPredefinedRequestSaveButtonTooltip:"Add the current request to the predefined requests",
     /**
      * @cfg {String} queryPanelResetButtonTooltip
      * The query Panel Reset Button Tooltip (defaults to <tt>'Reset the request'</tt>)
@@ -1062,17 +1081,18 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
             }]
         };
 
-        if (!this.hidePredefinedRequestButton) {
+        if (!this.hidePredefinedRequestSaveButton) {
             queryPanelConfig.tbar = {
                 cls: 'genapp_query_panel_tbar',
                 items:[{
                     xtype: 'tbbutton',
-                    text: this.queryPanelPredefinedRequestButtonText,
+                    text: this.queryPanelPredefinedRequestSaveButtonText,
                     tooltipType: 'title',
-                    tooltip: this.queryPanelPredefinedRequestButtonTooltip,
+                    tooltip: this.queryPanelPredefinedRequestSaveButtonTooltip,
+                    iconCls:'genapp-query-panel-predefined-request-save-button-icon',
                     scope: this,
                     handler: function(b,e){
-                        Genapp.cardPanel.getLayout().setActiveItem('predefined_request');
+                        // TODO
                     }
                 }]
             };

@@ -507,6 +507,9 @@ p.genapp-predefined-request-grid-panel-description-text {
 /*************************************************************************************************/
 
 /***** Query Form Panel************************************************************************/
+button.genapp-query-panel-predefined-request-save-button-icon {
+    background-image: url(../images/disk.png);
+}
 .genapp-query-request-panel-ct-xcollapsed-vertical-label-div{
     background-image: url(../images/green-ifn/request.gif);
 }
@@ -779,5 +782,13 @@ p.genapp-predefined-request-grid-panel-description-text {
 }
 .genapp-predefined-request-grid-panel-description-title {
     font-weight: bold;
+}
+/*************************************************************************************************/
+
+/***** Card Panel ********************************************************************************/
+
+.genapp-card-panel > .x-tab-panel-header > .x-tab-strip-wrap > ul.x-tab-strip-top {
+    background-color:#FFFFFF;
+    background-image:none;
 }
 /*************************************************************************************************/

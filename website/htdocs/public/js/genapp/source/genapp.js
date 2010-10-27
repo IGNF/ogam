@@ -50,7 +50,8 @@ Genapp.buildApplication = function(config){
 
         Ext.History.on('change', function(token){
             if(token){
-                Genapp.cardPanel.getLayout().setActiveItem(token);
+                //Genapp.cardPanel.getLayout().setActiveItem(token);
+                Genapp.cardPanel.activate(token);
             }else{
                 // This is the initial default state.  Necessary if you navigate starting from the
                 // page without any existing history token params and go back to the start state.
