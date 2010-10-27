@@ -5,12 +5,16 @@ Ext.namespace('Genapp.config'); // Contains the static config parameters used to
 
 // Set the defaults config values
 Genapp.config.historicActivated = true; // TODO: create a config.js file ?
+Genapp.config.localCls = 'en';
 
 /**
  * Build the genapp application
  * @param {object} config a config object
  */
 Genapp.buildApplication = function(config){
+
+    // Add the local class to the body
+    Ext.getBody().addClass(Genapp.config.localCls);
 
     // Activate the tooltips system
     // Init the singleton.  Any tag-based quick tips will start working.
