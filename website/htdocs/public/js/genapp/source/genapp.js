@@ -105,4 +105,4 @@ Genapp.util.resizeWrapper = function ()
     }else{
         wrapper.style.height = inside.offsetHeight +'px';
     }
-}
+}; // The last semicolon is important, otherwise YUICompressor will fail
