@@ -99,7 +99,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 *
 	 * @param String $requestName The request name
 	 */
-	public function _ajaxgetpredefinedrequest($requestName) {
+	private function _ajaxgetpredefinedrequest($requestName) {
 		$this->logger->debug('_ajaxgetpredefinedrequest');
 
 		// Increment of one the request clicks number
@@ -139,10 +139,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 		// Generate the JSON string
 		echo $this->_generateFormsJSON($savedRequest->datasetID, $forms);
-
-		// No View, we send directly the JSON
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
 
 	}
 
@@ -310,10 +306,11 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 			echo $this->_generateFormsJSON($datasetId, $forms);
 
-			// No View, we send directly the JSON
-			$this->_helper->layout()->disableLayout();
-			$this->_helper->viewRenderer->setNoRender();
 		}
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
 	}
 
 	/**
