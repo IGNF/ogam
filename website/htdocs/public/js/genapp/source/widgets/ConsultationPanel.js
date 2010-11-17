@@ -57,17 +57,48 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
     border :false,
     /**
      * @cfg {String} id
-     * <p>The <b>unique</b> id of this component (defaults to 'consultation_panel').
+     * <p>The <b>unique</b> id of this component (defaults to an {@link #getId auto-assigned id}).
      * You should assign an id if you need to be able to access the component later and you do
      * not have an object reference available (e.g., using {@link Ext}.{@link Ext#getCmp getCmp}).</p>
      * <p>Note that this id will also be used as the element id for the containing HTML element
      * that is rendered to the page for this component. This allows you to write id-based CSS
      * rules to style the specific instance of this component uniquely, and also to select
      * sub-elements using this component's id as the parent.</p>
-     * <p><b>Note</b>: to avoid complications imposed by a unique <tt>id</tt> see <tt>{@link #itemId}</tt>.</p>
-     * <p><b>Note</b>: to access the container of an item see <tt>{@link #ownerCt}</tt>.</p>
+     * <p><b>Note</b>: to avoid complications imposed by a unique <tt>id</tt> also see
+     * <code>{@link #itemId}</code> and <code>{@link #ref}</code>.</p>
+     * <p><b>Note</b>: to access the container of an item see <code>{@link #ownerCt}</code>.</p>
      */
     id:'consultation_panel',
+    /**
+     * @cfg {String} ref
+     * <p>A path specification, relative to the Component's <code>{@link #ownerCt}</code>
+     * specifying into which ancestor Container to place a named reference to this Component.</p>
+     * <p>The ancestor axis can be traversed by using '/' characters in the path.
+     * For example, to put a reference to a Toolbar Button into <i>the Panel which owns the Toolbar</i>:</p><pre><code>
+var myGrid = new Ext.grid.EditorGridPanel({
+title: 'My EditorGridPanel',
+store: myStore,
+colModel: myColModel,
+tbar: [{
+    text: 'Save',
+    handler: saveChanges,
+    disabled: true,
+    ref: '../saveButton'
+}],
+listeners: {
+    afteredit: function() {
+//      The button reference is in the GridPanel
+        myGrid.saveButton.enable();
+    }
+}
+});
+</code></pre>
+     * <p>In the code above, if the <code>ref</code> had been <code>'saveButton'</code>
+     * the reference would have been placed into the Toolbar. Each '/' in the <code>ref</code>
+     * moves up one level from the Component's <code>{@link #ownerCt}</code>.</p>
+     * <p>Also see the <code>{@link #added}</code> and <code>{@link #removed}</code> events.</p>
+     */
+    ref:'consultationPage',
     /**
      * @cfg {Boolean} hideCsvExportAlert
      * if true hide the csv export alert for IE (defaults to true).
@@ -1832,3 +1863,4 @@ Genapp.ConsultationPanel = Ext.extend(Ext.Panel, {
         });
     }
 });
+Ext.reg('consultationpage', Genapp.ConsultationPanel);

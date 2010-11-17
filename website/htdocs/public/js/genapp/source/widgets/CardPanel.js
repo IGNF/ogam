@@ -37,6 +37,7 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
      * {@link Ext.layout.FitLayout}).  Related to {@link Ext.layout.ContainerLayout#activeItem}.
      * 0 : PredefinedRequestPanel
      * 1 : ConsultationPanel
+     * 2 : DocSearchPage
      */
     activeItem: 1,
     /**
@@ -68,6 +69,16 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
      * The height to substract to the consultation panel (defaults to <tt>0</tt>)
      */
     heightToSubstract:210,
+    /**
+     * @cfg {Array} shownPages
+     * An array containing the page (xtype) to display
+     * Default to all the pages.
+     * The available values are:
+     * 'predefinedrequestpage'
+     * 'consultationpage'
+     * 'docsearchpage'
+     */
+    shownPages: ['predefinedrequestpage', 'consultationpage', 'docsearchpage'],
 
     // private
     initComponent : function() {
@@ -98,21 +109,19 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
             },
             this
         );
-        if (!this.items) {
-            this.items = [
-                this.predefinedRequestPanel = new Genapp.PredefinedRequestPanel(),
-                this.consultationPanel = new Genapp.ConsultationPanel()
-            ]
-        }
-        if (Genapp.config.historicActivated) {
-            this.predefinedRequestPanel.addListener(
-                'activate',
-                Ext.History.add.createDelegate(Ext.History,['predefined_request'])
-            );
-            this.consultationPanel.addListener(
-                'activate',
-                Ext.History.add.createDelegate(Ext.History,['consultation_panel'])
-            );
+        if (!this.items && this.shownPages.length !== 0) {
+            this.items = [];
+            for(var i=0; i<this.shownPages.length; i++){
+                var pageCfg = {xtype:this.shownPages[i]};
+                if (Genapp.config.historicActivated) {
+                    pageCfg.listeners = {
+                        'activate': function(panel) {
+                            Ext.History.add(this.id);
+                        }
+                    }
+                }
+                this.items.push(pageCfg);
+            }
         }
 
         Genapp.CardPanel.superclass.initComponent.call(this);

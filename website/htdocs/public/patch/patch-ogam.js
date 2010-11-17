@@ -13,3 +13,9 @@ if(Genapp.ConsultationPanel){
         heightToSubstract:210
     });
 }
+if(Genapp.CardPanel){
+    Ext.apply(Genapp.CardPanel.prototype, {
+        shownPages : ['consultationpage'],
+        activeItem : 0
+    });
+}
