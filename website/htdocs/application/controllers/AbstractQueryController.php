@@ -138,7 +138,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 
 		// Generate the JSON string
-		echo $this->_generateFormsJSON($savedRequest->datasetID, $forms);
+		echo $this->_generateFormsJSON($forms);
 
 	}
 
@@ -236,7 +236,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 * @param String $datasetId the dataset identifier
 	 * @param Array[FormFormat] $forms the list of FormFormat elements
 	 */
-	private function _generateFormsJSON($datasetId, $forms) {
+	private function _generateFormsJSON($forms) {
 
 		$json = '{success:true,data:[';
 
@@ -304,7 +304,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$form->resultsList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'result');
 			}
 
-			echo $this->_generateFormsJSON($datasetId, $forms);
+			echo $this->_generateFormsJSON($forms);
 
 		}
 
