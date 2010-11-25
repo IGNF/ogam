@@ -10,9 +10,7 @@ SCHEMA_CODE          	 VARCHAR(36)          not null,
 DATASET_ID               VARCHAR(36)          not null,
 DEFINITION				 VARCHAR(500)         null,
 LABEL 					 VARCHAR(50)	      null,
-CLICK 					 integer,
 DATE 					 date,
-CRITERIA_HINT			 VARCHAR(500),
 constraint PK_PREDEFINED_REQUEST primary key (REQUEST_NAME)
 );
 
@@ -28,9 +26,7 @@ COMMENT ON COLUMN PREDEFINED_REQUEST.SCHEMA_CODE IS 'The schema used by this req
 COMMENT ON COLUMN PREDEFINED_REQUEST.DATASET_ID IS 'The dataset used by this request';
 COMMENT ON COLUMN PREDEFINED_REQUEST.DEFINITION IS 'The description of the request';
 COMMENT ON COLUMN PREDEFINED_REQUEST.LABEL IS 'The label of the request';
-COMMENT ON COLUMN PREDEFINED_REQUEST.CLICK IS 'Count the number of clicks on the request';
 COMMENT ON COLUMN PREDEFINED_REQUEST.DATE IS 'Date of creation of the request';
-COMMENT ON COLUMN PREDEFINED_REQUEST.CRITERIA_HINT IS 'Help text that is displayed above the criterias';
 
 
 

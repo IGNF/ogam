@@ -15,7 +15,7 @@ if(Genapp.ConsultationPanel){
 }
 if(Genapp.CardPanel){
     Ext.apply(Genapp.CardPanel.prototype, {
-        shownPages : ['consultationpage'],
-        activeItem : 0
+        shownPages : ['predefinedrequestpage','consultationpage'],
+        activeItem : 1
     });
 }

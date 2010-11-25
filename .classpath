@@ -13,9 +13,6 @@
 	<classpathentry kind="lib" path="/libs_java/import/org/postgresql/postgresql-8.3-603.jdbc4.jar"/>
 	<classpathentry kind="lib" path="/libs_java/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/libs_java/import/org/apache/log4j/log4j-1.2.14.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet-api.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jsp-api.jar"/>
 	<classpathentry kind="lib" path="/libs_java/import/com/sun/mail/mail.jar"/>
 	<classpathentry kind="lib" path="/libs_java/lib/dbunit/dbunit.jar"/>
 	<classpathentry kind="lib" path="service_common/lib/commons-fileupload-1.2.1.jar"/>

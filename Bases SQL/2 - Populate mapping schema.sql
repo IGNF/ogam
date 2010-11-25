@@ -53,7 +53,7 @@ INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disab
 --
 -- for nuts codes, see http://en.wikipedia.org/wiki/Nomenclature_of_Territorial_Units_for_Statistics 
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('999','Europe', 0, null);
-INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('1','France', 1, 0, 0, 'FR');
+INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('1','France', 1, 'FR');
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('2','Belgium', 3, 'BE');
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('3','Netherlands', 2, 'NL');
 INSERT INTO bounding_box (code_country, country_name, zoom_level, nuts_code) values ('4','Germany', 2, 'DE');

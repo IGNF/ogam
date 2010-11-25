@@ -98,12 +98,10 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 * AJAX function : Get the predefined request.
 	 *
 	 * @param String $requestName The request name
+	 * @return Forms
 	 */
 	private function _ajaxgetpredefinedrequest($requestName) {
 		$this->logger->debug('_ajaxgetpredefinedrequest');
-
-		// Increment of one the request clicks number
-		$this->predefinedRequestModel->updateClick($requestName);
 
 		// Get the saved values for the forms
 		$savedRequest = $this->predefinedRequestModel->getPredefinedRequest($requestName);
@@ -137,8 +135,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			}
 		}
 
-		// Generate the JSON string
-		echo $this->_generateFormsJSON($forms);
+		// return the forms
+		return $forms;
 
 	}
 
@@ -158,20 +156,14 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$total = count($predefinedRequestList);
 		echo '{success:true, total:'.$total.',rows:[';
 
-		for ($i = 0; $i < $total; $i++) {
-			$json = '[';
-			foreach ($predefinedRequestList[$i] as $value) {
-				$json .= json_encode($value).',';
-			}
-			if (strlen($json) > 1) {
-				$json = substr($json, 0, -1);
-			}
-			if ($i != ($total - 1)) {
-				echo $json.'],';
-			} else {
-				echo $json.']';
-			}
+		foreach ($predefinedRequestList as $predefinedRequest) {
+			$json = $predefinedRequest->toJSON().",";
 		}
+		if (strlen($json) > 1) {
+			$json = substr($json, 0, -1); // remove the last colon
+		}
+		echo $json;
+
 		echo ']}';
 
 		// No View, we send directly the JSON
@@ -192,151 +184,46 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 		// Generate the JSON string
 		$total = count($predefinedRequestCriterias);
-		echo '{success:true, criteria:[';
+		$json = '{success:true, criteria:[';
 
-		for ($i = 0; $i < $total; $i++) {
-			$criteria = $predefinedRequestCriterias[$i];
-			$json = '[';
-			foreach ($criteria as $value) {
-				$json .= json_encode($value).',';
-			}
-			// For the SELECT field, get the list of options
-			if ($criteria['type'] == "CODE") {
-				$options = $this->metadataModel->getOptions($criteria['data']);
-				$json .= '{options:[';
+		foreach ($predefinedRequestCriterias as $criteria) {
+
+			$json .= '[';
+			$json .= $criteria->toJSON();
+
+			// add some specific options
+			if ($criteria->type == "CODE") {
+				$options = $this->metadataModel->getOptions($criteria->data);
+				$json .= ',{options:[';
 				foreach ($options as $option) {
 					$json .= '["'.$option->code.'","'.$option->label.'"],';
 				}
 				$json = substr($json, 0, -1);
 				$json .= ']}';
-			}
-			// For the RANGE field, get the min and max values
-			else if ($criteria['type'] == "RANGE") {
-				$range = $this->metadataModel->getRange($criteria['data']);
-				$json .= '{min:'.$range->min.',max:'.$range->max.'}';
-			} else {
-				$json .= '{}';
-			}
-			if ($i != ($total - 1)) {
-				echo $json.'],';
-			} else {
-				echo $json.']';
-			}
-		}
-		echo ']}';
-
-		// No View, we send directly the JSON
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
-	}
-
-	/**
-	 * Generate the JSON structure corresponding to a list of result and criteria columns.
-	 *
-	 * @param String $datasetId the dataset identifier
-	 * @param Array[FormFormat] $forms the list of FormFormat elements
-	 */
-	private function _generateFormsJSON($forms) {
-
-		$json = '{success:true,data:[';
-
-		foreach ($forms as $form) {
-			// Add the criteria
-			$json .= "{".$form->toJSON().',criteria:[';
-			foreach ($form->criteriaList as $field) {
-				$json .= '{'.$field->toCriteriaJSON();
-				// For the SELECT field, get the list of options
-				if ($field->type == "CODE") {
-					$options = $this->metadataModel->getOptions($field->data);
-					$json .= ',p:{options:[';
-					foreach ($options as $option) {
-						$json .= '['.json_encode($option->code).','.json_encode($option->label).'],';
-					}
-					$json = substr($json, 0, -1);
-					$json .= ']}';
-				}
+			} else if ($criteria->type == "RANGE") {
 				// For the RANGE field, get the min and max values
-				if ($field->type == "RANGE") {
-					$range = $this->metadataModel->getRange($field->data);
-					$json .= ',p:{min:'.$range->min.',max:'.$range->max.'}';
-				}
-				$json .= '},';
+				$range = $this->metadataModel->getRange($criteria->data);
+				$json .= ',{min:'.$range->min.',max:'.$range->max.'}';
+			} else {
+				$json .= ',{}'; // no options
 			}
-			if (count($form->criteriaList) > 0) {
-				$json = substr($json, 0, -1);
-			}
-			// Add the columns
-			$json .= '],columns:[';
-			foreach ($form->resultsList as $field) {
-				$json .= '{'.$field->toResultJSON().'},';
-			}
-			if (count($form->resultsList) > 0) {
-				$json = substr($json, 0, -1);
-			}
-			$json .= ']},';
+
+			$json .= '],';
 		}
-		if (count($forms) > 0) {
+
+		if ($total != 0) {
 			$json = substr($json, 0, -1);
 		}
-		$json = $json.']}';
 
-		return $json;
-	}
+		$json .= ']}';
 
-	/**
-	 * AJAX function : Get the list of available forms and criterias for the dataset
-	 */
-	public function ajaxgetformsAction() {
-		$this->logger->debug('ajaxgetformsAction');
-
-		$datasetId = $this->getRequest()->getPost('datasetId');
-		$requestName = $this->getRequest()->getPost('requestName');
-		$this->logger->debug('datasetId : '.$datasetId, $this->schema);
-		$this->logger->debug('requestName : '.$requestName, $this->schema);
-
-		if (!empty($requestName)) {
-			$this->_ajaxgetpredefinedrequest($requestName);
-		} else {
-			$forms = $this->metadataModel->getForms($datasetId, $this->schema);
-			foreach ($forms as $form) {
-				// Fill each form with the list of criterias and results
-				$form->criteriaList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'criteria');
-				$form->resultsList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'result');
-			}
-
-			echo $this->_generateFormsJSON($forms);
-
-		}
+		echo $json;
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
-
-	/**
-	 * AJAX function : Get the list of available datasets
-	 *
-	 * @return JSON The list of forms
-	 */
-	public function ajaxgetdatasetsAction() {
-		$datasetIds = $this->metadataModel->getDatasets();
-
-		echo "{";
-		echo "metaData:{";
-		echo "root:'rows',";
-		echo "fields:[";
-		echo "'id',";
-		echo "'label',";
-		echo "'is_default'";
-		echo "]";
-		echo "},";
-		echo "rows:".json_encode($datasetIds).'}';
-
-		// No View, we send directly the JSON
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
-	}
-
+	
 	/**
 	 * AJAX function : Save the parameters of the current query as a new predefined request.
 	 *
@@ -420,6 +307,112 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of result and criteria columns.
+	 *
+	 * @param Array[FormFormat] $forms the list of FormFormat elements
+	 */
+	private function _generateFormsJSON($forms) {
+
+		$json = '{success:true,data:[';
+
+		foreach ($forms as $form) {
+			// Add the criteria
+			$json .= "{".$form->toJSON().',criteria:[';
+			foreach ($form->criteriaList as $field) {
+				$json .= '{'.$field->toCriteriaJSON();
+				// For the SELECT field, get the list of options
+				if ($field->type == "CODE") {
+					$options = $this->metadataModel->getOptions($field->data);
+					$json .= ',p:{options:[';
+					foreach ($options as $option) {
+						$json .= '['.json_encode($option->code).','.json_encode($option->label).'],';
+					}
+					$json = substr($json, 0, -1);
+					$json .= ']}';
+				}
+				// For the RANGE field, get the min and max values
+				if ($field->type == "RANGE") {
+					$range = $this->metadataModel->getRange($field->data);
+					$json .= ',p:{min:'.$range->min.',max:'.$range->max.'}';
+				}
+				$json .= '},';
+			}
+			if (count($form->criteriaList) > 0) {
+				$json = substr($json, 0, -1);
+			}
+			// Add the columns
+			$json .= '],columns:[';
+			foreach ($form->resultsList as $field) {
+				$json .= '{'.$field->toResultJSON().'},';
+			}
+			if (count($form->resultsList) > 0) {
+				$json = substr($json, 0, -1);
+			}
+			$json .= ']},';
+		}
+		if (count($forms) > 0) {
+			$json = substr($json, 0, -1);
+		}
+		$json = $json.']}';
+
+		return $json;
+	}
+
+	/**
+	 * AJAX function : Get the list of available forms and criterias for the dataset
+	 */
+	public function ajaxgetformsAction() {
+		$this->logger->debug('ajaxgetformsAction');
+
+		$datasetId = $this->getRequest()->getPost('datasetId');
+		$requestName = $this->getRequest()->getPost('requestName');
+		$this->logger->debug('datasetId : '.$datasetId, $this->schema);
+		$this->logger->debug('requestName : '.$requestName, $this->schema);
+
+		if (!empty($requestName)) {
+			$forms = $this->_ajaxgetpredefinedrequest($requestName);
+		} else {
+			$forms = $this->metadataModel->getForms($datasetId, $this->schema);
+			foreach ($forms as $form) {
+				// Fill each form with the list of criterias and results
+				$form->criteriaList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'criteria');
+				$form->resultsList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'result');
+			}
+		}
+		
+		echo $this->_generateFormsJSON($forms);
+		
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+	}
+
+	/**
+	 * AJAX function : Get the list of available datasets
+	 *
+	 * @return JSON The list of forms
+	 */
+	public function ajaxgetdatasetsAction() {
+		$datasetIds = $this->metadataModel->getDatasets();
+
+		echo "{";
+		echo "metaData:{";
+		echo "root:'rows',";
+		echo "fields:[";
+		echo "'id',";
+		echo "'label',";
+		echo "'is_default'";
+		echo "]";
+		echo "},";
+		echo "rows:".json_encode($datasetIds).'}';
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
 	}
 
 	/**
@@ -1662,7 +1655,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 * @param $output The string to encode and to display
 	 */
 	private function _print($output) {
-		//Zend_Registry::get('logger')->debug('!!! ob_get_length : ' .ob_get_length());
 		$configuration = Zend_Registry::get("configuration");
 		echo iconv("UTF-8", $configuration->charset, $output);
 	}
