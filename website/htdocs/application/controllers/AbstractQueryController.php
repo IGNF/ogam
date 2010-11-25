@@ -156,8 +156,9 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$total = count($predefinedRequestList);
 		echo '{success:true, total:'.$total.',rows:[';
 
+		$json = "";
 		foreach ($predefinedRequestList as $predefinedRequest) {
-			$json = $predefinedRequest->toJSON().",";
+			$json .= $predefinedRequest->toJSON().",";
 		}
 		if (strlen($json) > 1) {
 			$json = substr($json, 0, -1); // remove the last colon
@@ -223,7 +224,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
-	
+
 	/**
 	 * AJAX function : Save the parameters of the current query as a new predefined request.
 	 *
@@ -382,9 +383,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$form->resultsList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'result');
 			}
 		}
-		
+
 		echo $this->_generateFormsJSON($forms);
-		
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
