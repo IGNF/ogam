@@ -702,7 +702,7 @@ listeners: {
             function(tabPanel){
                 var tabEdgeDiv = tabPanel.getEl().query(".x-tab-edge");
                 if(!this.hideUserManualLink){
-                    Ext.DomHelper.insertBefore(tabEdgeDiv[0],{
+                    var userManualLinkEl = Ext.DomHelper.insertBefore(tabEdgeDiv[0],{
                         tag: 'li',
                         children: [{
                             tag: 'a',
@@ -714,6 +714,10 @@ listeners: {
                                 html: this.userManualLinkText
                             }]
                         }]
+                    }, true);
+                    // Stop the event propagation to avoid the TabPanel error
+                    userManualLinkEl.on('mousedown',Ext.emptyFn,null,{
+                        stopPropagation:true
                     });
                 }
                 function addTopButton(config){
@@ -721,9 +725,9 @@ listeners: {
                         tag: 'li',
                         cls: 'genapp-query-center-panel-tab-strip-top-button'
                     },true);
-                    //Set the ul dom to the size of the TabPanel instead of 5000px by default
+                    // Set the ul dom to the size of the TabPanel instead of 5000px by default
                     el.parent().setWidth('100%');
-                    //Stop the event propagation to avoid the TabPanel error
+                    // Stop the event propagation to avoid the TabPanel error
                     el.on('mousedown',Ext.emptyFn,null,{
                         stopPropagation:true
                     });
