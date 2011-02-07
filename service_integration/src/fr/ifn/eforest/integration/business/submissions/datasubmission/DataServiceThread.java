@@ -19,7 +19,6 @@ public class DataServiceThread extends AbstractThread {
 	 * Local variables.
 	 */
 	private Integer submissionId;
-	private String countryCode;
 	private Map<String, String> requestParameters;
 
 	/**
@@ -39,16 +38,13 @@ public class DataServiceThread extends AbstractThread {
 	 * 
 	 * @param submissionId
 	 *            the identifier of the submission
-	 * @param countryCode
-	 *            the country code
 	 * @param requestParameters
 	 *            the map of static parameter values (the upload path, ...)
 	 * @throws Exception
 	 */
-	public DataServiceThread(Integer submissionId, String countryCode, Map<String, String> requestParameters) throws Exception {
+	public DataServiceThread(Integer submissionId, Map<String, String> requestParameters) throws Exception {
 
 		this.submissionId = submissionId;
-		this.countryCode = countryCode;
 		this.requestParameters = requestParameters;
 
 	}
@@ -65,7 +61,7 @@ public class DataServiceThread extends AbstractThread {
 
 			// Submit the data
 			DataService dataService = new DataService(this);
-			SubmissionData submission = dataService.submitData(submissionId, countryCode, requestParameters);
+			SubmissionData submission = dataService.submitData(submissionId, requestParameters);
 
 			// Log the end the the request
 			Date endDate = new Date();

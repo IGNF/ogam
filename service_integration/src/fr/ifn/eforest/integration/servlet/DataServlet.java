@@ -18,7 +18,6 @@ import fr.ifn.eforest.common.business.ThreadLock;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.integration.business.submissions.datasubmission.DataService;
 import fr.ifn.eforest.integration.business.submissions.datasubmission.DataServiceThread;
-import fr.ifn.eforest.integration.database.rawdata.SubmissionData;
 
 /**
  * Data Servlet.
@@ -46,9 +45,8 @@ public class DataServlet extends AbstractUploadServlet {
 	private static final String ACTION_STATUS = "status";
 
 	private static final String SUBMISSION_ID = "SUBMISSION_ID";
-	private static final String COUNTRY_CODE = "COUNTRY_CODE";
+	private static final String PROVIDER_ID = "PROVIDER_ID";
 	private static final String DATASET_ID = "DATASET_ID";
-	private static final String COMMENT = "COMMENT";
 	private static final String USER_LOGIN = "USER_LOGIN";
 
 	/**
@@ -88,9 +86,9 @@ public class DataServlet extends AbstractUploadServlet {
 			//
 			if (action.equals(ACTION_NEW_DATA_SUBMISSION)) {
 
-				String countryCode = request.getParameter(COUNTRY_CODE);
-				if (countryCode == null) {
-					throw new Exception("The " + COUNTRY_CODE + " parameter is mandatory");
+				String providerId = request.getParameter(PROVIDER_ID);
+				if (providerId == null) {
+					throw new Exception("The " + PROVIDER_ID + " parameter is mandatory");
 				}
 
 				String datasetId = request.getParameter(DATASET_ID);
@@ -98,14 +96,12 @@ public class DataServlet extends AbstractUploadServlet {
 					throw new Exception("The " + DATASET_ID + " parameter is mandatory");
 				}
 
-				String comment = request.getParameter(COMMENT);
-
 				String userLogin = request.getParameter(USER_LOGIN);
 				if (userLogin == null) {
 					throw new Exception("The " + USER_LOGIN + " parameter is mandatory");
 				}
 
-				Integer newSubmissionId = dataService.newSubmission(countryCode, datasetId, userLogin, comment);
+				Integer newSubmissionId = dataService.newSubmission(providerId, datasetId, userLogin);
 
 				out.print(generateResult("" + newSubmissionId));
 
@@ -178,7 +174,7 @@ public class DataServlet extends AbstractUploadServlet {
 
 			//
 			// Upload some data
-			//			
+			//
 			if (action.equals(ACTION_UPLOAD_DATA) && contentType.matches("multipart/form-data.*")) {
 
 				// Parse the multipart message and store the parts in two lists
@@ -196,9 +192,9 @@ public class DataServlet extends AbstractUploadServlet {
 				}
 
 				// Store the form items in the Map
-				Iterator formIter = formFieldsList.iterator();
+				Iterator<FileItem> formIter = formFieldsList.iterator();
 				while (formIter.hasNext()) {
-					FileItem item = (FileItem) formIter.next();
+					FileItem item = formIter.next();
 					String fieldName = item.getFieldName().trim();
 					String fieldValue = item.getString().trim();
 					requestParameters.put(fieldName, fieldValue);
@@ -211,21 +207,10 @@ public class DataServlet extends AbstractUploadServlet {
 				}
 				Integer submissionId = Integer.valueOf(submissionIDStr);
 
-				String countryCode = requestParameters.get(COUNTRY_CODE);
-				if (countryCode == null) {
-					throw new Exception("The " + COUNTRY_CODE + " parameter is mandatory");
-				}
-
-				// Check that the country code is consistent with the submission
-				SubmissionData submissionData = dataService.getSubmission(submissionId);
-				if (!submissionData.getCountryCode().equalsIgnoreCase(countryCode)) {
-					throw new Exception("The country code doesn't match the submission country code");
-				}
-
 				// Upload the file items in the directory
-				Iterator fileIter = fileFieldsList.iterator();
+				Iterator<FileItem> fileIter = fileFieldsList.iterator();
 				while (fileIter.hasNext()) {
-					FileItem item = (FileItem) fileIter.next();
+					FileItem item = fileIter.next();
 					String fileType = item.getFieldName().trim();
 					String filePath = pathFileDirectory + separator + submissionId + separator + fileType + separator + item.getName().trim();
 					uploadFile(item, filePath);
@@ -240,7 +225,7 @@ public class DataServlet extends AbstractUploadServlet {
 				}
 
 				// Launch the harmonization thread
-				process = new DataServiceThread(submissionId, countryCode, requestParameters);
+				process = new DataServiceThread(submissionId, requestParameters);
 				process.start();
 
 				// Register the running thread

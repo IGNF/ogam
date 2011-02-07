@@ -5,11 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.integration.database.rawdata.DataSubmissionDAO;
-import fr.ifn.eforest.integration.database.rawdata.DataSubmissionData;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStep;
-import fr.ifn.eforest.integration.business.submissions.SubmissionTypes;
 import fr.ifn.eforest.common.database.metadata.CheckData;
 import fr.ifn.eforest.common.database.metadata.ChecksDAO;
 import fr.ifn.eforest.integration.database.rawdata.SubmissionDAO;
@@ -30,7 +27,6 @@ public class CheckService {
 	 * Declare the DAOs.
 	 */
 	private SubmissionDAO submissionDAO = new SubmissionDAO();
-	private DataSubmissionDAO dataSubmissionDAO = new DataSubmissionDAO();
 	private ChecksDAO checksDAO = new ChecksDAO();
 	private CheckErrorDAO checkErrorDAO = new CheckErrorDAO();
 
@@ -70,13 +66,7 @@ public class CheckService {
 
 			// Get the list of checks to run
 			SubmissionData submission = submissionDAO.getSubmission(submissionId);
-			if (submission.getType().equalsIgnoreCase(SubmissionTypes.DATA)) {
-				DataSubmissionData dataSubmission = dataSubmissionDAO.getSubmission(submissionId);
-				logger.debug("Request ID : " + dataSubmission.getRequestId() + " Country code : " + submission.getCountryCode());
-				checksList = checksDAO.getChecks(dataSubmission.getRequestId(), submission.getCountryCode());
-			} else {
-				checksList = checksDAO.getChecks(submission.getType(), submission.getCountryCode());
-			}
+			checksList = checksDAO.getChecks(submission.getDatasetId(), submission.getProviderId());
 
 			// Launchs the checks
 			checksDAO.executeChecks(submissionId, checksList);

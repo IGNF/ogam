@@ -54,8 +54,6 @@ public class IntegrationService extends GenericMapper {
 	 * 
 	 * @param submissionId
 	 *            the submission identifier
-	 * @param countryCode
-	 *            the country code
 	 * @param csvFile
 	 *            the source data file
 	 * @param sourceFormat
@@ -65,7 +63,8 @@ public class IntegrationService extends GenericMapper {
 	 * @param thread
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
 	 */
-	public boolean insertData(Integer submissionId, String countryCode, CSVFile csvFile, String sourceFormat, Map<String, String> requestParameters, AbstractThread thread) throws Exception {
+	public boolean insertData(Integer submissionId, CSVFile csvFile, String sourceFormat, Map<String, String> requestParameters, AbstractThread thread)
+			throws Exception {
 
 		logger.debug("insertData");
 		boolean isInsertValid = true;
@@ -79,7 +78,6 @@ public class IntegrationService extends GenericMapper {
 				CheckException e = new CheckException(EMPTY_FILE);
 				e.setSourceFormat(sourceFormat);
 				e.setSubmissionId(submissionId);
-				e.setCountryCode(countryCode);
 				throw e;
 			}
 
@@ -95,7 +93,6 @@ public class IntegrationService extends GenericMapper {
 					e.setLineNumber(wrongColsCountsRows.getLineNumber());
 					e.setFoundValue("" + wrongColsCountsRows.getColNumber());
 					e.setExpectedValue("" + sourceFieldDescriptors.size());
-					e.setCountryCode(countryCode);
 					throw e;
 				} else {
 					// Few lignes have a wrong number of column
@@ -107,12 +104,11 @@ public class IntegrationService extends GenericMapper {
 						e.setLineNumber(wrongColsCountsRows.getLineNumber());
 						e.setFoundValue("" + wrongColsCountsRows.getColNumber());
 						e.setExpectedValue("" + sourceFieldDescriptors.size());
-						e.setCountryCode(countryCode);
 						if (i != wrongColsCounts.size() - 1) {
 							e.setSourceFormat(sourceFormat);
 							e.setSubmissionId(submissionId);
 							logger.error("CheckException", e);
-							// Store the check exception in database 
+							// Store the check exception in database
 							checkErrorDAO.createCheckError(e);
 						} else {
 							throw e;
@@ -134,7 +130,7 @@ public class IntegrationService extends GenericMapper {
 				TableFormatData destFormat = destFormatIter.next();
 
 				// Get the list of fiels for the table
-				List<TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat(), countryCode);
+				List<TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat());
 
 				// Store in a map
 				tableFieldsMap.put(destFormat.getFormat(), destFieldDescriptors);
@@ -144,7 +140,7 @@ public class IntegrationService extends GenericMapper {
 			// We create a map, giving for each field name a descriptor with the name of the destination table and column.
 			Map<String, TableFieldData> mappedFieldDescriptors = metadataDAO.getFieldMapping(sourceFormat, MappingTypes.FILE_MAPPING);
 
-			// Prepare the common destination fields for each table (indexed by destination format)					
+			// Prepare the common destination fields for each table (indexed by destination format)
 			Map<String, GenericData> commonFieldsMap = new HashMap<String, GenericData>();
 
 			// We go thru the expected destination fields of each table
@@ -221,12 +217,11 @@ public class IntegrationService extends GenericMapper {
 								e.setSourceData(sourceFieldDescriptor.getData());
 								e.setLineNumber(row + 1);
 								e.setSubmissionId(submissionId);
-								e.setCountryCode(countryCode);
 								throw e;
 							}
 						}
 
-						// Check and convert the type 
+						// Check and convert the type
 						try {
 							valueObj = convertType(sourceFieldDescriptor, value);
 						} catch (CheckException e) {
@@ -239,7 +234,6 @@ public class IntegrationService extends GenericMapper {
 							e.setFoundValue(value);
 							e.setLineNumber(row + 1);
 							e.setSubmissionId(submissionId);
-							e.setCountryCode(countryCode);
 							throw e;
 						}
 
@@ -252,7 +246,6 @@ public class IntegrationService extends GenericMapper {
 							e.setFoundValue(sourceFieldDescriptor.getData());
 							e.setLineNumber(row + 1);
 							e.setSubmissionId(submissionId);
-							e.setCountryCode(countryCode);
 							throw e;
 						}
 
@@ -267,7 +260,7 @@ public class IntegrationService extends GenericMapper {
 						commonFieldsMap.put(sourceFieldDescriptor.getData(), data);
 
 						if (mappedFieldDescriptor.isColumnOriented()) {
-							// If the value is column_oriented, add it to a separated list							
+							// If the value is column_oriented, add it to a separated list
 							data.setColumnName(sourceFieldDescriptor.getData()); // We store the value name instead of the column
 							colOrientedValuesList.add(data);
 						} else {
@@ -303,7 +296,6 @@ public class IntegrationService extends GenericMapper {
 							e.setSourceFormat(sourceFormat);
 							e.setLineNumber(row + 1);
 							e.setSubmissionId(submissionId);
-							e.setCountryCode(countryCode);
 							throw e;
 						}
 
@@ -332,7 +324,6 @@ public class IntegrationService extends GenericMapper {
 							e.setSourceFormat(sourceFormat);
 							e.setLineNumber(row + 1);
 							e.setSubmissionId(submissionId);
-							e.setCountryCode(countryCode);
 							throw e;
 						}
 					}
@@ -342,7 +333,7 @@ public class IntegrationService extends GenericMapper {
 					isInsertValid = false;
 					logger.error("CheckException", ce);
 
-					// We store the check exception in database and continue to the next line  
+					// We store the check exception in database and continue to the next line
 					checkErrorDAO.createCheckError(ce);
 
 				}
@@ -355,7 +346,7 @@ public class IntegrationService extends GenericMapper {
 			ce.setSubmissionId(submissionId);
 			logger.error("CheckException", ce);
 
-			// Store the check exception in database 
+			// Store the check exception in database
 			checkErrorDAO.createCheckError(ce);
 
 		} catch (Exception e) {
@@ -366,7 +357,7 @@ public class IntegrationService extends GenericMapper {
 			ce.setSubmissionId(submissionId);
 			logger.error("Unexpected Exception", e);
 
-			// Store the check exception in database 
+			// Store the check exception in database
 			checkErrorDAO.createCheckError(ce);
 
 		}

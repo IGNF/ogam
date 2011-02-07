@@ -7,28 +7,15 @@ public class SubmissionData {
 
 	private Integer submissionId;
 
-	private String type;
-
 	private String status;
 
 	private String step;
 
-	private String countryCode;
+	private String providerId;
 
-	/**
-	 * @return the countryCode
-	 */
-	public String getCountryCode() {
-		return countryCode;
-	}
+	private String datasetId;
 
-	/**
-	 * @param countryCode
-	 *            the countryCode to set
-	 */
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
-	}
+	private String userLogin;
 
 	/**
 	 * @return the submissionId
@@ -43,21 +30,6 @@ public class SubmissionData {
 	 */
 	public void setSubmissionId(Integer submissionId) {
 		this.submissionId = submissionId;
-	}
-
-	/**
-	 * @return the type
-	 */
-	public String getType() {
-		return type;
-	}
-
-	/**
-	 * @param type
-	 *            the type to set
-	 */
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	/**
@@ -88,6 +60,51 @@ public class SubmissionData {
 	 */
 	public void setStep(String step) {
 		this.step = step;
+	}
+
+	/**
+	 * @return the providerId
+	 */
+	public String getProviderId() {
+		return providerId;
+	}
+
+	/**
+	 * @param providerId
+	 *            the providerId to set
+	 */
+	public void setProviderId(String providerId) {
+		this.providerId = providerId;
+	}
+
+	/**
+	 * @return the datasetID
+	 */
+	public String getDatasetId() {
+		return datasetId;
+	}
+
+	/**
+	 * @param datasetId
+	 *            the datasetId to set
+	 */
+	public void setDatasetId(String datasetId) {
+		this.datasetId = datasetId;
+	}
+
+	/**
+	 * @return the userLogin
+	 */
+	public String getUserLogin() {
+		return userLogin;
+	}
+
+	/**
+	 * @param userLogin
+	 *            the userLogin to set
+	 */
+	public void setUserLogin(String userLogin) {
+		this.userLogin = userLogin;
 	}
 
 }

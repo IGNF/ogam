@@ -16,14 +16,11 @@ import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.RequestFormatData;
 import fr.ifn.eforest.common.database.metadata.TableFormatData;
 import fr.ifn.eforest.common.database.GenericDAO;
-import fr.ifn.eforest.integration.database.rawdata.DataSubmissionDAO;
-import fr.ifn.eforest.integration.database.rawdata.DataSubmissionData;
 import fr.ifn.eforest.integration.database.rawdata.SubmissionDAO;
 import fr.ifn.eforest.integration.database.rawdata.SubmissionData;
 import fr.ifn.eforest.integration.business.IntegrationService;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStep;
-import fr.ifn.eforest.integration.business.submissions.SubmissionTypes;
 
 /**
  * Service managing plot and tree data.
@@ -43,7 +40,6 @@ public class DataService extends AbstractService {
 	private SubmissionDAO submissionDAO = new SubmissionDAO();
 	private MetadataDAO metadataDAO = new MetadataDAO();
 	private GenericDAO genericDAO = new GenericDAO();
-	private DataSubmissionDAO dataSubmissionDAO = new DataSubmissionDAO();
 
 	/**
 	 * The generic mapper.
@@ -85,7 +81,7 @@ public class DataService extends AbstractService {
 	 * 
 	 * @param codeCountry
 	 *            the code country
-	 * @param datasetId
+	 * @param providerId
 	 *            the dataset identifier
 	 * @param userLogin
 	 *            the login of the user who creates the submission
@@ -93,13 +89,10 @@ public class DataService extends AbstractService {
 	 *            a comment
 	 * @return the identifier of the created submission
 	 */
-	public Integer newSubmission(String codeCountry, String datasetId, String userLogin, String comment) throws Exception {
+	public Integer newSubmission(String providerId, String datasetId, String userLogin) throws Exception {
 
 		// Create the submission
-		Integer submissionId = submissionDAO.newSubmission(SubmissionTypes.DATA, codeCountry);
-
-		// Enter the data submission information
-		dataSubmissionDAO.newDataSubmission(submissionId, datasetId, userLogin, comment);
+		Integer submissionId = submissionDAO.newSubmission(providerId, datasetId, userLogin);
 
 		logger.debug("New data submission created : " + submissionId);
 
@@ -130,19 +123,13 @@ public class DataService extends AbstractService {
 	 */
 	public void cancelSubmission(Integer submissionId) throws Exception {
 
-		// Check that the submissionId is of the good type
+		// Get some info about the submission
 		SubmissionData submissionData = submissionDAO.getSubmission(submissionId);
-		if (!submissionData.getType().equalsIgnoreCase(SubmissionTypes.DATA)) {
-			throw new Exception("The submission number " + submissionId + " should be of type " + SubmissionTypes.DATA);
-		}
-
-		// Get some info about the data submission
-		DataSubmissionData dataSubmission = dataSubmissionDAO.getSubmission(submissionId);
 
 		// Get the list of requested files concerned by the submission
-		List<RequestFormatData> requestedFiles = metadataDAO.getRequestFiles(dataSubmission.getRequestId());
+		List<RequestFormatData> requestedFiles = metadataDAO.getRequestFiles(submissionData.getDatasetId());
 
-		// Get the list of destination tables concerned by the submission 
+		// Get the list of destination tables concerned by the submission
 		List<TableFormatData> destinationTables = new ArrayList<TableFormatData>();
 		Iterator<RequestFormatData> requestedFilesIter = requestedFiles.iterator();
 		while (requestedFilesIter.hasNext()) {
@@ -152,8 +139,6 @@ public class DataService extends AbstractService {
 
 		// Get the tables with their ancestors sorted in the right order
 		List<String> toDeleteFormats = integrationService.getSortedAncestors(Schemas.RAW_DATA, destinationTables);
-		// Exclude the location table from the list
-		toDeleteFormats.remove(Formats.LOCATION_DATA);
 
 		// Delete data for the raw_data tables in the right order
 		Iterator<String> tableIter = toDeleteFormats.iterator();
@@ -175,13 +160,11 @@ public class DataService extends AbstractService {
 	 * 
 	 * @param submissionId
 	 *            the identifier of the submission
-	 * @param countryCode
-	 *            the country code
 	 * @param requestParameters
 	 *            the map of static parameter values (the upload path, ...)
 	 * @return the created submission object
 	 */
-	public SubmissionData submitData(Integer submissionId, String countryCode, Map<String, String> requestParameters) {
+	public SubmissionData submitData(Integer submissionId, Map<String, String> requestParameters) {
 
 		try {
 
@@ -194,15 +177,9 @@ public class DataService extends AbstractService {
 			if (submission == null) {
 				throw new Exception("The submission number " + submissionId + " doest not exist");
 			}
-			if (!submission.getType().equalsIgnoreCase(SubmissionTypes.DATA)) {
-				throw new Exception("The submission number " + submissionId + " is not a data submission");
-			}
-
-			// Get the information about the submission
-			DataSubmissionData dataSubmissionInfo = dataSubmissionDAO.getSubmission(submissionId);
 
 			// Get the expected CSV formats for the request
-			List<RequestFormatData> fileFormats = metadataDAO.getRequestFiles(dataSubmissionInfo.getRequestId());
+			List<RequestFormatData> fileFormats = metadataDAO.getRequestFiles(submission.getDatasetId());
 			Iterator<RequestFormatData> fileIter = fileFormats.iterator();
 			while (fileIter.hasNext()) {
 
@@ -218,7 +195,7 @@ public class DataService extends AbstractService {
 				submissionDAO.addSubmissionFile(submissionId, fileFormat.getFormat(), filePath, csvFile.getRowsCount());
 
 				// Insert the data in database with automatic mapping ...
-				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, countryCode, csvFile, fileFormat.getFormat(), requestParameters, this.thread);
+				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, csvFile, fileFormat.getFormat(), requestParameters, this.thread);
 
 			}
 

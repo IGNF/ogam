@@ -7,8 +7,6 @@ import fr.ifn.eforest.integration.AbstractEFDACTest;
 import fr.ifn.eforest.integration.business.checks.CheckService;
 import fr.ifn.eforest.integration.business.submissions.datasubmission.DataService;
 import fr.ifn.eforest.common.business.Formats;
-import fr.ifn.eforest.integration.business.submissions.plotlocation.LocationService;
-import fr.ifn.eforest.integration.business.submissions.strata.StrataService;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStep;
 import fr.ifn.eforest.integration.database.rawdata.SubmissionDAO;
@@ -26,8 +24,6 @@ public class DataServiceTest extends AbstractEFDACTest {
 
 	// The services
 	private DataService dataService = new DataService();
-	private LocationService locationService = new LocationService();
-	private StrataService strataService = new StrataService();
 	private CheckService checkService = new CheckService();
 
 	// The DAOs
@@ -48,58 +44,33 @@ public class DataServiceTest extends AbstractEFDACTest {
 	public void testDataSubmission() throws Exception {
 
 		// Parameters
-		String countryCode = "66";
+		String providerId = "test_provider";
 		String locationFile = "./test/data/PLOT_LOCATION/PLOT_LOCATION.CSV";
-		String strataFile = "./test/data/STRATA_DESCRIPTION/TEST_STRATA.csv";
 		String plotFile = "./test/data/WP3_REQUEST/PLOT_DATA.CSV";
 		String speciesFile = "./test/data/WP3_REQUEST/SPECIES_DATA.CSV";
 
 		String requestId = "WP3_REQUEST";
 		String userLogin = "Test user";
-		String comment = "JUnit Test";
 
-		Integer locationSubmissionId = null;
-		Integer strataSubmissionId = null;
 		Integer dataSubmissionId = null;
 
 		try {
 
-			// Create a new location submission
-			locationSubmissionId = locationService.newSubmission(countryCode);
-
-			// Simulate the location servlet request parameters
-			Map<String, String> locationParameters = new HashMap<String, String>();
-			locationParameters.put(SUBMISSION_ID, "" + locationSubmissionId);
-			locationParameters.put(COUNTRY_CODE, countryCode);
-
-			// Submit the location data
-			locationService.submitPlotLocations(locationSubmissionId, locationFile, locationParameters);
-
-			// Create a new strata submission
-			strataSubmissionId = strataService.newSubmission(countryCode);
-
-			// Simulate the location servlet request parameters
-			Map<String, String> strataParameters = new HashMap<String, String>();
-			strataParameters.put(SUBMISSION_ID, "" + strataSubmissionId);
-			strataParameters.put(COUNTRY_CODE, countryCode);
-
-			// Submit the location data
-			strataService.submitStrata(strataSubmissionId, strataFile, strataParameters);
-
 			// Create a new data submission
-			dataSubmissionId = dataService.newSubmission(countryCode, requestId, userLogin, comment);
+			dataSubmissionId = dataService.newSubmission(providerId, requestId, userLogin);
 
 			// Simulate the data servlet request parameters
 			Map<String, String> dataParameters = new HashMap<String, String>();
 			dataParameters.put(SUBMISSION_ID, "" + dataSubmissionId);
-			dataParameters.put(COUNTRY_CODE, countryCode);
+			dataParameters.put(PROVIDER_ID, providerId);
 			dataParameters.put(REF_YEAR_BEGIN, "2006");
 			dataParameters.put(REF_YEAR_END, "2009");
+			dataParameters.put(Formats.LOCATION_FILE, locationFile);
 			dataParameters.put(Formats.WP3_PLOT_FILE, plotFile);
 			dataParameters.put(Formats.WP3_SPECIES_FILE, speciesFile);
 
 			// Submit Data
-			dataService.submitData(dataSubmissionId, countryCode, dataParameters);
+			dataService.submitData(dataSubmissionId, dataParameters);
 
 			// Get the data submission status
 			SubmissionData submission = dataService.getSubmission(dataSubmissionId);
@@ -107,7 +78,6 @@ public class DataServiceTest extends AbstractEFDACTest {
 			// Check that the step is "DATA_INSERTED"
 			assertEquals(submission.getStep(), SubmissionStep.DATA_INSERTED);
 			assertEquals(submission.getStatus(), SubmissionStatus.OK);
-			assertEquals(countryCode, submission.getCountryCode());
 
 			// Check the submission
 			checkService.runChecks(dataSubmissionId);
@@ -137,14 +107,6 @@ public class DataServiceTest extends AbstractEFDACTest {
 			if (dataSubmissionId != null) {
 				dataService.cancelSubmission(dataSubmissionId);
 			}
-
-			// Cancel the strata submission
-			if (strataSubmissionId != null) {
-				strataService.cancelSubmission(strataSubmissionId);
-			}
-
-			// Cancel the location submission
-			locationService.cancelSubmission(locationSubmissionId);
 
 		}
 

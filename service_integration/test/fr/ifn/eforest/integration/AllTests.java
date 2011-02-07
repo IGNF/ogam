@@ -2,8 +2,6 @@ package fr.ifn.eforest.integration;
 
 import fr.ifn.eforest.integration.business.DataServiceTest;
 import fr.ifn.eforest.integration.business.GenericMapperTest;
-import fr.ifn.eforest.integration.business.LocationServiceTest;
-import fr.ifn.eforest.integration.business.StrataServiceTest;
 import fr.ifn.eforest.integration.database.MetadataTest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -23,8 +21,6 @@ public class AllTests {
 
 		suite.addTestSuite(DataServiceTest.class);
 		suite.addTestSuite(GenericMapperTest.class);
-		suite.addTestSuite(LocationServiceTest.class);
-		suite.addTestSuite(StrataServiceTest.class);
 		suite.addTestSuite(MetadataTest.class);
 		return suite;
 	}

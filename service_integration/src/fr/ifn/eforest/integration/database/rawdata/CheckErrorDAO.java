@@ -24,7 +24,7 @@ public class CheckErrorDAO {
 	/**
 	 * Create a new submission.
 	 */
-	private static final String CREATE_CHECK_ERROR_STMT = "INSERT INTO check_error (check_id, submission_id, line_number, src_format, src_data, found_value, expected_value, error_message, plot_code, country_code) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String CREATE_CHECK_ERROR_STMT = "INSERT INTO check_error (check_id, submission_id, line_number, src_format, src_data, found_value, expected_value, error_message, plot_code) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	/**
 	 * Counts the number of errors or warnings for a step and for a specified submission id.
@@ -77,7 +77,6 @@ public class CheckErrorDAO {
 			ps.setString(7, ce.getExpectedValue());
 			ps.setString(8, ce.getMessage());
 			ps.setString(9, ce.getPlotCode());
-			ps.setString(10, ce.getCountryCode());
 
 			logger.trace(CREATE_CHECK_ERROR_STMT);
 			ps.execute();

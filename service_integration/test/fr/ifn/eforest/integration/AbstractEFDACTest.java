@@ -44,7 +44,7 @@ public class AbstractEFDACTest extends JndiBasedDBTestCase {
 	protected JNDIUnitTestHelper harmonizedJNDI;
 
 	protected static final String SUBMISSION_ID = "SUBMISSION_ID";
-	protected static final String COUNTRY_CODE = "COUNTRY_CODE";
+	protected static final String PROVIDER_ID = "PROVIDER_ID";
 	protected static final String REF_YEAR_BEGIN = "REF_YEAR_BEGIN";
 	protected static final String REF_YEAR_END = "REF_YEAR_END";
 

@@ -30,7 +30,7 @@ public class SubmissionDAO {
 	/**
 	 * Create a new submission.
 	 */
-	private static final String CREATE_SUBMISSION_STMT = "INSERT INTO submission (submission_id, type, country_code, step) values (?, ?, ?, ?)";
+	private static final String CREATE_SUBMISSION_STMT = "INSERT INTO submission (submission_id, provider_id, dataset_id, user_login, step) values (?, ?, ?, ?, ?)";
 
 	/**
 	 * update the submission step and status.
@@ -55,7 +55,7 @@ public class SubmissionDAO {
 	/**
 	 * Get a submission.
 	 */
-	private static final String GET_SUBMISSION_BY_ID_STMT = "SELECT submission_id, type, step, status, country_code FROM submission WHERE submission_id = ?";
+	private static final String GET_SUBMISSION_BY_ID_STMT = "SELECT submission_id, step, status, provider_id, dataset_id, user_login FROM submission WHERE submission_id = ?";
 
 	/**
 	 * Get a connexion to the database.
@@ -102,8 +102,10 @@ public class SubmissionDAO {
 				result.setSubmissionId(submissionId);
 				result.setStep(rs.getString("step"));
 				result.setStatus(rs.getString("status"));
-				result.setType(rs.getString("type"));
-				result.setCountryCode(rs.getString("country_code"));
+				result.setProviderId(rs.getString("provider_id"));
+				result.setDatasetId(rs.getString("dataset_id"));
+				result.setUserLogin(rs.getString("user_login"));
+
 			}
 
 			return result;
@@ -137,11 +139,11 @@ public class SubmissionDAO {
 	 * 
 	 * @param submissionType
 	 *            the submission type
-	 * @param countryCode
-	 *            the code of the country
+	 * @param providerId
+	 *            the identifier of the provider
 	 * @return the identifier of the new submission
 	 */
-	public Integer newSubmission(String submissionType, String countryCode) throws Exception {
+	public Integer newSubmission(String providerId, String datasetId, String userLogin) throws Exception {
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -169,9 +171,10 @@ public class SubmissionDAO {
 			ps = con.prepareStatement(CREATE_SUBMISSION_STMT);
 			logger.trace(CREATE_SUBMISSION_STMT);
 			ps.setInt(1, submissionId);
-			ps.setString(2, submissionType);
-			ps.setString(3, countryCode);
-			ps.setString(4, SubmissionStep.INITIALISED);
+			ps.setString(2, providerId);
+			ps.setString(3, datasetId);
+			ps.setString(4, userLogin);
+			ps.setString(5, SubmissionStep.INITIALISED);
 			ps.execute();
 
 			return submissionId;

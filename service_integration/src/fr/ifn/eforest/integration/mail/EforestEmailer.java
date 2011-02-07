@@ -5,7 +5,6 @@ import javax.mail.Session;
 import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.util.Emailer;
-import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.integration.database.rawdata.SubmissionData;
 import fr.ifn.eforest.common.database.website.ApplicationParametersDAO;
 
@@ -29,7 +28,6 @@ public class EforestEmailer {
 	 * The DAOs.
 	 */
 	private ApplicationParametersDAO parameterDAO = new ApplicationParametersDAO();
-	private MetadataDAO metadataDAO = new MetadataDAO();
 
 	/**
 	 * Sends an email to the administrator.
@@ -50,9 +48,8 @@ public class EforestEmailer {
 			try {
 
 				message.append("\n\n");
-				String country = metadataDAO.getMode("COUNTRY_CODE", submission.getCountryCode());
-				message.append("Country : " + country + "\n");
-				message.append("Type : " + submission.getType() + "\n");
+				message.append("Provider : " + submission.getProviderId() + "\n");
+				message.append("Dataset : " + submission.getDatasetId() + "\n");
 				message.append("Step : " + submission.getStep() + "\n");
 				message.append("Status : " + submission.getStatus() + "\n");
 

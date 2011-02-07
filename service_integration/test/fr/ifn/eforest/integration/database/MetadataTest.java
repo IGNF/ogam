@@ -45,10 +45,10 @@ public class MetadataTest extends AbstractEFDACTest {
 	public void testCheckCode() throws Exception {
 
 		// The code xxx is not a country code
-		assertFalse("The code xxx is not a country code", metadataDAO.checkCode(COUNTRY_CODE, "xxx"));
+		assertFalse("The code xxx is not a country code", metadataDAO.checkCode("SPECIES_CODE", "toto"));
 
 		// The code 1 is a country code
-		assertTrue("The code 1 is a country code", metadataDAO.checkCode(COUNTRY_CODE, "1"));
+		assertTrue("The code 1 is a country code", metadataDAO.checkCode("SPECIES_CODE", "164.002.001"));
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class MetadataTest extends AbstractEFDACTest {
 	 */
 	public void testGetModes() throws Exception {
 
-		List<ModeData> countryCodes = metadataDAO.getModes(COUNTRY_CODE);
+		List<ModeData> countryCodes = metadataDAO.getModes("SPECIES_CODE");
 
 		assertEquals("There is 34 differents country codes", 34, countryCodes.size());
 
@@ -199,9 +199,8 @@ public class MetadataTest extends AbstractEFDACTest {
 	public void testGetTableFields() throws Exception {
 
 		String tableFormat = "PLOT_DATA";
-		String countryCode = null;
 
-		List<TableFieldData> fields = metadataDAO.getTableFields(tableFormat, countryCode);
+		List<TableFieldData> fields = metadataDAO.getTableFields(tableFormat);
 
 		logger.debug(fields);
 
