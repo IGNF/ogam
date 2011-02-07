@@ -104,7 +104,7 @@ LAYER
 	STATUS ON 
 	CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=OGAM host=localhost port=5432"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM nuts_0 USING srid=3035"
 	CLASSITEM "cell_id"
 	LABELITEM "cell_id"
@@ -186,9 +186,9 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=OGAM host=localhost port=5432"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT the_geom, country_code, plot_code, oid FROM result_location
+            SELECT the_geom, plot_code, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POINT'
               AND session_id = '%SESSION_ID%'
         ) as foo USING UNIQUE oid USING srid=3035
@@ -226,9 +226,9 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=OGAM host=localhost port=5432"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT transform(the_geom, 3035) as the_geom, country_code || '_' || plot_code as oid  
+            SELECT transform(the_geom, 3035) as the_geom, plot_code as oid  
             FROM location
         ) as foo USING srid=3035
     "
@@ -265,9 +265,9 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=OGAM host=localhost port=5432"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT transform(the_geom, 3035) as the_geom, country_code || '_' || plot_code as oid  
+            SELECT transform(the_geom, 3035) as the_geom, plot_code as oid  
             FROM location
             WHERE country_code = '%COUNTRY_CODE%'
         ) as foo USING srid=3035
@@ -305,9 +305,9 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=OGAM host=localhost port=5432"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT the_geom, country_code || '_' || plot_code as oid  
+            SELECT the_geom, plot_code as oid  
             FROM harmonized_location
         ) as foo USING srid=3035
     "
@@ -344,9 +344,9 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=OGAM host=localhost port=5432"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT the_geom, country_code || '_' || plot_code as oid  
+            SELECT the_geom, plot_code as oid  
             FROM harmonized_location
             WHERE country_code = '%COUNTRY_CODE%'
         ) as foo USING srid=3035
@@ -377,9 +377,9 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=OGAM host=localhost port=5432"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT transform(the_geom, 3035) as the_geom, country_code || '_' || plot_code as oid  
+            SELECT transform(the_geom, 3035) as the_geom, plot_code as oid  
             FROM location
             WHERE plot_code = '%plot_code%'
         ) as foo USING srid=3035
@@ -416,9 +416,9 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=OGAM host=localhost port=5432"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT the_geom, country_code || '_' || plot_code as oid  
+            SELECT the_geom, plot_code as oid  
             FROM harmonized_location
             WHERE plot_code = '%plot_code%'
         ) as foo USING srid=3035
