@@ -71,18 +71,11 @@ constraint PK_SUBMISSION_FILE primary key (SUBMISSION_ID, FILE_TYPE)
 create table LOCATION (
 SUBMISSION_ID        INT4                 not null,
 PLOT_CODE            VARCHAR(36)          not null,
-CLUSTER_CODE         VARCHAR(36)          not null,
-COUNTRY_CODE         VARCHAR(36)          not null,
 LAT                  FLOAT8               null,
 LONG                 FLOAT8               null,
-IS_PLOT_COORDINATES_DEGRADED   CHAR(1)	  not null,
-CELL_ID_NUTS0		 VARCHAR(36)          null,
-CELL_ID_100          VARCHAR(36)          null,
-CELL_ID_50           VARCHAR(36)          null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_LOCATION primary key (SUBMISSION_ID, PLOT_CODE),
-UNIQUE (COUNTRY_CODE, PLOT_CODE)
+constraint PK_LOCATION primary key (SUBMISSION_ID, PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
@@ -117,21 +110,13 @@ CREATE TRIGGER geom_trigger
 /*==============================================================*/
 create table PLOT_DATA (
 SUBMISSION_ID        INT4                 not null,
-STRATUM_CODE         VARCHAR(36)          null,
-COUNTRY_CODE         VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
-REF_YEAR_BEGIN       INTEGER	          not null,
-REF_YEAR_END	     INTEGER	          not null,
 INV_DATE             DATE                 null,
-STATISTICAL_WEIGHT   FLOAT8               null,
-DOMAIN_FOREST        VARCHAR(36)			  null,
-DOMAIN_BASAL_AREA    VARCHAR(36)			  null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
-IS_PARTITIONNING_PLOT  CHAR(1)	          null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_PLOT_DATA primary key (SUBMISSION_ID, COUNTRY_CODE, PLOT_CODE, CYCLE)
+constraint PK_PLOT_DATA primary key (SUBMISSION_ID, PLOT_CODE, CYCLE)
 );
 
 
@@ -141,16 +126,13 @@ constraint PK_PLOT_DATA primary key (SUBMISSION_ID, COUNTRY_CODE, PLOT_CODE, CYC
 /*==============================================================*/
 create table SPECIES_DATA (
 SUBMISSION_ID        INT4                 not null,
-COUNTRY_CODE         VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 SPECIES_CODE         VARCHAR(36)          not null,
-DBH_CLASS            VARCHAR(36)          null,
-NATIONAL_SPECIES_CODE         VARCHAR(36)          null,
 BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_SPECIES_DATA primary key (SUBMISSION_ID, COUNTRY_CODE, PLOT_CODE, CYCLE, DBH_CLASS, SPECIES_CODE)
+constraint PK_SPECIES_DATA primary key (SUBMISSION_ID, PLOT_CODE, CYCLE, SPECIES_CODE)
 );
 
 
@@ -192,7 +174,7 @@ alter table SPECIES_DATA
       
       
 -- Ajout d'indexes
-CREATE INDEX LOCATION_PLOT_CODE_IDX ON location (country_code, plot_code);
-CREATE INDEX PLOT_DATA_PLOT_CODE_IDX ON plot_data (country_code, plot_code);
-CREATE INDEX SPECIES_DATA_PLOT_CODE_IDX ON species_data (country_code, plot_code);
+CREATE INDEX LOCATION_PLOT_CODE_IDX ON location ( plot_code);
+CREATE INDEX PLOT_DATA_PLOT_CODE_IDX ON plot_data ( plot_code);
+CREATE INDEX SPECIES_DATA_PLOT_CODE_IDX ON species_data ( plot_code);
 
