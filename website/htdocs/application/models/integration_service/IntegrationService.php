@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once APPLICATION_PATH.'/models/abstract_service/AbstractService.php';
 
 /**
@@ -118,15 +118,14 @@ class Model_IntegrationService extends Model_AbstractService {
 	/**
 	 * Create a new data submission.
 	 *
-	 * @param string the country code
-	 * @param string the dataset identifier
-	 * @param string a comment
-	 * @param string the user login
+	 * @param String the provider identifier
+	 * @param String the dataset identifier
+	 * @param String the user login
 	 * @return the generated submissionId
 	 * @throws Exception if a problem occured on the server side
 	 */
-	public function newDataSubmission($countryCode, $datasetId, $comment, $userLogin) {
-		$this->logger->debug("newDataSubmission : ".$countryCode);
+	public function newDataSubmission($providerId, $datasetId, $userLogin) {
+		$this->logger->debug("newDataSubmission : ".$providerId." ".$datasetId);
 
 		$client = new Zend_Http_Client();
 		$client->setUri($this->serviceUrl."DataServlet?action=NewDataSubmission");
@@ -134,10 +133,9 @@ class Model_IntegrationService extends Model_AbstractService {
 			'maxredirects' => 0,
 			'timeout' => 30));
 
-		$client->setParameterPost('COUNTRY_CODE', $countryCode);
+		$client->setParameterPost('PROVIDER_ID', $providerId);
 		$client->setParameterPost('DATASET_ID', $datasetId);
 		$client->setParameterPost('USER_LOGIN', $userLogin);
-		$client->setParameterPost('COMMENT', $comment);
 
 		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."DataServlet?action=NewDataSubmission");
 

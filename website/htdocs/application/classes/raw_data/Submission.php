@@ -1,14 +1,14 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'raw_data/SubmissionFile.php';
 
 /**
  * Represent a submission.
  *
- * A submission is a batch of files that is send to the E-forest server in order to be stored in database.
+ * A submission is a batch of files that is send to the server in order to be stored in database.
  *
  * @package classes
  */
@@ -18,11 +18,6 @@ class Submission {
 	 * The submission identifier
 	 */
 	var $submissionId;
-
-	/**
-	 * The country code
-	 */
-	var $countryCode;
 
 	/**
 	 * The submission step
@@ -35,9 +30,19 @@ class Submission {
 	var $status;
 
 	/**
-	 * The submission type
+	 * The provider (country, organisation, ...) identifier
 	 */
-	var $type;
+	var $providerId;
+
+	/**
+	 * The dataset identifier
+	 */
+	var $datasetId;
+
+	/**
+	 * The login of the user who has done the submission
+	 */
+	var $userLogin;
 
 	/**
 	 * The files of the submission (array of SubmissionFile);

@@ -19,13 +19,9 @@ $user_session = new Zend_Session_Namespace('user');
 $role = $user_session->role;
 ?>
 
-<li>
-<a href="<?= $this->url(array('controller'=>'integration','action'=>'show-plot-location-page'), null, true) ?>">Submit Plot Locations</a>
-</li>
-
 
 <li>
-<a href="<?= $this->url(array('controller'=>'integration','action'=>'show-data-page'), null, true) ?>">Submit Forest Data</a>
+<a href="<?= $this->url(array('controller'=>'integration','action'=>'show-data-page'), null, true) ?>">Submit Data</a>
 </li>
 
 </ul>

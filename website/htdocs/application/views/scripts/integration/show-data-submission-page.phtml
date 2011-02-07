@@ -15,24 +15,23 @@
 <table class="sectiontable">
 <tr>
     <th>Submission ID</th>
-    <th>Country Code</th>
+    <th>Provider Id</th>
     <th>Dataset</th>
     <th>Step</th>
     <th>Status</th>
     <th>File Type</th>
     <th>Lines numbers</th>
-    <th>Comment</th>
     <th>Actions</th>
     <th></th>
 </tr>
 <?
 $i = 0;
-foreach($this->submissions as $submission) {
+foreach ($this->submissions as $submission) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
     <td><?= $this->escape($submission->submissionId); ?></td>
-    <td><?= $this->countries[$submission->countryCode]; ?></td>
-    <td><?= $this->escape($submission->jrcRequest); ?></td>
+    <td><?= $this->escape($submission->providerId); ?></td>
+    <td><?= $this->escape($submission->datasetId); ?></td>
     <td><?= $this->escape($submission->step); ?></td>
     <td>
             <? if ($submission->status === "OK" || $submission->status === "CHECKED") : ?>
@@ -99,14 +98,16 @@ foreach($this->submissions as $submission) {
                 </script>
                 </div>
             <?php else : //"ERROR" or "CRASH") ?>
-            	<?= $this->escape($submission->status); ?>
+            	<?=
+		$this->escape($submission->status);
+?>
                 <img src='<?= PATH_BASE_URL ?>/img/Red_x.png' />
             <?php endif; ?>
     </td>
     <td colspan=2>
         <?php if ($submission->status !== "DATARUNNING") : ?>
             <table>
-            <?php  foreach ($submission->files as $file) : ?>
+            <?php foreach ($submission->files as $file) : ?>
                 <tr><td><?= $file->fileType ?></td>
                 <td><?= $file->lineNumber ?></td></tr>
             <?php endforeach; ?>
@@ -114,25 +115,24 @@ foreach($this->submissions as $submission) {
         <?php endif; ?>
     </td>
     
-    <td><?= $this->escape($submission->comment); ?></td>
     <td>
     <?
-    if ($submission->step === "INSERTED" && $submission->status === "OK") {
-    ?>
+	if ($submission->step === "INSERTED" && $submission->status === "OK") {
+?>
     <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'check-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" >Check data</a></p>
     <? }
-    if ($submission->step !== "INIT" && $submission->status !== "DATARUNNING") {
-    ?>
+	if ($submission->step !== "INIT" && $submission->status !== "DATARUNNING") {
+?>
     <p><a href="<?= $this->url(array('controller'=>'proxy','action'=>'showreport'), null, true)?>?submissionId=<?=$submission->submissionId;?>" >Show report</a></p>
     <? }
-    if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
-    ?>
+	if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
+?>
     <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('Once validated the data will be available for agregation. Do you confirm?');">Validate data</a></p>
     <? } ?>
     <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('Are you sure?');">Cancel Submission</a></p>
 </td></tr>
 <?
-$i++;
+	$i++;
 }
 ?>
 </table>
