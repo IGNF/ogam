@@ -1,1 +1,1 @@
-RAW_DATA;LOCATION_DATA;*;;The location table has a separate submission systemRAW_DATA;PLOT_DATA;LOCATION_DATA;COUNTRY_CODE, PLOT_CODE;This table is the root of the raw_data schemaRAW_DATA;SPECIES_DATA;PLOT_DATA;SUBMISSION_ID, COUNTRY_CODE, PLOT_CODE, CYCLE;The submission id must match
+RAW_DATA;LOCATION_DATA;*;;RAW_DATA;PLOT_DATA;LOCATION_DATA;SUBMISSION_ID, PLOT_CODE;The submission id must matchRAW_DATA;SPECIES_DATA;PLOT_DATA;SUBMISSION_ID, PLOT_CODE, CYCLE;The submission id must match

@@ -20,36 +20,17 @@ CREATE SEQUENCE submission_id_seq
 /*==============================================================*/
 create table SUBMISSION (
 SUBMISSION_ID        INT4                 not null default nextval('submission_id_seq'),
-TYPE          		 VARCHAR(36)          not null,
 STEP		 		 VARCHAR(36)          null,
 STATUS    			 VARCHAR(36)          null,
-COUNTRY_CODE         VARCHAR(36)          not null,
+PROVIDER_ID          VARCHAR(36)          not null,
+DATASET_ID           VARCHAR(36)          not null,
+USER_LOGIN           VARCHAR(50)          not null,
 _CREATIONDT          DATE                 null DEFAULT current_timestamp,
 _VALIDATIONDT        DATE                 null DEFAULT current_timestamp,
 constraint PK_SUBMISSION primary key (SUBMISSION_ID)
 );
 
 
-
-/*==============================================================*/
-/* Table : DATA_SUBMISSION                                      */
-/*==============================================================*/
-create table DATA_SUBMISSION (
-SUBMISSION_ID        INT4                 not null,
-REQUEST_ID           VARCHAR(36)          not null,
-COMMENT              VARCHAR(255)         null,
-USER_LOGIN           VARCHAR(50)          null,
-constraint PK_DATA_SUBMISSION primary key (SUBMISSION_ID, REQUEST_ID)
-);
-
-
-/*==============================================================*/
-/* Table : LOCATION_SUBMISSION                                  */
-/*==============================================================*/
-create table LOCATION_SUBMISSION (
-SUBMISSION_ID        INT4                 not null,
-constraint PK_LOCATION_SUBMISSION primary key (SUBMISSION_ID)
-);
 
 
 /*==============================================================*/
@@ -75,7 +56,8 @@ LAT                  FLOAT8               null,
 LONG                 FLOAT8               null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_LOCATION primary key (SUBMISSION_ID, PLOT_CODE)
+constraint PK_LOCATION primary key (SUBMISSION_ID, PLOT_CODE),
+unique (PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
@@ -147,7 +129,6 @@ SUBMISSION_ID        INT4                 not null,
 LINE_NUMBER          INT4                 not null,
 SRC_FORMAT           VARCHAR(36)          null,
 SRC_DATA             VARCHAR(36)          null,
-COUNTRY_CODE         VARCHAR(36)          null,
 PLOT_CODE            VARCHAR(36)          null,
 FOUND_VALUE          VARCHAR(255)         null,
 EXPECTED_VALUE       VARCHAR(255)         null,
@@ -157,19 +138,15 @@ constraint PK_CHECK_ERROR primary key (CHECK_ID, SUBMISSION_ID, CHECK_ERROR_ID)
 );
 
 
-alter table LOCATION
-   add constraint FK_LOCATION_ASSOCIATI_LOCATION foreign key (SUBMISSION_ID)
-      references LOCATION_SUBMISSION (SUBMISSION_ID)
-      on delete restrict on update restrict;
-      
+     
 alter table PLOT_DATA
-   add constraint FK_PLOT_DATA_ASSOCIATE_LOCATION foreign key (PLOT_CODE, COUNTRY_CODE)
-      references LOCATION (PLOT_CODE, COUNTRY_CODE)
+   add constraint FK_PLOT_DATA_ASSOCIATE_LOCATION foreign key (PLOT_CODE)
+      references LOCATION (PLOT_CODE)
       on delete restrict on update restrict;
            
 alter table SPECIES_DATA
-   add constraint FK_SPECIES_ASSOCIATE_PLOT_DAT foreign key (SUBMISSION_ID, COUNTRY_CODE, PLOT_CODE, CYCLE)
-      references PLOT_DATA (SUBMISSION_ID, COUNTRY_CODE, PLOT_CODE, CYCLE)
+   add constraint FK_SPECIES_ASSOCIATE_PLOT_DAT foreign key (SUBMISSION_ID, PLOT_CODE, CYCLE)
+      references PLOT_DATA (SUBMISSION_ID, PLOT_CODE, CYCLE)
       on delete restrict on update restrict;     
       
       
@@ -178,3 +155,15 @@ CREATE INDEX LOCATION_PLOT_CODE_IDX ON location ( plot_code);
 CREATE INDEX PLOT_DATA_PLOT_CODE_IDX ON plot_data ( plot_code);
 CREATE INDEX SPECIES_DATA_PLOT_CODE_IDX ON species_data ( plot_code);
 
+
+
+GRANT ALL ON SCHEMA raw_data TO ogam;
+GRANT ALL ON TABLE raw_data.check_error_check_error_id_seq TO ogam;
+GRANT ALL ON TABLE raw_data.submission_id_seq TO ogam;
+GRANT ALL ON TABLE raw_data.check_error TO ogam;
+GRANT ALL ON TABLE raw_data."location" TO ogam;
+GRANT ALL ON TABLE raw_data.plot_data TO ogam;
+GRANT ALL ON TABLE raw_data.species_data TO ogam;
+GRANT ALL ON TABLE raw_data.submission TO ogam;
+GRANT ALL ON TABLE raw_data.submission_file TO ogam;
+GRANT EXECUTE ON FUNCTION raw_data.geomfromcoordinate() TO ogam;

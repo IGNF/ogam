@@ -14,6 +14,8 @@ alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_DATASET;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_FIELD;
 alter table DATASET_FILES drop constraint FK_DATASET_FILES_FORMAT;
 
+alter table website.PREDEFINED_REQUEST drop constraint FK_PREDEFINED_REQUEST_DATASET;
+
 --
 -- Remove old data
 --
@@ -40,6 +42,8 @@ delete from unit;
 
 delete from checks where check_id <= 1200;
 
+
+
 delete from dataset_files;
 delete from dataset_fields;
 delete from dataset;
@@ -48,15 +52,15 @@ delete from dataset;
 --delete from application_parameters;
 --delete from checks where check_id < 1200;
 
-COPY unit from '/tmp/eforest/unit.csv' with delimiter ';' null '';
-COPY data from '/tmp/eforest/data.csv' with delimiter ';' null '';
-COPY range from '/tmp/eforest/range.csv' with delimiter ';' null '';
-COPY mode from '/tmp/eforest/mode.csv' with delimiter ';' null '';
-COPY group_mode from '/tmp/eforest/group_mode.csv' with delimiter ';' null '';
+COPY unit from 'C:/workspace/OGAM/Bases SQL/Metadata/unit.csv' with delimiter ';' null '';
+COPY data from 'C:/workspace/OGAM/Bases SQL/Metadata/data.csv' with delimiter ';' null '';
+COPY range from 'C:/workspace/OGAM/Bases SQL/Metadata/range.csv' with delimiter ';' null '';
+COPY mode from 'C:/workspace/OGAM/Bases SQL/Metadata/mode.csv' with delimiter ';' null '';
+COPY group_mode from 'C:/workspace/OGAM/Bases SQL/Metadata/group_mode.csv' with delimiter ';' null '';
 
-COPY form_format from '/tmp/eforest/form_format.csv' with delimiter ';' null '';
-COPY table_format from '/tmp/eforest/table_format.csv' with delimiter ';' null '';
-COPY file_format from '/tmp/eforest/file_format.csv' with delimiter ';' null '';
+COPY form_format from 'C:/workspace/OGAM/Bases SQL/Metadata/form_format.csv' with delimiter ';' null '';
+COPY table_format from 'C:/workspace/OGAM/Bases SQL/Metadata/table_format.csv' with delimiter ';' null '';
+COPY file_format from 'C:/workspace/OGAM/Bases SQL/Metadata/file_format.csv' with delimiter ';' null '';
 
 -- Fill the parent table
 INSERT INTO format (format, type)
@@ -71,9 +75,9 @@ INSERT INTO format (format, type)
 SELECT format, 'FORM'
 FROM   form_format;
 
-COPY form_field from '/tmp/eforest/form_field.csv' with delimiter ';' null '';
-COPY file_field from '/tmp/eforest/file_field.csv' with delimiter ';' null '';
-COPY table_field from '/tmp/eforest/table_field.csv' with delimiter ';' null '';
+COPY form_field from 'C:/workspace/OGAM/Bases SQL/Metadata/form_field.csv' with delimiter ';' null '';
+COPY file_field from 'C:/workspace/OGAM/Bases SQL/Metadata/file_field.csv' with delimiter ';' null '';
+COPY table_field from 'C:/workspace/OGAM/Bases SQL/Metadata/table_field.csv' with delimiter ';' null '';
 
 -- Fill the parent table
 INSERT INTO field (data, format, type)
@@ -89,17 +93,17 @@ SELECT data, format, 'FORM'
 FROM   form_field;
 
 
-COPY field_mapping from '/tmp/eforest/field_mapping.csv' with delimiter ';' null '';
+COPY field_mapping from 'C:/workspace/OGAM/Bases SQL/Metadata/field_mapping.csv' with delimiter ';' null '';
 
-COPY checks (check_id, step, name, label, description, "statement", importance) from '/tmp/eforest/checks.csv' with delimiter ';' null '';
+COPY checks (check_id, step, name, label, description, "statement", importance) from 'C:/workspace/OGAM/Bases SQL/Metadata/checks.csv' with delimiter ';' null '';
 
 
-COPY dataset from '/tmp/eforest/dataset.csv' with delimiter ';' null '';
-COPY dataset_fields from '/tmp/eforest/dataset_fields.csv' with delimiter ';' null '';
-COPY dataset_files from '/tmp/eforest/dataset_files.csv' with delimiter ';' null '';
+COPY dataset from 'C:/workspace/OGAM/Bases SQL/Metadata/dataset.csv' with delimiter ';' null '';
+COPY dataset_fields from 'C:/workspace/OGAM/Bases SQL/Metadata/dataset_fields.csv' with delimiter ';' null '';
+COPY dataset_files from 'C:/workspace/OGAM/Bases SQL/Metadata/dataset_files.csv' with delimiter ';' null '';
 
-COPY table_schema from '/tmp/eforest/table_schema.csv' with delimiter ';' null '';
-COPY table_tree from '/tmp/eforest/table_tree.csv' with delimiter ';' null '';
+COPY table_schema from 'C:/workspace/OGAM/Bases SQL/Metadata/table_schema.csv' with delimiter ';' null '';
+COPY table_tree from 'C:/workspace/OGAM/Bases SQL/Metadata/table_tree.csv' with delimiter ';' null '';
 
 --
 -- Restore Integrity contraints
@@ -153,6 +157,11 @@ alter table DATASET_FILES
       references FILE_FORMAT (FORMAT)
       on delete restrict on update restrict;
 
+alter table website.PREDEFINED_REQUEST
+add constraint FK_PREDEFINED_REQUEST_DATASET foreign key (DATASET_ID)
+      references DATASET (DATASET_ID)
+      on delete restrict on update restrict;
+
 
 --
 -- Consistency checks
@@ -189,6 +198,7 @@ WHERE format||'_'||data NOT IN (
 	)
 UNION
 -- Raw data field should be mapped with harmonized fields
+/*
 SELECT format||'_'||data, 'This raw_data table field is not mapped with an harmonized field'
 FROM table_field
 JOIN table_format using (format)
@@ -196,7 +206,6 @@ WHERE schema_code = 'RAW_DATA'
 AND is_column_oriented = '0' -- We ignore complementary variables
 AND data <> 'SUBMISSION_ID'
 AND data <> 'LINE_NUMBER'
-AND data  <> 'IS_PLOT_COORDINATES_DEGRADED' -- Real plot coordinates are not mapped 
 AND format||'_'||data NOT IN (
 	SELECT (src_format||'_'||src_data )
 	FROM field_mapping
@@ -208,7 +217,7 @@ SELECT format||'_'||data, 'This harmonized_data table field is not used by a map
 FROM table_field
 JOIN table_format using (format)
 WHERE schema_code = 'HARMONIZED_DATA'
-AND column_name <> 'REQUEST_ID'  -- request ID added automatically
+AND column_name <> 'DATASET_ID'  -- request ID added automatically
 AND is_calculated <> '1'  -- field is not calculated
 AND format||'_'||data NOT IN (
 	SELECT (dst_format||'_'||dst_data )
@@ -217,11 +226,12 @@ AND format||'_'||data NOT IN (
 	)
 UNION
 -- the REQUEST_ID field is mandatory for harmonized data tables
-SELECT format, 'This harmonized table format is missing the REQUEST_ID field'
+SELECT format, 'This harmonized table format is missing the DATASET_ID field'
 FROM table_format 
 WHERE schema_code = 'HARMONIZED_DATA'
-AND NOT EXISTS (SELECT * FROM table_field WHERE table_format.format = table_field.format AND table_field.data='REQUEST_ID')
+AND NOT EXISTS (SELECT * FROM table_field WHERE table_format.format = table_field.format AND table_field.data='DATASET_ID')
 UNION
+*/
 -- the SUBMISSION_ID field is mandatory for raw data tables
 SELECT format, 'This raw table format is missing the SUBMISSION_ID field'
 FROM table_format 
