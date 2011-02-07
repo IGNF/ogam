@@ -310,7 +310,7 @@ public class GenericMapper {
 			String sourceTableFormat = sourceTablesIter.next();
 
 			// Get the descriptor of the table
-			List<TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat, countryCode);
+			List<TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat);
 			TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(sourceTableFormat, schema);
 			String tableName = metadataDAO.getTableName(sourceTableFormat);
 

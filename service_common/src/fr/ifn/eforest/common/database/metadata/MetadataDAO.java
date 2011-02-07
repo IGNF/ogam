@@ -23,7 +23,7 @@ import fr.ifn.eforest.common.util.LocalCache;
 import fr.ifn.eforest.common.business.MappingTypes;
 
 /**
- * Data Access Object used to access metadaa.
+ * Data Access Object used to access metadata.
  */
 public class MetadataDAO {
 
@@ -625,11 +625,9 @@ public class MetadataDAO {
 	 * 
 	 * @param tableformat
 	 *            the logical name of the table
-	 * @param countryCode
-	 *            the code of the country
 	 * @return the list of fields of the table
 	 */
-	public List<TableFieldData> getTableFields(String tableformat, String countryCode) throws Exception {
+	public List<TableFieldData> getTableFields(String tableformat) throws Exception {
 		List<TableFieldData> result = new ArrayList<TableFieldData>();
 		Connection con = null;
 		PreparedStatement ps = null;

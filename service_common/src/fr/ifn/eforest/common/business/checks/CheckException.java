@@ -48,9 +48,6 @@ public class CheckException extends Exception {
 	// The plot code
 	private String plotCode = null;
 
-	// The country code
-	private String countryCode = null;
-
 	/**
 	 * Constructor.
 	 * 
@@ -194,21 +191,6 @@ public class CheckException extends Exception {
 	 */
 	public void setPlotCode(String plotCode) {
 		this.plotCode = plotCode;
-	}
-
-	/**
-	 * @return the countryCode
-	 */
-	public String getCountryCode() {
-		return countryCode;
-	}
-
-	/**
-	 * @param countryCode
-	 *            the countryCode to set
-	 */
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
 	}
 
 	/**
