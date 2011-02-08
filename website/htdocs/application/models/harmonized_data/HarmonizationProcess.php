@@ -29,7 +29,9 @@ class Model_HarmonizationProcess extends Zend_Db_Table_Abstract {
 	 */
 	public function getHarmonizationsHistory() {
 		$db = $this->getAdapter();
-		$req = " SELECT * "." FROM harmonization_process "." ORDER BY harmonization_process_id DESC";
+		$req = " SELECT * ";
+		$req .= " FROM harmonization_process ";
+		$req .= " ORDER BY harmonization_process_id DESC";
 
 		$select = $db->prepare($req);
 		$select->execute(array());
@@ -42,8 +44,8 @@ class Model_HarmonizationProcess extends Zend_Db_Table_Abstract {
 
 			$harmonization = new HarmonizationProcess();
 			$harmonization->harmonizationId = $row['harmonization_process_id'];
-			$harmonization->countryCode = $row['country_code'];
-			$harmonization->datasetId = $row['request_id'];
+			$harmonization->providerId = $row['provider_id'];
+			$harmonization->datasetId = $row['dataset_id'];
 			$harmonization->status = $row['harmonization_status'];
 			$harmonization->date = $row['_creationdt'];
 
@@ -56,25 +58,29 @@ class Model_HarmonizationProcess extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the status of the last harmonization process for a given country and dataset
 	 *
-	 * @param HarmonizationProcess $harmonizationProcess the process to complete
+	 * @param Submission $activeSubmission a submission
 	 * @return HarmonizationProcess The completed process info
 	 */
-	public function getHarmonizationProcessInfo($harmonizationProcess) {
+	public function getHarmonizationProcessInfo($activeSubmission) {
 		$db = $this->getAdapter();
-		$req = " SELECT * "." FROM harmonization_process ";
+		$req = " SELECT * ";
+		$req .= " FROM harmonization_process ";
 		$req .= " LEFT JOIN harmonization_process_submissions USING (harmonization_process_id) ";
-		$req .= " WHERE country_code = ? ";
-		$req .= " AND  request_id = ? ";
+		$req .= " WHERE provider_id = ? ";
+		$req .= " AND  dataset_id = ? ";
 		$req .= " ORDER BY harmonization_process_id DESC LIMIT 1";
 
 		$select = $db->prepare($req);
-		$select->execute(array($harmonizationProcess->countryCode, $harmonizationProcess->datasetId));
+		$select->execute(array($activeSubmission->providerId, $activeSubmission->datasetId));
 
 		Zend_Registry::get("logger")->info('getHarmonizationProcessInfo : '.$req);
 
 		$result = $select->fetch();
 
-		if (!empty($result)) {
+		$harmonizationProcess = new HarmonizationProcess();
+		$harmonizationProcess->providerId = $activeSubmission->providerId;
+		$harmonizationProcess->datasetId = $activeSubmission->datasetId;
+		if (!empty($result)) {			
 			$harmonizationProcess->harmonizationId = $result['harmonization_process_id'];
 			$harmonizationProcess->status = $result['harmonization_status'];
 			$harmonizationProcess->date = $result['_creationdt'];

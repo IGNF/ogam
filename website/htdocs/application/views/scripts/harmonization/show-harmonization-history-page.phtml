@@ -12,7 +12,7 @@
 <table class="sectiontable">
 <tr>
 	<th>Process Id</th>
-	<th>Country Code</th>
+	<th>Provider</th>
 	<th>Dataset</th>
 	<th>Status</th>
 	<th>Date</th>
@@ -27,7 +27,7 @@ foreach($this->harmonizations as $harmonizationProcess) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
 	<td><?= $harmonizationProcess->harmonizationId ?></td>
-	<td><?= $this->countries[$harmonizationProcess->countryCode]; ?></td>
+	<td><?= $harmonizationProcess->providerId; ?></td>
 	<td><?= $harmonizationProcess->datasetId ?></td>
 	<td><?= $harmonizationProcess->status ?>
             <? if ($harmonizationProcess->status === "OK") : ?>
@@ -44,7 +44,7 @@ foreach($this->harmonizations as $harmonizationProcess) {
                        url: '<?php echo PATH_BASE_URL; ?>/Harmonization/get-harmonization-status',
                        params:{
                            DATASET_ID:'<?php echo $harmonizationProcess->datasetId; ?>',
-                           COUNTRY_CODE:'<?php echo $harmonizationProcess->countryCode; ?>',
+                           PROVIDER_ID:'<?php echo $harmonizationProcess->providerId; ?>',
                            action:'status'                               
                        },
                        callback: function(options, success, response){

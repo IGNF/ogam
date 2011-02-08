@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 
 /**
  * Represent a harmonization process.
@@ -17,9 +17,9 @@ class HarmonizationProcess {
 	var $harmonizationId;
 
 	/**
-	 * The country code
+	 * The provider identifier
 	 */
-	var $countryCode;
+	var $providerId;
 
 	/**
 	 * The dataset identifier

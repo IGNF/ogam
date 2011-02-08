@@ -30,13 +30,13 @@ class Model_HarmonizationService extends Model_AbstractService {
 	/**
 	 * Launch the harmonization process
 	 *
-	 * @param String the country code
+	 * @param String the data provider identifier
 	 * @param String the dataset identifier
 	 * @return true if the process was OK
 	 * @throws Exception if a problem occured on the server side
 	 */
-	public function harmonizeData($countryCode, $datasetId) {
-		$this->logger->debug("harmonizeData : ".$countryCode." ".$requestId);
+	public function harmonizeData($providerId, $datasetId) {
+		$this->logger->debug("harmonizeData : ".$providerId." ".$datasetId);
 
 		$client = new Zend_Http_Client();
 		$client->setUri($this->serviceUrl."HarmonizationServlet?action=HarmonizeData");
@@ -44,7 +44,7 @@ class Model_HarmonizationService extends Model_AbstractService {
 			'maxredirects' => 0,
 			'timeout' => 30));
 
-		$client->setParameterPost('COUNTRY_CODE', $countryCode);
+		$client->setParameterPost('PROVIDER_ID', $providerId);
 		$client->setParameterPost('DATASET_ID', $datasetId);
 
 		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."HarmonizationServlet?action=HarmonizeData");

@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/models/harmonized_data/HarmonizationProcess.php';
@@ -71,8 +71,6 @@ class HarmonizationController extends AbstractEforestController {
 
 		$this->view->harmonizations = $this->harmonizationModel->getHarmonizationsHistory();
 
-		$this->view->countries = $this->metadataModel->getModeFromUnit('COUNTRY_CODE');
-
 		$this->render('show-harmonization-history-page');
 	}
 
@@ -84,34 +82,36 @@ class HarmonizationController extends AbstractEforestController {
 	public function showHarmonizationPageAction() {
 		$this->logger->debug('showHarmonizationPageAction');
 
-		// Get the list of available harmonization (countries having done a submission)
-		$harmonisationProcesses = $this->submissionModel->getCountrySubmissions();
+		// Get the list of available harmonization (active submissions)
+		$activeSubmissions = $this->submissionModel->getActiveSubmissions();
 
-		foreach ($harmonisationProcesses as $id => $harmonisationProcess) {
+		$harmonisationProcesses = array();
 
+		foreach ($activeSubmissions as $id => $activeSubmission) {
+			
 			// Get the status of the last process run
-			$harmonisationProcesses[$id] = $this->harmonizationModel->getHarmonizationProcessInfo($harmonisationProcesses[$id]);
+			$process = $this->harmonizationModel->getHarmonizationProcessInfo($activeSubmission);
 
 			// Get the source submissions of this process
-			$harmonisationProcesses[$id] = $this->harmonizationModel->getHarmonizationProcessSources($harmonisationProcesses[$id]);
+			$process = $this->harmonizationModel->getHarmonizationProcessSources($process);
 
 			// Get the current status of the source data
 			$submissionStatus = "VALIDATED";
-			foreach ($harmonisationProcesses[$id]->submissionIDs as $submissionID) {
+			foreach ($process->submissionIDs as $submissionID) {
 				$submission = $this->submissionModel->getSubmission($submissionID);
 				if ($submission->step != "VALIDATED") {
 					$submissionStatus = "NOT_VALID";
 				}
 			}
-			$harmonisationProcesses[$id]->submissionStatus = $submissionStatus;
+
+			$process->submissionStatus = $submissionStatus;
+
+			$harmonisationProcesses[$id] = $process;
 
 		}
 
 		// Send the data to the view
 		$this->view->harmonizations = $harmonisationProcesses;
-
-		// Get the label of the countries
-		$this->view->countries = $this->metadataModel->getModeFromUnit('COUNTRY_CODE');
 
 		$this->render('show-harmonization-page');
 	}
@@ -125,12 +125,12 @@ class HarmonizationController extends AbstractEforestController {
 		$this->logger->debug('launchHarmonizationAction');
 
 		// Get the submission  Id
-		$countryCode = $this->_getParam("COUNTRY_CODE");
+		$providerId = $this->_getParam("PROVIDER_ID");
 		$datasetId = $this->_getParam("DATASET_ID");
 
 		// Send the cancel request to the integration server
 		try {
-			$this->harmonizationServiceModel->harmonizeData($countryCode, $datasetId);
+			$this->harmonizationServiceModel->harmonizeData($providerId, $datasetId);
 		} catch (Exception $e) {
 			$this->logger->debug('Error during harmonization: '.$e);
 			$this->view->errorMessage = $e->getMessage();
@@ -151,11 +151,11 @@ class HarmonizationController extends AbstractEforestController {
 
 		// Get the submission  Id
 		$datasetId = $this->_getParam("DATASET_ID");
-		$countryCode = $this->_getParam("COUNTRY_CODE");
+		$providerId = $this->_getParam("PROVIDER_ID");
 
 		// Send the cancel request to the integration server
 		try {
-			$status = $this->harmonizationServiceModel->getStatus($datasetId, $countryCode, 'HarmonizationServlet');
+			$status = $this->harmonizationServiceModel->getStatus($datasetId, $providerId, 'HarmonizationServlet');
 
 			// Echo the result as a JSON
 			echo "{status:'".$status->status."', taskName:'".$status->taskName."', currentCount:'".$status->currentCount."', totalCount:'".$status->totalCount."'}";

@@ -24,7 +24,7 @@ foreach($this->validatedsubmissions as $validatedSubmission) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
 	<td><?= $validatedSubmission->jrcRequest ?></td>	
-	<td><?= $this->countries[$validatedSubmission->countryCode]; ?></td>
+	<td><?= $validatedSubmission->countryCode; ?></td>
 </tr>
 <?
 $i++;
