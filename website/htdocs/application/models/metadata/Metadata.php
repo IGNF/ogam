@@ -581,11 +581,6 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getFieldMapping : '.$formName." ".$fieldName." ".$schema);
 
-		// We get some info about the user in the session in order to limit the available fields
-		$userSession = new Zend_Session_Namespace('user');
-		$countryCode = $userSession->user->countryCode;
-		$isEuropeLevel = $userSession->role->isEuropeLevel;
-
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load('fieldmapping_'.$formName.'_'.$fieldName.'_'.$schema);
 		}

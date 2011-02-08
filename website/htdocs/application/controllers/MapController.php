@@ -59,12 +59,9 @@ class MapController extends AbstractEforestController {
 
 		// Get back the country code
 		$userSession = new Zend_Session_Namespace('user');
-		if ($userSession->role->isEuropeLevel == '1') {
-			$countryCode = null;
-		} else {
-			$countryCode = $userSession->user->countryCode;
-		}
-		$this->logger->debug('countryCode : '.$countryCode);
+
+		// TODO : Remove hardcoded value
+		$countryCode = "1";
 
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
@@ -119,12 +116,9 @@ class MapController extends AbstractEforestController {
 
 		// Get back the country code
 		$userSession = new Zend_Session_Namespace('user');
-		if ($userSession->role->isEuropeLevel == '1') {
-			$countryCode = null;
-		} else {
-			$countryCode = $userSession->user->countryCode;
-		}
-		$this->logger->debug('countryCode : '.$countryCode);
+		
+		// TODO : Remove hardcoded value
+		$countryCode = "1";
 
 		// Get some configutation parameters
 		$configuration = Zend_Registry::get("configuration");

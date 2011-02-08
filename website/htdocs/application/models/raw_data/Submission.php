@@ -5,7 +5,6 @@
  */
 require_once 'raw_data/Submission.php';
 require_once 'raw_data/SubmissionFile.php';
-require_once 'raw_data/DataSubmission.php';
 
 /**
  * This is a model allowing access to the submission information.

@@ -31,7 +31,7 @@ class Model_Role extends Zend_Db_Table_Abstract {
 	public function getRole($roleCode) {
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, "." role_label, "." role_def, "." degradated_coordinate, "." is_europe_level "." FROM role "." WHERE role_code = ? ";
+		$req = " SELECT role_code, "." role_label, "." role_def, "." degradated_coordinate, "." FROM role "." WHERE role_code = ? ";
 		$this->logger->info('getRole : '.$req);
 
 		$query = $db->prepare($req);
@@ -45,7 +45,6 @@ class Model_Role extends Zend_Db_Table_Abstract {
 			$role->roleLabel = $result['role_label'];
 			$role->roleDefinition = $result['role_def'];
 			$role->degradatedCoordinate = $result['degradated_coordinate'];
-			$role->isEuropeLevel = $result['is_europe_level'];
 			return $role;
 		} else {
 			return null;
@@ -60,7 +59,7 @@ class Model_Role extends Zend_Db_Table_Abstract {
 	public function getRoles() {
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, role_label, role_def, degradated_coordinate, is_europe_level "." FROM role "." ORDER BY role_code";
+		$req = " SELECT role_code, role_label, role_def, degradated_coordinate "." FROM role "." ORDER BY role_code";
 		$this->logger->info('getRoles : '.$req);
 
 		$query = $db->prepare($req);
@@ -75,7 +74,6 @@ class Model_Role extends Zend_Db_Table_Abstract {
 			$role->roleLabel = $result['role_label'];
 			$role->roleDefinition = $result['role_def'];
 			$role->degradatedCoordinate = $result['degradated_coordinate'];
-			$role->isEuropeLevel = $result['is_europe_level'];
 			$roles[] = $role;
 		}
 
@@ -147,7 +145,6 @@ class Model_Role extends Zend_Db_Table_Abstract {
 			$role->roleLabel,
 			$role->roleDefinition,
 			$role->degradatedCoordinate,
-			$role->isEuropeLevel,
 			$role->roleCode));
 	}
 
@@ -191,7 +188,7 @@ class Model_Role extends Zend_Db_Table_Abstract {
 	public function createRole($role) {
 		$db = $this->getAdapter();
 
-		$req = " INSERT INTO role (role_code, role_label, role_def, degradated_coordinate, is_europe_level )"." VALUES (?, ?, ?, ?, ?)";
+		$req = " INSERT INTO role (role_code, role_label, role_def, degradated_coordinate )"." VALUES (?, ?, ?, ?, ?)";
 
 		$this->logger->info('createRole : '.$req);
 
@@ -200,8 +197,7 @@ class Model_Role extends Zend_Db_Table_Abstract {
 			$role->roleCode,
 			$role->roleLabel,
 			$role->roleDefinition,
-			$role->degradatedCoordinate,
-			$role->isEuropeLevel));
+			$role->degradatedCoordinate));
 	}
 
 	/**

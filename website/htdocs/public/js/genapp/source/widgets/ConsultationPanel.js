@@ -1272,9 +1272,9 @@ listeners: {
 
         var stringFormat = '';
         if(!this.hideDetails){
-            stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPanel.openDetails(\'{0}\', \'getdetails\');"></div>';
+            stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"></div>';
         }
-        stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.cardPanel.consultationPanel.displayLocation(\'{0}\',\'{1}\');"></div>';
+        stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');"></div>';
 
         return String.format(stringFormat, record.data.id, record.data.location_centroid);
     },

@@ -91,10 +91,6 @@ class AbstractAnalysisController extends AbstractEforestController {
 		// Get the root table;
 		$rootTable = array_shift($tables);
 		$from .= $rootTable->tableName." ".$rootTable->getLogicalName();
-		if ($role->isEuropeLevel != '1') {
-			// Check the user country code
-			$where .= " AND ".$rootTable->tableFormat.".COUNTRY_CODE = '".trim($countryCode)."'";
-		}
 
 		// Add the joined tables
 		foreach ($tables as $tableTreeData) {
@@ -114,12 +110,6 @@ class AbstractAnalysisController extends AbstractEforestController {
 				$from .= $tableTreeData->getLogicalName().".".trim($key)." = ".$tableTreeData->parentTable.".".trim($key)." AND ";
 			}
 			$from = substr($from, 0, -5);
-
-			// Check the user country code
-			if ($role->isEuropeLevel != '1') {
-				$countryCode = $userSession->user->countryCode;
-				$from .= " AND ".$tableTreeData->getLogicalName().".country_code = '".trim($countryCode)."'";
-			}
 
 			// Check is the table is column-oriented
 			if ($tableTreeData->isColumnOriented == '1') {

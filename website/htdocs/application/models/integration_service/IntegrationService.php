@@ -28,94 +28,6 @@ class Model_IntegrationService extends Model_AbstractService {
 	}
 
 	/**
-	 * Create a new location submission.
-	 *
-	 * @param string the country code
-	 * @return the generated submissionId
-	 * @throws Exception if a problem occured on the server side
-	 */
-	public function newLocationSubmission($countryCode) {
-		$this->logger->debug("newLocationSubmission : ".$countryCode);
-
-		$client = new Zend_Http_Client();
-		$client->setUri($this->serviceUrl."PlotLocationServlet?action=NewLocationSubmission");
-		$client->setConfig(array(
-			'maxredirects' => 0,
-			'timeout' => 30));
-
-		$client->setParameterPost('COUNTRY_CODE', $countryCode);
-
-		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."PlotLocationServlet?action=NewLocationSubmission");
-
-		$response = $client->request('POST');
-
-		// Check the result status
-		if ($response->isError()) {
-			$this->logger->debug("Error while creating new location submission : ".$response->getMessage());
-			throw new Exception("Error while creating new location submission : ".$response->getMessage());
-		}
-
-		// Extract the response body
-		$body = $response->getBody();
-		$this->logger->debug("HTTP RESPONSE : ".$body);
-
-		// Check the response status
-		if (strpos($body, "<Status>OK</Status>") === FALSE) {
-			// Parse an error message
-			$error = $this->parseErrorMessage($body);
-			throw new Exception("Error while creating new location submission : ".$error->errorMessage);
-		} else {
-			// Parse a valid response
-			$value = $this->parseValueResponse($body);
-			return $value;
-		}
-	}
-
-	/**
-	 * Create a strara submission.
-	 *
-	 * @param string the country code
-	 * @return the generated submissionId
-	 * @throws Exception if a problem occured on the server side
-	 */
-	public function newStrataSubmission($countryCode) {
-		$this->logger->debug("newStrataSubmission : ".$countryCode);
-
-		$client = new Zend_Http_Client();
-		$client->setUri($this->serviceUrl."StrataServlet?action=NewStrataSubmission");
-		$client->setConfig(array(
-			'maxredirects' => 0,
-			'timeout' => 30));
-
-		$client->setParameterPost('COUNTRY_CODE', $countryCode);
-
-		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."StrataServlet?action=NewStrataSubmission");
-
-		$response = $client->request('POST');
-
-		// Check the result status
-		if ($response->isError()) {
-			$this->logger->debug("Error while creating new strata submission : ".$response->getMessage());
-			throw new Exception("Error while creating new strata submission : ".$response->getMessage());
-		}
-
-		// Extract the response body
-		$body = $response->getBody();
-		$this->logger->debug("HTTP RESPONSE : ".$body);
-
-		// Check the response status
-		if (strpos($body, "<Status>OK</Status>") === FALSE) {
-			// Parse an error message
-			$error = $this->parseErrorMessage($body);
-			throw new Exception("Error while creating new strata submission : ".$error->errorMessage);
-		} else {
-			// Parse a valid response
-			$value = $this->parseValueResponse($body);
-			return $value;
-		}
-	}
-
-	/**
 	 * Create a new data submission.
 	 *
 	 * @param String the provider identifier
@@ -164,110 +76,16 @@ class Model_IntegrationService extends Model_AbstractService {
 	}
 
 	/**
-	 * Upload a plot location file.
-	 *
-	 * @param string the identifier of the submission
-	 * @param string the country code
-	 * @param string the path of the file to upload
-	 * @return true if the upload was OK
-	 * @throws Exception if a problem occured on the server side
-	 */
-	public function uploadPlotLocation($submissionId, $countryCode, $locationFile) {
-		$this->logger->debug("uploadPlotLocation : ".$submissionId." - ".$countryCode." - ".$locationFile);
-
-		$client = new Zend_Http_Client();
-		$client->setEncType($client->ENC_FORMDATA);
-		$client->setUri($this->serviceUrl."PlotLocationServlet?action=UploadLocations");
-		$client->setConfig(array(
-			'maxredirects' => 0,
-			'timeout' => 30));
-
-		$client->setParameterPost('SUBMISSION_ID', $submissionId);
-		$client->setParameterPost('COUNTRY_CODE', $countryCode);
-		$client->setFileUpload($locationFile, 'LOCATION_FILE');
-
-		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."PlotLocationServlet?action=UploadLocations");
-
-		$response = $client->request('POST');
-
-		// Check the result status
-		if ($response->isError()) {
-			$this->logger->debug("Error while creating new location submission : ".$response->getMessage());
-			throw new Exception("Error while creating new location submission : ".$response->getMessage());
-		}
-
-		// Extract the response body
-		$body = $response->getBody();
-		$this->logger->debug("HTTP RESPONSE : ".$body);
-
-		// Check the response status
-		if (strpos($body, "<Status>OK</Status>") === FALSE) {
-			// Parse an error message
-			$error = $this->parseErrorMessage($body);
-			throw new Exception("Error while creating new location submission : ".$error->errorMessage);
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * Upload a strata file.
-	 *
-	 * @param string the identifier of the submission
-	 * @param string the country code
-	 * @param string the path of the file to upload
-	 * @return true if the upload was OK
-	 * @throws Exception if a problem occured on the server side
-	 */
-	public function uploadStrata($submissionId, $countryCode, $strataFile) {
-		$this->logger->debug("uploadStrata : ".$submissionId." - ".$countryCode." - ".$strataFile);
-
-		$client = new Zend_Http_Client();
-		$client->setEncType($client->ENC_FORMDATA);
-		$client->setUri($this->serviceUrl."StrataServlet?action=UploadStrata");
-		$client->setConfig(array(
-			'maxredirects' => 0,
-			'timeout' => 30));
-
-		$client->setParameterPost('SUBMISSION_ID', $submissionId);
-		$client->setParameterPost('COUNTRY_CODE', $countryCode);
-		$client->setFileUpload($strataFile, 'STRATA_FILE');
-
-		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."StrataServlet?action=UploadStrata");
-
-		$response = $client->request('POST');
-
-		// Check the result status
-		if ($response->isError()) {
-			$this->logger->debug("Error while creating new strata : ".$response->getMessage());
-			throw new Exception("Error while creating new strata : ".$response->getMessage());
-		}
-
-		// Extract the response body
-		$body = $response->getBody();
-		$this->logger->debug("HTTP RESPONSE : ".$body);
-
-		// Check the response status
-		if (strpos($body, "<Status>OK</Status>") === FALSE) {
-			// Parse an error message
-			$error = $this->parseErrorMessage($body);
-			throw new Exception("Error while creating new strata submission : ".$error->errorMessage);
-		} else {
-			return true;
-		}
-	}
-
-	/**
 	 * Upload one or more data file.
 	 *
-	 * @param string the identifier of the submission
-	 * @param string the country code
+	 * @param String the identifier of the submission
+	 * @param String the identifier of the data provider
 	 * @param Array[RequestFormat] the list of files to upload
 	 * @return true if the upload was OK
 	 * @throws Exception if a problem occured on the server side
 	 */
-	public function uploadData($submissionId, $countryCode, $dataFiles) {
-		$this->logger->debug("uploadData : ".$submissionId." - ".$countryCode." - ".$dataFiles);
+	public function uploadData($submissionId, $providerId, $dataFiles) {
+		$this->logger->debug("uploadData : ".$submissionId." - ".$providerId." - ".$dataFiles);
 
 		$client = new Zend_Http_Client();
 		$client->setUri($this->serviceUrl."DataServlet?action=UploadData");
@@ -277,7 +95,7 @@ class Model_IntegrationService extends Model_AbstractService {
 			'timeout' => 30));
 
 		$client->setParameterPost('SUBMISSION_ID', $submissionId);
-		$client->setParameterPost('COUNTRY_CODE', $countryCode);
+		$client->setParameterPost('PROVIDER_ID', $providerId);
 		foreach ($dataFiles as $dataFile) {
 			$this->logger->debug("adding file : ".$dataFile->filePath);
 			$client->setFileUpload($dataFile->filePath, $dataFile->format);
@@ -302,90 +120,6 @@ class Model_IntegrationService extends Model_AbstractService {
 			// Parse an error message
 			$error = $this->parseErrorMessage($body);
 			throw new Exception("Error while creating new data submission : ".$error->errorMessage);
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * Cancel a location submission.
-	 *
-	 * @param string the submission identifier
-	 * @return true if the cancel was OK
-	 * @throws Exception if a problem occured on the server side
-	 */
-	public function cancelLocationSubmission($submissionId) {
-		$this->logger->debug("cancelLocationSubmission : ".$submissionId);
-
-		$client = new Zend_Http_Client();
-		$client->setUri($this->serviceUrl."PlotLocationServlet?action=CancelLocationSubmission");
-		$client->setConfig(array(
-			'maxredirects' => 0,
-			'timeout' => 300));
-
-		$client->setParameterPost('SUBMISSION_ID', $submissionId);
-
-		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."PlotLocationServlet?action=CancelLocationSubmission");
-
-		$response = $client->request('POST');
-
-		// Check the result status
-		if ($response->isError()) {
-			$this->logger->debug("Error while cancelling the location submission : ".$response->getMessage());
-			throw new Exception("Error while cancelling the location submission : ".$response->getMessage());
-		}
-
-		// Extract the response body
-		$body = $response->getBody();
-		$this->logger->debug("HTTP RESPONSE : ".$body);
-
-		// Check the response status
-		if (strpos($body, "<Status>OK</Status>") === FALSE) {
-			// Parse an error message
-			$error = $this->parseErrorMessage($body);
-			throw new Exception("Error while cancelling the location submission : ".$error->errorMessage);
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * Cancel a strata submission.
-	 *
-	 * @param string the submission identifier
-	 * @return true if the cancel was OK
-	 * @throws Exception if a problem occured on the server side
-	 */
-	public function cancelStrataSubmission($submissionId) {
-		$this->logger->debug("cancelStrataSubmission : ".$submissionId);
-
-		$client = new Zend_Http_Client();
-		$client->setUri($this->serviceUrl."StrataServlet?action=CancelStrataSubmission");
-		$client->setConfig(array(
-			'maxredirects' => 0,
-			'timeout' => 300));
-
-		$client->setParameterPost('SUBMISSION_ID', $submissionId);
-
-		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."StrataServlet?action=CancelStrataSubmission");
-
-		$response = $client->request('POST');
-
-		// Check the result status
-		if ($response->isError()) {
-			$this->logger->debug("Error while cancelling the strata submission : ".$response->getMessage());
-			throw new Exception("Error while cancelling the strata submission : ".$response->getMessage());
-		}
-
-		// Extract the response body
-		$body = $response->getBody();
-		$this->logger->debug("HTTP RESPONSE : ".$body);
-
-		// Check the response status
-		if (strpos($body, "<Status>OK</Status>") === FALSE) {
-			// Parse an error message
-			$error = $this->parseErrorMessage($body);
-			throw new Exception("Error while cancelling the strata submission : ".$error->errorMessage);
 		} else {
 			return true;
 		}
@@ -459,48 +193,6 @@ class Model_IntegrationService extends Model_AbstractService {
 		if ($response->isError()) {
 			$this->logger->debug("Error while validating the data submission : ".$response->getMessage());
 			throw new Exception("Error while validating the data submission : ".$response->getMessage());
-		}
-
-		// Extract the response body
-		$body = $response->getBody();
-		$this->logger->debug("HTTP RESPONSE : ".$body);
-
-		// Check the response status
-		if (strpos($body, "<Status>OK</Status>") === FALSE) {
-			// Parse an error message
-			$error = $this->parseErrorMessage($body);
-			throw new Exception("Error while validating the data submission : ".$error->errorMessage);
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * Validate a plot location submission.
-	 *
-	 * @param string the submission identifier
-	 * @return true if the validation was OK
-	 * @throws Exception if a problem occured on the server side
-	 */
-	public function validatePlotLocation($submissionId) {
-		$this->logger->debug("validatePlotLocation : ".$submissionId);
-
-		$client = new Zend_Http_Client();
-		$client->setUri($this->serviceUrl."PlotLocationServlet?action=ValidatePlotLocationSubmission");
-		$client->setConfig(array(
-			'maxredirects' => 0,
-			'timeout' => 30));
-
-		$client->setParameterPost('SUBMISSION_ID', $submissionId);
-
-		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."PlotLocationServlet?action=ValidatePlotLocationSubmission");
-
-		$response = $client->request('POST');
-
-		// Check the result status
-		if ($response->isError()) {
-			$this->logger->debug("Error while validating the plot location submission : ".$response->getMessage());
-			throw new Exception("Error while validating the plot location submission : ".$response->getMessage());
 		}
 
 		// Extract the response body

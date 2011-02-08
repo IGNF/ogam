@@ -1,13 +1,13 @@
 // Default parameters
 if(Genapp.ConsultationPanel){
     Ext.apply(Genapp.ConsultationPanel.prototype, {
-        hideDetails : true, 
-        hideMapDetails : true,  
-        hideCsvExportButton : true, 
+        hideDetails : false, 
+        hideMapDetails : false,  
+        hideCsvExportButton : false, 
         hideAggregationCsvExportMenuItem : true,
         hideAggregationButton : true,
         hideInterpolationButton : true,
-        hidePrintMapButton: true,
+        hidePrintMapButton: false,
         hidePredefinedRequestSaveButton : true,
         widthToSubstract:120,
         heightToSubstract:210

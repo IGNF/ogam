@@ -31,9 +31,4 @@ class Role {
 	 */
 	var $degradatedCoordinate;
 
-	/**
-	 * Flag indicating if the user can access coutries other than his own (1 for true, 0 for false).
-	 */
-	var $isEuropeLevel;
-
 }

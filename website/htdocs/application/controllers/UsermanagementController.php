@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/website/User.php';
 require_once APPLICATION_PATH.'/models/website/Role.php';
@@ -281,14 +281,6 @@ class UsermanagementController extends AbstractEforestController {
 		$degradatedCoordinate->setRequired(true);
 		if ($role != null) {
 			$degradatedCoordinate->setChecked(($role->degradatedCoordinate) != 1);
-		}
-
-		// isEuropeLevel
-		$isEuropeLevel = $form->createElement('checkbox', 'isEuropeLevel');
-		$isEuropeLevel->setLabel('Can see all countries');
-		$isEuropeLevel->setRequired(true);
-		if ($role != null) {
-			$isEuropeLevel->setChecked(($role->isEuropeLevel) == 1);
 		}
 
 		// Permissions

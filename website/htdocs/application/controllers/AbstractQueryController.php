@@ -622,6 +622,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 * @param String $leafTable The leaf table
 	 * @param String $mode if 'LINE', will generate a request corresponding to a single line of result
 	 *         else it will generate a SQL query with no where clause.
+	 *
+	 * TODO : Reuse generateSQLRequest
 	 */
 	private function _generateSQLDetailRequest($id, $leafTable, $mode = 'LINE') {
 
@@ -696,10 +698,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// Get the root table;
 		$rootTable = array_shift($tables);
 		$from .= $rootTable->tableName." ".$rootTable->getLogicalName();
-		if ($role->isEuropeLevel != '1') {
-			// Check the user country code
-			$where .= " AND ".$rootTable->tableFormat.".COUNTRY_CODE = '".trim($countryCode)."'";
-		}
 
 		// Add the joined tables
 		foreach ($tables as $tableFormat => $tableTreeData) {
@@ -744,7 +742,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 
 		// Add some hard-coded, needed fields
-		$select .= ", ".$this->getLocationTable().".country_code as loc_country_code, "; // The country code (used for the mapping view)
+		$select .= ", ".$this->getLocationTable().".provider_id as loc_provider_id, "; // The country code (used for the mapping view)
 		$select .= $this->getLocationTable().".plot_code as loc_plot_code, "; // The plot code  (used for the mapping view)
 		$select .= $this->getLocationTable().".the_geom as the_geom, "; // The geom (used for the mapping view)
 		$select .= 'ymin(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_y_min, '; // The location boundingbox (for zooming in javascript)
@@ -791,9 +789,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$uniqueId = ""; // The concatenation of columns used as an unique ID for the line, for use in the detail view
 		$leafTable = ""; // The logical name of the last table (leaf), for use in the detail view
 		$sort = ""; // The concatenation of columns used as an unique sort order
-
-		$role = $userSession->role;
-		$countryCode = $userSession->user->countryCode;
 
 		//
 		// Get the mapping for each field
@@ -889,10 +884,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// Get the root table;
 		$rootTable = array_shift($tables);
 		$from .= $rootTable->tableName." ".$rootTable->getLogicalName();
-		if ($role->isEuropeLevel != '1') {
-			// Check the user country code
-			$where .= " AND ".$rootTable->tableFormat.".COUNTRY_CODE = '".trim($countryCode)."'";
-		}
 
 		// Add the joined tables
 		foreach ($tables as $tableFormat => $tableTreeData) {
@@ -934,12 +925,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 					$sort .= ", ";
 				}
 				$sort .= $tableTreeData->getLogicalName().".".trim($identifier);
-			}
-
-			// Check the user country code
-			if ($role->isEuropeLevel != '1') {
-				$countryCode = $userSession->user->countryCode;
-				$from .= " AND ".$tableTreeData->getLogicalName().".country_code = '".trim($countryCode)."'";
 			}
 
 			// Check is the table is column-oriented
@@ -1126,7 +1111,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// If needed we check on the data submission type
 		if (!empty($datasetId) && $firstJoinedTable != "") {
 			$from .= " JOIN submission ON (submission.submission_id = ".$firstJoinedTable.".submission_id) ";
-			$where .= " AND submission.dataset_id = '".$datasetId."' ";			
+			$where .= " AND submission.dataset_id = '".$datasetId."' ";
 		}
 
 		// Add some hard-coded, needed fields

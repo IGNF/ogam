@@ -7,7 +7,6 @@ require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/models/integration_service/IntegrationService.php';
 require_once APPLICATION_PATH.'/models/raw_data/Submission.php';
-require_once APPLICATION_PATH.'/models/raw_data/Location.php';
 
 /**
  * IntegrationController is the controller that manages the data integration.
@@ -36,7 +35,6 @@ class IntegrationController extends AbstractEforestController {
 		$this->metadataModel = new Model_Metadata();
 		$this->integrationServiceModel = new Model_IntegrationService();
 		$this->submissionModel = new Model_Submission();
-		$this->locationModel = new Model_Location();
 
 		$configuration = Zend_Registry::get("configuration");
 		$this->fileMaxSize = $configuration->fileMaxSize;
@@ -242,11 +240,11 @@ class IntegrationController extends AbstractEforestController {
 		$values = $form->getValues();
 		$datasetId = $values['DATASET_ID'];
 
-		// TODO : The provider is hardcoded here because not used in the demo application
-		$providerId = "TEST_PROVIDER";
-
 		$userSession = new Zend_Session_Namespace('user');
 		$userLogin = $userSession->user->login;
+
+		// In this demo project, the provider id is the country code of the connected user
+		$providerId = $userSession->user->countryCode;
 
 		$this->logger->debug('userLogin : '.$userLogin);
 
@@ -302,6 +300,10 @@ class IntegrationController extends AbstractEforestController {
 		$dataSession = new Zend_Session_Namespace('submission');
 		$submission = $dataSession->data;
 
+		// Get the user info
+		$userSession = new Zend_Session_Namespace('user');
+		$providerId = $userSession->user->countryCode; // The provider identifier is the country code
+
 		// Get the configuration info
 		$configuration = Zend_Registry::get("configuration");
 		$uploadDir = $configuration->uploadDir;
@@ -347,7 +349,7 @@ class IntegrationController extends AbstractEforestController {
 
 			// Send the files to the integration server
 			try {
-				$this->integrationServiceModel->uploadData($submission->submissionId, $submission->countryCode, $requestedFiles);
+				$this->integrationServiceModel->uploadData($submission->submissionId, $providerId, $requestedFiles);
 			} catch (Exception $e) {
 				$this->logger->debug('Error during upload: '.$e);
 				$this->view->errorMessage = $e->getMessage();

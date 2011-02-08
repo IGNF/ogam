@@ -28,7 +28,7 @@ OpenLayers.Handler.FeatureInfo.prototype =
             function(response) {
                 try {
                     var result = Ext.decode(response.responseText);
-                    Genapp.cardPanel.consultationPanel.openDetails(result.id, 'getmapdetails');
+                    Genapp.cardPanel.consultationPage.openDetails(result.id, 'getmapdetails');
                 } catch (e) {
                     Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
                 }
