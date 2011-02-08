@@ -1111,7 +1111,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 					$where .= " AND (".$optionsList.")";
 				}
 
-			} else { // Default case is a STRING, we search with a ilike %%
+			} else { // Default case is a STRING, we search with a like %%
 
 				$optionsList = "";
 				foreach ($tableField->value as $option) {
@@ -1125,12 +1125,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 		// If needed we check on the data submission type
 		if (!empty($datasetId) && $firstJoinedTable != "") {
-			if ($this->schema == 'RAW_DATA') {
-				$from .= " JOIN data_submission ON (data_submission.submission_id = ".$firstJoinedTable.".submission_id) ";
-				$where .= " AND data_submission.request_id = '".$datasetId."' ";
-			} else {
-				$where .= " AND ".$firstJoinedTable.".request_id = '".$datasetId."' ";
-			}
+			$from .= " JOIN submission ON (submission.submission_id = ".$firstJoinedTable.".submission_id) ";
+			$where .= " AND submission.dataset_id = '".$datasetId."' ";			
 		}
 
 		// Add some hard-coded, needed fields
