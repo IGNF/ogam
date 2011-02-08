@@ -207,6 +207,12 @@ public class DataServlet extends AbstractUploadServlet {
 				}
 				Integer submissionId = Integer.valueOf(submissionIDStr);
 
+				// The PROVIDER_ID will be detected as a source data
+				String providerId = requestParameters.get(PROVIDER_ID);
+				if (providerId == null) {
+					throw new Exception("The " + PROVIDER_ID + " parameter is mandatory");
+				}
+
 				// Upload the file items in the directory
 				Iterator<FileItem> fileIter = fileFieldsList.iterator();
 				while (fileIter.hasNext()) {

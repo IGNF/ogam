@@ -6,7 +6,6 @@ import java.util.Map;
 import fr.ifn.eforest.integration.AbstractEFDACTest;
 import fr.ifn.eforest.integration.business.checks.CheckService;
 import fr.ifn.eforest.integration.business.submissions.datasubmission.DataService;
-import fr.ifn.eforest.common.business.Formats;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStep;
 import fr.ifn.eforest.integration.database.rawdata.SubmissionDAO;

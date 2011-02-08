@@ -9,8 +9,8 @@ SET SEARCH_PATH = harmonized_data, public;
 /*==============================================================*/
 create table HARMONIZATION_PROCESS (
 HARMONIZATION_PROCESS_ID         serial,
-REQUEST_ID           			 VARCHAR(36)          not null,
-COUNTRY_CODE	          		 VARCHAR(36)          not null,
+DATASET_ID           			 VARCHAR(36)          not null,
+PROVIDER_ID		          		 VARCHAR(36)          not null,
 HARMONIZATION_STATUS   			 VARCHAR(36)          null,
 _CREATIONDT          DATE                 null DEFAULT current_timestamp,
 constraint PK_HARMONIZATION_PROCESS primary key (HARMONIZATION_PROCESS_ID)

@@ -13,8 +13,6 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.util.SIGUtils;
 import fr.ifn.eforest.common.util.SynchronizedDateFormat;
-import fr.ifn.eforest.common.business.Data;
-import fr.ifn.eforest.common.business.Formats;
 import fr.ifn.eforest.common.business.UnitTypes;
 import fr.ifn.eforest.common.business.checks.CheckException;
 import fr.ifn.eforest.common.database.metadata.FieldData;
@@ -268,7 +266,7 @@ public class GenericMapper {
 				}
 			}
 			if (!found) {
-				// If not found, we add the and all its ancestors 
+				// If not found, we add the and all its ancestors
 				ancestorsIter = ancestors.iterator();
 				while (ancestorsIter.hasNext()) {
 					TableTreeData ancestor = ancestorsIter.next();
@@ -295,7 +293,8 @@ public class GenericMapper {
 	 *            some static values that can be used in the WHERE criteria
 	 * @return The list of values
 	 */
-	private String buildSelect(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, String countryCode) throws Exception {
+	private String buildSelect(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, String countryCode)
+			throws Exception {
 
 		String SELECT = "";
 		String FROM = "";
@@ -328,7 +327,8 @@ public class GenericMapper {
 				} else {
 					ORDER += ", ";
 				}
-				SELECT += sourceField.getTableName() + "." + sourceField.getColumnName() + " AS " + sourceField.getFormat() + "_" + sourceField.getFieldName() + " ";
+				SELECT += sourceField.getTableName() + "." + sourceField.getColumnName() + " AS " + sourceField.getFormat() + "_" + sourceField.getFieldName()
+						+ " ";
 				ORDER += sourceField.getTableName() + "." + sourceField.getColumnName();
 				this.readColumns.add(sourceField);
 			}
@@ -357,8 +357,7 @@ public class GenericMapper {
 			while (sourceFieldsIter.hasNext()) {
 				TableFieldData sourceField = sourceFieldsIter.next();
 
-				if (criteriaFields.containsKey(sourceField.getFieldName()) &&
-						!((sourceField.getFormat().equals(Formats.LOCATION_DATA) || sourceField.getFormat().equals(Formats.STRATA_DATA)) && sourceField.getFieldName().equals(Data.SUBMISSION_ID))) {
+				if (criteriaFields.containsKey(sourceField.getFieldName())) {
 					if (WHERE.equals("")) {
 						WHERE += " WHERE ";
 					} else {
@@ -396,8 +395,8 @@ public class GenericMapper {
 	 *            some static values that can be used in the WHERE criteria
 	 * @return The list of values
 	 */
-	public List<Map<String, GenericData>> readData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, String countryCode, int page, int maxlines)
-			throws Exception {
+	public List<Map<String, GenericData>> readData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields,
+			String countryCode, int page, int maxlines) throws Exception {
 
 		String SQL = buildSelect(schema, sourceTables, criteriaFields, countryCode);
 

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ifn.eforest.integration.AbstractEFDACTest;
-import fr.ifn.eforest.common.business.Formats;
+import fr.ifn.eforest.integration.business.Formats;
 import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.database.metadata.FieldData;
 import fr.ifn.eforest.common.database.metadata.DatasetData;

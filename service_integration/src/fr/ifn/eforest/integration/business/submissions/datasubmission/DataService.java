@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.util.CSVFile;
 import fr.ifn.eforest.common.business.AbstractService;
-import fr.ifn.eforest.common.business.Formats;
 import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.business.Schemas;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;

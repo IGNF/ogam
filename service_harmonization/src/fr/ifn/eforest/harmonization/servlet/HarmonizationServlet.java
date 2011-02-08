@@ -41,7 +41,7 @@ public class HarmonizationServlet extends AbstractServlet {
 	private static final String ACTION_STATUS = "status";
 
 	private static final String DATASET_ID = "DATASET_ID";
-	private static final String COUNTRY_CODE = "COUNTRY_CODE";
+	private static final String PROVIDER_ID = "PROVIDER_ID";
 
 	// Service
 	private transient HarmonizationService harmonizationService = new HarmonizationService();
@@ -78,13 +78,13 @@ public class HarmonizationServlet extends AbstractServlet {
 				throw new Exception("The " + DATASET_ID + " parameter is mandatory");
 			}
 
-			String countryCode = request.getParameter(COUNTRY_CODE);
-			if (countryCode == null) {
-				throw new Exception("The " + COUNTRY_CODE + " parameter is mandatory");
+			String providerId = request.getParameter(PROVIDER_ID);
+			if (providerId == null) {
+				throw new Exception("The " + PROVIDER_ID + " parameter is mandatory");
 			}
 
 			// Identifier of the process
-			String key = datasetId + "_" + countryCode;
+			String key = datasetId + "_" + providerId;
 
 			/*
 			 * Get the STATE of the process for a submission
@@ -99,7 +99,7 @@ public class HarmonizationServlet extends AbstractServlet {
 					out.print(generateResult(HarmonizationStatus.RUNNING, process));
 				} else {
 					// We try to get the status of the last harmonization
-					out.print(generateResult(harmonizationService.getHarmonizationStatus(datasetId, countryCode)));
+					out.print(generateResult(harmonizationService.getHarmonizationStatus(datasetId, providerId)));
 				}
 
 			} else
@@ -116,7 +116,7 @@ public class HarmonizationServlet extends AbstractServlet {
 				}
 
 				// Launch the harmonization thread
-				process = new HarmonizationServiceThread(datasetId, countryCode);
+				process = new HarmonizationServiceThread(datasetId, providerId);
 				process.start();
 
 				// Register the running thread

@@ -105,7 +105,7 @@ LAYER
 	CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
-    DATA "the_geom FROM nuts_0 USING srid=3035"
+    DATA "the_geom FROM nuts_0 USING UNIQUE gid USING srid=3035"
 	CLASSITEM "cell_id"
 	LABELITEM "cell_id"
 	CLASS

@@ -32,8 +32,6 @@ create table ROLE (
 ROLE_CODE            VARCHAR(36)             	not null,
 ROLE_LABEL           VARCHAR(100)             	null,
 ROLE_DEF             VARCHAR(255)         		null,
-DEGRADATED_COORDINATE CHAR(1)                 	null,
-IS_EUROPE_LEVEL      CHAR(1)                 	null,
 constraint PK_ROLE primary key (ROLE_CODE)
 );
 

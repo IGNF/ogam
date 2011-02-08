@@ -2,6 +2,10 @@ CREATE SCHEMA raw_data;
 
 SET SEARCH_PATH = raw_data, public;
 
+--
+-- WARNING: The DATASET_ID, PROVIDER_ID and PLOT_CODE columns are used by the system and should keep their names.
+--
+
 
 
 /*==============================================================*/
@@ -31,6 +35,15 @@ constraint PK_SUBMISSION primary key (SUBMISSION_ID)
 );
 
 
+COMMENT ON COLUMN SUBMISSION.SUBMISSION_ID IS 'The identifier of the submission';
+COMMENT ON COLUMN SUBMISSION.STEP IS 'The submission step (INIT, INSERTED, CHECKED, VALIDATED, CANCELLED)';
+COMMENT ON COLUMN SUBMISSION.STATUS IS 'The submission status (OK, WARNING, ERROR, CRASH)';
+COMMENT ON COLUMN SUBMISSION.PROVIDER_ID IS 'The data provider identifier (country code or organisation name)';
+COMMENT ON COLUMN SUBMISSION.DATASET_ID IS 'The dataset identifier';
+COMMENT ON COLUMN SUBMISSION.USER_LOGIN IS 'The login of the user doing the submission';
+COMMENT ON COLUMN SUBMISSION._CREATIONDT IS 'The date of submission';
+COMMENT ON COLUMN SUBMISSION._VALIDATIONDT IS 'The date of validation';
+
 
 
 /*==============================================================*/
@@ -44,6 +57,11 @@ NB_LINE              INT4                 null,
 constraint PK_SUBMISSION_FILE primary key (SUBMISSION_ID, FILE_TYPE)
 );
 
+COMMENT ON COLUMN SUBMISSION_FILE.SUBMISSION_ID IS 'The identifier of the submission';
+COMMENT ON COLUMN SUBMISSION_FILE.FILE_TYPE IS 'The type of file (reference a DATASET_FILES.FORMAT)';
+COMMENT ON COLUMN SUBMISSION_FILE.FILE_NAME IS 'The name of the file';
+COMMENT ON COLUMN SUBMISSION_FILE.NB_LINE IS 'The number of lines of data in the file (exluding comment and empty lines)';
+
 
 
 /*==============================================================*/
@@ -51,17 +69,30 @@ constraint PK_SUBMISSION_FILE primary key (SUBMISSION_ID, FILE_TYPE)
 /*==============================================================*/
 create table LOCATION (
 SUBMISSION_ID        INT4                 not null,
+PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 LAT                  FLOAT8               null,
 LONG                 FLOAT8               null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_LOCATION primary key (SUBMISSION_ID, PLOT_CODE),
-unique (PLOT_CODE)
+constraint PK_LOCATION primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE),
+unique (PROVIDER_ID, PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
 SELECT AddGeometryColumn('raw_data','location','the_geom',4326,'POINT',2);
+
+
+COMMENT ON COLUMN LOCATION.SUBMISSION_ID IS 'The identifier of the submission';
+COMMENT ON COLUMN LOCATION.PROVIDER_ID IS 'The identifier of the data provider';
+COMMENT ON COLUMN LOCATION.PLOT_CODE IS 'The identifier of the plot';
+COMMENT ON COLUMN LOCATION.LAT IS 'The latitude (in decimal degrees)';
+COMMENT ON COLUMN LOCATION.LONG IS 'The longitude (in decimal degrees)';
+COMMENT ON COLUMN LOCATION.COMMENT IS 'A comment about the plot location';
+COMMENT ON COLUMN LOCATION.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
+COMMENT ON COLUMN LOCATION.THE_GEOM IS 'The geometry of the location';
+
+
 		
 -- Spatial Index on the_geom 
 CREATE INDEX IX_LOCATION_SPATIAL_INDEX ON raw_data.location USING GIST
@@ -92,15 +123,26 @@ CREATE TRIGGER geom_trigger
 /*==============================================================*/
 create table PLOT_DATA (
 SUBMISSION_ID        INT4                 not null,
+PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 INV_DATE             DATE                 null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_PLOT_DATA primary key (SUBMISSION_ID, PLOT_CODE, CYCLE)
+constraint PK_PLOT_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE),
+constraint FK_PLOT_DATA_ASSOCIATE_LOCATION foreign key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE) references LOCATION (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE) on delete restrict on update restrict,
+unique (PROVIDER_ID, PLOT_CODE, CYCLE)
 );
 
+COMMENT ON COLUMN PLOT_DATA.SUBMISSION_ID IS 'The identifier of the submission';
+COMMENT ON COLUMN PLOT_DATA.PROVIDER_ID IS 'The identifier of the data provider';
+COMMENT ON COLUMN PLOT_DATA.PLOT_CODE IS 'The identifier of the plot';
+COMMENT ON COLUMN PLOT_DATA.CYCLE IS 'The cycle of inventory';
+COMMENT ON COLUMN PLOT_DATA.INV_DATE IS 'The date of inventory';
+COMMENT ON COLUMN PLOT_DATA.IS_FOREST_PLOT IS 'Is the plot a forest plot ?';
+COMMENT ON COLUMN PLOT_DATA.COMMENT IS 'A comment about the plot';
+COMMENT ON COLUMN PLOT_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 
 
 /*==============================================================*/
@@ -108,15 +150,26 @@ constraint PK_PLOT_DATA primary key (SUBMISSION_ID, PLOT_CODE, CYCLE)
 /*==============================================================*/
 create table SPECIES_DATA (
 SUBMISSION_ID        INT4                 not null,
+PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 SPECIES_CODE         VARCHAR(36)          not null,
 BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_SPECIES_DATA primary key (SUBMISSION_ID, PLOT_CODE, CYCLE, SPECIES_CODE)
+constraint PK_SPECIES_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
+constraint FK_SPECIES_ASSOCIATE_PLOT_DAT foreign key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE) references PLOT_DATA (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
+unique (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE)   
 );
 
+COMMENT ON COLUMN SPECIES_DATA.SUBMISSION_ID IS 'The identifier of the submission';
+COMMENT ON COLUMN SPECIES_DATA.PROVIDER_ID IS 'The identifier of the data provider';
+COMMENT ON COLUMN SPECIES_DATA.PLOT_CODE IS 'The identifier of the plot';
+COMMENT ON COLUMN SPECIES_DATA.CYCLE IS 'The cycle of inventory';
+COMMENT ON COLUMN SPECIES_DATA.SPECIES_CODE IS 'The code of the specie';
+COMMENT ON COLUMN SPECIES_DATA.BASAL_AREA IS 'The proportion of surface covered by this specie on the plot (in m2/ha)';
+COMMENT ON COLUMN SPECIES_DATA.COMMENT IS 'A comment about the species';
+COMMENT ON COLUMN SPECIES_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 
 
 /*==============================================================*/
@@ -129,6 +182,7 @@ SUBMISSION_ID        INT4                 not null,
 LINE_NUMBER          INT4                 not null,
 SRC_FORMAT           VARCHAR(36)          null,
 SRC_DATA             VARCHAR(36)          null,
+PROVIDER_ID          VARCHAR(36)          null,
 PLOT_CODE            VARCHAR(36)          null,
 FOUND_VALUE          VARCHAR(255)         null,
 EXPECTED_VALUE       VARCHAR(255)         null,
@@ -137,23 +191,22 @@ _CREATIONDT          DATE                 null  DEFAULT current_timestamp,
 constraint PK_CHECK_ERROR primary key (CHECK_ID, SUBMISSION_ID, CHECK_ERROR_ID)
 );
 
+COMMENT ON COLUMN CHECK_ERROR.CHECK_ERROR_ID IS 'The identifier of the error (autoincrement)';
+COMMENT ON COLUMN CHECK_ERROR.CHECK_ID IS 'The identifier of the check';
+COMMENT ON COLUMN CHECK_ERROR.SUBMISSION_ID IS 'The identifier of the submission checked';
+COMMENT ON COLUMN CHECK_ERROR.LINE_NUMBER IS 'The line number of the data in the original CSV file';
+COMMENT ON COLUMN CHECK_ERROR.SRC_FORMAT IS 'The logical name the data source (CSV file or table name)';
+COMMENT ON COLUMN CHECK_ERROR.SRC_DATA IS 'The logical name of the data (column)';
+COMMENT ON COLUMN CHECK_ERROR.PROVIDER_ID IS 'The identifier of the data provider';
+COMMENT ON COLUMN CHECK_ERROR.PLOT_CODE IS 'The identifier of the plot';
+COMMENT ON COLUMN CHECK_ERROR.FOUND_VALUE IS 'The erroreous value (if available)';
+COMMENT ON COLUMN CHECK_ERROR.EXPECTED_VALUE IS 'The expected value (if available)';
+COMMENT ON COLUMN CHECK_ERROR.ERROR_MESSAGE IS 'The error message';
+COMMENT ON COLUMN CHECK_ERROR._CREATIONDT IS 'The creation date';
 
-     
-alter table PLOT_DATA
-   add constraint FK_PLOT_DATA_ASSOCIATE_LOCATION foreign key (PLOT_CODE)
-      references LOCATION (PLOT_CODE)
-      on delete restrict on update restrict;
-           
-alter table SPECIES_DATA
-   add constraint FK_SPECIES_ASSOCIATE_PLOT_DAT foreign key (SUBMISSION_ID, PLOT_CODE, CYCLE)
-      references PLOT_DATA (SUBMISSION_ID, PLOT_CODE, CYCLE)
-      on delete restrict on update restrict;     
-      
-      
--- Ajout d'indexes
-CREATE INDEX LOCATION_PLOT_CODE_IDX ON location ( plot_code);
-CREATE INDEX PLOT_DATA_PLOT_CODE_IDX ON plot_data ( plot_code);
-CREATE INDEX SPECIES_DATA_PLOT_CODE_IDX ON species_data ( plot_code);
+       
+   
+
 
 
 

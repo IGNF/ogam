@@ -9,7 +9,7 @@ INSERT INTO application_parameters (name, value, description) values ('fromMail'
 INSERT INTO application_parameters (name, value, description) values ('toMail','benoit.pesty@ifn.fr','The destination email');
 
 -- Create some roles
-INSERT INTO role(role_code, role_label, role_def, degradated_coordinate, is_europe_level) VALUES ('ADMIN','Administrator', 'Manages the web site', 0, 1);
+INSERT INTO role(role_code, role_label, role_def) VALUES ('ADMIN','Administrator', 'Manages the web site');
 
 -- Create some users
 INSERT INTO users(user_login, user_password, user_name, country_code, active, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', '1', null); 

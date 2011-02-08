@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.business.AbstractService;
 import fr.ifn.eforest.common.business.Data;
-import fr.ifn.eforest.common.business.Formats;
 import fr.ifn.eforest.common.business.GenericMapper;
 import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.business.Schemas;
@@ -103,7 +102,7 @@ public class HarmonizationService extends AbstractService {
 
 			logger.debug("harmonize data for " + datasetId + " and country " + countryCode);
 
-			// Initialize the process			
+			// Initialize the process
 			processId = harmonisationProcessDAO.newHarmonizationProcess(datasetId, countryCode, HarmonizationStatus.RUNNING);
 
 			// Prepare some static data
@@ -126,15 +125,10 @@ public class HarmonizationService extends AbstractService {
 			// Prepare the metadata that we will use
 			//
 			List<TableFormatData> harmonizedTables = new ArrayList<TableFormatData>(); // The list of destination harmonized tables concerned by the JRC Request
-			Set<TableFieldData> harmonizedFields = new HashSet<TableFieldData>(); //The list of destination fields concerned by the JRC Request
+			Set<TableFieldData> harmonizedFields = new HashSet<TableFieldData>(); // The list of destination fields concerned by the JRC Request
 
 			// The list of source raw tables concerned by the JRC Request
 			Set<TableFormatData> rawTables = metadataDAO.getDatasetTables(datasetId, Schemas.RAW_DATA);
-
-			// We statically add the LOCATION and STRATA table 
-			// TODO : Avoid hard-coded values
-			rawTables.add(metadataDAO.getTableFormat(Formats.LOCATION_DATA));
-			rawTables.add(metadataDAO.getTableFormat(Formats.STRATA_DATA));
 
 			// Get the harmonized tables corresponding to the raw_data tables
 			// "Variable" tables should be eliminated at this step by the mapping
@@ -142,7 +136,7 @@ public class HarmonizationService extends AbstractService {
 			while (destTablesITer.hasNext()) {
 				TableFormatData rawTable = destTablesITer.next();
 
-				// Get the list of harmonized tables for each raw table 
+				// Get the list of harmonized tables for each raw table
 				harmonizedTables.addAll(metadataDAO.getFormatMapping(rawTable.getFormat(), MappingTypes.HARMONIZATION_MAPPING).values());
 
 				// Get the list of harmonized fields for each table
@@ -155,7 +149,7 @@ public class HarmonizationService extends AbstractService {
 			logger.debug("harmonizedTablesFormatSortedList : " + harmonizedTablesFormatSortedList);
 
 			//
-			// Delete old data 
+			// Delete old data
 			// from the harmonized tables (starting from the leaf tables)
 			//
 			Iterator<String> tablesIter = harmonizedTablesFormatSortedList.iterator();
@@ -196,7 +190,7 @@ public class HarmonizationService extends AbstractService {
 					throw new Exception("The REQUEST_ID is not described in the " + destTableFormat + " table metadata");
 				}
 
-				// Prepare some static criteria values			
+				// Prepare some static criteria values
 				TreeMap<String, GenericData> criteriaFields = new TreeMap<String, GenericData>();
 				criteriaFields.put(Data.DATASET_ID, datasetIdData);
 				criteriaFields.put(Data.COUNTRY_CODE, countryCodeData);
@@ -221,7 +215,7 @@ public class HarmonizationService extends AbstractService {
 							thread.updateInfo("Inserting " + destTableName + " data", count, total);
 						}
 
-						// TODO : Read the complementary data corresponding to this line				
+						// TODO : Read the complementary data corresponding to this line
 
 						// Add the static data for the destination table
 						sourceFields.put(Data.DATASET_ID, datasetIdData);
@@ -307,7 +301,8 @@ public class HarmonizationService extends AbstractService {
 	 *            the number of lines per page of data
 	 * @return The list of raw data
 	 */
-	private List<Map<String, GenericData>> readSourceData(String destTableFormat, TreeMap<String, GenericData> criteriaFields, String countryCode, int page, int maxlines) throws Exception {
+	private List<Map<String, GenericData>> readSourceData(String destTableFormat, TreeMap<String, GenericData> criteriaFields, String countryCode, int page,
+			int maxlines) throws Exception {
 
 		logger.debug("harmonize data for " + destTableFormat);
 
