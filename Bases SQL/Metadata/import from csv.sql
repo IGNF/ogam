@@ -198,7 +198,6 @@ WHERE format||'_'||data NOT IN (
 	)
 UNION
 -- Raw data field should be mapped with harmonized fields
-/*
 SELECT format||'_'||data, 'This raw_data table field is not mapped with an harmonized field'
 FROM table_field
 JOIN table_format using (format)
@@ -231,7 +230,7 @@ FROM table_format
 WHERE schema_code = 'HARMONIZED_DATA'
 AND NOT EXISTS (SELECT * FROM table_field WHERE table_format.format = table_field.format AND table_field.data='DATASET_ID')
 UNION
-*/
+
 -- the SUBMISSION_ID field is mandatory for raw data tables
 SELECT format, 'This raw table format is missing the SUBMISSION_ID field'
 FROM table_format 

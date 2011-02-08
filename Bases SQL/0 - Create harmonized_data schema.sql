@@ -17,8 +17,8 @@ constraint PK_HARMONIZATION_PROCESS primary key (HARMONIZATION_PROCESS_ID)
 );
 
 COMMENT ON COLUMN HARMONIZATION_PROCESS.HARMONIZATION_PROCESS_ID IS 'The identifier of the harmonization process';
-COMMENT ON COLUMN HARMONIZATION_PROCESS.REQUEST_ID IS 'The identifier of the dataset';
-COMMENT ON COLUMN HARMONIZATION_PROCESS.COUNTRY_CODE IS 'The identifier of the country';
+COMMENT ON COLUMN HARMONIZATION_PROCESS.DATASET_ID IS 'The identifier of the dataset';
+COMMENT ON COLUMN HARMONIZATION_PROCESS.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZATION_PROCESS.HARMONIZATION_STATUS IS 'The status of the harmonization process';
 COMMENT ON COLUMN HARMONIZATION_PROCESS._CREATIONDT IS 'The date of launch of the process';
 
@@ -44,19 +44,25 @@ alter table HARMONIZATION_PROCESS_SUBMISSIONS
 /* Table : HARMONIZED_LOCATION                                  */
 /*==============================================================*/
 create table HARMONIZED_LOCATION (
-REQUEST_ID           			 VARCHAR(36)          not null,
-COUNTRY_CODE         VARCHAR(36)          not null,
+DATASET_ID    		 VARCHAR(36)          not null,
+PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
-CLUSTER_CODE         VARCHAR(36)          not null,
 LAT                  FLOAT8               null,
 LONG                 FLOAT8               null,
-IS_PLOT_COORDINATES_DEGRADED   CHAR(1)	  null,
 COMMENT              VARCHAR(255)         null,
-constraint PK_HARMONIZED_LOCATION primary key (REQUEST_ID, COUNTRY_CODE, PLOT_CODE)
+constraint PK_HARMONIZED_LOCATION primary key (DATASET_ID, PROVIDER_ID, PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
 SELECT AddGeometryColumn('harmonized_data','harmonized_location','the_geom',3035,'POINT',2);
+
+COMMENT ON COLUMN HARMONIZED_LOCATION.DATASET_ID IS 'The identifier of the dataset';
+COMMENT ON COLUMN HARMONIZED_LOCATION.PROVIDER_ID IS 'The identifier of the data provider';
+COMMENT ON COLUMN HARMONIZED_LOCATION.PLOT_CODE IS 'The identifier of the plot';
+COMMENT ON COLUMN HARMONIZED_LOCATION.LAT IS 'The latitude (in decimal degrees)';
+COMMENT ON COLUMN HARMONIZED_LOCATION.LONG IS 'The longitude (in decimal degrees)';
+COMMENT ON COLUMN HARMONIZED_LOCATION.COMMENT IS 'A comment about the plot location';
+COMMENT ON COLUMN HARMONIZED_LOCATION.THE_GEOM IS 'The geometry of the location';
 		
 -- Spatial Index on the_geom 
 CREATE INDEX IX_HARMONIZED_LOCATION_SPATIAL_INDEX ON harmonized_data.harmonized_location USING GIST ( the_geom GIST_GEOMETRY_OPS );
@@ -86,60 +92,57 @@ CREATE TRIGGER geom_trigger
 /* Table : HARMONIZED_PLOT_DATA                                 */
 /*==============================================================*/
 create table HARMONIZED_PLOT_DATA (
-REQUEST_ID           VARCHAR(36)          not null,
-COUNTRY_CODE         VARCHAR(36)          not null,
-STRATUM_CODE         VARCHAR(36)          null,
+DATASET_ID           VARCHAR(36)          not null,
+PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
-REF_YEAR_BEGIN       INTEGER	          not null,
-REF_YEAR_END	     INTEGER	          not null,
 INV_DATE             DATE                 null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
-IS_PARTITIONNING_PLOT  CHAR(1)	          null,
 COMMENT              VARCHAR(1000)         null,
-constraint PK_HARMONIZED_PLOT_DATA primary key (REQUEST_ID, COUNTRY_CODE, PLOT_CODE, CYCLE)
+constraint PK_HARMONIZED_PLOT_DATA primary key (DATASET_ID, PROVIDER_ID, PLOT_CODE, CYCLE),
+constraint FK_HARMONIZED_PLOT_DATA_ASSOCIATE_LOCATION foreign key (DATASET_ID, PROVIDER_ID, PLOT_CODE) references HARMONIZED_LOCATION (DATASET_ID, PROVIDER_ID, PLOT_CODE)
 );
-
-
-alter table HARMONIZED_PLOT_DATA
-   add constraint FK_HARMONIZED_PLOT_DATA_ASSOCIATE_LOCATION foreign key (REQUEST_ID, PLOT_CODE, COUNTRY_CODE)
-      references HARMONIZED_LOCATION (REQUEST_ID, PLOT_CODE, COUNTRY_CODE)
-      on delete restrict on update restrict;
+   
       
+COMMENT ON COLUMN HARMONIZED_PLOT_DATA.DATASET_ID IS 'The identifier of the dataset';
+COMMENT ON COLUMN HARMONIZED_PLOT_DATA.PROVIDER_ID IS 'The identifier of the data provider';
+COMMENT ON COLUMN HARMONIZED_PLOT_DATA.PLOT_CODE IS 'The identifier of the plot';
+COMMENT ON COLUMN HARMONIZED_PLOT_DATA.CYCLE IS 'The cycle of inventory';
+COMMENT ON COLUMN HARMONIZED_PLOT_DATA.INV_DATE IS 'The date of inventory';
+COMMENT ON COLUMN HARMONIZED_PLOT_DATA.IS_FOREST_PLOT IS 'Is the plot a forest plot ?';
+COMMENT ON COLUMN HARMONIZED_PLOT_DATA.COMMENT IS 'A comment about the plot';
       
-CREATE INDEX HARMONIZED_PLOT_DATA_COUNTRY_IDX ON HARMONIZED_PLOT_DATA (COUNTRY_CODE);
       
 
 /*==============================================================*/
 /* Table : HARMONIZED_SPECIES_DATA                              */
 /*==============================================================*/
 create table HARMONIZED_SPECIES_DATA (
-REQUEST_ID        	 VARCHAR(36)          not null,
-COUNTRY_CODE         VARCHAR(36)          not null,
+DATASET_ID        	 VARCHAR(36)          not null,
+PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 SPECIES_CODE         VARCHAR(36)          not null,
-DBH_CLASS            VARCHAR(36)          null,
-NATIONAL_SPECIES_CODE         VARCHAR(36)          null,
+BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
-constraint PK_HARMONIZED_SPECIES_DATA primary key (REQUEST_ID, COUNTRY_CODE, PLOT_CODE, CYCLE, DBH_CLASS, SPECIES_CODE)
+constraint PK_HARMONIZED_SPECIES_DATA primary key (DATASET_ID, PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
+constraint FK_HARMONIZED_SPECIES_ASSOCIATE_PLOT_DAT foreign key (DATASET_ID, PROVIDER_ID, PLOT_CODE, CYCLE) references HARMONIZED_PLOT_DATA (DATASET_ID, PROVIDER_ID, PLOT_CODE, CYCLE)
 );
 
+COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.DATASET_ID IS 'The identifier of the dataset';
+COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.PROVIDER_ID IS 'The identifier of the data provider';
+COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.PLOT_CODE IS 'The identifier of the plot';
+COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.CYCLE IS 'The cycle of inventory';
+COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.SPECIES_CODE IS 'The code of the specie';
+COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.BASAL_AREA IS 'The proportion of surface covered by this specie on the plot (in m2/ha)';
+COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.COMMENT IS 'A comment about the species';
 
       
-alter table HARMONIZED_SPECIES_DATA
-   add constraint FK_HARMONIZED_SPECIES_ASSOCIATE_PLOT_DAT foreign key (REQUEST_ID, COUNTRY_CODE, PLOT_CODE, CYCLE)
-      references HARMONIZED_PLOT_DATA (REQUEST_ID, COUNTRY_CODE, PLOT_CODE, CYCLE)
-      on delete restrict on update restrict;     
-      
-      
-
-
-
-
--- Indexes
-CREATE INDEX HARMONIZED_LOCATION_PLOT_CODE_IDX ON harmonized_location (request_id, country_code, plot_code);
-CREATE INDEX HARMONIZED_PLOT_DATA_PLOT_CODE_IDX ON harmonized_plot_data (request_id, country_code, plot_code);
-CREATE INDEX HARMONIZED_SPECIES_DATA_PLOT_CODE_IDX ON harmonized_species_data (request_id, country_code, plot_code);
-
-      
+GRANT ALL ON SCHEMA harmonized_data TO ogam;
+GRANT ALL ON TABLE harmonized_data.harmonization_process_harmonization_process_id_seq TO ogam;
+GRANT ALL ON TABLE harmonized_data.harmonization_process TO ogam;
+GRANT ALL ON TABLE harmonized_data.harmonization_process_submissions TO ogam;
+GRANT ALL ON TABLE harmonized_data.harmonized_location TO ogam;
+GRANT ALL ON TABLE harmonized_data.harmonized_plot_data TO ogam;
+GRANT ALL ON TABLE harmonized_data.harmonized_species_data TO ogam;
+GRANT EXECUTE ON FUNCTION harmonized_data.geomfromcoordinate() TO ogam;      

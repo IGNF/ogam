@@ -22,7 +22,7 @@
 	<property name="deploy.name" value="${application.name}CalculationService" />
 
 	<!-- *** A modifier en fonction du répertoire d'installation de Tomcat *** -->
-	<property name="deploy.dir" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5/webapps" />
+	<property name="deploy.dir" value="C:/Program Files/Apache Software Foundation/Tomcat 7.0.6/webapps" />
 
 	<property name="classpath" value="${java.io.tmpdir}dist/libs_java/fr.ifn.commons.jar;${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar;${libraries.dir}/lib/servlet-api.jar;${libraries.dir}/lib/junit.jar;${libraries.dir}/import/org/postgresql/postgresql-8.3-603.jdbc4.jar;${libraries.dir}/lib/dbunit/dbunit.jar;${libraries.dir}/import/com/sun/mail/mail.jar" />
 
