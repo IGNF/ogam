@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.business.AbstractThread;
 import fr.ifn.eforest.common.business.ThreadLock;
-import fr.ifn.eforest.integration.database.rawdata.SubmissionData;
+import fr.ifn.eforest.common.database.rawdata.SubmissionData;
 import fr.ifn.eforest.integration.mail.EforestEmailer;
 
 /**

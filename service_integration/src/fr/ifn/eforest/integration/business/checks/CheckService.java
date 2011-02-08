@@ -9,8 +9,8 @@ import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStep;
 import fr.ifn.eforest.common.database.metadata.CheckData;
 import fr.ifn.eforest.common.database.metadata.ChecksDAO;
-import fr.ifn.eforest.integration.database.rawdata.SubmissionDAO;
-import fr.ifn.eforest.integration.database.rawdata.SubmissionData;
+import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
+import fr.ifn.eforest.common.database.rawdata.SubmissionData;
 import fr.ifn.eforest.integration.database.rawdata.CheckErrorDAO;
 
 /**

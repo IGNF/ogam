@@ -8,8 +8,8 @@ import fr.ifn.eforest.integration.business.checks.CheckService;
 import fr.ifn.eforest.integration.business.submissions.datasubmission.DataService;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.integration.business.submissions.SubmissionStep;
-import fr.ifn.eforest.integration.database.rawdata.SubmissionDAO;
-import fr.ifn.eforest.integration.database.rawdata.SubmissionData;
+import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
+import fr.ifn.eforest.common.database.rawdata.SubmissionData;
 
 //
 // Note : In order to use this Test Class correctly under Eclipse, you need to change the working directory to

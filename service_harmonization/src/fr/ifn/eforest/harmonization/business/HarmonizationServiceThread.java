@@ -15,8 +15,8 @@ public class HarmonizationServiceThread extends AbstractThread {
 	//
 	// The Thread is always linked to a country code and a JRC Request.
 	//
-	private String countryCode;
-	private String requestId;
+	private String datasetId;
+	private String providerId;
 
 	/**
 	 * The logger used to log the errors or several information.
@@ -28,16 +28,16 @@ public class HarmonizationServiceThread extends AbstractThread {
 	/**
 	 * Constructor.
 	 * 
-	 * @param requestId
+	 * @param datasetId
 	 *            the dataset identifier
-	 * @param countryCode
+	 * @param providerId
 	 *            the country code
 	 * @throws Exception
 	 */
-	public HarmonizationServiceThread(String requestId, String countryCode) throws Exception {
+	public HarmonizationServiceThread(String datasetId, String providerId) throws Exception {
 
-		this.requestId = requestId;
-		this.countryCode = countryCode;
+		this.datasetId = datasetId;
+		this.providerId = providerId;
 
 	}
 
@@ -53,7 +53,7 @@ public class HarmonizationServiceThread extends AbstractThread {
 
 			// SQL Conformity checks
 			HarmonizationService harmonizationService = new HarmonizationService(this);
-			harmonizationService.harmonizeData(requestId, countryCode);
+			harmonizationService.harmonizeData(datasetId, providerId);
 
 			// Log the end the the request
 			Date endDate = new Date();
@@ -61,7 +61,7 @@ public class HarmonizationServiceThread extends AbstractThread {
 
 		} finally {
 			// Remove itself from the list of running checks
-			String key = requestId + "_" + countryCode;
+			String key = datasetId + "_" + providerId;
 			ThreadLock.getInstance().releaseProcess(key);
 
 		}

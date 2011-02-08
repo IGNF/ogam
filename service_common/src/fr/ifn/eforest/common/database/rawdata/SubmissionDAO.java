@@ -1,4 +1,4 @@
-package fr.ifn.eforest.integration.database.rawdata;
+package fr.ifn.eforest.common.database.rawdata;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

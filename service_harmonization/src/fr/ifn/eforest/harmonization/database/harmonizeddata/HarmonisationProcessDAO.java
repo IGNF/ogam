@@ -29,7 +29,7 @@ public class HarmonisationProcessDAO {
 	/**
 	 * Create a new harmonization process.
 	 */
-	private static final String CREATE_HARMONIZATION_PROCESS_STMT = "INSERT INTO harmonization_process (harmonization_process_id, request_id, country_code, harmonization_status) VALUES (?, ?, ?, ?)";
+	private static final String CREATE_HARMONIZATION_PROCESS_STMT = "INSERT INTO harmonization_process (harmonization_process_id, dataset_id, provider_id, harmonization_status) VALUES (?, ?, ?, ?)";
 
 	/**
 	 * Update the process status.
@@ -50,7 +50,7 @@ public class HarmonisationProcessDAO {
 	/**
 	 * Get the status of the last harmonization process.
 	 */
-	private static final String GET_HARMONIZATION_PROCESS_STATUS_STMT = "SELECT harmonization_status FROM harmonization_process WHERE request_id = ? AND country_code = ? ORDER BY harmonization_process_id DESC LIMIT 1";
+	private static final String GET_HARMONIZATION_PROCESS_STATUS_STMT = "SELECT harmonization_status FROM harmonization_process WHERE dataset_id = ? AND provider_id = ? ORDER BY harmonization_process_id DESC LIMIT 1";
 
 	/**
 	 * Get a connexion to the database.
@@ -71,13 +71,13 @@ public class HarmonisationProcessDAO {
 	/**
 	 * Get the status of the last harmonization process for this JRC Request and country.
 	 * 
-	 * @param requestId
+	 * @param datasetId
 	 *            the identifier of the dataset
-	 * @param countryCode
+	 * @param providerId
 	 *            the code of the country
 	 * @return the status of the last harmonization process
 	 */
-	public String getHarmonizationProcessStatus(String requestId, String countryCode) throws Exception {
+	public String getHarmonizationProcessStatus(String datasetId, String providerId) throws Exception {
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -88,8 +88,8 @@ public class HarmonisationProcessDAO {
 
 			// Get the submission ID from the sequence
 			ps = con.prepareStatement(GET_HARMONIZATION_PROCESS_STATUS_STMT);
-			ps.setString(1, requestId);
-			ps.setString(2, countryCode);
+			ps.setString(1, datasetId);
+			ps.setString(2, providerId);
 			logger.trace(GET_HARMONIZATION_PROCESS_STATUS_STMT);
 			rs = ps.executeQuery();
 
@@ -127,15 +127,15 @@ public class HarmonisationProcessDAO {
 	/**
 	 * Create a new harmonization process.
 	 * 
-	 * @param requestId
+	 * @param datasetId
 	 *            the dataset identifier
-	 * @param countryCode
+	 * @param providerId
 	 *            the country code
 	 * @param harmonizationStatus
 	 *            the status of the process
 	 * @return the harmonisation process id
 	 */
-	public Integer newHarmonizationProcess(String requestId, String countryCode, String harmonizationStatus) throws Exception {
+	public Integer newHarmonizationProcess(String datasetId, String providerId, String harmonizationStatus) throws Exception {
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -162,8 +162,8 @@ public class HarmonisationProcessDAO {
 			ps = con.prepareStatement(CREATE_HARMONIZATION_PROCESS_STMT);
 			logger.trace(CREATE_HARMONIZATION_PROCESS_STMT);
 			ps.setInt(1, processId);
-			ps.setString(2, requestId);
-			ps.setString(3, countryCode);
+			ps.setString(2, datasetId);
+			ps.setString(3, providerId);
 			ps.setString(4, harmonizationStatus);
 			ps.execute();
 
@@ -319,7 +319,7 @@ public class HarmonisationProcessDAO {
 			ps.execute();
 
 		} catch (Exception e) {
-			// Low level log			
+			// Low level log
 			logger.error("Error while deleting process log", e);
 			throw e;
 		} finally {

@@ -13,7 +13,7 @@ public interface Data {
 	/**
 	 * The identifier of a dataset.
 	 */
-	String DATASET_ID = "REQUEST_ID";
+	String DATASET_ID = "DATASET_ID";
 
 	/**
 	 * The identifier of a submission.
@@ -21,8 +21,8 @@ public interface Data {
 	String SUBMISSION_ID = "SUBMISSION_ID";
 
 	/**
-	 * The country code.
+	 * The identifier of the provider.
 	 */
-	String COUNTRY_CODE = "COUNTRY_CODE";
+	String PROVIDER_ID = "PROVIDER_ID";
 
 }

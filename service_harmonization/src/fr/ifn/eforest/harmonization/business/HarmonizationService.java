@@ -22,10 +22,9 @@ import fr.ifn.eforest.common.database.GenericData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
 import fr.ifn.eforest.common.database.metadata.TableFormatData;
-import fr.ifn.eforest.harmonization.database.rawdata.ClusterDAO;
+import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
 import fr.ifn.eforest.harmonization.database.harmonizeddata.HarmonisationProcessDAO;
 import fr.ifn.eforest.harmonization.database.harmonizeddata.HarmonizedDataDAO;
-import fr.ifn.eforest.harmonization.database.rawdata.LocationDAO;
 
 /**
  * Service managing data harmonization.
@@ -42,10 +41,9 @@ public class HarmonizationService extends AbstractService {
 	// The Data Access Objects
 	private MetadataDAO metadataDAO = new MetadataDAO();
 	private GenericDAO genericDAO = new GenericDAO();
+	private SubmissionDAO submissionDAO = new SubmissionDAO();
 	private HarmonizedDataDAO harmonizedDataDAO = new HarmonizedDataDAO();
 	private HarmonisationProcessDAO harmonisationProcessDAO = new HarmonisationProcessDAO();
-	private ClusterDAO clusterDAO = new ClusterDAO();
-	private LocationDAO locationDAO = new LocationDAO();
 
 	// The generic mapper
 	private GenericMapper genericMapper = new GenericMapper();
@@ -90,20 +88,20 @@ public class HarmonizationService extends AbstractService {
 	 * 
 	 * @param datasetId
 	 *            The JRC request identifier
-	 * @param countryCode
+	 * @param providerId
 	 *            The country code
 	 * @return the process identifier
 	 */
-	public Integer harmonizeData(String datasetId, String countryCode) {
+	public Integer harmonizeData(String datasetId, String providerId) {
 
 		Integer processId = null;
 
 		try {
 
-			logger.debug("harmonize data for " + datasetId + " and country " + countryCode);
+			logger.debug("harmonize data for " + datasetId + " and provider " + providerId);
 
 			// Initialize the process
-			processId = harmonisationProcessDAO.newHarmonizationProcess(datasetId, countryCode, HarmonizationStatus.RUNNING);
+			processId = harmonisationProcessDAO.newHarmonizationProcess(datasetId, providerId, HarmonizationStatus.RUNNING);
 
 			// Prepare some static data
 			GenericData datasetIdData = new GenericData();
@@ -112,14 +110,14 @@ public class HarmonizationService extends AbstractService {
 			datasetIdData.setType(UnitTypes.STRING);
 			datasetIdData.setValue(datasetId);
 
-			GenericData countryCodeData = new GenericData();
-			countryCodeData.setColumnName(Data.COUNTRY_CODE);
-			countryCodeData.setFormat(Data.COUNTRY_CODE);
-			countryCodeData.setType(UnitTypes.STRING);
-			countryCodeData.setValue(countryCode);
+			GenericData providerIdData = new GenericData();
+			providerIdData.setColumnName(Data.PROVIDER_ID);
+			providerIdData.setFormat(Data.PROVIDER_ID);
+			providerIdData.setType(UnitTypes.STRING);
+			providerIdData.setValue(providerId);
 
-			// Identify the data submission we want to include
-			List<Integer> listSubmissionID = harmonizedDataDAO.getActiveDataSubmission(countryCode, datasetId);
+			// Identify the submission we want to include
+			List<Integer> listSubmissionID = submissionDAO.getActiveDataSubmission(providerId, datasetId);
 
 			//
 			// Prepare the metadata that we will use
@@ -160,7 +158,7 @@ public class HarmonizationService extends AbstractService {
 				if (thread != null) {
 					thread.updateInfo("Removing " + tableName + " data", 0, 0);
 				}
-				harmonizedDataDAO.deleteHarmonizedData(tableName, countryCode, datasetId);
+				harmonizedDataDAO.deleteHarmonizedData(tableName, providerId, datasetId);
 			}
 
 			// For each destination table (starting from the root in the hierarchy to the leaf tables)
@@ -193,18 +191,18 @@ public class HarmonizationService extends AbstractService {
 				// Prepare some static criteria values
 				TreeMap<String, GenericData> criteriaFields = new TreeMap<String, GenericData>();
 				criteriaFields.put(Data.DATASET_ID, datasetIdData);
-				criteriaFields.put(Data.COUNTRY_CODE, countryCodeData);
+				criteriaFields.put(Data.PROVIDER_ID, providerIdData);
 
 				boolean finished = false;
 				int count = 0;
 				int page = 0;
-				int total = countData(destTableFormat, criteriaFields, countryCode);
+				int total = countData(destTableFormat, criteriaFields, providerId);
 				while (!finished) {
 
 					//
 					// Build a giant SELECT from the raw tables
 					//
-					List<Map<String, GenericData>> sourceData = readSourceData(destTableFormat, criteriaFields, countryCode, page, MAX_LINES);
+					List<Map<String, GenericData>> sourceData = readSourceData(destTableFormat, criteriaFields, providerId, page, MAX_LINES);
 
 					Iterator<Map<String, GenericData>> sourceIter = sourceData.iterator();
 					while (sourceIter.hasNext()) {
@@ -219,7 +217,7 @@ public class HarmonizationService extends AbstractService {
 
 						// Add the static data for the destination table
 						sourceFields.put(Data.DATASET_ID, datasetIdData);
-						sourceFields.put(Data.COUNTRY_CODE, countryCodeData);
+						sourceFields.put(Data.PROVIDER_ID, providerIdData);
 
 						// TODO : Launch the harmonization rule corresponding to the data
 
@@ -239,30 +237,7 @@ public class HarmonizationService extends AbstractService {
 
 			}
 
-			// Precalculate cell identifiers for each raw data location
-			List<Integer> listLocationSubmissionID = harmonizedDataDAO.getActiveLocationSubmission(countryCode);
-			Iterator<Integer> locationSubmissionIDIter = listLocationSubmissionID.iterator();
-			int count = 0;
-			while (locationSubmissionIDIter.hasNext()) {
-				Integer locationSubmissionID = locationSubmissionIDIter.next();
-				if (thread != null) {
-					thread.updateInfo("Precalculate cell identifiers for each location", count, listLocationSubmissionID.size());
-				}
-				locationDAO.validatePlotLocations(locationSubmissionID);
-				count++;
-			}
-
-			// Precalculate cluster weights
-			if (thread != null) {
-				thread.updateInfo("Precalculate cluster weights", 0, 0);
-			}
-			clusterDAO.recalculateClusterWeights(datasetId, countryCode);
-
-			// Update the plot location to blur them
-			if (thread != null) {
-				thread.updateInfo("Centering plot location on 1x1km grid", 0, 0);
-			}
-			harmonizedDataDAO.blurPlotLocation(datasetId, countryCode);
+			// TODO : Launch post-processing
 
 			// Log the process in the log table
 			harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);
