@@ -17,9 +17,9 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
     mimeType: 'application/pdf',
     /**
      * @cfg {String} url
-     * The pdf url. Defaults to ''.
+     * The pdf url. Defaults to null.
      */
-    url:'',
+    url: null,
 
     // This two methods don't work on IE (the object tag can't be move?)
     /*onRender : function(ct, position){
@@ -70,6 +70,9 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
 
     /**
      * Update the component element
+     * 
+     * @hide
+     * @private
      */
     updateElement : function(){
         // This methods does't work on IE (the object can't be updated?)
@@ -90,6 +93,19 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
                 width="88" height="31" border="0" alt="Get Adobe Reader." />\
                 </a></p></p>Direct link to the document: <a href="'+this.url+'">'+this.url+'</a>'
         }));
+    },
+
+    /**
+     * Reset the component body
+     */
+    reset : function(){
+        if(this.url != null){
+            this.el = Ext.get(Ext.DomHelper.overwrite(this.ownerCt.body.dom, {
+                tag:'span',
+                html:'Veuillez selectionner un document...'
+            }));
+            this.url = null;
+        }
     }
 });
 Ext.reg('pdf', Genapp.PDFComponent);

@@ -121,6 +121,9 @@ listeners: {
                 },{
                     xtype: 'combo',
                     fieldLabel: 'Référence'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: 'Texte'
                 }],
                 buttons:[{
                     xtype: 'button',
@@ -183,6 +186,7 @@ listeners: {
                 singleSelect:true,
                 listeners:{
                     'rowselect':function(sm, rowIdx, r){
+                        this.pdf.reset();
                         this.westDocSlipPanel.update(r.data);
                     },
                     scope:this
@@ -193,6 +197,9 @@ listeners: {
                     if(event.keyCode == event.ENTER){
                         this.onEnter();
                     }
+                },
+                'rowdblclick':function(grid, rowIndex, event){
+                    this.onEnter();
                 },
                 scope:this
             }
@@ -256,7 +263,7 @@ listeners: {
         });
 
         this.centerPanel = new Ext.Panel({
-            title: 'My pdf',
+            title: 'Document',
             region: 'center',
             frame: true,
             margins:{
