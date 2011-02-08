@@ -41,37 +41,27 @@ if (!empty($permissions)) {
 </h3>
 <ul id="appmenu" class="menu">
 
-
-<?
-if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
-?>
-<li>
-<a href="<?= $this->url(array('controller'=>'query'), null, true) ?>" class="pagelink" >Visualize Raw Data</a>
-</li>
-<?
-}
-if (!empty($permissions) && array_key_exists('OVERVIEW',$permissions) && $role->isEuropeLevel == '1') {
-?>
-<li>
-<a href="<?= $this->url(array('controller'=>'overview'), null, true) ?>">Overview</a>
-</li>
-<? 
-} 
-
+<?php 
 if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {	
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'integration'), null, true) ?>" class="pagelink" >Data Integration</a>
 </li>
-<?
+<?php
 }
- 
+if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'query'), null, true) ?>" class="pagelink" >Visualize Raw Data</a>
+</li>
+<?php
+} 
 if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions)) {	
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" >Data Harmonization</a>
 </li>
-<?
+<?php
 }
 
 if (!empty($permissions) && array_key_exists('DATA_QUERY_HARMONIZED',$permissions)) {	
@@ -79,7 +69,7 @@ if (!empty($permissions) && array_key_exists('DATA_QUERY_HARMONIZED',$permission
 <li>
 <a href="<?= $this->url(array('controller'=>'harmonizationquery'), null, true) ?>" class="pagelink" >Visualize Aggregated Data</a>
 </li>
-<?
+<?php
 }
  
 if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {	
@@ -87,7 +77,7 @@ if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {
 <li>
 <a href="<?= $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" >User Administration</a>
 </li>
-<?
+<?php
 }
 
 if (!empty($permissions) && array_key_exists('DOCUMENTATION',$permissions)) {	
@@ -95,7 +85,7 @@ if (!empty($permissions) && array_key_exists('DOCUMENTATION',$permissions)) {
 <li>
 <a href="<?= $this->url(array('controller'=>'documentation'), null, true) ?>" class="pagelink" >Documentation</a>
 </li>
-<?
+<?php
 }
 
 if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
@@ -103,7 +93,7 @@ if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {
 <li>
 <a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" >Data edition</a>
 </li>
-<?
+<?php
 }
 
 $configuration = Zend_Registry::get("configuration");
@@ -115,12 +105,12 @@ if($configuration->autoLogin == 1){
 <li>
 <a href="<?= PATH_BASE_URL.'/user/logout'?>">Logout</a>
 </li>
-<?
+<?php
 }
 ?>
 </ul>
 </div>
-<?
+<?php
 }
 ?>
 </div>
