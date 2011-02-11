@@ -99,13 +99,25 @@ listeners: {
             frame:true,
             items:{
                 xtype: 'form',
+                ref:'formPanel',
                 labelWidth: 130, // label settings here cascade unless overridden
                 bodyStyle:'padding:5px 10px 0',
                 defaults: {width: 230},
                 defaultType: 'textfield',
                 items:[{
                     xtype: 'combo',
-                    fieldLabel: 'Titre'
+                    fieldLabel: 'Titre',
+                    mode: 'local',
+                    store: new Ext.data.ArrayStore({
+                        id: 0,
+                        fields: [
+                            'myId',
+                            'displayText'
+                        ],
+                        data: [[1, 'Titre 1'], [2, 'Titre 2'], [3, '...']]
+                    }),
+                    valueField: 'myId',
+                    displayField: 'displayText'
                 },{
                     xtype: 'combo',
                     fieldLabel: 'Auteur'
@@ -129,7 +141,7 @@ listeners: {
                     xtype: 'button',
                     text: 'Effacer filtres',
                     handler:function(){
-                        this.westBottomPanel.expand();
+                        this.westSearchPanel.formPanel.form.reset();
                     },
                     scope:this
                 },{
@@ -208,12 +220,12 @@ listeners: {
         this.westDocSlipPanel = new Ext.form.FieldSet({
             region:'south',
             data:{
-                title:'RENECOFOR - Manuel de référence n°5 pour la collecte de la litière et le traitement des échantillons recueillis, placette de niveau 1',
-                subject:'litière, fruit, aiguille, gland, faîne...',
-                authors:'Ulrich E, Lanier M, Roulet P',
-                publication_date:1994,
-                publication:'Manuels de référence',
-                reference:'17-06'
+                title:'-',
+                subject:'-',
+                authors:'-',
+                publication_date:'-',
+                publication:'-',
+                reference:'-'
             },
             margins:{
                 top: 5,
@@ -246,6 +258,16 @@ listeners: {
                 this.westDocSlipPanel
             ]
         });
+
+        // Only for the demo, remove this listeners after
+        this.westBottomPanel.on(
+            'expand',
+            function(){
+                this.westgridPanel.getSelectionModel().selectFirstRow.defer(300, this.westgridPanel.getSelectionModel());
+            },
+            this,
+            {single:true}
+        );
 
         this.westPanel = new Ext.Panel({
             region:'west',
