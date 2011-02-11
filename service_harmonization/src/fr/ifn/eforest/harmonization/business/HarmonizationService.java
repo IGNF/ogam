@@ -23,6 +23,7 @@ import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
 import fr.ifn.eforest.common.database.metadata.TableFormatData;
 import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
+import fr.ifn.eforest.common.database.rawdata.SubmissionData;
 import fr.ifn.eforest.harmonization.database.harmonizeddata.HarmonisationProcessDAO;
 import fr.ifn.eforest.harmonization.database.harmonizeddata.HarmonizedDataDAO;
 
@@ -117,7 +118,7 @@ public class HarmonizationService extends AbstractService {
 			providerIdData.setValue(providerId);
 
 			// Identify the submission we want to include
-			List<Integer> listSubmissionID = submissionDAO.getActiveDataSubmission(providerId, datasetId);
+			List<SubmissionData> listSubmissions = submissionDAO.getActiveSubmissions(providerId, datasetId);
 
 			//
 			// Prepare the metadata that we will use
@@ -241,8 +242,7 @@ public class HarmonizationService extends AbstractService {
 
 			// Log the process in the log table
 			harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);
-
-			harmonisationProcessDAO.updateHarmonizationProcessSubmissions(processId, listSubmissionID);
+			harmonisationProcessDAO.updateHarmonizationProcessSubmissions(processId, listSubmissions);
 
 			logger.debug("harmonization done");
 

@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -33,17 +35,17 @@ public class SubmissionDAO {
 	private static final String CREATE_SUBMISSION_STMT = "INSERT INTO submission (submission_id, provider_id, dataset_id, user_login, step) values (?, ?, ?, ?, ?)";
 
 	/**
-	 * update the submission step and status.
+	 * Update the submission step and status.
 	 */
 	private static final String UPDATE_SUBMISSION_STATUS_STMT = "UPDATE submission SET status = ?, STEP = ? WHERE submission_id = ?";
 
 	/**
-	 * validate the submission.
+	 * Validate the submission.
 	 */
 	private static final String VALIDATE_SUBMISSION_STMT = "UPDATE submission SET STEP = ?, _validationdt = ? WHERE submission_id = ?";
 
 	/**
-	 * update the submission step.
+	 * Update the submission step.
 	 */
 	private static final String UPDATE_SUBMISSION_STEP_STMT = "UPDATE submission SET STEP = ? WHERE submission_id = ?";
 
@@ -56,6 +58,11 @@ public class SubmissionDAO {
 	 * Get a submission.
 	 */
 	private static final String GET_SUBMISSION_BY_ID_STMT = "SELECT submission_id, step, status, provider_id, dataset_id, user_login FROM submission WHERE submission_id = ?";
+
+	/**
+	 * Get the active submissions for a given provider and dataset.
+	 */
+	private static final String GET_ACTIVE_SUBMISSIONS_STMT = "SELECT submission_id, step, status, provider_id, dataset_id, user_login FROM submission WHERE provider_id = ? AND dataset_id = ? AND step <> 'CANCELLED'";
 
 	/**
 	 * Get a connexion to the database.
@@ -106,6 +113,70 @@ public class SubmissionDAO {
 				result.setDatasetId(rs.getString("dataset_id"));
 				result.setUserLogin(rs.getString("user_login"));
 
+			}
+
+			return result;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing resultset : " + e.getMessage());
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing connexion : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Get the active submissions for a given provider and dataset.
+	 * 
+	 * @param providerId
+	 *            the provider
+	 * @param datasetId
+	 *            the dataset identifier
+	 * @return the submission
+	 */
+	public List<SubmissionData> getActiveSubmissions(String providerId, String datasetId) throws Exception {
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<SubmissionData> result = new ArrayList<SubmissionData>();
+		try {
+
+			con = getConnection();
+
+			// Get the submission ID from the sequence
+			ps = con.prepareStatement(GET_ACTIVE_SUBMISSIONS_STMT);
+			ps.setString(1, providerId);
+			ps.setString(2, datasetId);
+
+			logger.trace(GET_ACTIVE_SUBMISSIONS_STMT);
+			rs = ps.executeQuery();
+
+			if (rs.next()) {
+				SubmissionData submission = new SubmissionData();
+				submission.setSubmissionId(rs.getInt("submission_id"));
+				submission.setStep(rs.getString("step"));
+				submission.setStatus(rs.getString("status"));
+				submission.setProviderId(rs.getString("provider_id"));
+				submission.setDatasetId(rs.getString("dataset_id"));
+				submission.setUserLogin(rs.getString("user_login"));
+				result.add(submission);
 			}
 
 			return result;

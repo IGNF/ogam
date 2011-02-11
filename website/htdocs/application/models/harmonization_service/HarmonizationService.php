@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once APPLICATION_PATH.'/models/abstract_service/AbstractService.php';
 
 /**
@@ -71,17 +71,16 @@ class Model_HarmonizationService extends Model_AbstractService {
 		}
 	}
 
-
 	/**
 	 * Get the status of the harmonisation process.
 	 *
 	 * @param $datasetId The identifier of the dataset
-	 * @param $countryCode The identifier of the country
+	 * @param $providerId The identifier of the data provider
 	 * @param $servletName The name of the servlet to call
 	 * @return ProcessStatus the status of the process.
 	 * @throws Exception if a problem occured on the server side
 	 */
-	public function getStatus($datasetId, $countryCode, $servletName) {
+	public function getStatus($datasetId, $providerId, $servletName) {
 		$this->logger->debug("getStatus : ".$datasetId);
 
 		$client = new Zend_Http_Client();
@@ -91,7 +90,7 @@ class Model_HarmonizationService extends Model_AbstractService {
 			'timeout' => 30));
 
 		$client->setParameterPost('DATASET_ID', $datasetId);
-		$client->setParameterPost('COUNTRY_CODE', $countryCode);
+		$client->setParameterPost('PROVIDER_ID', $providerId);
 
 		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl.$servletName."?action=status");
 

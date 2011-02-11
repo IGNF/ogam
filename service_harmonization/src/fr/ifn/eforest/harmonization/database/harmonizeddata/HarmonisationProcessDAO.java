@@ -14,6 +14,8 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
+import fr.ifn.eforest.common.database.rawdata.SubmissionData;
+
 /**
  * Data Access Object used to access the harmonization log.
  */
@@ -243,7 +245,7 @@ public class HarmonisationProcessDAO {
 	 * @param listSubmissionID
 	 *            the identifiers of raw data submissions
 	 */
-	public void updateHarmonizationProcessSubmissions(Integer processId, List<Integer> listSubmissionID) throws Exception {
+	public void updateHarmonizationProcessSubmissions(Integer processId, List<SubmissionData> listSubmissions) throws Exception {
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -251,17 +253,17 @@ public class HarmonisationProcessDAO {
 
 			con = getConnection();
 
-			Iterator<Integer> submissionsIter = listSubmissionID.iterator();
+			Iterator<SubmissionData> submissionsIter = listSubmissions.iterator();
 
 			while (submissionsIter.hasNext()) {
 
-				Integer submission = submissionsIter.next();
+				SubmissionData submission = submissionsIter.next();
 
 				// Get the submission ID from the sequence
 				ps = con.prepareStatement(UPDATE_HARMONIZATION_PROCESS_SUBMISSION_STMT);
 				logger.trace(UPDATE_HARMONIZATION_PROCESS_SUBMISSION_STMT);
 				ps.setInt(1, processId);
-				ps.setInt(2, submission);
+				ps.setInt(2, submission.getSubmissionId());
 				ps.execute();
 
 				ps.close();

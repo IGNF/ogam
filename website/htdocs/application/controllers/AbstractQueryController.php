@@ -1109,9 +1109,15 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 
 		// If needed we check on the data submission type
-		if (!empty($datasetId) && $firstJoinedTable != "") {
-			$from .= " JOIN submission ON (submission.submission_id = ".$firstJoinedTable.".submission_id) ";
-			$where .= " AND submission.dataset_id = '".$datasetId."' ";
+		if ($this->schema == 'RAW_DATA') {
+			// For raw data, the dataset identifier is linked to the submission
+			if (!empty($datasetId) && $firstJoinedTable != "") {
+				$from .= " JOIN submission ON (submission.submission_id = ".$firstJoinedTable.".submission_id) ";
+				$where .= " AND submission.dataset_id = '".$datasetId."' ";
+			}
+		} else {
+			// Otherwise it should be in the root table 
+			$where .= " AND ".$firstJoinedTable.".dataset_id = '".$datasetId."' ";
 		}
 
 		// Add some hard-coded, needed fields
