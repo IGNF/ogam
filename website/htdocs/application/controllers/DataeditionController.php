@@ -1,10 +1,12 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
+require_once APPLICATION_PATH.'/classes/dataedition/DataObject.php';
+require_once APPLICATION_PATH.'/classes/dataedition/Value.php';
 
 /**
  * DataEditionController is the controller that allow the edition of simple data.
@@ -114,26 +116,57 @@ class DataEditionController extends AbstractEforestController {
 
 		// Get the dataset Id
 		$datasetId = $this->_getParam("DATASET_ID");
-		
+
 		// Store it in session
 		$websiteSession = new Zend_Session_Namespace('website');
-		$websiteSession->datasetID = $datasetId;		
+		$websiteSession->datasetID = $datasetId;
 
 		// Forward the user to the next step
-		$this->_redirector->gotoUrl('/dataedition/show-add-data');
+		$this->_redirector->gotoUrl('/dataedition/show-edit-data');
 	}
 
 	/**
-	 * Show the add page.
+	 * Edit a data.
+	 *
+	 * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
 	 *
 	 * @return the HTML view
 	 */
-	public function showAddDataAction() {
-		$this->logger->debug('showAddDataAction');
+	public function showEditDataAction() {
+		$this->logger->debug('showEditDataAction');
+
+		// Paramètres d'entrée :
+		// DATASET_ID
+		// FORMAT : Le nom de la table à éditer
+		// CLE1
+		// CLE2
+		// ...
+
+		$datasetId = "REQUEST";
+		$plot_code = "01575-14060-4-0T";
+		$cycle = "5";
+		$provider_id = "1";
+
+		$data = new DataObject();
+		$key1 = new Value("plot_code", $plot_code);
+		$key2 = new Value("cycle", $cycle);
+		$key3 = new Value("provider_id", $provider_id);
+		$data->addPrimaryKey($key1);
+		$data->addPrimaryKey($key2);
+		$data->addPrimaryKey($key3);
+
+		// Get the data objet from the database.
+		// TODO : Eliminer automatiquement la colonne submission_id de la clé
+
+		// If the objet is not existing then we are in create mode instead of edit mode
+
+		// Get the ancestors of the data objet from the database
+
+		// Get the childs of the data objet from the database
 
 		$this->view->form = $this->_getDatasetForm();
 
-		$this->render('show-dataset');
+		$this->render('edit-data');
 	}
 
 }
