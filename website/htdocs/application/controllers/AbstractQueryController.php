@@ -667,7 +667,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			foreach ($tableFields as $tableField) {
 
 				// Get the form field corresponding to the data field.
-				$formfield = $this->metadataModel->getFormField($tableField->sourceFormName, $tableField->sourceFieldName);
+				$formfield = $this->metadataModel->getTableToFormMapping($tableField);
 
 				$columnName = $tableField->columnName;
 
@@ -680,7 +680,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				}
 
 				// Build the SELECT
-				$select .= " AS ".$tableField->sourceFormName."__".$tableField->sourceFieldName.", ";
+				$select .= " AS ".$formfield->format."__".$formfield->data.", ";
 
 				// Store the field
 				$detailFields[] = $formfield;
@@ -797,18 +797,20 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$dataCrits = array();
 		foreach ($columns as $column) {
 			$split = explode("__", $column);
-			$format = $split[0];
-			$field = $split[1];
-			$tableField = $this->metadataModel->getFieldMapping($format, $field, $this->schema);
-			$dataCols[] = $tableField;
+			$formField = new FormField();
+			$formField->format = $split[0];
+			$formField->data = $split[1];
+			$tableField = $this->metadataModel->getFormToTableMapping($formField, $this->schema);
+			$dataCols[$column] = $tableField;
 		}
 		foreach ($criterias as $criteriaName => $value) {
 			$split = explode("__", $criteriaName);
-			$format = $split[0];
-			$field = $split[1];
-			$tableField = $this->metadataModel->getFieldMapping($format, $field, $this->schema);
+			$formField = new FormField();
+			$formField->format = $split[0];
+			$formField->data = $split[1];
+			$tableField = $this->metadataModel->getFormToTableMapping($formField, $this->schema);
 			$tableField->value = $value;
-			$dataCrits[] = $tableField;
+			$dataCrits[$criteriaName] = $tableField;
 		}
 
 		//
@@ -818,7 +820,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		foreach ($dataCols as $field) {
 			// Get the ancestors of the table and the foreign keys
 			$this->logger->debug('table : '.$field->format);
-			$ancestors = $this->metadataModel->getTablesTree($field->format, $field->sourceFieldName, $this->schema);
+			$ancestors = $this->metadataModel->getTablesTree($field->format, $field->data, $this->schema);
 
 			// Associate the field with its source table
 			$field->sourceTable = $ancestors[0];
@@ -833,7 +835,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 		foreach ($dataCrits as $field) {
 			// Get the ancestors of the table and the foreign keys
-			$ancestors = $this->metadataModel->getTablesTree($field->format, $field->sourceFieldName, $this->schema);
+			$ancestors = $this->metadataModel->getTablesTree($field->format, $field->data, $this->schema);
 
 			// Associate the field with its source table
 			$field->sourceTable = $ancestors[0];
@@ -852,7 +854,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		//
 		foreach ($dataCols as $tableField) {
 
-			$formfield = $this->metadataModel->getFormField($tableField->sourceFormName, $tableField->sourceFieldName);
+			$formfield = $this->metadataModel->getTableToFormMapping($tableField);
 
 			if ($tableField->sourceTable->isColumnOriented == '1') {
 				// For complementary values, stored in column_oriented tables
@@ -874,7 +876,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			} else {
 				$select .= $tableField->sourceTable->getLogicalName().".".$columnName;
 			}
-			$select .= " AS ".$tableField->sourceFormName."__".$tableField->sourceFieldName.", ";
+			$select .= " AS ".$formfield->format."__".$formfield->data.", ";
 		}
 		$select = substr($select, 0, -2);
 
@@ -1116,7 +1118,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$where .= " AND submission.dataset_id = '".$datasetId."' ";
 			}
 		} else {
-			// Otherwise it should be in the root table 
+			// Otherwise it should be in the root table
 			$where .= " AND ".$firstJoinedTable.".dataset_id = '".$datasetId."' ";
 		}
 

@@ -5,8 +5,9 @@
  */
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
+require_once APPLICATION_PATH.'/models/raw_data/Generic.php';
 require_once APPLICATION_PATH.'/classes/dataedition/DataObject.php';
-require_once APPLICATION_PATH.'/classes/dataedition/Value.php';
+require_once APPLICATION_PATH.'/classes/metadata/TableField.php';
 
 /**
  * DataEditionController is the controller that allow the edition of simple data.
@@ -33,6 +34,7 @@ class DataEditionController extends AbstractEforestController {
 
 		// Initialise the model
 		$this->metadataModel = new Model_Metadata();
+		$this->genericModel = new Model_Generic();
 
 	}
 
@@ -94,6 +96,109 @@ class DataEditionController extends AbstractEforestController {
 	}
 
 	/**
+	 * Generate a Zend Form Element from a TableField description.
+	 *
+	 * @param Zend_Form $form a form
+	 * @param TableField $field the descriptor
+	 * @param Boolean $isKey is the field a primary key ?
+	 */
+	private function getFormElement($form, $field, $isKey = false) {
+		
+		// TODO : Tester sur le form_field type
+
+		if ($field->type == "STRING") {
+			$elem = $form->createElement('text', $field->data);
+
+		} else if ($field->type == "INTEGER") {
+			$elem = $form->createElement('text', $field->data);
+
+		} else if ($field->type == "NUMERIC") {
+			$elem = $form->createElement('text', $field->data);
+
+		} else if ($field->type == "DATE") {
+			$elem = $form->createElement('text', $field->data);
+
+		} else if ($field->type == "COORDINATE") {
+			$elem = $form->createElement('text', $field->data);
+
+		} else if ($field->type == "RANGE") {
+			$elem = $form->createElement('text', $field->data);
+
+		} else if ($field->type == "CODE") {
+			$elem = $form->createElement('select', $field->data);
+
+		} else if ($field->type == "BOOLEAN") {
+			$elem = $form->createElement('checkbox', $field->data);
+
+		} else {
+			// Default
+			$elem = $form->createElement('text', $field->data);
+
+		}
+
+		$elem->setLabel($field->label);
+		$elem->setDescription($field->definition);
+		$elem->setValue($field->value);
+
+		if ($isKey) {
+			$elem->disabled = 'disabled';
+		}
+
+		return $elem;
+	}
+
+	/**
+	 * Build and return the data form.
+	 *
+	 * @param DataObject $data The descriptor of the expected data.
+	 */
+	private function _getEditDataForm($data) {
+
+		$form = new Zend_Form();
+		$form->setAction($this->baseUrl.'/dataedition/validate-edit-data');
+		$form->setMethod('post');
+
+		// Dynamically build the form
+
+		//
+		// The key elements as labels
+		//
+		foreach ($data->primaryKeys as $primaryKey) {
+
+			$elem = $this->getFormElement($form, $primaryKey, true);
+
+			// Hardcoded value : We don't display the submission id (it's a technical element)
+			if ($primaryKey->data != "SUBMISSION_ID") {
+				$form->addElement($elem);
+			} // L'ajouter aussi en tant que hidden ???
+
+		}
+
+		//
+		// The key elements as labels
+		//
+		foreach ($data->fields as $field) {
+
+			if ($field->data != "LINE_NUMBER") {
+				$elem = $this->getFormElement($form, $field, false);
+				$form->addElement($elem);
+			}
+
+		}
+
+		//
+		// Add the submit element
+		//
+		$submitElement = $form->createElement('submit', 'submit');
+		$submitElement->setLabel('Submit');
+
+		// Add elements to form:
+		$form->addElement($submitElement);
+
+		return $form;
+	}
+
+	/**
 	 * Show the select of dataset page.
 	 *
 	 * @return the HTML view
@@ -107,12 +212,12 @@ class DataEditionController extends AbstractEforestController {
 	}
 
 	/**
-	 * Validate the dataset selection.
+	 * Validate the selection of the dataset.
 	 *
-	 * @return a View.
+	 * @return the HTML view
 	 */
-	public function validateDataAction() {
-		$this->logger->debug('validateDataAction');
+	public function validateDatasetAction() {
+		$this->logger->debug('showSelectDatasetAction');
 
 		// Get the dataset Id
 		$datasetId = $this->_getParam("DATASET_ID");
@@ -135,6 +240,9 @@ class DataEditionController extends AbstractEforestController {
 	public function showEditDataAction() {
 		$this->logger->debug('showEditDataAction');
 
+		// Store it in session
+		$websiteSession = new Zend_Session_Namespace('website');
+
 		// Paramètres d'entrée :
 		// DATASET_ID
 		// FORMAT : Le nom de la table à éditer
@@ -142,31 +250,90 @@ class DataEditionController extends AbstractEforestController {
 		// CLE2
 		// ...
 
-		$datasetId = "REQUEST";
+		$datasetId = $websiteSession->datasetID;
+		$format = "PLOT_DATA";
+		$provider_id = "1";
 		$plot_code = "01575-14060-4-0T";
 		$cycle = "5";
-		$provider_id = "1";
 
+		$keyMap = array();
+		$keyMap["FORMAT"] = $format;
+		$keyMap["PROVIDER_ID"] = $provider_id;
+		$keyMap["PLOT_CODE"] = $plot_code;
+		$keyMap["CYCLE"] = $cycle;
+
+		// Create an empty data object with the info in session
 		$data = new DataObject();
-		$key1 = new Value("plot_code", $plot_code);
-		$key2 = new Value("cycle", $cycle);
-		$key3 = new Value("provider_id", $provider_id);
-		$data->addPrimaryKey($key1);
-		$data->addPrimaryKey($key2);
-		$data->addPrimaryKey($key3);
+		$data->format = $format;
+		$data->datasetId = $datasetId;
 
-		// Get the data objet from the database.
-		// TODO : Eliminer automatiquement la colonne submission_id de la clé
+		// Get the info about the format
+		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $data->format);
+
+		// Get all the description of the Table Fields corresponding to the format
+		$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->format);
+
+		// Separate the keys from other values
+		foreach ($tableFields as $tableField) {
+			if (in_array($tableField->data, $tableFormat->primaryKeys)) {
+				$data->primaryKeys[] = $tableField;
+			} else {
+				$data->fields[] = $tableField;
+			}
+		}
+
+		// Complete the primary key info with the session values
+		foreach ($data->primaryKeys as $primaryKey) {
+
+			if (!empty($keyMap[$primaryKey->data])) {
+				$primaryKey->value = $keyMap[$primaryKey->data];
+			}
+		}
+
+		// Complete the data object with the values from the database.
+		$data = $this->genericModel->getData($tableFormat, $data);
+
+		Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
 
 		// If the objet is not existing then we are in create mode instead of edit mode
 
-		// Get the ancestors of the data objet from the database
+		// Get the ancestors of the data objet from the database (to generate a summary)
 
-		// Get the childs of the data objet from the database
+		// Get the childs of the data objet from the database (to generate links)
 
-		$this->view->form = $this->_getDatasetForm();
+		// Store the data descriptor in session
+		$websiteSession = new Zend_Session_Namespace('website');
+		$websiteSession->data = $data;
+
+		// Generate dynamically the corresponding form
+		$this->view->form = $this->_getEditDataForm($data);
 
 		$this->render('edit-data');
+	}
+
+	/**
+	 * Sauve the edited data in database.
+	 *
+	 * @return the HTML view
+	 */
+	public function validateEditDataAction() {
+		$this->logger->debug('validateEditDataAction');
+
+		// Get back info from the session
+		$websiteSession = new Zend_Session_Namespace('website');
+		$datasetId = $websiteSession->datasetID;
+		$data = $websiteSession->data;
+
+		// Update the data descriptor with the values submitted
+		foreach ($data->fields as $field) {
+			/* @var $value TableField */
+
+			// TODO : Manage the case of the LINE_NUMBER
+			$field->value = $this->_getParam($field->data);
+		}
+
+		// Forward the user to the next step
+		$this->_redirector->gotoUrl('/dataedition');
 	}
 
 }

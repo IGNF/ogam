@@ -5,10 +5,10 @@
  */ 
 
 /**
- * Represent a request format (an input file descriptor).
+ * Represent a dataset file (an input file descriptor).
  * @package classes
  */
-class RequestFormat {
+class DatasetFile {
 
 	/**
 	 * The type of the file

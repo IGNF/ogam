@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/models/mapping/Grids.php';
@@ -51,9 +51,10 @@ class AbstractAnalysisController extends AbstractEforestController {
 		$dataCrits = array();
 		foreach ($criterias as $criteriaName => $value) {
 			$split = explode("__", $criteriaName);
-			$format = $split[0];
-			$field = $split[1];
-			$tableField = $this->metadataModel->getFieldMapping($format, $field, $this->schema);
+			$formField = new FormField();
+			$formField->format = $split[0];
+			$formField->data = $split[1];
+			$tableField = $this->metadataModel->getFormToTableMapping($formField, $this->schema);
 			$tableField->value = $value;
 			$dataCrits[] = $tableField;
 		}
@@ -64,7 +65,7 @@ class AbstractAnalysisController extends AbstractEforestController {
 		$tables = array();
 		foreach ($dataCrits as $field) {
 			// Get the ancestors of the table and the foreign keys
-			$ancestors = $this->metadataModel->getTablesTree($field->format, $field->sourceFieldName, $this->schema);
+			$ancestors = $this->metadataModel->getTablesTree($field->format, $field->data, $this->schema);
 
 			// Associate the field with its source table
 			$field->sourceTable = $ancestors[0];
@@ -124,7 +125,7 @@ class AbstractAnalysisController extends AbstractEforestController {
 		//
 		foreach ($dataCrits as $tableField) {
 
-			$formfield = $this->metadataModel->getFormField($tableField->sourceFormName, $tableField->sourceFieldName);
+			$formfield = $this->metadataModel->getTableToFormMapping($tableField);
 
 			if ($tableField->sourceTable->isColumnOriented == '1') {
 				// For complementary values, stored in column_oriented tables

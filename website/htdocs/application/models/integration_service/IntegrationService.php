@@ -80,7 +80,7 @@ class Model_IntegrationService extends Model_AbstractService {
 	 *
 	 * @param String the identifier of the submission
 	 * @param String the identifier of the data provider
-	 * @param Array[RequestFormat] the list of files to upload
+	 * @param Array[DatasetFile] the list of files to upload
 	 * @return true if the upload was OK
 	 * @throws Exception if a problem occured on the server side
 	 */

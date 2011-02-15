@@ -12,6 +12,11 @@
  * @package classes
  */
 class DataObject {
+	
+	/**
+	 * The identifier of the dataset.
+	 */
+	var $datasetId;
 
 	/**
 	 * The logical name of the datatable
@@ -20,20 +25,20 @@ class DataObject {
 
 	/**
 	 * The elements of the primary key.
-	 * Array[Values].
+	 * Array[TableField].
 	 */
 	var $primaryKeys = array();
 
 	/**
 	 * The other values.
-	 * Array[Values].
+	 * Array[TableField].
 	 */
-	var $values = array();
+	var $fields = array();
 
 	/**
 	 * Add a key element.
 	 *
-	 * @param Value a value
+	 * @param TableField a value
 	 */
 	public function addPrimaryKey($value) {
 		$this->primaryKeys[] = $value;
@@ -42,10 +47,10 @@ class DataObject {
 	/**
 	 * Add a value element.
 	 *
-	 * @param Value a value
+	 * @param TableField a field
 	 */
-	public function addValue($value) {
-		$this->values[] = $value;
+	public function addValue($field) {
+		$this->fields[] = $field;
 	}
 
 }

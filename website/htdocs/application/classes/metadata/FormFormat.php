@@ -1,31 +1,26 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
+require_once 'metadata/Format.php';
 
 /**
  * Represent a Form Format (a logical bloc of the HTML Query page).
  * @package classes
  */
-class FormFormat {
+class FormFormat extends Format {
 
-	/**
-	 * The form identifier 
-	 */
-	var $format;
-	
 	/**
 	 * The label of the form
 	 */
 	var $label;
-	
-	
+
 	/**
 	 * The definition of the form
 	 */
 	var $definition;
-	
+
 	/**
 	 * The list of result columns.
 	 */
@@ -35,10 +30,10 @@ class FormFormat {
 	 * The list of criteria columns.
 	 */
 	var $criteriaList = array();
-	
+
 	/**
 	 * Serialize the object as a JSON string
-	 * 
+	 *
 	 * @return a JSON string
 	 */
 	public function toJSON() {

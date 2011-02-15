@@ -14,6 +14,7 @@ set_include_path(
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/metadata'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/raw_data'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/website'
+    . PATH_SEPARATOR . APPLICATION_PATH . '/classes/dataedition'
     . PATH_SEPARATOR . get_include_path()
 );
 

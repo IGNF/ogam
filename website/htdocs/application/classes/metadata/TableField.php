@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'metadata/Field.php';
 
 /**
@@ -11,32 +11,24 @@ require_once 'metadata/Field.php';
  */
 class TableField extends Field {
 
-
 	/**
 	 * The physical name of the column.
 	 */
 	var $columnName;
 
 	/**
-	 * The value of the field (OPTIONAL, only used for criterias).
+	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).
 	 */
 	var $value;
 
 	/**
-	 * The name of the corresponding form field (used for column-oriented data).
+	 * Indicate if the field is calculated during an INSERT or UPDATE.
 	 */
-	var $sourceFieldName;
-
+	var $isCalculated;
+	
 	/**
-	 * The name of the corresponding form (used for column-oriented data).
+	 * Indicate if an operation of agregation can be done on this field (for numeric values).
 	 */
-	var $sourceFormName;
-
-	/**
-	 * Link the field to its source table (used when building the SQL request).
-	 * refer to a TableTreeData object.
-	 */
-	var $sourceTable;
-
+	var $isAggregatable;
 
 }

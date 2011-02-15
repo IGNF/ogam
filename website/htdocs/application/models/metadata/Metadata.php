@@ -6,9 +6,10 @@
 require_once 'metadata/FileField.php';
 require_once 'metadata/FormField.php';
 require_once 'metadata/FormFormat.php';
-require_once 'metadata/RequestFormat.php';
+require_once 'metadata/DatasetFile.php';
 require_once 'metadata/TableField.php';
 require_once 'metadata/TableTreeData.php';
+require_once 'metadata/TableFormat.php';
 require_once 'metadata/Range.php';
 require_once 'metadata/Mode.php';
 
@@ -116,7 +117,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the requested files for a data submission for a given dataset.
 	 *
 	 * @param $datasetId The identifier of the dataset
-	 * @return Array[RequestFormat]
+	 * @return Array[DatasetFile]
 	 */
 	public function getRequestedFiles($datasetId) {
 		$db = $this->getAdapter();
@@ -133,11 +134,11 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$requestFormat = new RequestFormat();
-			$requestFormat->fileType = $row['file_type'];
-			$requestFormat->format = $row['format'];
-			$requestFormat->label = $row['label'];
-			$result[] = $requestFormat;
+			$datasetFile = new DatasetFile();
+			$datasetFile->fileType = $row['file_type'];
+			$datasetFile->format = $row['format'];
+			$datasetFile->label = $row['label'];
+			$result[] = $datasetFile;
 		}
 		return $result;
 	}
@@ -187,42 +188,83 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String the dataset identifier
 	 * @param String the schema identifier
-	 * @return Array[FormField]
+	 * @param String the format
+	 * @return Array[TableField]
 	 */
-	public function getTableFields($datasetID, $schema) {
+	public function getTableFields($datasetID, $schema, $format) {
 
 		$db = $this->getAdapter();
 
-		$this->logger->debug('getTableFields : '.$datasetID.'_'.$schema);
+		$this->logger->debug('getTableFields : '.$datasetID.'_'.$schema.'_'.$format);
 
 		// Get the fields specified by the format
-		$req = "SELECT * ";
+		$req = "SELECT table_field.*, data.label, data.unit, unit.type, data.definition ";
 		$req .= " FROM table_field ";
-		$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.field) ";
+		$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.data) ";
 		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
 		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
 		$req .= " WHERE dataset_fields.dataset_id = ? ";
 		$req .= " AND dataset_fields.schema_code = ? ";
+		$req .= " AND table_field.format = ? ";
 
 		$this->logger->info('getTableFields : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array($datasetID, $schema));
+		$select->execute(array($datasetID, $schema, $format));
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$tableField = new TableField();
 			$tableField->data = $row['data'];
 			$tableField->format = $row['format'];
+			$tableField->columnName = $row['column_name'];
+			$tableField->isCalculated = $row['is_calculated'];
+			$tableField->isAggregatable = $row['is_aggregatable'];
 			$tableField->label = $row['label'];
 			$tableField->unit = $row['unit'];
 			$tableField->type = $row['type'];
 			$tableField->definition = $row['definition'];
-			$tableField->columnName = $row['column_name'];
+
 			$result[] = $tableField;
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get the information about a table format.
+	 *
+	 * @param String the schema identifier
+	 * @param String the format
+	 * @return TableFormat
+	 */
+	public function getTableFormat($schema, $format) {
+
+		$db = $this->getAdapter();
+
+		$this->logger->debug('getTableFormat : '.$schema.'_'.$format);
+
+		// Get the fields specified by the format
+		$req = "SELECT * ";
+		$req .= " FROM table_format ";
+		$req .= " WHERE schema_code = ? ";
+		$req .= " AND format = ? ";
+
+		$this->logger->info('getTableFormat : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($schema, $format));
+
+		$row = $select->fetch();
+
+		$tableFormat = new TableFormat();
+		$tableFormat->format = $format;
+		$tableFormat->schemaCode = $schema;
+		$tableFormat->isColumnOriented = $row['is_column_oriented'];
+		$tableFormat->tableName = $row['table_name'];
+		$tableFormat->primaryKeys = explode(",", $row['primary_key']);
+
+		return $tableFormat;
 	}
 
 	/**
@@ -288,7 +330,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the fields for a given Form that can be used as a result.
 	 *
-	 * @param dataset the name of the JRC Request
+	 * @param dataset the name of the dataset
 	 * @param formFormat the name of the form format
 	 * @param schema the name of the database schema
 	 * @param mode if 'criteria' we're looking for a criteria, if 'result' we're looking for a result.
@@ -309,35 +351,14 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 			$param = array();
 
-			$modeColumns = '';
-			if ($mode == 'result') {
-				$modeColumns = ', is_default_result';
-			} else if ($mode == "criteria") {
-				$modeColumns = ', is_default_criteria, default_value';
-			}
-
 			// Select the list of available fields for the table (excepted the FK)
-			$req = " SELECT DISTINCT foo.data, data.label, input_type, data.definition, foo.position, unit.type as type, foo.decimals, unit.unit as unit ".$modeColumns;
-			$req .= " FROM ( ";
-			$req .= "    SELECT format, data, position, is_result, is_criteria, decimals, input_type".$modeColumns;
-			$req .= "    FROM form_field ";
-			$req .= ") as foo ";
+			$req = " SELECT DISTINCT form_field.*, data.label, input_type, data.definition, unit.type as type, unit.unit as unit ";
+			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
 
-			// Check that the field is mapped to a dataset field
-			$req .= " LEFT JOIN field_mapping ON ( ";
-			$req .= "          format = field_mapping.src_format ";
-			$req .= "          AND data = field_mapping.src_data ";
-			$req .= "          AND field_mapping.mapping_type = 'FORM'";
-			$req .= "          ) ";
-			$req .= " LEFT JOIN dataset_fields ON ( ";
-			$req .= "          dataset_fields.format = field_mapping.dst_format ";
-			$req .= "          AND dataset_fields.data = field_mapping.dst_data ";
-			$req .= "          ) ";
-
 			// Check the field format
-			$req .= " WHERE foo.format = ?";
+			$req .= " WHERE format = ?";
 			$param[] = $formFormat;
 
 			// Check the field type (result or criteria)
@@ -348,19 +369,23 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			}
 
 			// If a dataset has been selected, filter the available options
+			// TODO : Do the mapping FROM -> TABLE 
 			if (!empty($dataset)) {
-				$req .= " AND (foo.data IN ( ";
+				$req .= " AND (data IN ( ";
 				$req .= " SELECT data ";
 				$req .= " FROM dataset_fields ";
+				$req .= " LEFT JOIN field_mapping on (dataset_fields.format = field_mapping.dst_format AND dataset_fields.data = field_mapping.dst_data AND mapping_type='FORM') ";
 				$req .= " WHERE dataset_id = ? ";
+				$req .= " AND schema_code = ? ";
+				$req .= " AND src_format = ? ";
 				$req .= " ) )";
 				$param[] = $dataset;
+				$param[] = $schema;
+				$param[] = $formFormat;
 			}
 
-			// Check the schema code
-			$req .= " AND schema_code = '".$schema."' ";
 
-			$req .= " ORDER BY foo.position";
+			$req .= " ORDER BY position";
 
 			$this->logger->info('getFormFields : '.$req);
 
@@ -375,15 +400,14 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 				$formField->label = $row['label'];
 				$formField->inputType = $row['input_type'];
 				$formField->definition = $row['definition'];
+				$formField->isCriteria = $row['is_criteria'];
+				$formField->isResult = $row['is_result'];
 				$formField->type = $row['type'];
 				$formField->unit = $row['unit'];
-				if ($mode == "result") {
-					$formField->isDefaultResult = $row['is_default_result'];
-				} else if ($mode == "criteria") {
-					$formField->isDefaultCriteria = $row['is_default_criteria'];
-					$formField->defaultValue = $row['default_value'];
-					$formField->decimals = $row['decimals'];
-				}
+				$formField->isDefaultResult = $row['is_default_result'];
+				$formField->isDefaultCriteria = $row['is_default_criteria'];
+				$formField->defaultValue = $row['default_value'];
+				$formField->decimals = $row['decimals'];
 				$result[] = $formField;
 			}
 
@@ -413,11 +437,8 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 			$this->logger->info('getFormField : '.$formFormat.", ".$formFieldName);
 			$db = $this->getAdapter();
-			$req = " SELECT data, data.label, input_type, data.definition, unit.type as type, decimals, unit.unit as unit ";
-			$req .= " FROM ( ";
-			$req .= "    SELECT format, data, input_type, decimals ";
-			$req .= "    FROM form_field ";
-			$req .= "  ) as foo ";
+			$req = " SELECT * ";
+			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
 			$req .= " WHERE data = ? ";
@@ -431,9 +452,14 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$formField->name = $formFieldName;
 			$formField->data = $row['data'];
 			$formField->format = $formFormat;
-			$formField->label = $row['label'];
+			$formField->isCriteria = $row['is_criteria'];
+			$formField->isResult = $row['is_result'];
 			$formField->inputType = $row['input_type'];
+			$formField->isDefaultResult = $row['is_default_result'];
+			$formField->isDefaultCriteria = $row['is_default_criteria'];
+			$formField->defaultValue = $row['default_value'];
 			$formField->definition = $row['definition'];
+			$formField->label = $row['label'];
 			$formField->type = $row['type'];
 			$formField->unit = $row['unit'];
 			$formField->decimals = $row['decimals'];
@@ -509,27 +535,6 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the table name for a given table format.
-	 *
-	 * @param String $format The logical name of the table
-	 * @return String The physical name of the table
-	 */
-	public function getTableName($format) {
-		$db = $this->getAdapter();
-		$req = "SELECT table_name
-                    FROM table_format
-                    WHERE format = ?";
-
-		$this->logger->info('getTableName : '.$req);
-
-		$select = $db->prepare($req);
-		$select->execute(array($format));
-
-		$row = $select->fetch();
-		return $row['table_name'];
-	}
-
-	/**
 	 * Get the list of available columns of a table.
 	 *
 	 * @param String the logical name of the table
@@ -572,17 +577,16 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the database field corresponding to the asked form field.
 	 *
-	 * @param String $formName the logical name of the form
-	 * @param String $fieldName the logical name of the field
+	 * @param FormField $formField the form field
 	 * @param String $schema the name of the schema (RAW_DATA or HARMONIZED_DATA)
-	 * @return array[TableField]
+	 * @return TableField
 	 */
-	public function getFieldMapping($formName, $fieldName, $schema) {
+	public function getFormToTableMapping($formField, $schema) {
 
-		$this->logger->info('getFieldMapping : '.$formName." ".$fieldName." ".$schema);
+		$this->logger->info('getFormToTableMapping : '.$formField->data." ".$schema);
 
 		if ($this->useCache) {
-			$cachedResult = $this->cache->load('fieldmapping_'.$formName.'_'.$fieldName.'_'.$schema);
+			$cachedResult = $this->cache->load('formtotablemapping_'.$formField->format.'_'.$formField->data.'_'.$schema);
 		}
 		if (empty($cachedResult)) {
 
@@ -598,27 +602,81 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " AND schema_code = ? ";
 			$req .= " AND mapping_type = 'FORM'";
 
-			$this->logger->info('getFieldMapping : '.$req);
+			$this->logger->info('getFormToTableMapping : '.$req);
 
 			$select = $db->prepare($req);
-			$select->execute(array($formName, $fieldName, $schema));
+			$select->execute(array($formField->format, $formField->data, $schema));
 
 			$row = $select->fetch();
 			$tableField = new TableField();
-			$tableField->sourceFormName = $formName;
-			$tableField->sourceFieldName = $fieldName;
-			$tableField->data = $row['dst_data'];
-			$tableField->format = $row['dst_format'];
+			$tableField->data = $row['data'];
+			$tableField->format = $row['format'];
+			$tableField->columnName = $row['column_name'];
+			$tableField->isCalculated = $row['is_calculated'];
+			$tableField->isAggregatable = $row['is_aggregatable'];
 			$tableField->label = $row['label'];
-			$tableField->definition = $row['definition'];
 			$tableField->unit = $row['unit'];
 			$tableField->type = $row['type'];
-			$tableField->columnName = $row['column_name'];
+			$tableField->definition = $row['definition'];
 
 			if ($this->useCache) {
-				$this->cache->save($tableField, 'fieldmapping_'.$formName.'_'.$fieldName.'_'.$schema);
+				$this->cache->save($tableField, 'formtotablemapping_'.$formField->format.'_'.$formField->data.'_'.$schema);
 			}
 			return $tableField;
+		} else {
+			return $cachedResult;
+		}
+	}
+
+	/**
+	 * Get the form field corresponding to the table field.
+	 *
+	 * @param TableField $tableField the table field
+	 * @return array[FormField]
+	 */
+	public function getTableToFormMapping($tableField) {
+
+		$this->logger->info('getTableToFormMapping : '.$tableField->data." ".$schema);
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load('tabletoformmapping_'.$tableField->format.'_'.$tableField->data);
+		}
+		if (empty($cachedResult)) {
+
+			$db = $this->getAdapter();
+			$req = " SELECT form_field.*, data.definition, data.unit, unit.type ";
+			$req .= " FROM form_field ";
+			$req .= " LEFT JOIN field_mapping on (field_mapping.src_format = form_field.format AND field_mapping.src_data = form_field.data AND mapping_type = 'FORM') ";
+			$req .= " LEFT JOIN data on (form_field.data = data.data)";
+			$req .= " LEFT JOIN unit on (data.unit = unit.unit)";
+			$req .= " WHERE field_mapping.dst_format = ? ";
+			$req .= " AND field_mapping.dst_data = ? ";
+
+			$this->logger->info('getTableToFormMapping : '.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($tableField->format, $tableField->data));
+
+			$row = $select->fetch();
+			$formField = new FormField();
+			$formField->data = $row['data'];
+			$formField->format = $row['format'];
+			$formField->label = $row['label'];
+			$formField->inputType = $row['input_type'];
+			$formField->definition = $row['definition'];
+			$formField->isCriteria = $row['is_criteria'];
+			$formField->isResult = $row['is_result'];
+			$formField->type = $row['type'];
+			$formField->unit = $row['unit'];
+			$formField->isDefaultResult = $row['is_default_result'];
+			$formField->isDefaultCriteria = $row['is_default_criteria'];
+			$formField->defaultValue = $row['default_value'];
+			$formField->decimals = $row['decimals'];
+
+			if ($this->useCache) {
+				$this->cache->save($formField, 'tabletoformmapping_'.$tableField->format.'_'.$tableField->data);
+			}
+			return $formField;
 		} else {
 			return $cachedResult;
 		}
