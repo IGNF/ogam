@@ -492,8 +492,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 					$i++;
 				}
 				
-				$this->logger->debug('metadata : '.print_r($metadata,true));
-
 				// Store the metadata in session
 				$websiteSession->metadata = $metadata;
 				$websiteSession->traductions = $traductions;
