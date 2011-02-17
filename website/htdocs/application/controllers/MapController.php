@@ -315,11 +315,7 @@ class MapController extends AbstractEforestController {
 
 		// Get back the country code
 		$userSession = new Zend_Session_Namespace('user');
-		if ($userSession->role->isEuropeLevel == '1') {
-			$countryCode = null;
-		} else {
-			$countryCode = $userSession->user->countryCode;
-		}
+		$countryCode = $userSession->user->countryCode;
 		$this->logger->debug('countryCode : '.$countryCode);
 
 		$item = $this->_getLegendItems(-1, $countryCode);
