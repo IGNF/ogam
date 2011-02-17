@@ -352,7 +352,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$param = array();
 
 			// Select the list of available fields for the table (excepted the FK)
-			$req = " SELECT DISTINCT form_field.*, data.label, input_type, data.definition, unit.type as type, unit.unit as unit ";
+			$req = " SELECT DISTINCT form_field.*, data.label, data.definition, unit.type, unit.unit ";
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
@@ -437,7 +437,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 			$this->logger->info('getFormField : '.$formFormat.", ".$formFieldName);
 			$db = $this->getAdapter();
-			$req = " SELECT * ";
+			$req = " SELECT form_field.*, data.label, data.definition, unit.type, unit.unit ";
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
@@ -583,7 +583,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getFormToTableMapping($formField, $schema) {
 
-		$this->logger->info('getFormToTableMapping : '.$formField->data." ".$schema);
+		$this->logger->info('getFormToTableMapping : '.$formField->format." ".$formField->data." ".$schema);
 
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load('formtotablemapping_'.$formField->format.'_'.$formField->data.'_'.$schema);
@@ -591,7 +591,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		if (empty($cachedResult)) {
 
 			$db = $this->getAdapter();
-			$req = " SELECT field_mapping.dst_data, field_mapping.dst_format, table_field.column_name, data.label, data.definition, unit.unit, unit.type ";
+			$req = " SELECT table_field.*, data.label, data.definition, unit.unit, unit.type ";
 			$req .= " FROM field_mapping ";
 			$req .= " LEFT JOIN table_field on (field_mapping.dst_format = table_field.format AND field_mapping.dst_data = table_field.data) ";
 			$req .= " LEFT JOIN dataset_fields on (dataset_fields.format = table_field.format AND dataset_fields.data = table_field.data) ";
@@ -636,7 +636,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTableToFormMapping($tableField) {
 
-		$this->logger->info('getTableToFormMapping : '.$tableField->data." ".$schema);
+		$this->logger->info('getTableToFormMapping : '.$tableField->format." ".$tableField->data);
 
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load('tabletoformmapping_'.$tableField->format.'_'.$tableField->data);
@@ -644,7 +644,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		if (empty($cachedResult)) {
 
 			$db = $this->getAdapter();
-			$req = " SELECT form_field.*, data.definition, data.unit, unit.type ";
+			$req = " SELECT form_field.*, data.label, data.definition, unit.unit, unit.type ";
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN field_mapping on (field_mapping.src_format = form_field.format AND field_mapping.src_data = form_field.data AND mapping_type = 'FORM') ";
 			$req .= " LEFT JOIN data on (form_field.data = data.data)";

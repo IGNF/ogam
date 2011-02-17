@@ -491,6 +491,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 					}
 					$i++;
 				}
+				
+				$this->logger->debug('metadata : '.print_r($metadata,true));
 
 				// Store the metadata in session
 				$websiteSession->metadata = $metadata;
@@ -849,6 +851,11 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			}
 		}
 
+		//		$this->logger->debug('************************************************');
+		//		$this->logger->debug('tables :'.print_r($tables, true));
+		//		$this->logger->debug('dataCrits :'.print_r($dataCrits, true));
+		//		$this->logger->debug('dataCols :'.print_r($dataCols, true));
+
 		//
 		// Prepare the SELECT clause
 		//
@@ -942,7 +949,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		//
 		foreach ($dataCrits as $tableField) {
 
-			$formfield = $this->metadataModel->getFormField($tableField->sourceFormName, $tableField->sourceFieldName);
+			/* @var $tableField TableField */
+			$formfield = $this->metadataModel->getTableToFormMapping($tableField);
 
 			if ($tableField->sourceTable->isColumnOriented == '1') {
 				// For complementary values, stored in column_oriented tables
