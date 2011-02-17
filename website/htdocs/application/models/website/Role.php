@@ -31,7 +31,9 @@ class Model_Role extends Zend_Db_Table_Abstract {
 	public function getRole($roleCode) {
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, "." role_label, "." role_def, "." degradated_coordinate, "." FROM role "." WHERE role_code = ? ";
+		$req = " SELECT role_code, role_label, role_def, degradated_coordinate ";
+		$req .= " FROM role ";
+		$req .= " WHERE role_code = ? ";
 		$this->logger->info('getRole : '.$req);
 
 		$query = $db->prepare($req);
@@ -59,7 +61,9 @@ class Model_Role extends Zend_Db_Table_Abstract {
 	public function getRoles() {
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, role_label, role_def, degradated_coordinate "." FROM role "." ORDER BY role_code";
+		$req = " SELECT role_code, role_label, role_def, degradated_coordinate ";
+		$req .= " FROM role ";
+		$req .= " ORDER BY role_code";
 		$this->logger->info('getRoles : '.$req);
 
 		$query = $db->prepare($req);
@@ -89,7 +93,10 @@ class Model_Role extends Zend_Db_Table_Abstract {
 	public function getRolePermissions($roleCode) {
 		$db = $this->getAdapter();
 
-		$req = " SELECT permission_code, permission_label "." FROM permission_per_role "." LEFT JOIN permission using (permission_code)"." WHERE role_code = ?";
+		$req = " SELECT permission_code, permission_label ";
+		$req .= " FROM permission_per_role ";
+		$req .= " LEFT JOIN permission using (permission_code) ";
+		$req .= " WHERE role_code = ?";
 		$this->logger->info('getRolePermissions : '.$req);
 
 		$query = $db->prepare($req);
@@ -112,7 +119,8 @@ class Model_Role extends Zend_Db_Table_Abstract {
 	public function getAllPermissions() {
 		$db = $this->getAdapter();
 
-		$req = " SELECT permission_code, permission_label "." FROM permission ";
+		$req = " SELECT permission_code, permission_label ";
+		$req .= " FROM permission ";
 
 		$this->logger->info('getAllPermissions : '.$req);
 
@@ -158,7 +166,8 @@ class Model_Role extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 
 		// Clean the previous permissions
-		$req = "DELETE FROM permission_per_role WHERE role_code = ?";
+		$req = "DELETE FROM permission_per_role";
+		$req .= " WHERE role_code = ?";
 
 		$this->logger->info('updateRolePermissions : '.$req);
 
@@ -188,7 +197,8 @@ class Model_Role extends Zend_Db_Table_Abstract {
 	public function createRole($role) {
 		$db = $this->getAdapter();
 
-		$req = " INSERT INTO role (role_code, role_label, role_def, degradated_coordinate )"." VALUES (?, ?, ?, ?, ?)";
+		$req = " INSERT INTO role (role_code, role_label, role_def, degradated_coordinate )";
+		$req .= " VALUES (?, ?, ?, ?, ?)";
 
 		$this->logger->info('createRole : '.$req);
 
