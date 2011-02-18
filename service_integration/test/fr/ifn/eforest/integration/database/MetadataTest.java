@@ -58,18 +58,18 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		List<ModeData> countryCodes = metadataDAO.getModes("SPECIES_CODE");
 
-		assertEquals("There is 34 differents country codes", 34, countryCodes.size());
+		assertEquals("There is 303 differents species codes", 303, countryCodes.size());
 
 	}
 
 	/**
 	 * Test the getJRCRequests function.
 	 */
-	public void testGetJRCRequests() throws Exception {
+	public void testGetDatasets() throws Exception {
 
 		List<DatasetData> datasets = metadataDAO.getDatasets();
 
-		assertEquals("There is 2 datasets configured in database", 2, datasets.size());
+		assertEquals("There is 1 datasets configured in database", 1, datasets.size());
 
 	}
 
@@ -91,9 +91,9 @@ public class MetadataTest extends AbstractEFDACTest {
 	 */
 	public void testGetType() throws Exception {
 
-		String type = metadataDAO.getType("COUNTRY_CODE");
+		String type = metadataDAO.getType("SPECIES_CODE");
 
-		assertEquals("The type of the data COUNTRY_CODE should be CODE", "CODE", type);
+		assertEquals("The type of the data SPECIES_CODE should be CODE", "CODE", type);
 
 	}
 
@@ -102,15 +102,17 @@ public class MetadataTest extends AbstractEFDACTest {
 	 */
 	public void testGetRequestFiles() throws Exception {
 
-		String requestID = "WP3_REQUEST";
+		String requestID = "REQUEST";
 
 		List<RequestFormatData> requestFormats = metadataDAO.getRequestFiles(requestID);
 
 		RequestFormatData file1 = requestFormats.get(0);
 		RequestFormatData file2 = requestFormats.get(1);
+		RequestFormatData file3 = requestFormats.get(2);
 
-		assertEquals("The first file of the WP3_REQUEST should be WP3_PLOT_FILE", "WP3_PLOT_FILE", file1.getFormat());
-		assertEquals("The second file of the WP3_REQUEST should be WP3_SPECIES_FILE", "WP3_SPECIES_FILE", file2.getFormat());
+		assertEquals("The first file of the REQUEST should be LOCATION_FILE", "LOCATION_FILE", file1.getFormat());
+		assertEquals("The first file of the REQUEST should be PLOT_FILE", "PLOT_FILE", file2.getFormat());
+		assertEquals("The second file of the REQUEST should be SPECIES_FILE", "SPECIES_FILE", file3.getFormat());
 
 	}
 
@@ -119,11 +121,11 @@ public class MetadataTest extends AbstractEFDACTest {
 	 */
 	public void testGetFileFields() throws Exception {
 
-		String fileFormat = Formats.WP3_SPECIES_FILE;
+		String fileFormat = Formats.SPECIES_FILE;
 
 		List<FieldData> fields = metadataDAO.getFileFields(fileFormat);
 
-		assertEquals("The basic test tree file should have 7 columns", 7, fields.size());
+		assertEquals("The basic test tree file should have 5 columns", 5, fields.size());
 
 	}
 
@@ -148,13 +150,13 @@ public class MetadataTest extends AbstractEFDACTest {
 	 */
 	public void testGetFormatMapping() throws Exception {
 
-		String tableFormat = Formats.WP3_SPECIES_FILE;
+		String tableFormat = Formats.SPECIES_FILE;
 
 		Map<String, TableFormatData> tables = metadataDAO.getFormatMapping(tableFormat, MappingTypes.FILE_MAPPING);
 
 		logger.debug(tables);
 
-		assertTrue("The SPECIES_DATA should be the destination of WP3_SPECIES_FILE", tables.containsKey("SPECIES_DATA"));
+		assertTrue("The SPECIES_DATA should be the destination of SPECIES_FILE", tables.containsKey("SPECIES_DATA"));
 
 	}
 
@@ -180,7 +182,7 @@ public class MetadataTest extends AbstractEFDACTest {
 	 */
 	public void testGetFieldMapping() throws Exception {
 
-		String sourceFormat = "WP3_PLOT_FILE";
+		String sourceFormat = Formats.PLOT_FILE;
 
 		Map<String, TableFieldData> mapping = metadataDAO.getFieldMapping(sourceFormat, MappingTypes.FILE_MAPPING);
 		if (mapping == null) {
@@ -204,7 +206,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		logger.debug(fields);
 
-		assertEquals("The PLOT_DATA table should contain 15 fields", fields.size(), 15);
+		assertEquals("The PLOT_DATA table should contain 8 fields", fields.size(), 8);
 
 	}
 

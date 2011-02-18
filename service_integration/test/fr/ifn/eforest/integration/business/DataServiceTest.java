@@ -44,11 +44,11 @@ public class DataServiceTest extends AbstractEFDACTest {
 
 		// Parameters
 		String providerId = "test_provider";
-		String locationFile = "./test/data/PLOT_LOCATION/PLOT_LOCATION.CSV";
-		String plotFile = "./test/data/WP3_REQUEST/PLOT_DATA.CSV";
-		String speciesFile = "./test/data/WP3_REQUEST/SPECIES_DATA.CSV";
+		String locationFile = "./test/data/location.csv";
+		String plotFile = "./test/data/plot_data.csv";
+		String speciesFile = "./test/data/species_data.csv";
 
-		String requestId = "WP3_REQUEST";
+		String requestId = "REQUEST";
 		String userLogin = "Test user";
 
 		Integer dataSubmissionId = null;
@@ -65,8 +65,8 @@ public class DataServiceTest extends AbstractEFDACTest {
 			dataParameters.put(REF_YEAR_BEGIN, "2006");
 			dataParameters.put(REF_YEAR_END, "2009");
 			dataParameters.put(Formats.LOCATION_FILE, locationFile);
-			dataParameters.put(Formats.WP3_PLOT_FILE, plotFile);
-			dataParameters.put(Formats.WP3_SPECIES_FILE, speciesFile);
+			dataParameters.put(Formats.PLOT_FILE, plotFile);
+			dataParameters.put(Formats.SPECIES_FILE, speciesFile);
 
 			// Submit Data
 			dataService.submitData(dataSubmissionId, dataParameters);

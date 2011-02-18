@@ -3,7 +3,6 @@ package fr.ifn.eforest.integration.business;
 import static fr.ifn.eforest.common.business.UnitTypes.*;
 import static fr.ifn.eforest.common.business.checks.CheckCodes.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -190,9 +189,6 @@ public class IntegrationService extends GenericMapper {
 					// List of tables where to insert data
 					Set<String> tablesContent = new TreeSet<String>();
 
-					// Separated list of colomn-oriented values
-					List<GenericData> colOrientedValuesList = new ArrayList<GenericData>();
-
 					// Store each column in the destination table container
 					for (int col = 0; col < csvFile.getColsCount(); col++) {
 
@@ -259,14 +255,8 @@ public class IntegrationService extends GenericMapper {
 						// Store the descriptor in the common list
 						commonFieldsMap.put(sourceFieldDescriptor.getData(), data);
 
-						if (mappedFieldDescriptor.isColumnOriented()) {
-							// If the value is column_oriented, add it to a separated list
-							data.setColumnName(sourceFieldDescriptor.getData()); // We store the value name instead of the column
-							colOrientedValuesList.add(data);
-						} else {
-							// Else store the name of the table
-							tablesContent.add(mappedFieldDescriptor.getFormat());
-						}
+						// Store the name of the table
+						tablesContent.add(mappedFieldDescriptor.getFormat());
 
 					}
 
@@ -299,33 +289,6 @@ public class IntegrationService extends GenericMapper {
 							throw e;
 						}
 
-					}
-
-					// Manage the column_oriented values
-					Iterator<GenericData> colOrientedIter = colOrientedValuesList.iterator();
-					while (colOrientedIter.hasNext()) {
-						GenericData data = colOrientedIter.next();
-
-						String tableName = destFormatsMap.get(data.getFormat()).getTableName();
-
-						try {
-							// Increment the line number
-							GenericData lineNumber = new GenericData();
-							lineNumber.setColumnName(Data.LINE_NUMBER);
-							lineNumber.setType(UnitTypes.INTEGER);
-							lineNumber.setFormat(Data.LINE_NUMBER);
-							lineNumber.setValue(row + 1);
-							commonFieldsMap.put(Data.LINE_NUMBER, lineNumber);
-
-							// Insert one value in the table
-							genericDAO.insertColumnData(Schemas.RAW_DATA, tableName, tableFieldsMap.get(data.getFormat()), data, commonFieldsMap);
-						} catch (CheckException e) {
-							// Complete the description of the problem
-							e.setSourceFormat(sourceFormat);
-							e.setLineNumber(row + 1);
-							e.setSubmissionId(submissionId);
-							throw e;
-						}
 					}
 
 				} catch (CheckException ce) {

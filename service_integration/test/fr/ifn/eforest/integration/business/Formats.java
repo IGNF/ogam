@@ -15,19 +15,14 @@ public interface Formats {
 	String LOCATION_FILE = "LOCATION_FILE";
 
 	/**
-	 * A strata file.
+	 * A plot file.
 	 */
-	String STRATA_FILE = "STRATA_FILE";
+	String PLOT_FILE = "PLOT_FILE";
 
 	/**
-	 * A plot file for the work package 3.
+	 * A species file.
 	 */
-	String WP3_PLOT_FILE = "WP3_PLOT_FILE";
-
-	/**
-	 * A species file for the work package 3.
-	 */
-	String WP3_SPECIES_FILE = "WP3_SPECIES_FILE";
+	String SPECIES_FILE = "SPECIES_FILE";
 
 	//
 	// Table formats
@@ -39,11 +34,6 @@ public interface Formats {
 	String PLOT_DATA = "PLOT_DATA";
 
 	/**
-	 * The plot complementary data table.
-	 */
-	String PLOT_VARIABLE = "PLOT_VARIABLE";
-
-	/**
 	 * /** The species table.
 	 */
 	String SPECIES_DATA = "SPECIES_DATA";
@@ -52,11 +42,6 @@ public interface Formats {
 	 * The location table.
 	 */
 	String LOCATION_DATA = "LOCATION_DATA";
-
-	/**
-	 * The strata table.
-	 */
-	String STRATA_DATA = "STRATA_DATA";
 
 	//
 	// Form formats

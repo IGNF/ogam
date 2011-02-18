@@ -42,8 +42,8 @@ public class GenericMapperTest extends AbstractEFDACTest {
 
 		// Get the description of the tables linked with some files
 		List<TableFormatData> destinationTables = new ArrayList<TableFormatData>();
-		destinationTables.addAll(metadataDAO.getFormatMapping("WP3_PLOT_FILE", MappingTypes.FILE_MAPPING).values());
-		destinationTables.addAll(metadataDAO.getFormatMapping("WP3_SPECIES_FILE", MappingTypes.FILE_MAPPING).values());
+		destinationTables.addAll(metadataDAO.getFormatMapping(Formats.PLOT_FILE, MappingTypes.FILE_MAPPING).values());
+		destinationTables.addAll(metadataDAO.getFormatMapping(Formats.SPECIES_FILE, MappingTypes.FILE_MAPPING).values());
 
 		// Get the ancestors of these tables, in the right order
 		List<String> sortedList = genericMapper.getSortedAncestors(Schemas.RAW_DATA, destinationTables);
