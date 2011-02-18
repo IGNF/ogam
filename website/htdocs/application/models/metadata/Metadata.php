@@ -260,7 +260,6 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		$tableFormat = new TableFormat();
 		$tableFormat->format = $format;
 		$tableFormat->schemaCode = $schema;
-		$tableFormat->isColumnOriented = $row['is_column_oriented'];
 		$tableFormat->tableName = $row['table_name'];
 		$tableFormat->primaryKeys = explode(",", $row['primary_key']);
 
@@ -369,7 +368,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			}
 
 			// If a dataset has been selected, filter the available options
-			// TODO : Do the mapping FROM -> TABLE 
+			// TODO : Do the mapping FROM -> TABLE
 			if (!empty($dataset)) {
 				$req .= " AND (data IN ( ";
 				$req .= " SELECT data ";
@@ -383,7 +382,6 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 				$param[] = $schema;
 				$param[] = $formFormat;
 			}
-
 
 			$req .= " ORDER BY position";
 
@@ -703,7 +701,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$result = array();
 
 			$db = $this->getAdapter();
-			$req = " SELECT child_table, parent_table, join_key, primary_key, table_format.table_name, table_format.is_column_oriented ";
+			$req = " SELECT child_table, parent_table, join_key, primary_key, table_format.table_name ";
 			$req .= " FROM table_tree ";
 			$req .= " LEFT JOIN table_format on (child_table = table_format.format) ";
 			$req .= " WHERE child_table = ? ";
@@ -728,7 +726,6 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$tableTreeData->identifiers = $row['primary_key'];
 			$tableTreeData->tableName = $row['table_name'];
 			$tableTreeData->fieldName = $fieldName;
-			$tableTreeData->isColumnOriented = $row['is_column_oriented'];
 
 			$result[] = $tableTreeData;
 
