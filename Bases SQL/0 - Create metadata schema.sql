@@ -175,7 +175,6 @@ COMMENT ON COLUMN FORM_FORMAT.IS_OPENED IS 'Indicate if the form is displayed as
 /*==============================================================*/
 create table TABLE_FORMAT (
 FORMAT               VARCHAR(36)          not null,
-IS_COLUMN_ORIENTED   CHAR(1)              null,
 TABLE_NAME           VARCHAR(36)          null,
 SCHEMA_CODE          VARCHAR(36)          null,
 PRIMARY_KEY          VARCHAR(255)         null,
@@ -183,7 +182,6 @@ constraint PK_TABLE_FORMAT primary key (FORMAT)
 );
 
 COMMENT ON COLUMN TABLE_FORMAT.FORMAT IS 'The logical name of the format';
-COMMENT ON COLUMN TABLE_FORMAT.IS_COLUMN_ORIENTED IS 'Indicate if the table is column-oriented';
 COMMENT ON COLUMN TABLE_FORMAT.TABLE_NAME IS 'The real name of the table';
 COMMENT ON COLUMN TABLE_FORMAT.SCHEMA_CODE IS 'The code of the schema (not used)';
 COMMENT ON COLUMN TABLE_FORMAT.PRIMARY_KEY IS 'The list of table fields used to identify one line of this table (separated by commas)';

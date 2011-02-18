@@ -202,7 +202,6 @@ SELECT format||'_'||data, 'This raw_data table field is not mapped with an harmo
 FROM table_field
 JOIN table_format using (format)
 WHERE schema_code = 'RAW_DATA'
-AND is_column_oriented = '0' -- We ignore complementary variables
 AND data <> 'SUBMISSION_ID'
 AND data <> 'LINE_NUMBER'
 AND format||'_'||data NOT IN (
