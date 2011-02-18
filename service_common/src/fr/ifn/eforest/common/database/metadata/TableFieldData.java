@@ -11,11 +11,8 @@ public class TableFieldData {
 	// The logical name of the data
 	private String fieldName;
 
-	// The physical name of the table 
+	// The physical name of the table
 	private String tableName;
-
-	// Indicate if the table is column-oriented (NAME / VALUE)
-	private boolean isColumnOriented;
 
 	// The physical name of the column
 	private String columnName;
@@ -51,21 +48,6 @@ public class TableFieldData {
 	 */
 	public void setColumnName(String columnName) {
 		this.columnName = columnName;
-	}
-
-	/**
-	 * @return the isColumnOriented
-	 */
-	public boolean isColumnOriented() {
-		return isColumnOriented;
-	}
-
-	/**
-	 * @param isColumnOriented
-	 *            the isColumnOriented to set
-	 */
-	public void setColumnOriented(boolean isColumnOriented) {
-		this.isColumnOriented = isColumnOriented;
 	}
 
 	/**

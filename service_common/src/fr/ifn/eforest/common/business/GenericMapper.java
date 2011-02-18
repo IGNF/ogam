@@ -384,8 +384,7 @@ public class GenericMapper {
 	 * Read data from a list of source tables.<br>
 	 * <br>
 	 * Build a SELECT request with the JOIN of all the source tables. <br>
-	 * TODO : Add the complementary tables. <br>
-	 * TODO : Limit the read values to the values needed by the JRC Request.<br>
+	 * TODO : Limit the read values to the values needed by the dataset.<br>
 	 * 
 	 * @param schema
 	 *            the schema in which we are working

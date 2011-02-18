@@ -46,7 +46,7 @@ public class MetadataDAO {
 	private static final String GET_FILE_FIELDS_STMT = "SELECT data.data, data.unit, mask, unit.type as type, is_mandatory " + //
 			" FROM file_field " + //
 			" LEFT JOIN data on (file_field.data = data.data)" + //
-			" LEFT JOIN unit on (data.unit = unit.unit)" + //			
+			" LEFT JOIN unit on (data.unit = unit.unit)" + //
 			" WHERE format = ? " + //
 			" ORDER BY position ASC";
 
@@ -55,14 +55,15 @@ public class MetadataDAO {
 	 */
 	private static final String GET_FILE_FIELD_STMT = "SELECT data.data, data.unit, mask, unit.type as type, is_mandatory  " + //
 			" FROM data " + //
-			" LEFT JOIN unit on (data.unit = unit.unit)" + //			
+			" LEFT JOIN unit on (data.unit = unit.unit)" + //
 			" LEFT JOIN file_field on (file_field.data = data.data)" + //
 			" WHERE data.data = ? ";
 
 	/**
 	 * Get the fields of a table format.
 	 */
-	private static final String GET_TABLE_FIELDS_STMT = "SELECT table_field.data as fieldname, table_name, column_name, is_column_oriented, table_format.format, unit.type " + //
+	private static final String GET_TABLE_FIELDS_STMT = "SELECT table_field.data as fieldname, table_name, column_name, table_format.format, unit.type "
+			+ //
 			" FROM table_format " + //
 			" LEFT JOIN table_field on (table_field.format = table_format.format) " + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
@@ -73,7 +74,8 @@ public class MetadataDAO {
 	/**
 	 * Get the description of one field of a table format.
 	 */
-	private static final String GET_TABLE_FIELD_STMT = "SELECT table_field.data as fieldname, table_name, column_name, is_column_oriented, table_format.format, unit.type " + //
+	private static final String GET_TABLE_FIELD_STMT = "SELECT table_field.data as fieldname, table_name, column_name, table_format.format, unit.type "
+			+ //
 			" FROM table_format " + //
 			" LEFT JOIN table_field on (table_field.format = table_format.format) " + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
@@ -84,7 +86,8 @@ public class MetadataDAO {
 	/**
 	 * Get the destination columns of the mapping.
 	 */
-	private static final String GET_FIELD_MAPPING_STMT = "SELECT field_mapping.src_data as fieldname, field_mapping.dst_format as format, table_name, column_name, is_column_oriented, unit.type " + //
+	private static final String GET_FIELD_MAPPING_STMT = "SELECT field_mapping.src_data as fieldname, field_mapping.dst_format as format, table_name, column_name, unit.type "
+			+ //
 			" FROM field_mapping" + //
 			" LEFT JOIN table_format on (field_mapping.dst_format = table_format.format) " + //
 			" LEFT JOIN table_field on (field_mapping.dst_format = table_field.format and field_mapping.dst_data = table_field.data)" + //
@@ -96,7 +99,7 @@ public class MetadataDAO {
 	/**
 	 * Get the destination tables of the mapping.
 	 */
-	private static final String GET_FORMAT_MAPPING_STMT = "SELECT DISTINCT table_format.format as format, table_name, is_column_oriented " + //
+	private static final String GET_FORMAT_MAPPING_STMT = "SELECT DISTINCT table_format.format as format, table_name " + //
 			" FROM field_mapping" + //
 			" LEFT JOIN table_format on (field_mapping.dst_format = table_format.format) " + //
 			" WHERE field_mapping.src_format = ? " + //
@@ -105,7 +108,7 @@ public class MetadataDAO {
 	/**
 	 * Get the source tables of the mapping.
 	 */
-	private static final String GET_SOUCE_FORMAT_MAPPING_STMT = "SELECT DISTINCT table_format.format as format, table_name, is_column_oriented " + //
+	private static final String GET_SOUCE_FORMAT_MAPPING_STMT = "SELECT DISTINCT table_format.format as format, table_name " + //
 			" FROM field_mapping" + //
 			" LEFT JOIN table_format on (field_mapping.src_format = table_format.format) " + //
 			" WHERE field_mapping.dst_format = ? " + //
@@ -116,7 +119,7 @@ public class MetadataDAO {
 	 */
 	private static final String GET_TYPE_STMT = "SELECT type " + //
 			" FROM unit " + //
-			" LEFT JOIN data on (data.unit = unit.unit)" + //	
+			" LEFT JOIN data on (data.unit = unit.unit)" + //
 			" WHERE data.data = ? ";
 
 	/**
@@ -142,7 +145,7 @@ public class MetadataDAO {
 	/**
 	 * Get the table physical name.
 	 */
-	private static final String GET_TABLE_FORMAT_STMT = "SELECT table_name, is_column_oriented, format, schema_code FROM table_format WHERE format = ?";
+	private static final String GET_TABLE_FORMAT_STMT = "SELECT table_name, format, schema_code FROM table_format WHERE format = ?";
 
 	/**
 	 * Get the list of available datasets.
@@ -152,7 +155,7 @@ public class MetadataDAO {
 	/**
 	 * Get the tables used by a given dataset.
 	 */
-	private static final String GET_DATASET_TABLES_STMT = "SELECT DISTINCT table_format.format, is_column_oriented, table_name, table_format.schema_code " + //
+	private static final String GET_DATASET_TABLES_STMT = "SELECT DISTINCT table_format.format, table_name, table_format.schema_code " + //
 			" FROM dataset_fields " + //
 			" LEFT JOIN table_format using (format) " + //
 			" WHERE dataset_id = ? " + //
@@ -171,8 +174,8 @@ public class MetadataDAO {
 	 * Get the description of the table in the tables hierarchie.
 	 */
 	private static final String GET_TABLE_TREE_STMT = "SELECT child_table, parent_table, join_key " + //
-			" FROM table_tree " + // 
-			" WHERE child_table = ? " + // 
+			" FROM table_tree " + //
+			" WHERE child_table = ? " + //
 			" AND schema_code = ?";
 
 	/**
@@ -232,7 +235,6 @@ public class MetadataDAO {
 					result = new TableFormatData();
 					result.setFormat(format);
 					result.setTableName(rs.getString("table_name"));
-					result.setColumnOriented(rs.getBoolean("is_column_oriented"));
 					result.setSchemaCode(rs.getString("schema_code"));
 				}
 
@@ -645,7 +647,6 @@ public class MetadataDAO {
 				TableFieldData field = new TableFieldData();
 				field.setColumnName(rs.getString("column_name"));
 				field.setTableName(rs.getString("table_name"));
-				field.setColumnOriented(rs.getBoolean("is_column_oriented"));
 				field.setFieldName(rs.getString("fieldname"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
@@ -706,7 +707,6 @@ public class MetadataDAO {
 				TableFieldData field = new TableFieldData();
 				field.setColumnName(rs.getString("column_name"));
 				field.setTableName(rs.getString("table_name"));
-				field.setColumnOriented(rs.getBoolean("is_column_oriented"));
 				field.setFieldName(rs.getString("fieldname"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
@@ -980,10 +980,9 @@ public class MetadataDAO {
 			while (rs.next()) {
 				TableFormatData format = new TableFormatData();
 
-				// format, table_name, is_column_oriented
+				// format, table_name
 				format.setFormat(rs.getString("format"));
 				format.setTableName(rs.getString("table_name"));
-				format.setColumnOriented(rs.getBoolean("is_column_oriented"));
 				result.put(format.getFormat(), format);
 			}
 
@@ -1041,10 +1040,9 @@ public class MetadataDAO {
 			while (rs.next()) {
 				TableFormatData format = new TableFormatData();
 
-				// format, table_name, is_column_oriented
+				// format, table_name
 				format.setFormat(rs.getString("format"));
 				format.setTableName(rs.getString("table_name"));
-				format.setColumnOriented(rs.getBoolean("is_column_oriented"));
 				result.put(format.getFormat(), format);
 			}
 
@@ -1103,7 +1101,6 @@ public class MetadataDAO {
 				TableFieldData field = new TableFieldData();
 				field.setColumnName(rs.getString("column_name"));
 				field.setTableName(rs.getString("table_name"));
-				field.setColumnOriented(rs.getBoolean("is_column_oriented"));
 				field.setFieldName(rs.getString("fieldname"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
@@ -1263,7 +1260,6 @@ public class MetadataDAO {
 			while (rs.next()) {
 				TableFormatData tableformat = new TableFormatData();
 				tableformat.setFormat(rs.getString("format"));
-				tableformat.setColumnOriented(rs.getBoolean("is_column_oriented"));
 				tableformat.setTableName(rs.getString("table_name"));
 				tableformat.setSchemaCode(rs.getString("schema_code"));
 				result.add(tableformat);

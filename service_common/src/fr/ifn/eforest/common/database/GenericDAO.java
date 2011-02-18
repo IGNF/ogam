@@ -32,11 +32,6 @@ public class GenericDAO {
 
 	private Logger logger = Logger.getLogger(this.getClass());
 
-	private static final String VARIABLE_NAME = "variable_name";
-	private static final String INT_VALUE = "int_value";
-	private static final String FLOAT_VALUE = "float_value";
-	private static final String TEXT_VALUE = "text_value";
-
 	/**
 	 * Get a connexion to the database.
 	 * 
@@ -51,181 +46,6 @@ public class GenericDAO {
 		Connection cx = ds.getConnection();
 
 		return cx;
-	}
-
-	/**
-	 * 
-	 * Insert a some values in a column-oriented destination table.
-	 * 
-	 * @param schema
-	 *            the name of the schema
-	 * @param tableName
-	 *            the name of the destination table
-	 * @param tableColumns
-	 *            the description of the columns of the destination table
-	 * @param data
-	 *            the value to insert
-	 * @param otherValues
-	 *            the other available values of the line (where to find foreign keys)
-	 * @throws Exception
-	 */
-	public void insertColumnData(String schema, String tableName, List<TableFieldData> tableColumns, GenericData data, Map<String, GenericData> otherValues) throws Exception {
-
-		logger.debug("Inserting column-oriented data");
-
-		Connection con = null;
-		PreparedStatement ps = null;
-		try {
-
-			con = getConnection();
-
-			// Preprare the SQL values 
-			StringBuffer colNames = new StringBuffer();
-			StringBuffer colValues = new StringBuffer();
-
-			// First, add the value storage column
-			String type = data.getType();
-			if (type.equalsIgnoreCase(STRING)) {
-				colNames.append(TEXT_VALUE);
-				colValues.append("?");
-			} else if (type.equalsIgnoreCase(CODE)) {
-				colNames.append(TEXT_VALUE);
-				colValues.append("?");
-			} else if (type.equalsIgnoreCase(RANGE)) {
-				colNames.append(FLOAT_VALUE);
-				colValues.append("?");
-			} else if (type.equalsIgnoreCase(NUMERIC)) {
-				colNames.append(FLOAT_VALUE);
-				colValues.append("?");
-			} else if (type.equalsIgnoreCase(INTEGER)) {
-				colNames.append(INT_VALUE);
-				colValues.append("?");
-			} else {
-				throw new Exception("Unexpected type");
-			}
-
-			// Add the other columns
-			Iterator<TableFieldData> columnsIter = tableColumns.iterator();
-			while (columnsIter.hasNext()) {
-				TableFieldData destColDescriptor = columnsIter.next();
-
-				if (!(destColDescriptor.getColumnName().equalsIgnoreCase(INT_VALUE) || destColDescriptor.getColumnName().equalsIgnoreCase(FLOAT_VALUE) || destColDescriptor.getColumnName()
-						.equalsIgnoreCase(TEXT_VALUE))) {
-					// Add the key columns
-					colNames.append(", " + destColDescriptor.getColumnName());
-					colValues.append(", ?");
-				}
-
-			}
-
-			// Build the SQL INSERT
-			String statement = "INSERT INTO " + tableName + " (" + colNames.toString() + ") VALUES (" + colValues.toString() + ")";
-
-			// Prepare the statement
-			logger.trace(statement);
-			ps = con.prepareStatement(statement);
-
-			// First, set the value
-			if (type.equalsIgnoreCase(STRING)) {
-				ps.setString(1, (String) data.getValue());
-			} else if (type.equalsIgnoreCase(CODE)) {
-				ps.setString(1, (String) data.getValue());
-			} else if (type.equalsIgnoreCase(RANGE)) {
-				ps.setBigDecimal(1, (BigDecimal) data.getValue());
-			} else if (type.equalsIgnoreCase(NUMERIC)) {
-				ps.setBigDecimal(1, (BigDecimal) data.getValue());
-			} else if (type.equalsIgnoreCase(INTEGER)) {
-				ps.setInt(1, (Integer) data.getValue());
-			} else {
-				throw new Exception("Unexpected type");
-			}
-
-			// Set the column values
-			int count = 2;
-
-			columnsIter = tableColumns.iterator();
-			while (columnsIter.hasNext()) {
-				TableFieldData destColDescriptor = columnsIter.next();
-
-				// destColDescriptor.getColumnName().equalsIgnoreCase(INT_VALUE)     ignored
-				// destColDescriptor.getColumnName().equalsIgnoreCase(FLOAT_VALUE)   ignored
-				// destColDescriptor.getColumnName().equalsIgnoreCase(TEXT_VALUE))	 ignored	 
-				if (!((destColDescriptor.getColumnName().equalsIgnoreCase(INT_VALUE) || destColDescriptor.getColumnName().equalsIgnoreCase(FLOAT_VALUE) || destColDescriptor.getColumnName()
-						.equalsIgnoreCase(TEXT_VALUE)))) {
-
-					if ((destColDescriptor.getColumnName().equalsIgnoreCase(VARIABLE_NAME))) {
-						// Set the variable name
-						ps.setString(count, data.getColumnName());
-						count++;
-					} else {
-						// Set the foreign key columns
-						GenericData otherColData = otherValues.get(destColDescriptor.getFieldName());
-						String otherType = otherColData.getType();
-						if (otherType.equalsIgnoreCase(STRING)) {
-							ps.setString(count, (String) otherColData.getValue());
-						} else if (otherType.equalsIgnoreCase(CODE)) {
-							ps.setString(count, (String) otherColData.getValue());
-						} else if (otherType.equalsIgnoreCase(RANGE)) {
-							ps.setBigDecimal(count, (BigDecimal) otherColData.getValue());
-						} else if (otherType.equalsIgnoreCase(NUMERIC)) {
-							ps.setBigDecimal(count, (BigDecimal) otherColData.getValue());
-						} else if (otherType.equalsIgnoreCase(INTEGER)) {
-							ps.setInt(count, (Integer) otherColData.getValue());
-						} else {
-							throw new Exception("Unexpected type");
-						}
-						count++;
-					}
-				}
-
-			}
-
-			// Execute the query
-			ps.execute();
-
-		} catch (SQLException sqle) {
-
-			// Log the error
-			logger.error("Error while storing plot location", sqle);
-
-			// Test the SQL exception type
-			if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
-				throw new CheckException(INTEGRITY_CONSTRAINT);
-			} else if (SqlStateSQL99.ERRCODE_UNIQUE_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
-				throw new CheckException(DUPLICATE_ROW);
-			} else if (SqlStateSQL99.ERRCODE_STRING_DATA_RIGHT_TRUNCATION.equalsIgnoreCase(sqle.getSQLState())) {
-				throw new CheckException(STRING_TOO_LONG);
-			} else if (SqlStateSQL99.ERRCODE_UNDEFINED_COLUMN.equalsIgnoreCase(sqle.getSQLState())) {
-				throw new CheckException(UNDEFINED_COLUMN);
-			} else {
-				// Unknown SQL Problem 
-				throw new CheckException(UNEXPECTED_SQL_ERROR);
-			}
-
-		} catch (Exception e) {
-
-			// Log the error
-			logger.error("Error while storing plot location", e);
-
-			// rethrow e
-			throw e;
-
-		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				logger.error("Error while closing statement : " + e.getMessage());
-			}
-		}
 	}
 
 	/**
@@ -250,7 +70,7 @@ public class GenericDAO {
 
 			con = getConnection();
 
-			// Prepare the SQL values 
+			// Prepare the SQL values
 			StringBuffer colNames = new StringBuffer();
 			StringBuffer colValues = new StringBuffer();
 			Iterator<TableFieldData> columnsIter = tableColumns.iterator();
@@ -418,14 +238,14 @@ public class GenericDAO {
 
 		} catch (SQLException sqle) {
 
-			// log the exception		
+			// log the exception
 			logger.error("Error while deleting raw data", sqle);
 
 			if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				throw new CheckException(INTEGRITY_CONSTRAINT);
 			}
 		} catch (Exception e) {
-			// log the exception		
+			// log the exception
 			logger.error("Error while deleting raw data", e);
 
 			// Rethrow e

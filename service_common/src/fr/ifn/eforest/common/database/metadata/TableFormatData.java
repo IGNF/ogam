@@ -11,8 +11,6 @@ public class TableFormatData {
 
 	private String tableName;
 
-	private boolean isColumnOriented;
-
 	private String schemaCode;
 
 	/**
@@ -43,21 +41,6 @@ public class TableFormatData {
 	 */
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
-	}
-
-	/**
-	 * @return the isColumnOriented
-	 */
-	public boolean isColumnOriented() {
-		return isColumnOriented;
-	}
-
-	/**
-	 * @param isColumnOriented
-	 *            the isColumnOriented to set
-	 */
-	public void setColumnOriented(boolean isColumnOriented) {
-		this.isColumnOriented = isColumnOriented;
 	}
 
 	/**
