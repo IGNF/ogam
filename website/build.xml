@@ -114,7 +114,7 @@
 	                     excludes="**/locale/*,**/genapp.js"/>
 	            <fileset file="${src.dir}public/js/extjsux/basiccheckbox/BasicCheckBox.js" />
 	        	<fileset file="${src.dir}public/js/extjsux/datePatch/datePatchExtjs3.1.1.js" />
-	        	<fileset file="${cps.src.dir}/patch-eforest.js" />
+	        	<fileset file="${src.dir}public/js/extjsux/rowExpander/RowExpander.js" />
 	        </concat>
 
 	        <!-- Concatenation of all the CSS in one file -->
