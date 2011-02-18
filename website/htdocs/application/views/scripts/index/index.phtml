@@ -49,6 +49,13 @@ if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {
 </li>
 <?php
 }
+if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" >Data edition</a>
+</li>
+<?php
+}
 if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
 ?>
 <li>
@@ -80,21 +87,6 @@ if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {
 <?php
 }
 
-if (!empty($permissions) && array_key_exists('DOCUMENTATION',$permissions)) {	
-?>
-<li>
-<a href="<?= $this->url(array('controller'=>'documentation'), null, true) ?>" class="pagelink" >Documentation</a>
-</li>
-<?php
-}
-
-if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
-?>
-<li>
-<a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" >Data edition</a>
-</li>
-<?php
-}
 
 $configuration = Zend_Registry::get("configuration");
 if($configuration->autoLogin == 1){
