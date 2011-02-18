@@ -96,13 +96,10 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @return Array[dataset_id => label]
 	 */
-	public function getDatasets($excludeLocation = true) {
+	public function getDatasets() {
 		$db = $this->getAdapter();
 		$req = "SELECT dataset_id as id, label, is_default ";
 		$req .= " FROM dataset";
-		if ($excludeLocation) {
-			$req .= " WHERE dataset_id <> 'LOCATION'";
-		}
 		$req .= " ORDER BY dataset_id";
 
 		$this->logger->info('getDatasets : '.$req);
@@ -146,7 +143,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the list of requested fields for the file.
 	 *
-	 * @param String the file format
+	 * @param String $fileFormat the file format
 	 * @return Array[FormField]
 	 */
 	public function getFileFields($fileFormat) {
@@ -329,10 +326,10 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the fields for a given Form that can be used as a result.
 	 *
-	 * @param dataset the name of the dataset
-	 * @param formFormat the name of the form format
-	 * @param schema the name of the database schema
-	 * @param mode if 'criteria' we're looking for a criteria, if 'result' we're looking for a result.
+	 * @param String $dataset the name of the dataset
+	 * @param String $formFormat the name of the form format
+	 * @param String $schema the name of the database schema
+	 * @param String $mode if 'criteria' we're looking for a criteria, if 'result' we're looking for a result.
 	 * @return Array[FormField]
 	 */
 	public function getFormFields($dataset, $formFormat, $schema, $mode) {

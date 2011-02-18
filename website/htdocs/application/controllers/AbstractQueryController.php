@@ -197,8 +197,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 				$options = $this->metadataModel->getModes($criteria->unit);
 				$json .= ',{options:[';
-				foreach ($options as $option) {
-					$json .= '["'.$option->code.'","'.$option->label.'"],';
+				foreach ($options as $code => $label) {
+					$json .= '["'.$code.'","'.$label.'"],';
 				}
 				$json = substr($json, 0, -1);
 				$json .= ']}';
