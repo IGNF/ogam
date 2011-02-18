@@ -96,7 +96,7 @@ class InterpolationController extends AbstractAnalysisController {
 		$gridElement = $form->createElement('select', 'GRID_NAME');
 		$gridElement->setLabel('Grid');
 		$gridElement->setRequired(true);
-		$grids = $this->metadataModel->getModeFromUnit('INTERPOLATION_GRID');
+		$grids = $this->metadataModel->getModes('INTERPOLATION_GRID');
 		$gridElement->addMultiOptions($grids);
 
 		//
@@ -105,7 +105,7 @@ class InterpolationController extends AbstractAnalysisController {
 		$methodElement = $form->createElement('select', 'METHOD');
 		$methodElement->setLabel('Interpolation Method');
 		$methodElement->setRequired(true);
-		$methods = $this->metadataModel->getModeFromUnit('INTERPOLATION_METHOD');
+		$methods = $this->metadataModel->getModes('INTERPOLATION_METHOD');
 		$methodElement->addMultiOptions($methods);
 
 		//
@@ -261,7 +261,7 @@ class InterpolationController extends AbstractAnalysisController {
 	public function ajaxgetgridsAction() {
 
 		// Get the list of grids
-		$grids = $this->metadataModel->getModeFromUnit('INTERPOLATION_GRID');
+		$grids = $this->metadataModel->getModes('INTERPOLATION_GRID');
 
 		$gridsList = array();
 		foreach ($grids as $code => $label) {
@@ -283,7 +283,7 @@ class InterpolationController extends AbstractAnalysisController {
 	public function ajaxgetmethodsAction() {
 
 		// Get the list of grids
-		$methods = $this->metadataModel->getModeFromUnit('INTERPOLATION_METHOD');
+		$methods = $this->metadataModel->getModes('INTERPOLATION_METHOD');
 
 		$methodsList = array();
 		foreach ($methods as $code => $label) {

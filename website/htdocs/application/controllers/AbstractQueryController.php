@@ -194,7 +194,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 			// add some specific options
 			if ($criteria->type == "CODE") {
-				$options = $this->metadataModel->getOptions($criteria->data);
+
+				$options = $this->metadataModel->getModes($criteria->unit);
 				$json .= ',{options:[';
 				foreach ($options as $option) {
 					$json .= '["'.$option->code.'","'.$option->label.'"],';
@@ -326,10 +327,10 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$json .= '{'.$field->toCriteriaJSON();
 				// For the SELECT field, get the list of options
 				if ($field->type == "CODE") {
-					$options = $this->metadataModel->getOptions($field->data);
+					$options = $this->metadataModel->getModes($field->unit);
 					$json .= ',p:{options:[';
-					foreach ($options as $option) {
-						$json .= '['.json_encode($option->code).','.json_encode($option->label).'],';
+					foreach ($options as $code => $label) {
+						$json .= '['.json_encode($code).','.json_encode($label).'],';
 					}
 					$json = substr($json, 0, -1);
 					$json .= ']}';
@@ -487,7 +488,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 					// Prepare the traduction of the code lists
 					if ($formField->type == "CODE") {
-						$traductions[$i] = $this->metadataModel->getModeFromUnit($formField->unit);
+						$traductions[$i] = $this->metadataModel->getModes($formField->unit);
 					}
 					$i++;
 				}
@@ -718,12 +719,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 					$uniqueId .= " || '_' || ";
 				}
 				$uniqueId .= $tableTreeData->getLogicalName().".".trim($identifier);
-			}
-
-			// Check the user country code
-			if ($role->isEuropeLevel != '1') {
-				$countryCode = $userSession->user->countryCode;
-				$from .= " AND ".$tableTreeData->getLogicalName().".country_code = '".trim($countryCode)."'";
 			}
 
 			$from .= ") ";
@@ -1181,7 +1176,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 			// Prepare the traduction of the code lists
 			if ($detailField->type == "CODE") {
-				$traductions[$i] = $this->metadataModel->getModeFromUnit($detailField->unit);
+				$traductions[$i] = $this->metadataModel->getModes($detailField->unit);
 			}
 			$i++;
 		}
@@ -1359,7 +1354,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 			// Prepare the traduction of the code lists
 			if ($detailField->type == "CODE") {
-				$traductions[$i] = $this->metadataModel->getModeFromUnit($detailField->unit);
+				$traductions[$i] = $this->metadataModel->getModes($detailField->unit);
 			}
 			$i++;
 		}

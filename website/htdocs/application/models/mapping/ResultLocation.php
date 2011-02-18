@@ -34,8 +34,8 @@ class Model_ResultLocation extends Zend_Db_Table_Abstract {
 		$db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
 
 		if ($sqlWhere != null) {
-			$request = " INSERT INTO result_location (session_id, plot_code, the_geom ) ";
-			$request .= " SELECT DISTINCT '".$sessionId."', ".$locationtable.".plot_code, st_transform(".$locationtable.".the_geom,".$visualisationSRS.") as the_geom ";
+			$request = " INSERT INTO result_location (session_id, provider_id, plot_code, the_geom ) ";
+			$request .= " SELECT DISTINCT '".$sessionId."', ".$locationtable.".provider_id, ".$locationtable.".plot_code, st_transform(".$locationtable.".the_geom,".$visualisationSRS.") as the_geom ";
 			$request .= $sqlWhere;
 
 			$this->logger->info('fillLocationResult : '.$request);

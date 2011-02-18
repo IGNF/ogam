@@ -18,8 +18,10 @@
 <!-- Affichage du formulaire d'édition -->
 <!--  Les élements faisant partie de la clé sont grisés -->
 <!--  Les autres valeurs sont éditables -->
+<fieldset>
+<legend><?= $this->tableFormat->format;?></legend>
 <?= $this->form ?>
-
+</fieldset>
 <!-- Affichage les tables enfant (uniquement les valeurs de la clé) -->
 <!-- Lien vers l'édition d'un enfant existant -->
 <!-- Lien pour l'ajout d'un nouvel enfant -->

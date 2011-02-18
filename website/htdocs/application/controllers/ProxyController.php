@@ -268,7 +268,7 @@ class ProxyController extends AbstractEforestController {
 				}
 			}
 			// Affiche l'info
-			echo '{success:true, id:\''.$results['country_code'].'__'.$results['plot_code'].'\'}';
+			echo '{success:true, id:\''.$results['provider_id'].'__'.$results['plot_code'].'\'}';
 		} else {
 			echo '{success:true, id:null}';
 		}

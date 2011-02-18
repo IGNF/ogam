@@ -80,7 +80,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 	 * Get a predefined request.
 	 *
 	 * @param String $requestName the name of the request
-	 * @return PredefinedField the request
+	 * @return PredefinedRequest the request
 	 * @throws an exception if the request is not found
 	 */
 	public function getPredefinedRequest($requestName) {
@@ -143,22 +143,10 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 			$request->resultsList[$field->format.'__'.$field->data] = $field;
 		}
 
+		
 		// Get the request result columns
-		$req = " SELECT * FROM predefined_request_criteria WHERE request_name = ?";
-
-		$query = $db->prepare($req);
-		$query->execute(array($requestName));
-
-		$results = $query->fetchAll();
-		foreach ($results as $result) {
-			$field = new PredefinedField();
-			$field->format = $result['format'];
-			$field->data = $result['data'];
-			$field->value = $result['value'];
-
-			$request->criteriaList[$field->format.'__'.$field->data] = $field;
-		}
-
+		$request->criteriaList = $this->getPredefinedRequestCriteria($requestName);
+		
 		return $request;
 
 	}
@@ -238,7 +226,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 
 		// Get the request
-		$req = " SELECT format, data, value, fixed, input_type, type, data.label, data.definition";
+		$req = " SELECT format, data, value, fixed, input_type, type, data.unit, data.label, data.definition";
 		$req .= " FROM predefined_request_criteria";
 		$req .= " JOIN form_field using (data, format)";
 		$req .= " JOIN data using (data)";
@@ -256,6 +244,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 			$field = new PredefinedField();
 			$field->format = $result['format'];
 			$field->data = $result['data'];
+			$field->unit = $result['unit'];
 			$field->value = $result['value'];
 			$field->fixed = $result['fixed'];
 			$field->inputType = $result['input_type'];

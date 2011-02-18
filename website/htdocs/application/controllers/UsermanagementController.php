@@ -127,7 +127,7 @@ class UsermanagementController extends AbstractEforestController {
 		if ($user != null) {
 			$countryCode->setValue($user->countryCode);
 		}
-		$countries = $this->metadataModel->getModeFromUnit('COUNTRY_CODE');
+		$countries = $this->metadataModel->getModes('COUNTRY_CODE');
 
 		$countryCode->addMultiOptions($countries);
 
@@ -560,7 +560,7 @@ class UsermanagementController extends AbstractEforestController {
 		$users = $this->userModel->getUsers();
 
 		// Get the list of countries
-		$countries = $this->metadataModel->getModeFromUnit('COUNTRY_CODE');
+		$countries = $this->metadataModel->getModes('COUNTRY_CODE');
 
 		$this->logger->debug('users : '.$users);
 

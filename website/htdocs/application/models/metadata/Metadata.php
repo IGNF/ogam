@@ -48,14 +48,14 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the unit modes
 	 *
-	 * @param string unit The unit
+	 * @param String $unit The unit
 	 * @return Array[mode => label]
 	 */
-	public function getModeFromUnit($unit) {
+	public function getModes($unit) {
 		$db = $this->getAdapter();
 		$req = "SELECT code, label FROM mode WHERE unit = ? ORDER BY position, code";
 
-		$this->logger->info('getModeFromUnit : '.$req);
+		$this->logger->info('getModes : '.$req);
 
 		$select = $db->prepare($req);
 		$select->execute(array($unit));
@@ -71,15 +71,15 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the mode and its label.
 	 *
-	 * @param string unit The unit
-	 * @param string mode The mode
+	 * @param String $unit The unit
+	 * @param String $mode The mode
 	 * @return Array[mode => label]
 	 */
 	public function getMode($unit, $mode) {
 		$db = $this->getAdapter();
 		$req = "SELECT code, label FROM mode WHERE unit = ? AND code = ? ORDER BY position, code";
 
-		$this->logger->info('getModeFromUnit : '.$req);
+		$this->logger->info('getMode : '.$req);
 
 		$select = $db->prepare($req);
 		$select->execute(array($unit, $mode));
@@ -116,7 +116,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the requested files for a data submission for a given dataset.
 	 *
-	 * @param $datasetId The identifier of the dataset
+	 * @param String $datasetId The identifier of the dataset
 	 * @return Array[DatasetFile]
 	 */
 	public function getRequestedFiles($datasetId) {
@@ -186,9 +186,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the list of table fields linked to a dataset.
 	 *
-	 * @param String the dataset identifier
-	 * @param String the schema identifier
-	 * @param String the format
+	 * @param String $datasetID the dataset identifier
+	 * @param String $schema the schema identifier
+	 * @param String $format the format
 	 * @return Array[TableField]
 	 */
 	public function getTableFields($datasetID, $schema, $format) {
@@ -234,8 +234,8 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the information about a table format.
 	 *
-	 * @param String the schema identifier
-	 * @param String the format
+	 * @param String $schema the schema identifier
+	 * @param String $format the format
 	 * @return TableFormat
 	 */
 	public function getTableFormat($schema, $format) {
@@ -474,44 +474,14 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get list of modes of a field.
-	 *
-	 * @param the data
-	 * @return Array[Mode]
-	 */
-	public function getOptions($data) {
-		$db = $this->getAdapter();
-		$req = " SELECT mode.code, mode.label ";
-		$req .= " FROM data ";
-		$req .= " LEFT JOIN mode USING (unit) ";
-		$req .= " WHERE data.data = ? ";
-		$req .= " ORDER BY position";
-
-		$this->logger->info('getOptions : '.$req);
-
-		$select = $db->prepare($req);
-		$select->execute(array($data));
-
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$mode = new Mode();
-			$mode->code = $row['code'];
-			$mode->label = $row['label'];
-			$result[] = $mode;
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Get the range of a field.
 	 *
-	 * @param the data
+	 * @param String $data the data
 	 * @return Range
 	 */
-	public function getRange($unit) {
+	public function getRange($data) {
 
-		$this->logger->info('getRange : '.$unit);
+		$this->logger->info('getRange : '.$data);
 
 		$db = $this->getAdapter();
 		$req = "SELECT min, max
@@ -522,7 +492,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		$this->logger->info('getRange : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array($unit));
+		$select->execute(array($data));
 
 		$row = $select->fetch();
 		$range = new Range();
@@ -535,7 +505,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the list of available columns of a table.
 	 *
-	 * @param String the logical name of the table
+	 * @param String $format the logical name of the table
 	 * @return array[TableField]
 	 */
 	public function getTableColumnsForDisplay($format) {
@@ -683,9 +653,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the ancestors of the table format in the table tree.
 	 *
-	 * @param $tableFormat the table format
-	 * @param $fieldName the name of the field that is using this table (used for complementary data)
-	 * @param $schemaCode the name of the schema
+	 * @param String $tableFormat the table format
+	 * @param String $fieldName the name of the field that is using this table (used for complementary data)
+	 * @param String $schemaCode the name of the schema
 	 * @return array[TableTreeData]
 	 * @throws Exception if the table is not found
 	 */
@@ -747,8 +717,8 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 * Get fields available for aggregation or interpolation.
 	 *
 	 * @param String $datasetId the dataset identifier
-	 * @param Array[TableTreeData] available tables
-	 * @param String schema the schema
+	 * @param Array[TableTreeData] $availableTables the available tables
+	 * @param String $schema the schema
 	 * @return Array[Field]
 	 */
 	public function getQuantitativeFields($datasetId, $availableTables, $schema) {

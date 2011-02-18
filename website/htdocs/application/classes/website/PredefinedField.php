@@ -37,6 +37,11 @@ class PredefinedField {
 	var $inputType;
 
 	/**
+	 * The unit.
+	 */
+	var $unit;
+
+	/**
 	 * The type of the data (CODE, STRING, RANGE, ...)
 	 */
 	var $type;
@@ -68,7 +73,7 @@ class PredefinedField {
 		$json .= ','.json_encode($this->type);
 		$json .= ','.json_encode($this->label);
 		$json .= ','.json_encode($this->definition);
-				
+
 		return $json;
 	}
 

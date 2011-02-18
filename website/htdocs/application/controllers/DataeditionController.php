@@ -98,47 +98,49 @@ class DataEditionController extends AbstractEforestController {
 	/**
 	 * Generate a Zend Form Element from a TableField description.
 	 *
-	 * @param Zend_Form $form a form
-	 * @param TableField $field the descriptor
+	 * @param Zend_Form $form the Zend form we want to update
+	 * @param TableField $tableField the table descriptor of the data
+	 * @param FormField $formField the form descriptor of the data
 	 * @param Boolean $isKey is the field a primary key ?
 	 */
-	private function getFormElement($form, $field, $isKey = false) {
+	private function getFormElement($form, $tableField, $formField, $isKey = false) {
 
-		// TODO : Tester sur le form_field type
+		// TODO OGAM-79 : Tester sur le formField type
 
-		if ($field->type == "STRING") {
-			$elem = $form->createElement('text', $field->data);
+		if ($tableField->type == "STRING") {
+			$elem = $form->createElement('text', $tableField->data);
 
-		} else if ($field->type == "INTEGER") {
-			$elem = $form->createElement('text', $field->data);
+		} else if ($tableField->type == "INTEGER") {
+			$elem = $form->createElement('text', $tableField->data);
 
-		} else if ($field->type == "NUMERIC") {
-			$elem = $form->createElement('text', $field->data);
+		} else if ($tableField->type == "NUMERIC") {
+			$elem = $form->createElement('text', $tableField->data);
 
-		} else if ($field->type == "DATE") {
-			$elem = $form->createElement('text', $field->data);
+		} else if ($tableField->type == "DATE") {
+			$elem = $form->createElement('text', $tableField->data);
 
-		} else if ($field->type == "COORDINATE") {
-			$elem = $form->createElement('text', $field->data);
+		} else if ($tableField->type == "COORDINATE") {
+			$elem = $form->createElement('text', $tableField->data);
 
-		} else if ($field->type == "RANGE") {
-			$elem = $form->createElement('text', $field->data);
+		} else if ($tableField->type == "RANGE") {
+			$elem = $form->createElement('text', $tableField->data);
 
-		} else if ($field->type == "CODE") {
-			$elem = $form->createElement('select', $field->data);
-
-		} else if ($field->type == "BOOLEAN") {
-			$elem = $form->createElement('checkbox', $field->data);
+		} else if ($tableField->type == "CODE") {
+			$modes = $this->metadataModel->getModes($tableField->unit);
+			$elem = $form->createElement('select', $tableField->data);
+			$elem->addMultiOptions($modes);
+		} else if ($tableField->type == "BOOLEAN") {
+			$elem = $form->createElement('checkbox', $tableField->data);
 
 		} else {
 			// Default
-			$elem = $form->createElement('text', $field->data);
+			$elem = $form->createElement('text', $tableField->data);
 
 		}
 
-		$elem->setLabel($field->label);
-		$elem->setDescription($field->definition);
-		$elem->setValue($field->value);
+		$elem->setLabel($tableField->label);
+		$elem->setDescription($tableField->definition);
+		$elem->setValue($tableField->value);
 
 		if ($isKey) {
 			$elem->disabled = 'disabled';
@@ -163,24 +165,26 @@ class DataEditionController extends AbstractEforestController {
 		//
 		// The key elements as labels
 		//
-		foreach ($data->primaryKeys as $primaryKey) {
-
-			$elem = $this->getFormElement($form, $primaryKey, true);
+		foreach ($data->primaryKeys as $tablefield) {
 
 			// Hardcoded value : We don't display the submission id (it's a technical element)
-			if ($primaryKey->data != "SUBMISSION_ID") {
+			if ($tablefield->data != "SUBMISSION_ID") {
+				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
+				$elem = $this->getFormElement($form, $tablefield, $formField, true);
 				$form->addElement($elem);
-			} // L'ajouter aussi en tant que hidden ???
+			}
 
 		}
 
 		//
 		// The key elements as labels
 		//
-		foreach ($data->fields as $field) {
+		foreach ($data->fields as $tablefield) {
 
-			if ($field->data != "LINE_NUMBER") {
-				$elem = $this->getFormElement($form, $field, false);
+			// Hardcoded value : We don't edit the line number (it's a technical element)
+			if ($tablefield->data != "LINE_NUMBER") {
+				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
+				$elem = $this->getFormElement($form, $tablefield, $formField, false);
 				$form->addElement($elem);
 			}
 
@@ -250,17 +254,27 @@ class DataEditionController extends AbstractEforestController {
 		// CLE2
 		// ...
 
+		// Test 1 : Plot data
+		//		$datasetId = $websiteSession->datasetID;
+		//		$format = "PLOT_DATA";
+		//		$provider_id = "1";
+		//		$plot_code = "01575-14060-4-0T";
+		//		$cycle = "5";
+
+		// Test 2 : Species data
 		$datasetId = $websiteSession->datasetID;
-		$format = "PLOT_DATA";
+		$format = "SPECIES_DATA";
 		$provider_id = "1";
 		$plot_code = "01575-14060-4-0T";
 		$cycle = "5";
-
+		$species_code = "035.001.001";
+		
 		$keyMap = array();
 		$keyMap["FORMAT"] = $format;
 		$keyMap["PROVIDER_ID"] = $provider_id;
 		$keyMap["PLOT_CODE"] = $plot_code;
 		$keyMap["CYCLE"] = $cycle;
+		$keyMap["SPECIES_CODE"] = $species_code;
 
 		// Create an empty data object with the info in session
 		$data = new DataObject();
@@ -300,6 +314,7 @@ class DataEditionController extends AbstractEforestController {
 		// If the objet is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
+		$ancestor = $this->genericModel->getAncestor($data);
 
 		// Get the childs of the data objet from the database (to generate links)
 
@@ -309,6 +324,7 @@ class DataEditionController extends AbstractEforestController {
 
 		// Generate dynamically the corresponding form
 		$this->view->form = $this->_getEditDataForm($data);
+		$this->view->tableFormat = $tableFormat;
 
 		$this->render('edit-data');
 	}
