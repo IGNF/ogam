@@ -19,9 +19,10 @@ class DataObject {
 	var $datasetId;
 
 	/**
-	 * The logical name of the datatable
+	 * The descriptor of the table.
+	 * TableFormat
 	 */
-	var $format;
+	var $tableFormat;
 
 	/**
 	 * The elements of the primary key.
@@ -40,16 +41,16 @@ class DataObject {
 	 *
 	 * @param TableField a value
 	 */
-	public function addPrimaryKey($value) {
-		$this->primaryKeys[] = $value;
+	public function addPrimaryKey($field) {
+		$this->primaryKeys[] = $field;
 	}
 
 	/**
-	 * Add a value element.
+	 * Add a field element.
 	 *
 	 * @param TableField a field
 	 */
-	public function addValue($field) {
+	public function addField($field) {
 		$this->fields[] = $field;
 	}
 

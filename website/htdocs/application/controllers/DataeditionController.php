@@ -103,7 +103,7 @@ class DataEditionController extends AbstractEforestController {
 	 * @param Boolean $isKey is the field a primary key ?
 	 */
 	private function getFormElement($form, $field, $isKey = false) {
-		
+
 		// TODO : Tester sur le form_field type
 
 		if ($field->type == "STRING") {
@@ -264,14 +264,16 @@ class DataEditionController extends AbstractEforestController {
 
 		// Create an empty data object with the info in session
 		$data = new DataObject();
-		$data->format = $format;
 		$data->datasetId = $datasetId;
 
 		// Get the info about the format
-		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $data->format);
+		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $format);
+
+		// Store it in the data object
+		$data->tableFormat = $tableFormat;
 
 		// Get all the description of the Table Fields corresponding to the format
-		$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->format);
+		$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->tableFormat->format);
 
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
@@ -291,9 +293,9 @@ class DataEditionController extends AbstractEforestController {
 		}
 
 		// Complete the data object with the values from the database.
-		$data = $this->genericModel->getData($tableFormat, $data);
+		$data = $this->genericModel->getData($data);
 
-		Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
+		// Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
 
 		// If the objet is not existing then we are in create mode instead of edit mode
 
@@ -331,6 +333,10 @@ class DataEditionController extends AbstractEforestController {
 			// TODO : Manage the case of the LINE_NUMBER
 			$field->value = $this->_getParam($field->data);
 		}
+
+		// Zend_Registry::get("logger")->info('$newdata : '.print_r($data, true));
+
+		$this->genericModel->updateData($data);
 
 		// Forward the user to the next step
 		$this->_redirector->gotoUrl('/dataedition');
