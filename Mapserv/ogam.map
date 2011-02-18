@@ -128,44 +128,6 @@ LAYER
 END
 
 
-#
-# Forest / Non Forest Layer 
-#
-LAYER  
-	NAME forestmap
-	TYPE RASTER
-	STATUS ON 
-	TILEINDEX "fmap.shp"
-	TILEITEM "Location"
-	CLASS
-	    EXPRESSION "0"  # No Data
-    		STYLE
-      			COLOR 255 255 255
-      		END
-    	END
-	CLASS
-		NAME 'Forest'
-		EXPRESSION "1" #forest
-    		STYLE
-      			COLOR 60 104 35
-      		END
-    	END
-	CLASS
-		NAME 'Non-Forest'
-		EXPRESSION "2" #non-forest
-    		STYLE
-      			COLOR 255 255 255
-      		END
-    	END
-	CLASS
-		EXPRESSION "3" #cloud
-    		STYLE
-      			COLOR 255 255 255
-      		END
-    	END
-END
-
-
 
 #
 # Vector layer for plot locations
