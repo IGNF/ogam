@@ -1,4 +1,4 @@
-<Context path="/EforestInterpolationService">
+<Context path="/OGAMInterpolationService">
 
 	<Resource name="jdbc/website" auth="Container" type="javax.sql.DataSource"
 		maxActive="20" maxIdle="10" maxWait="10000" username="eforest"
