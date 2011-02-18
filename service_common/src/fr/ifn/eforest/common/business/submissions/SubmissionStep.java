@@ -1,4 +1,4 @@
-package fr.ifn.eforest.integration.business.submissions;
+package fr.ifn.eforest.common.business.submissions;
 
 /**
  * List the data submission steps.

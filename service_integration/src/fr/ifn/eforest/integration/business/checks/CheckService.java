@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
-import fr.ifn.eforest.integration.business.submissions.SubmissionStep;
+import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
+import fr.ifn.eforest.common.business.submissions.SubmissionStep;
 import fr.ifn.eforest.common.database.metadata.CheckData;
 import fr.ifn.eforest.common.database.metadata.ChecksDAO;
 import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;

@@ -12,7 +12,7 @@ import fr.ifn.eforest.common.servlet.AbstractServlet;
 import fr.ifn.eforest.common.business.ThreadLock;
 import fr.ifn.eforest.integration.business.checks.CheckService;
 import fr.ifn.eforest.integration.business.checks.CheckServiceThread;
-import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
+import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
 
 /**
  * Check Servlet.

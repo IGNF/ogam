@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.integration.business.submissions.SubmissionStep;
+import fr.ifn.eforest.common.business.submissions.SubmissionStep;
 
 /**
  * Data Access Object used to access the application parameters.

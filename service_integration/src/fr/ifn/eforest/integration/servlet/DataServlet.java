@@ -15,7 +15,7 @@ import org.apache.commons.fileupload.FileItem;
 
 import fr.ifn.eforest.common.servlet.AbstractUploadServlet;
 import fr.ifn.eforest.common.business.ThreadLock;
-import fr.ifn.eforest.integration.business.submissions.SubmissionStatus;
+import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.integration.business.submissions.datasubmission.DataService;
 import fr.ifn.eforest.integration.business.submissions.datasubmission.DataServiceThread;
 
