@@ -32,8 +32,8 @@ class Model_BoundingBox extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 
 		if (empty($codeCountry)) {
-            $configuration = Zend_Registry::get("configuration");
-            $codeCountry = $configuration->defaultCodeCountry;
+            $userSession = new Zend_Session_Namespace('user');
+            $codeCountry = $userSession->user->countryCode;
 		}
 
 		$req = " SELECT (bb_xmin + bb_xmax) / 2 as x_center, (bb_ymin + bb_ymax) / 2 as y_center, zoom_level
