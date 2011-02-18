@@ -112,11 +112,6 @@ class AbstractAnalysisController extends AbstractEforestController {
 			}
 			$from = substr($from, 0, -5);
 
-			// Check is the table is column-oriented
-			if ($tableTreeData->isColumnOriented == '1') {
-				$from .= " AND ".$tableTreeData->getLogicalName().".variable_name = '".$tableTreeData->fieldName."'";
-			}
-
 			$from .= ") ";
 		}
 
@@ -127,18 +122,7 @@ class AbstractAnalysisController extends AbstractEforestController {
 
 			$formfield = $this->metadataModel->getTableToFormMapping($tableField);
 
-			if ($tableField->sourceTable->isColumnOriented == '1') {
-				// For complementary values, stored in column_oriented tables
-				if ($formfield->type == "NUMERIC") {
-					$columnName = "float_value";
-				} else if ($formfield->type == "INTEGER") {
-					$columnName = "int_value";
-				} else {
-					$columnName = "text_value";
-				}
-			} else {
-				$columnName = $tableField->columnName;
-			}
+			$columnName = $tableField->columnName;
 
 			if ($formfield->inputType == "SELECT") {
 				$optionsList = "";

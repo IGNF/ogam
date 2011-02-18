@@ -12,11 +12,6 @@ require_once 'metadata/Format.php';
 class TableFormat extends Format {
 
 	/**
-	 * Indicate if the table is "column-oriented" (one line for each value).
-	 */
-	var $isColumnOriented;
-
-	/**
 	 * The real name of the table
 	 */
 	var $tableName;

@@ -491,7 +491,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 					}
 					$i++;
 				}
-				
+
 				// Store the metadata in session
 				$websiteSession->metadata = $metadata;
 				$websiteSession->traductions = $traductions;
@@ -702,13 +702,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// Add the joined tables
 		foreach ($tables as $tableFormat => $tableTreeData) {
 
-			// Join the table
-			if ($tableTreeData->isColumnOriented == '1') {
-				$from .= " LEFT JOIN ";
-			} else {
-				$from .= " JOIN ";
-			}
-			$from .= $tableTreeData->tableName." ".$tableTreeData->getLogicalName()." on (";
+			$from .= " JOIN ".$tableTreeData->tableName." ".$tableTreeData->getLogicalName()." on (";
 
 			// Add the foreign key
 			$keys = explode(',', $tableTreeData->keys);
@@ -730,11 +724,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			if ($role->isEuropeLevel != '1') {
 				$countryCode = $userSession->user->countryCode;
 				$from .= " AND ".$tableTreeData->getLogicalName().".country_code = '".trim($countryCode)."'";
-			}
-
-			// Check is the table is column-oriented
-			if ($tableTreeData->isColumnOriented == '1') {
-				$from .= " AND ".$tableTreeData->getLogicalName().".variable_name = '".$tableTreeData->fieldName."'";
 			}
 
 			$from .= ") ";
@@ -861,18 +850,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 			$formfield = $this->metadataModel->getTableToFormMapping($tableField);
 
-			if ($tableField->sourceTable->isColumnOriented == '1') {
-				// For complementary values, stored in column_oriented tables
-				if ($formfield->type == "NUMERIC") {
-					$columnName = "float_value";
-				} else if ($formfield->type == "INTEGER") {
-					$columnName = "int_value";
-				} else {
-					$columnName = "text_value";
-				}
-			} else {
-				$columnName = $tableField->columnName;
-			}
+			$columnName = $tableField->columnName;
 
 			if ($formfield->inputType == "DATE") {
 				$select .= "to_char(".$tableField->sourceTable->getLogicalName().".".$columnName.", 'YYYY/MM/DD')";
@@ -903,12 +881,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			$leafTable = $tableTreeData->getLogicalName();
 
 			// Join the table
-			if ($tableTreeData->isColumnOriented == '1') {
-				$from .= " LEFT JOIN ";
-			} else {
-				$from .= " JOIN ";
-			}
-			$from .= $tableTreeData->tableName." ".$tableTreeData->getLogicalName()." on (";
+			$from .= " JOIN ".$tableTreeData->tableName." ".$tableTreeData->getLogicalName()." on (";
 
 			// Add the foreign keys
 			$keys = explode(',', $tableTreeData->keys);
@@ -934,11 +907,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$sort .= $tableTreeData->getLogicalName().".".trim($identifier);
 			}
 
-			// Check is the table is column-oriented
-			if ($tableTreeData->isColumnOriented == '1') {
-				$from .= " AND ".$tableTreeData->getLogicalName().".variable_name = '".$tableTreeData->fieldName."'";
-			}
-
 			$from .= ") ";
 		}
 
@@ -950,18 +918,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			/* @var $tableField TableField */
 			$formfield = $this->metadataModel->getTableToFormMapping($tableField);
 
-			if ($tableField->sourceTable->isColumnOriented == '1') {
-				// For complementary values, stored in column_oriented tables
-				if ($formfield->type == "NUMERIC") {
-					$columnName = "float_value";
-				} else if ($formfield->type == "INTEGER") {
-					$columnName = "int_value";
-				} else {
-					$columnName = "text_value";
-				}
-			} else {
-				$columnName = $tableField->columnName;
-			}
+			$columnName = $tableField->columnName;
 
 			if ($formfield->inputType == "SELECT") {
 				$optionsList = "";
