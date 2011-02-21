@@ -247,7 +247,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$db = $this->getAdapter();
 
-		$this->logger->debug('getTableFormat : '.$schema.'_'.$format);
+		$this->logger->debug('getTableFormat : '.$schema.' '.$format);
 
 		// Get the fields specified by the format
 		$req = "SELECT * ";

@@ -20,6 +20,8 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 
+		$this->metadataModel = new Model_Metadata();
+
 	}
 
 	/**
@@ -146,6 +148,68 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 		$select = $db->prepare($sql);
 		$select->execute();
+
+	}
+
+	/**
+	 * Get the information about the ancestors of a line of data.
+	 * The key elements in the parent tables must have an existing value in the child.
+	 *
+	 * @param DataObject $data the data object we're looking at.
+	 * @return List[DataObject] The lines of data in the parent tables.
+	 */
+	public function getAncestors($data) {
+		$db = $this->getAdapter();
+
+		$ancestors = array();
+
+		/* @var $data DataObject */
+		$tableFormat = $data->tableFormat;
+		/* @var $tableFormat TableFormat */
+
+		Zend_Registry::get("logger")->info('getAncestors');
+
+		// Get the parent of the current table
+		$sql = "SELECT *";
+		$sql .= " FROM TABLE_TREE ";
+		$sql .= " WHERE SCHEMA_CODE = '".$tableFormat->schemaCode."' AND child_table = '".$tableFormat->format."'";
+
+		Zend_Registry::get("logger")->info('getAncestors : '.$sql);
+
+		$select = $db->prepare($sql);
+		$select->execute();
+		$row = $select->fetch();
+
+		$parentTable = $row['parent_table'];
+		$joinKeys = explode(',', $row['join_key']);
+
+		// Check if we are not the root table
+		if ($parentTable != "*") {
+
+			// Get more info about the table format
+			$parentFormat = $this->metadataModel->getTableFormat('RAW_DATA', $parentTable);
+
+			// Build an empty parent object (with the key info)
+			$parent = new DataObject();
+			$parent->datasetId = $data->datasetId;
+			$parent->tableFormat = $parentFormat;
+			foreach ($joinKeys as $key) {
+
+				$keyField = $data->getPrimaryKeyField($key);
+
+				$parent->addPrimaryKeyField($keyField);
+			}
+
+			// Get the line of data from the parent
+			$parentData = $this->getData($parent);
+
+			$ancestors[] = $parentData;
+
+			// Recurse
+			$ancestors = array_merge($ancestors, $this->getAncestors($parentData));
+
+		}
+		return $ancestors;
 
 	}
 

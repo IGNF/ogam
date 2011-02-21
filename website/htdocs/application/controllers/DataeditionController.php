@@ -245,55 +245,57 @@ class DataEditionController extends AbstractEforestController {
 	public function showEditDataAction() {
 		$this->logger->debug('showEditDataAction');
 
-		// Store it in session
+		// Get back the dataset identifier
 		$websiteSession = new Zend_Session_Namespace('website');
-
-		// Paramètres d'entrée :
-		// DATASET_ID
-		// FORMAT : Le nom de la table à éditer
-		// CLE1
-		// CLE2
-		// ...
-
-		// Test 1 : Plot data
-		//		$datasetId = $websiteSession->datasetID;
-		//		$format = "PLOT_DATA";
-		//		$provider_id = "1";
-		//		$plot_code = "01575-14060-4-0T";
-		//		$cycle = "5";
-
-		// Test 2 : Species data
-		//		$datasetId = $websiteSession->datasetID;
-		//		$format = "SPECIES_DATA";
-		//		$provider_id = "1";
-		//		$plot_code = "01575-14060-4-0T";
-		//		$cycle = "5";
-		//		$species_code = "035.001.001";
-
-		// Test 3 : Tree data (no dataset filtering)
 		$datasetId = $websiteSession->datasetID;
-		$format = "TREE_DATA";
-		$provider_id = "1";
-		$plot_code = "21573-F1000-6-6T";
-		$cycle = "5";
-		$tree_id = "42668";
 
-		$this->logger->debug('$datasetId is null: '.($datasetId == null));
-
+		// Declare our array of business keys
 		$keyMap = array();
-		$keyMap["FORMAT"] = $format;
-		$keyMap["PROVIDER_ID"] = $provider_id;
-		$keyMap["PLOT_CODE"] = $plot_code;
-		$keyMap["CYCLE"] = $cycle;
-		$keyMap["TREE_ID"] = $tree_id;
-		//$keyMap["SPECIES_CODE"] = $species_code;
+
+		// Get the parameters from the URL
+		$request = $this->getRequest();
+		$params = $request->getUserParams();
+
+		if (sizeof($params) <= 3) { // default size = controller + action + module
+
+			// Paramètres d'entrée :
+			// DATASET_ID
+			// FORMAT : Le nom de la table à éditer
+			// CLE1
+			// CLE2
+			// ...
+
+			// Test 1 : Plot data
+			//		$keyMap["FORMAT"] = "PLOT_DATA";
+			//		$keyMap["PROVIDER_ID"] = "1";
+			//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
+			//		$keyMap["CYCLE"] = "5";
+
+			// Test 2 : Species data
+			//		$keyMap["FORMAT"] = "SPECIES_DATA";
+			//		$keyMap["PROVIDER_ID"] = "1";
+			//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
+			//		$keyMap["CYCLE"] = "5";
+			//		$keyMap["SPECIES_CODE"] = "035.001.001";
+
+			// Test 3 : Tree data (no dataset filtering)
+			$keyMap["FORMAT"] = "TREE_DATA";
+			$keyMap["PROVIDER_ID"] = "1";
+			$keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
+			$keyMap["CYCLE"] = "5";
+			$keyMap["TREE_ID"] = "42668";
+		} else {
+			$keyMap = $params;
+		}
+
+		Zend_Registry::get("logger")->info('$$keyMap : '.print_r($keyMap, true));
 
 		// Create an empty data object with the info in session
 		$data = new DataObject();
 		$data->datasetId = $datasetId;
 
 		// Get the info about the format
-		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $format);
+		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $keyMap["FORMAT"]);
 
 		// Store it in the data object
 		$data->tableFormat = $tableFormat;
@@ -304,9 +306,9 @@ class DataEditionController extends AbstractEforestController {
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
 			if (in_array($tableField->data, $tableFormat->primaryKeys)) {
-				$data->primaryKeys[] = $tableField;
+				$data->addPrimaryKeyField($tableField);
 			} else {
-				$data->fields[] = $tableField;
+				$data->addField($tableField);
 			}
 		}
 
@@ -326,7 +328,7 @@ class DataEditionController extends AbstractEforestController {
 		// If the objet is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
-		// TODO : $ancestor = $this->genericModel->getAncestor($data);
+		$ancestors = $this->genericModel->getAncestors($data);
 
 		// Get the childs of the data objet from the database (to generate links)
 
@@ -337,6 +339,7 @@ class DataEditionController extends AbstractEforestController {
 		// Generate dynamically the corresponding form
 		$this->view->form = $this->_getEditDataForm($data);
 		$this->view->tableFormat = $tableFormat;
+		$this->view->ancestors = $ancestors;
 
 		$this->render('edit-data');
 	}

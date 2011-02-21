@@ -12,7 +12,7 @@
  * @package classes
  */
 class DataObject {
-	
+
 	/**
 	 * The identifier of the dataset.
 	 */
@@ -39,19 +39,29 @@ class DataObject {
 	/**
 	 * Add a key element.
 	 *
-	 * @param TableField a value
+	 * @param TableField $field a field
 	 */
-	public function addPrimaryKey($field) {
-		$this->primaryKeys[] = $field;
+	public function addPrimaryKeyField($field) {
+		$this->primaryKeys[$field->data] = $field;
+	}
+
+	/**
+	 * Get a table field from the primary key.
+	 *
+	 * @param String $key a data
+	 * @return TableField the table field
+	 */
+	public function getPrimaryKeyField($key) {
+		return $this->primaryKeys[trim($key)];
 	}
 
 	/**
 	 * Add a field element.
 	 *
-	 * @param TableField a field
+	 * @param TableField $field a field
 	 */
 	public function addField($field) {
-		$this->fields[] = $field;
+		$this->fields[$field->data] = $field;
 	}
 
 }

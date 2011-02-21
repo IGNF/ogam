@@ -10,16 +10,34 @@
    Data edition module
 </h1>
 
-<div class="select-dataset-form">
 
 <!-- Rappel des infos sur les tables parentes -->
 <!-- Lien pour l'édition des tables parents -->
+<fieldset>
+<legend>Parents summary</legend>
+<?php
+$ancestors = array_reverse($this->ancestors);
+foreach ($ancestors as $ancestor) {
+	$tableFormat = $ancestor->tableFormat;
+	// Build the URL to link to the parent items
+	$urlArray = array('controller' => 'dataedition', 'action' => 'show-edit-data');
+	$urlArray['FORMAT'] = $tableFormat->format;
+	foreach ($ancestor->primaryKeys as $tableField) {
+		$urlArray[$tableField->data] = $tableField->value;
+	}
+	echo '<a href="'.$this->url($urlArray, null, true).'">Edit '.$tableFormat->format.'</a><br>';
+}
+
+?>
+</fieldset>
+
+<div class="select-dataset-form">
 
 <!-- Affichage du formulaire d'édition -->
 <!--  Les élements faisant partie de la clé sont grisés -->
 <!--  Les autres valeurs sont éditables -->
 <fieldset>
-<legend><?= $this->tableFormat->format;?></legend>
+<legend><?= $this->tableFormat->format; ?></legend>
 <?= $this->form ?>
 </fieldset>
 <!-- Affichage les tables enfant (uniquement les valeurs de la clé) -->
