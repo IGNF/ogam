@@ -142,7 +142,7 @@ LAYER
     	GML_FEATUREID      "oid" 
     	GML_INCLUDE_ITEMS  "all"    
     	"gml_groups"        	"display"
-		"gml_display_group" 	"country_code,plot_code" 	 	
+		"gml_display_group" 	"provider_id,plot_code" 	 	
   	END
   	DUMP TRUE 
     
@@ -150,7 +150,7 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT the_geom, plot_code, oid FROM result_location
+            SELECT the_geom, provider_id, plot_code, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POINT'
               AND session_id = '%SESSION_ID%'
         ) as foo USING UNIQUE oid USING srid=3035
@@ -210,46 +210,6 @@ LAYER
 END 
 
 #
-# Vector layer for all locations for one country
-#
-LAYER
-    NAME "all_locations_country"
-    TRANSPARENCY 80
-    TYPE POINT
-    STATUS ON
-    
-    METADATA
-    	WFS_TITLE		   "All Plots"
-    	GML_FEATUREID      "oid" 
-    	GML_INCLUDE_ITEMS  "all"      	
-  	END
-  	DUMP TRUE 
-    
-    CONNECTIONTYPE postgis
-    PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
-    DATA "the_geom FROM (
-            SELECT transform(the_geom, 3035) as the_geom, plot_code as oid  
-            FROM location
-            WHERE country_code = '%COUNTRY_CODE%'
-        ) as foo USING srid=3035
-    "
-    
-    SYMBOLSCALEDENOM 3000000
-    CLASS
-      NAME 'Plot location'
-      STYLE
-      	SIZE 3
-      	MINSIZE 1
-		MAXSIZE 5
-        COLOR 150 150 150
-        OUTLINECOLOR 150 150 150
-        SYMBOL "circle"
-      END
-    END
-END 
-
-#
 # Vector layer for all locations for all countries
 #
 LAYER
@@ -269,48 +229,8 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT the_geom, plot_code as oid  
+            SELECT the_geom, provider_id, plot_code as oid  
             FROM harmonized_location
-        ) as foo USING srid=3035
-    "
-    
-    SYMBOLSCALEDENOM 3000000
-    CLASS
-      NAME 'Plot location'
-      STYLE
-      	SIZE 3
-      	MINSIZE 1
-		MAXSIZE 5
-        COLOR 150 150 150
-        OUTLINECOLOR 150 150 150
-        SYMBOL "circle"
-      END
-    END
-END 
-
-#
-# Vector layer for all locations for one country
-#
-LAYER
-    NAME "all_harmonized_locations_country"
-    TRANSPARENCY 80
-    TYPE POINT
-    STATUS ON
-    
-    METADATA
-    	WFS_TITLE		   "All Plots"
-    	GML_FEATUREID      "oid" 
-    	GML_INCLUDE_ITEMS  "all"      	
-  	END
-  	DUMP TRUE 
-    
-    CONNECTIONTYPE postgis
-    PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
-    DATA "the_geom FROM (
-            SELECT the_geom, plot_code as oid  
-            FROM harmonized_location
-            WHERE country_code = '%COUNTRY_CODE%'
         ) as foo USING srid=3035
     "
     
