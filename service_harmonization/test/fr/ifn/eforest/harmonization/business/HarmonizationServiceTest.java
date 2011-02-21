@@ -39,7 +39,7 @@ public class HarmonizationServiceTest extends AbstractEFDACTest {
 		// Parameters
 		String countryCode = "66";
 
-		String requestId = "WP3_REQUEST";
+		String requestId = "REQUEST";
 
 		Integer processId = null;
 
@@ -66,9 +66,9 @@ public class HarmonizationServiceTest extends AbstractEFDACTest {
 			logger.debug("");
 
 			// Remove the inserted data
-			harmonizedDataDAO.deleteHarmonizedData("harmonized_species_data", countryCode, requestId);
-			harmonizedDataDAO.deleteHarmonizedData("harmonized_plot_data", countryCode, requestId);
-			harmonizedDataDAO.deleteHarmonizedData("harmonized_location", countryCode, requestId);
+			harmonizedDataDAO.deleteHarmonizedData("harmonized_species_data", countryCode);
+			harmonizedDataDAO.deleteHarmonizedData("harmonized_plot_data", countryCode);
+			harmonizedDataDAO.deleteHarmonizedData("harmonized_location", countryCode);
 
 			// Delete the harmonization log
 			if (processId != null) {

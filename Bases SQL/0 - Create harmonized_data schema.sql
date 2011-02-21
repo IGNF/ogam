@@ -44,19 +44,17 @@ alter table HARMONIZATION_PROCESS_SUBMISSIONS
 /* Table : HARMONIZED_LOCATION                                  */
 /*==============================================================*/
 create table HARMONIZED_LOCATION (
-DATASET_ID    		 VARCHAR(36)          not null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 LAT                  FLOAT8               null,
 LONG                 FLOAT8               null,
 COMMENT              VARCHAR(255)         null,
-constraint PK_HARMONIZED_LOCATION primary key (DATASET_ID, PROVIDER_ID, PLOT_CODE)
+constraint PK_HARMONIZED_LOCATION primary key (PROVIDER_ID, PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
 SELECT AddGeometryColumn('harmonized_data','harmonized_location','the_geom',3035,'POINT',2);
 
-COMMENT ON COLUMN HARMONIZED_LOCATION.DATASET_ID IS 'The identifier of the dataset';
 COMMENT ON COLUMN HARMONIZED_LOCATION.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZED_LOCATION.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN HARMONIZED_LOCATION.LAT IS 'The latitude (in decimal degrees)';
@@ -92,19 +90,17 @@ CREATE TRIGGER geom_trigger
 /* Table : HARMONIZED_PLOT_DATA                                 */
 /*==============================================================*/
 create table HARMONIZED_PLOT_DATA (
-DATASET_ID           VARCHAR(36)          not null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 INV_DATE             DATE                 null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
 COMMENT              VARCHAR(1000)         null,
-constraint PK_HARMONIZED_PLOT_DATA primary key (DATASET_ID, PROVIDER_ID, PLOT_CODE, CYCLE),
-constraint FK_HARMONIZED_PLOT_DATA_ASSOCIATE_LOCATION foreign key (DATASET_ID, PROVIDER_ID, PLOT_CODE) references HARMONIZED_LOCATION (DATASET_ID, PROVIDER_ID, PLOT_CODE)
+constraint PK_HARMONIZED_PLOT_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE),
+constraint FK_HARMONIZED_PLOT_DATA_ASSOCIATE_LOCATION foreign key (PROVIDER_ID, PLOT_CODE) references HARMONIZED_LOCATION (PROVIDER_ID, PLOT_CODE)
 );
    
       
-COMMENT ON COLUMN HARMONIZED_PLOT_DATA.DATASET_ID IS 'The identifier of the dataset';
 COMMENT ON COLUMN HARMONIZED_PLOT_DATA.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZED_PLOT_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN HARMONIZED_PLOT_DATA.CYCLE IS 'The cycle of inventory';
@@ -118,18 +114,16 @@ COMMENT ON COLUMN HARMONIZED_PLOT_DATA.COMMENT IS 'A comment about the plot';
 /* Table : HARMONIZED_SPECIES_DATA                              */
 /*==============================================================*/
 create table HARMONIZED_SPECIES_DATA (
-DATASET_ID        	 VARCHAR(36)          not null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 SPECIES_CODE         VARCHAR(36)          not null,
 BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
-constraint PK_HARMONIZED_SPECIES_DATA primary key (DATASET_ID, PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
-constraint FK_HARMONIZED_SPECIES_ASSOCIATE_PLOT_DAT foreign key (DATASET_ID, PROVIDER_ID, PLOT_CODE, CYCLE) references HARMONIZED_PLOT_DATA (DATASET_ID, PROVIDER_ID, PLOT_CODE, CYCLE)
+constraint PK_HARMONIZED_SPECIES_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
+constraint FK_HARMONIZED_SPECIES_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references HARMONIZED_PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE)
 );
 
-COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.DATASET_ID IS 'The identifier of the dataset';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.CYCLE IS 'The cycle of inventory';

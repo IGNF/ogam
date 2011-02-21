@@ -266,7 +266,7 @@ public class GenericMapper {
 				}
 			}
 			if (!found) {
-				// If not found, we add the and all its ancestors
+				// If not found, we add the table and all its ancestors
 				ancestorsIter = ancestors.iterator();
 				while (ancestorsIter.hasNext()) {
 					TableTreeData ancestor = ancestorsIter.next();

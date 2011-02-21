@@ -1075,9 +1075,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$from .= " JOIN submission ON (submission.submission_id = ".$firstJoinedTable.".submission_id) ";
 				$where .= " AND submission.dataset_id = '".$datasetId."' ";
 			}
-		} else {
-			// Otherwise it should be in the root table
-			$where .= " AND ".$firstJoinedTable.".dataset_id = '".$datasetId."' ";
 		}
 
 		// Add some hard-coded, needed fields

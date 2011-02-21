@@ -130,7 +130,6 @@ public class HarmonizationService extends AbstractService {
 			Set<TableFormatData> rawTables = metadataDAO.getDatasetTables(datasetId, Schemas.RAW_DATA);
 
 			// Get the harmonized tables corresponding to the raw_data tables
-			// "Variable" tables should be eliminated at this step by the mapping
 			Iterator<TableFormatData> destTablesITer = rawTables.iterator();
 			while (destTablesITer.hasNext()) {
 				TableFormatData rawTable = destTablesITer.next();
@@ -159,7 +158,7 @@ public class HarmonizationService extends AbstractService {
 				if (thread != null) {
 					thread.updateInfo("Removing " + tableName + " data", 0, 0);
 				}
-				harmonizedDataDAO.deleteHarmonizedData(tableName, providerId, datasetId);
+				harmonizedDataDAO.deleteHarmonizedData(tableName, providerId);
 			}
 
 			// For each destination table (starting from the root in the hierarchy to the leaf tables)
@@ -180,13 +179,6 @@ public class HarmonizationService extends AbstractService {
 					if (field.getFormat().equals(destTableFormat)) {
 						destFields.add(field);
 					}
-				}
-				// Add the REQUEST_ID field, which is mandatory
-				TableFieldData requestIDField = metadataDAO.getTableField(destTableFormat, Data.DATASET_ID);
-				if (requestIDField != null) {
-					destFields.add(requestIDField);
-				} else {
-					throw new Exception("The REQUEST_ID is not described in the " + destTableFormat + " table metadata");
 				}
 
 				// Prepare some static criteria values

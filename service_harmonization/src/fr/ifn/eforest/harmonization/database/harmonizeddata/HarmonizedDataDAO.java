@@ -42,10 +42,8 @@ public class HarmonizedDataDAO {
 	 *            the name of the table
 	 * @param providerId
 	 *            the identifier of the country
-	 * @param datasetId
-	 *            the identifier of the dataset
 	 */
-	public void deleteHarmonizedData(String tableName, String providerId, String datasetId) throws Exception {
+	public void deleteHarmonizedData(String tableName, String providerId) throws Exception {
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -54,14 +52,13 @@ public class HarmonizedDataDAO {
 			con = getConnection();
 
 			// Build the SQL INSERT
-			String statement = "DELETE FROM " + tableName + " WHERE provider_id  = ? AND dataset_id = ?";
+			String statement = "DELETE FROM " + tableName + " WHERE provider_id  = ?";
 
 			// Prepare the statement
 			ps = con.prepareStatement(statement);
 
 			// Set the values
 			ps.setString(1, providerId);
-			ps.setString(2, datasetId);
 
 			// Execute the query
 			logger.trace(statement);
