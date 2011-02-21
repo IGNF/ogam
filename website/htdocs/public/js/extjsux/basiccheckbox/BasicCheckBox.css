@@ -1,0 +1,76 @@
+.x-sm-form-check-innerwrap
+{
+    float: left;
+}
+
+.x-sm-form-check.checkbox_on
+{
+    background-image: url(imgs/checkbox_on.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.checkbox_off
+{
+    background-image: url(imgs/checkbox_off.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.checkbox_on_dled
+{
+    background-image: url(imgs/checkbox_on_dled.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.checkbox_off_dled
+{
+    background-image: url(imgs/checkbox_off_dled.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_blue
+{
+    background-image: url(imgs/flag_blue.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_green
+{
+    background-image: url(imgs/flag_green.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_orange
+{
+    background-image: url(imgs/flag_orange.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_pink
+{
+    background-image: url(imgs/flag_pink.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_purple
+{
+    background-image: url(imgs/flag_purple.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_red
+{
+    background-image: url(imgs/flag_red.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_yellow
+{
+    background-image: url(imgs/flag_yellow.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_grey
+{
+    background-image: url(imgs/flag_grey.png);
+    background-repeat: no-repeat;
+}

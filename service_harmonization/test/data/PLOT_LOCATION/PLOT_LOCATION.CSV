@@ -1,0 +1,8 @@
+// PLOT_CODE; CLUSTER_CODE; LATITUDE; LONGITUDE; IS_PLOT_COORDINATES_DEGRADED; COMMENT
+1234;"Cluster_test";""""+45.40.31";"+03.45.40";1;Test
+1235;"Cluster_test";"+45.41.32";"+03.45.40";1;Test
+1236;"Cluster_test";"+45.42.33";"+03.45.40";1;Test
+1237;"Cluster_test";"+45.43.34";"+03.45.40";1;Test
+1238;"Cluster_test";"+45.40.31";"+03.46.41";1;Test
+1239;"Cluster_test";"+45.40.31";"+03.47.42";1;Test
+1240;"Cluster_test";"+45.40.31";"+03.48.43";1;Test
