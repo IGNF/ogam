@@ -374,6 +374,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->logger->debug('datasetId : '.$datasetId, $this->schema);
 		$this->logger->debug('requestName : '.$requestName, $this->schema);
 
+		// If request name is filled then we are coming from the predefined request screen
 		if (!empty($requestName)) {
 			$forms = $this->_ajaxgetpredefinedrequest($requestName);
 		} else {
@@ -1065,15 +1066,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$optionsList = substr($optionsList, 0, -4);
 
 				$where .= " AND (".$optionsList.")";
-			}
-		}
-
-		// If needed we check on the data submission type
-		if ($this->schema == 'RAW_DATA') {
-			// For raw data, the dataset identifier is linked to the submission
-			if (!empty($datasetId) && $firstJoinedTable != "") {
-				$from .= " JOIN submission ON (submission.submission_id = ".$firstJoinedTable.".submission_id) ";
-				$where .= " AND submission.dataset_id = '".$datasetId."' ";
 			}
 		}
 

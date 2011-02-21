@@ -14,7 +14,7 @@ DELETE FROM predefined_request;
 INSERT INTO predefined_request_group(group_name, label, definition, position) VALUES ('SPECIES', 'Map of distribution by species', 'Map of distribution by species', 1);
 
 -- Création d'une requête prédéfinie
-INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('SPECIES', 'RAW_DATA', 'REQUEST', 'Map of distribution by species', 'Distribution of a given specie in forest plots', now());
+INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('SPECIES', 'RAW_DATA', 'SPECIES', 'Map of distribution by species', 'Distribution of a given specie in forest plots', now());
 
 
 -- Configuration de la requête prédéfinie

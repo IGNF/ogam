@@ -6,10 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.naming.Context;
@@ -62,8 +60,7 @@ public class MetadataDAO {
 	/**
 	 * Get the fields of a table format.
 	 */
-	private static final String GET_TABLE_FIELDS_STMT = "SELECT table_field.data as fieldname, table_name, column_name, table_format.format, unit.type "
-			+ //
+	private static final String GET_TABLE_FIELDS_STMT = "SELECT table_field.data as fieldname, table_name, column_name, table_format.format, unit.type " + //
 			" FROM table_format " + //
 			" LEFT JOIN table_field on (table_field.format = table_format.format) " + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
@@ -74,8 +71,7 @@ public class MetadataDAO {
 	/**
 	 * Get the description of one field of a table format.
 	 */
-	private static final String GET_TABLE_FIELD_STMT = "SELECT table_field.data as fieldname, table_name, column_name, table_format.format, unit.type "
-			+ //
+	private static final String GET_TABLE_FIELD_STMT = "SELECT table_field.data as fieldname, table_name, column_name, table_format.format, unit.type " + //
 			" FROM table_format " + //
 			" LEFT JOIN table_field on (table_field.format = table_format.format) " + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
@@ -155,16 +151,15 @@ public class MetadataDAO {
 	/**
 	 * Get the tables used by a given dataset.
 	 */
-	private static final String GET_DATASET_TABLES_STMT = "SELECT DISTINCT table_format.format, table_name, table_format.schema_code " + //
-			" FROM dataset_fields " + //
-			" LEFT JOIN table_format using (format) " + //
-			" WHERE dataset_id = ? " + //
-			" AND table_format.schema_code = ? ";
+	private static final String GET_DATASET_TABLES_STMT = "SELECT DISTINCT dst_format as format " + //
+			" FROM dataset_files " + //
+			" LEFT JOIN field_mapping on (dataset_files.format = field_mapping.src_format and mapping_type = 'FILE') " + //
+			" WHERE dataset_id = ? ";
 
 	/**
-	 * Get the expected formats for a jrc request.
+	 * Get the expected formats for a dataset.
 	 */
-	private static final String GET_REQUEST_FORMATS_STMT = "SELECT file_format.format, file_type " + //
+	private static final String GET_DATASET_FORMATS_STMT = "SELECT file_format.format, file_type " + //
 			"FROM dataset_files " + //
 			"LEFT JOIN file_format USING (format) " + //
 			"WHERE dataset_id = ? " + //
@@ -888,9 +883,9 @@ public class MetadataDAO {
 
 				con = getConnection();
 
-				ps = con.prepareStatement(GET_REQUEST_FORMATS_STMT);
+				ps = con.prepareStatement(GET_DATASET_FORMATS_STMT);
 				ps.setString(1, requestId);
-				logger.trace(GET_REQUEST_FORMATS_STMT);
+				logger.trace(GET_DATASET_FORMATS_STMT);
 				rs = ps.executeQuery();
 
 				while (rs.next()) {
@@ -1234,35 +1229,26 @@ public class MetadataDAO {
 	/**
 	 * Get the raw_data tables used by a dataset.
 	 * 
-	 * @param requestId
+	 * @param datasetId
 	 *            the identifier of the dataset
-	 * @param schemaCode
-	 *            the name of the schema (RAW_DATA or HARMONIZED_DATA)
-	 * @return the list of table descriptors
+	 * @return the list of table logical names
 	 */
-	public Set<TableFormatData> getDatasetTables(String requestId, String schemaCode) throws Exception {
-		Set<TableFormatData> result = null;
+	public List<String> getDatasetRawTables(String datasetId) throws Exception {
+		List<String> result = new ArrayList<String>();
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 
-			result = new HashSet<TableFormatData>();
-
 			con = getConnection();
 
 			ps = con.prepareStatement(GET_DATASET_TABLES_STMT);
-			ps.setString(1, requestId);
-			ps.setString(2, schemaCode);
+			ps.setString(1, datasetId);
 			logger.trace(GET_DATASET_TABLES_STMT);
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
-				TableFormatData tableformat = new TableFormatData();
-				tableformat.setFormat(rs.getString("format"));
-				tableformat.setTableName(rs.getString("table_name"));
-				tableformat.setSchemaCode(rs.getString("schema_code"));
-				result.add(tableformat);
+				result.add(rs.getString("format"));
 			}
 
 		} finally {

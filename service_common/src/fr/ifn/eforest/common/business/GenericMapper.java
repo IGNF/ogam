@@ -256,13 +256,7 @@ public class GenericMapper {
 				if (index != -1) {
 					found = true;
 					// We insert the table just before its ancestor
-					List<String> beforeFormats = sortedTablesList.subList(0, index);
-					List<String> afterFormats = sortedTablesList.subList(index, sortedTablesList.size());
-					sortedTablesList = new LinkedList<String>();
-					sortedTablesList.addAll(beforeFormats);
-					sortedTablesList.add(table.getFormat());
-					sortedTablesList.addAll(afterFormats);
-
+					sortedTablesList.add(index, table.getFormat());
 				}
 			}
 			if (!found) {
@@ -276,6 +270,44 @@ public class GenericMapper {
 					}
 				}
 			}
+		}
+
+		return sortedTablesList;
+
+	}
+
+	/**
+	 * Sort the tables from the leaf to the root.
+	 * 
+	 * @param schema
+	 *            the schema in which we are working
+	 * @param tables
+	 *            the list of tables we want to sort
+	 * @return The list of tables sorted from the leaf to the root
+	 */
+	public LinkedList<String> getSortedTables(String schema, List<TableFormatData> tables) throws Exception {
+
+		LinkedList<String> sortedTablesList = new LinkedList<String>();
+		Iterator<TableFormatData> tablesIter = tables.iterator();
+		while (tablesIter.hasNext()) {
+			TableFormatData table = tablesIter.next();
+			String tableFormat = table.getFormat();
+
+			// Check if the table is already listed
+			if (!sortedTablesList.contains(tableFormat)) {
+
+				// Get the list of descriptor of the table
+				TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(tableFormat, schema);
+
+				// If the parent table is listed, we insert the table just before
+				if (sortedTablesList.contains(tableDescriptor.getParentTable())) {
+					sortedTablesList.add(sortedTablesList.indexOf(tableDescriptor.getParentTable()), tableFormat);
+				} else {
+					// If not found, we add the table at the end of the list
+					sortedTablesList.add(tableFormat);
+				}
+			}
+
 		}
 
 		return sortedTablesList;

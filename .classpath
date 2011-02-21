@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="service_interpolation/classes" path="service_interpolation/src"/>
+	<classpathentry kind="src" path="service_common/test"/>
 	<classpathentry kind="src" output="service_harmonization/classes" path="service_harmonization/test"/>
 	<classpathentry kind="src" output="service_harmonization/classes" path="service_harmonization/src"/>
 	<classpathentry kind="src" output="service_calculation/classes" path="service_calculation/src"/>

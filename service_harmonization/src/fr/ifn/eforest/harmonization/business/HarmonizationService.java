@@ -126,24 +126,24 @@ public class HarmonizationService extends AbstractService {
 			List<TableFormatData> harmonizedTables = new ArrayList<TableFormatData>(); // The list of destination harmonized tables concerned by the JRC Request
 			Set<TableFieldData> harmonizedFields = new HashSet<TableFieldData>(); // The list of destination fields concerned by the JRC Request
 
-			// The list of source raw tables concerned by the JRC Request
-			Set<TableFormatData> rawTables = metadataDAO.getDatasetTables(datasetId, Schemas.RAW_DATA);
+			// The list of source raw tables concerned by the dataset
+			List<String> rawTables = metadataDAO.getDatasetRawTables(datasetId);
 
 			// Get the harmonized tables corresponding to the raw_data tables
-			Iterator<TableFormatData> destTablesITer = rawTables.iterator();
+			Iterator<String> destTablesITer = rawTables.iterator();
 			while (destTablesITer.hasNext()) {
-				TableFormatData rawTable = destTablesITer.next();
+				String rawTable = destTablesITer.next();
 
 				// Get the list of harmonized tables for each raw table
-				harmonizedTables.addAll(metadataDAO.getFormatMapping(rawTable.getFormat(), MappingTypes.HARMONIZATION_MAPPING).values());
+				harmonizedTables.addAll(metadataDAO.getFormatMapping(rawTable, MappingTypes.HARMONIZATION_MAPPING).values());
 
 				// Get the list of harmonized fields for each table
-				harmonizedFields.addAll(metadataDAO.getFieldMapping(rawTable.getFormat(), MappingTypes.HARMONIZATION_MAPPING).values());
+				harmonizedFields.addAll(metadataDAO.getFieldMapping(rawTable, MappingTypes.HARMONIZATION_MAPPING).values());
 
 			}
 
-			// Get the harmonized tables with their ancestors sorted in the right order
-			LinkedList<String> harmonizedTablesFormatSortedList = genericMapper.getSortedAncestors(Schemas.HARMONIZED_DATA, harmonizedTables);
+			// Sorted the tables in the right order
+			LinkedList<String> harmonizedTablesFormatSortedList = genericMapper.getSortedTables(Schemas.HARMONIZED_DATA, harmonizedTables);
 			logger.debug("harmonizedTablesFormatSortedList : " + harmonizedTablesFormatSortedList);
 
 			//

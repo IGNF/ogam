@@ -36,12 +36,12 @@ public class HarmonizedDataDAO {
 	}
 
 	/**
-	 * Remove all data from a table for a given country and JRC Request.
+	 * Remove all data from a table for a given provider.
 	 * 
 	 * @param tableName
 	 *            the name of the table
 	 * @param providerId
-	 *            the identifier of the country
+	 *            the identifier of the provider
 	 */
 	public void deleteHarmonizedData(String tableName, String providerId) throws Exception {
 

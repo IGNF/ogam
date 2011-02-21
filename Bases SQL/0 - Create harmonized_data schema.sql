@@ -131,6 +131,41 @@ COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.SPECIES_CODE IS 'The code of the speci
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.BASAL_AREA IS 'The proportion of surface covered by this specie on the plot (in m2/ha)';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.COMMENT IS 'A comment about the species';
 
+
+
+
+
+
+
+/*==============================================================*/
+/* Table : HARMONIZED_TREE_DATA                                         */
+/*==============================================================*/
+create table HARMONIZED_TREE_DATA (
+PROVIDER_ID          VARCHAR(36)          not null,
+PLOT_CODE            VARCHAR(36)          not null,
+CYCLE	             VARCHAR(36)          not null,
+TREE_ID              VARCHAR(36)          not null,
+SPECIES_CODE		 VARCHAR(36)          null,
+DBH					 FLOAT8	              null,
+HEIGHT	 			 FLOAT8	              null,
+COMMENT              VARCHAR(255)         null,
+constraint PK_HARMONIZED_TREE_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID),
+constraint FK_HARMONIZED_TREE_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references HARMONIZED_PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
+unique (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID)   
+);
+
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.PROVIDER_ID IS 'The identifier of the data provider';
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.PLOT_CODE IS 'The identifier of the plot';
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.CYCLE IS 'The cycle of inventory';
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.TREE_ID IS 'The identifier of the tree';
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.SPECIES_CODE IS 'The code of the specie of the tree';
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.DBH IS 'The diameter at breast height (in m)';
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.HEIGHT IS 'The tree height (in m)';
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
+
+
+
+
       
 GRANT ALL ON SCHEMA harmonized_data TO ogam;
 GRANT ALL ON TABLE harmonized_data.harmonization_process_harmonization_process_id_seq TO ogam;
@@ -139,4 +174,5 @@ GRANT ALL ON TABLE harmonized_data.harmonization_process_submissions TO ogam;
 GRANT ALL ON TABLE harmonized_data.harmonized_location TO ogam;
 GRANT ALL ON TABLE harmonized_data.harmonized_plot_data TO ogam;
 GRANT ALL ON TABLE harmonized_data.harmonized_species_data TO ogam;
+GRANT ALL ON TABLE harmonized_data.harmonized_tree_data TO ogam;
 GRANT EXECUTE ON FUNCTION harmonized_data.geomfromcoordinate() TO ogam;      

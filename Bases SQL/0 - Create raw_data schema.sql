@@ -131,7 +131,7 @@ IS_FOREST_PLOT		 CHAR(1)	          null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
 constraint PK_PLOT_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE),
-constraint FK_PLOT_DATA_ASSOCIATE_LOCATION foreign key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE) references LOCATION (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE) on delete restrict on update restrict,
+constraint FK_PLOT_DATA_ASSOCIATE_LOCATION foreign key (PROVIDER_ID, PLOT_CODE) references LOCATION (PROVIDER_ID, PLOT_CODE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE)
 );
 
@@ -158,7 +158,7 @@ BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
 constraint PK_SPECIES_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
-constraint FK_SPECIES_ASSOCIATE_PLOT_DAT foreign key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE) references PLOT_DATA (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
+constraint FK_SPECIES_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE)   
 );
 
@@ -170,6 +170,44 @@ COMMENT ON COLUMN SPECIES_DATA.SPECIES_CODE IS 'The code of the specie';
 COMMENT ON COLUMN SPECIES_DATA.BASAL_AREA IS 'The proportion of surface covered by this specie on the plot (in m2/ha)';
 COMMENT ON COLUMN SPECIES_DATA.COMMENT IS 'A comment about the species';
 COMMENT ON COLUMN SPECIES_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
+
+
+
+
+/*==============================================================*/
+/* Table : TREE_DATA                                         */
+/*==============================================================*/
+create table TREE_DATA (
+SUBMISSION_ID        INT4                 not null,
+PROVIDER_ID          VARCHAR(36)          not null,
+PLOT_CODE            VARCHAR(36)          not null,
+CYCLE	             VARCHAR(36)          not null,
+TREE_ID              VARCHAR(36)          not null,
+SPECIES_CODE		 VARCHAR(36)          null,
+DBH					 FLOAT8	              null,
+HEIGHT	 			 FLOAT8	              null,
+COMMENT              VARCHAR(255)         null,
+LINE_NUMBER			 INTEGER			  null,
+constraint PK_TREE_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID),
+constraint FK_TREE_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
+unique (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID)   
+);
+
+COMMENT ON COLUMN TREE_DATA.SUBMISSION_ID IS 'The identifier of the submission';
+COMMENT ON COLUMN TREE_DATA.PROVIDER_ID IS 'The identifier of the data provider';
+COMMENT ON COLUMN TREE_DATA.PLOT_CODE IS 'The identifier of the plot';
+COMMENT ON COLUMN TREE_DATA.CYCLE IS 'The cycle of inventory';
+COMMENT ON COLUMN TREE_DATA.TREE_ID IS 'The identifier of the tree';
+COMMENT ON COLUMN TREE_DATA.SPECIES_CODE IS 'The code of the specie of the tree';
+COMMENT ON COLUMN TREE_DATA.DBH IS 'The diameter at breast height (in m)';
+COMMENT ON COLUMN TREE_DATA.HEIGHT IS 'The tree height (in m)';
+COMMENT ON COLUMN TREE_DATA.COMMENT IS 'A comment about the species';
+COMMENT ON COLUMN TREE_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
+
+
+
+
+
 
 
 /*==============================================================*/
@@ -217,6 +255,7 @@ GRANT ALL ON TABLE raw_data.check_error TO ogam;
 GRANT ALL ON TABLE raw_data."location" TO ogam;
 GRANT ALL ON TABLE raw_data.plot_data TO ogam;
 GRANT ALL ON TABLE raw_data.species_data TO ogam;
+GRANT ALL ON TABLE raw_data.tree_data TO ogam;
 GRANT ALL ON TABLE raw_data.submission TO ogam;
 GRANT ALL ON TABLE raw_data.submission_file TO ogam;
 GRANT EXECUTE ON FUNCTION raw_data.geomfromcoordinate() TO ogam;
