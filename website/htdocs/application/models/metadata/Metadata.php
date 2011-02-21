@@ -181,9 +181,10 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the list of table fields linked to a dataset.
+	 * Get the list of table fields for a given table format.
+	 * If the dataset is specified, we filter on the fields of the dataset.
 	 *
-	 * @param String $datasetID the dataset identifier
+	 * @param String $datasetID the dataset identifier (optional)
 	 * @param String $schema the schema identifier
 	 * @param String $format the format
 	 * @return Array[TableField]
@@ -200,14 +201,21 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.data) ";
 		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
 		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
-		$req .= " WHERE dataset_fields.dataset_id = ? ";
+		$req .= " WHERE (1=1)";
+		if ($datasetID != null) {
+			$req .= " AND dataset_fields.dataset_id = ? ";
+		}
 		$req .= " AND dataset_fields.schema_code = ? ";
 		$req .= " AND table_field.format = ? ";
 
 		$this->logger->info('getTableFields : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array($datasetID, $schema, $format));
+		if ($datasetID != null) {
+			$select->execute(array($datasetID, $schema, $format));
+		} else {
+			$select->execute(array($schema, $format));
+		}
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {

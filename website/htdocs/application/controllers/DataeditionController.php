@@ -77,6 +77,7 @@ class DataEditionController extends AbstractEforestController {
 		$requestElement->setRequired(true);
 		$requests = $this->metadataModel->getDatasets(false);
 		$datasetIds = array();
+		$datasetIds[''] = 'No dataset filtering';
 		foreach ($requests as $request) {
 			$datasetIds[$request['id']] = $request['label'];
 		}
@@ -262,19 +263,30 @@ class DataEditionController extends AbstractEforestController {
 		//		$cycle = "5";
 
 		// Test 2 : Species data
+		//		$datasetId = $websiteSession->datasetID;
+		//		$format = "SPECIES_DATA";
+		//		$provider_id = "1";
+		//		$plot_code = "01575-14060-4-0T";
+		//		$cycle = "5";
+		//		$species_code = "035.001.001";
+
+		// Test 3 : Tree data (no dataset filtering)
 		$datasetId = $websiteSession->datasetID;
-		$format = "SPECIES_DATA";
+		$format = "TREE_DATA";
 		$provider_id = "1";
-		$plot_code = "01575-14060-4-0T";
+		$plot_code = "21573-F1000-6-6T";
 		$cycle = "5";
-		$species_code = "035.001.001";
-		
+		$tree_id = "42668";
+
+		$this->logger->debug('$datasetId is null: '.($datasetId == null));
+
 		$keyMap = array();
 		$keyMap["FORMAT"] = $format;
 		$keyMap["PROVIDER_ID"] = $provider_id;
 		$keyMap["PLOT_CODE"] = $plot_code;
 		$keyMap["CYCLE"] = $cycle;
-		$keyMap["SPECIES_CODE"] = $species_code;
+		$keyMap["TREE_ID"] = $tree_id;
+		//$keyMap["SPECIES_CODE"] = $species_code;
 
 		// Create an empty data object with the info in session
 		$data = new DataObject();
@@ -314,7 +326,7 @@ class DataEditionController extends AbstractEforestController {
 		// If the objet is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
-		$ancestor = $this->genericModel->getAncestor($data);
+		// TODO : $ancestor = $this->genericModel->getAncestor($data);
 
 		// Get the childs of the data objet from the database (to generate links)
 
@@ -328,7 +340,6 @@ class DataEditionController extends AbstractEforestController {
 
 		$this->render('edit-data');
 	}
-
 	/**
 	 * Sauve the edited data in database.
 	 *
