@@ -8,9 +8,10 @@ SET SEARCH_PATH = mapping, public;
 /*==============================================================*/
 create table RESULT_LOCATION (
 SESSION_ID           VARCHAR(50)           not null,
+PROVIDER_ID          VARCHAR(36)           not null,
 PLOT_CODE            VARCHAR(36)          not null,
 _CREATIONDT          DATE                 null DEFAULT current_timestamp,
-constraint PK_RESULT_LOCATION primary key (SESSION_ID, PLOT_CODE)
+constraint PK_RESULT_LOCATION primary key (SESSION_ID, PROVIDER_ID, PLOT_CODE)
 ) 
 WITH OIDS; -- Important : Needed by mapserv
 
@@ -26,6 +27,7 @@ CREATE INDEX RESULT_LOCATION_SESSION_IDX ON mapping.RESULT_LOCATION USING btree 
             
 
 COMMENT ON COLUMN RESULT_LOCATION.SESSION_ID IS 'Identifier of the user session';
+COMMENT ON COLUMN RESULT_LOCATION.PROVIDER_ID IS 'The provider id';
 COMMENT ON COLUMN RESULT_LOCATION.PLOT_CODE IS 'The plot code';
 COMMENT ON COLUMN RESULT_LOCATION._CREATIONDT IS 'Creation date (used to know when to purge the base)';
         
