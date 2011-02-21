@@ -308,7 +308,10 @@ class DataEditionController extends AbstractEforestController {
 			if (in_array($tableField->data, $tableFormat->primaryKeys)) {
 				$data->addPrimaryKeyField($tableField);
 			} else {
-				$data->addField($tableField);
+				if (!$tableField->isCalculated) {
+					// Fields that are calculated by a trigger should not be edited
+					$data->addField($tableField);
+				}
 			}
 		}
 
