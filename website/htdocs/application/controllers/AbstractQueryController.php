@@ -150,7 +150,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$sort = $this->_getParam('sort');
 
 		// Get the predefined values for the forms
-		$predefinedRequestList = $this->predefinedRequestModel->getPredefinedRequestList($dir, $sort);
+		$predefinedRequestList = $this->predefinedRequestModel->getPredefinedRequestList($this->schema, $dir, $sort);
 
 		// Generate the JSON string
 		$total = count($predefinedRequestList);
