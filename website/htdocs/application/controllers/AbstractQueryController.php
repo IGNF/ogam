@@ -632,7 +632,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 		$this->logger->debug('__generateSQLDetailRequest leafTable : '.$leafTable);
 
-		$select = "SELECT ";
+		$select = "SELECT DISTINCT ";
 		$from = " FROM ";
 		$where = " WHERE (1 = 1) ";
 
@@ -767,7 +767,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// Store the criterias in session for a future use
 		$websiteSession->criterias = $criterias;
 
-		$select = "SELECT ";
+		$select = "SELECT DISTINCT "; // distinct for the case where we have some criterias but no result columns selected o the last table
 		$from = " FROM ";
 		$where = "WHERE (1 = 1) ";
 
