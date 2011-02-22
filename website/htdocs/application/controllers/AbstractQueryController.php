@@ -170,6 +170,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**
@@ -224,6 +225,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**
@@ -308,6 +310,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 
 	}
 
@@ -391,6 +394,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**
@@ -415,6 +419,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**
@@ -528,6 +533,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 
 	}
 
@@ -616,6 +622,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**
@@ -1121,6 +1128,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 		$this->_helper->layout()->disableLayout();
 		$this->render('grid-parameters');
+		$this->getResponse()->setHeader('Content-type', 'application/javascript');
 	}
 
 	/**
@@ -1301,6 +1309,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 
 	}
 
@@ -1418,6 +1427,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**
@@ -1621,5 +1631,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 }
