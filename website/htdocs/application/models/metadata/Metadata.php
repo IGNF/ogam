@@ -195,45 +195,58 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->debug('getTableFields : '.$datasetID.'_'.$schema.'_'.$format);
 
-		// Get the fields specified by the format
-		$req = "SELECT table_field.*, data.label, data.unit, unit.type, data.definition ";
-		$req .= " FROM table_field ";
-		$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.data) ";
-		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
-		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
-		$req .= " WHERE (1=1)";
-		if ($datasetID != null) {
-			$req .= " AND dataset_fields.dataset_id = ? ";
+		$key = 'getTableFields_'.$datasetID.'_'.$schema.'_'.$format;
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
 		}
-		$req .= " AND dataset_fields.schema_code = ? ";
-		$req .= " AND table_field.format = ? ";
 
-		$this->logger->info('getTableFields : '.$req);
+		if (empty($cachedResult)) {
 
-		$select = $db->prepare($req);
-		if ($datasetID != null) {
-			$select->execute(array($datasetID, $schema, $format));
+			// Get the fields specified by the format
+			$req = "SELECT table_field.*, data.label, data.unit, unit.type, data.definition ";
+			$req .= " FROM table_field ";
+			$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.data) ";
+			$req .= " LEFT JOIN data on (table_field.data = data.data) ";
+			$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
+			$req .= " WHERE (1=1)";
+			if ($datasetID != null) {
+				$req .= " AND dataset_fields.dataset_id = ? ";
+			}
+			$req .= " AND dataset_fields.schema_code = ? ";
+			$req .= " AND table_field.format = ? ";
+
+			$this->logger->info('getTableFields : '.$req);
+
+			$select = $db->prepare($req);
+			if ($datasetID != null) {
+				$select->execute(array($datasetID, $schema, $format));
+			} else {
+				$select->execute(array($schema, $format));
+			}
+
+			$result = array();
+			foreach ($select->fetchAll() as $row) {
+				$tableField = new TableField();
+				$tableField->data = $row['data'];
+				$tableField->format = $row['format'];
+				$tableField->columnName = $row['column_name'];
+				$tableField->isCalculated = $row['is_calculated'];
+				$tableField->isAggregatable = $row['is_aggregatable'];
+				$tableField->label = $row['label'];
+				$tableField->unit = $row['unit'];
+				$tableField->type = $row['type'];
+				$tableField->definition = $row['definition'];
+
+				$result[] = $tableField;
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
 		} else {
-			$select->execute(array($schema, $format));
+			return $cachedResult;
 		}
-
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$tableField = new TableField();
-			$tableField->data = $row['data'];
-			$tableField->format = $row['format'];
-			$tableField->columnName = $row['column_name'];
-			$tableField->isCalculated = $row['is_calculated'];
-			$tableField->isAggregatable = $row['is_aggregatable'];
-			$tableField->label = $row['label'];
-			$tableField->unit = $row['unit'];
-			$tableField->type = $row['type'];
-			$tableField->definition = $row['definition'];
-
-			$result[] = $tableField;
-		}
-
-		return $result;
 	}
 
 	/**
@@ -249,26 +262,39 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->debug('getTableFormat : '.$schema.' '.$format);
 
-		// Get the fields specified by the format
-		$req = "SELECT * ";
-		$req .= " FROM table_format ";
-		$req .= " WHERE schema_code = ? ";
-		$req .= " AND format = ? ";
+		$key = 'getTableFormat'.$schema.'_'.$format;
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
 
-		$this->logger->info('getTableFormat : '.$req);
+		if (empty($cachedResult)) {
 
-		$select = $db->prepare($req);
-		$select->execute(array($schema, $format));
+			// Get the fields specified by the format
+			$req = "SELECT * ";
+			$req .= " FROM table_format ";
+			$req .= " WHERE schema_code = ? ";
+			$req .= " AND format = ? ";
 
-		$row = $select->fetch();
+			$this->logger->info('getTableFormat : '.$req);
 
-		$tableFormat = new TableFormat();
-		$tableFormat->format = $format;
-		$tableFormat->schemaCode = $schema;
-		$tableFormat->tableName = $row['table_name'];
-		$tableFormat->primaryKeys = explode(",", $row['primary_key']);
+			$select = $db->prepare($req);
+			$select->execute(array($schema, $format));
 
-		return $tableFormat;
+			$row = $select->fetch();
+
+			$tableFormat = new TableFormat();
+			$tableFormat->format = $format;
+			$tableFormat->schemaCode = $schema;
+			$tableFormat->tableName = $row['table_name'];
+			$tableFormat->primaryKeys = explode(",", $row['primary_key']);
+
+			if ($this->useCache) {
+				$this->cache->save($tableFormat, $key);
+			}
+			return $tableFormat;
+		} else {
+			return $cachedResult;
+		}
 	}
 
 	/**
@@ -280,8 +306,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getForms($datasetId, $schemaCode) {
 
+		$key = 'getForms_'.$datasetId."_".$schemaCode;
 		if ($this->useCache) {
-			$cachedResult = $this->cache->load('forms_'.$datasetId."_".$schemaCode);
+			$cachedResult = $this->cache->load($key);
 		}
 
 		if (empty($cachedResult)) {
@@ -323,7 +350,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 				$result[] = $formFormat;
 			}
 			if ($this->useCache) {
-				$this->cache->save($result, 'forms_'.$datasetId.'_'.$schemaCode);
+				$this->cache->save($result, $key);
 			}
 			return $result;
 		} else {
@@ -344,8 +371,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getFormFields : '.$dataset.' '.$formFormat.' '.$schema);
 
-		$key = $mode.'_'.$dataset.'_'.$formFormat.'_'.$schema;
-
+		$key = 'getFormFields_'.$mode.'_'.$dataset.'_'.$formFormat.'_'.$schema;
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -433,8 +459,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getFormField($formFormat, $formFieldName) {
 
+		$key = 'formfield_'.$formFormat.'_'.$formFieldName;
 		if ($this->useCache) {
-			$cachedResult = $this->cache->load('formfield_'.$formFormat.'_'.$formFieldName);
+			$cachedResult = $this->cache->load($key);
 		}
 		if (empty($cachedResult)) {
 
@@ -470,7 +497,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$this->logger->info('formField->format : '.$formField->format);
 
 			if ($this->useCache) {
-				$this->cache->save($formField, 'formfield_'.$formFormat.'_'.$formFieldName);
+				$this->cache->save($formField, $key);
 			}
 			return $formField;
 		} else {
@@ -558,8 +585,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getFormToTableMapping : '.$formField->format." ".$formField->data." ".$schema);
 
+		$key = 'formtotablemapping_'.$formField->format.'_'.$formField->data.'_'.$schema;
 		if ($this->useCache) {
-			$cachedResult = $this->cache->load('formtotablemapping_'.$formField->format.'_'.$formField->data.'_'.$schema);
+			$cachedResult = $this->cache->load($key);
 		}
 		if (empty($cachedResult)) {
 
@@ -593,7 +621,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$tableField->definition = $row['definition'];
 
 			if ($this->useCache) {
-				$this->cache->save($tableField, 'formtotablemapping_'.$formField->format.'_'.$formField->data.'_'.$schema);
+				$this->cache->save($tableField, $key);
 			}
 			return $tableField;
 		} else {
@@ -611,8 +639,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getTableToFormMapping : '.$tableField->format." ".$tableField->data);
 
+		$key = 'getTableToFormMapping'.$tableField->format.'_'.$tableField->data;
 		if ($this->useCache) {
-			$cachedResult = $this->cache->load('tabletoformmapping_'.$tableField->format.'_'.$tableField->data);
+			$cachedResult = $this->cache->load($key);
 		}
 		if (empty($cachedResult)) {
 
@@ -647,7 +676,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$formField->decimals = $row['decimals'];
 
 			if ($this->useCache) {
-				$this->cache->save($formField, 'tabletoformmapping_'.$tableField->format.'_'.$tableField->data);
+				$this->cache->save($formField, $key);
 			}
 			return $formField;
 		} else {
@@ -668,8 +697,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getTablesTree : tableFormat:'.$tableFormat.' fieldName:'.$fieldName.' schemaCode:'.$schemaCode);
 
+		$key = 'getTablesTree_'.$tableFormat.'_'.$fieldName.'_'.$schemaCode;
 		if ($this->useCache) {
-			$cachedResult = $this->cache->load('table_tree_'.$tableFormat.'_'.$fieldName.'_'.$schemaCode);
+			$cachedResult = $this->cache->load($key);
 		}
 		if (empty($cachedResult)) {
 
@@ -710,7 +740,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			}
 
 			if ($this->useCache) {
-				$this->cache->save($result, 'table_tree_'.$tableFormat.'_'.$fieldName.'_'.$schemaCode);
+				$this->cache->save($result, $key);
 			}
 			return $result;
 		} else {
