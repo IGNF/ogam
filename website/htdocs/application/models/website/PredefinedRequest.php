@@ -143,10 +143,9 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 			$request->resultsList[$field->format.'__'.$field->data] = $field;
 		}
 
-		
 		// Get the request result columns
 		$request->criteriaList = $this->getPredefinedRequestCriteria($requestName);
-		
+
 		return $request;
 
 	}
@@ -154,11 +153,12 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the list of predefined request (only the description, not the detailed fields and criteria).
 	 *
+	 * @param String $schema the database schema
 	 * @param String $dir the direction of sorting (ASC or DESC)
 	 * @param String $sort the sort column
 	 * @return Array[PredefinedRequest] the list of requests
 	 */
-	public function getPredefinedRequestList($dir, $sort) {
+	public function getPredefinedRequestList($schema, $dir, $sort) {
 		$db = $this->getAdapter();
 
 		// Prevent the sql injections
@@ -187,6 +187,7 @@ class Model_PredefinedRequest extends Zend_Db_Table_Abstract {
 		$req .= " JOIN predefined_request_group_asso prga using (request_name)";
 		$req .= " JOIN predefined_request_group prg using (group_name)";
 		$req .= " LEFT JOIN dataset on (pr.dataset_id = dataset.dataset_id)";
+		$req .= " WHERE pr.schema_code = '".$schema."'";
 		$req .= " ORDER BY ".$sort." ".$dir;
 
 		$this->logger->info('getPredefinedRequestList : '.$req);
