@@ -287,9 +287,7 @@ class DataEditionController extends AbstractEforestController {
 		} else {
 			$keyMap = $params;
 		}
-
-		Zend_Registry::get("logger")->info('$$keyMap : '.print_r($keyMap, true));
-
+		
 		// Create an empty data object with the info in session
 		$data = new DataObject();
 		$data->datasetId = $datasetId;
