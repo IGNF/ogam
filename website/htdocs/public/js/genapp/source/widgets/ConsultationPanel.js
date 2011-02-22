@@ -562,7 +562,7 @@ listeners: {
         this.gridDS = new Ext.data.Store({
             // store configs
             autoDestroy: true,
-            url: Genapp.ajax_query_url + 'ajaxgetgridrows',
+            url: Genapp.ajax_query_url + 'ajaxgetresultrows',
             remoteSort: true,
             // reader configs
             reader:this.gridDSReader
@@ -1421,7 +1421,7 @@ listeners: {
         );
 
         this.formsPanel.findParentByType('form').getForm().submit({
-            url: Genapp.ajax_query_url + 'ajaxgetgridcolumns',
+            url: Genapp.ajax_query_url + 'ajaxgetresultcolumns',
             timeout : 480000, 
             success : function(form, action)
             {

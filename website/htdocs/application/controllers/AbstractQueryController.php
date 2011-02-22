@@ -422,11 +422,12 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 *
 	 * @return JSON
 	 */
-	public function ajaxgetgridcolumnsAction() {
+	public function ajaxgetresultcolumnsAction() {
+		$this->logger->debug('ajaxgetresultcolumns');
+		
 		$configuration = Zend_Registry::get("configuration");
 		ini_set("max_execution_time", $configuration->max_execution_time);
 
-		$this->logger->debug('ajaxgetgridcolumns');
 		$json = "";
 
 		// Check the validity of the POST
@@ -535,8 +536,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 *
 	 * @return JSON
 	 */
-	public function ajaxgetgridrowsAction() {
-		$this->logger->debug('ajaxgetgridrows');
+	public function ajaxgetresultrowsAction() {
+		$this->logger->debug('ajaxgetresultrows');
 		$json = "";
 
 		try {
