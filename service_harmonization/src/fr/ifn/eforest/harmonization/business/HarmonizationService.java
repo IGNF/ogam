@@ -17,6 +17,8 @@ import fr.ifn.eforest.common.business.GenericMapper;
 import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.business.Schemas;
 import fr.ifn.eforest.common.business.UnitTypes;
+import fr.ifn.eforest.common.business.processing.ProcessingService;
+import fr.ifn.eforest.common.business.processing.ProcessingStep;
 import fr.ifn.eforest.common.database.GenericDAO;
 import fr.ifn.eforest.common.database.GenericData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
@@ -48,6 +50,9 @@ public class HarmonizationService extends AbstractService {
 
 	// The generic mapper
 	private GenericMapper genericMapper = new GenericMapper();
+
+	// The post-processing service.
+	private ProcessingService processingService = new ProcessingService();
 
 	// Maximum number of lines of data in memory
 	private static final int MAX_LINES = 5000;
@@ -230,7 +235,8 @@ public class HarmonizationService extends AbstractService {
 
 			}
 
-			// TODO : Launch post-processing
+			// Launch post-processing
+			processingService.processData(ProcessingStep.HARMONIZATION, providerId, this.thread);
 
 			// Log the process in the log table
 			harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);

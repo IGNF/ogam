@@ -51,7 +51,7 @@ public class HarmonizationServiceThread extends AbstractThread {
 			Date startDate = new Date();
 			logger.debug("Start of the harmonization process " + startDate + ".");
 
-			// SQL Conformity checks
+			// Harmonize data
 			HarmonizationService harmonizationService = new HarmonizationService(this);
 			harmonizationService.harmonizeData(datasetId, providerId);
 
