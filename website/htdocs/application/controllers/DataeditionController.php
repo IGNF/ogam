@@ -370,10 +370,7 @@ class DataEditionController extends AbstractEforestController {
 		$data = $websiteSession->data;
 
 		// Update the data descriptor with the values submitted
-		foreach ($data->fields as $field) {
-			/* @var $value TableField */
-
-			// TODO : Manage the case of the LINE_NUMBER
+		foreach ($data->editableFields as $field) {
 			$field->value = $this->_getParam($field->data);
 		}
 
@@ -398,15 +395,12 @@ class DataEditionController extends AbstractEforestController {
 		$datasetId = $websiteSession->datasetID;
 		$data = $websiteSession->data;
 
-		// Insert the data descriptor with the values submitted
-		foreach ($data->fields as $field) {
-			/* @var $value TableField */
+		Zend_Registry::get("logger")->info('$params : '.print_r($this->_getAllParams(), true));
 
-			// TODO : Manage the case of the LINE_NUMBER
+		// Insert the data descriptor with the values submitted
+		foreach ($data->editableFields as $field) {
 			$field->value = $this->_getParam($field->data);
 		}
-
-		Zend_Registry::get("logger")->info('$newdata : '.print_r($data, true));
 
 		$this->genericModel->insertData($data);
 
@@ -453,20 +447,22 @@ class DataEditionController extends AbstractEforestController {
 			//		$keyMap["CYCLE"] = "5";
 
 			// Test 2 : Species data
-			//		$keyMap["FORMAT"] = "SPECIES_DATA";
-			//		$keyMap["PROVIDER_ID"] = "1";
-			//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
-			//		$keyMap["CYCLE"] = "5";
-			//		$keyMap["SPECIES_CODE"] = "035.001.001";
-
-			// Test 3 : Tree data (no dataset filtering)
-			$keyMap["FORMAT"] = "TREE_DATA";
+			$keyMap["FORMAT"] = "SPECIES_DATA";
 			$keyMap["PROVIDER_ID"] = "1";
-			$keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
+			$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
 			$keyMap["CYCLE"] = "5";
+			//$keyMap["SPECIES_CODE"] = "035.001.001";
 			$keyMap["SUBMISSION_ID"] = "-1";
 			$keyMap["LINE_NUMBER"] = "-1";
-			//$keyMap["TREE_ID"] = "42668";
+
+			// Test 3 : Tree data (no dataset filtering)
+			/*
+			 $keyMap["FORMAT"] = "TREE_DATA";
+			 $keyMap["PROVIDER_ID"] = "1";
+			 $keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
+			 $keyMap["CYCLE"] = "5";
+			 $keyMap["SUBMISSION_ID"] = "-1";
+			 $keyMap["LINE_NUMBER"] = "-1";*/
 		} else {
 			$keyMap = $params;
 		}
