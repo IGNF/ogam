@@ -155,23 +155,29 @@ class DataEditionController extends AbstractEforestController {
 	 *
 	 * @param DataObject $data The descriptor of the expected data.
 	 */
-	private function _getEditDataForm($data) {
+	private function _getEditDataForm($data, $mode) {
 
 		$form = new Zend_Form();
-		$form->setAction($this->baseUrl.'/dataedition/validate-edit-data');
+		if ($mode == 'ADD') {
+			$form->setAction($this->baseUrl.'/dataedition/validate-add-data');
+		} else {
+			$form->setAction($this->baseUrl.'/dataedition/validate-edit-data');
+		}
 		$form->setMethod('post');
+		$form->setOptions(array('class' => 'editform'));
 
 		// Dynamically build the form
 
 		//
 		// The key elements as labels
 		//
-		foreach ($data->primaryKeys as $tablefield) {
+		foreach ($data->infoFields as $tablefield) {
 
 			// Hardcoded value : We don't display the submission id (it's a technical element)
 			if ($tablefield->data != "SUBMISSION_ID") {
 				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
 				$elem = $this->getFormElement($form, $tablefield, $formField, true);
+				$elem->class = 'dataedit_key';
 				$form->addElement($elem);
 			}
 
@@ -180,12 +186,13 @@ class DataEditionController extends AbstractEforestController {
 		//
 		// The key elements as labels
 		//
-		foreach ($data->fields as $tablefield) {
+		foreach ($data->editableFields as $tablefield) {
 
 			// Hardcoded value : We don't edit the line number (it's a technical element)
 			if ($tablefield->data != "LINE_NUMBER") {
 				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
 				$elem = $this->getFormElement($form, $tablefield, $formField, false);
+				$elem->class = 'dataedit_field';
 				$form->addElement($elem);
 			}
 
@@ -245,6 +252,8 @@ class DataEditionController extends AbstractEforestController {
 	public function showEditDataAction() {
 		$this->logger->debug('showEditDataAction');
 
+		$mode = 'EDIT';
+
 		// Get back the dataset identifier
 		$websiteSession = new Zend_Session_Namespace('website');
 		$datasetId = $websiteSession->datasetID;
@@ -283,7 +292,7 @@ class DataEditionController extends AbstractEforestController {
 			$keyMap["PROVIDER_ID"] = "1";
 			$keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
 			$keyMap["CYCLE"] = "5";
-			$keyMap["TREE_ID"] = "42668";
+			$keyMap["TREE_ID"] = "61618";
 		} else {
 			$keyMap = $params;
 		}
@@ -304,20 +313,21 @@ class DataEditionController extends AbstractEforestController {
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
 			if (in_array($tableField->data, $tableFormat->primaryKeys)) {
-				$data->addPrimaryKeyField($tableField);
+				// Primary keys are displayed as info fields
+				$data->addInfoField($tableField);
 			} else {
 				if (!$tableField->isCalculated) {
 					// Fields that are calculated by a trigger should not be edited
-					$data->addField($tableField);
+					$data->addEditableField($tableField);
 				}
 			}
 		}
 
 		// Complete the primary key info with the session values
-		foreach ($data->primaryKeys as $primaryKey) {
+		foreach ($data->infoFields as $infoField) {
 
-			if (!empty($keyMap[$primaryKey->data])) {
-				$primaryKey->value = $keyMap[$primaryKey->data];
+			if (!empty($keyMap[$infoField->data])) {
+				$infoField->value = $keyMap[$infoField->data];
 			}
 		}
 
@@ -338,9 +348,10 @@ class DataEditionController extends AbstractEforestController {
 		$websiteSession->data = $data;
 
 		// Generate dynamically the corresponding form
-		$this->view->form = $this->_getEditDataForm($data);
+		$this->view->form = $this->_getEditDataForm($data, $mode);
 		$this->view->tableFormat = $tableFormat;
 		$this->view->ancestors = $ancestors;
+		$this->view->mode = $mode;
 
 		$this->render('edit-data');
 	}
@@ -375,6 +386,35 @@ class DataEditionController extends AbstractEforestController {
 	}
 
 	/**
+	 * Add the edited data in database.
+	 *
+	 * @return the HTML view
+	 */
+	public function validateAddDataAction() {
+		$this->logger->debug('validateAddDataAction');
+
+		// Get back info from the session
+		$websiteSession = new Zend_Session_Namespace('website');
+		$datasetId = $websiteSession->datasetID;
+		$data = $websiteSession->data;
+
+		// Insert the data descriptor with the values submitted
+		foreach ($data->fields as $field) {
+			/* @var $value TableField */
+
+			// TODO : Manage the case of the LINE_NUMBER
+			$field->value = $this->_getParam($field->data);
+		}
+
+		Zend_Registry::get("logger")->info('$newdata : '.print_r($data, true));
+
+		$this->genericModel->insertData($data);
+
+		// Forward the user to the next step
+		$this->_redirector->gotoUrl('/dataedition');
+	}
+
+	/**
 	 * Add a new data.
 	 *
 	 * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
@@ -383,6 +423,8 @@ class DataEditionController extends AbstractEforestController {
 	 */
 	public function showAddDataAction() {
 		$this->logger->debug('showAddDataAction');
+
+		$mode = 'ADD';
 
 		// Get back the dataset identifier
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -422,6 +464,8 @@ class DataEditionController extends AbstractEforestController {
 			$keyMap["PROVIDER_ID"] = "1";
 			$keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
 			$keyMap["CYCLE"] = "5";
+			$keyMap["SUBMISSION_ID"] = "-1";
+			$keyMap["LINE_NUMBER"] = "-1";
 			//$keyMap["TREE_ID"] = "42668";
 		} else {
 			$keyMap = $params;
@@ -443,20 +487,25 @@ class DataEditionController extends AbstractEforestController {
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
 			if (in_array($tableField->data, $tableFormat->primaryKeys)) {
-				$data->addPrimaryKeyField($tableField);
+				// Primary keys are display as info when we have the value
+				if (!empty($keyMap[$tableField->data])) {
+					// Complete the primary key info with the session values
+					$tableField->value = $keyMap[$tableField->data];
+					$data->addInfoField($tableField);
+				} else {
+					// If the missing PK info is not calculated by trigger then it must be filled by the user
+					if (!$tableField->isCalculated) {
+						$this->logger->debug('adding field : '.$tableField->data.' as editable pk');
+						$data->addEditableField($tableField);
+					}
+				}
+
 			} else {
+				$this->logger->debug('is data');
 				if (!$tableField->isCalculated) {
 					// Fields that are calculated by a trigger should not be edited
-					$data->addField($tableField);
+					$data->addEditableField($tableField);
 				}
-			}
-		}
-
-		// Complete the primary key info with the session values
-		foreach ($data->primaryKeys as $primaryKey) {
-
-			if (!empty($keyMap[$primaryKey->data])) {
-				$primaryKey->value = $keyMap[$primaryKey->data];
 			}
 		}
 
@@ -477,9 +526,10 @@ class DataEditionController extends AbstractEforestController {
 		$websiteSession->data = $data;
 
 		// Generate dynamically the corresponding form
-		$this->view->form = $this->_getEditDataForm($data);
+		$this->view->form = $this->_getEditDataForm($data, $mode);
 		$this->view->tableFormat = $tableFormat;
 		$this->view->ancestors = $ancestors;
+		$this->view->mode = $mode;
 
 		$this->render('edit-data');
 	}

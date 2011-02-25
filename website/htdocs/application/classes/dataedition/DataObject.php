@@ -28,21 +28,21 @@ class DataObject {
 	 * The elements of the primary key.
 	 * Array[TableField].
 	 */
-	var $primaryKeys = array();
+	var $infoFields = array();
 
 	/**
 	 * The other values.
 	 * Array[TableField].
 	 */
-	var $fields = array();
+	var $editableFields = array();
 
 	/**
 	 * Add a key element.
 	 *
 	 * @param TableField $field a field
 	 */
-	public function addPrimaryKeyField($field) {
-		$this->primaryKeys[$field->data] = $field;
+	public function addInfoField($field) {
+		$this->infoFields[$field->data] = $field;
 	}
 
 	/**
@@ -51,8 +51,8 @@ class DataObject {
 	 * @param String $key a data
 	 * @return TableField the table field
 	 */
-	public function getPrimaryKeyField($key) {
-		return $this->primaryKeys[trim($key)];
+	public function getInfoField($key) {
+		return $this->infoFields[trim($key)];
 	}
 
 	/**
@@ -60,8 +60,8 @@ class DataObject {
 	 *
 	 * @param TableField $field a field
 	 */
-	public function addField($field) {
-		$this->fields[$field->data] = $field;
+	public function addEditableField($field) {
+		$this->editableFields[$field->data] = $field;
 	}
 
 }

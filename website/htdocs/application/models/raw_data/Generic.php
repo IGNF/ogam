@@ -63,7 +63,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$sql .= " WHERE(1 = 1)";
 
 		// Build the WHERE clause with the info from the PK.
-		foreach ($data->primaryKeys as $primaryKey) {
+		foreach ($data->infoFields as $primaryKey) {
 			/* @var $primaryKey TableField */
 
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
@@ -84,7 +84,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$row = $select->fetch();
 
 		// Fill the values with data from the table
-		foreach ($data->fields as $field) {
+		foreach ($data->editableFields as $field) {
 			/* @var $value TableField */
 			$field->value = $row[strtolower($field->columnName)];
 		}
@@ -112,7 +112,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$sql .= " SET ";
 
 		// updates of the data.
-		foreach ($data->fields as $field) {
+		foreach ($data->editableFields as $field) {
 			/* @var $field TableField */
 
 			if ($field->data != "LINE_NUMBER") { // Hardcoded value
@@ -130,7 +130,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$sql .= " WHERE(1 = 1)";
 
 		// Build the WHERE clause with the info from the PK.
-		foreach ($data->primaryKeys as $primaryKey) {
+		foreach ($data->infoFields as $primaryKey) {
 			/* @var $primaryKey TableField */
 
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
@@ -145,6 +145,61 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		}
 
 		Zend_Registry::get("logger")->info('updateData : '.$sql);
+
+		$select = $db->prepare($sql);
+		$select->execute();
+
+	}
+
+	/**
+	 * Insert a line of data from a table.
+	 *
+	 * @param DataObject $data the shell of the data object to insert.
+	 */
+	public function insertData($data) {
+		$db = $this->getAdapter();
+
+		/* @var $data DataObject */
+		$tableFormat = $data->tableFormat;
+		/* @var $tableFormat TableFormat */
+
+		Zend_Registry::get("logger")->info('insertData');
+
+		// Get the values from the data table
+		$sql = "INSERT INTO ".$tableFormat->schemaCode.".".$tableFormat->tableName;
+		$columns = "";
+		$values = "";
+
+		// updates of the data.
+		foreach ($data->infoFields as $field) {
+			if ($field->value != null) { // Primary keys that are not set should be serials ...
+				$columns .= $field->columnName.", ";
+				if ($field->type == "NUMERIC" || $field->type == "INTEGER") {
+					$values .= $field->value.", ";
+				} else {
+					$values .= "'".$field->value."', ";
+				}
+			}
+		}
+		foreach ($data->editableFields as $field) {
+			if ($field->value != null) { // Primary keys that are not set should be serials ...
+				if ($field->data != "LINE_NUMBER") {
+					$columns .= $field->columnName.", ";
+					if ($field->type == "NUMERIC" || $field->type == "INTEGER") {
+						$values .= $field->value.", ";
+					} else {
+						$values .= "'".$field->value."', ";
+					}
+				}
+			}
+		}
+		// remove last commas
+		$columns = substr($columns, 0, -2);
+		$values = substr($values, 0, -2);
+
+		$sql .= "(".$columns.") VALUES (".$values.")";
+
+		Zend_Registry::get("logger")->info('insertData : '.$sql);
 
 		$select = $db->prepare($sql);
 		$select->execute();
@@ -195,9 +250,9 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			$parent->tableFormat = $parentFormat;
 			foreach ($joinKeys as $key) {
 
-				$keyField = $data->getPrimaryKeyField($key);
+				$keyField = $data->getInfoField($key);
 
-				$parent->addPrimaryKeyField($keyField);
+				$parent->addInfoField($keyField);
 			}
 
 			// Get the line of data from the parent

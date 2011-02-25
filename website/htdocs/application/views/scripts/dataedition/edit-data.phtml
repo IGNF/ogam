@@ -7,7 +7,13 @@
 
 
 <h1>
-   Data edition module
+<?php
+if ($this->mode == 'ADD') {
+	echo 'Add '.$this->tableFormat->format;
+} else {
+	echo 'Edit '.$this->tableFormat->format;
+}
+?>
 </h1>
 
 
@@ -22,7 +28,7 @@ foreach ($ancestors as $ancestor) {
 	// Build the URL to link to the parent items
 	$urlArray = array('controller' => 'dataedition', 'action' => 'show-edit-data');
 	$urlArray['FORMAT'] = $tableFormat->format;
-	foreach ($ancestor->primaryKeys as $tableField) {
+	foreach ($ancestor->infoFields as $tableField) {
 		$urlArray[$tableField->data] = $tableField->value;
 	}
 	echo '<a href="'.$this->url($urlArray, null, true).'">Edit '.$tableFormat->format.'</a><br>';
