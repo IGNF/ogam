@@ -129,7 +129,7 @@ public class IntegrationService extends GenericMapper {
 				TableFormatData destFormat = destFormatIter.next();
 
 				// Get the list of fiels for the table
-				List<TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat());
+				List<TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat(), true);
 
 				// Store in a map
 				tableFieldsMap.put(destFormat.getFormat(), destFieldDescriptors);
