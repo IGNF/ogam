@@ -172,7 +172,17 @@ COMMENT ON COLUMN SPECIES_DATA.COMMENT IS 'A comment about the species';
 COMMENT ON COLUMN SPECIES_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 
 
-
+  
+/*==============================================================*/
+/* Sequence : TREE_ID                                           */
+/*==============================================================*/
+CREATE SEQUENCE tree_id_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+  
 
 /*==============================================================*/
 /* Table : TREE_DATA                                         */
@@ -182,7 +192,7 @@ SUBMISSION_ID        INT4                 not null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
-TREE_ID              VARCHAR(36)          not null,
+TREE_ID              INT4                 not null default nextval('tree_id_seq'),
 SPECIES_CODE		 VARCHAR(36)          null,
 DBH					 FLOAT8	              null,
 HEIGHT	 			 FLOAT8	              null,

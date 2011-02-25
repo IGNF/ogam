@@ -168,6 +168,9 @@ public class GenericDAO {
 			if (SqlStateSQL99.ERRCODE_UNIQUE_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				throw new CheckException(DUPLICATE_ROW);
 			}
+			if (SqlStateSQL99.ERRCODE_DATATYPE_MISMATCH.equalsIgnoreCase(sqle.getSQLState())) {
+				throw new CheckException(INVALID_TYPE_FIELD);				
+			}
 			if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				CheckException ce = new CheckException(INTEGRITY_CONSTRAINT);
 				String message = sqle.getMessage();

@@ -372,7 +372,7 @@ LABEL                VARCHAR(60)          null,
 DESCRIPTION          VARCHAR(500)         null,
 STATEMENT            VARCHAR(4000)        null,
 IMPORTANCE           VARCHAR(36)          null,
-_CREATIONDT          DATE                 null,
+_CREATIONDT          timestamp without time zone DEFAULT now(),
 constraint PK_CHECKS primary key (CHECK_ID)
 );
 
@@ -387,19 +387,53 @@ COMMENT ON COLUMN CHECKS._CREATIONDT IS 'The creation date';
 
 
 /*==============================================================*/
-/* Table : CHECKS_PER_COUNTRY                                   */
-/* A '*' country code means that the check is always done       */
+/* Table : CHECKS_PER_PROVIDER                                  */
+/* A '*' provider code means that the check is always done      */
 /*==============================================================*/
-create table CHECKS_PER_COUNTRY (
+create table CHECKS_PER_PROVIDER (
 CHECK_ID             INT4                 not null,
 DATASET_ID           VARCHAR(36)          not null,
-COUNTRY_CODE         VARCHAR(36)          null,
-constraint PK_CHECKS_PER_COUNTRY primary key (CHECK_ID, DATASET_ID, COUNTRY_CODE)
+PROVIDER_ID          VARCHAR(36)          null,
+constraint PK_CHECKS_PER_PROVIDER primary key (CHECK_ID, DATASET_ID, PROVIDER_ID)
 );
 
-COMMENT ON COLUMN CHECKS_PER_COUNTRY.CHECK_ID IS 'The identifier of the check';
-COMMENT ON COLUMN CHECKS_PER_COUNTRY.DATASET_ID IS 'The identifier of the dataset';
-COMMENT ON COLUMN CHECKS_PER_COUNTRY.COUNTRY_CODE IS 'The identifier of the country (* for all countries)';
+COMMENT ON COLUMN CHECKS_PER_PROVIDER.CHECK_ID IS 'The identifier of the check';
+COMMENT ON COLUMN CHECKS_PER_PROVIDER.DATASET_ID IS 'The identifier of the dataset';
+COMMENT ON COLUMN CHECKS_PER_PROVIDER.PROVIDER_ID IS 'The identifier of the provider (* for all providers)';
+
+
+
+
+
+
+/*==============================================================*/
+/* Table : PROCESS                                              */
+/*==============================================================*/
+CREATE TABLE metadata.process
+(
+  process_id character varying(50) NOT NULL, -- The name/identifier of the post-processing treatment
+  step character varying(50), -- The step of the process (INTEGRATION or HARMONIZATION)
+  label character varying(60), -- The label of the process
+  description character varying(500), -- The description the process
+  "statement" character varying(4000), -- The SQL statement corresponding to the process
+  _creationdt timestamp without time zone DEFAULT now(), -- The creation date
+  CONSTRAINT pk_process PRIMARY KEY (process_id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+COMMENT ON COLUMN metadata.process.process_id IS 'The name/identifier of the post-processing treatment';
+COMMENT ON COLUMN metadata.process.step IS 'The step of the process (INTEGRATION or HARMONIZATION)';
+COMMENT ON COLUMN metadata.process.label IS 'The label of the process';
+COMMENT ON COLUMN metadata.process.description IS 'The description the process';
+COMMENT ON COLUMN metadata.process."statement" IS 'The SQL statement corresponding to the process';
+COMMENT ON COLUMN metadata.process._creationdt IS 'The creation date';
+
+
+
+
 
 
 alter table DATA

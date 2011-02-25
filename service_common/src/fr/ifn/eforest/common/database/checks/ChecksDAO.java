@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.metadata;
+package fr.ifn.eforest.common.database.checks;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,13 +32,13 @@ public class ChecksDAO {
 	private static final String GET_DESCRIPTION_STMT = "SELECT check_id, description FROM checks";
 
 	/**
-	 * Get the checks for a country_code and a JRC Request.
+	 * Get the checks for a provider and a dataset.
 	 */
 	private static final String GET_CHECKS_STMT = "SELECT check_id, step, name, label, description, statement, importance " + //
-			"FROM checks_per_country " + //
+			"FROM checks_per_provider " + //
 			"LEFT JOIN checks USING (check_id) " + //
 			"WHERE dataset_id = ? " + //
-			"AND (country_code = ? OR country_code = '*')";
+			"AND (provider_id = ? OR provider_id = '*')";
 
 	/**
 	 * Get a connexion to the database.
@@ -109,15 +109,15 @@ public class ChecksDAO {
 	}
 
 	/**
-	 * Return the list of checks to do for a JRC request and a country.
+	 * Return the list of checks to do for a dataset and a provider.
 	 * 
 	 * @param datasetId
 	 *            the dataset identifier
-	 * @param countryCode
-	 *            the code of the country
+	 * @param providerId
+	 *            the provider identifier
 	 * @return the list of checks to do
 	 */
-	public List<CheckData> getChecks(String datasetId, String countryCode) {
+	public List<CheckData> getChecks(String datasetId, String providerId) {
 		List<CheckData> checksList = new ArrayList<CheckData>();
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -129,7 +129,7 @@ public class ChecksDAO {
 			// Insert the check error in the table
 			ps = con.prepareStatement(GET_CHECKS_STMT);
 			ps.setString(1, datasetId);
-			ps.setString(2, countryCode);
+			ps.setString(2, providerId);
 			logger.trace(GET_CHECKS_STMT);
 			rs = ps.executeQuery();
 
@@ -190,7 +190,7 @@ public class ChecksDAO {
 			con = getConnection();
 			ps = con.createStatement();
 
-			Iterator checksListIter = checksList.iterator();
+			Iterator<CheckData> checksListIter = checksList.iterator();
 			while (checksListIter.hasNext()) {
 				Date begin = new Date();
 				check = (CheckData) checksListIter.next();

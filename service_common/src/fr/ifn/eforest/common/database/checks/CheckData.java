@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.metadata;
+package fr.ifn.eforest.common.database.checks;
 
 /**
  * A Check.

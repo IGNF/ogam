@@ -287,7 +287,7 @@ class DataEditionController extends AbstractEforestController {
 		} else {
 			$keyMap = $params;
 		}
-		
+
 		// Create an empty data object with the info in session
 		$data = new DataObject();
 		$data->datasetId = $datasetId;
@@ -344,8 +344,9 @@ class DataEditionController extends AbstractEforestController {
 
 		$this->render('edit-data');
 	}
+
 	/**
-	 * Sauve the edited data in database.
+	 * Save the edited data in database.
 	 *
 	 * @return the HTML view
 	 */
@@ -371,6 +372,116 @@ class DataEditionController extends AbstractEforestController {
 
 		// Forward the user to the next step
 		$this->_redirector->gotoUrl('/dataedition');
+	}
+
+	/**
+	 * Add a new data.
+	 *
+	 * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
+	 *
+	 * @return the HTML view
+	 */
+	public function showAddDataAction() {
+		$this->logger->debug('showAddDataAction');
+
+		// Get back the dataset identifier
+		$websiteSession = new Zend_Session_Namespace('website');
+		$datasetId = $websiteSession->datasetID;
+
+		// Declare our array of business keys
+		$keyMap = array();
+
+		// Get the parameters from the URL
+		$request = $this->getRequest();
+		$params = $request->getUserParams();
+
+		if (sizeof($params) <= 3) { // default size = controller + action + module
+
+			// Paramètres d'entrée :
+			// DATASET_ID
+			// FORMAT : Le nom de la table à éditer
+			// CLE1
+			// CLE2
+			// ...
+
+			// Test 1 : Plot data
+			//		$keyMap["FORMAT"] = "PLOT_DATA";
+			//		$keyMap["PROVIDER_ID"] = "1";
+			//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
+			//		$keyMap["CYCLE"] = "5";
+
+			// Test 2 : Species data
+			//		$keyMap["FORMAT"] = "SPECIES_DATA";
+			//		$keyMap["PROVIDER_ID"] = "1";
+			//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
+			//		$keyMap["CYCLE"] = "5";
+			//		$keyMap["SPECIES_CODE"] = "035.001.001";
+
+			// Test 3 : Tree data (no dataset filtering)
+			$keyMap["FORMAT"] = "TREE_DATA";
+			$keyMap["PROVIDER_ID"] = "1";
+			$keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
+			$keyMap["CYCLE"] = "5";
+			//$keyMap["TREE_ID"] = "42668";
+		} else {
+			$keyMap = $params;
+		}
+
+		// Create an empty data object with the info in session
+		$data = new DataObject();
+		$data->datasetId = $datasetId;
+
+		// Get the info about the format
+		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $keyMap["FORMAT"]);
+
+		// Store it in the data object
+		$data->tableFormat = $tableFormat;
+
+		// Get all the description of the Table Fields corresponding to the format
+		$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->tableFormat->format);
+
+		// Separate the keys from other values
+		foreach ($tableFields as $tableField) {
+			if (in_array($tableField->data, $tableFormat->primaryKeys)) {
+				$data->addPrimaryKeyField($tableField);
+			} else {
+				if (!$tableField->isCalculated) {
+					// Fields that are calculated by a trigger should not be edited
+					$data->addField($tableField);
+				}
+			}
+		}
+
+		// Complete the primary key info with the session values
+		foreach ($data->primaryKeys as $primaryKey) {
+
+			if (!empty($keyMap[$primaryKey->data])) {
+				$primaryKey->value = $keyMap[$primaryKey->data];
+			}
+		}
+
+		// Complete the data object with the values from the database.
+		$data = $this->genericModel->getData($data);
+
+		// Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
+
+		// If the objet is not existing then we are in create mode instead of edit mode
+
+		// Get the ancestors of the data objet from the database (to generate a summary)
+		$ancestors = $this->genericModel->getAncestors($data);
+
+		// Get the childs of the data objet from the database (to generate links)
+
+		// Store the data descriptor in session
+		$websiteSession = new Zend_Session_Namespace('website');
+		$websiteSession->data = $data;
+
+		// Generate dynamically the corresponding form
+		$this->view->form = $this->_getEditDataForm($data);
+		$this->view->tableFormat = $tableFormat;
+		$this->view->ancestors = $ancestors;
+
+		$this->render('edit-data');
 	}
 
 }

@@ -3,7 +3,7 @@ package fr.ifn.eforest.common.business.checks;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.ifn.eforest.common.database.metadata.ChecksDAO;
+import fr.ifn.eforest.common.database.checks.ChecksDAO;
 
 /**
  * Exception linked to a check.

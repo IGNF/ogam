@@ -18,6 +18,8 @@ import fr.ifn.eforest.common.database.GenericDAO;
 import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
 import fr.ifn.eforest.common.database.rawdata.SubmissionData;
 import fr.ifn.eforest.integration.business.IntegrationService;
+import fr.ifn.eforest.common.business.processing.ProcessingService;
+import fr.ifn.eforest.common.business.processing.ProcessingStep;
 import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.common.business.submissions.SubmissionStep;
 
@@ -41,9 +43,14 @@ public class DataService extends AbstractService {
 	private GenericDAO genericDAO = new GenericDAO();
 
 	/**
-	 * The generic mapper.
+	 * The integration service.
 	 */
 	private IntegrationService integrationService = new IntegrationService();
+
+	/**
+	 * The post-processing service.
+	 */
+	private ProcessingService processingService = new ProcessingService();
 
 	/**
 	 * Constructor.
@@ -197,6 +204,9 @@ public class DataService extends AbstractService {
 				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, csvFile, fileFormat.getFormat(), requestParameters, this.thread);
 
 			}
+
+			// Launch post-processing
+			processingService.processData(ProcessingStep.INTEGRATION, submission.getProviderId(), this.thread);
 
 			// Update the submission status
 			if (isSubmitValid) {

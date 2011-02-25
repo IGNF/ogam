@@ -281,3 +281,44 @@ img.percentImage {
 
 .percentText {
 }
+
+
+
+/**************************************/
+/* Mise en forme des formulaires Zend */
+/**************************************/
+dl.zend dt,dd {
+	min-height: 30px;
+}
+
+dl.zend_form {
+	margin: 10px;
+}
+
+dl.zend_form dt {
+	width: 10em;
+	text-align:right;
+}
+
+dl.zend_form dt label.required {
+	font-weight: 600;
+}
+
+dl.zend_form dd {
+	position: relative;
+	left: 11em;
+	top: -2em;
+}
+
+
+dl.zend_form dd ul.errors {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+dl.zend_form dd ul.errors li {
+	margin: 0 0.15em;
+	font-size: 12px;
+	color: #CC2222;
+}
