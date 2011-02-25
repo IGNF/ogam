@@ -65,8 +65,7 @@ public class MetadataDAO {
 			" LEFT JOIN table_field on (table_field.format = table_format.format) " + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
 			" LEFT JOIN unit on (data.unit = unit.unit) " + //
-			" WHERE table_format.format = ? " + //
-			" AND is_calculated <> '1'";
+			" WHERE table_format.format = ? ";
 
 	/**
 	 * Get the description of one field of a table format.
@@ -622,9 +621,11 @@ public class MetadataDAO {
 	 * 
 	 * @param tableformat
 	 *            the logical name of the table
+	 * @param ignoreCalculated
+	 *            if true ignore the fields that are calculated by a trigged
 	 * @return the list of fields of the table
 	 */
-	public List<TableFieldData> getTableFields(String tableformat) throws Exception {
+	public List<TableFieldData> getTableFields(String tableformat, Boolean ignoreCalculated) throws Exception {
 		List<TableFieldData> result = new ArrayList<TableFieldData>();
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -633,9 +634,14 @@ public class MetadataDAO {
 
 			con = getConnection();
 
-			ps = con.prepareStatement(GET_TABLE_FIELDS_STMT);
+			String req = GET_TABLE_FIELDS_STMT;
+			if (ignoreCalculated) {
+				req += " AND is_calculated <> '1'";
+			}
+			logger.trace(req);
+
+			ps = con.prepareStatement(req);
 			ps.setString(1, tableformat);
-			logger.trace(GET_TABLE_FIELDS_STMT);
 			rs = ps.executeQuery();
 
 			while (rs.next()) {

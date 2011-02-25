@@ -138,13 +138,13 @@ COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.COMMENT IS 'A comment about the specie
 
 
 /*==============================================================*/
-/* Table : HARMONIZED_TREE_DATA                                         */
+/* Table : HARMONIZED_TREE_DATA                                 */
 /*==============================================================*/
 create table HARMONIZED_TREE_DATA (
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
-TREE_ID              VARCHAR(36)          not null,
+TREE_ID              INTEGER              not null,
 SPECIES_CODE		 VARCHAR(36)          null,
 DBH					 FLOAT8	              null,
 HEIGHT	 			 FLOAT8	              null,
