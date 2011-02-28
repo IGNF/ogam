@@ -82,7 +82,8 @@ public class MetadataDAO {
 	/**
 	 * Get the destination columns of the file to table mapping.
 	 */
-	private static final String GET_FILE_TO_TABLE_MAPPING_STMT = "SELECT table_field.*, table_name, data.label, data.unit, unit.type, data.definition " + //
+	private static final String GET_FILE_TO_TABLE_MAPPING_STMT = "SELECT table_field.*, field_mapping.src_data, table_name, data.label, data.unit, unit.type, data.definition "
+			+ //
 			" FROM field_mapping" + //
 			" LEFT JOIN table_format on (field_mapping.dst_format = table_format.format) " + //
 			" LEFT JOIN table_field on (field_mapping.dst_format = table_field.format and field_mapping.dst_data = table_field.data)" + //
@@ -102,6 +103,19 @@ public class MetadataDAO {
 			" LEFT JOIN unit on (data.unit = unit.unit) " + //
 			" WHERE field_mapping.src_format = ? " + //
 			" AND   field_mapping.mapping_type = ?";
+
+	/**
+	 * Get the destination columns of the table to table mapping (harmonization).
+	 */
+	private static final String GET_DATASET_HARMONIZED_FIELDS_STMT = "SELECT table_field.*, field_mapping.src_data, table_name, data.label, data.unit, unit.type, data.definition  "
+			+ //
+			" FROM field_mapping" + //
+			" LEFT JOIN table_format on (field_mapping.dst_format = table_format.format) " + //
+			" LEFT JOIN table_field on (field_mapping.dst_format = table_field.format and field_mapping.dst_data = table_field.data)" + //
+			" LEFT JOIN data on (table_field.data = data.data) " + //
+			" LEFT JOIN unit on (data.unit = unit.unit) " + //
+			" WHERE field_mapping.dst_format = ? " + //
+			" AND   field_mapping.mapping_type = '" + MappingTypes.HARMONIZATION_MAPPING + "'";
 
 	/**
 	 * Get the destination tables of the mapping.
@@ -152,7 +166,7 @@ public class MetadataDAO {
 	/**
 	 * Get the table physical name.
 	 */
-	private static final String GET_TABLE_FORMAT_STMT = "SELECT table_name, format, schema_code FROM table_format WHERE format = ?";
+	private static final String GET_TABLE_FORMAT_STMT = "SELECT * FROM table_format WHERE format = ?";
 
 	/**
 	 * Get the list of available datasets.
@@ -201,17 +215,6 @@ public class MetadataDAO {
 	}
 
 	/**
-	 * Return the physical name of a logical table format.
-	 * 
-	 * @param format
-	 *            the logical name of a table (ex : "LOCATION_DATA")
-	 * @return the physical name of the table (ex : "LOCATION")
-	 */
-	public String getTableName(String format) throws Exception {
-		return getTableFormat(format).getTableName();
-	}
-
-	/**
 	 * Return the table format a logical table.
 	 * 
 	 * @param format
@@ -242,6 +245,13 @@ public class MetadataDAO {
 					result.setFormat(format);
 					result.setTableName(rs.getString("table_name"));
 					result.setSchemaCode(rs.getString("schema_code"));
+					String primaryKeys = rs.getString("primary_key");
+					if (primaryKeys != null) {
+						StringTokenizer tokenizer = new StringTokenizer(primaryKeys, ",");
+						while (tokenizer.hasMoreTokens()) {
+							result.addPrimaryKey(tokenizer.nextToken());
+						}
+					}
 				}
 
 				tableNamesCache.put(format, result);
@@ -275,7 +285,7 @@ public class MetadataDAO {
 	}
 
 	/**
-	 * Return all the available datasets (JRC Requests).
+	 * Return all the available datasets.
 	 * 
 	 * @return The list of available datasets
 	 */
@@ -637,8 +647,8 @@ public class MetadataDAO {
 	 *            if true ignore the fields that are calculated by a trigged
 	 * @return the list of fields of the table
 	 */
-	public List<TableFieldData> getTableFields(String tableformat, Boolean ignoreCalculated) throws Exception {
-		List<TableFieldData> result = new ArrayList<TableFieldData>();
+	public Map<String, TableFieldData> getTableFields(String tableformat, Boolean ignoreCalculated) throws Exception {
+		Map<String, TableFieldData> result = new HashMap<String, TableFieldData>();
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -666,7 +676,7 @@ public class MetadataDAO {
 				field.setTableName(rs.getString("table_name"));
 				field.setDefinition(rs.getString("definition"));
 				field.setLabel(rs.getString("label"));
-				result.add(field);
+				result.put(field.getData(), field);
 			}
 
 		} finally {
@@ -1110,7 +1120,10 @@ public class MetadataDAO {
 				field.setTableName(rs.getString("table_name"));
 				field.setDefinition(rs.getString("definition"));
 				field.setLabel(rs.getString("label"));
-				result.put(field.getData(), field);
+
+				String sourceData = rs.getString("src_data");
+
+				result.put(sourceData, field);
 			}
 
 		} finally {
@@ -1204,6 +1217,69 @@ public class MetadataDAO {
 	}
 
 	/**
+	 * Get the destination columns of a mapping (a file).
+	 * 
+	 * @param destTable
+	 *            the logical name of the harmonized table format
+	 * @return a map where we have the list of destination table fields indexed by the logical name of the source data
+	 */
+	public Map<String, TableFieldData> getDatasetHarmonizedFields(String destTable) throws Exception {
+		Map<String, TableFieldData> result = new HashMap<String, TableFieldData>();
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+
+			con = getConnection();
+
+			ps = con.prepareStatement(GET_DATASET_HARMONIZED_FIELDS_STMT);
+			ps.setString(1, destTable);
+
+			logger.trace(GET_DATASET_HARMONIZED_FIELDS_STMT);
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				TableFieldData field = new TableFieldData();
+				field.setData(rs.getString("data"));
+				field.setFormat(rs.getString("format"));
+				field.setType(rs.getString("type"));
+				field.setUnit(rs.getString("unit"));
+				field.setColumnName(rs.getString("column_name"));
+				field.setTableName(rs.getString("table_name"));
+				field.setDefinition(rs.getString("definition"));
+				field.setLabel(rs.getString("label"));
+
+				String sourceData = rs.getString("src_data");
+				result.put(sourceData, field);
+			}
+
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * Get the descriptor of one table.
 	 * 
 	 * @param tableFormat
@@ -1229,7 +1305,6 @@ public class MetadataDAO {
 	 */
 	public List<TableTreeData> getTablesTree(String tableFormat, String schemaCode) throws Exception {
 		List<TableTreeData> result = null;
-		TableTreeData table = null;
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1254,9 +1329,13 @@ public class MetadataDAO {
 
 				if (rs.next()) {
 
-					table = new TableTreeData();
-					table.setTable(rs.getString("child_table"));
-					table.setParentTable(rs.getString("parent_table"));
+					TableTreeData table = new TableTreeData();
+					String childTable = rs.getString("child_table");
+					table.setTable(getTableFormat(childTable));
+					String parentTable = rs.getString("parent_table");
+					if (parentTable != "*") {
+						table.setParentTable(getTableFormat(parentTable));
+					}
 					String keys = rs.getString("join_key");
 					if (keys != null) {
 						StringTokenizer tokenizer = new StringTokenizer(keys, ",");
@@ -1264,12 +1343,13 @@ public class MetadataDAO {
 							table.addKey(tokenizer.nextToken());
 						}
 					}
-					result.add(table);
-				}
 
-				// Recursively call the function
-				if (table != null && !table.getParentTable().equals("*")) {
-					result.addAll(getTablesTree(table.getParentTable(), schemaCode));
+					result.add(table);
+
+					// Recursively call the function
+					if (table.getParentTable() != null && !table.getParentTable().getFormat().equals("*")) {
+						result.addAll(getTablesTree(table.getParentTable().getFormat(), schemaCode));
+					}
 				}
 
 				tableTreeCache.put(key, result);

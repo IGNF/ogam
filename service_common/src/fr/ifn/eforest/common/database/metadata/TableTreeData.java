@@ -8,16 +8,16 @@ import java.util.List;
  */
 public class TableTreeData implements Comparable<Object> {
 
-	private String table;
+	private TableFormatData table;
 
-	private String parentTable;
+	private TableFormatData parentTable;
 
 	private List<String> keys = new ArrayList<String>();
 
 	/**
 	 * @return the table
 	 */
-	public String getTable() {
+	public TableFormatData getTable() {
 		return table;
 	}
 
@@ -25,14 +25,14 @@ public class TableTreeData implements Comparable<Object> {
 	 * @param table
 	 *            the table to set
 	 */
-	public void setTable(String table) {
+	public void setTable(TableFormatData table) {
 		this.table = table;
 	}
 
 	/**
 	 * @return the parentTable
 	 */
-	public String getParentTable() {
+	public TableFormatData getParentTable() {
 		return parentTable;
 	}
 
@@ -40,7 +40,7 @@ public class TableTreeData implements Comparable<Object> {
 	 * @param parentTable
 	 *            the parentTable to set
 	 */
-	public void setParentTable(String parentTable) {
+	public void setParentTable(TableFormatData parentTable) {
 		this.parentTable = parentTable;
 	}
 

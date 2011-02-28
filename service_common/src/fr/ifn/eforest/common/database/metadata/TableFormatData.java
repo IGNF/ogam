@@ -85,7 +85,7 @@ public class TableFormatData extends FormatData {
 	 */
 	@Override
 	public String toString() {
-		return getFormat() + " - " + getTableName();
+		return getTableName();
 	}
 
 }
