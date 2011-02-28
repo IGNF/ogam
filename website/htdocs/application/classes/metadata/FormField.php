@@ -8,7 +8,7 @@ require_once 'metadata/Field.php';
 class FormField extends Field {
 
 	/**
-	 * The input type of the field (SELECT, TEXT, ...)
+	 * The input type of the field (SELECT, TEXT, ...).
 	 */
 	var $inputType;
 
@@ -23,24 +23,29 @@ class FormField extends Field {
 	var $isResult;
 
 	/**
-	 * True if the field is a default criteria
+	 * True if the field is a default criteria.
 	 */
 	var $isDefaultCriteria;
 
 	/**
-	 * True if the field is a default result
+	 * True if the field is a default result.
 	 */
 	var $isDefaultResult;
 
 	/**
-	 * default value for the criteria
+	 * default value for the criteria.
 	 */
 	var $defaultValue;
 
 	/**
-	 * the number of decimals for a numeric value
+	 * the number of decimals for a numeric value.
 	 */
 	var $decimals;
+
+	/**
+	 * the mask (for dates).
+	 */
+	var $mask;
 
 	/**
 	 * Serialize the object as a JSON string

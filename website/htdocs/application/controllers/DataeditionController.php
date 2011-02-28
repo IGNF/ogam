@@ -104,12 +104,15 @@ class DataEditionController extends AbstractEforestController {
 	 * @param FormField $formField the form descriptor of the data
 	 * @param Boolean $isKey is the field a primary key ?
 	 */
-	private function getFormElement($form, $tableField, $formField, $isKey = false) {
+	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
+		
+		$configuration = Zend_Registry::get("configuration");
 
 		// TODO OGAM-79 : Tester sur le formField type
 
 		if ($tableField->type == "STRING") {
 			$elem = $form->createElement('text', $tableField->data);
+			$elem->setValidator('Alnum');
 
 		} else if ($tableField->type == "INTEGER") {
 			$elem = $form->createElement('text', $tableField->data);
@@ -119,6 +122,13 @@ class DataEditionController extends AbstractEforestController {
 
 		} else if ($tableField->type == "DATE") {
 			$elem = $form->createElement('text', $tableField->data);
+			// validate the date format
+			if ($formField->mask != null) {
+				$validator = new Zend_Validate_Date(array('format' => $formField->mask, 'locale' => $configuration->defaultLocale));
+			} else {
+				$validator = new Zend_Validate_Date(array('locale' => $configuration->defaultLocale));
+			}
+			$elem->setValidator($validator);
 
 		} else if ($tableField->type == "COORDINATE") {
 			$elem = $form->createElement('text', $tableField->data);
@@ -176,7 +186,7 @@ class DataEditionController extends AbstractEforestController {
 			// Hardcoded value : We don't display the submission id (it's a technical element)
 			if ($tablefield->data != "SUBMISSION_ID") {
 				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
-				$elem = $this->getFormElement($form, $tablefield, $formField, true);
+				$elem = $this->_getFormElement($form, $tablefield, $formField, true);
 				$elem->class = 'dataedit_key';
 				$form->addElement($elem);
 			}
@@ -191,7 +201,7 @@ class DataEditionController extends AbstractEforestController {
 			// Hardcoded value : We don't edit the line number (it's a technical element)
 			if ($tablefield->data != "LINE_NUMBER") {
 				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
-				$elem = $this->getFormElement($form, $tablefield, $formField, false);
+				$elem = $this->_getFormElement($form, $tablefield, $formField, false);
 				$elem->class = 'dataedit_field';
 				$form->addElement($elem);
 			}

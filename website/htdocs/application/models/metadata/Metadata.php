@@ -153,7 +153,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		$this->logger->debug('getFileFields : '.$fileFormat);
 
 		// Get the fields specified by the format
-		$req = "SELECT file_field.data as data, file_field.format as format, is_mandatory, data.label as label, data.definition as definition, mask ";
+		$req = "SELECT file_field.*, data.label as label, data.unit, unit.type as type, data.definition as definition ";
 		$req .= " FROM file_field ";
 		$req .= " LEFT JOIN data on (file_field.data = data.data) ";
 		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
@@ -171,8 +171,10 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$fileField->data = $row['data'];
 			$fileField->format = $row['format'];
 			$fileField->label = $row['label'];
-			$fileField->isMandatory = $row['is_mandatory'];
+			$fileField->unit = $row['unit'];
+			$fileField->type = $row['type'];
 			$fileField->definition = $row['definition'];
+			$fileField->isMandatory = $row['is_mandatory'];
 			$fileField->mask = $row['mask'];
 			$result[] = $fileField;
 		}
@@ -437,6 +439,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 				$formField->isDefaultCriteria = $row['is_default_criteria'];
 				$formField->defaultValue = $row['default_value'];
 				$formField->decimals = $row['decimals'];
+				$formField->mask = $row['mask'];
 				$result[] = $formField;
 			}
 
@@ -493,6 +496,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$formField->type = $row['type'];
 			$formField->unit = $row['unit'];
 			$formField->decimals = $row['decimals'];
+			$formField->mask = $row['mask'];
 
 			$this->logger->info('formField->format : '.$formField->format);
 
@@ -674,6 +678,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$formField->isDefaultCriteria = $row['is_default_criteria'];
 			$formField->defaultValue = $row['default_value'];
 			$formField->decimals = $row['decimals'];
+			$formField->mask = $row['mask'];
 
 			if ($this->useCache) {
 				$this->cache->save($formField, $key);
