@@ -90,7 +90,7 @@ foreach($this->harmonizations as $harmonizationProcess) {
                 // equivalent using TaskMgr
                 Genapp.util.getStatusTask_<?php echo $harmonizationProcess->harmonizationId; ?> = {
                     run: Genapp.util.getStatus_<?php echo $harmonizationProcess->harmonizationId; ?>,
-                    interval: 2000
+                    interval: 3000
                 };
                 Ext.TaskMgr.start(Genapp.util.getStatusTask_<?php echo $harmonizationProcess->harmonizationId; ?>);
                 </script>
