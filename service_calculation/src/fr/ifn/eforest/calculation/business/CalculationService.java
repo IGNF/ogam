@@ -75,7 +75,7 @@ public class CalculationService extends AbstractService {
 			TableFieldData variable = metadataDAO.getTableField(variableFormat, variableName);
 
 			// Identify the domain of the variable
-			TableFieldData domain = metadataDAO.getVariableDomain(variableFormat, variableName);
+			TableFieldData domain = aggregationDAO.getVariableDomain(variableFormat, variableName);
 
 			// Retrieve some information about the grid where to aggregate
 			GridData grid = gridDAO.getGrid(gridName);
