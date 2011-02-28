@@ -105,20 +105,28 @@ class DataEditionController extends AbstractEforestController {
 	 * @param Boolean $isKey is the field a primary key ?
 	 */
 	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
-		
+
 		$configuration = Zend_Registry::get("configuration");
 
 		// TODO OGAM-79 : Tester sur le formField type
+		// TODO OGAM-73 : Manage all data types for edition (DATE, BOOLEAN, ...), with corresponding validators
 
 		if ($tableField->type == "STRING") {
 			$elem = $form->createElement('text', $tableField->data);
-			$elem->setValidator('Alnum');
+			$elem->addValidator('Alnum');
 
+			// Add a regexp validator if a mask is present
+			if ($formField->mask != null) {
+				$validator = new Zend_Validate_Regex(array('pattern' => $formField->mask));
+				$elem->addValidator($validator);
+			}
 		} else if ($tableField->type == "INTEGER") {
 			$elem = $form->createElement('text', $tableField->data);
+			$elem->addValidator(new Zend_Validate_Int());
 
 		} else if ($tableField->type == "NUMERIC") {
 			$elem = $form->createElement('text', $tableField->data);
+			$elem->addValidator(new Zend_Validate_Digits());
 
 		} else if ($tableField->type == "DATE") {
 			$elem = $form->createElement('text', $tableField->data);
@@ -128,13 +136,19 @@ class DataEditionController extends AbstractEforestController {
 			} else {
 				$validator = new Zend_Validate_Date(array('locale' => $configuration->defaultLocale));
 			}
-			$elem->setValidator($validator);
+			$elem->addValidator($validator);
 
 		} else if ($tableField->type == "COORDINATE") {
 			$elem = $form->createElement('text', $tableField->data);
 
 		} else if ($tableField->type == "RANGE") {
 			$elem = $form->createElement('text', $tableField->data);
+			$elem->addValidator(new Zend_Validate_Digits());
+
+			// Check min and max
+			$range = $this->metadataModel->getRange($tableField->data);
+			$elem->addValidator(new Zend_Validate_LessThan(array('max' => $range->max)));
+			$elem->addValidator(new Zend_Validate_GreaterThan(array('min' => $range->min)));
 
 		} else if ($tableField->type == "CODE") {
 			$modes = $this->metadataModel->getModes($tableField->unit);
@@ -182,6 +196,8 @@ class DataEditionController extends AbstractEforestController {
 		// The key elements as labels
 		//
 		foreach ($data->infoFields as $tablefield) {
+			
+			Zend_Registry::get("logger")->info('adding key filed : '.print_r($tablefield, true));
 
 			// Hardcoded value : We don't display the submission id (it's a technical element)
 			if ($tablefield->data != "SUBMISSION_ID") {
@@ -218,38 +234,6 @@ class DataEditionController extends AbstractEforestController {
 		$form->addElement($submitElement);
 
 		return $form;
-	}
-
-	/**
-	 * Show the select of dataset page.
-	 *
-	 * @return the HTML view
-	 */
-	public function showSelectDatasetAction() {
-		$this->logger->debug('showSelectDatasetAction');
-
-		$this->view->form = $this->_getDatasetForm();
-
-		$this->render('show-dataset');
-	}
-
-	/**
-	 * Validate the selection of the dataset.
-	 *
-	 * @return the HTML view
-	 */
-	public function validateDatasetAction() {
-		$this->logger->debug('showSelectDatasetAction');
-
-		// Get the dataset Id
-		$datasetId = $this->_getParam("DATASET_ID");
-
-		// Store it in session
-		$websiteSession = new Zend_Session_Namespace('website');
-		$websiteSession->datasetID = $datasetId;
-
-		// Forward the user to the next step
-		$this->_redirector->gotoUrl('/dataedition/show-edit-data');
 	}
 
 	/**
@@ -379,6 +363,21 @@ class DataEditionController extends AbstractEforestController {
 		$datasetId = $websiteSession->datasetID;
 		$data = $websiteSession->data;
 
+		Zend_Registry::get("logger")->info('$newdata : '.print_r($data, true));
+
+		// Validate the form
+		$form = $this->_getEditDataForm($data, 'EDIT');
+		if (!$form->isValidPartial($_POST)) {
+			
+			// On réaffiche le formulaire avec les messages d'erreur
+			$this->view->form = $form;
+			$this->view->tableFormat = $websiteSession->tableFormat;
+			$this->view->ancestors = $websiteSession->ancestors;
+			$this->view->mode = 'EDIT';
+
+			return $this->render('edit-data');
+		}
+
 		// Update the data descriptor with the values submitted
 		foreach ($data->editableFields as $field) {
 			$field->value = $this->_getParam($field->data);
@@ -406,6 +405,19 @@ class DataEditionController extends AbstractEforestController {
 		$data = $websiteSession->data;
 
 		Zend_Registry::get("logger")->info('$params : '.print_r($this->_getAllParams(), true));
+
+		// Validate the form
+		$form = $this->_getEditDataForm($data, 'ADD');
+		if (!$form->isValidPartial($_POST)) {
+
+			// On réaffiche le formulaire avec les messages d'erreur
+			$this->view->form = $form;
+			$this->view->tableFormat = $websiteSession->tableFormat;
+			$this->view->ancestors = $websiteSession->ancestors;
+			$this->view->mode = 'ADD';
+
+			return $this->render('edit-data');
+		}
 
 		// Insert the data descriptor with the values submitted
 		foreach ($data->editableFields as $field) {
@@ -530,6 +542,8 @@ class DataEditionController extends AbstractEforestController {
 		// Store the data descriptor in session
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->data = $data;
+		$websiteSession->ancestors = $ancestors;
+		$websiteSession->tableFormat = $tableFormat;
 
 		// Generate dynamically the corresponding form
 		$this->view->form = $this->_getEditDataForm($data, $mode);
