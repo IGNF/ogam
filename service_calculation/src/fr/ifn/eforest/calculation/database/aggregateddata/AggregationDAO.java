@@ -3,6 +3,7 @@ package fr.ifn.eforest.calculation.database.aggregateddata;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -11,7 +12,9 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
+import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.database.mapping.GridData;
+import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
 
 /**
@@ -22,6 +25,8 @@ public class AggregationDAO {
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	private Logger sqllogger = Logger.getLogger("SQLLogger");
+
+	private MetadataDAO metadataDAO = new MetadataDAO();
 
 	/**
 	 * Clean previous results.
@@ -118,11 +123,14 @@ public class AggregationDAO {
 			String request = "CREATE TEMP TABLE value_per_cluster ON COMMIT DROP AS ";
 			request += " SELECT country_code, cluster_code, cell_id, avg(value_cluster_cell) AS value_cluster_cell"; // average the basal area per cluster
 			request += " FROM ( ";
-			request += " SELECT location_data.country_code, location_data.cluster_code, " + grid.getLocationColumn() + " as cell_id, location_data.plot_code, sum(" + variable.getColumnName() +
-					") AS value_cluster_cell "; // average the basal area per cluster
+			request += " SELECT location_data.country_code, location_data.cluster_code, " + grid.getLocationColumn()
+					+ " as cell_id, location_data.plot_code, sum(" + variable.getColumnName() + ") AS value_cluster_cell "; // average the basal area per
+																															// cluster
 			request += sql;
 			request += " AND " + domain.getTableName() + "." + domain.getColumnName() + " = '1'  "; // Filter the plots corresponding to the domain
-			request += " GROUP BY location_data.country_code, location_data.cluster_code, location_data.plot_code, " + grid.getLocationColumn(); // Group by the requested Grid
+			request += " GROUP BY location_data.country_code, location_data.cluster_code, location_data.plot_code, " + grid.getLocationColumn(); // Group by the
+																																					// requested
+																																					// Grid
 			request += " ) as foo";
 			request += " GROUP BY country_code, cluster_code, cell_id";
 
@@ -203,14 +211,20 @@ public class AggregationDAO {
 		PreparedStatement ps = null;
 		try {
 
-			String request = "INSERT INTO aggregated_result (session_id, cell_id, average_value, value_count) " +
+			String request = "INSERT INTO aggregated_result (session_id, cell_id, average_value, value_count) "
+					+
 					//
-					" SELECT '" + sessionId +
-					"', cl.cell_id, sum(standardised_weight * nb_plots * value_cluster_cell) / (avg(standardised_weight) * avg(nb_plots) * count(*)) AS estim_value, sum(nb_plots) as value_count " +
+					" SELECT '"
+					+ sessionId
+					+ "', cl.cell_id, sum(standardised_weight * nb_plots * value_cluster_cell) / (avg(standardised_weight) * avg(nb_plots) * count(*)) AS estim_value, sum(nb_plots) as value_count "
+					+
 					//
-					" FROM standardized_cluster bj  " + //
-					" INNER JOIN nb_plots_per_cluster p ON (p.country_code = bj.country_code AND p.cluster_code = bj.cluster_code)" + // 
-					" INNER JOIN value_per_cluster cl ON (cl.country_code = bj.country_code AND cl.cluster_code = bj.cluster_code AND cl.cell_id = p.cell_id) " + //
+					" FROM standardized_cluster bj  "
+					+ //
+					" INNER JOIN nb_plots_per_cluster p ON (p.country_code = bj.country_code AND p.cluster_code = bj.cluster_code)"
+					+ //
+					" INNER JOIN value_per_cluster cl ON (cl.country_code = bj.country_code AND cl.cluster_code = bj.cluster_code AND cl.cell_id = p.cell_id) "
+					+ //
 					" GROUP BY cl.cell_id";
 
 			// Preparation of the request
@@ -271,6 +285,28 @@ public class AggregationDAO {
 				logger.error("Error while closing statement : " + e.getMessage());
 			}
 		}
+	}
+
+	/**
+	 * Return the domain field linked to a table field (a quantitative variable).
+	 * 
+	 * @param sourceformat
+	 *            the source format (table)
+	 * @param sourcefield
+	 *            the source field (column)
+	 * @return the domain field (column)
+	 */
+	public TableFieldData getVariableDomain(String sourceformat, String sourcefield) throws Exception {
+
+		Map<String, TableFieldData> mappedFields = metadataDAO.getTableToTableFieldMapping(sourceformat, "DOMAIN_MAPPING");
+
+		if (mappedFields == null) {
+			throw new Exception("No domain found for variable " + sourceformat);
+		}
+
+		TableFieldData field = mappedFields.get(sourcefield);
+
+		return field;
 	}
 
 }

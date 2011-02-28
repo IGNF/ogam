@@ -14,9 +14,10 @@ import org.apache.log4j.Logger;
 import fr.ifn.eforest.common.business.Schemas;
 import fr.ifn.eforest.common.database.metadata.FieldData;
 import fr.ifn.eforest.common.database.metadata.DatasetData;
+import fr.ifn.eforest.common.database.metadata.FileFieldData;
+import fr.ifn.eforest.common.database.metadata.FileFormatData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.ModeData;
-import fr.ifn.eforest.common.database.metadata.RequestFormatData;
 import fr.ifn.eforest.common.database.metadata.TableTreeData;
 
 /**
@@ -200,11 +201,11 @@ public class MetadataServlet extends HttpServlet {
 	 */
 	private String getRequestFiles(String datasetId) throws Exception {
 		StringBuffer result = new StringBuffer();
-		List<RequestFormatData> requestList = metadataDAO.getRequestFiles(datasetId);
+		List<FileFormatData> requestList = metadataDAO.getDatasetFiles(datasetId);
 		result.append("[");
-		Iterator<RequestFormatData> requestIter = requestList.iterator();
+		Iterator<FileFormatData> requestIter = requestList.iterator();
 		while (requestIter.hasNext()) {
-			RequestFormatData requestedFile = requestIter.next();
+			FileFormatData requestedFile = requestIter.next();
 			result.append("{format:\"" + requestedFile.getFormat() + "\",type:\"" + requestedFile.getFileType() + "\"}");
 			if (requestIter.hasNext()) {
 				result.append(",");
@@ -225,10 +226,10 @@ public class MetadataServlet extends HttpServlet {
 		StringBuffer result = new StringBuffer();
 
 		// Get the fields of the file format
-		List<FieldData> fields = metadataDAO.getFileFields(fileformat);
+		List<FileFieldData> fields = metadataDAO.getFileFields(fileformat);
 
 		result.append("[");
-		Iterator<FieldData> fieldsIter = fields.iterator();
+		Iterator<FileFieldData> fieldsIter = fields.iterator();
 		while (fieldsIter.hasNext()) {
 			FieldData field = fieldsIter.next();
 			result.append("{label:\"" + field.getData() + "\"}");

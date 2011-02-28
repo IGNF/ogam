@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * A table (a node) in the hierarchy of tables.
  */
-public class TableTreeData implements Comparable {
+public class TableTreeData implements Comparable<Object> {
 
 	private String table;
 

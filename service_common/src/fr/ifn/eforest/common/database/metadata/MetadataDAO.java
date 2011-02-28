@@ -35,13 +35,14 @@ public class MetadataDAO {
 	private static LocalCache modeExistCache = LocalCache.getLocalCache();
 	private static LocalCache rangeCache = LocalCache.getLocalCache();
 	private static LocalCache fileFieldsCache = LocalCache.getLocalCache();
-	private static LocalCache requestFormatsCache = LocalCache.getLocalCache();
+	private static LocalCache datasetFileCache = LocalCache.getLocalCache();
 	private static LocalCache tableTreeCache = LocalCache.getLocalCache();
 
 	/**
 	 * Get the fields of a csv file format.
 	 */
-	private static final String GET_FILE_FIELDS_STMT = "SELECT data.data, data.unit, mask, unit.type as type, is_mandatory " + //
+	private static final String GET_FILE_FIELDS_STMT = "SELECT file_field.*, data.label as label, data.unit, unit.type as type, data.definition as definition "
+			+ //
 			" FROM file_field " + //
 			" LEFT JOIN data on (file_field.data = data.data)" + //
 			" LEFT JOIN unit on (data.unit = unit.unit)" + //
@@ -51,16 +52,16 @@ public class MetadataDAO {
 	/**
 	 * Get description of one field.
 	 */
-	private static final String GET_FILE_FIELD_STMT = "SELECT data.data, data.unit, mask, unit.type as type, is_mandatory  " + //
-			" FROM data " + //
-			" LEFT JOIN unit on (data.unit = unit.unit)" + //
-			" LEFT JOIN file_field on (file_field.data = data.data)" + //
+	private static final String GET_FILE_FIELD_STMT = "SELECT file_field.*, data.label as label, data.unit, unit.type as type, data.definition as definition " + //
+			" FROM file_field " + //
+			" LEFT JOIN data on (file_field.data = data.data) " + //
+			" LEFT JOIN unit on (data.unit = unit.unit) " + //
 			" WHERE data.data = ? ";
 
 	/**
 	 * Get the fields of a table format.
 	 */
-	private static final String GET_TABLE_FIELDS_STMT = "SELECT table_field.data as fieldname, table_name, column_name, table_format.format, unit.type " + //
+	private static final String GET_TABLE_FIELDS_STMT = "SELECT table_field.*, table_name,  data.label, data.unit, unit.type, data.definition " + //
 			" FROM table_format " + //
 			" LEFT JOIN table_field on (table_field.format = table_format.format) " + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
@@ -70,7 +71,7 @@ public class MetadataDAO {
 	/**
 	 * Get the description of one field of a table format.
 	 */
-	private static final String GET_TABLE_FIELD_STMT = "SELECT table_field.data as fieldname, table_name, column_name, table_format.format, unit.type " + //
+	private static final String GET_TABLE_FIELD_STMT = "SELECT table_field.*, table_name, data.label, data.unit, unit.type, data.definition " + //
 			" FROM table_format " + //
 			" LEFT JOIN table_field on (table_field.format = table_format.format) " + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
@@ -79,17 +80,28 @@ public class MetadataDAO {
 			" AND   table_field.data = ? ";
 
 	/**
-	 * Get the destination columns of the mapping.
+	 * Get the destination columns of the file to table mapping.
 	 */
-	private static final String GET_FIELD_MAPPING_STMT = "SELECT field_mapping.src_data as fieldname, field_mapping.dst_format as format, table_name, column_name, unit.type "
-			+ //
+	private static final String GET_FILE_TO_TABLE_MAPPING_STMT = "SELECT table_field.*, table_name, data.label, data.unit, unit.type, data.definition " + //
 			" FROM field_mapping" + //
 			" LEFT JOIN table_format on (field_mapping.dst_format = table_format.format) " + //
 			" LEFT JOIN table_field on (field_mapping.dst_format = table_field.format and field_mapping.dst_data = table_field.data)" + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
 			" LEFT JOIN unit on (data.unit = unit.unit) " + //
 			" WHERE field_mapping.src_format = ? " + //
-			" AND   field_mapping.mapping_type = ? ";
+			" AND   field_mapping.mapping_type = '" + MappingTypes.FILE_MAPPING + "'";
+
+	/**
+	 * Get the destination columns of the table to table mapping (harmonization).
+	 */
+	private static final String GET_TABLE_TO_TABLE_MAPPING_STMT = "SELECT table_field.*, table_name, data.label, data.unit, unit.type, data.definition  " + //
+			" FROM field_mapping" + //
+			" LEFT JOIN table_format on (field_mapping.dst_format = table_format.format) " + //
+			" LEFT JOIN table_field on (field_mapping.dst_format = table_field.format and field_mapping.dst_data = table_field.data)" + //
+			" LEFT JOIN data on (table_field.data = data.data) " + //
+			" LEFT JOIN unit on (data.unit = unit.unit) " + //
+			" WHERE field_mapping.src_format = ? " + //
+			" AND   field_mapping.mapping_type = ?";
 
 	/**
 	 * Get the destination tables of the mapping.
@@ -156,9 +168,9 @@ public class MetadataDAO {
 			" WHERE dataset_id = ? ";
 
 	/**
-	 * Get the expected formats for a dataset.
+	 * Get the expected file formats for a dataset.
 	 */
-	private static final String GET_DATASET_FORMATS_STMT = "SELECT file_format.format, file_type " + //
+	private static final String GET_DATASET_FORMATS_STMT = "SELECT file_format.* " + //
 			"FROM dataset_files " + //
 			"LEFT JOIN file_format USING (format) " + //
 			"WHERE dataset_id = ? " + //
@@ -646,11 +658,14 @@ public class MetadataDAO {
 
 			while (rs.next()) {
 				TableFieldData field = new TableFieldData();
-				field.setColumnName(rs.getString("column_name"));
-				field.setTableName(rs.getString("table_name"));
-				field.setFieldName(rs.getString("fieldname"));
+				field.setData(rs.getString("data"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
+				field.setUnit(rs.getString("unit"));
+				field.setColumnName(rs.getString("column_name"));
+				field.setTableName(rs.getString("table_name"));
+				field.setDefinition(rs.getString("definition"));
+				field.setLabel(rs.getString("label"));
 				result.add(field);
 			}
 
@@ -706,11 +721,14 @@ public class MetadataDAO {
 
 			if (rs.next()) {
 				TableFieldData field = new TableFieldData();
-				field.setColumnName(rs.getString("column_name"));
-				field.setTableName(rs.getString("table_name"));
-				field.setFieldName(rs.getString("fieldname"));
+				field.setData(rs.getString("data"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
+				field.setUnit(rs.getString("unit"));
+				field.setColumnName(rs.getString("column_name"));
+				field.setTableName(rs.getString("table_name"));
+				field.setDefinition(rs.getString("definition"));
+				field.setLabel(rs.getString("label"));
 				return field;
 			} else {
 				return null;
@@ -748,8 +766,8 @@ public class MetadataDAO {
 	 *            the logical name of the data corresponding to the field
 	 * @return the field descriptor
 	 */
-	public FieldData getFileField(String data) throws Exception {
-		FieldData result = null;
+	public FileFieldData getFileField(String data) throws Exception {
+		FileFieldData result = null;
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -763,12 +781,15 @@ public class MetadataDAO {
 			rs = ps.executeQuery();
 
 			if (rs.next()) {
-				result = new FieldData();
+				result = new FileFieldData();
 				result.setData(rs.getString("data"));
+				result.setFormat(rs.getString("format"));
+				result.setLabel(rs.getString("label"));
 				result.setUnit(rs.getString("unit"));
-				result.setMask(rs.getString("mask"));
 				result.setType(rs.getString("type"));
+				result.setDefinition(rs.getString("definition"));
 				result.setIsMandatory(rs.getBoolean("is_mandatory"));
+				result.setMask(rs.getString("mask"));
 			}
 
 		} finally {
@@ -806,19 +827,19 @@ public class MetadataDAO {
 	 *            the country code
 	 * @return the list of field descriptors
 	 */
-	public List<FieldData> getFileFields(String fileformat) throws Exception {
-		List<FieldData> result = null;
+	public List<FileFieldData> getFileFields(String fileformat) throws Exception {
+		List<FileFieldData> result = null;
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 
 			String key = fileformat;
-			result = (List<FieldData>) fileFieldsCache.get(key);
+			result = (List<FileFieldData>) fileFieldsCache.get(key);
 
 			if (result == null) {
 
-				result = new ArrayList<FieldData>();
+				result = new ArrayList<FileFieldData>();
 
 				con = getConnection();
 
@@ -828,12 +849,15 @@ public class MetadataDAO {
 				rs = ps.executeQuery();
 
 				while (rs.next()) {
-					FieldData field = new FieldData();
+					FileFieldData field = new FileFieldData();
 					field.setData(rs.getString("data"));
+					field.setFormat(rs.getString("format"));
+					field.setLabel(rs.getString("label"));
 					field.setUnit(rs.getString("unit"));
-					field.setMask(rs.getString("mask"));
 					field.setType(rs.getString("type"));
+					field.setDefinition(rs.getString("definition"));
 					field.setIsMandatory(rs.getBoolean("is_mandatory"));
+					field.setMask(rs.getString("mask"));
 					result.add(field);
 				}
 
@@ -868,40 +892,43 @@ public class MetadataDAO {
 	}
 
 	/**
-	 * Get the CSV Files composing a JRC Request.
+	 * Get the CSV Files composing a dataset.
 	 * 
-	 * @param requestId
-	 *            the identifier of the JRC Request
+	 * @param datasetId
+	 *            the identifier of the dataset
 	 * @return the list of file descriptors
 	 */
-	public List<RequestFormatData> getRequestFiles(String requestId) throws Exception {
-		List<RequestFormatData> result = null;
+	public List<FileFormatData> getDatasetFiles(String datasetId) throws Exception {
+		List<FileFormatData> result = null;
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 
-			result = (List<RequestFormatData>) requestFormatsCache.get(requestId);
+			result = (List<FileFormatData>) datasetFileCache.get(datasetId);
 
 			if (result == null) {
 
-				result = new ArrayList<RequestFormatData>();
+				result = new ArrayList<FileFormatData>();
 
 				con = getConnection();
 
 				ps = con.prepareStatement(GET_DATASET_FORMATS_STMT);
-				ps.setString(1, requestId);
+				ps.setString(1, datasetId);
 				logger.trace(GET_DATASET_FORMATS_STMT);
 				rs = ps.executeQuery();
 
 				while (rs.next()) {
-					RequestFormatData fileformat = new RequestFormatData();
+					FileFormatData fileformat = new FileFormatData();
 					fileformat.setFormat(rs.getString("format"));
 					fileformat.setFileType(rs.getString("file_type"));
+					fileformat.setFileExtension(rs.getString("file_extension"));
+					fileformat.setLabel(rs.getString("label"));
+					fileformat.setPosition(rs.getInt("position"));
 					result.add(fileformat);
 				}
 
-				requestFormatsCache.put(requestId, result);
+				datasetFileCache.put(datasetId, result);
 
 			}
 
@@ -929,28 +956,6 @@ public class MetadataDAO {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * Return the domain field linked to a table field (a quantitative variable).
-	 * 
-	 * @param sourceformat
-	 *            the source format (table)
-	 * @param sourcefield
-	 *            the source field (column)
-	 * @return the domain field (column)
-	 */
-	public TableFieldData getVariableDomain(String sourceformat, String sourcefield) throws Exception {
-
-		Map<String, TableFieldData> mappedFields = getFieldMapping(sourceformat, MappingTypes.DOMAIN_MAPPING);
-
-		if (mappedFields == null) {
-			throw new Exception("No domain found for variable " + sourceformat);
-		}
-
-		TableFieldData field = mappedFields.get(sourcefield);
-
-		return field;
 	}
 
 	/**
@@ -1022,7 +1027,7 @@ public class MetadataDAO {
 	 *            the type of mapping
 	 * @return a map where we have for each logical name of a destination table the corresponding table descriptor
 	 */
-	public Map<String, TableFormatData> getSourceFormatMapping(String destformat, String mappingType) throws Exception {
+	public Map<String, TableFormatData> getSourceTablesMapping(String destformat, String mappingType) throws Exception {
 		Map<String, TableFormatData> result = new HashMap<String, TableFormatData>();
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -1078,11 +1083,9 @@ public class MetadataDAO {
 	 * 
 	 * @param sourceformat
 	 *            the logical name of a file format
-	 * @param mappingType
-	 *            the type of mapping
 	 * @return a map where we have the list of destination table fields indexed by the logical name
 	 */
-	public Map<String, TableFieldData> getFieldMapping(String sourceformat, String mappingType) throws Exception {
+	public Map<String, TableFieldData> getFileToTableMapping(String sourceformat) throws Exception {
 		Map<String, TableFieldData> result = new HashMap<String, TableFieldData>();
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -1091,21 +1094,87 @@ public class MetadataDAO {
 
 			con = getConnection();
 
-			ps = con.prepareStatement(GET_FIELD_MAPPING_STMT);
+			ps = con.prepareStatement(GET_FILE_TO_TABLE_MAPPING_STMT);
 			ps.setString(1, sourceformat);
-			ps.setString(2, mappingType);
 
-			logger.trace(GET_FIELD_MAPPING_STMT);
+			logger.trace(GET_FILE_TO_TABLE_MAPPING_STMT);
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
 				TableFieldData field = new TableFieldData();
-				field.setColumnName(rs.getString("column_name"));
-				field.setTableName(rs.getString("table_name"));
-				field.setFieldName(rs.getString("fieldname"));
+				field.setData(rs.getString("data"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
-				result.put(field.getFieldName(), field);
+				field.setUnit(rs.getString("unit"));
+				field.setColumnName(rs.getString("column_name"));
+				field.setTableName(rs.getString("table_name"));
+				field.setDefinition(rs.getString("definition"));
+				field.setLabel(rs.getString("label"));
+				result.put(field.getData(), field);
+			}
+
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Get the destination columns of a mapping (a file).
+	 * 
+	 * @param sourceTable
+	 *            the logical name of a table format
+	 * @param mappingType
+	 *            the mapping type (HARMONIZATION_MAPPING)
+	 * @return a map where we have the list of destination table fields indexed by the logical name
+	 */
+	public Map<String, TableFieldData> getTableToTableFieldMapping(String sourceTable, String mappingType) throws Exception {
+		Map<String, TableFieldData> result = new HashMap<String, TableFieldData>();
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+
+			con = getConnection();
+
+			ps = con.prepareStatement(GET_TABLE_TO_TABLE_MAPPING_STMT);
+			ps.setString(1, sourceTable);
+			ps.setString(2, mappingType);
+
+			logger.trace(GET_TABLE_TO_TABLE_MAPPING_STMT);
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				TableFieldData field = new TableFieldData();
+				field.setData(rs.getString("data"));
+				field.setFormat(rs.getString("format"));
+				field.setType(rs.getString("type"));
+				field.setUnit(rs.getString("unit"));
+				field.setColumnName(rs.getString("column_name"));
+				field.setTableName(rs.getString("table_name"));
+				field.setDefinition(rs.getString("definition"));
+				field.setLabel(rs.getString("label"));
+				result.put(field.getData(), field);
 			}
 
 		} finally {

@@ -23,7 +23,7 @@ import fr.ifn.eforest.common.business.UnitTypes;
 import fr.ifn.eforest.common.business.checks.CheckException;
 import fr.ifn.eforest.common.database.GenericDAO;
 import fr.ifn.eforest.common.database.GenericData;
-import fr.ifn.eforest.common.database.metadata.FieldData;
+import fr.ifn.eforest.common.database.metadata.FileFieldData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
 import fr.ifn.eforest.common.database.metadata.TableFormatData;
@@ -70,7 +70,7 @@ public class IntegrationService extends GenericMapper {
 		try {
 
 			// First get the description of the content of the CSV file
-			List<FieldData> sourceFieldDescriptors = metadataDAO.getFileFields(sourceFormat);
+			List<FileFieldData> sourceFieldDescriptors = metadataDAO.getFileFields(sourceFormat);
 
 			// Check that the content of the file match the description
 			if (csvFile.getRowsCount() == 0) {
@@ -137,7 +137,7 @@ public class IntegrationService extends GenericMapper {
 
 			// Get the field mapping
 			// We create a map, giving for each field name a descriptor with the name of the destination table and column.
-			Map<String, TableFieldData> mappedFieldDescriptors = metadataDAO.getFieldMapping(sourceFormat, MappingTypes.FILE_MAPPING);
+			Map<String, TableFieldData> mappedFieldDescriptors = metadataDAO.getFileToTableMapping(sourceFormat);
 
 			// Prepare the common destination fields for each table (indexed by destination format)
 			Map<String, GenericData> commonFieldsMap = new HashMap<String, GenericData>();
@@ -154,19 +154,24 @@ public class IntegrationService extends GenericMapper {
 					TableFieldData destFieldDescriptor = destDescriptorIter.next();
 
 					// If the field is not in the mapping
-					TableFieldData destFound = mappedFieldDescriptors.get(destFieldDescriptor.getFieldName());
+					TableFieldData destFound = mappedFieldDescriptors.get(destFieldDescriptor.getData());
 					if (destFound == null) {
 
 						// We look in the request parameters for the missing field
-						String value = requestParameters.get(destFieldDescriptor.getFieldName());
+						String value = requestParameters.get(destFieldDescriptor.getData());
 						if (value != null) {
 
-							// We get the metadata for the fieldFieldData
-							FieldData fieldData = metadataDAO.getFileField(destFieldDescriptor.getFieldName());
+							// We create the metadata for a virtual source file
+							FileFieldData fieldData = new FileFieldData();
+							fieldData.setData(destFieldDescriptor.getData());
+							fieldData.setFormat(destFieldDescriptor.getFormat());
+							fieldData.setType(destFieldDescriptor.getType());
+							fieldData.setUnit(destFieldDescriptor.getUnit());
+							fieldData.setIsMandatory(true);
 
 							// We add it to the common fields
 							GenericData commonField = new GenericData();
-							commonField.setFormat(destFieldDescriptor.getFieldName());
+							commonField.setFormat(destFieldDescriptor.getData());
 							commonField.setColumnName(destFieldDescriptor.getColumnName());
 							commonField.setType(fieldData.getType());
 							commonField.setValue(convertType(fieldData, value));
@@ -199,7 +204,7 @@ public class IntegrationService extends GenericMapper {
 						Object valueObj = null;
 
 						// Get the field descriptor
-						FieldData sourceFieldDescriptor = sourceFieldDescriptors.get(col);
+						FileFieldData sourceFieldDescriptor = sourceFieldDescriptors.get(col);
 
 						// Check the mask if available and the variable is not a date (date format is tested with a date format)
 						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE)) {

@@ -77,7 +77,7 @@ public class GenericDAO {
 			while (columnsIter.hasNext()) {
 				TableFieldData col = columnsIter.next();
 
-				GenericData colData = valueColumns.get(col.getFieldName());
+				GenericData colData = valueColumns.get(col.getData());
 
 				// If colData is null, the field is not mapped and is probably not expected (we hope)
 				if (colData != null) {
@@ -106,7 +106,7 @@ public class GenericDAO {
 			while (columnsIter.hasNext()) {
 				TableFieldData col = columnsIter.next();
 
-				GenericData colData = valueColumns.get(col.getFieldName());
+				GenericData colData = valueColumns.get(col.getData());
 
 				if (colData != null) {
 
@@ -169,7 +169,7 @@ public class GenericDAO {
 				throw new CheckException(DUPLICATE_ROW);
 			}
 			if (SqlStateSQL99.ERRCODE_DATATYPE_MISMATCH.equalsIgnoreCase(sqle.getSQLState())) {
-				throw new CheckException(INVALID_TYPE_FIELD);				
+				throw new CheckException(INVALID_TYPE_FIELD);
 			}
 			if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				CheckException ce = new CheckException(INTEGRITY_CONSTRAINT);
@@ -300,11 +300,11 @@ public class GenericDAO {
 				Iterator<TableFieldData> fieldsIter = fields.iterator();
 				while (fieldsIter.hasNext()) {
 					TableFieldData field = fieldsIter.next();
-					String columnName = field.getFormat() + "_" + field.getFieldName();
+					String columnName = field.getFormat() + "_" + field.getData();
 
 					GenericData data = new GenericData();
 					data.setColumnName(field.getColumnName());
-					data.setFormat(field.getFieldName());
+					data.setFormat(field.getData());
 					data.setType(field.getType());
 					if (field.getType().equalsIgnoreCase(STRING)) {
 						data.setValue(rs.getString(columnName));

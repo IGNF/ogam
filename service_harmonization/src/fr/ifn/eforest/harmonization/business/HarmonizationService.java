@@ -143,7 +143,7 @@ public class HarmonizationService extends AbstractService {
 				harmonizedTables.addAll(metadataDAO.getFormatMapping(rawTable, MappingTypes.HARMONIZATION_MAPPING).values());
 
 				// Get the list of harmonized fields for each table
-				harmonizedFields.addAll(metadataDAO.getFieldMapping(rawTable, MappingTypes.HARMONIZATION_MAPPING).values());
+				harmonizedFields.addAll(metadataDAO.getTableToTableFieldMapping(rawTable, MappingTypes.HARMONIZATION_MAPPING).values());
 
 			}
 
@@ -281,7 +281,7 @@ public class HarmonizationService extends AbstractService {
 
 		// Get the list of source tables that map to this destination table
 		List<TableFormatData> sourceTables = new ArrayList<TableFormatData>();
-		sourceTables.addAll(metadataDAO.getSourceFormatMapping(destTableFormat, MappingTypes.HARMONIZATION_MAPPING).values());
+		sourceTables.addAll(metadataDAO.getSourceTablesMapping(destTableFormat, MappingTypes.HARMONIZATION_MAPPING).values());
 
 		// Get all the ancestors of these tables, sorted in the right order
 		LinkedList<String> sourceTablesSortedList = genericMapper.getSortedAncestors(Schemas.RAW_DATA, sourceTables);
@@ -310,7 +310,7 @@ public class HarmonizationService extends AbstractService {
 
 		// Get the list of source tables that map to this destination table
 		List<TableFormatData> sourceTables = new ArrayList<TableFormatData>();
-		sourceTables.addAll(metadataDAO.getSourceFormatMapping(destTableFormat, MappingTypes.HARMONIZATION_MAPPING).values());
+		sourceTables.addAll(metadataDAO.getSourceTablesMapping(destTableFormat, MappingTypes.HARMONIZATION_MAPPING).values());
 
 		// Get all the ancestors of these tables, sorted in the right order
 		LinkedList<String> sourceTablesSortedList = genericMapper.getSortedAncestors(Schemas.RAW_DATA, sourceTables);

@@ -16,6 +16,7 @@ import fr.ifn.eforest.common.util.SynchronizedDateFormat;
 import fr.ifn.eforest.common.business.UnitTypes;
 import fr.ifn.eforest.common.business.checks.CheckException;
 import fr.ifn.eforest.common.database.metadata.FieldData;
+import fr.ifn.eforest.common.database.metadata.FileFieldData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.RangeData;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
@@ -116,7 +117,7 @@ public class GenericMapper {
 	 *            the field as a String
 	 * @return the field value casted to its correct type
 	 */
-	protected Object convertType(FieldData fieldDescriptor, String fieldValue) throws Exception {
+	protected Object convertType(FileFieldData fieldDescriptor, String fieldValue) throws Exception {
 
 		try {
 
@@ -359,8 +360,7 @@ public class GenericMapper {
 				} else {
 					ORDER += ", ";
 				}
-				SELECT += sourceField.getTableName() + "." + sourceField.getColumnName() + " AS " + sourceField.getFormat() + "_" + sourceField.getFieldName()
-						+ " ";
+				SELECT += sourceField.getTableName() + "." + sourceField.getColumnName() + " AS " + sourceField.getFormat() + "_" + sourceField.getData() + " ";
 				ORDER += sourceField.getTableName() + "." + sourceField.getColumnName();
 				this.readColumns.add(sourceField);
 			}
@@ -389,7 +389,7 @@ public class GenericMapper {
 			while (sourceFieldsIter.hasNext()) {
 				TableFieldData sourceField = sourceFieldsIter.next();
 
-				if (criteriaFields.containsKey(sourceField.getFieldName())) {
+				if (criteriaFields.containsKey(sourceField.getData())) {
 					if (WHERE.equals("")) {
 						WHERE += " WHERE ";
 					} else {
@@ -398,7 +398,7 @@ public class GenericMapper {
 					WHERE += sourceField.getTableName() + "." + sourceField.getColumnName() + " = ";
 
 					// Change the criteria depending on the type of the value
-					GenericData value = criteriaFields.get(sourceField.getFieldName());
+					GenericData value = criteriaFields.get(sourceField.getData());
 					if (value.getType().equalsIgnoreCase(UnitTypes.INTEGER) || value.getType().equalsIgnoreCase(UnitTypes.NUMERIC)) {
 						WHERE += value.getValue();
 					} else {

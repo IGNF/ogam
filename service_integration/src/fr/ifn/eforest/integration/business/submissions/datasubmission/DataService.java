@@ -11,8 +11,8 @@ import fr.ifn.eforest.common.util.CSVFile;
 import fr.ifn.eforest.common.business.AbstractService;
 import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.business.Schemas;
+import fr.ifn.eforest.common.database.metadata.FileFormatData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.RequestFormatData;
 import fr.ifn.eforest.common.database.metadata.TableFormatData;
 import fr.ifn.eforest.common.database.GenericDAO;
 import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
@@ -133,13 +133,13 @@ public class DataService extends AbstractService {
 		SubmissionData submissionData = submissionDAO.getSubmission(submissionId);
 
 		// Get the list of requested files concerned by the submission
-		List<RequestFormatData> requestedFiles = metadataDAO.getRequestFiles(submissionData.getDatasetId());
+		List<FileFormatData> requestedFiles = metadataDAO.getDatasetFiles(submissionData.getDatasetId());
 
 		// Get the list of destination tables concerned by the submission
 		List<TableFormatData> destinationTables = new ArrayList<TableFormatData>();
-		Iterator<RequestFormatData> requestedFilesIter = requestedFiles.iterator();
+		Iterator<FileFormatData> requestedFilesIter = requestedFiles.iterator();
 		while (requestedFilesIter.hasNext()) {
-			RequestFormatData requestedFile = requestedFilesIter.next();
+			FileFormatData requestedFile = requestedFilesIter.next();
 			destinationTables.addAll(metadataDAO.getFormatMapping(requestedFile.getFormat(), MappingTypes.FILE_MAPPING).values());
 		}
 
@@ -185,11 +185,11 @@ public class DataService extends AbstractService {
 			}
 
 			// Get the expected CSV formats for the request
-			List<RequestFormatData> fileFormats = metadataDAO.getRequestFiles(submission.getDatasetId());
-			Iterator<RequestFormatData> fileIter = fileFormats.iterator();
+			List<FileFormatData> fileFormats = metadataDAO.getDatasetFiles(submission.getDatasetId());
+			Iterator<FileFormatData> fileIter = fileFormats.iterator();
 			while (fileIter.hasNext()) {
 
-				RequestFormatData fileFormat = fileIter.next();
+				FileFormatData fileFormat = fileIter.next();
 
 				// Get the path of the file
 				String filePath = requestParameters.get(fileFormat.getFormat());
