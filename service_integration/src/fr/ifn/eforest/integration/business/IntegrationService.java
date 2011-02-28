@@ -58,7 +58,7 @@ public class IntegrationService extends GenericMapper {
 	 * @param sourceFormat
 	 *            the source format identifier
 	 * @param requestParameters
-	 *            the static values (COUNTRY_CODE, REQUEST_ID, ...)
+	 *            the static values (PROVIDER_ID, DATASET_ID, ...)
 	 * @param thread
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
 	 */
@@ -121,15 +121,16 @@ public class IntegrationService extends GenericMapper {
 			Map<String, TableFormatData> destFormatsMap = metadataDAO.getFormatMapping(sourceFormat, MappingTypes.FILE_MAPPING);
 
 			// Prepare the storage of the description of the destination tables
-			Map<String, List<TableFieldData>> tableFieldsMap = new HashMap<String, List<TableFieldData>>();
+			Map<String, Map<String, TableFieldData>> tableFieldsMap = new HashMap<String, Map<String, TableFieldData>>();
 
 			// Get the description of the destination tables
 			Iterator<TableFormatData> destFormatIter = destFormatsMap.values().iterator();
 			while (destFormatIter.hasNext()) {
 				TableFormatData destFormat = destFormatIter.next();
 
-				// Get the list of fiels for the table
-				List<TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat(), true);
+				// Get the list of fields for the table
+				// TODO : Filter on the dataset fields only (+ common fields like provider_id)
+				Map<String, TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat(), true);
 
 				// Store in a map
 				tableFieldsMap.put(destFormat.getFormat(), destFieldDescriptors);
@@ -147,14 +148,15 @@ public class IntegrationService extends GenericMapper {
 			while (destFormatIter.hasNext()) {
 				TableFormatData destFormat = destFormatIter.next();
 
-				List<TableFieldData> destFieldDescriptors = tableFieldsMap.get(destFormat.getFormat());
+				Map<String, TableFieldData> destFieldDescriptors = tableFieldsMap.get(destFormat.getFormat());
 
-				Iterator<TableFieldData> destDescriptorIter = destFieldDescriptors.iterator();
+				Iterator<String> destDescriptorIter = destFieldDescriptors.keySet().iterator();
 				while (destDescriptorIter.hasNext()) {
-					TableFieldData destFieldDescriptor = destDescriptorIter.next();
+					String sourceData = destDescriptorIter.next();
+					TableFieldData destFieldDescriptor = destFieldDescriptors.get(sourceData);
 
 					// If the field is not in the mapping
-					TableFieldData destFound = mappedFieldDescriptors.get(destFieldDescriptor.getData());
+					TableFieldData destFound = mappedFieldDescriptors.get(sourceData);
 					if (destFound == null) {
 
 						// We look in the request parameters for the missing field

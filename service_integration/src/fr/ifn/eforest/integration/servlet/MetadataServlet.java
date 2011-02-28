@@ -49,8 +49,6 @@ public class MetadataServlet extends HttpServlet {
 	 */
 
 	private static final String ACTION = "action";
-	private static final String ACTION_GET_COUNTRIES = "GetCountries";
-	private static final String ACTION_GET_JRC_REQUEST = "GetJRCRequests";
 	private static final String ACTION_GET_REQUEST_FILES = "GetRequestFiles";
 	private static final String ACTION_GET_FILE_FIELDS = "GetFileFields";
 	private static final String ACTION_GET_TABLES_TREE = "GetTablesTree";
@@ -82,24 +80,6 @@ public class MetadataServlet extends HttpServlet {
 			if (action == null) {
 				throw new Exception("The " + ACTION + " parameter is mandatory");
 			}
-
-			//
-			// Get Countries
-			//
-			if (action.equals(ACTION_GET_COUNTRIES)) {
-
-				out.print(getCountries());
-
-			} else
-
-			//
-			// Get JRC Requests
-			//
-			if (action.equals(ACTION_GET_JRC_REQUEST)) {
-
-				out.print(getJRCRequests());
-
-			} else
 
 			//
 			// Get the expected files for a request
@@ -148,48 +128,6 @@ public class MetadataServlet extends HttpServlet {
 			logger.error("Error during data upload", e);
 			out.print(e.getMessage());
 		}
-	}
-
-	/**
-	 * Return a JSON String listing the available countries.
-	 * 
-	 * @return the list of available countries as a JSON string
-	 */
-	private String getCountries() throws Exception {
-		StringBuffer result = new StringBuffer();
-		List<ModeData> modesList = metadataDAO.getModes("COUNTRY_CODE");
-		result.append("[");
-		Iterator<ModeData> modeIter = modesList.iterator();
-		while (modeIter.hasNext()) {
-			ModeData mode = modeIter.next();
-			result.append("{mode:\"" + mode.getMode() + "\",label:\"" + mode.getLabel() + "\"}");
-			if (modeIter.hasNext()) {
-				result.append(",");
-			}
-		}
-		result.append("]");
-		return result.toString();
-	}
-
-	/**
-	 * Return a JSON String listing the available JRC Requests.
-	 * 
-	 * * @return the list of available JRC Requests as a JSON string
-	 */
-	private String getJRCRequests() throws Exception {
-		StringBuffer result = new StringBuffer();
-		List<DatasetData> requestList = metadataDAO.getDatasets();
-		result.append("[");
-		Iterator<DatasetData> requestIter = requestList.iterator();
-		while (requestIter.hasNext()) {
-			DatasetData jrcrequest = requestIter.next();
-			result.append("{id:\"" + jrcrequest.getRequestId() + "\",label:\"" + jrcrequest.getLabel() + "\"}");
-			if (requestIter.hasNext()) {
-				result.append(",");
-			}
-		}
-		result.append("]");
-		return result.toString();
 	}
 
 	/**

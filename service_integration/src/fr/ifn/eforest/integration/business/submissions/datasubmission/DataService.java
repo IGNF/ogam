@@ -150,8 +150,8 @@ public class DataService extends AbstractService {
 		Iterator<String> tableIter = toDeleteFormats.iterator();
 		while (tableIter.hasNext()) {
 			String tableFormat = tableIter.next();
-			String tableName = metadataDAO.getTableName(tableFormat);
-			genericDAO.deleteRawData(tableName, submissionId);
+			TableFormatData tableFormatData = metadataDAO.getTableFormat(tableFormat);
+			genericDAO.deleteRawData(tableFormatData.getTableName(), submissionId);
 		}
 
 		// Update the status of the submission

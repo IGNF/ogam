@@ -227,7 +227,7 @@ public class DataServlet extends AbstractUploadServlet {
 				// Check if a thread is already running
 				Thread process = ThreadLock.getInstance().getProcess(submissionIDStr);
 				if (process != null) {
-					throw new Exception("A process is already running for this country and JRC Request");
+					throw new Exception("A process is already running for this provider and dataset");
 				}
 
 				// Launch the harmonization thread

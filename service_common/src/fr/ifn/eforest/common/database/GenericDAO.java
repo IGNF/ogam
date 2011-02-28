@@ -62,7 +62,7 @@ public class GenericDAO {
 	 * 
 	 * @throws Exception
 	 */
-	public void insertData(String schema, String tableName, List<TableFieldData> tableColumns, Map<String, GenericData> valueColumns) throws Exception {
+	public void insertData(String schema, String tableName, Map<String, TableFieldData> tableColumns, Map<String, GenericData> valueColumns) throws Exception {
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -73,11 +73,12 @@ public class GenericDAO {
 			// Prepare the SQL values
 			StringBuffer colNames = new StringBuffer();
 			StringBuffer colValues = new StringBuffer();
-			Iterator<TableFieldData> columnsIter = tableColumns.iterator();
+			Iterator<String> columnsIter = tableColumns.keySet().iterator();
 			while (columnsIter.hasNext()) {
-				TableFieldData col = columnsIter.next();
+				String sourceData = columnsIter.next();
+				TableFieldData destField = tableColumns.get(sourceData);
 
-				GenericData colData = valueColumns.get(col.getData());
+				GenericData colData = valueColumns.get(sourceData);
 
 				// If colData is null, the field is not mapped and is probably not expected (we hope)
 				if (colData != null) {
@@ -87,7 +88,7 @@ public class GenericDAO {
 						colValues.append(", ");
 					}
 
-					colNames.append(col.getColumnName());
+					colNames.append(destField.getColumnName());
 					colValues.append("?");
 
 				}
@@ -101,12 +102,11 @@ public class GenericDAO {
 			ps = con.prepareStatement(statement);
 
 			// Set the values
-			columnsIter = tableColumns.iterator();
+			columnsIter = tableColumns.keySet().iterator();
 			int count = 1;
 			while (columnsIter.hasNext()) {
-				TableFieldData col = columnsIter.next();
-
-				GenericData colData = valueColumns.get(col.getData());
+				String sourceData = columnsIter.next();
+				GenericData colData = valueColumns.get(sourceData);
 
 				if (colData != null) {
 

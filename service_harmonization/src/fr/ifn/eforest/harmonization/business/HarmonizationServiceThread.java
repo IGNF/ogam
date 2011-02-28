@@ -13,7 +13,7 @@ import fr.ifn.eforest.common.business.ThreadLock;
 public class HarmonizationServiceThread extends AbstractThread {
 
 	//
-	// The Thread is always linked to a country code and a JRC Request.
+	// The Thread is always linked to a country code and a dataset.
 	//
 	private String datasetId;
 	private String providerId;

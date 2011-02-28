@@ -64,7 +64,7 @@ public class MetadataTest extends AbstractEFDACTest {
 	}
 
 	/**
-	 * Test the getJRCRequests function.
+	 * Test the getDatasets function.
 	 */
 	public void testGetDatasets() throws Exception {
 
@@ -203,7 +203,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		String tableFormat = "PLOT_DATA";
 
-		List<TableFieldData> fields = metadataDAO.getTableFields(tableFormat, true);
+		Map<String, TableFieldData> fields = metadataDAO.getTableFields(tableFormat, true);
 
 		logger.debug(fields);
 
@@ -216,11 +216,11 @@ public class MetadataTest extends AbstractEFDACTest {
 	 */
 	public void testGetTableName() throws Exception {
 
-		String tableFormat = "PLOT_DATA";
+		String tableFormatName = "PLOT_DATA";
 
-		String name = metadataDAO.getTableName(tableFormat);
+		TableFormatData tableFormat = metadataDAO.getTableFormat(tableFormatName);
 
-		assertEquals("The physical name of the PLOT_DATA table should be PLOT_DATA", name, tableFormat);
+		assertEquals("The physical name of the PLOT_DATA table should be PLOT_DATA", tableFormat.getTableName(), tableFormatName);
 
 	}
 

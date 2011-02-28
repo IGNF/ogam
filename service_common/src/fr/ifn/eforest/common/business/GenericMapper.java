@@ -253,11 +253,13 @@ public class GenericMapper {
 			Iterator<TableTreeData> ancestorsIter = ancestors.iterator();
 			while (ancestorsIter.hasNext() && !found) {
 				TableTreeData ancestor = ancestorsIter.next();
-				int index = sortedTablesList.indexOf(ancestor.getParentTable());
-				if (index != -1) {
-					found = true;
-					// We insert the table just before its ancestor
-					sortedTablesList.add(index, table.getFormat());
+				if (ancestor.getParentTable() != null) {
+					int index = sortedTablesList.indexOf(ancestor.getParentTable().getFormat());
+					if (index != -1) {
+						found = true;
+						// We insert the table just before its ancestor
+						sortedTablesList.add(index, table.getFormat());
+					}
 				}
 			}
 			if (!found) {
@@ -266,8 +268,8 @@ public class GenericMapper {
 				while (ancestorsIter.hasNext()) {
 					TableTreeData ancestor = ancestorsIter.next();
 
-					if (!sortedTablesList.contains(ancestor.getTable())) {
-						sortedTablesList.add(ancestor.getTable());
+					if (!sortedTablesList.contains(ancestor.getTable().getFormat())) {
+						sortedTablesList.add(ancestor.getTable().getFormat());
 					}
 				}
 			}
@@ -342,12 +344,11 @@ public class GenericMapper {
 			String sourceTableFormat = sourceTablesIter.next();
 
 			// Get the descriptor of the table
-			List<TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat, false);
+			Map<String, TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat, false);
 			TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(sourceTableFormat, schema);
-			String tableName = metadataDAO.getTableName(sourceTableFormat);
 
 			// Build the SELECT clause
-			Iterator<TableFieldData> sourceFieldsIter = sourceFields.iterator();
+			Iterator<TableFieldData> sourceFieldsIter = sourceFields.values().iterator();
 			while (sourceFieldsIter.hasNext()) {
 				TableFieldData sourceField = sourceFieldsIter.next();
 				if (SELECT.equals("")) {
@@ -367,14 +368,14 @@ public class GenericMapper {
 
 			// Build the FROM clause
 			if (FROM.equals("")) {
-				FROM += " FROM " + tableName;
+				FROM += " FROM " + tableDescriptor.getTable().getTableName();
 			} else {
-				FROM += " LEFT JOIN " + tableName + " ON (";
+				FROM += " LEFT JOIN " + tableDescriptor.getTable().getTableName() + " ON (";
 				Iterator<String> keyIter = tableDescriptor.getKeys().iterator();
 				while (keyIter.hasNext()) {
 					String key = keyIter.next();
-					String parentTableName = metadataDAO.getTableName(tableDescriptor.getParentTable());
-					FROM += tableName + "." + key + " = " + parentTableName + "." + key;
+					String parentTableName = tableDescriptor.getParentTable().getTableName();
+					FROM += tableDescriptor.getTable().getTableName() + "." + key + " = " + parentTableName + "." + key;
 					if (keyIter.hasNext()) {
 						FROM += " AND ";
 					}
@@ -385,7 +386,7 @@ public class GenericMapper {
 			// Build the WHERE clause
 
 			// When we find a source field that match one of our criteria, we add the clause
-			sourceFieldsIter = sourceFields.iterator();
+			sourceFieldsIter = sourceFields.values().iterator();
 			while (sourceFieldsIter.hasNext()) {
 				TableFieldData sourceField = sourceFieldsIter.next();
 
