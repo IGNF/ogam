@@ -113,7 +113,6 @@ class DataEditionController extends AbstractEforestController {
 
 		if ($tableField->type == "STRING") {
 			$elem = $form->createElement('text', $tableField->data);
-			$elem->addValidator('Alnum');
 
 			// Add a regexp validator if a mask is present
 			if ($formField->mask != null) {
@@ -126,7 +125,7 @@ class DataEditionController extends AbstractEforestController {
 
 		} else if ($tableField->type == "NUMERIC") {
 			$elem = $form->createElement('text', $tableField->data);
-			$elem->addValidator(new Zend_Validate_Digits());
+			$elem->addValidator(new Zend_Validate_Float(array('locale' => $configuration->defaultLocale)));
 
 		} else if ($tableField->type == "DATE") {
 			$elem = $form->createElement('text', $tableField->data);
@@ -143,7 +142,7 @@ class DataEditionController extends AbstractEforestController {
 
 		} else if ($tableField->type == "RANGE") {
 			$elem = $form->createElement('text', $tableField->data);
-			$elem->addValidator(new Zend_Validate_Digits());
+			$elem->addValidator(new Zend_Validate_Float(array('locale' => $configuration->defaultLocale)));
 
 			// Check min and max
 			$range = $this->metadataModel->getRange($tableField->data);
@@ -196,7 +195,7 @@ class DataEditionController extends AbstractEforestController {
 		// The key elements as labels
 		//
 		foreach ($data->infoFields as $tablefield) {
-			
+
 			Zend_Registry::get("logger")->info('adding key filed : '.print_r($tablefield, true));
 
 			// Hardcoded value : We don't display the submission id (it's a technical element)
@@ -241,94 +240,100 @@ class DataEditionController extends AbstractEforestController {
 	 *
 	 * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
 	 *
+	 * @param DataObject $data The data to display (optional)
 	 * @return the HTML view
 	 */
-	public function showEditDataAction() {
+	public function showEditDataAction($data = null, $message = '') {
 		$this->logger->debug('showEditDataAction');
 
 		$mode = 'EDIT';
 
-		// Get back the dataset identifier
-		$websiteSession = new Zend_Session_Namespace('website');
-		$datasetId = $websiteSession->datasetID;
+		// If data is set then we don't need to read from database
+		if ($data == null) {
 
-		// Declare our array of business keys
-		$keyMap = array();
+			// Get back the dataset identifier
+			$websiteSession = new Zend_Session_Namespace('website');
+			$datasetId = $websiteSession->datasetID;
 
-		// Get the parameters from the URL
-		$request = $this->getRequest();
-		$params = $request->getUserParams();
+			// Declare our array of business keys
+			$keyMap = array();
 
-		if (sizeof($params) <= 3) { // default size = controller + action + module
+			// Get the parameters from the URL
+			$request = $this->getRequest();
+			$params = $request->getUserParams();
 
-			// Paramètres d'entrée :
-			// DATASET_ID
-			// FORMAT : Le nom de la table à éditer
-			// CLE1
-			// CLE2
-			// ...
+			if (sizeof($params) <= 3) { // default size = controller + action + module
 
-			// Test 1 : Plot data
-			//		$keyMap["FORMAT"] = "PLOT_DATA";
-			//		$keyMap["PROVIDER_ID"] = "1";
-			//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
-			//		$keyMap["CYCLE"] = "5";
+				// Paramètres d'entrée :
+				// DATASET_ID
+				// FORMAT : Le nom de la table à éditer
+				// CLE1
+				// CLE2
+				// ...
 
-			// Test 2 : Species data
-			//		$keyMap["FORMAT"] = "SPECIES_DATA";
-			//		$keyMap["PROVIDER_ID"] = "1";
-			//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
-			//		$keyMap["CYCLE"] = "5";
-			//		$keyMap["SPECIES_CODE"] = "035.001.001";
+				// Test 1 : Plot data
+				//		$keyMap["FORMAT"] = "PLOT_DATA";
+				//		$keyMap["PROVIDER_ID"] = "1";
+				//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
+				//		$keyMap["CYCLE"] = "5";
 
-			// Test 3 : Tree data (no dataset filtering)
-			$keyMap["FORMAT"] = "TREE_DATA";
-			$keyMap["PROVIDER_ID"] = "1";
-			$keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
-			$keyMap["CYCLE"] = "5";
-			$keyMap["TREE_ID"] = "61618";
-		} else {
-			$keyMap = $params;
-		}
+				// Test 2 : Species data
+				//		$keyMap["FORMAT"] = "SPECIES_DATA";
+				//		$keyMap["PROVIDER_ID"] = "1";
+				//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
+				//		$keyMap["CYCLE"] = "5";
+				//		$keyMap["SPECIES_CODE"] = "035.001.001";
 
-		// Create an empty data object with the info in session
-		$data = new DataObject();
-		$data->datasetId = $datasetId;
-
-		// Get the info about the format
-		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $keyMap["FORMAT"]);
-
-		// Store it in the data object
-		$data->tableFormat = $tableFormat;
-
-		// Get all the description of the Table Fields corresponding to the format
-		$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->tableFormat->format);
-
-		// Separate the keys from other values
-		foreach ($tableFields as $tableField) {
-			if (in_array($tableField->data, $tableFormat->primaryKeys)) {
-				// Primary keys are displayed as info fields
-				$data->addInfoField($tableField);
+				// Test 3 : Tree data (no dataset filtering)
+				$keyMap["FORMAT"] = "TREE_DATA";
+				$keyMap["PROVIDER_ID"] = "1";
+				$keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
+				$keyMap["CYCLE"] = "5";
+				$keyMap["TREE_ID"] = "246450";
 			} else {
-				if (!$tableField->isCalculated) {
-					// Fields that are calculated by a trigger should not be edited
-					$data->addEditableField($tableField);
+				$keyMap = $params;
+			}
+
+			// Create an empty data object with the info in session
+			$data = new DataObject();
+			$data->datasetId = $datasetId;
+
+			// Get the info about the format
+			$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $keyMap["FORMAT"]);
+
+			// Store it in the data object
+			$data->tableFormat = $tableFormat;
+
+			// Get all the description of the Table Fields corresponding to the format
+			$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->tableFormat->format);
+
+			// Separate the keys from other values
+			foreach ($tableFields as $tableField) {
+				if (in_array($tableField->data, $tableFormat->primaryKeys)) {
+					// Primary keys are displayed as info fields
+					$data->addInfoField($tableField);
+				} else {
+					if (!$tableField->isCalculated) {
+						// Fields that are calculated by a trigger should not be edited
+						$data->addEditableField($tableField);
+					}
 				}
 			}
-		}
 
-		// Complete the primary key info with the session values
-		foreach ($data->infoFields as $infoField) {
+			// Complete the primary key info with the session values
+			foreach ($data->infoFields as $infoField) {
 
-			if (!empty($keyMap[$infoField->data])) {
-				$infoField->value = $keyMap[$infoField->data];
+				if (!empty($keyMap[$infoField->data])) {
+					$infoField->value = $keyMap[$infoField->data];
+				}
 			}
+
+			// Complete the data object with the values from the database.
+			$data = $this->genericModel->getData($data);
+
 		}
 
-		// Complete the data object with the values from the database.
-		$data = $this->genericModel->getData($data);
-
-		// Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
+		Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
 
 		// If the objet is not existing then we are in create mode instead of edit mode
 
@@ -340,12 +345,14 @@ class DataEditionController extends AbstractEforestController {
 		// Store the data descriptor in session
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->data = $data;
+		$websiteSession->ancestors = $ancestors;
 
 		// Generate dynamically the corresponding form
 		$this->view->form = $this->_getEditDataForm($data, $mode);
-		$this->view->tableFormat = $tableFormat;
+		$this->view->tableFormat = $data->tableFormat;
 		$this->view->ancestors = $ancestors;
 		$this->view->mode = $mode;
+		$this->view->message = $message;
 
 		$this->render('edit-data');
 	}
@@ -363,16 +370,15 @@ class DataEditionController extends AbstractEforestController {
 		$datasetId = $websiteSession->datasetID;
 		$data = $websiteSession->data;
 
-		Zend_Registry::get("logger")->info('$newdata : '.print_r($data, true));
-
 		// Validate the form
 		$form = $this->_getEditDataForm($data, 'EDIT');
 		if (!$form->isValidPartial($_POST)) {
-			
+
 			// On réaffiche le formulaire avec les messages d'erreur
 			$this->view->form = $form;
-			$this->view->tableFormat = $websiteSession->tableFormat;
 			$this->view->ancestors = $websiteSession->ancestors;
+			$this->view->tableFormat = $data->tableFormat;
+			$this->view->message = '';
 			$this->view->mode = 'EDIT';
 
 			return $this->render('edit-data');
@@ -388,7 +394,7 @@ class DataEditionController extends AbstractEforestController {
 		$this->genericModel->updateData($data);
 
 		// Forward the user to the next step
-		$this->_redirector->gotoUrl('/dataedition');
+		return $this->showEditDataAction($data, 'Data successfully edited');
 	}
 
 	/**
@@ -404,16 +410,15 @@ class DataEditionController extends AbstractEforestController {
 		$datasetId = $websiteSession->datasetID;
 		$data = $websiteSession->data;
 
-		Zend_Registry::get("logger")->info('$params : '.print_r($this->_getAllParams(), true));
-
 		// Validate the form
 		$form = $this->_getEditDataForm($data, 'ADD');
 		if (!$form->isValidPartial($_POST)) {
 
 			// On réaffiche le formulaire avec les messages d'erreur
 			$this->view->form = $form;
-			$this->view->tableFormat = $websiteSession->tableFormat;
 			$this->view->ancestors = $websiteSession->ancestors;
+			$this->view->tableFormat = $data->tableFormat;
+			$this->view->message = '';
 			$this->view->mode = 'ADD';
 
 			return $this->render('edit-data');
@@ -427,7 +432,7 @@ class DataEditionController extends AbstractEforestController {
 		$this->genericModel->insertData($data);
 
 		// Forward the user to the next step
-		$this->_redirector->gotoUrl('/dataedition');
+		return $this->showAddDataAction($data, 'Data successfully inserted');
 	}
 
 	/**
@@ -435,100 +440,106 @@ class DataEditionController extends AbstractEforestController {
 	 *
 	 * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
 	 *
+	 * @param DataObject $data The data to display (optional)
 	 * @return the HTML view
 	 */
-	public function showAddDataAction() {
+	public function showAddDataAction($data = null, $message = '') {
 		$this->logger->debug('showAddDataAction');
 
 		$mode = 'ADD';
 
-		// Get back the dataset identifier
-		$websiteSession = new Zend_Session_Namespace('website');
-		$datasetId = $websiteSession->datasetID;
+		// If data is set then we don't need to read from database
+		if ($data == null) {
 
-		// Declare our array of business keys
-		$keyMap = array();
+			// Get back the dataset identifier
+			$websiteSession = new Zend_Session_Namespace('website');
+			$datasetId = $websiteSession->datasetID;
 
-		// Get the parameters from the URL
-		$request = $this->getRequest();
-		$params = $request->getUserParams();
+			// Declare our array of business keys
+			$keyMap = array();
 
-		if (sizeof($params) <= 3) { // default size = controller + action + module
+			// Get the parameters from the URL
+			$request = $this->getRequest();
+			$params = $request->getUserParams();
 
-			// Paramètres d'entrée :
-			// DATASET_ID
-			// FORMAT : Le nom de la table à éditer
-			// CLE1
-			// CLE2
-			// ...
+			if (sizeof($params) <= 3) { // default size = controller + action + module
 
-			// Test 1 : Plot data
-			//		$keyMap["FORMAT"] = "PLOT_DATA";
-			//		$keyMap["PROVIDER_ID"] = "1";
-			//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
-			//		$keyMap["CYCLE"] = "5";
+				// Paramètres d'entrée :
+				// DATASET_ID
+				// FORMAT : Le nom de la table à éditer
+				// CLE1
+				// CLE2
+				// ...
 
-			// Test 2 : Species data
-			$keyMap["FORMAT"] = "SPECIES_DATA";
-			$keyMap["PROVIDER_ID"] = "1";
-			$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
-			$keyMap["CYCLE"] = "5";
-			//$keyMap["SPECIES_CODE"] = "035.001.001";
-			$keyMap["SUBMISSION_ID"] = "-1";
-			$keyMap["LINE_NUMBER"] = "-1";
+				// Test 1 : Plot data
+				//		$keyMap["FORMAT"] = "PLOT_DATA";
+				//		$keyMap["PROVIDER_ID"] = "1";
+				//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
+				//		$keyMap["CYCLE"] = "5";
 
-			// Test 3 : Tree data (no dataset filtering)
-			/*
-			 $keyMap["FORMAT"] = "TREE_DATA";
-			 $keyMap["PROVIDER_ID"] = "1";
-			 $keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
-			 $keyMap["CYCLE"] = "5";
-			 $keyMap["SUBMISSION_ID"] = "-1";
-			 $keyMap["LINE_NUMBER"] = "-1";*/
-		} else {
-			$keyMap = $params;
-		}
+				// Test 2 : Species data
+				$keyMap["FORMAT"] = "SPECIES_DATA";
+				$keyMap["PROVIDER_ID"] = "1";
+				$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
+				$keyMap["CYCLE"] = "5";
+				//$keyMap["SPECIES_CODE"] = "035.001.001";
+				$keyMap["SUBMISSION_ID"] = "-1";
+				$keyMap["LINE_NUMBER"] = "-1";
 
-		// Create an empty data object with the info in session
-		$data = new DataObject();
-		$data->datasetId = $datasetId;
+				// Test 3 : Tree data (no dataset filtering)
+				/*
+				 $keyMap["FORMAT"] = "TREE_DATA";
+				 $keyMap["PROVIDER_ID"] = "1";
+				 $keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
+				 $keyMap["CYCLE"] = "5";
+				 $keyMap["SUBMISSION_ID"] = "-1";
+				 $keyMap["LINE_NUMBER"] = "-1";*/
+			} else {
+				$keyMap = $params;
+			}
 
-		// Get the info about the format
-		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $keyMap["FORMAT"]);
+			// Create an empty data object with the info in session
+			$data = new DataObject();
+			$data->datasetId = $datasetId;
 
-		// Store it in the data object
-		$data->tableFormat = $tableFormat;
+			// Get the info about the format
+			$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $keyMap["FORMAT"]);
 
-		// Get all the description of the Table Fields corresponding to the format
-		$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->tableFormat->format);
+			// Store it in the data object
+			$data->tableFormat = $tableFormat;
 
-		// Separate the keys from other values
-		foreach ($tableFields as $tableField) {
-			if (in_array($tableField->data, $tableFormat->primaryKeys)) {
-				// Primary keys are display as info when we have the value
-				if (!empty($keyMap[$tableField->data])) {
-					// Complete the primary key info with the session values
-					$tableField->value = $keyMap[$tableField->data];
-					$data->addInfoField($tableField);
+			// Get all the description of the Table Fields corresponding to the format
+			$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->tableFormat->format);
+
+			// Separate the keys from other values
+			foreach ($tableFields as $tableField) {
+				if (in_array($tableField->data, $tableFormat->primaryKeys)) {
+					// Primary keys are display as info when we have the value
+					if (!empty($keyMap[$tableField->data])) {
+						// Complete the primary key info with the session values
+						$tableField->value = $keyMap[$tableField->data];
+						$data->addInfoField($tableField);
+					} else {
+						// If the missing PK info is not calculated by trigger then it must be filled by the user
+						if (!$tableField->isCalculated) {
+							$this->logger->debug('adding field : '.$tableField->data.' as editable pk');
+							$data->addEditableField($tableField);
+						}
+					}
+
 				} else {
-					// If the missing PK info is not calculated by trigger then it must be filled by the user
+					$this->logger->debug('is data');
 					if (!$tableField->isCalculated) {
-						$this->logger->debug('adding field : '.$tableField->data.' as editable pk');
+						// Fields that are calculated by a trigger should not be edited
 						$data->addEditableField($tableField);
 					}
 				}
-
-			} else {
-				$this->logger->debug('is data');
-				if (!$tableField->isCalculated) {
-					// Fields that are calculated by a trigger should not be edited
-					$data->addEditableField($tableField);
-				}
 			}
-		}
 
-		// Complete the data object with the values from the database.
-		$data = $this->genericModel->getData($data);
+			// Complete the data object with the values from the database.
+			$data = $this->genericModel->getData($data);
+
+		}
 
 		// Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
 
@@ -543,13 +554,13 @@ class DataEditionController extends AbstractEforestController {
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->data = $data;
 		$websiteSession->ancestors = $ancestors;
-		$websiteSession->tableFormat = $tableFormat;
 
 		// Generate dynamically the corresponding form
 		$this->view->form = $this->_getEditDataForm($data, $mode);
-		$this->view->tableFormat = $tableFormat;
+		$this->view->tableFormat = $data->tableFormat;
 		$this->view->ancestors = $ancestors;
 		$this->view->mode = $mode;
+		$this->view->message = $message;
 
 		$this->render('edit-data');
 	}
