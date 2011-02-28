@@ -11,7 +11,6 @@ DATA                 VARCHAR(36)          not null,
 UNIT                 VARCHAR(36)          not null,
 LABEL                VARCHAR(60)          null,
 DEFINITION           VARCHAR(255)         null,
-MASK                 VARCHAR(100)         null,
 COMMENT              VARCHAR(255)         null,
 constraint PK_DATA primary key (DATA)
 );
@@ -20,7 +19,6 @@ COMMENT ON COLUMN DATA.DATA IS 'The logical name of the data';
 COMMENT ON COLUMN DATA.UNIT IS 'The unit of the data';
 COMMENT ON COLUMN DATA.LABEL IS 'The label of the data';
 COMMENT ON COLUMN DATA.DEFINITION IS 'The definition of the data (used in tooltips)';
-COMMENT ON COLUMN DATA.MASK IS 'A mask used to validate the data';
 COMMENT ON COLUMN DATA.COMMENT IS 'Any comment on the data';
 
 
@@ -46,6 +44,7 @@ create table FILE_FIELD (
 DATA                 VARCHAR(36)          not null,
 FORMAT               VARCHAR(36)          not null,
 IS_MANDATORY         CHAR(1)          	  null,
+MASK                 VARCHAR(100)         null,
 POSITION             INT4                 null,
 constraint PK_FILE_FIELD primary key (DATA, FORMAT)
 );
@@ -53,6 +52,7 @@ constraint PK_FILE_FIELD primary key (DATA, FORMAT)
 COMMENT ON COLUMN FILE_FIELD.DATA IS 'The logical name of the field';
 COMMENT ON COLUMN FILE_FIELD.FORMAT IS 'The name of the file format containing this field';
 COMMENT ON COLUMN FILE_FIELD.IS_MANDATORY IS 'Is the field mandatory?';
+COMMENT ON COLUMN FILE_FIELD.MASK IS 'A mask used to validate the data';
 COMMENT ON COLUMN FILE_FIELD.POSITION IS 'The position of this field in the file';
 
 /*==============================================================*/
@@ -69,6 +69,7 @@ IS_DEFAULT_CRITERIA  CHAR(1)              null,
 IS_DEFAULT_RESULT    CHAR(1)              null,
 DEFAULT_VALUE        VARCHAR(255)         null,
 DECIMALS       		 INT		          null,
+MASK                 VARCHAR(100)         null,
 constraint PK_FORM_FIELD primary key (DATA, FORMAT)
 );
 
@@ -82,6 +83,7 @@ COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_CRITERIA IS 'Is this field selected by d
 COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_RESULT IS 'Is this field selected by default as a result?';
 COMMENT ON COLUMN FORM_FIELD.DEFAULT_VALUE IS 'The default value for the criteria (multiple values are separated by a semicolon)';
 COMMENT ON COLUMN FORM_FIELD.DECIMALS IS 'The number of decimals to be displayed for numeric values';
+COMMENT ON COLUMN FORM_FIELD.MASK IS 'A mask used to validate the data (the format for date values)';
 
 /*==============================================================*/
 /* Table : TABLE_FIELD                                          */
