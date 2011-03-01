@@ -43,7 +43,8 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get a line of data from a table, given its primary key.
+	 * Fill a line of data with the values a table, given its primary key.
+	 * Only one object is expected in return.
 	 *
 	 * @param DataObject $data the shell of the data object with the values for the primary key.
 	 * @return DataObject The complete data object.
@@ -90,6 +91,91 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		}
 
 		return $data;
+
+	}
+
+	/**
+	 * Get a line of data from a table, given its primary key.
+	 * A list of objects is expected in return.
+	 *
+	 * @param DataObject $data the shell of the data object with the values for the primary key.
+	 * @return Array[DataObject] The complete data objects.
+	 */
+	public function getData($data) {
+		$db = $this->getAdapter();
+
+		Zend_Registry::get("logger")->info('getData');
+
+		$result = array();
+
+		// The table format descriptor
+		$tableFormat = $data->tableFormat;
+		//Zend_Registry::get("logger")->info('$tableFormat : '.print_r($tableFormat, true));
+
+		// The table fields descriptor
+		$tableFields = $this->metadataModel->getTableFields(null, 'RAW_DATA', $tableFormat->format);
+
+		//Zend_Registry::get("logger")->info('$tableFields : '.print_r($tableFields, true));
+
+		// Get the values from the data table
+		$sql = "SELECT *";
+		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName;
+		$sql .= " WHERE(1 = 1)";
+
+		// Build the WHERE clause with the info from the PK.
+		foreach ($data->infoFields as $primaryKey) {
+			/* @var $primaryKey TableField */
+
+			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
+			if (!($tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
+
+				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER") {
+					$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
+				} else {
+					$sql .= " AND ".$primaryKey->columnName." = '".$primaryKey->value."'";
+				}
+			}
+		}
+
+		Zend_Registry::get("logger")->info('getDatum : '.$sql);
+
+		$select = $db->prepare($sql);
+		$select->execute();
+		foreach ($select->fetchAll() as $row) {
+
+			// Create a new data object
+			$child = new DataObject();
+			$child->tableFormat = $tableFormat;
+
+			// Copy the key info (with know values)
+			$knownKeys = array();
+			foreach ($data->infoFields as $field) {
+				$child->addInfoField($field);
+				$knownKeys[] = $field->data;
+			}
+
+			// Add the unknown key items with their value from the table
+			$unknownKeys = array_diff($tableFormat->primaryKeys, $knownKeys);
+			foreach ($unknownKeys as $keyname) {
+				if ($keyname != 'SUBMISSION_ID') {
+					$key = clone $tableFields[$keyname];
+					$key->value = $row[strtolower($key->columnName)];
+					$child->addInfoField($key);
+				}
+			}
+
+			// Fill the values with data from the table
+			foreach ($data->editableFields as $field) {
+				$key = clone $tableFields[$keyname];
+				$field->value = $row[strtolower($field->columnName)];
+				$child->addEditableField($field);
+
+			}
+
+			$result[] = $child;
+		}
+
+		return $result;
 
 	}
 
@@ -145,7 +231,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		}
 
 		Zend_Registry::get("logger")->info('updateData : '.$sql);
-		
+
 		$request = $db->prepare($sql);
 
 		try {
@@ -308,27 +394,31 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 		$select = $db->prepare($sql);
 		$select->execute();
+
+		// For each potential child table listed, we search for the actual lines of data available		
 		foreach ($select->fetchAll() as $row) {
-			$children = $row['child_table'];
+			$childTable = $row['child_table'];
 			$joinKeys = explode(',', $row['join_key']);
 
-			// For each potential child table listed, we search for the actual lines
+			$childFormat = $this->metadataModel->getTableFormat('RAW_DATA', $childTable);
 
 			// Build an empty child object (with the key info)
 			$child = new DataObject();
 			$child->datasetId = $data->datasetId;
-			$child->tableFormat = $parentFormat;
+			$child->tableFormat = $childFormat;
 			foreach ($joinKeys as $key) {
 				$keyField = $data->getInfoField($key);
 				$child->addInfoField($keyField);
 			}
 
-			// Get the line of data from the parent
+			// Get the lines of data corresponding to the partial key
 			$child = $this->getData($child);
-			$children[] = $child;
 
-			return $children;
+			$children[$childFormat->format] = $child;
+
 		}
+
+		return $children;
 	}
 
 }

@@ -196,8 +196,6 @@ class DataEditionController extends AbstractEforestController {
 		//
 		foreach ($data->infoFields as $tablefield) {
 
-			Zend_Registry::get("logger")->info('adding key filed : '.print_r($tablefield, true));
-
 			// Hardcoded value : We don't display the submission id (it's a technical element)
 			if ($tablefield->data != "SUBMISSION_ID") {
 				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
@@ -322,7 +320,6 @@ class DataEditionController extends AbstractEforestController {
 
 			// Complete the primary key info with the session values
 			foreach ($data->infoFields as $infoField) {
-
 				if (!empty($keyMap[$infoField->data])) {
 					$infoField->value = $keyMap[$infoField->data];
 				}
@@ -343,15 +340,20 @@ class DataEditionController extends AbstractEforestController {
 		// Get the childs of the data objet from the database (to generate links)
 		$children = $this->genericModel->getChildren($data);
 
+		//Zend_Registry::get("logger")->info('$children : '.print_r($children, true));
+
 		// Store the data descriptor in session
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->data = $data;
 		$websiteSession->ancestors = $ancestors;
+		$websiteSession->children = $children;
 
 		// Generate dynamically the corresponding form
 		$this->view->form = $this->_getEditDataForm($data, $mode);
 		$this->view->tableFormat = $data->tableFormat;
+		$this->view->data = $data;
 		$this->view->ancestors = $ancestors;
+		$this->view->children = $children;
 		$this->view->mode = $mode;
 		$this->view->message = $message;
 
@@ -379,6 +381,8 @@ class DataEditionController extends AbstractEforestController {
 			$this->view->form = $form;
 			$this->view->ancestors = $websiteSession->ancestors;
 			$this->view->tableFormat = $data->tableFormat;
+			$this->view->data = $data;
+			$this->view->children = $websiteSession->children;
 			$this->view->message = '';
 			$this->view->mode = 'EDIT';
 
@@ -423,6 +427,8 @@ class DataEditionController extends AbstractEforestController {
 			$this->view->form = $form;
 			$this->view->ancestors = $websiteSession->ancestors;
 			$this->view->tableFormat = $data->tableFormat;
+			$this->view->data = $data;
+			$this->view->children = array(); // No children in edition mode
 			$this->view->message = '';
 			$this->view->mode = 'ADD';
 
@@ -537,16 +543,12 @@ class DataEditionController extends AbstractEforestController {
 					}
 
 				} else {
-					$this->logger->debug('is data');
 					if (!$tableField->isCalculated) {
 						// Fields that are calculated by a trigger should not be edited
 						$data->addEditableField($tableField);
 					}
 				}
 			}
-
-			// Complete the data object with the values from the database.
-			$data = $this->genericModel->getDatum($data);
 
 		}
 
@@ -568,6 +570,8 @@ class DataEditionController extends AbstractEforestController {
 		$this->view->form = $this->_getEditDataForm($data, $mode);
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->ancestors = $ancestors;
+		$this->view->data = $data;
+		$this->view->children = array(); // No children in edition mode
 		$this->view->mode = $mode;
 		$this->view->message = $message;
 

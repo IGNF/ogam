@@ -46,9 +46,48 @@ foreach ($ancestors as $ancestor) {
 <legend><?= $this->tableFormat->format; ?></legend>
 <?= $this->form ?>
 </fieldset>
+
+
+
 <!-- Affichage les tables enfant (uniquement les valeurs de la clé) -->
 <!-- Lien vers l'édition d'un enfant existant -->
 <!-- Lien pour l'ajout d'un nouvel enfant -->
+<!-- Rappel des infos sur les tables parentes -->
+<!-- Lien pour l'édition des tables parents -->
+<?php
+if (!empty($this->children)) {
+?>
+<fieldset>
+<legend>Children summary</legend>
+<?php
+	// Iterate though the child tables
+	foreach ($this->children as $childFormat => $childrenLines) {
+		echo "<fieldset><legend>".$childFormat."</legend>";
+
+		// Add the edit links for each child of the current item
+		foreach ($childrenLines as $format => $child) {
+			// Build the URL to link to the parent items
+			$urlArray = array('controller' => 'dataedition', 'action' => 'show-edit-data');
+			$urlArray['FORMAT'] = $childFormat;
+			foreach ($child->infoFields as $tableField) {
+				$urlArray[$tableField->data] = $tableField->value;
+			}
+			echo '<a href="'.$this->url($urlArray, null, true).'">Edit '.$childFormat.'</a><br>';
+		}
+
+		// Add link to a new child
+		$urlArray = array('controller' => 'dataedition', 'action' => 'show-add-data');
+		$urlArray['FORMAT'] = $childFormat;
+		foreach ($this->data->infoFields as $tableField) {
+			$urlArray[$tableField->data] = $tableField->value;
+		}
+		echo ' (+) <a href="'.$this->url($urlArray, null, true).'">Add '.$childFormat.'</a><br>';
+
+		echo "</fieldset>";
+	}
+?>
+</fieldset>
+<?php } ?>
 
 
 <!-- Sur chaque lien, alerte javascript proposant la sauvegarde des modifs -->

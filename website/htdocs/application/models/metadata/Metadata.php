@@ -239,7 +239,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 				$tableField->type = $row['type'];
 				$tableField->definition = $row['definition'];
 
-				$result[] = $tableField;
+				$result[$tableField->data] = $tableField;
 			}
 
 			if ($this->useCache) {

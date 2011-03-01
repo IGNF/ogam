@@ -25,10 +25,21 @@ class TableField extends Field {
 	 * Indicate if the field is calculated during an INSERT or UPDATE.
 	 */
 	var $isCalculated;
-	
+
 	/**
 	 * Indicate if an operation of agregation can be done on this field (for numeric values).
 	 */
 	var $isAggregatable;
+
+	/**
+	 * Clone the field
+	 */
+	function __clone() {
+		foreach ($this as $name => $value) {
+			if (gettype($value) == 'object') {
+				$this->$name = clone ($this->$name);
+			}
+		}
+	}
 
 }
