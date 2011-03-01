@@ -48,14 +48,14 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * @param DataObject $data the shell of the data object with the values for the primary key.
 	 * @return DataObject The complete data object.
 	 */
-	public function getData($data) {
+	public function getDatum($data) {
 		$db = $this->getAdapter();
 
 		/* @var $data DataObject */
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		Zend_Registry::get("logger")->info('getData');
+		Zend_Registry::get("logger")->info('getDatum');
 
 		// Get the values from the data table
 		$sql = "SELECT *";
@@ -77,7 +77,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			}
 		}
 
-		Zend_Registry::get("logger")->info('getData : '.$sql);
+		Zend_Registry::get("logger")->info('getDatum : '.$sql);
 
 		$select = $db->prepare($sql);
 		$select->execute();
@@ -145,9 +145,15 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		}
 
 		Zend_Registry::get("logger")->info('updateData : '.$sql);
+		
+		$request = $db->prepare($sql);
 
-		$select = $db->prepare($sql);
-		$select->execute();
+		try {
+			$request->execute();
+		} catch (Exception $e) {
+			Zend_Registry::get("logger")->err('Error while updating data  : '.$e->getMessage());
+			throw new Exception("Error while updating data  : ".$e->getMessage());
+		}
 
 	}
 
@@ -201,8 +207,14 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 		Zend_Registry::get("logger")->info('insertData : '.$sql);
 
-		$select = $db->prepare($sql);
-		$select->execute();
+		$request = $db->prepare($sql);
+
+		try {
+			$request->execute();
+		} catch (Exception $e) {
+			Zend_Registry::get("logger")->err('Error while inserting data  : '.$e->getMessage());
+			throw new Exception("Error while inserting data  : ".$e->getMessage());
+		}
 
 	}
 
@@ -227,7 +239,8 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		// Get the parent of the current table
 		$sql = "SELECT *";
 		$sql .= " FROM TABLE_TREE ";
-		$sql .= " WHERE SCHEMA_CODE = '".$tableFormat->schemaCode."' AND child_table = '".$tableFormat->format."'";
+		$sql .= " WHERE SCHEMA_CODE = '".$tableFormat->schemaCode."'";
+		$sql .= " AND child_table = '".$tableFormat->format."'";
 
 		Zend_Registry::get("logger")->info('getAncestors : '.$sql);
 
@@ -256,7 +269,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			}
 
 			// Get the line of data from the parent
-			$parentData = $this->getData($parent);
+			$parentData = $this->getDatum($parent);
 
 			$ancestors[] = $parentData;
 
@@ -266,6 +279,56 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		}
 		return $ancestors;
 
+	}
+
+	/**
+	 * Get the information about the children of a line of data.
+	 *
+	 * @param DataObject $data the data object we're looking at.
+	 * @return List[DataObject] The lines of data in the parent tables.
+	 */
+	public function getChildren($data) {
+		$db = $this->getAdapter();
+
+		$children = array();
+
+		/* @var $data DataObject */
+		$tableFormat = $data->tableFormat;
+		/* @var $tableFormat TableFormat */
+
+		Zend_Registry::get("logger")->info('getChildren');
+
+		// Get the children of the current table
+		$sql = "SELECT *";
+		$sql .= " FROM TABLE_TREE ";
+		$sql .= " WHERE SCHEMA_CODE = '".$tableFormat->schemaCode."'";
+		$sql .= " AND parent_table = '".$tableFormat->format."'";
+
+		Zend_Registry::get("logger")->info('getChildren : '.$sql);
+
+		$select = $db->prepare($sql);
+		$select->execute();
+		foreach ($select->fetchAll() as $row) {
+			$children = $row['child_table'];
+			$joinKeys = explode(',', $row['join_key']);
+
+			// For each potential child table listed, we search for the actual lines
+
+			// Build an empty child object (with the key info)
+			$child = new DataObject();
+			$child->datasetId = $data->datasetId;
+			$child->tableFormat = $parentFormat;
+			foreach ($joinKeys as $key) {
+				$keyField = $data->getInfoField($key);
+				$child->addInfoField($keyField);
+			}
+
+			// Get the line of data from the parent
+			$child = $this->getData($child);
+			$children[] = $child;
+
+			return $children;
+		}
 	}
 
 }

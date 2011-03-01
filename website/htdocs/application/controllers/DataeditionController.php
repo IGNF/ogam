@@ -329,11 +329,11 @@ class DataEditionController extends AbstractEforestController {
 			}
 
 			// Complete the data object with the values from the database.
-			$data = $this->genericModel->getData($data);
+			$data = $this->genericModel->getDatum($data);
 
 		}
 
-		Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
+		//Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
 
 		// If the objet is not existing then we are in create mode instead of edit mode
 
@@ -341,6 +341,7 @@ class DataEditionController extends AbstractEforestController {
 		$ancestors = $this->genericModel->getAncestors($data);
 
 		// Get the childs of the data objet from the database (to generate links)
+		$children = $this->genericModel->getChildren($data);
 
 		// Store the data descriptor in session
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -391,7 +392,11 @@ class DataEditionController extends AbstractEforestController {
 
 		// Zend_Registry::get("logger")->info('$newdata : '.print_r($data, true));
 
-		$this->genericModel->updateData($data);
+		try {
+			$this->genericModel->updateData($data);
+		} catch (Exception $e) {
+			return $this->showEditDataAction($data, $e->getMessage());
+		}
 
 		// Forward the user to the next step
 		return $this->showEditDataAction($data, 'Data successfully edited');
@@ -429,10 +434,14 @@ class DataEditionController extends AbstractEforestController {
 			$field->value = $this->_getParam($field->data);
 		}
 
-		$this->genericModel->insertData($data);
+		try {
+			$this->genericModel->insertData($data);
+		} catch (Exception $e) {
+			return $this->showAddDataAction($data, $e->getMessage());
+		}
 
 		// Forward the user to the next step
-		return $this->showAddDataAction($data, 'Data successfully inserted');
+		return $this->showEditDataAction($data, 'Data successfully inserted');
 	}
 
 	/**
@@ -537,7 +546,7 @@ class DataEditionController extends AbstractEforestController {
 			}
 
 			// Complete the data object with the values from the database.
-			$data = $this->genericModel->getData($data);
+			$data = $this->genericModel->getDatum($data);
 
 		}
 
