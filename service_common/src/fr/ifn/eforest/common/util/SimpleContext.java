@@ -11,12 +11,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * <p>
- * Title: SimpleContext
- * </p>
- * <p>
- * Description: A very thin Context for use by JNDIUnitTestHelper
- * </p>
+ * A very thin Context for use by JNDIUnitTestHelper.
  * <p>
  * Copyright: Copyright (c) 2002
  * </p>
@@ -35,6 +30,7 @@ public class SimpleContext implements Context {
 	 * Method lookup not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return Object
 	 * @throws NamingException
 	 */
@@ -48,6 +44,7 @@ public class SimpleContext implements Context {
 	 * Method lookup Returns the SimpleDataSource.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return Object A copy of the SimpleDataSource class
 	 * @throws NamingException
 	 */
@@ -59,7 +56,9 @@ public class SimpleContext implements Context {
 	 * Method bind not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @param obj
+	 *            The object to bind
 	 * @throws NamingException
 	 */
 	public void bind(Name name, Object obj) throws NamingException {
@@ -72,7 +71,9 @@ public class SimpleContext implements Context {
 	 * Method bind the SimpleDataSource for use.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @param obj
+	 *            The object to bind
 	 * @throws NamingException
 	 */
 	public void bind(String name, Object obj) throws NamingException {
@@ -85,7 +86,9 @@ public class SimpleContext implements Context {
 	 * Method rebind not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @param obj
+	 *            The object
 	 * @throws NamingException
 	 */
 	public void rebind(Name name, Object obj) throws NamingException {
@@ -98,6 +101,7 @@ public class SimpleContext implements Context {
 	 * Method rebind not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @param obj
 	 * @throws NamingException
 	 */
@@ -111,6 +115,7 @@ public class SimpleContext implements Context {
 	 * Method unbind not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @throws NamingException
 	 */
 	public void unbind(Name name) throws NamingException {
@@ -123,6 +128,7 @@ public class SimpleContext implements Context {
 	 * Method unbind not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @throws NamingException
 	 */
 	public void unbind(String name) throws NamingException {
@@ -133,7 +139,9 @@ public class SimpleContext implements Context {
 	 * Method rename not yet implemented.
 	 * 
 	 * @param oldName
+	 *            The old JNDI name
 	 * @param newName
+	 *            The new JNDI name
 	 * @throws NamingException
 	 */
 	public void rename(Name oldName, Name newName) throws NamingException {
@@ -146,7 +154,9 @@ public class SimpleContext implements Context {
 	 * Method rename not yet implemented.
 	 * 
 	 * @param oldName
+	 *            The old JNDI name
 	 * @param newName
+	 *            The new JNDI name
 	 * @throws NamingException
 	 */
 	public void rename(String oldName, String newName) throws NamingException {
@@ -159,6 +169,7 @@ public class SimpleContext implements Context {
 	 * Method list not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return NamingEnumeration
 	 * @throws NamingException
 	 */
@@ -172,6 +183,7 @@ public class SimpleContext implements Context {
 	 * Method list not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return NamingEnumeration
 	 * @throws NamingException
 	 */
@@ -185,6 +197,7 @@ public class SimpleContext implements Context {
 	 * Method listBindings not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return NamingEnumeration
 	 * @throws NamingException
 	 */
@@ -198,6 +211,7 @@ public class SimpleContext implements Context {
 	 * Method listBindings not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return NamingEnumeration
 	 * @throws NamingException
 	 */
@@ -211,6 +225,7 @@ public class SimpleContext implements Context {
 	 * Method destroySubcontext not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @throws NamingException
 	 */
 	public void destroySubcontext(Name name) throws NamingException {
@@ -223,6 +238,7 @@ public class SimpleContext implements Context {
 	 * Method destroySubcontext not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @throws NamingException
 	 */
 	public void destroySubcontext(String name) throws NamingException {
@@ -235,6 +251,7 @@ public class SimpleContext implements Context {
 	 * Method createSubcontext not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return Context
 	 * @throws NamingException
 	 */
@@ -248,6 +265,7 @@ public class SimpleContext implements Context {
 	 * Method createSubcontext not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return Context
 	 * @throws NamingException
 	 */
@@ -261,6 +279,7 @@ public class SimpleContext implements Context {
 	 * Method lookupLink not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return Object
 	 * @throws NamingException
 	 */
@@ -274,6 +293,7 @@ public class SimpleContext implements Context {
 	 * Method lookupLink not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return Object
 	 * @throws NamingException
 	 */
@@ -287,6 +307,7 @@ public class SimpleContext implements Context {
 	 * Method getNameParser not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return NameParser
 	 * @throws NamingException
 	 */
@@ -300,6 +321,7 @@ public class SimpleContext implements Context {
 	 * Method getNameParser not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @return NameParser
 	 * @throws NamingException
 	 */
@@ -313,6 +335,7 @@ public class SimpleContext implements Context {
 	 * Method composeName not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @param prefix
 	 * @return Name
 	 * @throws NamingException
@@ -327,6 +350,7 @@ public class SimpleContext implements Context {
 	 * Method composeName not yet implemented.
 	 * 
 	 * @param name
+	 *            The JNDI name
 	 * @param prefix
 	 * @return String
 	 * @throws NamingException

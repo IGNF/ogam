@@ -28,6 +28,12 @@ public class ProcessingService {
 	/**
 	 * Run the post-processing treatments.
 	 * 
+	 * @param step
+	 *            the step of the process (INTEGRATION or HARMONIZATION)
+	 * @param providerId
+	 *            the identifier of the data provider
+	 * @param thread
+	 *            the thread to notify during the process advancement
 	 */
 	public void processData(String step, String providerId, AbstractThread thread) throws Exception {
 

@@ -6,12 +6,12 @@ package fr.ifn.eforest.common.database.metadata;
 public class FormFormatData extends FormatData {
 
 	/**
-	 * The label of the form
+	 * The label of the form.
 	 */
 	private String label;
 
 	/**
-	 * The definition of the form
+	 * The definition of the form.
 	 */
 	private String definition;
 

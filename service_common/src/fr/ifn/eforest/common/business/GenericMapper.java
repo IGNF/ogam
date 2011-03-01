@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.util.SIGUtils;
 import fr.ifn.eforest.common.util.SynchronizedDateFormat;
-import fr.ifn.eforest.common.business.UnitTypes;
 import fr.ifn.eforest.common.business.checks.CheckException;
 import fr.ifn.eforest.common.database.metadata.FieldData;
 import fr.ifn.eforest.common.database.metadata.FileFieldData;
@@ -66,7 +65,7 @@ public class GenericMapper {
 	/**
 	 * Check that a code value correspond to an existing range.
 	 * 
-	 * @param data
+	 * @param fieldDescriptor
 	 *            the data of the field to check
 	 * @param fieldValue
 	 *            the field value
@@ -425,12 +424,18 @@ public class GenericMapper {
 	 *            the tables we want to read
 	 * @param criteriaFields
 	 *            some static values that can be used in the WHERE criteria
+	 * @param providerId
+	 *            The identifier of the provider
+	 * @param page
+	 *            the page number
+	 * @param maxlines
+	 *            the number of lines per page
 	 * @return The list of values
 	 */
 	public List<Map<String, GenericData>> readData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields,
-			String countryCode, int page, int maxlines) throws Exception {
+			String providerId, int page, int maxlines) throws Exception {
 
-		String SQL = buildSelect(schema, sourceTables, criteriaFields, countryCode);
+		String SQL = buildSelect(schema, sourceTables, criteriaFields, providerId);
 
 		// Calculate the limits
 		String LIMIT = " LIMIT " + maxlines;
@@ -453,11 +458,13 @@ public class GenericMapper {
 	 *            the tables we want to read
 	 * @param criteriaFields
 	 *            some static values that can be used in the WHERE criteria
+	 * @param providerId
+	 *            the identifier of the provider
 	 * @return The list of values
 	 */
-	public int countData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, String countryCode) throws Exception {
+	public int countData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, String providerId) throws Exception {
 
-		String SQL = buildSelect(schema, sourceTables, criteriaFields, countryCode);
+		String SQL = buildSelect(schema, sourceTables, criteriaFields, providerId);
 
 		return genericDAO.countData(SQL);
 	}

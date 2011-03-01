@@ -6,12 +6,12 @@ package fr.ifn.eforest.common.business.processing;
 public interface ProcessingStep {
 
 	/**
-	 * Post-integration processing
+	 * Post-integration processing.
 	 */
 	String INTEGRATION = "INTEGRATION";
 
 	/**
-	 * Post-harmonization processing
+	 * Post-harmonization processing.
 	 */
 	String HARMONIZATION = "HARMONIZATION";
 

@@ -8,32 +8,32 @@ package fr.ifn.eforest.common.database.metadata;
 public class FieldData {
 
 	/**
-	 * The field identifier (data)
+	 * The field identifier (data).
 	 */
 	protected String data;
 
 	/**
-	 * The source format
+	 * The source format.
 	 */
 	protected String format;
 
 	/**
-	 * The label of the field
+	 * The label of the field.
 	 */
 	protected String label;
 
 	/**
-	 * The unit of the data
+	 * The unit of the data.
 	 */
 	protected String unit;
 
 	/**
-	 * The type of the unit of the data (INTEGER, STRING, ...)
+	 * The type of the unit of the data (INTEGER, STRING, ...).
 	 */
 	protected String type;
 
 	/**
-	 * The definition of the field
+	 * The definition of the field.
 	 */
 	protected String definition;
 

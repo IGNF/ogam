@@ -88,6 +88,7 @@
 		<checkstyle config="${libraries.dir}/lib/checkstyle/ifn_checks.xml" maxErrors="2147483647" classpath="${classpath}">
 			<fileset dir="${src.dir}">
 				<include name="**/*.java" />
+				<exclude name="**/SqlStateSQL99.java" />
 			</fileset>
 			<formatter type="plain" />
 			<formatter type="xml" toFile="${test_result.dir}/checkstyle_result.xml" />

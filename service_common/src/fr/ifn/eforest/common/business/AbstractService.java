@@ -5,18 +5,21 @@ package fr.ifn.eforest.common.business;
  */
 public class AbstractService {
 
-	// The thread running this service 
+	// The thread running this service
 	protected AbstractThread thread = null;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public AbstractService() {
 		super();
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
+	 * @param thread
+	 *            the thread to notify during the process
 	 */
 	public AbstractService(AbstractThread thread) {
 		super();

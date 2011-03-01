@@ -6,12 +6,12 @@ package fr.ifn.eforest.common.database.metadata;
 public class FileFieldData extends FieldData {
 
 	/**
-	 * Indicate if the field is mandatory
+	 * Indicate if the field is mandatory.
 	 */
 	private Boolean isMandatory;
 
 	/**
-	 * The mask of the field
+	 * The mask of the field.
 	 */
 	private String mask;
 
