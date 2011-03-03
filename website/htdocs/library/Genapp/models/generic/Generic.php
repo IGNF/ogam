@@ -43,6 +43,127 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Build the WHERE clause.
+	 *
+	 * @param DataObject $data the shell of the data object.
+	 * @return String the WHERE part of the SQL query
+	 */
+	private function _buildWhere($data) {
+
+		$sql = " WHERE(1 = 1) ";
+
+		// Build the WHERE clause with the info from the PK.
+		foreach ($data->infoFields as $primaryKey) {
+
+			// If the PK elem is null, then we don't add the criteria, we will have more that one result
+			if ($primaryKey->value != null) {
+
+				// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
+				if (!($data->tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
+
+					if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER") {
+						$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
+					} else {
+						$sql .= " AND ".$primaryKey->columnName." = '".$primaryKey->value."'";
+					}
+				}
+			}
+		}
+
+		return $sql;
+	}
+
+	/**
+	 * Build the SELECT part for one field.
+	 *
+	 * @param TableField $field a table field descriptor.
+	 * @return String the SELECT part corresponding to the field.
+	 */
+	private function _buildSelectItem($field) {
+
+		$sql = "";
+
+		if ($field->type == "DATE") {
+			$sql .= "to_char(".$field->columnName.", 'YYYY/MM/DD') as ".$field->data.", ";
+		} else if ($field->type == "GEOM") {
+			$sql .= "asText(".$field->columnName.") as ".$field->data.", ";
+		} else {
+			$sql .= $field->columnName." as ".$field->data.", ";
+		}
+
+		return $sql;
+
+	}
+
+	/**
+	 * Build the SELECT clause.
+	 *
+	 * @param DataObject $data the shell of the data object.
+	 * @return String the SELECT part of the SQL query
+	 */
+	private function _buildSelect($data) {
+
+		$sql = "SELECT ";
+
+		// Iterate through the PKs (even if we already know their values)
+		foreach ($data->infoFields as $primaryKey) {
+
+			// We ignore the submission_id info (in theory we have an unicity constraint that allow this)
+			if (!($data->tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
+				$sql .= $this->_buildSelectItem($primaryKey);
+			}
+		}
+
+		// Build the WHERE clause with the info from the PK.
+		foreach ($data->editableFields as $field) {
+			if (!($data->tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "LINE_NUMBER")) {
+				$sql .= $this->_buildSelectItem($field);
+			}
+		}
+
+		// Remove the last comma
+		$sql = substr($sql, 0, -2);
+
+		return $sql;
+	}
+
+	/**
+	 * Build an empty data object.
+	 *
+	 * @param String $schema the name of the schema
+	 * @param String $format the name of the format
+	 * @return DataObject the DataObject structure (with no values set)
+	 */
+	public function buildDataObject($schema, $format, $datasetId = null) {
+
+		// Prepare a data object to be filled
+		$data = new DataObject();
+
+		$data->datasetId = $datasetId;
+
+		// Get the description of the table
+		$data->tableFormat = $this->metadataModel->getTableFormat($schema, $format);
+
+		// Get all the description of the Table Fields corresponding to the format
+		$tableFields = $this->metadataModel->getTableFields($datasetId, $schema, $format);
+
+		// Separate the keys from other values
+		foreach ($tableFields as $tableField) {
+			if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
+				// Primary keys are displayed as info fields
+				$data->addInfoField($tableField);
+			} else {
+				if (!$tableField->isCalculated) {
+					// Fields that are calculated by a trigger should not be edited
+					$data->addEditableField($tableField);
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Fill a line of data with the values a table, given its primary key.
 	 * Only one object is expected in return.
 	 *
@@ -59,24 +180,9 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		Zend_Registry::get("logger")->info('getDatum');
 
 		// Get the values from the data table
-		$sql = "SELECT *";
+		$sql = $this->_buildSelect($data);
 		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName;
-		$sql .= " WHERE(1 = 1)";
-
-		// Build the WHERE clause with the info from the PK.
-		foreach ($data->infoFields as $primaryKey) {
-			/* @var $primaryKey TableField */
-
-			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-			if (!($tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
-
-				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER") {
-					$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
-				} else {
-					$sql .= " AND ".$primaryKey->columnName." = '".$primaryKey->value."'";
-				}
-			}
-		}
+		$sql .= $this->_buildWhere($data);
 
 		Zend_Registry::get("logger")->info('getDatum : '.$sql);
 
@@ -86,8 +192,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 		// Fill the values with data from the table
 		foreach ($data->editableFields as $field) {
-			/* @var $value TableField */
-			$field->value = $row[strtolower($field->columnName)];
+			$field->value = $row[strtolower($field->data)];
 		}
 
 		return $data;
@@ -118,24 +223,9 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		//Zend_Registry::get("logger")->info('$tableFields : '.print_r($tableFields, true));
 
 		// Get the values from the data table
-		$sql = "SELECT *";
+		$sql = $this->_buildSelect($data);
 		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName;
-		$sql .= " WHERE(1 = 1)";
-
-		// Build the WHERE clause with the info from the PK.
-		foreach ($data->infoFields as $primaryKey) {
-			/* @var $primaryKey TableField */
-
-			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-			if (!($tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
-
-				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER") {
-					$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
-				} else {
-					$sql .= " AND ".$primaryKey->columnName." = '".$primaryKey->value."'";
-				}
-			}
-		}
+		$sql .= $this->_buildWhere($data);
 
 		Zend_Registry::get("logger")->info('getDatum : '.$sql);
 
@@ -156,20 +246,19 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 			// Add the unknown key items with their value from the table
 			$unknownKeys = array_diff($tableFormat->primaryKeys, $knownKeys);
-			foreach ($unknownKeys as $keyname) {
-				if ($keyname != 'SUBMISSION_ID') {
-					$key = clone $tableFields[$keyname];
-					$key->value = $row[strtolower($key->columnName)];
+			foreach ($unknownKeys as $fieldName) {
+				if ($fieldName != 'SUBMISSION_ID') {
+					$key = clone $tableFields[$fieldName];
+					$key->value = $row[strtolower($key->data)];
 					$child->addInfoField($key);
 				}
 			}
 
 			// Fill the values with data from the table
 			foreach ($data->editableFields as $field) {
-				$key = clone $tableFields[$keyname];
-				$field->value = $row[strtolower($field->columnName)];
-				$child->addEditableField($field);
-
+				if ($field->data != 'LINE_NUMBER') {
+					$child->addEditableField($field);
+				}
 			}
 
 			$result[] = $child;
@@ -309,7 +398,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * The key elements in the parent tables must have an existing value in the child.
 	 *
 	 * @param DataObject $data the data object we're looking at.
-	 * @return List[DataObject] The lines of data in the parent tables.
+	 * @return List[DataObject] The line of data in the parent tables.
 	 */
 	public function getAncestors($data) {
 		$db = $this->getAdapter();
@@ -373,7 +462,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * @param DataObject $data the data object we're looking at.
 	 * @return List[DataObject] The lines of data in the parent tables.
 	 */
-	public function getChildren($data) {
+	public function getChildren($schema, $data) {
 		$db = $this->getAdapter();
 
 		$children = array();
@@ -400,25 +489,54 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			$childTable = $row['child_table'];
 			$joinKeys = explode(',', $row['join_key']);
 
-			$childFormat = $this->metadataModel->getTableFormat('RAW_DATA', $childTable);
+			// Build an empty data object
+			$child = $this->buildDataObject($schema, $childTable);
 
-			// Build an empty child object (with the key info)
-			$child = new DataObject();
-			$child->datasetId = $data->datasetId;
-			$child->tableFormat = $childFormat;
-			foreach ($joinKeys as $key) {
-				$keyField = $data->getInfoField($key);
-				$child->addInfoField($keyField);
+			// Fill the known primary keys
+			foreach ($data->infoFields as $dataKey) {
+				foreach ($child->infoFields as $childKey) {
+					if ($dataKey->data == $childKey->data) {
+						$childKey->value = $dataKey->value;
+					}
+				}
 			}
 
 			// Get the lines of data corresponding to the partial key
-			$child = $this->getData($child);
+			$childs = $this->getData($child);
 
-			$children[$childFormat->format] = $child;
+			// Add to the result
+			$children[$child->tableFormat->format] = $childs;
 
 		}
 
 		return $children;
 	}
 
+	/**
+	 * Serialize the data object as a JSON string.
+	 *
+	 * @return JSON
+	 */
+	public function dataToDetailJSON($data) {
+
+		$json = "{title:'".$data->tableFormat->format."', is_array:false, fields:[";
+		$fields = "";
+		foreach ($data->getFields() as $tableField) {
+
+			// Get the form field correspondnig to the table field
+			$form = $this->metadataModel->getTableToFormMapping($tableField, true);
+
+			// Add the corresponding JSON
+			if ($form != null) {
+				$fields .= $form->toDetailJSON().",";
+			}
+		}
+		// remove last comma
+		if ($fields != "") {
+			$fields = substr($fields, 0, -1);
+		}
+		$json .= $fields."]}";
+
+		return $json;
+	}
 }

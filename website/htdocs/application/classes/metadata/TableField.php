@@ -17,11 +17,6 @@ class TableField extends Field {
 	var $columnName;
 
 	/**
-	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).
-	 */
-	var $value;
-
-	/**
 	 * Indicate if the field is calculated during an INSERT or UPDATE.
 	 */
 	var $isCalculated;
@@ -30,6 +25,11 @@ class TableField extends Field {
 	 * Indicate if an operation of agregation can be done on this field (for numeric values).
 	 */
 	var $isAggregatable;
+
+	/**
+	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).
+	 */
+	var $value;
 
 	/**
 	 * Clone the field

@@ -4,9 +4,9 @@
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
 require_once 'AbstractEforestController.php';
+require_once LIBRARY_PATH.'/models/generic/Generic.php';
+require_once LIBRARY_PATH.'/classes/generic/DataObject.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
-require_once APPLICATION_PATH.'/models/raw_data/Generic.php';
-require_once APPLICATION_PATH.'/classes/dataedition/DataObject.php';
 require_once APPLICATION_PATH.'/classes/metadata/TableField.php';
 
 /**
@@ -14,6 +14,8 @@ require_once APPLICATION_PATH.'/classes/metadata/TableField.php';
  * @package controllers
  */
 class DataEditionController extends AbstractEforestController {
+
+	private $schema = 'RAW_DATA';
 
 	protected $_redirector = null;
 
@@ -107,15 +109,16 @@ class DataEditionController extends AbstractEforestController {
 	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
 
 		$configuration = Zend_Registry::get("configuration");
+		
+		// Warning : $formField can be null if no mapping is defined with $tableField
 
-		// TODO OGAM-79 : Tester sur le formField type
 		// TODO OGAM-73 : Manage all data types for edition (DATE, BOOLEAN, ...), with corresponding validators
 
 		if ($tableField->type == "STRING") {
 			$elem = $form->createElement('text', $tableField->data);
 
 			// Add a regexp validator if a mask is present
-			if ($formField->mask != null) {
+			if ($formField != null && $formField->mask != null) {
 				$validator = new Zend_Validate_Regex(array('pattern' => $formField->mask));
 				$elem->addValidator($validator);
 			}
@@ -130,7 +133,7 @@ class DataEditionController extends AbstractEforestController {
 		} else if ($tableField->type == "DATE") {
 			$elem = $form->createElement('text', $tableField->data);
 			// validate the date format
-			if ($formField->mask != null) {
+			if ($formField != null && $formField->mask != null) {
 				$validator = new Zend_Validate_Date(array('format' => $formField->mask, 'locale' => $configuration->defaultLocale));
 			} else {
 				$validator = new Zend_Validate_Date(array('locale' => $configuration->defaultLocale));
@@ -199,6 +202,7 @@ class DataEditionController extends AbstractEforestController {
 			// Hardcoded value : We don't display the submission id (it's a technical element)
 			if ($tablefield->data != "SUBMISSION_ID") {
 				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
+
 				$elem = $this->_getFormElement($form, $tablefield, $formField, true);
 				$elem->class = 'dataedit_key';
 				$form->addElement($elem);
@@ -292,31 +296,7 @@ class DataEditionController extends AbstractEforestController {
 				$keyMap = $params;
 			}
 
-			// Create an empty data object with the info in session
-			$data = new DataObject();
-			$data->datasetId = $datasetId;
-
-			// Get the info about the format
-			$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $keyMap["FORMAT"]);
-
-			// Store it in the data object
-			$data->tableFormat = $tableFormat;
-
-			// Get all the description of the Table Fields corresponding to the format
-			$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->tableFormat->format);
-
-			// Separate the keys from other values
-			foreach ($tableFields as $tableField) {
-				if (in_array($tableField->data, $tableFormat->primaryKeys)) {
-					// Primary keys are displayed as info fields
-					$data->addInfoField($tableField);
-				} else {
-					if (!$tableField->isCalculated) {
-						// Fields that are calculated by a trigger should not be edited
-						$data->addEditableField($tableField);
-					}
-				}
-			}
+			$data = $this->genericModel->buildDataObject($this->schema, $keyMap["FORMAT"]);
 
 			// Complete the primary key info with the session values
 			foreach ($data->infoFields as $infoField) {
@@ -338,7 +318,7 @@ class DataEditionController extends AbstractEforestController {
 		$ancestors = $this->genericModel->getAncestors($data);
 
 		// Get the childs of the data objet from the database (to generate links)
-		$children = $this->genericModel->getChildren($data);
+		$children = $this->genericModel->getChildren($this->schema, $data);
 
 		//Zend_Registry::get("logger")->info('$children : '.print_r($children, true));
 
@@ -518,13 +498,13 @@ class DataEditionController extends AbstractEforestController {
 			$data->datasetId = $datasetId;
 
 			// Get the info about the format
-			$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', $keyMap["FORMAT"]);
+			$tableFormat = $this->metadataModel->getTableFormat($this->schema, $keyMap["FORMAT"]);
 
 			// Store it in the data object
 			$data->tableFormat = $tableFormat;
 
 			// Get all the description of the Table Fields corresponding to the format
-			$tableFields = $this->metadataModel->getTableFields($data->datasetId, 'RAW_DATA', $data->tableFormat->format);
+			$tableFields = $this->metadataModel->getTableFields($data->datasetId, $this->schema, $data->tableFormat->format);
 
 			// Separate the keys from other values
 			foreach ($tableFields as $tableField) {

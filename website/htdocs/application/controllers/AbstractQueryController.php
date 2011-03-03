@@ -4,8 +4,8 @@
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
 require_once 'AbstractEforestController.php';
+require_once LIBRARY_PATH.'/models/generic/Generic.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
-require_once APPLICATION_PATH.'/models/raw_data/Generic.php';
 require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
 require_once APPLICATION_PATH.'/models/website/PredefinedRequest.php';
 
@@ -429,7 +429,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 */
 	public function ajaxgetresultcolumnsAction() {
 		$this->logger->debug('ajaxgetresultcolumns');
-		
+
 		$configuration = Zend_Registry::get("configuration");
 		ini_set("max_execution_time", $configuration->max_execution_time);
 
@@ -628,14 +628,9 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	/**
 	 * Generate the SQL request to get the detailed information about a plot or a line of result.
 	 *
-	 * @param String $id The unique identifier of the plot or line (a concatenation of the primary keys of all involved tables)
-	 * @param String $leafTable The leaf table
-	 * @param String $mode if 'LINE', will generate a request corresponding to a single line of result
-	 *         else it will generate a SQL query with no where clause.
-	 *
-	 * TODO : Reuse generateSQLRequest
+	 * @param Array $keyMap The unique identifier row (list of all primary key identifiers)
 	 */
-	private function _generateSQLDetailRequest($id, $leafTable, $mode = 'LINE') {
+	private function _generateSQLDetailRequest($keyMap) {
 
 		$this->logger->debug('__generateSQLDetailRequest leafTable : '.$leafTable);
 
@@ -645,10 +640,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 		$uniqueId = ""; // The concatenation of columns used as an unique ID for the line
 		$detailFields = array(); // the list of fields in the detail request
-
-		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->role;
-		$countryCode = $userSession->user->countryCode;
 
 		//
 		// Get the Tree associed with the leaf table
@@ -735,7 +726,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 
 		// Add some hard-coded, needed fields
-		$select .= ", ".$this->getLocationTable().".provider_id as loc_provider_id, "; // The country code (used for the mapping view)
+		$select .= ", ".$this->getLocationTable().".provider_id as loc_provider_id, "; // The provider identifier (used for the mapping view)
 		$select .= $this->getLocationTable().".plot_code as loc_plot_code, "; // The plot code  (used for the mapping view)
 		$select .= $this->getLocationTable().".the_geom as the_geom, "; // The geom (used for the mapping view)
 		$select .= 'ymin(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_y_min, '; // The location boundingbox (for zooming in javascript)
@@ -845,7 +836,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		//		$this->logger->debug('************************************************');
 		//		$this->logger->debug('tables :'.print_r($tables, true));
 		//		$this->logger->debug('dataCrits :'.print_r($dataCrits, true));
-		//		$this->logger->debug('dataCols :'.print_r($dataCols, true));
+				$this->logger->debug('dataCols :'.print_r($dataCols, true));
 
 		//
 		// Prepare the SELECT clause
@@ -875,14 +866,18 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$from .= $rootTable->tableName." ".$rootTable->getLogicalName();
 
 		// Add the joined tables
+		$i = 0;
 		foreach ($tables as $tableFormat => $tableTreeData) {
+			$i++;
 
 			// We store the table name of the firstly joined table for a later use
 			if ($firstJoinedTable == "") {
 				$firstJoinedTable = $tableTreeData->getLogicalName();
 			}
 			// We store the name of the last joined table
-			$leafTable = $tableTreeData->getLogicalName();
+			if ($i == count($tables)) {
+				$leafTable = $tableTreeData->getLogicalName();
+			}
 
 			// Join the table
 			$from .= " JOIN ".$tableTreeData->tableName." ".$tableTreeData->getLogicalName()." on (";
@@ -899,10 +894,12 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			foreach ($identifiers as $identifier) {
 
 				// Concatenate the column to create a unique Id
-				if ($uniqueId != "") {
-					$uniqueId .= " || '_' || ";
+				if ($i == count($tables)) {
+					if ($uniqueId != "") {
+						$uniqueId .= " || '/' || ";
+					}
+					$uniqueId .= "'".$identifier."/' ||".$tableTreeData->getLogicalName().".".trim($identifier);
 				}
-				$uniqueId .= $tableTreeData->getLogicalName().".".trim($identifier);
 
 				// Create a unique sort order
 				if ($sort != "") {
@@ -1078,7 +1075,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 
 		// Add some hard-coded, needed fields
-		$select .= ", ".$uniqueId." as id, "; // The identifier of the line (for the details view in javascript)
+		$select .= ", 'FORMAT/".$leafTable."/' || ".$uniqueId." as id, "; // The identifier of the line (for the details view in javascript)
 		$select .= "astext(centroid(st_transform(".$this->getLocationTable().".the_geom,".$this->visualisationSRS."))) as location_center "; // The location center (for zooming in javascript)
 
 		$sql = $select.$from.$where;
@@ -1154,13 +1151,13 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$datasetId = $websiteSession->datasetId;
 
 		// Get the leaf table for the current dataset
-		$leafTable = $websiteSession->leafTable;
+		//$leafTable = $websiteSession->leafTable;
 
 		// Get the detailled data
-		$sql = $this->_generateSQLDetailRequest($id, $leafTable, 'ALL');
-		$sql .= " AND ".$this->getPlotTable().".COUNTRY_CODE = '".$countryCode."'";
-		$sql .= " AND ".$this->getPlotTable().".PLOT_CODE = '".$plotCode."'";
-		$result = $this->genericModel->executeRequest($sql);
+		//$sql = $this->_generateSQLDetailRequest($id, $leafTable, 'ALL');
+		//$sql .= " AND ".$this->getPlotTable().".COUNTRY_CODE = '".$countryCode."'";
+		//$sql .= " AND ".$this->getPlotTable().".PLOT_CODE = '".$plotCode."'";
+		//$result = $this->genericModel->executeRequest($sql);
 
 		// Get back the list of fields in the detail view
 		$detailFields = $websiteSession->detailFields;
@@ -1320,73 +1317,64 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 * @param String $leafTable The name of the lowest table in the hierarchy
 	 * @return JSON representing the detail of the result line.
 	 */
-	public function getdetailsAction($id = null, $leafTable = null) {
+	public function getdetailsAction($id = null) {
 
-		$this->logger->debug('getDetailsAction : '.$id."_".$leafTable);
+		$this->logger->debug('getDetailsAction : '.$id);
 
 		// Get the identifier of the line from the session
 		if ($id == null) {
 			$id = $this->getRequest()->getPost('id');
 		}
 
-		// Get the identifier of the leaf table from the session
-		$websiteSession = new Zend_Session_Namespace('website');
-		if ($leafTable == null) {
-			$leafTable = $websiteSession->leafTable;
+		// Transform the identifier in an array
+		$keyMap = array();
+		$idElems = explode("/", $id);
+		$i = 0;
+		while ($i < count($idElems)) {
+			$keyMap[$idElems[$i]] = $idElems[$i + 1];
+			$i += 2;
 		}
 
-		$this->logger->debug('getDetailsAction : '.$id."_".$leafTable);
+		// Prepare a data object to be filled
+		$data = $this->genericModel->buildDataObject($this->schema, $keyMap["FORMAT"]);
+
+		// Complete the primary key info with the session values
+		foreach ($data->infoFields as $infoField) {
+			if (!empty($keyMap[$infoField->data])) {
+				$infoField->value = $keyMap[$infoField->data];
+			}
+		}
 
 		// Get the detailled data
-		$sql = $this->_generateSQLDetailRequest($id, $leafTable);
-		$result = $this->genericModel->executeRequest($sql);
+		$result = $this->genericModel->getDatum($data);
 
-		// Get back the list of fields in the detail view
-		$detailFields = $websiteSession->detailFields;
+		// The data ancestors
+		$ancestors = $this->genericModel->getAncestors($data);
+		
+		// TODO : Get children too, display as is_array:true
 
-		// Prepare the metadata information
-		$metadata = array();
-		$traductions = array();
-		$i = 0;
-		foreach ($detailFields as $detailField) {
-			$metadata[$i] = $detailField;
-
-			// Prepare the traduction of the code lists
-			if ($detailField->type == "CODE") {
-				$traductions[$i] = $this->metadataModel->getModes($detailField->unit);
-			}
-			$i++;
-		}
+		
 
 		// Return the detailled information about the plot
 		$fields = "";
-		$line = $result[0];
-		$nbcol = sizeof($line);
-		$keys = array_keys($line);
-		for ($i = 0; $i < $nbcol - 7; $i++) { // the last 4 result columns are reserved
-			$colName = $keys[$i]; // get the name of the column
-			$value = $line[$colName];
-			$formField = $metadata[$i];
 
-			if ($formField->type == "CODE" && $value != "") {
-				// Manage code traduction
-				$label = $traductions[$i][$value];
-				$fields .= "{label:".json_encode($formField->label).", value : ".json_encode($label)."}, ";
-			} else {
-				$fields .= "{label:".json_encode($formField->label).", value : ".json_encode($value)."}, ";
-			}
+		//$bb = $this->_setupBoundingBox($line);
+		//$bb2 = $this->_setupBoundingBox($line, 200000); // Prepare an overview bbox
+
+		//$locationPlotCode = $line['loc_plot_code'];
+
+		// Title of the detail message
+		$json = "{title:'Detail', ";
+		$json .= "formats:[";
+		// List all the formats, starting with the ancestors
+		foreach ($ancestors as $ancestor) {
+			$json .= $this->genericModel->dataToDetailJSON($ancestor).",";
 		}
-		$fields = substr($fields, 0, -2);
+		// Add the current data
+		$json .= $this->genericModel->dataToDetailJSON($data);
 
-		$bb = $this->_setupBoundingBox($line);
-		$bb2 = $this->_setupBoundingBox($line, 200000); // Prepare an overview bbox
-
-		$locationPlotCode = $line['loc_plot_code'];
-
-		$json = "{title:'".$locationPlotCode."', formats:[{title:'Résultats détaillés', is_array:false, fields:[";
-		$json .= $fields;
-		$json .= "]}], ";
-		$json .= "map:[{title:'image',";
+		$json .= "], ";
+		$json .= "maps:[{title:'image',";
 		$json .= "url:'".$this->baseUrl."/proxy/gettile?";
 		$json .= "&LAYERS=".(empty($this->detailsLayers) ? '' : $this->detailsLayers[0]);
 		$json .= "&TRANSPARENT=true";
@@ -1397,13 +1385,15 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$json .= "&STYLES=";
 		$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
 		$json .= "&SRS=EPSG%3A".$this->visualisationSRS;
-		$json .= "&BBOX=".$bb['location_x_min'].",".$bb['location_y_min'].",".$bb['location_x_max'].",".$bb['location_y_max'];
+		//TODO $json .= "&BBOX=".$bb['location_x_min'].",".$bb['location_y_min'].",".$bb['location_x_max'].",".$bb['location_y_max'];
+		$json .= "&BBOX=4011305.875,2718334.125,4211305.875,2918334.125";
 		$json .= "&WIDTH=300";
 		$json .= "&HEIGHT=300";
 		$json .= "&map.scalebar=STATUS+embed";
 		$json .= "&sessionid=".session_id();
-		$json .= "&plot_code=".$locationPlotCode."'},";
-		$json .= "{title:'image',";
+		//$json .= "&plot_code=".$locationPlotCode."'";
+		$json .= "'},"; // end of map
+		$json .= "{title:'overview',";
 		$json .= "url:'".$this->baseUrl."/proxy/gettile?";
 		$json .= "&LAYERS=".(empty($this->detailsLayers) ? '' : $this->detailsLayers[1]);
 		$json .= "&TRANSPARENT=true";
@@ -1414,13 +1404,17 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$json .= "&STYLES=";
 		$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
 		$json .= "&SRS=EPSG%3A".$this->visualisationSRS;
-		$json .= "&BBOX=".$bb2['location_x_min'].",".$bb2['location_y_min'].",".$bb2['location_x_max'].",".$bb2['location_y_max'];
+		//TODO: $json .= "&BBOX=".$bb2['location_x_min'].",".$bb2['location_y_min'].",".$bb2['location_x_max'].",".$bb2['location_y_max'];
+		$json .= "&BBOX=4011305.875,2718334.125,4211305.875,2918334.125";
 		$json .= "&WIDTH=300";
 		$json .= "&HEIGHT=300";
 		$json .= "&sessionid=".session_id();
 		$json .= "&CLASS=REDSTAR";
 		$json .= "&map.scalebar=STATUS+embed";
-		$json .= "&plot_code=".$locationPlotCode."'}]}";
+		//$json .= "&plot_code=".$locationPlotCode."'";
+		$json .= "'}"; // end of overview map
+		$json .= "]"; // end of maps
+		$json .= "}";
 
 		echo $json;
 

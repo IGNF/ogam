@@ -69,11 +69,11 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the mode and its label.
+	 * Get the label of a mode.
 	 *
 	 * @param String $unit The unit
 	 * @param String $mode The mode
-	 * @return Array[mode => label]
+	 * @return String label
 	 */
 	public function getMode($unit, $mode) {
 		$db = $this->getAdapter();
@@ -84,11 +84,12 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		$select = $db->prepare($req);
 		$select->execute(array($unit, $mode));
 
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$result[$row['code']] = $row['label'];
+		$row = $select->fetch();
+		if ($row) {
+			return $row['label'];
+		} else {
+			return null;
 		}
-		return $result;
 	}
 
 	/**
@@ -531,11 +532,15 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		$select->execute(array($data));
 
 		$row = $select->fetch();
-		$range = new Range();
-		$range->min = $row['min'];
-		$range->max = $row['max'];
+		if ($row) {
+			$range = new Range();
+			$range->min = $row['min'];
+			$range->max = $row['max'];
+			return $range;
+		} else {
+			return null;
+		}
 
-		return $range;
 	}
 
 	/**
@@ -637,17 +642,21 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the form field corresponding to the table field.
 	 *
 	 * @param TableField $tableField the table field
+	 * @param Boolean $copyValues is true the values will be copied
 	 * @return array[FormField]
 	 */
-	public function getTableToFormMapping($tableField) {
+	public function getTableToFormMapping($tableField, $copyValues = false) {
 
 		$this->logger->info('getTableToFormMapping : '.$tableField->format." ".$tableField->data);
 
 		$key = 'getTableToFormMapping'.$tableField->format.'_'.$tableField->data;
+
+		// Get the form description corresponding to the table field
+		$result = null;
 		if ($this->useCache) {
-			$cachedResult = $this->cache->load($key);
+			$result = $this->cache->load($key);
 		}
-		if (empty($cachedResult)) {
+		if (empty($result)) {
 
 			$db = $this->getAdapter();
 			$req = " SELECT form_field.*, data.label, data.definition, unit.unit, unit.type ";
@@ -664,29 +673,48 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$select->execute(array($tableField->format, $tableField->data));
 
 			$row = $select->fetch();
-			$formField = new FormField();
-			$formField->data = $row['data'];
-			$formField->format = $row['format'];
-			$formField->label = $row['label'];
-			$formField->inputType = $row['input_type'];
-			$formField->definition = $row['definition'];
-			$formField->isCriteria = $row['is_criteria'];
-			$formField->isResult = $row['is_result'];
-			$formField->type = $row['type'];
-			$formField->unit = $row['unit'];
-			$formField->isDefaultResult = $row['is_default_result'];
-			$formField->isDefaultCriteria = $row['is_default_criteria'];
-			$formField->defaultValue = $row['default_value'];
-			$formField->decimals = $row['decimals'];
-			$formField->mask = $row['mask'];
 
-			if ($this->useCache) {
-				$this->cache->save($formField, $key);
+			if (!empty($row)) {
+				$formField = new FormField();
+				$formField->data = $row['data'];
+				$formField->format = $row['format'];
+				$formField->label = $row['label'];
+				$formField->inputType = $row['input_type'];
+				$formField->definition = $row['definition'];
+				$formField->isCriteria = $row['is_criteria'];
+				$formField->isResult = $row['is_result'];
+				$formField->type = $row['type'];
+				$formField->unit = $row['unit'];
+				$formField->isDefaultResult = $row['is_default_result'];
+				$formField->isDefaultCriteria = $row['is_default_criteria'];
+				$formField->defaultValue = $row['default_value'];
+				$formField->decimals = $row['decimals'];
+				$formField->mask = $row['mask'];
+
+				if ($this->useCache) {
+					$this->cache->save($formField, $key);
+				}
+				$result = clone $formField; // clone to avoid updating the values of the cached result
 			}
-			return $formField;
-		} else {
-			return $cachedResult;
 		}
+
+		// Get the actual value
+		if ($copyValues == true && $result != null && $tableField->value != null) {
+
+			// Copy the value
+			$result->value = $tableField->value;
+
+			// Fill the label
+			if ($result->type == "CODE") {
+				$result->valueLabel = $this->getMode($tableField->unit, $tableField->value);
+			} else {
+				$result->valueLabel = $tableField->value;
+			}
+
+		}
+
+		return $result;
+
 	}
 
 	/**

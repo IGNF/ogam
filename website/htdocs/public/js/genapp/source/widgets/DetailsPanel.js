@@ -43,7 +43,7 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
      * A {@link Ext.XTemplate} used to setup the details panel body.
      */
     tpl : new Ext.XTemplate(
-        '<tpl for="map">',
+        '<tpl for="maps">',
             '<img title="{title}" src="{url}">',
         '</tpl>',
         '<tpl for="formats">',
