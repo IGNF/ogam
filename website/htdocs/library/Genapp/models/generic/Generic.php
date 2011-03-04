@@ -91,6 +91,18 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			$sql .= $field->columnName." as ".$field->data.", ";
 		}
 
+		
+		// TODO : Manage THE_GEOM info
+		/*
+		 $select .= ", ".$this->getLocationTable().".provider_id as loc_provider_id, "; // The provider identifier (used for the mapping view)
+		 $select .= $this->getLocationTable().".plot_code as loc_plot_code, "; // The plot code  (used for the mapping view)
+		 $select .= $this->getLocationTable().".the_geom as the_geom, "; // The geom (used for the mapping view)
+		 $select .= 'ymin(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_y_min, '; // The location boundingbox (for zooming in javascript)
+		 $select .= 'ymax(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_y_max, ';
+		 $select .= 'xmin(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_x_min, ';
+		 $select .= 'xmax(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_x_max';
+		 */
+
 		return $sql;
 
 	}
@@ -392,7 +404,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		// Check if we are not the root table
 		if ($parentTable != "*") {
 
-			// Build an empty parent object 
+			// Build an empty parent object
 			$parent = $this->buildDataObject($schema, $parentTable);
 
 			// Fill the PK values
@@ -405,7 +417,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 			// Get the line of data from the table
 			$parent = $this->getDatum($parent);
-			
+
 			$ancestors[] = $parent;
 
 			// Recurse
