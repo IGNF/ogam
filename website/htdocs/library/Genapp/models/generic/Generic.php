@@ -363,7 +363,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * @param DataObject $data the data object we're looking at.
 	 * @return List[DataObject] The line of data in the parent tables.
 	 */
-	public function getAncestors($data) {
+	public function getAncestors($schema, $data) {
 		$db = $this->getAdapter();
 
 		$ancestors = array();
@@ -392,27 +392,24 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		// Check if we are not the root table
 		if ($parentTable != "*") {
 
-			// Get more info about the table format
-			$parentFormat = $this->metadataModel->getTableFormat('RAW_DATA', $parentTable);
+			// Build an empty parent object 
+			$parent = $this->buildDataObject($schema, $parentTable);
 
-			// Build an empty parent object (with the key info)
-			$parent = new DataObject();
-			$parent->datasetId = $data->datasetId;
-			$parent->tableFormat = $parentFormat;
-			foreach ($joinKeys as $key) {
-
-				$keyField = $data->getInfoField($key);
-
-				$parent->addInfoField($keyField);
+			// Fill the PK values
+			foreach ($parent->infoFields as $key) {
+				$keyField = $data->getInfoField($key->data);
+				if ($keyField != null && $keyField->value != null) {
+					$key->value = $keyField->value;
+				}
 			}
 
-			// Get the line of data from the parent
-			$parentData = $this->getDatum($parent);
-
-			$ancestors[] = $parentData;
+			// Get the line of data from the table
+			$parent = $this->getDatum($parent);
+			
+			$ancestors[] = $parent;
 
 			// Recurse
-			$ancestors = array_merge($ancestors, $this->getAncestors($parentData));
+			$ancestors = array_merge($ancestors, $this->getAncestors($schema, $parent));
 
 		}
 		return $ancestors;

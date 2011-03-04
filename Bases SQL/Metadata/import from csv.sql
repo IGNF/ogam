@@ -234,7 +234,7 @@ SELECT form_field.format || '_' || form_field.data, 'The form field input type (
 FROM form_field 
 LEFT JOIN data using (data)
 LEFT JOIN unit using (unit)
-WHERE (input_type = 'NUMERIC' AND type NOT IN ('NUMERIC', 'RANGE','INTEGER'))
+WHERE (input_type = 'NUMERIC' AND type NOT IN ('NUMERIC', 'RANGE','INTEGER','COORDINATE'))
 OR (input_type = 'DATE' AND type <> 'DATE')
 OR (input_type = 'SELECT' AND type <> 'CODE')
 OR (input_type = 'TEXT' AND type <> 'STRING')

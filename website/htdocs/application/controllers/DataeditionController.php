@@ -315,7 +315,7 @@ class DataEditionController extends AbstractEforestController {
 		// If the objet is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
-		$ancestors = $this->genericModel->getAncestors($data);
+		$ancestors = $this->genericModel->getAncestors($this->schema, $data);
 
 		// Get the childs of the data objet from the database (to generate links)
 		$children = $this->genericModel->getChildren($this->schema, $data);
@@ -537,7 +537,7 @@ class DataEditionController extends AbstractEforestController {
 		// If the objet is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
-		$ancestors = $this->genericModel->getAncestors($data);
+		$ancestors = $this->genericModel->getAncestors($this->schema, $data);
 
 		// Get the childs of the data objet from the database (to generate links)
 

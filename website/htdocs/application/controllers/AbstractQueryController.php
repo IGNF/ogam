@@ -836,7 +836,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		//		$this->logger->debug('************************************************');
 		//		$this->logger->debug('tables :'.print_r($tables, true));
 		//		$this->logger->debug('dataCrits :'.print_r($dataCrits, true));
-				$this->logger->debug('dataCols :'.print_r($dataCols, true));
+		$this->logger->debug('dataCols :'.print_r($dataCols, true));
 
 		//
 		// Prepare the SELECT clause
@@ -1349,11 +1349,12 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$result = $this->genericModel->getDatum($data);
 
 		// The data ancestors
-		$ancestors = $this->genericModel->getAncestors($data);
-		
-		// TODO : Get children too, display as is_array:true
+		$ancestors = $this->genericModel->getAncestors($this->schema, $data);
+		$ancestors = array_reverse($ancestors);
 
-		
+		Zend_Registry::get("logger")->info('$$ancestors : '.print_r($ancestors, true));
+
+		// TODO : Get children too, display as is_array:true
 
 		// Return the detailled information about the plot
 		$fields = "";
@@ -1367,7 +1368,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$json = "{title:'Detail', ";
 		$json .= "formats:[";
 		// List all the formats, starting with the ancestors
-		$ancestors = array_reverse($ancestors);
 		foreach ($ancestors as $ancestor) {
 			$json .= $this->genericModel->dataToDetailJSON($ancestor).",";
 		}
