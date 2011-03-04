@@ -206,7 +206,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		if (empty($cachedResult)) {
 
 			// Get the fields specified by the format
-			$req = "SELECT table_field.*, data.label, data.unit, unit.type, data.definition ";
+			$req = "SELECT DISTINCT table_field.*, data.label, data.unit, unit.type, data.definition ";
 			$req .= " FROM table_field ";
 			$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.data) ";
 			$req .= " LEFT JOIN data on (table_field.data = data.data) ";

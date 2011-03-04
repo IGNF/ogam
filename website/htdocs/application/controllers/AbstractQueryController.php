@@ -1031,6 +1031,10 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			$i += 2;
 		}
 
+		
+		// TODO : Hardcoded, should remove this dependency
+		$plotCode = $keyMap['PLOT_CODE'];
+		
 		// Prepare a data object to be filled
 		$data = $this->genericModel->buildDataObject($this->schema, $keyMap["FORMAT"]);
 
@@ -1045,20 +1049,45 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$result = $this->genericModel->getDatum($data);
 
 		// The data ancestors
-		$ancestors = $this->genericModel->getAncestors($this->schema, $data);
+		$ancestors = $this->genericModel->getAncestors($this->schema, $data, true);
 		$ancestors = array_reverse($ancestors);
-
-		Zend_Registry::get("logger")->info('$$ancestors : '.print_r($ancestors, true));
 
 		// TODO : Get children too, display as is_array:true
 
 		// Return the detailled information about the plot
 		$fields = "";
 
-		//$bb = $this->_setupBoundingBox($line);
-		//$bb2 = $this->_setupBoundingBox($line, 200000); // Prepare an overview bbox
+		// Look for a geometry object in order to calculate a bounding box
+		// Look for the plot location
+		$bb = null;
+		$bb2 = null;		
+		foreach ($data->getFields() as $field) {
+			if ($field->unit == "GEOM") {
+				// define a bbox around the location
+				$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 
-		//$locationPlotCode = $line['loc_plot_code'];
+				// Prepare an overview bbox
+				$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+				break;
+			}
+		}
+		if ($bb == null) {
+			foreach ($ancestors as $ancestor) {
+				foreach ($ancestor->getFields() as $field) {
+					if ($field->unit == "GEOM") {
+						// define a bbox around the location
+						$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+
+						// Prepare an overview bbox
+						$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+						break;
+					}
+				}
+			}
+		}
+
+		Zend_Registry::get("logger")->info('$ancestors : '.print_r($ancestors, true));
+		Zend_Registry::get("logger")->info('$bbox : '.print_r($bb, true));
 
 		// Title of the detail message
 		$json = "{title:'Detail', ";
@@ -1082,13 +1111,12 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$json .= "&STYLES=";
 		$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
 		$json .= "&SRS=EPSG%3A".$this->visualisationSRS;
-		//TODO $json .= "&BBOX=".$bb['location_x_min'].",".$bb['location_y_min'].",".$bb['location_x_max'].",".$bb['location_y_max'];
-		$json .= "&BBOX=4011305.875,2718334.125,4211305.875,2918334.125";
+		$json .= "&BBOX=".$bb['x_min'].",".$bb['y_min'].",".$bb['x_max'].",".$bb['y_max'];
 		$json .= "&WIDTH=300";
 		$json .= "&HEIGHT=300";
 		$json .= "&map.scalebar=STATUS+embed";
 		$json .= "&sessionid=".session_id();
-		//$json .= "&plot_code=".$locationPlotCode."'";
+		$json .= "&plot_code=".$plotCode;
 		$json .= "'},"; // end of map
 		$json .= "{title:'overview',";
 		$json .= "url:'".$this->baseUrl."/proxy/gettile?";
@@ -1101,14 +1129,13 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$json .= "&STYLES=";
 		$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
 		$json .= "&SRS=EPSG%3A".$this->visualisationSRS;
-		//TODO: $json .= "&BBOX=".$bb2['location_x_min'].",".$bb2['location_y_min'].",".$bb2['location_x_max'].",".$bb2['location_y_max'];
-		$json .= "&BBOX=4011305.875,2718334.125,4211305.875,2918334.125";
+		$json .= "&BBOX=".$bb2['x_min'].",".$bb2['y_min'].",".$bb2['x_max'].",".$bb2['y_max'];
 		$json .= "&WIDTH=300";
 		$json .= "&HEIGHT=300";
 		$json .= "&sessionid=".session_id();
+		$json .= "&plot_code=".$plotCode;
 		$json .= "&CLASS=REDSTAR";
 		$json .= "&map.scalebar=STATUS+embed";
-		//$json .= "&plot_code=".$locationPlotCode."'";
 		$json .= "'}"; // end of overview map
 		$json .= "]"; // end of maps
 		$json .= "}";
@@ -1124,30 +1151,28 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	/**
 	 * Setup the BoundingBox.
 	 *
-	 * @param String $line the line containing the bounding box
-	 * @param Integer $minSize the minimum size of the bounding box
+	 * @param Integer $xmin x min position
+	 * @param Integer $xmax x max position
+	 * @param Integer $ymin y min position
+	 * @param Integer $ymax y max position
 	 * @return Array the setup BoundingBox
 	 */
-	private function _setupBoundingBox($line, $minSize = 10000) {
+	private function _setupBoundingBox($xmin, $xmax, $ymin, $ymax, $minSize = 10000) {
 
-		$locationXmin = $line['location_x_min'];
-		$locationYmin = $line['location_y_min'];
-		$locationXmax = $line['location_x_max'];
-		$locationYmax = $line['location_y_max'];
-		$diffX = $locationXmax - $locationXmin;
-		$diffY = $locationYmax - $locationYmin;
+		$diffX = $xmax - $xmin;
+		$diffY = $ymax - $ymin;
 
 		//Enlarge the bb if it's too small (like for the point)
 		if ($diffX < $minSize) {
 			$addX = ($minSize - $diffX) / 2;
-			$locationXmin = $locationXmin - $addX;
-			$locationXmax = $locationXmax + $addX;
+			$xmin = $xmin - $addX;
+			$xmax = $xmax + $addX;
 			$diffX = $minSize;
 		}
 		if ($diffY < $minSize) {
 			$addY = ($minSize - $diffY) / 2;
-			$locationYmin = $locationYmin - $addY;
-			$locationYmax = $locationYmax + $addY;
+			$ymin = $ymin - $addY;
+			$ymax = $ymax + $addY;
 			$diffY = $minSize;
 		}
 
@@ -1155,18 +1180,18 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$diffXY = $diffX - $diffY;
 		if ($diffXY < 0) {
 			//The bb is highter than large
-			$locationXmin = $locationXmin + $diffXY / 2;
-			$locationXmax = $locationXmax - $diffXY / 2;
+			$xmin = $xmin + $diffXY / 2;
+			$xmax = $xmax - $diffXY / 2;
 		} else {
 			//The bb is larger than highter
-			$locationYmin = $locationYmin - $diffXY / 2;
-			$locationYmax = $locationYmax + $diffXY / 2;
+			$ymin = $ymin - $diffXY / 2;
+			$ymax = $ymax + $diffXY / 2;
 		}
 		return array(
-			'location_x_min' => $locationXmin,
-			'location_y_min' => $locationYmin,
-			'location_x_max' => $locationXmax,
-			'location_y_max' => $locationYmax);
+			'x_min' => $xmin,
+			'y_min' => $ymin,
+			'x_max' => $xmax,
+			'y_max' => $ymax);
 	}
 
 	/**

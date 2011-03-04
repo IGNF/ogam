@@ -10,6 +10,14 @@
  */
 class Model_Generic extends Zend_Db_Table_Abstract {
 
+	/**
+	 * The system of projection for the visualisation.
+	 */
+	var $visualisationSRS;
+
+	/**
+	 * The logger.
+	 */
 	var $logger;
 
 	/**
@@ -20,6 +28,11 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 
+		// Initialise the projection system
+		$configuration = Zend_Registry::get("configuration");
+		$this->visualisationSRS = $configuration->srs_visualisation;
+
+		// Initialise the metadata model
 		$this->metadataModel = new Model_Metadata();
 
 	}
@@ -85,23 +98,17 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 		if ($field->type == "DATE") {
 			$sql .= "to_char(".$field->columnName.", 'YYYY/MM/DD') as ".$field->data.", ";
-		} else if ($field->type == "GEOM") {
+		} else if ($field->unit == "GEOM") {
+			// Special case for THE_GEOM
 			$sql .= "asText(".$field->columnName.") as ".$field->data.", ";
+			$sql .= 'ymin(box2d(transform('.$field->columnName.','.$this->visualisationSRS.'))) as '.$field->data.'_y_min, ';
+			$sql .= 'ymax(box2d(transform('.$field->columnName.','.$this->visualisationSRS.'))) as '.$field->data.'_y_max, ';
+			$sql .= 'xmin(box2d(transform('.$field->columnName.','.$this->visualisationSRS.'))) as '.$field->data.'_x_min, ';
+			$sql .= 'xmax(box2d(transform('.$field->columnName.','.$this->visualisationSRS.'))) as '.$field->data.'_x_max, ';
+
 		} else {
 			$sql .= $field->columnName." as ".$field->data.", ";
 		}
-
-		
-		// TODO : Manage THE_GEOM info
-		/*
-		 $select .= ", ".$this->getLocationTable().".provider_id as loc_provider_id, "; // The provider identifier (used for the mapping view)
-		 $select .= $this->getLocationTable().".plot_code as loc_plot_code, "; // The plot code  (used for the mapping view)
-		 $select .= $this->getLocationTable().".the_geom as the_geom, "; // The geom (used for the mapping view)
-		 $select .= 'ymin(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_y_min, '; // The location boundingbox (for zooming in javascript)
-		 $select .= 'ymax(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_y_max, ';
-		 $select .= 'xmin(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_x_min, ';
-		 $select .= 'xmax(box2d(transform('.$this->getLocationTable().'.the_geom,'.$this->visualisationSRS.'))) as location_x_max';
-		 */
 
 		return $sql;
 
@@ -118,8 +125,8 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$sql = "SELECT ";
 
 		// Iterate through the fields
-		foreach ($data->getFields() as $primaryKey) {
-			$sql .= $this->_buildSelectItem($primaryKey);
+		foreach ($data->getFields() as $field) {
+			$sql .= $this->_buildSelectItem($field);
 		}
 
 		// Remove the last comma
@@ -133,9 +140,11 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $schema the name of the schema
 	 * @param String $format the name of the format
+	 * @param String $datasetId the dataset identifier
+	 * @param Boolean $isForDisplay indicate if we only want to display the data or if for update/insert
 	 * @return DataObject the DataObject structure (with no values set)
 	 */
-	public function buildDataObject($schema, $format, $datasetId = null) {
+	public function buildDataObject($schema, $format, $datasetId = null, $isForDisplay = false) {
 
 		// Prepare a data object to be filled
 		$data = new DataObject();
@@ -154,7 +163,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 				// Primary keys are displayed as info fields
 				$data->addInfoField($tableField);
 			} else {
-				if (!$tableField->isCalculated) {
+				if ($isForDisplay || !$tableField->isCalculated) {
 					// Fields that are calculated by a trigger should not be edited
 					$data->addEditableField($tableField);
 				}
@@ -178,7 +187,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		Zend_Registry::get("logger")->info('getDatum');
+		Zend_Registry::get("logger")->info('getDatum : ');
 
 		// Get the values from the data table
 		$sql = $this->_buildSelect($data);
@@ -194,6 +203,15 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		// Fill the values with data from the table
 		foreach ($data->editableFields as $field) {
 			$field->value = $row[strtolower($field->data)];
+
+			// Store additional info for geometry type
+			if ($field->unit == "GEOM") {
+				$field->xmin = $row[strtolower($field->data).'_x_min'];
+				$field->xmax = $row[strtolower($field->data).'_x_max'];
+				$field->ymin = $row[strtolower($field->data).'_y_min'];
+				$field->ymax = $row[strtolower($field->data).'_y_max'];
+			}
+
 		}
 
 		return $data;
@@ -372,10 +390,12 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * Get the information about the ancestors of a line of data.
 	 * The key elements in the parent tables must have an existing value in the child.
 	 *
+	 * @param String $schema the name of the schema
 	 * @param DataObject $data the data object we're looking at.
+	 * @param Boolean $isForDisplay indicate if we only want to display the data or if for update/insert
 	 * @return List[DataObject] The line of data in the parent tables.
 	 */
-	public function getAncestors($schema, $data) {
+	public function getAncestors($schema, $data, $isForDisplay = false) {
 		$db = $this->getAdapter();
 
 		$ancestors = array();
@@ -405,8 +425,8 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		if ($parentTable != "*") {
 
 			// Build an empty parent object
-			$parent = $this->buildDataObject($schema, $parentTable);
-
+			$parent = $this->buildDataObject($schema, $parentTable, null, $isForDisplay);
+						
 			// Fill the PK values
 			foreach ($parent->infoFields as $key) {
 				$keyField = $data->getInfoField($key->data);
@@ -421,7 +441,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			$ancestors[] = $parent;
 
 			// Recurse
-			$ancestors = array_merge($ancestors, $this->getAncestors($schema, $parent));
+			$ancestors = array_merge($ancestors, $this->getAncestors($schema, $parent, $isForDisplay));
 
 		}
 		return $ancestors;
@@ -487,6 +507,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	/**
 	 * Serialize the data object as a JSON string.
 	 *
+	 * @param DataObject $data the data object we're looking at.
 	 * @return JSON
 	 */
 	public function dataToDetailJSON($data) {
