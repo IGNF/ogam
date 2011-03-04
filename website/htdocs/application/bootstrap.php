@@ -34,6 +34,8 @@ Zend_Layout::startMvc(APPLICATION_PATH.'/layouts/scripts');
 // use. In this case, XHTML1 Strict.
 $view = Zend_Layout::getMvcInstance()->getView();
 $view->doctype('XHTML1_STRICT');
+$view->setEncoding('UTF-8');
+$view->addHelperPath(LIBRARY_PATH.'/Genapp/View/Helper', 'Genapp_View_Helper'); // Path to the genapp helpers
 
 // CONFIGURATION - Setup the configuration object
 // The Zend_Config_Ini component will parse the ini file, and resolve all of
@@ -48,15 +50,15 @@ date_default_timezone_set($configuration->defaultTimeZone);
 
 // Set the locale
 $browserLocales = Zend_Locale::getBrowser();
-$locales = array_intersect(array_keys($browserLocales),$configuration->availableLocales->toArray());
-if (empty($locales)){
-    $locale = new Zend_Locale($configuration->defaultLocale);
+$locales = array_intersect(array_keys($browserLocales), $configuration->availableLocales->toArray());
+if (empty($locales)) {
+	$locale = new Zend_Locale($configuration->defaultLocale);
 } else {
-    $locale = new Zend_Locale(current($locales));
+	$locale = new Zend_Locale(current($locales));
 }
 Zend_Registry::set('Zend_Locale', $locale);
 
-// Set the base path 
+// Set the base path
 $path_base_urls = $configuration->path_base_url->toArray();
 define('PATH_BASE_URL', $path_base_urls[0]);
 
@@ -130,10 +132,6 @@ if ($configuration->autoLogin) {
 		// Get the user informations
 		$user = $userModel->getUser($configuration->defaultUser);
 
-		// Get the country label (for the contextual info)
-		//$country = $this->metadataModel->getMode('COUNTRY_CODE', $user->countryCode);
-		//$user->countryLabel = $country[$user->countryCode];
-
 		// Store the user in session
 		$userSession = new Zend_Session_Namespace('user');
 		$userSession->connected = true;
@@ -150,17 +148,6 @@ if ($configuration->autoLogin) {
 		$userSession->permissions = $permissions;
 	}
 }
-
-/*
-// ROUTER - setup the routes
-$router = $frontController->getRouter();
-$router->addRoute('home',
-    new Zend_Controller_Router_Route('',
-        array('controller'=>$configuration->defaultController,
-            'action'=>$configuration->defaultAction)
-    )
-);
-*/
 
 // CLEANUP - remove items from global scope
 // This will clear all our local boostrap variables from the global scope of

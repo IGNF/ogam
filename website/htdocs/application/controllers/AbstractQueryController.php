@@ -4,7 +4,7 @@
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
 require_once 'AbstractEforestController.php';
-require_once LIBRARY_PATH.'/models/generic/Generic.php';
+require_once LIBRARY_PATH.'/Genapp/models/generic/Generic.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
 require_once APPLICATION_PATH.'/models/website/PredefinedRequest.php';
@@ -1367,6 +1367,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$json = "{title:'Detail', ";
 		$json .= "formats:[";
 		// List all the formats, starting with the ancestors
+		$ancestors = array_reverse($ancestors);
 		foreach ($ancestors as $ancestor) {
 			$json .= $this->genericModel->dataToDetailJSON($ancestor).",";
 		}

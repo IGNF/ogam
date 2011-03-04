@@ -105,20 +105,9 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 		$sql = "SELECT ";
 
-		// Iterate through the PKs (even if we already know their values)
-		foreach ($data->infoFields as $primaryKey) {
-
-			// We ignore the submission_id info (in theory we have an unicity constraint that allow this)
-			if (!($data->tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
-				$sql .= $this->_buildSelectItem($primaryKey);
-			}
-		}
-
-		// Build the WHERE clause with the info from the PK.
-		foreach ($data->editableFields as $field) {
-			if (!($data->tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "LINE_NUMBER")) {
-				$sql .= $this->_buildSelectItem($field);
-			}
+		// Iterate through the fields
+		foreach ($data->getFields() as $primaryKey) {
+			$sql .= $this->_buildSelectItem($primaryKey);
 		}
 
 		// Remove the last comma
@@ -206,7 +195,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * @param DataObject $data the shell of the data object with the values for the primary key.
 	 * @return Array[DataObject] The complete data objects.
 	 */
-	public function getData($data) {
+	public function getData($schema, $data) {
 		$db = $this->getAdapter();
 
 		Zend_Registry::get("logger")->info('getData');
@@ -215,12 +204,6 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 		// The table format descriptor
 		$tableFormat = $data->tableFormat;
-		//Zend_Registry::get("logger")->info('$tableFormat : '.print_r($tableFormat, true));
-
-		// The table fields descriptor
-		$tableFields = $this->metadataModel->getTableFields(null, 'RAW_DATA', $tableFormat->format);
-
-		//Zend_Registry::get("logger")->info('$tableFields : '.print_r($tableFields, true));
 
 		// Get the values from the data table
 		$sql = $this->_buildSelect($data);
@@ -233,32 +216,12 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$select->execute();
 		foreach ($select->fetchAll() as $row) {
 
-			// Create a new data object
-			$child = new DataObject();
-			$child->tableFormat = $tableFormat;
-
-			// Copy the key info (with know values)
-			$knownKeys = array();
-			foreach ($data->infoFields as $field) {
-				$child->addInfoField($field);
-				$knownKeys[] = $field->data;
-			}
-
-			// Add the unknown key items with their value from the table
-			$unknownKeys = array_diff($tableFormat->primaryKeys, $knownKeys);
-			foreach ($unknownKeys as $fieldName) {
-				if ($fieldName != 'SUBMISSION_ID') {
-					$key = clone $tableFields[$fieldName];
-					$key->value = $row[strtolower($key->data)];
-					$child->addInfoField($key);
-				}
-			}
+			// Build an new empty data object
+			$child = $this->buildDataObject($schema, $data->tableFormat->format);
 
 			// Fill the values with data from the table
-			foreach ($data->editableFields as $field) {
-				if ($field->data != 'LINE_NUMBER') {
-					$child->addEditableField($field);
-				}
+			foreach ($child->getFields() as $field) {
+				$field->value = $row[strtolower($field->data)];
 			}
 
 			$result[] = $child;
@@ -489,7 +452,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			$childTable = $row['child_table'];
 			$joinKeys = explode(',', $row['join_key']);
 
-			// Build an empty data object
+			// Build an empty data object (for the query)
 			$child = $this->buildDataObject($schema, $childTable);
 
 			// Fill the known primary keys
@@ -502,7 +465,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			}
 
 			// Get the lines of data corresponding to the partial key
-			$childs = $this->getData($child);
+			$childs = $this->getData($schema, $child);
 
 			// Add to the result
 			$children[$child->tableFormat->format] = $childs;

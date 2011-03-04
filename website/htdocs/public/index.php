@@ -4,10 +4,10 @@
 // Step 1: APPLICATION_PATH is a constant pointing to our
 // application/subdirectory. We use this to add our "library" directory
 // to the include_path, so that PHP can find our Zend Framework classes.
-define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application/'));
-define('LIBRARY_PATH', realpath(dirname(__FILE__) . '/../library/Genapp/'));
+define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application'));
+define('LIBRARY_PATH', realpath(dirname(__FILE__) . '/../library'));
 set_include_path(
-    APPLICATION_PATH . '/../library' 
+    LIBRARY_PATH 
     . PATH_SEPARATOR . APPLICATION_PATH . '/config'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/harmonized_data'
@@ -15,7 +15,7 @@ set_include_path(
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/metadata'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/raw_data'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/website'
-    . PATH_SEPARATOR . LIBRARY_PATH . '/classes/generic'
+    . PATH_SEPARATOR . LIBRARY_PATH . '/Genapp/classes/generic'
     . PATH_SEPARATOR . get_include_path()
 );
 

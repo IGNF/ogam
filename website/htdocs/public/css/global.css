@@ -288,7 +288,7 @@ img.percentImage {
 /* Mise en forme des formulaires Zend */
 /**************************************/
 
-.editform dd{
+.editform dd {
 	position: relative;
 	padding-left: 16em;
 	top: -2em;
@@ -298,4 +298,46 @@ img.percentImage {
 	color: #60BB60;
 	text-align: center;
 	font-size:16px;
+}
+
+/************************************************************/
+/* Tooltips en CSS                                          */
+*/ TODO : Replace with something more consistent with ExtJS */
+/************************************************************/
+
+a.tooltip {
+    display:none;
+}
+
+a.tooltip em {
+    display:none;
+}
+a.tooltip:hover {
+    border: 0; 
+    position: relative; 
+    z-index: 500; 
+    text-decoration:none;
+}
+a.tooltip:hover em {
+    font-style: normal; 
+    display: block; 
+    position: absolute; 
+    top: 20px; 
+    left: -10px; 
+    padding: 5px; 
+    color: #000; 
+    border: 1px solid #bbb; 
+    background: #ffc; 
+    width:300px;
+}
+a.tooltip:hover em span {
+    position: absolute; 
+    top: -7px; 
+    left: 15px;
+    height: 7px; 
+    width: 11px; 
+    background: transparent url(../img/infobulletop00.gif); 
+    margin:0; 
+    padding: 0; 
+    border: 0;
 }
