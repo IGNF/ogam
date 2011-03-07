@@ -44,7 +44,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	protected $genericModel;
 	protected $resultLocationModel;
 	protected $predefinedRequestModel;
-	
+
 	/**
 	 * The generic service
 	 */
@@ -1078,7 +1078,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// Look for the plot location
 		$bb = null;
 		$bb2 = null;
-		Zend_Registry::get("logger")->info('$$data : '.print_r($data, true));
 		foreach ($data->getFields() as $field) {
 			if ($field->unit == "GEOM") {
 				// define a bbox around the location
@@ -1103,9 +1102,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				}
 			}
 		}
-
-		Zend_Registry::get("logger")->info('$ancestors : '.print_r($ancestors, true));
-		Zend_Registry::get("logger")->info('$bbox : '.print_r($bb, true));
 
 		// Title of the detail message
 		$json = "{title:'Detail', ";
