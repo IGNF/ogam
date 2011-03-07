@@ -642,10 +642,9 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the form field corresponding to the table field.
 	 *
 	 * @param TableField $tableField the table field
-	 * @param Boolean $copyValues is true the values will be copied
 	 * @return array[FormField]
 	 */
-	public function getTableToFormMapping($tableField, $copyValues = false) {
+	public function getTableToFormMapping($tableField) {
 
 		$this->logger->info('getTableToFormMapping : '.$tableField->format." ".$tableField->data);
 
@@ -694,26 +693,11 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 				if ($this->useCache) {
 					$this->cache->save($formField, $key);
 				}
-				$result = clone $formField; // clone to avoid updating the values of the cached result
+				$result = $formField;
 			}
 		}
 
-		// Get the actual value
-		if ($copyValues == true && $result != null && $tableField->value != null) {
-
-			// Copy the value
-			$result->value = $tableField->value;
-
-			// Fill the label
-			if ($result->type == "CODE") {
-				$result->valueLabel = $this->getMode($tableField->unit, $tableField->value);
-			} else {
-				$result->valueLabel = $tableField->value;
-			}
-
-		}
-
-		return $result;
+		return $result; // clone to avoid updating the values of the cached result
 
 	}
 

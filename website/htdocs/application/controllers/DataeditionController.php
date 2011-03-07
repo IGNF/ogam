@@ -5,6 +5,7 @@
  */
 require_once 'AbstractEforestController.php';
 require_once LIBRARY_PATH.'/Genapp/models/generic/Generic.php';
+require_once LIBRARY_PATH.'/Genapp/classes/generic/GenericService.php';
 require_once LIBRARY_PATH.'/Genapp/classes/generic/DataObject.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/classes/metadata/TableField.php';
@@ -18,6 +19,17 @@ class DataEditionController extends AbstractEforestController {
 	private $schema = 'RAW_DATA';
 
 	protected $_redirector = null;
+
+	/**
+	 * The models
+	 */
+	private $metadataModel;
+	private $genericModel;
+
+	/**
+	 * The generic service
+	 */
+	private $genericService;
 
 	/**
 	 * Initialise the controler
@@ -37,6 +49,9 @@ class DataEditionController extends AbstractEforestController {
 		// Initialise the model
 		$this->metadataModel = new Model_Metadata();
 		$this->genericModel = new Model_Generic();
+
+		// The generic service
+		$this->genericService = new GenericService();
 
 	}
 
@@ -109,7 +124,7 @@ class DataEditionController extends AbstractEforestController {
 	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
 
 		$configuration = Zend_Registry::get("configuration");
-		
+
 		// Warning : $formField can be null if no mapping is defined with $tableField
 
 		// TODO OGAM-73 : Manage all data types for edition (DATE, BOOLEAN, ...), with corresponding validators
@@ -201,7 +216,7 @@ class DataEditionController extends AbstractEforestController {
 
 			// Hardcoded value : We don't display the submission id (it's a technical element)
 			if ($tablefield->data != "SUBMISSION_ID") {
-				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
+				$formField = $this->genericService->getTableToFormMapping($tablefield);
 
 				$elem = $this->_getFormElement($form, $tablefield, $formField, true);
 				$elem->class = 'dataedit_key';
@@ -217,7 +232,7 @@ class DataEditionController extends AbstractEforestController {
 
 			// Hardcoded value : We don't edit the line number (it's a technical element)
 			if ($tablefield->data != "LINE_NUMBER") {
-				$formField = $this->metadataModel->getTableToFormMapping($tablefield);
+				$formField = $this->genericService->getTableToFormMapping($tablefield);
 				$elem = $this->_getFormElement($form, $tablefield, $formField, false);
 				$elem->class = 'dataedit_field';
 				$form->addElement($elem);

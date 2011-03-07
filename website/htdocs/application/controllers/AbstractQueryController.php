@@ -5,6 +5,7 @@
  */
 require_once 'AbstractEforestController.php';
 require_once LIBRARY_PATH.'/Genapp/models/generic/Generic.php';
+require_once LIBRARY_PATH.'/Genapp/classes/generic/GenericService.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
 require_once APPLICATION_PATH.'/models/website/PredefinedRequest.php';
@@ -37,6 +38,19 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	protected $detailsLayers;
 
 	/**
+	 * The models
+	 */
+	protected $metadataModel;
+	protected $genericModel;
+	protected $resultLocationModel;
+	protected $predefinedRequestModel;
+	
+	/**
+	 * The generic service
+	 */
+	protected $genericService;
+
+	/**
 	 * Initialise the controler
 	 */
 	public function init() {
@@ -53,6 +67,9 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->genericModel = new Model_Generic();
 		$this->resultLocationModel = new Model_ResultLocation();
 		$this->predefinedRequestModel = new Model_PredefinedRequest();
+
+		// The generic service
+		$this->genericService = new GenericService();
 
 		// Reinit the activated layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
@@ -721,7 +738,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		//
 		foreach ($dataCols as $tableField) {
 
-			$formfield = $this->metadataModel->getTableToFormMapping($tableField);
+			$formfield = $this->genericService->getTableToFormMapping($tableField);
 
 			$columnName = $tableField->columnName;
 
@@ -795,7 +812,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		foreach ($dataCrits as $tableField) {
 
 			/* @var $tableField TableField */
-			$formfield = $this->metadataModel->getTableToFormMapping($tableField);
+			$formfield = $this->genericService->getTableToFormMapping($tableField);
 
 			$columnName = $tableField->columnName;
 
@@ -1031,10 +1048,9 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			$i += 2;
 		}
 
-		
 		// TODO : Hardcoded, should remove this dependency
 		$plotCode = $keyMap['PLOT_CODE'];
-		
+
 		// Prepare a data object to be filled
 		$data = $this->genericModel->buildDataObject($this->schema, $keyMap["FORMAT"]);
 
@@ -1052,7 +1068,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$ancestors = $this->genericModel->getAncestors($this->schema, $data, true);
 		$ancestors = array_reverse($ancestors);
 
-		// TODO : Get children too, display as is_array:true
+		// Get children too
+		$children = $this->genericModel->getChildren($this->schema, $data);
 
 		// Return the detailled information about the plot
 		$fields = "";
@@ -1060,7 +1077,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// Look for a geometry object in order to calculate a bounding box
 		// Look for the plot location
 		$bb = null;
-		$bb2 = null;		
+		$bb2 = null;
 		foreach ($data->getFields() as $field) {
 			if ($field->unit == "GEOM") {
 				// define a bbox around the location
@@ -1094,10 +1111,17 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$json .= "formats:[";
 		// List all the formats, starting with the ancestors
 		foreach ($ancestors as $ancestor) {
-			$json .= $this->genericModel->dataToDetailJSON($ancestor).",";
+			$json .= $this->genericService->datumToDetailJSON($ancestor).",";
 		}
 		// Add the current data
-		$json .= $this->genericModel->dataToDetailJSON($data);
+		$json .= $this->genericService->datumToDetailJSON($data);
+
+		// Add the children
+		if (!empty($children)) {
+			foreach ($children as $format => $listChild) {
+				$json .= $this->genericService->dataToDetailJSON($format, $listChild);
+			}
+		}
 
 		$json .= "], ";
 		$json .= "maps:[{title:'image',";
@@ -1147,7 +1171,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
-
 	/**
 	 * Setup the BoundingBox.
 	 *

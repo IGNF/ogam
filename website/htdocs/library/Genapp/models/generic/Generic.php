@@ -426,7 +426,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 			// Build an empty parent object
 			$parent = $this->buildDataObject($schema, $parentTable, null, $isForDisplay);
-						
+
 			// Fill the PK values
 			foreach ($parent->infoFields as $key) {
 				$keyField = $data->getInfoField($key->data);
@@ -452,7 +452,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * Get the information about the children of a line of data.
 	 *
 	 * @param DataObject $data the data object we're looking at.
-	 * @return List[DataObject] The lines of data in the parent tables.
+	 * @return Array[Format => List[DataObject]] The lines of data in the parent tables.
 	 */
 	public function getChildren($schema, $data) {
 		$db = $this->getAdapter();
@@ -504,32 +504,4 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		return $children;
 	}
 
-	/**
-	 * Serialize the data object as a JSON string.
-	 *
-	 * @param DataObject $data the data object we're looking at.
-	 * @return JSON
-	 */
-	public function dataToDetailJSON($data) {
-
-		$json = "{title:'".$data->tableFormat->format."', is_array:false, fields:[";
-		$fields = "";
-		foreach ($data->getFields() as $tableField) {
-
-			// Get the form field correspondnig to the table field
-			$form = $this->metadataModel->getTableToFormMapping($tableField, true);
-
-			// Add the corresponding JSON
-			if ($form != null) {
-				$fields .= $form->toDetailJSON().",";
-			}
-		}
-		// remove last comma
-		if ($fields != "") {
-			$fields = substr($fields, 0, -1);
-		}
-		$json .= $fields."]}";
-
-		return $json;
-	}
 }
