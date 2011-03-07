@@ -7,8 +7,9 @@ require_once 'AbstractEforestController.php';
 require_once LIBRARY_PATH.'/Genapp/models/generic/Generic.php';
 require_once LIBRARY_PATH.'/Genapp/classes/generic/GenericService.php';
 require_once LIBRARY_PATH.'/Genapp/classes/generic/DataObject.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableField.php';
 require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
-require_once APPLICATION_PATH.'/classes/metadata/TableField.php';
+
 
 /**
  * DataEditionController is the controller that allow the edition of simple data.
