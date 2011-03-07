@@ -187,7 +187,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		Zend_Registry::get("logger")->info('getDatum : ');
+		Zend_Registry::get("logger")->info('getDatum : '.$tableFormat->format);
 
 		// Get the values from the data table
 		$sql = $this->_buildSelect($data);

@@ -1052,7 +1052,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$plotCode = $keyMap['PLOT_CODE'];
 
 		// Prepare a data object to be filled
-		$data = $this->genericModel->buildDataObject($this->schema, $keyMap["FORMAT"]);
+		$data = $this->genericModel->buildDataObject($this->schema, $keyMap["FORMAT"], null, true);
 
 		// Complete the primary key info with the session values
 		foreach ($data->infoFields as $infoField) {
@@ -1078,6 +1078,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// Look for the plot location
 		$bb = null;
 		$bb2 = null;
+		Zend_Registry::get("logger")->info('$$data : '.print_r($data, true));
 		foreach ($data->getFields() as $field) {
 			if ($field->unit == "GEOM") {
 				// define a bbox around the location

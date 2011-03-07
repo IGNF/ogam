@@ -45,7 +45,7 @@ class GenericService {
 	 */
 	public function datumToDetailJSON($data) {
 
-		$this->logger->info('datumToDetailJSON : '.print_r($data, true));
+		$this->logger->info('datumToDetailJSON');
 
 		$json = "{title:'".$data->tableFormat->format."', is_array:false, fields:[";
 		$fields = "";

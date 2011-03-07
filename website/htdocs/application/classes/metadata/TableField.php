@@ -30,6 +30,16 @@ class TableField extends Field {
 	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).
 	 */
 	var $value;
+	
+	
+	/**
+	 * These fields are only filled when the table field is of unit GEOM.
+	 */
+	var $xmin;
+	var $xmax;
+	var $ymin;
+	var $ymax;
+	
 
 	/**
 	 * Clone the field
