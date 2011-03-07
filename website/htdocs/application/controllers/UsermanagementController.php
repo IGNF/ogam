@@ -6,7 +6,7 @@
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/website/User.php';
 require_once APPLICATION_PATH.'/models/website/Role.php';
-require_once APPLICATION_PATH.'/models/metadata/Metadata.php';
+require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
 
 /**
  * UsermanagementController is the controller that manages the users
