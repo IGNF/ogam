@@ -312,7 +312,7 @@ class DataEditionController extends AbstractEforestController {
 				$keyMap = $params;
 			}
 
-			$data = $this->genericModel->buildDataObject($this->schema, $keyMap["FORMAT"]);
+			$data = $this->genericService->buildDataObject($this->schema, $keyMap["FORMAT"]);
 
 			// Complete the primary key info with the session values
 			foreach ($data->infoFields as $infoField) {

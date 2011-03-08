@@ -135,7 +135,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		foreach ($select->fetchAll() as $row) {
 
 			// Build an new empty data object
-			$child = $this->buildDataObject($tableFormat->schemaCode, $data->tableFormat->format);
+			$child = $this->genericService->buildDataObject($tableFormat->schemaCode, $data->tableFormat->format);
 
 			// Fill the values with data from the table
 			foreach ($child->getFields() as $field) {
@@ -370,7 +370,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			$joinKeys = explode(',', $row['join_key']);
 
 			// Build an empty data object (for the query)
-			$child = $this->buildDataObject($schema, $childTable);
+			$child = $this->genericService->buildDataObject($schema, $childTable);
 
 			// Fill the known primary keys
 			foreach ($data->infoFields as $dataKey) {
