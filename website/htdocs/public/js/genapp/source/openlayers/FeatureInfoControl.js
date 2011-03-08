@@ -19,7 +19,7 @@ OpenLayers.Handler.FeatureInfo.prototype =
         var ll = this.map.getLonLatFromPixel(px);
         
         // Construction d'une URL pour faire une requête WFS sur le point
-        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=result_locations&MAXFEATURES=1&BBOX="+(ll.lon-500)+","+(ll.lat+500)+","+(ll.lon+500)+","+(ll.lat-500);
+        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=result_locations&MAXFEATURES=1&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
 
         OpenLayers.loadURL(
             url,
