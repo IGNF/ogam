@@ -81,11 +81,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 */
 	abstract protected function getLocationTable();
 
-	/**
-	 * Return the name of the plot table (the table containing the plot data)
-	 */
-	abstract protected function getPlotTable();
-
+	
 	/**
 	 * The "index" action is the default action for all controllers.
 	 *
@@ -716,9 +712,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			$i += 2;
 		}
 
-		// TODO : Hardcoded, should remove this dependency
-		$plotCode = $keyMap['PLOT_CODE'];
-
 		// Prepare a data object to be filled
 		$data = $this->genericService->buildDataObject($this->schema, $keyMap["FORMAT"], null, true);
 
@@ -805,7 +798,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$json .= "&HEIGHT=300";
 		$json .= "&map.scalebar=STATUS+embed";
 		$json .= "&sessionid=".session_id();
-		$json .= "&plot_code=".$plotCode;
 		$json .= "'},"; // end of map
 		$json .= "{title:'overview',";
 		$json .= "url:'".$this->baseUrl."/proxy/gettile?";
@@ -822,7 +814,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$json .= "&WIDTH=300";
 		$json .= "&HEIGHT=300";
 		$json .= "&sessionid=".session_id();
-		$json .= "&plot_code=".$plotCode;
 		$json .= "&CLASS=REDSTAR";
 		$json .= "&map.scalebar=STATUS+embed";
 		$json .= "'}"; // end of overview map

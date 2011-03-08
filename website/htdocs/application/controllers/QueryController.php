@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractQueryController.php';
 
 /**
@@ -27,7 +27,7 @@ class QueryController extends AbstractQueryController {
 
 		$configuration = Zend_Registry::get("configuration");
 		$this->detailsLayers = $configuration->query_details_layers->toArray();
-		
+
 		// Init the activated layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
 		$mappingSession->activatedLayers[] = 'all_locations';
@@ -58,12 +58,4 @@ class QueryController extends AbstractQueryController {
 		return "LOCATION_DATA";
 	}
 
-   /**
-     * Return the logical name of the plot table (the table containing the plot data).
-     *
-     * @return String the plot table
-     */
-    protected function getPlotTable() {
-        return "PLOT_DATA";
-    }
 }

@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractQueryController.php';
 require_once APPLICATION_PATH.'/models/aggregation/Aggregation.php';
 
@@ -56,15 +56,6 @@ class HarmonizationQueryController extends AbstractQueryController {
 	 */
 	protected function getLocationTable() {
 		return "HARMONIZED_LOCATION_DATA";
-	}
-
-	/**
-	 * Return the logical name of the plot table (the table containing the plot data).
-	 *
-	 * @return String the plot table
-	 */
-	protected function getPlotTable() {
-		return "HARMONIZED_PLOT_DATA";
 	}
 
 	/**
