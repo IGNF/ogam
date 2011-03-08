@@ -710,8 +710,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			$keyMap[$idElems[$i]] = $idElems[$i + 1];
 			$i += 2;
 		}
-		
-		$this->logger->debug('$$keyMap : '.print_r($keyMap, true));
 
 		// Prepare a data object to be filled
 		$data = $this->genericService->buildDataObject($this->schema, $keyMap["FORMAT"], null, true);
@@ -722,8 +720,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$infoField->value = $keyMap[$infoField->data];
 			}
 		}
-
-		$this->logger->debug('$data : '.print_r($data, true));
 
 		// Get the detailled data
 		$result = $this->genericModel->getDatum($data);
