@@ -83,6 +83,9 @@ class MapController extends AbstractEforestController {
 		$this->view->defaultzoom = $center->defaultzoom;
 		$this->view->x_center = $center->x_center;
 		$this->view->y_center = $center->y_center;
+		
+		// Margin
+		$this->view->featureinfo_margin = $configuration->featureinfo->margin; 
 
 		$this->_helper->layout()->disableLayout();
 		$this->render('map-parameters');

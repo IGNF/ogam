@@ -208,14 +208,17 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			// Get the fields specified by the format
 			$req = "SELECT DISTINCT table_field.*, data.label, data.unit, unit.type, data.definition ";
 			$req .= " FROM table_field ";
-			$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.data) ";
+			if ($datasetID != null) {
+				$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.data) ";
+			}
+			$req .= " LEFT JOIN table_format on (table_format.format = table_field.format) ";
 			$req .= " LEFT JOIN data on (table_field.data = data.data) ";
 			$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
 			$req .= " WHERE (1=1)";
 			if ($datasetID != null) {
 				$req .= " AND dataset_fields.dataset_id = ? ";
 			}
-			$req .= " AND dataset_fields.schema_code = ? ";
+			$req .= " AND table_format.schema_code = ? ";
 			$req .= " AND table_field.format = ? ";
 
 			$this->logger->info('getTableFields : '.$req);
@@ -276,7 +279,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 		foreach ($tables as $format) {
 			$req .= "'".$format."', ";
 		}
-		$req = substr($req, 0, - 2); // remove last comma
+		$req = substr($req, 0, -2); // remove last comma
 		$req .= " ) ";
 		$req .= " AND table_format.schema_code = ? ";
 		$req .= " AND data.unit = 'GEOM' ";
@@ -342,7 +345,10 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$tableFormat->format = $format;
 			$tableFormat->schemaCode = $schema;
 			$tableFormat->tableName = $row['table_name'];
-			$tableFormat->primaryKeys = explode(",", $row['primary_key']);
+			$pks = explode(",", $row['primary_key']);
+			foreach ($pks as $pk) {
+				$tableFormat->primaryKeys[] = trim($pk); // we need to trim all the values
+			}
 
 			if ($this->useCache) {
 				$this->cache->save($tableFormat, $key);
@@ -757,7 +763,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $tableFormat the table format
 	 * @param String $fieldName the name of the field that is using this table (used for complementary data)
 	 * @param String $schemaCode the name of the schema
-	 * @return array[TableTreeData]
+	 * @return Array[TableTreeData]
 	 * @throws Exception if the table is not found
 	 */
 	public function getTablesTree($tableFormat, $fieldName, $schemaCode) {

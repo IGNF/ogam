@@ -70,5 +70,23 @@ class DataObject {
 	public function getFields() {
 		return array_merge($this->infoFields, $this->editableFields);
 	}
+	
+/**
+	 * Get all table formats.
+	 *
+	 * @return Array[String] the table formats
+	 */
+	public function getFormats() {
+		
+		$formats = array();
+		
+		foreach ($this->getFields() as $field) {
+			if (!in_array($field->format, $formats)) {
+				$formats[] = $field->format;
+			}
+		}
+		
+		return $formats;
+	}
 
 }

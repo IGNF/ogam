@@ -49,13 +49,4 @@ class QueryController extends AbstractQueryController {
 		}
 	}
 
-	/**
-	 * Return the logical name of the location table (the table containing the the_geom column).
-	 *
-	 * @return String the name of the table.
-	 */
-	protected function getLocationTable() {
-		return "LOCATION_DATA";
-	}
-
 }

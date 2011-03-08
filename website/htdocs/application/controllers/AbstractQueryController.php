@@ -77,11 +77,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	}
 
 	/**
-	 * Return the name of the location table (the table containing the the_geom column)
-	 */
-	abstract protected function getLocationTable();
-
-	/**
 	 * The "index" action is the default action for all controllers.
 	 *
 	 * @return the default View
@@ -483,16 +478,20 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
 				$fromwhere = $this->genericService->generateSQLFromWhereRequest($this->schema, $queryObject);
 
-				$this->logger->debug('$where : '.print_r($fromwhere, true));
+				$this->logger->debug('$select : '.$select);
+				$this->logger->debug('$fromwhere : '.$fromwhere);
 
 				// Clean previously stored results
 				$sessionId = session_id();
 				$this->logger->debug('SessionId : '.$sessionId);
-				$this->logger->debug('visualisationSRS : '.$this->visualisationSRS);
 				$this->resultLocationModel->cleanPreviousResults($sessionId);
 
+				// Identify the field carrying the location information
+				$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
+				$locationField = $this->metadataModel->getLocationTableFields($this->schema, array_keys($tables));
+
 				// Run the request to store a temporary result table (for the web mapping)
-				$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $this->getLocationTable(), $this->visualisationSRS);
+				$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField->format, $this->visualisationSRS);
 
 				// Calculate the number of lines of result
 				$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count FROM result_location WHERE session_id = '".$sessionId."'");
@@ -506,6 +505,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$websiteSession->SQLFromWhere = $fromwhere;
 				$websiteSession->queryObject = $queryObject;
 				$websiteSession->count = $countResult[0]['count'];
+				$websiteSession->locationFormat = $locationField->format;
 
 				// Send the result as a JSON String
 				$json = '{success:true,';
@@ -710,6 +710,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			$keyMap[$idElems[$i]] = $idElems[$i + 1];
 			$i += 2;
 		}
+		
+		$this->logger->debug('$$keyMap : '.print_r($keyMap, true));
 
 		// Prepare a data object to be filled
 		$data = $this->genericService->buildDataObject($this->schema, $keyMap["FORMAT"], null, true);
@@ -720,6 +722,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$infoField->value = $keyMap[$infoField->data];
 			}
 		}
+
+		$this->logger->debug('$data : '.print_r($data, true));
 
 		// Get the detailled data
 		$result = $this->genericModel->getDatum($data);

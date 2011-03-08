@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractEforestController.php';
 require_once APPLICATION_PATH.'/models/aggregation/Aggregation.php';
 require_once APPLICATION_PATH.'/models/mapping/ClassDefinition.php';
@@ -232,6 +232,10 @@ class ProxyController extends AbstractEforestController {
 		$mapserverURL = $configuration->mapserver_url;
 		$mapserverURL = $mapserverURL."&";
 		$sessionId = session_id();
+		
+		$websiteSession = new Zend_Session_Namespace('website');
+		$locationFormat = $websiteSession->locationFormat; // The format carrying the location info
+		
 
 		$uri = $this->_extractAfter($uri, "proxy/getInfo?");
 
@@ -268,7 +272,8 @@ class ProxyController extends AbstractEforestController {
 				}
 			}
 			// Affiche l'info
-			echo '{success:true, id:\'FORMAT/LOCATION_DATA/PROVIDER_ID/'.$results['provider_id'].'/PLOT_CODE/'.$results['plot_code'].'\'}';
+			$this->logger->debug('$locationFormat : '.$locationFormat);
+			echo '{success:true, id:\'FORMAT/'.$locationFormat.'/PROVIDER_ID/'.$results['provider_id'].'/PLOT_CODE/'.$results['plot_code'].'\'}';
 		} else {
 			echo '{success:true, id:null}';
 		}

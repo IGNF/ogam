@@ -202,23 +202,7 @@ class GenericService {
 		//
 
 		// Prepare the list of needed tables
-		$tables = array();
-		foreach ($dataObject->getFields() as $tableField) {
-
-			if (!in_array($tableField->format, $tables)) {
-
-				// Get the ancestors of the table
-				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $tableField->data, $schema);
-
-				// Reverse the order of the list and store by indexing with the table name
-				// The root table (LOCATION) should appear first
-				$ancestors = array_reverse($ancestors);
-				foreach ($ancestors as $ancestor) {
-					$tables[$ancestor->getLogicalName()] = $ancestor;
-				}
-
-			}
-		}
+		$tables = $this->getAllFormats($schema, $dataObject);
 
 		// Add the root table;
 		$rootTable = array_shift($tables);
@@ -252,9 +236,6 @@ class GenericService {
 
 		$sql = $from.$where;
 
-		$this->logger->debug('generateSQLFromWhereRequest $from : '.$from);
-		$this->logger->debug('generateSQLFromWhereRequest $where : '.$where);
-
 		// Return the completed SQL request
 		return $sql;
 	}
@@ -283,26 +264,8 @@ class GenericService {
 		// Create a unique identifier for each line
 		// We use the last column of the leaf table
 		//
-		// Prepare the list of needed tables
-		$tables = array();
-		foreach ($dataObject->getFields() as $tableField) {
-
-			if (!in_array($tableField->format, $tables)) {
-
-				// Get the ancestors of the table
-				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $tableField->data, $schema);
-
-				// Reverse the order of the list and store by indexing with the table name
-				// The root table (LOCATION) should appear first
-				$ancestors = array_reverse($ancestors);
-				foreach ($ancestors as $ancestor) {
-					$tables[$ancestor->getLogicalName()] = $ancestor;
-				}
-
-			}
-		}
-
 		// Get the left table;
+		$tables = $this->getAllFormats($schema, $dataObject);
 		$leftTable = array_shift(array_reverse($tables));
 
 		$uniqueId = "'FORMAT/".$leftTable->getLogicalName()."'";
@@ -646,6 +609,37 @@ class GenericService {
 		}
 
 		return $result;
+	}
+
+	/**
+	 *  Get the hierarchy of tables needed for a data object.
+	 *
+	 * @param String $schema the schema
+	 * @param DataObject $dataObject the list of table fields
+	 * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
+	 */
+	public function getAllFormats($schema, $dataObject) {
+
+		// Prepare the list of needed tables
+		$tables = array();
+		foreach ($dataObject->getFields() as $tableField) {
+
+			if (!in_array($tableField->format, $tables)) {
+
+				// Get the ancestors of the table
+				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $tableField->data, $schema);
+
+				// Reverse the order of the list and store by indexing with the table name
+				// The root table (LOCATION) should appear first
+				$ancestors = array_reverse($ancestors);
+				foreach ($ancestors as $ancestor) {
+					$tables[$ancestor->getLogicalName()] = $ancestor;
+				}
+
+			}
+		}
+
+		return $tables;
 	}
 
 }

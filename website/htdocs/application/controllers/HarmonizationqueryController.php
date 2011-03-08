@@ -49,15 +49,7 @@ class HarmonizationQueryController extends AbstractQueryController {
 		}
 	}
 
-	/**
-	 * Return the logical name of the location table (the table containing the the_geom column).
-	 *
-	 * @return String the location table
-	 */
-	protected function getLocationTable() {
-		return "HARMONIZED_LOCATION_DATA";
-	}
-
+	
 	/**
 	 * Returns a csv file corresponding to the requested data.
 	 */
