@@ -75,7 +75,7 @@ LAT                  FLOAT8               null,
 LONG                 FLOAT8               null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_LOCATION primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE),
+constraint PK_LOCATION primary key (PROVIDER_ID, PLOT_CODE),
 unique (PROVIDER_ID, PLOT_CODE)
 );
 
@@ -130,7 +130,7 @@ INV_DATE             DATE                 null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_PLOT_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE),
+constraint PK_PLOT_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE),
 constraint FK_PLOT_DATA_ASSOCIATE_LOCATION foreign key (PROVIDER_ID, PLOT_CODE) references LOCATION (PROVIDER_ID, PLOT_CODE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE)
 );
@@ -157,7 +157,7 @@ SPECIES_CODE         VARCHAR(36)          not null,
 BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_SPECIES_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
+constraint PK_SPECIES_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
 constraint FK_SPECIES_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE)   
 );
@@ -198,7 +198,7 @@ DBH					 FLOAT8	              null,
 HEIGHT	 			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_TREE_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID),
+constraint PK_TREE_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID),
 constraint FK_TREE_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID)   
 );
