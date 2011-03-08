@@ -21,6 +21,11 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * The generic service.
+	 */
+	var $genericService;
+
+	/**
 	 * Initialisation
 	 */
 	public function init() {
@@ -34,6 +39,9 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 		// Initialise the metadata model
 		$this->metadataModel = new Model_Metadata();
+
+		// Initialise the generic service
+		$this->genericService = new GenericService();
 
 	}
 
@@ -56,124 +64,6 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Build the WHERE clause.
-	 *
-	 * @param DataObject $data the shell of the data object.
-	 * @return String the WHERE part of the SQL query
-	 */
-	private function _buildWhere($data) {
-
-		$sql = " WHERE(1 = 1) ";
-
-		// Build the WHERE clause with the info from the PK.
-		foreach ($data->infoFields as $primaryKey) {
-
-			// If the PK elem is null, then we don't add the criteria, we will have more that one result
-			if ($primaryKey->value != null) {
-
-				// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-				if (!($data->tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
-
-					if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER") {
-						$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
-					} else {
-						$sql .= " AND ".$primaryKey->columnName." = '".$primaryKey->value."'";
-					}
-				}
-			}
-		}
-
-		return $sql;
-	}
-
-	/**
-	 * Build the SELECT part for one field.
-	 *
-	 * @param TableField $field a table field descriptor.
-	 * @return String the SELECT part corresponding to the field.
-	 */
-	private function _buildSelectItem($field) {
-
-		$sql = "";
-
-		if ($field->type == "DATE") {
-			$sql .= "to_char(".$field->columnName.", 'YYYY/MM/DD') as ".$field->data.", ";
-		} else if ($field->unit == "GEOM") {
-			// Special case for THE_GEOM
-			$sql .= "asText(".$field->columnName.") as ".$field->data.", ";
-			$sql .= 'ymin(box2d(transform('.$field->columnName.','.$this->visualisationSRS.'))) as '.$field->data.'_y_min, ';
-			$sql .= 'ymax(box2d(transform('.$field->columnName.','.$this->visualisationSRS.'))) as '.$field->data.'_y_max, ';
-			$sql .= 'xmin(box2d(transform('.$field->columnName.','.$this->visualisationSRS.'))) as '.$field->data.'_x_min, ';
-			$sql .= 'xmax(box2d(transform('.$field->columnName.','.$this->visualisationSRS.'))) as '.$field->data.'_x_max, ';
-
-		} else {
-			$sql .= $field->columnName." as ".$field->data.", ";
-		}
-
-		return $sql;
-
-	}
-
-	/**
-	 * Build the SELECT clause.
-	 *
-	 * @param DataObject $data the shell of the data object.
-	 * @return String the SELECT part of the SQL query
-	 */
-	private function _buildSelect($data) {
-
-		$sql = "SELECT ";
-
-		// Iterate through the fields
-		foreach ($data->getFields() as $field) {
-			$sql .= $this->_buildSelectItem($field);
-		}
-
-		// Remove the last comma
-		$sql = substr($sql, 0, -2);
-
-		return $sql;
-	}
-
-	/**
-	 * Build an empty data object.
-	 *
-	 * @param String $schema the name of the schema
-	 * @param String $format the name of the format
-	 * @param String $datasetId the dataset identifier
-	 * @param Boolean $isForDisplay indicate if we only want to display the data or if for update/insert
-	 * @return DataObject the DataObject structure (with no values set)
-	 */
-	public function buildDataObject($schema, $format, $datasetId = null, $isForDisplay = false) {
-
-		// Prepare a data object to be filled
-		$data = new DataObject();
-
-		$data->datasetId = $datasetId;
-
-		// Get the description of the table
-		$data->tableFormat = $this->metadataModel->getTableFormat($schema, $format);
-
-		// Get all the description of the Table Fields corresponding to the format
-		$tableFields = $this->metadataModel->getTableFields($datasetId, $schema, $format);
-
-		// Separate the keys from other values
-		foreach ($tableFields as $tableField) {
-			if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
-				// Primary keys are displayed as info fields
-				$data->addInfoField($tableField);
-			} else {
-				if ($isForDisplay || !$tableField->isCalculated) {
-					// Fields that are calculated by a trigger should not be edited
-					$data->addEditableField($tableField);
-				}
-			}
-		}
-
-		return $data;
-	}
-
-	/**
 	 * Fill a line of data with the values a table, given its primary key.
 	 * Only one object is expected in return.
 	 *
@@ -183,16 +73,14 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	public function getDatum($data) {
 		$db = $this->getAdapter();
 
-		/* @var $data DataObject */
 		$tableFormat = $data->tableFormat;
-		/* @var $tableFormat TableFormat */
 
 		Zend_Registry::get("logger")->info('getDatum : '.$tableFormat->format);
 
 		// Get the values from the data table
-		$sql = $this->_buildSelect($data);
-		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName;
-		$sql .= $this->_buildWhere($data);
+		$sql = "SELECT ".$this->genericService->buildSelect($data->getFields());
+		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName." AS ".$tableFormat->format;
+		$sql .= " WHERE(1 = 1) ".$this->genericService->buildWhere($data->infoFields);
 
 		Zend_Registry::get("logger")->info('getDatum : '.$sql);
 
@@ -202,14 +90,14 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 
 		// Fill the values with data from the table
 		foreach ($data->editableFields as $field) {
-			$field->value = $row[strtolower($field->data)];
+			$field->value = $row[strtolower($field->format.'__'.$field->data)];
 
 			// Store additional info for geometry type
 			if ($field->unit == "GEOM") {
-				$field->xmin = $row[strtolower($field->data).'_x_min'];
-				$field->xmax = $row[strtolower($field->data).'_x_max'];
-				$field->ymin = $row[strtolower($field->data).'_y_min'];
-				$field->ymax = $row[strtolower($field->data).'_y_max'];
+				$field->xmin = $row[strtolower($field->format.'__'.$field->data).'_x_min'];
+				$field->xmax = $row[strtolower($field->format.'__'.$field->data).'_x_max'];
+				$field->ymin = $row[strtolower($field->format.'__'.$field->data).'_y_min'];
+				$field->ymax = $row[strtolower($field->format.'__'.$field->data).'_y_max'];
 			}
 
 		}
@@ -225,7 +113,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * @param DataObject $data the shell of the data object with the values for the primary key.
 	 * @return Array[DataObject] The complete data objects.
 	 */
-	public function getData($schema, $data) {
+	public function getData($data) {
 		$db = $this->getAdapter();
 
 		Zend_Registry::get("logger")->info('getData');
@@ -236,9 +124,9 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 
 		// Get the values from the data table
-		$sql = $this->_buildSelect($data);
-		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName;
-		$sql .= $this->_buildWhere($data);
+		$sql = "SELECT ".$this->genericService->buildSelect($data->getFields());
+		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName." AS ".$tableFormat->format;
+		$sql .= " WHERE(1 = 1) ".$this->genericService->buildWhere($data->infoFields);
 
 		Zend_Registry::get("logger")->info('getDatum : '.$sql);
 
@@ -247,11 +135,11 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		foreach ($select->fetchAll() as $row) {
 
 			// Build an new empty data object
-			$child = $this->buildDataObject($schema, $data->tableFormat->format);
+			$child = $this->buildDataObject($tableFormat->schemaCode, $data->tableFormat->format);
 
 			// Fill the values with data from the table
 			foreach ($child->getFields() as $field) {
-				$field->value = $row[strtolower($field->data)];
+				$field->value = $row[strtolower($field->format.'__'.$field->data)];
 			}
 
 			$result[] = $child;
@@ -425,7 +313,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		if ($parentTable != "*") {
 
 			// Build an empty parent object
-			$parent = $this->buildDataObject($schema, $parentTable, null, $isForDisplay);
+			$parent = $this->genericService->buildDataObject($schema, $parentTable, null, $isForDisplay);
 
 			// Fill the PK values
 			foreach ($parent->infoFields as $key) {
@@ -494,7 +382,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			}
 
 			// Get the lines of data corresponding to the partial key
-			$childs = $this->getData($schema, $child);
+			$childs = $this->getData($child);
 
 			// Add to the result
 			$children[$child->tableFormat->format] = $childs;

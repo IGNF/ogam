@@ -26,8 +26,6 @@ class QueryController extends AbstractQueryController {
 		$websiteSession->moduleURL = "query";
 
 		$configuration = Zend_Registry::get("configuration");
-		$this->visualisationSRS = $configuration->srs_visualisation;
-		$this->databaseSRS = $configuration->srs_raw_data;
 		$this->detailsLayers = $configuration->query_details_layers->toArray();
 		
 		// Init the activated layers

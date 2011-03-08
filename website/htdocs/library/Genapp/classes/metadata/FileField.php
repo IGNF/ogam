@@ -3,7 +3,7 @@
  * © French National Forest Inventory 
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */ 
-require_once 'metadata/Field.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/Field.php';
 
 /**
  * Represent a Field of a File.

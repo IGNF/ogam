@@ -54,7 +54,7 @@ class AbstractAnalysisController extends AbstractEforestController {
 			$formField = new FormField();
 			$formField->format = $split[0];
 			$formField->data = $split[1];
-			$tableField = $this->metadataModel->getFormToTableMapping($formField, $this->schema);
+			$tableField = $this->metadataModel->getFormToTableMapping($this->schema, $formField);
 			$tableField->value = $value;
 			$dataCrits[] = $tableField;
 		}

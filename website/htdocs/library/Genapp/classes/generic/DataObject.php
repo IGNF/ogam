@@ -5,9 +5,7 @@
  */
 
 /**
- * Represent a data object.
- *
- * A data objet can be any entry in the raw database.
+ * A data object is used to store a values of a line of data (from any table of a database).
  *
  * @package classes
  */

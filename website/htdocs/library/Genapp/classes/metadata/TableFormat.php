@@ -3,7 +3,7 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'metadata/Format.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/Format.php';
 
 /**
  * Represent a Table Format (a table in a database).

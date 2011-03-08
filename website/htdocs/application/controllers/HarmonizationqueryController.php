@@ -27,8 +27,6 @@ class HarmonizationQueryController extends AbstractQueryController {
 		$websiteSession->moduleURL = "harmonizationquery";
 
 		$configuration = Zend_Registry::get("configuration");
-		$this->visualisationSRS = $configuration->srs_visualisation;
-		$this->databaseSRS = $configuration->srs_harmonized_data;
 		$this->detailsLayers = $configuration->harmonized_details_layers->toArray();
 
 		// Init the activated layers

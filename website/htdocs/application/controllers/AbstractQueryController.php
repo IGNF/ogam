@@ -28,11 +28,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	protected $visualisationSRS;
 
 	/**
-	 * The system of projection for the storage.
-	 */
-	protected $databaseSRS;
-
-	/**
 	 * Name of the layer used to display the images in the details panel.
 	 */
 	protected $detailsLayers;
@@ -74,6 +69,10 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		// Reinit the activated layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
 		$mappingSession->activatedLayers = array();
+
+		// Configure the projection systems
+		$configuration = Zend_Registry::get("configuration");
+		$this->visualisationSRS = $configuration->srs_visualisation;
 
 	}
 
@@ -462,65 +461,56 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 		try {
 
-			// Parse the input parameters
-			$criterias = array();
-			$columns = array();
+			// Parse the input parameters and create a request object
+			$formQuery = new FormQuery();
+			$formQuery->datasetId = $datasetId;
 			foreach ($_POST as $inputName => $inputValue) {
 				if (strpos($inputName, "criteria__") === 0) {
 					$criteriaName = substr($inputName, strlen("criteria__"));
-					$criterias[$criteriaName] = $inputValue;
+					$split = explode("__", $criteriaName);
+					$formQuery->addCriteria($split[0], $split[1], $inputValue);
 				}
 				if (strpos($inputName, "column__") === 0) {
 					$columnName = substr($inputName, strlen("column__"));
-					$columns[$columnName] = $columnName;
+					$split = explode("__", $columnName);
+					$formQuery->addResult($split[0], $split[1]);
 				}
 			}
 
-			if (sizeof($columns) == 0) {
+			// Transform the form request object into a table data object
+			$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
+
+			if (sizeof($formQuery->results) == 0) {
 				$json = "{ success: false, errorMessage: 'At least one result column should be selected'}";
 			} else {
 
 				// Generate the SQL Request
-				$sql = $this->_generateSQLRequest($datasetId, $criterias, $columns);
+				$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
+				$fromwhere = $this->genericService->generateSQLFromWhereRequest($this->schema, $queryObject);
 
-				// Get the website session
-				$websiteSession = new Zend_Session_Namespace('website');
-				$where = $websiteSession->SQLWhere;
+				$this->logger->debug('$where : '.print_r($fromwhere, true));
 
 				// Clean previously stored results
 				$sessionId = session_id();
 				$this->logger->debug('SessionId : '.$sessionId);
+				$this->logger->debug('visualisationSRS : '.$this->visualisationSRS);
 				$this->resultLocationModel->cleanPreviousResults($sessionId);
 
 				// Run the request to store a temporary result table (for the web mapping)
-				$this->resultLocationModel->fillLocationResult($where, $sessionId, $this->getLocationTable(), $this->visualisationSRS);
+				$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $this->getLocationTable(), $this->visualisationSRS);
 
 				// Calculate the number of lines of result
-				$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count ".$where);
-				$websiteSession->count = $countResult[0]['count'];
+				$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count FROM result_location WHERE session_id = '".$sessionId."'");
 
-				// Prepare the metadata information
-				$metadata = array();
-				$traductions = array();
-				$i = 0;
-				foreach ($columns as $column) {
-					$split = explode("__", $column);
-					$format = $split[0];
-					$field = $split[1];
-					$formField = $this->metadataModel->getFormField($format, $field);
-					$metadata[$i] = $formField;
-
-					// Prepare the traduction of the code lists
-					if ($formField->type == "CODE") {
-						$traductions[$i] = $this->metadataModel->getModes($formField->unit);
-					}
-					$i++;
-				}
-
-				// Store the metadata in session
-				$websiteSession->metadata = $metadata;
-				$websiteSession->traductions = $traductions;
+				// Get the website session
+				$websiteSession = new Zend_Session_Namespace('website');
+				// Store the metadata in session for subsequent requests
+				$websiteSession->resultColumns = $queryObject->editableFields;
 				$websiteSession->datasetId = $datasetId;
+				$websiteSession->SQLSelect = $select;
+				$websiteSession->SQLFromWhere = $fromwhere;
+				$websiteSession->queryObject = $queryObject;
+				$websiteSession->count = $countResult[0]['count'];
 
 				// Send the result as a JSON String
 				$json = '{success:true,';
@@ -528,11 +518,17 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				// Metadata
 				$json .= '"columns":[';
 				// Get the titles of the columns
-				foreach ($metadata as $formField) {
+				foreach ($formQuery->results as $formField) {
+
+					// Get the full description of the form field
+					$formField = $this->metadataModel->getFormField($formField->format, $formField->data);
+
+					// Export the JSON
 					$json .= '{'.$formField->toJSON().', hidden:false},';
 				}
-				// Add the plot location in WKT
+				// Add the identifier of the line
 				$json .= '{name:"id",label:"Identifier of the line",inputType:"TEXT",definition:"The plot identifier", hidden:true},';
+				// Add the plot location in WKT
 				$json .= '{name:"location_centroid",label:"Location centroid",inputType:"TEXT",definition:"The plot location", hidden:true}';
 				$json .= ']}';
 			}
@@ -567,13 +563,12 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 			// Retrieve the SQL request from the session
 			$websiteSession = new Zend_Session_Namespace('website');
-			$sql = $websiteSession->SQLQuery;
-			$where = $websiteSession->SQLWhere;
+			$select = $websiteSession->SQLSelect;
+			$fromwhere = $websiteSession->SQLFromWhere;
 			$countResult = $websiteSession->count;
 
-			// Retrive the metadata
-			$metadata = $websiteSession->metadata;
-			$traductions = $websiteSession->traductions;
+			// Retrive the session-stored info
+			$resultColumns = $websiteSession->resultColumns; // array of TableField
 
 			// Get the datatable parameters
 			$start = $this->getRequest()->getPost('start');
@@ -583,7 +578,16 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 			$filter = "";
 			if ($sort != "") {
-				$filter .= " ORDER BY ".$sort." ".$sortDir;
+				// $sort contains the form format and field
+				$split = explode("__", $sort);
+				$formField = new FormField();
+				$formField->format = $split[0];
+				$formField->data = $split[1];
+				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
+				$key = $tableField->format.'__'.$tableField->data;
+				$filter .= " ORDER BY ".$key." ".$sortDir.", id";
+			} else {
+				$filter .= " ORDER BY id"; // default sort to ensure consistency
 			}
 			if (!empty($length)) {
 				$filter .= " LIMIT ".$length;
@@ -593,7 +597,15 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			}
 
 			// Execute the request
-			$result = $this->genericModel->executeRequest($sql.$filter);
+			$result = $this->genericModel->executeRequest($select.$fromwhere.$filter);
+
+			// Prepare the needed traductions
+			$traductions = array();
+			foreach ($resultColumns as $tableField) {
+				if ($tableField->type == "CODE") {
+					$traductions[$tableField->data] = $this->metadataModel->getModes($tableField->unit);
+				}
+			}
 
 			// Send the result as a JSON String
 			$json = '{success:true,';
@@ -601,16 +613,15 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			$json .= 'rows:[';
 			foreach ($result as $line) {
 				$json .= '[';
-				$nbcol = sizeof($line);
-				$keys = array_keys($line);
-				for ($i = 0; $i < $nbcol - 2; $i++) { // the last 5 result columns are reserved
-					$colName = $keys[$i]; // get the name of the column
-					$value = $line[$colName];
-					$formField = $metadata[$i];
 
-					if ($formField->type == "CODE" && $value != "") {
+				foreach ($resultColumns as $tableField) {
+
+					$key = strtolower($tableField->format.'__'.$tableField->data);
+					$value = $line[$key];
+
+					if ($tableField->type == "CODE" && $value != "") {
 						// Manage code traduction
-						$label = isset($traductions[$i][$value]) ? $traductions[$i][$value] : '';
+						$label = isset($traductions[$tableField->data][$value]) ? $traductions[$tableField->data][$value] : '';
 						$json .= json_encode($label == null ? '' : $label).',';
 					} else {
 						$json .= json_encode($value).',';
@@ -621,7 +632,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$json .= json_encode($line['id']).',';
 
 				// Add the plot location in WKT
-				$json .= json_encode($line['location_center']); // The last column is the location center
+				$json .= json_encode($line['location_centroid']); // The last column is the location center
 
 				$json .= '],';
 			}
@@ -640,349 +651,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
-	}
-
-	/**
-	 * Generate the SQL request corresponding to a list of parameters
-	 *
-	 * @param String $datasetId The selected dataset
-	 * @param Array[String => String] $criterias The list of criterias with their value
-	 * @param Array[String => String] $columns The result columns to display
-	 */
-	private function _generateSQLRequest($datasetId, $criterias, $columns) {
-
-		$this->logger->debug('_generateSQLRequest');
-
-		// Get an access to the session
-		$userSession = new Zend_Session_Namespace('user');
-		$websiteSession = new Zend_Session_Namespace('website');
-
-		// Store the criterias in session for a future use
-		$websiteSession->criterias = $criterias;
-
-		$select = "SELECT DISTINCT "; // distinct for the case where we have some criterias but no result columns selected o the last table
-		$from = " FROM ";
-		$where = "WHERE (1 = 1) ";
-
-		$firstJoinedTable = ""; // The logical name of the first table in the join
-		$uniqueId = ""; // The concatenation of columns used as an unique ID for the line, for use in the detail view
-		$leafTable = ""; // The logical name of the last table (leaf), for use in the detail view
-		$sort = ""; // The concatenation of columns used as an unique sort order
-
-		//
-		// Get the mapping for each field
-		//
-		$dataCols = array();
-		$dataCrits = array();
-		foreach ($columns as $column) {
-			$split = explode("__", $column);
-			$formField = new FormField();
-			$formField->format = $split[0];
-			$formField->data = $split[1];
-			$tableField = $this->metadataModel->getFormToTableMapping($formField, $this->schema);
-			$dataCols[$column] = $tableField;
-		}
-		foreach ($criterias as $criteriaName => $value) {
-			$split = explode("__", $criteriaName);
-			$formField = new FormField();
-			$formField->format = $split[0];
-			$formField->data = $split[1];
-			$tableField = $this->metadataModel->getFormToTableMapping($formField, $this->schema);
-			$tableField->value = $value;
-			$dataCrits[$criteriaName] = $tableField;
-		}
-
-		//
-		// Build the list of needed tables and associate each field with its source table
-		//
-		$tables = array();
-		foreach ($dataCols as $field) {
-			// Get the ancestors of the table and the foreign keys
-			$this->logger->debug('table : '.$field->format);
-			$ancestors = $this->metadataModel->getTablesTree($field->format, $field->data, $this->schema);
-
-			// Associate the field with its source table
-			$field->sourceTable = $ancestors[0];
-
-			// Reverse the order of the list and store by indexing with the table name
-			// If the table is already used it will be overriden
-			// The root table (Location should appear first)
-			$ancestors = array_reverse($ancestors);
-			foreach ($ancestors as $ancestor) {
-				$tables[$ancestor->getLogicalName()] = $ancestor;
-			}
-		}
-		foreach ($dataCrits as $field) {
-			// Get the ancestors of the table and the foreign keys
-			$ancestors = $this->metadataModel->getTablesTree($field->format, $field->data, $this->schema);
-
-			// Associate the field with its source table
-			$field->sourceTable = $ancestors[0];
-
-			// Reverse the order of the list and store by indexing with the table name
-			// If the table is already used it will be overriden
-			// The root table (Location should appear first)
-			$ancestors = array_reverse($ancestors);
-			foreach ($ancestors as $ancestor) {
-				$tables[$ancestor->getLogicalName()] = $ancestor;
-			}
-		}
-
-		//		$this->logger->debug('************************************************');
-		//		$this->logger->debug('tables :'.print_r($tables, true));
-		//		$this->logger->debug('dataCrits :'.print_r($dataCrits, true));
-		$this->logger->debug('dataCols :'.print_r($dataCols, true));
-
-		//
-		// Prepare the SELECT clause
-		//
-		foreach ($dataCols as $tableField) {
-
-			$formfield = $this->genericService->getTableToFormMapping($tableField);
-
-			$columnName = $tableField->columnName;
-
-			if ($formfield->inputType == "DATE") {
-				$select .= "to_char(".$tableField->sourceTable->getLogicalName().".".$columnName.", 'YYYY/MM/DD')";
-			} else if ($formfield->inputType == "GEOM") {
-				$select .= "asText(st_transform(".$tableField->sourceTable->getLogicalName().".".$columnName.",".$this->visualisationSRS."))";
-			} else {
-				$select .= $tableField->sourceTable->getLogicalName().".".$columnName;
-			}
-			$select .= " AS ".$formfield->format."__".$formfield->data.", ";
-		}
-		$select = substr($select, 0, -2);
-
-		//
-		// Prepare the FROM clause
-		//
-		// Get the root table;
-		$rootTable = array_shift($tables);
-		$from .= $rootTable->tableName." ".$rootTable->getLogicalName();
-
-		// Add the joined tables
-		$i = 0;
-		foreach ($tables as $tableFormat => $tableTreeData) {
-			$i++;
-
-			// We store the table name of the firstly joined table for a later use
-			if ($firstJoinedTable == "") {
-				$firstJoinedTable = $tableTreeData->getLogicalName();
-			}
-			// We store the name of the last joined table
-			if ($i == count($tables)) {
-				$leafTable = $tableTreeData->getLogicalName();
-			}
-
-			// Join the table
-			$from .= " JOIN ".$tableTreeData->tableName." ".$tableTreeData->getLogicalName()." on (";
-
-			// Add the foreign keys
-			$keys = explode(',', $tableTreeData->keys);
-			foreach ($keys as $key) {
-				$from .= $tableTreeData->getLogicalName().".".trim($key)." = ".$tableTreeData->parentTable.".".trim($key)." AND ";
-			}
-			$from = substr($from, 0, -5);
-
-			// Create an unique Id.
-			$identifiers = explode(',', $tableTreeData->identifiers);
-			foreach ($identifiers as $identifier) {
-
-				// Concatenate the column to create a unique Id
-				if ($i == count($tables)) {
-					if ($uniqueId != "") {
-						$uniqueId .= " || '/' || ";
-					}
-					$uniqueId .= "'".$identifier."/' ||".$tableTreeData->getLogicalName().".".trim($identifier);
-				}
-
-				// Create a unique sort order
-				if ($sort != "") {
-					$sort .= ", ";
-				}
-				$sort .= $tableTreeData->getLogicalName().".".trim($identifier);
-			}
-
-			$from .= ") ";
-		}
-
-		//
-		// Prepare the WHERE clause
-		//
-		foreach ($dataCrits as $tableField) {
-
-			/* @var $tableField TableField */
-			$formfield = $this->genericService->getTableToFormMapping($tableField);
-
-			$columnName = $tableField->columnName;
-
-			if ($formfield->inputType == "SELECT") {
-				$optionsList = "";
-				// We go thru the list of selected values (a criteria can be added more than once)
-				foreach ($tableField->value as $option) {
-					if ($option != "") {
-						$optionsList .= "'".$option."', ";
-					}
-				}
-				if ($optionsList != "") {
-					$optionsList = substr($optionsList, 0, -2);
-					$where .= " AND ".$tableField->sourceTable->getLogicalName().".".$columnName." IN (".$optionsList.")";
-				}
-
-			} else if ($formfield->inputType == "NUMERIC") {
-				$numericcrit = "";
-				// We go thru the list of selected values (a criteria can be added more than once)
-				foreach ($tableField->value as $crit) {
-
-					if ($crit != "") {
-
-						// Two values separated by a dash, we make a min / max comparison
-						$pos = strpos($crit, " - ");
-						if ($pos != false) {
-
-							$minValue = substr($crit, 0, $pos);
-							$maxValue = substr($crit, $pos + 3);
-
-							$numericcrit .= '(';
-							$isBegin = 0;
-							if (!empty($minValue)) {
-								$isBegin = 1;
-								$numericcrit .= $tableField->sourceTable->getLogicalName().".".$columnName." >= ".$minValue." ";
-							}
-							if (!empty($maxValue)) {
-								if ($isBegin) {
-									$numericcrit .= ' AND ';
-								}
-								$numericcrit .= $tableField->sourceTable->getLogicalName().".".$columnName." <= ".$maxValue." ";
-							}
-							$numericcrit .= ') OR ';
-						} else {
-							// One value, we make an equel comparison
-							$numericcrit .= "(".$tableField->sourceTable->getLogicalName().".".$columnName." = ".$crit.") OR ";
-
-						}
-
-					}
-				}
-				if ($numericcrit != "") {
-					$numericcrit = substr($numericcrit, 0, -4);
-					$where .= " AND( ".$numericcrit.")";
-				}
-
-			} else if ($formfield->inputType == "DATE") {
-				// Four formats are possible:
-				// "YYYY/MM/DD" : for equal value
-				// ">= YYYY/MM/DD" : for the superior value
-				// "<= YYYY/MM/DD" : for the inferior value
-				// "YYYY/MM/DD - YYYY/MM/DD" : for the interval
-				$optionsList = "";
-				// We go thru the list of selected values (a criteria can be added more than once)
-				foreach ($tableField->value as $option) {
-					if (!empty($option)) {
-						if (strlen($option) == 10) {
-							// Case "YYYY/MM/DD"
-							if (Zend_Date::isDate($option, 'YYYY/MM/DD')) {
-								// One value, we make an equel comparison
-								$optionsList .= '(';
-								$optionsList .= $tableField->sourceTable->getLogicalName().".".$columnName." = to_date('".$option."', 'YYYY/MM/DD') ";
-								$optionsList .= ') OR ';
-							}
-						} else if (strlen($option) == 13 && substr($option, 0, 2) == '>=') {
-							// Case ">= YYYY/MM/DD"
-							$beginDate = substr($option, 3, 10);
-							if (Zend_Date::isDate($beginDate, 'YYYY/MM/DD')) {
-								$optionsList .= '(';
-								$optionsList .= $tableField->sourceTable->getLogicalName().".".$columnName." >= to_date('".$beginDate."', 'YYYY/MM/DD') ";
-								$optionsList .= ') OR ';
-							}
-						} else if (strlen($option) == 13 && substr($option, 0, 2) == '<=') {
-							// Case "<= YYYY/MM/DD"
-							$endDate = substr($option, 3, 10);
-							if (Zend_Date::isDate($endDate, 'YYYY/MM/DD')) {
-								$optionsList .= '(';
-								$optionsList .= $tableField->sourceTable->getLogicalName().".".$columnName." <= to_date('".$endDate."', 'YYYY/MM/DD') ";
-								$optionsList .= ') OR ';
-							}
-						} else if (strlen($option) == 23) {
-							// Case "YYYY/MM/DD - YYYY/MM/DD"
-							$beginDate = substr($option, 0, 10);
-							$endDate = substr($option, 13, 10);
-							if (Zend_Date::isDate($beginDate, 'YYYY/MM/DD') && Zend_Date::isDate($endDate, 'YYYY/MM/DD')) {
-								$optionsList .= '(';
-								$optionsList .= $tableField->sourceTable->getLogicalName().".".$columnName." >= to_date('".$beginDate."', 'YYYY/MM/DD') ";
-								$optionsList .= ' AND ';
-								$optionsList .= $tableField->sourceTable->getLogicalName().".".$columnName." <= to_date('".$endDate."', 'YYYY/MM/DD') ";
-								$optionsList .= ') OR ';
-							}
-						}
-					}
-				}
-				if (!empty($optionsList)) {
-					$optionsList = substr($optionsList, 0, -4);
-					$where .= " AND (".$optionsList.")";
-				}
-
-			} else if ($formfield->inputType == "CHECKBOX") {
-
-				$optionsList = "";
-				// We go thru the list of selected values (a criteria can be added more than once)
-				foreach ($tableField->value as $option) {
-
-					$optionsList .= $tableField->sourceTable->getLogicalName().".".$columnName;
-					if ($option == "1") {
-						$optionsList .= " = '1'";
-					} else {
-						$optionsList .= " = '0'";
-					}
-					$optionsList .= ' OR ';
-
-				}
-
-				$optionsList = substr($optionsList, 0, -3);
-				$where .= " AND (".$optionsList.")";
-
-			} else if ($formfield->inputType == "GEOM") {
-				$optionsList = "";
-				// We go thru the list of selected values (a criteria can be added more than once)
-				foreach ($tableField->value as $option) {
-
-					if ($option != "") {
-						$optionsList .= "(ST_intersects(".$tableField->sourceTable->getLogicalName().".".$columnName.", transform(ST_GeomFromText('".$option."', ".$this->visualisationSRS."), ".$this->databaseSRS.")))";
-						$optionsList .= ' OR ';
-					}
-
-				}
-				if ($optionsList != "") {
-					$optionsList = substr($optionsList, 0, -3);
-					$where .= " AND (".$optionsList.")";
-				}
-
-			} else { // Default case is a STRING, we search with a like %%
-
-				$optionsList = "";
-				foreach ($tableField->value as $option) {
-					$optionsList .= $tableField->sourceTable->getLogicalName().".".$columnName." ILIKE '%".trim($option)."%' OR ";
-				}
-				$optionsList = substr($optionsList, 0, -4);
-
-				$where .= " AND (".$optionsList.")";
-			}
-		}
-
-		// Add some hard-coded, needed fields
-		$select .= ", 'FORMAT/".$leafTable."/' || ".$uniqueId." as id, "; // The identifier of the line (for the details view in javascript)
-		$select .= "astext(centroid(st_transform(".$this->getLocationTable().".the_geom,".$this->visualisationSRS."))) as location_center "; // The location center (for zooming in javascript)
-
-		$sql = $select.$from.$where;
-
-		// Store the SQL Request in session
-		$websiteSession->SQLQuery = $sql;
-		$websiteSession->SQLWhere = $from.$where;
-		$websiteSession->leafTable = $leafTable;
-		$websiteSession->sort = $sort;
-
-		// Return the completed SQL request
-		return $sql;
 	}
 
 	/**
@@ -1052,7 +720,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$plotCode = $keyMap['PLOT_CODE'];
 
 		// Prepare a data object to be filled
-		$data = $this->genericModel->buildDataObject($this->schema, $keyMap["FORMAT"], null, true);
+		$data = $this->genericService->buildDataObject($this->schema, $keyMap["FORMAT"], null, true);
 
 		// Complete the primary key info with the session values
 		foreach ($data->infoFields as $infoField) {

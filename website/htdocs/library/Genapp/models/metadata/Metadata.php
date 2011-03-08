@@ -3,15 +3,15 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'metadata/FileField.php';
-require_once 'metadata/FormField.php';
-require_once 'metadata/FormFormat.php';
-require_once 'metadata/DatasetFile.php';
-require_once 'metadata/TableField.php';
-require_once 'metadata/TableTreeData.php';
-require_once 'metadata/TableFormat.php';
-require_once 'metadata/Range.php';
-require_once 'metadata/Mode.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/FileField.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/FormField.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/FormFormat.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/DatasetFile.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableField.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableTreeData.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableFormat.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/Range.php';
+require_once LIBRARY_PATH.'/Genapp/classes/metadata/Mode.php';
 
 /**
  * This is the Metadata model.
@@ -253,6 +253,59 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Detect the column getting the geographical information in a list of tables.
+	 * If the dataset is specified, we filter on the fields of the dataset.
+	 *
+	 * @param String $schema the schema identifier
+	 * @param Array[String] $tables a list of formats
+	 * @return Array[TableField]
+	 */
+	public function getLocationTableFields($schema, $tables) {
+
+		$db = $this->getAdapter();
+
+		$this->logger->debug('getLocationTableFields : '.$schema);
+
+		// Get the fields specified by the format
+		$req = "SELECT DISTINCT table_field.*, data.label, data.unit, unit.type, data.definition ";
+		$req .= " FROM table_field ";
+		$req .= " LEFT JOIN table_format on (table_field.format = table_format.format) ";
+		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
+		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
+		$req .= " WHERE table_field.format IN ( ";
+		foreach ($tables as $format) {
+			$req .= "'".$format."', ";
+		}
+		$req = substr($req, 0, - 2); // remove last comma
+		$req .= " ) ";
+		$req .= " AND table_format.schema_code = ? ";
+		$req .= " AND data.unit = 'GEOM' ";
+
+		$this->logger->info('getTableFields : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($schema));
+
+		$row = $select->fetch();
+		if ($row) {
+			$tableField = new TableField();
+			$tableField->data = $row['data'];
+			$tableField->format = $row['format'];
+			$tableField->columnName = $row['column_name'];
+			$tableField->isCalculated = $row['is_calculated'];
+			$tableField->isAggregatable = $row['is_aggregatable'];
+			$tableField->label = $row['label'];
+			$tableField->unit = $row['unit'];
+			$tableField->type = $row['type'];
+			$tableField->definition = $row['definition'];
+			return $tableField;
+		} else {
+			throw new Exception("No geographical information detected");
+		}
+
+	}
+
+	/**
 	 * Get the information about a table format.
 	 *
 	 * @param String $schema the schema identifier
@@ -457,35 +510,34 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the description of a form field.
 	 *
-	 * @param String $formFormat The logical name of the form
-	 * @param String $formFieldName The logical name of the field
+	 * @param String $format The logical name of the form
+	 * @param String $data The logical name of the field
 	 * @return FormField
 	 */
-	public function getFormField($formFormat, $formFieldName) {
+	public function getFormField($format, $data) {
 
-		$key = 'formfield_'.$formFormat.'_'.$formFieldName;
+		$key = 'formfield_'.$format.'_'.$data;
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
 		if (empty($cachedResult)) {
 
-			$this->logger->info('getFormField : '.$formFormat.", ".$formFieldName);
+			$this->logger->info('getFormField : '.$format.", ".$data);
 			$db = $this->getAdapter();
 			$req = " SELECT form_field.*, data.label, data.definition, unit.type, unit.unit ";
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
-			$req .= " WHERE data = ? ";
-			$req .= " AND   format = ?";
+			$req .= " WHERE format = ? ";
+			$req .= " AND   data = ?";
 
 			$select = $db->prepare($req);
-			$select->execute(array($formFieldName, $formFormat));
+			$select->execute(array($format, $data));
 
 			$row = $select->fetch();
 			$formField = new FormField();
-			$formField->name = $formFieldName;
 			$formField->data = $row['data'];
-			$formField->format = $formFormat;
+			$formField->format = $row['format'];
 			$formField->isCriteria = $row['is_criteria'];
 			$formField->isResult = $row['is_result'];
 			$formField->inputType = $row['input_type'];
@@ -498,8 +550,6 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$formField->unit = $row['unit'];
 			$formField->decimals = $row['decimals'];
 			$formField->mask = $row['mask'];
-
-			$this->logger->info('formField->format : '.$formField->format);
 
 			if ($this->useCache) {
 				$this->cache->save($formField, $key);
@@ -586,11 +636,11 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the database field corresponding to the asked form field.
 	 *
-	 * @param FormField $formField the form field
 	 * @param String $schema the name of the schema (RAW_DATA or HARMONIZED_DATA)
+	 * @param FormField $formField the form field
 	 * @return TableField
 	 */
-	public function getFormToTableMapping($formField, $schema) {
+	public function getFormToTableMapping($schema, $formField) {
 
 		$this->logger->info('getFormToTableMapping : '.$formField->format." ".$formField->data." ".$schema);
 
