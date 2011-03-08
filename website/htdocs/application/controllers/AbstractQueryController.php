@@ -81,7 +81,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 */
 	abstract protected function getLocationTable();
 
-	
 	/**
 	 * The "index" action is the default action for all controllers.
 	 *
@@ -599,7 +598,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			$traductions = array();
 			foreach ($resultColumns as $tableField) {
 				if ($tableField->type == "CODE") {
-					$traductions[$tableField->data] = $this->metadataModel->getModes($tableField->unit);
+					$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
 				}
 			}
 
@@ -617,7 +616,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 					if ($tableField->type == "CODE" && $value != "") {
 						// Manage code traduction
-						$label = isset($traductions[$tableField->data][$value]) ? $traductions[$tableField->data][$value] : '';
+						$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
 						$json .= json_encode($label == null ? '' : $label).',';
 					} else {
 						$json .= json_encode($value).',';
@@ -891,7 +890,9 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport.csv', true);
 
 		$websiteSession = new Zend_Session_Namespace('website');
-		$sql = $websiteSession->SQLQuery;
+		$select = $websiteSession->SQLSelect;
+		$fromwhere = $websiteSession->SQLFromWhere;
+		$sql = $select.$fromwhere;
 
 		// Count the number of lines
 		$total = $websiteSession->count;
@@ -910,10 +911,16 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				echo(chr(0xBF));
 			}
 
-			// Retrive the metadata
-			$metadata = $websiteSession->metadata;
-			$traductions = $websiteSession->traductions;
+			// Retrive the session-stored info
+			$resultColumns = $websiteSession->resultColumns; // array of TableField
 
+			// Prepare the needed traductions
+			$traductions = array();
+			foreach ($resultColumns as $tableField) {
+				if ($tableField->type == "CODE") {
+					$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
+				}
+			}
 			// Display the default message
 			$this->_print('// *************************************************'."\n");
 			$this->_print('// Data Export'."\n");
@@ -921,8 +928,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 			// Export the column names
 			$this->_print('// ');
-			foreach ($metadata as $column) {
-				$this->_print($column->label.';');
+			foreach ($resultColumns as $tableField) {
+				$this->_print($tableField->label.';');
 			}
 			$this->_print("\n");
 
@@ -931,9 +938,18 @@ abstract class AbstractQueryController extends AbstractEforestController {
 			$sortDir = $this->getRequest()->getPost('dir');
 
 			$filter = "";
+
 			if ($sort != "") {
-				$filter .= " ORDER BY ".$sort." ".$sortDir." "; // Sort using the user choice first
-				$filter .= ", ".$websiteSession->sort; // The add the key columns to the sort order to ensure consistency
+				// $sort contains the form format and field
+				$split = explode("__", $sort);
+				$formField = new FormField();
+				$formField->format = $split[0];
+				$formField->data = $split[1];
+				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
+				$key = $tableField->format.'__'.$tableField->data;
+				$filter .= " ORDER BY ".$key." ".$sortDir.", id";
+			} else {
+				$filter .= " ORDER BY id";
 			}
 
 			// Define the max number of lines returned
@@ -955,25 +971,21 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 				// Export the lines of data
 				foreach ($result as $line) {
-					$nbcol = sizeof($line);
-					$keys = array_keys($line);
-					for ($i = 0; $i < $nbcol - 2; $i++) { // the last 2 result columns are reserved
-						$colName = $keys[$i]; // get the name of the column
-						$value = $line[$colName];
-						$formField = $metadata[$i];
-						if ($formField->type == "STRING") {
-							echo '"'.($value == null ? '' : $value).'";';
-						} else if ($formField->type == "CODE") {
+
+					foreach ($resultColumns as $tableField) {
+
+						$key = strtolower($tableField->format.'__'.$tableField->data);
+						$value = $line[$key];
+
+						if ($tableField->type == "CODE" && $value != "") {
 							// Manage code traduction
-							if (!empty($value) && !empty($traductions[$i][$value])) {
-								$label = $traductions[$i][$value];
-							} else {
-								$label = '';
-							}
+							$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+							echo '"'.$label.'";';
 						} else {
-							echo $value.';';
+							echo '"'.($value == null ? '' : $value).'";';
 						}
 					}
+
 					echo "\n";
 					$count++;
 				}
