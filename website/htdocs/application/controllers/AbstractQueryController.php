@@ -506,6 +506,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 				$websiteSession->queryObject = $queryObject;
 				$websiteSession->count = $countResult[0]['count'];
 				$websiteSession->locationFormat = $locationField->format;
+				$websiteSession->schema = $this->schema;
 
 				// Send the result as a JSON String
 				$json = '{success:true,';
@@ -712,7 +713,7 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		}
 
 		// Prepare a data object to be filled
-		$data = $this->genericService->buildDataObject($this->schema, $keyMap["FORMAT"], null, true);
+		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
 
 		// Complete the primary key info with the session values
 		foreach ($data->infoFields as $infoField) {
@@ -725,11 +726,11 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$result = $this->genericModel->getDatum($data);
 
 		// The data ancestors
-		$ancestors = $this->genericModel->getAncestors($this->schema, $data, true);
+		$ancestors = $this->genericModel->getAncestors($data, true);
 		$ancestors = array_reverse($ancestors);
 
 		// Get children too
-		$children = $this->genericModel->getChildren($this->schema, $data);
+		$children = $this->genericModel->getChildren($data);
 
 		// Return the detailled information about the plot
 		$fields = "";

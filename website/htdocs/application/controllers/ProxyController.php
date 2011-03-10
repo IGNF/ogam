@@ -232,10 +232,10 @@ class ProxyController extends AbstractEforestController {
 		$mapserverURL = $configuration->mapserver_url;
 		$mapserverURL = $mapserverURL."&";
 		$sessionId = session_id();
-		
+
 		$websiteSession = new Zend_Session_Namespace('website');
 		$locationFormat = $websiteSession->locationFormat; // The format carrying the location info
-		
+		$schema = $websiteSession->schema; // The format carrying the location info
 
 		$uri = $this->_extractAfter($uri, "proxy/getInfo?");
 
@@ -273,7 +273,7 @@ class ProxyController extends AbstractEforestController {
 			}
 			// Affiche l'info
 			$this->logger->debug('$locationFormat : '.$locationFormat);
-			echo '{success:true, id:\'FORMAT/'.$locationFormat.'/PROVIDER_ID/'.$results['provider_id'].'/PLOT_CODE/'.$results['plot_code'].'\'}';
+			echo '{success:true, id:\'SCHEMA/'.$schema.'/FORMAT/'.$locationFormat.'/PROVIDER_ID/'.$results['provider_id'].'/PLOT_CODE/'.$results['plot_code'].'\'}';
 		} else {
 			echo '{success:true, id:null}';
 		}

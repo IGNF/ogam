@@ -268,10 +268,11 @@ class GenericService {
 		$tables = $this->getAllFormats($schema, $dataObject);
 		$leftTable = array_shift(array_reverse($tables));
 
-		$uniqueId = "'FORMAT/".$leftTable->getLogicalName()."'";
+		$uniqueId = "'SCHEMA/".$schema."/FORMAT/".$leftTable->getLogicalName()."'";
 
 		$identifiers = explode(',', $leftTable->identifiers);
 		foreach ($identifiers as $identifier) {
+			$identifier = trim($identifier);
 			// Concatenate the column to create a unique Id
 			$uniqueId .= " || '/' || '".$identifier."/' ||".$leftTable->getLogicalName().".".trim($identifier);
 		}

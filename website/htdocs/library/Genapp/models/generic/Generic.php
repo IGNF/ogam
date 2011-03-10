@@ -278,12 +278,11 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * Get the information about the ancestors of a line of data.
 	 * The key elements in the parent tables must have an existing value in the child.
 	 *
-	 * @param String $schema the name of the schema
 	 * @param DataObject $data the data object we're looking at.
 	 * @param Boolean $isForDisplay indicate if we only want to display the data or if for update/insert
 	 * @return List[DataObject] The line of data in the parent tables.
 	 */
-	public function getAncestors($schema, $data, $isForDisplay = false) {
+	public function getAncestors($data, $isForDisplay = false) {
 		$db = $this->getAdapter();
 
 		$ancestors = array();
@@ -313,7 +312,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		if ($parentTable != "*") {
 
 			// Build an empty parent object
-			$parent = $this->genericService->buildDataObject($schema, $parentTable, null, $isForDisplay);
+			$parent = $this->genericService->buildDataObject($tableFormat->schemaCode, $parentTable, null, $isForDisplay);
 
 			// Fill the PK values
 			foreach ($parent->infoFields as $key) {
@@ -329,7 +328,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			$ancestors[] = $parent;
 
 			// Recurse
-			$ancestors = array_merge($ancestors, $this->getAncestors($schema, $parent, $isForDisplay));
+			$ancestors = array_merge($ancestors, $this->getAncestors($parent, $isForDisplay));
 
 		}
 		return $ancestors;
@@ -342,7 +341,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * @param DataObject $data the data object we're looking at.
 	 * @return Array[Format => List[DataObject]] The lines of data in the parent tables.
 	 */
-	public function getChildren($schema, $data) {
+	public function getChildren($data) {
 		$db = $this->getAdapter();
 
 		$children = array();
@@ -370,7 +369,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			$joinKeys = explode(',', $row['join_key']);
 
 			// Build an empty data object (for the query)
-			$child = $this->genericService->buildDataObject($schema, $childTable);
+			$child = $this->genericService->buildDataObject($tableFormat->schemaCode, $childTable);
 
 			// Fill the known primary keys
 			foreach ($data->infoFields as $dataKey) {

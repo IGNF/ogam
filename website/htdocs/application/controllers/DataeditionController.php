@@ -10,14 +10,11 @@ require_once LIBRARY_PATH.'/Genapp/classes/generic/DataObject.php';
 require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableField.php';
 require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
 
-
 /**
  * DataEditionController is the controller that allow the edition of simple data.
  * @package controllers
  */
 class DataEditionController extends AbstractEforestController {
-
-	private $schema = 'RAW_DATA';
 
 	protected $_redirector = null;
 
@@ -303,6 +300,7 @@ class DataEditionController extends AbstractEforestController {
 				//		$keyMap["SPECIES_CODE"] = "035.001.001";
 
 				// Test 3 : Tree data (no dataset filtering)
+				$keyMap["SCHEMA"] = "RAW_DATA";
 				$keyMap["FORMAT"] = "TREE_DATA";
 				$keyMap["PROVIDER_ID"] = "1";
 				$keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
@@ -312,7 +310,10 @@ class DataEditionController extends AbstractEforestController {
 				$keyMap = $params;
 			}
 
-			$data = $this->genericService->buildDataObject($this->schema, $keyMap["FORMAT"]);
+			$schema = $keyMap["SCHEMA"];
+			$format = $keyMap["FORMAT"];
+
+			$data = $this->genericService->buildDataObject($schema, $format);
 
 			// Complete the primary key info with the session values
 			foreach ($data->infoFields as $infoField) {
@@ -331,12 +332,10 @@ class DataEditionController extends AbstractEforestController {
 		// If the objet is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
-		$ancestors = $this->genericModel->getAncestors($this->schema, $data);
+		$ancestors = $this->genericModel->getAncestors($data);
 
 		// Get the childs of the data objet from the database (to generate links)
-		$children = $this->genericModel->getChildren($this->schema, $data);
-
-		//Zend_Registry::get("logger")->info('$children : '.print_r($children, true));
+		$children = $this->genericModel->getChildren($data);
 
 		// Store the data descriptor in session
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -489,6 +488,8 @@ class DataEditionController extends AbstractEforestController {
 				//		$keyMap["CYCLE"] = "5";
 
 				// Test 2 : Species data
+
+				$keyMap["SCHEMA"] = "RAW_DATA";
 				$keyMap["FORMAT"] = "SPECIES_DATA";
 				$keyMap["PROVIDER_ID"] = "1";
 				$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
@@ -509,18 +510,21 @@ class DataEditionController extends AbstractEforestController {
 				$keyMap = $params;
 			}
 
+			$schema = $keyMap["SCHEMA"];
+			$format = $keyMap["FORMAT"];
+
 			// Create an empty data object with the info in session
 			$data = new DataObject();
 			$data->datasetId = $datasetId;
 
 			// Get the info about the format
-			$tableFormat = $this->metadataModel->getTableFormat($this->schema, $keyMap["FORMAT"]);
+			$tableFormat = $this->metadataModel->getTableFormat($schema, $format);
 
 			// Store it in the data object
 			$data->tableFormat = $tableFormat;
 
 			// Get all the description of the Table Fields corresponding to the format
-			$tableFields = $this->metadataModel->getTableFields($data->datasetId, $this->schema, $data->tableFormat->format);
+			$tableFields = $this->metadataModel->getTableFields($data->datasetId, $schema, $format);
 
 			// Separate the keys from other values
 			foreach ($tableFields as $tableField) {
@@ -553,7 +557,7 @@ class DataEditionController extends AbstractEforestController {
 		// If the objet is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
-		$ancestors = $this->genericModel->getAncestors($this->schema, $data);
+		$ancestors = $this->genericModel->getAncestors($data);
 
 		// Get the childs of the data objet from the database (to generate links)
 

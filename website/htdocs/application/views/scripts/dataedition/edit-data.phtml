@@ -45,8 +45,6 @@ foreach ($ancestors as $ancestor) {
 <!-- Affichage les tables enfant (uniquement les valeurs de la clé) -->
 <!-- Lien vers l'édition d'un enfant existant -->
 <!-- Lien pour l'ajout d'un nouvel enfant -->
-<!-- Rappel des infos sur les tables parentes -->
-<!-- Lien pour l'édition des tables parents -->
 <?php
 if (!empty($this->children)) {
 ?>
@@ -63,13 +61,10 @@ if (!empty($this->children)) {
 		}
 
 		// Add link to a new child
-		$urlArray = array('controller' => 'dataedition', 'action' => 'show-add-data');
-		$urlArray['FORMAT'] = $childFormat;
-		foreach ($this->data->infoFields as $tableField) {
-			$urlArray[$tableField->data] = $tableField->value;
-		}
-		echo ' (+) <a href="'.$this->url($urlArray, null, true).'">Add '.$childFormat.'</a><br>';
-
+		$data = clone $this->data;
+		$data->tableFormat->format = $childFormat;
+		echo $this->generateAddLink($data)."<br/>";
+		
 		echo "</fieldset>";
 	}
 ?>
@@ -77,7 +72,6 @@ if (!empty($this->children)) {
 <?php } ?>
 
 
-<!-- Sur chaque lien, alerte javascript proposant la sauvegarde des modifs -->
 
 </div>
 
