@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once APPLICATION_PATH.'/models/website/User.php';
 require_once APPLICATION_PATH.'/models/website/Role.php';
 require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
@@ -34,8 +34,8 @@ class UserController extends Zend_Controller_Action {
 
 		// Get the base URL from the config
 		$configuration = Zend_Registry::get("configuration");
-		$path_base_urls = $configuration->path_base_url->toArray();
-		$this->baseUrl = $path_base_urls[0];
+		$pathBaseURLs = $configuration->path_base_url->toArray();
+		$this->baseUrl = $pathBaseURLs[0];
 	}
 
 	/**

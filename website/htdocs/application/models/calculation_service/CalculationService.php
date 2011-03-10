@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once APPLICATION_PATH.'/models/abstract_service/AbstractService.php';
 
 /**
@@ -35,6 +35,7 @@ class Model_CalculationService extends Model_AbstractService {
 	 * @param Field $selectedField the value to aggregate
 	 * @param Grid $grid the selected grid
 	 * @param String $sqlWhere the SQL Query corresponding to the user choice
+	 * @return a boolean
 	 * @throws Exception if a problem occured on the server side
 	 */
 	public function aggregateData($sessionId, $datasetId, $selectedField, $grid, $sqlWhere) {

@@ -49,7 +49,6 @@ class HarmonizationQueryController extends AbstractQueryController {
 		}
 	}
 
-	
 	/**
 	 * Returns a csv file corresponding to the requested data.
 	 */

@@ -83,9 +83,9 @@ class MapController extends AbstractEforestController {
 		$this->view->defaultzoom = $center->defaultzoom;
 		$this->view->x_center = $center->x_center;
 		$this->view->y_center = $center->y_center;
-		
+
 		// Margin
-		$this->view->featureinfo_margin = $configuration->featureinfo->margin; 
+		$this->view->featureinfo_margin = $configuration->featureinfo->margin;
 
 		$this->_helper->layout()->disableLayout();
 		$this->render('map-parameters');
@@ -119,14 +119,14 @@ class MapController extends AbstractEforestController {
 
 		// Get back the country code
 		$userSession = new Zend_Session_Namespace('user');
-		
+
 		// TODO : Remove hardcoded value
 		$countryCode = "1";
 
 		// Get some configutation parameters
 		$configuration = Zend_Registry::get("configuration");
-		$tilecache_urls = $configuration->tilecache_url->toArray();
-		$path_base_urls = $configuration->path_base_url->toArray();
+		$tilecacheURLs = $configuration->tilecache_url->toArray();
+		$pathBaseURLs = $configuration->path_base_url->toArray();
 		$proxyPath = $configuration->useMapProxy ? '/mapProxy.php' : '/proxy/gettile';
 
 		// Get the available layers
@@ -140,11 +140,11 @@ class MapController extends AbstractEforestController {
 
 		// Build the base URL for cached tiles
 		$out = "{url_array_cached:[";
-		foreach ($tilecache_urls as $tilecache_url) {
-			$out .= '"'.$tilecache_url.'&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap",';
+		foreach ($tilecacheURLs as $tilecacheURL) {
+			$out .= '"'.$tilecacheURL.'&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap",';
 		}
 		// Remove the last comma
-		if (!empty($tilecache_urls)) {
+		if (!empty($tilecacheURLs)) {
 			$out = substr($out, 0, -1);
 		}
 		echo $out.'],';
@@ -152,11 +152,11 @@ class MapController extends AbstractEforestController {
 		// Build the base URL for mapserver tiles
 		$sessionId = session_id();
 		$out = "url_array_tiled:[";
-		foreach ($path_base_urls as $path_base_url) {
-			$out .= '"'.$path_base_url.$proxyPath."?sessionid=".$sessionId.'",'; // appel direct
+		foreach ($pathBaseURLs as $pathBaseURL) {
+			$out .= '"'.$pathBaseURL.$proxyPath."?sessionid=".$sessionId.'",'; // appel direct
 		}
 		// Remove the last comma
-		if (!empty($path_base_urls)) {
+		if (!empty($pathBaseURLs)) {
 			$out = substr($out, 0, -1);
 		}
 		echo $out.'],';
@@ -417,7 +417,7 @@ class MapController extends AbstractEforestController {
 
 		// Get the configuration values
 		$configuration = Zend_Registry::get("configuration");
-		$reportService_url = $configuration->reportGenerationService_url;
+		$reportServiceURL = $configuration->reportGenerationService_url;
 		$mapReport = $configuration->mapReport;
 
 		// Calculate the Mapserver URL
@@ -432,7 +432,7 @@ class MapController extends AbstractEforestController {
 		// The WIDTH and HEIGHT parameters are defined inside the report
 
 		// Calculate the report URL
-		$reportUrl = $reportService_url."/run?__format=pdf&__report=report/".$mapReport;
+		$reportUrl = $reportServiceURL."/run?__format=pdf&__report=report/".$mapReport;
 		$reportUrl = "&WMSURL=".urlencode($wmsURL);
 
 		$this->logger->debug('ajaxgeneratemap URL : '.$reportUrl);
@@ -444,7 +444,7 @@ class MapController extends AbstractEforestController {
 		header("Content-disposition: attachment; filename=Map.pdf");
 
 		// Launch the PDF generation
-		$handle = fopen($report_url, "rb");
+		$handle = fopen($reportUrl, "rb");
 		if ($handle) {
 			while (!feof($handle)) {
 				echo fread($handle, 8192);

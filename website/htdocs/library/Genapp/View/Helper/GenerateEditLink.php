@@ -12,6 +12,7 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 	 * Generate a link corresponding to a data object
 	 *
 	 * @param DataObject $data
+	 * @return the HTML link
 	 */
 	function generateEditLink($data) {
 
@@ -22,7 +23,7 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 
 		// Add the schema
 		$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
-		
+
 		// Add the format		
 		$urlArray['FORMAT'] = $tableFormat;
 

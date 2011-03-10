@@ -12,6 +12,7 @@ class Genapp_View_Helper_GenerateAddLink extends Zend_View_Helper_Abstract {
 	 * Generate a link corresponding to a data object
 	 *
 	 * @param DataObject $data
+	 * @return the HTML link
 	 */
 	function generateAddLink($data) {
 

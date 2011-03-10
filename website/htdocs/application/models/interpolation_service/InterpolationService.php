@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once APPLICATION_PATH.'/models/abstract_service/AbstractService.php';
 
 /**
@@ -38,6 +38,7 @@ class Model_InterpolationService extends Model_AbstractService {
 	 * @param String $method the name of the interpolation method
 	 * @param Integer $gridSize the size of the interpolation grid (in meters)
 	 * @param Integer $maxdist the max distance (in meters)
+	 * @return a boolean
 	 * @throws Exception if a problem occured on the server side
 	 */
 	public function interpolateData($datasetId, $sqlWhere, $format, $data, $layerName, $method, $gridSize, $maxdist) {

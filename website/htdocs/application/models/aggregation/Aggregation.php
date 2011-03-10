@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 
 /**
  * This is a model allowing to aggregate the harmonized data.
@@ -81,7 +81,8 @@ class Model_Aggregation extends Zend_Db_Table_Abstract {
 	/**
 	 * Return the aggregated data for a given session id
 	 *
-	 * @param String the user session id.
+	 * @param String $sessionId the user session id.
+	 * @param String $filter a query filter.
 	 * @return Array[] the aggregated data
 	 */
 	public function getAggregatedData($sessionId, $filter) {

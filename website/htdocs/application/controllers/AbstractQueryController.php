@@ -691,7 +691,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 	 * Get the details associed with a result line (clic on the "detail button").
 	 *
 	 * @param String $id The identifier of the line
-	 * @param String $leafTable The name of the lowest table in the hierarchy
 	 * @return JSON representing the detail of the result line.
 	 */
 	public function getdetailsAction($id = null) {
@@ -707,7 +706,8 @@ abstract class AbstractQueryController extends AbstractEforestController {
 		$keyMap = array();
 		$idElems = explode("/", $id);
 		$i = 0;
-		while ($i < count($idElems)) {
+		$count = count($idElems);
+		while ($i < $count) {
 			$keyMap[$idElems[$i]] = $idElems[$i + 1];
 			$i += 2;
 		}
@@ -731,9 +731,6 @@ abstract class AbstractQueryController extends AbstractEforestController {
 
 		// Get children too
 		$children = $this->genericModel->getChildren($data);
-
-		// Return the detailled information about the plot
-		$fields = "";
 
 		// Look for a geometry object in order to calculate a bounding box
 		// Look for the plot location

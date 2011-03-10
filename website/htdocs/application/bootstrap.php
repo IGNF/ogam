@@ -59,8 +59,8 @@ if (empty($locales)) {
 Zend_Registry::set('Zend_Locale', $locale);
 
 // Set the base path
-$path_base_urls = $configuration->path_base_url->toArray();
-define('PATH_BASE_URL', $path_base_urls[0]);
+$pathBaseURLs = $configuration->path_base_url->toArray();
+define('PATH_BASE_URL', $pathBaseURLs[0]);
 
 // LOGS
 $logger = new Zend_Log();

@@ -76,6 +76,7 @@ class Model_Submission extends Zend_Db_Table_Abstract {
 	 *
 	 * @param Int the submission identifier
 	 * @return Submission
+	 * @throws an exception if the submission doesn't exist
 	 */
 	public function getSubmission($submissionId) {
 

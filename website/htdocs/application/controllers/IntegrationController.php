@@ -50,7 +50,6 @@ class IntegrationController extends AbstractEforestController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		$role = $userSession->role;
 		if (empty($permissions) || !array_key_exists('DATA_INTEGRATION', $permissions)) {
 			$this->_redirector->gotoUrl('/');
 		}

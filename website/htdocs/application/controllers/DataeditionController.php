@@ -62,7 +62,6 @@ class DataEditionController extends AbstractEforestController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		$role = $userSession->role;
 		if (empty($permissions) || !array_key_exists('DATA_EDITION', $permissions)) {
 			$this->_redirector->gotoUrl('/');
 		}
@@ -73,42 +72,6 @@ class DataEditionController extends AbstractEforestController {
 	 */
 	public function indexAction() {
 		$this->logger->debug('Data edition index');
-	}
-
-	/**
-	 * Build and return the dataset form.
-	 */
-	private function _getDatasetForm() {
-
-		$form = new Zend_Form();
-		$form->setAction($this->baseUrl.'/dataedition/validate-dataset');
-		$form->setMethod('post');
-
-		//
-		// Add the dataset element
-		//
-		$requestElement = $form->createElement('select', 'DATASET_ID');
-		$requestElement->setLabel('Dataset');
-		$requestElement->setRequired(true);
-		$requests = $this->metadataModel->getDatasets(false);
-		$datasetIds = array();
-		$datasetIds[''] = 'No dataset filtering';
-		foreach ($requests as $request) {
-			$datasetIds[$request['id']] = $request['label'];
-		}
-		$requestElement->addMultiOptions($datasetIds);
-
-		//
-		// Add the submit element
-		//
-		$submitElement = $form->createElement('submit', 'submit');
-		$submitElement->setLabel('Submit');
-
-		// Add elements to form:
-		$form->addElement($requestElement);
-		$form->addElement($submitElement);
-
-		return $form;
 	}
 
 	/**
@@ -256,6 +219,7 @@ class DataEditionController extends AbstractEforestController {
 	 * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
 	 *
 	 * @param DataObject $data The data to display (optional)
+	 * @param String $message a confirmation/warning message to display (optional)
 	 * @return the HTML view
 	 */
 	public function showEditDataAction($data = null, $message = '') {
@@ -451,6 +415,7 @@ class DataEditionController extends AbstractEforestController {
 	 * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
 	 *
 	 * @param DataObject $data The data to display (optional)
+	 * @param String $message A confirmation/warning message to display
 	 * @return the HTML view
 	 */
 	public function showAddDataAction($data = null, $message = '') {

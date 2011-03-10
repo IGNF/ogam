@@ -153,6 +153,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * Update a line of data from a table.
 	 *
 	 * @param DataObject $data the shell of the data object with the values for the primary key.
+	 * @throws an exception if an error occur during update
 	 */
 	public function updateData($data) {
 		$db = $this->getAdapter();
@@ -217,6 +218,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 	 * Insert a line of data from a table.
 	 *
 	 * @param DataObject $data the shell of the data object to insert.
+	 * @throws an exception if an error occur during insert
 	 */
 	public function insertData($data) {
 		$db = $this->getAdapter();
@@ -306,7 +308,6 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$row = $select->fetch();
 
 		$parentTable = $row['parent_table'];
-		$joinKeys = explode(',', $row['join_key']);
 
 		// Check if we are not the root table
 		if ($parentTable != "*") {
@@ -314,7 +315,7 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 			// Build an empty parent object
 			$parent = $this->genericService->buildDataObject($tableFormat->schemaCode, $parentTable, null, $isForDisplay);
 
-			// Fill the PK values
+			// Fill the PK values (we hope that the child contain the fields of the parent pk)
 			foreach ($parent->infoFields as $key) {
 				$keyField = $data->getInfoField($key->data);
 				if ($keyField != null && $keyField->value != null) {
@@ -366,12 +367,11 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		// For each potential child table listed, we search for the actual lines of data available		
 		foreach ($select->fetchAll() as $row) {
 			$childTable = $row['child_table'];
-			$joinKeys = explode(',', $row['join_key']);
 
 			// Build an empty data object (for the query)
 			$child = $this->genericService->buildDataObject($tableFormat->schemaCode, $childTable);
 
-			// Fill the known primary keys
+			// Fill the known primary keys (we hope the child contain the keys of the parent)
 			foreach ($data->infoFields as $dataKey) {
 				foreach ($child->infoFields as $childKey) {
 					if ($dataKey->data == $childKey->data) {

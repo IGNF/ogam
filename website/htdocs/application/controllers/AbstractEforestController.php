@@ -25,8 +25,8 @@ abstract class AbstractEforestController extends Zend_Controller_Action {
 
 		// Get the base URL from the config
 		$configuration = Zend_Registry::get("configuration");
-		$path_base_urls = $configuration->path_base_url->toArray();
-		$this->baseUrl = $path_base_urls[0];
+		$pathBaseURLs = $configuration->path_base_url->toArray();
+		$this->baseUrl = $pathBaseURLs[0];
 	}
 
 	/**

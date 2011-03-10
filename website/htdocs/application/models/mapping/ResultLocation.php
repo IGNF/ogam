@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 
 /**
  * This is the model for managing result locations (for the web mapping).
@@ -66,6 +66,7 @@ class Model_ResultLocation extends Zend_Db_Table_Abstract {
 	 * Get the plot locations.
 	 *
 	 * @param String the user session id.
+	 * @return Array[String] the list of plot locations as WKT (well known text)
 	 */
 	public function getPlotLocations($sessionId) {
 		$db = $this->getAdapter();
@@ -88,26 +89,27 @@ class Model_ResultLocation extends Zend_Db_Table_Abstract {
 		return $result;
 	}
 
-   /**
-     * Returns the bounding box that bounds geometries of results table.
-     *
-     * @param String the user session id.
-     */
-    public function getResultsBBox($sessionId) {
-        $db = $this->getAdapter();
+	/**
+	 * Returns the bounding box that bounds geometries of results table.
+	 *
+	 * @param String the user session id.
+	 * @return String the bounging box as WKT (well known text)
+	 */
+	public function getResultsBBox($sessionId) {
+		$db = $this->getAdapter();
 
-        $configuration = Zend_Registry::get("configuration");
-        $projection = $configuration->srs_visualisation;
+		$configuration = Zend_Registry::get("configuration");
+		$projection = $configuration->srs_visualisation;
 
-        $req = "SELECT astext(st_extent(transform(the_geom,".$projection."))) as wkt FROM result_location WHERE session_id = ?";
+		$req = "SELECT astext(st_extent(transform(the_geom,".$projection."))) as wkt FROM result_location WHERE session_id = ?";
 
-        $this->logger->info('getResultsBBox session_id : '.$sessionId);
-        $this->logger->info('getResultsBBox request : '.$req);
+		$this->logger->info('getResultsBBox session_id : '.$sessionId);
+		$this->logger->info('getResultsBBox request : '.$req);
 
-        $select = $db->prepare($req);
-        $select->execute(array($sessionId));
-        $result = $select->fetchColumn(0);
+		$select = $db->prepare($req);
+		$select->execute(array($sessionId));
+		$result = $select->fetchColumn(0);
 
-        return $result;
-    }
+		return $result;
+	}
 }

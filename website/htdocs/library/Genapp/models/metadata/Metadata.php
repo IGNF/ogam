@@ -262,6 +262,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $schema the schema identifier
 	 * @param Array[String] $tables a list of formats
 	 * @return Array[TableField]
+	 * @throws an exceptionif the tables contain no geographical information
 	 */
 	public function getLocationTableFields($schema, $tables) {
 
@@ -461,7 +462,6 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			}
 
 			// If a dataset has been selected, filter the available options
-			// TODO : Do the mapping FROM -> TABLE
 			if (!empty($dataset)) {
 				$req .= " AND (data IN ( ";
 				$req .= " SELECT data ";
@@ -607,7 +607,8 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTableColumnsForDisplay($format) {
 		$db = $this->getAdapter();
-		$req = " SELECT field_mapping.src_data, field_mapping.src_format, field_mapping.dst_data, field_mapping.dst_format, table_field.column_name, data.label, data.definition, unit.type, unit.unit ";
+		$req = " SELECT field_mapping.src_data, field_mapping.src_format, field_mapping.dst_data, field_mapping.dst_format, ";
+		$req .= " table_field.column_name, data.label, data.definition, unit.type, unit.unit ";
 		$req .= " FROM table_field ";
 		$req .= " LEFT JOIN field_mapping on (field_mapping.dst_format = table_field.format AND field_mapping.dst_data = table_field.data) ";
 		$req .= " LEFT JOIN form_field on (field_mapping.src_format = form_field.format AND field_mapping.src_data = form_field.data) ";

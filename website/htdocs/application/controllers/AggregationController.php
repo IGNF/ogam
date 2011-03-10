@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractAnalysisController.php';
 require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/models/mapping/Grids.php';
@@ -125,12 +125,12 @@ class AggregationController extends AbstractAnalysisController {
 		$this->calculationServiceModel->aggregateData($sessionId, $datasetId, $selectedField, $grid, $sqlWhere);
 
 		/* Old version : direct group by in PHP/SQL
-		// Clean previous results
+		 // Clean previous results
 		 $this->aggregationModel->cleanPreviousResults($sessionId);
-
-		// Aggregate the data and store it in the temporary result table
-		$this->aggregationModel->aggregateData($sessionId, $selectedField, $grid, $sqlWhere);
-		*/
+		
+		 // Aggregate the data and store it in the temporary result table
+		 $this->aggregationModel->aggregateData($sessionId, $selectedField, $grid, $sqlWhere);
+		 */
 
 		// Register the layer as being active
 		$mappingSession = new Zend_Session_Namespace('mapping');
@@ -166,20 +166,20 @@ class AggregationController extends AbstractAnalysisController {
 	/**
 	 * Validate the aggregation variables form.
 	 */
-	private function _validateAggregationVariableFormAction($dataset) {
+	private function _validateAggregationVariableFormAction() {
 		$this->logger->debug('_validateAggregationVariableFormAction');
 
 		// Get the selected values
 		$variable = $this->_getParam('AGGREGATE_VARIABLE');
 		$gridName = $this->_getParam('GRID_NAME');
-		
+
 		$this->logger->debug('$gridName : '.$gridName);
 
 		// Split the variable name and format
 		$split = explode("__", $variable);
 		$variableFormat = $split[0];
 		$variableName = $split[1];
-		
+
 		$this->logger->debug('$gridName : '.$gridName);
 
 		// Get the session id
@@ -191,10 +191,10 @@ class AggregationController extends AbstractAnalysisController {
 		return true;
 	}
 
-    /**
-     * Return the status of the service
-     */
-    public function ajaxGetStatusAction(){
-        $this->getStatus($this->calculationServiceModel, 'CalculationServlet');
-    }
+	/**
+	 * Return the status of the service
+	 */
+	public function ajaxGetStatusAction() {
+		$this->getStatus($this->calculationServiceModel, 'CalculationServlet');
+	}
 }

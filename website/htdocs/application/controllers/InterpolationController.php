@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'AbstractAnalysisController.php';
 require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
 require_once APPLICATION_PATH.'/models/mapping/Grids.php';
@@ -297,10 +297,10 @@ class InterpolationController extends AbstractAnalysisController {
 		$this->_helper->viewRenderer->setNoRender();
 	}
 
-    /**
-     * Return the status of the service
-     */
-    public function ajaxGetStatusAction(){
-        $this->getStatus($this->interpolationServiceModel, 'InterpolationServlet');
-    }
+	/**
+	 * Return the status of the service
+	 */
+	public function ajaxGetStatusAction() {
+		$this->getStatus($this->interpolationServiceModel, 'InterpolationServlet');
+	}
 }

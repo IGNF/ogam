@@ -88,7 +88,7 @@ class HarmonizationController extends AbstractEforestController {
 		$harmonisationProcesses = array();
 
 		foreach ($activeSubmissions as $id => $activeSubmission) {
-			
+
 			// Get the status of the last process run
 			$process = $this->harmonizationModel->getHarmonizationProcessInfo($activeSubmission);
 

@@ -27,7 +27,8 @@ class Genapp_Validate_UserExist extends Zend_Validate_Abstract {
 	 *
 	 * Returns true if the login exist
 	 *
-	 * @param  string $value
+	 * @param  String $value the value to test
+	 * @param  Array $context some contextual information
 	 * @return boolean
 	 */
 	public function isValid($value, $context = null) {

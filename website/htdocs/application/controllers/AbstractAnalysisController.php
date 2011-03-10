@@ -18,10 +18,12 @@ class AbstractAnalysisController extends AbstractEforestController {
 	/**
 	 * Generate the SQL FROM / WHERE request corresponding to the list of criterias selected by the user.
 	 *
-	 * CAUTION : This method looks a lot like the "generateSQLWHERERequest" method from AbstractQueryController, by we do LEFT JOINS instead of JOIN.
+	 * CAUTION : This method looks a lot like the "generateSQLWHERERequest" method from GenericService, by we do LEFT JOINS instead of JOIN.
+	 * TODO : Replace this method
 	 *
 	 * @param Field $selectedField The selected field
 	 * @param String $datasetId The identifier of the dataset
+	 * @return The generated SQL
 	 */
 	protected function generateSQLWHERERequest($selectedField, $datasetId) {
 
@@ -41,9 +43,6 @@ class AbstractAnalysisController extends AbstractEforestController {
 		$this->schema = 'RAW_DATA';
 
 		$firstJoinedTable = ""; // The logical name of the first table in the join
-
-		$role = $userSession->role;
-		$countryCode = $userSession->user->countryCode;
 
 		//
 		// Get the mapping for each field
@@ -302,7 +301,6 @@ class AbstractAnalysisController extends AbstractEforestController {
 
 		// Get back info from the user session
 		$websiteSession = new Zend_Session_Namespace('website');
-		$leafTable = $websiteSession->leafTable;
 
 		// Get back the datadetId
 		$datasetId = $websiteSession->datasetId;
