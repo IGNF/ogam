@@ -58,6 +58,21 @@ if (empty($locales)) {
 }
 Zend_Registry::set('Zend_Locale', $locale);
 
+// Setup the translation
+$adapterTranslate = new Zend_Translate('csv', APPLICATION_PATH.'/lang/lang_en.csv', 'en'); // default translation
+$adapterTranslate->addTranslation(array('content' => APPLICATION_PATH.'/lang/lang_fr.csv', 'locale' => 'fr')); // add french
+$adapterTranslate->addTranslation(array('content' => APPLICATION_PATH.'/lang/lang_en.csv', 'locale' => 'en')); // add english
+$adapterTranslate->setLocale($locale);
+Zend_Registry::set('Zend_Translate', $adapterTranslate); // store in the registry
+Zend_Validate_Abstract::setDefaultTranslator($adapterTranslate); // use the translator for validation
+
+// Instantiate and register ViewRenderer
+$viewRenderer = new Zend_Controller_Action_Helper_ViewRenderer();
+$viewRenderer->setView($view);
+
+// Pass $viewRenderer to the helper broker
+Zend_Controller_Action_HelperBroker::addHelper($viewRenderer);
+
 // Set the base path
 $pathBaseURLs = $configuration->path_base_url->toArray();
 define('PATH_BASE_URL', $pathBaseURLs[0]);
@@ -159,3 +174,4 @@ unset($registry);
 unset($configuration);
 unset($logger);
 unset($dbAdapter);
+unset($adapterTranslate);

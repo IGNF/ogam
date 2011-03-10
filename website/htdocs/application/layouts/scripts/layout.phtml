@@ -77,10 +77,10 @@
         $userSession = new Zend_Session_Namespace('user');
         $user = $userSession->user;
         if (!empty($user)) {
-             ?><a href="<?= PATH_BASE_URL.'/user/logout'?>">Logout</a>
+             ?><a href="<?= PATH_BASE_URL.'/user/logout'?>"><?=$this->translate('Logout');?></a>
 <?php
          } else {
-            ?><a href="<?= PATH_BASE_URL.'/user/index'?>">Login</a>
+            ?><a href="<?= PATH_BASE_URL.'/user/index'?>"><?=$this->translate('Login');?></a>
 <?php
          }
         }
