@@ -3,8 +3,16 @@
 ##########################
 Logout;Se déconnecter
 Login;Se connecter
+Contact Us;Nous contacter
 
 ﻿##########################
 #   Index                #
 ##########################
 Select a menu;Selectionnez un menu
+Welcome;Bienvenue sur le site web OGAM !
+Data Integration;Integration de données
+Data edition;Edition des données
+Visualize Raw Data;Visualisation des données brutes
+Data Harmonization;Harmonisation des données
+Visualize Harmonized Data;Visualisation des données harmonisées
+User Administration;Administration des utilisateurs

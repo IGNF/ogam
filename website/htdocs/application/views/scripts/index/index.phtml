@@ -22,7 +22,7 @@
     </br></br>
 <![endif]-->
 <h1>
-    Welcome to the OGAM web site !
+    <?=$this->translate('Welcome');?>
 </h1>
 <?
 
@@ -37,7 +37,7 @@ if (!empty($permissions)) {
 ?>
 <div class="moduletable_menu">
 <h3>
-<?php echo $this->translate('Select a menu');?>
+<?=$this->translate('Select a menu');?>
 </h3>
 <ul id="appmenu" class="menu">
 
@@ -45,28 +45,28 @@ if (!empty($permissions)) {
 if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'integration'), null, true) ?>" class="pagelink" >Data Integration</a>
+<a href="<?= $this->url(array('controller'=>'integration'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Integration');?></a>
 </li>
 <?php
 }
 if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" >Data edition</a>
+<a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" ><?=$this->translate('Data edition');?></a>
 </li>
 <?php
 }
 if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'query'), null, true) ?>" class="pagelink" >Visualize Raw Data</a>
+<a href="<?= $this->url(array('controller'=>'query'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
 </li>
 <?php
 } 
 if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" >Data Harmonization</a>
+<a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Harmonization');?></a>
 </li>
 <?php
 }
@@ -74,7 +74,7 @@ if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions))
 if (!empty($permissions) && array_key_exists('DATA_QUERY_HARMONIZED',$permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'harmonizationquery'), null, true) ?>" class="pagelink" >Visualize Harmonized Data</a>
+<a href="<?= $this->url(array('controller'=>'harmonizationquery'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
 </li>
 <?php
 }
@@ -82,7 +82,7 @@ if (!empty($permissions) && array_key_exists('DATA_QUERY_HARMONIZED',$permission
 if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" >User Administration</a>
+<a href="<?= $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" ><?=$this->translate('User Administration');?></a>
 </li>
 <?php
 }

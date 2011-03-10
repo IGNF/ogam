@@ -3,9 +3,17 @@
 ##########################
 Logout;Logout
 Login;Login
+Contact Us;Contact Us
 
 
 ﻿##########################
 #   Index                #
 ##########################
 Select a menu;Select a menu
+Welcome;Welcome to the OGAM web site !
+Data Integration;Data Integration
+Data edition;Data edition
+Visualize Raw Data;Visualize Raw Data
+Data Harmonization;Data Harmonization
+Visualize Harmonized Data;Visualize Harmonized Data
+User Administration;User Administration
