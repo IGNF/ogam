@@ -76,7 +76,7 @@ class UserController extends Zend_Controller_Action {
 		$loginSalt->setValue($salt);
 
 		$submit = $form->createElement('submit', 'submit');
-		$submit->setLabel('Login');
+		$submit->setLabel('Log in');
 
 		// Add elements to form:
 		$form->addElement($login);

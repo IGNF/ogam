@@ -112,12 +112,13 @@ Value is required and can't be empty;Cette valeur est obligatoire et ne peut êt
 notMatch;Le mot de passe n'est pas confirmé
 userNotExist;Cet utilisateur n'existe pas
 userExist;Cet utilisateur existe déjà
+Incorrect password;Mot de passe incorrect
 
 ##########################
 #   Layout               #
 ##########################
-Logout;Se déconnecter
-Login;Se connecter
+Log out;Se déconnecter
+Log in;Se connecter
 Contact Us;Nous contacter
 
 ﻿##########################
@@ -133,4 +134,25 @@ Visualize Harmonized Data;Visualisation des données harmonisées
 User Administration;Administration des utilisateurs
 
 
+﻿##########################
+#   User login           #
+##########################
+User Module;Module utilisateur
+Please login:;Veuillez vous connecter :
+Login;Identifiant
+Password;Mot de passe
+
+﻿##########################
+#  Data integration      #
+##########################
+Data integration module;Module d'intégration de données
+Submit Data;Soumettre des données
+Submission ID;Id de soumission
+Provider Id;Id fournisseur 
+Dataset;Dataset
+Step;Etape
+Status;Statut
+File;Fichier
+Lines;Lignes
+Actions;Actions
 

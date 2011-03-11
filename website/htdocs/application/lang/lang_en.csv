@@ -4,12 +4,13 @@
 notMatch;Password confirmation does not match
 userNotExist;This login doesn't exist
 userExist;This login already exist
+Incorrect password;Incorrect password
 
 ##########################
 #   Layout               #
 ##########################
-Logout;Logout
-Login;Login
+Log out;Log out
+Log in;Log in
 Contact Us;Contact Us
 
 
@@ -24,3 +25,25 @@ Visualize Raw Data;Visualize Raw Data
 Data Harmonization;Data Harmonization
 Visualize Harmonized Data;Visualize Harmonized Data
 User Administration;User Administration
+
+﻿##########################
+#   User login           #
+##########################
+User Module;User Module
+Please login:;Please login:
+Login;Login
+Password;Password
+
+﻿##########################
+#  Data integration      #
+##########################
+Data integration module;Data integration module
+Submit Data;Submit Data
+Submission ID;Submission ID
+Provider Id;Provider Id
+Dataset;Dataset
+Step;Step
+Status;Status
+File;File
+Lines;Lines
+Actions;Actions
