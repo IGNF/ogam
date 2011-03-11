@@ -119,17 +119,17 @@ foreach ($this->submissions as $submission) {
     <?
 	if ($submission->step === "INSERTED" && $submission->status === "OK") {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'check-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" >Check data</a></p>
+    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'check-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" ><?=$this->translate('Check data');?></a></p>
     <? }
 	if ($submission->step !== "INIT" && $submission->status !== "DATARUNNING") {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'proxy','action'=>'showreport'), null, true)?>?submissionId=<?=$submission->submissionId;?>" >Show report</a></p>
+    <p><a href="<?= $this->url(array('controller'=>'proxy','action'=>'showreport'), null, true)?>?submissionId=<?=$submission->submissionId;?>" ><?=$this->translate('Show report');?></a></p>
     <? }
 	if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('Once validated the data will be available for agregation. Do you confirm?');">Validate data</a></p>
+    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Confirm validation');?>');"></a></p>
     <? } ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('Are you sure?');">Cancel Submission</a></p>
+    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('Are you sure?');"><?=$this->translate('Cancel Submission');?></a></p>
 </td></tr>
 <?
 	$i++;
@@ -137,5 +137,5 @@ foreach ($this->submissions as $submission) {
 ?>
 </table>
 <p class="subTableLink">
-    <a href="<?= $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>">Create data submission</a>
+    <a href="<?= $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?=$this->translate('Create data submission');?></a>
 </p>

@@ -131,7 +131,7 @@ class IntegrationController extends AbstractEforestController {
 			if ($showDetail) {
 				// Get some more informations in the metadata base
 				$fields = $this->metadataModel->getFileFields($requestedFile->format);
-				$fieldsDesc .= "The expected fields are: ";
+				$fieldsDesc .= Zend_Registry::get('Zend_Translate')->translate('The expected fields are:');
 				foreach ($fields as $field) {
 					$fieldsDesc .= '<a href="#" title="';
 					$fieldsDesc .= $field->definition; // the tooltip
@@ -145,9 +145,8 @@ class IntegrationController extends AbstractEforestController {
 					}
 
 					$fieldsDesc .= '</a>';
-					$fieldsDesc .= ';&nbsp;</br></br>';
+					$fieldsDesc .= ';&nbsp;';
 				}
-				$fieldsDesc = substr($fieldsDesc, 0, -2).")";
 			}
 
 			$fileelement->setDescription($fieldsDesc);

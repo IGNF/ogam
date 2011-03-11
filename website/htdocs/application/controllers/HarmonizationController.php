@@ -62,19 +62,6 @@ class HarmonizationController extends AbstractEforestController {
 	}
 
 	/**
-	 * Display some statistics about the harmonization process.
-	 *
-	 * @return a View
-	 */
-	public function showHarmonizedHistoryAction() {
-		$this->logger->debug('showHarmonizedStatisticsAction');
-
-		$this->view->harmonizations = $this->harmonizationModel->getHarmonizationsHistory();
-
-		$this->render('show-harmonization-history-page');
-	}
-
-	/**
 	 * Show the harmonization page.
 	 *
 	 * @return a View

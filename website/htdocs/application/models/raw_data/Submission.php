@@ -34,7 +34,7 @@ class Model_Submission extends Zend_Db_Table_Abstract {
 		$req = " SELECT submission_id, step, status, provider_id, dataset_id, user_login, file_type, file_name, nb_line ";
 		$req .= " FROM submission ";
 		$req .= " LEFT JOIN submission_file USING (submission_id) ";
-		$req .= " WHERE step <>  'CANCELLED'";
+		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
 		$req .= " ORDER BY submission_id ";
 
 		$select = $db->prepare($req);

@@ -7,11 +7,11 @@
 
 
 <h1>
-  <?=$this->translate('Data integration module');?> - Error
+  <?=$this->translate('Data integration module');?> - <?=$this->translate('Error');?>
 </h1>
 <div class="error-msg">
     <img class="status-img" src='<?=PATH_BASE_URL?>/img/Red_x.png' /><?= $this->errorMessage ?>
 </div>
 <div class="bottom-menu">
-    <a href="<?=PATH_BASE_URL?>/integration/show-data-page"><b>Data Submission</b></a>
+    <a href="<?=PATH_BASE_URL?>/integration/show-data-page"><b><?=$this->translate('Data Submission');?></b></a>
 </div>

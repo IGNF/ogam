@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 require_once 'harmonized_data/HarmonizationProcess.php';
 
 /**
@@ -20,39 +20,6 @@ class Model_HarmonizationProcess extends Zend_Db_Table_Abstract {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
-	}
-
-	/**
-	 * Get the status of all the harmonisations.
-	 *
-	 * @return Array[HarmonizationProcess]
-	 */
-	public function getHarmonizationsHistory() {
-		$db = $this->getAdapter();
-		$req = " SELECT * ";
-		$req .= " FROM harmonization_process ";
-		$req .= " ORDER BY harmonization_process_id DESC";
-
-		$select = $db->prepare($req);
-		$select->execute(array());
-
-		Zend_Registry::get("logger")->info('getHarmonizations : '.$req);
-
-		$result = array();
-
-		foreach ($select->fetchAll() as $row) {
-
-			$harmonization = new HarmonizationProcess();
-			$harmonization->harmonizationId = $row['harmonization_process_id'];
-			$harmonization->providerId = $row['provider_id'];
-			$harmonization->datasetId = $row['dataset_id'];
-			$harmonization->status = $row['harmonization_status'];
-			$harmonization->date = $row['_creationdt'];
-
-			$result[] = $harmonization;
-		}
-
-		return $result;
 	}
 
 	/**
@@ -80,7 +47,7 @@ class Model_HarmonizationProcess extends Zend_Db_Table_Abstract {
 		$harmonizationProcess = new HarmonizationProcess();
 		$harmonizationProcess->providerId = $activeSubmission->providerId;
 		$harmonizationProcess->datasetId = $activeSubmission->datasetId;
-		if (!empty($result)) {			
+		if (!empty($result)) {
 			$harmonizationProcess->harmonizationId = $result['harmonization_process_id'];
 			$harmonizationProcess->status = $result['harmonization_status'];
 			$harmonizationProcess->date = $result['_creationdt'];

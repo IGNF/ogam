@@ -155,4 +155,24 @@ Status;Statut
 File;Fichier
 Lines;Lignes
 Actions;Actions
+Create data submission;Nouvelle submission
+Upload Data;Chargement des données
+Check data;Vérifier les données
+Show report;Afficher le rapport
+Validate data;Valider la soumission
+Cancel Submission;Annuler la soumission
+Submit;Valider
+Error;Erreur
+The expected fields are:;Les champs attendus sont :
+
+
+﻿##########################
+#  Data harmonization    #
+##########################
+Data harmonization module;Module d'harmonisation
+Harmonize Data;Harmoniser les données
+Back;Retour
+Launch Harmonization;Lancer l'harmonization
+Harmonization Date;Date d'harmonization
+Confirm harmonization;Attention, les données de ce fournisseur vont être supprimées et recréées
 

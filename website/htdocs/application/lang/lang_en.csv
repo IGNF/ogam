@@ -47,3 +47,23 @@ Status;Status
 File;File
 Lines;Lines
 Actions;Actions
+Create data submission;Create data submission
+Upload Data;Upload Data
+Check data;Check data
+Show report;Show report
+Validate data;Validate submission
+Cancel Submission;Cancel submission
+Confirm validation;Once validated the data will be available for agregation. Do you confirm?
+Submit;Submit
+Error;Error
+The expected fields are:;The expected fields are:
+
+﻿##########################
+#  Data harmonization    #
+##########################
+Data harmonization module;Data harmonization module
+Harmonize Data;Harmonize Data
+Back;Back
+Launch Harmonization;Launch Harmonization
+Harmonization Date;Harmonization Date
+Confirm harmonization;Warning, this will delete and recreate all data for this data provider in the harmonized database.

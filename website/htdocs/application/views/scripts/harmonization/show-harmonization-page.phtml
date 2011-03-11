@@ -8,29 +8,29 @@
 <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/extjs/ext-all.js"></script>
 <script type="text/javascript">
 	function confirmLauch() {
-		return confirm("Warning, this will delete and recreate all data for this data provider in the harmonized database.");
+		return confirm("<?= $this->translate('Confirm harmonization');?>");
 	}
 </script>
 
 
 <h1>
-   Harmonization Process
+  <?= $this->translate('Data harmonization module'); ?>
 </h1>
 
 
 <table class="sectiontable">
 <tr>
-	<th>Provider</th>
-	<th>Dataset</th>
-	<th>Harmonization Date</th>
-	<th>Status</th>
-	<th>Action</th>
+	<th><?= $this->translate('Provider Id');?></th>
+	<th><?= $this->translate('Dataset');?></th>
+	<th><?= $this->translate('Harmonization Date');?></th>
+	<th><?= $this->translate('Status');?></th>
+	<th><?= $this->translate('Action');?></th>
 </tr>
 
 <?
 
 $i = 0;
-foreach($this->harmonizations as $harmonizationProcess) {
+foreach ($this->harmonizations as $harmonizationProcess) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
 	<td><?= $harmonizationProcess->providerId; ?></td>
@@ -40,7 +40,7 @@ foreach($this->harmonizations as $harmonizationProcess) {
             <?php if ($harmonizationProcess->submissionStatus == "NOT_VALID") { ?>
             	<?= $harmonizationProcess->status ?>
                 <img src='<?php echo PATH_BASE_URL; ?>/img/warning_orange.png' title="The raw_data submission is not valid anymore" />
-            <?    } else if ($harmonizationProcess->status === "OK") { ?>
+            <? } else if ($harmonizationProcess->status === "OK") { ?>
             	<?= $harmonizationProcess->status ?>
                 <img src='<?php echo PATH_BASE_URL; ?>/img/Green_tick.png' />
             <?php } else if ($harmonizationProcess->status === "RUNNING") { ?>
@@ -97,16 +97,17 @@ foreach($this->harmonizations as $harmonizationProcess) {
                 </div>
             <?php } else if ($harmonizationProcess->status == "") { ?>
             <?php } else { //"ERROR" or "CRASH") ?>
-            	<?= $harmonizationProcess->status ?>
+            	<?=
+		$harmonizationProcess->status ?>
                 <img src='<?= PATH_BASE_URL ?>/img/Red_x.png' />
             <?php } ?></td>
-	<td><a onclick="return confirmLauch();" href="<?= $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" >Launch Harmonization</a></td>
+	<td><a onclick="return confirmLauch();" href="<?= $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?= $this->translate('Launch Harmonization');?></a></td>
 </tr>
 <?
-$i++;
+	$i++;
 }
 ?>
 </table>
 <p class="subTableLink">
-    <a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>">Back</a>
+    <a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>"><?= $this->translate('Back');?></a>
 </p>
