@@ -1,4 +1,11 @@
-﻿##########################
+﻿﻿##########################
+#   Validation           #
+##########################
+notMatch;Password confirmation does not match
+userNotExist;This login doesn't exist
+userExist;This login already exist
+
+##########################
 #   Layout               #
 ##########################
 Logout;Logout
