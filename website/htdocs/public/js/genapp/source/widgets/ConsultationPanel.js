@@ -1472,7 +1472,7 @@ listeners: {
                     fixed:true,
                     menuDisabled:true,
                     align:'center',
-                    width:52
+                    width:66
                 });
                 var newRF = new Array();
                 var columnConf;

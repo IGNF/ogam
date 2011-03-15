@@ -156,7 +156,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     height:16px !important;
     cursor: pointer;
     margin:0 4px 0 0;
-    float:right;
+    float:left;
 }
 .genapp-query-grid-slip{
     overflow:hidden !important;
