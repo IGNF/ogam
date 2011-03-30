@@ -50,7 +50,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
     columnsPanelTbarComboLoadingText:'searching...',
     /**
      * @cfg {String} columnsPanelTbarAddAllButtonTooltip
-     * The columns Panel Tba rAdd All Button Tooltip (defaults to <tt>'Add all the columns'</tt>)
+     * The columns Panel Tbar Add All Button Tooltip (defaults to <tt>'Add all the columns'</tt>)
      */
     columnsPanelTbarAddAllButtonTooltip:'Add all the columns',
     /**
@@ -58,6 +58,11 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * The columns Panel Tbar Remove All Button Tooltip (defaults to <tt>'Remove all the columns'</tt>)
      */
     columnsPanelTbarRemoveAllButtonTooltip:'Remove all the columns',
+    /**
+     * @cfg {Integer} criteriaLabelWidth
+     * The criteria Label Width (defaults to <tt>120</tt>)
+     */
+    criteriaLabelWidth:120,
 
     // private
     initComponent : function() {
@@ -105,7 +110,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             layout:'form',
             hidden:Ext.isEmpty(this.criteria) ? true:false,
             hideMode:'offsets',
-            labelWidth:120,
+            labelWidth:this.criteriaLabelWidth,
             cls:'genapp-query-criteria-panel',
             defaults: {
                 labelStyle: 'padding: 0; margin-top:3px', 
@@ -306,6 +311,8 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                         }
                         this.items.push(this.form.getCriteriaConfig(newRecord.data, false));
                     }
+                } else {
+                    this.items.push(this.form.getCriteriaConfig(record.data));
                 }
             }
         },{form:this, items:items})

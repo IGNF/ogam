@@ -245,6 +245,11 @@ listeners: {
      */
     queryPanelTitle: "Query Panel",
     /**
+     * @cfg {Integer} queryPanelWidth
+     * The query Panel Width (defaults to <tt>370</tt>)
+     */
+    queryPanelWidth:370,
+    /**
      * @cfg {String} queryPanelPinToolQtip
      * The query Panel Pin Tool Qtip (defaults to <tt>'Pin the panel'</tt>)
      */
@@ -508,7 +513,7 @@ listeners: {
          * @property datasetPanel
          * @type Ext.Panel
          */
-        this.datasetPanel = new Ext.Panel( {
+        this.datasetPanel = new Ext.Panel({
             region :'north',
             layout: 'form',
             autoHeight: true,
@@ -516,7 +521,27 @@ listeners: {
             margins:'10 0 5 0',
             cls: 'genapp_query_panel_dataset_panel',
             title : this.datasetPanelTitle,
-            items : this.datasetComboBox
+            items : this.datasetComboBox /* Modifications en cours pour renecofor (CAD: Benoit pas toucher! ;-)),
+            tools:[{
+                id:'help',
+                handler:function(){
+                    
+                },
+                scope:this
+            }],
+            listeners:{
+                'render':function(cmp){
+                    new Ext.ToolTip({
+                        anchor: 'left',
+                        target: cmp.getEl(),
+                        title: 'Basal Area by Species',
+                        html:'The "Basal Area by Species" protocol is...',//this.resetButtonTooltip,
+                        showDelay: Ext.QuickTips.getQuickTip().showDelay,
+                        dismissDelay: Ext.QuickTips.getQuickTip().dismissDelay
+                    });
+                },
+                scope:this
+            }*/
         });
 
         /**
@@ -1059,7 +1084,7 @@ listeners: {
             collapsible : true,
             margins:'0 5 0 0',
             titleCollapse : true,
-            width :370,
+            width :this.queryPanelWidth,
             frame:true,
             layout:'border',
             cls: 'genapp_query_panel',
