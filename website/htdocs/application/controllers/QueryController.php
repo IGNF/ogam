@@ -9,7 +9,7 @@ require_once 'AbstractQueryController.php';
  * QueryController is the controller that manages database query module.
  * @package controllers
  */
-class QueryController extends AbstractQueryController {
+class ParentQueryController extends AbstractQueryController {
 
 	protected $schema = "RAW_DATA";
 
@@ -48,5 +48,5 @@ class QueryController extends AbstractQueryController {
 			$this->_redirector->gotoUrl('/');
 		}
 	}
-
 }
+class QueryController extends ParentQueryController {}

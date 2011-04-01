@@ -15,7 +15,12 @@ $frontController = Zend_Controller_Front::getInstance();
 
 // CONTROLLER DIRECTORY SETUP - Point the front controller to your action
 // controller directory.
-$frontController->setControllerDirectory(APPLICATION_PATH.'/controllers');
+$frontController->setControllerDirectory(array(
+    'default' => APPLI_PATH.'/controllers',
+    'ogam' => APPLICATION_PATH.'/controllers'
+));
+//$frontController->setControllerDirectory(APPLICATION_PATH.'/controllers');
+$frontController->addModuleDirectory(APPLICATION_PATH);
 
 // APPLICATION ENVIRONMENT - Set the current environment.
 // Set a variable in the front controller indicating the current environment --
@@ -26,7 +31,11 @@ $frontController->setParam('env', APPLICATION_ENVIRONMENT);
 // LAYOUT SETUP - Setup the layout component
 // The Zend_Layout component implements a composite (or two-step-view) pattern
 // With this call we are telling the component where to find the layouts scripts.
-Zend_Layout::startMvc(APPLICATION_PATH.'/layouts/scripts');
+if(file_exists(APPLI_PATH.'/layouts/scripts/Layout.phtml')){
+    Zend_Layout::startMvc(APPLI_PATH.'/layouts/scripts');
+}else{
+    Zend_Layout::startMvc(APPLICATION_PATH.'/layouts/scripts');
+}
 
 // VIEW SETUP - Initialize properties of the view object
 // The Zend_View component is used for rendering views. Here, we grab a "global"
@@ -164,6 +173,15 @@ if ($configuration->autoLogin) {
 		$userSession->permissions = $permissions;
 	}
 }
+
+// ROUTER - setup the routes
+/*$router = $frontController->getRouter();
+$router->addRoute('home',
+    new Zend_Controller_Router_Route('',
+        array('controller'=>$configuration->defaultController,
+            'action'=>$configuration->defaultAction)
+    )
+);*/
 
 // CLEANUP - remove items from global scope
 // This will clear all our local boostrap variables from the global scope of
