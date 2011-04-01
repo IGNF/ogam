@@ -10,6 +10,12 @@ set_include_path(
     LIBRARY_PATH 
     . PATH_SEPARATOR . LIBRARY_PATH . '/Genapp/classes/metadata'
     . PATH_SEPARATOR . LIBRARY_PATH . '/Genapp/classes/generic'
+    . PATH_SEPARATOR . APPLICATION_PATH . '/../../application/config'
+    . PATH_SEPARATOR . APPLICATION_PATH . '/../../application/classes'
+    . PATH_SEPARATOR . APPLICATION_PATH . '/../../application/classes/harmonized_data'
+    . PATH_SEPARATOR . APPLICATION_PATH . '/../../application/classes/mapping'
+    . PATH_SEPARATOR . APPLICATION_PATH . '/../../application/classes/raw_data'
+    . PATH_SEPARATOR . APPLICATION_PATH . '/../../application/classes/website'
     . PATH_SEPARATOR . APPLICATION_PATH . '/config'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/harmonized_data'

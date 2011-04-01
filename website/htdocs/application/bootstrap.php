@@ -41,8 +41,8 @@ $view->addHelperPath(LIBRARY_PATH.'/Genapp/View/Helper', 'Genapp_View_Helper'); 
 // The Zend_Config_Ini component will parse the ini file, and resolve all of
 // the values for the given section.  Here we will be using the section name
 // that corresponds to the APP's Environment
-$configuration = new Zend_Config_Ini(APPLICATION_PATH.'/config/app.ini', APPLICATION_ENVIRONMENT);
-$sessionConfig = new Zend_Config_Ini(APPLICATION_PATH.'/config/session.ini', APPLICATION_ENVIRONMENT);
+$configuration = new Zend_Config_Ini('app.ini', APPLICATION_ENVIRONMENT);
+$sessionConfig = new Zend_Config_Ini('session.ini', APPLICATION_ENVIRONMENT);
 Zend_Session::setOptions($sessionConfig->toArray());
 
 // Set the default timezone
@@ -115,7 +115,8 @@ try {
 	Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
 
 } catch (Zend_Exception $e) {
-	$logger->err('Error while initializing database : '.$e->getMessage());
+	$logger->err('Error while initializing database/cache : '.$e->getMessage());
+	$logger->err('cacheDir : '.$cacheDir);
 	throw $e;
 }
 $logger->debug('Database initialised');
