@@ -1,0 +1,110 @@
+<?php
+/**
+ * Default layout
+ * @package layouts
+ */
+?>
+
+<?= $this->doctype() ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="eforest, efdac, jrc, forest" />
+  <meta name="description" content="European Forest DAta Center" />
+  <title>OGAM Application</title>
+  <link rel="stylesheet" type="text/css" href="<?=PATH_BASE_URL.'/css/global.css';?>">
+  <?php echo $this->headLink() ?>
+  <script type="text/javascript">
+      // Firebugx.js
+      if (!window.console || !console.firebug)
+      {
+          var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
+          "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+
+          window.console = {};
+          for (var i = 0; i < names.length; ++i)
+              window.console[names[i]] = function() {}
+      }
+  </script>
+  <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/extjs/adapter/ext/ext-base.js"></script>
+  <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/genapp.js"></script>
+  <script type="text/javascript">
+      //Defines the base URL for the scripts
+     function sendMail(){
+        pre='ogam';
+        suf='ifn.fr';
+        document.getElementById('lkContact').href="mailto:" + pre + "@" + suf;
+      }
+  </script>
+</head> 
+<body>
+<!--[if IE 6]><div class="ie6"><![endif]-->
+<!--[if IE 7]><div class="ie7"><![endif]-->
+<!--[if (IE) & (!IE 6) & (!IE 7)]><div class="ie"><![endif]--> <!-- Pour les anciennes et prochaines versions d'Internet Explorer (autres que 6 et 7) -->
+<!--[if !IE]>--><div class="notie"><!--<![endif]--> <!-- Le commentaire est fermé, puis rouvert -->
+
+<div id="wrapper">
+    <div id="inside" class="inside">
+        <div id="header">
+        <div id="banner">
+            <img border="0" alt="Banner" src="<?=PATH_BASE_URL.'/img/banner.jpg';?>" width="1160" height="80" />
+        </div>
+
+        <!-- HEADER -->
+<div id="top" style="background-color: #EEEEEE; height: 21px;">
+
+    <div id="header-logo" style="float: left">
+        <span class="pathway">
+        <a href="<?= PATH_BASE_URL.'/'?>"><b>OGAM</b></a>
+        <?php
+            $website_session = new Zend_Session_Namespace('website');
+            $moduleName = $website_session->module;
+            $moduleLabel = $website_session->moduleLabel;
+            $moduleURL = $website_session->moduleURL;
+            if (!empty($moduleName)) {
+                echo '<img src="'.PATH_BASE_URL.'/img/arrow.png"/>';
+                echo '<a href="'.PATH_BASE_URL.'/'.$moduleURL.'"><b>'.$moduleLabel.'</b></a>';
+            }
+        ?>
+        </span>
+    </div>
+
+    <div id="header-navigation" style="float: right">
+<?php
+        $configuration = Zend_Registry::get("configuration");
+        if($configuration->autoLogin != 1){
+        $userSession = new Zend_Session_Namespace('user');
+        $user = $userSession->user;
+        if (!empty($user)) {
+             ?><a href="<?= PATH_BASE_URL.'/user/logout'?>"><?=$this->translate('Log out');?></a>
+<?php
+         } else {
+            ?><a href="<?= PATH_BASE_URL.'/user/index'?>"><?=$this->translate('Log in');?></a>
+<?php
+         }
+        }
+?>
+    </div>
+</div>
+
+</div>
+        <div class="main-body">
+        <!-- CONTENT  -->
+        <?= $this->layout()->content ?>
+        </div>
+    </div>
+
+</div>
+<div id="bottom">
+    <div>Copyright © IFN 2010. Reproduction authorized provided the source is acknowledged.&nbsp;
+    <a id="lkContact" onclick="sendMail();" href="#"><?=$this->translate('Contact Us');?></a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    window.onload = Genapp.util.resizeWrapper;
+</script>
+</div>
+</body>
+</html>

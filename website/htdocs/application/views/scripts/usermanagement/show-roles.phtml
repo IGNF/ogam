@@ -1,0 +1,45 @@
+<?php
+/**
+ * Show the roles of the web site.
+ * @package views
+ */
+?>
+<h1>
+   User Management Module - Roles
+</h1>
+
+
+<table class="sectiontable">
+<tr>
+	<th>Edit Role</th>
+	<th>Role Code</th>
+	<th>Role Label</th>
+	<th>Role Definition</th>
+	<th>See full coordinates</th>
+	<th>See other countries</th>
+	<th>Delete Role</th>
+</tr>
+<?
+$i = 0;
+foreach($this->roles as $role) {
+?>
+<tr class="sectiontableentry<?=$i % 2?>">
+	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-edit-role'), null, true)?>?roleCode=<?=$role->roleCode;?>">Edit</a></td>
+	<td><?= $this->escape($role->roleCode); ?></td>
+	<td><?= $this->escape($role->roleLabel); ?></td>
+	<td><?= $this->escape($role->roleDefinition); ?></td>
+	<td><?= $role->degradatedCoordinate ? 'False' : 'True'?></td>
+	<td><?= $role->isEuropeLevel ? 'True' : 'False' ?></td>
+	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-role'), null, true)?>?roleCode=<?=$role->roleCode;?>" onClick="return confirm('Are you sure?');">Delete</a></td>
+</tr>
+<?
+$i++;
+}
+?>
+</table>
+ 
+<p class="subTableLink">
+    <a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-create-role'), null, true) ?>">Create a new role</a>
+<p/>
+
+ 
