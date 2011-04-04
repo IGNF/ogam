@@ -19,8 +19,9 @@ $frontController->setControllerDirectory(array(
     'default' => APPLI_PATH.'/controllers',
     'ogam' => APPLICATION_PATH.'/controllers'
 ));
+//$frontController->setParam('useDefaultControllerAlways', true);
 //$frontController->setControllerDirectory(APPLICATION_PATH.'/controllers');
-$frontController->addModuleDirectory(APPLICATION_PATH);
+//$frontController->addModuleDirectory(APPLICATION_PATH);
 
 // APPLICATION ENVIRONMENT - Set the current environment.
 // Set a variable in the front controller indicating the current environment --
