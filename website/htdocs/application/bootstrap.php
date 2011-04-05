@@ -5,7 +5,7 @@
 // APPLICATION CONSTANTS - Set the constants to use in this application.
 // These constants are accessible throughout the application, even in ini
 // files.
-include_once 'constants.php';
+include_once APPLICATION_PATH.'/config/constants.php';
 
 // FRONT CONTROLLER - Get the front controller.
 // The Zend_Front_Controller class implements the Singleton pattern, which is a
@@ -15,13 +15,7 @@ $frontController = Zend_Controller_Front::getInstance();
 
 // CONTROLLER DIRECTORY SETUP - Point the front controller to your action
 // controller directory.
-$frontController->setControllerDirectory(array(
-    'default' => APPLI_PATH.'/controllers',
-    'ogam' => APPLICATION_PATH.'/controllers'
-));
-//$frontController->setParam('useDefaultControllerAlways', true);
-//$frontController->setControllerDirectory(APPLICATION_PATH.'/controllers');
-//$frontController->addModuleDirectory(APPLICATION_PATH);
+$frontController->setControllerDirectory(APPLICATION_PATH.'/controllers');
 
 // APPLICATION ENVIRONMENT - Set the current environment.
 // Set a variable in the front controller indicating the current environment --
@@ -32,11 +26,7 @@ $frontController->setParam('env', APPLICATION_ENVIRONMENT);
 // LAYOUT SETUP - Setup the layout component
 // The Zend_Layout component implements a composite (or two-step-view) pattern
 // With this call we are telling the component where to find the layouts scripts.
-if(file_exists(APPLI_PATH.'/layouts/scripts/Layout.phtml')){
-    Zend_Layout::startMvc(APPLI_PATH.'/layouts/scripts');
-}else{
-    Zend_Layout::startMvc(APPLICATION_PATH.'/layouts/scripts');
-}
+Zend_Layout::startMvc(APPLICATION_PATH.'/layouts/scripts');
 
 // VIEW SETUP - Initialize properties of the view object
 // The Zend_View component is used for rendering views. Here, we grab a "global"
@@ -51,8 +41,8 @@ $view->addHelperPath(LIBRARY_PATH.'/Genapp/View/Helper', 'Genapp_View_Helper'); 
 // The Zend_Config_Ini component will parse the ini file, and resolve all of
 // the values for the given section.  Here we will be using the section name
 // that corresponds to the APP's Environment
-$configuration = new Zend_Config_Ini('app.ini', APPLICATION_ENVIRONMENT);
-$sessionConfig = new Zend_Config_Ini('session.ini', APPLICATION_ENVIRONMENT);
+$configuration = new Zend_Config_Ini(APPLICATION_PATH.'/config/app.ini', APPLICATION_ENVIRONMENT);
+$sessionConfig = new Zend_Config_Ini(APPLICATION_PATH.'/config/session.ini', APPLICATION_ENVIRONMENT);
 Zend_Session::setOptions($sessionConfig->toArray());
 
 // Set the default timezone

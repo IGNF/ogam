@@ -9,7 +9,7 @@ require_once 'AbstractQueryController.php';
  * QueryController is the controller that manages database query module.
  * @package controllers
  */
-class Ogam_QueryController extends AbstractQueryController {
+class QueryController extends AbstractQueryController {
 
     protected $schema = "RAW_DATA";
 

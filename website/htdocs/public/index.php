@@ -5,25 +5,17 @@
 // application/subdirectory. We use this to add our "library" directory
 // to the include_path, so that PHP can find our Zend Framework classes.
 define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application'));
-define('APPLI_PATH', realpath(dirname(__FILE__) . '/../../application'));
 define('LIBRARY_PATH', realpath(dirname(__FILE__) . '/../library'));
 set_include_path(
     LIBRARY_PATH 
     . PATH_SEPARATOR . LIBRARY_PATH . '/Genapp/classes/metadata'
     . PATH_SEPARATOR . LIBRARY_PATH . '/Genapp/classes/generic'
-    . PATH_SEPARATOR . APPLI_PATH . '/config'
     . PATH_SEPARATOR . APPLICATION_PATH . '/controllers'
-    . PATH_SEPARATOR . APPLI_PATH . '/classes'
-    . PATH_SEPARATOR . APPLI_PATH . '/classes/harmonized_data'
-    . PATH_SEPARATOR . APPLI_PATH . '/classes/mapping'
-    . PATH_SEPARATOR . APPLI_PATH . '/classes/raw_data'
-    . PATH_SEPARATOR . APPLI_PATH . '/classes/website'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/harmonized_data'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/mapping'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/raw_data'
     . PATH_SEPARATOR . APPLICATION_PATH . '/classes/website'
-    . PATH_SEPARATOR . APPLICATION_PATH . '/config'
     . PATH_SEPARATOR . get_include_path()
 );
 
