@@ -4,8 +4,8 @@
  * @package views
  */
 ?>
-<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/progressbar.js"></script>
-<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/extjs/ext-all.js"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/progressbar.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all.js') ?>"></script>
 <script type="text/javascript">
 	function confirmLauch() {
 		return confirm("<?= $this->translate('Confirm harmonization');?>");
@@ -39,21 +39,21 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 	<td>
             <?php if ($harmonizationProcess->submissionStatus == "NOT_VALID") { ?>
             	<?= $harmonizationProcess->status ?>
-                <img src='<?php echo PATH_BASE_URL; ?>/img/warning_orange.png' title="The raw_data submission is not valid anymore" />
+                <img src="<?= $this->baseUrl('img/warning_orange.png') ?>" title="The raw_data submission is not valid anymore" />
             <? } else if ($harmonizationProcess->status === "OK") { ?>
             	<?= $harmonizationProcess->status ?>
-                <img src='<?php echo PATH_BASE_URL; ?>/img/Green_tick.png' />
+                <img src="<?= $this->baseUrl('img/Green_tick.png') ?>" />
             <?php } else if ($harmonizationProcess->status === "RUNNING") { ?>
                 <div class="tempStatusDiv" id="tempStatusDiv_<?php echo $harmonizationProcess->harmonizationId; ?>">
                 <script type="text/javascript">
 
              	// Display the progress bar
-                display('progressBar<?= $harmonizationProcess->harmonizationId;?>', '', 0, '<?= PATH_BASE_URL ?>/img/');         
+                display('progressBar<?= $harmonizationProcess->harmonizationId;?>', '', 0, '<?= $this->baseUrl('img/') ?>');
                 
              	// Refresh The status of the submission
                 Genapp.util.getStatus_<?php echo $harmonizationProcess->harmonizationId; ?> =  function (){
                     Ext.Ajax.request({
-                       url: '<?php echo PATH_BASE_URL; ?>/Harmonization/get-status',
+                       url: "<?= $this->baseUrl('Harmonization/get-status') ?>",
                        params:{
                            DATASET_ID:'<?php echo $harmonizationProcess->datasetId; ?>',
                            PROVIDER_ID:'<?php echo $harmonizationProcess->providerId; ?>',
@@ -61,7 +61,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
                        },
                        callback: function(options, success, response){
                             var rp = Ext.decode(response.responseText);
-                            var src = '<?php echo PATH_BASE_URL; ?>/img/';
+                            var src = "<?= $this->baseUrl('img/') ?>";
                             switch(rp.status){
                                 case 'OK':
                                 case 'WARNING':
@@ -99,7 +99,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
             <?php } else { //"ERROR" or "CRASH") ?>
             	<?=
 		$harmonizationProcess->status ?>
-                <img src='<?= PATH_BASE_URL ?>/img/Red_x.png' />
+                <img src="<?= $this->baseUrl('img/Red_x.png') ?>" />
             <?php } ?></td>
 	<td><a onclick="return confirmLauch();" href="<?= $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?= $this->translate('Launch Harmonization');?></a></td>
 </tr>

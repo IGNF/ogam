@@ -3,13 +3,13 @@
  * © French National Forest Inventory 
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */ 
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/Field.php';
+//require_once 'Genapp/classes/metadata/Field.php';
 
 /**
  * Represent a Field of a File.
  * @package classes
  */
-class FileField extends Field {
+class Genapp_Model_Metadata_FileField extends Genapp_Model_Metadata_Field {
     
 	/**
      * Indicate if the field is mandatory

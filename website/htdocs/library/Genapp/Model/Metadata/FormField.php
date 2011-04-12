@@ -1,11 +1,11 @@
 <?php
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/Field.php';
+//require_once 'Genapp/classes/metadata/Field.php';
 
 /**
  * Represent a Field of a Form.
  * @package classes
  */
-class FormField extends Field {
+class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 
 	/**
 	 * The input type of the field (SELECT, TEXT, ...).

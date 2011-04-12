@@ -45,7 +45,7 @@ if (!empty($permissions)) {
 if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'integration'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Integration');?></a>
+<a href="<?= $this->url(array('controller'=>'integration'), 'default', true) ?>" class="pagelink" ><?=$this->translate('Data Integration');?></a>
 </li>
 <?php
 }
@@ -86,16 +86,32 @@ if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {
 </li>
 <?php
 }
-
-
+?>
+</ul>
+</div>
+<?php
+}
+?>
+<?php
 $configuration = Zend_Registry::get("configuration");
 if($configuration->autoLogin == 1){
 ?>
+<div class="moduletable_menu">
+<ul id="appmenu2" class="menu">
+<?
+if (empty($permissions)) {
+?>
 <li>
-<a href="<?= PATH_BASE_URL.'/user/index'?>">Change login</a>
+<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Log in');?></a>
+</li>
+<?
+} else {
+?>
+<li>
+<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Change login');?></a>
 </li>
 <li>
-<a href="<?= PATH_BASE_URL.'/user/logout'?>">Logout</a>
+<a href="<?= $this->baseUrl('user/logout') ?>"><?=$this->translate('Log out');?></a>
 </li>
 <?php
 }

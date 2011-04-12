@@ -29,7 +29,6 @@ foreach($this->roles as $role) {
 	<td><?= $this->escape($role->roleLabel); ?></td>
 	<td><?= $this->escape($role->roleDefinition); ?></td>
 	<td><?= $role->degradatedCoordinate ? 'False' : 'True'?></td>
-	<td><?= $role->isEuropeLevel ? 'True' : 'False' ?></td>
 	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-role'), null, true)?>?roleCode=<?=$role->roleCode;?>" onClick="return confirm('Are you sure?');">Delete</a></td>
 </tr>
 <?

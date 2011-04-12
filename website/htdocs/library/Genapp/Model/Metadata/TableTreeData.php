@@ -9,7 +9,7 @@
  *
  * @package classes
  */
-class TableTreeData {
+class Genapp_Model_Metadata_TableTreeData {
 
 	/**
 	 * The logical name of the table format

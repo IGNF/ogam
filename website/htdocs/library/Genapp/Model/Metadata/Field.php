@@ -9,7 +9,7 @@
  *
  * @package classes
  */
-class Field {
+class Genapp_Model_Metadata_Field {
 
 	/**
 	 * The field identifier (data)

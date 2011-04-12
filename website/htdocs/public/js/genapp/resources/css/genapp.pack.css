@@ -156,7 +156,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     height:16px !important;
     cursor: pointer;
     margin:0 4px 0 0;
-    float:right;
+    float:left;
 }
 .genapp-query-grid-slip{
     overflow:hidden !important;
@@ -507,6 +507,9 @@ p.genapp-predefined-request-grid-panel-description-text {
 /*************************************************************************************************/
 
 /***** Query Form Panel************************************************************************/
+button.genapp-query-panel-predefined-request-save-button-icon {
+    background-image: url(../images/disk.png);
+}
 .genapp-query-request-panel-ct-xcollapsed-vertical-label-div{
     background-image: url(../images/gray-extend/request.gif);
 }
@@ -738,6 +741,14 @@ p.genapp-predefined-request-grid-panel-description-text {
 .genapp-predefined-request-grid-panel-description-title {
 	font-weight: bold;
 }
+/*************************************************************************************************/
+
+/***** Card Panel ********************************************************************************/
+
+.genapp-card-panel > .x-tab-panel-header > .x-tab-strip-wrap > ul.x-tab-strip-top {
+    background-color:#FFFFFF;
+    background-image:none;
+}
 /*************************************************************************************************//***** Form Panel Toolbars **********************************************************************************/
 
 /* genapp small toolbar Buttons */
@@ -896,7 +907,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     height:16px !important;
     cursor: pointer;
     margin:0 4px 0 0;
-    float:right;
+    float:left;
 }
 .genapp-query-grid-slip{
     overflow:hidden !important;
@@ -1247,6 +1258,9 @@ p.genapp-predefined-request-grid-panel-description-text {
 /*************************************************************************************************/
 
 /***** Query Form Panel************************************************************************/
+button.genapp-query-panel-predefined-request-save-button-icon {
+    background-image: url(../images/disk.png);
+}
 .genapp-query-request-panel-ct-xcollapsed-vertical-label-div{
     background-image: url(../images/green-ifn/request.gif);
 }
@@ -1520,6 +1534,14 @@ p.genapp-predefined-request-grid-panel-description-text {
 .genapp-predefined-request-grid-panel-description-title {
     font-weight: bold;
 }
+/*************************************************************************************************/
+
+/***** Card Panel ********************************************************************************/
+
+.genapp-card-panel > .x-tab-panel-header > .x-tab-strip-wrap > ul.x-tab-strip-top {
+    background-color:#FFFFFF;
+    background-image:none;
+}
 /*************************************************************************************************//***** Form Panel Toolbars **********************************************************************************/
 
 /* genapp small toolbar Buttons */
@@ -1678,7 +1700,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     height:16px !important;
     cursor: pointer;
     margin:0 4px 0 0;
-    float:right;
+    float:left;
 }
 .genapp-query-grid-slip{
     overflow:hidden !important;
@@ -2029,6 +2051,9 @@ p.genapp-predefined-request-grid-panel-description-text {
 /*************************************************************************************************/
 
 /***** Query Form Panel************************************************************************/
+button.genapp-query-panel-predefined-request-save-button-icon {
+    background-image: url(../images/disk.png);
+}
 .genapp-query-request-panel-ct-xcollapsed-vertical-label-div{
     background-image: url(../images/gray-extend/request.gif);
 }
@@ -2260,6 +2285,14 @@ p.genapp-predefined-request-grid-panel-description-text {
 .genapp-predefined-request-grid-panel-description-title {
 	font-weight: bold;
 }
+/*************************************************************************************************/
+
+/***** Card Panel ********************************************************************************/
+
+.genapp-card-panel > .x-tab-panel-header > .x-tab-strip-wrap > ul.x-tab-strip-top {
+    background-color:#FFFFFF;
+    background-image:none;
+}
 /*************************************************************************************************//***** Form Panel Toolbars **********************************************************************************/
 .genapp-tb-btn .x-btn-mc .x-btn-text{
     background:transparent url(../../../extjs/resources/images/green-ifn/panel/tool-sprites.gif) no-repeat scroll;
@@ -2271,6 +2304,9 @@ p.genapp-predefined-request-grid-panel-description-text {
 /*************************************************************************************************/
 
 /***** Query Form Panel************************************************************************/
+button.genapp-query-panel-predefined-request-save-button-icon {
+    background-image: url(../images/disk.png);
+}
 .genapp-query-request-panel-ct-xcollapsed-vertical-label-div{
     background-image: url(../images/green-ifn/request.gif);
 }
@@ -2543,5 +2579,132 @@ p.genapp-predefined-request-grid-panel-description-text {
 }
 .genapp-predefined-request-grid-panel-description-title {
     font-weight: bold;
+}
+/*************************************************************************************************/
+
+/***** Card Panel ********************************************************************************/
+
+.genapp-card-panel > .x-tab-panel-header > .x-tab-strip-wrap > ul.x-tab-strip-top {
+    background-color:#FFFFFF;
+    background-image:none;
+}
+/*************************************************************************************************/.x-sm-form-check-innerwrap
+{
+    float: left;
+}
+
+.x-sm-form-check.checkbox_on
+{
+    background-image: url(imgs/checkbox_on.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.checkbox_off
+{
+    background-image: url(imgs/checkbox_off.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.checkbox_on_dled
+{
+    background-image: url(imgs/checkbox_on_dled.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.checkbox_off_dled
+{
+    background-image: url(imgs/checkbox_off_dled.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_blue
+{
+    background-image: url(imgs/flag_blue.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_green
+{
+    background-image: url(imgs/flag_green.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_orange
+{
+    background-image: url(imgs/flag_orange.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_pink
+{
+    background-image: url(imgs/flag_pink.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_purple
+{
+    background-image: url(imgs/flag_purple.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_red
+{
+    background-image: url(imgs/flag_red.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_yellow
+{
+    background-image: url(imgs/flag_yellow.png);
+    background-repeat: no-repeat;
+}
+
+.x-sm-form-check.flag_grey
+{
+    background-image: url(imgs/flag_grey.png);
+    background-repeat: no-repeat;
+}/***** Basic Checkbox ************************************************************************/
+
+.x-sm-form-check.checkbox_off {
+    background-image:url(../js/extjs/resources/images/default/form/checkbox.gif);
+    background-repeat:no-repeat;
+    background-position:0 0;
+    height:13px !important;
+    width:13px !important;
+}
+.x-sm-form-check.checkbox_on {
+    background-image:url(../js/extjs/resources/images/default/form/checkbox.gif);
+    background-repeat:no-repeat;
+    background-position:0 -13px;
+    height:13px !important;
+    width:13px !important;
+}
+.x-sm-form-check.checkbox_on_dled
+{
+    background-image: url(../js/extjs/resources/images/default/form/checkbox.gif);
+    background-repeat: no-repeat;
+    background-position:0 -26px;
+    height:13px !important;
+    width:13px !important;
+}
+
+.x-sm-form-check.checkbox_off_dled
+{
+    background-image: url(../js/extjs/resources/images/default/form/checkbox.gif);
+    background-repeat: no-repeat;
+    background-position:0 0;
+    height:13px !important;
+    width:13px !important;
+}
+input.x-form-checkbox
+{
+    left:0 !important;
+    top:0 !important;
+}
+.x-sm-form-check-innerwrap{
+    margin-top:5px;
+}
+.ext-ie7 .x-sm-form-check-innerwrap{
+     position: static !important;	
 }
 /*************************************************************************************************/

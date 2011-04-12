@@ -19,7 +19,7 @@ OpenLayers.Handler.FeatureInfo.prototype =
         var ll = this.map.getLonLatFromPixel(px);
         
         // Construction d'une URL pour faire une requête WFS sur le point
-        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=result_locations&MAXFEATURES=1&BBOX="+(ll.lon-500)+","+(ll.lat+500)+","+(ll.lon+500)+","+(ll.lat-500);
+        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=result_locations&MAXFEATURES=1&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
 
         OpenLayers.loadURL(
             url,
@@ -444,6 +444,11 @@ listeners: {
      */
     queryPanelTitle: "Query Panel",
     /**
+     * @cfg {Integer} queryPanelWidth
+     * The query Panel Width (defaults to <tt>370</tt>)
+     */
+    queryPanelWidth:370,
+    /**
      * @cfg {String} queryPanelPinToolQtip
      * The query Panel Pin Tool Qtip (defaults to <tt>'Pin the panel'</tt>)
      */
@@ -707,7 +712,7 @@ listeners: {
          * @property datasetPanel
          * @type Ext.Panel
          */
-        this.datasetPanel = new Ext.Panel( {
+        this.datasetPanel = new Ext.Panel({
             region :'north',
             layout: 'form',
             autoHeight: true,
@@ -715,7 +720,27 @@ listeners: {
             margins:'10 0 5 0',
             cls: 'genapp_query_panel_dataset_panel',
             title : this.datasetPanelTitle,
-            items : this.datasetComboBox
+            items : this.datasetComboBox /* Modifications en cours pour renecofor (CAD: Benoit pas toucher! ;-)),
+            tools:[{
+                id:'help',
+                handler:function(){
+                    
+                },
+                scope:this
+            }],
+            listeners:{
+                'render':function(cmp){
+                    new Ext.ToolTip({
+                        anchor: 'left',
+                        target: cmp.getEl(),
+                        title: 'Basal Area by Species',
+                        html:'The "Basal Area by Species" protocol is...',//this.resetButtonTooltip,
+                        showDelay: Ext.QuickTips.getQuickTip().showDelay,
+                        dismissDelay: Ext.QuickTips.getQuickTip().dismissDelay
+                    });
+                },
+                scope:this
+            }*/
         });
 
         /**
@@ -1258,7 +1283,7 @@ listeners: {
             collapsible : true,
             margins:'0 5 0 0',
             titleCollapse : true,
-            width :370,
+            width :this.queryPanelWidth,
             frame:true,
             layout:'border',
             cls: 'genapp_query_panel',
@@ -1671,7 +1696,7 @@ listeners: {
                     fixed:true,
                     menuDisabled:true,
                     align:'center',
-                    width:52
+                    width:66
                 });
                 var newRF = new Array();
                 var columnConf;
@@ -2843,7 +2868,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
     columnsPanelTbarComboLoadingText:'searching...',
     /**
      * @cfg {String} columnsPanelTbarAddAllButtonTooltip
-     * The columns Panel Tba rAdd All Button Tooltip (defaults to <tt>'Add all the columns'</tt>)
+     * The columns Panel Tbar Add All Button Tooltip (defaults to <tt>'Add all the columns'</tt>)
      */
     columnsPanelTbarAddAllButtonTooltip:'Add all the columns',
     /**
@@ -2851,6 +2876,11 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * The columns Panel Tbar Remove All Button Tooltip (defaults to <tt>'Remove all the columns'</tt>)
      */
     columnsPanelTbarRemoveAllButtonTooltip:'Remove all the columns',
+    /**
+     * @cfg {Integer} criteriaLabelWidth
+     * The criteria Label Width (defaults to <tt>120</tt>)
+     */
+    criteriaLabelWidth:120,
 
     // private
     initComponent : function() {
@@ -2898,7 +2928,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             layout:'form',
             hidden:Ext.isEmpty(this.criteria) ? true:false,
             hideMode:'offsets',
-            labelWidth:120,
+            labelWidth:this.criteriaLabelWidth,
             cls:'genapp-query-criteria-panel',
             defaults: {
                 labelStyle: 'padding: 0; margin-top:3px', 
@@ -3099,6 +3129,8 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                         }
                         this.items.push(this.form.getCriteriaConfig(newRecord.data, false));
                     }
+                } else {
+                    this.items.push(this.form.getCriteriaConfig(record.data));
                 }
             }
         },{form:this, items:items})

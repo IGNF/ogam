@@ -9,7 +9,7 @@
  *
  * @package classes
  */
-class DataObject {
+class Genapp_Model_Generic_DataObject {
 
 	/**
 	 * The identifier of the dataset.

@@ -8,7 +8,7 @@
  * This is a model allowing generic access to the RAW_DATA tables.
  * @package models
  */
-class Model_Generic extends Zend_Db_Table_Abstract {
+class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 
 	/**
 	 * The system of projection for the visualisation.
@@ -38,10 +38,10 @@ class Model_Generic extends Zend_Db_Table_Abstract {
 		$this->visualisationSRS = $configuration->srs_visualisation;
 
 		// Initialise the metadata model
-		$this->metadataModel = new Model_Metadata();
+		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
 
 		// Initialise the generic service
-		$this->genericService = new GenericService();
+		$this->genericService = new Genapp_Model_Generic_GenericService();
 
 	}
 

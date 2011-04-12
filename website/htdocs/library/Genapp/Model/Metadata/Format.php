@@ -8,7 +8,7 @@
  * Represent an abstract Format.
  * @package classes
  */
-class Format {
+class Genapp_Model_Metadata_Format {
 
 	/**
 	 * The format identifier

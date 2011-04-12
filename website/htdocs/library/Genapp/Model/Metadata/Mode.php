@@ -10,7 +10,7 @@
  * 
  * @package classes
  */
-class Mode {
+class Genapp_Model_Metadata_Mode {
 
 	/**
 	 * The code.

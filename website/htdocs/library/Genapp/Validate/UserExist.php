@@ -36,7 +36,7 @@ class Genapp_Validate_UserExist extends Zend_Validate_Abstract {
 		$this->_setValue($value);
 
 		// Check that the user exist
-		$userModel = new Model_User();
+		$userModel = new Application_Model_DbTable_Website_User();
 		$duplicate = $userModel->getUser($value);
 		if (!empty($duplicate)) {
 			return true;

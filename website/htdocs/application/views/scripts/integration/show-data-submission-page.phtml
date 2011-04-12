@@ -4,8 +4,8 @@
  * @package views
  */
 ?>
-<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/progressbar.js"></script>
-<script type="text/javascript" src="<?=PATH_BASE_URL?>/js/extjs/ext-all.js"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/progressbar.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all.js') ?>"></script>
 
 <h1>
    <?=$this->translate('Data integration module');?>
@@ -36,20 +36,20 @@ foreach ($this->submissions as $submission) {
     <td>
             <? if ($submission->status === "OK" || $submission->status === "CHECKED") : ?>
             	<?= $this->escape($submission->status); ?>
-                <img src='<?= PATH_BASE_URL ?>/img/Green_tick.png' />
+                <img src="<?= $this->baseUrl('img/Green_tick.png') ?>" />
             <?php elseif ($submission->status === "WARNING") : ?>
             	<?= $this->escape($submission->status); ?>
-                <img src='<?= PATH_BASE_URL ?>/img/warning_orange.png' />
+                <img src="<?= $this->baseUrl('img/warning_orange.png') ?>" />
             <?php elseif ($submission->status === "RUNNING") : ?>
                 <div class="tempStatusDiv" id="tempStatusDiv_<?= $submission->submissionId ?>">
                 <script type="text/javascript">
 
                 // Display the progress bar
-                display('progressBar<?= $submission->submissionId ?>', '', 0, '<?= PATH_BASE_URL ?>/img/');         
+                display('progressBar<?= $submission->submissionId ?>', '', 0, '<?= $this->baseUrl('img/') ?>');
                 
                 // Refresh The status of the submission
                 Genapp.util.getStatus_<?= $submission->submissionId ?> =  function (){
-                    var url = '<?= PATH_BASE_URL ?>/Integration/';
+                    var url = '<?= $this->baseUrl('Integration/') ?>';
                     <?php if ($submission->step === "CHECKED") : ?>
                         url += 'get-check-status';
                     <?php else : ?>
@@ -63,7 +63,7 @@ foreach ($this->submissions as $submission) {
                        },
                        callback: function(options, success, response){
                             var rp = Ext.decode(response.responseText);
-                            var src = '<?= PATH_BASE_URL ?>/img/';
+                            var src = '<?= $this->baseUrl('img/') ?>';
                             switch(rp.status){
                                 case 'OK':
                                 case 'WARNING':
@@ -101,7 +101,7 @@ foreach ($this->submissions as $submission) {
             	<?=
 		$this->escape($submission->status);
 ?>
-                <img src='<?= PATH_BASE_URL ?>/img/Red_x.png' />
+                <img src="<?= $this->baseUrl('img/Red_x.png') ?>" />
             <?php endif; ?>
     </td>
     <td colspan=2>

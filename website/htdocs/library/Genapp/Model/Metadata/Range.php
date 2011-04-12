@@ -9,7 +9,7 @@
  * 
  * @package classes
  */
-class Range {
+class Genapp_Model_Metadata_Range {
 
 	/**
 	 * The min value.

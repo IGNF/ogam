@@ -3,21 +3,21 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/FileField.php';
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/FormField.php';
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/FormFormat.php';
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/DatasetFile.php';
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableField.php';
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableTreeData.php';
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableFormat.php';
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/Range.php';
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/Mode.php';
+/*require_once 'Genapp/classes/metadata/FileField.php';
+require_once 'Genapp/classes/metadata/FormField.php';
+require_once 'Genapp/classes/metadata/FormFormat.php';
+require_once 'Genapp/classes/metadata/DatasetFile.php';
+require_once 'Genapp/classes/metadata/TableField.php';
+require_once 'Genapp/classes/metadata/TableTreeData.php';
+require_once 'Genapp/classes/metadata/TableFormat.php';
+require_once 'Genapp/classes/metadata/Range.php';
+require_once 'Genapp/classes/metadata/Mode.php';*/
 
 /**
  * This is the Metadata model.
  * @package models
  */
-class Model_Metadata extends Zend_Db_Table_Abstract {
+class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 	var $logger;
 
@@ -132,7 +132,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$datasetFile = new DatasetFile();
+			$datasetFile = new Genapp_Model_Metadata_DatasetFile();
 			$datasetFile->fileType = $row['file_type'];
 			$datasetFile->format = $row['format'];
 			$datasetFile->label = $row['label'];
@@ -168,7 +168,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$fileField = new FileField();
+			$fileField = new Genapp_Model_Metadata_FileField();
 			$fileField->data = $row['data'];
 			$fileField->format = $row['format'];
 			$fileField->label = $row['label'];
@@ -232,7 +232,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				$tableField = new TableField();
+				$tableField = new Genapp_Model_Metadata_TableField();
 				$tableField->data = $row['data'];
 				$tableField->format = $row['format'];
 				$tableField->columnName = $row['column_name'];
@@ -292,7 +292,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$row = $select->fetch();
 		if ($row) {
-			$tableField = new TableField();
+			$tableField = new Genapp_Model_Metadata_TableField();
 			$tableField->data = $row['data'];
 			$tableField->format = $row['format'];
 			$tableField->columnName = $row['column_name'];
@@ -342,7 +342,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 			$row = $select->fetch();
 
-			$tableFormat = new TableFormat();
+			$tableFormat = new Genapp_Model_Metadata_TableFormat();
 			$tableFormat->format = $format;
 			$tableFormat->schemaCode = $schema;
 			$tableFormat->tableName = $row['table_name'];
@@ -406,7 +406,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				$formFormat = new FormFormat();
+				$formFormat = new Genapp_Model_Metadata_FormFormat();
 				$formFormat->format = $row['format'];
 				$formFormat->label = $row['label'];
 				$formFormat->definition = $row['definition'];
@@ -485,7 +485,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				$formField = new FormField();
+				$formField = new Genapp_Model_Metadata_FormField();
 				$formField->data = $row['data'];
 				$formField->format = $formFormat;
 				$formField->label = $row['label'];
@@ -541,7 +541,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$select->execute(array($format, $data));
 
 			$row = $select->fetch();
-			$formField = new FormField();
+			$formField = new Genapp_Model_Metadata_FormField();
 			$formField->data = $row['data'];
 			$formField->format = $row['format'];
 			$formField->isCriteria = $row['is_criteria'];
@@ -589,7 +589,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$row = $select->fetch();
 		if ($row) {
-			$range = new Range();
+			$range = new Genapp_Model_Metadata_Range();
 			$range->min = $row['min'];
 			$range->max = $row['max'];
 			return $range;
@@ -625,7 +625,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$tableField = new TableField();
+			$tableField = new Genapp_Model_Metadata_TableField();
 			$tableField->sourceFormName = $row['src_format'];
 			$tableField->sourceFieldName = $row['src_data'];
 			$tableField->data = $row['dst_data'];
@@ -675,7 +675,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$select->execute(array($formField->format, $formField->data, $schema));
 
 			$row = $select->fetch();
-			$tableField = new TableField();
+			$tableField = new Genapp_Model_Metadata_TableField();
 			$tableField->data = $row['data'];
 			$tableField->format = $row['format'];
 			$tableField->columnName = $row['column_name'];
@@ -731,7 +731,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 			$row = $select->fetch();
 
 			if (!empty($row)) {
-				$formField = new FormField();
+				$formField = new Genapp_Model_Metadata_FormField();
 				$formField->data = $row['data'];
 				$formField->format = $row['format'];
 				$formField->label = $row['label'];
@@ -798,7 +798,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 				throw new Exception("Table ancestor cannot be found");
 			}
 
-			$tableTreeData = new TableTreeData();
+			$tableTreeData = new Genapp_Model_Metadata_TableTreeData();
 			$tableTreeData->tableFormat = $row['child_table'];
 			$tableTreeData->parentTable = $row['parent_table'];
 			$tableTreeData->keys = $row['join_key'];
@@ -863,7 +863,7 @@ class Model_Metadata extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$field = new Field();
+			$field = new Genapp_Model_Metadata_Field();
 			$field->data = $row['data'];
 			$field->format = $row['format'];
 			$field->label = $row['label'];

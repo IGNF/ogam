@@ -8,7 +8,7 @@
  * Represent a dataset file (an input file descriptor).
  * @package classes
  */
-class DatasetFile {
+class Genapp_Model_Metadata_DatasetFile {
 
 	/**
 	 * The type of the file

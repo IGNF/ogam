@@ -11,7 +11,7 @@
  *
  * @package classes
  */
-class GenericService {
+class Genapp_Model_Generic_GenericService {
 
 	/**
 	 * The logger.
@@ -38,7 +38,7 @@ class GenericService {
 		$this->logger = Zend_Registry::get("logger");
 
 		// Initialise the metadata models
-		$this->metadataModel = new Model_Metadata();
+		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
 
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
@@ -560,7 +560,7 @@ class GenericService {
 	public function buildDataObject($schema, $format, $datasetId = null, $isForDisplay = false) {
 
 		// Prepare a data object to be filled
-		$data = new DataObject();
+		$data = new Genapp_Model_Generic_DataObject();
 
 		$data->datasetId = $datasetId;
 
@@ -595,7 +595,7 @@ class GenericService {
 	 */
 	public function getFormQueryToTableData($schema, $formQuery) {
 
-		$result = new DataObject();
+		$result = new Genapp_Model_Generic_DataObject();
 
 		$result->datasetId = $formQuery->datasetId;
 

@@ -9,7 +9,7 @@
  *
  * @package classes
  */
-class FormQuery {
+class Genapp_Model_Generic_FormQuery {
 
 	/**
 	 * The dataset identifier.
@@ -37,7 +37,7 @@ class FormQuery {
 	 * @param String $value the criteria value
 	 */
 	public function addCriteria($format, $data, $value) {
-		$field = new FormField();
+		$field = new Genapp_Model_Metadata_FormField();
 		$field->format = $format;
 		$field->data = $data;
 		$field->value = $value;
@@ -51,7 +51,7 @@ class FormQuery {
 	 *  @param String $data the result form data
 	 */
 	public function addResult($format, $data) {
-		$field = new FormField();
+		$field = new Genapp_Model_Metadata_FormField();
 		$field->format = $format;
 		$field->data = $data;
 		$this->results[] = $field;
