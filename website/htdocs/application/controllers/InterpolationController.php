@@ -3,16 +3,16 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractAnalysisController.php';
-require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
-require_once APPLICATION_PATH.'/models/mapping/Grids.php';
-require_once APPLICATION_PATH.'/models/interpolation_service/InterpolationService.php';
+//require_once 'AbstractAnalysisController.php';
+//require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
+//require_once APPLICATION_PATH.'/models/mapping/Grids.php';
+//require_once APPLICATION_PATH.'/models/interpolation_service/InterpolationService.php';
 
 /**
  * InterpolationController is the controller that manages the data interpolation process.
  * @package controllers
  */
-class InterpolationController extends AbstractAnalysisController {
+class InterpolationController extends Genapp_Controller_AbstractAnalysisController {
 
 	/**
 	 * Initialise the controler

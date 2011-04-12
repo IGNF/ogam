@@ -3,9 +3,9 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once APPLICATION_PATH.'/models/website/User.php';
-require_once APPLICATION_PATH.'/models/website/Role.php';
-require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
+//require_once APPLICATION_PATH.'/models/website/User.php';
+//require_once APPLICATION_PATH.'/models/website/Role.php';
+//require_once 'Genapp/models/metadata/Metadata.php';
 
 /**
  * UserController is the controller that manages the current user session
@@ -25,24 +25,24 @@ class UserController extends Zend_Controller_Action {
 		parent::init();
 
 		// Initialise the logger
-		$this->logger = Zend_Registry::get('logger');
+		$bootstrap = $this->getInvokeArg('bootstrap');
+		$this->logger = $bootstrap->getResource('log');
 
 		// Initialise the models
-		$this->metadataModel = new Model_Metadata();
-		$this->userModel = new Model_User();
-		$this->roleModel = new Model_Role();
+		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->userModel = new Application_Model_DbTable_Website_User();
+		$this->roleModel = new Application_Model_DbTable_Website_Role();
 
 		// Get the base URL from the config
 		$configuration = Zend_Registry::get("configuration");
-		$pathBaseURLs = $configuration->path_base_url->toArray();
-		$this->baseUrl = $pathBaseURLs[0];
+		$this->baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
 	}
 
 	/**
 	 * The "index" action is the default action for all controllers.
 	 */
 	public function indexAction() {
-		$this->logger->debug('User index');
+		$this->logger->debug('Start of UserController->indexAction()');
 
 		$this->showLoginFormAction();
 	}
@@ -97,7 +97,8 @@ class UserController extends Zend_Controller_Action {
 	 */
 	public function showLoginFormAction($errorMessage = null) {
 
-		$this->logger->debug('showLoginForm : '.$errorMessage);
+		$this->logger->debug('Start of UserController->showLoginFormAction($errorMessage)'.$errorMessage);
+		$this->logger->debug('$errorMessage = '.$errorMessage);
 
 		// Generate a salt and store id in session
 		$salt = md5(uniqid(rand(), true));

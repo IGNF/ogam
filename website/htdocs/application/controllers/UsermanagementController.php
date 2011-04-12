@@ -3,16 +3,16 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractEforestController.php';
-require_once APPLICATION_PATH.'/models/website/User.php';
-require_once APPLICATION_PATH.'/models/website/Role.php';
-require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
+//require_once 'AbstractEforestController.php';
+//require_once APPLICATION_PATH.'/models/website/User.php';
+//require_once APPLICATION_PATH.'/models/website/Role.php';
+//require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
 
 /**
  * UsermanagementController is the controller that manages the users
  * @package controllers
  */
-class UsermanagementController extends AbstractEforestController {
+class UsermanagementController extends Genapp_Controller_AbstractEforestController {
 
 	/**
 	 * Initialise the controler
@@ -26,13 +26,10 @@ class UsermanagementController extends AbstractEforestController {
 		$websiteSession->moduleLabel = "Manage Users";
 		$websiteSession->moduleURL = "usermanagement/show-user-management";
 
-		// Initialise the logger
-		$this->logger = Zend_Registry::get('logger');
-
 		// Initialise the models
-		$this->metadataModel = new Model_Metadata();
-		$this->userModel = new Model_User();
-		$this->roleModel = new Model_Role();
+		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->userModel = new Application_Model_DbTable_Website_User();
+		$this->roleModel = new Application_Model_DbTable_Website_Role();
 	}
 
 	/**
@@ -310,7 +307,6 @@ class UsermanagementController extends AbstractEforestController {
 		$form->addElement($roleLabel);
 		$form->addElement($roleDefinition);
 		$form->addElement($degradatedCoordinate);
-		$form->addElement($isEuropeLevel);
 		$form->addElement($modeElement);
 		$form->addElement($rolepermissions);
 		$form->addElement($submitElement);
@@ -367,7 +363,7 @@ class UsermanagementController extends AbstractEforestController {
 			$this->logger->debug('userName : '.$userName);
 
 			// Build the user
-			$user = new User();
+			$user = new Application_Model_Website_User();
 			$user->login = $userLogin;
 			$user->username = $userName;
 			$user->countryCode = $countryCode;
@@ -499,7 +495,7 @@ class UsermanagementController extends AbstractEforestController {
 			$rolepermissions = $values['rolepermissions'];
 
 			// Build the user
-			$role = new Role();
+			$role = new Application_Model_Website_Role();
 			$role->roleCode = $roleCode;
 			$role->roleLabel = $roleLabel;
 			$role->roleDefinition = $roleDefinition;

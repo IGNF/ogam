@@ -3,16 +3,16 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractEforestController.php';
-require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
-require_once APPLICATION_PATH.'/models/integration_service/IntegrationService.php';
-require_once APPLICATION_PATH.'/models/raw_data/Submission.php';
+//require_once 'AbstractEforestController.php';
+//require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
+//require_once APPLICATION_PATH.'/models/integration_service/IntegrationService.php';
+//require_once APPLICATION_PATH.'/models/raw_data/Submission.php';
 
 /**
  * IntegrationController is the controller that manages the data integration.
  * @package controllers
  */
-class IntegrationController extends AbstractEforestController {
+class IntegrationController extends Genapp_Controller_AbstractEforestController {
 
 	protected $_redirector = null;
 
@@ -32,9 +32,9 @@ class IntegrationController extends AbstractEforestController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
 		// Initialise the model
-		$this->metadataModel = new Model_Metadata();
-		$this->integrationServiceModel = new Model_IntegrationService();
-		$this->submissionModel = new Model_Submission();
+		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->integrationServiceModel = new Application_Model_IntegrationService_IntegrationService();
+		$this->submissionModel = new Application_Model_DbTable_RawData_Submission();
 
 		$configuration = Zend_Registry::get("configuration");
 		$this->fileMaxSize = $configuration->fileMaxSize;
@@ -256,7 +256,7 @@ class IntegrationController extends AbstractEforestController {
 		}
 
 		// Store the submission information in session
-		$dataSubmission = new Submission();
+		$dataSubmission = new Application_Model_Rawdata_Submission();
 		$dataSubmission->submissionId = $submissionId;
 		$dataSubmission->providerId = $providerId;
 		$dataSubmission->datasetId = $datasetId;

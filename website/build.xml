@@ -99,7 +99,7 @@
     </target>
 
 	 <!-- Concats and compress the files  -->
-	    <target name="compressJavascript">
+	    <target name="compressCssAndJs">
 	    	
 	    	 <!-- Clean up -->
 	        <delete file="${cps.js.pack.path}" quiet="true"/>
@@ -171,7 +171,7 @@
 	
 
     <!-- Prépare le répertoire à copier pour le site web -->
-    <target name="deployWebSite" description="Build the web site" depends="clean, compressJavascript">
+    <target name="deployWebSite" description="Build the web site" depends="clean, compressCssAndJs">
 
         <!-- Copie de la structure de l'archive et des fichiers de configuration -->
         <copy todir="${dist.dir}">

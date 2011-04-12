@@ -3,17 +3,17 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractEforestController.php';
-require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
-require_once APPLICATION_PATH.'/models/harmonized_data/HarmonizationProcess.php';
-require_once APPLICATION_PATH.'/models/harmonization_service/HarmonizationService.php';
-require_once APPLICATION_PATH.'/models/raw_data/Submission.php';
+//require_once 'AbstractEforestController.php';
+//require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
+//require_once APPLICATION_PATH.'/models/harmonized_data/HarmonizationProcess.php';
+//require_once APPLICATION_PATH.'/models/harmonization_service/HarmonizationService.php';
+//require_once APPLICATION_PATH.'/models/raw_data/Submission.php';
 
 /**
  * HarmonizationController is the controller that manages the data harmonization process.
  * @package controllers
  */
-class HarmonizationController extends AbstractEforestController {
+class HarmonizationController extends Genapp_Controller_AbstractEforestController {
 
 	/**
 	 * Initialise the controler
@@ -31,10 +31,10 @@ class HarmonizationController extends AbstractEforestController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
 		// Initialise the model
-		$this->metadataModel = new Model_Metadata();
-		$this->harmonizationModel = new Model_HarmonizationProcess();
-		$this->harmonizationServiceModel = new Model_HarmonizationService();
-		$this->submissionModel = new Model_Submission();
+		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->harmonizationModel = new Application_Model_DbTable_HarmonizedData_HarmonizationProcess();
+		$this->harmonizationServiceModel = new Application_Model_HarmonizationService_HarmonizationService();
+		$this->submissionModel = new Application_Model_DbTable_RawData_Submission();
 
 	}
 

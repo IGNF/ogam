@@ -3,17 +3,17 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractAnalysisController.php';
-require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
-require_once APPLICATION_PATH.'/models/mapping/Grids.php';
-require_once APPLICATION_PATH.'/models/aggregation/Aggregation.php';
-require_once APPLICATION_PATH.'/models/calculation_service/CalculationService.php';
+//require_once 'AbstractAnalysisController.php';
+//require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
+//require_once APPLICATION_PATH.'/models/mapping/Grids.php';
+//require_once APPLICATION_PATH.'/models/aggregation/Aggregation.php';
+//require_once APPLICATION_PATH.'/models/calculation_service/CalculationService.php';
 
 /**
  * AggregationController is the controller that manages the data aggregation process.
  * @package controllers
  */
-class AggregationController extends AbstractAnalysisController {
+class AggregationController extends Genapp_Controller_AbstractAnalysisController {
 
 	protected $_redirector = null;
 
@@ -33,10 +33,10 @@ class AggregationController extends AbstractAnalysisController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
 		// Initialise the model
-		$this->metadataModel = new Model_Metadata();
-		$this->gridsModel = new Model_Grids();
-		$this->aggregationModel = new Model_Aggregation();
-		$this->calculationServiceModel = new Model_CalculationService();
+		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->gridsModel = new Application_Model_DbTable_Mapping_Grids();
+		$this->aggregationModel = new Application_Model_DbTable_Aggregation_Aggregation();
+		$this->calculationServiceModel = new Application_Model_CalculationService_CalculationService();
 
 	}
 

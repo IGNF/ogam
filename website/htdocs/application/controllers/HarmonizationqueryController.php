@@ -3,14 +3,14 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractQueryController.php';
-require_once APPLICATION_PATH.'/models/aggregation/Aggregation.php';
+//require_once 'AbstractQueryController.php';
+//require_once APPLICATION_PATH.'/models/aggregation/Aggregation.php';
 
 /**
  * HarmonizationQueryController is the controller that manages database query module on harmonized data.
  * @package controllers
  */
-class HarmonizationQueryController extends AbstractQueryController {
+class HarmonizationQueryController extends Genapp_Controller_AbstractQueryController {
 
 	protected $schema = "HARMONIZED_DATA";
 
@@ -73,7 +73,7 @@ class HarmonizationQueryController extends AbstractQueryController {
 		}
 
 		// Execute the request
-		$aggregationModel = new Model_Aggregation();
+		$aggregationModel = new Application_Model_DbTable_Aggregation_Aggregation();
 		$result = $aggregationModel->getAggregatedData(session_id(), $filter);
 
 		if (sizeof($result) != 0) {

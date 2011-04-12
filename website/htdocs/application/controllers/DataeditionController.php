@@ -3,18 +3,18 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractEforestController.php';
-require_once LIBRARY_PATH.'/Genapp/models/generic/Generic.php';
-require_once LIBRARY_PATH.'/Genapp/classes/generic/GenericService.php';
-require_once LIBRARY_PATH.'/Genapp/classes/generic/DataObject.php';
-require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableField.php';
-require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
+//require_once 'AbstractEforestController.php';
+//require_once LIBRARY_PATH.'/Genapp/models/generic/Generic.php';
+//require_once LIBRARY_PATH.'/Genapp/classes/generic/GenericService.php';
+//require_once LIBRARY_PATH.'/Genapp/classes/generic/DataObject.php';
+//require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableField.php';
+//require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
 
 /**
  * DataEditionController is the controller that allow the edition of simple data.
  * @package controllers
  */
-class DataEditionController extends AbstractEforestController {
+class DataEditionController extends Genapp_Controller_AbstractEforestController {
 
 	protected $_redirector = null;
 
@@ -45,11 +45,11 @@ class DataEditionController extends AbstractEforestController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
 		// Initialise the model
-		$this->metadataModel = new Model_Metadata();
-		$this->genericModel = new Model_Generic();
+		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
 
 		// The generic service
-		$this->genericService = new GenericService();
+		$this->genericService = new Genapp_Model_Generic_GenericService();
 
 	}
 
@@ -479,7 +479,7 @@ class DataEditionController extends AbstractEforestController {
 			$format = $keyMap["FORMAT"];
 
 			// Create an empty data object with the info in session
-			$data = new DataObject();
+			$data = new Genapp_Model_Generic_DataObject();
 			$data->datasetId = $datasetId;
 
 			// Get the info about the format

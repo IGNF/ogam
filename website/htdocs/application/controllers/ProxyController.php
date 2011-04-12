@@ -3,15 +3,15 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractEforestController.php';
-require_once APPLICATION_PATH.'/models/aggregation/Aggregation.php';
-require_once APPLICATION_PATH.'/models/mapping/ClassDefinition.php';
+//require_once 'AbstractEforestController.php';
+//require_once APPLICATION_PATH.'/models/aggregation/Aggregation.php';
+//require_once APPLICATION_PATH.'/models/mapping/ClassDefinition.php';
 
 /**
  * Proxy used to safely route the request to the mapserver.
  * @package controllers
  */
-class ProxyController extends AbstractEforestController {
+class ProxyController extends Genapp_Controller_AbstractEforestController {
 
 	/**
 	 * Initialise the controler
@@ -19,11 +19,8 @@ class ProxyController extends AbstractEforestController {
 	public function init() {
 		parent::init();
 
-		// Initialise the logger
-		$this->logger = Zend_Registry::get('logger');
-
-		$this->aggregationModel = new Model_Aggregation();
-		$this->classDefinitionModel = new Model_ClassDefinition();
+		$this->aggregationModel = new Application_Model_DbTable_Aggregation_Aggregation();
+		$this->classDefinitionModel = new Application_Model_DbTable_Mapping_ClassDefinition();
 	}
 
 	/**

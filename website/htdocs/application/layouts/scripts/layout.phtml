@@ -8,13 +8,11 @@
 <?= $this->doctype() ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta name="robots" content="index, follow" />
-  <meta name="keywords" content="eforest, efdac, jrc, forest" />
-  <meta name="description" content="European Forest DAta Center" />
-  <title>OGAM Application</title>
-  <link rel="stylesheet" type="text/css" href="<?=PATH_BASE_URL.'/css/global.css';?>">
+  <?php echo $this->headTitle() ?>
+  <?php echo $this->headMeta() ?>
   <?php echo $this->headLink() ?>
+  <?php echo $this->headStyle() ?>
+  <?php echo $this->headScript() ?>
   <script type="text/javascript">
       // Firebugx.js
       if (!window.console || !console.firebug)
@@ -27,8 +25,6 @@
               window.console[names[i]] = function() {}
       }
   </script>
-  <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/extjs/adapter/ext/ext-base.js"></script>
-  <script type="text/javascript" src="<?=PATH_BASE_URL?>/js/genapp/source/genapp.js"></script>
   <script type="text/javascript">
       //Defines the base URL for the scripts
      function sendMail(){
@@ -48,7 +44,7 @@
     <div id="inside" class="inside">
         <div id="header">
         <div id="banner">
-            <img border="0" alt="Banner" src="<?=PATH_BASE_URL.'/img/banner.jpg';?>" width="1160" height="80" />
+            <img border="0" alt="Banner" src="<?= $this->baseUrl('img/banner.jpg');?>" width="1160" height="80" />
         </div>
 
         <!-- HEADER -->
@@ -56,15 +52,15 @@
 
     <div id="header-logo" style="float: left">
         <span class="pathway">
-        <a href="<?= PATH_BASE_URL.'/'?>"><b>OGAM</b></a>
+        <a href="<?= $this->url(array('controller'=>'index'), 'default', true) ?>" ><b>OGAM</b></a>
         <?php
             $website_session = new Zend_Session_Namespace('website');
             $moduleName = $website_session->module;
             $moduleLabel = $website_session->moduleLabel;
             $moduleURL = $website_session->moduleURL;
             if (!empty($moduleName)) {
-                echo '<img src="'.PATH_BASE_URL.'/img/arrow.png"/>';
-                echo '<a href="'.PATH_BASE_URL.'/'.$moduleURL.'"><b>'.$moduleLabel.'</b></a>';
+                echo '<img src="'.$this->baseUrl('/img/arrow.png').'"/>';
+                echo '<a href="'. $this->url(array('controller'=>$moduleURL), 'default', true) .'" ><b>'.$moduleLabel.'</b></a>';
             }
         ?>
         </span>
@@ -77,10 +73,10 @@
         $userSession = new Zend_Session_Namespace('user');
         $user = $userSession->user;
         if (!empty($user)) {
-             ?><a href="<?= PATH_BASE_URL.'/user/logout'?>"><?=$this->translate('Log out');?></a>
+             ?><a href="<?= $this->url(array('controller'=>'user', 'action'=>'logout'), 'default', true) ?>" ><?=$this->translate('Log out');?></a>
 <?php
          } else {
-            ?><a href="<?= PATH_BASE_URL.'/user/index'?>"><?=$this->translate('Log in');?></a>
+            ?><a href="<?= $this->url(array('controller'=>'user', 'action'=>'index'), 'default', true) ?>" ><?=$this->translate('Log in');?></a>
 <?php
          }
         }

@@ -3,16 +3,16 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractEforestController.php';
-require_once APPLICATION_PATH.'/models/mapping/Layers.php';
-require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
-require_once APPLICATION_PATH.'/models/mapping/BoundingBox.php';
+//require_once 'AbstractEforestController.php';
+//require_once APPLICATION_PATH.'/models/mapping/Layers.php';
+//require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
+//require_once APPLICATION_PATH.'/models/mapping/BoundingBox.php';
 
 /**
  * MapController is the controller that manages the web-mapping interface.
  * @package controllers
  */
-class MapController extends AbstractEforestController {
+class MapController extends Genapp_Controller_AbstractEforestController {
 
 	/**
 	 * Initialise the controler
@@ -20,12 +20,9 @@ class MapController extends AbstractEforestController {
 	public function init() {
 		parent::init();
 
-		// Initialise the logger
-		$this->logger = Zend_Registry::get('logger');
-
 		// Initialise the models
-		$this->layersModel = new Model_Layers();
-		$this->boundingBoxModel = new Model_BoundingBox();
+		$this->layersModel = new Application_Model_DbTable_Mapping_Layers();
+		$this->boundingBoxModel = new Application_Model_DbTable_Mapping_BoundingBox();
 	}
 
 	/**

@@ -3,13 +3,13 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-require_once 'AbstractQueryController.php';
+//require_once 'AbstractQueryController.php';
 
 /**
  * QueryController is the controller that manages database query module.
  * @package controllers
  */
-class QueryController extends AbstractQueryController {
+class QueryController extends Genapp_Controller_AbstractQueryController {
 
     protected $schema = "RAW_DATA";
 
