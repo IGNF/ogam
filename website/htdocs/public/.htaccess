@@ -1,7 +1,22 @@
 SetEnv APPLICATION_ENV development
 
 RewriteEngine On
-RewriteBase /ogam/
+RewriteBase /rtm2/
+
+RewriteCond %{REQUEST_FILENAME} ^(.*)/img/(.*)$ [NC]
+RewriteCond %1/../../inherent/public/img/%2 -s
+RewriteRule . /inherent/img/%2 [NC,L]
+
+RewriteCond %{REQUEST_FILENAME} ^(.*)/pdf/(.*)$ [NC]
+RewriteCond %1/../../inherent/public/pdf/%2 -s
+RewriteRule . /inherent/pdf/%2 [NC,L]
+
+RewriteCond %{REQUEST_FILENAME} ^(.*)/css/(.*)$ [NC]
+RewriteRule . /inherent/css/index.php [NC,L]
+
+RewriteCond %{REQUEST_FILENAME} ^(.*)/js/genapp.conf.js$ [NC]
+RewriteRule . /inherent/js/index.php [NC,L]
+
 RewriteCond %{REQUEST_FILENAME} -s [OR]
 RewriteCond %{REQUEST_FILENAME} -l [OR]
 RewriteCond %{REQUEST_FILENAME} -d

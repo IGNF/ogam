@@ -121,6 +121,11 @@ Log out;Se déconnecter
 Log in;Se connecter
 Change login;Changer d'utilisateur
 Contact Us;Nous contacter
+Layout Head Title;Application OGAM
+Layout Head Meta Keywords;eforest, efdac, jrc, forêt
+Layout Head Meta Description;European Forest Data Center
+Layout Copyright;Copyright © IFN 2010. Reproduction autorisée à condition que la source soit mentionnée.
+Layout Pathway Home;Accueil
 
 ﻿##########################
 #   Index                #
@@ -128,12 +133,14 @@ Contact Us;Nous contacter
 Select a menu;Selectionnez un menu
 Welcome;Bienvenue sur le site web OGAM !
 Data Integration;Integration de données
-Data edition;Edition des données
+Data Edition;Edition des données
 Visualize Raw Data;Visualisation des données brutes
+Query Data;Visualisation des données brutes
 Data Harmonization;Harmonisation des données
 Visualize Harmonized Data;Visualisation des données harmonisées
+Query Harmonized Data;Visualisation des données harmonisées
 User Administration;Administration des utilisateurs
-
+Manage Users;Administration des utilisateurs
 
 ﻿##########################
 #   User login           #

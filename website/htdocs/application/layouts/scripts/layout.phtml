@@ -28,8 +28,8 @@
   <script type="text/javascript">
       //Defines the base URL for the scripts
      function sendMail(){
-        pre='ogam';
-        suf='ifn.fr';
+        pre=<?= $this->contactEmailPrefix; ?>;
+        suf=<?= $this->contactEmailSufix; ?>;
         document.getElementById('lkContact').href="mailto:" + pre + "@" + suf;
       }
   </script>
@@ -52,7 +52,7 @@
 
     <div id="header-logo" style="float: left">
         <span class="pathway">
-        <a href="<?= $this->url(array('controller'=>'index'), 'default', true) ?>" ><b>OGAM</b></a>
+        <a href="<?= $this->url(array('controller'=>'index'), 'default', true) ?>" ><b><?= $this->translate('Layout Pathway Home') ?></b></a>
         <?php
             $website_session = new Zend_Session_Namespace('website');
             $moduleName = $website_session->module;
@@ -60,7 +60,7 @@
             $moduleURL = $website_session->moduleURL;
             if (!empty($moduleName)) {
                 echo '<img src="'.$this->baseUrl('/img/arrow.png').'"/>';
-                echo '<a href="'. $this->url(array('controller'=>$moduleURL), 'default', true) .'" ><b>'.$moduleLabel.'</b></a>';
+                echo '<a href="'. $this->url(array('controller'=>$moduleURL), 'default', true) .'" ><b>'.$this->translate($moduleLabel).'</b></a>';
             }
         ?>
         </span>
@@ -93,7 +93,7 @@
 
 </div>
 <div id="bottom">
-    <div>Copyright © IFN 2010. Reproduction authorized provided the source is acknowledged.&nbsp;
+    <div><?= $this->translate('Layout Copyright');?>&nbsp;
     <a id="lkContact" onclick="sendMail();" href="#"><?=$this->translate('Contact Us');?></a>
     </div>
 </div>

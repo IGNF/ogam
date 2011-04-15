@@ -45,13 +45,13 @@
 
 <!-- Translations -->
 <?php $locale = Zend_Registry::get('Zend_Locale'); ?>
-<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/src/locale/ext-lang-<?=$locale?>.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/locale/genapp-lang-<?=$locale?>.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/src/locale/ext-lang-'.$locale.'.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/locale/genapp-lang-'.$locale.'.js') ?>"></script>
+
+<!-- Conf genapp -->
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp.conf.js') ?>"></script>
 
 <link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/extjs/resources/css/ext-all.css') ?>" />
-
-<!-- patch ogam -->
-<script type="text/javascript" src="<?= $this->baseUrl('patch/patch-ogam.js') ?>"></script>
 
 <!-- Gray extend theme -->
 <link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/extjs/resources/css/xtheme-gray-extend.css') ?>" />

@@ -32,20 +32,25 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
      */
     protected function _initView() {
         $this->bootstrap('frontController');
+        $this->bootstrap('RegisterTranslate');
+        $this->bootstrap('ConfFiles');
+        $configuration = Zend_Registry::get('configuration');
         $baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
 
         // Initialisons la vue
         $view = new Zend_View();
         $view->doctype('XHTML1_STRICT');
-        $view->headTitle()->setSeparator(' - ')->append('OGAM Application');
+        $view->headTitle()->setSeparator(' - ')->append($view->translate('Layout Head Title'));
         $view->headMeta()->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8')
                          //->appendHttpEquiv('Content-Language', 'fr-FR')
                          ->appendName('robots', 'index, follow')
-                         ->appendName('keywords', 'eforest, efdac, jrc, forest')
-                         ->appendName('description', 'European Forest Data Center');
+                         ->appendName('keywords', $view->translate('Layout Head Meta Keywords'))
+                         ->appendName('description', $view->translate('Layout Head Meta Description'));
         $view->headLink()->appendStylesheet($baseUrl . 'css/global.css');
         $view->headScript()->appendFile($baseUrl . 'js/extjs/adapter/ext/ext-base.js', 'text/javascript')
                            ->appendFile($baseUrl . 'js/genapp/source/genapp.js', 'text/javascript');
+        $view->contactEmailPrefix = $configuration->contactEmailPrefix;
+        $view->contactEmailSufix = $configuration->contactEmailSufix;
 
         // Ajoutons là au ViewRenderer
         $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('ViewRenderer');
@@ -79,21 +84,51 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
             throw new Zend_Exception('Locale object is empty.');
         }
 
+        // Setup the translation
+        $translations = $this->addTranslation(
+            array(
+                APPLICATION_PATH . '/lang',
+                INHERENT_APPLICATION_PATH . '/lang/new',
+                INHERENT_APPLICATION_PATH . '/lang/substitute',
+                INHERENT_APPLICATION_PATH . '/lang/patch'
+            ),
+            $translate
+        );
+
         // Set the locale
         $browserLocales = Zend_Locale::getBrowser();
-        $locales = array_intersect(array_keys($browserLocales), array_keys($translate->getOptions('translation')));
+        $locales = array_intersect(array_keys($browserLocales), array_keys($translations));
         if (!empty($locales)) {
             $locale = new Zend_Locale(current($locales));
         }
         Zend_Registry::set('Zend_Locale', $locale);
 
-        // Setup the translation
-        foreach ($translate->getOptions('translation') as $tstnLocale => $translation) {
-            $translate->addTranslation($translation, $tstnLocale);
-        }
         $translate->setLocale($locale);
         Zend_Registry::set('Zend_Translate', $translate); // store in the registry for the view helper
         Zend_Validate_Abstract::setDefaultTranslator($translate); // use the translator for validation
+    }
+
+    /**
+     * 
+     * Add the translation files to the provided Zend_Translate object
+     * @param array $dirs An array of lang dirs
+     * @param Zend_Translate $translate the current translator
+     */
+    private function addTranslation($dirs, $translate){
+        $translations = array();
+        foreach($dirs as $dir){
+            if ($handle = opendir($dir)) {
+                while (false !== ($file = readdir($handle))) {
+                    if ($file != "." && $file != ".." && $file != ".svn") {
+                        $explodedFile = explode('.',$file);
+                        $translate->addTranslation($dir . '/' . $file, $explodedFile[0]);
+                        $translations[] = $explodedFile[0];
+                    }
+                }
+                closedir($handle);
+            }
+        }
+        return array_unique($translations);
     }
 
     /**
@@ -110,7 +145,18 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
      * Register the *.ini files
      */
     protected function _initConfFiles() {
-        $configuration = new Zend_Config_Ini(APPLICATION_PATH.'/configs/app.ini', APPLICATION_ENV);
+        $appIniFilePath = APPLICATION_PATH. '/configs/app.ini';
+        if(defined('INHERENT_APPLICATION_PATH')
+        && file_exists(INHERENT_APPLICATION_PATH . '/configs/substitute/app.ini')) {
+                $appIniFilePath = INHERENT_APPLICATION_PATH . '/configs/substitute/app.ini';
+        }
+        $configuration = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
+        if(defined('INHERENT_APPLICATION_PATH')
+        && file_exists(INHERENT_APPLICATION_PATH . '/configs/patch/app.ini')) {
+                $appIniPatchPath = INHERENT_APPLICATION_PATH . '/configs/patch/app.ini';
+        }
+        $patchConfiguration = new Zend_Config_Ini($appIniPatchPath, APPLICATION_ENV);
+        $configuration->merge($patchConfiguration);
         Zend_Registry::set('configuration', $configuration);
     }
 
@@ -172,15 +218,4 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
             }
         }
     }
-
-    /*protected function _initAddRoutes(){
-        // ROUTER - setup the routes
-        $router = $frontController->getRouter();
-        $router->addRoute('home',
-            new Zend_Controller_Router_Route('',
-                array('controller'=>$configuration->defaultController,
-                    'action'=>$configuration->defaultAction)
-            )
-        );
-    }*/
 }

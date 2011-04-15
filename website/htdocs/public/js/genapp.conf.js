@@ -8,14 +8,14 @@ if(Genapp.ConsultationPanel){
         hideAggregationButton : true,
         hideInterpolationButton : true,
         hidePrintMapButton: false,
-        hidePredefinedRequestSaveButton : true,
-        widthToSubstract:120,
-        heightToSubstract:210
+        hidePredefinedRequestSaveButton : true
     });
 }
 if(Genapp.CardPanel){
     Ext.apply(Genapp.CardPanel.prototype, {
         shownPages : ['predefinedrequestpage','consultationpage'],
-        activeItem : 1
+        activeItem : 1,
+        widthToSubstract:120,
+        heightToSubstract:210
     });
 }
