@@ -93,12 +93,12 @@ class UserController extends Zend_Controller_Action {
 	/**
 	 * Return the login form.
 	 *
-	 * @param $errorMessage a potential error message
+	 * @param String $errorMessage a potential error message
 	 */
 	public function showLoginFormAction($errorMessage = null) {
 
 		$this->logger->debug('Start of UserController->showLoginFormAction($errorMessage)'.$errorMessage);
-		
+
 		// Generate a salt and store id in session
 		$salt = md5(uniqid(rand(), true));
 		$authenticationSession = new Zend_Session_Namespace('auth');
@@ -127,71 +127,79 @@ class UserController extends Zend_Controller_Action {
 	public function validateLoginAction() {
 		$this->logger->debug('validateLogin');
 
-		// Check the validity of the POST
-		if (!$this->getRequest()->isPost()) {
-			$this->logger->debug('form is not a POST');
-			return $this->_forward('index');
-		}
+		try {
 
-		// Retrieve salt from session and erase it since it's used once
-		$authenticationSession = new Zend_Session_Namespace('auth');
-		$salt = $authenticationSession->salt;
-		unset($authenticationSession->salt);
-
-		// Check the validity of the form
-		$form = $this->_getLoginForm($salt);
-		if (!$form->isValid($_POST)) {
-			// Failed validation; redisplay form
-			$this->logger->debug('form is not valid');
-			$this->view->form = $form;
-			return $this->render('show-login-form');
-		}
-
-		// Check the validity of the login
-		$values = $form->getValues();
-		$f = new Zend_Filter_StripTags();
-		$login = $f->filter($values['login']);
-		$cramFromClient = $f->filter($values['password']);
-
-		//$this->logger->debug('encoded login : '.sha1($values['login']));
-
-		// Retrieve the password from database
-		$storedpassword = $this->userModel->getPassword($login);
-
-		// Calculate the sha1 of salt + password
-		$cramFromServer = sha1($salt.$storedpassword);
-
-		// Compare the client-side and server-side responses and log the user if OK
-		if ($cramFromServer == $cramFromClient) {
-
-			// Get the user informations
-			$user = $this->userModel->getUser($login);
-
-			// Store the user in session
-			$userSession = new Zend_Session_Namespace('user');
-			$userSession->user = $user;
-
-			// Get the user role
-			$role = $this->roleModel->getRole($user->roleCode);
-
-			// Store the role in session
-			$userSession->role = $role;
-
-			// Get the User Permissions
-			$permissions = $this->roleModel->getRolePermissions($role->roleCode);
-			$userSession->permissions = $permissions;
-
-			// Redirect to the main page
-			$configuration = Zend_Registry::get("configuration");
-			if ($configuration->autoLogin == 1) {
-				$this->_redirect('/index');
-			} else {
-				$this->_redirect('/');
+			// Check the validity of the POST
+			if (!$this->getRequest()->isPost()) {
+				$this->logger->debug('form is not a POST');
+				return $this->_forward('index');
 			}
-		} else {
 
-			// Return to the login page
-			$this->showLoginFormAction("Incorrect password");
+			// Retrieve salt from session and erase it since it's used once
+			$authenticationSession = new Zend_Session_Namespace('auth');
+			$salt = $authenticationSession->salt;
+			unset($authenticationSession->salt);
+
+			// Check the validity of the form
+			$form = $this->_getLoginForm($salt);
+			if (!$form->isValid($_POST)) {
+				// Failed validation; redisplay form
+				$this->logger->debug('form is not valid');
+				$this->view->form = $form;
+				return $this->render('show-login-form');
+			} else {
+			}
+
+			// Check the validity of the login
+			$this->logger->debug('Check the validity of the login');
+			$values = $form->getValues();
+			$f = new Zend_Filter_StripTags();
+			$login = $f->filter($values['login']);
+			$cramFromClient = $f->filter($values['password']);
+
+			$this->logger->debug('encoded login : '.sha1($values['login']));
+
+			// Retrieve the password from database
+			$storedpassword = $this->userModel->getPassword($login);
+
+			// Calculate the sha1 of salt + password
+			$cramFromServer = sha1($salt.$storedpassword);
+
+			// Compare the client-side and server-side responses and log the user if OK
+			if ($cramFromServer == $cramFromClient) {
+
+				// Get the user informations
+				$user = $this->userModel->getUser($login);
+
+				// Store the user in session
+				$userSession = new Zend_Session_Namespace('user');
+				$userSession->user = $user;
+
+				// Get the user role
+				$role = $this->roleModel->getRole($user->roleCode);
+
+				// Store the role in session
+				$userSession->role = $role;
+
+				// Get the User Permissions
+				$permissions = $this->roleModel->getRolePermissions($role->roleCode);
+				$userSession->permissions = $permissions;
+
+				// Redirect to the main page
+				$configuration = Zend_Registry::get("configuration");
+				if ($configuration->autoLogin == 1) {
+					$this->_redirect('/index');
+				} else {
+					$this->_redirect('/');
+				}
+			} else {
+
+				// Return to the login page
+				$this->showLoginFormAction("Incorrect password");
+			}
+		} catch (Exception $e) {
+			$this->logger->debug('Exception '.$e);
+			$this->showLoginFormAction("Unexpected error : ".$e->getMessage());
 		}
 	}
 
