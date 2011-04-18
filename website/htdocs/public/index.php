@@ -10,8 +10,8 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV
 define('DATESTAMP', date('Y-m-d'));
 
 // Define path to inherent application directory
-if (file_exists(APPLICATION_PATH.'/../../oison')) {
-	define('INHERENT_APPLICATION_PATH', APPLICATION_PATH.'/../../oison/application');
+if (file_exists(APPLICATION_PATH.'/../../inherent')) {
+	define('INHERENT_APPLICATION_PATH', APPLICATION_PATH.'/../../inherent/application');
 }
 
 // Ensure library/ is on include_path
