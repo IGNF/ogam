@@ -229,7 +229,7 @@ class Genapp_Model_Generic_GenericService {
 		//
 		// Prepare the WHERE clause
 		//
-		$where = "WHERE (1 = 1) ";
+		$where = " WHERE (1 = 1) ";
 		foreach ($dataObject->infoFields as $tableField) {
 			$where .= $this->buildWhereItem($tableField);
 		}
