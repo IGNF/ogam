@@ -13,16 +13,6 @@
 	</servlet>
 
 	<servlet>
-		<servlet-name>PlotLocationServlet</servlet-name>
-		<servlet-class>fr.ifn.eforest.integration.servlet.PlotLocationServlet</servlet-class>
-	</servlet>
-	
-	<servlet>
-		<servlet-name>StrataServlet</servlet-name>
-		<servlet-class>fr.ifn.eforest.integration.servlet.StrataServlet</servlet-class>
-	</servlet>
-
-	<servlet>
 		<servlet-name>DataServlet</servlet-name>
 		<servlet-class>fr.ifn.eforest.integration.servlet.DataServlet</servlet-class>
 	</servlet>
@@ -32,26 +22,11 @@
 		<servlet-class>fr.ifn.eforest.integration.servlet.CheckServlet</servlet-class>
 	</servlet>
 	
-	<servlet>
-		<servlet-name>HarmonizationServlet</servlet-name>
-		<servlet-class>fr.ifn.eforest.integration.servlet.HarmonizationServlet</servlet-class>
-	</servlet>
-	
 	
 
 	<servlet-mapping>
 		<servlet-name>MetadataServlet</servlet-name>
 		<url-pattern>/MetadataServlet</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>PlotLocationServlet</servlet-name>
-		<url-pattern>/PlotLocationServlet</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
-		<servlet-name>StrataServlet</servlet-name>
-		<url-pattern>/StrataServlet</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
@@ -64,11 +39,6 @@
 		<url-pattern>/CheckServlet</url-pattern>
 	</servlet-mapping>
 	
-	<servlet-mapping>
-		<servlet-name>HarmonizationServlet</servlet-name>
-		<url-pattern>/HarmonizationServlet</url-pattern>
-	</servlet-mapping>
-
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
