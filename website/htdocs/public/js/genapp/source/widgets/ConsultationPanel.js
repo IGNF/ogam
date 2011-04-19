@@ -1424,25 +1424,26 @@ listeners: {
         if(!this.mapResultLayers){
             var rla = this.mapPanel.layersActivation['request'];
             this.mapResultLayers = [];
-            for(var i = 0; i<rla.length;i++){
-                var layer = this.mapPanel.map.getLayersByName(rla[i])[0];
-                //The layer visibility must be set to true to handle the 'loadend' event
-                layer.events.register("loadend", this, function(info){
-                    this.mapResultLayersLoadEnd[info.object.name] = 1;
-                    // Hide the map mask if all the result layers are loaded
-                    var count = 0;
-                    for (layer in this.mapResultLayersLoadEnd) {
-                        if (typeof this.mapResultLayersLoadEnd[layer] !== 'function') {
-                            count += this.mapResultLayersLoadEnd[layer];
+            if(!Ext.isEmpty(rla)){
+                for(var i = 0; i<rla.length;i++){
+                    var layer = this.mapPanel.map.getLayersByName(rla[i])[0];
+                    //The layer visibility must be set to true to handle the 'loadend' event
+                    layer.events.register("loadend", this, function(info){
+                        this.mapResultLayersLoadEnd[info.object.name] = 1;
+                        // Hide the map mask if all the result layers are loaded
+                        var count = 0;
+                        for (layer in this.mapResultLayersLoadEnd) {
+                            if (typeof this.mapResultLayersLoadEnd[layer] !== 'function') {
+                                count += this.mapResultLayersLoadEnd[layer];
+                            }
                         }
-                    }
-                    if(count === this.mapResultLayers.length){
-                        this.mapMask.hide();
-                    }
-                });
-                this.mapResultLayers.push(layer);
+                        if(count === this.mapResultLayers.length){
+                            this.mapMask.hide();
+                        }
+                    });
+                    this.mapResultLayers.push(layer);
+                }
             }
-
         }
         // Init mapResultLayersLoadEnd
         this.mapResultLayersLoadEnd = {};

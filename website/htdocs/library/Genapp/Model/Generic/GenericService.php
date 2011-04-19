@@ -414,7 +414,7 @@ class Genapp_Model_Generic_GenericService {
 		$value = $tableField->value;
 		$column = $tableField->format.".".$tableField->columnName;
 
-		if ($value != null) {
+		if ($value != null and $value != '' and $value != array()) {
 
 			switch ($tableField->type) {
 
@@ -423,19 +423,25 @@ class Genapp_Model_Generic_GenericService {
 				if (is_array($value)) {
 					$value = $value[0];
 				}
-				$sql .= " AND ".$column." = '".$value."'";
+				if(is_bool($value)){
+				    $sql .= " AND ".$column." = '".$value."'";
+				}
 				break;
 
 			case "DATE":
 				// Numeric values
 				if (is_array($value)) {
 					// Case of a list of values
-					$sql .= " AND (";
+					$sql2 = '';
 					foreach ($value as $val) {
-						$sql .= $this->_buildDateWhereItem($tableField, $val)." OR ";
+					    if (!empty($val)) {
+						  $sql2 .= $this->_buildDateWhereItem($tableField, $val)." OR ";
+					    }
 					}
-					$sql = substr($sql, 0, -4); // remove the last OR
-					$sql .= ")";
+					if ($sql2 != '') {
+    					$sql2 = substr($sql2, 0, -4); // remove the last OR
+    					$sql .= " AND (" . $sql2 . ")";
+					}
 				} else {
 					// Single value
 					if (!empty($value)) {
@@ -451,15 +457,19 @@ class Genapp_Model_Generic_GenericService {
 				// Numeric values
 				if (is_array($value)) {
 					// Case of a list of values
-					$sql .= " AND (";
+					$sql2 = '';
 					foreach ($value as $val) {
-						$sql .= $this->_buildNumericWhereItem($tableField, $val)." OR ";
+					    if (is_numeric($val) or is_string($value)) {
+						  $sql2 .= $this->_buildNumericWhereItem($tableField, $val)." OR ";
+					    }
 					}
-					$sql = substr($sql, 0, -4); // remove the last OR
-					$sql .= ")";
+					if ($sql2 != '') {
+    					$sql2 = substr($sql2, 0, -4); // remove the last OR
+    					$sql .= " AND (" . $sql2 . ")";
+					}
 				} else {
 					// Single value
-					if (!empty($value)) {
+					if (is_numeric($value) or is_string($value)) {
 						$sql .= " AND ".$this->_buildNumericWhereItem($tableField, $value);
 					}
 				}
@@ -471,27 +481,34 @@ class Genapp_Model_Generic_GenericService {
 					if (is_array($value)) {
 						$value = $value[0];
 					}
-					$sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
-
+					if (is_string($value)) {
+					   $sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+					}
 				} else {
 
 					// String
 					if (is_array($value)) {
 						// Case of a list of values
-						$sql .= " AND ".$column." IN (";
+						$sql2 = '';
 						foreach ($value as $val) {
-							$sql .= "'".$val."', ";
+						    if (is_string($val)) {
+							    $sql2 .= "'".$val."', ";
+						    }
 						}
-						$sql = substr($sql, 0, -2); // remove the last comma
-						$sql .= ")";
+						if ($sql2 != '') {
+    						$sql2 = substr($sql2, 0, -2); // remove the last comma
+    						$sql .= " AND ".$column." IN (" . $sql2 . ")";
+						}
 					} else {
-						// Single value
-						$sql .= " AND ".$column;
-						if ($useLike) {
-							$sql .= " LIKE '%".$value."%'";
-						} else {
-							$sql .= " = '".$value."'";
-						}
+					    if (is_string($value)) {
+    						// Single value
+    						$sql .= " AND ".$column;
+    						if ($useLike) {
+    							$sql .= " LIKE '%".$value."%'";
+    						} else {
+    							$sql .= " = '".$value."'";
+    						}
+					    }
 					}
 				}
 				break;
