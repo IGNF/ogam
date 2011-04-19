@@ -438,7 +438,9 @@ class Genapp_Model_Generic_GenericService {
 					$sql .= ")";
 				} else {
 					// Single value
-					$sql .= " AND ".$this->_buildDateWhereItem($tableField, $value);
+					if (!empty($value)) {
+						$sql .= " AND ".$this->_buildDateWhereItem($tableField, $value);
+					}
 				}
 				break;
 				break;
@@ -457,7 +459,9 @@ class Genapp_Model_Generic_GenericService {
 					$sql .= ")";
 				} else {
 					// Single value
-					$sql .= " AND ".$this->_buildNumericWhereItem($tableField, $value);
+					if (!empty($value)) {
+						$sql .= " AND ".$this->_buildNumericWhereItem($tableField, $value);
+					}
 				}
 				break;
 			case "CODE":
