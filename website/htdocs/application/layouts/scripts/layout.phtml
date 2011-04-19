@@ -28,8 +28,8 @@
   <script type="text/javascript">
       //Defines the base URL for the scripts
      function sendMail(){
-        pre=<?= $this->contactEmailPrefix; ?>;
-        suf=<?= $this->contactEmailSufix; ?>;
+        pre='<?= $this->contactEmailPrefix; ?>';
+        suf='<?= $this->contactEmailSufix; ?>';
         document.getElementById('lkContact').href="mailto:" + pre + "@" + suf;
       }
   </script>
