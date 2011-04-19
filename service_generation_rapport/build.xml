@@ -9,9 +9,9 @@
 	<property name="report.dir" value="./report" />
 	<property name="images.dir" value="./images" />
 	<property name="config.dir" value="./config" />
-	<property name="dist.dir" value="${java.io.tmpdir}/dist/${application.name}ReportGenerationService/" />
-	<property name="dist.webapps.dir" value="${java.io.tmpdir}/webapp/${application.name}ReportGenerationService/" />
-	<property name="deploy.name" value="${application.name}ReportGenerationService" />
+	<property name="dist.dir" value="${java.io.tmpdir}/dist/${application.name}RG/" />
+	<property name="dist.webapps.dir" value="${java.io.tmpdir}/webapp/${application.name}RG/" />
+	<property name="deploy.name" value="${application.name}RG" />
 	
 	<!-- *** A modifier en fonction du répertoire d'installation de Tomcat *** -->
 	<property name="deploy.dir" value="C:/Program Files/Apache Software Foundation/Tomcat 7.0.6/webapps/" />
