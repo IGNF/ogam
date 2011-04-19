@@ -17,7 +17,7 @@ class Application_Model_AbstractService_AbstractService {
 	/**
 	 * Class constructor
 	 */
-	function Model_AbstractService() {
+	function Application_Model_AbstractService_AbstractService() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");

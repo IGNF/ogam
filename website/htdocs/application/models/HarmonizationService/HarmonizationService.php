@@ -17,7 +17,7 @@ class Application_Model_HarmonizationService_HarmonizationService extends Applic
 	/**
 	 * Class constructor
 	 */
-	function Model_HarmonizationService() {
+	function Application_Model_HarmonizationService_HarmonizationService() {
 
 		// Initialise the service URL
 		$configuration = Zend_Registry::get("configuration");

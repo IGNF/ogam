@@ -17,7 +17,7 @@ class Application_Model_IntegrationService_IntegrationService extends Applicatio
 	/**
 	 * Class constructor
 	 */
-	function Model_IntegrationService() {
+	function Application_Model_IntegrationService_IntegrationService() {
 
 		// Initialise the service URL
 		$configuration = Zend_Registry::get("configuration");
