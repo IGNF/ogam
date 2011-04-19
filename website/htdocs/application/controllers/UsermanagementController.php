@@ -272,14 +272,6 @@ class UsermanagementController extends Genapp_Controller_AbstractEforestControll
 			$roleDefinition->setValue($role->roleDefinition);
 		}
 
-		// Degradated Coordinates
-		$degradatedCoordinate = $form->createElement('checkbox', 'degradatedCoordinate');
-		$degradatedCoordinate->setLabel('See full precision coordinates');
-		$degradatedCoordinate->setRequired(true);
-		if ($role != null) {
-			$degradatedCoordinate->setChecked(($role->degradatedCoordinate) != 1);
-		}
-
 		// Permissions
 		// Get all the Permissions
 		$allpermissions = $this->roleModel->getAllPermissions();
@@ -306,7 +298,6 @@ class UsermanagementController extends Genapp_Controller_AbstractEforestControll
 		$form->addElement($roleCode);
 		$form->addElement($roleLabel);
 		$form->addElement($roleDefinition);
-		$form->addElement($degradatedCoordinate);
 		$form->addElement($modeElement);
 		$form->addElement($rolepermissions);
 		$form->addElement($submitElement);
@@ -490,7 +481,6 @@ class UsermanagementController extends Genapp_Controller_AbstractEforestControll
 			$roleCode = $f->filter($values['roleCode']);
 			$roleLabel = $f->filter($values['roleLabel']);
 			$roleDefinition = $f->filter($values['roleDefinition']);
-			$fullCoordinate = $f->filter($values['degradatedCoordinate']);
 			$isEuropeLevel = $f->filter($values['isEuropeLevel']);
 			$rolepermissions = $values['rolepermissions'];
 
@@ -499,7 +489,6 @@ class UsermanagementController extends Genapp_Controller_AbstractEforestControll
 			$role->roleCode = $roleCode;
 			$role->roleLabel = $roleLabel;
 			$role->roleDefinition = $roleDefinition;
-			$role->degradatedCoordinate = ($fullCoordinate == 1) ? 0 : 1;
 			$role->isEuropeLevel = $isEuropeLevel;
 
 			if ($mode == 'edit') {

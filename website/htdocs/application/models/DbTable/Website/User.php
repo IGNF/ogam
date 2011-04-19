@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 
 /**
  * This is the User model.
@@ -29,7 +29,17 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 	public function getUsers() {
 		$db = $this->getAdapter();
 
-		$req = " SELECT user_login as login, "." user_name as username, "." country_code, "." email, "." active, "." role_label "." FROM users"." LEFT JOIN role_to_user USING (user_login) "." LEFT JOIN role USING (role_code)"." WHERE active = '1' "." ORDER BY role_label, user_login";
+		$req = " SELECT user_login as login, ";
+		$req .= " user_name as username, ";
+		$req .= " country_code, ";
+		$req .= " email, ";
+		$req .= " active, ";
+		$req .= " role_label ";
+		$req .= " FROM users ";
+		$req .= " LEFT JOIN role_to_user USING (user_login) ";
+		$req .= " LEFT JOIN role USING (role_code) ";
+		$req .= " WHERE active = '1' ";
+		$req .= " ORDER BY role_label, user_login";
 		$this->logger->info('getUser : '.$req);
 
 		$query = $db->prepare($req);
@@ -61,7 +71,16 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 	public function getUser($userLogin) {
 		$db = $this->getAdapter();
 
-		$req = " SELECT users.user_login as login, "." user_password as password, "." user_name as username, "." country_code, "." active, "." email, "." role_code "." FROM users "." LEFT JOIN role_to_user using(user_login)"." WHERE user_login = ? ";
+		$req = " SELECT users.user_login as login, ";
+		$req .= " user_password as password, ";
+		$req .= " user_name as username, ";
+		$req .= " country_code, ";
+		$req .= " active, ";
+		$req .= " email, ";
+		$req .= " role_code ";
+		$req .= " FROM users ";
+		$req .= " LEFT JOIN role_to_user using(user_login) ";
+		$req .= " WHERE user_login = ? ";
 		$this->logger->info('getUser : '.$req);
 
 		$query = $db->prepare($req);
@@ -79,6 +98,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 			$user->roleCode = $result['role_code'];
 			return $user;
 		} else {
+			$this->logger->error('User not found');
 			return null;
 		}
 
@@ -93,7 +113,10 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 	public function getPassword($login) {
 		$db = $this->getAdapter();
 
-		$req = " SELECT user_password "." FROM users "." WHERE user_login = ? "." AND active = '1'";
+		$req = " SELECT user_password ";
+		$req .= " FROM users ";
+		$req .= " WHERE user_login = ? ";
+		$req .= " AND active = '1'";
 
 		$this->logger->info('getPassword : '.$req);
 
@@ -134,7 +157,9 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 	public function updateUser($user) {
 		$db = $this->getAdapter();
 
-		$req = " UPDATE users "." SET user_name = ?, country_code = ?, email = ?"." WHERE user_login = ?";
+		$req = " UPDATE users ";
+		$req .= " SET user_name = ?, country_code = ?, email = ?";
+		$req .= " WHERE user_login = ?";
 
 		$this->logger->info('updateUser : '.$req);
 
@@ -154,7 +179,8 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 	public function createUser($user) {
 		$db = $this->getAdapter();
 
-		$req = " INSERT INTO users (user_login, user_password, user_name, country_code, email, active )"." VALUES (?, ?, ?, ?, ?, '1')";
+		$req = " INSERT INTO users (user_login, user_password, user_name, country_code, email, active )";
+		$req .= " VALUES (?, ?, ?, ?, ?, '1')";
 
 		$this->logger->info('createUser : '.$req);
 
@@ -176,7 +202,9 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 	public function updateUserRole($userLogin, $roleCode) {
 		$db = $this->getAdapter();
 
-		$req = " UPDATE role_to_user "." SET role_code = ? "." WHERE user_login = ?";
+		$req = " UPDATE role_to_user ";
+		$req .= " SET role_code = ? ";
+		$req .= " WHERE user_login = ?";
 
 		$this->logger->info('updateUserRole : '.$req);
 

@@ -1,9 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
-//require_once 'website/Role.php';
+ */
 
 /**
  * This is the Role model.
@@ -31,7 +30,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 	public function getRole($roleCode) {
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, role_label, role_def, degradated_coordinate ";
+		$req = " SELECT role_code, role_label, role_def ";
 		$req .= " FROM role ";
 		$req .= " WHERE role_code = ? ";
 		$this->logger->info('getRole : '.$req);
@@ -46,7 +45,6 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 			$role->roleCode = $result['role_code'];
 			$role->roleLabel = $result['role_label'];
 			$role->roleDefinition = $result['role_def'];
-			$role->degradatedCoordinate = $result['degradated_coordinate'];
 			return $role;
 		} else {
 			return null;
@@ -61,7 +59,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 	public function getRoles() {
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, role_label, role_def, degradated_coordinate ";
+		$req = " SELECT role_code, role_label, role_def ";
 		$req .= " FROM role ";
 		$req .= " ORDER BY role_code";
 		$this->logger->info('getRoles : '.$req);
@@ -77,7 +75,6 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 			$role->roleCode = $result['role_code'];
 			$role->roleLabel = $result['role_label'];
 			$role->roleDefinition = $result['role_def'];
-			$role->degradatedCoordinate = $result['degradated_coordinate'];
 			$roles[] = $role;
 		}
 
@@ -144,7 +141,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 	public function updateRole($role) {
 		$db = $this->getAdapter();
 
-		$req = "UPDATE role SET role_label=?, role_def=?, degradated_coordinate=?, is_europe_level=? WHERE role_code = ?";
+		$req = "UPDATE role SET role_label=?, role_def=?, is_europe_level=? WHERE role_code = ?";
 
 		$this->logger->info('updateRole : '.$req);
 
@@ -152,7 +149,6 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 		$query->execute(array(
 			$role->roleLabel,
 			$role->roleDefinition,
-			$role->degradatedCoordinate,
 			$role->roleCode));
 	}
 
@@ -197,8 +193,8 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 	public function createRole($role) {
 		$db = $this->getAdapter();
 
-		$req = " INSERT INTO role (role_code, role_label, role_def, degradated_coordinate )";
-		$req .= " VALUES (?, ?, ?, ?, ?)";
+		$req = " INSERT INTO role (role_code, role_label, role_def )";
+		$req .= " VALUES (?, ?, ?, ?)";
 
 		$this->logger->info('createRole : '.$req);
 
@@ -206,8 +202,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 		$query->execute(array(
 			$role->roleCode,
 			$role->roleLabel,
-			$role->roleDefinition,
-			$role->degradatedCoordinate));
+			$role->roleDefinition));
 	}
 
 	/**
