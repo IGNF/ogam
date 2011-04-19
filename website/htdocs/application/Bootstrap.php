@@ -69,14 +69,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap('Locale');
 		$this->bootstrap('Translate');
 		if (!$this->hasPluginResource('Translate')) {
-			throw new Zend_Exception('Translate not enabled in config.ini');
+			throw new Zend_Exception('Translate not enabled in application.ini');
 		}
 		$translate = $this->getResource('Translate');
 		if (empty($translate)) {
 			throw new Zend_Exception('Translate object is empty.');
 		}
 		if (!$this->hasPluginResource('Locale')) {
-			throw new Zend_Exception('Locale not enabled in config.ini');
+			throw new Zend_Exception('Locale not enabled in application.ini');
 		}
 		$locale = $this->getResource('Locale');
 		if (empty($locale)) {
