@@ -164,28 +164,6 @@ COMMENT ON COLUMN bounding_box.bb_ymax IS 'Max latitude coordinate';
 COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the country';
 
 
-/*==============================================================*/
-/* Table: grid_definition                                       */
-/* List the available grids for agregation                      */
-/*==============================================================*/
-CREATE TABLE grid_definition
-(
-  grid_name 			VARCHAR(50)    NOT NULL,   -- Logical name of the grid
-  grid_label 			VARCHAR(100),  -- Label of the grid
-  grid_table    		VARCHAR(50),  -- Name of PostGIS table containing the geometry
-  location_column  		VARCHAR(50),  -- Name of the column of the location table containing the cell id
-  aggregation_layer_name VARCHAR(50),  -- Logical name of the mapserver layer corresponding to the aggregation
-  position				INTEGER,
-  PRIMARY KEY  (grid_name)
-) WITHOUT OIDS;
-
-COMMENT ON COLUMN grid_definition.grid_name IS 'Logical name of the grid';
-COMMENT ON COLUMN grid_definition.grid_label IS 'Label of the grid';
-COMMENT ON COLUMN grid_definition.grid_table IS 'Name of PostGIS table containing the geometry';
-COMMENT ON COLUMN grid_definition.location_column IS 'Name of the column of the location table containing the cell id';
-COMMENT ON COLUMN grid_definition.position IS 'The position of this grid when listed on the web site';
-COMMENT ON COLUMN grid_definition.aggregation_layer_name IS 'Logical name of the mapserver layer corresponding to the aggregation';
-
 
 /*==============================================================*/
 /* Table: layer_profile_restriction                             */
@@ -200,36 +178,6 @@ CREATE TABLE layer_profile_restriction
 
 COMMENT ON COLUMN layer_profile_restriction.layer_name IS 'Logical name of the layer';
 COMMENT ON COLUMN layer_profile_restriction.role_code IS 'Role for whom this layer is forbidden';
-
-/*==============================================================*/
-/* Table: RASTER_CLASS_DEFINITION                               */
-/* Define the style of a DATA to be displayed as a raster       */
-/*==============================================================*/
-
-CREATE TABLE RASTER_CLASS_DEFINITION
-(
-  DATA 			VARCHAR(36)    NOT NULL,   -- Logical name of the data
-  VALUE			VARCHAR(36)    NOT NULL,   -- The value of the raster
-  COLOR			VARCHAR(10)    NULL,   -- Color
-  LABEL			VARCHAR(100)    NULL,   -- Label
-  PRIMARY KEY  (DATA, VALUE)
-) WITHOUT OIDS;
-
-
-/*==============================================================*/
-/* Table: CLASS_DEFINITION                                      */
-/* Define the style of a DATA to be displayed as a vector       */
-/*==============================================================*/
-
-CREATE TABLE CLASS_DEFINITION
-(
-  DATA 			VARCHAR(36)    	NOT NULL,   -- Logical name of the data
-  MIN_VALUE		NUMERIC    	NOT NULL,   -- The min value of the data
-  MAX_VALUE		NUMERIC    	NOT NULL,   -- The max value of the data
-  COLOR			VARCHAR(10)     NULL,   -- Color
-  LABEL			VARCHAR(100)    NULL,   -- Label
-  PRIMARY KEY  (DATA, MIN_VALUE, MAX_VALUE)
-) WITHOUT OIDS;
 
 
         
