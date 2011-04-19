@@ -3,12 +3,6 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'AbstractEforestController.php';
-//require_once LIBRARY_PATH.'/Genapp/models/generic/Generic.php';
-//require_once LIBRARY_PATH.'/Genapp/classes/generic/GenericService.php';
-//require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
-//require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
-//require_once APPLICATION_PATH.'/models/website/PredefinedRequest.php';
 
 /**
  * AbstractQueryController is the controller that manages the query module.
