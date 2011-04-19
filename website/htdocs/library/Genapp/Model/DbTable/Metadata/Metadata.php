@@ -93,6 +93,46 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get the available datasets for display.
+	 *
+	 * @return Array[dataset_id => label]
+	 */
+	public function getDatasetsForDisplay() {
+		$db = $this->getAdapter();
+		$req = "SELECT DISTINCT dataset_id as id, label, is_default ";
+		$req .= " FROM dataset ";
+		$req .= " INNER JOIN dataset_fields using (dataset_id) ";
+		$req .= " ORDER BY dataset_id";
+
+		$this->logger->info('getDatasetsForDisplay : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array());
+
+		return $select->fetchAll();
+	}
+
+	/**
+	 * Get the available datasets for upload.
+	 *
+	 * @return Array[dataset_id => label]
+	 */
+	public function getDatasetsForUpload() {
+		$db = $this->getAdapter();
+		$req = "SELECT DISTINCT dataset_id as id, label, is_default ";
+		$req .= " FROM dataset ";
+		$req .= " INNER JOIN dataset_files using (dataset_id) ";
+		$req .= " ORDER BY dataset_id";
+
+		$this->logger->info('getDatasetsForUpload : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array());
+
+		return $select->fetchAll();
+	}
+
+	/**
 	 * Get the available datasets.
 	 *
 	 * @param Boolean $forDisplay indicate if we want to list the datasets available for display

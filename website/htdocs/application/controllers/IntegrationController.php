@@ -79,7 +79,7 @@ class IntegrationController extends Genapp_Controller_AbstractOGAMController {
 		$requestElement = $form->createElement('select', 'DATASET_ID');
 		$requestElement->setLabel('Dataset');
 		$requestElement->setRequired(true);
-		$requests = $this->metadataModel->getDatasets();
+		$requests = $this->metadataModel->getDatasetsForUpload();
 		$datasetIds = array();
 		foreach ($requests as $request) {
 			$datasetIds[$request['id']] = $request['label'];

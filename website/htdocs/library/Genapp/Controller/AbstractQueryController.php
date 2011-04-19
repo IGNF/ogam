@@ -400,7 +400,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 	 * @return JSON The list of forms
 	 */
 	public function ajaxgetdatasetsAction() {
-		$datasetIds = $this->metadataModel->getDatasets(true);
+		$datasetIds = $this->metadataModel->getDatasetsForDisplay();
 
 		echo "{";
 		echo "metaData:{";
