@@ -226,7 +226,7 @@ class IntegrationController extends Genapp_Controller_AbstractOGAMController {
 			return $this->_forward('index');
 		}
 
-		// Check the validity of the From
+		// Check the validity of the Form
 		$form = $this->_getDataSubmissionForm();
 		if (!$form->isValid($_POST)) {
 			$this->logger->debug('form is not valid');
@@ -243,8 +243,6 @@ class IntegrationController extends Genapp_Controller_AbstractOGAMController {
 
 		// In this demo project, the provider id is the country code of the connected user
 		$providerId = $userSession->user->countryCode;
-
-		$this->logger->debug('userLogin : '.$userLogin);
 
 		// Send the request to the integration server
 		try {
