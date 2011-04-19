@@ -4,14 +4,14 @@
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
 /*require_once 'Genapp/classes/metadata/FileField.php';
-require_once 'Genapp/classes/metadata/FormField.php';
-require_once 'Genapp/classes/metadata/FormFormat.php';
-require_once 'Genapp/classes/metadata/DatasetFile.php';
-require_once 'Genapp/classes/metadata/TableField.php';
-require_once 'Genapp/classes/metadata/TableTreeData.php';
-require_once 'Genapp/classes/metadata/TableFormat.php';
-require_once 'Genapp/classes/metadata/Range.php';
-require_once 'Genapp/classes/metadata/Mode.php';*/
+ require_once 'Genapp/classes/metadata/FormField.php';
+ require_once 'Genapp/classes/metadata/FormFormat.php';
+ require_once 'Genapp/classes/metadata/DatasetFile.php';
+ require_once 'Genapp/classes/metadata/TableField.php';
+ require_once 'Genapp/classes/metadata/TableTreeData.php';
+ require_once 'Genapp/classes/metadata/TableFormat.php';
+ require_once 'Genapp/classes/metadata/Range.php';
+ require_once 'Genapp/classes/metadata/Mode.php';*/
 
 /**
  * This is the Metadata model.
@@ -95,12 +95,16 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the available datasets.
 	 *
+	 * @param Boolean $forDisplay indicate if we want to list the datasets available for display
 	 * @return Array[dataset_id => label]
 	 */
-	public function getDatasets() {
+	public function getDatasets($forDisplay = false) {
 		$db = $this->getAdapter();
 		$req = "SELECT dataset_id as id, label, is_default ";
-		$req .= " FROM dataset";
+		$req .= " FROM dataset ";
+		if ($forDisplay) {
+			$req .= " INNER JOIN dataset_fields using (dataset_id) ";
+		}
 		$req .= " ORDER BY dataset_id";
 
 		$this->logger->info('getDatasets : '.$req);
