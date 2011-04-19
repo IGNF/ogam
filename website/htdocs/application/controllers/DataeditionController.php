@@ -3,18 +3,12 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'AbstractEforestController.php';
-//require_once LIBRARY_PATH.'/Genapp/models/generic/Generic.php';
-//require_once LIBRARY_PATH.'/Genapp/classes/generic/GenericService.php';
-//require_once LIBRARY_PATH.'/Genapp/classes/generic/DataObject.php';
-//require_once LIBRARY_PATH.'/Genapp/classes/metadata/TableField.php';
-//require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
 
 /**
  * DataEditionController is the controller that allow the edition of simple data.
  * @package controllers
  */
-class DataEditionController extends Genapp_Controller_AbstractEforestController {
+class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 
 	protected $_redirector = null;
 
@@ -104,15 +98,15 @@ class DataEditionController extends Genapp_Controller_AbstractEforestController 
 
 		} else if ($tableField->type == "NUMERIC") {
 			$elem = $form->createElement('text', $tableField->data);
-			$elem->addValidator(new Zend_Validate_Float(array('locale' => $configuration->defaultLocale)));
+			$elem->addValidator(new Zend_Validate_Float(array('locale' => 'en_EN'))); // The locale should correspond to the database config
 
 		} else if ($tableField->type == "DATE") {
 			$elem = $form->createElement('text', $tableField->data);
 			// validate the date format
 			if ($formField != null && $formField->mask != null) {
-				$validator = new Zend_Validate_Date(array('format' => $formField->mask, 'locale' => $configuration->defaultLocale));
+				$validator = new Zend_Validate_Date(array('format' => $formField->mask, 'locale' => 'en_EN'));
 			} else {
-				$validator = new Zend_Validate_Date(array('locale' => $configuration->defaultLocale));
+				$validator = new Zend_Validate_Date(array('locale' => 'en_EN'));
 			}
 			$elem->addValidator($validator);
 
@@ -121,7 +115,7 @@ class DataEditionController extends Genapp_Controller_AbstractEforestController 
 
 		} else if ($tableField->type == "RANGE") {
 			$elem = $form->createElement('text', $tableField->data);
-			$elem->addValidator(new Zend_Validate_Float(array('locale' => $configuration->defaultLocale)));
+			$elem->addValidator(new Zend_Validate_Float(array('locale' => 'en_EN')));
 
 			// Check min and max
 			$range = $this->metadataModel->getRange($tableField->data);

@@ -13,7 +13,7 @@
  * HarmonizationController is the controller that manages the data harmonization process.
  * @package controllers
  */
-class HarmonizationController extends Genapp_Controller_AbstractEforestController {
+class HarmonizationController extends Genapp_Controller_AbstractOGAMController {
 
 	/**
 	 * Initialise the controler

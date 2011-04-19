@@ -8,7 +8,7 @@
  * AbstractEforestController is the common controler for the Eforest application.
  * @package controllers
  */
-abstract class Genapp_Controller_AbstractEforestController extends Zend_Controller_Action {
+abstract class Genapp_Controller_AbstractOGAMController extends Zend_Controller_Action {
 
 	/**
 	 * Base URL of the web site

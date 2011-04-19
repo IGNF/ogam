@@ -12,7 +12,7 @@
  * UsermanagementController is the controller that manages the users
  * @package controllers
  */
-class UsermanagementController extends Genapp_Controller_AbstractEforestController {
+class UsermanagementController extends Genapp_Controller_AbstractOGAMController {
 
 	/**
 	 * Initialise the controler

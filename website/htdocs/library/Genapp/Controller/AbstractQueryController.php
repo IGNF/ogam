@@ -8,7 +8,7 @@
  * AbstractQueryController is the controller that manages the query module.
  * @package controllers
  */
-abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controller_AbstractEforestController {
+abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controller_AbstractOGAMController {
 
 	/**
 	 * The name of the schema where the data is stored.

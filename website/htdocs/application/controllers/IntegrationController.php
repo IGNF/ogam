@@ -12,7 +12,7 @@
  * IntegrationController is the controller that manages the data integration.
  * @package controllers
  */
-class IntegrationController extends Genapp_Controller_AbstractEforestController {
+class IntegrationController extends Genapp_Controller_AbstractOGAMController {
 
 	protected $_redirector = null;
 

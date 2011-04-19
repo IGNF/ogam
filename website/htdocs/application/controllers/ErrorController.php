@@ -9,7 +9,7 @@
  * ErrorController
  * @package controllers
  */
-class ErrorController extends Genapp_Controller_AbstractEforestController {
+class ErrorController extends Genapp_Controller_AbstractOGAMController {
 
 	/**
 	 * Initialise the controler

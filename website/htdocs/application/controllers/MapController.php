@@ -12,7 +12,7 @@
  * MapController is the controller that manages the web-mapping interface.
  * @package controllers
  */
-class MapController extends Genapp_Controller_AbstractEforestController {
+class MapController extends Genapp_Controller_AbstractOGAMController {
 
 	/**
 	 * Initialise the controler

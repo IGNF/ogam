@@ -10,7 +10,7 @@
  * HarmonizationQueryController is the controller that manages database query module on harmonized data.
  * @package controllers
  */
-class HarmonizationQueryController extends Genapp_Controller_AbstractQueryController {
+class HarmonizationQueryController extends Genapp_Controller_AbstractOGAMController {
 
 	protected $schema = "HARMONIZED_DATA";
 

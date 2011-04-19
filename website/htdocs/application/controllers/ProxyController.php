@@ -11,7 +11,7 @@
  * Proxy used to safely route the request to the mapserver.
  * @package controllers
  */
-class ProxyController extends Genapp_Controller_AbstractEforestController {
+class ProxyController extends Genapp_Controller_AbstractOGAMController {
 
 	/**
 	 * Initialise the controler

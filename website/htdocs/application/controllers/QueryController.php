@@ -9,7 +9,7 @@
  * QueryController is the controller that manages database query module.
  * @package controllers
  */
-class QueryController extends Genapp_Controller_AbstractQueryController {
+class QueryController extends Genapp_Controller_AbstractOGAMController {
 
     protected $schema = "RAW_DATA";
 
