@@ -180,10 +180,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initAutoLogin() {
 		$this->bootstrap('Db');
 		$this->bootstrap('ConfFiles');
+		$this->bootstrap('Session');
 		$configuration = Zend_Registry::get('configuration');
 		// USER - autologin for public access
 		if ($configuration->autoLogin) {
-
 			$userSession = new Zend_Session_Namespace('user');
 			$user = $userSession->user;
 
@@ -195,7 +195,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 				if (!is_null($user)) {
 					// Store the user in session
-					$userSession = new Zend_Session_Namespace('user');
 					$userSession->connected = true;
 					$userSession->user = $user;
 

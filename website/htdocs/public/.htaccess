@@ -19,6 +19,10 @@ RewriteCond %{REQUEST_FILENAME} ^(.*)/js/genapp.conf.js$ [NC]
 RewriteCond %1/../../inherent/public/js/new/%2 -s [OR] %1/../../inherent/public/js/patch/%2 -s [OR] %1/../../inherent/public/js/substitute/%2 -s
 RewriteRule . /inherent/js/index.php [NC,L]
 
+RewriteCond %{REQUEST_FILENAME} ^(.*)/mapProxy.php$ [NC]
+RewriteCond %1/../../inherent/public/mapProxy.php -s
+RewriteRule . /inherent/mapProxy.php [NC,L]
+
 RewriteCond %{REQUEST_FILENAME} -s [OR]
 RewriteCond %{REQUEST_FILENAME} -l [OR]
 RewriteCond %{REQUEST_FILENAME} -d

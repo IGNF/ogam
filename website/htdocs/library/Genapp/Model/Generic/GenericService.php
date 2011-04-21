@@ -414,7 +414,7 @@ class Genapp_Model_Generic_GenericService {
 		$value = $tableField->value;
 		$column = $tableField->format.".".$tableField->columnName;
 
-		if ($value != null and $value != '' and $value != array()) {
+		if ($value != null && $value != '' && $value != array()) {
 
 			switch ($tableField->type) {
 
@@ -459,7 +459,7 @@ class Genapp_Model_Generic_GenericService {
 					// Case of a list of values
 					$sql2 = '';
 					foreach ($value as $val) {
-					    if (is_numeric($val) or is_string($value)) {
+					    if ($val != null && $val != '' && (is_numeric($val) or is_string($value))) {
 						  $sql2 .= $this->_buildNumericWhereItem($tableField, $val)." OR ";
 					    }
 					}
@@ -485,13 +485,12 @@ class Genapp_Model_Generic_GenericService {
 					   $sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
 					}
 				} else {
-
 					// String
 					if (is_array($value)) {
 						// Case of a list of values
 						$sql2 = '';
 						foreach ($value as $val) {
-						    if (is_string($val)) {
+						    if ($val != null && $val != '' && is_string($val)) {
 							    $sql2 .= "'".$val."', ";
 						    }
 						}
