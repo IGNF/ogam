@@ -59,7 +59,7 @@ if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {
 if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'query'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
+<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
 </li>
 <?php
 } 

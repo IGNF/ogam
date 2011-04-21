@@ -123,6 +123,16 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
                 this.items.push(pageCfg);
             }
         }
+        // Removes the tab if there are only one pages
+        if(this.shownPages.length == 1 ){
+            this.headerCfg = {
+                style:'display:none;'
+            };
+            // defaults are applied to items, not the container
+            this.defaults = {
+                frame:false
+            };
+        }
 
         Genapp.CardPanel.superclass.initComponent.call(this);
     }
