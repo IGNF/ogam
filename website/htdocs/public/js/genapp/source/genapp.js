@@ -34,7 +34,7 @@ Genapp.buildApplication = function(config){
     Ext.layout.FormLayout.prototype.labelSeparator = ' :';
 
     // Set the blank image to a local one
-    Ext.BLANK_IMAGE_URL = Genapp.base_url + "/img/s.gif";
+    Ext.BLANK_IMAGE_URL = Genapp.base_url + "img/s.gif";
     
     // Set the default timeout for AJAX calls
     // The JS timeout must be inferior or equal to the PHP execution time to avoid the not catchable php timeout fatal error

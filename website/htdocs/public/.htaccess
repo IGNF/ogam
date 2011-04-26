@@ -1,7 +1,6 @@
 SetEnv APPLICATION_ENV development
 
 RewriteEngine On
-RewriteBase /rtm2/
 
 RewriteCond %{REQUEST_FILENAME} ^(.*)/img/(.*)$ [NC]
 RewriteCond %1/../../inherent/public/img/%2 -s
@@ -11,12 +10,25 @@ RewriteCond %{REQUEST_FILENAME} ^(.*)/pdf/(.*)$ [NC]
 RewriteCond %1/../../inherent/public/pdf/%2 -s
 RewriteRule . /inherent/pdf/%2 [NC,L]
 
+# Order is important: CSS must be check before JS because the js libraries contains CSS 
 RewriteCond %{REQUEST_FILENAME} ^(.*)/css/(.*)$ [NC]
-RewriteCond %1/../../inherent/public/css/new/%2 -s [OR] %1/../../inherent/public/css/patch/%2 -s [OR] %1/../../inherent/public/css/substitute/%2 -s
+RewriteCond %1/../../inherent/public/css/new/%2 -s
+RewriteRule . /inherent/css/index.php [NC,L]
+RewriteCond %{REQUEST_FILENAME} ^(.*)/css/(.*)$ [NC]
+RewriteCond %1/../../inherent/public/css/patch/%2 -s
+RewriteRule . /inherent/css/index.php [NC,L]
+RewriteCond %{REQUEST_FILENAME} ^(.*)/css/(.*)$ [NC]
+RewriteCond %1/../../inherent/public/css/substitute/%2 -s
 RewriteRule . /inherent/css/index.php [NC,L]
 
-RewriteCond %{REQUEST_FILENAME} ^(.*)/js/genapp.conf.js$ [NC]
-RewriteCond %1/../../inherent/public/js/new/%2 -s [OR] %1/../../inherent/public/js/patch/%2 -s [OR] %1/../../inherent/public/js/substitute/%2 -s
+RewriteCond %{REQUEST_FILENAME} ^(.*)/js/(.*)$ [NC]
+RewriteCond %1/../../inherent/public/js/new/%2 -s
+RewriteRule . /inherent/js/index.php [NC,L]
+RewriteCond %{REQUEST_FILENAME} ^(.*)/js/(.*)$ [NC]
+RewriteCond %1/../../inherent/public/js/patch/%2 -s
+RewriteRule . /inherent/js/index.php [NC,L]
+RewriteCond %{REQUEST_FILENAME} ^(.*)/js/(.*)$ [NC]
+RewriteCond %1/../../inherent/public/js/substitute/%2 -s
 RewriteRule . /inherent/js/index.php [NC,L]
 
 RewriteCond %{REQUEST_FILENAME} ^(.*)/mapProxy.php$ [NC]
