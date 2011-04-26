@@ -40,7 +40,7 @@ class Genapp_Model_Generic_DataObject {
 	 * @param TableField $field a field
 	 */
 	public function addInfoField($field) {
-		$this->infoFields[$field->data] = $field;
+		$this->infoFields[$field->format.'__'.$field->data] = $field;
 	}
 
 	/**
@@ -59,7 +59,7 @@ class Genapp_Model_Generic_DataObject {
 	 * @param TableField $field a field
 	 */
 	public function addEditableField($field) {
-		$this->editableFields[$field->data] = $field;
+		$this->editableFields[$field->format.'__'.$field->data] = $field;
 	}
 
 	/**
@@ -70,22 +70,22 @@ class Genapp_Model_Generic_DataObject {
 	public function getFields() {
 		return array_merge($this->infoFields, $this->editableFields);
 	}
-	
-/**
+
+	/**
 	 * Get all table formats.
 	 *
 	 * @return Array[String] the table formats
 	 */
 	public function getFormats() {
-		
+
 		$formats = array();
-		
+
 		foreach ($this->getFields() as $field) {
 			if (!in_array($field->format, $formats)) {
 				$formats[] = $field->format;
 			}
 		}
-		
+
 		return $formats;
 	}
 
