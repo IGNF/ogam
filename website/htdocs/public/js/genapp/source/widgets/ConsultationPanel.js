@@ -1323,11 +1323,10 @@ listeners: {
 	 * Edit the row of data.
 	 * 
 	 * @param {String}
-	 *            id The r id
+	 *            id The unique id of the data
 	 */
 	edit : function(id) {
-		// TODO : Change that
-		window.open('dataedition/show-edit-data/'+id);
+		window.open(Genapp.base_url + 'dataedition/show-edit-data/'+id);
 	},
 
 	/**
