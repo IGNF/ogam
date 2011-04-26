@@ -123,7 +123,7 @@ class MapController extends Genapp_Controller_AbstractOGAMController {
 		// Get some configutation parameters
 		$configuration = Zend_Registry::get("configuration");
 		$tilecacheURLs = $configuration->tilecache_url->toArray();
-		$pathBaseURLs = $configuration->path_base_url->toArray();
+		$tileBaseRLs = $configuration->tiles_base_url->toArray();
 		$proxyPath = $configuration->useMapProxy ? '/mapProxy.php' : '/proxy/gettile';
 
 		// Get the available layers
@@ -149,11 +149,11 @@ class MapController extends Genapp_Controller_AbstractOGAMController {
 		// Build the base URL for mapserver tiles
 		$sessionId = session_id();
 		$out = "url_array_tiled:[";
-		foreach ($pathBaseURLs as $pathBaseURL) {
+		foreach ($tileBaseRLs as $pathBaseURL) {
 			$out .= '"'.$pathBaseURL.$proxyPath."?sessionid=".$sessionId.'",'; // appel direct
 		}
 		// Remove the last comma
-		if (!empty($pathBaseURLs)) {
+		if (!empty($tileBaseRLs)) {
 			$out = substr($out, 0, -1);
 		}
 		echo $out.'],';
