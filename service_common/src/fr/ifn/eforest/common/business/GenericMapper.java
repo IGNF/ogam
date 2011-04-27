@@ -108,6 +108,28 @@ public class GenericMapper {
 	}
 
 	/**
+	 * Convert a String representing an array to an Array Object.
+	 * 
+	 * @param fieldValue
+	 *            the field value
+	 * @return the array object
+	 */
+	protected String[] getArray(String fieldValue) throws Exception {
+
+		fieldValue = fieldValue.replaceAll("\\{", "");
+		fieldValue = fieldValue.replaceAll("\\}", "");
+		fieldValue = fieldValue.trim();
+
+		String[] array = fieldValue.split(",");
+
+		for (int i = 0; i < array.length; i++) {
+			array[i] = ((String) array[i]).trim();
+		}
+
+		return array;
+	}
+
+	/**
 	 * Check that a value is consistent with the expected type. And convert the strig value to the expected type
 	 * 
 	 * @param fieldDescriptor
@@ -123,11 +145,10 @@ public class GenericMapper {
 			Object result = null;
 
 			// Just in case, replace the comma with a dot
-			String normalizedFieldValue = fieldValue.replace(",", ".");
 
 			String type = fieldDescriptor.getType();
 
-			if (normalizedFieldValue.equalsIgnoreCase("") && fieldDescriptor.getIsMandatory()) {
+			if (fieldValue.equalsIgnoreCase("") && fieldDescriptor.getIsMandatory()) {
 				throw new CheckException(MANDATORY_FIELD_MISSING);
 			}
 
@@ -135,17 +156,19 @@ public class GenericMapper {
 				result = fieldValue;
 			}
 
-			if (type.equalsIgnoreCase(CODE) && !normalizedFieldValue.equalsIgnoreCase("")) {
-				checkCode(fieldDescriptor.getUnit(), normalizedFieldValue);
+			if (type.equalsIgnoreCase(CODE) && !fieldValue.equalsIgnoreCase("")) {
+				checkCode(fieldDescriptor.getUnit(), fieldValue);
 				result = fieldValue;
 			}
 
-			if (type.equalsIgnoreCase(RANGE) && !normalizedFieldValue.equalsIgnoreCase("")) {
+			if (type.equalsIgnoreCase(RANGE) && !fieldValue.equalsIgnoreCase("")) {
+				String normalizedFieldValue = fieldValue.replace(",", ".");
 				result = checkRange(fieldDescriptor, normalizedFieldValue);
 			}
 
 			if (type.equalsIgnoreCase(NUMERIC)) {
 				try {
+					String normalizedFieldValue = fieldValue.replace(",", ".");
 					result = new BigDecimal(normalizedFieldValue);
 				} catch (Exception e) {
 					if (fieldDescriptor.getIsMandatory()) {
@@ -156,6 +179,7 @@ public class GenericMapper {
 
 			if (type.equalsIgnoreCase(INTEGER)) {
 				try {
+					String normalizedFieldValue = fieldValue.replace(",", ".");
 					result = Integer.parseInt(normalizedFieldValue);
 				} catch (Exception e) {
 					if (fieldDescriptor.getIsMandatory()) {
@@ -166,6 +190,7 @@ public class GenericMapper {
 
 			if (type.equalsIgnoreCase(COORDINATE)) {
 				try {
+					String normalizedFieldValue = fieldValue.replace(",", ".");
 					result = getCoordinate(normalizedFieldValue);
 				} catch (Exception e) {
 					if (fieldDescriptor.getIsMandatory()) {
@@ -178,6 +203,7 @@ public class GenericMapper {
 				try {
 					SynchronizedDateFormat formatter = new SynchronizedDateFormat(fieldDescriptor.getMask());
 					formatter.setLenient(false);
+					String normalizedFieldValue = fieldValue.replace(",", ".");
 					result = formatter.parse(normalizedFieldValue);
 				} catch (Exception e) {
 					if (fieldDescriptor.getIsMandatory()) {
@@ -191,7 +217,7 @@ public class GenericMapper {
 
 			if (type.equalsIgnoreCase(BOOLEAN)) {
 				try {
-					if (normalizedFieldValue.trim().equals("1") || normalizedFieldValue.trim().equalsIgnoreCase("true")) {
+					if (fieldValue.trim().equals("1") || fieldValue.trim().equalsIgnoreCase("true")) {
 						result = Boolean.TRUE;
 					} else {
 						result = Boolean.FALSE;
@@ -200,6 +226,14 @@ public class GenericMapper {
 					if (fieldDescriptor.getIsMandatory()) {
 						throw new CheckException(INVALID_TYPE_FIELD);
 					}
+				}
+			}
+
+			if (type.equalsIgnoreCase(ARRAY)) {
+				try {
+					result = getArray(fieldValue);
+				} catch (Exception e) {
+					throw new CheckException(INVALID_TYPE_FIELD);
 				}
 			}
 

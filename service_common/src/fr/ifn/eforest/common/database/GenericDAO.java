@@ -148,6 +148,15 @@ public class GenericDAO {
 							String bool = ((Boolean) colData.getValue()) ? "1" : "0";
 							ps.setString(count, bool);
 						}
+					} else if (colData.getType().equalsIgnoreCase(ARRAY)) {
+						if (colData.getValue() == null) {
+							ps.setNull(count, java.sql.Types.ARRAY);
+						} else {
+							String[] value = (String[]) colData.getValue();
+							java.sql.Array array = con.createArrayOf("varchar", value);
+							ps.setArray(count, array);
+						}
+
 					} else {
 						throw new Exception("Unexpected type");
 					}

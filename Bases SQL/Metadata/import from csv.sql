@@ -14,6 +14,9 @@ alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_DATASET;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_FIELD;
 alter table DATASET_FILES drop constraint FK_DATASET_FILES_FORMAT;
 
+
+--alter table website.predefined_request drop constraint fk_predefined_request_dataset;
+
 --
 -- Remove old data
 --
@@ -213,12 +216,6 @@ AND format||'_'||data NOT IN (
 	FROM field_mapping
 	WHERE mapping_type = 'HARMONIZE'
 	)
-UNION
--- the REQUEST_ID field is mandatory for harmonized data tables
-SELECT format, 'This harmonized table format is missing the REQUEST_ID field'
-FROM table_format 
-WHERE schema_code = 'HARMONIZED_DATA'
-AND NOT EXISTS (SELECT * FROM table_field WHERE table_format.format = table_field.format AND table_field.data='REQUEST_ID')
 UNION
 -- the SUBMISSION_ID field is mandatory for raw data tables
 SELECT format, 'This raw table format is missing the SUBMISSION_ID field'

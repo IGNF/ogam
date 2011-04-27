@@ -44,5 +44,10 @@ public interface UnitTypes {
 	 * A boolean (mapped to java type Boolean).
 	 */
 	String BOOLEAN = "BOOLEAN";
+	
+	/**
+	 * An array of codes.
+	 */
+	String ARRAY = "ARRAY";
 
 }
