@@ -1277,99 +1277,126 @@ listeners: {
         }
     },
 
-	/**
-	 * Renders for the left tools column cell
-	 * 
-	 * @param {Object}
-	 *            value The data value for the cell.
-	 * @param {Object}
-	 *            metadata An object in which you may set the
-	 *            following attributes: {String} css A CSS class
-	 *            name to add to the cell's TD element. {String}
-	 *            attr : An HTML attribute definition string to
-	 *            apply to the data container element within the
-	 *            table cell (e.g. 'style="color:red;"').
-	 * @param {Ext.data.record}
-	 *            record The {@link Ext.data.Record} from which
-	 *            the data was extracted.
-	 * @param {Number}
-	 *            rowIndex Row index
-	 * @param {Number}
-	 *            colIndex Column index
-	 * @param {Ext.data.Store}
-	 *            store The {@link Ext.data.Store} object from
-	 *            which the Record was extracted.
-	 * @return {String} The html code for the column
-	 * @hide
-	 */
-	renderLeftTools : function(value, metadata, record,
-			rowIndex, colIndex, store) {
+    /**
+     * Renders for the left tools column cell
+     * 
+     * @param {Object}
+     *            value The data value for the cell.
+     * @param {Object}
+     *            metadata An object in which you may set the
+     *            following attributes: {String} css A CSS class
+     *            name to add to the cell's TD element. {String}
+     *            attr : An HTML attribute definition string to
+     *            apply to the data container element within the
+     *            table cell (e.g. 'style="color:red;"').
+     * @param {Ext.data.record}
+     *            record The {@link Ext.data.Record} from which
+     *            the data was extracted.
+     * @param {Number}
+     *            rowIndex Row index
+     * @param {Number}
+     *            colIndex Column index
+     * @param {Ext.data.Store}
+     *            store The {@link Ext.data.Store} object from
+     *            which the Record was extracted.
+     * @return {String} The html code for the column
+     * @hide
+     */
+    renderLeftTools : function(value, metadata, record,
+            rowIndex, colIndex, store) {
 
-		var stringFormat = '';
-		if (!this.hideDetails) {
-			stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\''
-					+ record.data.id
-					+ '\', \'getdetails\');"></div>';
-		}
-		stringFormat += '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPage.edit(\''
-				+ record.data.id + '\');"></div>';
-		stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');"></div>';
+        var stringFormat = '';
+        if (!this.hideDetails) {
+            stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"></div>';
+        }
+        stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');"></div>';
 
-		return String.format(stringFormat, record.data.id,
-				record.data.location_centroid);
-	},
+        return String.format(stringFormat, record.data.id,
+                record.data.location_centroid);
+    },
 
-	/**
-	 * Edit the row of data.
-	 * 
-	 * @param {String}
-	 *            id The unique id of the data
-	 */
-	edit : function(id) {
-		window.open(Genapp.base_url + 'dataedition/show-edit-data/'+id);
-	},
+   /**
+     * Renders for the right tools column cell
+     * 
+     * @param {Object}
+     *            value The data value for the cell.
+     * @param {Object}
+     *            metadata An object in which you may set the
+     *            following attributes: {String} css A CSS class
+     *            name to add to the cell's TD element. {String}
+     *            attr : An HTML attribute definition string to
+     *            apply to the data container element within the
+     *            table cell (e.g. 'style="color:red;"').
+     * @param {Ext.data.record}
+     *            record The {@link Ext.data.Record} from which
+     *            the data was extracted.
+     * @param {Number}
+     *            rowIndex Row index
+     * @param {Number}
+     *            colIndex Column index
+     * @param {Ext.data.Store}
+     *            store The {@link Ext.data.Store} object from
+     *            which the Record was extracted.
+     * @return {String} The html code for the column
+     * @hide
+     */
+    renderRightTools : function(value, metadata, record,
+            rowIndex, colIndex, store) {
+        var stringFormat = '<div class="genapp-query-grid-edit" onclick="Genapp.cardPanel.consultationPage.edit(\'{0}\');"></div>';
+        return String.format(stringFormat, record.data.id);
+    },
 
-	/**
-	 * Open the row details
-	 * 
-	 * @param {String}
-	 *            id The details id
-	 * @param {String}
-	 *            url The url to get the details
-	 */
-	openDetails : function(id, url) {
-		if (!Ext.isEmpty(id)) {
-			var consultationPanel = Ext
-					.getCmp('consultation_panel');
-			consultationPanel.collapseQueryPanel();
-			consultationPanel.detailsPanel.ownerCt.expand();
-			var tab = consultationPanel.detailsPanel.get(id);
-			if (Ext.isEmpty(tab)) {
-				tab = consultationPanel.detailsPanel
-						.add(new Genapp.DetailsPanel({
-							rowId : id,
-							dataUrl : url
-						}));
-			}
-			consultationPanel.detailsPanel.activate(tab);
-		}
-	},
+    /**
+     * Edit the row of data.
+     * 
+     * @param {String}
+     *            id The unique id of the data
+     */
+    edit : function(id) {
+        window.open(Genapp.base_url + 'dataedition/show-edit-data/'+id);
+    },
 
-	/**
-	 * Displays the location on the map
-	 * 
-	 * @param {String}
-	 *            id The location id
-	 * @param {String}
-	 *            wkt a point WKT to be displayed as a flag.
-	 */
-	displayLocation : function(id, wkt) {
-		var consultationPanel = Ext
-				.getCmp('consultation_panel');
-		consultationPanel.centerPanel
-				.activate(consultationPanel.mapPanel);
-		consultationPanel.mapPanel.zoomToFeature(id, wkt);
-	},
+    /**
+     * Open the row details
+     * 
+     * @param {String}
+     *            id The details id
+     * @param {String}
+     *            url The url to get the details
+     */
+    openDetails : function(id, url) {
+        if (!Ext.isEmpty(id)) {
+            var consultationPanel = Ext
+                    .getCmp('consultation_panel');
+            consultationPanel.collapseQueryPanel();
+            consultationPanel.detailsPanel.ownerCt.expand();
+            var tab = consultationPanel.detailsPanel.get(id);
+            if (Ext.isEmpty(tab)) {
+                tab = consultationPanel.detailsPanel
+                        .add(new Genapp.DetailsPanel({
+                            rowId : id,
+                            dataUrl : url
+                        }));
+            }
+            consultationPanel.detailsPanel.activate(tab);
+        }
+    },
+
+    /**
+     * Displays the location on the map
+     * 
+     * @param {String}
+     *            id The location id
+     * @param {String}
+     *            wkt a point WKT to be displayed as a flag.
+     */
+    displayLocation : function(id, wkt) {
+        var consultationPanel = Ext
+                .getCmp('consultation_panel');
+        consultationPanel.centerPanel
+                .activate(consultationPanel.mapPanel);
+        consultationPanel.mapPanel.zoomToFeature(id, wkt);
+    },
 
     /**
      * Cancel the current ajax request (submit or load)
@@ -1491,13 +1518,14 @@ listeners: {
                 // Creation of the column model and the reader metadata fields
                 var columns = action.result.columns;
                 var newCM = new Array({
+                    dataIndex:'leftTools',
                     header:'',
                     renderer:this.renderLeftTools.createDelegate(this),
                     sortable:false,
                     fixed:true,
                     menuDisabled:true,
                     align:'center',
-                    width:66
+                    width:50
                 });
                 var newRF = new Array();
                 var columnConf;
@@ -1524,16 +1552,16 @@ listeners: {
                             columnConf.xtype='gridcolumn';
                             break;
                         case 'NUMERIC':
-                        	columnConf.xtype='numbercolumn';
-                        	if (columns[i].decimals != null) {
-                        		columnConf.format= this.numberPattern('.', columns[i].decimals);
-                        	}
-                        	break;
+                            columnConf.xtype='numbercolumn';
+                            if (columns[i].decimals != null) {
+                                columnConf.format= this.numberPattern('.', columns[i].decimals);
+                            }
+                            break;
                         case 'RANGE':
                             columnConf.xtype='numbercolumn';
                             if (columns[i].decimals != null) {
-                        		columnConf.format= this.numberPattern('.', columns[i].decimals);
-                        	}
+                                columnConf.format= this.numberPattern('.', columns[i].decimals);
+                            }
                             break;
                         case 'DATE':
                             columnConf.xtype='datecolumn';
@@ -1547,6 +1575,17 @@ listeners: {
                     newCM.push(columnConf);
                     newRF.push(readerFieldsConf);
                 }
+
+                newCM.push({
+                    dataIndex:'rightTools',
+                    header:'',
+                    renderer:this.renderRightTools.createDelegate(this),
+                    sortable:false,
+                    fixed:true,
+                    menuDisabled:true,
+                    align:'center',
+                    width:30
+                });
 
                 // Updates of the store reader metadata
                 this.gridDSReader.updateMetadata({
@@ -1577,7 +1616,6 @@ listeners: {
                     this,
                     {single:true}
                 );
-
                 this.gridPanel.getStore().load({
                     params:{
                         start: 0,
@@ -1757,9 +1795,9 @@ listeners: {
         var activatedLayers = this.mapPanel.map.getLayersBy('visibility', true);
         var activatedLayersNames = '';
         for (var i=0; i<activatedLayers.length; i++) {
-        	if (activatedLayers[i].printable !== false) {
-        		activatedLayersNames += activatedLayers[i].name + ',';
-        	}
+            if (activatedLayers[i].printable !== false) {
+                activatedLayersNames += activatedLayers[i].name + ',';
+            }
         }
         activatedLayersNames = activatedLayersNames.substr(0,activatedLayersNames.length - 1);
 
@@ -1785,27 +1823,27 @@ listeners: {
     },
 
     /**
-	 * Return the pattern used to format a number.
-	 * 
-	 * @param {String}
-	 *            decimalSeparator the decimal separator (default to',')
-	 * @param {Integer}
-	 *            decimalPrecision the decimal precision
-	 * @param {String}
-	 *            groupingSymbol the grouping separator (absent by default)
-	 */
+     * Return the pattern used to format a number.
+     * 
+     * @param {String}
+     *            decimalSeparator the decimal separator (default to',')
+     * @param {Integer}
+     *            decimalPrecision the decimal precision
+     * @param {String}
+     *            groupingSymbol the grouping separator (absent by default)
+     */
     numberPattern: function (decimalSeparator, decimalPrecision, groupingSymbol) {
         // Building the number format pattern for use by ExtJS
-		// Ext.util.Format.number
+        // Ext.util.Format.number
         var pattern = [];
         pattern.push('0');
         if (groupingSymbol) {
-        	pattern.push(groupingSymbol + '000');
+            pattern.push(groupingSymbol + '000');
         }
         if (decimalPrecision) {
             pattern.push(decimalSeparator);
             for (var i = 0; i < decimalPrecision; i++) {
-            	pattern.push('0');
+                pattern.push('0');
             }
         }
         return pattern.join('');
@@ -1901,7 +1939,7 @@ listeners: {
                     throw('');
                 } else {
                     if (!Ext.isEmpty(response.resultsbbox)) {
-	                    this.mapPanel.resultsBBox = response.resultsbbox;
+                        this.mapPanel.resultsBBox = response.resultsbbox;
                     } else {
                         this.mapPanel.resultsBBox = null;
                     }

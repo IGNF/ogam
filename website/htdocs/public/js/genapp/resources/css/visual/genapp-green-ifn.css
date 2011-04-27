@@ -122,6 +122,9 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 .genapp-query-grid-slip{
     background:transparent url(../images/page_white_magnify.png) no-repeat scroll !important;
 }
+.genapp-query-grid-edit{
+    background:transparent url(../images/page_white_edit.png) no-repeat scroll !important;
+}
 /*************************************************************************************************/
 
 

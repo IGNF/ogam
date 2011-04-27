@@ -155,7 +155,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     width:16px !important;
     height:16px !important;
     cursor: pointer;
-    margin:0 4px 0 0;
+    margin:0 2px;
     float:left;
 }
 .genapp-query-grid-slip{
@@ -164,6 +164,14 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     height:16px !important;
     cursor: pointer;
     float:left;
+}
+.genapp-query-grid-edit{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
 }
 /*************************************************************************************************/
 
@@ -619,6 +627,9 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 .genapp-query-grid-slip{
     background:transparent url(../images/page_white_magnify.png) no-repeat scroll !important;
+}
+.genapp-query-grid-edit{
+    background:transparent url(../images/page_white_edit.png) no-repeat scroll !important;
 }
 /*************************************************************************************************/
 
