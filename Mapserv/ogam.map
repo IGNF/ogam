@@ -15,14 +15,14 @@ SHAPEPATH "C:/workspace/OGAM/Mapserv/data/"
 IMAGECOLOR 255 255 255
 FONTSET "C:/workspace/OGAM/Mapserv/data/fonts/fonts.txt"
 
-CONFIG  "MS_ERRORFILE" "C:/workspace/OGAM/website/htdocs/application/logs/mapserver_ogam.log"
+CONFIG  "MS_ERRORFILE" "C:/workspace/OGAM/website/htdocs/logs/mapserver_ogam.log"
 DEBUG 5
 
 #
 # Start of web interface definition
 #
 WEB
-   LOG "C:/workspace/OGAM/website/htdocs/application/logs/mapserver_ogam.log"
+   LOG "C:/workspace/OGAM/website/htdocs/logs/mapserver_ogam.log"
    METADATA
    
 		WFS_TITLE   					"OGAM MapServer"  
