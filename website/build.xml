@@ -1,29 +1,7 @@
 <?xml version="1.0"?>
 <project name="eForest" default="deployWebSite" basedir=".">
 
-    <!-- Define the properties -->
-    <property name="libraries.dir" value="../../libs_php" />
-    <property name="libraries_java.dir" value="../../libs_java" />
-    <property name="application.dir" value="./htdocs/application/" />
-    <property name="src.dir" value="./htdocs/" />
-    <property name="dist.dir" value="${java.io.tmpdir}dist/ogam" />
-    <property name="test_result.dir" value="./test_result" />
-	
-	 <!-- You need to checkout on your workspace the libs_java project hosted on the repository for the yuicompressor files -->
-    <property name="cps.yui.compressor.jar" value="${libraries_java.dir}/lib/ant/yuicompressor/yuicompressor-2.4.2.jar" />
-    <property name="cps.yui.compressor.ant.task.jar" value="${libraries_java.dir}/lib/ant/yuicompressor/yui-compressor-ant-task-0.4.jar" />
-	   
-	
-    <!-- Define the properties -->
-    <property name="cps.dir" value="${src.dir}public/js/genapp" />
-    <property name="cps.src.dir" value="${cps.dir}/source" />
-    <property name="cps.resrcs.dir" value="${cps.dir}/resources/css" />
-    <property name="cps.name" value="genapp" />
-    <property name="cps.js.pack.path" value="${cps.dir}/${cps.name}.pack.js" />
-    <property name="cps.css.pack.path" value="${cps.resrcs.dir}/${cps.name}.pack.css" />
-    <property name="cps.js.min.path" value="${cps.dir}/${cps.name}.pack-min.js" />
-    <property name="cps.css.min.path" value="${cps.resrcs.dir}/${cps.name}.pack-min.css" />
-
+    <property file="build.properties"/>
 
 	 <!-- Define the class path for yui-compressor -->
     <path id="cps.task.classpath">
