@@ -85,6 +85,8 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 		// TODO OGAM-73 : Manage all data types for edition (DATE, BOOLEAN, ...), with corresponding validators
 
 		if ($tableField->type == "STRING") {
+
+			// The field is a text field
 			$elem = $form->createElement('text', $tableField->data);
 
 			// Add a regexp validator if a mask is present
@@ -92,15 +94,25 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 				$validator = new Zend_Validate_Regex(array('pattern' => $formField->mask));
 				$elem->addValidator($validator);
 			}
+			$elem->setValue($tableField->value);
+
 		} else if ($tableField->type == "INTEGER") {
+
+			// The field is an integer
 			$elem = $form->createElement('text', $tableField->data);
 			$elem->addValidator(new Zend_Validate_Int());
+			$elem->setValue($tableField->value);
 
 		} else if ($tableField->type == "NUMERIC") {
+
+			// The field is a numeric
 			$elem = $form->createElement('text', $tableField->data);
 			$elem->addValidator(new Zend_Validate_Float(array('locale' => 'en_EN'))); // The locale should correspond to the database config
+			$elem->setValue($tableField->value);
 
 		} else if ($tableField->type == "DATE") {
+
+			// The field is a date
 			$elem = $form->createElement('text', $tableField->data);
 			// validate the date format
 			if ($formField != null && $formField->mask != null) {
@@ -109,11 +121,17 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 				$validator = new Zend_Validate_Date(array('locale' => 'en_EN'));
 			}
 			$elem->addValidator($validator);
+			$elem->setValue($tableField->value);
 
 		} else if ($tableField->type == "COORDINATE") {
+
+			// The field is a geometry info
 			$elem = $form->createElement('text', $tableField->data);
+			$elem->setValue($tableField->value);
 
 		} else if ($tableField->type == "RANGE") {
+
+			// The field is a range value
 			$elem = $form->createElement('text', $tableField->data);
 			$elem->addValidator(new Zend_Validate_Float(array('locale' => 'en_EN')));
 
@@ -121,23 +139,44 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 			$range = $this->metadataModel->getRange($tableField->data);
 			$elem->addValidator(new Zend_Validate_LessThan(array('max' => $range->max)));
 			$elem->addValidator(new Zend_Validate_GreaterThan(array('min' => $range->min)));
+			$elem->setValue($tableField->value);
 
 		} else if ($tableField->type == "CODE") {
+
+			// The field is a single code
 			$modes = $this->metadataModel->getModes($tableField->unit);
 			$elem = $form->createElement('select', $tableField->data);
 			$elem->addMultiOptions($modes);
+			$elem->setValue($tableField->value);
+
 		} else if ($tableField->type == "BOOLEAN") {
+
+			// The field is a boolean
 			$elem = $form->createElement('checkbox', $tableField->data);
+			$elem->setValue($tableField->value);
+
+		} else if ($tableField->type == "ARRAY") {
+
+			// The field is a list of codes
+
+			// Get the list of available values
+			$modes = $this->metadataModel->getModes($tableField->unit);
+
+			// Build a multiple select box
+			$elem = $form->createElement('multiselect', $tableField->data);
+			$elem->addMultiOptions($modes);
+			$elem->setValue($tableField->value);
 
 		} else {
+
 			// Default
 			$elem = $form->createElement('text', $tableField->data);
+			$elem->setValue($tableField->value);
 
 		}
 
 		$elem->setLabel($tableField->label);
 		$elem->setDescription($tableField->definition);
-		$elem->setValue($tableField->value);
 
 		if ($isKey) {
 			$elem->disabled = 'disabled';
@@ -152,6 +191,8 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 	 * @param DataObject $data The descriptor of the expected data.
 	 */
 	private function _getEditDataForm($data, $mode) {
+
+		$this->logger->debug('_getEditDataForm :  mode = '.$mode);
 
 		$form = new Zend_Form();
 		if ($mode == 'ADD') {
@@ -287,7 +328,7 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 
 		//Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
 
-		// If the objet is not existing then we are in create mode instead of edit mode
+		// If the object is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
 		$ancestors = $this->genericModel->getAncestors($data);
@@ -328,6 +369,7 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 
 		// Validate the form
 		$form = $this->_getEditDataForm($data, 'EDIT');
+
 		if (!$form->isValidPartial($_POST)) {
 
 			// On réaffiche le formulaire avec les messages d'erreur
@@ -346,8 +388,6 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 		foreach ($data->editableFields as $field) {
 			$field->value = $this->_getParam($field->data);
 		}
-
-		// Zend_Registry::get("logger")->info('$newdata : '.print_r($data, true));
 
 		try {
 			$this->genericModel->updateData($data);

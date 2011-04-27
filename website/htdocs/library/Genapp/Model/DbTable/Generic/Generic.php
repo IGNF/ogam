@@ -98,6 +98,13 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 				$field->xmax = $row[strtolower($field->format.'__'.$field->data).'_x_max'];
 				$field->ymin = $row[strtolower($field->format.'__'.$field->data).'_y_min'];
 				$field->ymax = $row[strtolower($field->format.'__'.$field->data).'_y_max'];
+			} else if ($field->type == "ARRAY") {
+				// For array field we transform the value in a array object
+				$values = str_replace("{", "", $field->value);
+				$values = str_replace("}", "", $values);
+				$values = trim($values);
+				$valuesArray = explode(",", $values);
+				$field->value = $valuesArray;
 			}
 
 		}
@@ -139,7 +146,17 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 
 			// Fill the values with data from the table
 			foreach ($child->getFields() as $field) {
+
 				$field->value = $row[strtolower($field->format.'__'.$field->data)];
+
+				if ($field->type == "ARRAY") {
+					// For array field we transform the value in a array object
+					$values = str_replace("{", "", $field->value);
+					$values = str_replace("}", "", $values);
+					$values = trim($values);
+					$valuesArray = explode(",", $values);
+					$field->value = $valuesArray;
+				}
 			}
 
 			$result[] = $child;
@@ -173,9 +190,21 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 			/* @var $field TableField */
 
 			if ($field->data != "LINE_NUMBER") { // Hardcoded value
-				if ($field->type == "NUMERIC" || $field->type == "INTEGER") {
+				if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
+					// Numeric values
 					$sql .= $field->columnName." = ".$field->value;
+				} else if ($field->type == "ARRAY") {
+					// Arrays
+					// $field->value should be an array
+					$array = $field->value;
+					$sql .= $field->columnName." = '{";
+					foreach ($array as $value) {
+						$sql .= $value.",";
+					}
+					$sql = substr($sql, 0, -1); // remove last comma
+					$sql .= "}'";
 				} else {
+					// Text values
 					$sql .= $field->columnName." = '".$field->value."'";
 				}
 				$sql .= ",";
@@ -193,8 +222,12 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
 			if (!($tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
 
-				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER") {
+				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER" || $field->type == "RANGE") {
 					$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
+				} else if ($primaryKey->type == "ARRAY") {
+					// Arrays
+					// $primaryKey->value should contain a unique value (String)
+					$sql .= " AND ANY(".$primaryKey->columnName.") = '".$primaryKey->value."'";
 				} else {
 					$sql .= " AND ".$primaryKey->columnName." = '".$primaryKey->value."'";
 				}
@@ -228,6 +261,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		/* @var $tableFormat TableFormat */
 
 		Zend_Registry::get("logger")->info('insertData');
+		Zend_Registry::get("logger")->info('data : '.print_r($data, true));
 
 		// Get the values from the data table
 		$sql = "INSERT INTO ".$tableFormat->schemaCode.".".$tableFormat->tableName;
@@ -238,8 +272,18 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		foreach ($data->infoFields as $field) {
 			if ($field->value != null) { // Primary keys that are not set should be serials ...
 				$columns .= $field->columnName.", ";
-				if ($field->type == "NUMERIC" || $field->type == "INTEGER") {
+				if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
 					$values .= $field->value.", ";
+				} else if ($field->type == "ARRAY") {
+					// Arrays
+					// $field->value should be an array
+					$array = $field->value;
+					$sql .= "'{";
+					foreach ($array as $value) {
+						$sql .= $value.",";
+					}
+					$sql = substr($sql, 0, -1); // remove last comma
+					$sql .= "}', ";
 				} else {
 					$values .= "'".$field->value."', ";
 				}
@@ -249,9 +293,20 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 			if ($field->value != null) { // Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
 					$columns .= $field->columnName.", ";
-					if ($field->type == "NUMERIC" || $field->type == "INTEGER") {
+					if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
 						$values .= $field->value.", ";
+					} else if ($field->type == "ARRAY") {
+						// Arrays
+						// $field->value should be an array
+						$array = $field->value;
+						$sql .= "'{";
+						foreach ($array as $value) {
+							$sql .= $value.",";
+						}
+						$sql = substr($sql, 0, -1); // remove last comma
+						$sql .= "}', ";
 					} else {
+						// Text values
 						$values .= "'".$field->value."', ";
 					}
 				}
