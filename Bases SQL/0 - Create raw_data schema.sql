@@ -73,6 +73,7 @@ PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 LAT                  FLOAT8               null,
 LONG                 FLOAT8               null,
+COMMUNES			 TEXT[] 			  null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
 constraint PK_LOCATION primary key (PROVIDER_ID, PLOT_CODE),
@@ -88,6 +89,7 @@ COMMENT ON COLUMN LOCATION.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN LOCATION.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN LOCATION.LAT IS 'The latitude (in decimal degrees)';
 COMMENT ON COLUMN LOCATION.LONG IS 'The longitude (in decimal degrees)';
+COMMENT ON COLUMN LOCATION.COMMUNES IS 'Communes concerned by the location';
 COMMENT ON COLUMN LOCATION.COMMENT IS 'A comment about the plot location';
 COMMENT ON COLUMN LOCATION.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 COMMENT ON COLUMN LOCATION.THE_GEOM IS 'The geometry of the location';
