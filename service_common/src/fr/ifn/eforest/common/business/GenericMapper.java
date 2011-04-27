@@ -110,6 +110,8 @@ public class GenericMapper {
 	/**
 	 * Convert a String representing an array to an Array Object.
 	 * 
+	 * The string format is { value1, value2, value3 }
+	 * 
 	 * @param fieldValue
 	 *            the field value
 	 * @return the array object
