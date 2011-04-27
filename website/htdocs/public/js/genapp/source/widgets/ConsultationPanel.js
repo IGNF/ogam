@@ -1342,18 +1342,8 @@ listeners: {
      */
     renderRightTools : function(value, metadata, record,
             rowIndex, colIndex, store) {
-        var stringFormat = '<div class="genapp-query-grid-edit" onclick="Genapp.cardPanel.consultationPage.edit(\'{0}\');"></div>';
+        var stringFormat = '<div class="genapp-query-grid-edit" onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"></div>';
         return String.format(stringFormat, record.data.id);
-    },
-
-    /**
-     * Edit the row of data.
-     * 
-     * @param {String}
-     *            id The unique id of the data
-     */
-    edit : function(id) {
-        window.open(Genapp.base_url + 'dataedition/show-edit-data/'+id);
     },
 
     /**
