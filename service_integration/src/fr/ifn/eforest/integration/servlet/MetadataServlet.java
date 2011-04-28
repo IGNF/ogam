@@ -30,7 +30,7 @@ public class MetadataServlet extends HttpServlet {
 	 * 
 	 * @see org.apache.log4j.Logger
 	 */
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected final transient Logger logger = Logger.getLogger(this.getClass());
 
 	/**
 	 * The serial version ID used to identify the object.
@@ -40,7 +40,7 @@ public class MetadataServlet extends HttpServlet {
 	/**
 	 * The data access objects.
 	 */
-	private transient MetadataDAO metadataDAO = new MetadataDAO();
+	private MetadataDAO metadataDAO = new MetadataDAO();
 
 	/**
 	 * Input parameters.
