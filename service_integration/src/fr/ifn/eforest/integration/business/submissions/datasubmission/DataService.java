@@ -85,14 +85,12 @@ public class DataService extends AbstractService {
 	/**
 	 * Create a new data submission.
 	 * 
-	 * @param codeCountry
-	 *            the code country
 	 * @param providerId
 	 *            the dataset identifier
+	 * @param datasetId
+	 *            the identifier of the dataset
 	 * @param userLogin
 	 *            the login of the user who creates the submission
-	 * @param comment
-	 *            a comment
 	 * @return the identifier of the created submission
 	 */
 	public Integer newSubmission(String providerId, String datasetId, String userLogin) throws Exception {

@@ -61,6 +61,7 @@ public class IntegrationService extends GenericMapper {
 	 *            the static values (PROVIDER_ID, DATASET_ID, ...)
 	 * @param thread
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
+	 * @return the status of the update
 	 */
 	public boolean insertData(Integer submissionId, CSVFile csvFile, String sourceFormat, Map<String, String> requestParameters, AbstractThread thread)
 			throws Exception {

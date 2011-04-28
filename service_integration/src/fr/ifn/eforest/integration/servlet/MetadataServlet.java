@@ -13,11 +13,9 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.business.Schemas;
 import fr.ifn.eforest.common.database.metadata.FieldData;
-import fr.ifn.eforest.common.database.metadata.DatasetData;
 import fr.ifn.eforest.common.database.metadata.FileFieldData;
 import fr.ifn.eforest.common.database.metadata.FileFormatData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.ModeData;
 import fr.ifn.eforest.common.database.metadata.TableTreeData;
 
 /**
@@ -32,7 +30,7 @@ public class MetadataServlet extends HttpServlet {
 	 * 
 	 * @see org.apache.log4j.Logger
 	 */
-	protected final transient Logger logger = Logger.getLogger(this.getClass());
+	protected final Logger logger = Logger.getLogger(this.getClass());
 
 	/**
 	 * The serial version ID used to identify the object.
