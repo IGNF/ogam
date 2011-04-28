@@ -326,7 +326,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 			foreach ($form->criteriaList as $field) {
 				$json .= '{'.$field->toCriteriaJSON();
 				// For the SELECT field, get the list of options
-				if ($field->type == "CODE") {
+				if ($field->type == "CODE" || $field->type == "ARRAY") {
 					$options = $this->metadataModel->getModes($field->unit);
 					$json .= ',p:{options:[';
 					foreach ($options as $code => $label) {

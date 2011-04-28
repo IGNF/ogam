@@ -99,12 +99,10 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 				$field->ymin = $row[strtolower($field->format.'__'.$field->data).'_y_min'];
 				$field->ymax = $row[strtolower($field->format.'__'.$field->data).'_y_max'];
 			} else if ($field->type == "ARRAY") {
+
 				// For array field we transform the value in a array object
-				$values = str_replace("{", "", $field->value);
-				$values = str_replace("}", "", $values);
-				$values = trim($values);
-				$valuesArray = explode(",", $values);
-				$field->value = $valuesArray;
+				$field->value = $this->genericService->stringToArray($field->value);
+
 			}
 
 		}
@@ -151,11 +149,8 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 
 				if ($field->type == "ARRAY") {
 					// For array field we transform the value in a array object
-					$values = str_replace("{", "", $field->value);
-					$values = str_replace("}", "", $values);
-					$values = trim($values);
-					$valuesArray = explode(",", $values);
-					$field->value = $valuesArray;
+					$field->value = $this->genericService->stringToArray($field->value);
+
 				}
 			}
 

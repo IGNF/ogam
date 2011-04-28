@@ -347,6 +347,47 @@ class Genapp_Model_Generic_GenericService {
 	}
 
 	/**
+	 * Return the SQL String representation of an array.
+	 *
+	 * Example : Array ( [0] => Boynes, [1] => Ascoux ) =>  {Boynes, Vrigny}
+	 *
+	 * @param Array[String] $value an array of values.
+	 * @return the String representation of the array
+	 */
+	public function arrayToSQLString($arrayValues) {
+		$string = "{";
+		foreach ($arrayValues as $value) {
+			$string .= $value.",";
+		}
+		$string = substr($string, 0, -1); // Remove last comma
+		$string .= "}";
+
+		return $string;
+	}
+
+	/**
+	 * Return an Array object corresponding to a SQL string.
+	 *
+	 * Example : {Boynes, Vrigny} => Array ( [0] => Boynes, [1] => Ascoux )
+	 *
+	 * @param String $value an array of values.
+	 * @return the String representation of the array
+	 */
+	public function stringToArray($value) {
+		$values = str_replace("{", "", $value);
+		$values = str_replace("}", "", $values);
+		$values = trim($values);
+		$valuesArray = explode(",", $values);
+
+		foreach ($valuesArray as $v) {
+			$v = trim($v);
+		}
+
+		return $valuesArray;
+
+	}
+
+	/**
 	 * Build a WHERE criteria for a single date value.
 	 *
 	 * @param TableField $tableField a criteria field.
@@ -423,8 +464,8 @@ class Genapp_Model_Generic_GenericService {
 				if (is_array($value)) {
 					$value = $value[0];
 				}
-				if(is_bool($value)){
-				    $sql .= " AND ".$column." = '".$value."'";
+				if (is_bool($value)) {
+					$sql .= " AND ".$column." = '".$value."'";
 				}
 				break;
 
@@ -434,13 +475,13 @@ class Genapp_Model_Generic_GenericService {
 					// Case of a list of values
 					$sql2 = '';
 					foreach ($value as $val) {
-					    if (!empty($val)) {
-						  $sql2 .= $this->_buildDateWhereItem($tableField, $val)." OR ";
-					    }
+						if (!empty($val)) {
+							$sql2 .= $this->_buildDateWhereItem($tableField, $val)." OR ";
+						}
 					}
 					if ($sql2 != '') {
-    					$sql2 = substr($sql2, 0, -4); // remove the last OR
-    					$sql .= " AND (" . $sql2 . ")";
+						$sql2 = substr($sql2, 0, -4); // remove the last OR
+						$sql .= " AND (".$sql2.")";
 					}
 				} else {
 					// Single value
@@ -459,13 +500,13 @@ class Genapp_Model_Generic_GenericService {
 					// Case of a list of values
 					$sql2 = '';
 					foreach ($value as $val) {
-					    if ($val != null && $val != '' && (is_numeric($val) or is_string($value))) {
-						  $sql2 .= $this->_buildNumericWhereItem($tableField, $val)." OR ";
-					    }
+						if ($val != null && $val != '' && (is_numeric($val) or is_string($value))) {
+							$sql2 .= $this->_buildNumericWhereItem($tableField, $val)." OR ";
+						}
 					}
 					if ($sql2 != '') {
-    					$sql2 = substr($sql2, 0, -4); // remove the last OR
-    					$sql .= " AND (" . $sql2 . ")";
+						$sql2 = substr($sql2, 0, -4); // remove the last OR
+						$sql .= " AND (".$sql2.")";
 					}
 				} else {
 					// Single value
@@ -473,6 +514,17 @@ class Genapp_Model_Generic_GenericService {
 						$sql .= " AND ".$this->_buildNumericWhereItem($tableField, $value);
 					}
 				}
+				break;
+			case "ARRAY":
+				if (is_array($value)) {
+					// Case of a list of values
+					$stringValue = $this->arrayToSQLString($value);
+					$sql .= " AND ".$column." @> '".$stringValue."'";
+				} else if (is_string($value)) {
+					// Single value
+					$sql .= " AND ANY(".$column.") = '".$value."'";
+				}
+
 				break;
 			case "CODE":
 			case "STRING":
@@ -482,7 +534,7 @@ class Genapp_Model_Generic_GenericService {
 						$value = $value[0];
 					}
 					if (is_string($value)) {
-					   $sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+						$sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
 					}
 				} else {
 					// String
@@ -490,24 +542,24 @@ class Genapp_Model_Generic_GenericService {
 						// Case of a list of values
 						$sql2 = '';
 						foreach ($value as $val) {
-						    if ($val != null && $val != '' && is_string($val)) {
-							    $sql2 .= "'".$val."', ";
-						    }
+							if ($val != null && $val != '' && is_string($val)) {
+								$sql2 .= "'".$val."', ";
+							}
 						}
 						if ($sql2 != '') {
-    						$sql2 = substr($sql2, 0, -2); // remove the last comma
-    						$sql .= " AND ".$column." IN (" . $sql2 . ")";
+							$sql2 = substr($sql2, 0, -2); // remove the last comma
+							$sql .= " AND ".$column." IN (".$sql2.")";
 						}
 					} else {
-					    if (is_string($value)) {
-    						// Single value
-    						$sql .= " AND ".$column;
-    						if ($useLike) {
-    							$sql .= " LIKE '%".$value."%'";
-    						} else {
-    							$sql .= " = '".$value."'";
-    						}
-					    }
+						if (is_string($value)) {
+							// Single value
+							$sql .= " AND ".$column;
+							if ($useLike) {
+								$sql .= " LIKE '%".$value."%'";
+							} else {
+								$sql .= " = '".$value."'";
+							}
+						}
 					}
 				}
 				break;
