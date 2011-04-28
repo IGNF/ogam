@@ -422,10 +422,16 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 	/**
 	 * AJAX function : Get the description of the columns of the result of the query.
 	 *
+	 * @param Boolean $withSQL indicate that we want the server to return the genetared SQL
 	 * @return JSON
 	 */
-	public function ajaxgetresultcolumnsAction() {
+	public function ajaxgetresultcolumnsAction($withSQL = false) {
 		$this->logger->debug('ajaxgetresultcolumns');
+
+		// withSQL flag value
+		if ($withSQL == null) {
+			$withSQL = $this->getRequest()->getPost('withSQL');
+		}
 
 		$configuration = Zend_Registry::get("configuration");
 		ini_set("max_execution_time", $configuration->max_execution_time);
@@ -517,7 +523,11 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 				$json .= '{name:"id",label:"Identifier of the line",inputType:"TEXT",definition:"The plot identifier", hidden:true},';
 				// Add the plot location in WKT
 				$json .= '{name:"location_centroid",label:"Location centroid",inputType:"TEXT",definition:"The plot location", hidden:true}';
-				$json .= ']}';
+				$json .= ']';
+				if ($withSQL) {
+					$json .= ', "SQL":'.json_encode($select.$fromwhere);
+				}
+				$json .= '}';
 			}
 
 		} catch (Exception $e) {
