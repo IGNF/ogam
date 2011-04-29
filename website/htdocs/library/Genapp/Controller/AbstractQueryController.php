@@ -737,6 +737,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		// Look for the plot location
 		$bb = null;
 		$bb2 = null;
+		$locationTable = null;
 		foreach ($data->getFields() as $field) {
 			if ($field->unit == "GEOM") {
 				// define a bbox around the location
@@ -744,6 +745,8 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 
 				// Prepare an overview bbox
 				$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+				
+				$locationTable = $data;
 				break;
 			}
 		}
@@ -756,6 +759,8 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 
 						// Prepare an overview bbox
 						$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+						
+						$locationTable = $ancestor;
 						break;
 					}
 				}
@@ -796,6 +801,9 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$json .= "&HEIGHT=300";
 		$json .= "&map.scalebar=STATUS+embed";
 		$json .= "&sessionid=".session_id();
+	    foreach($locationTable->getInfoFields() as $primaryKey){
+            $json .= '&' . $primaryKey->columnName . '=' . $primaryKey->value;
+        }
 		$json .= "'},"; // end of map
 		$json .= "{title:'overview',";
 		$json .= "url:'".$this->baseUrl."/proxy/gettile?";
@@ -814,6 +822,9 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$json .= "&sessionid=".session_id();
 		$json .= "&CLASS=REDSTAR";
 		$json .= "&map.scalebar=STATUS+embed";
+		foreach($locationTable->getInfoFields() as $primaryKey){
+		    $json .= '&' . $primaryKey->columnName . '=' . $primaryKey->value;
+		}
 		$json .= "'}"; // end of overview map
 		$json .= "]"; // end of maps
 		$json .= "}";

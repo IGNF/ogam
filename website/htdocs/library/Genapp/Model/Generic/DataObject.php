@@ -53,6 +53,15 @@ class Genapp_Model_Generic_DataObject {
 		return $this->infoFields[trim($key)];
 	}
 
+    /**
+     * Return the infoFields array .
+     *
+     * @return TableField the infoFields array
+     */
+    public function getInfoFields() {
+        return $this->infoFields;
+    }
+
 	/**
 	 * Add a field element.
 	 *
