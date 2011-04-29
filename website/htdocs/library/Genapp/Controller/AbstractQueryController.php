@@ -767,8 +767,19 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 			}
 		}
 
+		// Defines the panel title and the mapsserver parameters.
+        $mapservParams = '';
+        $title = '';
+        foreach($locationTable->getInfoFields() as $primaryKey){
+            $mapservParams .= '&' . $primaryKey->columnName . '=' . $primaryKey->value;
+            if($title !== ''){
+                $title .= '_';
+            }
+            $title .= $primaryKey->value;
+        }
+
 		// Title of the detail message
-		$json = "{title:'Detail', ";
+		$json = "{title:'$title', ";
 		$json .= "formats:[";
 		// List all the formats, starting with the ancestors
 		foreach ($ancestors as $ancestor) {
@@ -801,9 +812,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$json .= "&HEIGHT=300";
 		$json .= "&map.scalebar=STATUS+embed";
 		$json .= "&sessionid=".session_id();
-	    foreach($locationTable->getInfoFields() as $primaryKey){
-            $json .= '&' . $primaryKey->columnName . '=' . $primaryKey->value;
-        }
+	    $json .= $mapservParams;
 		$json .= "'},"; // end of map
 		$json .= "{title:'overview',";
 		$json .= "url:'".$this->baseUrl."/proxy/gettile?";
@@ -822,9 +831,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$json .= "&sessionid=".session_id();
 		$json .= "&CLASS=REDSTAR";
 		$json .= "&map.scalebar=STATUS+embed";
-		foreach($locationTable->getInfoFields() as $primaryKey){
-		    $json .= '&' . $primaryKey->columnName . '=' . $primaryKey->value;
-		}
+		$json .= $mapservParams;
 		$json .= "'}"; // end of overview map
 		$json .= "]"; // end of maps
 		$json .= "}";
