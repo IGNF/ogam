@@ -60,12 +60,12 @@ class Genapp_Model_Generic_GenericService {
 		$fields = "";
 		foreach ($data->getFields() as $tableField) {
 
-			// Get the form field correspondnig to the table field
-			$form = $this->getTableToFormMapping($tableField, true);
+			// Get the form field corresponding to the table field
+			$formField = $this->getTableToFormMapping($tableField, true);
 
 			// Add the corresponding JSON
-			if ($form != null) {
-				$fields .= $form->toDetailJSON().",";
+			if ($formField != null) {
+				$fields .= $formField->toDetailJSON().",";
 			}
 		}
 		// remove last comma
