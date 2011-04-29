@@ -19,7 +19,6 @@ class ProxyController extends Genapp_Controller_AbstractOGAMController {
 	public function init() {
 		parent::init();
 
-		$this->aggregationModel = new Application_Model_DbTable_Aggregation_Aggregation();
 		$this->classDefinitionModel = new Application_Model_DbTable_Mapping_ClassDefinition();
 	}
 
