@@ -160,7 +160,7 @@ LAYER
     CLASS
       NAME 'Result location'
       STYLE
-      	SIZE 12
+      	MINSIZE 3
         COLOR 238 153 0
         OUTLINECOLOR 238 153 0
         SYMBOL "circle"
@@ -197,9 +197,7 @@ LAYER
     CLASS
       NAME 'Plot location'
       STYLE
-      	SIZE 3
-      	MINSIZE 1
-		MAXSIZE 5
+      	MINSIZE 3
         COLOR 150 150 150
         OUTLINECOLOR 150 150 150
         SYMBOL "circle"
