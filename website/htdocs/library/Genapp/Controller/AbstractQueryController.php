@@ -491,7 +491,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 				$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField->format, $this->visualisationSRS);
 
 				// Calculate the number of lines of result
-				$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count FROM result_location WHERE session_id = '".$sessionId."'");
+				$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count ".$where);		
 
 				// Get the website session
 				$websiteSession = new Zend_Session_Namespace('website');
