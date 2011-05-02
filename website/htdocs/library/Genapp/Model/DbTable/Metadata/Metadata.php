@@ -264,6 +264,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			}
 			$req .= " AND table_format.schema_code = ? ";
 			$req .= " AND table_field.format = ? ";
+			$req .= " ORDER BY table_field.position ";
 
 			$this->logger->info('getTableFields : '.$req);
 
@@ -281,7 +282,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$tableField->format = $row['format'];
 				$tableField->columnName = $row['column_name'];
 				$tableField->isCalculated = $row['is_calculated'];
-				$tableField->isAggregatable = $row['is_aggregatable'];
+				$tableField->position = $row['position'];
 				$tableField->label = $row['label'];
 				$tableField->unit = $row['unit'];
 				$tableField->type = $row['type'];
@@ -341,7 +342,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableField->format = $row['format'];
 			$tableField->columnName = $row['column_name'];
 			$tableField->isCalculated = $row['is_calculated'];
-			$tableField->isAggregatable = $row['is_aggregatable'];
+			$tableField->position = $row['position'];
 			$tableField->label = $row['label'];
 			$tableField->unit = $row['unit'];
 			$tableField->type = $row['type'];
@@ -521,7 +522,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$param[] = $formFormat;
 			}
 
-			$req .= " ORDER BY position";
+			$req .= " ORDER BY form_field.position";
 
 			$this->logger->info('getFormFields : '.$req);
 
@@ -662,6 +663,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " WHERE table_field.format = ? ";
 		$req .= " AND mapping_type = 'FORM' ";
 		$req .= " AND form_field.is_result = '1'";
+		$req .= " ORDER BY table_field.position ";
 
 		$this->logger->info('getTableColumnsForDisplay : '.$req);
 
@@ -713,6 +715,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " AND src_data = ? ";
 			$req .= " AND schema_code = ? ";
 			$req .= " AND mapping_type = 'FORM'";
+			$req .= " ORDER BY table_field.position ";
 
 			$this->logger->info('getFormToTableMapping : '.$req);
 
@@ -725,7 +728,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableField->format = $row['format'];
 			$tableField->columnName = $row['column_name'];
 			$tableField->isCalculated = $row['is_calculated'];
-			$tableField->isAggregatable = $row['is_aggregatable'];
+			$tableField->position = $row['position'];
 			$tableField->label = $row['label'];
 			$tableField->unit = $row['unit'];
 			$tableField->type = $row['type'];
@@ -767,6 +770,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " LEFT JOIN unit on (data.unit = unit.unit)";
 			$req .= " WHERE field_mapping.dst_format = ? ";
 			$req .= " AND field_mapping.dst_data = ? ";
+			$req .= " ORDER BY form_field.position ";
 
 			$this->logger->info('getTableToFormMapping : '.$req);
 

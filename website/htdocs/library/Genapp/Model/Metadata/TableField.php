@@ -24,12 +24,6 @@ class Genapp_Model_Metadata_TableField extends Genapp_Model_Metadata_Field {
 	var $isCalculated;
 
 	/**
-	 * Indicate if an operation of agregation can be done on this field (for numeric values).
-	 * @var bool
-	 */
-	var $isAggregatable;
-
-	/**
 	 * The value of the field (this is not defined in the metadata database, it's the raw value of the data).
 	 * In case of a query request, can contain an array of authorised values (will generate a OR clause).
 	 * @var mixed
@@ -44,6 +38,11 @@ class Genapp_Model_Metadata_TableField extends Genapp_Model_Metadata_Field {
 	var $ymin;
 	var $ymax;
 	var $center;
+	
+	/**
+	 * The position of the table field to be displayed. This is used in the detail panel and in the data edition module. 
+	 */
+	var $position;
 
 	/**
 	 * Clone the field
