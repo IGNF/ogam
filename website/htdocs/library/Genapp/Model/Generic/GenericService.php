@@ -56,21 +56,23 @@ class Genapp_Model_Generic_GenericService {
 
 		$this->logger->info('datumToDetailJSON');
 
-		$json = "{title:'".$data->tableFormat->format."', is_array:false, fields:[";
-		$fields = "";
+		$json = "{title:'".$data->tableFormat->label."', is_array:false, fields:[";
+		$fields = '';
 		foreach ($data->getFields() as $tableField) {
 
 			// Get the form field corresponding to the table field
 			$formField = $this->getTableToFormMapping($tableField, true);
 
 			// Add the corresponding JSON
-			if ($formField != null) {
+			if ($formField != null and $formField->isResult) {
 				$fields .= $formField->toDetailJSON().",";
 			}
 		}
 		// remove last comma
-		if ($fields != "") {
+		if ($fields != '') {
 			$fields = substr($fields, 0, -1);
+		}else{
+		    return '';
 		}
 		$json .= $fields."]}";
 

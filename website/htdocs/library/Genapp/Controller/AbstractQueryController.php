@@ -783,7 +783,10 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$json .= "formats:[";
 		// List all the formats, starting with the ancestors
 		foreach ($ancestors as $ancestor) {
-			$json .= $this->genericService->datumToDetailJSON($ancestor).",";
+		    $ancestorJSON = $this->genericService->datumToDetailJSON($ancestor);
+			if($ancestorJSON !== ''){
+			    $json .= $ancestorJSON . ',';
+			}
 		}
 		// Add the current data
 		$json .= $this->genericService->datumToDetailJSON($data);

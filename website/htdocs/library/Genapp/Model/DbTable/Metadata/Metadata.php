@@ -390,6 +390,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableFormat->format = $format;
 			$tableFormat->schemaCode = $schema;
 			$tableFormat->tableName = $row['table_name'];
+			$tableFormat->label = $row['label'];
 			$pks = explode(",", $row['primary_key']);
 			foreach ($pks as $pk) {
 				$tableFormat->primaryKeys[] = trim($pk); // we need to trim all the values
