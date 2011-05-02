@@ -906,7 +906,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$maxLines = 5000;
 
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=UTF-8;application/force-download;', true);
+		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset='.$configuration->csvExportCharset.';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport.csv', true);
 
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -1000,13 +1000,12 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 						if ($tableField->type == "CODE" && $value != "") {
 							// Manage code traduction
 							$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
-							echo '"'.$label.'";';
+							$this->_print('"'.$label.'";');
 						} else {
-							echo '"'.($value == null ? '' : $value).'";';
+							$this->_print('"'.($value == null ? '' : $value).'";');
 						}
 					}
-
-					echo "\n";
+					$this->_print("\n");
 					$count++;
 				}
 
@@ -1030,7 +1029,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 	 */
 	private function _print($output) {
 		$configuration = Zend_Registry::get("configuration");
-		echo iconv("UTF-8", $configuration->charset, $output);
+		echo iconv("UTF-8", $configuration->csvExportCharset, $output);
 	}
 
 	/**
