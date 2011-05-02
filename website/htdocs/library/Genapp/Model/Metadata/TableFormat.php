@@ -12,7 +12,7 @@
 class Genapp_Model_Metadata_TableFormat extends Genapp_Model_Metadata_Format {
 
 	/**
-	 * The real name of the table
+	 * The real name of the table.
 	 */
 	var $tableName;
 
@@ -27,7 +27,7 @@ class Genapp_Model_Metadata_TableFormat extends Genapp_Model_Metadata_Format {
 	var $primaryKeys = array();
 	
 	/**
-	 * The label
+	 * The label.
 	 */
     var $label;
 }

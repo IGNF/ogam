@@ -335,7 +335,9 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 
 		// Get the childs of the data objet from the database (to generate links)
 		$children = $this->genericModel->getChildren($data);
-
+		
+		$childrenTableLabels = $this->metadataModel->getChildrenTableLabels($data->tableFormat);
+		
 		// Store the data descriptor in session
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->data = $data;
@@ -350,6 +352,7 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 		$this->view->children = $children;
 		$this->view->mode = $mode;
 		$this->view->message = $message;
+		$this->view->childrenTableLabels = $childrenTableLabels;
 
 		$this->render('edit-data');
 	}

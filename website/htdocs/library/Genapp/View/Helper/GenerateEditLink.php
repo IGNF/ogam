@@ -39,7 +39,7 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 		}
 
 		// output the result
-		return '<a href="'.$this->view->url($urlArray, null, true).'" class="tooltip">Edit '.$tableFormat.'<em><span></span>'.$tooltip.'</em></a>';
+		return '<a href="'.$this->view->url($urlArray, null, true).'" class="tooltip">Edit '.$data->tableFormat->label.'<em><span></span>'.$tooltip.'</em></a>';
 	}
 
 }

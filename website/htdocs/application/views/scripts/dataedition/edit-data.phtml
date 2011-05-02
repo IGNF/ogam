@@ -9,9 +9,9 @@
 <h1>
 <?php
 if ($this->mode == 'ADD') {
-	echo 'Add '.$this->tableFormat->format;
+	echo 'Add '.$this->tableFormat->label;
 } else {
-	echo 'Edit '.$this->tableFormat->format;
+	echo 'Edit '.$this->tableFormat->label;
 }
 ?>
 </h1>
@@ -36,7 +36,7 @@ foreach ($ancestors as $ancestor) {
 <!--  Les élements faisant partie de la clé sont grisés -->
 <!--  Les autres valeurs sont éditables -->
 <fieldset>
-<legend><?= $this->tableFormat->format; ?></legend>
+<legend><?= $this->tableFormat->label; ?></legend>
 <?= $this->form ?>
 </fieldset>
 
@@ -53,7 +53,8 @@ if (!empty($this->children)) {
 <?php
 	// Iterate though the child tables
 	foreach ($this->children as $childFormat => $childrenLines) {
-		echo "<fieldset><legend>".$childFormat."</legend>";
+
+		echo "<fieldset><legend>".$this->childrenTableLabels[$childFormat]."</legend>";
 
 		// Add the edit links for each child of the current item
 		foreach ($childrenLines as $child) {
@@ -63,8 +64,8 @@ if (!empty($this->children)) {
 		// Add link to a new child
 		$data = clone $this->data;
 		$data->tableFormat->format = $childFormat;
-		echo $this->generateAddLink($data)."<br/>";
-		
+		echo $this->generateAddLink($data, $this->childrenTableLabels[$childFormat])."<br/>";
+
 		echo "</fieldset>";
 	}
 ?>

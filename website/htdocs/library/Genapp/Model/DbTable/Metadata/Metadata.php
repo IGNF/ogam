@@ -920,4 +920,41 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		return $result;
 	}
+
+	/**
+	 * Get the labels of the children tables of a line of data.
+	 *
+	 * @param TableFormat $tableFormat the table format we're looking at.
+	 * @return Array[String => String] The labels for each table format.
+	 */
+	public function getChildrenTableLabels($tableFormat) {
+		$db = $this->getAdapter();
+
+		$childrenLabels = array();
+
+		Zend_Registry::get("logger")->info('getChildren');
+
+		// Get the children of the current table
+		$sql = "SELECT TABLE_TREE.child_table as format, TABLE_FORMAT.label ";
+		$sql .= " FROM TABLE_TREE ";
+		$sql .= " LEFT JOIN TABLE_FORMAT on (TABLE_TREE.child_table = TABLE_FORMAT.format) ";
+		$sql .= " WHERE TABLE_TREE.SCHEMA_CODE = '".$tableFormat->schemaCode."'";
+		$sql .= " AND parent_table = '".$tableFormat->format."'";
+
+		Zend_Registry::get("logger")->info('getChildren : '.$sql);
+
+		$select = $db->prepare($sql);
+		$select->execute();
+
+		foreach ($select->fetchAll() as $row) {
+			$format = $row['format'];
+			$label = $row['label'];
+
+			// Add to the result
+			$childrenLabels[$format] = $label;
+
+		}
+
+		return $childrenLabels;
+	}
 }

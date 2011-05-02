@@ -14,7 +14,7 @@ class Genapp_View_Helper_GenerateAddLink extends Zend_View_Helper_Abstract {
 	 * @param DataObject $data
 	 * @return the HTML link
 	 */
-	function generateAddLink($data) {
+	function generateAddLink($data, $tableLabel) {
 
 		$tableFormat = $data->tableFormat->format;
 
@@ -39,7 +39,7 @@ class Genapp_View_Helper_GenerateAddLink extends Zend_View_Helper_Abstract {
 		}
 
 		// output the result
-		return '<a href="'.$this->view->url($urlArray, null, true).'" class="tooltip">(+) Add '.$tableFormat.'<em><span></span>'.$tooltip.'</em></a>';
+		return '<a href="'.$this->view->url($urlArray, null, true).'" class="tooltip">(+) Add '.$tableLabel.'<em><span></span>'.$tooltip.'</em></a>';
 	}
 
 }
