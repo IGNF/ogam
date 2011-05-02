@@ -93,7 +93,7 @@ DATA                 VARCHAR(36)          not null,
 FORMAT               VARCHAR(36)          not null,
 COLUMN_NAME          VARCHAR(36)          null,
 IS_CALCULATED        CHAR(1)		      null,
-IS_AGGREGATABLE      CHAR(1)		      null,
+POSITION             INT4                 null,
 COMMENT		         VARCHAR(255)         null,
 constraint PK_TABLE_FIELD primary key (DATA, FORMAT)
 );
@@ -102,7 +102,7 @@ COMMENT ON COLUMN TABLE_FIELD.DATA IS 'The logical name of the field';
 COMMENT ON COLUMN TABLE_FIELD.FORMAT IS 'The name of the table format containing this field';
 COMMENT ON COLUMN TABLE_FIELD.COLUMN_NAME IS 'The real name of the column';
 COMMENT ON COLUMN TABLE_FIELD.IS_CALCULATED IS 'Indicate if the field should be provided for insertion (value = 0) or if it is calculated by a trigger function (value = 1)';
-COMMENT ON COLUMN TABLE_FIELD.IS_AGGREGATABLE IS 'Indicate if the field can be used as an aggegrated value';
+COMMENT ON COLUMN TABLE_FIELD.POSITION IS 'The position of this field in the table (for the detail panel and the edition module)';
 COMMENT ON COLUMN TABLE_FIELD.COMMENT IS 'Any comment';
 
 /*==============================================================*/
