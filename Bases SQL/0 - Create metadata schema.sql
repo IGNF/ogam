@@ -180,6 +180,7 @@ FORMAT               VARCHAR(36)          not null,
 TABLE_NAME           VARCHAR(36)          null,
 SCHEMA_CODE          VARCHAR(36)          null,
 PRIMARY_KEY          VARCHAR(255)         null,
+LABEL				 VARCHAR(255)         null,
 constraint PK_TABLE_FORMAT primary key (FORMAT)
 );
 
@@ -187,6 +188,7 @@ COMMENT ON COLUMN TABLE_FORMAT.FORMAT IS 'The logical name of the format';
 COMMENT ON COLUMN TABLE_FORMAT.TABLE_NAME IS 'The real name of the table';
 COMMENT ON COLUMN TABLE_FORMAT.SCHEMA_CODE IS 'The code of the schema (not used)';
 COMMENT ON COLUMN TABLE_FORMAT.PRIMARY_KEY IS 'The list of table fields used to identify one line of this table (separated by commas)';
+COMMENT ON COLUMN TABLE_FORMAT.LABEL IS 'A label for the table (displayed on the detail panel)';
 
 /*==============================================================*/
 /* Table : MODE                                                 */
