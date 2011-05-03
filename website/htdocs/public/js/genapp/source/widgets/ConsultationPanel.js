@@ -155,6 +155,11 @@ listeners: {
      */
     hidePredefinedRequestSaveButton : true,
     /**
+     * @cfg {Boolean} hideGridDataEditButton
+     * if true hide the grid data edit button (defaults to true).
+     */
+    hideGridDataEditButton : true,
+    /**
      * @cfg {String} userManualLinkHref
      * The user Manual Link Href (defaults to <tt>'Genapp.base_url + 'pdf/User_Manual.pdf''</tt>)
      */
@@ -234,6 +239,11 @@ listeners: {
      * The grid Panel Tab Tip (defaults to <tt>'The request's results'</tt>)
      */
     gridPanelTabTip:'The request\'s results',
+    /**
+     * @cfg {Number} gridPageSize
+     * The grid page size (defaults to <tt>20</tt>)
+     */
+    gridPageSize: 20,
     /**
      * @cfg {String} centerPanelTitle
      * The center Panel Title (defaults to <tt>'Result Panel'</tt>)
@@ -599,7 +609,7 @@ listeners: {
          * @type Ext.PagingToolbar
          */
         this.pagingToolbar = new Ext.PagingToolbar({
-            pageSize: Genapp.grid.pagesize,
+            pageSize: this.gridPageSize,
             store: this.gridDS,
             displayInfo: true
         });
@@ -1049,6 +1059,10 @@ listeners: {
                         iconCls:'genapp-query-center-panel-aggregation-csv-export-menu-item-icon',
                         disabled:true
                     }));
+                }
+                // Hide the csv export button if there are no menu items
+                if(Ext.isEmpty(csvExportMenuItems)){
+                    this.hideCsvExportButton = true;
                 }
                 if(!this.hideCsvExportButton){
                     this.csvExportButton = addTopButton({
@@ -1566,16 +1580,18 @@ listeners: {
                     newRF.push(readerFieldsConf);
                 }
 
-                newCM.push({
-                    dataIndex:'rightTools',
-                    header:'',
-                    renderer:this.renderRightTools.createDelegate(this),
-                    sortable:false,
-                    fixed:true,
-                    menuDisabled:true,
-                    align:'center',
-                    width:30
-                });
+                if(!this.hideGridDataEditButton){
+                    newCM.push({
+                        dataIndex:'rightTools',
+                        header:'',
+                        renderer:this.renderRightTools.createDelegate(this),
+                        sortable:false,
+                        fixed:true,
+                        menuDisabled:true,
+                        align:'center',
+                        width:30
+                    });
+                }
 
                 // Updates of the store reader metadata
                 this.gridDSReader.updateMetadata({
@@ -1609,7 +1625,7 @@ listeners: {
                 this.gridPanel.getStore().load({
                     params:{
                         start: 0,
-                        limit: Genapp.grid.pagesize
+                        limit: this.gridPageSize
                     },
                     callback : function(){
                         this.requestConn = null;

@@ -663,24 +663,28 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		$this->view->hideExportCSV = 'true'; // By defaut the export is hidden
-		$this->view->hideInterpolationMenuItem = 'true';
+		$this->view->hideGridCsvExportMenuItem = 'true'; // By defaut the export is hidden
+		$this->view->hideInterpolationButton = 'true';
 		$this->view->hideAggregationCsvExportMenuItem = 'true';
 		$this->view->hideAggregationButton = 'true';
+		$this->view->hideGridDataEditButton = 'true';
 		if (!empty($permissions)) {
 			if ($this->schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) {
-				$this->view->hideExportCSV = 'false';
+				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
 			if ($this->schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions)) {
-				$this->view->hideExportCSV = 'false';
+				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
 			if ($this->schema == 'HARMONIZED_DATA' && array_key_exists('DATA_QUERY_AGGREGATED', $permissions)) {
 				$this->view->hideAggregationButton = 'false';
 				$this->view->hideAggregationCsvExportMenuItem = 'false';
 			}
 			if ($this->schema == 'HARMONIZED_DATA' && array_key_exists('DATA_INTERPOLATION', $permissions)) {
-				$this->view->hideInterpolationMenuItem = 'false';
+				$this->view->hideInterpolationButton = 'false';
 			}
+		    if (($this->schema == 'RAW_DATA' || $this->schema == 'HARMONIZED_DATA') && array_key_exists('DATA_EDITION', $permissions)) {
+                $this->view->hideGridDataEditButton = 'false';
+            }
 
 		}
 		$this->_helper->layout()->disableLayout();
