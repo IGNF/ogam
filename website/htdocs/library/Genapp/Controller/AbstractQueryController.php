@@ -896,7 +896,10 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 	 */
 	public function gridCsvExportAction() {
 
-		$this->logger->debug('gridCsvExportAction');
+        $this->logger->debug('gridCsvExportAction');
+
+        $userSession = new Zend_Session_Namespace('user');
+        $permissions = $userSession->permissions;
 
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
@@ -908,115 +911,121 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset='.$configuration->csvExportCharset.';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport.csv', true);
 
-		$websiteSession = new Zend_Session_Namespace('website');
-		$select = $websiteSession->SQLSelect;
-		$fromwhere = $websiteSession->SQLFromWhere;
-		$sql = $select.$fromwhere;
+    	if (($this->schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions))
+        || ($this->schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
 
-		// Count the number of lines
-		$total = $websiteSession->count;
-		$this->logger->debug('Expected lines : '.$total);
-
-		if ($sql == null) {
-			$this->_print('// No Data');
-		} else if ($total > 65535) {
-			$this->_print('// Too many result lines');
-		} else {
-
-			// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
-			if ($configuration->charset == 'UTF-8') {
-				echo(chr(0xEF));
-				echo(chr(0xBB));
-				echo(chr(0xBF));
-			}
-
-			// Retrive the session-stored info
-			$resultColumns = $websiteSession->resultColumns; // array of TableField
-
-			// Prepare the needed traductions
-			$traductions = array();
-			foreach ($resultColumns as $tableField) {
-				if ($tableField->type == "CODE") {
-					$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
-				}
-			}
-			// Display the default message
-			$this->_print('// *************************************************'."\n");
-			$this->_print('// Data Export'."\n");
-			$this->_print('// *************************************************'."\n\n");
-
-			// Export the column names
-			$this->_print('// ');
-			foreach ($resultColumns as $tableField) {
-				$this->_print($tableField->label.';');
-			}
-			$this->_print("\n");
-
-			// Get the order parameters
-			$sort = $this->getRequest()->getPost('sort');
-			$sortDir = $this->getRequest()->getPost('dir');
-
-			$filter = "";
-
-			if ($sort != "") {
-				// $sort contains the form format and field
-				$split = explode("__", $sort);
-				$formField = new Genapp_Model_Metadata_FormField();
-				$formField->format = $split[0];
-				$formField->data = $split[1];
-				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
-				$key = $tableField->format.'__'.$tableField->data;
-				$filter .= " ORDER BY ".$key." ".$sortDir.", id";
-			} else {
-				$filter .= " ORDER BY id";
-			}
-
-			// Define the max number of lines returned
-			$limit = " LIMIT ".$maxLines." ";
-
-			$count = 0;
-			$page = 0;
-			$finished = false;
-			while (!$finished) {
-
-				// Pb with memory limit, with PHP 5.2 we don't have a garbage collector
-
-				// Define the position of the cursor in the dataset
-				$offset = " OFFSET ".($page * $maxLines)." ";
-
-				// Execute the request
-				$this->logger->debug('reading data ... page '.$page);
-				$result = $this->genericModel->executeRequest($sql.$filter.$limit.$offset);
-
-				// Export the lines of data
-				foreach ($result as $line) {
-
-					foreach ($resultColumns as $tableField) {
-
-						$key = strtolower($tableField->format.'__'.$tableField->data);
-						$value = $line[$key];
-
-						if ($tableField->type == "CODE" && $value != "") {
-							// Manage code traduction
-							$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
-							$this->_print('"'.$label.'";');
-						} else {
-							$this->_print('"'.($value == null ? '' : $value).'";');
-						}
-					}
-					$this->_print("\n");
-					$count++;
-				}
-
-				// Check we have read everything
-				if ($count == $total) {
-					$finished = true;
-				}
-
-				$page++;
-
-			}
-		}
+    		$websiteSession = new Zend_Session_Namespace('website');
+    		$select = $websiteSession->SQLSelect;
+    		$fromwhere = $websiteSession->SQLFromWhere;
+    		$sql = $select.$fromwhere;
+    
+    		// Count the number of lines
+    		$total = $websiteSession->count;
+    		$this->logger->debug('Expected lines : '.$total);
+    
+    		if ($sql == null) {
+    			$this->_print('// No Data');
+    		} else if ($total > 65535) {
+    			$this->_print('// Too many result lines');
+    		} else {
+    
+    			// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
+    			if ($configuration->charset == 'UTF-8') {
+    				echo(chr(0xEF));
+    				echo(chr(0xBB));
+    				echo(chr(0xBF));
+    			}
+    
+    			// Retrive the session-stored info
+    			$resultColumns = $websiteSession->resultColumns; // array of TableField
+    
+    			// Prepare the needed traductions
+    			$traductions = array();
+    			foreach ($resultColumns as $tableField) {
+    				if ($tableField->type == "CODE") {
+    					$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
+    				}
+    			}
+    			// Display the default message
+    			$this->_print('// *************************************************'."\n");
+    			$this->_print('// Data Export'."\n");
+    			$this->_print('// *************************************************'."\n\n");
+    
+    			// Export the column names
+    			$this->_print('// ');
+    			foreach ($resultColumns as $tableField) {
+    				$this->_print($tableField->label.';');
+    			}
+    			$this->_print("\n");
+    
+    			// Get the order parameters
+    			$sort = $this->getRequest()->getPost('sort');
+    			$sortDir = $this->getRequest()->getPost('dir');
+    
+    			$filter = "";
+    
+    			if ($sort != "") {
+    				// $sort contains the form format and field
+    				$split = explode("__", $sort);
+    				$formField = new Genapp_Model_Metadata_FormField();
+    				$formField->format = $split[0];
+    				$formField->data = $split[1];
+    				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
+    				$key = $tableField->format.'__'.$tableField->data;
+    				$filter .= " ORDER BY ".$key." ".$sortDir.", id";
+    			} else {
+    				$filter .= " ORDER BY id";
+    			}
+    
+    			// Define the max number of lines returned
+    			$limit = " LIMIT ".$maxLines." ";
+    
+    			$count = 0;
+    			$page = 0;
+    			$finished = false;
+    			while (!$finished) {
+    
+    				// Pb with memory limit, with PHP 5.2 we don't have a garbage collector
+    
+    				// Define the position of the cursor in the dataset
+    				$offset = " OFFSET ".($page * $maxLines)." ";
+    
+    				// Execute the request
+    				$this->logger->debug('reading data ... page '.$page);
+    				$result = $this->genericModel->executeRequest($sql.$filter.$limit.$offset);
+    
+    				// Export the lines of data
+    				foreach ($result as $line) {
+    
+    					foreach ($resultColumns as $tableField) {
+    
+    						$key = strtolower($tableField->format.'__'.$tableField->data);
+    						$value = $line[$key];
+    
+    						if ($tableField->type == "CODE" && $value != "") {
+    							// Manage code traduction
+    							$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+    							$this->_print('"'.$label.'";');
+    						} else {
+    							$this->_print('"'.($value == null ? '' : $value).'";');
+    						}
+    					}
+    					$this->_print("\n");
+    					$count++;
+    				}
+    
+    				// Check we have read everything
+    				if ($count == $total) {
+    					$finished = true;
+    				}
+    
+    				$page++;
+    
+    			}
+    		 }
+         } else {
+             $this->_print('// No Permissions');
+         }
 
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
