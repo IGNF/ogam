@@ -656,11 +656,6 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 	public function getgridparametersAction() {
 		$this->logger->debug('getgridparametersAction');
 
-		// Get the parameters from configuration file
-		$configuration = Zend_Registry::get("configuration");
-
-		$this->view->pagesize = $configuration->pagesize; // Number of lines on a page
-
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
 		$this->view->hideGridCsvExportMenuItem = 'true'; // By defaut the export is hidden
