@@ -15,7 +15,7 @@ if (file_exists(APPLICATION_PATH.'/../../inherent')) {
 }
 
 // Define current base url
-define('BASE_URL', substr($_ENV['REQUEST_URI'], 0, strrpos($_ENV['REQUEST_URI'],'index.php')) .'/');
+define('BASE_URL', substr($_ENV['REDIRECT_URL'], 0, strrpos($_ENV['REDIRECT_URL'],'index.php') - 1 ) .'/');
 
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
