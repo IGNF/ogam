@@ -10,8 +10,8 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV
 define('DATE_STAMP', date('Y-m-d'));
 
 // Define path to inherent application directory
-if (file_exists(APPLICATION_PATH.'/../../inherent')) {
-    define('INHERENT_APPLICATION_PATH', APPLICATION_PATH.'/../../inherent/application');
+if (file_exists(APPLICATION_PATH.'/../../oison')) {
+    define('INHERENT_APPLICATION_PATH', APPLICATION_PATH.'/../../oison/application');
 }
 
 // Define current base url
@@ -42,3 +42,5 @@ if (defined('INHERENT_APPLICATION_PATH') && file_exists(INHERENT_APPLICATION_PAT
     $patchConfiguration = new Zend_Config_Ini($applicationIniPatchPath, APPLICATION_ENV);
     $ApplicationConf->merge($patchConfiguration);
 }
+
+define('BASE_URL', substr($_ENV['REDIRECT_URL'], 0, -9)); //remove index.php
