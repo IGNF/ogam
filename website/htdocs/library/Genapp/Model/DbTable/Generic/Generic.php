@@ -55,7 +55,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 		$db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
 
-		Zend_Registry::get("logger")->info('executeRequest : '.$sql);
+		$this->logger->info('executeRequest : '.$sql);
 
 		$result = $db->fetchAll($sql);
 
@@ -75,14 +75,14 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		$tableFormat = $data->tableFormat;
 
-		Zend_Registry::get("logger")->info('getDatum : '.$tableFormat->format);
+		$this->logger->info('getDatum : '.$tableFormat->format);
 
 		// Get the values from the data table
 		$sql = "SELECT ".$this->genericService->buildSelect($data->getFields());
 		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName." AS ".$tableFormat->format;
 		$sql .= " WHERE(1 = 1) ".$this->genericService->buildWhere($data->infoFields);
 
-		Zend_Registry::get("logger")->info('getDatum : '.$sql);
+		$this->logger->info('getDatum : '.$sql);
 
 		$select = $db->prepare($sql);
 		$select->execute();
@@ -121,7 +121,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 	public function getData($data) {
 		$db = $this->getAdapter();
 
-		Zend_Registry::get("logger")->info('getData');
+		$this->logger->info('getData');
 
 		$result = array();
 
@@ -133,7 +133,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName." AS ".$tableFormat->format;
 		$sql .= " WHERE(1 = 1) ".$this->genericService->buildWhere($data->infoFields);
 
-		Zend_Registry::get("logger")->info('getDatum : '.$sql);
+		$this->logger->info('getDatum : '.$sql);
 
 		$select = $db->prepare($sql);
 		$select->execute();
@@ -174,7 +174,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		Zend_Registry::get("logger")->info('updateData');
+		$this->logger->info('updateData');
 
 		// Get the values from the data table
 		$sql = "UPDATE ".$tableFormat->schemaCode.".".$tableFormat->tableName;
@@ -229,14 +229,14 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 			}
 		}
 
-		Zend_Registry::get("logger")->info('updateData : '.$sql);
+		$this->logger->info('updateData : '.$sql);
 
 		$request = $db->prepare($sql);
 
 		try {
 			$request->execute();
 		} catch (Exception $e) {
-			Zend_Registry::get("logger")->err('Error while updating data  : '.$e->getMessage());
+			$this->logger->err('Error while updating data  : '.$e->getMessage());
 			throw new Exception("Error while updating data  : ".$e->getMessage());
 		}
 
@@ -255,9 +255,8 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		Zend_Registry::get("logger")->info('insertData');
-		Zend_Registry::get("logger")->info('data : '.print_r($data, true));
-
+		$this->logger->info('insertData');
+		
 		// Get the values from the data table
 		$sql = "INSERT INTO ".$tableFormat->schemaCode.".".$tableFormat->tableName;
 		$columns = "";
@@ -313,14 +312,14 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		$sql .= "(".$columns.") VALUES (".$values.")";
 
-		Zend_Registry::get("logger")->info('insertData : '.$sql);
+		$this->logger->info('insertData : '.$sql);
 
 		$request = $db->prepare($sql);
 
 		try {
 			$request->execute();
 		} catch (Exception $e) {
-			Zend_Registry::get("logger")->err('Error while inserting data  : '.$e->getMessage());
+			$this->logger->err('Error while inserting data  : '.$e->getMessage());
 			throw new Exception("Error while inserting data  : ".$e->getMessage());
 		}
 
@@ -343,7 +342,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		Zend_Registry::get("logger")->info('getAncestors');
+		$this->logger->info('getAncestors');
 
 		// Get the parent of the current table
 		$sql = "SELECT *";
@@ -351,7 +350,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$sql .= " WHERE SCHEMA_CODE = '".$tableFormat->schemaCode."'";
 		$sql .= " AND child_table = '".$tableFormat->format."'";
 
-		Zend_Registry::get("logger")->info('getAncestors : '.$sql);
+		$this->logger->info('getAncestors : '.$sql);
 
 		$select = $db->prepare($sql);
 		$select->execute();
@@ -401,7 +400,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		Zend_Registry::get("logger")->info('getChildren');
+		$this->logger->info('getChildren');
 
 		// Get the children of the current table
 		$sql = "SELECT *";
@@ -409,7 +408,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$sql .= " WHERE SCHEMA_CODE = '".$tableFormat->schemaCode."'";
 		$sql .= " AND parent_table = '".$tableFormat->format."'";
 
-		Zend_Registry::get("logger")->info('getChildren : '.$sql);
+		$this->logger->info('getChildren : '.$sql);
 
 		$select = $db->prepare($sql);
 		$select->execute();
