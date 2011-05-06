@@ -2,6 +2,11 @@
 
 <project name="OGAMIntegrationService" default="deploy" basedir=".">
 
+    <!-- Properties are immutable: 
+    whoever sets a property first freezes it for the rest of the build;
+    they are most definitely not variables. -->
+    <property file="../build_properties/service_integration.ppt"/>
+
 	<!-- Définition des properties -->
 	<property name="application.name" value="OGAM" />
 	<property name="workspace.dir" value="${basedir}/../.." />

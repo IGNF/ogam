@@ -1,7 +1,33 @@
 <?xml version="1.0"?>
 <project name="eForest" default="deployWebSite" basedir=".">
 
-    <property file="build.properties"/>
+    <!-- Properties are immutable: 
+    whoever sets a property first freezes it for the rest of the build;
+    they are most definitely not variables. -->
+	<property file="build.ppt"/>
+
+    <!-- Define the properties -->
+    <property name="libraries.dir" value="../../libs_php" />
+    <property name="libraries_java.dir" value="../../libs_java" />
+    <property name="application.dir" value="./htdocs/application/" />
+    <property name="src.dir" value="./htdocs/" />
+    <property name="dist.dir" value="${java.io.tmpdir}dist/ogam" />
+    <property name="test_result.dir" value="./test_result" />
+    
+     <!-- You need to checkout on your workspace the libs_java project hosted on the repository for the yuicompressor files -->
+    <property name="cps.yui.compressor.jar" value="${libraries_java.dir}/lib/ant/yuicompressor/yuicompressor-2.4.2.jar" />
+    <property name="cps.yui.compressor.ant.task.jar" value="${libraries_java.dir}/lib/ant/yuicompressor/yui-compressor-ant-task-0.4.jar" />
+       
+    
+    <!-- Define the properties -->
+    <property name="cps.dir" value="${src.dir}public/js/genapp" />
+    <property name="cps.src.dir" value="${cps.dir}/source" />
+    <property name="cps.resrcs.dir" value="${cps.dir}/resources/css" />
+    <property name="cps.name" value="genapp" />
+    <property name="cps.js.pack.path" value="${cps.dir}/${cps.name}.pack.js" />
+    <property name="cps.css.pack.path" value="${cps.resrcs.dir}/${cps.name}.pack.css" />
+    <property name="cps.js.min.path" value="${cps.dir}/${cps.name}.pack-min.js" />
+    <property name="cps.css.min.path" value="${cps.resrcs.dir}/${cps.name}.pack-min.css" />
 
 	 <!-- Define the class path for yui-compressor -->
     <path id="cps.task.classpath">
@@ -60,17 +86,17 @@
     <!-- Concats the css themes files  -->
     <target name="compressCssThemes">
         <!-- Clean up -->
-        <delete file="${cps.resrcs.dir}/genapp-gray-extend-all.css" quiet="true"/>
-        <delete file="${cps.resrcs.dir}/genapp-green-ifn-all.css" quiet="true"/>
+        <delete file="${cps.resrcs.dir}/${cps.name}-gray-extend-all.css" quiet="true"/>
+        <delete file="${cps.resrcs.dir}/${cps.name}-green-ifn-all.css" quiet="true"/>
 
         <!-- Concatenation of the gray extend CSS file -->
-        <concat destfile="${cps.resrcs.dir}/genapp-gray-extend-all.css">
+        <concat destfile="${cps.resrcs.dir}/${cps.name}-gray-extend-all.css">
             <fileset file="${src.dir}public/js/genapp/resources/css/structure/genapp.css" />
             <fileset file="${src.dir}public/js/genapp/resources/css/visual/genapp-gray-extend.css" />
         </concat>
 
     	<!-- Concatenation of the green ifn CSS file -->
-        <concat destfile="${cps.resrcs.dir}/genapp-green-ifn-all.css">
+        <concat destfile="${cps.resrcs.dir}/${cps.name}-green-ifn-all.css">
             <fileset file="${src.dir}public/js/genapp/resources/css/structure/genapp.css" />
             <fileset file="${src.dir}public/js/genapp/resources/css/visual/genapp-green-ifn.css" />
         </concat>
