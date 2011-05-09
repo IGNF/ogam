@@ -29,8 +29,12 @@
 
 	<!-- Suppression des répertoires de déploiement -->
 	<target name="cleanest" description="Removes all the generated files or directories">
-		<delete dir="${classes.dir}" />
-		<mkdir dir="${classes.dir}" />
+		<delete>
+	         <fileset dir="${classes.dir}">
+	            <include name="**/*.*" />
+	            <exclude name=".svn" />
+	         </fileset>
+		</delete>
 	</target>
 
 	<!-- Compile les sources -->
