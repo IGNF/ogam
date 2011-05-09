@@ -2,6 +2,11 @@
 
 <project name="OGAM Generation rapport Web App" default="deploy" basedir=".">
 
+    <!-- Properties are immutable: 
+    whoever sets a property first freezes it for the rest of the build;
+    they are most definitely not variables. -->
+    <property file="../configs/service_generation_rapport/build.ppts"/>
+
 	<!-- Définition des properties -->
 	<property name="application.name" value="OGAM" />
 	<property name="workspace.dir" value="${basedir}/../.." />
@@ -96,11 +101,9 @@
 		</copy>
 		
 		<!-- Copie du fichier de config tomcat -->
-		<copy todir="${deploy.dir}/../conf/Catalina/localhost">
-			<fileset dir="${config.dir}">
-			</fileset>
-		</copy>
-  		
+	    <copy file="${config.dir}/${deploy.name}.xml" todir="${deploy.dir}/../conf/Catalina/localhost" failonerror="false" />
+	    <copy file="../configs/service_generation_rapport/${deploy.name}.xml" todir="${deploy.dir}/../conf/Catalina/localhost" failonerror="false" />
+
 	</target>
 	
 

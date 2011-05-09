@@ -4,7 +4,7 @@
     <!-- Properties are immutable: 
     whoever sets a property first freezes it for the rest of the build;
     they are most definitely not variables. -->
-	<property file="build.ppt"/>
+	<property file="build.ppts"/>
 
     <!-- Define the properties -->
     <property name="libraries.dir" value="../../libs_php" />
