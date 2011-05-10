@@ -33,6 +33,7 @@ public class MetadataDAO {
 	private static LocalCache tableNamesCache = LocalCache.getLocalCache();
 	private static LocalCache modesCache = LocalCache.getLocalCache();
 	private static LocalCache modeExistCache = LocalCache.getLocalCache();
+	private static LocalCache treemodeExistCache = LocalCache.getLocalCache();
 	private static LocalCache rangeCache = LocalCache.getLocalCache();
 	private static LocalCache fileFieldsCache = LocalCache.getLocalCache();
 	private static LocalCache datasetFileCache = LocalCache.getLocalCache();
@@ -41,7 +42,7 @@ public class MetadataDAO {
 	/**
 	 * Get the fields of a csv file format.
 	 */
-	private static final String GET_FILE_FIELDS_STMT = "SELECT file_field.*, data.label as label, data.unit, unit.type as type, data.definition as definition "
+	private static final String GET_FILE_FIELDS_STMT = "SELECT file_field.*, data.label as label, data.unit, unit.type as type, unit.subtype as subtype, data.definition as definition "
 			+ //
 			" FROM file_field " + //
 			" LEFT JOIN data on (file_field.data = data.data)" + //
@@ -52,7 +53,8 @@ public class MetadataDAO {
 	/**
 	 * Get description of one field.
 	 */
-	private static final String GET_FILE_FIELD_STMT = "SELECT file_field.*, data.label as label, data.unit, unit.type as type, data.definition as definition " + //
+	private static final String GET_FILE_FIELD_STMT = "SELECT file_field.*, data.label as label, data.unit, unit.type as type, unit.subtype as subtype, data.definition as definition "
+			+ //
 			" FROM file_field " + //
 			" LEFT JOIN data on (file_field.data = data.data) " + //
 			" LEFT JOIN unit on (data.unit = unit.unit) " + //
@@ -61,7 +63,8 @@ public class MetadataDAO {
 	/**
 	 * Get the fields of a table format.
 	 */
-	private static final String GET_TABLE_FIELDS_STMT = "SELECT table_field.*, table_name,  data.label, data.unit, unit.type, data.definition " + //
+	private static final String GET_TABLE_FIELDS_STMT = "SELECT table_field.*, table_name,  data.label, data.unit, unit.type, unit.subtype as subtype, data.definition "
+			+ //
 			" FROM table_format " + //
 			" LEFT JOIN table_field on (table_field.format = table_format.format) " + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
@@ -71,7 +74,8 @@ public class MetadataDAO {
 	/**
 	 * Get the description of one field of a table format.
 	 */
-	private static final String GET_TABLE_FIELD_STMT = "SELECT table_field.*, table_name, data.label, data.unit, unit.type, data.definition " + //
+	private static final String GET_TABLE_FIELD_STMT = "SELECT table_field.*, table_name, data.label, data.unit, unit.type, unit.subtype as subtype, data.definition "
+			+ //
 			" FROM table_format " + //
 			" LEFT JOIN table_field on (table_field.format = table_format.format) " + //
 			" LEFT JOIN data on (table_field.data = data.data) " + //
@@ -82,7 +86,7 @@ public class MetadataDAO {
 	/**
 	 * Get the destination columns of the file to table mapping.
 	 */
-	private static final String GET_FILE_TO_TABLE_MAPPING_STMT = "SELECT table_field.*, field_mapping.src_data, table_name, data.label, data.unit, unit.type, data.definition "
+	private static final String GET_FILE_TO_TABLE_MAPPING_STMT = "SELECT table_field.*, field_mapping.src_data, table_name, data.label, data.unit, unit.type, unit.subtype as subtype, data.definition "
 			+ //
 			" FROM field_mapping" + //
 			" LEFT JOIN table_format on (field_mapping.dst_format = table_format.format) " + //
@@ -95,7 +99,8 @@ public class MetadataDAO {
 	/**
 	 * Get the destination columns of the table to table mapping (harmonization).
 	 */
-	private static final String GET_TABLE_TO_TABLE_MAPPING_STMT = "SELECT table_field.*, table_name, data.label, data.unit, unit.type, data.definition  " + //
+	private static final String GET_TABLE_TO_TABLE_MAPPING_STMT = "SELECT table_field.*, table_name, data.label, data.unit, unit.type, unit.subtype as subtype, data.definition  "
+			+ //
 			" FROM field_mapping" + //
 			" LEFT JOIN table_format on (field_mapping.dst_format = table_format.format) " + //
 			" LEFT JOIN table_field on (field_mapping.dst_format = table_field.format and field_mapping.dst_data = table_field.data)" + //
@@ -107,7 +112,7 @@ public class MetadataDAO {
 	/**
 	 * Get the destination columns of the table to table mapping (harmonization).
 	 */
-	private static final String GET_DATASET_HARMONIZED_FIELDS_STMT = "SELECT table_field.*, field_mapping.src_data, table_name, data.label, data.unit, unit.type, data.definition  "
+	private static final String GET_DATASET_HARMONIZED_FIELDS_STMT = "SELECT table_field.*, field_mapping.src_data, table_name, data.label, data.unit, unit.type, unit.subtype as subtype, data.definition  "
 			+ //
 			" FROM field_mapping" + //
 			" LEFT JOIN table_format on (field_mapping.dst_format = table_format.format) " + //
@@ -156,7 +161,12 @@ public class MetadataDAO {
 	/**
 	 * Check if a mode exists.
 	 */
-	private static final String CHECK_MODE_EXIST_STMT = "SELECT mode FROM mode WHERE unit = ? AND code = ?";
+	private static final String CHECK_MODE_EXIST_STMT = "SELECT code FROM mode WHERE unit = ? AND code = ?";
+
+	/**
+	 * Check if a tree mode exists.
+	 */
+	private static final String CHECK_TREE_MODE_EXIST_STMT = "SELECT code FROM mode_tree WHERE unit = ? AND code = ?";
 
 	/**
 	 * Get a range value.
@@ -344,7 +354,7 @@ public class MetadataDAO {
 	 * Check that a code value correspond to an existing code (used during conformity checking).
 	 * 
 	 * @param unit
-	 *            The unit ot test
+	 *            The unit to test
 	 * @param mode
 	 *            The mode to test
 	 * @return true if the mode exist for this unit
@@ -373,6 +383,71 @@ public class MetadataDAO {
 
 				if (rs.next()) {
 					modeExistCache.put(key, rs.getString(1));
+					result = true;
+				}
+
+			}
+
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Check that a code value correspond to an existing code (used during conformity checking).
+	 * 
+	 * @param unit
+	 *            The unit to test
+	 * @param mode
+	 *            The mode to test
+	 * @return true if the mode exist for this unit
+	 */
+	public boolean checkTreeCode(String unit, String mode) throws Exception {
+		boolean result = false;
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+
+			String key = unit + "_" + mode;
+			Object foundValue = treemodeExistCache.get(key);
+
+			if (foundValue != null) {
+				return true;
+			} else {
+
+				con = getConnection();
+
+				ps = con.prepareStatement(CHECK_TREE_MODE_EXIST_STMT);
+				ps.setString(1, unit);
+				ps.setString(2, mode);
+				logger.trace(CHECK_TREE_MODE_EXIST_STMT);
+				rs = ps.executeQuery();
+
+				if (rs.next()) {
+					treemodeExistCache.put(key, rs.getString(1));
 					result = true;
 				}
 
@@ -671,6 +746,7 @@ public class MetadataDAO {
 				field.setData(rs.getString("data"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
+				field.setSubtype(rs.getString("subtype"));
 				field.setUnit(rs.getString("unit"));
 				field.setColumnName(rs.getString("column_name"));
 				field.setTableName(rs.getString("table_name"));
@@ -734,6 +810,7 @@ public class MetadataDAO {
 				field.setData(rs.getString("data"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
+				field.setSubtype(rs.getString("subtype"));
 				field.setUnit(rs.getString("unit"));
 				field.setColumnName(rs.getString("column_name"));
 				field.setTableName(rs.getString("table_name"));
@@ -797,6 +874,7 @@ public class MetadataDAO {
 				result.setLabel(rs.getString("label"));
 				result.setUnit(rs.getString("unit"));
 				result.setType(rs.getString("type"));
+				result.setSubtype(rs.getString("subtype"));
 				result.setDefinition(rs.getString("definition"));
 				result.setIsMandatory(rs.getBoolean("is_mandatory"));
 				result.setMask(rs.getString("mask"));
@@ -865,6 +943,7 @@ public class MetadataDAO {
 					field.setLabel(rs.getString("label"));
 					field.setUnit(rs.getString("unit"));
 					field.setType(rs.getString("type"));
+					field.setSubtype(rs.getString("subtype"));
 					field.setDefinition(rs.getString("definition"));
 					field.setIsMandatory(rs.getBoolean("is_mandatory"));
 					field.setMask(rs.getString("mask"));
@@ -1115,6 +1194,7 @@ public class MetadataDAO {
 				field.setData(rs.getString("data"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
+				field.setSubtype(rs.getString("subtype"));
 				field.setUnit(rs.getString("unit"));
 				field.setColumnName(rs.getString("column_name"));
 				field.setTableName(rs.getString("table_name"));
@@ -1182,6 +1262,7 @@ public class MetadataDAO {
 				field.setData(rs.getString("data"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
+				field.setSubtype(rs.getString("subtype"));
 				field.setUnit(rs.getString("unit"));
 				field.setColumnName(rs.getString("column_name"));
 				field.setTableName(rs.getString("table_name"));
@@ -1243,6 +1324,7 @@ public class MetadataDAO {
 				field.setData(rs.getString("data"));
 				field.setFormat(rs.getString("format"));
 				field.setType(rs.getString("type"));
+				field.setSubtype(rs.getString("subtype"));
 				field.setUnit(rs.getString("unit"));
 				field.setColumnName(rs.getString("column_name"));
 				field.setTableName(rs.getString("table_name"));

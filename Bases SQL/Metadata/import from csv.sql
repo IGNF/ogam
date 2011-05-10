@@ -51,15 +51,16 @@ delete from dataset;
 --delete from application_parameters;
 --delete from checks where check_id < 1200;
 
-COPY unit from '/tmp/eforest/unit.csv' with delimiter ';' null '';
-COPY data from '/tmp/eforest/data.csv' with delimiter ';' null '';
-COPY range from '/tmp/eforest/range.csv' with delimiter ';' null '';
-COPY mode from '/tmp/eforest/mode.csv' with delimiter ';' null '';
-COPY group_mode from '/tmp/eforest/group_mode.csv' with delimiter ';' null '';
+COPY unit from 'C:/workspace/OGAM/Bases SQL/Metadata/unit.csv' with delimiter ';' null '';
+COPY data from 'C:/workspace/OGAM/Bases SQL/Metadata/data.csv' with delimiter ';' null '';
+COPY range from 'C:/workspace/OGAM/Bases SQL/Metadata/range.csv' with delimiter ';' null '';
+COPY mode from 'C:/workspace/OGAM/Bases SQL/Metadata/mode.csv' with delimiter ';' null '';
+COPY group_mode from 'C:/workspace/OGAM/Bases SQL/Metadata/group_mode.csv' with delimiter ';' null '';
+COPY mode_tree from 'C:/workspace/OGAM/Bases SQL/Metadata/mode_tree.csv' with delimiter ';' null '';
 
-COPY form_format from '/tmp/eforest/form_format.csv' with delimiter ';' null '';
-COPY table_format from '/tmp/eforest/table_format.csv' with delimiter ';' null '';
-COPY file_format from '/tmp/eforest/file_format.csv' with delimiter ';' null '';
+COPY form_format from 'C:/workspace/OGAM/Bases SQL/Metadata/form_format.csv' with delimiter ';' null '';
+COPY table_format from 'C:/workspace/OGAM/Bases SQL/Metadata/table_format.csv' with delimiter ';' null '';
+COPY file_format from 'C:/workspace/OGAM/Bases SQL/Metadata/file_format.csv' with delimiter ';' null '';
 
 -- Fill the parent table
 INSERT INTO format (format, type)
@@ -74,9 +75,9 @@ INSERT INTO format (format, type)
 SELECT format, 'FORM'
 FROM   form_format;
 
-COPY form_field from '/tmp/eforest/form_field.csv' with delimiter ';' null '';
-COPY file_field from '/tmp/eforest/file_field.csv' with delimiter ';' null '';
-COPY table_field from '/tmp/eforest/table_field.csv' with delimiter ';' null '';
+COPY form_field from 'C:/workspace/OGAM/Bases SQL/Metadata/form_field.csv' with delimiter ';' null '';
+COPY file_field from 'C:/workspace/OGAM/Bases SQL/Metadata/file_field.csv' with delimiter ';' null '';
+COPY table_field from 'C:/workspace/OGAM/Bases SQL/Metadata/table_field.csv' with delimiter ';' null '';
 
 -- Fill the parent table
 INSERT INTO field (data, format, type)
@@ -92,17 +93,17 @@ SELECT data, format, 'FORM'
 FROM   form_field;
 
 
-COPY field_mapping from '/tmp/eforest/field_mapping.csv' with delimiter ';' null '';
+COPY field_mapping from 'C:/workspace/OGAM/Bases SQL/Metadata/field_mapping.csv' with delimiter ';' null '';
 
-COPY checks (check_id, step, name, label, description, "statement", importance) from '/tmp/eforest/checks.csv' with delimiter ';' null '';
+COPY checks (check_id, step, name, label, description, "statement", importance) from 'C:/workspace/OGAM/Bases SQL/Metadata/checks.csv' with delimiter ';' null '';
 
 
-COPY dataset from '/tmp/eforest/dataset.csv' with delimiter ';' null '';
-COPY dataset_fields from '/tmp/eforest/dataset_fields.csv' with delimiter ';' null '';
-COPY dataset_files from '/tmp/eforest/dataset_files.csv' with delimiter ';' null '';
+COPY dataset from 'C:/workspace/OGAM/Bases SQL/Metadata/dataset.csv' with delimiter ';' null '';
+COPY dataset_fields from 'C:/workspace/OGAM/Bases SQL/Metadata/dataset_fields.csv' with delimiter ';' null '';
+COPY dataset_files from 'C:/workspace/OGAM/Bases SQL/Metadata/dataset_files.csv' with delimiter ';' null '';
 
-COPY table_schema from '/tmp/eforest/table_schema.csv' with delimiter ';' null '';
-COPY table_tree from '/tmp/eforest/table_tree.csv' with delimiter ';' null '';
+COPY table_schema from 'C:/workspace/OGAM/Bases SQL/Metadata/table_schema.csv' with delimiter ';' null '';
+COPY table_tree from 'C:/workspace/OGAM/Bases SQL/Metadata/table_tree.csv' with delimiter ';' null '';
 
 --
 -- Restore Integrity contraints
@@ -164,13 +165,13 @@ alter table DATASET_FILES
 -- Units of type CODE should have an entry in the CODE table
 SELECT UNIT, 'This unit of type CODE is not described in the MODE table'
 FROM unit
-WHERE TYPE = 'CODE'
+WHERE TYPE = 'CODE' AND SUBTYPE = 'MODE'
 AND unit not in (SELECT UNIT FROM MODE WHERE MODE.UNIT=UNIT)
 UNION
 -- Units of type RANGE should have an entry in the RANGE table
 SELECT UNIT, 'This unit of type RANGE is not described in the RANGE table'
 FROM unit
-WHERE TYPE = 'RANGE'
+WHERE TYPE = 'NUMERIC' AND SUBTYPE = 'RANGE'
 AND unit not in (SELECT UNIT FROM RANGE WHERE RANGE.UNIT=UNIT)
 UNION
 -- File fields should have a FILE mapping
@@ -223,14 +224,28 @@ FROM table_format
 WHERE schema_code = 'RAW_DATA'
 AND NOT EXISTS (SELECT * FROM table_field WHERE table_format.format = table_field.format AND table_field.data='SUBMISSION_ID')
 UNION
--- the unit type in not consistent with the form field input type
+-- the UNIT type is not in the list
+SELECT unit||'_'||type, 'The UNIT type is not in the list'
+FROM unit 
+WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'COORDINATE', 'DATE', 'INTEGER', 'NUMERIC', 'STRING')
+UNION
+-- the subtype is not consistent with the type
+SELECT unit||'_'||type, 'The UNIT subtype is not consistent with the type'
+FROM unit 
+WHERE (type = 'CODE' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC'))
+OR    (type = 'ARRAY' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC'))
+OR    (type = 'NUMERIC' AND subtype NOT IN ('RANGE'))
+UNION
+-- the unit type is not consistent with the form field input type
 SELECT form_field.format || '_' || form_field.data, 'The form field input type (' || input_type || ') is not consistent with the unit type (' || type || ')'
 FROM form_field 
 LEFT JOIN data using (data)
 LEFT JOIN unit using (unit)
-WHERE (input_type = 'NUMERIC' AND type NOT IN ('NUMERIC', 'RANGE','INTEGER'))
+WHERE (input_type = 'NUMERIC' AND type NOT IN ('NUMERIC', 'INTEGER'))
 OR (input_type = 'DATE' AND type <> 'DATE')
 OR (input_type = 'SELECT' AND type <> 'CODE')
 OR (input_type = 'TEXT' AND type <> 'STRING')
 OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')
+OR (input_type = 'MULTIPLE' AND type <> 'ARRAY')
+OR (input_type = 'TREE' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TREE'))
 

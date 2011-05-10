@@ -156,6 +156,7 @@ PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 SPECIES_CODE         VARCHAR(36)          not null,
+ID_TAXON             VARCHAR(36)          not null,
 BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
@@ -169,6 +170,7 @@ COMMENT ON COLUMN SPECIES_DATA.PROVIDER_ID IS 'The identifier of the data provid
 COMMENT ON COLUMN SPECIES_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN SPECIES_DATA.CYCLE IS 'The cycle of inventory';
 COMMENT ON COLUMN SPECIES_DATA.SPECIES_CODE IS 'The code of the specie';
+COMMENT ON COLUMN SPECIES_DATA.ID_TAXON IS 'Identifiant de taxon';
 COMMENT ON COLUMN SPECIES_DATA.BASAL_AREA IS 'The proportion of surface covered by this specie on the plot (in m2/ha)';
 COMMENT ON COLUMN SPECIES_DATA.COMMENT IS 'A comment about the species';
 COMMENT ON COLUMN SPECIES_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';

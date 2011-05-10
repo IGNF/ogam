@@ -1,7 +1,7 @@
 package fr.ifn.eforest.common.business;
 
 /**
- * List the authorised field types.
+ * List the field types.
  */
 public interface UnitTypes {
 
@@ -14,11 +14,6 @@ public interface UnitTypes {
 	 * A code (mapped to java type String).
 	 */
 	String CODE = "CODE";
-
-	/**
-	 * A decimal value comprised in a specified range (mapped to java type BigDecimal).
-	 */
-	String RANGE = "RANGE";
 
 	/**
 	 * A numeric value (mapped to java type BigDecimal).
@@ -44,7 +39,7 @@ public interface UnitTypes {
 	 * A boolean (mapped to java type Boolean).
 	 */
 	String BOOLEAN = "BOOLEAN";
-	
+
 	/**
 	 * An array of codes.
 	 */

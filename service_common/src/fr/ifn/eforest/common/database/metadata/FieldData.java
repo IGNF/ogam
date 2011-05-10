@@ -28,9 +28,14 @@ public class FieldData {
 	protected String unit;
 
 	/**
-	 * The type of the unit of the data (INTEGER, STRING, ...).
+	 * The type of the unit of the data (INTEGER, STRING, CODE, ARRAY, ...).
 	 */
 	protected String type;
+
+	/**
+	 * The sub-type of the unit of the data (RANGE, MODE, TREE, ...).
+	 */
+	protected String subtype;
 
 	/**
 	 * The definition of the field.
@@ -125,6 +130,21 @@ public class FieldData {
 	 */
 	public void setDefinition(String definition) {
 		this.definition = definition;
+	}
+
+	/**
+	 * @return the subtype
+	 */
+	public String getSubtype() {
+		return subtype;
+	}
+
+	/**
+	 * @param subtype
+	 *            the subtype to set
+	 */
+	public void setSubtype(String subtype) {
+		this.subtype = subtype;
 	}
 
 	/**

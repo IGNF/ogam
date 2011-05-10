@@ -63,6 +63,22 @@ public class GenericMapper {
 	}
 
 	/**
+	 * Check that a code value correspond to an existing code in a tree of codes.
+	 * 
+	 * @param unit
+	 *            the unit of the field to check
+	 * @param fieldValue
+	 *            the code to check
+	 */
+	protected void checkTreeCode(String unit, String fieldValue) throws Exception {
+
+		if (!metadataDAO.checkTreeCode(unit, fieldValue)) {
+			CheckException ce = new CheckException(INVALID_CODE_FIELD);
+			throw ce;
+		}
+	}
+
+	/**
 	 * Check that a code value correspond to an existing range.
 	 * 
 	 * @param fieldDescriptor
@@ -159,19 +175,23 @@ public class GenericMapper {
 			}
 
 			if (type.equalsIgnoreCase(CODE) && !fieldValue.equalsIgnoreCase("")) {
-				checkCode(fieldDescriptor.getUnit(), fieldValue);
+				if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.TREE)) {
+					checkTreeCode(fieldDescriptor.getUnit(), fieldValue);
+				} else {
+					checkCode(fieldDescriptor.getUnit(), fieldValue);
+				}
 				result = fieldValue;
-			}
-
-			if (type.equalsIgnoreCase(RANGE) && !fieldValue.equalsIgnoreCase("")) {
-				String normalizedFieldValue = fieldValue.replace(",", ".");
-				result = checkRange(fieldDescriptor, normalizedFieldValue);
 			}
 
 			if (type.equalsIgnoreCase(NUMERIC)) {
 				try {
 					String normalizedFieldValue = fieldValue.replace(",", ".");
-					result = new BigDecimal(normalizedFieldValue);
+
+					if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.RANGE)) {
+						result = checkRange(fieldDescriptor, normalizedFieldValue);
+					} else {
+						result = new BigDecimal(normalizedFieldValue);
+					}
 				} catch (Exception e) {
 					if (fieldDescriptor.getIsMandatory()) {
 						throw new CheckException(INVALID_TYPE_FIELD);
