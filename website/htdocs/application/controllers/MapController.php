@@ -83,6 +83,8 @@ class MapController extends Genapp_Controller_AbstractOGAMController {
 
 		// Margin
 		$this->view->featureinfo_margin = $configuration->featureinfo->margin;
+		// Typename
+		$this->view->featureinfo_typename = $configuration->featureinfo->typename;
 
 		$this->_helper->layout()->disableLayout();
 		$this->render('map-parameters');
@@ -150,7 +152,7 @@ class MapController extends Genapp_Controller_AbstractOGAMController {
 		$sessionId = session_id();
 		$out = "url_array_tiled:[";
 		foreach ($tileBaseRLs as $pathBaseURL) {
-			$out .= '"'.$pathBaseURL.$proxyPath."?sessionid=".$sessionId.'",'; // appel direct
+			$out .= '"'.$pathBaseURL.$proxyPath."?SESSION_ID=".$sessionId.'",'; // appel direct
 		}
 		// Remove the last comma
 		if (!empty($tileBaseRLs)) {

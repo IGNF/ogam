@@ -788,12 +788,18 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 			}
 		}
 		// Add the current data
-		$json .= $this->genericService->datumToDetailJSON($data);
+		$dataJSON = $this->genericService->datumToDetailJSON($data);
+		if($dataJSON !== ''){
+		    $json .= $dataJSON . ',';
+		}
 
 		// Add the children
 		if (!empty($children)) {
 			foreach ($children as $format => $listChild) {
-				$json .= $this->genericService->dataToDetailJSON($format, $listChild);
+				$childrenJSON = $this->genericService->dataToDetailJSON($listChild);
+    			if($childrenJSON !== ''){
+                    $json .= $childrenJSON . ',';
+                }
 			}
 		}
 

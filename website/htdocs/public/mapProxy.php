@@ -57,7 +57,7 @@ $queryParamsAllow = array(//paramNom => requis
     'FORMAT' => true,
     'WIDTH' => false,
     'HEIGHT' => false,
-    'sessionid' => true,
+    'SESSION_ID' => true,
     'TRANSPARENT' => true,
     'VERSION' => true,
     'STYLES' => true

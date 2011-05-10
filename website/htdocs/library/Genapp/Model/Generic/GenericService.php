@@ -86,9 +86,9 @@ class Genapp_Model_Generic_GenericService {
 	 * @param List[DataObject] $data the data object we're looking at.
 	 * @return JSON
 	 */
-	public function dataToDetailJSON($title, $data) {
+	public function dataToDetailJSON($data) {
 
-		$this->logger->info('dataToDetailJSON : '.$title);
+		$this->logger->info('dataToDetailJSON');
 
 		$json = "";
 
@@ -97,7 +97,7 @@ class Genapp_Model_Generic_GenericService {
 			$firstData = $data[0];
 
 			// create the JSON object
-			$json .= ",{title:'".$title."', is_array:true, columns:[";
+			$json .= "{title:'".$firstData->tableFormat->label."', is_array:true, columns:[";
 
 			// add the colums description
 			foreach ($firstData->editableFields as $field) {

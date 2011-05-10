@@ -141,7 +141,7 @@ listeners: {
     hideDetails : false,
     /**
      * @cfg {Boolean} hideMapDetails
-     * if true hide the details button in map toolbar (defaults to false).
+     * if true hide the details button in map toolbar (defaults to true).
      */
     hideMapDetails : true,
     /**
