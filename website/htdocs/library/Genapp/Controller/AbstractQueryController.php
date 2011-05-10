@@ -193,14 +193,25 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 			// add some specific options
 			if ($criteria->type == "CODE") {
 
-				$options = $this->metadataModel->getModes($criteria->unit);
-				$json .= ',{options:[';
-				foreach ($options as $code => $label) {
-					$json .= '["'.$code.'","'.$label.'"],';
+				if ($criteria->subtype == "MODE") {
+					$options = $this->metadataModel->getModes($criteria->unit);
+					$json .= ',{options:[';
+					foreach ($options as $code => $label) {
+						$json .= '["'.$code.'","'.$label.'"],';
+					}
+					$json = substr($json, 0, -1);
+					$json .= ']}';
+				} else if ($criteria->subtype == "TREE") {
+					// Get the nodes of the tree, from the root (-1) and down to 2 levels
+					$options = $this->metadataModel->getTreeModes($criteria->unit, -1, 2);
+					$json .= ',{options:[';
+					foreach ($options as $code => $label) {
+						$json .= '["'.$code.'","'.$label.'"],';
+					}
+					$json = substr($json, 0, -1);
+					$json .= ']}';
 				}
-				$json = substr($json, 0, -1);
-				$json .= ']}';
-			} else if ($criteria->type == "RANGE") {
+			} else if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
 				// For the RANGE field, get the min and max values
 				$range = $this->metadataModel->getRange($criteria->data);
 				$json .= ',{min:'.$range->min.',max:'.$range->max.'}';
@@ -327,20 +338,33 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 				$json .= '{'.$field->toCriteriaJSON();
 				// For the SELECT field, get the list of options
 				if ($field->type == "CODE" || $field->type == "ARRAY") {
-					$options = $this->metadataModel->getModes($field->unit);
-					$json .= ',p:{options:[';
-					foreach ($options as $code => $label) {
-						$json .= '['.json_encode($code).','.json_encode($label).'],';
+
+					if ($field->subtype == "MODE") {
+						$options = $this->metadataModel->getModes($field->unit);
+						$json .= ',params:{options:[';
+						foreach ($options as $code => $label) {
+							$json .= '['.json_encode($code).','.json_encode($label).'],';
+						}
+						$json = substr($json, 0, -1);
+						$json .= ']}';
+					} else if ($field->subtype == "TREE") {
+						// Get the nodes of the tree, from the root ("-1") and down to 2 levels
+						//$options = $this->metadataModel->getTreeModes($field->unit, -1, 2);
+						$json .= ',params:{options:[';
+						//foreach ($options as $code => $label) {
+						//	$json .= '["'.$code.'","'.$label.'"],';
+						//}
+						//$json = substr($json, 0, -1);
+						$json .= ']}';
 					}
-					$json = substr($json, 0, -1);
-					$json .= ']}';
 				}
 				// For the RANGE field, get the min and max values
-				if ($field->type == "RANGE") {
+				if ($field->type == "NUMERIC" && "RANGE") {
 					$range = $this->metadataModel->getRange($field->data);
-					$json .= ',p:{min:'.$range->min.',max:'.$range->max.'}';
+					$json .= ',params:{min:'.$range->min.',max:'.$range->max.'}';
 				}
 				$json .= '},';
+
 			}
 			if (count($form->criteriaList) > 0) {
 				$json = substr($json, 0, -1);
@@ -491,7 +515,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 				$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField->format, $this->visualisationSRS);
 
 				// Calculate the number of lines of result
-				$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count ".$fromwhere);		
+				$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count ".$fromwhere);
 
 				// Get the website session
 				$websiteSession = new Zend_Session_Namespace('website');
@@ -677,9 +701,9 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 			if ($this->schema == 'HARMONIZED_DATA' && array_key_exists('DATA_INTERPOLATION', $permissions)) {
 				$this->view->hideInterpolationButton = 'false';
 			}
-		    if (($this->schema == 'RAW_DATA' || $this->schema == 'HARMONIZED_DATA') && array_key_exists('DATA_EDITION', $permissions)) {
-                $this->view->hideGridDataEditButton = 'false';
-            }
+			if (($this->schema == 'RAW_DATA' || $this->schema == 'HARMONIZED_DATA') && array_key_exists('DATA_EDITION', $permissions)) {
+				$this->view->hideGridDataEditButton = 'false';
+			}
 
 		}
 		$this->_helper->layout()->disableLayout();
@@ -744,7 +768,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 
 				// Prepare an overview bbox
 				$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-				
+
 				$locationTable = $data;
 				break;
 			}
@@ -758,7 +782,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 
 						// Prepare an overview bbox
 						$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-						
+
 						$locationTable = $ancestor;
 						break;
 					}
@@ -767,39 +791,39 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		}
 
 		// Defines the panel title and the mapsserver parameters.
-        $mapservParams = '';
-        $title = '';
-        foreach($locationTable->getInfoFields() as $primaryKey){
-            $mapservParams .= '&' . $primaryKey->columnName . '=' . $primaryKey->value;
-            if($title !== ''){
-                $title .= '_';
-            }
-            $title .= $primaryKey->value;
-        }
+		$mapservParams = '';
+		$title = '';
+		foreach ($locationTable->getInfoFields() as $primaryKey) {
+			$mapservParams .= '&'.$primaryKey->columnName.'='.$primaryKey->value;
+			if ($title !== '') {
+				$title .= '_';
+			}
+			$title .= $primaryKey->value;
+		}
 
 		// Title of the detail message
 		$json = "{title:'$title', ";
 		$json .= "formats:[";
 		// List all the formats, starting with the ancestors
 		foreach ($ancestors as $ancestor) {
-		    $ancestorJSON = $this->genericService->datumToDetailJSON($ancestor);
-			if($ancestorJSON !== ''){
-			    $json .= $ancestorJSON . ',';
+			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor);
+			if ($ancestorJSON !== '') {
+				$json .= $ancestorJSON.',';
 			}
 		}
 		// Add the current data
 		$dataJSON = $this->genericService->datumToDetailJSON($data);
-		if($dataJSON !== ''){
-		    $json .= $dataJSON . ',';
+		if ($dataJSON !== '') {
+			$json .= $dataJSON.',';
 		}
 
 		// Add the children
 		if (!empty($children)) {
 			foreach ($children as $format => $listChild) {
 				$childrenJSON = $this->genericService->dataToDetailJSON($listChild);
-    			if($childrenJSON !== ''){
-                    $json .= $childrenJSON . ',';
-                }
+				if ($childrenJSON !== '') {
+					$json .= $childrenJSON.',';
+				}
 			}
 		}
 
@@ -820,7 +844,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$json .= "&HEIGHT=300";
 		$json .= "&map.scalebar=STATUS+embed";
 		$json .= "&sessionid=".session_id();
-	    $json .= $mapservParams;
+		$json .= $mapservParams;
 		$json .= "'},"; // end of map
 		$json .= "{title:'overview',";
 		$json .= "url:'".$this->baseUrl."/proxy/gettile?";
@@ -902,10 +926,10 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 	 */
 	public function gridCsvExportAction() {
 
-        $this->logger->debug('gridCsvExportAction');
+		$this->logger->debug('gridCsvExportAction');
 
-        $userSession = new Zend_Session_Namespace('user');
-        $permissions = $userSession->permissions;
+		$userSession = new Zend_Session_Namespace('user');
+		$permissions = $userSession->permissions;
 
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
@@ -917,121 +941,120 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset='.$configuration->csvExportCharset.';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport.csv', true);
 
-    	if (($this->schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions))
-        || ($this->schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
+		if (($this->schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($this->schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
 
-    		$websiteSession = new Zend_Session_Namespace('website');
-    		$select = $websiteSession->SQLSelect;
-    		$fromwhere = $websiteSession->SQLFromWhere;
-    		$sql = $select.$fromwhere;
-    
-    		// Count the number of lines
-    		$total = $websiteSession->count;
-    		$this->logger->debug('Expected lines : '.$total);
-    
-    		if ($sql == null) {
-    			$this->_print('// No Data');
-    		} else if ($total > 65535) {
-    			$this->_print('// Too many result lines');
-    		} else {
-    
-    			// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
-    			if ($configuration->charset == 'UTF-8') {
-    				echo(chr(0xEF));
-    				echo(chr(0xBB));
-    				echo(chr(0xBF));
-    			}
-    
-    			// Retrive the session-stored info
-    			$resultColumns = $websiteSession->resultColumns; // array of TableField
-    
-    			// Prepare the needed traductions
-    			$traductions = array();
-    			foreach ($resultColumns as $tableField) {
-    				if ($tableField->type == "CODE") {
-    					$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
-    				}
-    			}
-    			// Display the default message
-    			$this->_print('// *************************************************'."\n");
-    			$this->_print('// Data Export'."\n");
-    			$this->_print('// *************************************************'."\n\n");
-    
-    			// Export the column names
-    			$this->_print('// ');
-    			foreach ($resultColumns as $tableField) {
-    				$this->_print($tableField->label.';');
-    			}
-    			$this->_print("\n");
-    
-    			// Get the order parameters
-    			$sort = $this->getRequest()->getPost('sort');
-    			$sortDir = $this->getRequest()->getPost('dir');
-    
-    			$filter = "";
-    
-    			if ($sort != "") {
-    				// $sort contains the form format and field
-    				$split = explode("__", $sort);
-    				$formField = new Genapp_Model_Metadata_FormField();
-    				$formField->format = $split[0];
-    				$formField->data = $split[1];
-    				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
-    				$key = $tableField->format.'__'.$tableField->data;
-    				$filter .= " ORDER BY ".$key." ".$sortDir.", id";
-    			} else {
-    				$filter .= " ORDER BY id";
-    			}
-    
-    			// Define the max number of lines returned
-    			$limit = " LIMIT ".$maxLines." ";
-    
-    			$count = 0;
-    			$page = 0;
-    			$finished = false;
-    			while (!$finished) {
-    
-    				// Pb with memory limit, with PHP 5.2 we don't have a garbage collector
-    
-    				// Define the position of the cursor in the dataset
-    				$offset = " OFFSET ".($page * $maxLines)." ";
-    
-    				// Execute the request
-    				$this->logger->debug('reading data ... page '.$page);
-    				$result = $this->genericModel->executeRequest($sql.$filter.$limit.$offset);
-    
-    				// Export the lines of data
-    				foreach ($result as $line) {
-    
-    					foreach ($resultColumns as $tableField) {
-    
-    						$key = strtolower($tableField->format.'__'.$tableField->data);
-    						$value = $line[$key];
-    
-    						if ($tableField->type == "CODE" && $value != "") {
-    							// Manage code traduction
-    							$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
-    							$this->_print('"'.$label.'";');
-    						} else {
-    							$this->_print('"'.($value == null ? '' : $value).'";');
-    						}
-    					}
-    					$this->_print("\n");
-    					$count++;
-    				}
-    
-    				// Check we have read everything
-    				if ($count == $total) {
-    					$finished = true;
-    				}
-    
-    				$page++;
-    
-    			}
-    		 }
-         } else {
-             $this->_print('// No Permissions');
-         }
+			$websiteSession = new Zend_Session_Namespace('website');
+			$select = $websiteSession->SQLSelect;
+			$fromwhere = $websiteSession->SQLFromWhere;
+			$sql = $select.$fromwhere;
+
+			// Count the number of lines
+			$total = $websiteSession->count;
+			$this->logger->debug('Expected lines : '.$total);
+
+			if ($sql == null) {
+				$this->_print('// No Data');
+			} else if ($total > 65535) {
+				$this->_print('// Too many result lines');
+			} else {
+
+				// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
+				if ($configuration->charset == 'UTF-8') {
+					echo(chr(0xEF));
+					echo(chr(0xBB));
+					echo(chr(0xBF));
+				}
+
+				// Retrive the session-stored info
+				$resultColumns = $websiteSession->resultColumns; // array of TableField
+
+				// Prepare the needed traductions
+				$traductions = array();
+				foreach ($resultColumns as $tableField) {
+					if ($tableField->type == "CODE") {
+						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
+					}
+				}
+				// Display the default message
+				$this->_print('// *************************************************'."\n");
+				$this->_print('// Data Export'."\n");
+				$this->_print('// *************************************************'."\n\n");
+
+				// Export the column names
+				$this->_print('// ');
+				foreach ($resultColumns as $tableField) {
+					$this->_print($tableField->label.';');
+				}
+				$this->_print("\n");
+
+				// Get the order parameters
+				$sort = $this->getRequest()->getPost('sort');
+				$sortDir = $this->getRequest()->getPost('dir');
+
+				$filter = "";
+
+				if ($sort != "") {
+					// $sort contains the form format and field
+					$split = explode("__", $sort);
+					$formField = new Genapp_Model_Metadata_FormField();
+					$formField->format = $split[0];
+					$formField->data = $split[1];
+					$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
+					$key = $tableField->format.'__'.$tableField->data;
+					$filter .= " ORDER BY ".$key." ".$sortDir.", id";
+				} else {
+					$filter .= " ORDER BY id";
+				}
+
+				// Define the max number of lines returned
+				$limit = " LIMIT ".$maxLines." ";
+
+				$count = 0;
+				$page = 0;
+				$finished = false;
+				while (!$finished) {
+
+					// Pb with memory limit, with PHP 5.2 we don't have a garbage collector
+
+					// Define the position of the cursor in the dataset
+					$offset = " OFFSET ".($page * $maxLines)." ";
+
+					// Execute the request
+					$this->logger->debug('reading data ... page '.$page);
+					$result = $this->genericModel->executeRequest($sql.$filter.$limit.$offset);
+
+					// Export the lines of data
+					foreach ($result as $line) {
+
+						foreach ($resultColumns as $tableField) {
+
+							$key = strtolower($tableField->format.'__'.$tableField->data);
+							$value = $line[$key];
+
+							if ($tableField->type == "CODE" && $value != "") {
+								// Manage code traduction
+								$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+								$this->_print('"'.$label.'";');
+							} else {
+								$this->_print('"'.($value == null ? '' : $value).'";');
+							}
+						}
+						$this->_print("\n");
+						$count++;
+					}
+
+					// Check we have read everything
+					if ($count == $total) {
+						$finished = true;
+					}
+
+					$page++;
+
+				}
+			}
+		} else {
+			$this->_print('// No Permissions');
+		}
 
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -1067,6 +1090,32 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 			$json = "{success:false,errorMessage:'".json_encode($e->getMessage())."'}";
 		}
 		echo $json;
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * AJAX function : Return the results features bounding box in order to zoom on the features.
+	 *
+	 * @return JSON.
+	 */
+	public function ajaxgettreenodesAction() {
+		$this->logger->debug('ajaxgettreenodesAction');
+
+		$unit = $this->getRequest()->getParam('unit');
+		$code = $this->getRequest()->getParam('code');
+		$depth = $this->getRequest()->getParam('depth');
+		$this->logger->debug('$unit : '.$unit);
+
+		$tree = $this->metadataModel->getTreeModes($unit, $code, $depth);
+
+		$this->logger->debug('$tree : '.print_r($tree, true));
+
+		// Send the result as a JSON String
+		echo $tree->toJSON();
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
