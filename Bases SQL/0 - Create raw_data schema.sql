@@ -265,6 +265,7 @@ COMMENT ON COLUMN CHECK_ERROR._CREATIONDT IS 'The creation date';
 GRANT ALL ON SCHEMA raw_data TO ogam;
 GRANT ALL ON TABLE raw_data.check_error_check_error_id_seq TO ogam;
 GRANT ALL ON TABLE raw_data.submission_id_seq TO ogam;
+GRANT ALL ON TABLE raw_data.tree_id_seq TO ogam;
 GRANT ALL ON TABLE raw_data.check_error TO ogam;
 GRANT ALL ON TABLE raw_data."location" TO ogam;
 GRANT ALL ON TABLE raw_data.plot_data TO ogam;
