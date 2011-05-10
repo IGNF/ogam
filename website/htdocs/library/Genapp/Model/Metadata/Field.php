@@ -32,9 +32,14 @@ class Genapp_Model_Metadata_Field {
 	var $unit;
 
 	/**
-	 * The type of the unit of the data (INTEGER, STRING, ...)
+	 * The type of the unit of the data (BOOLEAN, CODE, ARRAY, COORDINATE, DATE, INTEGER, NUMERIC or STRING)
 	 */
 	var $type;
+	
+	/**
+	 * The sub-type of the unit of the data (MODE, TREE or DYNAMIC for CODE or ARRAY, RANGE for numeric)
+	 */
+	var $subtype;
 
 	/**
 	 * The definition of the field

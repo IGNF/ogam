@@ -198,7 +198,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$this->logger->debug('getFileFields : '.$fileFormat);
 
 		// Get the fields specified by the format
-		$req = "SELECT file_field.*, data.label as label, data.unit, unit.type as type, data.definition as definition ";
+		$req = "SELECT file_field.*, data.label as label, data.unit, unit.type as type, unit.subtype as subtype, data.definition as definition ";
 		$req .= " FROM file_field ";
 		$req .= " LEFT JOIN data on (file_field.data = data.data) ";
 		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
@@ -218,6 +218,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$fileField->label = $row['label'];
 			$fileField->unit = $row['unit'];
 			$fileField->type = $row['type'];
+			$fileField->subtype = $row['subtype'];
 			$fileField->definition = $row['definition'];
 			$fileField->isMandatory = $row['is_mandatory'];
 			$fileField->mask = $row['mask'];
@@ -250,7 +251,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		if (empty($cachedResult)) {
 
 			// Get the fields specified by the format
-			$req = "SELECT DISTINCT table_field.*, data.label, data.unit, unit.type, data.definition ";
+			$req = "SELECT DISTINCT table_field.*, data.label, data.unit, unit.type, unit.subtype, data.definition ";
 			$req .= " FROM table_field ";
 			if ($datasetID != null) {
 				$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.data) ";
@@ -286,6 +287,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$tableField->label = $row['label'];
 				$tableField->unit = $row['unit'];
 				$tableField->type = $row['type'];
+				$tableField->subtype = $row['subtype'];
 				$tableField->definition = $row['definition'];
 
 				$result[$tableField->data] = $tableField;
@@ -316,7 +318,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$this->logger->debug('getLocationTableFields : '.$schema);
 
 		// Get the fields specified by the format
-		$req = "SELECT DISTINCT table_field.*, data.label, data.unit, unit.type, data.definition ";
+		$req = "SELECT DISTINCT table_field.*, data.label, data.unit, unit.type, unit.subtype, data.definition ";
 		$req .= " FROM table_field ";
 		$req .= " LEFT JOIN table_format on (table_field.format = table_format.format) ";
 		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
@@ -346,6 +348,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableField->label = $row['label'];
 			$tableField->unit = $row['unit'];
 			$tableField->type = $row['type'];
+			$tableField->subtype = $row['subtype'];
 			$tableField->definition = $row['definition'];
 			return $tableField;
 		} else {
@@ -491,7 +494,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$param = array();
 
 			// Select the list of available fields for the table (excepted the FK)
-			$req = " SELECT DISTINCT form_field.*, data.label, data.definition, unit.type, unit.unit ";
+			$req = " SELECT DISTINCT form_field.*, data.label, data.definition, unit.type, unit.subtype, unit.unit ";
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
@@ -540,6 +543,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$formField->isCriteria = $row['is_criteria'];
 				$formField->isResult = $row['is_result'];
 				$formField->type = $row['type'];
+				$formField->subtype = $row['subtype'];
 				$formField->unit = $row['unit'];
 				$formField->isDefaultResult = $row['is_default_result'];
 				$formField->isDefaultCriteria = $row['is_default_criteria'];
@@ -576,7 +580,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$this->logger->info('getFormField : '.$format.", ".$data);
 			$db = $this->getAdapter();
-			$req = " SELECT form_field.*, data.label, data.definition, unit.type, unit.unit ";
+			$req = " SELECT form_field.*, data.label, data.definition, unit.type, unit.subtype, unit.unit ";
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
@@ -599,6 +603,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$formField->definition = $row['definition'];
 			$formField->label = $row['label'];
 			$formField->type = $row['type'];
+			$formField->subtype = $row['subtype'];
 			$formField->unit = $row['unit'];
 			$formField->decimals = $row['decimals'];
 			$formField->mask = $row['mask'];
@@ -654,7 +659,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getTableColumnsForDisplay($format) {
 		$db = $this->getAdapter();
 		$req = " SELECT field_mapping.src_data, field_mapping.src_format, field_mapping.dst_data, field_mapping.dst_format, ";
-		$req .= " table_field.column_name, data.label, data.definition, unit.type, unit.unit ";
+		$req .= " table_field.column_name, data.label, data.definition, unit.type, unit.subtype, unit.unit ";
 		$req .= " FROM table_field ";
 		$req .= " LEFT JOIN field_mapping on (field_mapping.dst_format = table_field.format AND field_mapping.dst_data = table_field.data) ";
 		$req .= " LEFT JOIN form_field on (field_mapping.src_format = form_field.format AND field_mapping.src_data = form_field.data) ";
@@ -680,6 +685,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableField->label = $row['label'];
 			$tableField->definition = $row['definition'];
 			$tableField->unit = $row['unit'];
+			$tableField->subtype = $row['subtype'];
 			$tableField->columnName = $row['column_name'];
 			$result[] = $tableField;
 		}
@@ -705,7 +711,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		if (empty($cachedResult)) {
 
 			$db = $this->getAdapter();
-			$req = " SELECT table_field.*, data.label, data.definition, unit.unit, unit.type ";
+			$req = " SELECT table_field.*, data.label, data.definition, unit.unit, unit.type, unit.subtype ";
 			$req .= " FROM field_mapping ";
 			$req .= " LEFT JOIN table_field on (field_mapping.dst_format = table_field.format AND field_mapping.dst_data = table_field.data) ";
 			$req .= " LEFT JOIN dataset_fields on (dataset_fields.format = table_field.format AND dataset_fields.data = table_field.data) ";
@@ -732,6 +738,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableField->label = $row['label'];
 			$tableField->unit = $row['unit'];
 			$tableField->type = $row['type'];
+			$tableField->subtype = $row['subtype'];
 			$tableField->definition = $row['definition'];
 
 			if ($this->useCache) {
@@ -763,7 +770,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		if (empty($result)) {
 
 			$db = $this->getAdapter();
-			$req = " SELECT form_field.*, data.label, data.definition, unit.unit, unit.type ";
+			$req = " SELECT form_field.*, data.label, data.definition, unit.unit, unit.type, unit.subtype ";
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN field_mapping on (field_mapping.src_format = form_field.format AND field_mapping.src_data = form_field.data AND mapping_type = 'FORM') ";
 			$req .= " LEFT JOIN data on (form_field.data = data.data)";
@@ -789,6 +796,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$formField->isCriteria = $row['is_criteria'];
 				$formField->isResult = $row['is_result'];
 				$formField->type = $row['type'];
+				$formField->subtype = $row['subtype'];
 				$formField->unit = $row['unit'];
 				$formField->isDefaultResult = $row['is_default_result'];
 				$formField->isDefaultCriteria = $row['is_default_criteria'];
@@ -894,7 +902,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$this->logger->info('availableTables : '.$formats);
 
 		// Prepare the request
-		$req = " SELECT dataset_fields.format, data.data, data.label, unit.unit, unit.type ";
+		$req = " SELECT dataset_fields.format, data.data, data.label, unit.unit, unit.type, unit.subtype ";
 		$req .= " FROM dataset_fields ";
 		$req .= " LEFT JOIN data using (data) ";
 		$req .= " LEFT JOIN unit using (unit) ";
@@ -917,6 +925,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$field->format = $row['format'];
 			$field->label = $row['label'];
 			$field->unit = $row['unit'];
+			$field->subtype = $row['subtype'];
 			$field->type = $row['type'];
 
 			$result[] = $field;
