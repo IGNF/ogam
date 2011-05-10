@@ -73,14 +73,17 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
          */
         this.criteriaDS = new Ext.data.JsonStore({
             fields:[
-                {name:'name',mapping:'a'},
-                {name:'label',mapping:'b'},
-                {name:'inputType',mapping:'c'},
-                {name:'type',mapping:'d'},
-                {name:'definition',mapping:'e'},
-                {name:'is_default',mapping:'f'},
-                {name:'default_value',mapping:'g'},
-                {name:'params',mapping:'p'}
+                {name:'name',mapping:'name'},
+                {name:'label',mapping:'label'},
+                {name:'inputType',mapping:'inputType'},
+                {name:'unit',mapping:'unit'},
+                {name:'type',mapping:'type'},
+                {name:'subtype',mapping:'subtype'},
+                {name:'definition',mapping:'definition'},
+                {name:'is_default',mapping:'is_default'},
+                {name:'default_value',mapping:'default_value'},
+                {name:'decimals',mapping:'decimals'},                
+                {name:'params',mapping:'params'}
             ],
             data:this.criteria
         });
@@ -92,11 +95,12 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
          */
         this.columnsDS = new Ext.data.JsonStore({
             fields:[
-                {name:'name',mapping:'a'},
-                {name:'label',mapping:'b'},
-                {name:'definition',mapping:'c'},
-                {name:'is_default',mapping:'d'},
-                {name:'params',mapping:'p'}
+                {name:'name',mapping:'name'},
+                {name:'label',mapping:'label'},
+                {name:'definition',mapping:'definition'},
+                {name:'is_default',mapping:'is_default'},
+                {name:'decimals',mapping:'decimals'},
+                {name:'params',mapping:'params'}
             ],
             data:this.columns
         });
@@ -546,6 +550,20 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.xtype = 'geometryfield';
                 field.itemCls = 'trigger-field'; // For IE7 layout
                 break;
+            case 'TREE': // TODO : Tree View
+                field.xtype = 'treepanel';
+                field.enableDD = true;
+                field.animate = true; 
+                field.border = false;
+                field.rootVisible = false;
+                field.useArrows = true;
+                field.autoScroll = true;
+                field.animate = true;
+                field.containerScroll = true;
+                field.frame = false;
+                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/code/-1/depth/2'; 
+                field.root = {nodeType: 'async', text:'Tree Root', draggable : false};
+                break;    
             default: 
                 field.xtype  = 'field';
             break;

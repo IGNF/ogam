@@ -80,6 +80,7 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 		$return .= ',inputType:'.json_encode($this->inputType);
 		$return .= ',unit:'.json_encode($this->unit);
 		$return .= ',type:'.json_encode($this->type);
+		$return .= ',subtype:'.json_encode($this->subtype);
 		$return .= ',definition:'.json_encode($this->definition);
 		$return .= ',decimals:'.json_encode($this->decimals);
 		return $return;
@@ -103,14 +104,16 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 	 * @return JSON the criteria field descriptor
 	 */
 	public function toCriteriaJSON() {
-		$return = 'a:'.json_encode($this->format.'__'.$this->data);
-		$return .= ',b:'.json_encode($this->label);
-		$return .= ',c:'.json_encode($this->inputType);
-		$return .= ',d:'.json_encode($this->type);
-		$return .= ',e:'.json_encode($this->definition);
-		$return .= ',f:'.$this->isDefaultCriteria;
-		$return .= ',g:'.json_encode($this->defaultValue);
-		$return .= ',h:'.json_encode($this->decimals);
+		$return = 'name:'.json_encode($this->format.'__'.$this->data);
+		$return .= ',label:'.json_encode($this->label);
+		$return .= ',inputType:'.json_encode($this->inputType);
+		$return .= ',unit:'.json_encode($this->unit);
+		$return .= ',type:'.json_encode($this->type);
+		$return .= ',subtype:'.json_encode($this->subtype);
+		$return .= ',definition:'.json_encode($this->definition);
+		$return .= ',is_default:'.$this->isDefaultCriteria;
+		$return .= ',default_value:'.json_encode($this->defaultValue);
+		$return .= ',decimals:'.json_encode($this->decimals);
 		return $return;
 	}
 
@@ -120,10 +123,10 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 	 * @return JSON the result field descriptor
 	 */
 	public function toResultJSON() {
-		$return = 'a:'.json_encode($this->format.'__'.$this->data);
-		$return .= ',b:'.json_encode($this->label);
-		$return .= ',c:'.json_encode($this->definition);
-		$return .= ',d:'.$this->isDefaultResult;
+		$return = 'name:'.json_encode($this->format.'__'.$this->data);
+		$return .= ',label:'.json_encode($this->label);
+		$return .= ',definition:'.json_encode($this->definition);
+		$return .= ',decimals:'.$this->isDefaultResult;
 		return $return;
 	}
 

@@ -69,6 +69,72 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get the unit modes from a tree.
+	 *
+	 * @param String $unit The unit
+	 * @param String $startcode The identifier of the start node in the tree
+	 * @param Integer $levels The number of levels of depth (if 0 then no limitation)
+	 * @return TreeNodes
+	 */
+	public function getTreeModes($unit, $startcode = '-1', $levels = 1) {
+		$db = $this->getAdapter();
+		$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
+		$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
+		$req .= "		FROM mode_tree ";
+		$req .= "		WHERE unit = ? ";
+		$req .= "		AND code = ? ";
+		$req .= "	UNION ";
+		$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
+		$req .= "		FROM mode_tree child ";
+		$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
+		if ($levels != 0) {
+			$req .= "		WHERE level < ".$levels." ";
+		}
+		$req .= "	) ";
+		$req .= "	SELECT * ";
+		$req .= "	FROM node_list ";
+		$req .= "	ORDER BY position, code ";
+
+		$this->logger->info('getTreeModes : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($unit, $startcode));
+
+		$tree = new Genapp_Model_Metadata_TreeNode();
+		foreach ($select->fetchAll() as $row) {
+
+			$parentCode = $row['parent_code'];
+
+			// Check if a parent can be found in the structure
+			$node = $tree->getNode($parentCode);
+			if ($node == null) {
+
+				// No parent exist, we add the element to the root
+				$tree->code = $row['code'];
+				$tree->label = $row['label'];
+				$tree->isLeaf = $row['is_leaf'];
+
+			} else {
+
+				// Create a new child element
+				$treeNode = new Genapp_Model_Metadata_TreeNode();
+				$treeNode->code = $row['code'];
+				$treeNode->label = $row['label'];
+				$treeNode->isLeaf = $row['is_leaf'];
+
+				// Add it to the found parent
+				$node->addChild($treeNode);
+
+			}
+
+		}
+
+		$this->logger->info('$result : '.print_r($tree, true));
+
+		return $tree;
+	}
+
+	/**
 	 * Get the label of a mode.
 	 *
 	 * @param String $unit The unit
