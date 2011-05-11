@@ -1108,11 +1108,8 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$unit = $this->getRequest()->getParam('unit');
 		$code = $this->getRequest()->getParam('code');
 		$depth = $this->getRequest()->getParam('depth');
-		$this->logger->debug('$unit : '.$unit);
 
 		$tree = $this->metadataModel->getTreeModes($unit, $code, $depth);
-
-		$this->logger->debug('$tree : '.print_r($tree, true));
 
 		// Send the result as a JSON String
 		echo $tree->toJSON();

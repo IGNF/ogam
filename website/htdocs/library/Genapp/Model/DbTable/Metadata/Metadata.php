@@ -129,7 +129,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		}
 
-		$this->logger->info('$result : '.print_r($tree, true));
+		//$this->logger->info('$result : '.print_r($tree, true));
 
 		return $tree;
 	}
