@@ -1547,7 +1547,7 @@ listeners: {
                         name: columns[i].name
                     };
                     switch(columns[i].type){
-                        // TODO : BOOLEAN, CODE, COORDINATE
+                        // TODO : BOOLEAN, CODE, COORDINATE, ARRAY, TREE
                         case 'STRING':
                             columnConf.xtype='gridcolumn';
                             readerFieldsConf.type='string';
@@ -1556,12 +1556,6 @@ listeners: {
                             columnConf.xtype='gridcolumn';
                             break;
                         case 'NUMERIC':
-                            columnConf.xtype='numbercolumn';
-                            if (columns[i].decimals != null) {
-                                columnConf.format= this.numberPattern('.', columns[i].decimals);
-                            }
-                            break;
-                        case 'RANGE':
                             columnConf.xtype='numbercolumn';
                             if (columns[i].decimals != null) {
                                 columnConf.format= this.numberPattern('.', columns[i].decimals);

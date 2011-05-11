@@ -552,17 +552,23 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 break;
             case 'TREE': // TODO : Tree View
                 field.xtype = 'treepanel';
-                field.enableDD = true;
+                field.enableDD = false; //  drag and drop
                 field.animate = true; 
                 field.border = false;
                 field.rootVisible = false;
                 field.useArrows = true;
                 field.autoScroll = true;
-                field.animate = true;
                 field.containerScroll = true;
                 field.frame = false;
-                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/code/-1/depth/2'; 
-                field.root = {nodeType: 'async', text:'Tree Root', draggable : false};
+                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/2'; 
+                field.root = {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}; // root is always '*'                
+                field.listeners = {
+                    click: function(node, event) {
+                        alert('Navigation Tree Click', 'You clicked: "' + node.attributes.id + '"');
+                    }
+                }
+                
+                
                 break;    
             default: 
                 field.xtype  = 'field';

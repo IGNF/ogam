@@ -1106,7 +1106,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$this->logger->debug('ajaxgettreenodesAction');
 
 		$unit = $this->getRequest()->getParam('unit');
-		$code = $this->getRequest()->getParam('code');
+		$code = $this->getRequest()->getPost('node');
 		$depth = $this->getRequest()->getParam('depth');
 
 		$tree = $this->metadataModel->getTreeModes($unit, $code, $depth);

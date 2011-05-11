@@ -72,17 +72,17 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the unit modes from a tree.
 	 *
 	 * @param String $unit The unit
-	 * @param String $startcode The identifier of the start node in the tree
+	 * @param String $parentcode The identifier of the start node in the tree (by default the root node is *)
 	 * @param Integer $levels The number of levels of depth (if 0 then no limitation)
 	 * @return TreeNodes
 	 */
-	public function getTreeModes($unit, $startcode = '-1', $levels = 1) {
+	public function getTreeModes($unit, $parentcode = '*', $levels = 1) {
 		$db = $this->getAdapter();
 		$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
 		$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
 		$req .= "		FROM mode_tree ";
 		$req .= "		WHERE unit = ? ";
-		$req .= "		AND code = ? ";
+		$req .= "		AND parent_code = ? ";
 		$req .= "	UNION ";
 		$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
 		$req .= "		FROM mode_tree child ";
@@ -98,7 +98,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$this->logger->info('getTreeModes : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array($unit, $startcode));
+		$select->execute(array($unit, $parentcode));
 
 		$tree = new Genapp_Model_Metadata_TreeNode();
 		foreach ($select->fetchAll() as $row) {
