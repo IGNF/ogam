@@ -1112,7 +1112,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 		$tree = $this->metadataModel->getTreeModes($unit, $code, $depth);
 
 		// Send the result as a JSON String
-		echo $tree->toJSON();
+		echo '['.$tree->toJSON().']';
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
