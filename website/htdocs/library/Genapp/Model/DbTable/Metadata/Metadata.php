@@ -93,7 +93,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= "	) ";
 		$req .= "	SELECT * ";
 		$req .= "	FROM node_list ";
-		$req .= "	ORDER BY position, code ";
+		$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
 
 		$this->logger->info('getTreeModes : '.$req);
 
