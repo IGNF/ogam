@@ -71,8 +71,8 @@ class Genapp_Model_Generic_GenericService {
 		// remove last comma
 		if ($fields != '') {
 			$fields = substr($fields, 0, -1);
-		}else{
-		    return '';
+		} else {
+			return '';
 		}
 		$json .= $fields."]}";
 
@@ -493,10 +493,8 @@ class Genapp_Model_Generic_GenericService {
 				}
 				break;
 				break;
-			case "COORDINATE": // long or lat
 			case "INTEGER":
 			case "NUMERIC":
-			case "RANGE":
 				// Numeric values
 				if (is_array($value)) {
 					// Case of a list of values
@@ -528,39 +526,63 @@ class Genapp_Model_Generic_GenericService {
 				}
 
 				break;
+			case "TREE":
+
+				$this->logger->debug('******** CASE TREE **********');
+				if (is_array($value)) {
+					$value = $value[0];
+				}
+				$sql .= " AND ".$column." IN ('".$value."')";
+
+				break;
 			case "CODE":
-			case "STRING":
-			default:
-				if ($tableField->unit == 'GEOM') { // special case for unit = GEOM
-					if (is_array($value)) {
-						$value = $value[0];
+				// String
+				if (is_array($value)) {
+					// Case of a list of values
+					$values = '';
+					foreach ($value as $val) {
+						if ($val != null && $val != '' && is_string($val)) {
+							$values .= "'".$val."', ";
+						}
 					}
-					if (is_string($value)) {
-						$sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+					if ($values != '') {
+						$values = substr($values, 0, -2); // remove the last comma
+						$sql .= " AND ".$column." IN (".$values.")";
 					}
 				} else {
-					// String
-					if (is_array($value)) {
-						// Case of a list of values
-						$sql2 = '';
-						foreach ($value as $val) {
-							if ($val != null && $val != '' && is_string($val)) {
-								$sql2 .= "'".$val."', ";
-							}
+					// Single value
+					$sql .= " AND ".$column." = '".$value."'";
+				}
+				break;
+			case "GEOM":
+				if (is_array($value)) {
+					$value = $value[0];
+				}
+				$sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+				break;
+			case "STRING":
+			default:
+				// String
+				if (is_array($value)) {
+					// Case of a list of values
+					$sql2 = '';
+					foreach ($value as $val) {
+						if ($val != null && $val != '' && is_string($val)) {
+							$sql2 .= "'".$val."', ";
 						}
-						if ($sql2 != '') {
-							$sql2 = substr($sql2, 0, -2); // remove the last comma
-							$sql .= " AND ".$column." IN (".$sql2.")";
-						}
-					} else {
-						if (is_string($value)) {
-							// Single value
-							$sql .= " AND ".$column;
-							if ($useLike) {
-								$sql .= " LIKE '%".$value."%'";
-							} else {
-								$sql .= " = '".$value."'";
-							}
+					}
+					if ($sql2 != '') {
+						$sql2 = substr($sql2, 0, -2); // remove the last comma
+						$sql .= " AND ".$column." IN (".$sql2.")";
+					}
+				} else {
+					if (is_string($value)) {
+						// Single value
+						$sql .= " AND ".$column;
+						if ($useLike) {
+							$sql .= " LIKE '%".$value."%'";
+						} else {
+							$sql .= " = '".$value."'";
 						}
 					}
 				}

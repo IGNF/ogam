@@ -26,11 +26,6 @@ public interface UnitTypes {
 	String INTEGER = "INTEGER";
 
 	/**
-	 * A geographic coordinate (mapped to java type BigDecimal).
-	 */
-	String COORDINATE = "COORDINATE";
-
-	/**
 	 * A date (mapped to java type Date).
 	 */
 	String DATE = "DATE";
@@ -44,5 +39,10 @@ public interface UnitTypes {
 	 * An array of codes.
 	 */
 	String ARRAY = "ARRAY";
+	
+	/**
+	 * An geometry object (not managed by the integration module, built using a trigger).
+	 */
+	String GEOM = "GEOM";
 
 }

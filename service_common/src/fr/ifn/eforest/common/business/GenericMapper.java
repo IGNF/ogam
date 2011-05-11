@@ -189,6 +189,9 @@ public class GenericMapper {
 
 					if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.RANGE)) {
 						result = checkRange(fieldDescriptor, normalizedFieldValue);
+					}
+					if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.COORDINATE)) {
+						result = getCoordinate(normalizedFieldValue);
 					} else {
 						result = new BigDecimal(normalizedFieldValue);
 					}
@@ -203,17 +206,6 @@ public class GenericMapper {
 				try {
 					String normalizedFieldValue = fieldValue.replace(",", ".");
 					result = Integer.parseInt(normalizedFieldValue);
-				} catch (Exception e) {
-					if (fieldDescriptor.getIsMandatory()) {
-						throw new CheckException(INVALID_TYPE_FIELD);
-					}
-				}
-			}
-
-			if (type.equalsIgnoreCase(COORDINATE)) {
-				try {
-					String normalizedFieldValue = fieldValue.replace(",", ".");
-					result = getCoordinate(normalizedFieldValue);
 				} catch (Exception e) {
 					if (fieldDescriptor.getIsMandatory()) {
 						throw new CheckException(INVALID_TYPE_FIELD);

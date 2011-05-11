@@ -34,6 +34,7 @@ delete from form_format;
 delete from format;
 
 delete from group_mode;
+delete from mode_tree;
 delete from mode;
 delete from range;
 
@@ -224,17 +225,22 @@ FROM table_format
 WHERE schema_code = 'RAW_DATA'
 AND NOT EXISTS (SELECT * FROM table_field WHERE table_format.format = table_field.format AND table_field.data='SUBMISSION_ID')
 UNION
+-- the INPUT_TYPE is not in the list
+SELECT format||'_'||data, 'The INPUT_TYPE type is not in the list'
+FROM form_field 
+WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE')
+UNION
 -- the UNIT type is not in the list
 SELECT unit||'_'||type, 'The UNIT type is not in the list'
 FROM unit 
-WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'COORDINATE', 'DATE', 'INTEGER', 'NUMERIC', 'STRING')
+WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'DATE', 'INTEGER', 'NUMERIC', 'STRING', 'GEOM')
 UNION
 -- the subtype is not consistent with the type
 SELECT unit||'_'||type, 'The UNIT subtype is not consistent with the type'
 FROM unit 
 WHERE (type = 'CODE' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC'))
 OR    (type = 'ARRAY' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC'))
-OR    (type = 'NUMERIC' AND subtype NOT IN ('RANGE'))
+OR    (type = 'NUMERIC' AND subtype NOT IN ('RANGE', 'COORDINATE'))
 UNION
 -- the unit type is not consistent with the form field input type
 SELECT form_field.format || '_' || form_field.data, 'The form field input type (' || input_type || ') is not consistent with the unit type (' || type || ')'
@@ -247,5 +253,6 @@ OR (input_type = 'SELECT' AND type <> 'CODE')
 OR (input_type = 'TEXT' AND type <> 'STRING')
 OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')
 OR (input_type = 'MULTIPLE' AND type <> 'ARRAY')
+OR (input_type = 'GEOM' AND type <> 'GEOM')
 OR (input_type = 'TREE' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TREE'))
 

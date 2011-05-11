@@ -11,6 +11,11 @@ public interface UnitSubTypes {
 	String RANGE = "RANGE";
 
 	/**
+	 * A coordinate expressed in decimal degrees (mapped to java type BigDecimal). For NUMERIC type.
+	 */
+	String COORDINATE = "COORDINATE";
+
+	/**
 	 * A mode (list of values) For CODE type.
 	 */
 	String MODE = "MODE";

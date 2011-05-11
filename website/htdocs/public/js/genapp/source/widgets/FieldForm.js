@@ -550,7 +550,9 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.xtype = 'geometryfield';
                 field.itemCls = 'trigger-field'; // For IE7 layout
                 break;
-            case 'TREE': // TODO : Tree View
+            case 'TREE': 
+            	
+            	// Add a Tree View
                 field.xtype = 'treepanel';
                 field.enableDD = false; //  drag and drop
                 field.animate = true; 
@@ -563,11 +565,18 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/2'; 
                 field.root = {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}; // root is always '*'                
                 field.listeners = {
+               		// TODO
                     click: function(node, event) {
                         alert('Navigation Tree Click', 'You clicked: "' + node.attributes.id + '"');
                     }
                 }
-                
+                // TODO : Manage link with treeview
+                // Add a hidden field for submit
+                var hiddenfield = {};
+                hiddenfield.xtype = 'hidden';
+                hiddenfield.name = field.name;
+                hiddenfield.value = '-1';
+                this.criteriaPanel.add(hiddenfield); // TODO : à supprimer
                 
                 break;    
             default: 

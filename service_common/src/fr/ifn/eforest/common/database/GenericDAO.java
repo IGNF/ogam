@@ -126,8 +126,6 @@ public class GenericDAO {
 						} else {
 							ps.setInt(count, (Integer) colData.getValue());
 						}
-					} else if (colData.getType().equalsIgnoreCase(COORDINATE)) {
-						ps.setBigDecimal(count, (BigDecimal) colData.getValue());
 					} else if (colData.getType().equalsIgnoreCase(DATE)) {
 						if (colData.getValue() == null) {
 							ps.setNull(count, java.sql.Types.DATE);
@@ -317,8 +315,6 @@ public class GenericDAO {
 						data.setValue(rs.getBigDecimal(columnName));
 					} else if (field.getType().equalsIgnoreCase(INTEGER)) {
 						data.setValue(rs.getInt(columnName));
-					} else if (field.getType().equalsIgnoreCase(COORDINATE)) {
-						data.setValue(rs.getBigDecimal(columnName));
 					} else if (field.getType().equalsIgnoreCase(DATE)) {
 						String val = rs.getString(columnName);
 						if (val == null) {
