@@ -135,6 +135,47 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get all the children codes from a node of a tree.
+	 *
+	 * @param String $unit The unit
+	 * @param String $code The identifier of the start node in the tree (by default the root node is *)
+	 * @param Integer $levels The number of levels of depth (if 0 then no limitation)
+	 * @return Array[String]
+	 */
+	public function getTreeChildrenCodes($unit, $code = '*', $levels = 1) {
+		$this->logger->info('getTreeChildrenCodes : '.$unit.'_'.$code.'_'.$levels);
+		$db = $this->getAdapter();
+		$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
+		$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
+		$req .= "		FROM mode_tree ";
+		$req .= "		WHERE unit = ? ";
+		$req .= "		AND code = ? ";
+		$req .= "	UNION ";
+		$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
+		$req .= "		FROM mode_tree child ";
+		$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
+		if ($levels != 0) {
+			$req .= "		WHERE level < ".$levels." ";
+		}
+		$req .= "	) ";
+		$req .= "	SELECT * ";
+		$req .= "	FROM node_list ";
+		$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
+
+		$this->logger->info('getTreeChildrenCodes : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($unit, $code));
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[] = $row['code'];
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Get the label of a mode.
 	 *
 	 * @param String $unit The unit

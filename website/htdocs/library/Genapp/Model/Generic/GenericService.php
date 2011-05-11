@@ -526,32 +526,42 @@ class Genapp_Model_Generic_GenericService {
 				}
 
 				break;
-			case "TREE":
-
-				$this->logger->debug('******** CASE TREE **********');
-				if (is_array($value)) {
-					$value = $value[0];
-				}
-				$sql .= " AND ".$column." IN ('".$value."')";
-
-				break;
 			case "CODE":
-				// String
-				if (is_array($value)) {
-					// Case of a list of values
-					$values = '';
-					foreach ($value as $val) {
-						if ($val != null && $val != '' && is_string($val)) {
-							$values .= "'".$val."', ";
-						}
+				if ($tableField->subtype == 'TREE') {
+					if (is_array($value)) {
+						$value = $value[0];
 					}
-					if ($values != '') {
-						$values = substr($values, 0, -2); // remove the last comma
-						$sql .= " AND ".$column." IN (".$values.")";
+
+					// Get all the children of a selected node
+					$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
+
+					$sql2 = '';
+					foreach ($nodeCodes as $nodeCode) {
+						$sql2 .= "'".$nodeCode."',";
 					}
+					$sql2 = substr($sql2, 0, -1); // remove last comma
+
+					$sql .= " AND ".$column." IN (".$sql2.")";
+
 				} else {
-					// Single value
-					$sql .= " AND ".$column." = '".$value."'";
+
+					// String
+					if (is_array($value)) {
+						// Case of a list of values
+						$values = '';
+						foreach ($value as $val) {
+							if ($val != null && $val != '' && is_string($val)) {
+								$values .= "'".$val."', ";
+							}
+						}
+						if ($values != '') {
+							$values = substr($values, 0, -2); // remove the last comma
+							$sql .= " AND ".$column." IN (".$values.")";
+						}
+					} else {
+						// Single value
+						$sql .= " AND ".$column." = '".$value."'";
+					}
 				}
 				break;
 			case "GEOM":
