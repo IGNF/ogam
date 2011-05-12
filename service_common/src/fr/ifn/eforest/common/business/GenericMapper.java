@@ -63,6 +63,24 @@ public class GenericMapper {
 	}
 
 	/**
+	 * Check that a code value correspond to an existing code in a dynamic list.
+	 * 
+	 * @param unit
+	 *            the unit of the field to check
+	 * @param fieldValue
+	 *            the code to check
+	 */
+	protected void checkDynaCode(String unit, String fieldValue) throws Exception {
+
+		List<String> modes = metadataDAO.getDynamodes(unit);
+
+		if (!modes.contains(fieldValue)) {
+			CheckException ce = new CheckException(INVALID_CODE_FIELD);
+			throw ce;
+		}
+	}
+
+	/**
 	 * Check that a code value correspond to an existing code in a tree of codes.
 	 * 
 	 * @param unit
@@ -177,6 +195,8 @@ public class GenericMapper {
 			if (type.equalsIgnoreCase(CODE) && !fieldValue.equalsIgnoreCase("")) {
 				if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.TREE)) {
 					checkTreeCode(fieldDescriptor.getUnit(), fieldValue);
+				} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.DYNAMIC)) {
+					checkDynaCode(fieldDescriptor.getUnit(), fieldValue);
 				} else {
 					checkCode(fieldDescriptor.getUnit(), fieldValue);
 				}

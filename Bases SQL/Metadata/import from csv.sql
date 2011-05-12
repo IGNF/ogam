@@ -33,6 +33,7 @@ delete from table_format;
 delete from form_format;
 delete from format;
 
+delete from dynamode;
 delete from group_mode;
 delete from mode_tree;
 delete from mode;
@@ -58,6 +59,7 @@ COPY range from 'C:/workspace/OGAM/Bases SQL/Metadata/range.csv' with delimiter 
 COPY mode from 'C:/workspace/OGAM/Bases SQL/Metadata/mode.csv' with delimiter ';' null '';
 COPY group_mode from 'C:/workspace/OGAM/Bases SQL/Metadata/group_mode.csv' with delimiter ';' null '';
 COPY mode_tree from 'C:/workspace/OGAM/Bases SQL/Metadata/mode_tree.csv' with delimiter ';' null '';
+COPY dynamode from 'C:/workspace/OGAM/Bases SQL/Metadata/dynamode.csv' with delimiter ';' null '';
 
 COPY form_format from 'C:/workspace/OGAM/Bases SQL/Metadata/form_format.csv' with delimiter ';' null '';
 COPY table_format from 'C:/workspace/OGAM/Bases SQL/Metadata/table_format.csv' with delimiter ';' null '';

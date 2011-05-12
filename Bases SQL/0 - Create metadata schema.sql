@@ -78,6 +78,48 @@ COMMENT ON COLUMN GROUP_MODE.DST_CODE IS 'The destination code';
 COMMENT ON COLUMN GROUP_MODE.COMMENT IS 'Any comment';
 
 
+
+/*==============================================================*/
+/* Table : MODE_TREE                                            */
+/*==============================================================*/
+create table MODE_TREE (
+UNIT                 VARCHAR(36)          not null,
+CODE                 VARCHAR(36)          not null,
+PARENT_CODE          VARCHAR(36)          null,
+LABEL                VARCHAR(60)          null,
+DEFINITION           VARCHAR(255)         null,
+POSITION			 INTEGER              null,
+IS_LEAF			     CHAR(1)              null,
+constraint PK_MODE_TREE primary key (UNIT, CODE)
+);
+
+COMMENT ON COLUMN MODE_TREE.UNIT IS 'The unit';
+COMMENT ON COLUMN MODE_TREE.CODE IS 'The code of the mode';
+COMMENT ON COLUMN MODE_TREE.PARENT_CODE IS 'The parent code';
+COMMENT ON COLUMN MODE_TREE.LABEL IS 'The label';
+COMMENT ON COLUMN MODE_TREE.DEFINITION IS 'The definition of the mode';
+COMMENT ON COLUMN MODE_TREE.POSITION IS 'The position of the mode';
+COMMENT ON COLUMN MODE_TREE.IS_LEAF IS 'Indicate if the node is a leaf (1 for true)';
+
+
+
+
+
+/*==============================================================*/
+/* Table : DYNAMODE                                            */
+/*==============================================================*/
+create table DYNAMODE (
+UNIT                 VARCHAR(36)          not null,
+SQL                  TEXT          not null,
+constraint PK_DYNAMODE primary key (UNIT)
+);
+
+COMMENT ON COLUMN DYNAMODE.UNIT IS 'The unit';
+COMMENT ON COLUMN DYNAMODE.SQL IS 'The sql query that will generate the list of codes. A sorted list of uniques CODE, LABEL is expected';
+
+
+
+
 /*==============================================================*/
 /* Table : RANGE                                                */
 /*==============================================================*/
@@ -339,30 +381,6 @@ COMMENT ON COLUMN TABLE_TREE.CHILD_TABLE IS 'The name of the child table (should
 COMMENT ON COLUMN TABLE_TREE.PARENT_TABLE IS 'The name of the parent table (should correspond to a table format, * when this is a root table)';
 COMMENT ON COLUMN TABLE_TREE.JOIN_KEY IS 'The list of table fields used to make the join between the table (separated by commas)';
 COMMENT ON COLUMN TABLE_TREE.COMMENT IS 'Any comment';
-
-
-
-/*==============================================================*/
-/* Table : MODE_TREE                                            */
-/*==============================================================*/
-create table MODE_TREE (
-UNIT                 VARCHAR(36)          not null,
-CODE                 VARCHAR(36)          not null,
-PARENT_CODE          VARCHAR(36)          null,
-LABEL                VARCHAR(60)          null,
-DEFINITION           VARCHAR(255)         null,
-POSITION			 INTEGER              null,
-IS_LEAF			     CHAR(1)              null,
-constraint PK_MODE_TREE primary key (UNIT, CODE)
-);
-
-COMMENT ON COLUMN MODE_TREE.UNIT IS 'The unit';
-COMMENT ON COLUMN MODE_TREE.CODE IS 'The code of the mode';
-COMMENT ON COLUMN MODE_TREE.PARENT_CODE IS 'The parent code';
-COMMENT ON COLUMN MODE_TREE.LABEL IS 'The label';
-COMMENT ON COLUMN MODE_TREE.DEFINITION IS 'The definition of the mode';
-COMMENT ON COLUMN MODE_TREE.POSITION IS 'The position of the mode';
-COMMENT ON COLUMN MODE_TREE.IS_LEAF IS 'Indicate if the node is a leaf (1 for true)';
 
 
 

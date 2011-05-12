@@ -1,5 +1,7 @@
 package fr.ifn.eforest.common.database.metadata;
 
+import static fr.ifn.eforest.common.business.checks.CheckCodes.INTEGRITY_CONSTRAINT;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +20,9 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.util.LocalCache;
+import fr.ifn.eforest.common.util.SqlStateSQL99;
 import fr.ifn.eforest.common.business.MappingTypes;
+import fr.ifn.eforest.common.business.checks.CheckException;
 
 /**
  * Data Access Object used to access metadata.
@@ -32,6 +36,8 @@ public class MetadataDAO {
 	 */
 	private static LocalCache tableNamesCache = LocalCache.getLocalCache();
 	private static LocalCache modesCache = LocalCache.getLocalCache();
+	private static LocalCache dynamodeSQLCache = LocalCache.getLocalCache();
+	private static LocalCache dynamodeCache = LocalCache.getLocalCache();
 	private static LocalCache modeExistCache = LocalCache.getLocalCache();
 	private static LocalCache treemodeExistCache = LocalCache.getLocalCache();
 	private static LocalCache rangeCache = LocalCache.getLocalCache();
@@ -172,6 +178,11 @@ public class MetadataDAO {
 	 * Get a range value.
 	 */
 	private static final String GET_RANGE_STMT = "SELECT min, max FROM range WHERE unit = ?";
+
+	/**
+	 * Get a dynamic mode SQL request.
+	 */
+	private static final String GET_DYNAMODE_SQL_STMT = "SELECT sql FROM dynamode WHERE unit = ?";
 
 	/**
 	 * Get the table physical name.
@@ -512,6 +523,67 @@ public class MetadataDAO {
 				}
 
 				rangeCache.put(unit, result);
+
+			}
+
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get a SQL request to execute for a unit.
+	 * 
+	 * @param unit
+	 *            The unit of type CODE and subtype DYNAMODE
+	 * @return The SQL request to run
+	 */
+	private String getDynamodeSQL(String unit) throws Exception {
+		String result = null;
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+
+			result = (String) dynamodeSQLCache.get(unit);
+
+			if (result == null) {
+
+				con = getConnection();
+
+				ps = con.prepareStatement(GET_DYNAMODE_SQL_STMT);
+				ps.setString(1, unit);
+				logger.trace(GET_DYNAMODE_SQL_STMT);
+				rs = ps.executeQuery();
+
+				if (rs.next()) {
+					result = rs.getString("sql");
+					dynamodeSQLCache.put(unit, result);
+				} else {
+					throw new Exception("No SQL query found for the modes of unit " + unit);
+				}
 
 			}
 
@@ -1514,4 +1586,71 @@ public class MetadataDAO {
 		return result;
 	}
 
+	/**
+	 * Get a list of modes for a unit using a dynamic list.
+	 * 
+	 * @param sql
+	 *            the SQL query used to generate the dynamic list
+	 * @return List<String> the list of modes
+	 */
+	public List<String> getDynamodes(String unit) throws Exception {
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			List<String> result = (List<String>) dynamodeCache.get(unit);
+
+			// If cache is empty
+			if (result == null) {
+
+				result = new ArrayList<String>();
+
+				con = getConnection();
+
+				// Get the SQL used to extract a list
+				String sql = getDynamodeSQL(unit);
+				logger.trace(sql);
+
+				// Execute the statement
+				ps = con.prepareStatement(sql);
+				rs = ps.executeQuery();
+
+				while (rs.next()) {
+					result.add(rs.getString(1)); // We expect the first column to contain the code
+				}
+
+				// fill the cache
+				dynamodeCache.put(unit, result);
+
+			}
+
+			return result;
+
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing resultset : " + e.getMessage());
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing connexion : " + e.getMessage());
+			}
+		}
+	}
 }
