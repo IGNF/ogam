@@ -1100,7 +1100,7 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 	}
 
 	/**
-	 * AJAX function : Return the results features bounding box in order to zoom on the features.
+	 * AJAX function : Nodes of a tree under a given node and for a given unit.
 	 *
 	 * @return JSON.
 	 */
@@ -1115,6 +1115,36 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 
 		// Send the result as a JSON String
 		echo '['.$tree->toJSON().']';
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * AJAX function : Return the list of available codes for a dynamic list.
+	 *
+	 * @return JSON.
+	 */
+	public function ajaxgetdynamiccodesAction() {
+		$this->logger->debug('ajaxgetdynamiccodesAction');
+
+		$unit = $this->getRequest()->getParam('unit');
+
+		$this->logger->debug('$unit : '.$unit);
+
+		$codes = $this->metadataModel->getDynamodes($unit);
+
+		// Send the result as a JSON String
+		$json .= '{codes:[';
+		foreach ($codes as $code => $label) {
+			$json .= '{code:"'.$code.'", label:"'.$label.'"},';
+		}
+		$json = substr($json, 0, -1);
+		$json .= ']}';
+
+		echo $json;
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();

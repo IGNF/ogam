@@ -474,10 +474,22 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.valueField  = 'code';
                 field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
                 field.disableKeyFilter = true;
-                field.store = new Ext.data.ArrayStore({
-                    fields:['code','label'],
-                    data : record.params.options
-                });
+                if (record.subtype == 'DYNAMIC') {
+                	field.store = new Ext.data.JsonStore({
+                		autoLoad: true,  
+                		root: 'codes',
+	                    fields:[
+	                            {name:'code',mapping:'code'},
+	                            {name:'label',mapping:'label'}
+	                            ],
+	                    url: 'ajaxgetdynamiccodes/unit/'+record.unit
+	                });
+                } else {
+	                field.store = new Ext.data.ArrayStore({
+	                    fields:['code','label'],
+	                    data : record.params.options
+	                });
+                }
                 break;
             case 'MULTIPLE':  // The input type MULTIPLE correspond generally to a data type ARRAY
                 field.xtype = 'combo';
@@ -490,10 +502,22 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.valueField  = 'code';
                 field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
                 field.disableKeyFilter = true;
-                field.store = new Ext.data.ArrayStore({
-                    fields:['code','label'],
-                    data : record.params.options
-                });
+                if (record.subtype=='DYNAMIC') {
+                	field.store = new Ext.data.JsonStore({
+                		autoLoad: true,  
+                		root: 'codes',
+                		fields:[
+	                            {name:'code',mapping:'code'},
+	                            {name:'label',mapping:'label'}
+	                            ],
+	                    url: 'ajaxgetdynamiccodes/unit/'+record.unit
+	                });
+                } else {
+	                field.store = new Ext.data.ArrayStore({
+	                    fields:['code','label'],
+	                    data : record.params.options
+	                });
+                }
                 break;
             case 'DATE': // The input type DATE correspond generally to a data type DATE
                 field.xtype = 'daterangefield';

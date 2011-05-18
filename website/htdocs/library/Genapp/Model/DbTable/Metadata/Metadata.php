@@ -46,7 +46,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the unit modes
+	 * Get the unit modes.
 	 *
 	 * @param String $unit The unit
 	 * @return Array[mode => label]
@@ -66,6 +66,54 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get the unit modes for a dynamic list.
+	 *
+	 * @param String $unit The unit
+	 * @return Array[mode => label]
+	 */
+	public function getDynamodes($unit) {
+		$db = $this->getAdapter();
+
+		$req = $this->getDynamodeSQL($unit);
+
+		$this->logger->info('getDynamicCodes : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array());
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[$row['code']] = $row['label'];
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Get the SQL query used to find unit modes for a dynamic list.
+	 *
+	 * @param String $unit The unit
+	 * @return String the SQL query, that should return an ordered list of code / label.
+	 */
+	private function getDynamodeSQL($unit) {
+		$db = $this->getAdapter();
+		$req = "SELECT sql FROM dynamode WHERE unit = ?";
+
+		$this->logger->info('getDynamodeSQL : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($unit));
+
+		$row = $select->fetch();
+
+		if (!empty($row)) {
+			return $row['sql'];
+		} else {
+			throw new Exception("There is no SQL query defined for UNIT ".$unit);
+		}
 	}
 
 	/**
