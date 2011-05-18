@@ -87,52 +87,6 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the predefined request.
-	 *
-	 * @param String $requestName The request name
-	 * @return Forms
-	 */
-	private function _ajaxgetpredefinedrequest($requestName) {
-		$this->logger->debug('_ajaxgetpredefinedrequest');
-
-		// Get the saved values for the forms
-		$savedRequest = $this->predefinedRequestModel->getPredefinedRequest($requestName);
-
-		// Get the default values for the forms
-		$forms = $this->metadataModel->getForms($savedRequest->datasetID, $savedRequest->schemaCode);
-		foreach ($forms as $form) {
-			// Fill each form with the list of criterias and results
-			$form->criteriaList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'criteria');
-			$form->resultsList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'result');
-		}
-
-		// Update the default values with the saved values.
-		foreach ($forms as $form) {
-			foreach ($form->criteriaList as $criteria) {
-				$criteria->isDefaultCriteria = '0';
-				$criteria->defaultValue = '';
-
-				if (array_key_exists($criteria->format.'__'.$criteria->data, $savedRequest->criteriaList)) {
-					$criteria->isDefaultCriteria = '1';
-					$criteria->defaultValue = $savedRequest->criteriaList[$criteria->format.'__'.$criteria->data]->value;
-				}
-			}
-
-			foreach ($form->resultsList as $result) {
-				$result->isDefaultResult = '0';
-
-				if (array_key_exists($result->format.'__'.$result->data, $savedRequest->resultsList)) {
-					$result->isDefaultResult = '1';
-				}
-			}
-		}
-
-		// return the forms
-		return $forms;
-
-	}
-
-	/**
 	 * AJAX function : Get the list of available predefined requests.
 	 *
 	 * @return JSON

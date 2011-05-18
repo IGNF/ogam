@@ -84,16 +84,8 @@ class Genapp_Service_QueryService {
 						}
 						$json = substr($json, 0, -1);
 						$json .= ']}';
-					} else if ($field->subtype == "TREE") {
-						// Get the nodes of the tree, from the root ("-1") and down to 2 levels
-						//$options = $this->metadataModel->getTreeModes($field->unit, -1, 2);
-						$json .= ',params:{options:[';
-						//foreach ($options as $code => $label) {
-						//	$json .= '["'.$code.'","'.$label.'"],';
-						//}
-						//$json = substr($json, 0, -1);
-						$json .= ']}';
-					}
+					} 
+					// For DYNAMIC and TREE modes, the list is populated using an ajax request
 				}
 				// For the RANGE field, get the min and max values
 				if ($field->type == "NUMERIC" && "RANGE") {
@@ -122,6 +114,52 @@ class Genapp_Service_QueryService {
 		$json = $json.']}';
 
 		return $json;
+	}
+
+	/**
+	 * AJAX function : Get the predefined request.
+	 *
+	 * @param String $requestName The request name
+	 * @return Forms
+	 */
+	private function _getPredefinedRequest($requestName) {
+		$this->logger->debug('_getPredefinedRequest');
+
+		// Get the saved values for the forms
+		$savedRequest = $this->predefinedRequestModel->getPredefinedRequest($requestName);
+
+		// Get the default values for the forms
+		$forms = $this->metadataModel->getForms($savedRequest->datasetID, $savedRequest->schemaCode);
+		foreach ($forms as $form) {
+			// Fill each form with the list of criterias and results
+			$form->criteriaList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'criteria');
+			$form->resultsList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'result');
+		}
+
+		// Update the default values with the saved values.
+		foreach ($forms as $form) {
+			foreach ($form->criteriaList as $criteria) {
+				$criteria->isDefaultCriteria = '0';
+				$criteria->defaultValue = '';
+
+				if (array_key_exists($criteria->format.'__'.$criteria->data, $savedRequest->criteriaList)) {
+					$criteria->isDefaultCriteria = '1';
+					$criteria->defaultValue = $savedRequest->criteriaList[$criteria->format.'__'.$criteria->data]->value;
+				}
+			}
+
+			foreach ($form->resultsList as $result) {
+				$result->isDefaultResult = '0';
+
+				if (array_key_exists($result->format.'__'.$result->data, $savedRequest->resultsList)) {
+					$result->isDefaultResult = '1';
+				}
+			}
+		}
+
+		// return the forms
+		return $forms;
+
 	}
 
 	/**
@@ -157,7 +195,7 @@ class Genapp_Service_QueryService {
 		if (!empty($requestName)) {
 			// If request name is filled then we are coming from the predefined request screen
 			// and we build the form corresponding to the request
-			$forms = $this->_ajaxgetpredefinedrequest($requestName);
+			$forms = $this->_getPredefinedRequest($requestName);
 		} else {
 			// Otherwise we get all the fields available with their default value
 			$forms = $this->metadataModel->getForms($datasetId, $this->schema);
