@@ -626,7 +626,12 @@ abstract class Genapp_Controller_AbstractQueryController extends Genapp_Controll
 			$traductions = array();
 			foreach ($resultColumns as $tableField) {
 				if ($tableField->type == "CODE") {
-					$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
+					if ($tableField->subtype == "DYNAMIC") {
+						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getDynamodes($tableField->unit);
+						$this->logger->debug('$traductions : '.print_r($traductions,true));
+					} else {
+						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
+					}
 				}
 			}
 
