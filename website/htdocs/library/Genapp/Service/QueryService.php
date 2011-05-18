@@ -84,7 +84,7 @@ class Genapp_Service_QueryService {
 						}
 						$json = substr($json, 0, -1);
 						$json .= ']}';
-					} 
+					}
 					// For DYNAMIC and TREE modes, the list is populated using an ajax request
 				}
 				// For the RANGE field, get the min and max values
@@ -223,6 +223,10 @@ class Genapp_Service_QueryService {
 
 		$json = "";
 
+		// Configure the projection systems
+		$configuration = Zend_Registry::get("configuration");
+		$visualisationSRS = $configuration->srs_visualisation;
+
 		// Transform the form request object into a table data object
 		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
 
@@ -249,7 +253,7 @@ class Genapp_Service_QueryService {
 			$locationField = $this->metadataModel->getLocationTableFields($this->schema, array_keys($tables));
 
 			// Run the request to store a temporary result table (for the web mapping)
-			$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField->format, $this->visualisationSRS);
+			$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField->format, $visualisationSRS);
 
 			// Calculate the number of lines of result
 			$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count ".$fromwhere);

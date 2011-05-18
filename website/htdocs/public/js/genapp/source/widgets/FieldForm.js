@@ -83,7 +83,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 {name:'is_default',mapping:'is_default'},
                 {name:'default_value',mapping:'default_value'},
                 {name:'decimals',mapping:'decimals'},                
-                {name:'params',mapping:'params'}
+                {name:'params',mapping:'params'} // reserved for min/max or list of codes
             ],
             data:this.criteria
         });
@@ -100,7 +100,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 {name:'definition',mapping:'definition'},
                 {name:'is_default',mapping:'is_default'},
                 {name:'decimals',mapping:'decimals'},
-                {name:'params',mapping:'params'}
+                {name:'params',mapping:'params'}  // reserved for min/max or list of codes
             ],
             data:this.columns
         });

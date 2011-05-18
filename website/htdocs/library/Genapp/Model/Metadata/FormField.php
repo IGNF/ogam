@@ -126,7 +126,8 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 		$return = 'name:'.json_encode($this->format.'__'.$this->data);
 		$return .= ',label:'.json_encode($this->label);
 		$return .= ',definition:'.json_encode($this->definition);
-		$return .= ',decimals:'.$this->isDefaultResult;
+		$return .= ',is_default:'.json_encode($this->isDefaultResult);
+		$return .= ',decimals:'.json_encode($this->decimals);
 		return $return;
 	}
 
