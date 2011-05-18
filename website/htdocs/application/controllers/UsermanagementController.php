@@ -3,16 +3,13 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'AbstractEforestController.php';
-//require_once APPLICATION_PATH.'/models/website/User.php';
-//require_once APPLICATION_PATH.'/models/website/Role.php';
-//require_once LIBRARY_PATH.'/Genapp/models/metadata/Metadata.php';
+require_once 'AbstractOGAMController.php';
 
 /**
  * UsermanagementController is the controller that manages the users
  * @package controllers
  */
-class UsermanagementController extends Genapp_Controller_AbstractOGAMController {
+class UsermanagementController extends AbstractOGAMController {
 
 	/**
 	 * Initialise the controler

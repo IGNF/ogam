@@ -3,12 +3,13 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
+require_once 'AbstractOGAMController.php';
 
 /**
  * DataEditionController is the controller that allow the edition of simple data.
  * @package controllers
  */
-class DataEditionController extends Genapp_Controller_AbstractOGAMController {
+class DataEditionController extends AbstractOGAMController {
 
 	protected $_redirector = null;
 
@@ -43,7 +44,7 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
 
 		// The generic service
-		$this->genericService = new Genapp_Model_Generic_GenericService();
+		$this->genericService = new Genapp_Service_GenericService();
 
 	}
 

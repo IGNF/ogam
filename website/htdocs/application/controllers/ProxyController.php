@@ -3,15 +3,13 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'AbstractEforestController.php';
-//require_once APPLICATION_PATH.'/models/aggregation/Aggregation.php';
-//require_once APPLICATION_PATH.'/models/mapping/ClassDefinition.php';
+require_once 'AbstractOGAMController.php';
 
 /**
  * Proxy used to safely route the request to the mapserver.
  * @package controllers
  */
-class ProxyController extends Genapp_Controller_AbstractOGAMController {
+class ProxyController extends AbstractOGAMController {
 
 	/**
 	 * Initialise the controler

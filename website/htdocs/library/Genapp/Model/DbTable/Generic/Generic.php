@@ -41,7 +41,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
 
 		// Initialise the generic service
-		$this->genericService = new Genapp_Model_Generic_GenericService();
+		$this->genericService = new Genapp_Service_GenericService();
 
 	}
 

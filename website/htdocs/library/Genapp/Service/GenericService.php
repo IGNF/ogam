@@ -7,11 +7,11 @@
 /**
  * The Generic Service.
  *
- * This service handles transformations between data objects.
+ * This service handles transformations between data objects and generate generic SQL requests from the metadata.
  *
  * @package classes
  */
-class Genapp_Model_Generic_GenericService {
+class Genapp_Service_GenericService {
 
 	/**
 	 * The logger.

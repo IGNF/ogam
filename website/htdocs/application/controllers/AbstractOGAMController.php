@@ -5,10 +5,10 @@
  */ 
 
 /**
- * AbstractEforestController is the common controler for the Eforest application.
+ * AbstractOGAMController is the common controler for the OGAM application.
  * @package controllers
  */
-abstract class Genapp_Controller_AbstractOGAMController extends Zend_Controller_Action {
+abstract class AbstractOGAMController extends Zend_Controller_Action {
 
 	/**
 	 * Base URL of the web site

@@ -227,7 +227,7 @@ class Application_Model_DbTable_Website_PredefinedRequest extends Zend_Db_Table_
 		$db = $this->getAdapter();
 
 		// Get the request
-		$req = " SELECT format, data, value, fixed, input_type, type, data.unit, data.label, data.definition";
+		$req = " SELECT format, data, value, fixed, input_type, type, subtype, data.unit, data.label, data.definition";
 		$req .= " FROM predefined_request_criteria";
 		$req .= " JOIN form_field using (data, format)";
 		$req .= " JOIN data using (data)";
@@ -250,6 +250,7 @@ class Application_Model_DbTable_Website_PredefinedRequest extends Zend_Db_Table_
 			$field->fixed = $result['fixed'];
 			$field->inputType = $result['input_type'];
 			$field->type = $result['type'];
+			$field->subtype = $result['subtype'];
 			$field->label = $result['label'];
 			$field->definition = $result['definition'];
 

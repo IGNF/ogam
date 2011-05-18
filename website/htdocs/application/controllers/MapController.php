@@ -3,16 +3,13 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'AbstractEforestController.php';
-//require_once APPLICATION_PATH.'/models/mapping/Layers.php';
-//require_once APPLICATION_PATH.'/models/mapping/ResultLocation.php';
-//require_once APPLICATION_PATH.'/models/mapping/BoundingBox.php';
+require_once 'AbstractOGAMController.php';
 
 /**
  * MapController is the controller that manages the web-mapping interface.
  * @package controllers
  */
-class MapController extends Genapp_Controller_AbstractOGAMController {
+class MapController extends AbstractOGAMController {
 
 	/**
 	 * Initialise the controler

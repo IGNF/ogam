@@ -3,13 +3,13 @@
  * © French National Forest Inventory 
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */ 
-//require_once 'AbstractEforestController.php';
+require_once 'AbstractOGAMController.php';
 
 /**
  * ErrorController
  * @package controllers
  */
-class ErrorController extends Genapp_Controller_AbstractOGAMController {
+class ErrorController extends AbstractOGAMController {
 
 	/**
 	 * Initialise the controler
