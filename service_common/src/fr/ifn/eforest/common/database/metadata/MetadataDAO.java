@@ -1,7 +1,5 @@
 package fr.ifn.eforest.common.database.metadata;
 
-import static fr.ifn.eforest.common.business.checks.CheckCodes.INTEGRITY_CONSTRAINT;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,9 +18,7 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.util.LocalCache;
-import fr.ifn.eforest.common.util.SqlStateSQL99;
 import fr.ifn.eforest.common.business.MappingTypes;
-import fr.ifn.eforest.common.business.checks.CheckException;
 
 /**
  * Data Access Object used to access metadata.
