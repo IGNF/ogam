@@ -154,13 +154,12 @@ class Genapp_Service_QueryService {
 	public function getForms($datasetId, $requestName) {
 		$this->logger->debug('getforms');
 
-		$this->logger->debug('datasetId : '.$datasetId);
-		$this->logger->debug('requestName : '.$requestName);
-
-		// If request name is filled then we are coming from the predefined request screen
 		if (!empty($requestName)) {
+			// If request name is filled then we are coming from the predefined request screen
+			// and we build the form corresponding to the request
 			$forms = $this->_ajaxgetpredefinedrequest($requestName);
 		} else {
+			// Otherwise we get all the fields available with their default value
 			$forms = $this->metadataModel->getForms($datasetId, $this->schema);
 			foreach ($forms as $form) {
 				// Fill each form with the list of criterias and results
