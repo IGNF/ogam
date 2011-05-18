@@ -144,7 +144,13 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 		} else if ($tableField->type == "CODE") {
 
 			// The field is a single code
-			$modes = $this->metadataModel->getModes($tableField->unit);
+
+			if ($tableField->subtype == "DYNAMIC") {
+				$modes = $this->metadataModel->getDynamodes($tableField->unit);
+			} else {
+				$modes = $this->metadataModel->getModes($tableField->unit);
+			}
+
 			$elem = $form->createElement('select', $tableField->data);
 			$elem->addMultiOptions($modes);
 			$elem->setValue($tableField->value);
@@ -160,7 +166,11 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 			// The field is a list of codes
 
 			// Get the list of available values
-			$modes = $this->metadataModel->getModes($tableField->unit);
+			if ($tableField->subtype == "DYNAMIC") {
+				$modes = $this->metadataModel->getDynamodes($tableField->unit);
+			} else {
+				$modes = $this->metadataModel->getModes($tableField->unit);
+			}
 
 			// Build a multiple select box
 			$elem = $form->createElement('multiselect', $tableField->data);
@@ -335,9 +345,9 @@ class DataEditionController extends Genapp_Controller_AbstractOGAMController {
 
 		// Get the childs of the data objet from the database (to generate links)
 		$children = $this->genericModel->getChildren($data);
-		
+
 		$childrenTableLabels = $this->metadataModel->getChildrenTableLabels($data->tableFormat);
-		
+
 		// Store the data descriptor in session
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->data = $data;
