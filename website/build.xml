@@ -184,7 +184,7 @@
                 <exclude name="**/tmp/**" />
                 <exclude name="**/upload/**" />
             	<exclude name="**/hudson**" />
-                <exclude name="**/application/config/**" />
+                <exclude name="**/application/configs/**" />
                 <exclude name="**/.htaccess" />
                 <exclude name="**/js/extjs/docs/**" />
                 <exclude name="**/js/extjs/examples/**" />
