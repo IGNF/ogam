@@ -8,7 +8,7 @@
  * Represent a file of a submission.
  * @package classes
  */
-class Application_Model_Rawdata_SubmissionFile {
+class Application_Model_RawData_SubmissionFile {
 
 	/**
 	 * The name of the file

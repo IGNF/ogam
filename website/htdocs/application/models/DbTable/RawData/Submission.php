@@ -47,7 +47,7 @@ class Application_Model_DbTable_RawData_Submission extends Zend_Db_Table_Abstrac
 
 			if (empty($result[$submissionId])) {
 				// Create the new submission
-				$submission = new Application_Model_Rawdata_Submission();
+				$submission = new Application_Model_RawData_Submission();
 				$submission->submissionId = $submissionId;
 				$submission->step = $row['step'];
 				$submission->status = $row['status'];
@@ -57,7 +57,7 @@ class Application_Model_DbTable_RawData_Submission extends Zend_Db_Table_Abstrac
 				$result[$submissionId] = $submission;
 			}
 			// Add file info
-			$submissionFile = new Application_Model_Rawdata_SubmissionFile();
+			$submissionFile = new Application_Model_RawData_Submission();
 			$submissionFile->fileName = $row['file_name'];
 			$submissionFile->fileType = $row['file_type'];
 			$submissionFile->lineNumber = $row['nb_line'];
@@ -95,7 +95,7 @@ class Application_Model_DbTable_RawData_Submission extends Zend_Db_Table_Abstrac
 
 		if (!empty($row)) {
 			// Create the new submission
-			$submission = new Application_Model_Rawdata_Submission();
+			$submission = new Application_Model_RawData_Submission();
 			$submission->submissionId = $submissionId;
 			$submission->step = $row['step'];
 			$submission->status = $row['status'];

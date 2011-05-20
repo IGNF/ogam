@@ -251,7 +251,7 @@ class IntegrationController extends AbstractOGAMController {
 		}
 
 		// Store the submission information in session
-		$dataSubmission = new Application_Model_Rawdata_Submission();
+		$dataSubmission = new Application_Model_RawData_Submission();
 		$dataSubmission->submissionId = $submissionId;
 		$dataSubmission->providerId = $providerId;
 		$dataSubmission->datasetId = $datasetId;

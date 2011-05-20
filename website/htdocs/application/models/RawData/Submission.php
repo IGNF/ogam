@@ -12,7 +12,7 @@
  *
  * @package classes
  */
-class Application_Model_Rawdata_Submission {
+class Application_Model_RawData_Submission {
 
 	/**
 	 * The submission identifier
