@@ -85,11 +85,17 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Setup the translation
 		$translations = $this->addTranslation(array(
-			APPLICATION_PATH.'/lang',
-			INHERENT_APPLICATION_PATH.'/lang/new',
-			INHERENT_APPLICATION_PATH.'/lang/substitute',
-			INHERENT_APPLICATION_PATH.'/lang/patch'
+			APPLICATION_PATH.'/lang'
 		), $translate);
+		// Setup the translation with files specific to the app
+		if (defined('INHERENT_APPLICATION_PATH')) {
+			$translations = $this->addTranslation(array(
+				APPLICATION_PATH.'/lang',
+				INHERENT_APPLICATION_PATH.'/lang/new',
+				INHERENT_APPLICATION_PATH.'/lang/substitute',
+				INHERENT_APPLICATION_PATH.'/lang/patch'
+			), $translate);
+		}
 
 		// Set the locale
 		$browserLocales = Zend_Locale::getBrowser();
