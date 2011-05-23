@@ -66,7 +66,18 @@ class DataEditionController extends AbstractOGAMController {
 	 * The "index" action is the default action for all controllers.
 	 */
 	public function indexAction() {
+		return $this->showIndexAction();
+	}
+
+	/**
+	 * Display the "index" page.
+	 */
+	public function showIndexAction($message = '') {
 		$this->logger->debug('Data edition index');
+
+		$this->view->message = $message;
+
+		$this->render('index');
 	}
 
 	/**
@@ -260,6 +271,34 @@ class DataEditionController extends AbstractOGAMController {
 	}
 
 	/**
+	 * Parse request parameters and build the corresponding data object.
+	 *
+	 * @param Zend_Controller_Request_Abstract $request The request object.
+	 * @return DataObject the data object
+	 */
+	private function _getDataFromRequest($request) {
+
+		$params = $request->getUserParams();
+
+		$schema = $params["SCHEMA"];
+		$format = $params["FORMAT"];
+
+		$data = $this->genericService->buildDataObject($schema, $format);
+
+		// Complete the primary key info with the session values
+		foreach ($data->infoFields as $infoField) {
+			if (!empty($params[$infoField->data])) {
+				$infoField->value = $params[$infoField->data];
+			}
+		}
+
+		// Complete the data object with the values from the database.
+		$data = $this->genericModel->getDatum($data);
+
+		return $data;
+	}
+
+	/**
 	 * Edit a data.
 	 *
 	 * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
@@ -282,26 +321,12 @@ class DataEditionController extends AbstractOGAMController {
 
 			// Get the parameters from the URL
 			$request = $this->getRequest();
-			$params = $request->getUserParams();
 
-			$schema = $params["SCHEMA"];
-			$format = $params["FORMAT"];
-
-			$data = $this->genericService->buildDataObject($schema, $format);
-
-			// Complete the primary key info with the session values
-			foreach ($data->infoFields as $infoField) {
-				if (!empty($params[$infoField->data])) {
-					$infoField->value = $params[$infoField->data];
-				}
-			}
-
-			// Complete the data object with the values from the database.
-			$data = $this->genericModel->getDatum($data);
+			$data = $this->_getDataFromRequest($request);
 
 		}
 
-		//Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
+		//$this->logger->info('$data : '.print_r($data, true));
 
 		// If the object is not existing then we are in create mode instead of edit mode
 
@@ -330,6 +355,47 @@ class DataEditionController extends AbstractOGAMController {
 		$this->view->childrenTableLabels = $childrenTableLabels;
 
 		$this->render('edit-data');
+	}
+
+	/**
+	 * Delete a data.
+	 *
+	 * Return to the index.
+	 **/
+	public function deleteDataAction() {
+		$this->logger->debug('deleteDataAction');
+
+		// Get back the dataset identifier
+		$websiteSession = new Zend_Session_Namespace('website');
+		$datasetId = $websiteSession->datasetID;
+
+		// Get the parameters from the URL
+		$request = $this->getRequest();
+
+		// Get the data object corresponding to the parameters
+		$data = $this->_getDataFromRequest($request);
+
+		//$this->logger->info('$data : '.print_r($data, true));
+
+		// Check if the data has children
+		$children = $this->genericModel->getChildren($data);
+
+		if (!empty($children)) {
+			// Redirect to the index page
+			return $this->showIndexAction('Item cannot be deleted because it has children');
+		} else {
+			// Delete the data
+			try {
+				$this->genericModel->deleteData($data);
+			} catch (Exception $e) {
+				$this->logger->err($e->getMessage());
+				return $this->showIndexAction($e->getMessage());
+			}
+
+			// Redirect to the index page
+			return $this->showIndexAction('Item deleted');
+		}
+
 	}
 
 	/**
@@ -370,6 +436,7 @@ class DataEditionController extends AbstractOGAMController {
 		try {
 			$this->genericModel->updateData($data);
 		} catch (Exception $e) {
+			$this->logger->err($e->getMessage());
 			return $this->showEditDataAction($data, $e->getMessage());
 		}
 
@@ -414,6 +481,7 @@ class DataEditionController extends AbstractOGAMController {
 		try {
 			$this->genericModel->insertData($data);
 		} catch (Exception $e) {
+			$this->logger->err($e->getMessage());
 			return $this->showAddDataAction($data, $e->getMessage());
 		}
 
@@ -444,51 +512,11 @@ class DataEditionController extends AbstractOGAMController {
 
 			// Get the parameters from the URL
 			$request = $this->getRequest();
-			$params = $request->getUserParams();
 
-			$schema = $params["SCHEMA"];
-			$format = $params["FORMAT"];
-
-			// Create an empty data object with the info in session
-			$data = new Genapp_Model_Generic_DataObject();
-			$data->datasetId = $datasetId;
-
-			// Get the info about the format
-			$tableFormat = $this->metadataModel->getTableFormat($schema, $format);
-
-			// Store it in the data object
-			$data->tableFormat = $tableFormat;
-
-			// Get all the description of the Table Fields corresponding to the format
-			$tableFields = $this->metadataModel->getTableFields($data->datasetId, $schema, $format);
-
-			// Separate the keys from other values
-			foreach ($tableFields as $tableField) {
-				if (in_array($tableField->data, $tableFormat->primaryKeys)) {
-					// Primary keys are display as info when we have the value
-					if (!empty($params[$tableField->data])) {
-						// Complete the primary key info with the session values
-						$tableField->value = $params[$tableField->data];
-						$data->addInfoField($tableField);
-					} else {
-						// If the missing PK info is not calculated by trigger then it must be filled by the user
-						if (!$tableField->isCalculated) {
-							$this->logger->debug('adding field : '.$tableField->data.' as editable pk');
-							$data->addEditableField($tableField);
-						}
-					}
-
-				} else {
-					if (!$tableField->isCalculated) {
-						// Fields that are calculated by a trigger should not be edited
-						$data->addEditableField($tableField);
-					}
-				}
-			}
-
+			$data = $this->_getDataFromRequest($request);
 		}
 
-		// Zend_Registry::get("logger")->info('$data : '.print_r($data, true));
+		// $this->logger->info('$data : '.print_r($data, true));
 
 		// If the objet is not existing then we are in create mode instead of edit mode
 

@@ -245,7 +245,7 @@ class IntegrationController extends AbstractOGAMController {
 		try {
 			$submissionId = $this->integrationServiceModel->newDataSubmission($providerId, $datasetId, $userLogin);
 		} catch (Exception $e) {
-			$this->logger->debug('Error during upload: '.$e);
+			$this->logger->err('Error during upload: '.$e);
 			$this->view->errorMessage = $e->getMessage();
 			return $this->render('show-data-error');
 		}
@@ -344,7 +344,7 @@ class IntegrationController extends AbstractOGAMController {
 			try {
 				$this->integrationServiceModel->uploadData($submission->submissionId, $providerId, $requestedFiles);
 			} catch (Exception $e) {
-				$this->logger->debug('Error during upload: '.$e);
+				$this->logger->err('Error during upload: '.$e);
 				$this->view->errorMessage = $e->getMessage();
 				return $this->render('show-data-error');
 			}
@@ -374,7 +374,7 @@ class IntegrationController extends AbstractOGAMController {
 		try {
 			$this->integrationServiceModel->cancelDataSubmission($submissionId);
 		} catch (Exception $e) {
-			$this->logger->debug('Error during upload: '.$e);
+			$this->logger->err('Error during upload: '.$e);
 			$this->view->errorMessage = $e->getMessage();
 			return $this->render('show-data-error');
 		}
@@ -398,7 +398,7 @@ class IntegrationController extends AbstractOGAMController {
 		try {
 			$this->integrationServiceModel->checkDataSubmission($submissionId);
 		} catch (Exception $e) {
-			$this->logger->debug('Error during upload: '.$e);
+			$this->logger->err('Error during upload: '.$e);
 			$this->view->errorMessage = $e->getMessage();
 			return $this->render('show-data-error');
 		}
@@ -427,7 +427,7 @@ class IntegrationController extends AbstractOGAMController {
 		try {
 			$this->integrationServiceModel->validateDataSubmission($submissionId);
 		} catch (Exception $e) {
-			$this->logger->debug('Error during upload: '.$e);
+			$this->logger->err('Error during upload: '.$e);
 			$this->view->errorMessage = $e->getMessage();
 			return $this->render('show-data-error');
 		}
@@ -455,7 +455,7 @@ class IntegrationController extends AbstractOGAMController {
 			// Echo the result as a JSON
 			echo '{success:true, status:\''.$status->status.'\', taskName:\''.$status->taskName.'\', currentCount:\''.$status->currentCount.'\', totalCount:\''.$status->totalCount.'\'}';
 		} catch (Exception $e) {
-			$this->logger->debug('Error during get: '.$e);
+			$this->logger->err('Error during get: '.$e);
 			$this->view->errorMessage = $e->getMessage();
 			echo '{success:false, errorMsg: \'\'}';
 		}

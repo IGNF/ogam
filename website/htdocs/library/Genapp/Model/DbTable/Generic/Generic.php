@@ -243,6 +243,56 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Delete a line of data from a table.
+	 *
+	 * @param DataObject $data the shell of the data object with the values for the primary key.
+	 * @throws an exception if an error occur during delete
+	 */
+	public function deleteData($data) {
+		$db = $this->getAdapter();
+
+		/* @var $data DataObject */
+		$tableFormat = $data->tableFormat;
+		/* @var $tableFormat TableFormat */
+
+		$this->logger->info('deleteData');
+
+		// Get the values from the data table
+		$sql = "DELETE FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName;
+		$sql .= " WHERE (1 = 1) ";
+
+		// Build the WHERE clause with the info from the PK.
+		foreach ($data->infoFields as $primaryKey) {
+			/* @var $primaryKey TableField */
+
+			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
+			if (!($tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
+
+				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER" || $field->type == "RANGE") {
+					$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
+				} else if ($primaryKey->type == "ARRAY") {
+					// Arrays not handlmed as primary keys
+					throw new Exception("A primary key should not be of type ARRAY");
+				} else {
+					$sql .= " AND ".$primaryKey->columnName." = '".$primaryKey->value."'";
+				}
+			}
+		}
+
+		$this->logger->info('deleteData : '.$sql);
+
+		$request = $db->prepare($sql);
+
+		try {
+			$request->execute();
+		} catch (Exception $e) {
+			$this->logger->err('Error while deleting data  : '.$e->getMessage());
+			throw new Exception("Error while deleting data  : ".$e->getMessage());
+		}
+
+	}
+
+	/**
 	 * Insert a line of data from a table.
 	 *
 	 * @param DataObject $data the shell of the data object to insert.
@@ -256,7 +306,7 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		/* @var $tableFormat TableFormat */
 
 		$this->logger->info('insertData');
-		
+
 		// Get the values from the data table
 		$sql = "INSERT INTO ".$tableFormat->schemaCode.".".$tableFormat->tableName;
 		$columns = "";

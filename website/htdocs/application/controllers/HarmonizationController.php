@@ -115,7 +115,7 @@ class HarmonizationController extends AbstractOGAMController {
 		try {
 			$this->harmonizationServiceModel->harmonizeData($providerId, $datasetId);
 		} catch (Exception $e) {
-			$this->logger->debug('Error during harmonization: '.$e);
+			$this->logger->err('Error during harmonization: '.$e);
 			$this->view->errorMessage = $e->getMessage();
 			return $this->render('show-harmonization-process-error');
 		}
@@ -143,7 +143,7 @@ class HarmonizationController extends AbstractOGAMController {
 			// Echo the result as a JSON
 			echo "{status:'".$status->status."', taskName:'".$status->taskName."', currentCount:'".$status->currentCount."', totalCount:'".$status->totalCount."'}";
 		} catch (Exception $e) {
-			$this->logger->debug('Error during get: '.$e);
+			$this->logger->err('Error during get: '.$e);
 			$this->view->errorMessage = $e->getMessage();
 			return $this->render('show-data-error');
 		}

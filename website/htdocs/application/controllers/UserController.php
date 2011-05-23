@@ -198,7 +198,7 @@ class UserController extends Zend_Controller_Action {
 				$this->showLoginFormAction("Incorrect password");
 			}
 		} catch (Exception $e) {
-			$this->logger->debug('Exception '.$e);
+			$this->logger->err('Exception '.$e);
 			$this->showLoginFormAction("Unexpected error : ".$e->getMessage());
 		}
 	}

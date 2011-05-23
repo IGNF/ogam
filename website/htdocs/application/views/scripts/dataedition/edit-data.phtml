@@ -72,9 +72,19 @@ if (!empty($this->children)) {
 </fieldset>
 <?php } ?>
 
-
-
 </div>
+
+<br/>
+<?php
+
+if (empty($this->children)) {
+	// If the item has no child we can delete it
+	echo $this->generateDeleteLink($this->data);
+} else {
+	echo '<img src="'.$this->baseUrl('img/bin.gif').'" /> Delete data (not available because of children)';
+}
+
+?>
 
 
 <div class="message">
