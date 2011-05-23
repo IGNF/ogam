@@ -193,10 +193,14 @@ public class GenericMapper {
 			}
 
 			if (type.equalsIgnoreCase(CODE) && !fieldValue.equalsIgnoreCase("")) {
-				if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.TREE)) {
-					checkTreeCode(fieldDescriptor.getUnit(), fieldValue);
-				} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.DYNAMIC)) {
-					checkDynaCode(fieldDescriptor.getUnit(), fieldValue);
+				if (fieldDescriptor.getSubtype() != null) {
+					if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.TREE)) {
+						checkTreeCode(fieldDescriptor.getUnit(), fieldValue);
+					} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.DYNAMIC)) {
+						checkDynaCode(fieldDescriptor.getUnit(), fieldValue);
+					} else {
+						checkCode(fieldDescriptor.getUnit(), fieldValue);
+					}
 				} else {
 					checkCode(fieldDescriptor.getUnit(), fieldValue);
 				}
@@ -207,11 +211,14 @@ public class GenericMapper {
 				try {
 					String normalizedFieldValue = fieldValue.replace(",", ".");
 
-					if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.RANGE)) {
-						result = checkRange(fieldDescriptor, normalizedFieldValue);
-					}
-					if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.COORDINATE)) {
-						result = getCoordinate(normalizedFieldValue);
+					if (fieldDescriptor.getSubtype() != null) {
+						if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.RANGE)) {
+							result = checkRange(fieldDescriptor, normalizedFieldValue);
+						} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.COORDINATE)) {
+							result = getCoordinate(normalizedFieldValue);
+						} else {
+							result = new BigDecimal(normalizedFieldValue);
+						}
 					} else {
 						result = new BigDecimal(normalizedFieldValue);
 					}

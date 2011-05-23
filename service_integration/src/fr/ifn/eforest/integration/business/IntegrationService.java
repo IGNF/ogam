@@ -73,8 +73,16 @@ public class IntegrationService extends GenericMapper {
 			// First get the description of the content of the CSV file
 			List<FileFieldData> sourceFieldDescriptors = metadataDAO.getFileFields(sourceFormat);
 
-			// Check that the content of the file match the description
-			if (csvFile.getRowsCount() == 0) {
+			// Check if the file is mandatory (any of its field is mandatory)
+			boolean fileMandatory = false;
+			Iterator<FileFieldData> sourceFieldsIter = sourceFieldDescriptors.iterator();
+			while (sourceFieldsIter.hasNext()) {
+				FileFieldData sourceField = sourceFieldsIter.next();
+				fileMandatory = fileMandatory || sourceField.getIsMandatory();
+			}
+
+			// If the file is mandatory, check that it contains at least one line
+			if (fileMandatory && csvFile.getRowsCount() == 0) {
 				CheckException e = new CheckException(EMPTY_FILE);
 				e.setSourceFormat(sourceFormat);
 				e.setSubmissionId(submissionId);

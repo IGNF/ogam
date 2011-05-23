@@ -168,11 +168,11 @@ public class GenericDAO {
 
 			if (SqlStateSQL99.ERRCODE_UNIQUE_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				throw new CheckException(DUPLICATE_ROW);
-			}
-			if (SqlStateSQL99.ERRCODE_DATATYPE_MISMATCH.equalsIgnoreCase(sqle.getSQLState())) {
+			} else if (SqlStateSQL99.ERRCODE_DATATYPE_MISMATCH.equalsIgnoreCase(sqle.getSQLState())) {
 				throw new CheckException(INVALID_TYPE_FIELD);
-			}
-			if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
+			} else if (SqlStateSQL99.ERRCODE_STRING_DATA_RIGHT_TRUNCATION.equalsIgnoreCase(sqle.getSQLState())) {
+				throw new CheckException(STRING_TOO_LONG);
+			} else if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				CheckException ce = new CheckException(INTEGRITY_CONSTRAINT);
 				String message = sqle.getMessage();
 				int pos = message.indexOf("Détail : ");
@@ -184,6 +184,9 @@ public class GenericDAO {
 				}
 				ce.setFoundValue(message);
 				throw ce;
+			} else {
+				logger.error("SQL STATE : " + sqle.getSQLState());
+				throw new CheckException(UNEXPECTED_SQL_ERROR);
 			}
 		} catch (Exception e) {
 
