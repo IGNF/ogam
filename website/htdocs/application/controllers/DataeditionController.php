@@ -280,55 +280,19 @@ class DataEditionController extends AbstractOGAMController {
 			$websiteSession = new Zend_Session_Namespace('website');
 			$datasetId = $websiteSession->datasetID;
 
-			// Declare our array of business keys
-			$keyMap = array();
-
 			// Get the parameters from the URL
 			$request = $this->getRequest();
 			$params = $request->getUserParams();
 
-			if (sizeof($params) <= 3) { // default size = controller + action + module
-
-				// Paramètres d'entrée :
-				// DATASET_ID
-				// FORMAT : Le nom de la table à éditer
-				// CLE1
-				// CLE2
-				// ...
-
-				// Test 1 : Plot data
-				//		$keyMap["FORMAT"] = "PLOT_DATA";
-				//		$keyMap["PROVIDER_ID"] = "1";
-				//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
-				//		$keyMap["CYCLE"] = "5";
-
-				// Test 2 : Species data
-				//		$keyMap["FORMAT"] = "SPECIES_DATA";
-				//		$keyMap["PROVIDER_ID"] = "1";
-				//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
-				//		$keyMap["CYCLE"] = "5";
-				//		$keyMap["SPECIES_CODE"] = "035.001.001";
-
-				// Test 3 : Tree data (no dataset filtering)
-				$keyMap["SCHEMA"] = "RAW_DATA";
-				$keyMap["FORMAT"] = "TREE_DATA";
-				$keyMap["PROVIDER_ID"] = "1";
-				$keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
-				$keyMap["CYCLE"] = "5";
-				$keyMap["TREE_ID"] = "246450";
-			} else {
-				$keyMap = $params;
-			}
-
-			$schema = $keyMap["SCHEMA"];
-			$format = $keyMap["FORMAT"];
+			$schema = $params["SCHEMA"];
+			$format = $params["FORMAT"];
 
 			$data = $this->genericService->buildDataObject($schema, $format);
 
 			// Complete the primary key info with the session values
 			foreach ($data->infoFields as $infoField) {
-				if (!empty($keyMap[$infoField->data])) {
-					$infoField->value = $keyMap[$infoField->data];
+				if (!empty($params[$infoField->data])) {
+					$infoField->value = $params[$infoField->data];
 				}
 			}
 
@@ -478,53 +442,12 @@ class DataEditionController extends AbstractOGAMController {
 			$websiteSession = new Zend_Session_Namespace('website');
 			$datasetId = $websiteSession->datasetID;
 
-			// Declare our array of business keys
-			$keyMap = array();
-
 			// Get the parameters from the URL
 			$request = $this->getRequest();
 			$params = $request->getUserParams();
 
-			if (sizeof($params) <= 3) { // default size = controller + action + module
-
-				// Paramètres d'entrée :
-				// DATASET_ID
-				// FORMAT : Le nom de la table à éditer
-				// CLE1
-				// CLE2
-				// ...
-
-				// Test 1 : Plot data
-				//		$keyMap["FORMAT"] = "PLOT_DATA";
-				//		$keyMap["PROVIDER_ID"] = "1";
-				//		$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
-				//		$keyMap["CYCLE"] = "5";
-
-				// Test 2 : Species data
-
-				$keyMap["SCHEMA"] = "RAW_DATA";
-				$keyMap["FORMAT"] = "SPECIES_DATA";
-				$keyMap["PROVIDER_ID"] = "1";
-				$keyMap["PLOT_CODE"] = "01575-14060-4-0T";
-				$keyMap["CYCLE"] = "5";
-				//$keyMap["SPECIES_CODE"] = "035.001.001";
-				$keyMap["SUBMISSION_ID"] = "-1";
-				$keyMap["LINE_NUMBER"] = "-1";
-
-				// Test 3 : Tree data (no dataset filtering)
-				/*
-				 $keyMap["FORMAT"] = "TREE_DATA";
-				 $keyMap["PROVIDER_ID"] = "1";
-				 $keyMap["PLOT_CODE"] = "21573-F1000-6-6T";
-				 $keyMap["CYCLE"] = "5";
-				 $keyMap["SUBMISSION_ID"] = "-1";
-				 $keyMap["LINE_NUMBER"] = "-1";*/
-			} else {
-				$keyMap = $params;
-			}
-
-			$schema = $keyMap["SCHEMA"];
-			$format = $keyMap["FORMAT"];
+			$schema = $params["SCHEMA"];
+			$format = $params["FORMAT"];
 
 			// Create an empty data object with the info in session
 			$data = new Genapp_Model_Generic_DataObject();
@@ -543,9 +466,9 @@ class DataEditionController extends AbstractOGAMController {
 			foreach ($tableFields as $tableField) {
 				if (in_array($tableField->data, $tableFormat->primaryKeys)) {
 					// Primary keys are display as info when we have the value
-					if (!empty($keyMap[$tableField->data])) {
+					if (!empty($params[$tableField->data])) {
 						// Complete the primary key info with the session values
-						$tableField->value = $keyMap[$tableField->data];
+						$tableField->value = $params[$tableField->data];
 						$data->addInfoField($tableField);
 					} else {
 						// If the missing PK info is not calculated by trigger then it must be filled by the user

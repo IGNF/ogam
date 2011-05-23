@@ -20,12 +20,19 @@ $role = $user_session->role;
 ?>
 
 <li>
-<a href="<?= $this->url(array('controller'=>'dataedition','action'=>'show-edit-data'), null, true) ?>">Edit data</a>
+<!-- TODO : Remove hardcoded values when a selection screen is available -->
+<a href="<?= $this->url(array('controller'=>'dataedition',
+				'action'=>'show-edit-data', 
+				'SCHEMA'=>'RAW_DATA', 
+				'FORMAT' => 'SPECIES_DATA',
+				'PROVIDER_ID' => '1',
+				'PLOT_CODE' => '21573-F1000-6-6T',
+				'CYCLE' => '5',
+				'SPECIES_CODE' => '031.001.041'
+				), 'default', true) ?>">Edit data</a>
+				
 </li>
 
-<li>
-<a href="<?= $this->url(array('controller'=>'dataedition','action'=>'show-add-data'), null, true) ?>">Add data</a>
-</li>
 
 
 </ul>
