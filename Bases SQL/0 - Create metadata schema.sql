@@ -86,7 +86,7 @@ create table MODE_TREE (
 UNIT                 VARCHAR(36)          not null,
 CODE                 VARCHAR(36)          not null,
 PARENT_CODE          VARCHAR(36)          null,
-LABEL                VARCHAR(60)          null,
+LABEL                VARCHAR(255)          null,
 DEFINITION           VARCHAR(255)         null,
 POSITION			 INTEGER              null,
 IS_LEAF			     CHAR(1)              null,
