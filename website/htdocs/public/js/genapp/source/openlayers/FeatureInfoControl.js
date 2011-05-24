@@ -19,7 +19,7 @@ OpenLayers.Handler.FeatureInfo.prototype =
         var ll = this.map.getLonLatFromPixel(px);
         
         // Construction d'une URL pour faire une requête WFS sur le point
-        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename="+Genapp.map.featureinfo_typename+"&MAXFEATURES=1&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
+        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename="+Genapp.map.featureinfo_typename+"&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
 
         OpenLayers.loadURL(
             url,
@@ -28,7 +28,13 @@ OpenLayers.Handler.FeatureInfo.prototype =
             function(response) {
                 try {
                     var result = Ext.decode(response.responseText);
-                    Genapp.cardPanel.consultationPage.openDetails(result.id, 'getdetails');
+                    if(!Ext.isEmpty(result.data)){
+                        if(result.data.length == 1){
+                            Genapp.cardPanel.consultationPage.openDetails(result.data[0].id, 'getdetails');
+                        }else{
+                            Genapp.cardPanel.consultationPage.openMapDetailsWindow(result);
+                        }
+                    }
                 } catch (e) {
                     Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
                 }

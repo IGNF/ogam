@@ -458,6 +458,8 @@ listeners: {
      * True to collapse the query panel on a prefefined request load (default to true)
      */
     collapseQueryPanelOnPredefinedRequestLoad: true,
+    // private
+    locationsSearchNumber: 0,
 
     // private
     initComponent : function() {
@@ -1235,7 +1237,21 @@ listeners: {
                     this.detailsPanelPinned = false;
                 },
                 scope:this
-            }]
+            }],
+            listeners:{
+                // Collapse the layersAndLegendsPanel on expand event
+                expand:function(){
+                    // The map panel must be rendered and activated to resize correctly the map div
+                    if(this.centerPanel.getActiveTab() instanceof Genapp.MapPanel){
+                        this.mapPanel.layersAndLegendsPanel.collapse();
+                    }else{
+                        this.centerPanel.activate(this.mapPanel);
+                        this.mapPanel.layersAndLegendsPanel.collapse();
+                        this.centerPanel.activate(this.gridPanel);
+                    }
+                },
+                scope:this
+            }
         });
 
         // Add the layers and legends vertical label
@@ -1243,11 +1259,77 @@ listeners: {
             this.addVerticalLabel(this.detailsPanelCt, 'genapp-query-details-panel-ct-xcollapsed-vertical-label-div');
         }
 
+        /**
+         * The locations panel.
+         * @property locationsPanel
+         * @type Ext.TabPanel
+         */
+        this.locationsPanel = new Ext.TabPanel({
+            frame:true,
+            plain:true,
+            enableTabScroll:true,
+            cls:'genapp-query-locations-panel',
+            scrollIncrement:91,
+            scrollRepeatInterval:100,
+            idDelimiter:'___' // Avoid a conflict with the Genapp id separator('__')
+        });
+
+        this.locationsPanelPinned = true;
+        this.locationsPanelCtTitle = 'Intersected Locations';
+        /**
+         * The locations panel container.
+         * @property locationsPanelCt
+         * @type Ext.Panel
+         */
+        this.locationsPanelCt = new Ext.Panel({
+            region:'south',
+            title:this.locationsPanelCtTitle,
+            frame:true,
+            split:true,
+            layout: 'fit',
+            height:250,
+            minHeight:200,
+            collapsible : true,
+            titleCollapse : true,
+            collapsed:true,
+            items: this.locationsPanel,
+            tools:[{
+                id:'pin',
+                qtip: this.locationsPanelCtPinToolQtip,
+                hidden:true,
+                handler: function(event, toolEl, panel){
+                    toolEl.hide();
+                    panel.header.child('.x-tool-unpin').show();
+                    this.locationsPanelPinned = true;
+                },
+                scope:this
+            },{
+                id:'unpin',
+                qtip: this.locationsPanelCtUnpinToolQtip,
+                handler: function(event, toolEl, panel){
+                    toolEl.hide();
+                    panel.header.child('.x-tool-pin').show();
+                    this.locationsPanelPinned = false;
+                },
+                scope:this
+            }]
+        });
+        
+        var centerPanelCtItems = [this.centerPanel];
+        if(!this.hideDetails){
+            centerPanelCtItems.push(this.detailsPanelCt);
+        }
+        if(!this.hideLocationsGrid){
+            centerPanelCtItems.push(this.locationsPanelCt);
+        }
+        this.centerPanelCt = new Ext.Panel({
+            layout: 'border',
+            region :'center',
+            items: centerPanelCtItems
+        });
+
         if (!this.items) {
-            this.items = [this.queryPanel, this.centerPanel];
-            if(!this.hideDetails){
-                this.items.push(this.detailsPanelCt);
-            }
+            this.items = [this.queryPanel, this.centerPanelCt];
         }
 
         Genapp.ConsultationPanel.superclass.initComponent.call(this);
@@ -1369,9 +1451,9 @@ listeners: {
      *            url The url to get the details
      */
     openDetails : function(id, url) {
+        this.locationsSearchNumber++;
         if (!Ext.isEmpty(id)) {
-            var consultationPanel = Ext
-                    .getCmp('consultation_panel');
+            var consultationPanel = Ext.getCmp('consultation_panel');
             consultationPanel.collapseQueryPanel();
             consultationPanel.detailsPanel.ownerCt.expand();
             var tab = consultationPanel.detailsPanel.get(id);
@@ -1384,6 +1466,60 @@ listeners: {
             }
             consultationPanel.detailsPanel.activate(tab);
         }
+    },
+
+    openMapDetailsWindow : function(response){
+        this.locationsSearchNumber++;
+        response.locationsSearchNumber = this.locationsSearchNumber;
+        if (!Ext.isEmpty(response.data)) {
+            var consultationPanel = Ext.getCmp('consultation_panel');
+            consultationPanel.locationsPanel.ownerCt.expand();
+            var tab = consultationPanel.locationsPanel.get(response.id);
+            if (Ext.isEmpty(tab)) {
+                tab = consultationPanel.locationsPanel
+                        .add(new Genapp.CardGridDetailsPanel({
+                            initConf:response
+                        }));
+            }
+            consultationPanel.locationsPanel.activate(tab);
+        }
+    },
+
+    launchLocationRequest : function(id, value){
+        var form = this.formsPanel.get('LOCALISATION_FORM');
+        form.addCriteria('LOCALISATION_FORM__SIT_NO_CLASS', value);
+        this.submitRequest();
+    },
+
+    getChildren : function(cardPanelId, id){
+        var cardPanel = Ext.getCmp(cardPanelId);
+        var parentItem = cardPanel.activeItem;
+        var tab = cardPanel.get(id);
+        if (Ext.isEmpty(tab)) {
+            Ext.Ajax.request({
+                url: Genapp.ajax_query_url + 'ajaxgetchildren',
+                success: function(response, opts) {
+                    var obj = Ext.decode(response.responseText);
+                    obj.parentItem = parentItem;
+                    obj.ownerCt = cardPanel;
+                    tab = cardPanel.add(new Genapp.GridDetailsPanel({
+                        initConf:obj
+                    }));
+                    cardPanel.getLayout().setActiveItem(tab);
+                },
+                failure: function(response, opts) {
+                    console.log('server-side failure with status code ' + response.status);
+                },
+                params: {id: id}
+             });
+        } else {
+            cardPanel.getLayout().setActiveItem(tab);
+        }
+    },
+
+    getParent : function(cardPanelId){
+        var cardPanel = Ext.getCmp(cardPanelId);
+        cardPanel.getLayout().setActiveItem(cardPanel.getLayout().activeItem.parentItem);
     },
 
     /**

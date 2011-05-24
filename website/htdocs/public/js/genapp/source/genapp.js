@@ -66,9 +66,13 @@ Genapp.buildApplication = function(config){
  * @return {String} The formated string
  */
 Genapp.util.htmlStringFormat = function(value){
-    value = value.replace(new  RegExp("'", "g"),"&#39;");
-    value = value.replace(new  RegExp("\"", "g"),"&#34;");
-    return value;
+    if(!Ext.isEmpty(value) && Ext.isString(value)){
+        value = value.replace(new  RegExp("'", "g"),"&#39;");
+        value = value.replace(new  RegExp("\"", "g"),"&#34;");
+        return value;
+    } else {
+        return '';
+    }
 };
 
 /**

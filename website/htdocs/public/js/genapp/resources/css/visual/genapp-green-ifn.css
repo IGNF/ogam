@@ -115,7 +115,7 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
-/***** Grid Panel ************************************************************************/
+/***** Grid Panel ********************************************************************************/
 .genapp-query-grid-map{
     background:transparent url(../images/map_magnify.png) no-repeat scroll !important;
 }
@@ -127,8 +127,22 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
+/***** Grid Details Panel ************************************************************************/
+.genapp-query-grid-details-panel-slip{
+    background:transparent url(../images/page_white_magnify.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-search{
+    background:transparent url(../images/application_side_contract.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-parent{
+    background:transparent url(../images/resultset_previous.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-children{
+    background:transparent url(../images/resultset_next.png) no-repeat scroll !important;
+}
+/*************************************************************************************************/
 
-/** Details Panel ************************************************************************/
+/** Details Panel ********************************************************************************/
 .genapp-query-details-panel .x-tab-strip-top .x-tab-right,
 .genapp-query-details-panel .x-tab-strip-top .x-tab-left,
 .genapp-query-details-panel .x-tab-strip-top .x-tab-strip-inner {

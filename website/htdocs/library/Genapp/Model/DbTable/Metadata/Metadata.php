@@ -563,6 +563,58 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			return $cachedResult;
 		}
 	}
+	
+   /**
+     * Get the information about a table format.
+     *
+     * @param String $schema the schema name
+     * @param String $table the table name
+     * @return TableFormat
+     */
+    public function getTableFormatFromTableName($schema, $table) {
+
+        $db = $this->getAdapter();
+
+        $this->logger->debug('getTableFormatFromTableName : '.$schema.' '.$table);
+
+        $key = 'getTableFormatFromTableName'.$schema.' '.$table;
+        if ($this->useCache) {
+            $cachedResult = $this->cache->load($key);
+        }
+
+        if (empty($cachedResult)) {
+
+            // Get the fields specified by the format
+            $req = "SELECT * ";
+            $req .= " FROM table_format ";
+            $req .= " WHERE schema_code = ? ";
+            $req .= " AND table_name = upper(?) ";
+
+            $this->logger->info('getTableFormat : '.$req);
+
+            $select = $db->prepare($req);
+            $select->execute(array($schema, $table));
+
+            $row = $select->fetch();
+
+            $tableFormat = new Genapp_Model_Metadata_TableFormat();
+            $tableFormat->format = $row['format'];
+            $tableFormat->schemaCode = $row['schema_code'];
+            $tableFormat->tableName = $row['table_name'];
+            $tableFormat->label = $row['label'];
+            $pks = explode(",", $row['primary_key']);
+            foreach ($pks as $pk) {
+                $tableFormat->primaryKeys[] = trim($pk); // we need to trim all the values
+            }
+
+            if ($this->useCache) {
+                $this->cache->save($tableFormat, $key);
+            }
+            return $tableFormat;
+        } else {
+            return $cachedResult;
+        }
+    }
 
 	/**
 	 * Get the forms used by a dataset.

@@ -72,6 +72,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
          * @type Ext.data.JsonStore
          */
         this.criteriaDS = new Ext.data.JsonStore({
+            idProperty: 'name',
             fields:[
                 {name:'name',mapping:'name'},
                 {name:'label',mapping:'label'},
@@ -94,6 +95,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
          * @type Ext.data.JsonStore
          */
         this.columnsDS = new Ext.data.JsonStore({
+            idProperty: 'name',
             fields:[
                 {name:'name',mapping:'name'},
                 {name:'label',mapping:'label'},
@@ -176,7 +178,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                     listeners : {
                         scope :this,
                         'select' : {
-                            fn : this.addCriteria,
+                            fn : this.addSelectedCriteria,
                             scope :this
                         }
                     }
@@ -273,11 +275,25 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * @param {Number} index The criteria combobox record index
      * @hide
      */
-    addCriteria : function(combo, record, index) {
+    addSelectedCriteria : function(combo, record, index) {
         if(combo !== null){
             combo.clearValue();
             combo.collapse();
         }
+        // Add the field
+        this.criteriaPanel.add(this.getCriteriaConfig(record.data, false));
+        this.criteriaPanel.doLayout();
+    },
+
+    /**
+     * Add the criteria to the list of criteria.
+     * @param {String} criteriaId The criteria id
+     * @param {String} value The criteria value
+     */
+    addCriteria : function(criteriaId, value) {
+        // Setup the field
+        var record = this.criteriaDS.getById(criteriaId);
+        record.data.default_value = value;
         // Add the field
         this.criteriaPanel.add(this.getCriteriaConfig(record.data, false));
         this.criteriaPanel.doLayout();

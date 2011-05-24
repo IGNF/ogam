@@ -449,6 +449,43 @@ class Genapp_Service_QueryService {
 	}
 
 	/**
+	 * Decode the identifier
+	 * 
+	 * @param String $id
+	 * @return Array the decoded id
+	 */
+    protected function _decodeId ($id){
+        // Transform the identifier in an array
+        $keyMap = array();
+        $idElems = explode("/", $id);
+        $i = 0;
+        $count = count($idElems);
+        while ($i < $count) {
+            $keyMap[$idElems[$i]] = $idElems[$i + 1];
+            $i += 2;
+        }
+        return $keyMap;
+    }
+
+    /**
+     * Decode the identifiers
+     * 
+     * @param array/string $id
+     * @return Array the decoded id
+     */
+    protected function _decodeIds($ids = null){
+        if(is_array($ids)){
+            $keyMaps = array();
+            foreach($ids as $id){
+                $keyMaps[] = $this->_decodeId($id);
+            }
+            return $keyMaps;
+        } else {
+            return $this->_decodeId($id);
+        }
+    }
+
+	/**
 	 * Get the details associed with a result line (clic on the "detail button").
 	 *
 	 * @param String $id The identifier of the line
@@ -467,14 +504,7 @@ class Genapp_Service_QueryService {
 		$visualisationSRS = $configuration->srs_visualisation;
 
 		// Transform the identifier in an array
-		$keyMap = array();
-		$idElems = explode("/", $id);
-		$i = 0;
-		$count = count($idElems);
-		while ($i < $count) {
-			$keyMap[$idElems[$i]] = $idElems[$i + 1];
-			$i += 2;
-		}
+		$keyMap = $this->_decodeId($id);
 
 		// Prepare a data object to be filled
 		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
@@ -611,6 +641,45 @@ class Genapp_Service_QueryService {
 		return $json;
 
 	}
+
+    /**
+     * Return the node children
+     * 
+     * @param String $id The identifier of the line
+     * @return JSON representing the detail of the children.
+     */
+    public function ajaxgetchildren($id)
+    {
+        $keyMap = $this->_decodeId($id);
+
+        // For RTM TODO: trouver une autre solution
+        $keyMap["FORMAT"] = 'LOCATION_COMPL_DATA';
+
+        // Prepare a data object to be filled
+        $data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
+
+        // Complete the primary key
+        foreach ($data->infoFields as $infoField) {
+            if (!empty($keyMap[$infoField->data])) {
+                $infoField->value = $keyMap[$infoField->data];
+            }
+        }
+
+        // Get children too
+        $children = $this->genericModel->getChildren($data);// TODO: filtrer sur le dataset
+
+        $this->logger->debug('ajaxgetchildrenAction $children : '.print_r($children, true));
+        // Add the children
+        $json = "";
+        if (!empty($children)) {
+            foreach ($children as $format => $listChild) {
+                $json .= $this->genericService->dataToGridDetailJSON($id, $listChild);
+            }
+        } else {
+            $json .= '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
+        }
+        return $json;
+    }
 
 	/**
 	 * Get the list of available predefined requests.

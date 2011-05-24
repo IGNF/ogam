@@ -25,7 +25,7 @@ class Genapp_Model_Metadata_TableFormat extends Genapp_Model_Metadata_Format {
 	 * The primary key.
 	 */
 	var $primaryKeys = array();
-	
+
 	/**
 	 * The label.
 	 */
