@@ -61,6 +61,7 @@ if(Genapp.ConsultationPanel){
         detailsPanelCtTitle:"Détails",
         detailsPanelCtPinToolQtip: "Annuler la fermeture automatique de l'onglet",
         detailsPanelCtUnpinToolQtip:"Activer la fermeture automatique de l'onglet",
+        featuresInformationPanelCtTitle:"Informations sur les tracés",
         mapMaskMsg:"Chargement...",
         alertErrorTitle:"Erreur :",
         alertRequestFailedMsg:"Désolé, la requête a échoué...",
@@ -98,6 +99,12 @@ if(Genapp.DateRangePicker){
 if(Genapp.DetailsPanel){
     Ext.apply(Genapp.DetailsPanel.prototype, {
         loadingMsg:"Cgmt..."
+    });
+}
+if(Genapp.CardGridDetailsPanel){
+    Ext.apply(Genapp.CardGridDetailsPanel.prototype, {
+        loadingMsg:"Cgmt...",
+        cardGridDetailsPanelTitle:"Sélection"
     });
 }
 if(Genapp.FieldForm){

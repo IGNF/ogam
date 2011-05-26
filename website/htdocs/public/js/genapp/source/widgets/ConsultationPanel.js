@@ -325,6 +325,11 @@ listeners: {
      */
     detailsPanelCtUnpinToolQtip:'Unpin the panel',
     /**
+     * @cfg {String} featuresInformationPanelCtTitle
+     * The features Information PanelCt Title (defaults to <tt>'Features Information'</tt>)
+     */
+    featuresInformationPanelCtTitle:'Features Information',
+    /**
      * @cfg {Ext.LoadMask} mask
      * The consultation page mask
      */
@@ -459,7 +464,7 @@ listeners: {
      */
     collapseQueryPanelOnPredefinedRequestLoad: true,
     // private
-    locationsSearchNumber: 0,
+    featuresInformationSearchNumber: 0,
 
     // private
     initComponent : function() {
@@ -1260,11 +1265,11 @@ listeners: {
         }
 
         /**
-         * The locations panel.
-         * @property locationsPanel
+         * The features Information panel.
+         * @property featuresInformationPanel
          * @type Ext.TabPanel
          */
-        this.locationsPanel = new Ext.TabPanel({
+        this.featuresInformationPanel = new Ext.TabPanel({
             frame:true,
             plain:true,
             enableTabScroll:true,
@@ -1274,16 +1279,15 @@ listeners: {
             idDelimiter:'___' // Avoid a conflict with the Genapp id separator('__')
         });
 
-        this.locationsPanelPinned = true;
-        this.locationsPanelCtTitle = 'Intersected Locations';
+        this.featuresInformationPanelPinned = true;
         /**
-         * The locations panel container.
-         * @property locationsPanelCt
+         * The features Information panel container.
+         * @property featuresInformationPanelCt
          * @type Ext.Panel
          */
-        this.locationsPanelCt = new Ext.Panel({
+        this.featuresInformationPanelCt = new Ext.Panel({
             region:'south',
-            title:this.locationsPanelCtTitle,
+            title:this.featuresInformationPanelCtTitle,
             frame:true,
             split:true,
             layout: 'fit',
@@ -1292,24 +1296,24 @@ listeners: {
             collapsible : true,
             titleCollapse : true,
             collapsed:true,
-            items: this.locationsPanel,
+            items: this.featuresInformationPanel,
             tools:[{
                 id:'pin',
-                qtip: this.locationsPanelCtPinToolQtip,
+                qtip: this.featuresInformationPanelCtPinToolQtip,
                 hidden:true,
                 handler: function(event, toolEl, panel){
                     toolEl.hide();
                     panel.header.child('.x-tool-unpin').show();
-                    this.locationsPanelPinned = true;
+                    this.featuresInformationPanelPinned = true;
                 },
                 scope:this
             },{
                 id:'unpin',
-                qtip: this.locationsPanelCtUnpinToolQtip,
+                qtip: this.featuresInformationPanelCtUnpinToolQtip,
                 handler: function(event, toolEl, panel){
                     toolEl.hide();
                     panel.header.child('.x-tool-pin').show();
-                    this.locationsPanelPinned = false;
+                    this.featuresInformationPanelPinned = false;
                 },
                 scope:this
             }]
@@ -1319,8 +1323,8 @@ listeners: {
         if(!this.hideDetails){
             centerPanelCtItems.push(this.detailsPanelCt);
         }
-        if(!this.hideLocationsGrid){
-            centerPanelCtItems.push(this.locationsPanelCt);
+        if(!this.hideMapDetails){
+            centerPanelCtItems.push(this.featuresInformationPanelCt);
         }
         this.centerPanelCt = new Ext.Panel({
             layout: 'border',
@@ -1451,7 +1455,7 @@ listeners: {
      *            url The url to get the details
      */
     openDetails : function(id, url) {
-        this.locationsSearchNumber++;
+        this.featuresInformationSearchNumber++;
         if (!Ext.isEmpty(id)) {
             var consultationPanel = Ext.getCmp('consultation_panel');
             consultationPanel.collapseQueryPanel();
@@ -1468,32 +1472,46 @@ listeners: {
         }
     },
 
-    openMapDetailsWindow : function(response){
-        this.locationsSearchNumber++;
-        response.locationsSearchNumber = this.locationsSearchNumber;
-        if (!Ext.isEmpty(response.data)) {
+    /**
+     * Open a features information panel
+     * 
+     * @param {Object} selection The selection information
+     */
+    openFeaturesInformationSelection : function(selection){
+        this.featuresInformationSearchNumber++;
+        selection.featuresInformationSearchNumber = this.featuresInformationSearchNumber;
+        if (!Ext.isEmpty(selection.data)) {
             var consultationPanel = Ext.getCmp('consultation_panel');
-            consultationPanel.locationsPanel.ownerCt.expand();
-            var tab = consultationPanel.locationsPanel.get(response.id);
+            consultationPanel.featuresInformationPanel.ownerCt.expand();
+            var tab = consultationPanel.featuresInformationPanel.get(selection.id);
             if (Ext.isEmpty(tab)) {
-                tab = consultationPanel.locationsPanel
+                tab = consultationPanel.featuresInformationPanel
                         .add(new Genapp.CardGridDetailsPanel({
-                            initConf:response
+                            initConf:selection
                         }));
             }
-            consultationPanel.locationsPanel.activate(tab);
+            consultationPanel.featuresInformationPanel.activate(tab);
         }
     },
 
+    // TODO: patch rtm to delete??
     launchLocationRequest : function(id, value){
         var form = this.formsPanel.get('LOCALISATION_FORM');
         form.addCriteria('LOCALISATION_FORM__SIT_NO_CLASS', value);
         this.submitRequest();
     },
 
+    /**
+     * Switch the current gridDetailsPanel to the children gridDetailsPanel
+     * 
+     * @param {String} 
+     *            cardPanelId The id of the card panel containing the current gridDetailsPanel
+     * @param {String} 
+     *            id The id of the selected row in the current gridDetailsPanel
+     */
     getChildren : function(cardPanelId, id){
         var cardPanel = Ext.getCmp(cardPanelId);
-        var parentItem = cardPanel.activeItem;
+        var parentItem = cardPanel.getLayout().activeItem;
         var tab = cardPanel.get(id);
         if (Ext.isEmpty(tab)) {
             Ext.Ajax.request({
@@ -1517,6 +1535,12 @@ listeners: {
         }
     },
 
+    /**
+     * Switch the current gridDetailsPanel to the parent gridDetailsPanel
+     * 
+     * @param {String} 
+     *            cardPanelId The id of the card panel containing the current gridDetailsPanel
+     */
     getParent : function(cardPanelId){
         var cardPanel = Ext.getCmp(cardPanelId);
         cardPanel.getLayout().setActiveItem(cardPanel.getLayout().activeItem.parentItem);

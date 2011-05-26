@@ -32,7 +32,7 @@ OpenLayers.Handler.FeatureInfo.prototype =
                         if(result.data.length == 1){
                             Genapp.cardPanel.consultationPage.openDetails(result.data[0].id, 'getdetails');
                         }else{
-                            Genapp.cardPanel.consultationPage.openMapDetailsWindow(result);
+                            Genapp.cardPanel.consultationPage.openFeaturesInformationSelection(result);
                         }
                     }
                 } catch (e) {

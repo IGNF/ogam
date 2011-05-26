@@ -42,7 +42,7 @@ Genapp.CardGridDetailsPanel = Ext.extend(Ext.Panel, {
      * @cfg {String} gridDetailsPanelTitle
      * The grid Details Panel Title (default to 'Locations')
      */
-    cardGridDetailsPanelTitle: 'Map search',
+    cardGridDetailsPanelTitle: 'Selection',
     activeItem: 0, // make sure the active item is set on the container config!
 
 
@@ -51,7 +51,7 @@ Genapp.CardGridDetailsPanel = Ext.extend(Ext.Panel, {
             this.itemId = this.initConf.id;
 
             this.title = '<div style="width:'+ this.headerWidth + 'px;">'
-            + this.cardGridDetailsPanelTitle + ' ' + this.initConf.locationsSearchNumber
+            + this.cardGridDetailsPanelTitle + ' ' + this.initConf.featuresInformationSearchNumber
             + '</div>';
             
             this.items = new Genapp.GridDetailsPanel({

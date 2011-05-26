@@ -653,7 +653,7 @@ class Genapp_Service_QueryService {
         $keyMap = $this->_decodeId($id);
 
         // For RTM TODO: trouver une autre solution
-        $keyMap["FORMAT"] = 'LOCATION_COMPL_DATA';
+        // $keyMap["FORMAT"] = 'LOCATION_COMPL_DATA';
 
         // Prepare a data object to be filled
         $data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
@@ -666,7 +666,8 @@ class Genapp_Service_QueryService {
         }
 
         // Get children too
-        $children = $this->genericModel->getChildren($data);// TODO: filtrer sur le dataset
+        $websiteSession = new Zend_Session_Namespace('website');
+        $children = $this->genericModel->getChildren($data, $websiteSession->datasetId);
 
         $this->logger->debug('ajaxgetchildrenAction $children : '.print_r($children, true));
         // Add the children

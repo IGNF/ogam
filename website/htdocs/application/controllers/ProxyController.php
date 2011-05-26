@@ -270,10 +270,6 @@ class ProxyController extends AbstractOGAMController {
             $locationFields = array('id');
             // The data to full the store
             $locationsData = array();
-            // The table label
-            $tableLabel = '';
-            // The table format
-            $tableFormat = null;
             foreach($displayNodes as $displayIndex => $displayNode){
                 $locationData = array();
                 // Get the locations ids
@@ -314,8 +310,8 @@ class ProxyController extends AbstractOGAMController {
                                 $tableField = $tFOrdered[strtoupper($columnName)];
                                 // Set the column model and the location fields
                                 $dataIndex = $tableField->format.'__'.$tableField->data;
-                                // Adds the column header to prevent it from being truncated too
-                                array_push($columnsMaxLength[$columnName], strlen($tableField->label));
+                                // Adds the column header to prevent it from being truncated too and 2 for the header margins
+                                array_push($columnsMaxLength[$columnName], strlen($tableField->label) + 2);
                                 $column = array(
                                     'header' => $tableField->label,
                                     'dataIndex' => $dataIndex,
@@ -336,9 +332,10 @@ class ProxyController extends AbstractOGAMController {
             // into the mapfile sql request to avoid a lower performance
             sort($id);
 
-            // Check if the table has a child table
+            // Check if the location table has a child table
             $hasChild = false;
-            $children = $metadataModel->getChildrenTableLabels($tableFormat);
+            $locationTableFormat = $metadataModel->getTableFormat($schema, $locationFormat);
+            $children = $metadataModel->getChildrenTableLabels($locationTableFormat);
             if(!empty($children)){
                 $hasChild = true;
             }
@@ -348,7 +345,7 @@ class ProxyController extends AbstractOGAMController {
             echo '{'
                 .'success:true'
                 .', id:'. json_encode(implode('', $id))
-                .', title:'. json_encode($tableLabel . ' (' . count($locationsData) .')')
+                .', title:'. json_encode($locationTableFormat->label . ' (' . count($locationsData) .')')
                 .', hasChild:'. json_encode($hasChild)
                 .', columns:'.json_encode($columns)
                 .', fields:'.json_encode($locationFields)
