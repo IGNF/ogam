@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 //require_once 'mapping/Center.php';
 
 /**
@@ -32,8 +32,8 @@ class Application_Model_DbTable_Mapping_BoundingBox extends Zend_Db_Table_Abstra
 		$db = $this->getAdapter();
 
 		if (empty($codeCountry)) {
-            $userSession = new Zend_Session_Namespace('user');
-            $codeCountry = $userSession->user->countryCode;
+			$userSession = new Zend_Session_Namespace('user');
+			$codeCountry = $userSession->user->countryCode;
 		}
 
 		$req = " SELECT (bb_xmin + bb_xmax) / 2 as x_center, (bb_ymin + bb_ymax) / 2 as y_center, zoom_level

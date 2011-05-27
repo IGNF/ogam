@@ -273,7 +273,7 @@ class ProxyController extends AbstractOGAMController {
 			foreach ($displayNodes as $displayIndex => $displayNode) {
 				$locationData = array();
 				// Get the locations ids
-				$params = $this->getParams($displayNode);
+				$params = $this->_getParams($displayNode);
 				$nextNode = $displayNode->nextSibling;
 				// TODO : remove the hard coded keys
 				array_push($id, $params['provider_id'].$params['plot_code']);
@@ -282,7 +282,7 @@ class ProxyController extends AbstractOGAMController {
 				while ($nextNode != null) {
 					if ($nextNode->nodeType == XML_ELEMENT_NODE && stripos($nextNode->nodeName, 'display_') !== false) {
 						// Get the params
-						$tableParams = $this->getParams($nextNode);
+						$tableParams = $this->_getParams($nextNode);
 						// Setup the location data and the column max length
 						foreach ($tableParams as $columnName => $value) {
 							array_push($locationData, $value);
@@ -299,7 +299,6 @@ class ProxyController extends AbstractOGAMController {
 							// Get the table format
 							$tableFormat = $metadataModel->getTableFormatFromTableName($schema, $table);
 							$format = $tableFormat->format;
-							$tableLabel = $tableFormat->label;
 							// Get the table fields
 							$tableFields = $metadataModel->getTableFields(null, $schema, $format);
 							$tFOrdered = array();
@@ -352,7 +351,13 @@ class ProxyController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 	}
 
-	function getParams($domNode) {
+	/**
+	 * Extract some parameters from a WFS XLM response.
+	 *
+	 * @param String $domNode the XML node
+	 * @return Array[String => String] The params
+	 */
+	private function _getParams($domNode) {
 		$child = array();
 		foreach ($domNode->childNodes as $childNode) {
 			if ($childNode->nodeType == XML_ELEMENT_NODE) {

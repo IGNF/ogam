@@ -147,7 +147,6 @@ class UserController extends Zend_Controller_Action {
 				$this->logger->debug('form is not valid');
 				$this->view->form = $form;
 				return $this->render('show-login-form');
-			} else {
 			}
 
 			// Check the validity of the login

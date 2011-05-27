@@ -64,6 +64,8 @@ class DataEditionController extends AbstractOGAMController {
 
 	/**
 	 * The "index" action is the default action for all controllers.
+	 *
+	 * @return the index view
 	 */
 	public function indexAction() {
 		return $this->showIndexAction();
@@ -71,6 +73,8 @@ class DataEditionController extends AbstractOGAMController {
 
 	/**
 	 * Display the "index" page.
+	 *
+	 * @param String $message a message to be displayed on the page
 	 */
 	public function showIndexAction($message = '') {
 		$this->logger->debug('Data edition index');
@@ -89,8 +93,6 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param Boolean $isKey is the field a primary key ?
 	 */
 	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
-
-		$configuration = Zend_Registry::get("configuration");
 
 		// Warning : $formField can be null if no mapping is defined with $tableField
 
@@ -315,10 +317,6 @@ class DataEditionController extends AbstractOGAMController {
 		// If data is set then we don't need to read from database
 		if ($data == null) {
 
-			// Get back the dataset identifier
-			$websiteSession = new Zend_Session_Namespace('website');
-			$datasetId = $websiteSession->datasetID;
-
 			// Get the parameters from the URL
 			$request = $this->getRequest();
 
@@ -360,7 +358,7 @@ class DataEditionController extends AbstractOGAMController {
 	/**
 	 * Delete a data.
 	 *
-	 * Return to the index.
+	 * @return the index view.
 	 **/
 	public function deleteDataAction() {
 		$this->logger->debug('deleteDataAction');

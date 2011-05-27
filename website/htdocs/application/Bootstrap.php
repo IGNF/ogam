@@ -41,8 +41,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$view = new Zend_View();
 		$view->doctype('XHTML1_STRICT');
 		$view->headTitle()->setSeparator(' - ')->append($view->translate('Layout Head Title'));
-		$view->headMeta()->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8') //->appendHttpEquiv('Content-Language', 'fr-FR')
-		->appendName('robots', 'index, follow')->appendName('keywords', $view->translate('Layout Head Meta Keywords'))->appendName('description', $view->translate('Layout Head Meta Description'));
+		$view->headMeta()->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8'); //->appendHttpEquiv('Content-Language', 'fr-FR')
+		$view->headMeta()->appendName('robots', 'index, follow')->appendName('keywords', $view->translate('Layout Head Meta Keywords'))->appendName('description', $view->translate('Layout Head Meta Description'));
 		$view->headLink()->appendStylesheet($baseUrl.'css/global.css');
 		$view->headScript()->appendFile($baseUrl.'js/extjs/adapter/ext/ext-base.js', 'text/javascript')->appendFile($baseUrl.'js/genapp/source/genapp.js', 'text/javascript');
 		$view->contactEmailPrefix = $configuration->contactEmailPrefix;
@@ -84,12 +84,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		}
 
 		// Setup the translation
-		$translations = $this->addTranslation(array(
+		$translations = $this->_addTranslation(array(
 			APPLICATION_PATH.'/lang'
 		), $translate);
 		// Setup the translation with files specific to the app
 		if (defined('INHERENT_APPLICATION_PATH')) {
-			$translations = $this->addTranslation(array(
+			$translations = $this->_addTranslation(array(
 				APPLICATION_PATH.'/lang',
 				INHERENT_APPLICATION_PATH.'/lang/new',
 				INHERENT_APPLICATION_PATH.'/lang/substitute',
@@ -116,14 +116,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * @param array $dirs An array of lang dirs
 	 * @param Zend_Translate $translate the current translator
 	 */
-	private function addTranslation($dirs, $translate) {
+	private function _addTranslation($dirs, $translate) {
 		$translations = array();
 		foreach ($dirs as $dir) {
 			if ($handle = opendir($dir)) {
 				while (false !== ($file = readdir($handle))) {
 					if ($file != "." && $file != ".." && $file != ".svn") {
 						$explodedFile = explode('.', $file);
-						$translate->addTranslation($dir.'/'.$file, $explodedFile[0]);
+						$translate->_addTranslation($dir.'/'.$file, $explodedFile[0]);
 						$translations[] = $explodedFile[0];
 					}
 				}

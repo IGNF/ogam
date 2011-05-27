@@ -152,7 +152,7 @@ class MapController extends AbstractOGAMController {
 			$out .= '"'.$pathBaseURL.$proxyPath."?SESSION_ID=".$sessionId.'",'; // appel direct
 		}
 		// Remove the last comma
-		if (!empty($tileBaseRLs)) {
+		if (!empty($tileBaseURLs)) {
 			$out = substr($out, 0, -1);
 		}
 		echo $out.'],';

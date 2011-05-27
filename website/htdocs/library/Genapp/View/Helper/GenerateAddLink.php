@@ -11,7 +11,8 @@ class Genapp_View_Helper_GenerateAddLink extends Zend_View_Helper_Abstract {
 	/**
 	 * Generate a link corresponding to a data object
 	 *
-	 * @param DataObject $data
+	 * @param DataObject $data The data object to link to 
+	 * @param String $tableLabel The label of the table to display
 	 * @return the HTML link
 	 */
 	function generateAddLink($data, $tableLabel) {

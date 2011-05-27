@@ -187,6 +187,8 @@ class Genapp_Service_QueryService {
 	/**
 	 * Get the list of available forms and criterias for the dataset.
 	 *
+	 * @param String $datasetId the identifier of the selected dataset
+	 * @param String $requestName the name of the predefined request if available
 	 * @return JSON.
 	 */
 	public function getForms($datasetId, $requestName) {
@@ -450,40 +452,40 @@ class Genapp_Service_QueryService {
 
 	/**
 	 * Decode the identifier
-	 * 
+	 *
 	 * @param String $id
 	 * @return Array the decoded id
 	 */
-    protected function _decodeId ($id){
-        // Transform the identifier in an array
-        $keyMap = array();
-        $idElems = explode("/", $id);
-        $i = 0;
-        $count = count($idElems);
-        while ($i < $count) {
-            $keyMap[$idElems[$i]] = $idElems[$i + 1];
-            $i += 2;
-        }
-        return $keyMap;
-    }
+	protected function _decodeId($id) {
+		// Transform the identifier in an array
+		$keyMap = array();
+		$idElems = explode("/", $id);
+		$i = 0;
+		$count = count($idElems);
+		while ($i < $count) {
+			$keyMap[$idElems[$i]] = $idElems[$i + 1];
+			$i += 2;
+		}
+		return $keyMap;
+	}
 
-    /**
-     * Decode the identifiers
-     * 
-     * @param array/string $id
-     * @return Array the decoded id
-     */
-    protected function _decodeIds($ids = null){
-        if(is_array($ids)){
-            $keyMaps = array();
-            foreach($ids as $id){
-                $keyMaps[] = $this->_decodeId($id);
-            }
-            return $keyMaps;
-        } else {
-            return $this->_decodeId($id);
-        }
-    }
+	/**
+	 * Decode the identifiers
+	 *
+	 * @param array/string $id
+	 * @return Array the decoded id
+	 */
+	protected function _decodeIds($ids = null) {
+		if (is_array($ids)) {
+			$keyMaps = array();
+			foreach ($ids as $id) {
+				$keyMaps[] = $this->_decodeId($id);
+			}
+			return $keyMaps;
+		} else {
+			return $this->_decodeId($id);
+		}
+	}
 
 	/**
 	 * Get the details associed with a result line (clic on the "detail button").
@@ -572,7 +574,7 @@ class Genapp_Service_QueryService {
 		}
 
 		// Title of the detail message
-		$json = "{title:'$title', ";
+		$json = "{title:'".$title."', ";
 		$json .= "formats:[";
 		// List all the formats, starting with the ancestors
 		foreach ($ancestors as $ancestor) {
@@ -642,45 +644,43 @@ class Genapp_Service_QueryService {
 
 	}
 
-    /**
-     * Return the node children
-     * 
-     * @param String $id The identifier of the line
-     * @return JSON representing the detail of the children.
-     */
-    public function ajaxgetchildren($id)
-    {
-        $keyMap = $this->_decodeId($id);
+	/**
+	 * Return the node children
+	 *
+	 * @param String $id The identifier of the line
+	 * @return JSON representing the detail of the children.
+	 */
+	public function ajaxgetchildren($id) {
+		$keyMap = $this->_decodeId($id);
 
-        // For RTM TODO: trouver une autre solution
-        // $keyMap["FORMAT"] = 'LOCATION_COMPL_DATA';
+		// For RTM TODO: trouver une autre solution
+		// $keyMap["FORMAT"] = 'LOCATION_COMPL_DATA';
 
-        // Prepare a data object to be filled
-        $data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
+		// Prepare a data object to be filled
+		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
 
-        // Complete the primary key
-        foreach ($data->infoFields as $infoField) {
-            if (!empty($keyMap[$infoField->data])) {
-                $infoField->value = $keyMap[$infoField->data];
-            }
-        }
+		// Complete the primary key
+		foreach ($data->infoFields as $infoField) {
+			if (!empty($keyMap[$infoField->data])) {
+				$infoField->value = $keyMap[$infoField->data];
+			}
+		}
 
-        // Get children too
-        $websiteSession = new Zend_Session_Namespace('website');
-        $children = $this->genericModel->getChildren($data, $websiteSession->datasetId);
+		// Get children too
+		$websiteSession = new Zend_Session_Namespace('website');
+		$children = $this->genericModel->getChildren($data, $websiteSession->datasetId);
 
-        $this->logger->debug('ajaxgetchildrenAction $children : '.print_r($children, true));
-        // Add the children
-        $json = "";
-        if (!empty($children)) {
-            foreach ($children as $format => $listChild) {
-                $json .= $this->genericService->dataToGridDetailJSON($id, $listChild);
-            }
-        } else {
-            $json .= '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
-        }
-        return $json;
-    }
+		// Add the children
+		$json = "";
+		if (!empty($children)) {
+			foreach ($children as $format => $listChild) {
+				$json .= $this->genericService->dataToGridDetailJSON($id, $listChild);
+			}
+		} else {
+			$json .= '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
+		}
+		return $json;
+	}
 
 	/**
 	 * Get the list of available predefined requests.

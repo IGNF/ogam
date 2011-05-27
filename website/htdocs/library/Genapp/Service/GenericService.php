@@ -64,7 +64,7 @@ class Genapp_Service_GenericService {
 			$formField = $this->getTableToFormMapping($tableField, true);
 
 			// Add the corresponding JSON
-			if ($formField != null and $formField->isResult) {
+			if ($formField != null && $formField->isResult) {
 				$fields .= $formField->toDetailJSON().",";
 			}
 		}
@@ -125,85 +125,77 @@ class Genapp_Service_GenericService {
 	}
 
 	/**
-     * Serialize a list of data objects as a JSON array for a display into a Ext.GridPanel.
-     *
-     * @param String $id the id for the returned dataset
-     * @param List[DataObject] $data the data object we're looking at.
-     * @return JSON
-     */
-    public function dataToGridDetailJSON($id, $data) {
+	 * Serialize a list of data objects as a JSON array for a display into a Ext.GridPanel.
+	 *
+	 * @param String $id the id for the returned dataset
+	 * @param List[DataObject] $data the data object we're looking at.
+	 * @return JSON
+	 */
+	public function dataToGridDetailJSON($id, $data) {
 
-        $this->logger->info('dataToDetailJSON');
+		$this->logger->info('dataToDetailJSON');
 
-        $json = "";
+		$json = "";
 
-        if (!empty($data)) {
+		if (!empty($data)) {
 
-            // The columns config to setup the grid columnModel
-            $columns = array();
-            // The columns max length to setup the column width
-            $columnsMaxLength = array();
-            // The fields config to setup the store reader
-            $locationFields = array('id');
-            // The data to full the store
-            $locationsData = array();
-            $firstData = $data[0];
+			// The columns config to setup the grid columnModel
+			$columns = array();
+			// The columns max length to setup the column width
+			$columnsMaxLength = array();
+			// The fields config to setup the store reader
+			$locationFields = array('id');
+			// The data to full the store
+			$locationsData = array();
+			$firstData = $data[0];
 
-            // dump each row values
-            foreach ($data as $datum) {
-                $locationData = array();
-                $datumId = 'SCHEMA/'.$firstData->tableFormat->schemaCode.'/FORMAT/'.$firstData->tableFormat->format;
-                foreach ($datum->infoFields as $field) {
-                    $datumId .= '/'.$field->data.'/'.$field->value;
-                }
-                array_push($locationData, $datumId);
-                foreach ($datum->editableFields as $field) {
-                    array_push($locationData, $field->value);
-                    if(empty($columnsMaxLength[$field->data])){
-                        $columnsMaxLength[$field->data] = array();
-                    }
-                    array_push($columnsMaxLength[$field->data], strlen($field->value));
-                }
-                array_push($locationsData,$locationData);
-            }
+			// dump each row values
+			foreach ($data as $datum) {
+				$locationData = array();
+				$datumId = 'SCHEMA/'.$firstData->tableFormat->schemaCode.'/FORMAT/'.$firstData->tableFormat->format;
+				foreach ($datum->infoFields as $field) {
+					$datumId .= '/'.$field->data.'/'.$field->value;
+				}
+				array_push($locationData, $datumId);
+				foreach ($datum->editableFields as $field) {
+					array_push($locationData, $field->value);
+					if (empty($columnsMaxLength[$field->data])) {
+						$columnsMaxLength[$field->data] = array();
+					}
+					array_push($columnsMaxLength[$field->data], strlen($field->value));
+				}
+				array_push($locationsData, $locationData);
+			}
 
-            // add the colums description
-            foreach ($firstData->editableFields as $field) {
-                // Set the column model and the location fields
-                $dataIndex = $firstData->tableFormat->format.'__'.$field->data;
-                // Adds the column header to prevent it from being truncated too
-                array_push($columnsMaxLength[$field->data], strlen($field->label));
-                $column = array(
-                    'header' => $field->label,
-                    'dataIndex' => $dataIndex,
-                    'editable' => false,
-                    'tooltip' => $field->definition,
-                    'width' => max($columnsMaxLength[$field->data]) * 7
-                );
-                array_push($columns,$column);
-                array_push($locationFields,$dataIndex);
-            }
+			// add the colums description
+			foreach ($firstData->editableFields as $field) {
+				// Set the column model and the location fields
+				$dataIndex = $firstData->tableFormat->format.'__'.$field->data;
+				// Adds the column header to prevent it from being truncated too
+				array_push($columnsMaxLength[$field->data], strlen($field->label));
+				$column = array(
+					'header' => $field->label,
+					'dataIndex' => $dataIndex,
+					'editable' => false,
+					'tooltip' => $field->definition,
+					'width' => max($columnsMaxLength[$field->data]) * 7
+				);
+				array_push($columns, $column);
+				array_push($locationFields, $dataIndex);
+			}
 
-            // Check if the table has a child table
-            $hasChild = false;
-            $children = $this->metadataModel->getChildrenTableLabels($firstData->tableFormat);
-            if(!empty($children)){
-                $hasChild = true;
-            }
+			// Check if the table has a child table
+			$hasChild = false;
+			$children = $this->metadataModel->getChildrenTableLabels($firstData->tableFormat);
+			if (!empty($children)) {
+				$hasChild = true;
+			}
 
-            return '{'
-                .'success:true'
-                .', id:'. json_encode($id)
-                .', title:'. json_encode($firstData->tableFormat->label . ' (' . count($locationsData) .')')
-                .', hasChild:'. json_encode($hasChild)
-                .', columns:'. json_encode($columns)
-                .', fields:'. json_encode($locationFields)
-                .', data:'. json_encode($locationsData)
-            .'}';
-        } else {
-            return '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
-        }
-    }
+			return '{'.'success:true'.', id:'.json_encode($id).', title:'.json_encode($firstData->tableFormat->label.' ('.count($locationsData).')').', hasChild:'.json_encode($hasChild).', columns:'.json_encode($columns).', fields:'.json_encode($locationFields).', data:'.json_encode($locationsData).'}';
+		} else {
+			return '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
+		}
+	}
 
 	/**
 	 * Get the form field corresponding to the table field.
@@ -580,7 +572,7 @@ class Genapp_Service_GenericService {
 					// Case of a list of values
 					$sql2 = '';
 					foreach ($value as $val) {
-						if ($val != null && $val != '' && (is_numeric($val) or is_string($value))) {
+						if ($val != null && $val != '' && (is_numeric($val) || is_string($value))) {
 							$sql2 .= $this->_buildNumericWhereItem($tableField, $val)." OR ";
 						}
 					}
@@ -590,7 +582,7 @@ class Genapp_Service_GenericService {
 					}
 				} else {
 					// Single value
-					if (is_numeric($value) or is_string($value)) {
+					if (is_numeric($value) || is_string($value)) {
 						$sql .= " AND ".$this->_buildNumericWhereItem($tableField, $value);
 					}
 				}

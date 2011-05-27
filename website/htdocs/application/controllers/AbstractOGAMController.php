@@ -24,8 +24,7 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 		$this->logger = $bootstrap->getResource('log');
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
-		// Get the base URL from the config
-		$configuration = Zend_Registry::get("configuration");
+		// Get the base URL 
 		$this->baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
 	}
 

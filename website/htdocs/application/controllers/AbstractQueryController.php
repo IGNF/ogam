@@ -383,22 +383,21 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
-    /**
-     * Return the node children
-     * 
-     * @return JSON representing the detail of the children.
-     */
-	public function ajaxgetchildrenAction()
-	{
-	    $id = $this->getRequest()->getPost('id');
-	    $this->logger->debug('ajaxgetchildrenAction : '.$id);
+	/**
+	 * Return the node children
+	 *
+	 * @return JSON representing the detail of the children.
+	 */
+	public function ajaxgetchildrenAction() {
+		$id = $this->getRequest()->getPost('id');
+		$this->logger->debug('ajaxgetchildrenAction : '.$id);
 
-        echo $this->queryService->ajaxgetchildren($id);
+		echo $this->queryService->ajaxgetchildren($id);
 
-        // No View, we send directly the JSON
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender();
-        $this->getResponse()->setHeader('Content-type', 'application/json');
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**

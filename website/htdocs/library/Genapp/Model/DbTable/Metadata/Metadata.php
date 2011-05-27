@@ -3,15 +3,6 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-/*require_once 'Genapp/classes/metadata/FileField.php';
- require_once 'Genapp/classes/metadata/FormField.php';
- require_once 'Genapp/classes/metadata/FormFormat.php';
- require_once 'Genapp/classes/metadata/DatasetFile.php';
- require_once 'Genapp/classes/metadata/TableField.php';
- require_once 'Genapp/classes/metadata/TableTreeData.php';
- require_once 'Genapp/classes/metadata/TableFormat.php';
- require_once 'Genapp/classes/metadata/Range.php';
- require_once 'Genapp/classes/metadata/Mode.php';*/
 
 /**
  * This is the Metadata model.
@@ -77,7 +68,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getDynamodes($unit) {
 		$db = $this->getAdapter();
 
-		$req = $this->getDynamodeSQL($unit);
+		$req = $this->_getDynamodeSQL($unit);
 
 		$this->logger->info('getDynamicCodes : '.$req);
 
@@ -98,11 +89,11 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $unit The unit
 	 * @return String the SQL query, that should return an ordered list of code / label.
 	 */
-	private function getDynamodeSQL($unit) {
+	private function _getDynamodeSQL($unit) {
 		$db = $this->getAdapter();
 		$req = "SELECT sql FROM dynamode WHERE unit = ?";
 
-		$this->logger->info('getDynamodeSQL : '.$req);
+		$this->logger->info('_getDynamodeSQL : '.$req);
 
 		$select = $db->prepare($req);
 		$select->execute(array($unit));
@@ -563,58 +554,58 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			return $cachedResult;
 		}
 	}
-	
-   /**
-     * Get the information about a table format.
-     *
-     * @param String $schema the schema name
-     * @param String $table the table name
-     * @return TableFormat
-     */
-    public function getTableFormatFromTableName($schema, $table) {
 
-        $db = $this->getAdapter();
+	/**
+	 * Get the information about a table format.
+	 *
+	 * @param String $schema the schema name
+	 * @param String $table the table name
+	 * @return TableFormat
+	 */
+	public function getTableFormatFromTableName($schema, $table) {
 
-        $this->logger->debug('getTableFormatFromTableName : '.$schema.' '.$table);
+		$db = $this->getAdapter();
 
-        $key = 'getTableFormatFromTableName'.$schema.' '.$table;
-        if ($this->useCache) {
-            $cachedResult = $this->cache->load($key);
-        }
+		$this->logger->debug('getTableFormatFromTableName : '.$schema.' '.$table);
 
-        if (empty($cachedResult)) {
+		$key = 'getTableFormatFromTableName'.$schema.' '.$table;
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
 
-            // Get the fields specified by the format
-            $req = "SELECT * ";
-            $req .= " FROM table_format ";
-            $req .= " WHERE schema_code = ? ";
-            $req .= " AND table_name = upper(?) ";
+		if (empty($cachedResult)) {
 
-            $this->logger->info('getTableFormat : '.$req);
+			// Get the fields specified by the format
+			$req = "SELECT * ";
+			$req .= " FROM table_format ";
+			$req .= " WHERE schema_code = ? ";
+			$req .= " AND table_name = upper(?) ";
 
-            $select = $db->prepare($req);
-            $select->execute(array($schema, $table));
+			$this->logger->info('getTableFormat : '.$req);
 
-            $row = $select->fetch();
+			$select = $db->prepare($req);
+			$select->execute(array($schema, $table));
 
-            $tableFormat = new Genapp_Model_Metadata_TableFormat();
-            $tableFormat->format = $row['format'];
-            $tableFormat->schemaCode = $row['schema_code'];
-            $tableFormat->tableName = $row['table_name'];
-            $tableFormat->label = $row['label'];
-            $pks = explode(",", $row['primary_key']);
-            foreach ($pks as $pk) {
-                $tableFormat->primaryKeys[] = trim($pk); // we need to trim all the values
-            }
+			$row = $select->fetch();
 
-            if ($this->useCache) {
-                $this->cache->save($tableFormat, $key);
-            }
-            return $tableFormat;
-        } else {
-            return $cachedResult;
-        }
-    }
+			$tableFormat = new Genapp_Model_Metadata_TableFormat();
+			$tableFormat->format = $row['format'];
+			$tableFormat->schemaCode = $row['schema_code'];
+			$tableFormat->tableName = $row['table_name'];
+			$tableFormat->label = $row['label'];
+			$pks = explode(",", $row['primary_key']);
+			foreach ($pks as $pk) {
+				$tableFormat->primaryKeys[] = trim($pk); // we need to trim all the values
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($tableFormat, $key);
+			}
+			return $tableFormat;
+		} else {
+			return $cachedResult;
+		}
+	}
 
 	/**
 	 * Get the forms used by a dataset.
