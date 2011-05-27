@@ -20,6 +20,10 @@ OpenLayers.Handler.FeatureInfo.prototype =
         
         // Construction d'une URL pour faire une requête WFS sur le point
         var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename="+Genapp.map.featureinfo_typename+"&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
+        
+        if (Genapp.map.featureinfo_maxfeatures != 0) {
+        	url = url + "&MAXFEATURES=" + Genapp.map.featureinfo_maxfeatures;
+        }
 
         OpenLayers.loadURL(
             url,

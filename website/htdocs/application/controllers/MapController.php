@@ -78,10 +78,10 @@ class MapController extends AbstractOGAMController {
 		$this->view->x_center = $center->x_center;
 		$this->view->y_center = $center->y_center;
 
-		// Margin
+		// Feature parameters
 		$this->view->featureinfo_margin = $configuration->featureinfo->margin;
-		// Typename
 		$this->view->featureinfo_typename = $configuration->featureinfo->typename;
+		$this->view->featureinfo_maxfeatures = $configuration->featureinfo->maxfeatures;
 
 		$this->_helper->layout()->disableLayout();
 		$this->render('map-parameters');
