@@ -1519,12 +1519,13 @@ listeners: {
         var cardPanel = Ext.getCmp(cardPanelId);
         var tab = cardPanel.get(id);
         if (Ext.isEmpty(tab)) {
-            var parentItem = cardPanel.getLayout().activeItem;
+            // We must get the id and not a reference to the activeItem
+            var parentItemId = cardPanel.getLayout().activeItem.getId();
             Ext.Ajax.request({
                 url: Genapp.ajax_query_url + 'ajaxgetchildren',
                 success: function(response, opts) {
                     var obj = Ext.decode(response.responseText);
-                    obj.parentItem = parentItem;
+                    obj.parentItemId = parentItemId;
                     obj.ownerCt = cardPanel;
                     tab = cardPanel.add(new Genapp.GridDetailsPanel({
                         initConf:obj
@@ -1549,7 +1550,7 @@ listeners: {
      */
     getParent : function(cardPanelId){
         var cardPanel = Ext.getCmp(cardPanelId);
-        cardPanel.getLayout().setActiveItem(cardPanel.getLayout().activeItem.parentItem);
+        cardPanel.getLayout().setActiveItem(Ext.getCmp(cardPanel.getLayout().activeItem.parentItemId));
     },
 
     /**

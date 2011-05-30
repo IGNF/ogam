@@ -85,7 +85,7 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
             this.itemId = this.initConf.id;
             this.hasChild = this.initConf.hasChild;
             this.title = this.initConf.title;
-            this.parentItem = this.initConf.parentItem;
+            this.parentItemId = this.initConf.parentItemId;
             // We need of the ownerCt here (before it's set automatically when this Component is added to a Container)
             this.ownerCt = this.initConf.ownerCt;
 
@@ -106,7 +106,7 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
                 columns[i].tooltip =  Genapp.util.htmlStringFormat(columns[i].tooltip);
             }
             var leftToolsHeader = '';
-            if (!Ext.isEmpty(this.parentItem)) {
+            if (!Ext.isEmpty(this.parentItemId)) {
                 leftToolsHeader = '<div class="genapp-query-grid-details-panel-get-parent" onclick="Genapp.cardPanel.consultationPage.getParent(\''
                 + this.ownerCt.getId() +'\');"></div>';
             }
