@@ -13,20 +13,21 @@
 	// 
 	Genapp.map = {};
 	
-	Genapp.map.defaultzoom = <?=$this->defaultzoom?>;
-	Genapp.map.x_center = <?=$this->x_center?>;
-	Genapp.map.y_center = <?=$this->y_center?>;
-	Genapp.map.resolutions = [<?=$this->resolutions?>];
-	Genapp.map.projection = '<?=$this->projection?>';
-	Genapp.map.tilesize= <?=$this->tilesize?>;
+	Genapp.map.defaultzoom = <?= $this->defaultzoom ?>;
+	Genapp.map.x_center = <?= $this->x_center ?>;
+	Genapp.map.y_center = <?= $this->y_center ?>;
+	Genapp.map.resolutions = [<?= $this->resolutions ?>];
+	Genapp.map.projection = '<?= $this->projection ?>';
+	Genapp.map.tilesize= <?= $this->tilesize ?>;
 
-	Genapp.map.x_min= <?=$this->bbox->x_min?>;
-	Genapp.map.y_min= <?=$this->bbox->y_min?>;
-	Genapp.map.x_max= <?=$this->bbox->x_max?>;
-	Genapp.map.y_max= <?=$this->bbox->y_max?>;
+	Genapp.map.x_min= <?= $this->bbox->x_min ?>;
+	Genapp.map.y_min= <?= $this->bbox->y_min ?>;
+	Genapp.map.x_max= <?= $this->bbox->x_max ?>;
+	Genapp.map.y_max= <?= $this->bbox->y_max ?>;
 	
-	Genapp.map.featureinfo_margin = <?=$this->featureinfo_margin?>;
-	Genapp.map.featureinfo_typename = '<?=$this->featureinfo_typename?>';
+	Genapp.map.featureinfo_margin = <?= $this->featureinfo_margin ?>;
+	Genapp.map.featureinfo_typename = '<?= $this->featureinfo_typename ?>';
 	
-	Genapp.map.featureinfo_maxfeatures = <?=$this->featureinfo_maxfeatures?>;
+
+	Genapp.map.featureinfo_maxfeatures = <?= (!empty($this->featureinfo_maxfeatures)) ? $this->featureinfo_maxfeatures : "0"; ?>;
 
