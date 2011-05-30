@@ -330,6 +330,11 @@ listeners: {
      */
     featuresInformationPanelCtTitle:'Features Information',
     /**
+     * @cfg {Number} featuresInformationPanelCtHeight
+     * The features Information Panel Ct Height (defaults to <tt>185 (3 rows)</tt>)
+     */
+    featuresInformationPanelCtHeight:185,
+    /**
      * @cfg {Ext.LoadMask} mask
      * The consultation page mask
      */
@@ -1291,8 +1296,7 @@ listeners: {
             frame:true,
             split:true,
             layout: 'fit',
-            height:250,
-            minHeight:200,
+            height:this.featuresInformationPanelCtHeight,
             collapsible : true,
             titleCollapse : true,
             collapsed:true,
@@ -1496,9 +1500,11 @@ listeners: {
 
     // TODO: patch rtm to delete??
     launchLocationRequest : function(id, value){
-        var form = this.formsPanel.get('LOCALISATION_FORM');
-        form.addCriteria('LOCALISATION_FORM__SIT_NO_CLASS', value);
-        this.submitRequest();
+        if(!Ext.isEmpty(value)){
+            var form = this.formsPanel.get('LOCALISATION_FORM');
+            form.addCriteria('LOCALISATION_FORM__SIT_NO_CLASS', value);
+            this.submitRequest();
+        }
     },
 
     /**
@@ -1511,9 +1517,9 @@ listeners: {
      */
     getChildren : function(cardPanelId, id){
         var cardPanel = Ext.getCmp(cardPanelId);
-        var parentItem = cardPanel.getLayout().activeItem;
         var tab = cardPanel.get(id);
         if (Ext.isEmpty(tab)) {
+            var parentItem = cardPanel.getLayout().activeItem;
             Ext.Ajax.request({
                 url: Genapp.ajax_query_url + 'ajaxgetchildren',
                 success: function(response, opts) {

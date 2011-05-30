@@ -70,7 +70,10 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
         if (!this.hideDetails) {
             stringFormat = '<div class="genapp-query-grid-details-panel-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"></div>';
         }
-        stringFormat += '<div class="genapp-query-grid-details-panel-search" onclick="Genapp.cardPanel.consultationPage.launchLocationRequest(\'\',\'{2}\');"></div>';
+        // TODO: Patch RTM to remove ??
+        if(!Ext.isEmpty(record.data.LOCATION_COMPL_DATA__SIT_NO_CLASS)){
+            stringFormat += '<div class="genapp-query-grid-details-panel-search" onclick="Genapp.cardPanel.consultationPage.launchLocationRequest(\'\',\'{2}\');"></div>';
+        }
         if(this.hasChild) {
             stringFormat += '<div class="genapp-query-grid-details-panel-get-children" onclick="Genapp.cardPanel.consultationPage.getChildren(\'{1}\',\'{0}\');"></div>';
         }

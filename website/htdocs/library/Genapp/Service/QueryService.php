@@ -653,7 +653,7 @@ class Genapp_Service_QueryService {
 	public function ajaxgetchildren($id) {
 		$keyMap = $this->_decodeId($id);
 
-		// For RTM TODO: trouver une autre solution
+		// Patch RTM TODO: trouver une autre solution
 		// $keyMap["FORMAT"] = 'LOCATION_COMPL_DATA';
 
 		// Prepare a data object to be filled
