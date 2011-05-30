@@ -79,8 +79,17 @@ class MapController extends AbstractOGAMController {
 		$this->view->y_center = $center->y_center;
 
 		// Feature parameters
+		if (empty($configuration->featureinfo->margin)) {
+			$configuration->featureinfo->margin = "5000";
+		}
 		$this->view->featureinfo_margin = $configuration->featureinfo->margin;
+		if (empty($configuration->featureinfo->typename)) {
+			$configuration->featureinfo->typename = "result_locations";
+		}
 		$this->view->featureinfo_typename = $configuration->featureinfo->typename;
+		if (empty($configuration->featureinfo->maxfeatures)) {
+			$configuration->featureinfo->maxfeatures = 0;
+		}
 		$this->view->featureinfo_maxfeatures = $configuration->featureinfo->maxfeatures;
 
 		$this->_helper->layout()->disableLayout();
