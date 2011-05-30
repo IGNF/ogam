@@ -696,17 +696,6 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
 
         this.toolbar.addFill();
 
-        if(!this.hideMapDetails){
-            // Get info on the feature
-            this.toolbar.addControl(
-                new OpenLayers.Control.FeatureInfoControl(),
-                {
-                    iconCls: 'feature-info',
-                    tooltip: this.featureInfoControlTitle
-                }
-            );
-        }
-
         // Navigation history : back and next.
         var nav = new OpenLayers.Control.NavigationHistory({});
         this.map.addControl(nav);
@@ -762,6 +751,17 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         );
 
         this.toolbar.addSeparator();
+
+        if(!this.hideMapDetails){
+            // Get info on the feature
+            this.toolbar.addControl(
+                new OpenLayers.Control.FeatureInfoControl(),
+                {
+                    iconCls: 'feature-info',
+                    tooltip: this.featureInfoControlTitle
+                }
+            );
+        }
 
         this.toolbar.addControl(
             new OpenLayers.Control.ZoomBox({

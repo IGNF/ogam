@@ -1,7 +1,6 @@
 OpenLayers.Handler.FeatureInfo = OpenLayers.Class.create();
 OpenLayers.Handler.FeatureInfo.prototype = 
   OpenLayers.Class.inherit( OpenLayers.Handler, {
-    
       /**
        * @cfg {String} alertErrorTitle
        * The alert Error Title (defaults to <tt>'Error :'</tt>)
@@ -58,7 +57,6 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class.create();
 OpenLayers.Control.FeatureInfoControl.prototype = 
   OpenLayers.Class.inherit( OpenLayers.Control, {
     type: OpenLayers.Control.TYPE_TOOL,
-    
     /**
      * Constructor: OpenLayers.Control.FeatureInfoControl
      * 
@@ -70,12 +68,11 @@ OpenLayers.Control.FeatureInfoControl.prototype =
     },
     
     draw: function() {
-        this.handler = new OpenLayers.Handler.FeatureInfo( this, {'click':this.click});   
-        this.activate();
+        this.handler = new OpenLayers.Handler.FeatureInfo( this, {'click':this.click});
+        //this.activate();
     },
      
      /** @final @type String */
     CLASS_NAME: "OpenLayers.Control.FeatureInfoControl"
-        
   }
 );
