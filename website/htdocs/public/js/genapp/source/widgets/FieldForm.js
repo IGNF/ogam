@@ -602,7 +602,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.autoScroll = true;
                 field.containerScroll = true;
                 field.frame = false;
-                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/2'; 
+                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/1';  // TODO change depth depending on level
                 field.root = {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}; // root is always '*'                
                 field.listeners = {
                		// TODO

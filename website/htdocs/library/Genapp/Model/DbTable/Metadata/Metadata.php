@@ -139,27 +139,25 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$select = $db->prepare($req);
 		$select->execute(array($unit, $parentcode));
 
-		$tree = new Genapp_Model_Metadata_TreeNode();
+		$resultTree = new Genapp_Model_Metadata_TreeNode(); // The root is empty
 		foreach ($select->fetchAll() as $row) {
 
 			$parentCode = $row['parent_code'];
+
+			//Build the new node
+			$tree = new Genapp_Model_Metadata_TreeNode();
+			$tree->code = $row['code'];
+			$tree->label = $row['label'];
+			$tree->isLeaf = $row['is_leaf'];
 
 			// Check if a parent can be found in the structure
 			$node = $tree->getNode($parentCode);
 			if ($node == null) {
 
-				// No parent exist, we add the element to the root
-				$tree->code = $row['code'];
-				$tree->label = $row['label'];
-				$tree->isLeaf = $row['is_leaf'];
+				// Add the new node to the result root
+				$resultTree->addChild($tree);
 
 			} else {
-
-				// Create a new child element
-				$treeNode = new Genapp_Model_Metadata_TreeNode();
-				$treeNode->code = $row['code'];
-				$treeNode->label = $row['label'];
-				$treeNode->isLeaf = $row['is_leaf'];
 
 				// Add it to the found parent
 				$node->addChild($treeNode);
@@ -168,9 +166,9 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		}
 
-		//$this->logger->info('$result : '.print_r($tree, true));
+		$this->logger->info('$result : '.print_r($resultTree, true));
 
-		return $tree;
+		return $resultTree;
 	}
 
 	/**

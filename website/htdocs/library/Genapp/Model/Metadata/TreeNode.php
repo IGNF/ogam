@@ -68,21 +68,31 @@ class Genapp_Model_Metadata_TreeNode {
 	 * @return JSON the descriptor
 	 */
 	public function toJSON() {
-		$return = '{';
-		$return .= 'text:'.json_encode($this->label);
-		$return .= ',id:'.json_encode($this->code);
-		if ($this->isLeaf) {
-			$return .= ',leaf:true';
-		}
-		if (!empty($this->children)) {
-			$return .= ',children: [';
+
+		if (empty($this->code) && empty($this->label)) {
+			// Case when the root is just a placeholder, we return only the children
 			foreach ($this->children as $child) {
 				$return .= $child->toJSON().',';
 			}
 			$return = substr($return, 0, -1); // remove the last comma
-			$return .= ']';
+		} else {
+			// We return the root itself plus the children
+			$return = '{';
+			$return .= 'text:'.json_encode($this->label);
+			$return .= ',id:'.json_encode($this->code);
+			if ($this->isLeaf) {
+				$return .= ',leaf:true';
+			}
+			if (!empty($this->children)) {
+				$return .= ',children: [';
+				foreach ($this->children as $child) {
+					$return .= $child->toJSON().',';
+				}
+				$return = substr($return, 0, -1); // remove the last comma
+				$return .= ']';
+			}
+			$return .= '}';
 		}
-		$return .= '}';
 
 		return $return;
 	}
