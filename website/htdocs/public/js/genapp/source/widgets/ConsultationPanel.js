@@ -1323,7 +1323,7 @@ listeners: {
         if(!this.hideDetails){
             centerPanelCtItems.push(this.detailsPanelCt);
         }
-        if(!this.hideMapDetails){
+        if(!this.hideMapDetails && Genapp.map.featureinfo_maxfeatures != 1){
             centerPanelCtItems.push(this.featuresInformationPanelCt);
         }
         this.centerPanelCt = new Ext.Panel({

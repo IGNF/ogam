@@ -36,7 +36,6 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
      * The loading message (defaults to <tt>'Loading...'</tt>)
      */
     loadingMsg: 'Loading...',
-    //header: false,
     layout: 'fit',
     sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
     /**
@@ -90,9 +89,8 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
             this.store = new Ext.data.ArrayStore({
                 // store configs
                 autoDestroy: true,
-                storeId: 'myStore',
                 // reader configs
-                idIndex: 0,  
+                idIndex: 0,
                 fields: this.initConf.fields,
                 data: this.initConf.data
             });

@@ -267,7 +267,7 @@ class ProxyController extends AbstractOGAMController {
 			// The columns max length to setup the column width
 			$columnsMaxLength = array();
 			// The fields config to setup the store reader
-			$locationFields = array('id');
+			$locationFields = array('id');// The id must stay the first field
 			// The data to full the store
 			$locationsData = array();
 			foreach ($displayNodes as $displayIndex => $displayNode) {

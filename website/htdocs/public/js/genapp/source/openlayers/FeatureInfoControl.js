@@ -33,8 +33,8 @@ OpenLayers.Handler.FeatureInfo.prototype =
                 try {
                     var result = Ext.decode(response.responseText);
                     if(!Ext.isEmpty(result.data)){
-                        if(result.data.length == 1){
-                            Genapp.cardPanel.consultationPage.openDetails(result.data[0].id, 'getdetails');
+                        if(Genapp.map.featureinfo_maxfeatures == 1){
+                            Genapp.cardPanel.consultationPage.openDetails(result.data[0][0], 'getdetails');
                         }else{
                             Genapp.cardPanel.consultationPage.openFeaturesInformationSelection(result);
                         }
