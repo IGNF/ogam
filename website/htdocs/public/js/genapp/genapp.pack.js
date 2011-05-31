@@ -1,7 +1,6 @@
 OpenLayers.Handler.FeatureInfo = OpenLayers.Class.create();
 OpenLayers.Handler.FeatureInfo.prototype = 
   OpenLayers.Class.inherit( OpenLayers.Handler, {
-    
       /**
        * @cfg {String} alertErrorTitle
        * The alert Error Title (defaults to <tt>'Error :'</tt>)
@@ -19,7 +18,11 @@ OpenLayers.Handler.FeatureInfo.prototype =
         var ll = this.map.getLonLatFromPixel(px);
         
         // Construction d'une URL pour faire une requête WFS sur le point
-        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=result_locations&MAXFEATURES=1&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
+        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename="+Genapp.map.featureinfo_typename+"&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
+        
+        if (Genapp.map.featureinfo_maxfeatures != 0) {
+        	url = url + "&MAXFEATURES=" + Genapp.map.featureinfo_maxfeatures;
+        }
 
         OpenLayers.loadURL(
             url,
@@ -28,7 +31,13 @@ OpenLayers.Handler.FeatureInfo.prototype =
             function(response) {
                 try {
                     var result = Ext.decode(response.responseText);
-                    Genapp.cardPanel.consultationPage.openDetails(result.id, 'getdetails');
+                    if(!Ext.isEmpty(result.data)){
+                        if(Genapp.map.featureinfo_maxfeatures == 1){
+                            Genapp.cardPanel.consultationPage.openDetails(result.data[0][0], 'getdetails');
+                        }else{
+                            Genapp.cardPanel.consultationPage.openFeaturesInformationSelection(result);
+                        }
+                    }
                 } catch (e) {
                     Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
                 }
@@ -48,7 +57,6 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class.create();
 OpenLayers.Control.FeatureInfoControl.prototype = 
   OpenLayers.Class.inherit( OpenLayers.Control, {
     type: OpenLayers.Control.TYPE_TOOL,
-    
     /**
      * Constructor: OpenLayers.Control.FeatureInfoControl
      * 
@@ -60,16 +68,77 @@ OpenLayers.Control.FeatureInfoControl.prototype =
     },
     
     draw: function() {
-        this.handler = new OpenLayers.Handler.FeatureInfo( this, {'click':this.click});   
-        this.activate();
+        this.handler = new OpenLayers.Handler.FeatureInfo( this, {'click':this.click});
+        //this.activate();
     },
      
      /** @final @type String */
     CLASS_NAME: "OpenLayers.Control.FeatureInfoControl"
-        
   }
 );
 /**
+ * The class of the Card Grid Details Panel.
+ * 
+ * @class Genapp.CardGridDetailsPanel
+ * @extends Ext.Panel
+ * @constructor Create a new CardGridDetailsPanel
+ * @param {Object} config The config object
+ */
+Genapp.CardGridDetailsPanel = Ext.extend(Ext.Panel, {
+    /**
+     * @cfg {Number} headerWidth
+     * The tab header width. (Default to 60)
+     */
+    headerWidth:95,
+    /**
+     * @cfg {Boolean} closable
+     * Panels themselves do not directly support being closed, but some Panel subclasses do (like
+     * {@link Ext.Window}) or a Panel Class within an {@link Ext.TabPanel}.  Specify true
+     * to enable closing in such situations. Defaults to true.
+     */
+    closable: true,
+    /**
+     * @cfg {Boolean} autoScroll
+     * true to use overflow:'auto' on the panel's body element and show scroll bars automatically when
+     * necessary, false to clip any overflowing content (defaults to true).
+     */
+    autoScroll:true,
+    /**
+     * @cfg {String} cls
+     * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp-query-grid-details-panel').
+     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
+     */
+    cls:'genapp-query-card-grid-details-panel',
+    /**
+     * @cfg {String} loadingMsg
+     * The loading message (defaults to <tt>'Loading...'</tt>)
+     */
+    loadingMsg: 'Loading...',
+    header: false,
+    layout: 'card',
+    /**
+     * @cfg {String} gridDetailsPanelTitle
+     * The grid Details Panel Title (default to 'Locations')
+     */
+    cardGridDetailsPanelTitle: 'Selection',
+    activeItem: 0, // make sure the active item is set on the container config!
+
+
+    // private
+    initComponent : function() {
+            this.itemId = this.initConf.id;
+
+            this.title = '<div style="width:'+ this.headerWidth + 'px;">'
+            + this.cardGridDetailsPanelTitle + ' ' + this.initConf.featuresInformationSearchNumber
+            + '</div>';
+            
+            this.items = new Genapp.GridDetailsPanel({
+                initConf:this.initConf
+            });
+
+        Genapp.CardGridDetailsPanel.superclass.initComponent.call(this);
+    }
+});/**
  * A CardPanel correspond to the panel containing the application pages.
  * 
  * @class Genapp.CardPanel
@@ -193,6 +262,16 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
                 }
                 this.items.push(pageCfg);
             }
+        }
+        // Removes the tab if there are only one pages
+        if(this.shownPages.length == 1 ){
+            this.headerCfg = {
+                style:'display:none;'
+            };
+            // defaults are applied to items, not the container
+            this.defaults = {
+                frame:false
+            };
         }
 
         Genapp.CardPanel.superclass.initComponent.call(this);
@@ -340,7 +419,7 @@ listeners: {
     hideDetails : false,
     /**
      * @cfg {Boolean} hideMapDetails
-     * if true hide the details button in map toolbar (defaults to false).
+     * if true hide the details button in map toolbar (defaults to true).
      */
     hideMapDetails : true,
     /**
@@ -353,6 +432,11 @@ listeners: {
      * if true hide the predefined request save button (defaults to true).
      */
     hidePredefinedRequestSaveButton : true,
+    /**
+     * @cfg {Boolean} hideGridDataEditButton
+     * if true hide the grid data edit button (defaults to true).
+     */
+    hideGridDataEditButton : true,
     /**
      * @cfg {String} userManualLinkHref
      * The user Manual Link Href (defaults to <tt>'Genapp.base_url + 'pdf/User_Manual.pdf''</tt>)
@@ -434,6 +518,11 @@ listeners: {
      */
     gridPanelTabTip:'The request\'s results',
     /**
+     * @cfg {Number} gridPageSize
+     * The grid page size (defaults to <tt>20</tt>)
+     */
+    gridPageSize: 20,
+    /**
      * @cfg {String} centerPanelTitle
      * The center Panel Title (defaults to <tt>'Result Panel'</tt>)
      */
@@ -513,6 +602,16 @@ listeners: {
      * The details PanelCt Unpin Tool Qtip (defaults to <tt>'Unpin the panel'</tt>)
      */
     detailsPanelCtUnpinToolQtip:'Unpin the panel',
+    /**
+     * @cfg {String} featuresInformationPanelCtTitle
+     * The features Information PanelCt Title (defaults to <tt>'Features Information'</tt>)
+     */
+    featuresInformationPanelCtTitle:'Features Information',
+    /**
+     * @cfg {Number} featuresInformationPanelCtHeight
+     * The features Information Panel Ct Height (defaults to <tt>185 (3 rows)</tt>)
+     */
+    featuresInformationPanelCtHeight:185,
     /**
      * @cfg {Ext.LoadMask} mask
      * The consultation page mask
@@ -647,6 +746,8 @@ listeners: {
      * True to collapse the query panel on a prefefined request load (default to true)
      */
     collapseQueryPanelOnPredefinedRequestLoad: true,
+    // private
+    featuresInformationSearchNumber: 0,
 
     // private
     initComponent : function() {
@@ -798,7 +899,7 @@ listeners: {
          * @type Ext.PagingToolbar
          */
         this.pagingToolbar = new Ext.PagingToolbar({
-            pageSize: Genapp.grid.pagesize,
+            pageSize: this.gridPageSize,
             store: this.gridDS,
             displayInfo: true
         });
@@ -1249,6 +1350,10 @@ listeners: {
                         disabled:true
                     }));
                 }
+                // Hide the csv export button if there are no menu items
+                if(Ext.isEmpty(csvExportMenuItems)){
+                    this.hideCsvExportButton = true;
+                }
                 if(!this.hideCsvExportButton){
                     this.csvExportButton = addTopButton({
                         xtype:'splitbutton',
@@ -1420,7 +1525,21 @@ listeners: {
                     this.detailsPanelPinned = false;
                 },
                 scope:this
-            }]
+            }],
+            listeners:{
+                // Collapse the layersAndLegendsPanel on expand event
+                expand:function(){
+                    // The map panel must be rendered and activated to resize correctly the map div
+                    if(this.centerPanel.getActiveTab() instanceof Genapp.MapPanel){
+                        this.mapPanel.layersAndLegendsPanel.collapse();
+                    }else{
+                        this.centerPanel.activate(this.mapPanel);
+                        this.mapPanel.layersAndLegendsPanel.collapse();
+                        this.centerPanel.activate(this.gridPanel);
+                    }
+                },
+                scope:this
+            }
         });
 
         // Add the layers and legends vertical label
@@ -1428,11 +1547,75 @@ listeners: {
             this.addVerticalLabel(this.detailsPanelCt, 'genapp-query-details-panel-ct-xcollapsed-vertical-label-div');
         }
 
+        /**
+         * The features Information panel.
+         * @property featuresInformationPanel
+         * @type Ext.TabPanel
+         */
+        this.featuresInformationPanel = new Ext.TabPanel({
+            frame:true,
+            plain:true,
+            enableTabScroll:true,
+            cls:'genapp-query-locations-panel',
+            scrollIncrement:91,
+            scrollRepeatInterval:100,
+            idDelimiter:'___' // Avoid a conflict with the Genapp id separator('__')
+        });
+
+        this.featuresInformationPanelPinned = true;
+        /**
+         * The features Information panel container.
+         * @property featuresInformationPanelCt
+         * @type Ext.Panel
+         */
+        this.featuresInformationPanelCt = new Ext.Panel({
+            region:'south',
+            title:this.featuresInformationPanelCtTitle,
+            frame:true,
+            split:true,
+            layout: 'fit',
+            height:this.featuresInformationPanelCtHeight,
+            collapsible : true,
+            titleCollapse : true,
+            collapsed:true,
+            items: this.featuresInformationPanel,
+            tools:[{
+                id:'pin',
+                qtip: this.featuresInformationPanelCtPinToolQtip,
+                hidden:true,
+                handler: function(event, toolEl, panel){
+                    toolEl.hide();
+                    panel.header.child('.x-tool-unpin').show();
+                    this.featuresInformationPanelPinned = true;
+                },
+                scope:this
+            },{
+                id:'unpin',
+                qtip: this.featuresInformationPanelCtUnpinToolQtip,
+                handler: function(event, toolEl, panel){
+                    toolEl.hide();
+                    panel.header.child('.x-tool-pin').show();
+                    this.featuresInformationPanelPinned = false;
+                },
+                scope:this
+            }]
+        });
+        
+        var centerPanelCtItems = [this.centerPanel];
+        if(!this.hideDetails){
+            centerPanelCtItems.push(this.detailsPanelCt);
+        }
+        if(!this.hideMapDetails && Genapp.map.featureinfo_maxfeatures != 1){
+            centerPanelCtItems.push(this.featuresInformationPanelCt);
+        }
+        this.centerPanelCt = new Ext.Panel({
+            layout: 'border',
+            region :'center',
+            items: centerPanelCtItems
+        });
+
         if (!this.items) {
-            this.items = [this.queryPanel, this.centerPanel];
-            if(!this.hideDetails){
-                this.items.push(this.detailsPanelCt);
-            }
+            this.items = [this.queryPanel, this.centerPanelCt];
         }
 
         Genapp.ConsultationPanel.superclass.initComponent.call(this);
@@ -1476,100 +1659,193 @@ listeners: {
         }
     },
 
-	/**
-	 * Renders for the left tools column cell
-	 * 
-	 * @param {Object}
-	 *            value The data value for the cell.
-	 * @param {Object}
-	 *            metadata An object in which you may set the
-	 *            following attributes: {String} css A CSS class
-	 *            name to add to the cell's TD element. {String}
-	 *            attr : An HTML attribute definition string to
-	 *            apply to the data container element within the
-	 *            table cell (e.g. 'style="color:red;"').
-	 * @param {Ext.data.record}
-	 *            record The {@link Ext.data.Record} from which
-	 *            the data was extracted.
-	 * @param {Number}
-	 *            rowIndex Row index
-	 * @param {Number}
-	 *            colIndex Column index
-	 * @param {Ext.data.Store}
-	 *            store The {@link Ext.data.Store} object from
-	 *            which the Record was extracted.
-	 * @return {String} The html code for the column
-	 * @hide
-	 */
-	renderLeftTools : function(value, metadata, record,
-			rowIndex, colIndex, store) {
+    /**
+     * Renders for the left tools column cell
+     * 
+     * @param {Object}
+     *            value The data value for the cell.
+     * @param {Object}
+     *            metadata An object in which you may set the
+     *            following attributes: {String} css A CSS class
+     *            name to add to the cell's TD element. {String}
+     *            attr : An HTML attribute definition string to
+     *            apply to the data container element within the
+     *            table cell (e.g. 'style="color:red;"').
+     * @param {Ext.data.record}
+     *            record The {@link Ext.data.Record} from which
+     *            the data was extracted.
+     * @param {Number}
+     *            rowIndex Row index
+     * @param {Number}
+     *            colIndex Column index
+     * @param {Ext.data.Store}
+     *            store The {@link Ext.data.Store} object from
+     *            which the Record was extracted.
+     * @return {String} The html code for the column
+     * @hide
+     */
+    renderLeftTools : function(value, metadata, record,
+            rowIndex, colIndex, store) {
 
-		var stringFormat = '';
-		if (!this.hideDetails) {
-			stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\''
-					+ record.data.id
-					+ '\', \'getdetails\');"></div>';
-		}
-		stringFormat += '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPage.edit(\''
-				+ record.data.id + '\');"></div>';
-		stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');"></div>';
+        var stringFormat = '';
+        if (!this.hideDetails) {
+            stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"></div>';
+        }
+        stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');"></div>';
 
-		return String.format(stringFormat, record.data.id,
-				record.data.location_centroid);
-	},
+        return String.format(stringFormat, record.data.id,
+                record.data.location_centroid);
+    },
 
-	/**
-	 * Edit the row of data.
-	 * 
-	 * @param {String}
-	 *            id The r id
-	 */
-	edit : function(id) {
-		// TODO : Change that
-		window.open('dataedition/show-edit-data/'+id);
-	},
+   /**
+     * Renders for the right tools column cell
+     * 
+     * @param {Object}
+     *            value The data value for the cell.
+     * @param {Object}
+     *            metadata An object in which you may set the
+     *            following attributes: {String} css A CSS class
+     *            name to add to the cell's TD element. {String}
+     *            attr : An HTML attribute definition string to
+     *            apply to the data container element within the
+     *            table cell (e.g. 'style="color:red;"').
+     * @param {Ext.data.record}
+     *            record The {@link Ext.data.Record} from which
+     *            the data was extracted.
+     * @param {Number}
+     *            rowIndex Row index
+     * @param {Number}
+     *            colIndex Column index
+     * @param {Ext.data.Store}
+     *            store The {@link Ext.data.Store} object from
+     *            which the Record was extracted.
+     * @return {String} The html code for the column
+     * @hide
+     */
+    renderRightTools : function(value, metadata, record,
+            rowIndex, colIndex, store) {
+        var stringFormat = '<div class="genapp-query-grid-edit" onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"></div>';
+        return String.format(stringFormat, record.data.id);
+    },
 
-	/**
-	 * Open the row details
-	 * 
-	 * @param {String}
-	 *            id The details id
-	 * @param {String}
-	 *            url The url to get the details
-	 */
-	openDetails : function(id, url) {
-		if (!Ext.isEmpty(id)) {
-			var consultationPanel = Ext
-					.getCmp('consultation_panel');
-			consultationPanel.collapseQueryPanel();
-			consultationPanel.detailsPanel.ownerCt.expand();
-			var tab = consultationPanel.detailsPanel.get(id);
-			if (Ext.isEmpty(tab)) {
-				tab = consultationPanel.detailsPanel
-						.add(new Genapp.DetailsPanel({
-							rowId : id,
-							dataUrl : url
-						}));
-			}
-			consultationPanel.detailsPanel.activate(tab);
-		}
-	},
+    /**
+     * Open the row details
+     * 
+     * @param {String}
+     *            id The details id
+     * @param {String}
+     *            url The url to get the details
+     */
+    openDetails : function(id, url) {
+        this.featuresInformationSearchNumber++;
+        if (!Ext.isEmpty(id)) {
+            var consultationPanel = Ext.getCmp('consultation_panel');
+            consultationPanel.collapseQueryPanel();
+            consultationPanel.detailsPanel.ownerCt.expand();
+            var tab = consultationPanel.detailsPanel.get(id);
+            if (Ext.isEmpty(tab)) {
+                tab = consultationPanel.detailsPanel
+                        .add(new Genapp.DetailsPanel({
+                            rowId : id,
+                            dataUrl : url
+                        }));
+            }
+            consultationPanel.detailsPanel.activate(tab);
+        }
+    },
 
-	/**
-	 * Displays the location on the map
-	 * 
-	 * @param {String}
-	 *            id The location id
-	 * @param {String}
-	 *            wkt a point WKT to be displayed as a flag.
-	 */
-	displayLocation : function(id, wkt) {
-		var consultationPanel = Ext
-				.getCmp('consultation_panel');
-		consultationPanel.centerPanel
-				.activate(consultationPanel.mapPanel);
-		consultationPanel.mapPanel.zoomToFeature(id, wkt);
-	},
+    /**
+     * Open a features information panel
+     * 
+     * @param {Object} selection The selection information
+     */
+    openFeaturesInformationSelection : function(selection){
+        this.featuresInformationSearchNumber++;
+        selection.featuresInformationSearchNumber = this.featuresInformationSearchNumber;
+        if (!Ext.isEmpty(selection.data)) {
+            var consultationPanel = Ext.getCmp('consultation_panel');
+            consultationPanel.featuresInformationPanel.ownerCt.expand();
+            var tab = consultationPanel.featuresInformationPanel.get(selection.id);
+            if (Ext.isEmpty(tab)) {
+                tab = consultationPanel.featuresInformationPanel
+                        .add(new Genapp.CardGridDetailsPanel({
+                            initConf:selection
+                        }));
+            }
+            consultationPanel.featuresInformationPanel.activate(tab);
+        }
+    },
+
+    // TODO: patch rtm to delete??
+    launchLocationRequest : function(id, value){
+        if(!Ext.isEmpty(value)){
+            var form = this.formsPanel.get('LOCALISATION_FORM');
+            form.addCriteria('LOCALISATION_FORM__SIT_NO_CLASS', value);
+            this.submitRequest();
+        }
+    },
+
+    /**
+     * Switch the current gridDetailsPanel to the children gridDetailsPanel
+     * 
+     * @param {String} 
+     *            cardPanelId The id of the card panel containing the current gridDetailsPanel
+     * @param {String} 
+     *            id The id of the selected row in the current gridDetailsPanel
+     */
+    getChildren : function(cardPanelId, id){
+        var cardPanel = Ext.getCmp(cardPanelId);
+        var tab = cardPanel.get(id);
+        if (Ext.isEmpty(tab)) {
+            // We must get the id and not a reference to the activeItem
+            var parentItemId = cardPanel.getLayout().activeItem.getId();
+            Ext.Ajax.request({
+                url: Genapp.ajax_query_url + 'ajaxgetchildren',
+                success: function(response, opts) {
+                    var obj = Ext.decode(response.responseText);
+                    obj.parentItemId = parentItemId;
+                    obj.ownerCt = cardPanel;
+                    tab = cardPanel.add(new Genapp.GridDetailsPanel({
+                        initConf:obj
+                    }));
+                    cardPanel.getLayout().setActiveItem(tab);
+                },
+                failure: function(response, opts) {
+                    console.log('server-side failure with status code ' + response.status);
+                },
+                params: {id: id}
+             });
+        } else {
+            cardPanel.getLayout().setActiveItem(tab);
+        }
+    },
+
+    /**
+     * Switch the current gridDetailsPanel to the parent gridDetailsPanel
+     * 
+     * @param {String} 
+     *            cardPanelId The id of the card panel containing the current gridDetailsPanel
+     */
+    getParent : function(cardPanelId){
+        var cardPanel = Ext.getCmp(cardPanelId);
+        cardPanel.getLayout().setActiveItem(Ext.getCmp(cardPanel.getLayout().activeItem.parentItemId));
+    },
+
+    /**
+     * Displays the location on the map
+     * 
+     * @param {String}
+     *            id The location id
+     * @param {String}
+     *            wkt a point WKT to be displayed as a flag.
+     */
+    displayLocation : function(id, wkt) {
+        var consultationPanel = Ext
+                .getCmp('consultation_panel');
+        consultationPanel.centerPanel
+                .activate(consultationPanel.mapPanel);
+        consultationPanel.mapPanel.zoomToFeature(id, wkt);
+    },
 
     /**
      * Cancel the current ajax request (submit or load)
@@ -1623,25 +1899,26 @@ listeners: {
         if(!this.mapResultLayers){
             var rla = this.mapPanel.layersActivation['request'];
             this.mapResultLayers = [];
-            for(var i = 0; i<rla.length;i++){
-                var layer = this.mapPanel.map.getLayersByName(rla[i])[0];
-                //The layer visibility must be set to true to handle the 'loadend' event
-                layer.events.register("loadend", this, function(info){
-                    this.mapResultLayersLoadEnd[info.object.name] = 1;
-                    // Hide the map mask if all the result layers are loaded
-                    var count = 0;
-                    for (layer in this.mapResultLayersLoadEnd) {
-                        if (typeof this.mapResultLayersLoadEnd[layer] !== 'function') {
-                            count += this.mapResultLayersLoadEnd[layer];
+            if(!Ext.isEmpty(rla)){
+                for(var i = 0; i<rla.length;i++){
+                    var layer = this.mapPanel.map.getLayersByName(rla[i])[0];
+                    //The layer visibility must be set to true to handle the 'loadend' event
+                    layer.events.register("loadend", this, function(info){
+                        this.mapResultLayersLoadEnd[info.object.name] = 1;
+                        // Hide the map mask if all the result layers are loaded
+                        var count = 0;
+                        for (layer in this.mapResultLayersLoadEnd) {
+                            if (typeof this.mapResultLayersLoadEnd[layer] !== 'function') {
+                                count += this.mapResultLayersLoadEnd[layer];
+                            }
                         }
-                    }
-                    if(count === this.mapResultLayers.length){
-                        this.mapMask.hide();
-                    }
-                });
-                this.mapResultLayers.push(layer);
+                        if(count === this.mapResultLayers.length){
+                            this.mapMask.hide();
+                        }
+                    });
+                    this.mapResultLayers.push(layer);
+                }
             }
-
         }
         // Init mapResultLayersLoadEnd
         this.mapResultLayersLoadEnd = {};
@@ -1690,13 +1967,14 @@ listeners: {
                 // Creation of the column model and the reader metadata fields
                 var columns = action.result.columns;
                 var newCM = new Array({
+                    dataIndex:'leftTools',
                     header:'',
                     renderer:this.renderLeftTools.createDelegate(this),
                     sortable:false,
                     fixed:true,
                     menuDisabled:true,
                     align:'center',
-                    width:66
+                    width:50
                 });
                 var newRF = new Array();
                 var columnConf;
@@ -1714,7 +1992,7 @@ listeners: {
                         name: columns[i].name
                     };
                     switch(columns[i].type){
-                        // TODO : BOOLEAN, CODE, COORDINATE
+                        // TODO : BOOLEAN, CODE, COORDINATE, ARRAY, TREE
                         case 'STRING':
                             columnConf.xtype='gridcolumn';
                             readerFieldsConf.type='string';
@@ -1723,16 +2001,10 @@ listeners: {
                             columnConf.xtype='gridcolumn';
                             break;
                         case 'NUMERIC':
-                        	columnConf.xtype='numbercolumn';
-                        	if (columns[i].decimals != null) {
-                        		columnConf.format= this.numberPattern('.', columns[i].decimals);
-                        	}
-                        	break;
-                        case 'RANGE':
                             columnConf.xtype='numbercolumn';
                             if (columns[i].decimals != null) {
-                        		columnConf.format= this.numberPattern('.', columns[i].decimals);
-                        	}
+                                columnConf.format= this.numberPattern('.', columns[i].decimals);
+                            }
                             break;
                         case 'DATE':
                             columnConf.xtype='datecolumn';
@@ -1745,6 +2017,19 @@ listeners: {
                     }
                     newCM.push(columnConf);
                     newRF.push(readerFieldsConf);
+                }
+
+                if(!this.hideGridDataEditButton){
+                    newCM.push({
+                        dataIndex:'rightTools',
+                        header:'',
+                        renderer:this.renderRightTools.createDelegate(this),
+                        sortable:false,
+                        fixed:true,
+                        menuDisabled:true,
+                        align:'center',
+                        width:30
+                    });
                 }
 
                 // Updates of the store reader metadata
@@ -1776,11 +2061,10 @@ listeners: {
                     this,
                     {single:true}
                 );
-
                 this.gridPanel.getStore().load({
                     params:{
                         start: 0,
-                        limit: Genapp.grid.pagesize
+                        limit: this.gridPageSize
                     },
                     callback : function(){
                         this.requestConn = null;
@@ -1956,9 +2240,9 @@ listeners: {
         var activatedLayers = this.mapPanel.map.getLayersBy('visibility', true);
         var activatedLayersNames = '';
         for (var i=0; i<activatedLayers.length; i++) {
-        	if (activatedLayers[i].printable !== false) {
-        		activatedLayersNames += activatedLayers[i].name + ',';
-        	}
+            if (activatedLayers[i].printable !== false) {
+                activatedLayersNames += activatedLayers[i].name + ',';
+            }
         }
         activatedLayersNames = activatedLayersNames.substr(0,activatedLayersNames.length - 1);
 
@@ -1984,27 +2268,27 @@ listeners: {
     },
 
     /**
-	 * Return the pattern used to format a number.
-	 * 
-	 * @param {String}
-	 *            decimalSeparator the decimal separator (default to',')
-	 * @param {Integer}
-	 *            decimalPrecision the decimal precision
-	 * @param {String}
-	 *            groupingSymbol the grouping separator (absent by default)
-	 */
+     * Return the pattern used to format a number.
+     * 
+     * @param {String}
+     *            decimalSeparator the decimal separator (default to',')
+     * @param {Integer}
+     *            decimalPrecision the decimal precision
+     * @param {String}
+     *            groupingSymbol the grouping separator (absent by default)
+     */
     numberPattern: function (decimalSeparator, decimalPrecision, groupingSymbol) {
         // Building the number format pattern for use by ExtJS
-		// Ext.util.Format.number
+        // Ext.util.Format.number
         var pattern = [];
         pattern.push('0');
         if (groupingSymbol) {
-        	pattern.push(groupingSymbol + '000');
+            pattern.push(groupingSymbol + '000');
         }
         if (decimalPrecision) {
             pattern.push(decimalSeparator);
             for (var i = 0; i < decimalPrecision; i++) {
-            	pattern.push('0');
+                pattern.push('0');
             }
         }
         return pattern.join('');
@@ -2100,7 +2384,7 @@ listeners: {
                     throw('');
                 } else {
                     if (!Ext.isEmpty(response.resultsbbox)) {
-	                    this.mapPanel.resultsBBox = response.resultsbbox;
+                        this.mapPanel.resultsBBox = response.resultsbbox;
                     } else {
                         this.mapPanel.resultsBBox = null;
                     }
@@ -2890,15 +3174,19 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
          * @type Ext.data.JsonStore
          */
         this.criteriaDS = new Ext.data.JsonStore({
+            idProperty: 'name',
             fields:[
-                {name:'name',mapping:'a'},
-                {name:'label',mapping:'b'},
-                {name:'inputType',mapping:'c'},
-                {name:'type',mapping:'d'},
-                {name:'definition',mapping:'e'},
-                {name:'is_default',mapping:'f'},
-                {name:'default_value',mapping:'g'},
-                {name:'params',mapping:'p'}
+                {name:'name',mapping:'name'},
+                {name:'label',mapping:'label'},
+                {name:'inputType',mapping:'inputType'},
+                {name:'unit',mapping:'unit'},
+                {name:'type',mapping:'type'},
+                {name:'subtype',mapping:'subtype'},
+                {name:'definition',mapping:'definition'},
+                {name:'is_default',mapping:'is_default'},
+                {name:'default_value',mapping:'default_value'},
+                {name:'decimals',mapping:'decimals'},                
+                {name:'params',mapping:'params'} // reserved for min/max or list of codes
             ],
             data:this.criteria
         });
@@ -2909,12 +3197,14 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
          * @type Ext.data.JsonStore
          */
         this.columnsDS = new Ext.data.JsonStore({
+            idProperty: 'name',
             fields:[
-                {name:'name',mapping:'a'},
-                {name:'label',mapping:'b'},
-                {name:'definition',mapping:'c'},
-                {name:'is_default',mapping:'d'},
-                {name:'params',mapping:'p'}
+                {name:'name',mapping:'name'},
+                {name:'label',mapping:'label'},
+                {name:'definition',mapping:'definition'},
+                {name:'is_default',mapping:'is_default'},
+                {name:'decimals',mapping:'decimals'},
+                {name:'params',mapping:'params'}  // reserved for min/max or list of codes
             ],
             data:this.columns
         });
@@ -2990,7 +3280,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                     listeners : {
                         scope :this,
                         'select' : {
-                            fn : this.addCriteria,
+                            fn : this.addSelectedCriteria,
                             scope :this
                         }
                     }
@@ -3087,11 +3377,25 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * @param {Number} index The criteria combobox record index
      * @hide
      */
-    addCriteria : function(combo, record, index) {
+    addSelectedCriteria : function(combo, record, index) {
         if(combo !== null){
             combo.clearValue();
             combo.collapse();
         }
+        // Add the field
+        this.criteriaPanel.add(this.getCriteriaConfig(record.data, false));
+        this.criteriaPanel.doLayout();
+    },
+
+    /**
+     * Add the criteria to the list of criteria.
+     * @param {String} criteriaId The criteria id
+     * @param {String} value The criteria value
+     */
+    addCriteria : function(criteriaId, value) {
+        // Setup the field
+        var record = this.criteriaDS.getById(criteriaId);
+        record.data.default_value = value;
         // Add the field
         this.criteriaPanel.add(this.getCriteriaConfig(record.data, false));
         this.criteriaPanel.doLayout();
@@ -3288,10 +3592,50 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.valueField  = 'code';
                 field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
                 field.disableKeyFilter = true;
-                field.store = new Ext.data.ArrayStore({
-                    fields:['code','label'],
-                    data : record.params.options
-                });
+                if (record.subtype == 'DYNAMIC') {
+                	field.store = new Ext.data.JsonStore({
+                		autoLoad: true,  
+                		root: 'codes',
+	                    fields:[
+	                            {name:'code',mapping:'code'},
+	                            {name:'label',mapping:'label'}
+	                            ],
+	                    url: 'ajaxgetdynamiccodes/unit/'+record.unit
+	                });
+                } else {
+	                field.store = new Ext.data.ArrayStore({
+	                    fields:['code','label'],
+	                    data : record.params.options
+	                });
+                }
+                break;
+            case 'MULTIPLE':  // The input type MULTIPLE correspond generally to a data type ARRAY
+                field.xtype = 'combo';
+                field.itemCls = 'trigger-field'; // For IE7 layout
+                field.hiddenName = field.name;
+                field.triggerAction = 'all';
+                field.typeAhead = true;
+                field.mode = 'local';
+                field.displayField = 'label';
+                field.valueField  = 'code';
+                field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
+                field.disableKeyFilter = true;
+                if (record.subtype=='DYNAMIC') {
+                	field.store = new Ext.data.JsonStore({
+                		autoLoad: true,  
+                		root: 'codes',
+                		fields:[
+	                            {name:'code',mapping:'code'},
+	                            {name:'label',mapping:'label'}
+	                            ],
+	                    url: 'ajaxgetdynamiccodes/unit/'+record.unit
+	                });
+                } else {
+	                field.store = new Ext.data.ArrayStore({
+	                    fields:['code','label'],
+	                    data : record.params.options
+	                });
+                }
                 break;
             case 'DATE': // The input type DATE correspond generally to a data type DATE
                 field.xtype = 'daterangefield';
@@ -3348,6 +3692,35 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.xtype = 'geometryfield';
                 field.itemCls = 'trigger-field'; // For IE7 layout
                 break;
+            case 'TREE': 
+            	
+            	// Add a Tree View
+                field.xtype = 'treepanel';
+                field.enableDD = false; //  drag and drop
+                field.animate = true; 
+                field.border = false;
+                field.rootVisible = false;
+                field.useArrows = true;
+                field.autoScroll = true;
+                field.containerScroll = true;
+                field.frame = false;
+                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/1';  // TODO change depth depending on level
+                field.root = {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}; // root is always '*'                
+                field.listeners = {
+               		// TODO
+                    click: function(node, event) {
+                        alert('Navigation Tree Click', 'You clicked: "' + node.attributes.id + '"');
+                    }
+                }
+                // TODO : Manage link with treeview
+                // Add a hidden field for submit
+                var hiddenfield = {};
+                hiddenfield.xtype = 'hidden';
+                hiddenfield.name = field.name;
+                hiddenfield.value = '-1';
+                this.criteriaPanel.add(hiddenfield); // TODO : à supprimer
+                
+                break;    
             default: 
                 field.xtype  = 'field';
             break;
@@ -3392,6 +3765,137 @@ Ext.apply(Genapp.FieldForm.prototype, {
             };
         }
         return field;
+    }
+});/**
+ * The class of the Grid Details Panel.
+ * 
+ * @class Genapp.GridDetailsPanel
+ * @extends Ext.GridPanel
+ * @constructor Create a new GridDetailsPanel
+ * @param {Object} config The config object
+ */
+Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
+    /**
+     * @cfg {Number} headerWidth
+     * The tab header width. (Default to 60)
+     */
+    headerWidth:95,
+    /**
+     * @cfg {Boolean} closable
+     * Panels themselves do not directly support being closed, but some Panel subclasses do (like
+     * {@link Ext.Window}) or a Panel Class within an {@link Ext.TabPanel}.  Specify true
+     * to enable closing in such situations. Defaults to true.
+     */
+    closable: true,
+    /**
+     * @cfg {Boolean} autoScroll
+     * true to use overflow:'auto' on the panel's body element and show scroll bars automatically when
+     * necessary, false to clip any overflowing content (defaults to true).
+     */
+    autoScroll:true,
+    /**
+     * @cfg {String} cls
+     * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp-query-grid-details-panel').
+     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
+     */
+    cls:'genapp-query-grid-details-panel',
+    /**
+     * @cfg {String} loadingMsg
+     * The loading message (defaults to <tt>'Loading...'</tt>)
+     */
+    loadingMsg: 'Loading...',
+    layout: 'fit',
+    sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
+    /**
+     * Renders for the left tools column cell
+     * 
+     * @param {Object}
+     *            value The data value for the cell.
+     * @param {Object}
+     *            metadata An object in which you may set the
+     *            following attributes: {String} css A CSS class
+     *            name to add to the cell's TD element. {String}
+     *            attr : An HTML attribute definition string to
+     *            apply to the data container element within the
+     *            table cell (e.g. 'style="color:red;"').
+     * @param {Ext.data.record}
+     *            record The {@link Ext.data.Record} from which
+     *            the data was extracted.
+     * @param {Number}
+     *            rowIndex Row index
+     * @param {Number}
+     *            colIndex Column index
+     * @param {Ext.data.Store}
+     *            store The {@link Ext.data.Store} object from
+     *            which the Record was extracted.
+     * @return {String} The html code for the column
+     * @hide
+     */
+    renderLeftTools : function(value, metadata, record,
+            rowIndex, colIndex, store) {
+
+        var stringFormat = '';
+        if (!this.hideDetails) {
+            stringFormat = '<div class="genapp-query-grid-details-panel-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"></div>';
+        }
+        // TODO: Patch RTM to remove ??
+        if(!Ext.isEmpty(record.data.LOCATION_COMPL_DATA__SIT_NO_CLASS)){
+            stringFormat += '<div class="genapp-query-grid-details-panel-search" onclick="Genapp.cardPanel.consultationPage.launchLocationRequest(\'\',\'{2}\');"></div>';
+        }
+        if(this.hasChild) {
+            stringFormat += '<div class="genapp-query-grid-details-panel-get-children" onclick="Genapp.cardPanel.consultationPage.getChildren(\'{1}\',\'{0}\');"></div>';
+        }
+        return String.format(stringFormat, record.data.id, this.ownerCt.getId(),record.data.LOCATION_COMPL_DATA__SIT_NO_CLASS);
+    },
+
+    // private
+    initComponent : function() {
+            this.itemId = this.initConf.id;
+            this.hasChild = this.initConf.hasChild;
+            this.title = this.initConf.title;
+            this.parentItemId = this.initConf.parentItemId;
+            // We need of the ownerCt here (before it's set automatically when this Component is added to a Container)
+            this.ownerCt = this.initConf.ownerCt;
+
+            this.store = new Ext.data.ArrayStore({
+                // store configs
+                autoDestroy: true,
+                // reader configs
+                idIndex: 0,
+                fields: this.initConf.fields,
+                data: this.initConf.data
+            });
+
+            // setup the columns
+            var i;
+            var columns = this.initConf.columns;
+            for(i = 0; i<columns.length; i++){
+                columns[i].header =  Genapp.util.htmlStringFormat(columns[i].header);
+                columns[i].tooltip =  Genapp.util.htmlStringFormat(columns[i].tooltip);
+            }
+            var leftToolsHeader = '';
+            if (!Ext.isEmpty(this.parentItemId)) {
+                leftToolsHeader = '<div class="genapp-query-grid-details-panel-get-parent" onclick="Genapp.cardPanel.consultationPage.getParent(\''
+                + this.ownerCt.getId() +'\');"></div>';
+            }
+            this.initConf.columns.unshift({
+                dataIndex:'leftTools',
+                header:leftToolsHeader,
+                renderer:this.renderLeftTools.createDelegate(this),
+                sortable:false,
+                fixed:true,
+                menuDisabled:true,
+                align:'center',
+                width:70
+            });
+            this.colModel = new Ext.grid.ColumnModel({
+                defaults: {
+                    width: 100,
+                    sortable: true
+                },
+                columns: columns
+            });
+        Genapp.GridDetailsPanel.superclass.initComponent.call(this);
     }
 });/**
  * Panel containing the dynamic map.
@@ -4091,17 +4595,6 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
 
         this.toolbar.addFill();
 
-        if(!this.hideMapDetails){
-            // Get info on the feature
-            this.toolbar.addControl(
-                new OpenLayers.Control.FeatureInfoControl(),
-                {
-                    iconCls: 'feature-info',
-                    tooltip: this.featureInfoControlTitle
-                }
-            );
-        }
-
         // Navigation history : back and next.
         var nav = new OpenLayers.Control.NavigationHistory({});
         this.map.addControl(nav);
@@ -4157,6 +4650,17 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         );
 
         this.toolbar.addSeparator();
+
+        if(!this.hideMapDetails){
+            // Get info on the feature
+            this.toolbar.addControl(
+                new OpenLayers.Control.FeatureInfoControl(),
+                {
+                    iconCls: 'feature-info',
+                    tooltip: this.featureInfoControlTitle
+                }
+            );
+        }
 
         this.toolbar.addControl(
             new OpenLayers.Control.ZoomBox({
@@ -8012,4 +8516,66 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
 Ext.preg('rowexpander', Ext.ux.grid.RowExpander);
 
 //backwards compat
-Ext.grid.RowExpander = Ext.ux.grid.RowExpander;
+Ext.grid.RowExpander = Ext.ux.grid.RowExpander;/****************************/
+/**     RTM Substitute     **/
+/****************************/
+// Ajout d'un lien vers le manuel utilisateur et paramétrage par défaut
+if(Genapp.ConsultationPanel){
+    Ext.apply(Genapp.ConsultationPanel.prototype, {
+        dateFormat:'f/m/d',
+        hideMapDetails: false,// Display the link map to details
+        queryPanelCancelButtonText: 'Stopper la recherche',
+        hideCsvExportButton: false,
+        hideGridCsvExportMenuItem: false,
+        hideCsvExportAlert: true,
+        hideAggregationButton: true,
+        hideInterpolationButton: true,
+        hideAggregationCsvExportMenuItem: true,
+        hidePrintMapButton: true,
+        hidePredefinedRequestSaveButton : true,
+        autoZoomOnResultsFeatures:true,
+        hideUserManualLink: false,
+        userManualLinkHref: '../pdf/ModeDEmploi.pdf',
+        userManualLinkText: 'Mode d\'emploi',
+        queryPanelWidth:380,
+        gridPageSize:50
+    });
+}
+// On séléctionne les dates par défaut
+if(Genapp.form.DateRangeField) {
+    Ext.apply(Genapp.form.DateRangeField.prototype, {
+        minDefaultValue: new Date(0,0,1),//'1900/01/01',
+        maxDefaultValue: new Date(),
+        minValue: new Date(-1,12,1),//'0000/01/01',
+        maxValue: new Date()
+    });
+}
+//On séléctionne le format de date
+if(Genapp.FieldForm) {
+    Ext.apply(Genapp.FieldForm.prototype, {
+        dateFormat:'f/m/d',
+        criteriaLabelWidth:130
+    });
+}
+if(Genapp.MapPanel) {
+    Ext.apply(Genapp.MapPanel.prototype, {
+        rightPanelWidth : 175
+    });
+}
+if(Genapp.form.GeometryField) {
+    Ext.apply(Genapp.form.GeometryField.prototype, {
+        hideMapDetails : true,// Display the link map to details
+        mapWindowMaximized: true,
+        mapWindowMinZoomLevel:1,
+        mapWindowMaximizable:false
+    });
+}
+if(Genapp.CardPanel){
+    Ext.apply(Genapp.CardPanel.prototype, {
+        shownPages : ['consultationpage'],
+        activeItem : 0,
+        // Reduction of the application size in function of the web site margins
+        widthToSubstract:20,
+        heightToSubstract:20
+    });
+}
