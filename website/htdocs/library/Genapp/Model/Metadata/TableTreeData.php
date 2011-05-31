@@ -8,6 +8,7 @@
  * Represent an information about a table in the table hierarchical tree.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Metadata_TableTreeData {
 

@@ -8,6 +8,7 @@
  * Represent a Field.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Metadata_Field {
 

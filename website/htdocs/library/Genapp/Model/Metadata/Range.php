@@ -8,6 +8,7 @@
  * Represent a range of a unit.
  * 
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Metadata_Range {
 

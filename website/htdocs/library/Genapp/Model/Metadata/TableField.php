@@ -3,11 +3,12 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'Genapp/classes/metadata/Field.php';
 
 /**
  * Represent a Field of a Database.
+ * 
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Metadata_TableField extends Genapp_Model_Metadata_Field {
 

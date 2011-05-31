@@ -6,7 +6,9 @@
 
 /**
  * Represent an abstract Format.
+ * 
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Metadata_Format {
 

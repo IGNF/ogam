@@ -6,7 +6,9 @@
 
 /**
  * Represent a dataset file (an input file descriptor).
+ * 
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Metadata_DatasetFile {
 

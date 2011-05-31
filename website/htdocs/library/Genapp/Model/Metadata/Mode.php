@@ -9,6 +9,7 @@
  * Represent a mode of a unit.
  * 
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Metadata_Mode {
 

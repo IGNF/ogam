@@ -1,9 +1,10 @@
 <?php
-//require_once 'Genapp/classes/metadata/Field.php';
 
 /**
  * Represent a Field of a Form.
+ * 
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 
@@ -49,9 +50,9 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 
 	/**
 	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).
-	 * Can be an array in case of a select multiple (will generate a OR clause). 
-	 * @var mixed 
-	 * 
+	 * Can be an array in case of a select multiple (will generate a OR clause).
+	 * @var mixed
+	 *
 	 * Examples of valid values :
 	 * toto
 	 * 12.6
@@ -66,6 +67,13 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 	 * The label corresponding to value of the field (this is not defined in the metadata databae, it's the raw value of the data).
 	 */
 	var $valueLabel;
+
+	/**
+	 * Indicate if the field is editable.
+	 *
+	 * @var Boolean
+	 */
+	var $editable;
 
 	/**
 	 * Serialize the object as a JSON used to describe a list of result columns
@@ -83,6 +91,27 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 		$return .= ',subtype:'.json_encode($this->subtype);
 		$return .= ',definition:'.json_encode($this->definition);
 		$return .= ',decimals:'.json_encode($this->decimals);
+		return $return;
+	}
+
+	/**
+	 * Serialize the object as a JSON used to describe form field for the edition module.
+	 *
+	 * @return JSON the form field descriptor
+	 */
+	public function toEditJSON() {
+		$return = 'name:'.json_encode($this->format.'__'.$this->data);
+		$return .= ',data:'.json_encode($this->data);
+		$return .= ',format:'.json_encode($this->format);
+		$return .= ',label:'.json_encode($this->label);
+		$return .= ',inputType:'.json_encode($this->inputType);
+		$return .= ',unit:'.json_encode($this->unit);
+		$return .= ',type:'.json_encode($this->type);
+		$return .= ',subtype:'.json_encode($this->subtype);
+		$return .= ',definition:'.json_encode($this->definition);
+		$return .= ',decimals:'.json_encode($this->decimals);
+		$return .= ',value:'.json_encode($this->value);
+		$return .= ',editable:'.json_encode($this->editable);
 		return $return;
 	}
 

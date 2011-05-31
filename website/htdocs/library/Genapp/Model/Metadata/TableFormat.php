@@ -3,11 +3,12 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'Genapp/classes/metadata/Format.php';
 
 /**
  * Represent a Table Format (a table in a database).
+ * 
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Metadata_TableFormat extends Genapp_Model_Metadata_Format {
 

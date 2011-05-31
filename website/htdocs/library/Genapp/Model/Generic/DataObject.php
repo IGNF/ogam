@@ -8,6 +8,7 @@
  * A data object is used to store a values of a line of data (from any table of a database).
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Model_Generic_DataObject {
 
