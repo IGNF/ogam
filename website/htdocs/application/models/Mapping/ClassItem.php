@@ -8,6 +8,7 @@
  * Represent a class of value.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 Class Application_Model_Mapping_ClassItem {
 

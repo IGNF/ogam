@@ -8,6 +8,7 @@
  * Represent a map layer.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_Mapping_Layer {
 

@@ -8,6 +8,7 @@
  * Represent a harmonization process.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_Harmonizeddata_HarmonizationProcess {
 

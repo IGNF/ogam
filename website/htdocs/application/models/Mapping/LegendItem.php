@@ -8,6 +8,7 @@
  * Represent a map legend item.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_Mapping_LegendItem {
 

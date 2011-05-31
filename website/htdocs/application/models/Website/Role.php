@@ -8,6 +8,7 @@
  * Represent a user's role.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_Website_Role {
 

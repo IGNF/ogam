@@ -8,6 +8,7 @@
  * Represent an error response from the integration service.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_Error {
 

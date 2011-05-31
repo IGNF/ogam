@@ -11,6 +11,7 @@
  * A submission is a batch of files that is send to the server in order to be stored in database.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_RawData_Submission {
 

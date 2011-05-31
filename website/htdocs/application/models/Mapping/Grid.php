@@ -8,6 +8,7 @@
  * Represent a grid definition.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_Mapping_Grid {
 

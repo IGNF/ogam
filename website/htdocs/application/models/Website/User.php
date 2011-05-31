@@ -8,6 +8,7 @@
  * Represent a user.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_Website_User {
 

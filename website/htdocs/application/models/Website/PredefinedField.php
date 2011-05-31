@@ -8,6 +8,7 @@
  * Represent a Predefined Field.
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_Website_PredefinedField {
 

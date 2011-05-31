@@ -8,6 +8,7 @@
  * Represent the status of a process (integration or harmonization service).
  *
  * @package classes
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Model_ProcessStatus {
 
