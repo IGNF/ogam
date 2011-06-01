@@ -151,8 +151,8 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tree->isLeaf = $row['is_leaf'];
 
 			// Check if a parent can be found in the structure
-			$node = $tree->getNode($parentCode);
-			if ($node == null) {
+			$parentNode = $resultTree->getNode($parentCode);
+			if ($parentNode == null) {
 
 				// Add the new node to the result root
 				$resultTree->addChild($tree);
@@ -160,13 +160,11 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			} else {
 
 				// Add it to the found parent
-				$node->addChild($treeNode);
+				$parentNode->addChild($tree);
 
 			}
 
 		}
-
-		$this->logger->info('$result : '.print_r($resultTree, true));
 
 		return $resultTree;
 	}
