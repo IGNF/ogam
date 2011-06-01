@@ -41,7 +41,7 @@ class Genapp_Service_QueryService {
 	 *
 	 * @param String $schema the schema
 	 */
-	function __construct($schema) {
+	function Genapp_Service_QueryService($schema) {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
@@ -64,7 +64,7 @@ class Genapp_Service_QueryService {
 	 *
 	 * @param Array[FormFormat] $forms the list of FormFormat elements
 	 */
-	private function _generateFormsJSON($forms) {
+	private function _generateQueryFormsJSON($forms) {
 
 		$json = '{success:true,data:[';
 
@@ -191,8 +191,8 @@ class Genapp_Service_QueryService {
 	 * @param String $requestName the name of the predefined request if available
 	 * @return JSON.
 	 */
-	public function getForms($datasetId, $requestName) {
-		$this->logger->debug('getforms');
+	public function getQueryForm($datasetId, $requestName) {
+		$this->logger->debug('getQueryForm');
 
 		if (!empty($requestName)) {
 			// If request name is filled then we are coming from the predefined request screen
@@ -208,7 +208,52 @@ class Genapp_Service_QueryService {
 			}
 		}
 
-		return $this->_generateFormsJSON($forms);
+		return $this->_generateQueryFormsJSON($forms);
+
+	}
+
+	/**
+	 * Get the form fields for a data to edit.
+	 *
+	 * @param String $datasetId the identifier of the selected dataset
+	 * @param String $requestName the name of the predefined request if available
+	 * @return JSON.
+	 */
+	public function getEditForm($data) {
+		$this->logger->debug('getEditForm');
+
+		// Get the HTML form fields corresponding to the data
+		$fields = array();
+
+		$json = '[';
+
+		//
+		// The key elements as labels
+		//
+		foreach ($data->editableFields as $tablefield) {
+			$formField = $this->genericService->getTableToFormMapping($tablefield);
+			if (!empty($formField)) {
+				$formField->value = $tablefield->value;
+				$formField->editable = false;
+				$json .= "{".$formField->toEditJSON()."},";
+			}
+		}
+		//
+		// The value elements as edit forms
+		//
+		foreach ($data->infoFields as $tablefield) {
+			$formField = $this->genericService->getTableToFormMapping($tablefield);
+			if (!empty($formField)) {
+				$formField->value = $tablefield->value;
+				$formField->editable = true;
+				$json .= "{".$formField->toEditJSON()."},";
+			}
+		}
+		
+		$json = substr($json, 0, -1);
+		$json .= ']';
+
+		return $json;
 
 	}
 

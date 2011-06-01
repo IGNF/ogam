@@ -32,7 +32,7 @@ class Genapp_Service_GenericService {
 	/**
 	 * Constructor.
 	 */
-	function __construct() {
+	function Genapp_Service_GenericService() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
