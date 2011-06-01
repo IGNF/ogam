@@ -14,13 +14,13 @@ class DataEditionController extends AbstractOGAMController {
 	protected $_redirector = null;
 
 	/**
-	 * The models
+	 * The models.
 	 */
 	private $metadataModel;
 	private $genericModel;
 
 	/**
-	 * The generic service
+	 * The generic service.
 	 */
 	private $genericService;
 
@@ -363,10 +363,6 @@ class DataEditionController extends AbstractOGAMController {
 	public function deleteDataAction() {
 		$this->logger->debug('deleteDataAction');
 
-		// Get back the dataset identifier
-		$websiteSession = new Zend_Session_Namespace('website');
-		$datasetId = $websiteSession->datasetID;
-
 		// Get the parameters from the URL
 		$request = $this->getRequest();
 
@@ -538,6 +534,30 @@ class DataEditionController extends AbstractOGAMController {
 		$this->view->message = $message;
 
 		$this->render('edit-data');
+	}
+
+	/**
+	 * AJAX function : Get the list of available datasets
+	 *
+	 * @return JSON The list of forms
+	 */
+	public function ajaxgeteditformAction() {
+
+		$this->logger->debug('ajaxgeteditformAction');
+
+		// Get the parameters from the URL
+		$request = $this->getRequest();
+		$data = $this->_getDataFromRequest($request);
+
+		// The service used to manage the query module
+		$this->queryService = new Genapp_Service_QueryService($data->tableFormat->schemaCode);
+
+		echo $this->queryService->getEditForm($data);
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 }
