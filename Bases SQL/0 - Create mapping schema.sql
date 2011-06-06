@@ -33,28 +33,6 @@ COMMENT ON COLUMN RESULT_LOCATION._CREATIONDT IS 'Creation date (used to know wh
         
 
 /*==============================================================*/
-/* Table : AGGREGATED_RESULT                                    */
-/*==============================================================*/
-create table AGGREGATED_RESULT (
-SESSION_ID           VARCHAR(50)          not null,
-CELL_ID              VARCHAR(36)          not null,
-AVERAGE_VALUE        FLOAT8               null,
-VALUE_COUNT          INTEGER              null,
-_CREATIONDT          DATE                 null DEFAULT current_timestamp,
-constraint PK_AGGREGATED_RESULT primary key (SESSION_ID, CELL_ID)
-) 
-WITH OIDS; -- Important : Needed by mapserv
-           
-
-COMMENT ON COLUMN AGGREGATED_RESULT.SESSION_ID IS 'Identifier of the user session';
-COMMENT ON COLUMN AGGREGATED_RESULT.CELL_ID IS 'Identifier of the cell or country';
-COMMENT ON COLUMN AGGREGATED_RESULT.AVERAGE_VALUE IS 'The value of the cell';
-COMMENT ON COLUMN AGGREGATED_RESULT.VALUE_COUNT IS 'The number of averaged items';
-COMMENT ON COLUMN AGGREGATED_RESULT._CREATIONDT IS 'Creation date (used to know when to purge the base)';
-            
-             
-            
-/*==============================================================*/
 -- table SCALES : List the available map scales
 -- Warning : The map scales should match the tilecache configuration
 /*==============================================================*/
