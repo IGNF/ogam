@@ -23,7 +23,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 	protected $detailsLayers;
 
 	/**
-	 * The models
+	 * The models.
 	 */
 	protected $metadataModel;
 	protected $genericModel;
@@ -31,9 +31,14 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 	protected $predefinedRequestModel;
 
 	/**
-	 * The generic service
+	 * The generic service.
 	 */
 	protected $genericService;
+
+	/**
+	 * The query service.
+	 */
+	protected $queryService;
 
 	/**
 	 * Initialise the controler
@@ -209,15 +214,15 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the list of available forms and criterias for the dataset
+	 * AJAX function : Get the list of available form criteria and result fields for the dataset/request.
 	 */
-	public function ajaxgetformsAction() {
-		$this->logger->debug('ajaxgetformsAction');
+	public function ajaxgetqueryformAction() {
+		$this->logger->debug('ajaxgetqueryformAction');
 
 		$datasetId = $this->getRequest()->getPost('datasetId');
 		$requestName = $this->getRequest()->getPost('requestName');
 
-		echo $this->queryService->getForms($datasetId, $requestName);
+		echo $this->queryService->getQueryForm($datasetId, $requestName);
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
