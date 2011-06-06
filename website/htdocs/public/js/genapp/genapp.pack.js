@@ -2136,7 +2136,7 @@ listeners: {
         this.formsPanel.removeAll(true);
         this.formsPanel.getUpdater().showLoading();
         Ext.Ajax.request({
-            url: Genapp.ajax_query_url + 'ajaxgetforms',
+            url: Genapp.ajax_query_url + 'ajaxgetqueryform',
             success: this.updateWestPanels.createDelegate(this,[apiParams, criteriaValues],true),
             method: 'POST',
             params: requestParams,

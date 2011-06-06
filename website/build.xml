@@ -168,6 +168,7 @@
     <!-- Suppression des répertoires de travail -->
     <target name="_clean">
         <delete dir="${dist.dir}" />
+        <delete dir="${dist.dir}/../inherent/" />
     </target>
 
     <!-- Prépare le répertoire à copier pour le site web -->
@@ -184,9 +185,10 @@
                 <exclude name="**/.htaccess" />
                 <exclude name="**/js/extjs/docs/**" />
                 <exclude name="**/js/extjs/examples/**" />
-                <exclude name="**/js/extjs/package/**" />
-                <exclude name="**/js/extjs/source/**" />       
-                <exclude name="**/js/extjs/src/**" />           
+                <exclude name="**/js/extjs/pkgs/**" />
+                <exclude name="**/js/extjs/src/**" />
+                <exclude name="**/js/extjs/test/**" />
+                <exclude name="**/js/extjs/welcome/**" />
                 <exclude name="**/js/mapfish/mapfish/**" />
                 <exclude name="**/js/OpenLayers/apidoc_config/**" />
                 <exclude name="**/js/OpenLayers/art/**" />
@@ -197,12 +199,21 @@
                 <exclude name="**/js/OpenLayers/lib/**" />
                 <exclude name="**/js/OpenLayers/tests/**" />
                 <exclude name="**/js/OpenLayers/tools/**" />
-            </fileset>        
+            </fileset>
+        </copy>
+        <copy todir="${dist.dir}/../inherent/">
+            <fileset dir="${src.dir}/../inherent/">
+                <exclude name="**/application/configs/**" />
+                <exclude name="**/.htaccess" />
+            </fileset>
         </copy>
 
         <!-- Replace some calls to javascript files with the compressed version -->
         <copy todir="${dist.dir}" overwrite="true" verbose="true">
             <fileset dir="${src.dir}">
+                <include name="**/application/views/scripts/**/*.phtml" />
+            </fileset>
+            <fileset dir="${src.dir}/../inherent/">
                 <include name="**/application/views/scripts/**/*.phtml" />
             </fileset> 
             <filterchain>
