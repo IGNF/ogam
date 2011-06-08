@@ -1,0 +1,124 @@
+<?php
+/**
+ * Default view for the web site (main page).
+ * @package views
+ */
+?>
+ <!--[if lte IE 6]>
+    <div style='border: 1px solid #F7941D; background: #FEEFDA; text-align: center; clear: both; height: 75px; position: relative;'>
+    <div style='position: absolute; right: 3px; top: 3px; font-family: courier new; font-weight: bold;'><a href='#' onclick='javascript:this.parentNode.parentNode.style.display="none"; return false;'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-cornerx.jpg' style='border: none;' alt='Close this notice'/></a></div>
+    <div style='width: 640px; margin: 0 auto; text-align: left; padding: 0; overflow: hidden; color: black;'>
+      <div style='width: 75px; float: left;'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-warning.jpg' alt='Warning!'/></div>
+      <div style='width: 275px; float: left; font-family: Arial, sans-serif;'>
+        <div style='font-size: 14px; font-weight: bold; margin-top: 12px;'>You are using an outdated browser</div>
+        <div style='font-size: 12px; margin-top: 6px; line-height: 12px;'>For a better experience using this site, please upgrade to a modern web browser.</div>
+      </div>
+      <div style='width: 75px; float: left;'><a href='http://www.firefox.com' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-firefox.jpg' style='border: none;' alt='Get Firefox 3.5'/></a></div>
+      <div style='width: 75px; float: left;'><a href='http://www.browserforthebetter.com/download.html' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-ie8.jpg' style='border: none;' alt='Get Internet Explorer 8'/></a></div>
+      <div style='width: 73px; float: left;'><a href='http://www.apple.com/safari/download/' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-safari.jpg' style='border: none;' alt='Get Safari 4'/></a></div>
+      <div style='float: left;'><a href='http://www.google.com/chrome' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-chrome.jpg' style='border: none;' alt='Get Google Chrome'/></a></div>
+    </div>
+    </div>
+    </br></br>
+<![endif]-->
+<h1>
+    <?=$this->translate('Welcome');?>
+</h1>
+<?
+
+// Get the user permissions
+$userSession = new Zend_Session_Namespace('user');
+$permissions = $userSession->permissions;
+$role = $userSession->role;
+?>
+<div class="left-column">
+<?
+if (!empty($permissions)) {
+?>
+<div class="moduletable_menu">
+<h3>
+<?=$this->translate('Select a menu');?>
+</h3>
+<ul id="appmenu" class="menu">
+
+<?php 
+if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'integration'), 'default', true) ?>" class="pagelink" ><?=$this->translate('Data Integration');?></a>
+</li>
+<?php
+}
+if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Edition');?></a>
+</li>
+<?php
+}
+if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
+</li>
+<?php
+} 
+if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Harmonization');?></a>
+</li>
+<?php
+}
+
+if (!empty($permissions) && array_key_exists('DATA_QUERY_HARMONIZED',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'harmonizationquery'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
+</li>
+<?php
+}
+ 
+if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {	
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" ><?=$this->translate('User Administration');?></a>
+</li>
+<?php
+}
+?>
+</ul>
+</div>
+<?php
+}
+?>
+<?php
+$configuration = Zend_Registry::get("configuration");
+if($configuration->autoLogin == 1){
+?>
+<div class="moduletable_menu">
+<ul id="appmenu2" class="menu">
+<?
+if (empty($permissions)) {
+?>
+<li>
+<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Log in');?></a>
+</li>
+<?
+} else {
+?>
+<li>
+<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Change login');?></a>
+</li>
+<li>
+<a href="<?= $this->baseUrl('user/logout') ?>"><?=$this->translate('Log out');?></a>
+</li>
+<?php
+}
+?>
+</ul>
+</div>
+<?php
+}
+?>
+</div>
