@@ -14,9 +14,6 @@ if (file_exists(APPLICATION_PATH.'/../../inherent')) {
 	define('INHERENT_APPLICATION_PATH', APPLICATION_PATH.'/../../inherent/application');
 }
 
-// Define current base url
-define('BASE_URL', substr($_SERVER['REDIRECT_URL'], 0, -9)); //remove index.php
-
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
 	realpath(APPLICATION_PATH.'/../library'),

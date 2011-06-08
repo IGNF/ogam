@@ -32,17 +32,23 @@ if (defined('INHERENT_APPLICATION_PATH') && file_exists(INHERENT_APPLICATION_PAT
 Zend_Session::setOptions($ApplicationConf->resources->session->toArray());
 
 $userSession = new Zend_Session_Namespace('user');
+/*
+echo 'connected :<br/>'; echo $userSession->connected;
+echo '<br/>role :<br/>'; print_r($userSession->role);
+echo '<br/>permissions :<br/>'; print_r($userSession->permissions);
+exit();
+*/
+
 if(!$userSession->connected){
     error_log('User not connected on '.$_SERVER["HTTP_HOST"]);
     error_log('Request: '.$_SERVER["QUERY_STRING"]);
-    onfailure(BASE_URL);
+    onfailure('/');
 }
-/*
 $permissions = $userSession->permissions;
 $role = $userSession->role;
 if (empty($permissions) || !array_key_exists('DATA_QUERY',$permissions)) {
-    onfailure(BASE_URL);
-}*/
+    onfailure('/');
+}
 
 //Zend_Session::stop(); // Doesn't work well
 session_write_close();//libere le cookie/session
@@ -69,7 +75,7 @@ foreach($queryParamsAllow as $param => $isReq){
     if($isReq && !isset($query[$param])){
         error_log('Request param not found.');
         error_log('Request: '.$_SERVER["QUERY_STRING"]);
-        onfailure(BASE_URL);
+        onfailure('/');
     }
     if(isset($query[$param])){
         $queriesArg[$param] = $query[$param];

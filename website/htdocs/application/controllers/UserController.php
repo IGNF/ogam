@@ -172,6 +172,7 @@ class UserController extends Zend_Controller_Action {
 
 				// Store the user in session
 				$userSession = new Zend_Session_Namespace('user');
+				$userSession->connected = true;
 				$userSession->user = $user;
 
 				// Get the user role

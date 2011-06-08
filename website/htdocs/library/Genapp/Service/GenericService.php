@@ -340,7 +340,8 @@ class Genapp_Service_GenericService {
 		//
 		// Get the left table;
 		$tables = $this->getAllFormats($schema, $dataObject);
-		$leftTable = array_shift(array_reverse($tables));
+		$reversedTable = array_reverse($tables); // Only variables should be passed by reference
+		$leftTable = array_shift($reversedTable);
 
 		$uniqueId = "'SCHEMA/".$schema."/FORMAT/".$leftTable->getLogicalName()."'";
 

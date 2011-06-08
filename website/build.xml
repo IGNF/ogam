@@ -175,7 +175,7 @@
     <target name="deployWebSite" description="Build the web site" depends="_clean, compressCssAndJs">
 
         <!-- Copie de la structure de l'archive et des fichiers de configuration -->
-        <copy todir="${dist.dir}">
+        <copy todir="${dist.dir}" includeEmptyDirs="true">
             <fileset dir="${src.dir}">
                 <exclude name="**/logs/**" />
                 <exclude name="**/tmp/**" />
@@ -187,6 +187,9 @@
                 <exclude name="**/js/extjs/examples/**" />
                 <exclude name="**/js/extjs/pkgs/**" />
                 <exclude name="**/js/extjs/src/**" />
+                <exclude name="**/js/extjs/*.txt" />
+                <exclude name="**/js/extjs/*.jsb2" />
+                <exclude name="**/js/extjs/*.html" />
                 <exclude name="**/js/extjs/test/**" />
                 <exclude name="**/js/extjs/welcome/**" />
                 <exclude name="**/js/mapfish/mapfish/**" />
@@ -201,7 +204,10 @@
                 <exclude name="**/js/OpenLayers/tools/**" />
             </fileset>
         </copy>
-        <copy todir="${dist.dir}/../inherent/">
+        <copy todir="${dist.dir}/public/js/extjs/src/locale/">
+            <fileset dir="${src.dir}/public/js/extjs/src/locale/" />
+        </copy>
+        <copy todir="${dist.dir}/../inherent/" includeEmptyDirs="true">
             <fileset dir="${src.dir}/../inherent/">
                 <exclude name="**/application/configs/**" />
                 <exclude name="**/.htaccess" />
