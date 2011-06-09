@@ -501,7 +501,7 @@ class Genapp_Service_QueryService {
 	 * @param String $id
 	 * @return Array the decoded id
 	 */
-	protected function _decodeId($id) {
+	private function _decodeId($id) {
 		// Transform the identifier in an array
 		$keyMap = array();
 		$idElems = explode("/", $id);
@@ -520,7 +520,7 @@ class Genapp_Service_QueryService {
 	 * @param array/string $id
 	 * @return Array the decoded id
 	 */
-	protected function _decodeIds($ids = null) {
+	private function _decodeIds($ids = null) {
 		if (is_array($ids)) {
 			$keyMaps = array();
 			foreach ($ids as $id) {

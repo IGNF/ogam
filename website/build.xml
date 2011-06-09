@@ -1,330 +1,314 @@
 <?xml version="1.0"?>
 <project name="eForest" default="deployWebSite" basedir=".">
 
-    <!-- Properties are immutable: 
+	<!-- Properties are immutable: 
     whoever sets a property first freezes it for the rest of the build;
     they are most definitely not variables. -->
-    <property file="build.ppts"/>
+	<property file="build.ppts" />
 
-    <!-- Define the properties -->
-    <property name="libraries.dir" value="../../libs_php" />
-    <property name="libraries_java.dir" value="../../libs_java" />
-    <property name="application.dir" value="./htdocs/application/" />
-    <property name="src.dir" value="./htdocs/" />
-    <property name="dist.dir" value="${java.io.tmpdir}dist/ogam" />
-    <property name="test_result.dir" value="./test_result" />
+	<!-- Define the properties -->
+	<property name="libraries.dir" value="../../libs_php" />
+	<property name="libraries_java.dir" value="../../libs_java" />
+	<property name="application.dir" value="./htdocs/ogam/application/" />
+	<property name="src.dir" value="./htdocs/" />
+	<property name="dist.dir" value="${java.io.tmpdir}dist/ogam" />
+	<property name="test_result.dir" value="./test_result" />
 
-     <!-- You need to checkout on your workspace the libs_java project hosted on the repository for the yuicompressor files -->
-    <property name="cps.yui.compressor.jar" value="${libraries_java.dir}/lib/ant/yuicompressor/yuicompressor-2.4.2.jar" />
-    <property name="cps.yui.compressor.ant.task.jar" value="${libraries_java.dir}/lib/ant/yuicompressor/yui-compressor-ant-task-0.4.jar" />
+	<!--
+	<property name="inherent.js.substitute" value="./config" />
+	<property name="inherent.js.new" value="./config" />
+	<property name="inherent.js.patch" value="./config" />
+	<property name="inherent.css.substitute" value="" />
+	<property name="inherent.css.new" value="" />
+	<property name="inherent.css.patch" value="" />
+    -->
 
-    <!-- Define the properties -->
-    <property name="cps.dir" value="${src.dir}public/js/genapp" />
-    <property name="cps.src.dir" value="${cps.dir}/source" />
-    <property name="cps.resrcs.dir" value="${cps.dir}/resources/css" />
-    <property name="cps.name" value="genapp" />
-    <property name="cps.js.pack.path" value="${cps.dir}/${cps.name}.pack.js" />
-    <property name="cps.css.pack.path" value="${cps.resrcs.dir}/${cps.name}.pack.css" />
-    <property name="cps.js.min.path" value="${cps.dir}/${cps.name}.pack-min.js" />
-    <property name="cps.css.min.path" value="${cps.resrcs.dir}/${cps.name}.pack-min.css" />
+	<!-- You need to checkout on your workspace the libs_java project hosted on the repository for the yuicompressor files -->
+	<property name="cps.yui.compressor.jar" value="${libraries_java.dir}/lib/ant/yuicompressor/yuicompressor-2.4.2.jar" />
+	<property name="cps.yui.compressor.ant.task.jar" value="${libraries_java.dir}/lib/ant/yuicompressor/yui-compressor-ant-task-0.4.jar" />
 
-     <!-- Define the class path for yui-compressor -->
-    <path id="cps.task.classpath">
-        <pathelement location="${cps.yui.compressor.jar}" />
-        <pathelement location="${cps.yui.compressor.ant.task.jar}" />
-    </path>
+	<!-- Define the properties -->
+	<property name="cps.dir" value="${src.dir}ogam/public/js/genapp" />
+	<property name="cps.src.dir" value="${cps.dir}/source" />
+	<property name="cps.resrcs.dir" value="${cps.dir}/resources/css" />
+	<property name="cps.name" value="genapp" />
+	<property name="cps.js.pack.path" value="${cps.dir}/${cps.name}.pack.js" />
+	<property name="cps.css.pack.path" value="${cps.resrcs.dir}/${cps.name}.pack.css" />
+	<property name="cps.js.min.path" value="${cps.dir}/${cps.name}.pack-min.js" />
+	<property name="cps.css.min.path" value="${cps.resrcs.dir}/${cps.name}.pack-min.css" />
 
-    <!-- yui-compressor task definition -->
-    <taskdef 
-        name="yui-compressor" 
-        classname="net.noha.tools.ant.yuicompressor.tasks.YuiCompressorTask">
-        <classpath refid="cps.task.classpath" />
-    </taskdef>
+	<!-- Define the class path for yui-compressor -->
+	<path id="cps.task.classpath">
+		<pathelement location="${cps.yui.compressor.jar}" />
+		<pathelement location="${cps.yui.compressor.ant.task.jar}" />
+	</path>
 
-    <!-- Test the environment -->
-    <target name="_targetCheck">
-        <condition property="isUnix">
-            <and>
-                <os family="unix" />
-            </and>
-        </condition>
-        <condition property="isWindows">
-            <and>
-                <os family="windows" />
-            </and>
-        </condition>
-    </target>
+	<!-- yui-compressor task definition -->
+	<taskdef name="yui-compressor" classname="net.noha.tools.ant.yuicompressor.tasks.YuiCompressorTask">
+		<classpath refid="cps.task.classpath" />
+	</taskdef>
 
-    <!-- Concats the CSS themes files ('gray extend' and 'green-ifn') -->
-    <target name="concatCssThemes" description="Concats the CSS themes files ('gray extend' and 'green-ifn')">
-        <!-- Clean up -->
-        <delete file="${cps.resrcs.dir}/${cps.name}-gray-extend-all.css" quiet="true"/>
-        <delete file="${cps.resrcs.dir}/${cps.name}-green-ifn-all.css" quiet="true"/>
+	<!-- Test the environment -->
+	<target name="_targetCheck">
+		<condition property="isUnix">
+			<and>
+				<os family="unix" />
+			</and>
+		</condition>
+		<condition property="isWindows">
+			<and>
+				<os family="windows" />
+			</and>
+		</condition>
+	</target>
 
-        <!-- Concatenation of the gray extend CSS file -->
-        <concat destfile="${cps.resrcs.dir}/${cps.name}-gray-extend-all.css">
-            <fileset file="${src.dir}public/js/genapp/resources/css/structure/genapp.css" />
-            <fileset file="${src.dir}public/js/genapp/resources/css/visual/genapp-gray-extend.css" />
-        </concat>
+	<!-- Concats the CSS themes files ('gray extend' and 'green-ifn') -->
+	<target name="concatCssThemes" description="Concats the CSS themes files ('gray extend' and 'green-ifn')">
+		<!-- Clean up -->
+		<delete file="${cps.resrcs.dir}/${cps.name}-gray-extend-all.css" quiet="true" />
+		<delete file="${cps.resrcs.dir}/${cps.name}-green-ifn-all.css" quiet="true" />
 
-        <!-- Concatenation of the green ifn CSS file -->
-        <concat destfile="${cps.resrcs.dir}/${cps.name}-green-ifn-all.css">
-            <fileset file="${src.dir}public/js/genapp/resources/css/structure/genapp.css" />
-            <fileset file="${src.dir}public/js/genapp/resources/css/visual/genapp-green-ifn.css" />
-        </concat>
-    </target>
+		<!-- Concatenation of the gray extend CSS file -->
+		<concat destfile="${cps.resrcs.dir}/${cps.name}-gray-extend-all.css">
+			<fileset file="${src.dir}ogam/public/js/genapp/resources/css/structure/genapp.css" />
+			<fileset file="${src.dir}ogam/public/js/genapp/resources/css/visual/genapp-gray-extend.css" />
+		</concat>
 
-     <!-- Compress the CSS and JS files  -->
-    <target name="compressCssAndJs" depends="concatCssThemes" description="Compress the CSS and JS files">
+		<!-- Concatenation of the green ifn CSS file -->
+		<concat destfile="${cps.resrcs.dir}/${cps.name}-green-ifn-all.css">
+			<fileset file="${src.dir}ogam/public/js/genapp/resources/css/structure/genapp.css" />
+			<fileset file="${src.dir}ogam/public/js/genapp/resources/css/visual/genapp-green-ifn.css" />
+		</concat>
+	</target>
 
-         <!-- Clean up -->
-        <delete file="${cps.js.pack.path}" quiet="true"/>
-        <delete file="${cps.js.min.path}" quiet="true"/>
-        <delete file="${cps.css.pack.path}" quiet="true"/>
-        <delete file="${cps.css.min.path}" quiet="true"/>
+	<!-- Compress the CSS and JS files  -->
+	<target name="compressCssAndJs" depends="concatCssThemes" description="Compress the CSS and JS files">
 
-        <!-- Gets the js substitute file to exclude -->
-        <fileset id="inherent_js_substitute_fileset" dir="${inherent.js.substitute}" includes="**/*.js" />
-        <pathconvert pathsep=",**/" property="js_substitute_to_exclude" refid="inherent_js_substitute_fileset">
-            <mapper type="flatten" />
-        </pathconvert>
+		<!-- Clean up -->
+		<delete file="${cps.js.pack.path}" quiet="true" />
+		<delete file="${cps.js.min.path}" quiet="true" />
+		<delete file="${cps.css.pack.path}" quiet="true" />
+		<delete file="${cps.css.min.path}" quiet="true" />
 
-        <!-- Concatenation of all the JS in one file -->
-        <concat destfile="${cps.js.pack.path}">
-            <fileset id="sounds_fileset" dir="${cps.src.dir}" 
-                     includes="**/*.js" 
-                     excludes="**/locale/*,**/genapp.js,**/${js_substitute_to_exclude}"/>
-            <fileset file="${src.dir}public/js/extjsux/basiccheckbox/BasicCheckBox.js" />
-            <fileset file="${src.dir}public/js/extjsux/datePatch/datePatchExtjs3.1.1.js" />
-            <fileset file="${src.dir}public/js/extjsux/rowExpander/RowExpander.js" />
+		<!-- Gets the js substitute file to exclude -->
+		<fileset id="inherent_js_substitute_fileset" dir="${inherent.js.substitute}" includes="**/*.js" erroronmissingdir="false" />
+		<pathconvert pathsep=",**/" property="js_substitute_to_exclude" refid="inherent_js_substitute_fileset">
+			<mapper type="flatten" />
+		</pathconvert>
 
-            <fileset dir="${inherent.js.new}" includes="**/*.js" />
-            <fileset dir="${inherent.js.patch}" includes="**/*.js" />
-            <fileset dir="${inherent.js.substitute}" includes="**/*.js" />
-        </concat>
+		<!-- Concatenation of all the JS in one file -->
+		<concat destfile="${cps.js.pack.path}">
+			<fileset id="sounds_fileset" dir="${cps.src.dir}" includes="**/*.js" excludes="**/locale/*,**/genapp.js,**/${js_substitute_to_exclude}" />
+			<fileset file="${src.dir}ogam/public/js/extjsux/basiccheckbox/BasicCheckBox.js" />
+			<fileset file="${src.dir}ogam/public/js/extjsux/datePatch/datePatchExtjs3.1.1.js" />
+			<fileset file="${src.dir}ogam/public/js/extjsux/rowExpander/RowExpander.js" />
 
-        <!-- Gets the css substitute file to exclude -->
-        <fileset id="inherent_css_substitute_fileset" dir="${inherent.css.substitute}" includes="**/*.css" />
-        <pathconvert pathsep=",**/" property="css_substitute_to_exclude" refid="inherent_css_substitute_fileset">
-            <mapper type="flatten" />
-        </pathconvert>
+			<fileset dir="${inherent.js.new}" includes="**/*.js" erroronmissingdir="false" />
+			<fileset dir="${inherent.js.patch}" includes="**/*.js" erroronmissingdir="false" />
+			<fileset dir="${inherent.js.substitute}" includes="**/*.js" erroronmissingdir="false" />
+		</concat>
 
-        <!-- Concatenation of all the CSS in one file -->
-        <concat destfile="${cps.css.pack.path}">
-            <fileset dir="${cps.resrcs.dir}" includes="**/*.css" excludes="**/${css_substitute_to_exclude}"/>
-            <fileset file="${src.dir}public/js/extjsux/basiccheckbox/BasicCheckBox.css" />
-            <fileset file="${src.dir}public/css/extjsux.css" />
+		<!-- Gets the css substitute file to exclude -->
+		<fileset id="inherent_css_substitute_fileset" dir="${inherent.css.substitute}" includes="**/*.css" erroronmissingdir="false" />
+		<pathconvert pathsep=",**/" property="css_substitute_to_exclude" refid="inherent_css_substitute_fileset">
+			<mapper type="flatten" />
+		</pathconvert>
 
-            <fileset dir="${inherent.css.new}" includes="**/*.css" />
-            <fileset dir="${inherent.css.patch}" includes="**/*.css" />
-            <fileset dir="${inherent.css.substitute}" includes="**/*.css" />
-        </concat>
+		<!-- Concatenation of all the CSS in one file -->
+		<concat destfile="${cps.css.pack.path}">
+			<fileset dir="${cps.resrcs.dir}" includes="**/*.css" excludes="**/${css_substitute_to_exclude}" />
+			<fileset file="${src.dir}ogam/public/js/extjsux/basiccheckbox/BasicCheckBox.css" />
+			<fileset file="${src.dir}ogam/public/css/extjsux.css" />
 
-        <!-- Compress the concatened files on the main directory -->
-        <yui-compressor 
-            charset="UTF-8" 
-            warn="false" 
-            munge="true"
-            optimize="true"
-            preserveallsemicolons="false" 
-            fromdir="${cps.dir}"
-            todir="${cps.dir}">
-            <include name="resources/css/genapp.pack.css" /> 
-            <include name="genapp.pack.js" />
-        </yui-compressor>
-    </target>
+			<fileset dir="${inherent.css.new}" includes="**/*.css" erroronmissingdir="false" />
+			<fileset dir="${inherent.css.patch}" includes="**/*.css" erroronmissingdir="false" />
+			<fileset dir="${inherent.css.substitute}" includes="**/*.css" erroronmissingdir="false" />
+		</concat>
 
-    <!-- Compress OpenLayers -->
-    <target name="compressOpenLayers" description="Compress the OpenLayers Library"  depends="_targetCheck"  if="isWindows">
-        
-        <exec executable="cmd"  dir="${src.dir}public/js/OpenLayers/build">
-            <arg line="/c build.cmd"/>
-        </exec>
-        
-         <copy todir="${src.dir}public/js/OpenLayers" 
-            overwrite="true" 
-            verbose="true"
-            file="${src.dir}public/js/OpenLayers/build/OpenLayers.js">
-         </copy>
-    </target>
+		<!-- Compress the concatened files on the main directory -->
+		<yui-compressor charset="UTF-8" warn="false" munge="true" optimize="true" preserveallsemicolons="false" fromdir="${cps.dir}" todir="${cps.dir}">
+			<include name="resources/css/genapp.pack.css" />
+			<include name="genapp.pack.js" />
+		</yui-compressor>
+	</target>
 
-    <!-- Compress Mapfish -->
-    <target name="compressMapfish" description="Compress the Mapfish Library"  depends="_targetCheck"  if="isWindows">
-        
-        <delete file="${src.dir}public/js/mapfish/build/MapFish.js"/>
-        
-        <exec executable="cmd"  dir="${src.dir}public/js/mapfish/build">
-            <arg line="/c build.cmd"/>
-        </exec>
-        
-        <copy todir="${src.dir}public/js/mapfish" 
-            overwrite="true" 
-            verbose="true"
-            file="${src.dir}public/js/mapfish/build/MapFish.js">
-         </copy>
-        
-    </target>
+	<!-- Compress OpenLayers -->
+	<target name="compressOpenLayers" description="Compress the OpenLayers Library" depends="_targetCheck" if="isWindows">
 
-    <!-- Suppression des répertoires de travail -->
-    <target name="_clean">
-        <delete dir="${dist.dir}" />
-        <delete dir="${dist.dir}/../inherent/" />
-    </target>
+		<exec executable="cmd" dir="${src.dir}ogam/public/js/OpenLayers/build">
+			<arg line="/c build.cmd" />
+		</exec>
 
-    <!-- Prépare le répertoire à copier pour le site web -->
-    <target name="deployWebSite" description="Build the web site" depends="_clean, compressCssAndJs">
+		<copy todir="${src.dir}ogam/public/js/OpenLayers" overwrite="true" verbose="true" file="${src.dir}ogam/public/js/OpenLayers/build/OpenLayers.js">
+		</copy>
+	</target>
 
-        <!-- Copie de la structure de l'archive et des fichiers de configuration -->
-        <copy todir="${dist.dir}" includeEmptyDirs="true">
-            <fileset dir="${src.dir}">
-                <exclude name="**/logs/**" />
-                <exclude name="**/tmp/**" />
-                <exclude name="**/upload/**" />
-                <exclude name="**/hudson**" />
-                <exclude name="**/application/configs/**" />
-                <exclude name="**/.htaccess" />
-                <exclude name="**/js/extjs/docs/**" />
-                <exclude name="**/js/extjs/examples/**" />
-                <exclude name="**/js/extjs/pkgs/**" />
-                <exclude name="**/js/extjs/src/**" />
-                <exclude name="**/js/extjs/*.txt" />
-                <exclude name="**/js/extjs/*.jsb2" />
-                <exclude name="**/js/extjs/*.html" />
-                <exclude name="**/js/extjs/test/**" />
-                <exclude name="**/js/extjs/welcome/**" />
-                <exclude name="**/js/mapfish/mapfish/**" />
-                <exclude name="**/js/OpenLayers/apidoc_config/**" />
-                <exclude name="**/js/OpenLayers/art/**" />
-                <exclude name="**/js/OpenLayers/build/**" />
-                <exclude name="**/js/OpenLayers/doc/**" />
-                <exclude name="**/js/OpenLayers/doc_config/**" />
-                <exclude name="**/js/OpenLayers/examples/**" />
-                <exclude name="**/js/OpenLayers/lib/**" />
-                <exclude name="**/js/OpenLayers/tests/**" />
-                <exclude name="**/js/OpenLayers/tools/**" />
-            </fileset>
-        </copy>
-        <copy todir="${dist.dir}/public/js/extjs/src/locale/">
-            <fileset dir="${src.dir}/public/js/extjs/src/locale/" />
-        </copy>
-        <copy todir="${dist.dir}/../inherent/" includeEmptyDirs="true">
-            <fileset dir="${src.dir}/../inherent/">
-                <exclude name="**/application/configs/**" />
-                <exclude name="**/.htaccess" />
-            </fileset>
-        </copy>
+	<!-- Compress Mapfish -->
+	<target name="compressMapfish" description="Compress the Mapfish Library" depends="_targetCheck" if="isWindows">
 
-        <!-- Replace some calls to javascript files with the compressed version -->
-        <copy todir="${dist.dir}" overwrite="true" verbose="true">
-            <fileset dir="${src.dir}">
-                <include name="**/application/views/scripts/**/*.phtml" />
-            </fileset>
-            <fileset dir="${src.dir}/../inherent/">
-                <include name="**/application/views/scripts/**/*.phtml" />
-            </fileset> 
-            <filterchain>
-                  <replaceregex 
-                      pattern="/js/extjs/ext-all-debug.js" 
-                      replace="/js/extjs/ext-all.js"/>
-                  <replaceregex 
-                      pattern="/js/OpenLayers/lib/OpenLayers.js" 
-                      replace="/js/OpenLayers/OpenLayers.js"/>
-                  <replaceregex 
-                      pattern="Production mode start" 
-                      replace="Production mode start -->"/>
-                  <replaceregex 
-                      pattern="Debug mode start -->" 
-                      replace="Debug mode start"/>
-                 <replaceregex 
-                       pattern=" Production mode end -->" 
-                       replace="!-- Production mode end -->"/>
-                  <replaceregex 
-                       pattern="!-- Debug mode end -->" 
-                       replace=" Debug mode end -->"/>
-            </filterchain>  
-        </copy>
+		<delete file="${src.dir}ogam/public/js/mapfish/build/MapFish.js" />
 
-        <echo>Vous pouvez recopier le repertoire "${dist.dir}" sur le serveur PHP</echo>
+		<exec executable="cmd" dir="${src.dir}public/js/mapfish/build">
+			<arg line="/c build.cmd" />
+		</exec>
 
-    </target>
+		<copy todir="${src.dir}ogam/public/js/mapfish" overwrite="true" verbose="true" file="${src.dir}ogam/public/js/mapfish/build/MapFish.js">
+		</copy>
 
-    <!-- Launch PHP CheckStyle -->
-    <target name="_phpcheckstylewindows" depends="_targetCheck" if="isWindows">
-        <echo>Windows</echo>
-        <exec executable="./hudson/phpcheckstyle.cmd" dir=".">
-            <arg value="${libraries.dir}/PhpCheckstyle/run.php" />
-        </exec>
-    </target>
+	</target>
 
-    <!-- Launch PHP CheckStyle -->
-    <target name="_phpcheckstyleunix" depends="_targetCheck" if="isUnix">
-        <echo>Unix</echo>
-        <chmod file="./hudson/phpcheckstyle.sh" perm="ugo+rx" />
-        <exec executable="./hudson/phpcheckstyle.sh" dir=".">
-            <arg value="${libraries.dir}/PhpCheckstyle/run.php" />
-        </exec>
-    </target>
+	<!-- Suppression des répertoires de travail -->
+	<target name="_clean">
+		<delete dir="${dist.dir}" />
+		<delete dir="${dist.dir}/../inherent/" />
+	</target>
 
-    <!-- Checks the PHP Code Style -->
-    <target name="phpcheckstyle" description="Checks the PHP Code Style" depends="_phpcheckstylewindows, _phpcheckstyleunix">
-    </target>
+	<!-- Prépare le répertoire à copier pour le site web -->
+	<target name="deployWebSite" description="Build the web site" depends="_clean, compressCssAndJs">
 
-    <!-- Generate the PHP Doc (on unix systems) -->
-    <target name="_phpdocunix" depends="_targetCheck" if="isUnix">
-        <echo>Unix</echo>
-        <chmod file="./hudson/phpdoc.sh" perm="ugo+rx" />
-        <exec executable="./hudson/phpdoc.sh" dir=".">
-            <arg value="&quot;${libraries.dir}/PhpDocumentor/phpDocumentor/phpdoc.inc&quot;" />
-        </exec>
-    </target>
+		<!-- Copie de la structure de l'archive et des fichiers de configuration -->
+		<copy todir="${dist.dir}" includeEmptyDirs="true">
+			<fileset dir="${src.dir}">
+				<exclude name="**/logs/**" />
+				<exclude name="**/tmp/**" />
+				<exclude name="**/upload/**" />
+				<exclude name="**/sessions/**" />
+				<exclude name="**/hudson**" />
+				<exclude name="**/application/configs/**" />
+				<exclude name="**/.htaccess" />
+				<exclude name="**/js/extjs/docs/**" />
+				<exclude name="**/js/extjs/examples/**" />
+				<exclude name="**/js/extjs/pkgs/**" />
+				<exclude name="**/js/extjs/src/**" />
+				<exclude name="**/js/extjs/*.txt" />
+				<exclude name="**/js/extjs/*.jsb2" />
+				<exclude name="**/js/extjs/*.html" />
+				<exclude name="**/js/extjs/test/**" />
+				<exclude name="**/js/extjs/welcome/**" />
+				<exclude name="**/js/mapfish/mapfish/**" />
+				<exclude name="**/js/OpenLayers/apidoc_config/**" />
+				<exclude name="**/js/OpenLayers/art/**" />
+				<exclude name="**/js/OpenLayers/build/**" />
+				<exclude name="**/js/OpenLayers/doc/**" />
+				<exclude name="**/js/OpenLayers/doc_config/**" />
+				<exclude name="**/js/OpenLayers/examples/**" />
+				<exclude name="**/js/OpenLayers/lib/**" />
+				<exclude name="**/js/OpenLayers/tests/**" />
+				<exclude name="**/js/OpenLayers/tools/**" />
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/ogam/public/js/extjs/src/locale/">
+			<fileset dir="${src.dir}/ogam/public/js/extjs/src/locale/" />
+		</copy>
+		<copy todir="${dist.dir}/../inherent/" includeEmptyDirs="true">
+			<fileset dir="${src.dir}/../inherent/" erroronmissingdir="false">
+				<exclude name="**/application/configs/**" />
+				<exclude name="**/.htaccess" />
+			</fileset>
+		</copy>
 
-    <!-- Generate the PHP Doc (on windows systems) -->
-    <target name="_phpdocwindows" depends="_targetCheck" if="isWindows">
-        <echo>Windows</echo>
-        <exec executable="./hudson/phpdoc.cmd" dir=".">
-            <arg value="${libraries.dir}/PhpDocumentor/phpDocumentor/phpdoc.inc" />
-        </exec>
-    </target>
+		<!-- Replace some calls to javascript files with the compressed version -->
+		<copy todir="${dist.dir}" overwrite="true" verbose="true">
+			<fileset dir="${src.dir}">
+				<include name="**/application/views/scripts/**/*.phtml" />
+			</fileset>
+			<fileset dir="${src.dir}/../inherent/" erroronmissingdir="false">
+				<include name="**/application/views/scripts/**/*.phtml" />
+			</fileset>
+			<filterchain>
+				<replaceregex pattern="/js/extjs/ext-all-debug.js" replace="/js/extjs/ext-all.js" />
+				<replaceregex pattern="/js/OpenLayers/lib/OpenLayers.js" replace="/js/OpenLayers/OpenLayers.js" />
+				<replaceregex pattern="Production mode start" replace="Production mode start -->" />
+				<replaceregex pattern="Debug mode start -->" replace="Debug mode start" />
+				<replaceregex pattern=" Production mode end -->" replace="!-- Production mode end -->" />
+				<replaceregex pattern="!-- Debug mode end -->" replace=" Debug mode end -->" />
+			</filterchain>
+		</copy>
 
-    <!-- Generate the PHP Doc -->
-    <target name="phpdoc" description="Generate the PHP Doc" depends="_phpdocunix, _phpdocwindows">
-    </target>
+		<mkdir dir="${dist.dir}/logs" />
+		<mkdir dir="${dist.dir}/sessions" />
+		<mkdir dir="${dist.dir}/tmp" />
+		<mkdir dir="${dist.dir}/upload" />
 
-     <!-- Launch jsdoc for windows -->
-    <target name="_jsdocwindows" depends="_targetCheck" if="isWindows">
-        <echo>Windows</echo>
-        <exec executable="./hudson/ext-doc.cmd" dir=".">
-            <arg value="${libraries_java.dir}/lib/ext-doc/ext-doc.jar" />
-            <arg value="${libraries_java.dir}/lib/ext-doc/template/ext/template.xml" />
-        </exec>
-    </target>
+		<echo>Vous pouvez recopier le repertoire "${dist.dir}" sur le serveur PHP</echo>
 
-    <!-- Launch jsdoc for unix -->
-    <target name="_jsdocunix" depends="_targetCheck" if="isUnix">
-        <echo>Unix</echo>
-        <chmod file="./hudson/ext-doc.sh" perm="ugo+rx" />
-        <exec executable="./hudson/ext-doc.sh" dir=".">
-            <arg value="${libraries_java.dir}/lib/ext-doc/ext-doc.jar" />
-            <arg value="${libraries_java.dir}/lib/ext-doc/template/ext/template.xml" />
-        </exec>
-    </target>
+	</target>
 
-    <!-- Launch jsdoc -->
-    <target name="jsdoc" description="Launch ext-doc" depends="_jsdocwindows, _jsdocunix">
-    </target>
+	<!-- Launch PHP CheckStyle -->
+	<target name="_phpcheckstylewindows" depends="_targetCheck" if="isWindows">
+		<echo>Windows</echo>
+		<exec executable="./hudson/phpcheckstyle.cmd" dir=".">
+			<arg value="${libraries.dir}/PhpCheckstyle/run.php" />
+		</exec>
+	</target>
 
-    <!-- Génère la documentation du Javascript -->      
-    <taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${libraries_java.dir}/lib/jsdoc/jsdoctoolkit-ant-task-1.0.1.jar;${libraries_java.dir}/lib/jsdoc/js.jar"/>
-    <target name="javascriptdoc" description="Generate the javascript documentation">
+	<!-- Launch PHP CheckStyle -->
+	<target name="_phpcheckstyleunix" depends="_targetCheck" if="isUnix">
+		<echo>Unix</echo>
+		<chmod file="./hudson/phpcheckstyle.sh" perm="ugo+rx" />
+		<exec executable="./hudson/phpcheckstyle.sh" dir=".">
+			<arg value="${libraries.dir}/PhpCheckstyle/run.php" />
+		</exec>
+	</target>
 
-            <delete dir="./hudson/docs/genapp/jsdoc" />
+	<!-- Checks the PHP Code Style -->
+	<target name="phpcheckstyle" description="Checks the PHP Code Style" depends="_phpcheckstylewindows, _phpcheckstyleunix">
+	</target>
 
-            <jsdoctoolkit jsdochome="${libraries_java.dir}/lib/jsdoc/" 
-                          template="jsdoc" 
-                          outputdir="./hudson/docs/genapp/jsdoc">
-                <fileset dir="${cps.dir}">
-                    <exclude name="**/*.pack*" />
-                </fileset>
-            </jsdoctoolkit>
-    </target>
+	<!-- Generate the PHP Doc (on unix systems) -->
+	<target name="_phpdocunix" depends="_targetCheck" if="isUnix">
+		<echo>Unix</echo>
+		<chmod file="./hudson/phpdoc.sh" perm="ugo+rx" />
+		<exec executable="./hudson/phpdoc.sh" dir=".">
+			<arg value="&quot;${libraries.dir}/PhpDocumentor/phpDocumentor/phpdoc.inc&quot;" />
+		</exec>
+	</target>
+
+	<!-- Generate the PHP Doc (on windows systems) -->
+	<target name="_phpdocwindows" depends="_targetCheck" if="isWindows">
+		<echo>Windows</echo>
+		<exec executable="./hudson/phpdoc.cmd" dir=".">
+			<arg value="${libraries.dir}/PhpDocumentor/phpDocumentor/phpdoc.inc" />
+		</exec>
+	</target>
+
+	<!-- Generate the PHP Doc -->
+	<target name="phpdoc" description="Generate the PHP Doc" depends="_phpdocunix, _phpdocwindows">
+	</target>
+
+	<!-- Launch jsdoc for windows -->
+	<target name="_jsdocwindows" depends="_targetCheck" if="isWindows">
+		<echo>Windows</echo>
+		<exec executable="./hudson/ext-doc.cmd" dir=".">
+			<arg value="${libraries_java.dir}/lib/ext-doc/ext-doc.jar" />
+			<arg value="${libraries_java.dir}/lib/ext-doc/template/ext/template.xml" />
+		</exec>
+	</target>
+
+	<!-- Launch jsdoc for unix -->
+	<target name="_jsdocunix" depends="_targetCheck" if="isUnix">
+		<echo>Unix</echo>
+		<chmod file="./hudson/ext-doc.sh" perm="ugo+rx" />
+		<exec executable="./hudson/ext-doc.sh" dir=".">
+			<arg value="${libraries_java.dir}/lib/ext-doc/ext-doc.jar" />
+			<arg value="${libraries_java.dir}/lib/ext-doc/template/ext/template.xml" />
+		</exec>
+	</target>
+
+	<!-- Launch jsdoc -->
+	<target name="jsdoc" description="Launch ext-doc" depends="_jsdocwindows, _jsdocunix">
+	</target>
+
+	<!-- Génère la documentation du Javascript -->
+	<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${libraries_java.dir}/lib/jsdoc/jsdoctoolkit-ant-task-1.0.1.jar;${libraries_java.dir}/lib/jsdoc/js.jar" />
+	<target name="javascriptdoc" description="Generate the javascript documentation">
+
+		<delete dir="./hudson/docs/genapp/jsdoc" />
+
+		<jsdoctoolkit jsdochome="${libraries_java.dir}/lib/jsdoc/" template="jsdoc" outputdir="./hudson/docs/genapp/jsdoc">
+			<fileset dir="${cps.dir}">
+				<exclude name="**/*.pack*" />
+			</fileset>
+		</jsdoctoolkit>
+	</target>
 </project>
