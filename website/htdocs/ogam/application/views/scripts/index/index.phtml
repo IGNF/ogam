@@ -49,13 +49,15 @@ if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {
 </li>
 <?php
 }
-if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
+// if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
 ?>
+<!-- 
 <li>
 <a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Edition');?></a>
 </li>
+ -->
 <?php
-}
+// }
 if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
 ?>
 <li>
