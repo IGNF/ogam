@@ -9,7 +9,7 @@ require_once 'AbstractOGAMController.php';
  * ErrorController
  * @package controllers
  */
-class ErrorController extends AbstractOGAMController {
+class ErrorController extends Zend_Controller_Action {
 
 	/**
 	 * Initialise the controler
