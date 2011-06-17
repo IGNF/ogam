@@ -21,7 +21,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->module = "user";
 		$websiteSession->moduleLabel = "Manage Users";
-		$websiteSession->moduleURL = "usermanagement/show-user-management";
+		$websiteSession->moduleURL = "usermanagement";
 
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
