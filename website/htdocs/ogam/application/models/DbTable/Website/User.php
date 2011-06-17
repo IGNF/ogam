@@ -98,7 +98,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 			$user->roleCode = $result['role_code'];
 			return $user;
 		} else {
-			$this->logger->error('User not found');
+			$this->logger->err('User not found');
 			return null;
 		}
 
