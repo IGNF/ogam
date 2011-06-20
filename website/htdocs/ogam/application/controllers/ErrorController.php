@@ -3,7 +3,6 @@
  * © French National Forest Inventory 
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */ 
-require_once 'AbstractOGAMController.php';
 
 /**
  * ErrorController
@@ -22,6 +21,7 @@ class ErrorController extends Zend_Controller_Action {
 	public function init() {
 		parent::init();
 		
+		$bootstrap = $this->getInvokeArg('bootstrap');
 		$this->logger = $bootstrap->getResource('log');
 
 	}
