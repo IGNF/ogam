@@ -10,12 +10,19 @@ require_once 'AbstractOGAMController.php';
  * @package controllers
  */
 class ErrorController extends Zend_Controller_Action {
+	
+	/**
+	 * The logger
+	 */
+	protected $logger;
 
 	/**
 	 * Initialise the controler
 	 */
 	public function init() {
 		parent::init();
+		
+		$this->logger = $bootstrap->getResource('log');
 
 	}
 

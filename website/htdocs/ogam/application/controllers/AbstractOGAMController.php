@@ -14,6 +14,11 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 	 * Base URL of the web site
 	 */
 	protected $baseUrl;
+	
+	/**
+	 * The logger
+	 */
+	protected $logger;
 
 	/**
 	 * Initialise the controler
