@@ -612,11 +612,11 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 }
                 // TODO : Manage link with treeview
                 // Add a hidden field for submit
-                var hiddenfield = {};
-                hiddenfield.xtype = 'hidden';
-                hiddenfield.name = field.name;
-                hiddenfield.value = '-1';
-                this.criteriaPanel.add(hiddenfield); // TODO : à supprimer
+                //var hiddenfield = {};
+                //hiddenfield.xtype = 'hidden';
+                //hiddenfield.name = field.name;
+                //hiddenfield.value = '-1';
+                //this.criteriaPanel.add(hiddenfield); // TODO : à supprimer
                 
                 break;    
             default: 
