@@ -56,7 +56,7 @@ class Genapp_Service_GenericService {
 
 		$this->logger->info('datumToDetailJSON');
 
-		$json = "{title:'".$data->tableFormat->label."', is_array:false, fields:[";
+		$json = "{title:".json_encode($data->tableFormat->label, JSON_HEX_APOS).", is_array:false, fields:[";
 		$fields = '';
 		foreach ($data->getFields() as $tableField) {
 
@@ -96,7 +96,7 @@ class Genapp_Service_GenericService {
 			$firstData = $data[0];
 
 			// create the JSON object
-			$json .= "{title:'".$firstData->tableFormat->label."', is_array:true, columns:[";
+			$json .= "{title:".json_encode($firstData->tableFormat->label, JSON_HEX_APOS).", is_array:true, columns:[";
 
 			// add the colums description
 			foreach ($firstData->editableFields as $field) {
