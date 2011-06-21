@@ -660,7 +660,7 @@ class Genapp_Service_QueryService {
 		$json .= "&WIDTH=300";
 		$json .= "&HEIGHT=300";
 		$json .= "&map.scalebar=STATUS+embed";
-		$json .= "&sessionid=".session_id();
+		$json .= "&SESSION_ID=".session_id();
 		$json .= $mapservParams;
 		$json .= "'},"; // end of map
 		$json .= "{title:'overview',";
@@ -677,7 +677,7 @@ class Genapp_Service_QueryService {
 		$json .= "&BBOX=".$bb2['x_min'].",".$bb2['y_min'].",".$bb2['x_max'].",".$bb2['y_max'];
 		$json .= "&WIDTH=300";
 		$json .= "&HEIGHT=300";
-		$json .= "&sessionid=".session_id();
+		$json .= "&SESSION_ID=".session_id();
 		$json .= "&CLASS=REDSTAR";
 		$json .= "&map.scalebar=STATUS+embed";
 		$json .= $mapservParams;
