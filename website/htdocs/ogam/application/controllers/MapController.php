@@ -410,6 +410,36 @@ class MapController extends AbstractOGAMController {
 	}
 
 	/**
+	 * Calculate bounding box corresponding to a position and zoom level.
+	 *
+	 * @param Integer $centerX the X position of the center of the map
+	 * @param Integer $centerY the Y position of the center of the map
+	 * @param Integer $zoomLevel the zoom level
+	 * @param Integer $size the size of the image (in pixels)
+	 * @return Array[Integer] the bounding box
+	 */
+	private function _getBbox($centerX, $centerY, $zoomLevel, $size) {
+
+		// Get the scales
+		$scales = $this->layersModel->getScales();
+
+		// Get the resolutions (in meters per pixel)
+		$resolutions = $this->_getResolutions($scales);
+
+		// Get the resolution at the current zoom level
+		$resolutions = array_values($resolutions);
+		$currentRes = $resolutions[$zoomLevel];
+
+		// Calculate the BBOX around the center for an image of a given size
+		$xMin = $centerX - ($currentRes * $size / 2);
+		$xMax = $centerX + ($currentRes * $size / 2);
+		$yMin = $centerY - ($currentRes * $size / 2);
+		$yMax = $centerY + ($currentRes * $size / 2);
+
+		return $xMin.",".$yMin.",".$xMax.",".$yMax;
+	}
+
+	/**
 	 * Show a PDF containing the map selected by the user.
 	 */
 	function ajaxgeneratemapAction() {
@@ -417,18 +447,26 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('ajaxgeneratemapAction');
 
 		// Get the map parameters
-		$bbox = $this->_getParam('bbox');
+		$center = $this->_getParam('center');
+		$zoom = $this->_getParam('zoom');
 		$layers = $this->_getParam('layers');
+		$centerX = substr($center, stripos($center, "lon=") + 4, stripos($center, ",") - (stripos($center, "lon=") + 4));
+		$centerY = substr($center, stripos($center, "lat=") + 4);
 
 		// Get the configuration values
 		$configuration = Zend_Registry::get("configuration");
 		$reportServiceURL = $configuration->reportGenerationService_url;
 		$mapReport = $configuration->mapReport;
 
+		// Get the corresponding BBOX (for an image of 700 pixels, the size in the PDF report)
+		$bbox = $this->_getBbox($centerX, $centerY, $zoom, 700);
+		$this->logger->debug('bbox : '.$bbox);
+
 		// Calculate the Mapserver URL
 		$wmsURL = $configuration->mapserver_url;
 		$wmsURL .= "&SERVICE=WMS";
 		$wmsURL .= "&VERSION=1.1.1";
+		$wmsURL .= "&FORMAT=PNG";
 		$wmsURL .= "&REQUEST=GetMap";
 		$wmsURL .= "&SESSION_ID=".session_id();
 		$wmsURL .= "&SRS=EPSG:".$configuration->srs_visualisation;
@@ -438,7 +476,7 @@ class MapController extends AbstractOGAMController {
 
 		// Calculate the report URL
 		$reportUrl = $reportServiceURL."/run?__format=pdf&__report=report/".$mapReport;
-		$reportUrl = "&WMSURL=".urlencode($wmsURL);
+		$reportUrl .= "&WMSURL=".urlencode($wmsURL);
 
 		$this->logger->debug('ajaxgeneratemap URL : '.$reportUrl);
 
