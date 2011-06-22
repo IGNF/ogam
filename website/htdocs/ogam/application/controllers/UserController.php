@@ -97,7 +97,8 @@ class UserController extends Zend_Controller_Action {
 	 */
 	public function showLoginFormAction($errorMessage = null) {
 
-		$this->logger->debug('Start of UserController->showLoginFormAction($errorMessage)'.$errorMessage);
+		$this->logger->debug('Start of UserController->showLoginFormAction($errorMessage)');
+		$this->logger->debug('$errorMessage : '.$errorMessage);
 
 		// Generate a salt and store id in session
 		$salt = md5(uniqid(rand(), true));

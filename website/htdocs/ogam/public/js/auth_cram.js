@@ -9,7 +9,6 @@ function cram()
     
     // Clean the salt value
     document.getElementById('login_salt').value = "" ;
-    document.forms[0].submit();
 }
 
 

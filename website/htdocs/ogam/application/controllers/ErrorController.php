@@ -8,6 +8,7 @@
  * ErrorController
  * @package controllers
  */
+// Don't extends the AbstractOGAMController because of the predispatch redirection
 class ErrorController extends Zend_Controller_Action {
 	
 	/**
@@ -45,6 +46,7 @@ class ErrorController extends Zend_Controller_Action {
 
 		// Grab the error object from the request
 		$errors = $this->_getParam('error_handler');
+		$this->logger->err('Error : '.$errors->exception);
 
 		// $errors will be an object set as a parameter of the request object,
 		// type is a property
@@ -69,7 +71,6 @@ class ErrorController extends Zend_Controller_Action {
 
 		// pass the actual exception object to the view
 		$this->view->exception = $errors->exception;
-		$this->logger->err('Error : '.$errors->exception);
 
 		// pass the request to the view
 		$this->view->request = $errors->request;

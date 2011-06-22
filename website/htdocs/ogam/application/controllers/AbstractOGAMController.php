@@ -14,11 +14,6 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 	 * Base URL of the web site
 	 */
 	protected $baseUrl;
-	
-	/**
-	 * The logger
-	 */
-	protected $logger;
 
 	/**
 	 * Initialise the controler
@@ -39,6 +34,9 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 	function preDispatch() {
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
+
+		//$this->logger->debug("preDispatch controller : " . $this->getRequest()->getControllerName());
+		//$this->logger->debug("preDispatch action : " . $this->getRequest()->getActionName());
 
 		if (!empty($user)) {
 			$this->logger->debug("preDispatch user logged : ".$user->username);
