@@ -102,6 +102,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$locales = array_intersect(array_keys($browserLocales), array_keys($translations));
 		if (!empty($locales)) {
 			$locale = new Zend_Locale(current($locales));
+		} else {
+			$locale = new Zend_Locale(key($locale->getDefault()));
 		}
 		Zend_Registry::set('Zend_Locale', $locale);
 
