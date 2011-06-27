@@ -470,6 +470,11 @@ listeners: {
     collapseQueryPanelOnPredefinedRequestLoad: true,
     // private
     featuresInformationSearchNumber: 0,
+    /**
+     * @cfg {Number} tipDefaultWidth
+     * The tip Default Width. (Default to 300)
+     */
+    tipDefaultWidth: 300,
 
     // private
     initComponent : function() {
@@ -1411,9 +1416,19 @@ listeners: {
 
         var stringFormat = '';
         if (!this.hideDetails) {
-            stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"></div>';
+            stringFormat = '<div class="genapp-query-grid-slip" '
+                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');" '
+                +'ext:qtitle="See the details"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="Display the row details into the details panel."'
+            +'></div>';
         }
-        stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');"></div>';
+        stringFormat += '<div class="genapp-query-grid-map" '
+            +'onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');" '
+            +'ext:qtitle="See on the map"'
+            +'ext:qwidth="' + this.tipDefaultWidth + '"'
+            +'ext:qtip="Zoom and centre on the location on the map."'
+        +'></div>';
 
         return String.format(stringFormat, record.data.id,
                 record.data.location_centroid);
@@ -1446,7 +1461,12 @@ listeners: {
      */
     renderRightTools : function(value, metadata, record,
             rowIndex, colIndex, store) {
-        var stringFormat = '<div class="genapp-query-grid-edit" onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"></div>';
+        var stringFormat = '<div class="genapp-query-grid-edit" '
+                +'onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"'
+                +'ext:qtitle="Edit the data"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="Go to the edition page to edit the page."'
+            +'></div>';
         return String.format(stringFormat, record.data.id);
     },
 

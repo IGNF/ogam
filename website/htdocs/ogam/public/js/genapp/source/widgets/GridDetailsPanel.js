@@ -37,7 +37,43 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
      */
     loadingMsg: 'Loading...',
     layout: 'fit',
+    /**
+     * @cfg {String} openDetailsButtonTitle
+     * The open Details Button Title (defaults to <tt>'See the details'</tt>)
+     */
+    openDetailsButtonTitle: 'See the details',
+    /**
+     * @cfg {String} openDetailsButtonTip
+     * The open Details Button Tip (defaults to <tt>'Display the row details into the details panel.'</tt>)
+     */
+    openDetailsButtonTip: 'Display the row details into the details panel.',
+    /**
+     * @cfg {String} getChildrenButtonTitle
+     * The get Children Button Title (defaults to <tt>'Switch to the children'</tt>)
+     */
+    getChildrenButtonTitle: 'Switch to the children',
+    /**
+     * @cfg {String} getChildrenButtonTip
+     * The get Children Button Tip (defaults to <tt>'Display the children of the data.'</tt>)
+     */
+    getChildrenButtonTip: 'Display the children of the data.',
+    /**
+     * @cfg {String} getParentButtonTitle
+     * The get Parent Button Title (defaults to <tt>'Return to the parent'</tt>)
+     */
+    getParentButtonTitle: 'Return to the parent',
+    /**
+     * @cfg {String} getParentButtonTip
+     * The get Parent Button Tip (defaults to <tt>'Display the parent of the data.'</tt>)
+     */
+    getParentButtonTip: 'Display the parent of the data.',
+    /**
+     * @cfg {Number} tipDefaultWidth
+     * The tip Default Width. (Default to 300)
+     */
+    tipDefaultWidth: 300,
     sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
+
     /**
      * Renders for the left tools column cell
      * 
@@ -68,14 +104,29 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
 
         var stringFormat = '';
         if (!this.hideDetails) {
-            stringFormat = '<div class="genapp-query-grid-details-panel-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"></div>';
+            stringFormat = '<div class="genapp-query-grid-details-panel-slip" '
+                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"'
+                +'ext:qtitle="' + this.openDetailsButtonTitle + '"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="' + this.openDetailsButtonTip + '"'
+            +'></div>';
         }
         // TODO: Patch RTM to remove ??
         if(!Ext.isEmpty(record.data.LOCATION_COMPL_DATA__SIT_NO_CLASS)){
-            stringFormat += '<div class="genapp-query-grid-details-panel-search" onclick="Genapp.cardPanel.consultationPage.launchLocationRequest(\'\',\'{2}\');"></div>';
+            stringFormat += '<div class="genapp-query-grid-details-panel-search" '
+                +'onclick="Genapp.cardPanel.consultationPage.launchLocationRequest(\'\',\'{2}\');"'
+                +'ext:qtitle="Ajouter ce site comme critère"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="Ajoute le numéro de site à la requête et la relance."'
+            +'></div>';
         }
         if(this.hasChild) {
-            stringFormat += '<div class="genapp-query-grid-details-panel-get-children" onclick="Genapp.cardPanel.consultationPage.getChildren(\'{1}\',\'{0}\');"></div>';
+            stringFormat += '<div class="genapp-query-grid-details-panel-get-children" '
+                +'onclick="Genapp.cardPanel.consultationPage.getChildren(\'{1}\',\'{0}\');"'
+                +'ext:qtitle="' + this.getChildrenButtonTitle + '"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="' + this.getChildrenButtonTip + '"'
+            +'></div>';
         }
         return String.format(stringFormat, record.data.id, this.ownerCt.getId(),record.data.LOCATION_COMPL_DATA__SIT_NO_CLASS);
     },
@@ -107,8 +158,12 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
             }
             var leftToolsHeader = '';
             if (!Ext.isEmpty(this.parentItemId)) {
-                leftToolsHeader = '<div class="genapp-query-grid-details-panel-get-parent" onclick="Genapp.cardPanel.consultationPage.getParent(\''
-                + this.ownerCt.getId() +'\');"></div>';
+                leftToolsHeader = '<div class="genapp-query-grid-details-panel-get-parent" '
+                    +'onclick="Genapp.cardPanel.consultationPage.getParent(\'' + this.ownerCt.getId() +'\');"'
+                    +'ext:qtitle="' + this.getParentButtonTitle + '"'
+                    +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                    +'ext:qtip="' + this.getParentButtonTip + '"'
+                    +'></div>';
             }
             this.initConf.columns.unshift({
                 dataIndex:'leftTools',

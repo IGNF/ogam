@@ -107,6 +107,17 @@ if(Genapp.CardGridDetailsPanel){
         cardGridDetailsPanelTitle:"Sélection"
     });
 }
+if(Genapp.GridDetailsPanel){
+    Ext.apply(Genapp.GridDetailsPanel.prototype, {
+        loadingMsg:"Cgmt...",
+        openDetailsButtonTitle:'Afficher les détails',
+        openDetailsButtonTip:'Affiche la fiche détaillée dans l\'onglet des fiches détaillées.',
+        getChildrenButtonTitle:'Descendre un niveau en dessous',
+        getChildrenButtonTip:'Afficher les enfants de l\'enregistrement.',
+        getParentButtonTitle:'Remonter un niveau au dessus',
+        getParentButtonTip:'Réafficher le parent des enregistrements.'
+    });
+}
 if(Genapp.FieldForm){
     Ext.apply(Genapp.FieldForm.prototype, {
         criteriaPanelTbarLabel:"Critères",

@@ -72,7 +72,11 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
                     '</tpl>',
                 '</table>',
             '</tpl>',
-        '</tpl>'
+        '</tpl>',
+        {
+            compiled: true,      // compile immediately
+            disableFormats: true // reduce apply time since no formatting
+        }
     ),
     /**
      * @cfg {String} loadingMsg
