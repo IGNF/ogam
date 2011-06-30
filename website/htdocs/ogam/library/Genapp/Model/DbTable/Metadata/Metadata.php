@@ -997,6 +997,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$formField->defaultValue = $row['default_value'];
 				$formField->decimals = $row['decimals'];
 				$formField->mask = $row['mask'];
+				$formField->position = $row['position'];
 
 				if ($this->useCache) {
 					$this->cache->save($formField, $key);

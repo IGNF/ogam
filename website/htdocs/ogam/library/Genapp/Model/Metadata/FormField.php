@@ -74,6 +74,11 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 	 * @var Boolean
 	 */
 	var $editable;
+	
+	/**
+	 * The field position in the form
+	 */
+	var $position;
 
 	/**
 	 * Serialize the object as a JSON used to describe a list of result columns
