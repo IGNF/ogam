@@ -249,7 +249,7 @@ class Genapp_Service_QueryService {
 				$json .= "{".$formField->toEditJSON()."},";
 			}
 		}
-		
+
 		$json = substr($json, 0, -1);
 		$json .= ']';
 
