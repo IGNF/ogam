@@ -570,9 +570,6 @@ class Genapp_Service_QueryService {
 		$ancestors = $this->genericModel->getAncestors($data, true);
 		$ancestors = array_reverse($ancestors);
 
-		// Get children too
-		$children = $this->genericModel->getChildren($data);
-
 		// Look for a geometry object in order to calculate a bounding box
 		// Look for the plot location
 		$bb = null;
@@ -632,16 +629,6 @@ class Genapp_Service_QueryService {
 		$dataJSON = $this->genericService->datumToDetailJSON($data);
 		if ($dataJSON !== '') {
 			$json .= $dataJSON.',';
-		}
-
-		// Add the children
-		if (!empty($children)) {
-			foreach ($children as $format => $listChild) {
-				$childrenJSON = $this->genericService->dataToDetailJSON($listChild);
-				if ($childrenJSON !== '') {
-					$json .= $childrenJSON.',';
-				}
-			}
 		}
 
 		$json .= "], ";

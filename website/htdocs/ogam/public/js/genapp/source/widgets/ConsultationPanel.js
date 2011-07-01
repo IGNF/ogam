@@ -1479,7 +1479,6 @@ listeners: {
      *            url The url to get the details
      */
     openDetails : function(id, url) {
-        this.featuresInformationSearchNumber++;
         if (!Ext.isEmpty(id)) {
             var consultationPanel = Ext.getCmp('consultation_panel');
             consultationPanel.collapseQueryPanel();
@@ -1559,6 +1558,33 @@ listeners: {
              });
         } else {
             cardPanel.getLayout().setActiveItem(tab);
+        }
+    },
+
+    /**
+     * Add a new CardGridDetailsPanel and display the children
+     * 
+     * @param {String} 
+     *            id The id of the selected row in the current detailsPanel
+     */
+    displayChildren : function(id){
+        var consultationPanel = Ext.getCmp('consultation_panel');
+        tab = consultationPanel.featuresInformationPanel.get(id);
+        if (!Ext.isEmpty(tab)) {
+            consultationPanel.featuresInformationPanel.activate(tab);
+        } else {
+            Ext.Ajax.request({
+                url: Genapp.ajax_query_url + 'ajaxgetchildren',
+                success: function(response, opts) {
+                    var obj = Ext.decode(response.responseText);
+                    var consultationPanel = Ext.getCmp('consultation_panel');
+                    consultationPanel.openFeaturesInformationSelection(obj);
+                },
+                failure: function(response, opts) {
+                    console.log('server-side failure with status code ' + response.status);
+                },
+                params: {id: id}
+            });
         }
     },
 

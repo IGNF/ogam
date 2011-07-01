@@ -70,14 +70,14 @@
 
 		<!-- Concatenation of the gray extend CSS file -->
 		<concat destfile="${cps.resrcs.dir}/${cps.name}-gray-extend-all.css">
-			<fileset file="${src.dir}ogam/public/js/genapp/resources/css/structure/genapp.css" />
-			<fileset file="${src.dir}ogam/public/js/genapp/resources/css/visual/genapp-gray-extend.css" />
+			<fileset file="${cps.resrcs.dir}/structure/genapp.css" />
+			<fileset file="${cps.resrcs.dir}/visual/genapp-gray-extend.css" />
 		</concat>
 
 		<!-- Concatenation of the green ifn CSS file -->
 		<concat destfile="${cps.resrcs.dir}/${cps.name}-green-ifn-all.css">
-			<fileset file="${src.dir}ogam/public/js/genapp/resources/css/structure/genapp.css" />
-			<fileset file="${src.dir}ogam/public/js/genapp/resources/css/visual/genapp-green-ifn.css" />
+			<fileset file="${cps.resrcs.dir}/structure/genapp.css" />
+			<fileset file="${cps.resrcs.dir}/visual/genapp-green-ifn.css" />
 		</concat>
 	</target>
 

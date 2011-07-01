@@ -98,7 +98,11 @@ if(Genapp.DateRangePicker){
 }
 if(Genapp.DetailsPanel){
     Ext.apply(Genapp.DetailsPanel.prototype, {
-        loadingMsg:"Cgmt..."
+        loadingMsg:"Cgmt...",
+        seeChildrenButtonTitle: 'Afficher les enfants',
+        seeChildrenButtonTip: 'Afficher les enfants dans le tableau des détails.',
+        seeChildrenTextSingular: '&gt;&gt;&gt; Voir l\'unique enfant',
+        seeChildrenTextPlural: '&gt;&gt;&gt; Voir les {children_count} enfants'
     });
 }
 if(Genapp.CardGridDetailsPanel){

@@ -248,6 +248,9 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .genapp-query-details-panel legend{
     padding:0 5px;
 }
+.genapp-query-details-panel-see-children{
+    margin-top:10px;
+}
 /*************************************************************************************************/
 
 /***** Criteria Form Panel Body ************************************************************************/

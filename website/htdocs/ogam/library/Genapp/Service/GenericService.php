@@ -56,7 +56,15 @@ class Genapp_Service_GenericService {
 
         $this->logger->info('datumToDetailJSON');
 
-        $json = "{title:".json_encode($data->tableFormat->label, JSON_HEX_APOS).", is_array:false, fields:[";
+        // Get children
+        $this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
+        $children = $this->genericModel->getChildren($data);
+
+		$childrenCount = 0;
+		if(!empty($children)){
+		    $childrenCount = count(current($children));
+		}
+        $json = "{title:".json_encode($data->tableFormat->label, JSON_HEX_APOS).", children_count:".$childrenCount.", id:'".$this->getIdFromData($data)."', fields:[";
         $fields = '';
         // Get the form field corresponding to the table field
         $formFields = $this->getFormFieldsOrdered($data->getFields());
@@ -76,52 +84,16 @@ class Genapp_Service_GenericService {
     }
 
     /**
-     * Serialize a list of data objects as a JSON array.
-     *
-     * @param List[DataObject] $data the data object we're looking at.
-     * @return JSON
+     * Build and return the datum id
+     * 
+     * @param DataObject $datum The datum
      */
-    public function dataToDetailJSON($data) {
-
-        $this->logger->info('dataToDetailJSON');
-
-        $json = "";
-
-        if (!empty($data)) {
-
-            $firstData = $data[0];
-
-            // create the JSON object
-            $json .= "{title:".json_encode($firstData->tableFormat->label, JSON_HEX_APOS).", is_array:true, columns:[";
-
-            // Add the colums description
-            // Get the form field corresponding to the table field
-            $formFields = $this->getFormFieldsOrdered($firstData->getFields());
-            foreach ($formFields as $formField) {
-                $json .= "{name:".json_encode($formField->data).", label:".json_encode($formField->label)."}, ";
-            }
-            $json = substr($json, 0, -2);
-            $json .= "], rows:[";
-
-            // dump each row values
-            foreach ($data as $datum) {
-                // Get the form field corresponding to the table field
-                $formFields = $this->getFormFieldsOrdered($datum->getFields());
-                if(!empty($formFields)){
-                    $json .= "["; // new line
-                    foreach ($formFields as $formField) {
-                        $json .= json_encode($formField->valueLabel).", ";
-                    }
-                    $json = substr($json, 0, -2);
-                    $json .= "], "; // end of line
-                }
-            }
-            $json = substr($json, 0, -2);
-            $json .= "]"; // end of rows
-            $json .= "}"; // end the object
+    public function getIdFromData($datum) {
+        $datumId = 'SCHEMA/'.$datum->tableFormat->schemaCode.'/FORMAT/'.$datum->tableFormat->format;
+        foreach ($datum->infoFields as $field) {
+            $datumId .= '/'.$field->data.'/'.$field->value;
         }
-
-        return $json;
+        return $datumId;
     }
 
     /**
@@ -152,12 +124,8 @@ class Genapp_Service_GenericService {
             // Dump each row values
             foreach ($data as $datum) {
                 $locationData = array();
-                $datumId = 'SCHEMA/'.$firstData->tableFormat->schemaCode.'/FORMAT/'.$firstData->tableFormat->format;
-                foreach ($datum->infoFields as $field) {
-                    $datumId .= '/'.$field->data.'/'.$field->value;
-                }
                 // Addition of the row id
-                $locationData[0] = $datumId;
+                $locationData[0] = $this->getIdFromData($datum);
                 $formFields = $this->getFormFieldsOrdered($datum->getFields());
                 foreach ($formFields as $formField) {
                     // We keep only the result fields (The columns availables) 
@@ -181,7 +149,7 @@ class Genapp_Service_GenericService {
                     'dataIndex' => $dataIndex,
                     'editable' => false,
                     'tooltip' => $field->definition,
-                    'width' => max($columnsMaxLength[$field->data]) * 7
+                    'width' => 150 //max($columnsMaxLength[$field->data]) * 7
                 );
                 array_push($columns, $column);
                 array_push($locationFields, $dataIndex);

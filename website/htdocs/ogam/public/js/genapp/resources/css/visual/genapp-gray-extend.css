@@ -165,6 +165,15 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     color:#505050;
     font-size:12px;
 }
+.genapp-query-details-panel-see-children{
+    font-weight:bold;
+    color:#505050;
+    font-size:12px;
+    cursor: pointer;
+}
+.genapp-query-details-panel-see-children:hover{
+    text-decoration: underline;
+}
 /*************************************************************************************************/
 
 

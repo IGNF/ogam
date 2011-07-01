@@ -39,45 +39,30 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
      */
     cls:'genapp-query-details-panel',
     /**
-     * @cfg {Ext.XTemplate} tpl
-     * A {@link Ext.XTemplate} used to setup the details panel body.
+     * @cfg {String} seeChildrenButtonTitle
+     * The see Children Button Title (defaults to <tt>'Display the children'</tt>)
      */
-    tpl : new Ext.XTemplate(
-        '<tpl for="maps">',
-            '<img title="{title}" src="{url}">',
-        '</tpl>',
-        '<tpl for="formats">',
-            '<tpl if="is_array != true">',
-                '<fieldset>',
-                    '<legend align="top"> {title} </legend>',
-                    '<tpl for="fields">',
-                        '<p><b>{label} :</b> {value}</p>',
-                    '</tpl>',
-                '</fieldset>',
-            '</tpl>',
-            '<tpl if="is_array == true">',
-                '<table>',
-                '<caption>{title}</caption>',
-                '<tr>',
-                    '<tpl for="columns">',
-                        '<th>{label}</th>',
-                    '</tpl>',
-                '</tr>',
-                    '<tpl for="rows">',
-                        '<tr>',
-                            '<tpl for=".">',
-                                '<td>{.}</td>',
-                            '</tpl>',
-                        '</tr>',
-                    '</tpl>',
-                '</table>',
-            '</tpl>',
-        '</tpl>',
-        {
-            compiled: true,      // compile immediately
-            disableFormats: true // reduce apply time since no formatting
-        }
-    ),
+    seeChildrenButtonTitle: 'Display the children',
+    /**
+     * @cfg {String} seeChildrenButtonTip
+     * The see Children Button Tip (defaults to <tt>'Display the children of the data into the grid details panel.'</tt>)
+     */
+    seeChildrenButtonTip: 'Display the children of the data into the grid details panel.',
+    /**
+     * @cfg {String} seeChildrenTextSingular
+     * The see Children Text Singular (defaults to <tt>'&gt;&gt;&gt; See the only child'</tt>)
+     */
+    seeChildrenTextSingular: '&gt;&gt;&gt; See the only child',
+    /**
+     * @cfg {String} seeChildrenTextPlural
+     * The see Children Text Plural (defaults to <tt>'&gt;&gt;&gt; See the {children_count} children'</tt>)
+     */
+    seeChildrenTextPlural: '&gt;&gt;&gt; See the {children_count} children',
+    /**
+     * @cfg {Number} tipDefaultWidth
+     * The tip Default Width. (Default to 300)
+     */
+    tipDefaultWidth: 300,
     /**
      * @cfg {String} loadingMsg
      * The loading message (defaults to <tt>'Loading...'</tt>)
@@ -89,6 +74,40 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
         this.title = '<div style="width:'+ this.headerWidth + 'px;">'+this.loadingMsg+'</div>';
         this.on('render', this.updateDetails, this);
         this.itemId = this.rowId;
+        /**
+         * @cfg {Ext.XTemplate} tpl
+         * A {@link Ext.XTemplate} used to setup the details panel body.
+         */
+        this.tpl = new Ext.XTemplate(
+            '<tpl for="maps">',
+                '<img title="{title}" src="{url}">',
+            '</tpl>',
+            '<tpl for="formats">',
+                '<fieldset>',
+                    '<legend align="top"> {title} </legend>',
+                    '<tpl for="fields">',
+                        '<p><b>{label} :</b> {value}</p>',
+                    '</tpl>',
+                    '<div class="genapp-query-details-panel-see-children" ',
+                        'onclick="Genapp.cardPanel.consultationPage.displayChildren(\'{id}\');"',
+                        'ext:qtitle="' + this.seeChildrenButtonTitle + '" ',
+                        'ext:qwidth="' + this.tipDefaultWidth + '" ',
+                        'ext:qtip="' + this.seeChildrenButtonTip + '">',
+                        '<tpl if="children_count == 1">',
+                            this.seeChildrenTextSingular,
+                        '</tpl>',
+                        '<tpl if="children_count &gt; 1">',
+                            this.seeChildrenTextPlural,
+                        '</tpl>',
+                    '</div>',
+                '</fieldset>',
+            '</tpl>',
+            {
+                compiled: true,      // compile immediately
+                disableFormats: true // reduce apply time since no formatting
+            }
+        );
+
         Genapp.DetailsPanel.superclass.initComponent.call(this);
     },
 
