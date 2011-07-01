@@ -39,6 +39,11 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
      */
     cls:'genapp-query-details-panel',
     /**
+     * @cfg {String} hideSeeChildrenButton
+     * True to hide the see children button (defaults to <tt>false</tt>)
+     */
+    hideSeeChildrenButton: false,
+    /**
      * @cfg {String} seeChildrenButtonTitle
      * The see Children Button Title (defaults to <tt>'Display the children'</tt>)
      */
@@ -88,18 +93,21 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
                     '<tpl for="fields">',
                         '<p><b>{label} :</b> {value}</p>',
                     '</tpl>',
-                    '<div class="genapp-query-details-panel-see-children" ',
-                        'onclick="Genapp.cardPanel.consultationPage.displayChildren(\'{id}\');"',
-                        'ext:qtitle="' + this.seeChildrenButtonTitle + '" ',
-                        'ext:qwidth="' + this.tipDefaultWidth + '" ',
-                        'ext:qtip="' + this.seeChildrenButtonTip + '">',
-                        '<tpl if="children_count == 1">',
-                            this.seeChildrenTextSingular,
-                        '</tpl>',
-                        '<tpl if="children_count &gt; 1">',
-                            this.seeChildrenTextPlural,
-                        '</tpl>',
-                    '</div>',
+                    '<tpl if="!'+ this.hideSeeChildrenButton +'">',
+                        '<div class="genapp-query-details-panel-see-children" ',
+                            'onclick="Genapp.cardPanel.consultationPage.displayChildren(\'{id}\');"',
+                            'ext:qtitle="' + this.seeChildrenButtonTitle + '" ',
+                            'ext:qwidth="' + this.tipDefaultWidth + '" ',
+                            'ext:qtip="' + this.seeChildrenButtonTip + '">',
+                            
+                                '<tpl if="children_count == 1">',
+                                    this.seeChildrenTextSingular,
+                                '</tpl>',
+                                '<tpl if="children_count &gt; 1">',
+                                    this.seeChildrenTextPlural,
+                                '</tpl>',
+                        '</div>',
+                    '</tpl>',
                 '</fieldset>',
             '</tpl>',
             {
