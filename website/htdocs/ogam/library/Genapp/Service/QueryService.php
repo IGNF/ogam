@@ -628,7 +628,7 @@ class Genapp_Service_QueryService {
 		// Add the current data
 		$dataJSON = $this->genericService->datumToDetailJSON($data);
 		if ($dataJSON !== '') {
-			$json .= $dataJSON.',';
+			$json .= $dataJSON;
 		}
 
 		$json .= "], ";
