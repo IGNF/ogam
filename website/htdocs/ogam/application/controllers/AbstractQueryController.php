@@ -621,7 +621,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		// Send the result as a JSON String
 		$json .= '{codes:[';
 		foreach ($codes as $code => $label) {
-			$json .= '{code:"'.$code.'", label:"'.$label.'"},';
+			$json .= '{code:'.json_encode($code).', label:'.json_encode($label).'},';
 		}
 		$json = substr($json, 0, -1);
 		$json .= ']}';
