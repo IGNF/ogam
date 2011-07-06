@@ -88,14 +88,7 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox,  {
     onDestroy : function(){
         Ext.destroy(this.menu, this.wrap);
         Genapp.form.TreeField.superclass.onDestroy.call(this);
-    },
-
-    // private
-    beforeBlur : function(){
-        var v = this.getRawValue();
-        if(v){
-            this.setValue(v);
-        }
     }
+   
 });
 Ext.reg('treefield', Genapp.form.TreeField);
