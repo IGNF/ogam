@@ -463,6 +463,22 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
+/***** Tree Picker *********************************************************************/
+
+.x-tree-menu .x-menu-list{
+    padding:0;
+}
+.x-menu-tree-item .x-panel-btns{
+    padding:0;
+}
+.x-menu-tree-item .x-panel-body{
+    border: none 0;
+}
+.x-menu-tree-item .x-btn-noicon .x-btn-small .x-btn-text{
+    height:12px;
+}
+/*************************************************************************************************/
+
 /***** Geometry Field *********************************************************************/
 
 .x-form-field-wrap .x-form-map-trigger{
@@ -778,6 +794,14 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 .x-menu-number-range-item .x-form-field-wrap .x-form-trigger{
     background-image:url(../../../extjs/resources/images/gray-extend/form/clear-trigger.gif);
+}
+/*************************************************************************************************/
+
+/***** Tree Picker *********************************************************************/
+.x-menu-tree-item .x-panel-footer{
+    background-color:#EBEBEB;
+    background-image:url(../../../extjs/resources/images/gray-extend/shared/glass-bg.gif);
+    border-top:#D0D0D0 1px solid;
 }
 /*************************************************************************************************/
 

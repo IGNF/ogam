@@ -250,6 +250,13 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
+/***** Tree Picker *********************************************************************/
+.x-menu-tree-item .x-panel-footer{
+    background-image:url(../../../extjs/resources/images/green-ifn/shared/glass-bg.gif);
+    border-top:#75AA1C 1px solid;
+}
+/*************************************************************************************************/
+
 /***** Geometry Field *********************************************************************/
 .x-form-field-wrap .x-form-map-trigger{
     background-image: url(../images/green-ifn/map-trigger.gif);

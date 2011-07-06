@@ -2,7 +2,7 @@
  * Provides a number range input field with a {@link Genapp.NumberRangePicker} dropdown and automatic number validation.
  *
  * @class Genapp.form.NumberRangeField
- * @extends Ext.form.NumberField
+ * @extends Ext.form.TriggerField
  * @constructor Create a new NumberRangeField
  * @param {Object} config
  * @xtype numberrangefield
