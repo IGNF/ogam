@@ -619,7 +619,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		$codes = $this->metadataModel->getDynamodes($unit);
 
 		// Send the result as a JSON String
-		$json .= '{codes:[';
+		$json = '{codes:[';
 		foreach ($codes as $code => $label) {
 			$json .= '{code:'.json_encode($code).', label:'.json_encode($label).'},';
 		}
