@@ -613,10 +613,12 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		$this->logger->debug('ajaxgetdynamiccodesAction');
 
 		$unit = $this->getRequest()->getParam('unit');
+		$query = $this->getRequest()->getParam('query');
 
 		$this->logger->debug('$unit : '.$unit);
+		$this->logger->debug('$query : '.$query);
 
-		$codes = $this->metadataModel->getDynamodes($unit);
+		$codes = $this->metadataModel->getDynamodes($unit, $query);
 
 		// Send the result as a JSON String
 		$json = '{codes:[';

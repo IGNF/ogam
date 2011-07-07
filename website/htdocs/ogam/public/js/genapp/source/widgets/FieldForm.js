@@ -485,20 +485,20 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.hiddenName = field.name;
                 field.triggerAction = 'all';
                 field.typeAhead = true;
-                field.mode = 'local';
+                field.mode = 'remote';
                 field.displayField = 'label';
                 field.valueField  = 'code';
                 field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
-                field.disableKeyFilter = true;
                 if (record.subtype == 'DYNAMIC') {
                 	field.store = new Ext.data.JsonStore({
-                		autoLoad: true,  
                 		root: 'codes',
+                		idProperty: 'code',
 	                    fields:[
-	                            {name:'code',mapping:'code'},
-	                            {name:'label',mapping:'label'}
-	                            ],
-	                    url: 'ajaxgetdynamiccodes/unit/'+record.unit
+	                        {name:'code',mapping:'code'},
+	                        {name:'label',mapping:'label'}
+	                    ],
+	                    url: 'ajaxgetdynamiccodes',
+	                    baseParams:{'unit':record.unit}
 	                });
                 } else {
 	                field.store = new Ext.data.ArrayStore({

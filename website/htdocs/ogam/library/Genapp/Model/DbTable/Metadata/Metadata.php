@@ -65,11 +65,14 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $unit The unit
 	 * @return Array[mode => label]
 	 */
-	public function getDynamodes($unit) {
+	public function getDynamodes($unit, $query) {
 		$db = $this->getAdapter();
 
 		$req = $this->_getDynamodeSQL($unit);
 
+	    if(!empty($query)){
+            $req = "select * from ($req) as foo where label ilike '$query%'";
+        }
 		$this->logger->info('getDynamicCodes : '.$req);
 
 		$select = $db->prepare($req);
