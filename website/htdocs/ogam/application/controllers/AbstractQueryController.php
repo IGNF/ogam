@@ -248,7 +248,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 	/**
 	 * AJAX function : Get the description of the columns of the result of the query.
 	 *
-	 * @param Boolean $withSQL indicate that we want the server to return the genetared SQL
+	 * @param Boolean $withSQL indicate that we want the server to return the generated SQL
 	 * @return JSON
 	 */
 	public function ajaxgetresultcolumnsAction($withSQL = false) {
