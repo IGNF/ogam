@@ -19,15 +19,10 @@ require_once APPLICATION_PATH . '/../library/Zend/Session.php';
 
 // Gets the app configuration ini file.
 $appIniFilePath = APPLICATION_PATH.'/configs/app.ini';
-if (defined('INHERENT_APPLICATION_PATH') && file_exists(INHERENT_APPLICATION_PATH.'/configs/substitute/app.ini')) {
-    $appIniFilePath = INHERENT_APPLICATION_PATH.'/configs/substitute/app.ini';
+if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/configs/app.ini')) {
+    $appIniFilePath = CUSTOM_APPLICATION_PATH.'/configs/app.ini';
 }
 $AppConf = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
-if (defined('INHERENT_APPLICATION_PATH') && file_exists(INHERENT_APPLICATION_PATH.'/configs/patch/app.ini')) {
-    $appIniPatchPath = INHERENT_APPLICATION_PATH.'/configs/patch/app.ini';
-    $patchConfiguration = new Zend_Config_Ini($appIniPatchPath, APPLICATION_ENV);
-    $AppConf->merge($patchConfiguration);
-}
 
 Zend_Session::setOptions($ApplicationConf->resources->session->toArray());
 

@@ -9,9 +9,9 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV
 // Define current date (For log file name)
 define('DATE_STAMP', date('Y-m-d'));
 
-// Define path to inherent application directory
-if (file_exists(APPLICATION_PATH.'/../../inherent')) {
-	define('INHERENT_APPLICATION_PATH', APPLICATION_PATH.'/../../inherent/application');
+// Define path to oison application directory
+if (file_exists(APPLICATION_PATH.'/../../custom')) {
+	define('CUSTOM_APPLICATION_PATH', APPLICATION_PATH.'/../../custom/application');
 }
 
 // Ensure library/ is on include_path
@@ -19,9 +19,9 @@ set_include_path(implode(PATH_SEPARATOR, array(
 	realpath(APPLICATION_PATH.'/../library'),
 	get_include_path()
 )));
-if (defined('INHERENT_APPLICATION_PATH') && file_exists(INHERENT_APPLICATION_PATH.'/../library')) {
+if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/../library')) {
 	set_include_path(implode(PATH_SEPARATOR, array(
-		realpath(INHERENT_APPLICATION_PATH.'/../library'),
+		realpath(CUSTOM_APPLICATION_PATH.'/../library'),
 		get_include_path()
 	)));
 }
@@ -30,12 +30,8 @@ require_once 'Zend/Config/Ini.php';
 
 // Create application, bootstrap, and run
 $applicationIniFilePath = APPLICATION_PATH.'/configs/application.ini';
-if (defined('INHERENT_APPLICATION_PATH') && file_exists(INHERENT_APPLICATION_PATH.'/configs/substitute/application.ini')) {
-	$applicationIniFilePath = INHERENT_APPLICATION_PATH.'/configs/substitute/application.ini';
+if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/configs/application.ini')) {
+	$applicationIniFilePath = CUSTOM_APPLICATION_PATH.'/configs/application.ini';
 }
 $ApplicationConf = new Zend_Config_Ini($applicationIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
-if (defined('INHERENT_APPLICATION_PATH') && file_exists(INHERENT_APPLICATION_PATH.'/configs/patch/application.ini')) {
-	$applicationIniPatchPath = INHERENT_APPLICATION_PATH.'/configs/patch/application.ini';
-	$patchConfiguration = new Zend_Config_Ini($applicationIniPatchPath, APPLICATION_ENV);
-	$ApplicationConf->merge($patchConfiguration);
-}
+

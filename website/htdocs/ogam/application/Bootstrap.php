@@ -87,12 +87,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			APPLICATION_PATH.'/lang'
 		), $translate);
 		// Setup the translation with files specific to the app
-		if (defined('INHERENT_APPLICATION_PATH')) {
+		if (defined('CUSTOM_APPLICATION_PATH')) {
 			$translations = $this->_addTranslation(array(
 				APPLICATION_PATH.'/lang',
-				INHERENT_APPLICATION_PATH.'/lang/new',
-				INHERENT_APPLICATION_PATH.'/lang/substitute',
-				INHERENT_APPLICATION_PATH.'/lang/patch'
+				CUSTOM_APPLICATION_PATH.'/lang'
 			), $translate);
 		}
 
@@ -144,20 +142,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		}
 
 	/**
-	 *
-	 * Register the *.ini files
+	 * Register the *.ini files.
+	 * 
+	 * Take by default the files in ogam/application/config and if present overrides with custom/application/config.
 	 */
 	protected function _initConfFiles() {
 		$appIniFilePath = APPLICATION_PATH.'/configs/app.ini';
-		if (defined('INHERENT_APPLICATION_PATH') && file_exists(INHERENT_APPLICATION_PATH.'/configs/substitute/app.ini')) {
-			$appIniFilePath = INHERENT_APPLICATION_PATH.'/configs/substitute/app.ini';
+		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/configs/app.ini')) {
+			$appIniFilePath = CUSTOM_APPLICATION_PATH.'/configs/app.ini';
 		}
-		$configuration = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
-		if (defined('INHERENT_APPLICATION_PATH') && file_exists(INHERENT_APPLICATION_PATH.'/configs/patch/app.ini')) {
-			$appIniPatchPath = INHERENT_APPLICATION_PATH.'/configs/patch/app.ini';
-			$patchConfiguration = new Zend_Config_Ini($appIniPatchPath, APPLICATION_ENV);
-			$configuration->merge($patchConfiguration);
-		}
+		$configuration = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array('allowModifications' => true));		
 		Zend_Registry::set('configuration', $configuration);
 	}
 

@@ -16,3 +16,10 @@ if(Genapp.CardPanel){
         heightToSubstract:150 // 120 of header + 30 of footer
     });
 }
+if(Genapp.DetailsPanel){
+    Ext.apply(Genapp.DetailsPanel.prototype, {
+    	hideSeeChildrenButton : true
+    });
+}
+
+// ogam
