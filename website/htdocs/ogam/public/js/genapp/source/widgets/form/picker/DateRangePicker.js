@@ -8,9 +8,9 @@
  * @xtype daterangepicker
  */
 
-Ext.namespace('Genapp');
+Ext.namespace('Genapp.form.picker');
 
-Genapp.DateRangePicker = Ext.extend(Ext.Panel, {
+Genapp.form.picker.DateRangePicker = Ext.extend(Ext.Panel, {
     /**
      * @cfg {String/Object} layout
      * Specify the layout manager class for this container either as an Object or as a String.
@@ -261,4 +261,4 @@ Genapp.DateRangePicker = Ext.extend(Ext.Panel, {
         }
     }
 });
-Ext.reg('daterangepicker', Genapp.DateRangePicker);
+Ext.reg('daterangepicker', Genapp.form.picker.DateRangePicker);

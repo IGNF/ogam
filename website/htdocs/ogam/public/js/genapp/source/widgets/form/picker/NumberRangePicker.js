@@ -1,13 +1,15 @@
 /**
  * Simple number range picker class.
  * 
- * @class Genapp.NumberRangePicker
+ * @class Genapp.form.picker.NumberRangePicker
  * @extends Ext.Panel
  * @constructor Create a new NumberRangePicker
  * @param {Object} config The config object
  * @xtype numberrangepicker
  */
-Genapp.NumberRangePicker = Ext.extend(Ext.Panel, {
+Ext.namespace('Genapp.form.picker');
+
+Genapp.form.picker.NumberRangePicker = Ext.extend(Ext.Panel, {
     /**
      * @cfg {String/Object} layout
      * Specify the layout manager class for this container either as an Object or as a String.
@@ -96,7 +98,7 @@ Genapp.NumberRangePicker = Ext.extend(Ext.Panel, {
             this.height = this.height + 28;
         }
 
-        Genapp.NumberRangePicker.superclass.initComponent.call(this);
+        Genapp.form.picker.NumberRangePicker.superclass.initComponent.call(this);
     },
 
     // private
@@ -109,4 +111,4 @@ Genapp.NumberRangePicker = Ext.extend(Ext.Panel, {
         }
     }
 });
-Ext.reg('numberrangepicker', Genapp.NumberRangePicker);
+Ext.reg('numberrangepicker', Genapp.form.picker.NumberRangePicker);

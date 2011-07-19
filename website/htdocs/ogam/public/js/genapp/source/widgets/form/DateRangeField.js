@@ -1,5 +1,5 @@
 /**
- * Provides a date range input field with a {@link Genapp.DateRangePicker} dropdown and automatic date validation.
+ * Provides a date range input field with a {@link Genapp.form.picker.DateRangePicker} dropdown and automatic date validation.
  *  
  * @class Genapp.form.DateRangeField
  * @extends Ext.form.DateField
@@ -348,9 +348,9 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             /**
              * The field menu (displayed on a trigger click).
              * @property menu
-             * @type Genapp.menu.DateRangeMenu
+             * @type Genapp.form.menu.DateRangeMenu
              */
-            this.menu = new Genapp.menu.DateRangeMenu({
+            this.menu = new Genapp.form.menu.DateRangeMenu({
                 hideOnClick: false,
                 hideValidationButton: this.hideValidationButton,
                 showToday: this.showToday

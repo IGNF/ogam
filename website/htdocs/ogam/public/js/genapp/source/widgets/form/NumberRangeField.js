@@ -267,9 +267,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
             /**
              * The field menu (displayed on a trigger click).
              * @property menu
-             * @type Genapp.menu.NumberRangeMenu
+             * @type Genapp.form.menu.NumberRangeMenu
              */
-            this.menu = new Genapp.menu.NumberRangeMenu({
+            this.menu = new Genapp.form.menu.NumberRangeMenu({
                 hideOnClick: false,
                 hideValidationButton: this.hideValidationButton
             });

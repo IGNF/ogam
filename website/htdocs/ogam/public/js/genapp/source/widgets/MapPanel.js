@@ -526,7 +526,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         this.map.addControl(new OpenLayers.Control.MousePosition({ 
             prefix: 'X: ', 
             separator: ' - Y: ', 
-            suffix: ' m (L2e)', 
+            suffix: ' m (L93)', 
             numDigits: 0,
             title: 'MousePosition'
         }));

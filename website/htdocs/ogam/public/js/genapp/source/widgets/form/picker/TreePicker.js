@@ -1,13 +1,15 @@
 /**
  * Simple tree picker class.
  * 
- * @class Genapp.TreePicker
+ * @class Genapp.form.picker.TreePicker
  * @extends Ext.TreePanel
  * @constructor Create a new TreePicker
  * @param {Object} config The config object
  * @xtype treepicker
  */
-Genapp.TreePicker = Ext.extend(Ext.tree.TreePanel, {
+Ext.namespace('Genapp.form.picker');
+
+Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
     /**
      * @cfg {Number} height
      * The height of this component in pixels (defaults to 59).
@@ -77,7 +79,7 @@ Genapp.TreePicker = Ext.extend(Ext.tree.TreePanel, {
             this.height = this.height + 28;
         }
 
-        Genapp.TreePicker.superclass.initComponent.call(this);
+        Genapp.form.picker.TreePicker.superclass.initComponent.call(this);
     },
 
     // private
@@ -88,4 +90,4 @@ Genapp.TreePicker = Ext.extend(Ext.tree.TreePanel, {
         }
     }
 });
-Ext.reg('treepicker', Genapp.TreePicker);
+Ext.reg('treepicker', Genapp.form.picker.TreePicker);
