@@ -49,6 +49,7 @@ body {
 	color:#333333;	
 	width: 100%;
 	min-height: 100%;
+	height: auto !important;
 	height: 100%;
 	margin-top: 0;	
 	margin-bottom: -30px; /* the bottom margin is the negative value of the footer's height */
