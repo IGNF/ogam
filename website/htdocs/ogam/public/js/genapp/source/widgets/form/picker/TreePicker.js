@@ -12,12 +12,12 @@ Ext.namespace('Genapp.form.picker');
 Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
     /**
      * @cfg {Number} height
-     * The height of this component in pixels (defaults to 59).
+     * The height of this component in pixels (defaults to 300).
      */
     height:300,
     /**
      * @cfg {Number} width
-     * The width of this component in pixels (defaults to 176).
+     * The width of this component in pixels (defaults to 300).
      */
     width:300,
     /**

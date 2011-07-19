@@ -141,7 +141,7 @@ Genapp.form.picker.DateRangePicker = Ext.extend(Ext.Panel, {
             });
         }
 
-        Genapp.DateRangePicker.superclass.initComponent.call(this);
+        Genapp.form.picker.DateRangePicker.superclass.initComponent.call(this);
     },
 
     // private

@@ -41,7 +41,7 @@ Genapp.form.menu.TreeMenu = Ext.extend( Ext.menu.Menu, {
             showSeparator: false,
             items: [this.treePicker = new Genapp.form.picker.TreePicker(this.initialConfig)]
         });
-        Genapp.menu.TreeMenu.superclass.initComponent.call(this);
+        Genapp.form.menu.TreeMenu.superclass.initComponent.call(this);
         this.relayEvents(this.treePicker, ["select"]);
     },
 
