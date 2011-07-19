@@ -1,7 +1,7 @@
 /**
  * A menu containing a {@link Genapp.form.picker.TreePicker} Component.
  *
- * @class Genapp.menu.TreeMenu
+ * @class Genapp.form.menu.TreeMenu
  * @extends Ext.menu.Menu
  * @constructor Create a new TreeMenu
  * @param {Object} config
@@ -43,30 +43,6 @@ Genapp.form.menu.TreeMenu = Ext.extend( Ext.menu.Menu, {
         });
         Genapp.form.menu.TreeMenu.superclass.initComponent.call(this);
         this.relayEvents(this.treePicker, ["select"]);
-    },
-
-    /**
-     * Displays this menu at a specific xy position
-     * @param {Array} xyPosition Contains X & Y [x, y] values for the position at which to show the menu (coordinates are page-based)
-     * @param {Ext.menu.Menu} parentMenu (optional) This menu's parent menu, if applicable (defaults to undefined)
-     */
-    showAt : function(xy, parentMenu, /* private: */_e){
-        this.parentMenu = parentMenu;
-        if(!this.el){
-            this.render();
-        }
-        if(_e !== false){
-            xy = this.el.adjustForConstraints(xy);
-        }
-        this.el.setXY(xy);
-        if(this.enableScrolling){
-            this.constrainScroll(xy[1]);     
-        }
-        this.el.show();
-        Ext.menu.Menu.superclass.onShow.call(this);
-        this.hidden = false;
-        this.focus();
-        this.fireEvent("show", this);
     }
 });
 Ext.reg('treemenu', Genapp.form.menu.TreeMenu);

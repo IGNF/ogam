@@ -44,12 +44,12 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox,  {
             /**
              * The field menu (displayed on a trigger click).
              * @property menu
-             * @type Genapp.menu.TreeMenu
+             * @type Genapp.form.menu.TreeMenu
              */
-            this.menu = new Genapp.menu.TreeMenu({
+            this.menu = new Genapp.form.menu.TreeMenu({
                 hideOnClick: false,
                 hideValidationButton: this.hideValidationButton,
-                dataUrl: this.dataUrl
+                //dataUrl: this.dataUrl
             });
         }
         this.onFocus();
