@@ -63,12 +63,12 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
      * @cfg {String} widthToSubstract
      * The width to substract to the consultation panel (defaults to <tt>0</tt>)
      */
-    widthToSubstract:120,
+    widthToSubstract:80,
     /**
      * @cfg {String} heightToSubstract
      * The height to substract to the consultation panel (defaults to <tt>0</tt>)
      */
-    heightToSubstract:210,
+    heightToSubstract:150,
     /**
      * @cfg {Array} shownPages
      * An array containing the page (xtype) to display

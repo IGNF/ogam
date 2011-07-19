@@ -35,38 +35,38 @@
   </script>
 </head> 
 <body>
-<!--[if IE 6]><div class="ie6"><![endif]-->
-<!--[if IE 7]><div class="ie7"><![endif]-->
-<!--[if (IE) & (!IE 6) & (!IE 7)]><div class="ie"><![endif]--> <!-- Pour les anciennes et prochaines versions d'Internet Explorer (autres que 6 et 7) -->
-<!--[if !IE]>--><div class="notie"><!--<![endif]--> <!-- Le commentaire est fermé, puis rouvert -->
 
-<div id="wrapper">
-    <div id="inside" class="inside">
-        <div id="header">
-        <div id="banner">
+<div class="wrapper">
+
+<div class="main-body">
+
+	<!-- HEADER -->
+	<div class="header">
+   
+        <div class="banner">
             <img border="0" alt="Banner" src="<?= $this->baseUrl('img/banner.jpg');?>" width="1160" height="80" />
         </div>
 
-        <!-- HEADER -->
-<div id="top" style="background-color: #EEEEEE; height: 21px;">
+        <div class="top" style="background-color: #EEEEEE; height: 21px;">
 
-    <div id="header-logo" style="float: left">
-        <span class="pathway">
-        <a href="<?= $this->url(array('controller'=>'index'), 'default', true) ?>" ><b><?= $this->translate('Layout Pathway Home') ?></b></a>
-        <?php
-            $website_session = new Zend_Session_Namespace('website');
-            $moduleName = $website_session->module;
-            $moduleLabel = $website_session->moduleLabel;
-            $moduleURL = $website_session->moduleURL;
-            if (!empty($moduleName)) {
-                echo '<img src="'.$this->baseUrl('/img/arrow.png').'"/>';
-                echo '<a href="'. $this->url(array('controller'=>$moduleURL), 'default', true) .'" ><b>'.$this->translate($moduleLabel).'</b></a>';
-            }
-        ?>
-        </span>
-    </div>
+    	<div class="header-beadcrumb" style="float:left">
+	        <span>
+	        <a href="<?= $this->url(array('controller'=>'index'), 'default', true) ?>" ><b><?= $this->translate('Layout Pathway Home') ?></b></a>
+	        <?php
+	            $website_session = new Zend_Session_Namespace('website');
+	            $moduleName = $website_session->module;
+	            $moduleLabel = $website_session->moduleLabel;
+	            $moduleURL = $website_session->moduleURL;
+	            if (!empty($moduleName)) {
+	                echo '<img src="'.$this->baseUrl('/img/arrow.png').'"/>';
+	                echo '<a href="'. $this->url(array('controller'=>$moduleURL), 'default', true) .'" ><b>'.$this->translate($moduleLabel).'</b></a>';
+	            }
+	        ?>
+	        </span>
+    	</div>
+   
 
-    <div id="header-navigation" style="float: right">
+    	<div class="header-login" style="float: right">
 <?php
         $configuration = Zend_Registry::get("configuration");
         if($configuration->autoLogin != 1){
@@ -81,26 +81,36 @@
          }
         }
 ?>
-    </div>
+    	</div>
+    
+     </div>
+    
+<!-- Fin du header -->
 </div>
 
-</div>
-        <div class="main-body">
-        <!-- CONTENT  -->
-        <?= $this->layout()->content ?>
-        </div>
-    </div>
 
+    <!-- CONTENT -->
+    <div class="content">
+        <?= $this->layout()->content ?> 
+    </div>
+    
+
+	
+<!-- Fin du main-body -->
 </div>
-<div id="bottom">
-    <div><?= $this->translate('Layout Copyright');?>&nbsp;
+
+
+	<!-- Utilisé pour maintenir le bas de page en bas -->
+	<div class="push"></div> 
+
+<!-- Fin du wrapper -->
+</div>
+ 
+<div class="footer">
+ 	<?= $this->translate('Layout Copyright');?>&nbsp;
     <a id="lkContact" onclick="sendMail();" href="#"><?=$this->translate('Contact Us');?></a>
-    </div>
 </div>
 
-<script type="text/javascript">
-    window.onload = Genapp.util.resizeWrapper;
-</script>
-</div>
+
 </body>
 </html>

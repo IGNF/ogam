@@ -15,7 +15,7 @@ if(Genapp.CardPanel){
     Ext.apply(Genapp.CardPanel.prototype, {
         shownPages : ['predefinedrequestpage','consultationpage'],
         activeItem : 1,
-        widthToSubstract:120,
-        heightToSubstract:210
+        widthToSubstract:80, // 2*40 of margin
+        heightToSubstract:150 // 120 of header + 30 of footer
     });
 }

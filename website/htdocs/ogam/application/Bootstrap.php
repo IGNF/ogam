@@ -44,7 +44,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$view->headMeta()->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8'); //->appendHttpEquiv('Content-Language', 'fr-FR')
 		$view->headMeta()->appendName('robots', 'index, follow')->appendName('keywords', $view->translate('Layout Head Meta Keywords'))->appendName('description', $view->translate('Layout Head Meta Description'));
 		$view->headLink()->appendStylesheet($baseUrl.'css/global.css');
-		$view->headScript()->appendFile($baseUrl.'js/extjs/adapter/ext/ext-base.js', 'text/javascript')->appendFile($baseUrl.'js/genapp/source/genapp.js', 'text/javascript');
 		$view->contactEmailPrefix = $configuration->contactEmailPrefix;
 		$view->contactEmailSufix = $configuration->contactEmailSufix;
 

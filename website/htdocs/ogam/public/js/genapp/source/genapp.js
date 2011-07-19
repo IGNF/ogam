@@ -94,19 +94,4 @@ Genapp.util.post = function(url, params) {
     document.body.appendChild(temp);
     temp.submit();
     return temp;
-};
-
-/**
- * Resize the wrapper accordingly to the windows size
- */
-Genapp.util.resizeWrapper = function ()
-{
-    var viewHeight = Ext.lib.Dom.getViewHeight() - 66;
-    var wrapper = window.document.getElementById('wrapper');
-    var inside = window.document.getElementById('inside');
-    if(inside.offsetHeight < viewHeight){
-        wrapper.style.height = viewHeight +'px';
-    }else{
-        wrapper.style.height = inside.offsetHeight +'px';
-    }
 }; // The last semicolon is important, otherwise YUICompressor will fail
