@@ -4,9 +4,6 @@ if(Genapp.ConsultationPanel){
         hideDetails : false, 
         hideMapDetails : false,  
         hideCsvExportButton : false, 
-        hideAggregationCsvExportMenuItem : true,
-        hideAggregationButton : true,
-        hideInterpolationButton : true,
         hidePrintMapButton: false,
         hidePredefinedRequestSaveButton : true
     });
