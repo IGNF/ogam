@@ -692,12 +692,6 @@ listeners: {
             bbar: this.pagingToolbar,
             listeners:{
                 'activate': function (panel) {
-                    if(!this.hideInterpolationButton){
-                        this.interpolationButton.hide();
-                    }
-                    if(!this.hideAggregationButton){
-                        this.aggregationButton.hide();
-                    }
                     if(!this.hideCsvExportButton){
                         this.csvExportButton.show();
                     }
