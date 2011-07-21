@@ -32,6 +32,42 @@
         suf='<?= $this->contactEmailSufix; ?>';
         document.getElementById('lkContact').href="mailto:" + pre + "@" + suf;
       }
+
+     // Renvoi la hauteur de la page
+     function getWindowHeight() {
+    	    var windowHeight=0;
+    	    if (typeof(window.innerHeight)=='number') {
+    	        windowHeight=window.innerHeight;
+    	    }
+    	    else {
+    	     if (document.documentElement&&
+    	       document.documentElement.clientHeight) {
+    	         windowHeight = document.documentElement.clientHeight;
+    	    }
+    	    else {
+    	     if (document.body&&document.body.clientHeight) {
+    	         windowHeight=document.body.clientHeight;
+    	      }
+    	     }
+    	    }
+    	    return windowHeight;
+    	}
+
+	 // Dimensionne correctement la hauteur de "content"
+     function setFooter() {
+    	 var windowHeight = getWindowHeight();
+    	 var headerHeight = document.getElementById('header').offsetHeight;
+    	 var footerHeight = document.getElementById('footer').offsetHeight;
+    	 var contentHeight = (windowHeight -(headerHeight + footerHeight)) + 'px';
+    	 document.getElementById('content').style.height = contentHeight;    	   
+    	}
+
+     	window.onload = function() {
+    		setFooter();
+    	}
+    	window.onresize = function() {
+    		setFooter();
+    	}
   </script>
 </head> 
 <body>
@@ -41,7 +77,7 @@
 <div class="main-body">
 
 	<!-- HEADER -->
-	<div class="header">
+	<div class="header" id="header">
    
         <div class="banner">
             <img border="0" alt="Banner" src="<?= $this->baseUrl('img/banner.jpg');?>" width="1160" height="80" />
@@ -90,7 +126,7 @@
 
 
     <!-- CONTENT -->
-    <div class="content">
+    <div class="content" id="content">
         <?= $this->layout()->content ?> 
     </div>
     
@@ -99,14 +135,13 @@
 <!-- Fin du main-body -->
 </div>
 
-
 	<!-- Utilisé pour maintenir le bas de page en bas -->
 	<div class="push"></div> 
 
 <!-- Fin du wrapper -->
 </div>
  
-<div class="footer">
+<div class="footer"  id="footer">
  	<?= $this->translate('Layout Copyright');?>&nbsp;
     <a id="lkContact" onclick="sendMail();" href="#"><?=$this->translate('Contact Us');?></a>
 </div>
