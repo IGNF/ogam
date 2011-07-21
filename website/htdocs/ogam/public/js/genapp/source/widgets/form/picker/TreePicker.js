@@ -50,6 +50,7 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
     autoScroll : true,
     containerScroll : true,
     frame : false,
+    baseAttr: {singleClickExpand:true},
     root : {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}, // root is always '*'
     listeners:{
         'load':{// Expand by default the root children

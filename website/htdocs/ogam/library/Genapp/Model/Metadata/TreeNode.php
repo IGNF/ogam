@@ -82,7 +82,6 @@ class Genapp_Model_Metadata_TreeNode {
 			$return .= '{';
 			$return .= 'text:'.json_encode($this->label);
 			$return .= ',id:'.json_encode($this->code);
-			$return .= ',singleClickExpand:true';
 			if ($this->isLeaf) {
 				$return .= ',leaf:true';
 			}
