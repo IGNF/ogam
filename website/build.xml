@@ -281,7 +281,7 @@
 		<echo>Windows</echo>
 		<exec executable="./hudson/ext-doc.cmd" dir=".">
 			<arg value="${libraries_java.dir}/lib/ext-doc/ext-doc.jar" />
-			<arg value="${libraries_java.dir}/lib/ext-doc/template/ext/template.xml" />
+			<arg value="${libraries_java.dir}" />
 		</exec>
 	</target>
 
@@ -291,7 +291,7 @@
 		<chmod file="./hudson/ext-doc.sh" perm="ugo+rx" />
 		<exec executable="./hudson/ext-doc.sh" dir=".">
 			<arg value="${libraries_java.dir}/lib/ext-doc/ext-doc.jar" />
-			<arg value="${libraries_java.dir}/lib/ext-doc/template/ext/template.xml" />
+			<arg value="${libraries_java.dir}" />
 		</exec>
 	</target>
 
