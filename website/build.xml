@@ -15,13 +15,9 @@
 	<property name="test_result.dir" value="./test_result" />
 
 	<!--
-	<property name="inherent.js.substitute" value="./config" />
-	<property name="inherent.js.new" value="./config" />
-	<property name="inherent.js.patch" value="./config" />
-	<property name="inherent.css.substitute" value="" />
-	<property name="inherent.css.new" value="" />
-	<property name="inherent.css.patch" value="" />
-    -->
+	<property name="custom.js" value="./config" />
+	<property name="custom.css" value="" />
+	-->
 
 	<!-- You need to checkout on your workspace the libs_java project hosted on the repository for the yuicompressor files -->
 	<property name="cps.yui.compressor.jar" value="${libraries_java.dir}/lib/ant/yuicompressor/yuicompressor-2.4.2.jar" />
@@ -90,39 +86,25 @@
 		<delete file="${cps.css.pack.path}" quiet="true" />
 		<delete file="${cps.css.min.path}" quiet="true" />
 
-		<!-- Gets the js substitute file to exclude -->
-		<fileset id="inherent_js_substitute_fileset" dir="${inherent.js.substitute}" includes="**/*.js" erroronmissingdir="false" />
-		<pathconvert pathsep=",**/" property="js_substitute_to_exclude" refid="inherent_js_substitute_fileset">
-			<mapper type="flatten" />
-		</pathconvert>
 
 		<!-- Concatenation of all the JS in one file -->
 		<concat destfile="${cps.js.pack.path}">
-			<fileset id="sounds_fileset" dir="${cps.src.dir}" includes="**/*.js" excludes="**/locale/*,**/genapp.js,**/${js_substitute_to_exclude}" />
+			<fileset id="sounds_fileset" dir="${cps.src.dir}" includes="**/*.js" excludes="**/locale/*,**/genapp.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/basiccheckbox/BasicCheckBox.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/datePatch/datePatchExtjs3.1.1.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/rowExpander/RowExpander.js" />
 
-			<fileset dir="${inherent.js.new}" includes="**/*.js" erroronmissingdir="false" />
-			<fileset dir="${inherent.js.patch}" includes="**/*.js" erroronmissingdir="false" />
-			<fileset dir="${inherent.js.substitute}" includes="**/*.js" erroronmissingdir="false" />
+			<fileset dir="${custom.js}" includes="**/*.js" erroronmissingdir="false" />
 		</concat>
 
-		<!-- Gets the css substitute file to exclude -->
-		<fileset id="inherent_css_substitute_fileset" dir="${inherent.css.substitute}" includes="**/*.css" erroronmissingdir="false" />
-		<pathconvert pathsep=",**/" property="css_substitute_to_exclude" refid="inherent_css_substitute_fileset">
-			<mapper type="flatten" />
-		</pathconvert>
 
 		<!-- Concatenation of all the CSS in one file -->
 		<concat destfile="${cps.css.pack.path}">
-			<fileset dir="${cps.resrcs.dir}" includes="**/*.css" excludes="**/${css_substitute_to_exclude}" />
+			<fileset dir="${cps.resrcs.dir}" includes="**/*.css" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/basiccheckbox/BasicCheckBox.css" />
 			<fileset file="${src.dir}ogam/public/css/extjsux.css" />
 
-			<fileset dir="${inherent.css.new}" includes="**/*.css" erroronmissingdir="false" />
-			<fileset dir="${inherent.css.patch}" includes="**/*.css" erroronmissingdir="false" />
-			<fileset dir="${inherent.css.substitute}" includes="**/*.css" erroronmissingdir="false" />
+			<fileset dir="${custom.css}" includes="**/*.css" erroronmissingdir="false" />
 		</concat>
 
 		<!-- Compress the concatened files on the main directory -->
@@ -160,7 +142,7 @@
 	<!-- Suppression des répertoires de travail -->
 	<target name="_clean">
 		<delete dir="${dist.dir}" />
-		<delete dir="${dist.dir}/../inherent/" />
+		<delete dir="${dist.dir}/../custom/" />
 	</target>
 
 	<!-- Prépare le répertoire à copier pour le site web -->
@@ -200,8 +182,8 @@
 		<copy todir="${dist.dir}/ogam/public/js/extjs/src/locale/">
 			<fileset dir="${src.dir}/ogam/public/js/extjs/src/locale/" />
 		</copy>
-		<copy todir="${dist.dir}/../inherent/" includeEmptyDirs="true">
-			<fileset dir="${src.dir}/../inherent/" erroronmissingdir="false">
+		<copy todir="${dist.dir}/../custom/" includeEmptyDirs="true">
+			<fileset dir="${src.dir}/../custom/" erroronmissingdir="false">
 				<exclude name="**/application/configs/**" />
 				<exclude name="**/.htaccess" />
 			</fileset>
@@ -212,7 +194,7 @@
 			<fileset dir="${src.dir}">
 				<include name="**/application/views/scripts/**/*.phtml" />
 			</fileset>
-			<fileset dir="${src.dir}/../inherent/" erroronmissingdir="false">
+			<fileset dir="${src.dir}/../custom/" erroronmissingdir="false">
 				<include name="**/application/views/scripts/**/*.phtml" />
 			</fileset>
 			<filterchain>
