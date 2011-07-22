@@ -86,6 +86,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$translations = $this->_addTranslation(array(
 			APPLICATION_PATH.'/lang'
 		), $translate);
+		
 		// Setup the translation with files specific to the app
 		if (defined('CUSTOM_APPLICATION_PATH')) {
 			$translations = $this->_addTranslation(array(
