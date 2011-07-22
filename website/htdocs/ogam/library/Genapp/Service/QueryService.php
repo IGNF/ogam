@@ -170,16 +170,15 @@ class Genapp_Service_QueryService {
 	public function getDatasets() {
 		$datasetIds = $this->metadataModel->getDatasetsForDisplay();
 
-		$json = "{";
-		$json .= "metaData:{";
-		$json .= "root:'rows',";
-		$json .= "fields:[";
-		$json .= "'id',";
-		$json .= "'label',";
-		$json .= "'is_default'";
-		$json .= "]";
-		$json .= "},";
-		$json .= "rows:".json_encode($datasetIds).'}';
+		$json = '{"metaData":{';
+		$json .= '"root":"rows",';
+		$json .= '"fields":[';
+		$json .= '"id",';
+		$json .= '"label",';
+		$json .= '"is_default"';
+		$json .= ']';
+		$json .= '},';
+		$json .= '"rows":'.json_encode($datasetIds).'}';
 
 		return $json;
 	}
@@ -728,7 +727,7 @@ class Genapp_Service_QueryService {
 
 		// Generate the JSON string
 		$total = count($predefinedRequestList);
-		$json = '{success:true, total:'.$total.',rows:[';
+		$json = '{"success":true, "total":'.$total.',"rows":[';
 
 		foreach ($predefinedRequestList as $predefinedRequest) {
 			$json .= $predefinedRequest->toJSON().",";
@@ -757,7 +756,7 @@ class Genapp_Service_QueryService {
 
 		// Generate the JSON string
 		$total = count($predefinedRequestCriterias);
-		$json = '{success:true, criteria:[';
+		$json = '{"success":true, "criteria":[';
 
 		foreach ($predefinedRequestCriterias as $criteria) {
 
@@ -770,36 +769,18 @@ class Genapp_Service_QueryService {
 				if ($criteria->subtype == "MODE") {
 
 					$options = $this->metadataModel->getModes($criteria->unit);
-					$json .= ',{options:[';
+					$json .= ',{"options":[';
 					foreach ($options as $code => $label) {
-						$json .= '["'.$code.'","'.$label.'"],';
+						$json .= '['.json_encode($code).','.json_encode($label).'],';
 					}
 					$json = substr($json, 0, -1);
 					$json .= ']}';
-				} else if ($criteria->subtype == "DYNAMIC") {
-
-					$options = $this->metadataModel->getDynamodes($criteria->unit);
-					$json .= ',{options:[';
-					foreach ($options as $code => $label) {
-						$json .= '["'.$code.'","'.$label.'"],';
-					}
-					$json = substr($json, 0, -1);
-					$json .= ']}';
-				} else if ($criteria->subtype == "TREE") {
-
-					// Get the nodes of the tree, from the root (-1) and down to 2 levels
-					$options = $this->metadataModel->getTreeModes($criteria->unit, -1, 2);
-					$json .= ',{options:[';
-					foreach ($options as $code => $label) {
-						$json .= '["'.$code.'","'.$label.'"],';
-					}
-					$json = substr($json, 0, -1);
-					$json .= ']}';
-				}
+				} 
+				// For DYNAMIC and TREE subtypes, the list is populated using an ajax request
 			} else if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
 				// For the RANGE field, get the min and max values
 				$range = $this->metadataModel->getRange($criteria->data);
-				$json .= ',{min:'.$range->min.',max:'.$range->max.'}';
+				$json .= ',{"min":'.$range->min.',"max":'.$range->max.'}';
 			} else {
 				$json .= ',{}'; // no options
 			}

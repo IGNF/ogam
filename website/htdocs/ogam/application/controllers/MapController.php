@@ -357,32 +357,32 @@ class MapController extends AbstractOGAMController {
 		foreach ($legendItems as $legendItem) {
 
 			$json .= '{';
-			$json .= 'text: "'.$legendItem->label.'", ';
-			$json .= 'maxscale: "'.$legendItem->maxScale.'", ';
-			$json .= 'minscale: "'.$legendItem->minScale.'", ';
+			$json .= '"text": "'.$legendItem->label.'", ';
+			$json .= '"maxscale": "'.$legendItem->maxScale.'", ';
+			$json .= '"minscale": "'.$legendItem->minScale.'", ';
 
-			$json .= 'expanded: ';
+			$json .= '"expanded": ';
 			if ($legendItem->isExpended == 1) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
-			$json .= 'checked: ';
+			$json .= '"checked": ';
 			if ($legendItem->isChecked == 1) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
-			$json .= 'hidden: ';
+			$json .= '"hidden": ';
 			if ($legendItem->isHidden == 1 && !in_array($legendItem->layerName, $activatedLayers)) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
-			$json .= 'disabled: ';
+			$json .= '"disabled": ';
 			if ($legendItem->isDisabled == 1) {
 				$json .= 'true, ';
 			} else {
@@ -391,14 +391,14 @@ class MapController extends AbstractOGAMController {
 
 			// The item is a leaf
 			if ($legendItem->isLayer == 1) {
-				$json .= 'leaf: true, ';
-				$json .= 'layerName: "'.$legendItem->layerName.'" ';
+				$json .= '"leaf": true, ';
+				$json .= '"layerName": "'.$legendItem->layerName.'" ';
 			} else {
 				// The item is a node
-				$json .= 'leaf: false, ';
+				$json .= '"leaf": false, ';
 
 				// Recursive call
-				$json .= 'children: ['.$this->_getLegendItems($legendItem->itemId, $countryCode).']';
+				$json .= '"children": ['.$this->_getLegendItems($legendItem->itemId, $countryCode).']';
 			}
 			$json .= '}, ';
 		}
