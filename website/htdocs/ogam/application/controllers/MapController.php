@@ -144,7 +144,7 @@ class MapController extends AbstractOGAMController {
 		$resolutions = $this->_getResolutions($scales);
 
 		// Build the base URL for cached tiles
-		$out = "{url_array_cached:[";
+		$out = '{"url_array_cached":[';
 		foreach ($tilecacheURLs as $tilecacheURL) {
 			$out .= '"'.$tilecacheURL.'&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap",';
 		}
@@ -156,7 +156,7 @@ class MapController extends AbstractOGAMController {
 
 		// Build the base URL for mapserver tiles
 		$sessionId = session_id();
-		$out = "url_array_tiled:[";
+		$out = '"url_array_tiled":[';
 		foreach ($tileBaseURLs as $pathBaseURL) {
 			$out .= '"'.$pathBaseURL.$proxyPath."?SESSION_ID=".$sessionId.'",'; // appel direct
 		}
@@ -167,123 +167,122 @@ class MapController extends AbstractOGAMController {
 		echo $out.'],';
 
 		// For each available layer, build the corresponding URL and definition
-		$out = 'layers:[';
+		$out = '"layers":[';
 		foreach ($layers as $layer) {
 
 			$out .= "{";
 
 			// OpenLayer object (tiled or not)
 			if ($layer->isUntiled == 1) {
-				$out .= "untiled:true";
+				$out .= '"untiled":true';
 			} else {
-				$out .= "untiled:false";
+				$out .= '"untiled":false';
 			}
 
 			// Logical layer name
-			$out .= ", name:'".$layer->layerName."'";
+			$out .= ', "name":"'.$layer->layerName.'"';
 
 			// URL for the layer
 			if ($layer->isCached == 1) {
-				$out .= ", url:'url_array_cached'";
+				$out .= ', "url":"url_array_cached"';
 			} else {
-				$out .= ", url:'url_array_tiled'";
+				$out .= ', "url":"url_array_tiled"';
 			}
 
 			// Has a legend ?
 			if ($layer->hasLegend == 1) {
-				$out .= ", 'hasLegend': true";
+				$out .= ', "hasLegend": true';
 			} else {
-				$out .= ", 'hasLegend': false";
+				$out .= ', "hasLegend": false';
 			}
 
-			$out .= ", params:{";
+			$out .= ', "params":{';
 
 			// Mapserver Layer name (or list of names)
 			$layerNames = $layer->mapservLayers;
-			$out .= "'layers' : ['".$layerNames."']";
+			$out .= '"layers" : ["'.$layerNames.'"]';
 
 			// Transparency
 			if ($layer->isTransparent == 1) {
-				$out .= ", 'transparent': 'true'";
+				$out .= ', "transparent": true';
 			} else {
-				$out .= ", 'transparent': 'false'";
+				$out .= ', "transparent": false';
 			}
 
 			//  Image Format
-			$out .= ", format: 'image/".$layer->imageFormat."'";
+			$out .= ', "format": "image/'.$layer->imageFormat.'"';
 
 			// Hidden ?
 			if ($layer->isHidden == 1) {
-				$out .= ", 'isHidden': true";
+				$out .= ', "isHidden": true';
 			} else {
-				$out .= ", 'isHidden': false";
+				$out .= ', "isHidden": false';
 			}
 
 			// Disabled ?
 			if ($layer->isDisabled == 1) {
-				$out .= ", 'isDisabled': true";
+				$out .= ', "isDisabled": true';
 			} else {
-				$out .= ", 'isDisabled': false";
+				$out .= ', "isDisabled": false';
 			}
 
 			// Checked ?
 			if ($layer->isChecked == 1) {
-				$out .= ", 'isChecked': true";
+				$out .= ', "isChecked": true';
 			} else {
-				$out .= ", 'isChecked': false";
+				$out .= ', "isChecked": false';
 			}
 
-			$out .= ", 'activateType': '".$layer->activateType."'";
+			$out .= ', "activateType": "'.$layer->activateType.'"';
 
 			// We will test this flag to know if we need to generate a SLD
 			if ($layer->hasSLD == 1) {
-				$out .= ", 'hasSLD': true";
+				$out .= ', "hasSLD": true';
 			} else {
-				$out .= ", 'hasSLD': false";
+				$out .= ', "hasSLD": false';
 			}
 
 			// Add the sessionid
-			$out .= ", 'session_id': '".$sessionId."'";
+			$out .= ', "session_id": "'.$sessionId.'"';
 
 			// Add the country code
-			$out .= ", 'country_code': '".$countryCode."'";
+			$out .= ', "country_code": "'.$countryCode.'"';
 
-			$out .= "}";
+			$out .= '}';
 
 			// Options
-			$out .= ", options:{";
-			$out .= "'buffer' : 0";
+			$out .= ', "options":{"buffer": 0';
 
 			// Transition effect
 			if (!empty($layer->transitionEffect)) {
-				$out .= ", transitionEffect: '".$layer->transitionEffect."'";
+				$out .= ', "transitionEffect": "'.$layer->transitionEffect.'"';
 			}
 
 			// Layer visibility by default
 			if ($layer->isDefault == 1) {
-				$out .= ", 'visibility': true";
+				$out .= ', "visibility": true';
 			} else {
-				$out .= ", 'visibility': false";
+				$out .= ', "visibility": false';
 			}
 
 			// Is a Base Layer ?
 			if ($layer->isBaseLayer == 1) {
-				$out .= ", 'isBaseLayer': true";
+				$out .= ', "isBaseLayer": true';
 			} else {
-				$out .= ", 'isBaseLayer': false";
+				$out .= ', "isBaseLayer": false';
 			}
 
 			// Label
-			$out .= ',label:\''.addslashes($layer->layerLabel).'\'';
+			$out .= ',"label":"'.addslashes($layer->layerLabel).'"';
 
 			// Opacity
 			if ($layer->opacity != "") {
-				$out .= ", 'opacity': ".($layer->opacity / 100);
+				$out .= ', "opacity":'.($layer->opacity / 100);
 			}
 
 			// Scale min/max management
 			if ($layer->maxscale != "" || $layer->minscale != "") {
-				$out .= ", 'resolutions': [";
+				$out .= ', "resolutions": [';
 
 				$restable = "";
 				foreach ($scales as $scale) {
