@@ -293,7 +293,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : '.$e);
-			echo "{success:false,errorMessage:'".json_encode($e->getMessage())."'}";
+			echo '{"success":false,errorMessage:"'.json_encode($e->getMessage()).'"}';
 		}
 
 		// Activate the result layer

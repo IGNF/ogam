@@ -279,7 +279,7 @@ class Genapp_Service_QueryService {
 		//$this->logger->debug('$queryObject : '.print_r($queryObject, true));
 
 		if (sizeof($formQuery->results) == 0) {
-			$json = "{ success: false, errorMessage: 'At least one result column should be selected'}";
+			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
 		} else {
 
 			// Generate the SQL Request
@@ -319,7 +319,7 @@ class Genapp_Service_QueryService {
 			$websiteSession->schema = $this->schema;
 
 			// Send the result as a JSON String
-			$json = '{success:true,';
+			$json = '{"success":true,';
 
 			// Metadata
 			$json .= '"columns":[';
@@ -330,12 +330,12 @@ class Genapp_Service_QueryService {
 				$formField = $this->metadataModel->getFormField($formField->format, $formField->data);
 
 				// Export the JSON
-				$json .= '{'.$formField->toJSON().', hidden:false},';
+				$json .= '{'.$formField->toJSON().', "hidden":false},';
 			}
 			// Add the identifier of the line
-			$json .= '{name:"id",label:"Identifier of the line",inputType:"TEXT",definition:"The plot identifier", hidden:true},';
+			$json .= '{"name":"id","label":"Identifier of the line","inputType":"TEXT","definition":"The plot identifier", "hidden":true},';
 			// Add the plot location in WKT
-			$json .= '{name:"location_centroid",label:"Location centroid",inputType:"TEXT",definition:"The plot location", hidden:true}';
+			$json .= '{"name":"location_centroid","label":"Location centroid","inputType":"TEXT","definition":"The plot location", "hidden":true}';
 			$json .= ']';
 			if ($withSQL) {
 				$json .= ', "SQL":'.json_encode($select.$fromwhere);
@@ -407,9 +407,9 @@ class Genapp_Service_QueryService {
 			}
 
 			// Send the result as a JSON String
-			$json = '{success:true,';
-			$json .= 'total:'.$countResult.',';
-			$json .= 'rows:[';
+			$json = '{"success":true,';
+			$json .= '"total":'.$countResult.',';
+			$json .= '"rows":[';
 			foreach ($result as $line) {
 				$json .= '[';
 
