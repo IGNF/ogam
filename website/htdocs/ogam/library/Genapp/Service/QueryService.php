@@ -66,11 +66,11 @@ class Genapp_Service_QueryService {
 	 */
 	private function _generateQueryFormsJSON($forms) {
 
-		$json = '{success:true,data:[';
+		$json = '{"success":true,"data":[';
 
 		foreach ($forms as $form) {
 			// Add the criteria
-			$json .= "{".$form->toJSON().',criteria:[';
+			$json .= '{'.$form->toJSON().',"criteria":[';
 			foreach ($form->criteriaList as $field) {
 				$json .= '{'.$field->toCriteriaJSON();
 				// For the SELECT field, get the list of options
@@ -78,7 +78,7 @@ class Genapp_Service_QueryService {
 
 					if ($field->subtype == "MODE") {
 						$options = $this->metadataModel->getModes($field->unit);
-						$json .= ',params:{options:[';
+						$json .= ',"params":{"options":[';
 						foreach ($options as $code => $label) {
 							$json .= '['.json_encode($code).','.json_encode($label).'],';
 						}
@@ -88,9 +88,9 @@ class Genapp_Service_QueryService {
 					// For DYNAMIC and TREE modes, the list is populated using an ajax request
 				}
 				// For the RANGE field, get the min and max values
-				if ($field->type == "NUMERIC" && "RANGE") {
+				if ($field->type == "NUMERIC" && $field->subtype == "RANGE") {
 					$range = $this->metadataModel->getRange($field->data);
-					$json .= ',params:{min:'.$range->min.',max:'.$range->max.'}';
+					$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
 				}
 				$json .= '},';
 
@@ -99,7 +99,7 @@ class Genapp_Service_QueryService {
 				$json = substr($json, 0, -1);
 			}
 			// Add the columns
-			$json .= '],columns:[';
+			$json .= '],"columns":[';
 			foreach ($form->resultsList as $field) {
 				$json .= '{'.$field->toResultJSON().'},';
 			}

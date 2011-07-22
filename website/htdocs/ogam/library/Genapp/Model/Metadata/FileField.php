@@ -31,12 +31,12 @@ class Genapp_Model_Metadata_FileField extends Genapp_Model_Metadata_Field {
 	 */
 	public function toJSON() {
 
-		$json = 'name:'.json_encode($this->format.'__'.$this->data);
-		$json .= ',format:'.json_encode($this->format);
-		$json .= ',label:'.json_encode($this->label);
-		$json .= ',isMandatory:'.json_encode($this->isMandatory);
-		$json .= ',definition:'.json_encode($this->definition);
-		$json .= ',mask:'.json_encode($this->mask);
+		$json = '"name":'.json_encode($this->format.'__'.$this->data);
+		$json .= ',"format":'.json_encode($this->format);
+		$json .= ',"label":'.json_encode($this->label);
+		$json .= ',"isMandatory":'.json_encode($this->isMandatory);
+		$json .= ',"definition":'.json_encode($this->definition);
+		$json .= ',"mask":'.json_encode($this->mask);
 
 		return $json;
 	}

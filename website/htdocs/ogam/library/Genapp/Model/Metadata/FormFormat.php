@@ -38,7 +38,7 @@ class Genapp_Model_Metadata_FormFormat extends Genapp_Model_Metadata_Format {
 	 * @return a JSON string
 	 */
 	public function toJSON() {
-		return 'id:'.json_encode($this->format).',label:'.json_encode($this->label);
+		return '"id":'.json_encode($this->format).',"label":'.json_encode($this->label);
 	}
 
 }

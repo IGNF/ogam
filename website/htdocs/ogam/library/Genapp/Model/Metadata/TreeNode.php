@@ -79,14 +79,13 @@ class Genapp_Model_Metadata_TreeNode {
 			$return = substr($return, 0, -1); // remove the last comma
 		} else {
 			// We return the root itself plus the children
-			$return .= '{';
-			$return .= 'text:'.json_encode($this->label);
-			$return .= ',id:'.json_encode($this->code);
+			$return .= '{"text":'.json_encode($this->label);
+			$return .= ',"id":'.json_encode($this->code);
 			if ($this->isLeaf) {
-				$return .= ',leaf:true';
+				$return .= ',"leaf":true';
 			}
 			if (!empty($this->children)) {
-				$return .= ',children: [';
+				$return .= ',"children": [';
 				foreach ($this->children as $child) {
 					$return .= $child->toJSON().',';
 				}
