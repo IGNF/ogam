@@ -88,6 +88,10 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		$sessionId = session_id();
 		$this->resultLocationModel->cleanPreviousResults($sessionId);
 
+		// Check if the parameter of the default page is set
+		if ($this->_request->getParam("default") == "predefined")
+			$this->view->default = 'predefined';
+
 		$this->render('show-query-form');
 	}
 
