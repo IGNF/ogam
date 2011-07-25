@@ -34,8 +34,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 */
 	protected function _initCustomRouter() {
 
-		$this->logger->debug("_initCustomRouter");
-
 		// Vérifie que le contrôleur frontal est bien présent, et le récupère
 		$this->bootstrap('FrontController');
 		$front = $this->getResource('FrontController');
