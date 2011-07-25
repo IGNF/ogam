@@ -5,6 +5,8 @@
  * @package views
  */
 ?>
+  	
+
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/adapter/ext/ext-base.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all-debug.js') ?>"></script>
@@ -73,6 +75,7 @@
     Ext.onReady(function(){
     	Genapp.base_url = "<?= $this->baseUrl(); ?>/";
     	Genapp.ajax_query_url = "<?= $this->baseUrl('query') ?>/";
+    	Genapp.configure();
     	Genapp.buildApplication();
     	Genapp.cardPanel.on('resizewrapper',Genapp.util.resizeWrapper);
     });
