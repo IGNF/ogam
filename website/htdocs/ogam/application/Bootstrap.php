@@ -159,7 +159,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	private function _addTranslation($dirs, $translate) {
 		$translations = array();
 		foreach ($dirs as $dir) {
-			if ($handle = opendir($dir)) {
+			if ($handle = @opendir($dir)) {
 				while (false !== ($file = readdir($handle))) {
 					if ($file != "." && $file != ".." && $file != ".svn") {
 						$explodedFile = explode('.', $file);
