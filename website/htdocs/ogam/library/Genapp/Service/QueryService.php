@@ -536,9 +536,10 @@ class Genapp_Service_QueryService {
 	 *
 	 * @param String $id The identifier of the line
 	 * @param String $detailLayers The names of the layers used to display the images in the detail panel.
+	 * @param String $datasetId The identifier of the dataset (to filter data)
 	 * @return JSON representing the detail of the result line.
 	 */
-	public function getDetails($id, $detailLayers) {
+	public function getDetails($id, $detailLayers, $datasetId = null) {
 
 		$this->logger->debug('getDetails : '.$id);
 
@@ -619,13 +620,13 @@ class Genapp_Service_QueryService {
 		$json .= "formats:[";
 		// List all the formats, starting with the ancestors
 		foreach ($ancestors as $ancestor) {
-			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor);
+			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
 			if ($ancestorJSON !== '') {
 				$json .= $ancestorJSON.',';
 			}
 		}
 		// Add the current data
-		$dataJSON = $this->genericService->datumToDetailJSON($data);
+		$dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
 		if ($dataJSON !== '') {
 			$json .= $dataJSON;
 		}

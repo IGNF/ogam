@@ -439,10 +439,10 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * Get the information about the children of a line of data.
 	 *
 	 * @param DataObject $data the data object we're looking at.
-	 * @param String $dataset the dataset id
+	 * @param String $datasetId the dataset id
 	 * @return Array[Format => List[DataObject]] The lines of data in the parent tables.
 	 */
-	public function getChildren($data, $dataset = null) {
+	public function getChildren($data, $datasetId = null) {
 		$db = $this->getAdapter();
 
 		$children = array();
@@ -451,19 +451,19 @@ class Genapp_Model_DbTable_Generic_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		$this->logger->info('getChildren');
+		$this->logger->info('getChildren dataset : '.$datasetId);
 
 		// Get the children of the current table
 		$sql = "SELECT *";
 		$sql .= " FROM TABLE_TREE TT";
-		if ($dataset != null) {
+		if ($datasetId != null) {
 			$sql .= " JOIN (SELECT DISTINCT DATASET_ID, SCHEMA_CODE, FORMAT FROM DATASET_FIELDS) as DF";
 			$sql .= " ON DF.SCHEMA_CODE = TT.SCHEMA_CODE AND DF.FORMAT = TT.CHILD_TABLE";
 		}
 		$sql .= " WHERE TT.SCHEMA_CODE = '".$tableFormat->schemaCode."'";
 		$sql .= " AND TT.PARENT_TABLE = '".$tableFormat->format."'";
-		if ($dataset != null) {
-			$sql .= " AND DF.DATASET_ID = '".$dataset."'";
+		if ($datasetId != null) {
+			$sql .= " AND DF.DATASET_ID = '".$datasetId."'";
 		}
 
 		$this->logger->info('getChildren : '.$sql);

@@ -50,15 +50,16 @@ class Genapp_Service_GenericService {
 	 * Serialize the data object as a JSON string.
 	 *
 	 * @param DataObject $data the data object we're looking at.
+	 * @param String $dataset the dataset identifier (optional), limit the children to the current dataset.
 	 * @return JSON
 	 */
-	public function datumToDetailJSON($data) {
+	public function datumToDetailJSON($data, $datasetId = null) {
 
 		$this->logger->info('datumToDetailJSON');
 
-		// Get children
+		// Get children for the current dataset
 		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
-		$children = $this->genericModel->getChildren($data);
+		$children = $this->genericModel->getChildren($data, $datasetId);
 
 		$childrenCount = 0;
 		if(!empty($children)){

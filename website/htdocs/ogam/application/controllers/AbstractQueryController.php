@@ -370,12 +370,16 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 
 		$this->logger->debug('getDetailsAction : '.$id);
 
+		// Get the current dataset to filter the results
+		$websiteSession = new Zend_Session_Namespace('website');
+		$datasetId = $websiteSession->datasetId ;
+
 		// Get the identifier of the line from the session
 		if ($id == null) {
 			$id = $this->getRequest()->getPost('id');
 		}
 
-		echo $this->queryService->getDetails($id, $this->detailsLayers);
+		echo $this->queryService->getDetails($id, $this->detailsLayers, $datasetId);
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
