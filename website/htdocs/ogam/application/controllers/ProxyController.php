@@ -246,7 +246,6 @@ class ProxyController extends AbstractOGAMController {
 			}
 			fclose($handle);
 		}
-		//$this->logger->debug('$gml : '.$gml);
 
 		// On parse le résultat (à l'ancienne) et on affiche les données
 
