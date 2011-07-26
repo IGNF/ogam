@@ -90,7 +90,8 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 
 		// Check if the parameter of the default page is set
 		if ($this->_request->getParam("default") == "predefined") {
-			$this->view->default = 'predefined';
+			$this->logger->debug('defaultTab predefined');
+			$this->view->defaultTab = 'predefined';
 		}
 
 		$this->render('show-query-form');

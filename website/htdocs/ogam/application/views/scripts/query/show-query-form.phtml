@@ -76,6 +76,13 @@
     	Genapp.base_url = "<?= $this->baseUrl(); ?>/";
     	Genapp.ajax_query_url = "<?= $this->baseUrl('query') ?>/";
     	Genapp.configure();
+
+<?php  		
+		if ($this->defaultTab == 'predefined') {
+    		echo "Ext.apply(Genapp.CardPanel.prototype, { activeItem : 0});";
+		}
+?>
+    	    	
     	Genapp.buildApplication();
     	Genapp.cardPanel.on('resizewrapper',Genapp.util.resizeWrapper);
     });
