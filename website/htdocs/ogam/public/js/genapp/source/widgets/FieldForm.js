@@ -485,12 +485,12 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.hiddenName = field.name;
                 field.triggerAction = 'all';
                 field.typeAhead = true;
-                field.mode = 'remote';
                 field.displayField = 'label';
                 field.valueField  = 'code';
                 field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
                 if (record.subtype == 'DYNAMIC') {
-                	field.store = new Ext.data.JsonStore({
+                	 field.mode = 'remote';
+                     field.store = new Ext.data.JsonStore({
                 		root: 'codes',
                 		idProperty: 'code',
 	                    fields:[
@@ -501,11 +501,12 @@ Ext.apply(Genapp.FieldForm.prototype, {
 	                    baseParams:{'unit':record.unit}
 	                });
                 } else {
-	                field.store = new Ext.data.ArrayStore({
+                    field.mode = 'local';
+                    field.store = new Ext.data.ArrayStore({
 	                    fields:['code','label'],
 	                    data : record.params.options
 	                });
-                }
+	            }
                 break;
             case 'DATE': // The input type DATE correspond generally to a data type DATE
                 field.xtype = 'daterangefield';
