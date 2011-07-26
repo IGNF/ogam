@@ -72,6 +72,13 @@
     Ext.onReady(function(){
     	Genapp.base_url = "<?= $this->baseUrl(); ?>/";
     	Genapp.ajax_query_url = "<?= $this->baseUrl('harmonizationquery') ?>/";
+
+    	<?php  		
+    			if ($this->defaultTab == 'predefined') {
+    	    		echo "Ext.apply(Genapp.CardPanel.prototype, { activeItem : 0});";
+    			}
+    	?>
+    	
     	Genapp.configure();
         Genapp.buildApplication();
         Genapp.cardPanel.on('resizewrapper',Genapp.util.resizeWrapper);
