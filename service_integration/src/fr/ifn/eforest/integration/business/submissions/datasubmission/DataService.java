@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.util.CSVFile;
 import fr.ifn.eforest.common.business.AbstractService;
 import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.business.Schemas;
@@ -192,14 +191,8 @@ public class DataService extends AbstractService {
 				// Get the path of the file
 				String filePath = requestParameters.get(fileFormat.getFormat());
 
-				// Read the CSV files
-				CSVFile csvFile = new CSVFile(filePath);
-
-				// Store the name and path of the file
-				submissionDAO.addSubmissionFile(submissionId, fileFormat.getFormat(), filePath, csvFile.getRowsCount());
-
 				// Insert the data in database with automatic mapping ...
-				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, csvFile, fileFormat.getFormat(), requestParameters, this.thread);
+				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, filePath, fileFormat.getFormat(), requestParameters, this.thread);
 
 			}
 

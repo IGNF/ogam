@@ -12,8 +12,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+import fr.ifn.eforest.common.util.InconsistentNumberOfColumns;
 import fr.ifn.eforest.common.util.CSVFile;
-import fr.ifn.eforest.common.util.LineInfo;
 import fr.ifn.eforest.common.business.AbstractThread;
 import fr.ifn.eforest.common.business.Data;
 import fr.ifn.eforest.common.business.GenericMapper;
@@ -27,6 +27,7 @@ import fr.ifn.eforest.common.database.metadata.FileFieldData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
 import fr.ifn.eforest.common.database.metadata.TableFormatData;
+import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
 import fr.ifn.eforest.integration.database.rawdata.CheckErrorDAO;
 
 /**
@@ -47,14 +48,15 @@ public class IntegrationService extends GenericMapper {
 	private MetadataDAO metadataDAO = new MetadataDAO();
 	private GenericDAO genericDAO = new GenericDAO();
 	private CheckErrorDAO checkErrorDAO = new CheckErrorDAO();
+	private SubmissionDAO submissionDAO = new SubmissionDAO();
 
 	/**
 	 * Insert a dataset coming from a CSV in database.
 	 * 
 	 * @param submissionId
 	 *            the submission identifier
-	 * @param csvFile
-	 *            the source data file
+	 * @param filePath
+	 *            the source data file path
 	 * @param sourceFormat
 	 *            the source format identifier
 	 * @param requestParameters
@@ -63,68 +65,48 @@ public class IntegrationService extends GenericMapper {
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
 	 * @return the status of the update
 	 */
-	public boolean insertData(Integer submissionId, CSVFile csvFile, String sourceFormat, Map<String, String> requestParameters, AbstractThread thread)
+	public boolean insertData(Integer submissionId, String filePath, String sourceFormat, Map<String, String> requestParameters, AbstractThread thread)
 			throws Exception {
 
 		logger.debug("insertData");
 		boolean isInsertValid = true;
+		CSVFile csvFile = null;
 		try {
 
 			// First get the description of the content of the CSV file
 			List<FileFieldData> sourceFieldDescriptors = metadataDAO.getFileFields(sourceFormat);
 
-			// Check if the file is mandatory (any of its field is mandatory)
-			boolean fileMandatory = false;
-			Iterator<FileFieldData> sourceFieldsIter = sourceFieldDescriptors.iterator();
-			while (sourceFieldsIter.hasNext()) {
-				FileFieldData sourceField = sourceFieldsIter.next();
-				fileMandatory = fileMandatory || sourceField.getIsMandatory();
+			// Parse the CSV file and check the number of lines/columns
+
+			try {
+				csvFile = new CSVFile(filePath);
+			} catch (InconsistentNumberOfColumns ince) {
+
+				// The file number of columns changes from line to line
+				CheckException e = new CheckException(WRONG_FIELD_NUMBER);
+				e.setSourceFormat(sourceFormat);
+				e.setSubmissionId(submissionId);
+				throw e;
 			}
 
-			// If the file is mandatory, check that it contains at least one line
-			if (fileMandatory && csvFile.getRowsCount() == 0) {
+			// Check that the file is not empty
+			if (csvFile.getRowsCount() == 0) {
 				CheckException e = new CheckException(EMPTY_FILE);
 				e.setSourceFormat(sourceFormat);
 				e.setSubmissionId(submissionId);
 				throw e;
 			}
 
-			// Get the lines where the number of columns is more than expected
-			List<LineInfo> wrongColsCounts = csvFile.getWrongColumnNumberLines(sourceFieldDescriptors.size());
-			if (wrongColsCounts.size() > 0) {
-				if (csvFile.getRowsCount() == wrongColsCounts.size()) {
-					// All the lignes have a wrong number of column
-					CheckException e = new CheckException(WRONG_FIELD_NUMBER);
-					e.setSourceFormat(sourceFormat);
-					e.setSubmissionId(submissionId);
-					LineInfo wrongColsCountsRows = wrongColsCounts.get(0);
-					e.setLineNumber(wrongColsCountsRows.getLineNumber());
-					e.setFoundValue("" + wrongColsCountsRows.getColNumber());
-					e.setExpectedValue("" + sourceFieldDescriptors.size());
-					throw e;
-				} else {
-					// Few lignes have a wrong number of column
-					for (int i = 0; i < wrongColsCounts.size(); i++) {
-						CheckException e = new CheckException(WRONG_FIELD_NUMBER);
-						e.setSourceFormat(sourceFormat);
-						e.setSubmissionId(submissionId);
-						LineInfo wrongColsCountsRows = wrongColsCounts.get(i);
-						e.setLineNumber(wrongColsCountsRows.getLineNumber());
-						e.setFoundValue("" + wrongColsCountsRows.getColNumber());
-						e.setExpectedValue("" + sourceFieldDescriptors.size());
-						if (i != wrongColsCounts.size() - 1) {
-							e.setSourceFormat(sourceFormat);
-							e.setSubmissionId(submissionId);
-							logger.error("CheckException", e);
-							// Store the check exception in database
-							checkErrorDAO.createCheckError(e);
-						} else {
-							throw e;
-						}
-
-					}
-				}
+			// check that the file as the expected number of columns
+			if (csvFile.getColsCount() != sourceFieldDescriptors.size()) {
+				CheckException e = new CheckException(WRONG_FIELD_NUMBER);
+				e.setSourceFormat(sourceFormat);
+				e.setSubmissionId(submissionId);
+				throw e;
 			}
+
+			// Store the name and path of the file
+			submissionDAO.addSubmissionFile(submissionId, sourceFormat, filePath, csvFile.getRowsCount());
 
 			// Get the destination formats
 			Map<String, TableFormatData> destFormatsMap = metadataDAO.getFormatMapping(sourceFormat, MappingTypes.FILE_MAPPING);
@@ -194,7 +176,9 @@ public class IntegrationService extends GenericMapper {
 			}
 
 			// Travel the content of the csv file line by line
-			for (int row = 0; row < csvFile.getRowsCount(); row++) {
+			int row = 1;
+			String[] csvLine = csvFile.readNextLine();
+			while (csvLine != null) {
 
 				try {
 
@@ -209,7 +193,7 @@ public class IntegrationService extends GenericMapper {
 					for (int col = 0; col < csvFile.getColsCount(); col++) {
 
 						// Get the value to insert
-						String value = csvFile.getData(row, col);
+						String value = csvLine[col];
 
 						// The value once transformed into an Object
 						Object valueObj = null;
@@ -317,6 +301,9 @@ public class IntegrationService extends GenericMapper {
 
 				}
 
+				csvLine = csvFile.readNextLine();
+				row++;
+
 			}
 		} catch (CheckException ce) {
 			// File-Level catch of checked exceptions
@@ -339,6 +326,10 @@ public class IntegrationService extends GenericMapper {
 			// Store the check exception in database
 			checkErrorDAO.createCheckError(ce);
 
+		} finally {
+			if (csvFile != null) {
+				csvFile.close();
+			}
 		}
 
 		return isInsertValid;
