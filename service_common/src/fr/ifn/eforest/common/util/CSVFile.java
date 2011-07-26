@@ -1,36 +1,33 @@
 package fr.ifn.eforest.common.util;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.*;
-
-import fr.ifn.eforest.common.util.StringUtils;
 
 /**
  * Utility class used to load a CSV file.
  * 
- * @author Glob
- * @version 0.1
+ * CSV file is parsed during instantiation. Data is stored in a array
  */
 public class CSVFile {
 
-	// Number of rows in the file
-	private int rowsCount;
+	// Number of rows in the file (non empty lines)
+	private int rowsCount = 0;
 
 	// Number of lines in the file
-	private int fileLineNumber;
+	private int fileLineNumber = 0;
 
 	// Number of columns in the file
-	private int colsCount;
+	private int colsCount = -1;
 
-	// The content of the file, stored as an Array.
-	private List fileContent;
+	// The current line of the reader
+	private int currentLine = 0;
+
+	// The location of the CSV file
+	private String path = "";
+
+	// The file reader
+	private BufferedReader reader;
 
 	// The cell separator
 	private final static char CELL_SEPARATOR = ';';
@@ -43,52 +40,38 @@ public class CSVFile {
 	 * 
 	 * @param path
 	 *            le chemin du fichier à parser.
-	 * @throws FileNotFoundException
-	 *             si le fichier spécifié n'existe pas.
 	 */
-	public CSVFile(String path) throws FileNotFoundException {
-		fileContent = new ArrayList();
-		FileReader fileReader = new FileReader(path);
-		readFromFile(fileReader);
+	public CSVFile(String aPath) throws Exception {
+
+		this.path = aPath;
+
+		// Parse the file
+		parseFile(aPath);
+
+		// Initialise the reader
+		this.reader = new BufferedReader(new FileReader(this.path));
+
 	}
 
 	/**
-	 * Constructor.
-	 * 
-	 * @param reader
-	 *            un reader dans lequel on lit le fichier CSV.
-	 */
-	public CSVFile(Reader reader) {
-		fileContent = new ArrayList();
-		readFromFile(reader);
-	}
-
-	/**
-	 * Return the content of the file as a list.
-	 * 
-	 * @return the content
-	 */
-	public List getFileContent() {
-		return fileContent;
-	}
-
-	/**
-	 * Read the data from the file.
+	 * Parse the file a first time and get info about the number of lines and columns.
 	 * 
 	 * @param reader
 	 *            A reader on the file
 	 */
-	private void readFromFile(Reader reader) {
-		BufferedReader buffReader = new BufferedReader(reader);
+	private void parseFile(String path) throws Exception {
+
+		FileReader fileReader = new FileReader(this.path);
+		BufferedReader buffReader = new BufferedReader(fileReader);
 		if (buffReader != null) {
 			try {
-				String tempLine = "";
+				String tempLine = buffReader.readLine();
 				while (tempLine != null) {
-					tempLine = buffReader.readLine();
 					if (tempLine != null && !tempLine.trim().startsWith("//") && !tempLine.trim().equals("")) {
-						readFromLine(tempLine);
+						parseLine(tempLine);
 					}
 					fileLineNumber++;
+					tempLine = buffReader.readLine();
 				}
 			} catch (IOException e) {
 				System.err.println("Error reading CSV file: " + e.toString());
@@ -103,23 +86,105 @@ public class CSVFile {
 	}
 
 	/**
-	 * Read data from one line.
+	 * Reset the reader.
+	 */
+	public void reset() throws Exception {
+
+		// Reset the line index
+		this.currentLine = 0;
+
+		// Close the old reader if needed
+		try {
+			this.reader.close();
+		} catch (IOException e) {
+			System.err.println("Erreur closing CSV file: " + e.toString());
+		}
+
+		// Reset the reader
+		this.reader = new BufferedReader(new FileReader(this.path));
+	}
+
+	/**
+	 * Close the reader.
+	 */
+	public void close() throws Exception {
+
+		// Close the old reader if needed
+		try {
+			this.reader.close();
+		} catch (IOException e) {
+			System.err.println("Erreur closing CSV file: " + e.toString());
+		}
+
+	}
+
+	/**
+	 * Return the next line of data.
+	 * 
+	 * @return null if no data left
+	 */
+	public String[] readNextLine() throws Exception {
+
+		// Read next line
+		String tempLine = this.reader.readLine();
+		while (tempLine != null) {
+
+			// Skip comment and empty lines
+			if (!tempLine.trim().startsWith("//") && !tempLine.trim().equals("")) {
+
+				String[] data = new String[this.colsCount];
+
+				// Split the content of the line
+				int lineColCount = 0;
+				int cursorBegin = 0;
+				int cursorEnd = tempLine.indexOf(CELL_SEPARATOR);
+				while (cursorBegin > -1) {
+					while (cursorEnd != -1 && tempLine.charAt(cursorBegin) == TEXT_SEPARATOR && tempLine.charAt(cursorEnd - 1) != TEXT_SEPARATOR) {
+						cursorEnd = tempLine.indexOf(CELL_SEPARATOR, cursorEnd + 1);
+					}
+					if (cursorEnd == -1) {
+						data[lineColCount] = StringUtils.trimQuotes(tempLine.substring(cursorBegin));
+						cursorBegin = cursorEnd;
+
+					} else {
+						data[lineColCount] = StringUtils.trimQuotes(tempLine.substring(cursorBegin, cursorEnd));
+						cursorBegin = cursorEnd + 1;
+					}
+					cursorEnd = tempLine.indexOf(CELL_SEPARATOR, cursorBegin);
+					lineColCount++;
+				}
+
+				this.currentLine++;
+
+				return data;
+			}
+			tempLine = this.reader.readLine();
+		}
+
+		return null; // no data left
+
+	}
+
+	/**
+	 * Parse a line of data to get the number of columns.
 	 * 
 	 * @param tempLine
 	 *            one line
 	 */
-	private void readFromLine(String tempLine) {
+	private void parseLine(String tempLine) throws Exception {
 		if (tempLine == null) {
 			return;
 		}
-		List currentLine = new ArrayList();
-		fileContent.add(currentLine);
-		rowsCount++;
-		// setRowsCount(getRowsCount() + 1);
+
 		if (tempLine.trim().length() == 0) {
 			return;
 		}
-		int colCount = 0;
+
+		// Increase the number of rows containing actual data
+		this.rowsCount++;
+
+		// Split the line using CELL_SEPERATOR and not breaking inside TEXT_SEPARATOR
+		int lineColCount = 0;
 		int cursorBegin = 0;
 		int cursorEnd = tempLine.indexOf(CELL_SEPARATOR);
 		while (cursorBegin > -1) {
@@ -127,18 +192,25 @@ public class CSVFile {
 				cursorEnd = tempLine.indexOf(CELL_SEPARATOR, cursorEnd + 1);
 			}
 			if (cursorEnd == -1) {
-				currentLine.add(StringUtils.trimQuotes(tempLine.substring(cursorBegin)));
 				cursorBegin = cursorEnd;
 			} else {
-				currentLine.add(StringUtils.trimQuotes(tempLine.substring(cursorBegin, cursorEnd)));
 				cursorBegin = cursorEnd + 1;
 			}
 			cursorEnd = tempLine.indexOf(CELL_SEPARATOR, cursorBegin);
-			colCount++;
+			lineColCount++;
 		}
-		if (colCount > getColsCount()) {
-			setColsCount(Math.max(getColsCount(), colCount));
+
+		if (this.getColsCount() == -1) {
+			// Initialise the col count
+			this.colsCount = lineColCount;
+		} else {
+			// check if col count is consistent
+			if (this.colsCount != lineColCount) {
+				throw new InconsistentNumberOfColumns("Col count is not consistant (line " + this.fileLineNumber + " expected " + this.colsCount + " but got "
+						+ lineColCount);
+			}
 		}
+
 	}
 
 	/**
@@ -169,124 +241,10 @@ public class CSVFile {
 	}
 
 	/**
-	 * Returns the lines where the number of column is different than what is expected.
-	 * 
-	 * @param colnbr
-	 *            The expected number of columns
-	 * @return List The rows having more or less colunms than expected
+	 * @return the currentLine
 	 */
-	public List<LineInfo> getWrongColumnNumberLines(int colnbr) {
-		List colsCounts = new ArrayList();
-		for (int row = 0; row < getRowsCount(); row++) {
-			int lineSize = ((ArrayList) fileContent.get(row)).size();
-			if (lineSize != colnbr) {
-				LineInfo lineInfo = new LineInfo();
-				lineInfo.setColNumber(lineSize); //The row column number
-				lineInfo.setLineNumber(row + 1); //The row number
-				colsCounts.add(lineInfo);
-			}
-		}
-		return colsCounts;
+	public int getCurrentLine() {
+		return currentLine;
 	}
 
-	/**
-	 * Sets the colsCount.
-	 * 
-	 * @param colsCount
-	 *            The colsCount to set
-	 */
-	public void setColsCount(int colsCount) {
-		this.colsCount = colsCount;
-	}
-
-	/**
-	 * Sets the rowsCount.
-	 * 
-	 * @param rowsCount
-	 *            The rowsCount to set
-	 */
-	public void setRowsCount(int rowsCount) {
-		this.rowsCount = rowsCount;
-	}
-
-	/**
-	 * Method getData.
-	 * 
-	 * @param row
-	 *            la ligne voulue
-	 * @param col
-	 *            la colonne voulue
-	 * @return String la valeur à l'enplacement spécifié. Null si outOfBound.
-	 */
-	public String getData(int row, int col) {
-		if (row < 0 || col < 0 || row > (getRowsCount() - 1) || col > (getColsCount() - 1)) {
-			return null;
-		}
-		try {
-			List theRow = (List) fileContent.get(row);
-			String result = (String) theRow.get(col);
-			return (result == null ? "" : result);
-		} catch (IndexOutOfBoundsException e) {
-			return "";
-		}
-	}
-
-	/**
-	 * Method setData.
-	 * 
-	 * @param row
-	 *            le numéro de ligne (commence à 0).
-	 * @param col
-	 *            le numéro de colonne (commence à 0).
-	 * @param data
-	 *            les données à insérer.
-	 */
-	public void setData(int row, int col, String data) {
-		if (row < 0 || col < 0 || row > (getRowsCount() - 1) || col > (getColsCount() - 1)) {
-			throw new IndexOutOfBoundsException();
-		}
-		List theRow = (List) fileContent.get(row);
-		theRow.set(col, data);
-	}
-
-	/**
-	 * Method write.
-	 * 
-	 * @param filePath
-	 *            le fichier dans lequel sauver les données.
-	 * @throws IOException
-	 *             si une erreur survient.
-	 */
-	public void write(String filePath) throws IOException {
-		FileWriter fileWriter = new FileWriter(filePath);
-		write(fileWriter);
-	}
-
-	/**
-	 * Method write.
-	 * 
-	 * @param aWriter
-	 *            le writer dans lequel on veut écrire les données.
-	 * @throws IOException
-	 *             si une erreur survient.
-	 */
-	public void write(Writer aWriter) throws IOException {
-		BufferedWriter writer;
-		writer = new BufferedWriter(aWriter);
-		int fileSize = getRowsCount();
-		int colCount = getColsCount();
-		for (int i = 0; i < fileSize; i++) {
-			for (int j = 0; j < colCount; j++) {
-				writer.write(getData(i, j));
-				if (j + 1 < colCount) {
-					writer.write(CELL_SEPARATOR);
-				}
-			}
-			if (i + 1 < fileSize) {
-				writer.write("\n");
-			}
-		}
-		writer.flush();
-		writer.close();
-	}
 }
