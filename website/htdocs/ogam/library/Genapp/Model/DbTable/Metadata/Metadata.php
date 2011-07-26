@@ -70,9 +70,9 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$req = $this->_getDynamodeSQL($unit);
 
-	    if(!empty($query)){
-            $req = "select * from ($req) as foo where label ilike '$query%'";
-        }
+		if(!empty($query)){
+			$req = "select * from ($req) as foo where label ilike '$query%'";
+		}
 		$this->logger->info('getDynamicCodes : '.$req);
 
 		$select = $db->prepare($req);
@@ -411,8 +411,6 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " AND table_format.schema_code = ? ";
 			$req .= " AND table_field.format = ? ";
 			$req .= " ORDER BY table_field.position ";
-
-			$this->logger->info('getTableFields : '.$req);
 
 			$select = $db->prepare($req);
 			if ($datasetID != null) {

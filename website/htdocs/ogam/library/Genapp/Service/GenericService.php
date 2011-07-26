@@ -64,7 +64,7 @@ class Genapp_Service_GenericService {
 		if(!empty($children)){
 			$childrenCount = count(current($children));
 		}
-		$json = "{title:".json_encode($data->tableFormat->label, JSON_HEX_APOS).", children_count:".$childrenCount.", id:'".$this->getIdFromData($data)."', fields:[";
+		$json = '{"title":'.json_encode($data->tableFormat->label, JSON_HEX_APOS).', "children_count":'.$childrenCount.', "id":"'.$this->getIdFromData($data).'", "fields":[';
 		$fields = '';
 		// Get the form field corresponding to the table field
 		$formFields = $this->getFormFieldsOrdered($data->getFields());

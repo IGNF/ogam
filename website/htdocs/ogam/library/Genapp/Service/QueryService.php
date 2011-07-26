@@ -775,7 +775,7 @@ class Genapp_Service_QueryService {
 					}
 					$json = substr($json, 0, -1);
 					$json .= ']}';
-				} 
+				}
 				// For DYNAMIC and TREE subtypes, the list is populated using an ajax request
 			} else if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
 				// For the RANGE field, get the min and max values

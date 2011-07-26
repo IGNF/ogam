@@ -1347,24 +1347,6 @@ listeners: {
      * Submit the request and get the description of the result columns
      */
     submitRequest : function(){
-        // Disable the top buttons, reset the combos and force a reload
-        if(!this.hideAggregationButton){
-            this.aggregationButton.disable();
-            this.aggregationButtonMenuDataCombo.reset();
-            this.aggregationButtonMenuGridsCombo.reset();
-            delete this.aggregationButtonMenuDataCombo.lastQuery;
-        }
-        if(!this.hideAggregationCsvExportMenuItem){
-            this.aggregationCsvExportMenuItem.disable();
-        }
-        if(!this.hideInterpolationButton){
-            this.interpolationButton.disable();
-            this.interpolationButtonMenuDataCombo.reset();
-            this.interpolationButtonMenuGridsCombo.reset();
-            this.interpolationButtonMenuMethodsCombo.reset();
-            this.interpolationButtonMenuMaxDistanceText.setValue(this.interpolationButtonMenuMaxDistanceTextDefaultValue);
-            delete this.interpolationButtonMenuDataCombo.lastQuery;
-        }
         if(!this.hideCsvExportButton){
             this.csvExportButton.disable();
         }
@@ -1558,13 +1540,7 @@ listeners: {
                         this.collapseDetailsPanel();
 
                        // Enable the top buttons
-                       if(!this.hideAggregationButton){
-                           this.aggregationButton.enable();
-                       }
-                       if(!this.hideInterpolationButton){
-                           this.interpolationButton.enable();
-                       }
-                       if(!this.hideCsvExportButton){
+                        if(!this.hideCsvExportButton){
                            this.csvExportButton.enable();
                        }
                        this.gridPanel.syncSize(); //Bug in Ext 3.2.1 (The grid bottom tool bar disappear)
