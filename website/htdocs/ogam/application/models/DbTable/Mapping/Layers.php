@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 //require_once 'mapping/Layer.php';
 //require_once 'mapping/LegendItem.php';
 
@@ -48,7 +48,7 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$params[] = $countryCode;
 		}
 
-		// Check the user profile		
+		// Check the user profile
 		$userSession = new Zend_Session_Namespace('user');
 		$role = $userSession->role;
 		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_profile_restriction WHERE role_code = ?))';
@@ -86,6 +86,51 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$result[] = $layer;
 		}
 		return $result;
+	}
+
+	/**
+	 * Get the layer definition.
+	 *
+	 * @param String $layerName the layer logical name
+	 * @return Layer
+	 */
+	public function getLayer($layerName) {
+
+		$db = $this->getAdapter();
+
+		$req = " SELECT * ";
+		$req .= " FROM layer_definition ";
+		$req .= " WHERE layer_name = ?";
+
+		Zend_Registry::get("logger")->info('getLayersList : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($layerName));
+
+		$result = array();
+		$row = $select->fetch();
+		$layer = new Application_Model_Mapping_Layer();
+		$layer->layerName = $row['layer_name'];
+		$layer->layerLabel = $row['layer_label'];
+		$layer->mapservLayers = $row['mapserv_layers'];
+		$layer->isTransparent = $row['istransparent'];
+		$layer->isBaseLayer = $row['isbaselayer'];
+		$layer->isUntiled = $row['isuntiled'];
+		$layer->isCached = $row['iscached'];
+		$layer->maxscale = $row['maxscale'];
+		$layer->minscale = $row['minscale'];
+		$layer->transitionEffect = $row['transitioneffect'];
+		$layer->imageFormat = $row['imageformat'];
+		$layer->opacity = $row['opacity'];
+		$layer->isDefault = $row['is_checked'];
+		$layer->isHidden = $row['is_hidden'];
+		$layer->isDisabled = $row['is_disabled'];
+		$layer->isChecked = $row['is_checked'];
+		$layer->activateType = $row['activate_type'];
+		$layer->hasLegend = $row['has_legend'];
+		$layer->hasSLD = $row['has_sld'];
+
+		return $layer;
 	}
 
 	/**
