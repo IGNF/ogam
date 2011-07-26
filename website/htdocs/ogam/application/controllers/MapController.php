@@ -452,6 +452,15 @@ class MapController extends AbstractOGAMController {
 		$centerX = substr($center, stripos($center, "lon=") + 4, stripos($center, ",") - (stripos($center, "lon=") + 4));
 		$centerY = substr($center, stripos($center, "lat=") + 4);
 
+		// Get the mapserver name for the layers
+		$layerNames = explode(",", $layers);
+		$mapservLayers = "";
+		foreach ($layerNames as $layerName) {
+			$layer = $this->layersModel->getLayer($layerName);
+			$mapservLayers .= $layer->mapservLayers.",";
+		}
+		$mapservLayers = substr($mapservLayers, 0, -1); // remove last comma
+
 		// Get the configuration values
 		$configuration = Zend_Registry::get("configuration");
 		$reportServiceURL = $configuration->reportGenerationService_url;
@@ -470,7 +479,7 @@ class MapController extends AbstractOGAMController {
 		$wmsURL .= "&SESSION_ID=".session_id();
 		$wmsURL .= "&SRS=EPSG:".$configuration->srs_visualisation;
 		$wmsURL .= "&BBOX=".$bbox;
-		$wmsURL .= "&LAYERS=".$layers;
+		$wmsURL .= "&LAYERS=".$mapservLayers;
 		// The WIDTH and HEIGHT parameters are defined inside the report
 
 		// Calculate the report URL
