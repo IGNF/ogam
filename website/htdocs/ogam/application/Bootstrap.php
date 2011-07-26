@@ -42,7 +42,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Si un controleur existe dans custom alors on le prend en priorité à la place de default
 		if (defined('CUSTOM_APPLICATION_PATH')) {
-				
+
 			// Scan des controleurs présents
 			$files = scandir(CUSTOM_APPLICATION_PATH.'/controllers/');
 			foreach ($files as $file) {
@@ -51,7 +51,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					$controllerName = strtolower($controllerName);
 					$this->logger->debug("Adding custom controller : ".$controllerName);
 					$customRoute = new Zend_Controller_Router_Route($controllerName.'/:action', array('module' => 'custom', 'controller' => $controllerName));
-					$router->addRoute('customQuery'.$controllerName,$customRoute);
+					$router->addRoute('customQuery'.$controllerName, $customRoute);
 				}
 			}
 		}
