@@ -32,77 +32,41 @@
         suf='<?= $this->contactEmailSufix; ?>';
         document.getElementById('lkContact').href="mailto:" + pre + "@" + suf;
       }
-
-     // Renvoi la hauteur de la page
-     function getWindowHeight() {
-    	    var windowHeight=0;
-    	    if (typeof(window.innerHeight)=='number') {
-    	        windowHeight=window.innerHeight;
-    	    }
-    	    else {
-    	     if (document.documentElement&&
-    	       document.documentElement.clientHeight) {
-    	         windowHeight = document.documentElement.clientHeight;
-    	    }
-    	    else {
-    	     if (document.body&&document.body.clientHeight) {
-    	         windowHeight=document.body.clientHeight;
-    	      }
-    	     }
-    	    }
-    	    return windowHeight;
-    	}
-
-	 // Dimensionne correctement la hauteur de "content"
-     function setFooter() {
-    	 var windowHeight = getWindowHeight();
-    	 var headerHeight = document.getElementById('header').offsetHeight;
-    	 var footerHeight = document.getElementById('footer').offsetHeight;
-    	 var contentHeight = (windowHeight -(headerHeight + footerHeight)) + 'px';
-    	 document.getElementById('content').style.height = contentHeight;    	   
-    	}
-
-     	window.onload = function() {
-    		setFooter();
-    	}
-    	window.onresize = function() {
-    		setFooter();
-    	}
   </script>
 </head> 
 <body>
 
-<div class="wrapper">
+<div id="wrapper" class="wrapper">
 
-<div class="main-body">
-
-	<!-- HEADER -->
-	<div class="header" id="header">
+<div id="main-body-bg" class="main-body-bg"></div>
+<div id="main-body" class="main-body">
+    <!-- HEADER -->
+    <div class="header" id="header">
    
-        <div class="banner">
+        <div id="banner" class="banner">
             <img border="0" alt="Banner" src="<?= $this->baseUrl('img/banner.jpg');?>" width="1160" height="80" />
         </div>
 
-        <div class="top" style="background-color: #EEEEEE; height: 21px;">
+        <div id="top" class="top" style="background-color: #EEEEEE; height: 21px;">
 
-    	<div class="header-beadcrumb" style="float:left">
-	        <span>
-	        <a href="<?= $this->url(array('controller'=>'index'), 'default', true) ?>" ><b><?= $this->translate('Layout Pathway Home') ?></b></a>
-	        <?php
-	            $website_session = new Zend_Session_Namespace('website');
-	            $moduleName = $website_session->module;
-	            $moduleLabel = $website_session->moduleLabel;
-	            $moduleURL = $website_session->moduleURL;
-	            if (!empty($moduleName)) {
-	                echo '<img src="'.$this->baseUrl('/img/arrow.png').'"/>';
-	                echo '<a href="'. $this->url(array('controller'=>$moduleURL), 'default', true) .'" ><b>'.$this->translate($moduleLabel).'</b></a>';
-	            }
-	        ?>
-	        </span>
-    	</div>
+        <div id="header-beadcrumb" class="header-beadcrumb" style="float:left">
+            <span class="pathway">
+            <a href="<?= $this->url(array('controller'=>'index'), 'default', true) ?>" ><b><?= $this->translate('Layout Pathway Home') ?></b></a>
+            <?php
+                $website_session = new Zend_Session_Namespace('website');
+                $moduleName = $website_session->module;
+                $moduleLabel = $website_session->moduleLabel;
+                $moduleURL = $website_session->moduleURL;
+                if (!empty($moduleName)) {
+                    echo '<img src="'.$this->baseUrl('/img/arrow.png').'"/>';
+                    echo '<a href="'. $this->url(array('controller'=>$moduleURL), 'default', true) .'" ><b>'.$this->translate($moduleLabel).'</b></a>';
+                }
+            ?>
+            </span>
+        </div>
    
 
-    	<div class="header-login" style="float: right">
+        <div id="header-login" class="header-login" style="float: right">
 <?php
         $configuration = Zend_Registry::get("configuration");
         if($configuration->autoLogin != 1){
@@ -117,35 +81,32 @@
          }
         }
 ?>
-    	</div>
-    
+        </div>
      </div>
-    
+
 <!-- Fin du header -->
 </div>
 
-
     <!-- CONTENT -->
     <div class="content" id="content">
-        <?= $this->layout()->content ?> 
+        <?= $this->layout()->content ?>
     </div>
-    
 
-	
 <!-- Fin du main-body -->
 </div>
 
-	<!-- Utilisé pour maintenir le bas de page en bas -->
-	<div class="push"></div> 
+    <!-- Utilisé pour maintenir le bas de page en bas -->
+    <div id="push" class="push"></div> 
 
 <!-- Fin du wrapper -->
 </div>
- 
-<div class="footer"  id="footer">
- 	<?= $this->translate('Layout Copyright');?>&nbsp;
-    <a id="lkContact" onclick="sendMail();" href="#"><?=$this->translate('Contact Us');?></a>
-</div>
 
+<div class="footer"  id="footer">
+    <div id="footer-ct" class="footer-ct">
+        <?= $this->translate('Layout Copyright');?>&nbsp;
+        <a id="lkContact" onclick="sendMail();" href="#"><?=$this->translate('Contact Us');?></a>
+    </div>
+</div>
 
 </body>
 </html>
