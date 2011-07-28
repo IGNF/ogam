@@ -41,7 +41,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$router = $front->getRouter();
 
 		// Si un controleur existe dans custom alors on le prend en priorité à la place de default
-		if (defined('CUSTOM_APPLICATION_PATH')) {
+		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/controllers/')) {
 
 			// Scan des controleurs présents
 			$files = scandir(CUSTOM_APPLICATION_PATH.'/controllers/');
@@ -81,10 +81,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$view->contactEmailSufix = $configuration->contactEmailSufix;
 
 		// Si le répertoire custom existe alors on le prend en priorité
-		if (defined('CUSTOM_APPLICATION_PATH')) {
+		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/views/')) {
 			$view->addBasePath(CUSTOM_APPLICATION_PATH.'/views/');
-			$view->addBasePath(APPLICATION_PATH.'/views/');
 		}
+		$view->addBasePath(APPLICATION_PATH.'/views/');
 
 		// Path to the genapp helpers
 		$view->addHelperPath(APPLICATION_PATH."/../library/Genapp/View/Helper", 'Genapp_View_Helper');
@@ -128,7 +128,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		), $translate);
 
 		// Setup the translation with files specific to the app
-		if (defined('CUSTOM_APPLICATION_PATH')) {
+		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/lang/')) {
 			$translations = $this->_addTranslation(array(
 			APPLICATION_PATH.'/lang',
 			CUSTOM_APPLICATION_PATH.'/lang'
