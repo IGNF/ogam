@@ -122,12 +122,7 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$layer->transitionEffect = $row['transitioneffect'];
 		$layer->imageFormat = $row['imageformat'];
 		$layer->opacity = $row['opacity'];
-		$layer->isDefault = $row['is_checked'];
-		$layer->isHidden = $row['is_hidden'];
-		$layer->isDisabled = $row['is_disabled'];
-		$layer->isChecked = $row['is_checked'];
 		$layer->activateType = $row['activate_type'];
-		$layer->hasLegend = $row['has_legend'];
 		$layer->hasSLD = $row['has_sld'];
 
 		return $layer;
