@@ -216,6 +216,12 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      * }
      */
     layersActivation: {},
+    
+    /**
+     * @cfg {String} projectionLabel
+     * The projection to be displayed next to the mouse position.
+     */
+    projectionLabel: " m (L2e)",
 
     // private
     initComponent : function() {
@@ -526,7 +532,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         this.map.addControl(new OpenLayers.Control.MousePosition({ 
             prefix: 'X: ', 
             separator: ' - Y: ', 
-            suffix: ' m (L93)', 
+            suffix: this.projectionLabel, 
             numDigits: 0,
             title: 'MousePosition'
         }));
