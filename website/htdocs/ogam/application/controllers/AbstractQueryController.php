@@ -257,7 +257,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 	 * @param Undef $criteria
 	 * @return true if empty
 	 */
-	private function isEmptyCriteria($criteria) {
+	private function _isEmptyCriteria($criteria) {
 		if (is_array($criteria)) {
 			$emptyArray = true;
 			foreach ($criteria as $value) {
@@ -302,7 +302,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 			$formQuery = new Genapp_Model_Generic_FormQuery();
 			$formQuery->datasetId = $datasetId;
 			foreach ($_POST as $inputName => $inputValue) {
-				if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
+				if (strpos($inputName, "criteria__") === 0 && !$this->_isEmptyCriteria($inputValue)) {
 					$this->logger->debug('POST var added');
 					$criteriaName = substr($inputName, strlen("criteria__"));
 					$split = explode("__", $criteriaName);
