@@ -252,6 +252,26 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 	}
 
 	/**
+	 * Check if a criteria is empty.
+	 *
+	 * @param Undef $criteria
+	 * @return true if empty
+	 */
+	private function isEmptyCriteria($criteria) {
+		if (is_array($criteria)) {
+			$emptyArray = true;
+			foreach ($criteria as $value) {
+				if ($value != "") {
+					$emptyArray = false;
+				}
+			}
+			return $emptyArray;
+		} else {
+			return $criteria == "";
+		}
+	}
+
+	/**
 	 * AJAX function : Get the description of the columns of the result of the query.
 	 *
 	 * @param Boolean $withSQL indicate that we want the server to return the generated SQL
@@ -282,7 +302,8 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 			$formQuery = new Genapp_Model_Generic_FormQuery();
 			$formQuery->datasetId = $datasetId;
 			foreach ($_POST as $inputName => $inputValue) {
-				if (strpos($inputName, "criteria__") === 0) {
+				if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
+					$this->logger->debug('POST var added');
 					$criteriaName = substr($inputName, strlen("criteria__"));
 					$split = explode("__", $criteriaName);
 					$formQuery->addCriteria($split[0], $split[1], $inputValue);
