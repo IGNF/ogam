@@ -733,7 +733,7 @@ class Genapp_Service_QueryService {
 		foreach ($predefinedRequestList as $predefinedRequest) {
 			$json .= $predefinedRequest->toJSON().",";
 		}
-		if (strlen($json) > 1) {
+		if (!empty($predefinedRequestList)) {
 			$json = substr($json, 0, -1); // remove the last colon
 		}
 
