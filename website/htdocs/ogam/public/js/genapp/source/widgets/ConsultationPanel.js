@@ -475,6 +475,36 @@ listeners: {
      * The tip Default Width. (Default to 300)
      */
     tipDefaultWidth: 300,
+    /**
+     * @cfg {String} openGridDetailsButtonTitle
+     * The open Grid Details Button Title (defaults to <tt>'See the details'</tt>)
+     */
+    openGridDetailsButtonTitle : "See the details",
+    /**
+     * @cfg {String} openGridDetailsButtonTip
+     * The open Grid Details Button Tip (defaults to <tt>'Display the row details into the details panel.'</tt>)
+     */
+    openGridDetailsButtonTip : "Display the row details into the details panel.",
+    /**
+     * @cfg {String} seeOnMapButtonTitle
+     * The see On Map Button Title (defaults to <tt>'See on the map'</tt>)
+     */
+    seeOnMapButtonTitle : "See on the map",
+    /**
+     * @cfg {String} seeOnMapButtonTip
+     * The see On Map Button Tip (defaults to <tt>'Zoom and centre on the location on the map.'</tt>)
+     */
+    seeOnMapButtonTip : "Zoom and centre on the location on the map.",
+    /**
+     * @cfg {String} editDataButtonTitle
+     * The edit Data Button Title (defaults to <tt>'Edit the data'</tt>)
+     */
+    editDataButtonTitle : "Edit the data",
+    /**
+     * @cfg {String} editDataButtonTip
+     * The edit Data Button Tip (defaults to <tt>'Go to the edition page to edit the page.'</tt>)
+     */
+    editDataButtonTip : "Go to the edition page to edit the data.",
 
     // private
     initComponent : function() {
@@ -1128,16 +1158,16 @@ listeners: {
         if (!this.hideDetails) {
             stringFormat = '<div class="genapp-query-grid-slip" '
                 +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');" '
-                +'ext:qtitle="See the details"'
+                +'ext:qtitle="' + this.openGridDetailsButtonTitle + '"'
                 +'ext:qwidth="' + this.tipDefaultWidth + '"'
-                +'ext:qtip="Display the row details into the details panel."'
+                +'ext:qtip="' + this.openGridDetailsButtonTip + '"'
             +'></div>';
         }
         stringFormat += '<div class="genapp-query-grid-map" '
             +'onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');" '
-            +'ext:qtitle="See on the map"'
+            +'ext:qtitle="' + this.seeOnMapButtonTitle + '"'
             +'ext:qwidth="' + this.tipDefaultWidth + '"'
-            +'ext:qtip="Zoom and centre on the location on the map."'
+            +'ext:qtip="' + this.seeOnMapButtonTip + '"'
         +'></div>';
 
         return String.format(stringFormat, record.data.id,
@@ -1173,9 +1203,9 @@ listeners: {
             rowIndex, colIndex, store) {
         var stringFormat = '<div class="genapp-query-grid-edit" '
                 +'onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"'
-                +'ext:qtitle="Edit the data"'
+                +'ext:qtitle="' + this.editDataButtonTitle + '"'
                 +'ext:qwidth="' + this.tipDefaultWidth + '"'
-                +'ext:qtip="Go to the edition page to edit the page."'
+                +'ext:qtip="' + this.editDataButtonTip + '"'
             +'></div>';
         return String.format(stringFormat, record.data.id);
     },

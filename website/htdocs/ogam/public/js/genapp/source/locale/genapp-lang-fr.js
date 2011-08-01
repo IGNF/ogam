@@ -61,7 +61,7 @@ if(Genapp.ConsultationPanel){
         detailsPanelCtTitle:"Détails",
         detailsPanelCtPinToolQtip: "Annuler la fermeture automatique de l'onglet",
         detailsPanelCtUnpinToolQtip:"Activer la fermeture automatique de l'onglet",
-        featuresInformationPanelCtTitle:"Informations sur les tracés",
+        featuresInformationPanelCtTitle:"Tableau(x) détaillé(s)",
         mapMaskMsg:"Chargement...",
         alertErrorTitle:"Erreur :",
         alertRequestFailedMsg:"Désolé, la requête a échoué...",
@@ -85,7 +85,13 @@ if(Genapp.ConsultationPanel){
             <li>Sélectionner l'extension XLS</li> \
             <li>Cliquer sur le bouton 'Avancé'</li> \
             <li>Décocher 'Parcourir dans une même fenêtre'</li> \
-            </ul></div>"
+            </ul></div>",
+        openGridDetailsButtonTitle : "Voir les détails",
+        openGridDetailsButtonTip : "Affiche les informations détaillées dans l'onglet des détails.",
+        seeOnMapButtonTitle : "Voir sur la carte",
+        seeOnMapButtonTip : "Affiche la carte, puis zoom et centre sur la localisation.",
+        editDataButtonTitle : "Edité les données",
+        editDataButtonTip : "Ouvre la page d'édition pour éditer les données."
     });
 }
 if(Genapp.DateRangePicker){

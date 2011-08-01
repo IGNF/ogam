@@ -111,15 +111,6 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
                 +'ext:qtip="' + this.openDetailsButtonTip + '"'
             +'></div>';
         }
-        // TODO: Patch RTM to remove ??
-        if(!Ext.isEmpty(record.data.LOCATION_COMPL_DATA__SIT_NO_CLASS)){
-            stringFormat += '<div class="genapp-query-grid-details-panel-search" '
-                +'onclick="Genapp.cardPanel.consultationPage.launchLocationRequest(\'\',\'{2}\');"'
-                +'ext:qtitle="Ajouter ce site comme critère"'
-                +'ext:qwidth="' + this.tipDefaultWidth + '"'
-                +'ext:qtip="Ajoute le numéro de site à la requête et la relance."'
-            +'></div>';
-        }
         if(this.hasChild) {
             stringFormat += '<div class="genapp-query-grid-details-panel-get-children" '
                 +'onclick="Genapp.cardPanel.consultationPage.getChildren(\'{1}\',\'{0}\');"'
