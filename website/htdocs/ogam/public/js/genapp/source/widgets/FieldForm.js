@@ -124,22 +124,26 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             },
             listeners:{
                 'add': function(container, cmp, index){
+                    var subName = cmp.name,
+                    i = 0,
+                    foundComponents,
+                    tmpName = '',
+                    criteriaPanel = cmp.ownerCt,
+                    className = 'first-child';
                     if(container.defaultType === 'panel') { // The add event is not only called for the items
                         // Add a class to the first child for IE7 layout
-                        if(index == 0){
-                            var className = 'first-child';
+                        if(index === 0){
                             if (cmp.rendered) {
                                 cmp.getEl().addClass(className);
                             } else {
-                                cmp.itemCls ? cmp.itemCls += ' ' + className : cmp.itemCls = className;
+                                if(cmp.itemCls){
+                                    cmp.itemCls += ' ' + className;
+                                }else{
+                                    cmp.itemCls = className;
+                                }
                             }
                         }
                         // Setup the name of the field
-                        var subName = cmp.name;
-                        var i = 0;
-                        var foundComponents;
-                        var tmpName = '';
-                        var criteriaPanel = cmp.ownerCt;
                         do {
                             tmpName = subName + '[' + i++ + ']';
                         }
@@ -310,9 +314,10 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 // if the field have multiple default values, duplicate the criteria
                 var defaultValue = record.data.default_value;
                 if(!Ext.isEmpty(defaultValue)){
-                    var defaultValues = defaultValue.split(';');
-                    var criteriaValuesEmpty = Ext.isEmpty(this.form.criteriaValues);
-                    for (var i = 0; i < defaultValues.length; i++) {
+                    var defaultValues = defaultValue.split(';'),
+                        criteriaValuesEmpty = Ext.isEmpty(this.form.criteriaValues),
+                        i;
+                    for (i = 0; i < defaultValues.length; i++) {
                         // clone the object
                         var newRecord = record.copy();
                         if(criteriaValuesEmpty){
@@ -335,7 +340,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                     this.items.push(this.form.getCriteriaConfig(record.data));
                 }
             }
-        },{form:this, items:items})
+        },{form:this, items:items});
         return items;
     },
 
@@ -419,7 +424,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             if(record.data.is_default){
                 this.items.push(this.form.getColumnConfig(record.data));
             }
-        },{form:this, items:items})
+        },{form:this, items:items});
         return items;
     },
 
@@ -465,10 +470,10 @@ Ext.apply(Genapp.FieldForm.prototype, {
      */
     getCriteriaConfig : function(record, hideBin){
         // If the field have multiple default values, duplicate the criteria
-        if(!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') != -1){
+        if(!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1){
             var fields = [];
-            var defaultValues = record.default_value.split(';');
-            for (var i = 0; i < defaultValues.length; i++) {
+            var defaultValues = record.default_value.split(';'), i;
+            for (i = 0; i < defaultValues.length; i++) {
                 record.default_value = defaultValues[i];
                 fields.push(Genapp.FieldForm.prototype.getCriteriaConfig(record, hideBin));
             }
@@ -488,25 +493,25 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.displayField = 'label';
                 field.valueField  = 'code';
                 field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
-                if (record.subtype == 'DYNAMIC') {
-                	 field.mode = 'remote';
+                if (record.subtype === 'DYNAMIC') {
+                     field.mode = 'remote';
                      field.store = new Ext.data.JsonStore({
-                		root: 'codes',
-                		idProperty: 'code',
-	                    fields:[
-	                        {name:'code',mapping:'code'},
-	                        {name:'label',mapping:'label'}
-	                    ],
-	                    url: 'ajaxgetdynamiccodes',
-	                    baseParams:{'unit':record.unit}
-	                });
+                        root: 'codes',
+                        idProperty: 'code',
+                        fields:[
+                            {name:'code',mapping:'code'},
+                            {name:'label',mapping:'label'}
+                        ],
+                        url: 'ajaxgetdynamiccodes',
+                        baseParams:{'unit':record.unit}
+                    });
                 } else {
                     field.mode = 'local';
                     field.store = new Ext.data.ArrayStore({
-	                    fields:['code','label'],
-	                    data : record.params.options
-	                });
-	            }
+                        fields:['code','label'],
+                        data : record.params.options
+                    });
+                }
                 break;
             case 'DATE': // The input type DATE correspond generally to a data type DATE
                 field.xtype = 'daterangefield';
@@ -517,12 +522,12 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.xtype = 'numberrangefield';
                 field.itemCls = 'trigger-field'; // For IE7 layout
                 // If RANGE we set the min and max values
-                if (record.type=='RANGE') {
+                if (record.type==='RANGE') {
                     field.minValue = record.params.min;
                     field.maxValue = record.params.max;
                 }
                 // IF INTEGER we remove the decimals
-                if (record.type=='INTEGER') {
+                if (record.type==='INTEGER') {
                     field.allowDecimals = false;
                     field.decimalPrecision = 0;
                 }

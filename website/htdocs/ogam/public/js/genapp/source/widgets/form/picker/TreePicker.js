@@ -55,7 +55,7 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
     listeners:{
         'load':{// Expand by default the root children
             fn:function(node){
-                if(node.getDepth() == 0){
+                if(node.getDepth() === 0){
                     node.expandChildNodes();
                 }
             },
@@ -87,7 +87,7 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
     onOkButtonPress: function (button, state){
         if(state){
             var selectedNode = this.getSelectionModel().getSelectedNode();
-            this.fireEvent('select', selectedNode == null ? null : selectedNode.attributes);
+            this.fireEvent('select', selectedNode === null ? null : selectedNode.attributes);
         }
     }
 });

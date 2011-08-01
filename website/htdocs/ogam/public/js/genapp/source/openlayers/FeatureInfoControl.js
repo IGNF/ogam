@@ -20,8 +20,8 @@ OpenLayers.Handler.FeatureInfo.prototype =
         // Construction d'une URL pour faire une requête WFS sur le point
         var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename="+Genapp.map.featureinfo_typename+"&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
         
-        if (Genapp.map.featureinfo_maxfeatures != 0) {
-        	url = url + "&MAXFEATURES=" + Genapp.map.featureinfo_maxfeatures;
+        if (Genapp.map.featureinfo_maxfeatures !== 0) {
+            url = url + "&MAXFEATURES=" + Genapp.map.featureinfo_maxfeatures;
         }
 
         OpenLayers.loadURL(
@@ -32,7 +32,7 @@ OpenLayers.Handler.FeatureInfo.prototype =
                 try {
                     var result = Ext.decode(response.responseText);
                     if(!Ext.isEmpty(result.data)){
-                        if(Genapp.map.featureinfo_maxfeatures == 1){
+                        if(Genapp.map.featureinfo_maxfeatures === 1){
                             Genapp.cardPanel.consultationPage.openDetails(result.data[0][0], 'getdetails');
                         }else{
                             Genapp.cardPanel.consultationPage.openFeaturesInformationSelection(result);

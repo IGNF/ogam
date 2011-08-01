@@ -219,7 +219,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
     
     /**
      * @cfg {String} projectionLabel
-     * The projection to be displayed next to the mouse position.
+     * The projection to be displayed next to the mouse position (defaults to <tt> m (L2e)</tt>)
      */
     projectionLabel: " m (L2e)",
 
@@ -332,10 +332,10 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                         Ext.Ajax.request({
                             url: Genapp.base_url + 'map/getLayers',
                             success :function(response, options){
-                                var layersObject = Ext.decode(response.responseText);
+                                var layersObject = Ext.decode(response.responseText), i;
                                 this.layersList = [];
                                 this.layersActivation = {}; // Avoid a conflict between the geometryField mapPanel and the consultation mapPanel
-                                for ( var i = 0; i < layersObject.layers.length; i++) {
+                                for ( i = 0; i < layersObject.layers.length; i++) {
                                     var newLayer;
                                     if(layersObject.layers[i].untiled){
                                         newLayer = new OpenLayers.Layer.WMS.Untiled(
@@ -458,8 +458,8 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
     initMap : function(consultationMapDivId) {
 
         // Create the map config resolution array
-        var resolutions = [];
-        for (var i = this.minZoomLevel; i < Genapp.map.resolutions.length; i++) {
+        var resolutions = [], i;
+        for (i = this.minZoomLevel; i < Genapp.map.resolutions.length; i++) {
             resolutions.push(Genapp.map.resolutions[i]);
         }
 
@@ -477,7 +477,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
             'maxExtent' : new OpenLayers.Bounds(Genapp.map.x_min, Genapp.map.y_min, Genapp.map.x_max, Genapp.map.y_max),
             'eventListeners' : {// Hide the legend if needed
                 changelayer: function(o){
-                    if(o.property == 'visibility'){
+                    if(o.property === 'visibility'){
                         this.toggleLayersAndLegendsForZoom(o.layer);
                     }
                 },
@@ -496,7 +496,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
          * @property vectorLayer
          */
         this.vectorLayer = new OpenLayers.Layer.Vector("Vector Layer", {
-        	printable : false // This layers is never printed
+            printable : false // This layers is never printed
         });
 
         //
@@ -512,7 +512,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         this.map.addLayer(baseLayer);
 
         // Add the available layers
-        for ( var i = 0; i < this.layersList.length; i++) {
+        for (i = 0; i < this.layersList.length; i++) {
             this.map.addLayer(this.layersList[i]);
         }
 
@@ -590,6 +590,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      * @hide
      */
     initLayerTree : function() {
+        var i;
         /**
          * The layer tree.
          * @type {mapfish.widgets.LayerTree}
@@ -603,7 +604,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
             enableDD : true,
             listeners:{
                 'afterrender':function(){
-                    for (var i = 0; i < this.map.layers.length; i++){
+                    for (i = 0; i < this.map.layers.length; i++){
                         this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
                     }
                 },
@@ -611,17 +612,17 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
             },
             plugins : [
                {
-                	init: function(layerTree) {
-                		layerTree.getRootNode().cascade(
-	                    function(child) {
-	                        if(child.attributes.disabled == true){
-	                            child.forceDisable = true;
-	                        }else{
-	                            child.forceDisable = false;
-	                        }
-	                    }
-                		);
-                	}
+                    init: function(layerTree) {
+                        layerTree.getRootNode().cascade(
+                        function(child) {
+                            if(child.attributes.disabled === true){
+                                child.forceDisable = true;
+                            }else{
+                                child.forceDisable = false;
+                            }
+                        }
+                        );
+                    }
                 },
                 mapfish.widgets.LayerTree.createContextualMenuPlugin(['opacitySlide'])                
                 ],
@@ -925,10 +926,11 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      */
     toggleLayersAndLegends: function(layerNames){
 
-        var layersAndLegendsToEnableChecked = [];
-        var layersAndLegendsToEnableUnchecked = [];
-        var layersAndLegendsToDisable = [];
-        var layersAndLegendsToHide = [];
+        var layersAndLegendsToEnableChecked = [],
+            layersAndLegendsToEnableUnchecked = [],
+            layersAndLegendsToDisable = [],
+            layersAndLegendsToHide = [],
+            layerName;
         for(layerName in layerNames){
             if (layerNames.hasOwnProperty(layerName)) {
                 switch (layerNames[layerName])
@@ -968,22 +970,22 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
     enableLayersAndLegends: function(layerNames, check, setForceDisable){
 
         //The tabPanels must be activated before to show a child component
-        var isLayerPanelVisible = this.layerPanel.isVisible();
+        var isLayerPanelVisible = this.layerPanel.isVisible(), i;
 
         this.layersAndLegendsPanel.activate(this.layerPanel);
-        for(var i = 0; i<layerNames.length ;i++){
+        for(i = 0; i<layerNames.length ;i++){
             var nodeId = this.layertree.layerToNodeIds[layerNames[i]];
             if(!Ext.isEmpty(nodeId)){
-                if (setForceDisable != false){
+                if (setForceDisable !== false){
                     this.layertree.getNodeById(nodeId).forceDisable = false;
                 }
-                if(this.layertree.getNodeById(nodeId).zoomDisable != true){
+                if(this.layertree.getNodeById(nodeId).zoomDisable !== true){
                     this.layertree.getNodeById(nodeId).enable();
                 }
                 this.layertree.getNodeById(nodeId).getUI().show();
                 /*var layers = this.layertree.nodeIdToLayers[nodeId];
                 layers[0].display(true);*/
-                if (check == true) {
+                if (check === true) {
                     // Note: the redraw must be done before to check the node
                     // to avoid to redisplay the old layer images before the new one
                     var layers = this.map.getLayersByName(layerNames[i]);
@@ -1015,19 +1017,20 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      */
     disableLayersAndLegends: function(layerNames, uncheck, hide, setForceDisable){
 
+        var i;
         if(!Ext.isEmpty(layerNames)){
-            for(var i = 0; i<layerNames.length ;i++){
+            for(i = 0; i<layerNames.length ;i++){
                 var nodeId = this.layertree.layerToNodeIds[layerNames[i]];
                 if(!Ext.isEmpty(nodeId)){
-                    if (uncheck == true) {
+                    if (uncheck === true) {
                         this.layertree.setNodeChecked(nodeId,false);
                     }
                     var node = this.layertree.getNodeById(nodeId);
-                    if (hide == true) {
+                    if (hide === true) {
                         node.getUI().hide();
                     }
                     node.disable();
-                    if (setForceDisable != false) {
+                    if (setForceDisable !== false) {
                         node.forceDisable = true;
                     }
                     /*var layers = this.layertree.nodeIdToLayers[nodeId];
@@ -1054,7 +1057,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                         this.disableLayersAndLegends([layer.name], false, false, false);
                     } else {
                         node.zoomDisable = false;
-                        if (node.forceDisable != true) {
+                        if (node.forceDisable !== true) {
                             this.enableLayersAndLegends([layer.name], false, false);
                         }
                     }
@@ -1070,10 +1073,11 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      * @param {Boolean} visible True to show, false to hide
      */
     setLegendsVisible: function(layerNames, visible){
+        var i;
         for(i = 0; i<layerNames.length ;i++){
             var legendCmp = this.legendPanel.findById(this.id + layerNames[i]);
             if(!Ext.isEmpty(legendCmp)){
-                if (visible == true) {
+                if (visible === true) {
                     var layers = this.map.getLayersByName(layerNames[i]);
                     if(layers[0].calculateInRange() && layers[0].getVisibility()){
                         legendCmp.show();

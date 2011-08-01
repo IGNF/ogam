@@ -156,7 +156,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
             // because Ext does not clean everything (mapWindow still instanceof Ext.Window):
             this.mapWindow.on('destroy', function(){
                 delete this.mapWindow;
-                if(this.submitRequest == true){
+                if(this.submitRequest === true){
                     Ext.getCmp('consultation_panel').submitRequest();
                     this.submitRequest = false;
                 }
@@ -179,7 +179,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
     onWindowValidate: function (search){
         var value = this.mapPanel.vectorLayer.features.length ? this.mapPanel.wktFormat.write(this.mapPanel.vectorLayer.features[0]) : '';
         this.setValue(value);
-        if (search == true) {
+        if (search === true) {
             this.submitRequest = true;
         }
         this.mapWindow.destroy();

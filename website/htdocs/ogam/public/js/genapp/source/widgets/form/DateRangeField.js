@@ -133,7 +133,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
      * @param {Date} value The minimum date that can be selected
      */
     setMinValue : function(dt){
-        this.minValue = (typeof dt == "string" ? this.parseDate(dt) : dt);
+        this.minValue = (typeof dt === "string" ? this.parseDate(dt) : dt);
         if(this.menu){
             this.menu.rangePicker.startDatePicker.setMinDate(this.minValue);
             this.menu.rangePicker.endDatePicker.setMinDate(this.minValue);
@@ -145,7 +145,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
      * @param {Date} value The maximum date that can be selected
      */
     setMaxValue : function(dt){
-        this.maxValue = (typeof dt == "string" ? this.parseDate(dt) : dt);
+        this.maxValue = (typeof dt === "string" ? this.parseDate(dt) : dt);
         if(this.menu){
             this.menu.rangePicker.startDatePicker.setMaxDate(this.maxValue);
             this.menu.rangePicker.endDatePicker.setMaxDate(this.maxValue);
@@ -170,12 +170,12 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
              return errors;
         }
         var values = value.split(this.dateSeparator);
-        if (values.length != 1 && values.length != 2){
+        if (values.length !== 1 && values.length !== 2){
             errors.push(String.format(this.invalidText, value, this.format+this.dateSeparator+this.format));
             return errors;
         }
         var rangeDate = this.parseRangeDate(value);
-        if(values.length == 1){
+        if(values.length === 1){
             if (!rangeDate){
                 errors.push(String.format(this.invalidText, value, this.format));
                 return errors;
@@ -185,7 +185,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
                 errors.push(String.format(this.invalidText, value, this.format));
                 return errors;
             }
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             if (!rangeDate){
                 errors.push(String.format(this.invalidText, value, this.format+this.dateSeparator+this.format));
                 return errors;
@@ -199,13 +199,13 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
                 errors.push(this.reverseText);
                 return errors;
             }
-            if (!this.authorizeEqualValues && rangeDate.endDate.getElapsed(rangeDate.startDate) == 0){
+            if (!this.authorizeEqualValues && rangeDate.endDate.getElapsed(rangeDate.startDate) === 0){
                 errors.push(this.notEqualText);
                 return errors;
             }
         }
         //Checks if the start date is in the interval [minDate,maxDate]
-        if (rangeDate.startDate != null){
+        if (rangeDate.startDate !== null){
             if (rangeDate.startDate.getTime() - this.minValue.getTime() < 0){
                 errors.push(String.format(this.minText, this.formatDate(this.minValue)));
                 return errors;
@@ -216,7 +216,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             }
         }
         //Checks if the end date is in the interval [minDate,maxDate]
-        if (rangeDate.endDate != null){
+        if (rangeDate.endDate !== null){
             if (rangeDate.endDate.getTime() - this.minValue.getTime() < 0){
                 errors.push(String.format(this.minText, this.formatDate(this.minValue)));
                 return errors;
@@ -242,10 +242,10 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             return {startDate:value, endDate:value};
         }
         var values = value.split(this.dateSeparator);
-        if(values.length == 1){
+        if(values.length === 1){
             var sdpIndex = value.indexOf(this.startDatePrefix,0);
             var edpIndex = value.indexOf(this.endDatePrefix,0);
-            if(sdpIndex != -1){
+            if(sdpIndex !== -1){
             // Case ">= YYYY/MM/DD"
                 var startDate = this.parseDate.call(this, value.substring(sdpIndex + this.startDatePrefix.length));
                 if(startDate){
@@ -253,7 +253,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
                 }else{
                     return null;
                 }
-            }else if(edpIndex != -1){
+            }else if(edpIndex !== -1){
             // Case "<= YYYY/MM/DD"
                 var endDate = this.parseDate.call(this, value.substring(edpIndex + this.endDatePrefix.length));
                 if(endDate){
@@ -270,7 +270,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
                     return null;
                 }
             }
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             // Case "YYYY/MM/DD - YYYY/MM/DD"
             var sv = Date.parseDate(values[0], this.format);
             var ev = Date.parseDate(values[1], this.format);
@@ -306,20 +306,20 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             return Genapp.form.DateRangeField.superclass.formatDate.call(this, date);
         }
         if(this.isRangeDate(date)){
-            if(date.startDate == null && date.endDate != null){
+            if(date.startDate === null && date.endDate !== null){
                 if(this.usePrefix){
                     return this.endDatePrefix + date.endDate.format(this.format);
                 }else{
                     return this.minValue.format(this.format) + this.dateSeparator + date.endDate.format(this.format);
                 }
-            }else if(date.startDate != null && date.endDate == null){
+            }else if(date.startDate !== null && date.endDate === null){
                 if(this.usePrefix){
                     return this.startDatePrefix + date.startDate.format(this.format);
                 }else{
                     return date.startDate.format(this.format) + this.dateSeparator + this.maxValue.format(this.format);
                 }
-            }else if(date.startDate != null && date.endDate != null){
-                if(this.mergeEqualValues && date.endDate.getElapsed(date.startDate) == 0){
+            }else if(date.startDate !== null && date.endDate !== null){
+                if(this.mergeEqualValues && date.endDate.getElapsed(date.startDate) === 0){
                     return date.startDate.format(this.format);
                 }else if(this.autoReverse && date.endDate.getTime() - date.startDate.getTime() < 0){
                     return date.endDate.format(this.format) + this.dateSeparator + date.startDate.format(this.format);
@@ -397,10 +397,10 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             minv = values;
             maxv = values;
         }else if(this.isRangeDate(values)){
-            if(values.startDate != null){
+            if(values.startDate !== null){
                 minv = values.startDate;
             }
-            if(values.endDate != null){
+            if(values.endDate !== null){
                 maxv = values.endDate;
             }
         }
@@ -421,7 +421,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
      * @return {Boolean} true if the object is a range date
      */
     isRangeDate : function(rangeDate){
-        return (Ext.isObject(rangeDate) && (Ext.isDate(rangeDate.startDate) || rangeDate.startDate == null) && (Ext.isDate(rangeDate.endDate) || rangeDate.endDate == null));
+        return (Ext.isObject(rangeDate) && (Ext.isDate(rangeDate.startDate) || rangeDate.startDate === null) && (Ext.isDate(rangeDate.endDate) || rangeDate.endDate === null));
     },
     
     /**

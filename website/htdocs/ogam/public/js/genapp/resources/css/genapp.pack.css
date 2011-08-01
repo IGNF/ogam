@@ -148,7 +148,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
-/***** Grid Panel ************************************************************************/
+/***** Grid Panel ********************************************************************************/
 
 .genapp-query-grid-map{
     overflow:hidden !important;
@@ -175,7 +175,42 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
-/** Details Panel ************************************************************************/
+/***** Grid Details Panel ************************************************************************/
+
+.genapp-query-grid-details-panel-slip{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+}
+.genapp-query-grid-details-panel-search{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
+}
+.genapp-query-grid-details-panel-get-parent{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
+}
+.genapp-query-grid-details-panel-get-children{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
+}
+/*************************************************************************************************/
+
+/** Details Panel ********************************************************************************/
 
 .genapp-query-details-panel-ct-xcollapsed-vertical-label-div{
     overflow: auto;
@@ -212,6 +247,9 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 .genapp-query-details-panel legend{
     padding:0 5px;
+}
+.genapp-query-details-panel-see-children{
+    margin-top:10px;
 }
 /*************************************************************************************************/
 
@@ -425,6 +463,22 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
+/***** Tree Picker *********************************************************************/
+
+.x-tree-menu .x-menu-list{
+    padding:0;
+}
+.x-menu-tree-item .x-panel-btns{
+    padding:0;
+}
+.x-menu-tree-item .x-panel-body{
+    border: none 0;
+}
+.x-menu-tree-item .x-btn-noicon .x-btn-small .x-btn-text{
+    height:12px;
+}
+/*************************************************************************************************/
+
 /***** Geometry Field *********************************************************************/
 
 .x-form-field-wrap .x-form-map-trigger{
@@ -612,7 +666,7 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
-/***** Grid Panel ************************************************************************/
+/***** Grid Panel ********************************************************************************/
 .genapp-query-grid-map{
     background:transparent url(../images/map_magnify.png) no-repeat scroll !important;
 }
@@ -624,8 +678,22 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
+/***** Grid Details Panel ************************************************************************/
+.genapp-query-grid-details-panel-slip{
+    background:transparent url(../images/page_white_magnify.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-search{
+    background:transparent url(../images/application_side_contract.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-parent{
+    background:transparent url(../images/resultset_previous.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-children{
+    background:transparent url(../images/resultset_next.png) no-repeat scroll !important;
+}
+/*************************************************************************************************/
 
-/** Details Panel ************************************************************************/
+/** Details Panel ********************************************************************************/
 .genapp-query-details-panel-ct-xcollapsed-vertical-label-div{
     background-image: url(../images/gray-extend/details.gif);
 }
@@ -656,6 +724,15 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     font-weight:bold;
     color:#505050;
     font-size:12px;
+}
+.genapp-query-details-panel-see-children{
+    font-weight:bold;
+    color:#505050;
+    font-size:12px;
+    cursor: pointer;
+}
+.genapp-query-details-panel-see-children:hover{
+    text-decoration: underline;
 }
 /*************************************************************************************************/
 
@@ -717,6 +794,14 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 .x-menu-number-range-item .x-form-field-wrap .x-form-trigger{
     background-image:url(../../../extjs/resources/images/gray-extend/form/clear-trigger.gif);
+}
+/*************************************************************************************************/
+
+/***** Tree Picker *********************************************************************/
+.x-menu-tree-item .x-panel-footer{
+    background-color:#EBEBEB;
+    background-image:url(../../../extjs/resources/images/gray-extend/shared/glass-bg.gif);
+    border-top:#D0D0D0 1px solid;
 }
 /*************************************************************************************************/
 
@@ -910,7 +995,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
-/***** Grid Panel ************************************************************************/
+/***** Grid Panel ********************************************************************************/
 
 .genapp-query-grid-map{
     overflow:hidden !important;
@@ -937,7 +1022,42 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
-/** Details Panel ************************************************************************/
+/***** Grid Details Panel ************************************************************************/
+
+.genapp-query-grid-details-panel-slip{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+}
+.genapp-query-grid-details-panel-search{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
+}
+.genapp-query-grid-details-panel-get-parent{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
+}
+.genapp-query-grid-details-panel-get-children{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
+}
+/*************************************************************************************************/
+
+/** Details Panel ********************************************************************************/
 
 .genapp-query-details-panel-ct-xcollapsed-vertical-label-div{
     overflow: auto;
@@ -974,6 +1094,9 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 .genapp-query-details-panel legend{
     padding:0 5px;
+}
+.genapp-query-details-panel-see-children{
+    margin-top:10px;
 }
 /*************************************************************************************************/
 
@@ -1183,6 +1306,22 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     background-position:0px 0px;
 }
 .x-menu-number-range-item .x-btn-noicon .x-btn-small .x-btn-text{
+    height:12px;
+}
+/*************************************************************************************************/
+
+/***** Tree Picker *********************************************************************/
+
+.x-tree-menu .x-menu-list{
+    padding:0;
+}
+.x-menu-tree-item .x-panel-btns{
+    padding:0;
+}
+.x-menu-tree-item .x-panel-body{
+    border: none 0;
+}
+.x-menu-tree-item .x-btn-noicon .x-btn-small .x-btn-text{
     height:12px;
 }
 /*************************************************************************************************/
@@ -1383,7 +1522,7 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
-/***** Grid Panel ************************************************************************/
+/***** Grid Panel ********************************************************************************/
 .genapp-query-grid-map{
     background:transparent url(../images/map_magnify.png) no-repeat scroll !important;
 }
@@ -1395,8 +1534,22 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
+/***** Grid Details Panel ************************************************************************/
+.genapp-query-grid-details-panel-slip{
+    background:transparent url(../images/page_white_magnify.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-search{
+    background:transparent url(../images/application_side_contract.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-parent{
+    background:transparent url(../images/resultset_previous.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-children{
+    background:transparent url(../images/resultset_next.png) no-repeat scroll !important;
+}
+/*************************************************************************************************/
 
-/** Details Panel ************************************************************************/
+/** Details Panel ********************************************************************************/
 .genapp-query-details-panel .x-tab-strip-top .x-tab-right,
 .genapp-query-details-panel .x-tab-strip-top .x-tab-left,
 .genapp-query-details-panel .x-tab-strip-top .x-tab-strip-inner {
@@ -1432,6 +1585,15 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     font-weight:bold;
     color:#505050;
     font-size:12px;
+}
+.genapp-query-details-panel-see-children{
+    font-weight:bold;
+    color:#505050;
+    font-size:12px;
+    cursor: pointer;
+}
+.genapp-query-details-panel-see-children:hover{
+    text-decoration: underline;
 }
 /*************************************************************************************************/
 
@@ -1492,6 +1654,13 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 .x-menu-number-range-item .x-form-field-wrap .x-form-trigger{
     background-image:url(../../../extjs/resources/images/green-ifn/form/clear-trigger.gif);
+}
+/*************************************************************************************************/
+
+/***** Tree Picker *********************************************************************/
+.x-menu-tree-item .x-panel-footer{
+    background-image:url(../../../extjs/resources/images/green-ifn/shared/glass-bg.gif);
+    border-top:#75AA1C 1px solid;
 }
 /*************************************************************************************************/
 
@@ -1714,7 +1883,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
-/***** Grid Panel ************************************************************************/
+/***** Grid Panel ********************************************************************************/
 
 .genapp-query-grid-map{
     overflow:hidden !important;
@@ -1741,7 +1910,42 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
-/** Details Panel ************************************************************************/
+/***** Grid Details Panel ************************************************************************/
+
+.genapp-query-grid-details-panel-slip{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+}
+.genapp-query-grid-details-panel-search{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
+}
+.genapp-query-grid-details-panel-get-parent{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
+}
+.genapp-query-grid-details-panel-get-children{
+    overflow:hidden !important;
+    width:16px !important;
+    height:16px !important;
+    cursor: pointer;
+    float:left;
+    margin: 0 2px;
+}
+/*************************************************************************************************/
+
+/** Details Panel ********************************************************************************/
 
 .genapp-query-details-panel-ct-xcollapsed-vertical-label-div{
     overflow: auto;
@@ -1778,6 +1982,9 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 .genapp-query-details-panel legend{
     padding:0 5px;
+}
+.genapp-query-details-panel-see-children{
+    margin-top:10px;
 }
 /*************************************************************************************************/
 
@@ -1991,6 +2198,22 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
+/***** Tree Picker *********************************************************************/
+
+.x-tree-menu .x-menu-list{
+    padding:0;
+}
+.x-menu-tree-item .x-panel-btns{
+    padding:0;
+}
+.x-menu-tree-item .x-panel-body{
+    border: none 0;
+}
+.x-menu-tree-item .x-btn-noicon .x-btn-small .x-btn-text{
+    height:12px;
+}
+/*************************************************************************************************/
+
 /***** Geometry Field *********************************************************************/
 
 .x-form-field-wrap .x-form-map-trigger{
@@ -2178,7 +2401,7 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
-/***** Grid Panel ************************************************************************/
+/***** Grid Panel ********************************************************************************/
 .genapp-query-grid-map{
     background:transparent url(../images/map_magnify.png) no-repeat scroll !important;
 }
@@ -2190,8 +2413,22 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
+/***** Grid Details Panel ************************************************************************/
+.genapp-query-grid-details-panel-slip{
+    background:transparent url(../images/page_white_magnify.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-search{
+    background:transparent url(../images/application_side_contract.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-parent{
+    background:transparent url(../images/resultset_previous.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-children{
+    background:transparent url(../images/resultset_next.png) no-repeat scroll !important;
+}
+/*************************************************************************************************/
 
-/** Details Panel ************************************************************************/
+/** Details Panel ********************************************************************************/
 .genapp-query-details-panel-ct-xcollapsed-vertical-label-div{
     background-image: url(../images/gray-extend/details.gif);
 }
@@ -2222,6 +2459,15 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     font-weight:bold;
     color:#505050;
     font-size:12px;
+}
+.genapp-query-details-panel-see-children{
+    font-weight:bold;
+    color:#505050;
+    font-size:12px;
+    cursor: pointer;
+}
+.genapp-query-details-panel-see-children:hover{
+    text-decoration: underline;
 }
 /*************************************************************************************************/
 
@@ -2283,6 +2529,14 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 .x-menu-number-range-item .x-form-field-wrap .x-form-trigger{
     background-image:url(../../../extjs/resources/images/gray-extend/form/clear-trigger.gif);
+}
+/*************************************************************************************************/
+
+/***** Tree Picker *********************************************************************/
+.x-menu-tree-item .x-panel-footer{
+    background-color:#EBEBEB;
+    background-image:url(../../../extjs/resources/images/gray-extend/shared/glass-bg.gif);
+    border-top:#D0D0D0 1px solid;
 }
 /*************************************************************************************************/
 
@@ -2443,7 +2697,7 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
-/***** Grid Panel ************************************************************************/
+/***** Grid Panel ********************************************************************************/
 .genapp-query-grid-map{
     background:transparent url(../images/map_magnify.png) no-repeat scroll !important;
 }
@@ -2455,8 +2709,22 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
+/***** Grid Details Panel ************************************************************************/
+.genapp-query-grid-details-panel-slip{
+    background:transparent url(../images/page_white_magnify.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-search{
+    background:transparent url(../images/application_side_contract.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-parent{
+    background:transparent url(../images/resultset_previous.png) no-repeat scroll !important;
+}
+.genapp-query-grid-details-panel-get-children{
+    background:transparent url(../images/resultset_next.png) no-repeat scroll !important;
+}
+/*************************************************************************************************/
 
-/** Details Panel ************************************************************************/
+/** Details Panel ********************************************************************************/
 .genapp-query-details-panel .x-tab-strip-top .x-tab-right,
 .genapp-query-details-panel .x-tab-strip-top .x-tab-left,
 .genapp-query-details-panel .x-tab-strip-top .x-tab-strip-inner {
@@ -2492,6 +2760,15 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     font-weight:bold;
     color:#505050;
     font-size:12px;
+}
+.genapp-query-details-panel-see-children{
+    font-weight:bold;
+    color:#505050;
+    font-size:12px;
+    cursor: pointer;
+}
+.genapp-query-details-panel-see-children:hover{
+    text-decoration: underline;
 }
 /*************************************************************************************************/
 
@@ -2552,6 +2829,13 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 .x-menu-number-range-item .x-form-field-wrap .x-form-trigger{
     background-image:url(../../../extjs/resources/images/green-ifn/form/clear-trigger.gif);
+}
+/*************************************************************************************************/
+
+/***** Tree Picker *********************************************************************/
+.x-menu-tree-item .x-panel-footer{
+    background-image:url(../../../extjs/resources/images/green-ifn/shared/glass-bg.gif);
+    border-top:#75AA1C 1px solid;
 }
 /*************************************************************************************************/
 
@@ -2744,3 +3028,545 @@ input.x-form-checkbox
      position: static !important;	
 }
 /*************************************************************************************************/
+/***** Basic Checkbox ************************************************************************/
+
+.x-sm-form-check.checkbox_off {
+    background-image:url(../js/extjs/resources/images/default/form/checkbox.gif);
+    background-repeat:no-repeat;
+    background-position:0 0;
+    height:13px !important;
+    width:13px !important;
+}
+.x-sm-form-check.checkbox_on {
+    background-image:url(../js/extjs/resources/images/default/form/checkbox.gif);
+    background-repeat:no-repeat;
+    background-position:0 -13px;
+    height:13px !important;
+    width:13px !important;
+}
+.x-sm-form-check.checkbox_on_dled
+{
+    background-image: url(../js/extjs/resources/images/default/form/checkbox.gif);
+    background-repeat: no-repeat;
+    background-position:0 -26px;
+    height:13px !important;
+    width:13px !important;
+}
+
+.x-sm-form-check.checkbox_off_dled
+{
+    background-image: url(../js/extjs/resources/images/default/form/checkbox.gif);
+    background-repeat: no-repeat;
+    background-position:0 0;
+    height:13px !important;
+    width:13px !important;
+}
+input.x-form-checkbox
+{
+    left:0 !important;
+    top:0 !important;
+}
+.x-sm-form-check-innerwrap{
+    margin-top:5px;
+}
+.ext-ie7 .x-sm-form-check-innerwrap{
+     position: static !important;   
+}
+/*************************************************************************************************/
+
+
+/************************/
+/**     RTM Patch      **/
+/************************/
+/**
+ * This following css is added to the end of the extjsux.css
+ * because it's the last css inclusion into the "show-query-form" view
+ * and it's simpler for the svn update to patch this file
+ * than rewrite the view to add a new css inclusion.
+ */
+
+/************************/
+/**      Genapp        **/
+/************************/
+html {
+    background-color: white;
+}
+#header {
+    display:none;
+}
+#footer {
+    display:none;
+}
+#push {
+    display:none;
+}
+#wrapper {
+    margin:0px;
+}
+#main-body {
+    margin: 0;
+    bottom:0px;
+    left:0;
+    right:0;
+    padding:10px;
+}
+.content {
+    padding:0;
+}
+.labelNextBin {
+    color:#000000;
+}
+.columnLabel {
+    color:#000000;
+}
+
+/************************/
+/**     Openlayer      **/
+/************************/
+.olControlScale{
+    background-color:white;
+    font-size: 1.2em !important;
+    bottom:1.5em !important;
+    opacity:0.8;
+}
+div.olControlMousePosition{
+    background-color:white;
+    font-size: 1.2em !important;
+    opacity:0.8;
+}
+.olControlScaleLine{
+    background-color:white;
+    font-size: 1.2em !important;
+    bottom:8px !important;
+    opacity:0.8;
+}* {
+    margin:0;
+    padding:0;
+}
+html {
+    height:100%;
+}
+h1, h2, h3 {
+    color:#135CAE;
+}
+
+h3 {    
+    border-bottom:1px dotted #CCCCCC;
+    display:block;
+    font-size:1.7em;
+    font-weight:normal;
+    line-height:1.7em;
+    margin-left:20px;
+    padding:0;
+    text-transform:uppercase;
+}
+
+ul.errors {
+    color:#FF0000;
+}
+
+img {
+    border: 0 none;
+}
+ul, ol {
+    margin-left:2em;
+}
+fieldset {
+    padding:.5em;
+}
+body {
+    background-color: #CCCCCC;
+    background-image: url("../img/CCCCCC.png");
+    background-repeat: repeat-x;
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:76.8%;
+    line-height:1.8em;
+    margin:0 0;
+    height: 100%;
+}
+
+.wrapper {
+    color:#333333;  
+    width: 100%;
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin-top: 0;  
+    margin-bottom: -40px; /* the bottom margin is the negative value of the footer's height */
+}
+
+.main-body {
+    background-color:#FFFFFF;
+    margin:0 auto;
+    text-align:left;
+    margin-left: 40px;
+    margin-right: 40px;
+    height: 100%;
+}
+.main-body-bg {
+    background-color:#FFFFFF;
+    position:absolute;
+    top:0;
+    left:40px;
+    right:40px;
+    z-index: -1;
+    bottom:30px;
+}
+
+.header {
+    height: 120px; /* size of banner + top menu */
+}
+
+.header-beadcrumb {
+    width:400px;
+}
+
+.header-login {
+    width:200px;
+    text-align:right;
+    font-weight:bold;
+}
+
+.banner {
+    color:#CCCCCC;
+    /*margin:10px 0;*/
+    width:100%;
+    text-align:center;
+    overflow:hidden;
+}
+.top {
+    background-color:#EDEDED;
+    border-bottom:1px dotted #CCCCCC;
+    border-top:1px dotted #CCCCCC;
+    padding:2px 5px;
+}
+.content {
+    /*min-height: 100%;
+    height: 100%;*/
+    background-color:#FFFFFF;
+    padding-bottom:15px;
+}
+
+.content h1, .content h2{
+    text-align:center;
+    margin-top:20px;
+}
+
+.footer,.push {
+    height: 40px; /* .push must be the same height as .footer */
+}
+
+.footer {
+    position:relative;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #CCCCCC;
+    color:#FFFFFF;
+}
+.footer-ct {
+    position:relative;
+    top:10px;
+}
+
+a {
+    text-decoration:none;
+}
+a:hover {
+    text-decoration:underline;
+    color: #333333;
+}
+a:visited {
+    text-decoration:none;
+    color: #135CAE;
+}
+
+
+
+.left-column {
+    width: 300px;
+}
+
+#contextual {
+    padding-left: 30px;
+}
+#contextual p{
+    margin:0;
+}
+#contextual li{
+    margin-left: 15px;
+}
+
+#divJRCRequestForm {
+    position:absolute;
+    left:5px;
+    width:250px;
+}
+
+#queryForm {
+    position:absolute;
+    top:180px;
+    left:5px;
+    width:250px;
+}
+
+#divQueryResult {
+    position:absolute;
+    top:180px;
+    left:260px;
+    right:250px;
+}
+/** Menu **/
+div.moduletable_menu {
+    margin:30px 0;
+}
+div.moduletable_menu li {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+
+div.moduletable_menu a:hover {
+    background-color:#EEEEEE;
+    color:#666666;
+    text-decoration:none;
+}
+div.moduletable_menu a:link, div.moduletable_menu a:active, div.moduletable_menu a:visited {
+    background-image: url(../img/greybullet2.png);
+    background-position:5px 50%;
+    background-repeat:no-repeat;
+    border-bottom:1px dotted #CCCCCC;
+    color:#606060;
+    display:block;
+    padding:3px 5px 3px 25px;
+}
+
+
+.field_label {
+    color:#003300;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:13px;
+    text-decoration:none;
+}
+
+.criteria_label {
+    color:#003300;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:11px;
+    text-decoration:none;
+}
+
+.result_label {
+    color:#003300;
+    font-family:Verdana,Arial,Helvetica,sans-serif;
+    font-size:11px;
+    text-decoration:none;
+}
+.login-form , .create-user-form, .data-harmonization-form,
+.create-data-submission-form, .create-plot-location-submission-form,
+.create-strata-submission-form, .show-upload-strata-form,
+.create-aggregation-form,
+.create-interpolation-form,
+.show-upload-data-form, .show-upload-plot-location-form,
+.show-change-password-form, .show-create-role-form,
+.show-edit-role-form, .show-edit-user-form {
+    width:250px;
+    text-align:left;
+    background-color:#EDEDED;
+    padding:0px 40px;
+    border-bottom:1px dotted #CCCCCC;
+    border-top:1px dotted #CCCCCC;
+    margin: 50px auto;
+}
+.login-form, .show-change-password-form{
+    width:150px;
+}
+.show-upload-data-form, .show-upload-plot-location-form{
+    width:1000px;
+}
+.show-create-role-form label input,
+.show-edit-role-form label input{
+    margin-right:10px;
+}
+
+tr.sectiontableentry0 td {
+    background-color:#EDEDED;
+    border-bottom:1px dotted #CCCCCC;
+    border-top:1px dotted #CCCCCC;
+    padding:3px;
+    text-align:left;
+}
+
+tr.sectiontableentry1 td {
+    padding:3px;
+    text-align:left;
+}
+
+
+.csv-export {
+    background-image:url(../img/table_save.png) !important;
+}
+.sectiontableentry0 img, .sectiontableentry1 img{
+    height:16px;
+    border:0 none;
+    margin: 0 0 0 10px;
+}
+.status-img{
+    height:16px;
+    border:0 none;
+    margin: 0 10px 0 0;
+}
+.error-msg{
+    text-align:center;
+    margin:100px 0 0;
+}
+.bottom-menu{
+    text-align:center;
+    margin:40px 0 0;
+}
+.sectiontable{
+    margin: 30px auto;
+}
+.subTableLink{
+    text-align: center;
+}
+.tempStatusDiv{
+    display:inline;
+}
+
+img.percentImage {
+ background: white url(../img/percentImage_back.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
+ background-position: 1px 0;
+}
+
+.percentLabel {
+}
+
+.percentText {
+}
+
+
+
+/**************************************/
+/* Mise en forme des formulaires Zend */
+/**************************************/
+
+.editform dd {
+    position: relative;
+    padding-left: 16em;
+    top: -2em;
+}
+
+.message {
+    color: #60BB60;
+    text-align: center;
+    font-size:16px;
+}
+
+/************************************************************/
+/* Tooltips en CSS                                          */
+*/ TODO : Replace with something more consistent with ExtJS */
+/************************************************************/
+
+a.tooltip {
+    display:none;
+}
+
+a.tooltip em {
+    display:none;
+}
+a.tooltip:hover {
+    border: 0; 
+    position: relative; 
+    z-index: 500; 
+    text-decoration:none;
+}
+a.tooltip:hover em {
+    font-style: normal; 
+    display: block; 
+    position: absolute; 
+    top: 20px; 
+    left: -10px; 
+    padding: 5px; 
+    color: #000; 
+    border: 1px solid #bbb; 
+    background: #ffc; 
+    width:300px;
+}
+a.tooltip:hover em span {
+    position: absolute; 
+    top: -7px; 
+    left: 15px;
+    height: 7px; 
+    width: 11px; 
+    background: transparent url(../img/infobulletop00.gif); 
+    margin:0; 
+    padding: 0; 
+    border: 0;
+}
+
+/*************************************************************************************************/
+
+/************************/
+/**     RTM Patch      **/
+/************************/
+.pathway a, #bottom a{
+    color: #333333;
+}
+.pathway a:hover, #bottom a:hover{
+    color: #000000;
+    text-decoration:underline;
+}
+.pathway a:visited, #bottom a:visited{
+    color: #333333;
+    text-decoration:none;
+}
+.presentation-div a{
+    font-weight: bold;
+    color: black;
+}
+.presentation-div a:hover{
+    font-weight: bold;
+    text-decoration: underline;
+    color: black;
+}
+.presentation-div{
+    margin:auto;
+    margin-top:40px;
+    margin-bottom:40px;
+    width:95%;
+    border-color:#D0D0D0;
+    border-style:none solid solid;
+    border-width:0 1px 1px;
+}
+.presentation-top-div{
+    font-weight: bold;
+    padding: 3px 5px;
+    background-image:url(../js/extjs/resources/images/gray-extend/panel/top-bottom.gif);
+    border-bottom: 1px solid #D0D0D0;
+}
+.presentation-center-div{
+    background-color: #EFEFEF;
+    padding: 20px 15px;
+    border-bottom: 1px solid #D0D0D0;
+    line-height: 15px;
+}
+.presentation-center-warning-div{
+    font-size: 9px;
+    font-style: italic;
+    line-height: 12px;
+}
+.presentation-center-div a{
+    font-weight: bold;
+    text-decoration: underline;
+    color: black;
+}
+.presentation-bottom-div{
+    text-align: right;
+    background-color: #EDEDED;
+    padding: 5px;
+}
+.notie .save-password-button{
+    display: none;
+}

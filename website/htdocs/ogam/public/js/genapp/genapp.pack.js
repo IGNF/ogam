@@ -1,7 +1,6 @@
 OpenLayers.Handler.FeatureInfo = OpenLayers.Class.create();
 OpenLayers.Handler.FeatureInfo.prototype = 
   OpenLayers.Class.inherit( OpenLayers.Handler, {
-    
       /**
        * @cfg {String} alertErrorTitle
        * The alert Error Title (defaults to <tt>'Error :'</tt>)
@@ -19,7 +18,11 @@ OpenLayers.Handler.FeatureInfo.prototype =
         var ll = this.map.getLonLatFromPixel(px);
         
         // Construction d'une URL pour faire une requête WFS sur le point
-        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename="+Genapp.map.featureinfo_typename+"&MAXFEATURES=1&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
+        var url = Genapp.base_url+"proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename="+Genapp.map.featureinfo_typename+"&BBOX="+(ll.lon-Genapp.map.featureinfo_margin)+","+(ll.lat+Genapp.map.featureinfo_margin)+","+(ll.lon+Genapp.map.featureinfo_margin)+","+(ll.lat-Genapp.map.featureinfo_margin);
+        
+        if (Genapp.map.featureinfo_maxfeatures !== 0) {
+            url = url + "&MAXFEATURES=" + Genapp.map.featureinfo_maxfeatures;
+        }
 
         OpenLayers.loadURL(
             url,
@@ -28,7 +31,13 @@ OpenLayers.Handler.FeatureInfo.prototype =
             function(response) {
                 try {
                     var result = Ext.decode(response.responseText);
-                    Genapp.cardPanel.consultationPage.openDetails(result.id, 'getdetails');
+                    if(!Ext.isEmpty(result.data)){
+                        if(Genapp.map.featureinfo_maxfeatures === 1){
+                            Genapp.cardPanel.consultationPage.openDetails(result.data[0][0], 'getdetails');
+                        }else{
+                            Genapp.cardPanel.consultationPage.openFeaturesInformationSelection(result);
+                        }
+                    }
                 } catch (e) {
                     Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
                 }
@@ -48,7 +57,6 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class.create();
 OpenLayers.Control.FeatureInfoControl.prototype = 
   OpenLayers.Class.inherit( OpenLayers.Control, {
     type: OpenLayers.Control.TYPE_TOOL,
-    
     /**
      * Constructor: OpenLayers.Control.FeatureInfoControl
      * 
@@ -60,16 +68,77 @@ OpenLayers.Control.FeatureInfoControl.prototype =
     },
     
     draw: function() {
-        this.handler = new OpenLayers.Handler.FeatureInfo( this, {'click':this.click});   
-        this.activate();
+        this.handler = new OpenLayers.Handler.FeatureInfo( this, {'click':this.click});
+        //this.activate();
     },
      
      /** @final @type String */
     CLASS_NAME: "OpenLayers.Control.FeatureInfoControl"
-        
   }
 );
 /**
+ * The class of the Card Grid Details Panel.
+ * 
+ * @class Genapp.CardGridDetailsPanel
+ * @extends Ext.Panel
+ * @constructor Create a new CardGridDetailsPanel
+ * @param {Object} config The config object
+ */
+Genapp.CardGridDetailsPanel = Ext.extend(Ext.Panel, {
+    /**
+     * @cfg {Number} headerWidth
+     * The tab header width. (Default to 60)
+     */
+    headerWidth:95,
+    /**
+     * @cfg {Boolean} closable
+     * Panels themselves do not directly support being closed, but some Panel subclasses do (like
+     * {@link Ext.Window}) or a Panel Class within an {@link Ext.TabPanel}.  Specify true
+     * to enable closing in such situations. Defaults to true.
+     */
+    closable: true,
+    /**
+     * @cfg {Boolean} autoScroll
+     * true to use overflow:'auto' on the panel's body element and show scroll bars automatically when
+     * necessary, false to clip any overflowing content (defaults to true).
+     */
+    autoScroll:true,
+    /**
+     * @cfg {String} cls
+     * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp-query-grid-details-panel').
+     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
+     */
+    cls:'genapp-query-card-grid-details-panel',
+    /**
+     * @cfg {String} loadingMsg
+     * The loading message (defaults to <tt>'Loading...'</tt>)
+     */
+    loadingMsg: 'Loading...',
+    header: false,
+    layout: 'card',
+    /**
+     * @cfg {String} gridDetailsPanelTitle
+     * The grid Details Panel Title (default to 'Locations')
+     */
+    cardGridDetailsPanelTitle: 'Selection',
+    activeItem: 0, // make sure the active item is set on the container config!
+
+
+    // private
+    initComponent : function() {
+            this.itemId = this.initConf.id;
+
+            this.title = '<div style="width:'+ this.headerWidth + 'px;">'
+            + this.cardGridDetailsPanelTitle + ' ' + this.initConf.featuresInformationSearchNumber
+            + '</div>';
+            
+            this.items = new Genapp.GridDetailsPanel({
+                initConf:this.initConf
+            });
+
+        Genapp.CardGridDetailsPanel.superclass.initComponent.call(this);
+    }
+});/**
  * A CardPanel correspond to the panel containing the application pages.
  * 
  * @class Genapp.CardPanel
@@ -132,14 +201,14 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
     renderTo:'page',
     /**
      * @cfg {String} widthToSubstract
-     * The width to substract to the consultation panel (defaults to <tt>0</tt>)
+     * The width to substract to the consultation panel (defaults to <tt>80</tt>)
      */
-    widthToSubstract:120,
+    widthToSubstract:80,
     /**
      * @cfg {String} heightToSubstract
-     * The height to substract to the consultation panel (defaults to <tt>0</tt>)
+     * The height to substract to the consultation panel (defaults to <tt>160</tt>)
      */
-    heightToSubstract:210,
+    heightToSubstract:160,
     /**
      * @cfg {Array} shownPages
      * An array containing the page (xtype) to display
@@ -153,7 +222,10 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
 
     // private
     initComponent : function() {
-
+    var i,
+        onActivateFct = function(panel) {
+            Ext.History.add(this.id);
+        };
     this.addEvents(
             /**
              * @event resizewrapper
@@ -182,20 +254,18 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
         );
         if (!this.items && this.shownPages.length !== 0) {
             this.items = [];
-            for(var i=0; i<this.shownPages.length; i++){
+            for(i=0; i<this.shownPages.length; i++){
                 var pageCfg = {xtype:this.shownPages[i]};
                 if (Genapp.config.historicActivated) {
                     pageCfg.listeners = {
-                        'activate': function(panel) {
-                            Ext.History.add(this.id);
-                        }
-                    }
+                        'activate': onActivateFct
+                    };
                 }
                 this.items.push(pageCfg);
             }
         }
         // Removes the tab if there are only one pages
-        if(this.shownPages.length == 1 ){
+        if(this.shownPages.length === 1 ){
             this.headerCfg = {
                 style:'display:none;'
             };
@@ -534,6 +604,16 @@ listeners: {
      */
     detailsPanelCtUnpinToolQtip:'Unpin the panel',
     /**
+     * @cfg {String} featuresInformationPanelCtTitle
+     * The features Information PanelCt Title (defaults to <tt>'Features Information'</tt>)
+     */
+    featuresInformationPanelCtTitle:'Features Information',
+    /**
+     * @cfg {Number} featuresInformationPanelCtHeight
+     * The features Information Panel Ct Height (defaults to <tt>185 (3 rows)</tt>)
+     */
+    featuresInformationPanelCtHeight:185,
+    /**
      * @cfg {Ext.LoadMask} mask
      * The consultation page mask
      */
@@ -667,6 +747,13 @@ listeners: {
      * True to collapse the query panel on a prefefined request load (default to true)
      */
     collapseQueryPanelOnPredefinedRequestLoad: true,
+    // private
+    featuresInformationSearchNumber: 0,
+    /**
+     * @cfg {Number} tipDefaultWidth
+     * The tip Default Width. (Default to 300)
+     */
+    tipDefaultWidth: 300,
 
     // private
     initComponent : function() {
@@ -884,12 +971,6 @@ listeners: {
             bbar: this.pagingToolbar,
             listeners:{
                 'activate': function (panel) {
-                    if(!this.hideInterpolationButton){
-                        this.interpolationButton.hide();
-                    }
-                    if(!this.hideAggregationButton){
-                        this.aggregationButton.hide();
-                    }
                     if(!this.hideCsvExportButton){
                         this.csvExportButton.show();
                     }
@@ -910,12 +991,6 @@ listeners: {
             hideMapDetails: this.hideMapDetails,
             listeners:{
                 'activate': function (panel) {
-                    if(!this.hideInterpolationButton){
-                        this.interpolationButton.show();
-                    }
-                    if(!this.hideAggregationButton){
-                        this.aggregationButton.show();
-                    }
                     if(!this.hideCsvExportButton){
                         this.csvExportButton.hide();
                     }
@@ -981,277 +1056,7 @@ listeners: {
                 this.mask = new Ext.LoadMask(this.getEl(), {msg:this.mapMaskMsg});
 
                 this.centerPanel.doLayout();
-                if(!this.hideInterpolationButton){
-                    this.interpolationButton = addTopButton({
-                       xtype:'splitbutton',
-                       text:this.interpolationButtonText,
-                       disabled:true,
-                       menu: this.interpolationButtonMenu = new Ext.menu.Menu({
-                           cls: 'genapp-query-center-panel-interpolation-button-menu',
-                           defaults:{
-                               width:200
-                           },
-                           items: [
-                               // these items will render as dropdown menu items when the arrow is clicked:
-                               //{xtype: 'label', text:'Data:'},
-                               this.interpolationButtonMenuDataCombo = new Ext.form.ComboBox({
-                                   xtype: 'combo',
-                                   queryParam :'datasetId',
-                                   store : new Ext.data.JsonStore({
-                                       url : Genapp.base_url + 'interpolation/ajaxgetvariables',  
-                                       method : 'POST',
-                                       listeners: {
-                                           load: function(store, records, options){
-                                               if(records.length == 0){
-                                                   this.interpolationButtonMenuDataCombo.reset();
-                                                   delete this.interpolationButtonMenuDataCombo.lastQuery;
-                                               }
-                                           },
-                                           scope:this
-                                        }
-                                   }),
-                                   editable : false,
-                                   allowBlank: false,
-                                   displayField: 'label',
-                                   valueField: 'name',
-                                   forceSelection: true,
-                                   typeAhead: true,
-                                   triggerAction: 'all',
-                                   emptyText: 'Select a datum...',
-                                   getListParent: function() {
-                                       return this.el.up('.x-menu');
-                                   },
-                                   lastQuery: '',
-                                   listeners: {
-                                       // delete the previous query in the beforequery event or set
-                                       // combo.lastQuery = null (this will reload the store the next time it expands)
-                                       beforequery: function(qe){
-                                           //delete qe.combo.lastQuery;
-                                           qe.query = this.datasetComboBox.getValue();
-                                           if(Ext.isEmpty(qe.query)){
-                                               qe.cancel = true;
-                                           }
-                                       },
-                                       scope:this
-                                    }
-                                }),
-                               //{xtype: 'label', text:'Grid:'},
-                                this.interpolationButtonMenuGridsCombo = new Ext.form.ComboBox({
-                                   xtype: 'combo',
-                                   store : new Ext.data.JsonStore( {
-                                       url : Genapp.base_url + 'interpolation/ajaxgetgrids',
-                                       method : 'POST',
-                                       autoLoad:true
-                                   }),
-                                   mode:'local',
-                                   editable : false,
-                                   allowBlank: false,
-                                   displayField: 'label',
-                                   valueField: 'name',
-                                   forceSelection: true,
-                                   typeAhead: true,
-                                   triggerAction: 'all',
-                                   emptyText: 'Select a grid...',
-                                   getListParent: function() {
-                                       return this.el.up('.x-menu');
-                                   }
-                               }),
-                               this.interpolationButtonMenuMethodsCombo = new Ext.form.ComboBox({
-                                   xtype: 'combo',
-                                   store : new Ext.data.JsonStore( {
-                                       url : Genapp.base_url + 'interpolation/ajaxgetmethods',
-                                       method : 'POST',
-                                       autoLoad:true
-                                   }),
-                                   mode:'local',
-                                   editable : false,
-                                   allowBlank: false,
-                                   displayField: 'label',
-                                   valueField: 'name',
-                                   forceSelection: true,
-                                   typeAhead: true,
-                                   triggerAction: 'all',
-                                   emptyText: 'Select a method...',
-                                   getListParent: function() {
-                                       return this.el.up('.x-menu');
-                                   }
-                               }),
-                               this.interpolationButtonMenuMaxDistanceText = new Ext.form.TextField({
-                                   xtype: 'textfield',
-                                   allowBlank: false,
-                                   emptyText: 'Select a max distance...',
-                                   value: this.interpolationButtonMenuMaxDistanceTextDefaultValue,
-                                   getListParent: function() {
-                                       return this.el.up('.x-menu');
-                                   }
-                               }),{
-                                   xtype: 'button',
-                                   text: 'Ok',
-                                   handler: function(b,e){
-                                       if(this.interpolationButtonMenuDataCombo.isValid(true) 
-                                               && this.interpolationButtonMenuGridsCombo.isValid(true)
-                                               && this.interpolationButtonMenuMethodsCombo.isValid(true)
-                                               && this.interpolationButtonMenuMaxDistanceText.isValid(true)){
-                                           this.showMask();
-                                           Ext.Ajax.request({
-                                               url: Genapp.base_url + 'interpolation/ajax-validate-interpolation-variable-form',
-                                               success: function(response, options) {
-                                                   var response = Ext.decode(response.responseText);
-                                                   if(Ext.isEmpty(response.success) || response.success == false){
-                                                       this.hideMask();
-                                                       var msg = 'An error occured during the interpolation process.';
-                                                       if (!Ext.isEmpty(response.errorMsg)){
-                                                           msg += ' ' + response.errorMsg;
-                                                       }
-                                                       Ext.Msg.alert('Error...',msg);
-                                                   }else{
-                                                       this.getStatus('interpolation', function(){
-                                                           this.mapPanel.enableLayersAndLegends([response.layerName], true, true);
-                                                       });
-                                                   }
-                                               },
-                                               failure: function(){
-                                                   this.hideMask();
-                                                   Ext.Msg.alert.createCallback('Error...','An error occured during the interpolation process.');
-                                               },
-                                               params: {
-                                                   'INTERPOLATION_VARIABLE' : this.interpolationButtonMenuDataCombo.getValue(),
-                                                   'GRID_NAME' : this.interpolationButtonMenuGridsCombo.getValue(),
-                                                   'METHOD' : this.interpolationButtonMenuMethodsCombo.getValue(),
-                                                   'MAXDIST' : this.interpolationButtonMenuMaxDistanceText.getValue()
-                                               },
-                                               scope:this
-                                            });
-                                           this.interpolationButtonMenu.hide();
-                                       }
-                                   },
-                                   scope:this,
-                                   style:'margin:auto;'
-                               }
-                           ]
-                       })
-                   });
-                }
-                if(!this.hideAggregationButton){
-                    this.aggregationButton = addTopButton({
-                        xtype:'splitbutton',
-                        text:this.aggregationButtonText,
-                        disabled:true,
-                        menu: this.aggregationButtonMenu = new Ext.menu.Menu({
-                            cls: 'genapp-query-center-panel-aggregation-button-menu',
-                            defaults:{
-                                width:200
-                            },
-                            items: [
-                                // these items will render as dropdown menu items when the arrow is clicked:
-                                //{xtype: 'label', text:'Data:'},
-                                this.aggregationButtonMenuDataCombo = new Ext.form.ComboBox({
-                                    xtype: 'combo',
-                                    queryParam :'datasetId',
-                                    store : new Ext.data.JsonStore({
-                                        url : Genapp.base_url + 'aggregation/ajaxgetvariables',  
-                                        method : 'POST',
-                                        listeners: {
-                                            load: function(store, records, options){
-                                                if(records.length == 0){
-                                                    this.aggregationButtonMenuDataCombo.reset();
-                                                    delete this.aggregationButtonMenuDataCombo.lastQuery;
-                                                }
-                                            },
-                                            scope:this
-                                         }
-                                    }),
-                                    editable : false,
-                                    allowBlank: false,
-                                    displayField: 'label',
-                                    valueField: 'name',
-                                    forceSelection: true,
-                                    typeAhead: true,
-                                    triggerAction: 'all',
-                                    emptyText: 'Select a datum...',
-                                    getListParent: function() {
-                                        return this.el.up('.x-menu');
-                                    },
-                                    lastQuery: '',
-                                    listeners: {
-                                        // delete the previous query in the beforequery event or set
-                                        // combo.lastQuery = null (this will reload the store the next time it expands)
-                                        beforequery: function(qe){
-                                            //delete qe.combo.lastQuery;
-                                            qe.query = this.datasetComboBox.getValue();
-                                            if(Ext.isEmpty(qe.query)){
-                                                qe.cancel = true;
-                                            }
-                                        },
-                                        scope:this
-                                     }
-                                 }),
-                                //{xtype: 'label', text:'Grid:'},
-                                 this.aggregationButtonMenuGridsCombo = new Ext.form.ComboBox({
-                                    xtype: 'combo',
-                                    store : new Ext.data.JsonStore( {
-                                        url : Genapp.base_url + 'aggregation/ajaxgetgrids',
-                                        method : 'POST',
-                                        autoLoad:true
-                                    }),
-                                    mode:'local',
-                                    editable : false,
-                                    allowBlank: false,
-                                    displayField: 'label',
-                                    valueField: 'name',
-                                    forceSelection: true,
-                                    typeAhead: true,
-                                    triggerAction: 'all',
-                                    emptyText: 'Select a grid...',
-                                    getListParent: function() {
-                                        return this.el.up('.x-menu');
-                                    }
-                                }),{
-                                    xtype: 'button',
-                                    text: 'Ok',
-                                    handler: function(b,e){
-                                        if(this.aggregationButtonMenuDataCombo.isValid(true) 
-                                                && this.aggregationButtonMenuGridsCombo.isValid(true)){
-                                            this.showMask();
-                                            Ext.Ajax.request({
-                                                url: Genapp.base_url + 'aggregation/ajax-validate-aggregation-variable-form',
-                                                success: function(response, options) {
-                                                    var response = Ext.decode(response.responseText);
-                                                    if(Ext.isEmpty(response.success) || response.success == false){
-                                                        this.hideMask();
-                                                        var msg = 'An error occured during the aggregation process.';
-                                                        if (!Ext.isEmpty(response.errorMsg)){
-                                                            msg += ' ' + response.errorMsg;
-                                                        }
-                                                        Ext.Msg.alert('Error...',msg);
-                                                    }else{
-                                                        this.getStatus('aggregation', function(){
-                                                            this.aggregationCsvExportMenuItem.enable();
-                                                            this.mapPanel.disableLayersAndLegends(this.mapPanel.layersActivation['aggregation'], true, true, true);
-                                                            this.mapPanel.enableLayersAndLegends([response.layerName], true, true);
-                                                        });
-                                                    }
-                                                },
-                                                failure: function(){
-                                                    this.hideMask();
-                                                    Ext.Msg.alert.createCallback('Error...','An error occured during the aggregation process.');
-                                                },
-                                                params: {
-                                                    'AGGREGATE_VARIABLE' : this.aggregationButtonMenuDataCombo.getValue(),
-                                                    'GRID_NAME' : this.aggregationButtonMenuGridsCombo.getValue()
-                                                },
-                                                scope:this
-                                             });
-                                            this.aggregationButtonMenu.hide();
-                                        }
-                                    },
-                                    scope:this,
-                                    style:'margin:auto;'
-                                }
-                            ]
-                        })
-                    });
-                }
+               
                 // add the export button
                 var csvExportMenuItems = [];
                 if(!this.hideGridCsvExportMenuItem){
@@ -1260,15 +1065,7 @@ listeners: {
                         handler:this.exportCSV.createDelegate(this,['grid-csv-export']),
                         iconCls:'genapp-query-center-panel-grid-csv-export-menu-item-icon'
                     }));
-                }
-                if(!this.hideAggregationCsvExportMenuItem){
-                    csvExportMenuItems.push(this.aggregationCsvExportMenuItem = new Ext.menu.Item({
-                        text:this.aggregationCsvExportMenuItemText,
-                        handler:this.exportCSV.createDelegate(this,['aggregation-csv-export']),
-                        iconCls:'genapp-query-center-panel-aggregation-csv-export-menu-item-icon',
-                        disabled:true
-                    }));
-                }
+                }                
                 // Hide the csv export button if there are no menu items
                 if(Ext.isEmpty(csvExportMenuItems)){
                     this.hideCsvExportButton = true;
@@ -1444,7 +1241,21 @@ listeners: {
                     this.detailsPanelPinned = false;
                 },
                 scope:this
-            }]
+            }],
+            listeners:{
+                // Collapse the layersAndLegendsPanel on expand event
+                expand:function(){
+                    // The map panel must be rendered and activated to resize correctly the map div
+                    if(this.centerPanel.getActiveTab() instanceof Genapp.MapPanel){
+                        this.mapPanel.layersAndLegendsPanel.collapse();
+                    }else{
+                        this.centerPanel.activate(this.mapPanel);
+                        this.mapPanel.layersAndLegendsPanel.collapse();
+                        this.centerPanel.activate(this.gridPanel);
+                    }
+                },
+                scope:this
+            }
         });
 
         // Add the layers and legends vertical label
@@ -1452,11 +1263,75 @@ listeners: {
             this.addVerticalLabel(this.detailsPanelCt, 'genapp-query-details-panel-ct-xcollapsed-vertical-label-div');
         }
 
+        /**
+         * The features Information panel.
+         * @property featuresInformationPanel
+         * @type Ext.TabPanel
+         */
+        this.featuresInformationPanel = new Ext.TabPanel({
+            frame:true,
+            plain:true,
+            enableTabScroll:true,
+            cls:'genapp-query-locations-panel',
+            scrollIncrement:91,
+            scrollRepeatInterval:100,
+            idDelimiter:'___' // Avoid a conflict with the Genapp id separator('__')
+        });
+
+        this.featuresInformationPanelPinned = true;
+        /**
+         * The features Information panel container.
+         * @property featuresInformationPanelCt
+         * @type Ext.Panel
+         */
+        this.featuresInformationPanelCt = new Ext.Panel({
+            region:'south',
+            title:this.featuresInformationPanelCtTitle,
+            frame:true,
+            split:true,
+            layout: 'fit',
+            height:this.featuresInformationPanelCtHeight,
+            collapsible : true,
+            titleCollapse : true,
+            collapsed:true,
+            items: this.featuresInformationPanel,
+            tools:[{
+                id:'pin',
+                qtip: this.featuresInformationPanelCtPinToolQtip,
+                hidden:true,
+                handler: function(event, toolEl, panel){
+                    toolEl.hide();
+                    panel.header.child('.x-tool-unpin').show();
+                    this.featuresInformationPanelPinned = true;
+                },
+                scope:this
+            },{
+                id:'unpin',
+                qtip: this.featuresInformationPanelCtUnpinToolQtip,
+                handler: function(event, toolEl, panel){
+                    toolEl.hide();
+                    panel.header.child('.x-tool-pin').show();
+                    this.featuresInformationPanelPinned = false;
+                },
+                scope:this
+            }]
+        });
+        
+        var centerPanelCtItems = [this.centerPanel];
+        if(!this.hideDetails){
+            centerPanelCtItems.push(this.detailsPanelCt);
+        }
+        if(!this.hideMapDetails && Genapp.map.featureinfo_maxfeatures !== 1){
+            centerPanelCtItems.push(this.featuresInformationPanelCt);
+        }
+        this.centerPanelCt = new Ext.Panel({
+            layout: 'border',
+            region :'center',
+            items: centerPanelCtItems
+        });
+
         if (!this.items) {
-            this.items = [this.queryPanel, this.centerPanel];
-            if(!this.hideDetails){
-                this.items.push(this.detailsPanelCt);
-            }
+            this.items = [this.queryPanel, this.centerPanelCt];
         }
 
         Genapp.ConsultationPanel.superclass.initComponent.call(this);
@@ -1471,12 +1346,12 @@ listeners: {
      * @hide
      */
     updateWestPanels : function(response, opts, apiParams, criteriaValues) {
-        var forms = Ext.decode(response.responseText);
+        var forms = Ext.decode(response.responseText), i;
         // Removes the loading message
         this.formsPanel.body.update();
         
         // Add each form
-        for ( var i = 0; i < forms.data.length; i++) {
+        for (i = 0; i < forms.data.length; i++) {
             if(!(Ext.isEmpty(forms.data[i].criteria) && Ext.isEmpty(forms.data[i].columns))){
                 this.formsPanel.add( 
                     new Genapp.FieldForm({
@@ -1491,10 +1366,10 @@ listeners: {
         }
         this.formsPanel.doLayout();
         if(!Ext.isEmpty(apiParams)){
-            if (apiParams.collapseQueryPanel == true) {
+            if (apiParams.collapseQueryPanel === true) {
                 this.queryPanel.collapse();
             }
-            if (apiParams.launchRequest == true) {
+            if (apiParams.launchRequest === true) {
                 this.submitRequest();
             }
         }
@@ -1530,9 +1405,19 @@ listeners: {
 
         var stringFormat = '';
         if (!this.hideDetails) {
-            stringFormat = '<div class="genapp-query-grid-slip" onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"></div>';
+            stringFormat = '<div class="genapp-query-grid-slip" '
+                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');" '
+                +'ext:qtitle="See the details"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="Display the row details into the details panel."'
+            +'></div>';
         }
-        stringFormat += '<div class="genapp-query-grid-map" onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');"></div>';
+        stringFormat += '<div class="genapp-query-grid-map" '
+            +'onclick="Genapp.cardPanel.consultationPage.displayLocation(\'{0}\',\'{1}\');" '
+            +'ext:qtitle="See on the map"'
+            +'ext:qwidth="' + this.tipDefaultWidth + '"'
+            +'ext:qtip="Zoom and centre on the location on the map."'
+        +'></div>';
 
         return String.format(stringFormat, record.data.id,
                 record.data.location_centroid);
@@ -1565,7 +1450,12 @@ listeners: {
      */
     renderRightTools : function(value, metadata, record,
             rowIndex, colIndex, store) {
-        var stringFormat = '<div class="genapp-query-grid-edit" onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"></div>';
+        var stringFormat = '<div class="genapp-query-grid-edit" '
+                +'onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"'
+                +'ext:qtitle="Edit the data"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="Go to the edition page to edit the page."'
+            +'></div>';
         return String.format(stringFormat, record.data.id);
     },
 
@@ -1579,8 +1469,7 @@ listeners: {
      */
     openDetails : function(id, url) {
         if (!Ext.isEmpty(id)) {
-            var consultationPanel = Ext
-                    .getCmp('consultation_panel');
+            var consultationPanel = Ext.getCmp('consultation_panel');
             consultationPanel.collapseQueryPanel();
             consultationPanel.detailsPanel.ownerCt.expand();
             var tab = consultationPanel.detailsPanel.get(id);
@@ -1593,6 +1482,110 @@ listeners: {
             }
             consultationPanel.detailsPanel.activate(tab);
         }
+    },
+
+    /**
+     * Open a features information panel
+     * 
+     * @param {Object} selection The selection information
+     */
+    openFeaturesInformationSelection : function(selection){
+        this.featuresInformationSearchNumber++;
+        selection.featuresInformationSearchNumber = this.featuresInformationSearchNumber;
+        if (!Ext.isEmpty(selection.data)) {
+            var consultationPanel = Ext.getCmp('consultation_panel');
+            consultationPanel.featuresInformationPanel.ownerCt.expand();
+            var tab = consultationPanel.featuresInformationPanel.get(selection.id);
+            if (Ext.isEmpty(tab)) {
+                tab = consultationPanel.featuresInformationPanel
+                        .add(new Genapp.CardGridDetailsPanel({
+                            initConf:selection
+                        }));
+            }
+            consultationPanel.featuresInformationPanel.activate(tab);
+        }
+    },
+
+    // TODO: patch rtm to delete??
+    launchLocationRequest : function(id, value){
+        if(!Ext.isEmpty(value)){
+            var form = this.formsPanel.get('LOCALISATION_FORM');
+            form.addCriteria('LOCALISATION_FORM__SIT_NO_CLASS', value);
+            this.submitRequest();
+        }
+    },
+
+    /**
+     * Switch the current gridDetailsPanel to the children gridDetailsPanel
+     * 
+     * @param {String} 
+     *            cardPanelId The id of the card panel containing the current gridDetailsPanel
+     * @param {String} 
+     *            id The id of the selected row in the current gridDetailsPanel
+     */
+    getChildren : function(cardPanelId, id){
+        var cardPanel = Ext.getCmp(cardPanelId);
+        var tab = cardPanel.get(id);
+        if (Ext.isEmpty(tab)) {
+            // We must get the id and not a reference to the activeItem
+            var parentItemId = cardPanel.getLayout().activeItem.getId();
+            Ext.Ajax.request({
+                url: Genapp.ajax_query_url + 'ajaxgetchildren',
+                success: function(response, opts) {
+                    var obj = Ext.decode(response.responseText);
+                    obj.parentItemId = parentItemId;
+                    obj.ownerCt = cardPanel;
+                    tab = cardPanel.add(new Genapp.GridDetailsPanel({
+                        initConf:obj
+                    }));
+                    cardPanel.getLayout().setActiveItem(tab);
+                },
+                failure: function(response, opts) {
+                    console.log('server-side failure with status code ' + response.status);
+                },
+                params: {id: id}
+             });
+        } else {
+            cardPanel.getLayout().setActiveItem(tab);
+        }
+    },
+
+    /**
+     * Add a new CardGridDetailsPanel and display the children
+     * 
+     * @param {String} 
+     *            id The id of the selected row in the current detailsPanel
+     */
+    displayChildren : function(id){
+        var consultationPanel = Ext.getCmp('consultation_panel');
+        tab = consultationPanel.featuresInformationPanel.get(id);
+        if (!Ext.isEmpty(tab)) {
+            consultationPanel.featuresInformationPanel.activate(tab);
+        } else {
+            Ext.Ajax.request({
+                url: Genapp.ajax_query_url + 'ajaxgetchildren',
+                success: function(response, opts) {
+                    var obj = Ext.decode(response.responseText);
+                    var consultationPanel = Ext.getCmp('consultation_panel');
+                    consultationPanel.openFeaturesInformationSelection(obj);
+                },
+                failure: function(response, opts) {
+                    console.log('server-side failure with status code ' + response.status);
+                },
+                params: {id: id}
+            });
+        }
+    },
+
+    /**
+     * Switch the current gridDetailsPanel to the parent gridDetailsPanel
+     * 
+     * @param {String} 
+     *            cardPanelId The id of the card panel containing the current gridDetailsPanel
+     */
+    getParent : function(cardPanelId){
+        var cardPanel = Ext.getCmp(cardPanelId);
+        cardPanel.getLayout().setActiveItem(Ext.getCmp(cardPanel.getLayout().activeItem.parentItemId));
     },
 
     /**
@@ -1633,24 +1626,7 @@ listeners: {
      * Submit the request and get the description of the result columns
      */
     submitRequest : function(){
-        // Disable the top buttons, reset the combos and force a reload
-        if(!this.hideAggregationButton){
-            this.aggregationButton.disable();
-            this.aggregationButtonMenuDataCombo.reset();
-            this.aggregationButtonMenuGridsCombo.reset();
-            delete this.aggregationButtonMenuDataCombo.lastQuery;
-        }
-        if(!this.hideAggregationCsvExportMenuItem){
-            this.aggregationCsvExportMenuItem.disable();
-        }
-        if(!this.hideInterpolationButton){
-            this.interpolationButton.disable();
-            this.interpolationButtonMenuDataCombo.reset();
-            this.interpolationButtonMenuGridsCombo.reset();
-            this.interpolationButtonMenuMethodsCombo.reset();
-            this.interpolationButtonMenuMaxDistanceText.setValue(this.interpolationButtonMenuMaxDistanceTextDefaultValue);
-            delete this.interpolationButtonMenuDataCombo.lastQuery;
-        }
+        var i;
         if(!this.hideCsvExportButton){
             this.csvExportButton.disable();
         }
@@ -1664,7 +1640,7 @@ listeners: {
             var rla = this.mapPanel.layersActivation['request'];
             this.mapResultLayers = [];
             if(!Ext.isEmpty(rla)){
-                for(var i = 0; i<rla.length;i++){
+                for(i = 0; i<rla.length;i++){
                     var layer = this.mapPanel.map.getLayersByName(rla[i])[0];
                     //The layer visibility must be set to true to handle the 'loadend' event
                     layer.events.register("loadend", this, function(info){
@@ -1686,7 +1662,7 @@ listeners: {
         }
         // Init mapResultLayersLoadEnd
         this.mapResultLayersLoadEnd = {};
-        for(var i = 0; i<this.mapResultLayers.length;i++){
+        for(i = 0; i<this.mapResultLayers.length;i++){
             var layer = this.mapResultLayers[i];
             this.mapResultLayersLoadEnd[layer.name] = 0;
         }
@@ -1707,8 +1683,8 @@ listeners: {
             this.centerPanel.activate(this.mapPanel);
             this.mapMask.show();
         }
-        for(var i = 0; i<this.mapResultLayersLoadEnd.length;i++){
-            var layer = this.mapResultLayersLoadEnd[i]
+        for(i = 0; i<this.mapResultLayersLoadEnd.length;i++){
+            var layer = this.mapResultLayersLoadEnd[i];
             layer.display(false);
         }
         this.mapPanel.clean();
@@ -1730,7 +1706,7 @@ listeners: {
                 this.requestConn = null;
                 // Creation of the column model and the reader metadata fields
                 var columns = action.result.columns;
-                var newCM = new Array({
+                var newCM = [{
                     dataIndex:'leftTools',
                     header:'',
                     renderer:this.renderLeftTools.createDelegate(this),
@@ -1739,11 +1715,11 @@ listeners: {
                     menuDisabled:true,
                     align:'center',
                     width:50
-                });
-                var newRF = new Array();
+                }];
+                var newRF = [];
                 var columnConf;
                 var readerFieldsConf;
-                for(var i=0; i<columns.length;i++){
+                for(i=0; i<columns.length;i++){
                     columnConf = {
                         header:Genapp.util.htmlStringFormat(columns[i].label),
                         sortable:true,
@@ -1766,7 +1742,7 @@ listeners: {
                             break;
                         case 'NUMERIC':
                             columnConf.xtype='numbercolumn';
-                            if (columns[i].decimals != null) {
+                            if (columns[i].decimals !== null) {
                                 columnConf.format= this.numberPattern('.', columns[i].decimals);
                             }
                             break;
@@ -1834,7 +1810,7 @@ listeners: {
                         this.requestConn = null;
 
                         this.getResultsBBox();
-                        if(this.autoZoomOnResultsFeatures != true){
+                        if(this.autoZoomOnResultsFeatures !== true){
                             // Display the results layer
                             this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
                         }
@@ -1844,13 +1820,7 @@ listeners: {
                         this.collapseDetailsPanel();
 
                        // Enable the top buttons
-                       if(!this.hideAggregationButton){
-                           this.aggregationButton.enable();
-                       }
-                       if(!this.hideInterpolationButton){
-                           this.interpolationButton.enable();
-                       }
-                       if(!this.hideCsvExportButton){
+                        if(!this.hideCsvExportButton){
                            this.csvExportButton.enable();
                        }
                        this.gridPanel.syncSize(); //Bug in Ext 3.2.1 (The grid bottom tool bar disappear)
@@ -1900,7 +1870,7 @@ listeners: {
         this.formsPanel.removeAll(true);
         this.formsPanel.getUpdater().showLoading();
         Ext.Ajax.request({
-            url: Genapp.ajax_query_url + 'ajaxgetforms',
+            url: Genapp.ajax_query_url + 'ajaxgetqueryform',
             success: this.updateWestPanels.createDelegate(this,[apiParams, criteriaValues],true),
             method: 'POST',
             params: requestParams,
@@ -1949,7 +1919,7 @@ listeners: {
      */
     clearGrid : function (){
         var gridDs = this.gridPanel.getStore();
-        if(gridDs.getCount() != 0){
+        if(gridDs.getCount() !== 0){
             // Reset the paging toolbar
             this.gridPanel.getBottomToolbar().reset();
         }
@@ -1997,13 +1967,14 @@ listeners: {
      */
     printMap : function (button, event) {
         // Get the BBOX
-        var center = this.mapPanel.map.center;
-        var zoom = this.mapPanel.map.zoom;
-        
+        var center = this.mapPanel.map.center,
+            zoom = this.mapPanel.map.zoom,
+            i;
+
         // Get the layers
         var activatedLayers = this.mapPanel.map.getLayersBy('visibility', true);
         var activatedLayersNames = '';
-        for (var i=0; i<activatedLayers.length; i++) {
+        for (i=0; i<activatedLayers.length; i++) {
             if (activatedLayers[i].printable !== false) {
                 activatedLayersNames += activatedLayers[i].name + ',';
             }
@@ -2044,14 +2015,14 @@ listeners: {
     numberPattern: function (decimalSeparator, decimalPrecision, groupingSymbol) {
         // Building the number format pattern for use by ExtJS
         // Ext.util.Format.number
-        var pattern = [];
+        var pattern = [], i;
         pattern.push('0');
         if (groupingSymbol) {
             pattern.push(groupingSymbol + '000');
         }
         if (decimalPrecision) {
             pattern.push(decimalSeparator);
-            for (var i = 0; i < decimalPrecision; i++) {
+            for (i = 0; i < decimalPrecision; i++) {
                 pattern.push('0');
             }
         }
@@ -2097,24 +2068,24 @@ listeners: {
     getStatus : function (serviceName, callback){
         Ext.Ajax.request({
             url: Genapp.base_url + serviceName +'/ajax-get-status',
-            success: function(response, options) {
-                var response = Ext.decode(response.responseText);
-                if (Ext.isEmpty(response.success) || response.success == false) {
+            success: function(rpse, options) {
+                var response = Ext.decode(rpse.responseText), msg;
+                if (Ext.isEmpty(response.success) || response.success === false) {
                     this.hideMask();
-                    var msg = 'An error occured during the status request.';
+                    msg = 'An error occured during the status request.';
                     if (!Ext.isEmpty(response.errorMsg)) {
                         msg += ' ' + response.errorMsg;
                     }
                     Ext.Msg.alert('Error...',msg);
                 } else {
-                    if (response.status == 'RUNNING') {
+                    if (response.status === 'RUNNING') {
                         this.getStatus.defer(2000,this,[serviceName, callback]);
-                    } else if (response.status == 'OK'){
+                    } else if (response.status === 'OK'){
                         this.hideMask();
                         callback.call(this);
                     } else { // The service is done or an error occured
                         this.hideMask();
-                        var msg = 'An error occured during the status request.';
+                        msg = 'An error occured during the status request.';
                         if (!Ext.isEmpty(response.errorMsg)) {
                             msg += ' ' + response.errorMsg;
                         }
@@ -2137,11 +2108,11 @@ listeners: {
     getResultsBBox: function(){
         Ext.Ajax.request({
             url: Genapp.ajax_query_url +'ajaxgetresultsbbox',
-            success: function(response, options) {
+            success: function(rpse, options) {
             try
             {
-                var response = Ext.decode(response.responseText);
-                if (Ext.isEmpty(response.success) || response.success == false) {
+                var response = Ext.decode(rpse.responseText);
+                if (Ext.isEmpty(response.success) || response.success === false) {
                     if (!Ext.isEmpty(response.errorMsg)) {
                         throw(response.errorMsg);
                     }
@@ -2152,7 +2123,7 @@ listeners: {
                     } else {
                         this.mapPanel.resultsBBox = null;
                     }
-                    if (this.autoZoomOnResultsFeatures == true) {
+                    if (this.autoZoomOnResultsFeatures === true) {
                         if (this.mapPanel.resultsBBox !== null) {
                            this.mapPanel.zoomOnBBox(this.mapPanel.resultsBBox);
                         }
@@ -2177,269 +2148,6 @@ listeners: {
     }
 });
 Ext.reg('consultationpage', Genapp.ConsultationPanel);/**
- * Simple date range picker class.
- * 
- * @class Genapp.DateRangePicker
- * @extends Ext.Panel
- * @constructor Create a new DateRangePicker
- * @param {Object} config The config object
- * @xtype daterangepicker
- */
-
-Ext.namespace('Genapp');
-
-Genapp.DateRangePicker = Ext.extend(Ext.Panel, {
-    /**
-     * @cfg {String/Object} layout
-     * Specify the layout manager class for this container either as an Object or as a String.
-     * See {@link Ext.Container#layout layout manager} also.
-     * Default to 'column'.
-     */
-    layout: 'column',
-    /**
-     * @cfg {String} cls
-     * An optional extra CSS class that will be added to this component's Element (defaults to 'x-menu-date-range-item').
-     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
-     */
-    cls: 'x-menu-date-range-item',
-    /**
-     * @cfg {String} buttonAlign
-     * The alignment of any {@link #buttons} added to this panel.  Valid values are 'right',
-     * 'left' and 'center' (defaults to 'center').
-     */
-    buttonAlign: 'center',
-    /**
-     * @cfg {Boolean} hideValidationButton if true hide the menu validation button (defaults to false).
-     */
-    hideValidationButton : false,
-    /**
-     * @cfg {String} tbarStartDateButtonText
-     * The tbar start date button text (defaults to <tt>'Start Date ...'</tt>)
-     */
-    tbarStartDateButtonText:'Start Date ...',
-    /**
-     * @cfg {String} tbarRangeDateButtonText
-     * The tbar range date button text (defaults to <tt>'Range Date'</tt>)
-     */
-    tbarRangeDateButtonText:'Range Date',
-    /**
-     * @cfg {String} tbarEndDateButtonText
-     * The tbar end date button text (defaults to <tt>'... End Date'</tt>)
-     */
-    tbarEndDateButtonText:'... End Date',
-    /**
-     * @cfg {String} fbarOkButtonText
-     * The fbar ok button text (defaults to <tt>'ok'</tt>)
-     */
-    fbarOkButtonText:'ok',
-    /**
-     * The selected dates (Default to '{startDate:null, endDate:null}'). Read-only.
-     * @type Object
-     * @property selectedDate
-     */
-    selectedDate: {startDate:null, endDate:null},
-
-    // private
-    initComponent : function(){
-        this.items = [
-            /**
-             * The start date picker (The left picker).
-             * @property startDatePicker
-             * @type Ext.DatePicker
-             */
-            this.startDatePicker = new Ext.DatePicker(Ext.apply({
-                internalRender: this.strict || !Ext.isIE,
-                ctCls: 'x-menu-date-item',
-                columnWidth: .5
-                }, this.initialConfig)
-            ),{
-                xtype:'spacer',
-                width:5,
-                html:'&nbsp;' // For FF and IE8
-            },
-            /**
-             * The end date picker (The right picker).
-             * @property endDatePicker
-             * @type Ext.DatePicker
-             */
-            this.endDatePicker = new Ext.DatePicker(Ext.apply({
-                internalRender: this.strict || !Ext.isIE,
-                ctCls: 'x-menu-date-item',
-                columnWidth: .5
-                }, this.initialConfig)
-            )
-        ];
-
-        this.startDatePicker.on('select',this.startDateSelect, this);
-        this.endDatePicker.on('select',this.endDateSelect, this);
-
-        /**
-         * The top toolbar.
-         * @property tbar
-         * @type Ext.Toolbar
-         */
-        this.tbar= new Ext.Toolbar({
-             items: [
-             this.startDateButton = new Ext.Button({
-                 text: this.tbarStartDateButtonText,
-                 cls: 'x-menu-date-range-item-start-date-button',
-                 enableToggle: true,
-                 allowDepress: false,
-                 toggleGroup: 'DateButtonsGroup',
-                 toggleHandler: this.onStartDatePress.createDelegate(this)
-             }),
-             this.rangeDateButton = new Ext.Button({
-                 text: this.tbarRangeDateButtonText,
-                 cls: 'x-menu-date-range-item-range-date-button',
-                 pressed:true,
-                 enableToggle: true,
-                 allowDepress: false,
-                 toggleGroup: 'DateButtonsGroup',
-                 toggleHandler: this.onRangeDatePress.createDelegate(this)
-             }),'->',
-             this.endDateButton = new Ext.Button({
-                 text: this.tbarEndDateButtonText,
-                 cls: 'x-menu-date-range-item-end-date-button',
-                 enableToggle: true,
-                 allowDepress: false,
-                 toggleGroup: 'DateButtonsGroup',
-                 toggleHandler: this.onEndDatePress.createDelegate(this)
-             })]
-         });
-
-        if(!this.hideValidationButton){
-            this.fbar = new Ext.Toolbar({
-                cls: 'x-date-bottom',
-                items: [{
-                    xtype:'button',
-                    text:this.fbarOkButtonText,
-                    width:'auto',
-                    handler:this.onOkButtonPress.createDelegate(this)
-                }]
-            });
-        }
-
-        Genapp.DateRangePicker.superclass.initComponent.call(this);
-    },
-
-    // private
-    onRangeDatePress: function (button, state){
-        if(state){
-            this.startDatePicker.enable();
-            this.endDatePicker.enable();
-            this.resetDates();
-        }
-    },
-
-    // private
-    onStartDatePress: function (button, state){
-        if(state){
-            this.startDatePicker.enable();
-            this.endDatePicker.disable();
-            this.resetDates();
-        }
-    },
-
-    // private
-    onEndDatePress: function (button, state){
-        if(state){
-            this.startDatePicker.disable();
-            this.endDatePicker.enable();
-            this.resetDates();
-        }
-    },
-
-    // private
-    startDateSelect: function (startDatePicker, date){
-        this.selectedDate.startDate = date;
-        if(this.startDateButton.pressed){
-            this.returnSelectedDate();
-        }else{ // rangeDateButton is pressed
-            if(this.selectedDate.endDate !== null){
-                this.returnSelectedDate();
-            }
-        }
-    },
-
-    // private
-    endDateSelect: function (endDatePicker, date){
-        this.selectedDate.endDate = date;
-        if(this.endDateButton.pressed){
-            this.returnSelectedDate();
-        }else{ // rangeDateButton is pressed
-            if(this.selectedDate.startDate !== null){
-                this.returnSelectedDate();
-            }
-        }
-    },
-
-    // private
-    resetselectedDate: function(){
-        this.selectedDate = {
-            startDate:null,
-            endDate:null
-        };
-    },
-
-    /**
-     * Reset the dates
-     */
-    resetDates: function(){
-        this.resetselectedDate();
-        this.startDatePicker.setValue(this.startDatePicker.defaultValue);
-        this.endDatePicker.setValue(this.endDatePicker.defaultValue);
-    },
-
-    // private
-    returnSelectedDate: function(){
-        this.fireEvent('select', this, this.selectedDate);
-        this.resetselectedDate();
-    },
-
-    /**
-     * Checks if the date is in the interval [minDate,maxDate] of the picker
-     */
-    isEnabledDate: function (picker){
-        if((picker.activeDate.getTime() - picker.minDate.getTime() >= 0) 
-                && (picker.maxDate.getTime() - picker.activeDate.getTime() >= 0)){
-            return true;
-        } else {
-            return false;
-        }
-    },
-
-    // private
-    onOkButtonPress: function (button, state){
-        if (state){
-            if (this.startDateButton.pressed){
-                if (this.isEnabledDate(this.startDatePicker)){
-                    this.selectedDate = {
-                        startDate:this.startDatePicker.activeDate,
-                        endDate:null
-                    };
-                    this.returnSelectedDate();
-                }
-            } else if(this.endDateButton.pressed){
-                if (this.isEnabledDate(this.endDatePicker)){
-                    this.selectedDate = {
-                        startDate:null,
-                        endDate:this.endDatePicker.activeDate
-                    };
-                    this.returnSelectedDate();
-                }
-            } else {
-                if (this.isEnabledDate(this.startDatePicker) && this.isEnabledDate(this.endDatePicker)){
-                    this.selectedDate = {
-                        startDate:this.startDatePicker.activeDate,
-                        endDate:this.endDatePicker.activeDate
-                    };
-                    this.returnSelectedDate();
-                }
-            }
-        }
-    }
-});
-Ext.reg('daterangepicker', Genapp.DateRangePicker);/**
  * The class of the details panel.
  * This class is required because the panel class
  * can't be closed but the panel extended class can.
@@ -2480,41 +2188,35 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
      */
     cls:'genapp-query-details-panel',
     /**
-     * @cfg {Ext.XTemplate} tpl
-     * A {@link Ext.XTemplate} used to setup the details panel body.
+     * @cfg {String} hideSeeChildrenButton
+     * True to hide the see children button (defaults to <tt>false</tt>)
      */
-    tpl : new Ext.XTemplate(
-        '<tpl for="maps">',
-            '<img title="{title}" src="{url}">',
-        '</tpl>',
-        '<tpl for="formats">',
-            '<tpl if="is_array != true">',
-                '<fieldset>',
-                    '<legend align="top"> {title} </legend>',
-                    '<tpl for="fields">',
-                        '<p><b>{label} :</b> {value}</p>',
-                    '</tpl>',
-                '</fieldset>',
-            '</tpl>',
-            '<tpl if="is_array == true">',
-                '<table>',
-                '<caption>{title}</caption>',
-                '<tr>',
-                    '<tpl for="columns">',
-                        '<th>{label}</th>',
-                    '</tpl>',
-                '</tr>',
-                    '<tpl for="rows">',
-                        '<tr>',
-                            '<tpl for=".">',
-                                '<td>{.}</td>',
-                            '</tpl>',
-                        '</tr>',
-                    '</tpl>',
-                '</table>',
-            '</tpl>',
-        '</tpl>'
-    ),
+    hideSeeChildrenButton: false,
+    /**
+     * @cfg {String} seeChildrenButtonTitle
+     * The see Children Button Title (defaults to <tt>'Display the children'</tt>)
+     */
+    seeChildrenButtonTitle: 'Display the children',
+    /**
+     * @cfg {String} seeChildrenButtonTip
+     * The see Children Button Tip (defaults to <tt>'Display the children of the data into the grid details panel.'</tt>)
+     */
+    seeChildrenButtonTip: 'Display the children of the data into the grid details panel.',
+    /**
+     * @cfg {String} seeChildrenTextSingular
+     * The see Children Text Singular (defaults to <tt>'&gt;&gt;&gt; See the only child'</tt>)
+     */
+    seeChildrenTextSingular: '&gt;&gt;&gt; See the only child',
+    /**
+     * @cfg {String} seeChildrenTextPlural
+     * The see Children Text Plural (defaults to <tt>'&gt;&gt;&gt; See the {children_count} children'</tt>)
+     */
+    seeChildrenTextPlural: '&gt;&gt;&gt; See the {children_count} children',
+    /**
+     * @cfg {Number} tipDefaultWidth
+     * The tip Default Width. (Default to 300)
+     */
+    tipDefaultWidth: 300,
     /**
      * @cfg {String} loadingMsg
      * The loading message (defaults to <tt>'Loading...'</tt>)
@@ -2526,6 +2228,43 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
         this.title = '<div style="width:'+ this.headerWidth + 'px;">'+this.loadingMsg+'</div>';
         this.on('render', this.updateDetails, this);
         this.itemId = this.rowId;
+        /**
+         * @cfg {Ext.XTemplate} tpl
+         * A {@link Ext.XTemplate} used to setup the details panel body.
+         */
+        this.tpl = new Ext.XTemplate(
+            '<tpl for="maps">',
+                '<img title="{title}" src="{url}">',
+            '</tpl>',
+            '<tpl for="formats">',
+                '<fieldset>',
+                    '<legend align="top"> {title} </legend>',
+                    '<tpl for="fields">',
+                        '<p><b>{label} :</b> {value}</p>',
+                    '</tpl>',
+                    '<tpl if="!'+ this.hideSeeChildrenButton +'">',
+                        '<div class="genapp-query-details-panel-see-children" ',
+                            'onclick="Genapp.cardPanel.consultationPage.displayChildren(\'{id}\');"',
+                            'ext:qtitle="' + this.seeChildrenButtonTitle + '" ',
+                            'ext:qwidth="' + this.tipDefaultWidth + '" ',
+                            'ext:qtip="' + this.seeChildrenButtonTip + '">',
+                            
+                                '<tpl if="children_count == 1">',
+                                    this.seeChildrenTextSingular,
+                                '</tpl>',
+                                '<tpl if="children_count &gt; 1">',
+                                    this.seeChildrenTextPlural,
+                                '</tpl>',
+                        '</div>',
+                    '</tpl>',
+                '</fieldset>',
+            '</tpl>',
+            {
+                compiled: true,      // compile immediately
+                disableFormats: true // reduce apply time since no formatting
+            }
+        );
+
         Genapp.DetailsPanel.superclass.initComponent.call(this);
     },
 
@@ -2742,7 +2481,7 @@ listeners: {
                     {header: 'Parution', width: 50, dataIndex: 'publication_date'},
                     {header: 'Publication', dataIndex: 'publication'},
                     {id: 'reference', header: 'Référence', width: 50, dataIndex: 'reference'}
-                ],
+                ]
             }),
             sm: new Ext.grid.RowSelectionModel({
                 singleSelect:true,
@@ -2756,7 +2495,7 @@ listeners: {
             }),
             listeners:{
                 'keydown':function(event){
-                    if(event.keyCode == event.ENTER){
+                    if(event.keyCode === event.ENTER){
                         this.onEnter();
                     }
                 },
@@ -2862,9 +2601,349 @@ listeners: {
             //var rowIdx = g.getStore().indexOf(sels[0]);
             this.pdf.updateUrl('pdf/' + sels[0].data.reference + '.pdf');
         //}
-    },
+    }
 });
 Ext.reg('docsearchpage', Genapp.DocSearchPage);/**
+ * An EditionPanel correspond to the complete page for editing/inserting a table
+ * row.
+ * 
+ * @class Genapp.EditionPanel
+ * @extends Ext.Panel
+ * @constructor Create a new Edition Panel
+ * @param {Object}
+ *            config The config object
+ * @xtype editionpanel
+ */
+Genapp.EditionPanel = Ext.extend(Ext.Panel, {
+
+    /**
+     * @cfg {String} title The title text to be used as innerHTML (html tags are
+     *      accepted) to display in the panel <code>{@link #header}</code>
+     *      (defaults to ''). When a <code>title</code> is specified the
+     *      <code>{@link #header}</code> element will automatically be created
+     *      and displayed unless {@link #header} is explicitly set to
+     *      <code>false</code>. If you do not want to specify a
+     *      <code>title</code> at config time, but you may want one later, you
+     *      must either specify a non-empty <code>title</code> (a blank space ' '
+     *      will do) or <code>header:true</code> so that the container element
+     *      will get created.
+     */
+    title : 'Edition',
+
+    /**
+     * @cfg {String} cls An optional extra CSS class that will be added to this
+     *      component's Element (defaults to 'genapp_edition_panel'). This can
+     *      be useful for adding customized styles to the component or any of
+     *      its children using standard CSS rules.
+     */
+    cls : 'genapp_edition_panel',
+
+    /**
+     * @cfg {String} id
+     *      <p>
+     *      The <b>unique</b> id of this component (defaults to an
+     *      {@link #getId auto-assigned id}). You should assign an id if you
+     *      need to be able to access the component later and you do not have an
+     *      object reference available (e.g., using {@link Ext}.{@link Ext#getCmp getCmp}).
+     *      </p>
+     *      <p>
+     *      Note that this id will also be used as the element id for the
+     *      containing HTML element that is rendered to the page for this
+     *      component. This allows you to write id-based CSS rules to style the
+     *      specific instance of this component uniquely, and also to select
+     *      sub-elements using this component's id as the parent.
+     *      </p>
+     *      <p>
+     *      <b>Note</b>: to avoid complications imposed by a unique <tt>id</tt>
+     *      also see <code>{@link #itemId}</code> and
+     *      <code>{@link #ref}</code>.
+     *      </p>
+     *      <p>
+     *      <b>Note</b>: to access the container of an item see
+     *      <code>{@link #ownerCt}</code>.
+     *      </p>
+     */
+    id : 'edition_panel',
+
+    /**
+     * @cfg {String} ref
+     *      <p>
+     *      A path specification, relative to the Component's
+     *      <code>{@link #ownerCt}</code> specifying into which ancestor
+     *      Container to place a named reference to this Component.
+     *      </p>
+     *      <p>
+     *      Also see the <code>{@link #added}</code> and
+     *      <code>{@link #removed}</code> events.
+     *      </p>
+     */
+    ref : 'editionPage',
+
+    width : 500,
+    height : 500,
+    
+    /**
+     * @cfg {Ext.form.FormPanel} inner form panel
+     */ 
+    
+    
+    items: [{
+        fieldLabel: 'First Name',
+        name: 'first',
+        allowBlank:false
+    }],
+
+    // private
+    initComponent : function() {
+
+        /**
+         * The form fields Data Store.
+         * 
+         * @property criteriaDS
+         * @type Ext.data.JsonStore
+         */
+        this.formDS = new Ext.data.JsonStore({
+            url: Genapp.base_url + 'dataedition/ajaxgeteditform/SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA/PROVIDER_ID/1/PLOT_CODE/21573-F1000-6-6T/CYCLE/5/SPECIES_CODE/031.001.041',
+            method: 'POST',
+            autoLoad: true,
+            fields:[
+                    {name:'name',mapping:'name'},
+                    {name:'data',mapping:'data'},
+                    {name:'format',mapping:'format'},
+                    {name:'label',mapping:'label'},
+                    {name:'inputType',mapping:'inputType'},
+                    {name:'unit',mapping:'unit'},
+                    {name:'type',mapping:'type'},
+                    {name:'subtype',mapping:'subtype'},
+                    {name:'definition',mapping:'definition'},
+                    {name:'decimals',mapping:'decimals'},     
+                    {name:'value',mapping:'value'},     // the current value  
+                    {name:'editable',mapping:'editable'},       // is the field editable?
+                    {name:'params',mapping:'params'} // reserved for min/max or list of codes
+                ],
+            idProperty : 'name',                
+            listeners : {
+                'load': {
+                    fn : function(store, records, options) {
+                         var i;
+                         for(i = 0; i<records.length; i++){
+                            //alert(records[i].data);
+                            //this.getEditFormConfig(records[i].data.id);
+                            }
+                        }
+                    },
+                    scope :this
+                }
+            
+        });
+        
+        /*var formPanel = new Ext.form.Panel({
+            
+            url:'save-form.php',
+            frame:true,
+            title: 'Simple Form',
+            bodyStyle:'padding:5px 5px 0',
+            width: 350,
+            fieldDefaults: {
+                msgTarget: 'side',
+                labelWidth: 75
+            },
+            defaultType: 'textfield',
+            defaults: {
+                anchor: '100%'
+            },
+
+            items: [{
+                fieldLabel: 'First Name',
+                name: 'first',
+                allowBlank:false
+            },{
+                fieldLabel: 'Last Name',
+                name: 'last'
+            },{
+                fieldLabel: 'Company',
+                name: 'company'
+            }, {
+                fieldLabel: 'Email',
+                name: 'email',
+                vtype:'email'
+            }, {
+                xtype: 'timefield',
+                fieldLabel: 'Time',
+                name: 'time',
+                minValue: '8:00am',
+                maxValue: '6:00pm'
+            }],
+
+            buttons: [{
+                text: 'Save'
+            },{
+                text: 'Cancel'
+            }]
+        });*/
+        
+    
+        
+        Genapp.EditionPanel.superclass.initComponent.call(this);
+    },
+    
+    
+    
+     /**
+     * Construct a edition form from the record.
+     * 
+     * @param {Ext.data.Record} record The form field to add
+     */
+    getEditFormConfig : function(record){
+     
+        var field = {};
+        field.name = record.name;
+
+        // Creates the ext field config
+        switch(record.inputType){
+            case 'SELECT':  // The input type SELECT correspond generally to a data type CODE
+                field.xtype = 'combo';
+                field.itemCls = 'trigger-field'; // For IE7 layout
+                field.hiddenName = field.name;
+                field.triggerAction = 'all';
+                field.typeAhead = true;
+                field.mode = 'local';
+                field.displayField = 'label';
+                field.valueField  = 'code';
+                field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
+                field.disableKeyFilter = true;
+                if (record.subtype === 'DYNAMIC') {
+                    field.store = new Ext.data.JsonStore({
+                        autoLoad: true,  
+                        root: 'codes',
+                        fields:[
+                                {name:'code',mapping:'code'},
+                                {name:'label',mapping:'label'}
+                                ],
+                        url: 'ajaxgetdynamiccodes/unit/'+record.unit
+                    });
+                } else {
+                    field.store = new Ext.data.ArrayStore({
+                        fields:['code','label'],
+                        data : record.params.options
+                    });
+                }
+                break;
+            case 'MULTIPLE':  // The input type MULTIPLE correspond generally to a data type ARRAY
+                field.xtype = 'combo';
+                field.itemCls = 'trigger-field'; // For IE7 layout
+                field.hiddenName = field.name;
+                field.triggerAction = 'all';
+                field.typeAhead = true;
+                field.mode = 'local';
+                field.displayField = 'label';
+                field.valueField  = 'code';
+                field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
+                field.disableKeyFilter = true;
+                if (record.subtype ==='DYNAMIC') {
+                    field.store = new Ext.data.JsonStore({
+                        autoLoad: true,  
+                        root: 'codes',
+                        fields:[
+                                {name:'code',mapping:'code'},
+                                {name:'label',mapping:'label'}
+                                ],
+                        url: 'ajaxgetdynamiccodes/unit/'+record.unit
+                    });
+                } else {
+                    field.store = new Ext.data.ArrayStore({
+                        fields:['code','label'],
+                        data : record.params.options
+                    });
+                }
+                break;
+            case 'DATE': // The input type DATE correspond generally to a data type DATE
+                field.xtype = 'daterangefield';
+                field.itemCls = 'trigger-field'; // For IE7 layout
+                field.format = Genapp.FieldForm.prototype.dateFormat;
+                break;
+            case 'NUMERIC': // The input type NUMERIC correspond generally to a data type NUMERIC or RANGE
+                field.xtype = 'numberrangefield';
+                field.itemCls = 'trigger-field'; // For IE7 layout
+                // If RANGE we set the min and max values
+                if (record.type === 'RANGE') {
+                    field.minValue = record.params.min;
+                    field.maxValue = record.params.max;
+                }
+                // IF INTEGER we remove the decimals
+                if (record.type === 'INTEGER') {
+                    field.allowDecimals = false;
+                    field.decimalPrecision = 0;
+                }
+                break;
+            case 'CHECKBOX':
+                 field.xtype = 'switch_checkbox';
+                 field.ctCls = 'improvedCheckbox';
+                 switch(record.default_value){
+                     case 1:
+                     case '1':
+                     case true:
+                     case 'true':
+                         field.inputValue = '1';
+                         break;
+                     default:
+                         field.inputValue = '0';
+                     break;
+                 }
+                 //field.boxLabel = record.label;
+                 break;
+            case 'RADIO':
+            case 'TEXT':
+                switch(record.type){
+                    // TODO : BOOLEAN, COORDINATE
+                    case 'INTEGER':
+                        field.xtype  = 'numberfield';
+                        field.allowDecimals = false;
+                        break;
+                    case 'NUMERIC':
+                        field.xtype  = 'numberfield';
+                        break;
+                    default : // STRING
+                        field.xtype  = 'textfield';
+                        break;
+                }
+                break;
+            case 'GEOM':
+                field.xtype = 'geometryfield';
+                field.itemCls = 'trigger-field'; // For IE7 layout
+                break;
+            case 'TREE': 
+                
+                // Add a Tree View
+                field.xtype = 'treeselectfield';
+                field.enableDD = false; //  drag and drop
+                field.animate = true; 
+                field.border = false;
+                field.rootVisible = false;
+                field.useArrows = true;
+                field.autoScroll = true;
+                field.containerScroll = true;
+                field.frame = false;
+                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/1';  // TODO change depth depending on level
+                field.root = {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}; // root is always '*'                
+                               
+                
+                
+                break;    
+            default: 
+                field.xtype  = 'field';
+            break;
+        }
+       
+        field.value = record.value;
+        field.fieldLabel = record.label;
+        
+        return field;
+    }
+}
+);
+
+Ext.reg('editionpage', Genapp.EditionPanel);/**
  * Show one field form.
  * 
  * The following parameters are expected :
@@ -2938,6 +3017,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
          * @type Ext.data.JsonStore
          */
         this.criteriaDS = new Ext.data.JsonStore({
+            idProperty: 'name',
             fields:[
                 {name:'name',mapping:'name'},
                 {name:'label',mapping:'label'},
@@ -2960,6 +3040,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
          * @type Ext.data.JsonStore
          */
         this.columnsDS = new Ext.data.JsonStore({
+            idProperty: 'name',
             fields:[
                 {name:'name',mapping:'name'},
                 {name:'label',mapping:'label'},
@@ -2988,22 +3069,26 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             },
             listeners:{
                 'add': function(container, cmp, index){
+                    var subName = cmp.name,
+                    i = 0,
+                    foundComponents,
+                    tmpName = '',
+                    criteriaPanel = cmp.ownerCt,
+                    className = 'first-child';
                     if(container.defaultType === 'panel') { // The add event is not only called for the items
                         // Add a class to the first child for IE7 layout
-                        if(index == 0){
-                            var className = 'first-child';
+                        if(index === 0){
                             if (cmp.rendered) {
                                 cmp.getEl().addClass(className);
                             } else {
-                                cmp.itemCls ? cmp.itemCls += ' ' + className : cmp.itemCls = className;
+                                if(cmp.itemCls){
+                                    cmp.itemCls += ' ' + className;
+                                }else{
+                                    cmp.itemCls = className;
+                                }
                             }
                         }
                         // Setup the name of the field
-                        var subName = cmp.name;
-                        var i = 0;
-                        var foundComponents;
-                        var tmpName = '';
-                        var criteriaPanel = cmp.ownerCt;
                         do {
                             tmpName = subName + '[' + i++ + ']';
                         }
@@ -3042,7 +3127,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                     listeners : {
                         scope :this,
                         'select' : {
-                            fn : this.addCriteria,
+                            fn : this.addSelectedCriteria,
                             scope :this
                         }
                     }
@@ -3139,11 +3224,25 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * @param {Number} index The criteria combobox record index
      * @hide
      */
-    addCriteria : function(combo, record, index) {
+    addSelectedCriteria : function(combo, record, index) {
         if(combo !== null){
             combo.clearValue();
             combo.collapse();
         }
+        // Add the field
+        this.criteriaPanel.add(this.getCriteriaConfig(record.data, false));
+        this.criteriaPanel.doLayout();
+    },
+
+    /**
+     * Add the criteria to the list of criteria.
+     * @param {String} criteriaId The criteria id
+     * @param {String} value The criteria value
+     */
+    addCriteria : function(criteriaId, value) {
+        // Setup the field
+        var record = this.criteriaDS.getById(criteriaId);
+        record.data.default_value = value;
         // Add the field
         this.criteriaPanel.add(this.getCriteriaConfig(record.data, false));
         this.criteriaPanel.doLayout();
@@ -3160,9 +3259,10 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 // if the field have multiple default values, duplicate the criteria
                 var defaultValue = record.data.default_value;
                 if(!Ext.isEmpty(defaultValue)){
-                    var defaultValues = defaultValue.split(';');
-                    var criteriaValuesEmpty = Ext.isEmpty(this.form.criteriaValues);
-                    for (var i = 0; i < defaultValues.length; i++) {
+                    var defaultValues = defaultValue.split(';'),
+                        criteriaValuesEmpty = Ext.isEmpty(this.form.criteriaValues),
+                        i;
+                    for (i = 0; i < defaultValues.length; i++) {
                         // clone the object
                         var newRecord = record.copy();
                         if(criteriaValuesEmpty){
@@ -3185,7 +3285,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                     this.items.push(this.form.getCriteriaConfig(record.data));
                 }
             }
-        },{form:this, items:items})
+        },{form:this, items:items});
         return items;
     },
 
@@ -3269,7 +3369,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             if(record.data.is_default){
                 this.items.push(this.form.getColumnConfig(record.data));
             }
-        },{form:this, items:items})
+        },{form:this, items:items});
         return items;
     },
 
@@ -3315,10 +3415,10 @@ Ext.apply(Genapp.FieldForm.prototype, {
      */
     getCriteriaConfig : function(record, hideBin){
         // If the field have multiple default values, duplicate the criteria
-        if(!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') != -1){
+        if(!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1){
             var fields = [];
-            var defaultValues = record.default_value.split(';');
-            for (var i = 0; i < defaultValues.length; i++) {
+            var defaultValues = record.default_value.split(';'), i;
+            for (i = 0; i < defaultValues.length; i++) {
                 record.default_value = defaultValues[i];
                 fields.push(Genapp.FieldForm.prototype.getCriteriaConfig(record, hideBin));
             }
@@ -3335,54 +3435,27 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.hiddenName = field.name;
                 field.triggerAction = 'all';
                 field.typeAhead = true;
-                field.mode = 'local';
                 field.displayField = 'label';
                 field.valueField  = 'code';
                 field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
-                field.disableKeyFilter = true;
-                if (record.subtype == 'DYNAMIC') {
-                	field.store = new Ext.data.JsonStore({
-                		autoLoad: true,  
-                		root: 'codes',
-	                    fields:[
-	                            {name:'code',mapping:'code'},
-	                            {name:'label',mapping:'label'}
-	                            ],
-	                    url: 'ajaxgetdynamiccodes/unit/'+record.unit
-	                });
+                if (record.subtype === 'DYNAMIC') {
+                     field.mode = 'remote';
+                     field.store = new Ext.data.JsonStore({
+                        root: 'codes',
+                        idProperty: 'code',
+                        fields:[
+                            {name:'code',mapping:'code'},
+                            {name:'label',mapping:'label'}
+                        ],
+                        url: 'ajaxgetdynamiccodes',
+                        baseParams:{'unit':record.unit}
+                    });
                 } else {
-	                field.store = new Ext.data.ArrayStore({
-	                    fields:['code','label'],
-	                    data : record.params.options
-	                });
-                }
-                break;
-            case 'MULTIPLE':  // The input type MULTIPLE correspond generally to a data type ARRAY
-                field.xtype = 'combo';
-                field.itemCls = 'trigger-field'; // For IE7 layout
-                field.hiddenName = field.name;
-                field.triggerAction = 'all';
-                field.typeAhead = true;
-                field.mode = 'local';
-                field.displayField = 'label';
-                field.valueField  = 'code';
-                field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
-                field.disableKeyFilter = true;
-                if (record.subtype=='DYNAMIC') {
-                	field.store = new Ext.data.JsonStore({
-                		autoLoad: true,  
-                		root: 'codes',
-                		fields:[
-	                            {name:'code',mapping:'code'},
-	                            {name:'label',mapping:'label'}
-	                            ],
-	                    url: 'ajaxgetdynamiccodes/unit/'+record.unit
-	                });
-                } else {
-	                field.store = new Ext.data.ArrayStore({
-	                    fields:['code','label'],
-	                    data : record.params.options
-	                });
+                    field.mode = 'local';
+                    field.store = new Ext.data.ArrayStore({
+                        fields:['code','label'],
+                        data : record.params.options
+                    });
                 }
                 break;
             case 'DATE': // The input type DATE correspond generally to a data type DATE
@@ -3394,12 +3467,12 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.xtype = 'numberrangefield';
                 field.itemCls = 'trigger-field'; // For IE7 layout
                 // If RANGE we set the min and max values
-                if (record.type=='RANGE') {
+                if (record.type==='RANGE') {
                     field.minValue = record.params.min;
                     field.maxValue = record.params.max;
                 }
                 // IF INTEGER we remove the decimals
-                if (record.type=='INTEGER') {
+                if (record.type==='INTEGER') {
                     field.allowDecimals = false;
                     field.decimalPrecision = 0;
                 }
@@ -3440,35 +3513,10 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.xtype = 'geometryfield';
                 field.itemCls = 'trigger-field'; // For IE7 layout
                 break;
-            case 'TREE': 
-            	
-            	// Add a Tree View
-                field.xtype = 'treepanel';
-                field.enableDD = false; //  drag and drop
-                field.animate = true; 
-                field.border = false;
-                field.rootVisible = false;
-                field.useArrows = true;
-                field.autoScroll = true;
-                field.containerScroll = true;
-                field.frame = false;
-                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/2'; 
-                field.root = {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}; // root is always '*'                
-                field.listeners = {
-               		// TODO
-                    click: function(node, event) {
-                        alert('Navigation Tree Click', 'You clicked: "' + node.attributes.id + '"');
-                    }
-                }
-                // TODO : Manage link with treeview
-                // Add a hidden field for submit
-                var hiddenfield = {};
-                hiddenfield.xtype = 'hidden';
-                hiddenfield.name = field.name;
-                hiddenfield.value = '-1';
-                this.criteriaPanel.add(hiddenfield); // TODO : à supprimer
-                
-                break;    
+            case 'TREE':
+                field.xtype = 'treefield';
+                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/1';  // TODO change depth depending on level
+                break;
             default: 
                 field.xtype  = 'field';
             break;
@@ -3513,6 +3561,192 @@ Ext.apply(Genapp.FieldForm.prototype, {
             };
         }
         return field;
+    }
+});/**
+ * The class of the Grid Details Panel.
+ * 
+ * @class Genapp.GridDetailsPanel
+ * @extends Ext.GridPanel
+ * @constructor Create a new GridDetailsPanel
+ * @param {Object} config The config object
+ */
+Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
+    /**
+     * @cfg {Number} headerWidth
+     * The tab header width. (Default to 60)
+     */
+    headerWidth:95,
+    /**
+     * @cfg {Boolean} closable
+     * Panels themselves do not directly support being closed, but some Panel subclasses do (like
+     * {@link Ext.Window}) or a Panel Class within an {@link Ext.TabPanel}.  Specify true
+     * to enable closing in such situations. Defaults to true.
+     */
+    closable: true,
+    /**
+     * @cfg {Boolean} autoScroll
+     * true to use overflow:'auto' on the panel's body element and show scroll bars automatically when
+     * necessary, false to clip any overflowing content (defaults to true).
+     */
+    autoScroll:true,
+    /**
+     * @cfg {String} cls
+     * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp-query-grid-details-panel').
+     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
+     */
+    cls:'genapp-query-grid-details-panel',
+    /**
+     * @cfg {String} loadingMsg
+     * The loading message (defaults to <tt>'Loading...'</tt>)
+     */
+    loadingMsg: 'Loading...',
+    layout: 'fit',
+    /**
+     * @cfg {String} openDetailsButtonTitle
+     * The open Details Button Title (defaults to <tt>'See the details'</tt>)
+     */
+    openDetailsButtonTitle: 'See the details',
+    /**
+     * @cfg {String} openDetailsButtonTip
+     * The open Details Button Tip (defaults to <tt>'Display the row details into the details panel.'</tt>)
+     */
+    openDetailsButtonTip: 'Display the row details into the details panel.',
+    /**
+     * @cfg {String} getChildrenButtonTitle
+     * The get Children Button Title (defaults to <tt>'Switch to the children'</tt>)
+     */
+    getChildrenButtonTitle: 'Switch to the children',
+    /**
+     * @cfg {String} getChildrenButtonTip
+     * The get Children Button Tip (defaults to <tt>'Display the children of the data.'</tt>)
+     */
+    getChildrenButtonTip: 'Display the children of the data.',
+    /**
+     * @cfg {String} getParentButtonTitle
+     * The get Parent Button Title (defaults to <tt>'Return to the parent'</tt>)
+     */
+    getParentButtonTitle: 'Return to the parent',
+    /**
+     * @cfg {String} getParentButtonTip
+     * The get Parent Button Tip (defaults to <tt>'Display the parent of the data.'</tt>)
+     */
+    getParentButtonTip: 'Display the parent of the data.',
+    /**
+     * @cfg {Number} tipDefaultWidth
+     * The tip Default Width. (Default to 300)
+     */
+    tipDefaultWidth: 300,
+    sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
+
+    /**
+     * Renders for the left tools column cell
+     * 
+     * @param {Object}
+     *            value The data value for the cell.
+     * @param {Object}
+     *            metadata An object in which you may set the
+     *            following attributes: {String} css A CSS class
+     *            name to add to the cell's TD element. {String}
+     *            attr : An HTML attribute definition string to
+     *            apply to the data container element within the
+     *            table cell (e.g. 'style="color:red;"').
+     * @param {Ext.data.record}
+     *            record The {@link Ext.data.Record} from which
+     *            the data was extracted.
+     * @param {Number}
+     *            rowIndex Row index
+     * @param {Number}
+     *            colIndex Column index
+     * @param {Ext.data.Store}
+     *            store The {@link Ext.data.Store} object from
+     *            which the Record was extracted.
+     * @return {String} The html code for the column
+     * @hide
+     */
+    renderLeftTools : function(value, metadata, record,
+            rowIndex, colIndex, store) {
+
+        var stringFormat = '';
+        if (!this.hideDetails) {
+            stringFormat = '<div class="genapp-query-grid-details-panel-slip" '
+                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"'
+                +'ext:qtitle="' + this.openDetailsButtonTitle + '"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="' + this.openDetailsButtonTip + '"'
+            +'></div>';
+        }
+        // TODO: Patch RTM to remove ??
+        if(!Ext.isEmpty(record.data.LOCATION_COMPL_DATA__SIT_NO_CLASS)){
+            stringFormat += '<div class="genapp-query-grid-details-panel-search" '
+                +'onclick="Genapp.cardPanel.consultationPage.launchLocationRequest(\'\',\'{2}\');"'
+                +'ext:qtitle="Ajouter ce site comme critère"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="Ajoute le numéro de site à la requête et la relance."'
+            +'></div>';
+        }
+        if(this.hasChild) {
+            stringFormat += '<div class="genapp-query-grid-details-panel-get-children" '
+                +'onclick="Genapp.cardPanel.consultationPage.getChildren(\'{1}\',\'{0}\');"'
+                +'ext:qtitle="' + this.getChildrenButtonTitle + '"'
+                +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                +'ext:qtip="' + this.getChildrenButtonTip + '"'
+            +'></div>';
+        }
+        return String.format(stringFormat, record.data.id, this.ownerCt.getId(),record.data.LOCATION_COMPL_DATA__SIT_NO_CLASS);
+    },
+
+    // private
+    initComponent : function() {
+            this.itemId = this.initConf.id;
+            this.hasChild = this.initConf.hasChild;
+            this.title = this.initConf.title;
+            this.parentItemId = this.initConf.parentItemId;
+            // We need of the ownerCt here (before it's set automatically when this Component is added to a Container)
+            this.ownerCt = this.initConf.ownerCt;
+
+            this.store = new Ext.data.ArrayStore({
+                // store configs
+                autoDestroy: true,
+                // reader configs
+                idIndex: 0,
+                fields: this.initConf.fields,
+                data: this.initConf.data
+            });
+
+            // setup the columns
+            var i;
+            var columns = this.initConf.columns;
+            for(i = 0; i<columns.length; i++){
+                columns[i].header =  Genapp.util.htmlStringFormat(columns[i].header);
+                columns[i].tooltip =  Genapp.util.htmlStringFormat(columns[i].tooltip);
+            }
+            var leftToolsHeader = '';
+            if (!Ext.isEmpty(this.parentItemId)) {
+                leftToolsHeader = '<div class="genapp-query-grid-details-panel-get-parent" '
+                    +'onclick="Genapp.cardPanel.consultationPage.getParent(\'' + this.ownerCt.getId() +'\');"'
+                    +'ext:qtitle="' + this.getParentButtonTitle + '"'
+                    +'ext:qwidth="' + this.tipDefaultWidth + '"'
+                    +'ext:qtip="' + this.getParentButtonTip + '"'
+                    +'></div>';
+            }
+            this.initConf.columns.unshift({
+                dataIndex:'leftTools',
+                header:leftToolsHeader,
+                renderer:this.renderLeftTools.createDelegate(this),
+                sortable:false,
+                fixed:true,
+                menuDisabled:true,
+                align:'center',
+                width:70
+            });
+            this.colModel = new Ext.grid.ColumnModel({
+                defaults: {
+                    width: 100,
+                    sortable: true
+                },
+                columns: columns
+            });
+        Genapp.GridDetailsPanel.superclass.initComponent.call(this);
     }
 });/**
  * Panel containing the dynamic map.
@@ -3732,6 +3966,12 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      * }
      */
     layersActivation: {},
+    
+    /**
+     * @cfg {String} projectionLabel
+     * The projection to be displayed next to the mouse position (defaults to <tt> m (L2e)</tt>)
+     */
+    projectionLabel: " m (L2e)",
 
     // private
     initComponent : function() {
@@ -3842,10 +4082,10 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                         Ext.Ajax.request({
                             url: Genapp.base_url + 'map/getLayers',
                             success :function(response, options){
-                                var layersObject = Ext.decode(response.responseText);
+                                var layersObject = Ext.decode(response.responseText), i;
                                 this.layersList = [];
                                 this.layersActivation = {}; // Avoid a conflict between the geometryField mapPanel and the consultation mapPanel
-                                for ( var i = 0; i < layersObject.layers.length; i++) {
+                                for ( i = 0; i < layersObject.layers.length; i++) {
                                     var newLayer;
                                     if(layersObject.layers[i].untiled){
                                         newLayer = new OpenLayers.Layer.WMS.Untiled(
@@ -3968,8 +4208,8 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
     initMap : function(consultationMapDivId) {
 
         // Create the map config resolution array
-        var resolutions = [];
-        for (var i = this.minZoomLevel; i < Genapp.map.resolutions.length; i++) {
+        var resolutions = [], i;
+        for (i = this.minZoomLevel; i < Genapp.map.resolutions.length; i++) {
             resolutions.push(Genapp.map.resolutions[i]);
         }
 
@@ -3987,7 +4227,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
             'maxExtent' : new OpenLayers.Bounds(Genapp.map.x_min, Genapp.map.y_min, Genapp.map.x_max, Genapp.map.y_max),
             'eventListeners' : {// Hide the legend if needed
                 changelayer: function(o){
-                    if(o.property == 'visibility'){
+                    if(o.property === 'visibility'){
                         this.toggleLayersAndLegendsForZoom(o.layer);
                     }
                 },
@@ -4006,7 +4246,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
          * @property vectorLayer
          */
         this.vectorLayer = new OpenLayers.Layer.Vector("Vector Layer", {
-        	printable : false // This layers is never printed
+            printable : false // This layers is never printed
         });
 
         //
@@ -4022,7 +4262,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         this.map.addLayer(baseLayer);
 
         // Add the available layers
-        for ( var i = 0; i < this.layersList.length; i++) {
+        for (i = 0; i < this.layersList.length; i++) {
             this.map.addLayer(this.layersList[i]);
         }
 
@@ -4042,7 +4282,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         this.map.addControl(new OpenLayers.Control.MousePosition({ 
             prefix: 'X: ', 
             separator: ' - Y: ', 
-            suffix: ' m (L2e)', 
+            suffix: this.projectionLabel, 
             numDigits: 0,
             title: 'MousePosition'
         }));
@@ -4100,6 +4340,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      * @hide
      */
     initLayerTree : function() {
+        var i;
         /**
          * The layer tree.
          * @type {mapfish.widgets.LayerTree}
@@ -4113,7 +4354,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
             enableDD : true,
             listeners:{
                 'afterrender':function(){
-                    for (var i = 0; i < this.map.layers.length; i++){
+                    for (i = 0; i < this.map.layers.length; i++){
                         this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
                     }
                 },
@@ -4121,17 +4362,17 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
             },
             plugins : [
                {
-                	init: function(layerTree) {
-                		layerTree.getRootNode().cascade(
-	                    function(child) {
-	                        if(child.attributes.disabled == true){
-	                            child.forceDisable = true;
-	                        }else{
-	                            child.forceDisable = false;
-	                        }
-	                    }
-                		);
-                	}
+                    init: function(layerTree) {
+                        layerTree.getRootNode().cascade(
+                        function(child) {
+                            if(child.attributes.disabled === true){
+                                child.forceDisable = true;
+                            }else{
+                                child.forceDisable = false;
+                            }
+                        }
+                        );
+                    }
                 },
                 mapfish.widgets.LayerTree.createContextualMenuPlugin(['opacitySlide'])                
                 ],
@@ -4212,17 +4453,6 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
 
         this.toolbar.addFill();
 
-        if(!this.hideMapDetails){
-            // Get info on the feature
-            this.toolbar.addControl(
-                new OpenLayers.Control.FeatureInfoControl(),
-                {
-                    iconCls: 'feature-info',
-                    tooltip: this.featureInfoControlTitle
-                }
-            );
-        }
-
         // Navigation history : back and next.
         var nav = new OpenLayers.Control.NavigationHistory({});
         this.map.addControl(nav);
@@ -4278,6 +4508,17 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         );
 
         this.toolbar.addSeparator();
+
+        if(!this.hideMapDetails){
+            // Get info on the feature
+            this.toolbar.addControl(
+                new OpenLayers.Control.FeatureInfoControl(),
+                {
+                    iconCls: 'feature-info',
+                    tooltip: this.featureInfoControlTitle
+                }
+            );
+        }
 
         this.toolbar.addControl(
             new OpenLayers.Control.ZoomBox({
@@ -4435,10 +4676,11 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      */
     toggleLayersAndLegends: function(layerNames){
 
-        var layersAndLegendsToEnableChecked = [];
-        var layersAndLegendsToEnableUnchecked = [];
-        var layersAndLegendsToDisable = [];
-        var layersAndLegendsToHide = [];
+        var layersAndLegendsToEnableChecked = [],
+            layersAndLegendsToEnableUnchecked = [],
+            layersAndLegendsToDisable = [],
+            layersAndLegendsToHide = [],
+            layerName;
         for(layerName in layerNames){
             if (layerNames.hasOwnProperty(layerName)) {
                 switch (layerNames[layerName])
@@ -4478,22 +4720,22 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
     enableLayersAndLegends: function(layerNames, check, setForceDisable){
 
         //The tabPanels must be activated before to show a child component
-        var isLayerPanelVisible = this.layerPanel.isVisible();
+        var isLayerPanelVisible = this.layerPanel.isVisible(), i;
 
         this.layersAndLegendsPanel.activate(this.layerPanel);
-        for(var i = 0; i<layerNames.length ;i++){
+        for(i = 0; i<layerNames.length ;i++){
             var nodeId = this.layertree.layerToNodeIds[layerNames[i]];
             if(!Ext.isEmpty(nodeId)){
-                if (setForceDisable != false){
+                if (setForceDisable !== false){
                     this.layertree.getNodeById(nodeId).forceDisable = false;
                 }
-                if(this.layertree.getNodeById(nodeId).zoomDisable != true){
+                if(this.layertree.getNodeById(nodeId).zoomDisable !== true){
                     this.layertree.getNodeById(nodeId).enable();
                 }
                 this.layertree.getNodeById(nodeId).getUI().show();
                 /*var layers = this.layertree.nodeIdToLayers[nodeId];
                 layers[0].display(true);*/
-                if (check == true) {
+                if (check === true) {
                     // Note: the redraw must be done before to check the node
                     // to avoid to redisplay the old layer images before the new one
                     var layers = this.map.getLayersByName(layerNames[i]);
@@ -4525,19 +4767,20 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      */
     disableLayersAndLegends: function(layerNames, uncheck, hide, setForceDisable){
 
+        var i;
         if(!Ext.isEmpty(layerNames)){
-            for(var i = 0; i<layerNames.length ;i++){
+            for(i = 0; i<layerNames.length ;i++){
                 var nodeId = this.layertree.layerToNodeIds[layerNames[i]];
                 if(!Ext.isEmpty(nodeId)){
-                    if (uncheck == true) {
+                    if (uncheck === true) {
                         this.layertree.setNodeChecked(nodeId,false);
                     }
                     var node = this.layertree.getNodeById(nodeId);
-                    if (hide == true) {
+                    if (hide === true) {
                         node.getUI().hide();
                     }
                     node.disable();
-                    if (setForceDisable != false) {
+                    if (setForceDisable !== false) {
                         node.forceDisable = true;
                     }
                     /*var layers = this.layertree.nodeIdToLayers[nodeId];
@@ -4564,7 +4807,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
                         this.disableLayersAndLegends([layer.name], false, false, false);
                     } else {
                         node.zoomDisable = false;
-                        if (node.forceDisable != true) {
+                        if (node.forceDisable !== true) {
                             this.enableLayersAndLegends([layer.name], false, false);
                         }
                     }
@@ -4580,10 +4823,11 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
      * @param {Boolean} visible True to show, false to hide
      */
     setLegendsVisible: function(layerNames, visible){
+        var i;
         for(i = 0; i<layerNames.length ;i++){
             var legendCmp = this.legendPanel.findById(this.id + layerNames[i]);
             if(!Ext.isEmpty(legendCmp)){
-                if (visible == true) {
+                if (visible === true) {
                     var layers = this.map.getLayersByName(layerNames[i]);
                     if(layers[0].calculateInRange() && layers[0].getVisibility()){
                         legendCmp.show();
@@ -4605,117 +4849,6 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         Genapp.MapPanel.superclass.beforeDestroy.call(this);
     }
 });/**
- * Simple number range picker class.
- * 
- * @class Genapp.NumberRangePicker
- * @extends Ext.Panel
- * @constructor Create a new NumberRangePicker
- * @param {Object} config The config object
- * @xtype numberrangepicker
- */
-Genapp.NumberRangePicker = Ext.extend(Ext.Panel, {
-    /**
-     * @cfg {String/Object} layout
-     * Specify the layout manager class for this container either as an Object or as a String.
-     * See {@link Ext.Container#layout layout manager} also.
-     * Default to 'form'.
-     */
-    layout: 'form',
-    /**
-     * @cfg {Number} height
-     * The height of this component in pixels (defaults to 59).
-     */
-    height:59,
-    /**
-     * @cfg {Number} width
-     * The width of this component in pixels (defaults to 176).
-     */
-    width:176,
-    /**
-     * @cfg {Number} labelWidth The width of labels in pixels. This property cascades to child containers
-     * and can be overridden on any child container (e.g., a fieldset can specify a different labelWidth
-     * for its fields) (defaults to 30).
-     * See {@link Ext.form.FormPanel#labelWidth} also.
-     */
-    labelWidth: 30,
-    /**
-     * @cfg {String} buttonAlign
-     * The alignment of any {@link #buttons} added to this panel.  Valid values are 'right',
-     * 'left' and 'center' (defaults to 'center').
-     */
-    buttonAlign: 'center',
-    /**
-     * @cfg {String} cls
-     * An optional extra CSS class that will be added to this component's Element (defaults to 'x-menu-number-range-item').
-     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
-     */
-    cls: 'x-menu-number-range-item',
-    /**
-     * @cfg {String} minFieldLabel
-     * The min Field Label (defaults to <tt>'Min'</tt>)
-     */
-    minFieldLabel:"Min",
-    /**
-     * @cfg {String} maxFieldLabel
-     * The max Field Label (defaults to <tt>'Max'</tt>)
-     */
-    maxFieldLabel:"Max",
-    /**
-     * @cfg {String} okButtonText
-     * The ok Button Text (defaults to <tt>'ok'</tt>)
-     */
-    okButtonText:"ok",
-    /**
-     * @cfg {Boolean} hideValidationButton if true hide the menu validation button (defaults to true).
-     */
-    hideValidationButton : true,
-
-    // private
-    initComponent : function(){
-        Ext.apply(this, {
-                items: [
-                /**
-                 * The min field.
-                 * @property minField
-                 * @type Genapp.form.TwinNumberField
-                 */
-                this.minField = new Genapp.form.TwinNumberField({
-                    fieldLabel:this.minFieldLabel
-                }),
-                /**
-                 * The max field.
-                 * @property maxField
-                 * @type Genapp.form.TwinNumberField
-                 */
-                this.maxField = new Genapp.form.TwinNumberField({
-                    fieldLabel:this.maxFieldLabel
-                })
-            ]
-        });
-        if(!this.hideValidationButton){
-            this.buttons = [{
-                xtype:'button',
-                text:this.okButtonText,
-                width:'auto',
-                handler:this.onOkButtonPress.createDelegate(this)
-            }];
-            this.height = this.height + 28;
-        }
-
-        Genapp.NumberRangePicker.superclass.initComponent.call(this);
-    },
-
-    // private
-    onOkButtonPress: function (button, state){
-        if(state){
-            this.fireEvent('select', this, {
-                minValue: this.minField.getValue(),
-                maxValue: this.maxField.getValue()
-            });
-        }
-    }
-});
-Ext.reg('numberrangepicker', Genapp.NumberRangePicker);/**
  * A PDFComponent is a tag object of type 'application/pdf'
  * 
  * @class Genapp.PDFComponent
@@ -4816,7 +4949,7 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
      * Reset the component body
      */
     reset : function(){
-        if(this.url != null){
+        if(this.url !== null){
             this.el = Ext.get(Ext.DomHelper.overwrite(this.ownerCt.body.dom, {
                 tag:'span',
                 html:'Veuillez selectionner un document...'
@@ -5083,7 +5216,7 @@ listeners: {
          */
         var groupRendererFct = function(v, unused, r, rowIndex, colIndex, ds, dataName) {
             return r.data[dataName];
-        }
+        };
 
         /**
          * The grid column model
@@ -5273,7 +5406,7 @@ listeners: {
                 });
             },
             scope: this
-        }
+        };
 
         Genapp.PredefinedRequestPanel.superclass.initComponent.call(this);
     },
@@ -5293,6 +5426,7 @@ listeners: {
             Ext.Ajax.request({
                 url: Genapp.ajax_query_url + 'ajaxgetpredefinedrequestcriteria',
                 success: function(response, opts) {
+                    var i;
                     var myReader = new Ext.data.ArrayReader({
                         root:'criteria',
                         fields:[
@@ -5327,7 +5461,7 @@ listeners: {
                             }
                         }
                     });
-                    for(var i = 0; i < result.records.length; i++){
+                    for(i = 0; i < result.records.length; i++){
                         // Add the field
                         requestCriteriaPanel.add(Genapp.FieldForm.prototype.getCriteriaConfig(result.records[i].data, true));
                     }
@@ -5360,7 +5494,7 @@ listeners: {
     }
 });
 Ext.reg('predefinedrequestpage', Genapp.PredefinedRequestPanel);/**
- * Provides a date range input field with a {@link Genapp.DateRangePicker} dropdown and automatic date validation.
+ * Provides a date range input field with a {@link Genapp.form.picker.DateRangePicker} dropdown and automatic date validation.
  *  
  * @class Genapp.form.DateRangeField
  * @extends Ext.form.DateField
@@ -5494,7 +5628,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
      * @param {Date} value The minimum date that can be selected
      */
     setMinValue : function(dt){
-        this.minValue = (typeof dt == "string" ? this.parseDate(dt) : dt);
+        this.minValue = (typeof dt === "string" ? this.parseDate(dt) : dt);
         if(this.menu){
             this.menu.rangePicker.startDatePicker.setMinDate(this.minValue);
             this.menu.rangePicker.endDatePicker.setMinDate(this.minValue);
@@ -5506,7 +5640,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
      * @param {Date} value The maximum date that can be selected
      */
     setMaxValue : function(dt){
-        this.maxValue = (typeof dt == "string" ? this.parseDate(dt) : dt);
+        this.maxValue = (typeof dt === "string" ? this.parseDate(dt) : dt);
         if(this.menu){
             this.menu.rangePicker.startDatePicker.setMaxDate(this.maxValue);
             this.menu.rangePicker.endDatePicker.setMaxDate(this.maxValue);
@@ -5531,12 +5665,12 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
              return errors;
         }
         var values = value.split(this.dateSeparator);
-        if (values.length != 1 && values.length != 2){
+        if (values.length !== 1 && values.length !== 2){
             errors.push(String.format(this.invalidText, value, this.format+this.dateSeparator+this.format));
             return errors;
         }
         var rangeDate = this.parseRangeDate(value);
-        if(values.length == 1){
+        if(values.length === 1){
             if (!rangeDate){
                 errors.push(String.format(this.invalidText, value, this.format));
                 return errors;
@@ -5546,7 +5680,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
                 errors.push(String.format(this.invalidText, value, this.format));
                 return errors;
             }
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             if (!rangeDate){
                 errors.push(String.format(this.invalidText, value, this.format+this.dateSeparator+this.format));
                 return errors;
@@ -5560,13 +5694,13 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
                 errors.push(this.reverseText);
                 return errors;
             }
-            if (!this.authorizeEqualValues && rangeDate.endDate.getElapsed(rangeDate.startDate) == 0){
+            if (!this.authorizeEqualValues && rangeDate.endDate.getElapsed(rangeDate.startDate) === 0){
                 errors.push(this.notEqualText);
                 return errors;
             }
         }
         //Checks if the start date is in the interval [minDate,maxDate]
-        if (rangeDate.startDate != null){
+        if (rangeDate.startDate !== null){
             if (rangeDate.startDate.getTime() - this.minValue.getTime() < 0){
                 errors.push(String.format(this.minText, this.formatDate(this.minValue)));
                 return errors;
@@ -5577,7 +5711,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             }
         }
         //Checks if the end date is in the interval [minDate,maxDate]
-        if (rangeDate.endDate != null){
+        if (rangeDate.endDate !== null){
             if (rangeDate.endDate.getTime() - this.minValue.getTime() < 0){
                 errors.push(String.format(this.minText, this.formatDate(this.minValue)));
                 return errors;
@@ -5603,10 +5737,10 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             return {startDate:value, endDate:value};
         }
         var values = value.split(this.dateSeparator);
-        if(values.length == 1){
+        if(values.length === 1){
             var sdpIndex = value.indexOf(this.startDatePrefix,0);
             var edpIndex = value.indexOf(this.endDatePrefix,0);
-            if(sdpIndex != -1){
+            if(sdpIndex !== -1){
             // Case ">= YYYY/MM/DD"
                 var startDate = this.parseDate.call(this, value.substring(sdpIndex + this.startDatePrefix.length));
                 if(startDate){
@@ -5614,7 +5748,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
                 }else{
                     return null;
                 }
-            }else if(edpIndex != -1){
+            }else if(edpIndex !== -1){
             // Case "<= YYYY/MM/DD"
                 var endDate = this.parseDate.call(this, value.substring(edpIndex + this.endDatePrefix.length));
                 if(endDate){
@@ -5631,7 +5765,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
                     return null;
                 }
             }
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             // Case "YYYY/MM/DD - YYYY/MM/DD"
             var sv = Date.parseDate(values[0], this.format);
             var ev = Date.parseDate(values[1], this.format);
@@ -5667,20 +5801,20 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             return Genapp.form.DateRangeField.superclass.formatDate.call(this, date);
         }
         if(this.isRangeDate(date)){
-            if(date.startDate == null && date.endDate != null){
+            if(date.startDate === null && date.endDate !== null){
                 if(this.usePrefix){
                     return this.endDatePrefix + date.endDate.format(this.format);
                 }else{
                     return this.minValue.format(this.format) + this.dateSeparator + date.endDate.format(this.format);
                 }
-            }else if(date.startDate != null && date.endDate == null){
+            }else if(date.startDate !== null && date.endDate === null){
                 if(this.usePrefix){
                     return this.startDatePrefix + date.startDate.format(this.format);
                 }else{
                     return date.startDate.format(this.format) + this.dateSeparator + this.maxValue.format(this.format);
                 }
-            }else if(date.startDate != null && date.endDate != null){
-                if(this.mergeEqualValues && date.endDate.getElapsed(date.startDate) == 0){
+            }else if(date.startDate !== null && date.endDate !== null){
+                if(this.mergeEqualValues && date.endDate.getElapsed(date.startDate) === 0){
                     return date.startDate.format(this.format);
                 }else if(this.autoReverse && date.endDate.getTime() - date.startDate.getTime() < 0){
                     return date.endDate.format(this.format) + this.dateSeparator + date.startDate.format(this.format);
@@ -5709,9 +5843,9 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             /**
              * The field menu (displayed on a trigger click).
              * @property menu
-             * @type Genapp.menu.DateRangeMenu
+             * @type Genapp.form.menu.DateRangeMenu
              */
-            this.menu = new Genapp.menu.DateRangeMenu({
+            this.menu = new Genapp.form.menu.DateRangeMenu({
                 hideOnClick: false,
                 hideValidationButton: this.hideValidationButton,
                 showToday: this.showToday
@@ -5758,10 +5892,10 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
             minv = values;
             maxv = values;
         }else if(this.isRangeDate(values)){
-            if(values.startDate != null){
+            if(values.startDate !== null){
                 minv = values.startDate;
             }
-            if(values.endDate != null){
+            if(values.endDate !== null){
                 maxv = values.endDate;
             }
         }
@@ -5782,7 +5916,7 @@ Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
      * @return {Boolean} true if the object is a range date
      */
     isRangeDate : function(rangeDate){
-        return (Ext.isObject(rangeDate) && (Ext.isDate(rangeDate.startDate) || rangeDate.startDate == null) && (Ext.isDate(rangeDate.endDate) || rangeDate.endDate == null));
+        return (Ext.isObject(rangeDate) && (Ext.isDate(rangeDate.startDate) || rangeDate.startDate === null) && (Ext.isDate(rangeDate.endDate) || rangeDate.endDate === null));
     },
     
     /**
@@ -5985,7 +6119,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
             // because Ext does not clean everything (mapWindow still instanceof Ext.Window):
             this.mapWindow.on('destroy', function(){
                 delete this.mapWindow;
-                if(this.submitRequest == true){
+                if(this.submitRequest === true){
                     Ext.getCmp('consultation_panel').submitRequest();
                     this.submitRequest = false;
                 }
@@ -6008,7 +6142,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
     onWindowValidate: function (search){
         var value = this.mapPanel.vectorLayer.features.length ? this.mapPanel.wktFormat.write(this.mapPanel.vectorLayer.features[0]) : '';
         this.setValue(value);
-        if (search == true) {
+        if (search === true) {
             this.submitRequest = true;
         }
         this.mapWindow.destroy();
@@ -6019,7 +6153,7 @@ Ext.reg('geometryfield', Genapp.form.GeometryField);/**
  * Provides a number range input field with a {@link Genapp.NumberRangePicker} dropdown and automatic number validation.
  *
  * @class Genapp.form.NumberRangeField
- * @extends Ext.form.NumberField
+ * @extends Ext.form.TriggerField
  * @constructor Create a new NumberRangeField
  * @param {Object} config
  * @xtype numberrangefield
@@ -6147,7 +6281,7 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
 
         var values = value.split(this.numberSeparator);
         // The value can be one number if min = max
-        if(values.length == 1){
+        if(values.length === 1){
             var v = this.parseValue(values[0]);
             if(isNaN(v)){
                 this.markInvalid(String.format(this.nanText, v));
@@ -6155,7 +6289,7 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
             }else{
                 return true;
             }
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             var minv = this.parseValue(values[0]);
             var maxv = this.parseValue(values[1]);
             if(maxv === '' || minv === ''){
@@ -6197,9 +6331,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
     getValue : function(){
         var value = Genapp.form.NumberRangeField.superclass.getValue.call(this);
         var values = value.split(this.numberSeparator);
-        if(values.length == 1){
+        if(values.length === 1){
             return String(this.fixPrecision(this.parseValue(values[0]))).replace(".", this.decimalSeparator);
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             return String(this.fixPrecision(this.parseValue(values[0]))).replace(".", this.decimalSeparator) 
             + this.numberSeparator 
             + String(this.fixPrecision(this.parseValue(values[1]))).replace(".", this.decimalSeparator);
@@ -6227,9 +6361,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
         }else{
             if(typeof v === 'string'){
                 var values = v.split(this.numberSeparator);
-                if(values.length == 1){
+                if(values.length === 1){
                     minv = maxv = this.parseValue(values[0]);
-                }else if(values.length == 2){
+                }else if(values.length === 2){
                     minv = this.parseValue(values[0]);
                     maxv = this.parseValue(values[1]);
                 }else{
@@ -6239,12 +6373,12 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
                 return '';
             }
         }
-        min = typeof minv == 'number' ? minv : parseFloat(String(minv).replace(this.decimalSeparator, "."));
-        max = typeof maxv == 'number' ? maxv : parseFloat(String(maxv).replace(this.decimalSeparator, "."));
+        min = typeof minv === 'number' ? minv : parseFloat(String(minv).replace(this.decimalSeparator, "."));
+        max = typeof maxv === 'number' ? maxv : parseFloat(String(maxv).replace(this.decimalSeparator, "."));
         mins = isNaN(min) ? '' : String(this.fixPrecision(min)).replace(".", this.decimalSeparator);
         maxs = isNaN(max) ? '' : String(this.fixPrecision(max)).replace(".", this.decimalSeparator);
 
-        if(min == max){
+        if(min === max){
             v = mins;
         }else if(min < max){
             v = mins + this.numberSeparator + maxs;
@@ -6264,7 +6398,7 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
     // private
     fixPrecision : function(value){
         var nan = isNaN(value);
-        if(!this.allowDecimals || this.decimalPrecision == -1 || nan || !value){
+        if(!this.allowDecimals || this.decimalPrecision === -1 || nan || !value){
            return nan ? '' : value;
         }
         return parseFloat(parseFloat(value).toFixed(this.decimalPrecision));
@@ -6284,9 +6418,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
             /**
              * The field menu (displayed on a trigger click).
              * @property menu
-             * @type Genapp.menu.NumberRangeMenu
+             * @type Genapp.form.menu.NumberRangeMenu
              */
-            this.menu = new Genapp.menu.NumberRangeMenu({
+            this.menu = new Genapp.form.menu.NumberRangeMenu({
                 hideOnClick: false,
                 hideValidationButton: this.hideValidationButton
             });
@@ -6314,10 +6448,10 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
         });
 
         var values = this.getValue().split(this.numberSeparator);
-        if(values.length == 1){
+        if(values.length === 1){
             var minv = this.parseValue(values[0]);
             var maxv = minv;
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             var minv = this.parseValue(values[0]);
             var maxv = this.parseValue(values[1]);
         }else{
@@ -6375,6 +6509,110 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
     }
 });
 Ext.reg('numberrangefield', Genapp.form.NumberRangeField);/**
+ * Provides a tree field
+ * 
+ * @class Genapp.form.TreeField
+ * @extends Ext.form.TriggerField
+ * @constructor Create a new TreeField
+ * @param {Object}
+ *            config
+ * @xtype treefield
+ */
+
+Ext.namespace('Genapp.form');
+
+Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
+	/**
+	 * @cfg {Boolean} hideValidationButton if true hide the menu validation
+	 *      button (defaults to true).
+	 */
+	hideValidationButton : false,
+	store : new Ext.data.ArrayStore({
+		// store configs
+		autoDestroy : true,
+		// reader configs
+		idIndex : 0,
+		fields : [ 'id', 'text' ]
+	}),
+	valueField : 'id',
+	displayField : 'text',
+
+	// private
+	initComponent : function() {
+		Genapp.form.TreeField.superclass.initComponent.call(this);
+	},
+
+	/**
+	 * The function that handle the trigger's click event. Implements the
+	 * default empty TriggerField.onTriggerClick function to display the
+	 * NumberRangePicker
+	 * 
+	 * @method onTriggerClick
+	 * @hide
+	 */
+	onTriggerClick : function() {
+		if (this.disabled) {
+			return;
+		}
+		if (!this.menu) {
+			/**
+			 * The field menu (displayed on a trigger click).
+			 * 
+			 * @property menu
+			 * @type Genapp.form.menu.TreeMenu
+			 */
+			this.menu = new Genapp.form.menu.TreeMenu({
+				hideOnClick : false,
+				hideValidationButton : this.hideValidationButton,
+				dataUrl : this.dataUrl
+			});
+		}
+		this.onFocus();
+
+		this.menu.show(this.el, "tl-bl?");
+		this.menuEvents('on');
+	},
+
+	// private
+	menuEvents : function(method) {
+		this.menu[method]('select', this.onSelect, this);
+		this.menu[method]('hide', this.onMenuHide, this);
+		this.menu[method]('show', this.onFocus, this);
+	},
+
+	// private
+	onSelect : function(value) {
+		this.menu.hide();
+		if (value !== null) {
+			this.getStore().add([ new Ext.data.Record({
+				id : value.id,
+				text : value.text
+			}) ]);
+			this.setValue(value.id);
+		}
+	},
+
+	// private
+	onMenuHide : function() {
+		this.focus(false, 60);
+		this.menuEvents('un');
+	},
+
+	// private
+	// Provides logic to override the default TriggerField.validateBlur which
+	// just returns true
+	validateBlur : function() {
+		return !this.menu || !this.menu.isVisible();
+	},
+
+	// private
+	onDestroy : function() {
+		Ext.destroy(this.menu, this.wrap);
+		Genapp.form.TreeField.superclass.onDestroy.call(this);
+	}
+
+});
+Ext.reg('treefield', Genapp.form.TreeField);/**
  * 
  * A twin number field.
  * 
@@ -6480,7 +6718,7 @@ Genapp.form.TwinNumberField = Ext.extend(Ext.form.TwinTriggerField, {
     // private
     onChange : function(field){
         var v = this.getValue();
-        if(v !== '' && v != null){
+        if(v !== '' && v !== null){
             this.triggers[0].show();
         }else{
             this.triggers[0].hide();
@@ -6541,10 +6779,10 @@ Genapp.form.TwinNumberField = Ext.extend(Ext.form.TwinTriggerField, {
      * @return {Ext.form.Field} this
      */
     setValue : function(v){
-        v = typeof v == 'number' ? v : parseFloat(String(v).replace(this.decimalSeparator, "."));
+        v = typeof v === 'number' ? v : parseFloat(String(v).replace(this.decimalSeparator, "."));
         v = isNaN(v) ? '' : String(v).replace(".", this.decimalSeparator);
         if(this.triggers){
-            if(v !== '' && v != null && v != this.minValue && v != this.maxValue){
+            if(v !== '' && v !== null && v !== this.minValue && v !== this.maxValue){
                 this.triggers[0].show();
             }else{
                 this.triggers[0].hide();
@@ -6562,7 +6800,7 @@ Genapp.form.TwinNumberField = Ext.extend(Ext.form.TwinTriggerField, {
     // private
     fixPrecision : function(value){
         var nan = isNaN(value);
-        if(!this.allowDecimals || this.decimalPrecision == -1 || nan || !value){
+        if(!this.allowDecimals || this.decimalPrecision === -1 || nan || !value){
            return nan ? '' : value;
         }
         return parseFloat(parseFloat(value).toFixed(this.decimalPrecision));
@@ -6571,25 +6809,25 @@ Genapp.form.TwinNumberField = Ext.extend(Ext.form.TwinTriggerField, {
     // private
     beforeBlur : function(){
         var v = this.parseValue(this.getRawValue());
-        if(v !== '' && v != null){
+        if(v !== '' && v !== null){
             this.setValue(this.fixPrecision(v));
         }
     }
 });
 Ext.reg('twinnumberfield', Genapp.form.TwinNumberField);/**
  * 
- * A menu containing a {@link Genapp.DateRangePicker} Component.
+ * A menu containing a {@link Genapp.form.picker.DateRangePicker} Component.
  * 
- * @class Genapp.menu.DateRangeMenu
+ * @class Genapp.form.menu.DateRangeMenu
  * @extends Ext.menu.DateMenu
  * @constructor Create a new DateRangeMenu
  * @param {Object} config
  * @xtype daterangemenu
  */
 
-Ext.namespace('Genapp.menu');
+Ext.namespace('Genapp.form.menu');
 
-Genapp.menu.DateRangeMenu = Ext.extend( Ext.menu.DateMenu, {
+Genapp.form.menu.DateRangeMenu = Ext.extend( Ext.menu.DateMenu, {
     /**
      * @cfg {String/Object} layout
      * Specify the layout manager class for this container either as an Object or as a String.
@@ -6612,14 +6850,14 @@ Genapp.menu.DateRangeMenu = Ext.extend( Ext.menu.DateMenu, {
     initComponent: function(){
         this.on('beforeshow', this.onBeforeShow, this);
         /**
-         * The {@link Genapp.DateRangePicker} instance for this DateRangeMenu
+         * The {@link Genapp.form.picker.DateRangePicker} instance for this DateRangeMenu
          * @property rangePicker
-         * @type Genapp.DateRangePicker
+         * @type Genapp.form.picker.DateRangePicker
          */
         Ext.apply(this, {
             plain: true,
             showSeparator: false,
-            items: [this.rangePicker = new Genapp.DateRangePicker(this.initialConfig)]
+            items: [this.rangePicker = new Genapp.form.picker.DateRangePicker(this.initialConfig)]
         });
         this.rangePicker.purgeListeners();
         Ext.menu.DateMenu.superclass.initComponent.call(this);
@@ -6632,46 +6870,21 @@ Genapp.menu.DateRangeMenu = Ext.extend( Ext.menu.DateMenu, {
             this.rangePicker.startDatePicker.hideMonthPicker(true);
             this.rangePicker.endDatePicker.hideMonthPicker(true);
         }
-    },
-
-    /**
-     * Displays this menu at a specific xy position
-     * @param {Array} xyPosition Contains X & Y [x, y] values for the position at which to show the menu (coordinates are page-based)
-     * @param {Ext.menu.Menu} parentMenu (optional) This menu's parent menu, if applicable (defaults to undefined)
-     */
-    showAt : function(xy, parentMenu, /* private: */_e){
-        this.parentMenu = parentMenu;
-        if(!this.el){
-            this.render();
-        }
-        if(_e !== false){
-            this.fireEvent("beforeshow", this);
-            xy = this.el.adjustForConstraints(xy);
-        }
-        this.el.setXY(xy);
-        if(this.enableScrolling){
-            this.constrainScroll(xy[1]);     
-        }
-        this.el.show();
-        Ext.menu.Menu.superclass.onShow.call(this);
-        this.hidden = false;
-        this.focus();
-        this.fireEvent("show", this);
     }
 });
-Ext.reg('daterangemenu', Genapp.menu.DateRangeMenu);/**
- * A menu containing a {@link Genapp.NumberRangePicker} Component.
+Ext.reg('daterangemenu', Genapp.form.menu.DateRangeMenu);/**
+ * A menu containing a {@link Genapp.form.picker.NumberRangePicker} Component.
  *
- * @class Genapp.menu.NumberRangeMenu
+ * @class Genapp.form.menu.NumberRangeMenu
  * @extends Ext.menu.Menu
  * @constructor Create a new NumberRangeMenu
  * @param {Object} config
  * @xtype numberrangemenu
  */
 
-Ext.namespace('Genapp.menu');
+Ext.namespace('Genapp.form.menu');
 
-Genapp.menu.NumberRangeMenu = Ext.extend( Ext.menu.Menu, {
+Genapp.form.menu.NumberRangeMenu = Ext.extend( Ext.menu.Menu, {
     /**
      * @cfg {String/Object} layout
      * Specify the layout manager class for this container either as an Object or as a String.
@@ -6693,45 +6906,537 @@ Genapp.menu.NumberRangeMenu = Ext.extend( Ext.menu.Menu, {
     // private
     initComponent: function(){
         /**
-         * The {@link Genapp.NumberRangePicker} instance for this NumberRangeMenu
+         * The {@link Genapp.form.picker.NumberRangePicker} instance for this NumberRangeMenu
          * @property rangePicker
-         * @type Genapp.NumberRangePicker
+         * @type Genapp.form.picker.NumberRangePicker
          */
         Ext.apply(this, {
             plain: true,
             showSeparator: false,
-            items: [this.rangePicker = new Genapp.NumberRangePicker(this.initialConfig)]
+            items: [this.rangePicker = new Genapp.form.picker.NumberRangePicker(this.initialConfig)]
         });
         this.rangePicker.purgeListeners();
-        Genapp.menu.NumberRangeMenu.superclass.initComponent.call(this);
+        Genapp.form.menu.NumberRangeMenu.superclass.initComponent.call(this);
         this.relayEvents(this.rangePicker, ["select"]);
+    }
+});
+Ext.reg('numberrangemenu', Genapp.form.menu.NumberRangeMenu);/**
+ * A menu containing a {@link Genapp.form.picker.TreePicker} Component.
+ *
+ * @class Genapp.form.menu.TreeMenu
+ * @extends Ext.menu.Menu
+ * @constructor Create a new TreeMenu
+ * @param {Object} config
+ * @xtype treemenu
+ */
+
+Ext.namespace('Genapp.form.menu');
+
+Genapp.form.menu.TreeMenu = Ext.extend( Ext.menu.Menu, {
+    /**
+     * @cfg {String/Object} layout
+     * Specify the layout manager class for this container either as an Object or as a String.
+     * See {@link Ext.Container#layout layout manager} also.
+     * Default to 'auto'.
+     * Note: The layout 'menu' doesn't work on FF3.5,
+     * the rangePicker items are not rendered 
+     * because the rangePicker is hidden... 
+     * But it's working on IE ???
+     */
+    layout:'auto', 
+    /**
+     * @cfg {String} cls
+     * An optional extra CSS class that will be added to this component's Element (defaults to 'x-number-range-menu').
+     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
+     */
+    cls: 'x-tree-menu',
+
+    // private
+    initComponent: function(){
+        /**
+         * The {@link Genapp.form.picker.TreePicker} instance for this TreeMenu
+         * @property rangePicker
+         * @type Genapp.form.picker.TreePicker
+         */
+        Ext.apply(this, {
+            plain: true,
+            showSeparator: false,
+            items: [this.treePicker = new Genapp.form.picker.TreePicker(this.initialConfig)]
+        });
+        Genapp.form.menu.TreeMenu.superclass.initComponent.call(this);
+        this.relayEvents(this.treePicker, ["select"]);
+    }
+});
+Ext.reg('treemenu', Genapp.form.menu.TreeMenu);/**
+ * Simple date range picker class.
+ * 
+ * @class Genapp.DateRangePicker
+ * @extends Ext.Panel
+ * @constructor Create a new DateRangePicker
+ * @param {Object} config The config object
+ * @xtype daterangepicker
+ */
+
+Ext.namespace('Genapp.form.picker');
+
+Genapp.form.picker.DateRangePicker = Ext.extend(Ext.Panel, {
+    /**
+     * @cfg {String/Object} layout
+     * Specify the layout manager class for this container either as an Object or as a String.
+     * See {@link Ext.Container#layout layout manager} also.
+     * Default to 'column'.
+     */
+    layout: 'column',
+    /**
+     * @cfg {String} cls
+     * An optional extra CSS class that will be added to this component's Element (defaults to 'x-menu-date-range-item').
+     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
+     */
+    cls: 'x-menu-date-range-item',
+    /**
+     * @cfg {String} buttonAlign
+     * The alignment of any {@link #buttons} added to this panel.  Valid values are 'right',
+     * 'left' and 'center' (defaults to 'center').
+     */
+    buttonAlign: 'center',
+    /**
+     * @cfg {Boolean} hideValidationButton if true hide the menu validation button (defaults to false).
+     */
+    hideValidationButton : false,
+    /**
+     * @cfg {String} tbarStartDateButtonText
+     * The tbar start date button text (defaults to <tt>'Start Date ...'</tt>)
+     */
+    tbarStartDateButtonText:'Start Date ...',
+    /**
+     * @cfg {String} tbarRangeDateButtonText
+     * The tbar range date button text (defaults to <tt>'Range Date'</tt>)
+     */
+    tbarRangeDateButtonText:'Range Date',
+    /**
+     * @cfg {String} tbarEndDateButtonText
+     * The tbar end date button text (defaults to <tt>'... End Date'</tt>)
+     */
+    tbarEndDateButtonText:'... End Date',
+    /**
+     * @cfg {String} fbarOkButtonText
+     * The fbar ok button text (defaults to <tt>'ok'</tt>)
+     */
+    fbarOkButtonText:'ok',
+    /**
+     * The selected dates (Default to '{startDate:null, endDate:null}'). Read-only.
+     * @type Object
+     * @property selectedDate
+     */
+    selectedDate: {startDate:null, endDate:null},
+
+    // private
+    initComponent : function(){
+        this.items = [
+            /**
+             * The start date picker (The left picker).
+             * @property startDatePicker
+             * @type Ext.DatePicker
+             */
+            this.startDatePicker = new Ext.DatePicker(Ext.apply({
+                internalRender: this.strict || !Ext.isIE,
+                ctCls: 'x-menu-date-item',
+                columnWidth: 0.5
+                }, this.initialConfig)
+            ),{
+                xtype:'spacer',
+                width:5,
+                html:'&nbsp;' // For FF and IE8
+            },
+            /**
+             * The end date picker (The right picker).
+             * @property endDatePicker
+             * @type Ext.DatePicker
+             */
+            this.endDatePicker = new Ext.DatePicker(Ext.apply({
+                internalRender: this.strict || !Ext.isIE,
+                ctCls: 'x-menu-date-item',
+                columnWidth: 0.5
+                }, this.initialConfig)
+            )
+        ];
+
+        this.startDatePicker.on('select',this.startDateSelect, this);
+        this.endDatePicker.on('select',this.endDateSelect, this);
+
+        /**
+         * The top toolbar.
+         * @property tbar
+         * @type Ext.Toolbar
+         */
+        this.tbar= new Ext.Toolbar({
+             items: [
+             this.startDateButton = new Ext.Button({
+                 text: this.tbarStartDateButtonText,
+                 cls: 'x-menu-date-range-item-start-date-button',
+                 enableToggle: true,
+                 allowDepress: false,
+                 toggleGroup: 'DateButtonsGroup',
+                 toggleHandler: this.onStartDatePress.createDelegate(this)
+             }),
+             this.rangeDateButton = new Ext.Button({
+                 text: this.tbarRangeDateButtonText,
+                 cls: 'x-menu-date-range-item-range-date-button',
+                 pressed:true,
+                 enableToggle: true,
+                 allowDepress: false,
+                 toggleGroup: 'DateButtonsGroup',
+                 toggleHandler: this.onRangeDatePress.createDelegate(this)
+             }),'->',
+             this.endDateButton = new Ext.Button({
+                 text: this.tbarEndDateButtonText,
+                 cls: 'x-menu-date-range-item-end-date-button',
+                 enableToggle: true,
+                 allowDepress: false,
+                 toggleGroup: 'DateButtonsGroup',
+                 toggleHandler: this.onEndDatePress.createDelegate(this)
+             })]
+         });
+
+        if(!this.hideValidationButton){
+            this.fbar = new Ext.Toolbar({
+                cls: 'x-date-bottom',
+                items: [{
+                    xtype:'button',
+                    text:this.fbarOkButtonText,
+                    width:'auto',
+                    handler:this.onOkButtonPress.createDelegate(this)
+                }]
+            });
+        }
+
+        Genapp.form.picker.DateRangePicker.superclass.initComponent.call(this);
+    },
+
+    // private
+    onRangeDatePress: function (button, state){
+        if(state){
+            this.startDatePicker.enable();
+            this.endDatePicker.enable();
+            this.resetDates();
+        }
+    },
+
+    // private
+    onStartDatePress: function (button, state){
+        if(state){
+            this.startDatePicker.enable();
+            this.endDatePicker.disable();
+            this.resetDates();
+        }
+    },
+
+    // private
+    onEndDatePress: function (button, state){
+        if(state){
+            this.startDatePicker.disable();
+            this.endDatePicker.enable();
+            this.resetDates();
+        }
+    },
+
+    // private
+    startDateSelect: function (startDatePicker, date){
+        this.selectedDate.startDate = date;
+        if(this.startDateButton.pressed){
+            this.returnSelectedDate();
+        }else{ // rangeDateButton is pressed
+            if(this.selectedDate.endDate !== null){
+                this.returnSelectedDate();
+            }
+        }
+    },
+
+    // private
+    endDateSelect: function (endDatePicker, date){
+        this.selectedDate.endDate = date;
+        if(this.endDateButton.pressed){
+            this.returnSelectedDate();
+        }else{ // rangeDateButton is pressed
+            if(this.selectedDate.startDate !== null){
+                this.returnSelectedDate();
+            }
+        }
+    },
+
+    // private
+    resetselectedDate: function(){
+        this.selectedDate = {
+            startDate:null,
+            endDate:null
+        };
     },
 
     /**
-     * Displays this menu at a specific xy position
-     * @param {Array} xyPosition Contains X & Y [x, y] values for the position at which to show the menu (coordinates are page-based)
-     * @param {Ext.menu.Menu} parentMenu (optional) This menu's parent menu, if applicable (defaults to undefined)
+     * Reset the dates
      */
-    showAt : function(xy, parentMenu, /* private: */_e){
-        this.parentMenu = parentMenu;
-        if(!this.el){
-            this.render();
+    resetDates: function(){
+        this.resetselectedDate();
+        this.startDatePicker.setValue(this.startDatePicker.defaultValue);
+        this.endDatePicker.setValue(this.endDatePicker.defaultValue);
+    },
+
+    // private
+    returnSelectedDate: function(){
+        this.fireEvent('select', this, this.selectedDate);
+        this.resetselectedDate();
+    },
+
+    /**
+     * Checks if the date is in the interval [minDate,maxDate] of the picker
+     */
+    isEnabledDate: function (picker){
+        if((picker.activeDate.getTime() - picker.minDate.getTime() >= 0) 
+                && (picker.maxDate.getTime() - picker.activeDate.getTime() >= 0)){
+            return true;
+        } else {
+            return false;
         }
-        if(_e !== false){
-            xy = this.el.adjustForConstraints(xy);
+    },
+
+    // private
+    onOkButtonPress: function (button, state){
+        if (state){
+            if (this.startDateButton.pressed){
+                if (this.isEnabledDate(this.startDatePicker)){
+                    this.selectedDate = {
+                        startDate:this.startDatePicker.activeDate,
+                        endDate:null
+                    };
+                    this.returnSelectedDate();
+                }
+            } else if(this.endDateButton.pressed){
+                if (this.isEnabledDate(this.endDatePicker)){
+                    this.selectedDate = {
+                        startDate:null,
+                        endDate:this.endDatePicker.activeDate
+                    };
+                    this.returnSelectedDate();
+                }
+            } else {
+                if (this.isEnabledDate(this.startDatePicker) && this.isEnabledDate(this.endDatePicker)){
+                    this.selectedDate = {
+                        startDate:this.startDatePicker.activeDate,
+                        endDate:this.endDatePicker.activeDate
+                    };
+                    this.returnSelectedDate();
+                }
+            }
         }
-        this.el.setXY(xy);
-        if(this.enableScrolling){
-            this.constrainScroll(xy[1]);     
-        }
-        this.el.show();
-        Ext.menu.Menu.superclass.onShow.call(this);
-        this.hidden = false;
-        this.focus();
-        this.fireEvent("show", this);
     }
 });
-Ext.reg('numberrangemenu', Genapp.menu.NumberRangeMenu);Ext.namespace('Ext.ux.form');
+Ext.reg('daterangepicker', Genapp.form.picker.DateRangePicker);/**
+ * Simple number range picker class.
+ * 
+ * @class Genapp.form.picker.NumberRangePicker
+ * @extends Ext.Panel
+ * @constructor Create a new NumberRangePicker
+ * @param {Object} config The config object
+ * @xtype numberrangepicker
+ */
+Ext.namespace('Genapp.form.picker');
+
+Genapp.form.picker.NumberRangePicker = Ext.extend(Ext.Panel, {
+    /**
+     * @cfg {String/Object} layout
+     * Specify the layout manager class for this container either as an Object or as a String.
+     * See {@link Ext.Container#layout layout manager} also.
+     * Default to 'form'.
+     */
+    layout: 'form',
+    /**
+     * @cfg {Number} height
+     * The height of this component in pixels (defaults to 59).
+     */
+    height:59,
+    /**
+     * @cfg {Number} width
+     * The width of this component in pixels (defaults to 176).
+     */
+    width:176,
+    /**
+     * @cfg {Number} labelWidth The width of labels in pixels. This property cascades to child containers
+     * and can be overridden on any child container (e.g., a fieldset can specify a different labelWidth
+     * for its fields) (defaults to 30).
+     * See {@link Ext.form.FormPanel#labelWidth} also.
+     */
+    labelWidth: 30,
+    /**
+     * @cfg {String} buttonAlign
+     * The alignment of any {@link #buttons} added to this panel.  Valid values are 'right',
+     * 'left' and 'center' (defaults to 'center').
+     */
+    buttonAlign: 'center',
+    /**
+     * @cfg {String} cls
+     * An optional extra CSS class that will be added to this component's Element (defaults to 'x-menu-number-range-item').
+     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
+     */
+    cls: 'x-menu-number-range-item',
+    /**
+     * @cfg {String} minFieldLabel
+     * The min Field Label (defaults to <tt>'Min'</tt>)
+     */
+    minFieldLabel:"Min",
+    /**
+     * @cfg {String} maxFieldLabel
+     * The max Field Label (defaults to <tt>'Max'</tt>)
+     */
+    maxFieldLabel:"Max",
+    /**
+     * @cfg {String} okButtonText
+     * The ok Button Text (defaults to <tt>'ok'</tt>)
+     */
+    okButtonText:"ok",
+    /**
+     * @cfg {Boolean} hideValidationButton if true hide the menu validation button (defaults to true).
+     */
+    hideValidationButton : true,
+
+    // private
+    initComponent : function(){
+        Ext.apply(this, {
+                items: [
+                /**
+                 * The min field.
+                 * @property minField
+                 * @type Genapp.form.TwinNumberField
+                 */
+                this.minField = new Genapp.form.TwinNumberField({
+                    fieldLabel:this.minFieldLabel
+                }),
+                /**
+                 * The max field.
+                 * @property maxField
+                 * @type Genapp.form.TwinNumberField
+                 */
+                this.maxField = new Genapp.form.TwinNumberField({
+                    fieldLabel:this.maxFieldLabel
+                })
+            ]
+        });
+        if(!this.hideValidationButton){
+            this.buttons = [{
+                xtype:'button',
+                text:this.okButtonText,
+                width:'auto',
+                handler:this.onOkButtonPress.createDelegate(this)
+            }];
+            this.height = this.height + 28;
+        }
+
+        Genapp.form.picker.NumberRangePicker.superclass.initComponent.call(this);
+    },
+
+    // private
+    onOkButtonPress: function (button, state){
+        if(state){
+            this.fireEvent('select', this, {
+                minValue: this.minField.getValue(),
+                maxValue: this.maxField.getValue()
+            });
+        }
+    }
+});
+Ext.reg('numberrangepicker', Genapp.form.picker.NumberRangePicker);/**
+ * Simple tree picker class.
+ * 
+ * @class Genapp.form.picker.TreePicker
+ * @extends Ext.TreePanel
+ * @constructor Create a new TreePicker
+ * @param {Object} config The config object
+ * @xtype treepicker
+ */
+Ext.namespace('Genapp.form.picker');
+
+Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
+    /**
+     * @cfg {Number} height
+     * The height of this component in pixels (defaults to 300).
+     */
+    height:300,
+    /**
+     * @cfg {Number} width
+     * The width of this component in pixels (defaults to 300).
+     */
+    width:300,
+    /**
+     * @cfg {String} buttonAlign
+     * The alignment of any {@link #buttons} added to this panel.  Valid values are 'right',
+     * 'left' and 'center' (defaults to 'center').
+     */
+    buttonAlign: 'center',
+    /**
+     * @cfg {String} cls
+     * An optional extra CSS class that will be added to this component's Element (defaults to 'x-menu-number-range-item').
+     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
+     */
+    cls: 'x-menu-tree-item',
+    /**
+     * @cfg {String} okButtonText
+     * The ok Button Text (defaults to <tt>'ok'</tt>)
+     */
+    okButtonText:"ok",
+    /**
+     * @cfg {Boolean} hideValidationButton if true hide the menu validation button (defaults to true).
+     */
+    hideValidationButton : true,
+    padding:5,
+    enableDD : false,
+    animate : true, 
+    border : false,
+    rootVisible : false,
+    useArrows : true,
+    autoScroll : true,
+    containerScroll : true,
+    frame : false,
+    baseAttr: {singleClickExpand:true},
+    root : {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}, // root is always '*'
+    listeners:{
+        'load':{// Expand by default the root children
+            fn:function(node){
+                if(node.getDepth() === 0){
+                    node.expandChildNodes();
+                }
+            },
+            single:true
+        },
+        'dblclick':{// Select the node on double click
+            fn:function(node, event){
+                this.fireEvent('select', node.attributes);
+            }
+        }
+    },
+
+    // private
+    initComponent : function(){
+        if(!this.hideValidationButton){
+            this.buttons = [{
+                xtype:'button',
+                text:this.okButtonText,
+                width:'auto',
+                handler:this.onOkButtonPress.createDelegate(this)
+            }];
+            this.height = this.height + 28;
+        }
+
+        Genapp.form.picker.TreePicker.superclass.initComponent.call(this);
+    },
+
+    // private
+    onOkButtonPress: function (button, state){
+        if(state){
+            var selectedNode = this.getSelectionModel().getSelectedNode();
+            this.fireEvent('select', selectedNode === null ? null : selectedNode.attributes);
+        }
+    }
+});
+Ext.reg('treepicker', Genapp.form.picker.TreePicker);Ext.namespace('Ext.ux.form');
 
 Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	/**
@@ -6962,7 +7667,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	initEvents : function()
 	{
 		Ext.ux.form.BasicCheckbox.superclass.initEvents.call(this);
-		if (this.mode != 'compat' || this.themedCompat)
+		if (this.mode !== 'compat' || this.themedCompat)
 		{
 			this.mon(this.el, {
 				click: this.onClick,
@@ -7027,17 +7732,19 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	{
 		var v = (this.rendered? this.el.dom.value : this.inputValue);
 		var d = ((this.rendered? this.el.dom.disabled : this.disabled)? 'disabled' : 'enabled');
-		if (this.mode == 'compat' && this.mustCheck && !value)
+		if (this.mode === 'compat' && this.mustCheck && !value)
 		{
 			this.markInvalid(this.mustCheckText);
 			return false;
 		}
-		if (this.mode != 'compat')
+		if (this.mode !== 'compat')
+		{
 			if (v !== undefined && v !== null && this[this.mode+'Config'][d][v] === undefined)
 			{
 				this.markInvalid();
 				return false;
 			}
+		}
 		if (this.vtype)
 		{
 			var vt = Ext.form.VTypes;
@@ -7047,7 +7754,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 				return false;
 			}
 		}
-		if (typeof this.validator == "function")
+		if (typeof this.validator === "function")
 		{
 			var msg = this.validator(value);
 			if (msg !== true)
@@ -7081,7 +7788,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 			this.setNextValue(); // initialize first value set
 		}
 
-		if (this.mode != 'compat' || this.themedCompat) this.el.setOpacity(0);
+		if (this.mode !== 'compat' || this.themedCompat) {this.el.setOpacity(0);}
 		this.innerWrap = this.el.wrap({cls: "x-sm-form-check-innerwrap"});
 		this.innerWrap.setStyle({
 			'position': 'relative',
@@ -7089,7 +7796,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 		});
 		this.wrap = this.innerWrap.wrap({cls: "x-form-check-wrap"});
 		this.vel = this.innerWrap.createChild({tag: 'div', cls: 'x-sm-form-check'}, this.el.dom);
-		if (this.mode != 'compat' || this.themedCompat)
+		if (this.mode !== 'compat' || this.themedCompat)
 		{
 			this.vel.setSize(vw, vh);
 			this.el.setStyle({
@@ -7104,7 +7811,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 			this.wrap.createChild({tag: 'label', htmlFor: this.el.id, cls: 'x-form-cb-label', html: this.boxLabel});
 		}
 
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
 			this.checked = (this.checked? true : (this.el.dom.checked? true : false));
 			this.setValue(this.checked);
@@ -7120,14 +7827,15 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	// private
 	manageActiveClass: function()
 	{
-		if (this.rendered && (this.mode != 'compat' || this.themedCompat))
+		if (this.rendered && (this.mode !== 'compat' || this.themedCompat))
 		{
-			var v = (this.mode == 'compat'? this.protectedValue : (this.rendered? this.el.dom.value : this.protectedValue));
+			var v = (this.mode === 'compat'? this.protectedValue : (this.rendered? this.el.dom.value : this.protectedValue));
 			var d = ((this.rendered? this.el.dom.disabled : this.disabled)? 'disabled' : 'enabled');
 			var c = this[this.mode+'Config'][d][v];
 			var fval;
+			var i;
 
-			for (var i in this[this.mode+'Config'][d])
+			for (i in this[this.mode+'Config'][d])
 			{
 				fval = i;
 				break;
@@ -7150,28 +7858,29 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	// private
 	setNextValue: function()
 	{
-		var v = (this.mode == 'compat'? this.protectedValue : (this.rendered? this.el.dom.value : this.protectedValue));
+		var v = (this.mode === 'compat'? this.protectedValue : (this.rendered? this.el.dom.value : this.protectedValue));
 		var d = ((this.rendered? this.el.dom.disabled : this.disabled)? 'disabled' : 'enabled');
 		var setNewValue = false;
 		var fval = null;
+		var i;
 
 		this.protectedValue = null;
-		for (var i in this[this.mode+'Config'][d])
+		for (i in this[this.mode+'Config'][d])
 		{
-			if (fval === null) fval = i;
-			if (v === undefined) break; // undefined sets first value
+			if (fval === null)  {fval = i;}
+			if (v === undefined) {break;} // undefined sets first value
 			if (setNewValue && this.protectedValue === null)
 			{
 				this.protectedValue = i;
 			}
-			if (i == v)
+			if (i === v)
 			{
 				setNewValue = true;
 			}
 		}
-		if (this.protectedValue === null) this.protectedValue = fval;
+		if (this.protectedValue === null) {this.protectedValue = fval;}
 
-		if (this.mode != 'compat')
+		if (this.mode !== 'compat')
 		{
 			this.inputValue = this.protectedValue;
 		}
@@ -7183,7 +7892,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 
 	// private
 	onDestroy : function(){
-		if (this.wrap) this.wrap.remove();
+		if (this.wrap) {this.wrap.remove();}
 		Ext.ux.form.BasicCheckbox.superclass.onDestroy.call(this);
 	},
 
@@ -7192,7 +7901,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	{
 		// reference to original value for reset
 		this.originalValue = this.inputValue;
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
 			this.originalValue = this.checked;
 		}
@@ -7205,10 +7914,10 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	 */
 	getRawValue : function()
 	{
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
-			if (this.rendered) return this.el.dom.checked;
-			else return this.checked;
+			if (this.rendered) {return this.el.dom.checked;}
+			else {return this.checked;}
 		}
 		var v = this.rendered ? this.el.getValue() : Ext.value(this.value, '');
 		return v;
@@ -7224,8 +7933,8 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	{
 		var result = false;
 
-		if (this.mode == 'compat') if (this.rendered) result = this.el.dom.checked;
-		else result = this.protectedValue;
+		if (this.mode === 'compat') {if (this.rendered) {result = this.el.dom.checked;}}
+		else {result = this.protectedValue;}
 
 		return result;
 	},
@@ -7233,9 +7942,9 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	// private
 	onClick : function()
 	{
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
-			if (this.el.dom.checked != this.checked)
+			if (this.el.dom.checked !== this.checked)
 			{
 				this.setNextValue();
 				this.checked = this.el.dom.checked;
@@ -7256,9 +7965,9 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	// private
 	onChange : function()
 	{
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
-			if (this.el.dom.checked != this.checked)
+			if (this.el.dom.checked !== this.checked)
 			{
 				this.setNextValue();
 				this.checked = this.el.dom.checked;
@@ -7288,9 +7997,10 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	 */
 	setValue : function(value)
 	{
-		if (this.mode == 'compat')
+		var i;
+		if (this.mode === 'compat')
 		{
-			this.checked = (value === true || value === 'true' || value == '1' || String(value).toLowerCase() == 'on');
+			this.checked = (value === true || value === 'true' || value === '1' || String(value).toLowerCase() === 'on');
 			if (this.rendered)
 			{
 				this.el.dom.checked = this.checked;
@@ -7308,7 +8018,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 			}
 			else
 			{
-				for (var i in this[this.mode+'Config'][d])
+				for (i in this[this.mode+'Config'][d])
 				{
 					this.protectedValue = i;
 					break;
@@ -7626,11 +8336,12 @@ Date.createParser = function() {
             calc = [],
             regex = [],
             special = false,
-            ch = "";
+            ch = "",
+            i;
 
-        for (var i = 0; i < format.length; ++i) {
+        for (i = 0; i < format.length; ++i) {
             ch = format.charAt(i);
-            if (!special && ch == "\\") {
+            if (!special && ch === "\\") {
                 special = true;
             } else if (special) {
                 special = false;
@@ -7647,7 +8358,7 @@ Date.createParser = function() {
 
         Date.parseRegexes[regexNum] = new RegExp("^" + regex.join('') + "$", "i");
         Date.parseFunctions[format] = new Function("input", "strict", xf(code, regexNum, calc.join('')));
-    }
+    };
 }();
 //**************************************************
 //Format for example the year 2 to 0002
@@ -7668,7 +8379,7 @@ Ext.DatePicker.prototype.onMonthClick = function(e, t){
     }
     else if(el.is('button.x-date-mp-ok')){
         var d = new Date(this.mpSelYear, this.mpSelMonth, (this.activeDate || this.value).getDate());
-        if(d.getMonth() != this.mpSelMonth){
+        if(d.getMonth() !== this.mpSelMonth){
             // "fix" the JS rolling date conversion if needed
             d = new Date(this.mpSelYear, this.mpSelMonth, 1).getLastDateOfMonth();
         }
@@ -7727,10 +8438,10 @@ Ext.DatePicker.prototype.update = function(date, forceRefresh){
         this.activeDate = date;
         if(!forceRefresh && vd && this.el){
             var t = date.getTime();
-            if(vd.getMonth() == date.getMonth() && vd.getFullYear() == date.getFullYear()){
+            if(vd.getMonth() === date.getMonth() && vd.getFullYear() === date.getFullYear()){
                 this.cells.removeClass('x-date-selected');
                 this.cells.each(function(c){
-                   if(c.dom.firstChild.dateValue == t){
+                   if(c.dom.firstChild.dateValue === t){
                        c.addClass('x-date-selected');
                        if(vis && !this.cancelFocus){
                            Ext.fly(c.dom.firstChild).focus(50);
@@ -7775,7 +8486,7 @@ Ext.DatePicker.prototype.update = function(date, forceRefresh){
             var td = new Date().clearTime(),
                 disable = (td < min || td > max ||
                 (ddMatch && format && ddMatch.test(td.dateFormat(format))) ||
-                (ddays && ddays.indexOf(td.getDay()) != -1));
+                (ddays && ddays.indexOf(td.getDay()) !== -1));
 
             if(!this.disabled){
                 this.todayBtn.setDisabled(disable);
@@ -7787,11 +8498,11 @@ Ext.DatePicker.prototype.update = function(date, forceRefresh){
             cell.title = '';
             var t = d.getTime();
             cell.firstChild.dateValue = t;
-            if(t == today){
+            if(t === today){
                 cell.className += ' x-date-today';
                 cell.title = cal.todayText;
             }
-            if(t == sel){
+            if(t === sel){
                 cell.className += ' x-date-selected';
                 if(vis){
                     Ext.fly(cell.firstChild).focus(50);
@@ -7809,7 +8520,7 @@ Ext.DatePicker.prototype.update = function(date, forceRefresh){
                 return;
             }
             if(ddays){
-                if(ddays.indexOf(d.getDay()) != -1){
+                if(ddays.indexOf(d.getDay()) !== -1){
                     cell.title = ddaysText;
                     cell.className = ' x-date-disabled';
                 }
@@ -7967,7 +8678,7 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
         Ext.ux.grid.RowExpander.superclass.constructor.call(this);
 
         if(this.tpl){
-            if(typeof this.tpl == 'string'){
+            if(typeof this.tpl === 'string'){
                 this.tpl = new Ext.Template(this.tpl);
             }
             this.tpl.compile();
@@ -8047,10 +8758,12 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     onEnter: function(e) {
-        var g = this.grid;
-        var sm = g.getSelectionModel();
-        var sels = sm.getSelections();
-        for (var i = 0, len = sels.length; i < len; i++) {
+        var g = this.grid,
+            sm = g.getSelectionModel(),
+            sels = sm.getSelections(),
+            i,
+            len;
+        for (i = 0, len = sels.length; i < len; i++) {
             var rowIdx = g.getStore().indexOf(sels[i]);
             this.toggleRow(rowIdx);
         }
@@ -8091,21 +8804,21 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     toggleRow : function(row){
-        if(typeof row == 'number'){
+        if(typeof row === 'number'){
             row = this.grid.view.getRow(row);
         }
         this[Ext.fly(row).hasClass('x-grid3-row-collapsed') ? 'expandRow' : 'collapseRow'](row);
     },
 
     expandRow : function(row){
-        if(typeof row == 'number'){
+        if(typeof row === 'number'){
             row = this.grid.view.getRow(row);
         }
         var record = this.grid.store.getAt(row.rowIndex);
         var body = Ext.DomQuery.selectNode('tr:nth(2) div.x-grid3-row-body', row);
         if(this.beforeExpand(record, body, row.rowIndex)){
-            if (this.accordionMode == true){
-                if (this.lastExpandedRow != null) {
+            if (this.accordionMode === true){
+                if (this.lastExpandedRow !== null) {
                     this.collapseRow(this.lastExpandedRow);
                 }
                 this.lastExpandedRow = row;
@@ -8117,7 +8830,7 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     collapseRow : function(row){
-        if(typeof row == 'number'){
+        if(typeof row === 'number'){
             row = this.grid.view.getRow(row);
         }
         var record = this.grid.store.getAt(row.rowIndex);
@@ -8133,4 +8846,68 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
 Ext.preg('rowexpander', Ext.ux.grid.RowExpander);
 
 //backwards compat
-Ext.grid.RowExpander = Ext.ux.grid.RowExpander;
+Ext.grid.RowExpander = Ext.ux.grid.RowExpander;/****************************/
+/**     RTM Substitute     **/
+/** ************************* */
+Genapp.configure = function() {
+	// Ajout d'un lien vers le manuel utilisateur et paramétrage par défaut
+	if (Genapp.ConsultationPanel) {
+		Ext.apply(Genapp.ConsultationPanel.prototype, {
+			dateFormat : 'f/m/d',
+			hideMapDetails : false,// Display the link map to details
+			queryPanelCancelButtonText : 'Stopper la recherche',
+			hideCsvExportButton : false,
+			hideGridCsvExportMenuItem : false,
+			hideCsvExportAlert : true,
+			hideAggregationButton : true,
+			hideInterpolationButton : true,
+			hideAggregationCsvExportMenuItem : true,
+			hidePrintMapButton : true,
+			hidePredefinedRequestSaveButton : true,
+			autoZoomOnResultsFeatures : true,
+			hideUserManualLink : false,
+			userManualLinkHref : '../pdf/ModeDEmploi.pdf',
+			userManualLinkText : 'Mode d\'emploi',
+			queryPanelWidth : 380,
+			gridPageSize : 50
+		});
+	}
+	// On séléctionne les dates par défaut
+	if (Genapp.form.DateRangeField) {
+		Ext.apply(Genapp.form.DateRangeField.prototype, {
+			minDefaultValue : new Date(0, 0, 1),// '1900/01/01',
+			maxDefaultValue : new Date(),
+			minValue : new Date(-1, 12, 1),// '0000/01/01',
+			maxValue : new Date()
+		});
+	}
+	// On séléctionne le format de date
+	if (Genapp.FieldForm) {
+		Ext.apply(Genapp.FieldForm.prototype, {
+			dateFormat : 'f/m/d',
+			criteriaLabelWidth : 130
+		});
+	}
+	if (Genapp.MapPanel) {
+		Ext.apply(Genapp.MapPanel.prototype, {
+			rightPanelWidth : 175
+		});
+	}
+	if (Genapp.form.GeometryField) {
+		Ext.apply(Genapp.form.GeometryField.prototype, {
+			hideMapDetails : true,// Display the link map to details
+			mapWindowMaximized : true,
+			mapWindowMinZoomLevel : 1,
+			mapWindowMaximizable : false
+		});
+	}
+	if (Genapp.CardPanel) {
+		Ext.apply(Genapp.CardPanel.prototype, {
+			shownPages : [ 'consultationpage' ],
+			activeItem : 0,
+			// Reduction of the application size in function of the web site margins
+			widthToSubstract : 20,
+			heightToSubstract : 20
+		});
+	}
+}

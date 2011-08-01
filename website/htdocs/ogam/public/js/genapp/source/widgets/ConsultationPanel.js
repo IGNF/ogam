@@ -1042,7 +1042,7 @@ listeners: {
         if(!this.hideDetails){
             centerPanelCtItems.push(this.detailsPanelCt);
         }
-        if(!this.hideMapDetails && Genapp.map.featureinfo_maxfeatures != 1){
+        if(!this.hideMapDetails && Genapp.map.featureinfo_maxfeatures !== 1){
             centerPanelCtItems.push(this.featuresInformationPanelCt);
         }
         this.centerPanelCt = new Ext.Panel({
@@ -1067,12 +1067,12 @@ listeners: {
      * @hide
      */
     updateWestPanels : function(response, opts, apiParams, criteriaValues) {
-        var forms = Ext.decode(response.responseText);
+        var forms = Ext.decode(response.responseText), i;
         // Removes the loading message
         this.formsPanel.body.update();
         
         // Add each form
-        for ( var i = 0; i < forms.data.length; i++) {
+        for (i = 0; i < forms.data.length; i++) {
             if(!(Ext.isEmpty(forms.data[i].criteria) && Ext.isEmpty(forms.data[i].columns))){
                 this.formsPanel.add( 
                     new Genapp.FieldForm({
@@ -1087,10 +1087,10 @@ listeners: {
         }
         this.formsPanel.doLayout();
         if(!Ext.isEmpty(apiParams)){
-            if (apiParams.collapseQueryPanel == true) {
+            if (apiParams.collapseQueryPanel === true) {
                 this.queryPanel.collapse();
             }
-            if (apiParams.launchRequest == true) {
+            if (apiParams.launchRequest === true) {
                 this.submitRequest();
             }
         }
@@ -1347,6 +1347,7 @@ listeners: {
      * Submit the request and get the description of the result columns
      */
     submitRequest : function(){
+        var i;
         if(!this.hideCsvExportButton){
             this.csvExportButton.disable();
         }
@@ -1360,7 +1361,7 @@ listeners: {
             var rla = this.mapPanel.layersActivation['request'];
             this.mapResultLayers = [];
             if(!Ext.isEmpty(rla)){
-                for(var i = 0; i<rla.length;i++){
+                for(i = 0; i<rla.length;i++){
                     var layer = this.mapPanel.map.getLayersByName(rla[i])[0];
                     //The layer visibility must be set to true to handle the 'loadend' event
                     layer.events.register("loadend", this, function(info){
@@ -1382,7 +1383,7 @@ listeners: {
         }
         // Init mapResultLayersLoadEnd
         this.mapResultLayersLoadEnd = {};
-        for(var i = 0; i<this.mapResultLayers.length;i++){
+        for(i = 0; i<this.mapResultLayers.length;i++){
             var layer = this.mapResultLayers[i];
             this.mapResultLayersLoadEnd[layer.name] = 0;
         }
@@ -1403,8 +1404,8 @@ listeners: {
             this.centerPanel.activate(this.mapPanel);
             this.mapMask.show();
         }
-        for(var i = 0; i<this.mapResultLayersLoadEnd.length;i++){
-            var layer = this.mapResultLayersLoadEnd[i]
+        for(i = 0; i<this.mapResultLayersLoadEnd.length;i++){
+            var layer = this.mapResultLayersLoadEnd[i];
             layer.display(false);
         }
         this.mapPanel.clean();
@@ -1426,7 +1427,7 @@ listeners: {
                 this.requestConn = null;
                 // Creation of the column model and the reader metadata fields
                 var columns = action.result.columns;
-                var newCM = new Array({
+                var newCM = [{
                     dataIndex:'leftTools',
                     header:'',
                     renderer:this.renderLeftTools.createDelegate(this),
@@ -1435,11 +1436,11 @@ listeners: {
                     menuDisabled:true,
                     align:'center',
                     width:50
-                });
-                var newRF = new Array();
+                }];
+                var newRF = [];
                 var columnConf;
                 var readerFieldsConf;
-                for(var i=0; i<columns.length;i++){
+                for(i=0; i<columns.length;i++){
                     columnConf = {
                         header:Genapp.util.htmlStringFormat(columns[i].label),
                         sortable:true,
@@ -1462,7 +1463,7 @@ listeners: {
                             break;
                         case 'NUMERIC':
                             columnConf.xtype='numbercolumn';
-                            if (columns[i].decimals != null) {
+                            if (columns[i].decimals !== null) {
                                 columnConf.format= this.numberPattern('.', columns[i].decimals);
                             }
                             break;
@@ -1530,7 +1531,7 @@ listeners: {
                         this.requestConn = null;
 
                         this.getResultsBBox();
-                        if(this.autoZoomOnResultsFeatures != true){
+                        if(this.autoZoomOnResultsFeatures !== true){
                             // Display the results layer
                             this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
                         }
@@ -1639,7 +1640,7 @@ listeners: {
      */
     clearGrid : function (){
         var gridDs = this.gridPanel.getStore();
-        if(gridDs.getCount() != 0){
+        if(gridDs.getCount() !== 0){
             // Reset the paging toolbar
             this.gridPanel.getBottomToolbar().reset();
         }
@@ -1687,13 +1688,14 @@ listeners: {
      */
     printMap : function (button, event) {
         // Get the BBOX
-        var center = this.mapPanel.map.center;
-        var zoom = this.mapPanel.map.zoom;
-        
+        var center = this.mapPanel.map.center,
+            zoom = this.mapPanel.map.zoom,
+            i;
+
         // Get the layers
         var activatedLayers = this.mapPanel.map.getLayersBy('visibility', true);
         var activatedLayersNames = '';
-        for (var i=0; i<activatedLayers.length; i++) {
+        for (i=0; i<activatedLayers.length; i++) {
             if (activatedLayers[i].printable !== false) {
                 activatedLayersNames += activatedLayers[i].name + ',';
             }
@@ -1734,14 +1736,14 @@ listeners: {
     numberPattern: function (decimalSeparator, decimalPrecision, groupingSymbol) {
         // Building the number format pattern for use by ExtJS
         // Ext.util.Format.number
-        var pattern = [];
+        var pattern = [], i;
         pattern.push('0');
         if (groupingSymbol) {
             pattern.push(groupingSymbol + '000');
         }
         if (decimalPrecision) {
             pattern.push(decimalSeparator);
-            for (var i = 0; i < decimalPrecision; i++) {
+            for (i = 0; i < decimalPrecision; i++) {
                 pattern.push('0');
             }
         }
@@ -1787,24 +1789,24 @@ listeners: {
     getStatus : function (serviceName, callback){
         Ext.Ajax.request({
             url: Genapp.base_url + serviceName +'/ajax-get-status',
-            success: function(response, options) {
-                var response = Ext.decode(response.responseText);
-                if (Ext.isEmpty(response.success) || response.success == false) {
+            success: function(rpse, options) {
+                var response = Ext.decode(rpse.responseText), msg;
+                if (Ext.isEmpty(response.success) || response.success === false) {
                     this.hideMask();
-                    var msg = 'An error occured during the status request.';
+                    msg = 'An error occured during the status request.';
                     if (!Ext.isEmpty(response.errorMsg)) {
                         msg += ' ' + response.errorMsg;
                     }
                     Ext.Msg.alert('Error...',msg);
                 } else {
-                    if (response.status == 'RUNNING') {
+                    if (response.status === 'RUNNING') {
                         this.getStatus.defer(2000,this,[serviceName, callback]);
-                    } else if (response.status == 'OK'){
+                    } else if (response.status === 'OK'){
                         this.hideMask();
                         callback.call(this);
                     } else { // The service is done or an error occured
                         this.hideMask();
-                        var msg = 'An error occured during the status request.';
+                        msg = 'An error occured during the status request.';
                         if (!Ext.isEmpty(response.errorMsg)) {
                             msg += ' ' + response.errorMsg;
                         }
@@ -1827,11 +1829,11 @@ listeners: {
     getResultsBBox: function(){
         Ext.Ajax.request({
             url: Genapp.ajax_query_url +'ajaxgetresultsbbox',
-            success: function(response, options) {
+            success: function(rpse, options) {
             try
             {
-                var response = Ext.decode(response.responseText);
-                if (Ext.isEmpty(response.success) || response.success == false) {
+                var response = Ext.decode(rpse.responseText);
+                if (Ext.isEmpty(response.success) || response.success === false) {
                     if (!Ext.isEmpty(response.errorMsg)) {
                         throw(response.errorMsg);
                     }
@@ -1842,7 +1844,7 @@ listeners: {
                     } else {
                         this.mapPanel.resultsBBox = null;
                     }
-                    if (this.autoZoomOnResultsFeatures == true) {
+                    if (this.autoZoomOnResultsFeatures === true) {
                         if (this.mapPanel.resultsBBox !== null) {
                            this.mapPanel.zoomOnBBox(this.mapPanel.resultsBBox);
                         }

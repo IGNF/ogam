@@ -99,7 +99,7 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
      * Reset the component body
      */
     reset : function(){
-        if(this.url != null){
+        if(this.url !== null){
             this.el = Ext.get(Ext.DomHelper.overwrite(this.ownerCt.body.dom, {
                 tag:'span',
                 html:'Veuillez selectionner un document...'

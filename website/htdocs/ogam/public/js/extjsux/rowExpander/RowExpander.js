@@ -102,7 +102,7 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
         Ext.ux.grid.RowExpander.superclass.constructor.call(this);
 
         if(this.tpl){
-            if(typeof this.tpl == 'string'){
+            if(typeof this.tpl === 'string'){
                 this.tpl = new Ext.Template(this.tpl);
             }
             this.tpl.compile();
@@ -182,10 +182,12 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     onEnter: function(e) {
-        var g = this.grid;
-        var sm = g.getSelectionModel();
-        var sels = sm.getSelections();
-        for (var i = 0, len = sels.length; i < len; i++) {
+        var g = this.grid,
+            sm = g.getSelectionModel(),
+            sels = sm.getSelections(),
+            i,
+            len;
+        for (i = 0, len = sels.length; i < len; i++) {
             var rowIdx = g.getStore().indexOf(sels[i]);
             this.toggleRow(rowIdx);
         }
@@ -226,21 +228,21 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     toggleRow : function(row){
-        if(typeof row == 'number'){
+        if(typeof row === 'number'){
             row = this.grid.view.getRow(row);
         }
         this[Ext.fly(row).hasClass('x-grid3-row-collapsed') ? 'expandRow' : 'collapseRow'](row);
     },
 
     expandRow : function(row){
-        if(typeof row == 'number'){
+        if(typeof row === 'number'){
             row = this.grid.view.getRow(row);
         }
         var record = this.grid.store.getAt(row.rowIndex);
         var body = Ext.DomQuery.selectNode('tr:nth(2) div.x-grid3-row-body', row);
         if(this.beforeExpand(record, body, row.rowIndex)){
-            if (this.accordionMode == true){
-                if (this.lastExpandedRow != null) {
+            if (this.accordionMode === true){
+                if (this.lastExpandedRow !== null) {
                     this.collapseRow(this.lastExpandedRow);
                 }
                 this.lastExpandedRow = row;
@@ -252,7 +254,7 @@ Ext.ux.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     collapseRow : function(row){
-        if(typeof row == 'number'){
+        if(typeof row === 'number'){
             row = this.grid.view.getRow(row);
         }
         var record = this.grid.store.getAt(row.rowIndex);

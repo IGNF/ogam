@@ -192,7 +192,7 @@ listeners: {
                     {header: 'Parution', width: 50, dataIndex: 'publication_date'},
                     {header: 'Publication', dataIndex: 'publication'},
                     {id: 'reference', header: 'Référence', width: 50, dataIndex: 'reference'}
-                ],
+                ]
             }),
             sm: new Ext.grid.RowSelectionModel({
                 singleSelect:true,
@@ -206,7 +206,7 @@ listeners: {
             }),
             listeners:{
                 'keydown':function(event){
-                    if(event.keyCode == event.ENTER){
+                    if(event.keyCode === event.ENTER){
                         this.onEnter();
                     }
                 },
@@ -312,6 +312,6 @@ listeners: {
             //var rowIdx = g.getStore().indexOf(sels[0]);
             this.pdf.updateUrl('pdf/' + sels[0].data.reference + '.pdf');
         //}
-    },
+    }
 });
 Ext.reg('docsearchpage', Genapp.DocSearchPage);

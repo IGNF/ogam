@@ -87,11 +87,12 @@ Date.createParser = function() {
             calc = [],
             regex = [],
             special = false,
-            ch = "";
+            ch = "",
+            i;
 
-        for (var i = 0; i < format.length; ++i) {
+        for (i = 0; i < format.length; ++i) {
             ch = format.charAt(i);
-            if (!special && ch == "\\") {
+            if (!special && ch === "\\") {
                 special = true;
             } else if (special) {
                 special = false;
@@ -108,7 +109,7 @@ Date.createParser = function() {
 
         Date.parseRegexes[regexNum] = new RegExp("^" + regex.join('') + "$", "i");
         Date.parseFunctions[format] = new Function("input", "strict", xf(code, regexNum, calc.join('')));
-    }
+    };
 }();
 //**************************************************
 //Format for example the year 2 to 0002
@@ -129,7 +130,7 @@ Ext.DatePicker.prototype.onMonthClick = function(e, t){
     }
     else if(el.is('button.x-date-mp-ok')){
         var d = new Date(this.mpSelYear, this.mpSelMonth, (this.activeDate || this.value).getDate());
-        if(d.getMonth() != this.mpSelMonth){
+        if(d.getMonth() !== this.mpSelMonth){
             // "fix" the JS rolling date conversion if needed
             d = new Date(this.mpSelYear, this.mpSelMonth, 1).getLastDateOfMonth();
         }
@@ -188,10 +189,10 @@ Ext.DatePicker.prototype.update = function(date, forceRefresh){
         this.activeDate = date;
         if(!forceRefresh && vd && this.el){
             var t = date.getTime();
-            if(vd.getMonth() == date.getMonth() && vd.getFullYear() == date.getFullYear()){
+            if(vd.getMonth() === date.getMonth() && vd.getFullYear() === date.getFullYear()){
                 this.cells.removeClass('x-date-selected');
                 this.cells.each(function(c){
-                   if(c.dom.firstChild.dateValue == t){
+                   if(c.dom.firstChild.dateValue === t){
                        c.addClass('x-date-selected');
                        if(vis && !this.cancelFocus){
                            Ext.fly(c.dom.firstChild).focus(50);
@@ -236,7 +237,7 @@ Ext.DatePicker.prototype.update = function(date, forceRefresh){
             var td = new Date().clearTime(),
                 disable = (td < min || td > max ||
                 (ddMatch && format && ddMatch.test(td.dateFormat(format))) ||
-                (ddays && ddays.indexOf(td.getDay()) != -1));
+                (ddays && ddays.indexOf(td.getDay()) !== -1));
 
             if(!this.disabled){
                 this.todayBtn.setDisabled(disable);
@@ -248,11 +249,11 @@ Ext.DatePicker.prototype.update = function(date, forceRefresh){
             cell.title = '';
             var t = d.getTime();
             cell.firstChild.dateValue = t;
-            if(t == today){
+            if(t === today){
                 cell.className += ' x-date-today';
                 cell.title = cal.todayText;
             }
-            if(t == sel){
+            if(t === sel){
                 cell.className += ' x-date-selected';
                 if(vis){
                     Ext.fly(cell.firstChild).focus(50);
@@ -270,7 +271,7 @@ Ext.DatePicker.prototype.update = function(date, forceRefresh){
                 return;
             }
             if(ddays){
-                if(ddays.indexOf(d.getDay()) != -1){
+                if(ddays.indexOf(d.getDay()) !== -1){
                     cell.title = ddaysText;
                     cell.className = ' x-date-disabled';
                 }

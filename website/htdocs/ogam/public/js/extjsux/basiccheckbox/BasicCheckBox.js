@@ -229,7 +229,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	initEvents : function()
 	{
 		Ext.ux.form.BasicCheckbox.superclass.initEvents.call(this);
-		if (this.mode != 'compat' || this.themedCompat)
+		if (this.mode !== 'compat' || this.themedCompat)
 		{
 			this.mon(this.el, {
 				click: this.onClick,
@@ -294,17 +294,19 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	{
 		var v = (this.rendered? this.el.dom.value : this.inputValue);
 		var d = ((this.rendered? this.el.dom.disabled : this.disabled)? 'disabled' : 'enabled');
-		if (this.mode == 'compat' && this.mustCheck && !value)
+		if (this.mode === 'compat' && this.mustCheck && !value)
 		{
 			this.markInvalid(this.mustCheckText);
 			return false;
 		}
-		if (this.mode != 'compat')
+		if (this.mode !== 'compat')
+		{
 			if (v !== undefined && v !== null && this[this.mode+'Config'][d][v] === undefined)
 			{
 				this.markInvalid();
 				return false;
 			}
+		}
 		if (this.vtype)
 		{
 			var vt = Ext.form.VTypes;
@@ -314,7 +316,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 				return false;
 			}
 		}
-		if (typeof this.validator == "function")
+		if (typeof this.validator === "function")
 		{
 			var msg = this.validator(value);
 			if (msg !== true)
@@ -348,7 +350,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 			this.setNextValue(); // initialize first value set
 		}
 
-		if (this.mode != 'compat' || this.themedCompat) this.el.setOpacity(0);
+		if (this.mode !== 'compat' || this.themedCompat) {this.el.setOpacity(0);}
 		this.innerWrap = this.el.wrap({cls: "x-sm-form-check-innerwrap"});
 		this.innerWrap.setStyle({
 			'position': 'relative',
@@ -356,7 +358,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 		});
 		this.wrap = this.innerWrap.wrap({cls: "x-form-check-wrap"});
 		this.vel = this.innerWrap.createChild({tag: 'div', cls: 'x-sm-form-check'}, this.el.dom);
-		if (this.mode != 'compat' || this.themedCompat)
+		if (this.mode !== 'compat' || this.themedCompat)
 		{
 			this.vel.setSize(vw, vh);
 			this.el.setStyle({
@@ -371,7 +373,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 			this.wrap.createChild({tag: 'label', htmlFor: this.el.id, cls: 'x-form-cb-label', html: this.boxLabel});
 		}
 
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
 			this.checked = (this.checked? true : (this.el.dom.checked? true : false));
 			this.setValue(this.checked);
@@ -387,14 +389,15 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	// private
 	manageActiveClass: function()
 	{
-		if (this.rendered && (this.mode != 'compat' || this.themedCompat))
+		if (this.rendered && (this.mode !== 'compat' || this.themedCompat))
 		{
-			var v = (this.mode == 'compat'? this.protectedValue : (this.rendered? this.el.dom.value : this.protectedValue));
+			var v = (this.mode === 'compat'? this.protectedValue : (this.rendered? this.el.dom.value : this.protectedValue));
 			var d = ((this.rendered? this.el.dom.disabled : this.disabled)? 'disabled' : 'enabled');
 			var c = this[this.mode+'Config'][d][v];
 			var fval;
+			var i;
 
-			for (var i in this[this.mode+'Config'][d])
+			for (i in this[this.mode+'Config'][d])
 			{
 				fval = i;
 				break;
@@ -417,28 +420,29 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	// private
 	setNextValue: function()
 	{
-		var v = (this.mode == 'compat'? this.protectedValue : (this.rendered? this.el.dom.value : this.protectedValue));
+		var v = (this.mode === 'compat'? this.protectedValue : (this.rendered? this.el.dom.value : this.protectedValue));
 		var d = ((this.rendered? this.el.dom.disabled : this.disabled)? 'disabled' : 'enabled');
 		var setNewValue = false;
 		var fval = null;
+		var i;
 
 		this.protectedValue = null;
-		for (var i in this[this.mode+'Config'][d])
+		for (i in this[this.mode+'Config'][d])
 		{
-			if (fval === null) fval = i;
-			if (v === undefined) break; // undefined sets first value
+			if (fval === null)  {fval = i;}
+			if (v === undefined) {break;} // undefined sets first value
 			if (setNewValue && this.protectedValue === null)
 			{
 				this.protectedValue = i;
 			}
-			if (i == v)
+			if (i === v)
 			{
 				setNewValue = true;
 			}
 		}
-		if (this.protectedValue === null) this.protectedValue = fval;
+		if (this.protectedValue === null) {this.protectedValue = fval;}
 
-		if (this.mode != 'compat')
+		if (this.mode !== 'compat')
 		{
 			this.inputValue = this.protectedValue;
 		}
@@ -450,7 +454,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 
 	// private
 	onDestroy : function(){
-		if (this.wrap) this.wrap.remove();
+		if (this.wrap) {this.wrap.remove();}
 		Ext.ux.form.BasicCheckbox.superclass.onDestroy.call(this);
 	},
 
@@ -459,7 +463,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	{
 		// reference to original value for reset
 		this.originalValue = this.inputValue;
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
 			this.originalValue = this.checked;
 		}
@@ -472,10 +476,10 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	 */
 	getRawValue : function()
 	{
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
-			if (this.rendered) return this.el.dom.checked;
-			else return this.checked;
+			if (this.rendered) {return this.el.dom.checked;}
+			else {return this.checked;}
 		}
 		var v = this.rendered ? this.el.getValue() : Ext.value(this.value, '');
 		return v;
@@ -491,8 +495,8 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	{
 		var result = false;
 
-		if (this.mode == 'compat') if (this.rendered) result = this.el.dom.checked;
-		else result = this.protectedValue;
+		if (this.mode === 'compat') {if (this.rendered) {result = this.el.dom.checked;}}
+		else {result = this.protectedValue;}
 
 		return result;
 	},
@@ -500,9 +504,9 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	// private
 	onClick : function()
 	{
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
-			if (this.el.dom.checked != this.checked)
+			if (this.el.dom.checked !== this.checked)
 			{
 				this.setNextValue();
 				this.checked = this.el.dom.checked;
@@ -523,9 +527,9 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	// private
 	onChange : function()
 	{
-		if (this.mode == 'compat')
+		if (this.mode === 'compat')
 		{
-			if (this.el.dom.checked != this.checked)
+			if (this.el.dom.checked !== this.checked)
 			{
 				this.setNextValue();
 				this.checked = this.el.dom.checked;
@@ -555,9 +559,10 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 	 */
 	setValue : function(value)
 	{
-		if (this.mode == 'compat')
+		var i;
+		if (this.mode === 'compat')
 		{
-			this.checked = (value === true || value === 'true' || value == '1' || String(value).toLowerCase() == 'on');
+			this.checked = (value === true || value === 'true' || value === '1' || String(value).toLowerCase() === 'on');
 			if (this.rendered)
 			{
 				this.el.dom.checked = this.checked;
@@ -575,7 +580,7 @@ Ext.ux.form.BasicCheckbox = Ext.extend(Ext.form.Field, {
 			}
 			else
 			{
-				for (var i in this[this.mode+'Config'][d])
+				for (i in this[this.mode+'Config'][d])
 				{
 					this.protectedValue = i;
 					break;

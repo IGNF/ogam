@@ -256,7 +256,7 @@ listeners: {
          */
         var groupRendererFct = function(v, unused, r, rowIndex, colIndex, ds, dataName) {
             return r.data[dataName];
-        }
+        };
 
         /**
          * The grid column model
@@ -446,7 +446,7 @@ listeners: {
                 });
             },
             scope: this
-        }
+        };
 
         Genapp.PredefinedRequestPanel.superclass.initComponent.call(this);
     },
@@ -466,6 +466,7 @@ listeners: {
             Ext.Ajax.request({
                 url: Genapp.ajax_query_url + 'ajaxgetpredefinedrequestcriteria',
                 success: function(response, opts) {
+                    var i;
                     var myReader = new Ext.data.ArrayReader({
                         root:'criteria',
                         fields:[
@@ -500,7 +501,7 @@ listeners: {
                             }
                         }
                     });
-                    for(var i = 0; i < result.records.length; i++){
+                    for(i = 0; i < result.records.length; i++){
                         // Add the field
                         requestCriteriaPanel.add(Genapp.FieldForm.prototype.getCriteriaConfig(result.records[i].data, true));
                     }

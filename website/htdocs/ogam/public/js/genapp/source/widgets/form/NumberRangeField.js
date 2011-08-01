@@ -130,7 +130,7 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
 
         var values = value.split(this.numberSeparator);
         // The value can be one number if min = max
-        if(values.length == 1){
+        if(values.length === 1){
             var v = this.parseValue(values[0]);
             if(isNaN(v)){
                 this.markInvalid(String.format(this.nanText, v));
@@ -138,7 +138,7 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
             }else{
                 return true;
             }
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             var minv = this.parseValue(values[0]);
             var maxv = this.parseValue(values[1]);
             if(maxv === '' || minv === ''){
@@ -180,9 +180,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
     getValue : function(){
         var value = Genapp.form.NumberRangeField.superclass.getValue.call(this);
         var values = value.split(this.numberSeparator);
-        if(values.length == 1){
+        if(values.length === 1){
             return String(this.fixPrecision(this.parseValue(values[0]))).replace(".", this.decimalSeparator);
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             return String(this.fixPrecision(this.parseValue(values[0]))).replace(".", this.decimalSeparator) 
             + this.numberSeparator 
             + String(this.fixPrecision(this.parseValue(values[1]))).replace(".", this.decimalSeparator);
@@ -210,9 +210,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
         }else{
             if(typeof v === 'string'){
                 var values = v.split(this.numberSeparator);
-                if(values.length == 1){
+                if(values.length === 1){
                     minv = maxv = this.parseValue(values[0]);
-                }else if(values.length == 2){
+                }else if(values.length === 2){
                     minv = this.parseValue(values[0]);
                     maxv = this.parseValue(values[1]);
                 }else{
@@ -222,12 +222,12 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
                 return '';
             }
         }
-        min = typeof minv == 'number' ? minv : parseFloat(String(minv).replace(this.decimalSeparator, "."));
-        max = typeof maxv == 'number' ? maxv : parseFloat(String(maxv).replace(this.decimalSeparator, "."));
+        min = typeof minv === 'number' ? minv : parseFloat(String(minv).replace(this.decimalSeparator, "."));
+        max = typeof maxv === 'number' ? maxv : parseFloat(String(maxv).replace(this.decimalSeparator, "."));
         mins = isNaN(min) ? '' : String(this.fixPrecision(min)).replace(".", this.decimalSeparator);
         maxs = isNaN(max) ? '' : String(this.fixPrecision(max)).replace(".", this.decimalSeparator);
 
-        if(min == max){
+        if(min === max){
             v = mins;
         }else if(min < max){
             v = mins + this.numberSeparator + maxs;
@@ -247,7 +247,7 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
     // private
     fixPrecision : function(value){
         var nan = isNaN(value);
-        if(!this.allowDecimals || this.decimalPrecision == -1 || nan || !value){
+        if(!this.allowDecimals || this.decimalPrecision === -1 || nan || !value){
            return nan ? '' : value;
         }
         return parseFloat(parseFloat(value).toFixed(this.decimalPrecision));
@@ -297,10 +297,10 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
         });
 
         var values = this.getValue().split(this.numberSeparator);
-        if(values.length == 1){
+        if(values.length === 1){
             var minv = this.parseValue(values[0]);
             var maxv = minv;
-        }else if(values.length == 2){
+        }else if(values.length === 2){
             var minv = this.parseValue(values[0]);
             var maxv = this.parseValue(values[1]);
         }else{

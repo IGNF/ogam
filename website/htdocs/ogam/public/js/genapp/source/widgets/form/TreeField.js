@@ -73,7 +73,7 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	// private
 	onSelect : function(value) {
 		this.menu.hide();
-		if (value != null) {
+		if (value !== null) {
 			this.getStore().add([ new Ext.data.Record({
 				id : value.id,
 				text : value.text

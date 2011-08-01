@@ -104,7 +104,7 @@ Genapp.form.TwinNumberField = Ext.extend(Ext.form.TwinTriggerField, {
     // private
     onChange : function(field){
         var v = this.getValue();
-        if(v !== '' && v != null){
+        if(v !== '' && v !== null){
             this.triggers[0].show();
         }else{
             this.triggers[0].hide();
@@ -165,10 +165,10 @@ Genapp.form.TwinNumberField = Ext.extend(Ext.form.TwinTriggerField, {
      * @return {Ext.form.Field} this
      */
     setValue : function(v){
-        v = typeof v == 'number' ? v : parseFloat(String(v).replace(this.decimalSeparator, "."));
+        v = typeof v === 'number' ? v : parseFloat(String(v).replace(this.decimalSeparator, "."));
         v = isNaN(v) ? '' : String(v).replace(".", this.decimalSeparator);
         if(this.triggers){
-            if(v !== '' && v != null && v != this.minValue && v != this.maxValue){
+            if(v !== '' && v !== null && v !== this.minValue && v !== this.maxValue){
                 this.triggers[0].show();
             }else{
                 this.triggers[0].hide();
@@ -186,7 +186,7 @@ Genapp.form.TwinNumberField = Ext.extend(Ext.form.TwinTriggerField, {
     // private
     fixPrecision : function(value){
         var nan = isNaN(value);
-        if(!this.allowDecimals || this.decimalPrecision == -1 || nan || !value){
+        if(!this.allowDecimals || this.decimalPrecision === -1 || nan || !value){
            return nan ? '' : value;
         }
         return parseFloat(parseFloat(value).toFixed(this.decimalPrecision));
@@ -195,7 +195,7 @@ Genapp.form.TwinNumberField = Ext.extend(Ext.form.TwinTriggerField, {
     // private
     beforeBlur : function(){
         var v = this.parseValue(this.getRawValue());
-        if(v !== '' && v != null){
+        if(v !== '' && v !== null){
             this.setValue(this.fixPrecision(v));
         }
     }

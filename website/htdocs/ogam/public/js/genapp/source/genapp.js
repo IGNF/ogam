@@ -81,11 +81,11 @@ Genapp.util.htmlStringFormat = function(value){
  * @param {object} params The form params
  */
 Genapp.util.post = function(url, params) {
-    var temp=document.createElement("form");
+    var temp=document.createElement("form"), x;
     temp.action=url;
     temp.method="POST";
     temp.style.display="none";
-    for (var x in params) {
+    for (x in params) {
         var opt=document.createElement("textarea");
         opt.name=x;
         opt.value=params[x];

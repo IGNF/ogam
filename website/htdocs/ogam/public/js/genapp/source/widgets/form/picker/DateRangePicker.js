@@ -72,7 +72,7 @@ Genapp.form.picker.DateRangePicker = Ext.extend(Ext.Panel, {
             this.startDatePicker = new Ext.DatePicker(Ext.apply({
                 internalRender: this.strict || !Ext.isIE,
                 ctCls: 'x-menu-date-item',
-                columnWidth: .5
+                columnWidth: 0.5
                 }, this.initialConfig)
             ),{
                 xtype:'spacer',
@@ -87,7 +87,7 @@ Genapp.form.picker.DateRangePicker = Ext.extend(Ext.Panel, {
             this.endDatePicker = new Ext.DatePicker(Ext.apply({
                 internalRender: this.strict || !Ext.isIE,
                 ctCls: 'x-menu-date-item',
-                columnWidth: .5
+                columnWidth: 0.5
                 }, this.initialConfig)
             )
         ];

@@ -66,7 +66,7 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
     widthToSubstract:80,
     /**
      * @cfg {String} heightToSubstract
-     * The height to substract to the consultation panel (defaults to <tt>150</tt>)
+     * The height to substract to the consultation panel (defaults to <tt>160</tt>)
      */
     heightToSubstract:160,
     /**
@@ -82,7 +82,10 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
 
     // private
     initComponent : function() {
-
+    var i,
+        onActivateFct = function(panel) {
+            Ext.History.add(this.id);
+        };
     this.addEvents(
             /**
              * @event resizewrapper
@@ -111,20 +114,18 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
         );
         if (!this.items && this.shownPages.length !== 0) {
             this.items = [];
-            for(var i=0; i<this.shownPages.length; i++){
+            for(i=0; i<this.shownPages.length; i++){
                 var pageCfg = {xtype:this.shownPages[i]};
                 if (Genapp.config.historicActivated) {
                     pageCfg.listeners = {
-                        'activate': function(panel) {
-                            Ext.History.add(this.id);
-                        }
-                    }
+                        'activate': onActivateFct
+                    };
                 }
                 this.items.push(pageCfg);
             }
         }
         // Removes the tab if there are only one pages
-        if(this.shownPages.length == 1 ){
+        if(this.shownPages.length === 1 ){
             this.headerCfg = {
                 style:'display:none;'
             };
