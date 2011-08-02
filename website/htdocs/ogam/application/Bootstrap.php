@@ -138,11 +138,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Set the locale
 		// TODO: check if still needed (It's may be already done by zend_Locale...)
-		$browserLocales = Zend_Locale::getBrowser();
+		/*$browserLocales = Zend_Locale::getBrowser();
 		$locales = array_intersect(array_keys($browserLocales), array_keys($translations));
 		if (!empty($locales)) {
 			$locale = new Zend_Locale(current($locales));
-		}
+		}*/
 		switch($locale->getLanguage()){
 			case 'fr' : $locale = 'fr';break;
 			case 'fr_FR' : $locale = 'fr';break;
@@ -157,6 +157,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$translate->setLocale($locale);
 		Zend_Registry::set('Zend_Translate', $translate); // store in the registry for the view helper
 		Zend_Validate_Abstract::setDefaultTranslator($translate); // use the translator for validation
+		
 	}
 
 	/**
