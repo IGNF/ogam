@@ -91,7 +91,7 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
                 '<fieldset>',
                     '<legend align="top"> {title} </legend>',
                     '<tpl for="fields">',
-                        '<p><b>{label} :</b> {value}</p>',
+                        '<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? "-" : values.value]}</p>',
                     '</tpl>',
                     '<tpl if="!'+ this.hideSeeChildrenButton +'">',
                         '<div class="genapp-query-details-panel-see-children" ',
@@ -99,7 +99,6 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
                             'ext:qtitle="' + this.seeChildrenButtonTitle + '" ',
                             'ext:qwidth="' + this.tipDefaultWidth + '" ',
                             'ext:qtip="' + this.seeChildrenButtonTip + '">',
-                            
                                 '<tpl if="children_count == 1">',
                                     this.seeChildrenTextSingular,
                                 '</tpl>',
