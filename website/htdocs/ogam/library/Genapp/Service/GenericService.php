@@ -183,9 +183,6 @@ class Genapp_Service_GenericService {
 				$fieldsOrdered[] = $formField;
 			}
 		}
-			
-		$this->logger->info('getFormFieldsOrdered : '.print_r($fieldsOrdered,true));
-		
 		return array_values($fieldsOrdered);
 	}
 
