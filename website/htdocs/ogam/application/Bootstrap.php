@@ -117,12 +117,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		if (!$this->hasPluginResource('Locale')) {
 			throw new Zend_Exception('Locale not enabled in application.ini');
 		}
+		// Return the current locale build by Zend from the local browser, server... and the config file!
 		$locale = $this->getResource('Locale');
 		if (empty($locale)) {
 			throw new Zend_Exception('Locale object is empty.');
 		}
 
 		// Setup the translation
+		// !!! Note: the translate local correspond to the file name only.
 		$translations = $this->_addTranslation(array(
 		APPLICATION_PATH.'/lang'
 		), $translate);
@@ -130,19 +132,26 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		// Setup the translation with files specific to the app
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/lang/')) {
 			$translations = $this->_addTranslation(array(
-			APPLICATION_PATH.'/lang',
 			CUSTOM_APPLICATION_PATH.'/lang'
 			), $translate);
 		}
 
 		// Set the locale
+		// TODO: check if still needed (It's may be already done by zend_Locale...)
 		$browserLocales = Zend_Locale::getBrowser();
 		$locales = array_intersect(array_keys($browserLocales), array_keys($translations));
 		if (!empty($locales)) {
 			$locale = new Zend_Locale(current($locales));
-		} else {
-			$locale = new Zend_Locale(key($locale->getDefault()));
 		}
+		switch($locale->getLanguage()){
+			case 'fr' : $locale = 'fr';break;
+			case 'fr_FR' : $locale = 'fr';break;
+			case 'en' : $locale = 'en';break;
+			case 'en_GB' : $locale = 'en';break;
+			case 'en_US' : $locale = 'en';break;
+			default : $locale = current(array_keys($locale->getDefault()));
+		}
+		$locale = new Zend_Locale($locale);
 		Zend_Registry::set('Zend_Locale', $locale);
 
 		$translate->setLocale($locale);
