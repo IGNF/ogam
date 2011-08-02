@@ -90,7 +90,7 @@ if(Genapp.ConsultationPanel){
         openGridDetailsButtonTip : "Affiche les informations détaillées dans l'onglet des détails.",
         seeOnMapButtonTitle : "Voir sur la carte",
         seeOnMapButtonTip : "Affiche la carte, puis zoom et centre sur la localisation.",
-        editDataButtonTitle : "Edité les données",
+        editDataButtonTitle : "Editer les données",
         editDataButtonTip : "Ouvre la page d'édition pour éditer les données."
     });
 }
