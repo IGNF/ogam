@@ -373,6 +373,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
             xtype: 'container',
             autoEl: 'div',
             cls: 'genapp-query-column-item',
+            width:'100%',
             items: [{
                 xtype:'box',
                 autoEl:{
