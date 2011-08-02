@@ -970,9 +970,10 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " LEFT JOIN field_mapping on (field_mapping.src_format = form_field.format AND field_mapping.src_data = form_field.data AND mapping_type = 'FORM') ";
 			$req .= " LEFT JOIN data on (form_field.data = data.data)";
 			$req .= " LEFT JOIN unit on (data.unit = unit.unit)";
+			$req .= " LEFT JOIN form_format on (form_format.format = form_field.format)";
 			$req .= " WHERE field_mapping.dst_format = ? ";
 			$req .= " AND field_mapping.dst_data = ? ";
-			$req .= " ORDER BY form_field.position ";
+			$req .= " ORDER BY form_format.position, form_field.position ";
 
 			$this->logger->info('getTableToFormMapping : '.$req);
 

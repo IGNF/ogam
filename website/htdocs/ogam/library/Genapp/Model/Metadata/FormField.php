@@ -2,7 +2,7 @@
 
 /**
  * Represent a Field of a Form.
- * 
+ *
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
@@ -74,7 +74,7 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 	 * @var Boolean
 	 */
 	var $editable;
-	
+
 	/**
 	 * The field position in the form
 	 */
@@ -175,4 +175,5 @@ class Genapp_Model_Metadata_FormField extends Genapp_Model_Metadata_Field {
 			}
 		}
 	}
+
 }

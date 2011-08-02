@@ -179,13 +179,13 @@ class Genapp_Service_GenericService {
 		foreach ($tableFields as $tableField) {
 			// Get the form field corresponding to the table field
 			$formField = $this->getTableToFormMapping($tableField, true);
-
-			// get the form field corresponding to the table field
 			if ($formField != null && $formField->isResult) {
-				$fieldsOrdered[$formField->position] = $formField;
+				$fieldsOrdered[] = $formField;
 			}
 		}
-		ksort($fieldsOrdered);
+			
+		$this->logger->info('getFormFieldsOrdered : '.print_r($fieldsOrdered,true));
+		
 		return array_values($fieldsOrdered);
 	}
 
