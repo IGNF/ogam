@@ -267,7 +267,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 			}
 			return $emptyArray;
 		} else {
-			return $criteria == "";
+			return ($criteria == "");
 		}
 	}
 

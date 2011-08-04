@@ -638,15 +638,21 @@ class Genapp_Service_GenericService {
 					if (is_array($value)) {
 						// Case of a list of values
 						$sql .= " AND (";
+						$oradded = false;
 						foreach ($value as $val) {
-							if ($useLike) {
-								$sql .= $column." ILIKE '%".$val."%'";
-							} else {
-								$sql .= $column." = '".$val."'";
+							if ($val != null && $val != '' && is_string($val)) {
+								if ($useLike) {
+									$sql .= $column." ILIKE '%".$val."%'";
+								} else {
+									$sql .= $column." = '".$val."'";
+								}
+								$sql .= " OR ";
+								$oradded = true;
 							}
-							$sql .= " OR ";
 						}
-						$sql = substr($sql, 0, -4); // remove the last OR
+						if ($oradded) {
+							$sql = substr($sql, 0, -4); // remove the last OR
+						}
 						$sql .= ")";
 					} else {
 						if (is_string($value)) {
