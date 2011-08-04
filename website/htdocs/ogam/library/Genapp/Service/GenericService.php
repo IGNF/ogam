@@ -294,7 +294,7 @@ class Genapp_Service_GenericService {
 		//
 		$where = " WHERE (1 = 1) ";
 		foreach ($dataObject->infoFields as $tableField) {
-			$where .= $this->buildWhereItem($tableField);
+			$where .= $this->buildWhereItem($tableField, true);
 		}
 
 		$sql = $from.$where;
@@ -364,7 +364,7 @@ class Genapp_Service_GenericService {
 
 		// Build the WHERE clause with the info from the PK.
 		foreach ($criterias as $tableField) {
-			$sql .= $this->buildWhereItem($tableField);
+			$sql .= $this->buildWhereItem($tableField, false); // exact match
 		}
 
 		return $sql;
@@ -637,16 +637,17 @@ class Genapp_Service_GenericService {
 					// String
 					if (is_array($value)) {
 						// Case of a list of values
-						$sql2 = '';
+						$sql .= " AND (";
 						foreach ($value as $val) {
-							if ($val != null && $val != '' && is_string($val)) {
-								$sql2 .= "'".$val."', ";
+							if ($useLike) {
+								$sql .= $column." ILIKE '%".$val."%'";
+							} else {
+								$sql .= $column." = '".$val."'";
 							}
+							$sql .= " OR ";
 						}
-						if ($sql2 != '') {
-							$sql2 = substr($sql2, 0, -2); // remove the last comma
-							$sql .= " AND ".$column." IN (".$sql2.")";
-						}
+						$sql = substr($sql, 0, -4); // remove the last OR
+						$sql .= ")";
 					} else {
 						if (is_string($value)) {
 							// Single value
