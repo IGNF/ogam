@@ -9,10 +9,11 @@ import fr.ifn.eforest.integration.business.Formats;
 import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.database.metadata.FieldData;
 import fr.ifn.eforest.common.database.metadata.DatasetData;
+import fr.ifn.eforest.common.database.metadata.FileFieldData;
+import fr.ifn.eforest.common.database.metadata.FileFormatData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.ModeData;
 import fr.ifn.eforest.common.database.metadata.RangeData;
-import fr.ifn.eforest.common.database.metadata.RequestFormatData;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
 import fr.ifn.eforest.common.database.metadata.TableFormatData;
 import fr.ifn.eforest.common.database.metadata.TableTreeData;
@@ -63,7 +64,7 @@ public class MetadataTest extends AbstractEFDACTest {
 	}
 
 	/**
-	 * Test the getJRCRequests function.
+	 * Test the getDatasets function.
 	 */
 	public void testGetDatasets() throws Exception {
 
@@ -104,11 +105,11 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		String requestID = "REQUEST";
 
-		List<RequestFormatData> requestFormats = metadataDAO.getRequestFiles(requestID);
+		List<FileFormatData> requestFormats = metadataDAO.getDatasetFiles(requestID);
 
-		RequestFormatData file1 = requestFormats.get(0);
-		RequestFormatData file2 = requestFormats.get(1);
-		RequestFormatData file3 = requestFormats.get(2);
+		FileFormatData file1 = requestFormats.get(0);
+		FileFormatData file2 = requestFormats.get(1);
+		FileFormatData file3 = requestFormats.get(2);
 
 		assertEquals("The first file of the REQUEST should be LOCATION_FILE", "LOCATION_FILE", file1.getFormat());
 		assertEquals("The first file of the REQUEST should be PLOT_FILE", "PLOT_FILE", file2.getFormat());
@@ -123,7 +124,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		String fileFormat = Formats.SPECIES_FILE;
 
-		List<FieldData> fields = metadataDAO.getFileFields(fileFormat);
+		List<FileFieldData> fields = metadataDAO.getFileFields(fileFormat);
 
 		assertEquals("The basic test tree file should have 5 columns", 5, fields.size());
 
@@ -184,7 +185,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		String sourceFormat = Formats.PLOT_FILE;
 
-		Map<String, TableFieldData> mapping = metadataDAO.getFieldMapping(sourceFormat, MappingTypes.FILE_MAPPING);
+		Map<String, TableFieldData> mapping = metadataDAO.getFileToTableMapping(sourceFormat);
 		if (mapping == null) {
 			fail("Mapping should not be null");
 		}
@@ -202,7 +203,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		String tableFormat = "PLOT_DATA";
 
-		List<TableFieldData> fields = metadataDAO.getTableFields(tableFormat);
+		Map<String, TableFieldData> fields = metadataDAO.getTableFields(tableFormat, true);
 
 		logger.debug(fields);
 
@@ -215,11 +216,11 @@ public class MetadataTest extends AbstractEFDACTest {
 	 */
 	public void testGetTableName() throws Exception {
 
-		String tableFormat = "PLOT_DATA";
+		String tableFormatName = "PLOT_DATA";
 
-		String name = metadataDAO.getTableName(tableFormat);
+		TableFormatData tableFormat = metadataDAO.getTableFormat(tableFormatName);
 
-		assertEquals("The physical name of the PLOT_DATA table should be PLOT_DATA", name, tableFormat);
+		assertEquals("The physical name of the PLOT_DATA table should be PLOT_DATA", tableFormat.getTableName(), tableFormatName);
 
 	}
 

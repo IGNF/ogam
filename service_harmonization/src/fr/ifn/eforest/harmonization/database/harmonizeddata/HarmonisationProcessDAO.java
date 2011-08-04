@@ -71,7 +71,7 @@ public class HarmonisationProcessDAO {
 	}
 
 	/**
-	 * Get the status of the last harmonization process for this JRC Request and country.
+	 * Get the status of the last harmonization process for this dataset and provider.
 	 * 
 	 * @param datasetId
 	 *            the identifier of the dataset

@@ -2,6 +2,11 @@
 
 <project name="OGAMCommon" default="compile" basedir=".">
 
+    <!-- Properties are immutable: 
+    whoever sets a property first freezes it for the rest of the build;
+    they are most definitely not variables. -->
+    <property file="../configs/service_common/build.ppts"/>
+
 	<!-- Définition des properties -->
 	<property name="application.name" value="Eforest" />
 	<property name="workspace.dir" value="${basedir}/../.." />
@@ -24,8 +29,12 @@
 
 	<!-- Suppression des répertoires de déploiement -->
 	<target name="cleanest" description="Removes all the generated files or directories">
-		<delete dir="${classes.dir}" />
-		<mkdir dir="${classes.dir}" />
+		<delete>
+	         <fileset dir="${classes.dir}">
+	            <include name="**/*.*" />
+	            <exclude name=".svn" />
+	         </fileset>
+		</delete>
 	</target>
 
 	<!-- Compile les sources -->
@@ -88,6 +97,7 @@
 		<checkstyle config="${libraries.dir}/lib/checkstyle/ifn_checks.xml" maxErrors="2147483647" classpath="${classpath}">
 			<fileset dir="${src.dir}">
 				<include name="**/*.java" />
+				<exclude name="**/SqlStateSQL99.java" />
 			</fileset>
 			<formatter type="plain" />
 			<formatter type="xml" toFile="${test_result.dir}/checkstyle_result.xml" />

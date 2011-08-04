@@ -3,7 +3,7 @@ package fr.ifn.eforest.common.database.metadata;
 /**
  * A dataset.
  * 
- * Describes a dataset (a JRC Request).
+ * Describes a dataset.
  */
 public class DatasetData {
 

@@ -73,9 +73,11 @@ PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 LAT                  FLOAT8               null,
 LONG                 FLOAT8               null,
+COMMUNES			 TEXT[] 			  null,
+DEPARTEMENT			 VARCHAR(36)      	  null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_LOCATION primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE),
+constraint PK_LOCATION primary key (PROVIDER_ID, PLOT_CODE),
 unique (PROVIDER_ID, PLOT_CODE)
 );
 
@@ -88,6 +90,8 @@ COMMENT ON COLUMN LOCATION.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN LOCATION.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN LOCATION.LAT IS 'The latitude (in decimal degrees)';
 COMMENT ON COLUMN LOCATION.LONG IS 'The longitude (in decimal degrees)';
+COMMENT ON COLUMN LOCATION.COMMUNES IS 'Communes concerned by the location';
+COMMENT ON COLUMN LOCATION.DEPARTEMENT IS 'Département';
 COMMENT ON COLUMN LOCATION.COMMENT IS 'A comment about the plot location';
 COMMENT ON COLUMN LOCATION.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 COMMENT ON COLUMN LOCATION.THE_GEOM IS 'The geometry of the location';
@@ -130,7 +134,7 @@ INV_DATE             DATE                 null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_PLOT_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE),
+constraint PK_PLOT_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE),
 constraint FK_PLOT_DATA_ASSOCIATE_LOCATION foreign key (PROVIDER_ID, PLOT_CODE) references LOCATION (PROVIDER_ID, PLOT_CODE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE)
 );
@@ -154,10 +158,11 @@ PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 SPECIES_CODE         VARCHAR(36)          not null,
+ID_TAXON             VARCHAR(36)          not null,
 BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_SPECIES_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
+constraint PK_SPECIES_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
 constraint FK_SPECIES_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE)   
 );
@@ -167,12 +172,23 @@ COMMENT ON COLUMN SPECIES_DATA.PROVIDER_ID IS 'The identifier of the data provid
 COMMENT ON COLUMN SPECIES_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN SPECIES_DATA.CYCLE IS 'The cycle of inventory';
 COMMENT ON COLUMN SPECIES_DATA.SPECIES_CODE IS 'The code of the specie';
+COMMENT ON COLUMN SPECIES_DATA.ID_TAXON IS 'Identifiant de taxon';
 COMMENT ON COLUMN SPECIES_DATA.BASAL_AREA IS 'The proportion of surface covered by this specie on the plot (in m2/ha)';
 COMMENT ON COLUMN SPECIES_DATA.COMMENT IS 'A comment about the species';
 COMMENT ON COLUMN SPECIES_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 
 
-
+  
+/*==============================================================*/
+/* Sequence : TREE_ID                                           */
+/*==============================================================*/
+CREATE SEQUENCE tree_id_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+  
 
 /*==============================================================*/
 /* Table : TREE_DATA                                         */
@@ -182,13 +198,13 @@ SUBMISSION_ID        INT4                 not null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
-TREE_ID              VARCHAR(36)          not null,
+TREE_ID              INT4                 not null default nextval('tree_id_seq'),
 SPECIES_CODE		 VARCHAR(36)          null,
 DBH					 FLOAT8	              null,
 HEIGHT	 			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_TREE_DATA primary key (SUBMISSION_ID, PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID),
+constraint PK_TREE_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID),
 constraint FK_TREE_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID)   
 );
@@ -251,6 +267,7 @@ COMMENT ON COLUMN CHECK_ERROR._CREATIONDT IS 'The creation date';
 GRANT ALL ON SCHEMA raw_data TO ogam;
 GRANT ALL ON TABLE raw_data.check_error_check_error_id_seq TO ogam;
 GRANT ALL ON TABLE raw_data.submission_id_seq TO ogam;
+GRANT ALL ON TABLE raw_data.tree_id_seq TO ogam;
 GRANT ALL ON TABLE raw_data.check_error TO ogam;
 GRANT ALL ON TABLE raw_data."location" TO ogam;
 GRANT ALL ON TABLE raw_data.plot_data TO ogam;

@@ -7,17 +7,18 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.util.CSVFile;
 import fr.ifn.eforest.common.business.AbstractService;
 import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.business.Schemas;
+import fr.ifn.eforest.common.database.metadata.FileFormatData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.RequestFormatData;
 import fr.ifn.eforest.common.database.metadata.TableFormatData;
 import fr.ifn.eforest.common.database.GenericDAO;
 import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
 import fr.ifn.eforest.common.database.rawdata.SubmissionData;
 import fr.ifn.eforest.integration.business.IntegrationService;
+import fr.ifn.eforest.common.business.processing.ProcessingService;
+import fr.ifn.eforest.common.business.processing.ProcessingStep;
 import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.common.business.submissions.SubmissionStep;
 
@@ -41,9 +42,14 @@ public class DataService extends AbstractService {
 	private GenericDAO genericDAO = new GenericDAO();
 
 	/**
-	 * The generic mapper.
+	 * The integration service.
 	 */
 	private IntegrationService integrationService = new IntegrationService();
+
+	/**
+	 * The post-processing service.
+	 */
+	private ProcessingService processingService = new ProcessingService();
 
 	/**
 	 * Constructor.
@@ -78,14 +84,12 @@ public class DataService extends AbstractService {
 	/**
 	 * Create a new data submission.
 	 * 
-	 * @param codeCountry
-	 *            the code country
 	 * @param providerId
 	 *            the dataset identifier
+	 * @param datasetId
+	 *            the identifier of the dataset
 	 * @param userLogin
 	 *            the login of the user who creates the submission
-	 * @param comment
-	 *            a comment
 	 * @return the identifier of the created submission
 	 */
 	public Integer newSubmission(String providerId, String datasetId, String userLogin) throws Exception {
@@ -126,13 +130,13 @@ public class DataService extends AbstractService {
 		SubmissionData submissionData = submissionDAO.getSubmission(submissionId);
 
 		// Get the list of requested files concerned by the submission
-		List<RequestFormatData> requestedFiles = metadataDAO.getRequestFiles(submissionData.getDatasetId());
+		List<FileFormatData> requestedFiles = metadataDAO.getDatasetFiles(submissionData.getDatasetId());
 
 		// Get the list of destination tables concerned by the submission
 		List<TableFormatData> destinationTables = new ArrayList<TableFormatData>();
-		Iterator<RequestFormatData> requestedFilesIter = requestedFiles.iterator();
+		Iterator<FileFormatData> requestedFilesIter = requestedFiles.iterator();
 		while (requestedFilesIter.hasNext()) {
-			RequestFormatData requestedFile = requestedFilesIter.next();
+			FileFormatData requestedFile = requestedFilesIter.next();
 			destinationTables.addAll(metadataDAO.getFormatMapping(requestedFile.getFormat(), MappingTypes.FILE_MAPPING).values());
 		}
 
@@ -143,8 +147,8 @@ public class DataService extends AbstractService {
 		Iterator<String> tableIter = toDeleteFormats.iterator();
 		while (tableIter.hasNext()) {
 			String tableFormat = tableIter.next();
-			String tableName = metadataDAO.getTableName(tableFormat);
-			genericDAO.deleteRawData(tableName, submissionId);
+			TableFormatData tableFormatData = metadataDAO.getTableFormat(tableFormat);
+			genericDAO.deleteRawData(tableFormatData.getTableName(), submissionId);
 		}
 
 		// Update the status of the submission
@@ -178,25 +182,22 @@ public class DataService extends AbstractService {
 			}
 
 			// Get the expected CSV formats for the request
-			List<RequestFormatData> fileFormats = metadataDAO.getRequestFiles(submission.getDatasetId());
-			Iterator<RequestFormatData> fileIter = fileFormats.iterator();
+			List<FileFormatData> fileFormats = metadataDAO.getDatasetFiles(submission.getDatasetId());
+			Iterator<FileFormatData> fileIter = fileFormats.iterator();
 			while (fileIter.hasNext()) {
 
-				RequestFormatData fileFormat = fileIter.next();
+				FileFormatData fileFormat = fileIter.next();
 
 				// Get the path of the file
 				String filePath = requestParameters.get(fileFormat.getFormat());
 
-				// Read the CSV files
-				CSVFile csvFile = new CSVFile(filePath);
-
-				// Store the name and path of the file
-				submissionDAO.addSubmissionFile(submissionId, fileFormat.getFormat(), filePath, csvFile.getRowsCount());
-
 				// Insert the data in database with automatic mapping ...
-				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, csvFile, fileFormat.getFormat(), requestParameters, this.thread);
+				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, filePath, fileFormat.getFormat(), requestParameters, this.thread);
 
 			}
+
+			// Launch post-processing
+			processingService.processData(ProcessingStep.INTEGRATION, submission.getProviderId(), this.thread);
 
 			// Update the submission status
 			if (isSubmitValid) {

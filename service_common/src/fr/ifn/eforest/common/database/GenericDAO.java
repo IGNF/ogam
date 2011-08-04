@@ -62,7 +62,7 @@ public class GenericDAO {
 	 * 
 	 * @throws Exception
 	 */
-	public void insertData(String schema, String tableName, List<TableFieldData> tableColumns, Map<String, GenericData> valueColumns) throws Exception {
+	public void insertData(String schema, String tableName, Map<String, TableFieldData> tableColumns, Map<String, GenericData> valueColumns) throws Exception {
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -73,11 +73,12 @@ public class GenericDAO {
 			// Prepare the SQL values
 			StringBuffer colNames = new StringBuffer();
 			StringBuffer colValues = new StringBuffer();
-			Iterator<TableFieldData> columnsIter = tableColumns.iterator();
+			Iterator<String> columnsIter = tableColumns.keySet().iterator();
 			while (columnsIter.hasNext()) {
-				TableFieldData col = columnsIter.next();
+				String sourceData = columnsIter.next();
+				TableFieldData destField = tableColumns.get(sourceData);
 
-				GenericData colData = valueColumns.get(col.getFieldName());
+				GenericData colData = valueColumns.get(sourceData);
 
 				// If colData is null, the field is not mapped and is probably not expected (we hope)
 				if (colData != null) {
@@ -87,7 +88,7 @@ public class GenericDAO {
 						colValues.append(", ");
 					}
 
-					colNames.append(col.getColumnName());
+					colNames.append(destField.getColumnName());
 					colValues.append("?");
 
 				}
@@ -101,12 +102,11 @@ public class GenericDAO {
 			ps = con.prepareStatement(statement);
 
 			// Set the values
-			columnsIter = tableColumns.iterator();
+			columnsIter = tableColumns.keySet().iterator();
 			int count = 1;
 			while (columnsIter.hasNext()) {
-				TableFieldData col = columnsIter.next();
-
-				GenericData colData = valueColumns.get(col.getFieldName());
+				String sourceData = columnsIter.next();
+				GenericData colData = valueColumns.get(sourceData);
 
 				if (colData != null) {
 
@@ -114,12 +114,6 @@ public class GenericDAO {
 						ps.setString(count, (String) colData.getValue());
 					} else if (colData.getType().equalsIgnoreCase(CODE)) {
 						ps.setString(count, (String) colData.getValue());
-					} else if (colData.getType().equalsIgnoreCase(RANGE)) {
-						if (colData.getValue() == null) {
-							ps.setNull(count, java.sql.Types.DECIMAL);
-						} else {
-							ps.setBigDecimal(count, (BigDecimal) colData.getValue());
-						}
 					} else if (colData.getType().equalsIgnoreCase(NUMERIC)) {
 						if (colData.getValue() == null) {
 							ps.setNull(count, java.sql.Types.DECIMAL);
@@ -132,8 +126,6 @@ public class GenericDAO {
 						} else {
 							ps.setInt(count, (Integer) colData.getValue());
 						}
-					} else if (colData.getType().equalsIgnoreCase(COORDINATE)) {
-						ps.setBigDecimal(count, (BigDecimal) colData.getValue());
 					} else if (colData.getType().equalsIgnoreCase(DATE)) {
 						if (colData.getValue() == null) {
 							ps.setNull(count, java.sql.Types.DATE);
@@ -148,6 +140,15 @@ public class GenericDAO {
 							String bool = ((Boolean) colData.getValue()) ? "1" : "0";
 							ps.setString(count, bool);
 						}
+					} else if (colData.getType().equalsIgnoreCase(ARRAY)) {
+						if (colData.getValue() == null) {
+							ps.setNull(count, java.sql.Types.ARRAY);
+						} else {
+							String[] value = (String[]) colData.getValue();
+							java.sql.Array array = con.createArrayOf("varchar", value);
+							ps.setArray(count, array);
+						}
+
 					} else {
 						throw new Exception("Unexpected type");
 					}
@@ -167,8 +168,11 @@ public class GenericDAO {
 
 			if (SqlStateSQL99.ERRCODE_UNIQUE_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				throw new CheckException(DUPLICATE_ROW);
-			}
-			if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
+			} else if (SqlStateSQL99.ERRCODE_DATATYPE_MISMATCH.equalsIgnoreCase(sqle.getSQLState())) {
+				throw new CheckException(INVALID_TYPE_FIELD);
+			} else if (SqlStateSQL99.ERRCODE_STRING_DATA_RIGHT_TRUNCATION.equalsIgnoreCase(sqle.getSQLState())) {
+				throw new CheckException(STRING_TOO_LONG);
+			} else if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				CheckException ce = new CheckException(INTEGRITY_CONSTRAINT);
 				String message = sqle.getMessage();
 				int pos = message.indexOf("Détail : ");
@@ -180,6 +184,9 @@ public class GenericDAO {
 				}
 				ce.setFoundValue(message);
 				throw ce;
+			} else {
+				logger.error("SQL STATE : " + sqle.getSQLState());
+				throw new CheckException(UNEXPECTED_SQL_ERROR);
 			}
 		} catch (Exception e) {
 
@@ -297,24 +304,20 @@ public class GenericDAO {
 				Iterator<TableFieldData> fieldsIter = fields.iterator();
 				while (fieldsIter.hasNext()) {
 					TableFieldData field = fieldsIter.next();
-					String columnName = field.getFormat() + "_" + field.getFieldName();
+					String columnName = field.getFormat() + "_" + field.getData();
 
 					GenericData data = new GenericData();
 					data.setColumnName(field.getColumnName());
-					data.setFormat(field.getFieldName());
+					data.setFormat(field.getData());
 					data.setType(field.getType());
 					if (field.getType().equalsIgnoreCase(STRING)) {
 						data.setValue(rs.getString(columnName));
 					} else if (field.getType().equalsIgnoreCase(CODE)) {
 						data.setValue(rs.getString(columnName));
-					} else if (field.getType().equalsIgnoreCase(RANGE)) {
-						data.setValue(rs.getBigDecimal(columnName));
 					} else if (field.getType().equalsIgnoreCase(NUMERIC)) {
 						data.setValue(rs.getBigDecimal(columnName));
 					} else if (field.getType().equalsIgnoreCase(INTEGER)) {
 						data.setValue(rs.getInt(columnName));
-					} else if (field.getType().equalsIgnoreCase(COORDINATE)) {
-						data.setValue(rs.getBigDecimal(columnName));
 					} else if (field.getType().equalsIgnoreCase(DATE)) {
 						String val = rs.getString(columnName);
 						if (val == null) {
@@ -427,4 +430,5 @@ public class GenericDAO {
 			}
 		}
 	}
+
 }

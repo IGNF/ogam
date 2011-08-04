@@ -1,12 +1,10 @@
 package fr.ifn.eforest.harmonization.business;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -17,6 +15,8 @@ import fr.ifn.eforest.common.business.GenericMapper;
 import fr.ifn.eforest.common.business.MappingTypes;
 import fr.ifn.eforest.common.business.Schemas;
 import fr.ifn.eforest.common.business.UnitTypes;
+import fr.ifn.eforest.common.business.processing.ProcessingService;
+import fr.ifn.eforest.common.business.processing.ProcessingStep;
 import fr.ifn.eforest.common.database.GenericDAO;
 import fr.ifn.eforest.common.database.GenericData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
@@ -49,6 +49,9 @@ public class HarmonizationService extends AbstractService {
 	// The generic mapper
 	private GenericMapper genericMapper = new GenericMapper();
 
+	// The post-processing service.
+	private ProcessingService processingService = new ProcessingService();
+
 	// Maximum number of lines of data in memory
 	private static final int MAX_LINES = 5000;
 
@@ -73,7 +76,7 @@ public class HarmonizationService extends AbstractService {
 	 * Get the status of the last harmonization process for this request and country.
 	 * 
 	 * @param datasetId
-	 *            The JRC request identifier
+	 *            The dataset identifier
 	 * @param countryCode
 	 *            The country code
 	 * @return the status of the process
@@ -88,7 +91,7 @@ public class HarmonizationService extends AbstractService {
 	 * Harmonize Data.
 	 * 
 	 * @param datasetId
-	 *            The JRC request identifier
+	 *            The dataset identifier
 	 * @param providerId
 	 *            The country code
 	 * @return the process identifier
@@ -123,26 +126,23 @@ public class HarmonizationService extends AbstractService {
 			//
 			// Prepare the metadata that we will use
 			//
-			List<TableFormatData> harmonizedTables = new ArrayList<TableFormatData>(); // The list of destination harmonized tables concerned by the JRC Request
-			Set<TableFieldData> harmonizedFields = new HashSet<TableFieldData>(); // The list of destination fields concerned by the JRC Request
+			List<TableFormatData> harmonizedTables = new ArrayList<TableFormatData>(); // The list of destination harmonized tables concerned by the dataset
+			// Set<TableFieldData> harmonizedFields = new HashSet<TableFieldData>(); // The list of destination fields concerned by the dataset
 
 			// The list of source raw tables concerned by the dataset
 			List<String> rawTables = metadataDAO.getDatasetRawTables(datasetId);
 
 			// Get the harmonized tables corresponding to the raw_data tables
-			Iterator<String> destTablesITer = rawTables.iterator();
-			while (destTablesITer.hasNext()) {
-				String rawTable = destTablesITer.next();
+			Iterator<String> rawTablesIter = rawTables.iterator();
+			while (rawTablesIter.hasNext()) {
+				String rawTable = rawTablesIter.next();
 
 				// Get the list of harmonized tables for each raw table
 				harmonizedTables.addAll(metadataDAO.getFormatMapping(rawTable, MappingTypes.HARMONIZATION_MAPPING).values());
 
-				// Get the list of harmonized fields for each table
-				harmonizedFields.addAll(metadataDAO.getFieldMapping(rawTable, MappingTypes.HARMONIZATION_MAPPING).values());
-
 			}
 
-			// Sorted the tables in the right order
+			// Sort the tables in the right order (leaf first)
 			LinkedList<String> harmonizedTablesFormatSortedList = genericMapper.getSortedTables(Schemas.HARMONIZED_DATA, harmonizedTables);
 			logger.debug("harmonizedTablesFormatSortedList : " + harmonizedTablesFormatSortedList);
 
@@ -153,12 +153,12 @@ public class HarmonizationService extends AbstractService {
 			Iterator<String> tablesIter = harmonizedTablesFormatSortedList.iterator();
 			while (tablesIter.hasNext()) {
 				String tableFormat = tablesIter.next();
-				String tableName = metadataDAO.getTableName(tableFormat);
-				logger.debug("Removing previous data from table : " + tableName);
+				TableFormatData tableFormatData = metadataDAO.getTableFormat(tableFormat);
+				logger.debug("Removing previous data from table : " + tableFormatData.getTableName());
 				if (thread != null) {
-					thread.updateInfo("Removing " + tableName + " data", 0, 0);
+					thread.updateInfo("Removing " + tableFormatData.getTableName() + " data", 0, 0);
 				}
-				harmonizedDataDAO.deleteHarmonizedData(tableName, providerId);
+				harmonizedDataDAO.deleteHarmonizedData(tableFormatData.getTableName(), providerId);
 			}
 
 			// For each destination table (starting from the root in the hierarchy to the leaf tables)
@@ -169,17 +169,10 @@ public class HarmonizationService extends AbstractService {
 				logger.debug("Preparing to insert data in table : " + destTableFormat);
 
 				// Get the physical name of the destination table
-				String destTableName = metadataDAO.getTableName(destTableFormat);
+				TableFormatData destTableFormatData = metadataDAO.getTableFormat(destTableFormat);
 
-				// Get the list of destination fields for this table and this JRC Request
-				List<TableFieldData> destFields = new ArrayList<TableFieldData>();
-				Iterator<TableFieldData> harmonizedFieldsIter = harmonizedFields.iterator();
-				while (harmonizedFieldsIter.hasNext()) {
-					TableFieldData field = harmonizedFieldsIter.next();
-					if (field.getFormat().equals(destTableFormat)) {
-						destFields.add(field);
-					}
-				}
+				// Get the list of destination fields for this table and this dataset
+				Map<String, TableFieldData> destFields = metadataDAO.getDatasetHarmonizedFields(destTableFormat);
 
 				// Prepare some static criteria values
 				TreeMap<String, GenericData> criteriaFields = new TreeMap<String, GenericData>();
@@ -203,7 +196,7 @@ public class HarmonizationService extends AbstractService {
 						// Get the source data from the source table(s)
 						Map<String, GenericData> sourceFields = sourceIter.next();
 						if (thread != null) {
-							thread.updateInfo("Inserting " + destTableName + " data", count, total);
+							thread.updateInfo("Inserting " + destTableFormatData.getTableName() + " data", count, total);
 						}
 
 						// TODO : Read the complementary data corresponding to this line
@@ -212,10 +205,8 @@ public class HarmonizationService extends AbstractService {
 						sourceFields.put(Data.DATASET_ID, datasetIdData);
 						sourceFields.put(Data.PROVIDER_ID, providerIdData);
 
-						// TODO : Launch the harmonization rule corresponding to the data
-
 						// Insert the record data in the destination table
-						genericDAO.insertData(Schemas.HARMONIZED_DATA, destTableName, destFields, sourceFields);
+						genericDAO.insertData(Schemas.HARMONIZED_DATA, destTableFormatData.getTableName(), destFields, sourceFields);
 						count++;
 					}
 
@@ -230,7 +221,8 @@ public class HarmonizationService extends AbstractService {
 
 			}
 
-			// TODO : Launch post-processing
+			// Launch post-processing
+			processingService.processData(ProcessingStep.HARMONIZATION, providerId, this.thread);
 
 			// Log the process in the log table
 			harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);
@@ -275,7 +267,7 @@ public class HarmonizationService extends AbstractService {
 
 		// Get the list of source tables that map to this destination table
 		List<TableFormatData> sourceTables = new ArrayList<TableFormatData>();
-		sourceTables.addAll(metadataDAO.getSourceFormatMapping(destTableFormat, MappingTypes.HARMONIZATION_MAPPING).values());
+		sourceTables.addAll(metadataDAO.getSourceTablesMapping(destTableFormat, MappingTypes.HARMONIZATION_MAPPING).values());
 
 		// Get all the ancestors of these tables, sorted in the right order
 		LinkedList<String> sourceTablesSortedList = genericMapper.getSortedAncestors(Schemas.RAW_DATA, sourceTables);
@@ -304,7 +296,7 @@ public class HarmonizationService extends AbstractService {
 
 		// Get the list of source tables that map to this destination table
 		List<TableFormatData> sourceTables = new ArrayList<TableFormatData>();
-		sourceTables.addAll(metadataDAO.getSourceFormatMapping(destTableFormat, MappingTypes.HARMONIZATION_MAPPING).values());
+		sourceTables.addAll(metadataDAO.getSourceTablesMapping(destTableFormat, MappingTypes.HARMONIZATION_MAPPING).values());
 
 		// Get all the ancestors of these tables, sorted in the right order
 		LinkedList<String> sourceTablesSortedList = genericMapper.getSortedAncestors(Schemas.RAW_DATA, sourceTables);

@@ -14,7 +14,8 @@ alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_DATASET;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_FIELD;
 alter table DATASET_FILES drop constraint FK_DATASET_FILES_FORMAT;
 
-alter table website.PREDEFINED_REQUEST drop constraint FK_PREDEFINED_REQUEST_DATASET;
+
+--alter table website.predefined_request drop constraint fk_predefined_request_dataset;
 
 --
 -- Remove old data
@@ -32,7 +33,9 @@ delete from table_format;
 delete from form_format;
 delete from format;
 
+delete from dynamode;
 delete from group_mode;
+delete from mode_tree;
 delete from mode;
 delete from range;
 
@@ -41,8 +44,6 @@ delete from data;
 delete from unit;
 
 delete from checks where check_id <= 1200;
-
-
 
 delete from dataset_files;
 delete from dataset_fields;
@@ -57,6 +58,8 @@ COPY data from 'C:/workspace/OGAM/Bases SQL/Metadata/data.csv' with delimiter ';
 COPY range from 'C:/workspace/OGAM/Bases SQL/Metadata/range.csv' with delimiter ';' null '';
 COPY mode from 'C:/workspace/OGAM/Bases SQL/Metadata/mode.csv' with delimiter ';' null '';
 COPY group_mode from 'C:/workspace/OGAM/Bases SQL/Metadata/group_mode.csv' with delimiter ';' null '';
+COPY mode_tree from 'C:/workspace/OGAM/Bases SQL/Metadata/mode_tree.csv' with delimiter ';' null '';
+COPY dynamode from 'C:/workspace/OGAM/Bases SQL/Metadata/dynamode.csv' with delimiter ';' null '';
 
 COPY form_format from 'C:/workspace/OGAM/Bases SQL/Metadata/form_format.csv' with delimiter ';' null '';
 COPY table_format from 'C:/workspace/OGAM/Bases SQL/Metadata/table_format.csv' with delimiter ';' null '';
@@ -157,11 +160,6 @@ alter table DATASET_FILES
       references FILE_FORMAT (FORMAT)
       on delete restrict on update restrict;
 
-alter table website.PREDEFINED_REQUEST
-add constraint FK_PREDEFINED_REQUEST_DATASET foreign key (DATASET_ID)
-      references DATASET (DATASET_ID)
-      on delete restrict on update restrict;
-
 
 --
 -- Consistency checks
@@ -170,13 +168,13 @@ add constraint FK_PREDEFINED_REQUEST_DATASET foreign key (DATASET_ID)
 -- Units of type CODE should have an entry in the CODE table
 SELECT UNIT, 'This unit of type CODE is not described in the MODE table'
 FROM unit
-WHERE TYPE = 'CODE'
+WHERE TYPE = 'CODE' AND SUBTYPE = 'MODE'
 AND unit not in (SELECT UNIT FROM MODE WHERE MODE.UNIT=UNIT)
 UNION
 -- Units of type RANGE should have an entry in the RANGE table
 SELECT UNIT, 'This unit of type RANGE is not described in the RANGE table'
 FROM unit
-WHERE TYPE = 'RANGE'
+WHERE TYPE = 'NUMERIC' AND SUBTYPE = 'RANGE'
 AND unit not in (SELECT UNIT FROM RANGE WHERE RANGE.UNIT=UNIT)
 UNION
 -- File fields should have a FILE mapping
@@ -215,7 +213,7 @@ SELECT format||'_'||data, 'This harmonized_data table field is not used by a map
 FROM table_field
 JOIN table_format using (format)
 WHERE schema_code = 'HARMONIZED_DATA'
-AND column_name <> 'DATASET_ID'  -- request ID added automatically
+AND column_name <> 'REQUEST_ID'  -- request ID added automatically
 AND is_calculated <> '1'  -- field is not calculated
 AND format||'_'||data NOT IN (
 	SELECT (dst_format||'_'||dst_data )
@@ -229,14 +227,33 @@ FROM table_format
 WHERE schema_code = 'RAW_DATA'
 AND NOT EXISTS (SELECT * FROM table_field WHERE table_format.format = table_field.format AND table_field.data='SUBMISSION_ID')
 UNION
--- the unit type in not consistent with the form field input type
+-- the INPUT_TYPE is not in the list
+SELECT format||'_'||data, 'The INPUT_TYPE type is not in the list'
+FROM form_field 
+WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE')
+UNION
+-- the UNIT type is not in the list
+SELECT unit||'_'||type, 'The UNIT type is not in the list'
+FROM unit 
+WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'DATE', 'INTEGER', 'NUMERIC', 'STRING', 'GEOM')
+UNION
+-- the subtype is not consistent with the type
+SELECT unit||'_'||type, 'The UNIT subtype is not consistent with the type'
+FROM unit 
+WHERE (type = 'CODE' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC'))
+OR    (type = 'ARRAY' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC'))
+OR    (type = 'NUMERIC' AND subtype NOT IN ('RANGE', 'COORDINATE'))
+UNION
+-- the unit type is not consistent with the form field input type
 SELECT form_field.format || '_' || form_field.data, 'The form field input type (' || input_type || ') is not consistent with the unit type (' || type || ')'
 FROM form_field 
 LEFT JOIN data using (data)
 LEFT JOIN unit using (unit)
-WHERE (input_type = 'NUMERIC' AND type NOT IN ('NUMERIC', 'RANGE','INTEGER'))
+WHERE (input_type = 'NUMERIC' AND type NOT IN ('NUMERIC', 'INTEGER'))
 OR (input_type = 'DATE' AND type <> 'DATE')
-OR (input_type = 'SELECT' AND type <> 'CODE')
+OR (input_type = 'SELECT' AND NOT (type = 'ARRAY' or TYPE = 'CODE'))
 OR (input_type = 'TEXT' AND type <> 'STRING')
 OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')
+OR (input_type = 'GEOM' AND type <> 'GEOM')
+OR (input_type = 'TREE' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TREE'))
 

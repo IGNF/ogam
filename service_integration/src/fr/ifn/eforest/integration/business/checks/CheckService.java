@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
 import fr.ifn.eforest.common.business.submissions.SubmissionStep;
-import fr.ifn.eforest.common.database.metadata.CheckData;
-import fr.ifn.eforest.common.database.metadata.ChecksDAO;
+import fr.ifn.eforest.common.database.checks.CheckData;
+import fr.ifn.eforest.common.database.checks.ChecksDAO;
 import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
 import fr.ifn.eforest.common.database.rawdata.SubmissionData;
 import fr.ifn.eforest.integration.database.rawdata.CheckErrorDAO;

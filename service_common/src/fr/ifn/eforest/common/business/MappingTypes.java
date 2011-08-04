@@ -20,9 +20,4 @@ public interface MappingTypes {
 	 */
 	String HARMONIZATION_MAPPING = "HARMONIZE";
 
-	/**
-	 * Map a field from the raw database (qualitative value, for exemple basal_area) to the related domain field (domain_basal_area).
-	 */
-	String DOMAIN_MAPPING = "DOMAIN";
-
 }

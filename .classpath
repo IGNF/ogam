@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" output="service_interpolation/classes" path="service_interpolation/src"/>
 	<classpathentry kind="src" path="service_common/test"/>
 	<classpathentry kind="src" output="service_harmonization/classes" path="service_harmonization/test"/>
 	<classpathentry kind="src" output="service_harmonization/classes" path="service_harmonization/src"/>
-	<classpathentry kind="src" output="service_calculation/classes" path="service_calculation/src"/>
-	<classpathentry kind="src" output="service_interpolation/classes" path="service_interpolation/test"/>
 	<classpathentry kind="src" output="service_integration/classes" path="service_integration/test"/>
 	<classpathentry kind="src" output="service_common/classes" path="service_common/src"/>
 	<classpathentry kind="src" output="service_integration/classes" path="service_integration/src"/>

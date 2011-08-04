@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * Parameters for the result grid.
+ * @package views
+ */
+?>
+
+if(Genapp.ConsultationPanel){
+    Ext.apply(Genapp.ConsultationPanel.prototype, {
+        hideGridCsvExportMenuItem : <?=$this->hideGridCsvExportMenuItem?>,
+        hideGridDataEditButton : <?=$this->hideGridDataEditButton?>
+    });
+}

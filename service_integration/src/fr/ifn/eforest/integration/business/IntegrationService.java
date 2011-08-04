@@ -12,8 +12,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+import fr.ifn.eforest.common.util.InconsistentNumberOfColumns;
 import fr.ifn.eforest.common.util.CSVFile;
-import fr.ifn.eforest.common.util.LineInfo;
 import fr.ifn.eforest.common.business.AbstractThread;
 import fr.ifn.eforest.common.business.Data;
 import fr.ifn.eforest.common.business.GenericMapper;
@@ -23,10 +23,11 @@ import fr.ifn.eforest.common.business.UnitTypes;
 import fr.ifn.eforest.common.business.checks.CheckException;
 import fr.ifn.eforest.common.database.GenericDAO;
 import fr.ifn.eforest.common.database.GenericData;
-import fr.ifn.eforest.common.database.metadata.FieldData;
+import fr.ifn.eforest.common.database.metadata.FileFieldData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
 import fr.ifn.eforest.common.database.metadata.TableFormatData;
+import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
 import fr.ifn.eforest.integration.database.rawdata.CheckErrorDAO;
 
 /**
@@ -47,32 +48,48 @@ public class IntegrationService extends GenericMapper {
 	private MetadataDAO metadataDAO = new MetadataDAO();
 	private GenericDAO genericDAO = new GenericDAO();
 	private CheckErrorDAO checkErrorDAO = new CheckErrorDAO();
+	private SubmissionDAO submissionDAO = new SubmissionDAO();
 
 	/**
 	 * Insert a dataset coming from a CSV in database.
 	 * 
 	 * @param submissionId
 	 *            the submission identifier
-	 * @param csvFile
-	 *            the source data file
+	 * @param filePath
+	 *            the source data file path
 	 * @param sourceFormat
 	 *            the source format identifier
 	 * @param requestParameters
-	 *            the static values (COUNTRY_CODE, REQUEST_ID, ...)
+	 *            the static values (PROVIDER_ID, DATASET_ID, ...)
 	 * @param thread
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
+	 * @return the status of the update
 	 */
-	public boolean insertData(Integer submissionId, CSVFile csvFile, String sourceFormat, Map<String, String> requestParameters, AbstractThread thread)
+	public boolean insertData(Integer submissionId, String filePath, String sourceFormat, Map<String, String> requestParameters, AbstractThread thread)
 			throws Exception {
 
 		logger.debug("insertData");
 		boolean isInsertValid = true;
+		CSVFile csvFile = null;
 		try {
 
 			// First get the description of the content of the CSV file
-			List<FieldData> sourceFieldDescriptors = metadataDAO.getFileFields(sourceFormat);
+			List<FileFieldData> sourceFieldDescriptors = metadataDAO.getFileFields(sourceFormat);
 
-			// Check that the content of the file match the description
+			// Parse the CSV file and check the number of lines/columns
+
+			try {
+				csvFile = new CSVFile(filePath);
+			} catch (InconsistentNumberOfColumns ince) {
+
+				// The file number of columns changes from line to line
+				CheckException e = new CheckException(WRONG_FIELD_NUMBER);
+				e.setSourceFormat(sourceFormat);
+				e.setSubmissionId(submissionId);
+				throw e;
+			}
+
+			// Check that the file is not empty
 			if (csvFile.getRowsCount() == 0) {
 				CheckException e = new CheckException(EMPTY_FILE);
 				e.setSourceFormat(sourceFormat);
@@ -80,56 +97,31 @@ public class IntegrationService extends GenericMapper {
 				throw e;
 			}
 
-			// Get the lines where the number of columns is more than expected
-			List<LineInfo> wrongColsCounts = csvFile.getWrongColumnNumberLines(sourceFieldDescriptors.size());
-			if (wrongColsCounts.size() > 0) {
-				if (csvFile.getRowsCount() == wrongColsCounts.size()) {
-					// All the lignes have a wrong number of column
-					CheckException e = new CheckException(WRONG_FIELD_NUMBER);
-					e.setSourceFormat(sourceFormat);
-					e.setSubmissionId(submissionId);
-					LineInfo wrongColsCountsRows = wrongColsCounts.get(0);
-					e.setLineNumber(wrongColsCountsRows.getLineNumber());
-					e.setFoundValue("" + wrongColsCountsRows.getColNumber());
-					e.setExpectedValue("" + sourceFieldDescriptors.size());
-					throw e;
-				} else {
-					// Few lignes have a wrong number of column
-					for (int i = 0; i < wrongColsCounts.size(); i++) {
-						CheckException e = new CheckException(WRONG_FIELD_NUMBER);
-						e.setSourceFormat(sourceFormat);
-						e.setSubmissionId(submissionId);
-						LineInfo wrongColsCountsRows = wrongColsCounts.get(i);
-						e.setLineNumber(wrongColsCountsRows.getLineNumber());
-						e.setFoundValue("" + wrongColsCountsRows.getColNumber());
-						e.setExpectedValue("" + sourceFieldDescriptors.size());
-						if (i != wrongColsCounts.size() - 1) {
-							e.setSourceFormat(sourceFormat);
-							e.setSubmissionId(submissionId);
-							logger.error("CheckException", e);
-							// Store the check exception in database
-							checkErrorDAO.createCheckError(e);
-						} else {
-							throw e;
-						}
-
-					}
-				}
+			// check that the file as the expected number of columns
+			if (csvFile.getColsCount() != sourceFieldDescriptors.size()) {
+				CheckException e = new CheckException(WRONG_FIELD_NUMBER);
+				e.setSourceFormat(sourceFormat);
+				e.setSubmissionId(submissionId);
+				throw e;
 			}
+
+			// Store the name and path of the file
+			submissionDAO.addSubmissionFile(submissionId, sourceFormat, filePath, csvFile.getRowsCount());
 
 			// Get the destination formats
 			Map<String, TableFormatData> destFormatsMap = metadataDAO.getFormatMapping(sourceFormat, MappingTypes.FILE_MAPPING);
 
 			// Prepare the storage of the description of the destination tables
-			Map<String, List<TableFieldData>> tableFieldsMap = new HashMap<String, List<TableFieldData>>();
+			Map<String, Map<String, TableFieldData>> tableFieldsMap = new HashMap<String, Map<String, TableFieldData>>();
 
 			// Get the description of the destination tables
 			Iterator<TableFormatData> destFormatIter = destFormatsMap.values().iterator();
 			while (destFormatIter.hasNext()) {
 				TableFormatData destFormat = destFormatIter.next();
 
-				// Get the list of fiels for the table
-				List<TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat());
+				// Get the list of fields for the table
+				// TODO : Filter on the dataset fields only (+ common fields like provider_id)
+				Map<String, TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat(), true);
 
 				// Store in a map
 				tableFieldsMap.put(destFormat.getFormat(), destFieldDescriptors);
@@ -137,7 +129,7 @@ public class IntegrationService extends GenericMapper {
 
 			// Get the field mapping
 			// We create a map, giving for each field name a descriptor with the name of the destination table and column.
-			Map<String, TableFieldData> mappedFieldDescriptors = metadataDAO.getFieldMapping(sourceFormat, MappingTypes.FILE_MAPPING);
+			Map<String, TableFieldData> mappedFieldDescriptors = metadataDAO.getFileToTableMapping(sourceFormat);
 
 			// Prepare the common destination fields for each table (indexed by destination format)
 			Map<String, GenericData> commonFieldsMap = new HashMap<String, GenericData>();
@@ -147,26 +139,32 @@ public class IntegrationService extends GenericMapper {
 			while (destFormatIter.hasNext()) {
 				TableFormatData destFormat = destFormatIter.next();
 
-				List<TableFieldData> destFieldDescriptors = tableFieldsMap.get(destFormat.getFormat());
+				Map<String, TableFieldData> destFieldDescriptors = tableFieldsMap.get(destFormat.getFormat());
 
-				Iterator<TableFieldData> destDescriptorIter = destFieldDescriptors.iterator();
+				Iterator<String> destDescriptorIter = destFieldDescriptors.keySet().iterator();
 				while (destDescriptorIter.hasNext()) {
-					TableFieldData destFieldDescriptor = destDescriptorIter.next();
+					String sourceData = destDescriptorIter.next();
+					TableFieldData destFieldDescriptor = destFieldDescriptors.get(sourceData);
 
 					// If the field is not in the mapping
-					TableFieldData destFound = mappedFieldDescriptors.get(destFieldDescriptor.getFieldName());
+					TableFieldData destFound = mappedFieldDescriptors.get(sourceData);
 					if (destFound == null) {
 
 						// We look in the request parameters for the missing field
-						String value = requestParameters.get(destFieldDescriptor.getFieldName());
+						String value = requestParameters.get(destFieldDescriptor.getData());
 						if (value != null) {
 
-							// We get the metadata for the fieldFieldData
-							FieldData fieldData = metadataDAO.getFileField(destFieldDescriptor.getFieldName());
+							// We create the metadata for a virtual source file
+							FileFieldData fieldData = new FileFieldData();
+							fieldData.setData(destFieldDescriptor.getData());
+							fieldData.setFormat(destFieldDescriptor.getFormat());
+							fieldData.setType(destFieldDescriptor.getType());
+							fieldData.setUnit(destFieldDescriptor.getUnit());
+							fieldData.setIsMandatory(true);
 
 							// We add it to the common fields
 							GenericData commonField = new GenericData();
-							commonField.setFormat(destFieldDescriptor.getFieldName());
+							commonField.setFormat(destFieldDescriptor.getData());
 							commonField.setColumnName(destFieldDescriptor.getColumnName());
 							commonField.setType(fieldData.getType());
 							commonField.setValue(convertType(fieldData, value));
@@ -178,7 +176,9 @@ public class IntegrationService extends GenericMapper {
 			}
 
 			// Travel the content of the csv file line by line
-			for (int row = 0; row < csvFile.getRowsCount(); row++) {
+			int row = 1;
+			String[] csvLine = csvFile.readNextLine();
+			while (csvLine != null) {
 
 				try {
 
@@ -193,13 +193,13 @@ public class IntegrationService extends GenericMapper {
 					for (int col = 0; col < csvFile.getColsCount(); col++) {
 
 						// Get the value to insert
-						String value = csvFile.getData(row, col);
+						String value = csvLine[col];
 
 						// The value once transformed into an Object
 						Object valueObj = null;
 
 						// Get the field descriptor
-						FieldData sourceFieldDescriptor = sourceFieldDescriptors.get(col);
+						FileFieldData sourceFieldDescriptor = sourceFieldDescriptors.get(col);
 
 						// Check the mask if available and the variable is not a date (date format is tested with a date format)
 						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE)) {
@@ -301,6 +301,9 @@ public class IntegrationService extends GenericMapper {
 
 				}
 
+				csvLine = csvFile.readNextLine();
+				row++;
+
 			}
 		} catch (CheckException ce) {
 			// File-Level catch of checked exceptions
@@ -323,6 +326,10 @@ public class IntegrationService extends GenericMapper {
 			// Store the check exception in database
 			checkErrorDAO.createCheckError(ce);
 
+		} finally {
+			if (csvFile != null) {
+				csvFile.close();
+			}
 		}
 
 		return isInsertValid;

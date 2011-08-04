@@ -18,8 +18,8 @@ public class AbstractThread extends Thread {
 	}
 
 	/**
-	 * @param currentName
-	 *            the currentName to set
+	 * @param taskName
+	 *            the taskName to set
 	 */
 	public void setTaskName(String taskName) {
 		this.taskName = taskName;

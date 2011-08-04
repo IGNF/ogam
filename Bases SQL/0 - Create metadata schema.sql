@@ -11,7 +11,6 @@ DATA                 VARCHAR(36)          not null,
 UNIT                 VARCHAR(36)          not null,
 LABEL                VARCHAR(60)          null,
 DEFINITION           VARCHAR(255)         null,
-MASK                 VARCHAR(100)         null,
 COMMENT              VARCHAR(255)         null,
 constraint PK_DATA primary key (DATA)
 );
@@ -20,106 +19,120 @@ COMMENT ON COLUMN DATA.DATA IS 'The logical name of the data';
 COMMENT ON COLUMN DATA.UNIT IS 'The unit of the data';
 COMMENT ON COLUMN DATA.LABEL IS 'The label of the data';
 COMMENT ON COLUMN DATA.DEFINITION IS 'The definition of the data (used in tooltips)';
-COMMENT ON COLUMN DATA.MASK IS 'A mask used to validate the data';
 COMMENT ON COLUMN DATA.COMMENT IS 'Any comment on the data';
 
 
-
 /*==============================================================*/
-/* Table : FIELD                                                */
+/* Table : UNIT                                                 */
 /*==============================================================*/
-create table FIELD (
-DATA                 VARCHAR(36)             not null,
-FORMAT               VARCHAR(36)             not null,
-TYPE                 VARCHAR(36)             null,
-constraint PK_FIELD primary key (DATA, FORMAT)
+create table UNIT (
+UNIT                 VARCHAR(36)          not null,
+TYPE                 VARCHAR(36)          null,
+SUBTYPE              VARCHAR(36)          null,
+LABEL                VARCHAR(60)          null,
+DEFINITION           VARCHAR(255)         null,
+constraint PK_UNIT primary key (UNIT)
 );
 
-COMMENT ON COLUMN FIELD.DATA IS 'The logical name of the field';
-COMMENT ON COLUMN FIELD.FORMAT IS 'The name of the format containing this field';
-COMMENT ON COLUMN FIELD.TYPE IS 'The type of the field (FILE, FORM or TABLE)';
+COMMENT ON COLUMN UNIT.UNIT IS 'The logical name of the unit';
+COMMENT ON COLUMN UNIT.TYPE IS 'The type of the unit (BOOLEAN, CODE, ARRAY (of code), COORDINATE, DATE, INTEGER, NUMERIC or STRING)';
+COMMENT ON COLUMN UNIT.SUBTYPE IS 'The sub-type of the unit (MODE, TREE or DYNAMIC for CODE or ARRAY, RANGE for numeric)';
+COMMENT ON COLUMN UNIT.LABEL IS 'The label of the unit';
+COMMENT ON COLUMN UNIT.DEFINITION IS 'The definition of the unit';
+
 
 /*==============================================================*/
-/* Table : FILE_FIELD                                           */
+/* Table : MODE                                                 */
 /*==============================================================*/
-create table FILE_FIELD (
-DATA                 VARCHAR(36)          not null,
-FORMAT               VARCHAR(36)          not null,
-IS_MANDATORY         CHAR(1)          	  null,
-POSITION             INT4                 null,
-constraint PK_FILE_FIELD primary key (DATA, FORMAT)
+create table MODE (
+UNIT                 VARCHAR(36)             not null,
+CODE                 VARCHAR(36)             not null,
+POSITION           	 INT4                 null,
+LABEL                VARCHAR(255)         null,
+DEFINITION           VARCHAR(255)         null,
+constraint PK_MODE primary key (UNIT, CODE)
 );
 
-COMMENT ON COLUMN FILE_FIELD.DATA IS 'The logical name of the field';
-COMMENT ON COLUMN FILE_FIELD.FORMAT IS 'The name of the file format containing this field';
-COMMENT ON COLUMN FILE_FIELD.IS_MANDATORY IS 'Is the field mandatory?';
-COMMENT ON COLUMN FILE_FIELD.POSITION IS 'The position of this field in the file';
+COMMENT ON COLUMN MODE.UNIT IS 'The unit';
+COMMENT ON COLUMN MODE.CODE IS 'The code';
+COMMENT ON COLUMN MODE.POSITION IS 'The position of this mode in the list';
+COMMENT ON COLUMN MODE.LABEL IS 'The label';
+COMMENT ON COLUMN MODE.DEFINITION IS 'The definition of the mode';
 
 /*==============================================================*/
-/* Table : FORM_FIELD                                           */
+/* Table : GROUP_MODE                                                 */
 /*==============================================================*/
-create table FORM_FIELD (
-DATA                 VARCHAR(36)          not null,
-FORMAT               VARCHAR(36)          not null,
-IS_CRITERIA          CHAR(1)              null,
-IS_RESULT            CHAR(1)              null,
-INPUT_TYPE           VARCHAR(128)         null,
-POSITION             INT4                 null,
-IS_DEFAULT_CRITERIA  CHAR(1)              null,
-IS_DEFAULT_RESULT    CHAR(1)              null,
-DEFAULT_VALUE        VARCHAR(255)         null,
-DECIMALS       		 INT		          null,
-constraint PK_FORM_FIELD primary key (DATA, FORMAT)
+create table GROUP_MODE (
+SRC_UNIT                 VARCHAR(36)             not null,
+SRC_CODE                 VARCHAR(36)             not null,
+DST_UNIT           	     VARCHAR(36)             not null,
+DST_CODE                 VARCHAR(36)             not null,
+COMMENT                  VARCHAR(255)            null,
+constraint PK_GROUP_MODE primary key (SRC_UNIT, SRC_CODE, DST_UNIT, DST_CODE)
 );
 
-COMMENT ON COLUMN FORM_FIELD.DATA IS 'The logical name of the field';
-COMMENT ON COLUMN FORM_FIELD.FORMAT IS 'The name of the form format containing this field';
-COMMENT ON COLUMN FORM_FIELD.IS_CRITERIA IS 'Can this field be used as a criteria?';
-COMMENT ON COLUMN FORM_FIELD.IS_RESULT IS 'Can this field be displayed as a result?';
-COMMENT ON COLUMN FORM_FIELD.INPUT_TYPE IS 'The input type associed with this field (TEXT, DATE, GEOM, NUMERIC, SELECT)';
-COMMENT ON COLUMN FORM_FIELD.POSITION IS 'The position of this field in the form';
-COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_CRITERIA IS 'Is this field selected by default as a criteria?';
-COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_RESULT IS 'Is this field selected by default as a result?';
-COMMENT ON COLUMN FORM_FIELD.DEFAULT_VALUE IS 'The default value for the criteria (multiple values are separated by a semicolon)';
-COMMENT ON COLUMN FORM_FIELD.DECIMALS IS 'The number of decimals to be displayed for numeric values';
+COMMENT ON COLUMN GROUP_MODE.SRC_UNIT IS 'The source unit';
+COMMENT ON COLUMN GROUP_MODE.SRC_CODE IS 'The source code';
+COMMENT ON COLUMN GROUP_MODE.DST_UNIT IS 'The destination unit';
+COMMENT ON COLUMN GROUP_MODE.DST_CODE IS 'The destination code';
+COMMENT ON COLUMN GROUP_MODE.COMMENT IS 'Any comment';
+
+
 
 /*==============================================================*/
-/* Table : TABLE_FIELD                                          */
+/* Table : MODE_TREE                                            */
 /*==============================================================*/
-create table TABLE_FIELD (
-DATA                 VARCHAR(36)          not null,
-FORMAT               VARCHAR(36)          not null,
-COLUMN_NAME          VARCHAR(36)          null,
-IS_CALCULATED        CHAR(1)		      null,
-IS_AGGREGATABLE      CHAR(1)		      null,
-COMMENT		         VARCHAR(255)         null,
-constraint PK_TABLE_FIELD primary key (DATA, FORMAT)
+create table MODE_TREE (
+UNIT                 VARCHAR(36)          not null,
+CODE                 VARCHAR(36)          not null,
+PARENT_CODE          VARCHAR(36)          null,
+LABEL                VARCHAR(255)          null,
+DEFINITION           VARCHAR(255)         null,
+POSITION			 INTEGER              null,
+IS_LEAF			     CHAR(1)              null,
+constraint PK_MODE_TREE primary key (UNIT, CODE)
 );
 
-COMMENT ON COLUMN TABLE_FIELD.DATA IS 'The logical name of the field';
-COMMENT ON COLUMN TABLE_FIELD.FORMAT IS 'The name of the table format containing this field';
-COMMENT ON COLUMN TABLE_FIELD.COLUMN_NAME IS 'The real name of the column';
-COMMENT ON COLUMN TABLE_FIELD.IS_CALCULATED IS 'Indicate if the field should be provided for insertion (value = 0) or if it is calculated by a trigger function (value = 1)';
-COMMENT ON COLUMN TABLE_FIELD.IS_AGGREGATABLE IS 'Indicate if the field can be used as an aggegrated value';
-COMMENT ON COLUMN TABLE_FIELD.COMMENT IS 'Any comment';
+COMMENT ON COLUMN MODE_TREE.UNIT IS 'The unit';
+COMMENT ON COLUMN MODE_TREE.CODE IS 'The code of the mode';
+COMMENT ON COLUMN MODE_TREE.PARENT_CODE IS 'The parent code';
+COMMENT ON COLUMN MODE_TREE.LABEL IS 'The label';
+COMMENT ON COLUMN MODE_TREE.DEFINITION IS 'The definition of the mode';
+COMMENT ON COLUMN MODE_TREE.POSITION IS 'The position of the mode';
+COMMENT ON COLUMN MODE_TREE.IS_LEAF IS 'Indicate if the node is a leaf (1 for true)';
+
+
+
+
 
 /*==============================================================*/
-/* Table : FIELD_MAPPING                                        */
+/* Table : DYNAMODE                                            */
 /*==============================================================*/
-create table FIELD_MAPPING (
-SRC_DATA             VARCHAR(36)             not null,
-SRC_FORMAT           VARCHAR(36)             not null,
-DST_DATA             VARCHAR(36)             not null,
-DST_FORMAT           VARCHAR(36)             not null,
-MAPPING_TYPE         VARCHAR(36)             not null,
-constraint PK_FIELD_MAPPING primary key (SRC_DATA, SRC_FORMAT, DST_DATA, DST_FORMAT)
+create table DYNAMODE (
+UNIT                 VARCHAR(36)          not null,
+SQL                  TEXT          not null,
+constraint PK_DYNAMODE primary key (UNIT)
 );
 
-COMMENT ON COLUMN FIELD_MAPPING.SRC_DATA IS 'The source data';
-COMMENT ON COLUMN FIELD_MAPPING.SRC_FORMAT IS 'The source format';
-COMMENT ON COLUMN FIELD_MAPPING.DST_DATA IS 'The destination data';
-COMMENT ON COLUMN FIELD_MAPPING.DST_FORMAT IS 'The destination format';
-COMMENT ON COLUMN FIELD_MAPPING.MAPPING_TYPE IS 'The type of mapping (FORM, FIELD)';
+COMMENT ON COLUMN DYNAMODE.UNIT IS 'The unit';
+COMMENT ON COLUMN DYNAMODE.SQL IS 'The sql query that will generate the list of codes. A sorted list of uniques CODE, LABEL is expected';
+
+
+
+
+/*==============================================================*/
+/* Table : RANGE                                                */
+/*==============================================================*/
+create table RANGE (
+UNIT                 VARCHAR(36)             not null,
+MIN                  FLOAT8               null,
+MAX                  FLOAT8               null,
+constraint PK_RANGE primary key (UNIT)
+);
+
+COMMENT ON COLUMN RANGE.UNIT IS 'The unit';
+COMMENT ON COLUMN RANGE.MIN IS 'The minimal value of the range';
+COMMENT ON COLUMN RANGE.MAX IS 'The maximal value of the range';
 
 
 /*==============================================================*/
@@ -178,6 +191,7 @@ FORMAT               VARCHAR(36)          not null,
 TABLE_NAME           VARCHAR(36)          null,
 SCHEMA_CODE          VARCHAR(36)          null,
 PRIMARY_KEY          VARCHAR(255)         null,
+LABEL				 VARCHAR(255)         null,
 constraint PK_TABLE_FORMAT primary key (FORMAT)
 );
 
@@ -185,73 +199,109 @@ COMMENT ON COLUMN TABLE_FORMAT.FORMAT IS 'The logical name of the format';
 COMMENT ON COLUMN TABLE_FORMAT.TABLE_NAME IS 'The real name of the table';
 COMMENT ON COLUMN TABLE_FORMAT.SCHEMA_CODE IS 'The code of the schema (not used)';
 COMMENT ON COLUMN TABLE_FORMAT.PRIMARY_KEY IS 'The list of table fields used to identify one line of this table (separated by commas)';
+COMMENT ON COLUMN TABLE_FORMAT.LABEL IS 'A label for the table (displayed on the detail panel)';
+
+
 
 /*==============================================================*/
-/* Table : MODE                                                 */
+/* Table : FIELD                                                */
 /*==============================================================*/
-create table MODE (
-UNIT                 VARCHAR(36)             not null,
-CODE                 VARCHAR(36)             not null,
-POSITION           	 INT4                 null,
-LABEL                VARCHAR(255)         null,
-DEFINITION           VARCHAR(255)         null,
-constraint PK_MODE primary key (UNIT, CODE)
+create table FIELD (
+DATA                 VARCHAR(36)             not null,
+FORMAT               VARCHAR(36)             not null,
+TYPE                 VARCHAR(36)             null,
+constraint PK_FIELD primary key (DATA, FORMAT)
 );
 
-COMMENT ON COLUMN MODE.UNIT IS 'The unit';
-COMMENT ON COLUMN MODE.CODE IS 'The code';
-COMMENT ON COLUMN MODE.POSITION IS 'The position of this mode in the list';
-COMMENT ON COLUMN MODE.LABEL IS 'The label';
-COMMENT ON COLUMN MODE.DEFINITION IS 'The definition of the mode';
+COMMENT ON COLUMN FIELD.DATA IS 'The logical name of the field';
+COMMENT ON COLUMN FIELD.FORMAT IS 'The name of the format containing this field';
+COMMENT ON COLUMN FIELD.TYPE IS 'The type of the field (FILE, FORM or TABLE)';
 
 /*==============================================================*/
-/* Table : GROUP_MODE                                                 */
+/* Table : FILE_FIELD                                           */
 /*==============================================================*/
-create table GROUP_MODE (
-SRC_UNIT                 VARCHAR(36)             not null,
-SRC_CODE                 VARCHAR(36)             not null,
-DST_UNIT           	     VARCHAR(36)             not null,
-DST_CODE                 VARCHAR(36)             not null,
-COMMENT                  VARCHAR(255)            null,
-constraint PK_GROUP_MODE primary key (SRC_UNIT, SRC_CODE, DST_UNIT, DST_CODE)
+create table FILE_FIELD (
+DATA                 VARCHAR(36)          not null,
+FORMAT               VARCHAR(36)          not null,
+IS_MANDATORY         CHAR(1)          	  null,
+MASK                 VARCHAR(100)         null,
+POSITION             INT4                 null,
+constraint PK_FILE_FIELD primary key (DATA, FORMAT)
 );
 
-COMMENT ON COLUMN GROUP_MODE.SRC_UNIT IS 'The source unit';
-COMMENT ON COLUMN GROUP_MODE.SRC_CODE IS 'The source code';
-COMMENT ON COLUMN GROUP_MODE.DST_UNIT IS 'The destination unit';
-COMMENT ON COLUMN GROUP_MODE.DST_CODE IS 'The destination code';
-COMMENT ON COLUMN GROUP_MODE.COMMENT IS 'Any comment';
-
+COMMENT ON COLUMN FILE_FIELD.DATA IS 'The logical name of the field';
+COMMENT ON COLUMN FILE_FIELD.FORMAT IS 'The name of the file format containing this field';
+COMMENT ON COLUMN FILE_FIELD.IS_MANDATORY IS 'Is the field mandatory?';
+COMMENT ON COLUMN FILE_FIELD.MASK IS 'A mask used to validate the data';
+COMMENT ON COLUMN FILE_FIELD.POSITION IS 'The position of this field in the file';
 
 /*==============================================================*/
-/* Table : RANGE                                                */
+/* Table : FORM_FIELD                                           */
 /*==============================================================*/
-create table RANGE (
-UNIT                 VARCHAR(36)             not null,
-MIN                  FLOAT8               null,
-MAX                  FLOAT8               null,
-constraint PK_RANGE primary key (UNIT)
+create table FORM_FIELD (
+DATA                 VARCHAR(36)          not null,
+FORMAT               VARCHAR(36)          not null,
+IS_CRITERIA          CHAR(1)              null,
+IS_RESULT            CHAR(1)              null,
+INPUT_TYPE           VARCHAR(128)         null,
+POSITION             INT4                 null,
+IS_DEFAULT_CRITERIA  CHAR(1)              null,
+IS_DEFAULT_RESULT    CHAR(1)              null,
+DEFAULT_VALUE        VARCHAR(255)         null,
+DECIMALS       		 INT		          null,
+MASK                 VARCHAR(100)         null,
+constraint PK_FORM_FIELD primary key (DATA, FORMAT)
 );
 
-COMMENT ON COLUMN RANGE.UNIT IS 'The unit';
-COMMENT ON COLUMN RANGE.MIN IS 'The minimal value of the range';
-COMMENT ON COLUMN RANGE.MAX IS 'The maximal value of the range';
+COMMENT ON COLUMN FORM_FIELD.DATA IS 'The logical name of the field';
+COMMENT ON COLUMN FORM_FIELD.FORMAT IS 'The name of the form format containing this field';
+COMMENT ON COLUMN FORM_FIELD.IS_CRITERIA IS 'Can this field be used as a criteria?';
+COMMENT ON COLUMN FORM_FIELD.IS_RESULT IS 'Can this field be displayed as a result?';
+COMMENT ON COLUMN FORM_FIELD.INPUT_TYPE IS 'The input type associed with this field (TEXT, DATE, GEOM, NUMERIC, SELECT, CHECKBOX, MULTIPLE, TREE)';
+COMMENT ON COLUMN FORM_FIELD.POSITION IS 'The position of this field in the form';
+COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_CRITERIA IS 'Is this field selected by default as a criteria?';
+COMMENT ON COLUMN FORM_FIELD.IS_DEFAULT_RESULT IS 'Is this field selected by default as a result?';
+COMMENT ON COLUMN FORM_FIELD.DEFAULT_VALUE IS 'The default value for the criteria (multiple values are separated by a semicolon)';
+COMMENT ON COLUMN FORM_FIELD.DECIMALS IS 'The number of decimals to be displayed for numeric values';
+COMMENT ON COLUMN FORM_FIELD.MASK IS 'A mask used to validate the data (the format for date values)';
 
 /*==============================================================*/
-/* Table : UNIT                                                 */
+/* Table : TABLE_FIELD                                          */
 /*==============================================================*/
-create table UNIT (
-UNIT                 VARCHAR(36)          not null,
-TYPE                 VARCHAR(36)          null,
-LABEL                VARCHAR(60)          null,
-DEFINITION           VARCHAR(255)         null,
-constraint PK_UNIT primary key (UNIT)
+create table TABLE_FIELD (
+DATA                 VARCHAR(36)          not null,
+FORMAT               VARCHAR(36)          not null,
+COLUMN_NAME          VARCHAR(36)          null,
+IS_CALCULATED        CHAR(1)		      null,
+POSITION             INT4                 null,
+COMMENT		         VARCHAR(255)         null,
+constraint PK_TABLE_FIELD primary key (DATA, FORMAT)
 );
 
-COMMENT ON COLUMN UNIT.UNIT IS 'The logical name of the unit';
-COMMENT ON COLUMN UNIT.TYPE IS 'The type of the unit (BOOLEAN, CODE, COORDINATE, DATE, INTEGER, NUMERIC, RANGE or STRING)';
-COMMENT ON COLUMN UNIT.LABEL IS 'The label of the unit';
-COMMENT ON COLUMN UNIT.DEFINITION IS 'The definition of the unit';
+COMMENT ON COLUMN TABLE_FIELD.DATA IS 'The logical name of the field';
+COMMENT ON COLUMN TABLE_FIELD.FORMAT IS 'The name of the table format containing this field';
+COMMENT ON COLUMN TABLE_FIELD.COLUMN_NAME IS 'The real name of the column';
+COMMENT ON COLUMN TABLE_FIELD.IS_CALCULATED IS 'Indicate if the field should be provided for insertion (value = 0) or if it is calculated by a trigger function (value = 1)';
+COMMENT ON COLUMN TABLE_FIELD.POSITION IS 'The position of this field in the table (for the detail panel and the edition module)';
+COMMENT ON COLUMN TABLE_FIELD.COMMENT IS 'Any comment';
+
+/*==============================================================*/
+/* Table : FIELD_MAPPING                                        */
+/*==============================================================*/
+create table FIELD_MAPPING (
+SRC_DATA             VARCHAR(36)             not null,
+SRC_FORMAT           VARCHAR(36)             not null,
+DST_DATA             VARCHAR(36)             not null,
+DST_FORMAT           VARCHAR(36)             not null,
+MAPPING_TYPE         VARCHAR(36)             not null,
+constraint PK_FIELD_MAPPING primary key (SRC_DATA, SRC_FORMAT, DST_DATA, DST_FORMAT)
+);
+
+COMMENT ON COLUMN FIELD_MAPPING.SRC_DATA IS 'The source data';
+COMMENT ON COLUMN FIELD_MAPPING.SRC_FORMAT IS 'The source format';
+COMMENT ON COLUMN FIELD_MAPPING.DST_DATA IS 'The destination data';
+COMMENT ON COLUMN FIELD_MAPPING.DST_FORMAT IS 'The destination format';
+COMMENT ON COLUMN FIELD_MAPPING.MAPPING_TYPE IS 'The type of mapping (FORM, FIELD)';
 
 
 /*==============================================================*/
@@ -335,32 +385,6 @@ COMMENT ON COLUMN TABLE_TREE.COMMENT IS 'Any comment';
 
 
 
-
-/*==============================================================*/
-/* Table : MODE_TREE                                            */
-/*==============================================================*/
-create table MODE_TREE (
-UNIT                 VARCHAR(36)          not null,
-CODE                 VARCHAR(36)          not null,
-PARENT_CODE          VARCHAR(36)          null,
-LABEL                VARCHAR(60)          null,
-DEFINITION           VARCHAR(255)         null,
-POSITION			 INTEGER              null,
-__IS_LEAF			 CHAR(1)              null,
-constraint PK_MODE_TREE primary key (UNIT, CODE)
-);
-
-COMMENT ON COLUMN MODE_TREE.UNIT IS 'The unit';
-COMMENT ON COLUMN MODE_TREE.CODE IS 'The code of the mode';
-COMMENT ON COLUMN MODE_TREE.PARENT_CODE IS 'The parent code';
-COMMENT ON COLUMN MODE_TREE.LABEL IS 'The label';
-COMMENT ON COLUMN MODE_TREE.DEFINITION IS 'The definition of the mode';
-COMMENT ON COLUMN MODE_TREE.POSITION IS 'The position of the mode';
-COMMENT ON COLUMN MODE_TREE.__IS_LEAF IS 'Indicate if the node is a leaf (1 for true)';
-
-
-
-
 /*==============================================================*/
 /* Table : CHECKS                                               */
 /*==============================================================*/
@@ -372,7 +396,7 @@ LABEL                VARCHAR(60)          null,
 DESCRIPTION          VARCHAR(500)         null,
 STATEMENT            VARCHAR(4000)        null,
 IMPORTANCE           VARCHAR(36)          null,
-_CREATIONDT          DATE                 null,
+_CREATIONDT          timestamp without time zone DEFAULT now(),
 constraint PK_CHECKS primary key (CHECK_ID)
 );
 
@@ -387,19 +411,53 @@ COMMENT ON COLUMN CHECKS._CREATIONDT IS 'The creation date';
 
 
 /*==============================================================*/
-/* Table : CHECKS_PER_COUNTRY                                   */
-/* A '*' country code means that the check is always done       */
+/* Table : CHECKS_PER_PROVIDER                                  */
+/* A '*' provider code means that the check is always done      */
 /*==============================================================*/
-create table CHECKS_PER_COUNTRY (
+create table CHECKS_PER_PROVIDER (
 CHECK_ID             INT4                 not null,
 DATASET_ID           VARCHAR(36)          not null,
-COUNTRY_CODE         VARCHAR(36)          null,
-constraint PK_CHECKS_PER_COUNTRY primary key (CHECK_ID, DATASET_ID, COUNTRY_CODE)
+PROVIDER_ID          VARCHAR(36)          null,
+constraint PK_CHECKS_PER_PROVIDER primary key (CHECK_ID, DATASET_ID, PROVIDER_ID)
 );
 
-COMMENT ON COLUMN CHECKS_PER_COUNTRY.CHECK_ID IS 'The identifier of the check';
-COMMENT ON COLUMN CHECKS_PER_COUNTRY.DATASET_ID IS 'The identifier of the dataset';
-COMMENT ON COLUMN CHECKS_PER_COUNTRY.COUNTRY_CODE IS 'The identifier of the country (* for all countries)';
+COMMENT ON COLUMN CHECKS_PER_PROVIDER.CHECK_ID IS 'The identifier of the check';
+COMMENT ON COLUMN CHECKS_PER_PROVIDER.DATASET_ID IS 'The identifier of the dataset';
+COMMENT ON COLUMN CHECKS_PER_PROVIDER.PROVIDER_ID IS 'The identifier of the provider (* for all providers)';
+
+
+
+
+
+
+/*==============================================================*/
+/* Table : PROCESS                                              */
+/*==============================================================*/
+CREATE TABLE metadata.process
+(
+  process_id character varying(50) NOT NULL, -- The name/identifier of the post-processing treatment
+  step character varying(50), -- The step of the process (INTEGRATION or HARMONIZATION)
+  label character varying(60), -- The label of the process
+  description character varying(500), -- The description the process
+  "statement" character varying(4000), -- The SQL statement corresponding to the process
+  _creationdt timestamp without time zone DEFAULT now(), -- The creation date
+  CONSTRAINT pk_process PRIMARY KEY (process_id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+COMMENT ON COLUMN metadata.process.process_id IS 'The name/identifier of the post-processing treatment';
+COMMENT ON COLUMN metadata.process.step IS 'The step of the process (INTEGRATION or HARMONIZATION)';
+COMMENT ON COLUMN metadata.process.label IS 'The label of the process';
+COMMENT ON COLUMN metadata.process.description IS 'The description the process';
+COMMENT ON COLUMN metadata.process."statement" IS 'The SQL statement corresponding to the process';
+COMMENT ON COLUMN metadata.process._creationdt IS 'The creation date';
+
+
+
+
 
 
 alter table DATA

@@ -1,0 +1,77 @@
+﻿﻿##########################
+#   Validation           #
+##########################
+notMatch;Password confirmation does not match
+userNotExist;This login doesn't exist
+userExist;This login already exist
+Incorrect password;Incorrect password
+
+##########################
+#   Layout               #
+##########################
+Log out;Log out
+Log in;Log in
+Change login;Change login
+Contact Us;Contact Us
+Layout Head Title;OGAM Application
+Layout Head Meta Keywords;eforest, efdac, jrc, forest
+Layout Head Meta Description;European Forest Data Center
+Layout Copyright;Copyright © IFN 2010. Reproduction authorized provided the source is acknowledged.
+Layout Pathway Home;Home
+
+﻿##########################
+#   Index                #
+##########################
+Select a menu;Select a menu
+Welcome;Welcome to the OGAM web site !
+Data Integration;Data Integration
+Data Edition;Data Edition
+Visualize Raw Data;Visualize Raw Data
+Query Data;Visualize Raw Data
+Data Harmonization;Data Harmonization
+Visualize Harmonized Data;Visualize Harmonized Data
+Query Harmonized Data;Visualize Harmonized Data
+User Administration;User Administration
+Manage Users;User Administration
+
+﻿##########################
+#   User login           #
+##########################
+User Module;User Module
+Please login:;Please login:
+Login;Login
+Password;Password
+
+﻿##########################
+#  Data integration      #
+##########################
+Data integration module;Data integration module
+Submit Data;Submit Data
+Submission ID;Submission ID
+Provider Id;Provider Id
+Dataset;Dataset
+Step;Step
+Status;Status
+File;File
+Lines;Lines
+Actions;Actions
+Create data submission;Create data submission
+Upload Data;Upload Data
+Check data;Check data
+Show report;Show report
+Validate data;Validate submission
+Cancel Submission;Cancel submission
+Confirm validation;Once validated the data will be available for agregation. Do you confirm?
+Submit;Submit
+Error;Error
+The expected fields are:;The expected fields are:
+
+﻿##########################
+#  Data harmonization    #
+##########################
+Data harmonization module;Data harmonization module
+Harmonize Data;Harmonize Data
+Back;Back
+Launch Harmonization;Launch Harmonization
+Harmonization Date;Harmonization Date
+Confirm harmonization;Warning, this will delete and recreate all data for this data provider in the harmonized database.

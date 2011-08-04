@@ -13,7 +13,7 @@ import fr.ifn.eforest.common.business.ThreadLock;
 public class HarmonizationServiceThread extends AbstractThread {
 
 	//
-	// The Thread is always linked to a country code and a JRC Request.
+	// The Thread is always linked to a country code and a dataset.
 	//
 	private String datasetId;
 	private String providerId;
@@ -51,7 +51,7 @@ public class HarmonizationServiceThread extends AbstractThread {
 			Date startDate = new Date();
 			logger.debug("Start of the harmonization process " + startDate + ".");
 
-			// SQL Conformity checks
+			// Harmonize data
 			HarmonizationService harmonizationService = new HarmonizationService(this);
 			harmonizationService.harmonizeData(datasetId, providerId);
 

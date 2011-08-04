@@ -1,32 +1,29 @@
 package fr.ifn.eforest.common.database.metadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A table format.
  * 
  * Describes the table.
  */
-public class TableFormatData {
+public class TableFormatData extends FormatData {
 
-	private String format;
-
+	/**
+	 * The physical name of the table.
+	 */
 	private String tableName;
 
+	/**
+	 * The name of the schema.
+	 */
 	private String schemaCode;
 
 	/**
-	 * @return the format
+	 * The list of primary keys of the table.
 	 */
-	public String getFormat() {
-		return format;
-	}
-
-	/**
-	 * @param format
-	 *            the format to set
-	 */
-	public void setFormat(String format) {
-		this.format = format;
-	}
+	private List<String> primaryKeys = new ArrayList<String>();
 
 	/**
 	 * @return the tableName
@@ -59,63 +56,36 @@ public class TableFormatData {
 	}
 
 	/**
+	 * @return the primaryKeys
+	 */
+	public List<String> getPrimaryKeys() {
+		return primaryKeys;
+	}
+
+	/**
+	 * @param primaryKeys
+	 *            the primaryKeys to set
+	 */
+	public void setPrimaryKeys(List<String> primaryKeys) {
+		this.primaryKeys = primaryKeys;
+	}
+
+	/**
+	 * @param key
+	 *            the key to add
+	 */
+	public void addPrimaryKey(String key) {
+		this.primaryKeys.add(key);
+	}
+
+	/**
 	 * Return a String description of the Object.
 	 * 
 	 * @return the string
 	 */
 	@Override
 	public String toString() {
-		return getFormat() + " - " + getTableName();
-	}
-
-	/**
-	 * Return the hashcode of the object.
-	 * 
-	 * @return the hashcode
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((format == null) ? 0 : format.hashCode());
-		result = prime * result + ((schemaCode == null) ? 0 : schemaCode.hashCode());
-		return result;
-	}
-
-	/**
-	 * Check if two objects are equal.
-	 * 
-	 * @param obj
-	 *            The object to compare with
-	 * @return 0 if equals, -1 or 1 otherwise.
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		TableFormatData other = (TableFormatData) obj;
-		if (format == null) {
-			if (other.format != null) {
-				return false;
-			}
-		} else if (!format.equals(other.format)) {
-			return false;
-		}
-		if (schemaCode == null) {
-			if (other.schemaCode != null) {
-				return false;
-			}
-		} else if (!schemaCode.equals(other.schemaCode)) {
-			return false;
-		}
-		return true;
+		return getTableName();
 	}
 
 }

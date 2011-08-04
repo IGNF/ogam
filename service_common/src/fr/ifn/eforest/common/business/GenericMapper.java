@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.util.SIGUtils;
 import fr.ifn.eforest.common.util.SynchronizedDateFormat;
-import fr.ifn.eforest.common.business.UnitTypes;
 import fr.ifn.eforest.common.business.checks.CheckException;
 import fr.ifn.eforest.common.database.metadata.FieldData;
+import fr.ifn.eforest.common.database.metadata.FileFieldData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
 import fr.ifn.eforest.common.database.metadata.RangeData;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
@@ -63,9 +63,43 @@ public class GenericMapper {
 	}
 
 	/**
+	 * Check that a code value correspond to an existing code in a dynamic list.
+	 * 
+	 * @param unit
+	 *            the unit of the field to check
+	 * @param fieldValue
+	 *            the code to check
+	 */
+	protected void checkDynaCode(String unit, String fieldValue) throws Exception {
+
+		List<String> modes = metadataDAO.getDynamodes(unit);
+
+		if (!modes.contains(fieldValue)) {
+			CheckException ce = new CheckException(INVALID_CODE_FIELD);
+			throw ce;
+		}
+	}
+
+	/**
+	 * Check that a code value correspond to an existing code in a tree of codes.
+	 * 
+	 * @param unit
+	 *            the unit of the field to check
+	 * @param fieldValue
+	 *            the code to check
+	 */
+	protected void checkTreeCode(String unit, String fieldValue) throws Exception {
+
+		if (!metadataDAO.checkTreeCode(unit, fieldValue)) {
+			CheckException ce = new CheckException(INVALID_CODE_FIELD);
+			throw ce;
+		}
+	}
+
+	/**
 	 * Check that a code value correspond to an existing range.
 	 * 
-	 * @param data
+	 * @param fieldDescriptor
 	 *            the data of the field to check
 	 * @param fieldValue
 	 *            the field value
@@ -108,6 +142,30 @@ public class GenericMapper {
 	}
 
 	/**
+	 * Convert a String representing an array to an Array Object.
+	 * 
+	 * The string format is { value1, value2, value3 }
+	 * 
+	 * @param fieldValue
+	 *            the field value
+	 * @return the array object
+	 */
+	protected String[] getArray(String fieldValue) throws Exception {
+
+		fieldValue = fieldValue.replaceAll("\\{", "");
+		fieldValue = fieldValue.replaceAll("\\}", "");
+		fieldValue = fieldValue.trim();
+
+		String[] array = fieldValue.split(",");
+
+		for (int i = 0; i < array.length; i++) {
+			array[i] = ((String) array[i]).trim();
+		}
+
+		return array;
+	}
+
+	/**
 	 * Check that a value is consistent with the expected type. And convert the strig value to the expected type
 	 * 
 	 * @param fieldDescriptor
@@ -116,18 +174,17 @@ public class GenericMapper {
 	 *            the field as a String
 	 * @return the field value casted to its correct type
 	 */
-	protected Object convertType(FieldData fieldDescriptor, String fieldValue) throws Exception {
+	protected Object convertType(FileFieldData fieldDescriptor, String fieldValue) throws Exception {
 
 		try {
 
 			Object result = null;
 
 			// Just in case, replace the comma with a dot
-			String normalizedFieldValue = fieldValue.replace(",", ".");
 
 			String type = fieldDescriptor.getType();
 
-			if (normalizedFieldValue.equalsIgnoreCase("") && fieldDescriptor.getIsMandatory()) {
+			if (fieldValue.equalsIgnoreCase("") && fieldDescriptor.getIsMandatory()) {
 				throw new CheckException(MANDATORY_FIELD_MISSING);
 			}
 
@@ -135,18 +192,36 @@ public class GenericMapper {
 				result = fieldValue;
 			}
 
-			if (type.equalsIgnoreCase(CODE) && !normalizedFieldValue.equalsIgnoreCase("")) {
-				checkCode(fieldDescriptor.getUnit(), normalizedFieldValue);
+			if (type.equalsIgnoreCase(CODE) && !fieldValue.equalsIgnoreCase("")) {
+				if (fieldDescriptor.getSubtype() != null) {
+					if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.TREE)) {
+						checkTreeCode(fieldDescriptor.getUnit(), fieldValue);
+					} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.DYNAMIC)) {
+						checkDynaCode(fieldDescriptor.getUnit(), fieldValue);
+					} else {
+						checkCode(fieldDescriptor.getUnit(), fieldValue);
+					}
+				} else {
+					checkCode(fieldDescriptor.getUnit(), fieldValue);
+				}
 				result = fieldValue;
-			}
-
-			if (type.equalsIgnoreCase(RANGE) && !normalizedFieldValue.equalsIgnoreCase("")) {
-				result = checkRange(fieldDescriptor, normalizedFieldValue);
 			}
 
 			if (type.equalsIgnoreCase(NUMERIC)) {
 				try {
-					result = new BigDecimal(normalizedFieldValue);
+					String normalizedFieldValue = fieldValue.replace(",", ".");
+
+					if (fieldDescriptor.getSubtype() != null) {
+						if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.RANGE)) {
+							result = checkRange(fieldDescriptor, normalizedFieldValue);
+						} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.COORDINATE)) {
+							result = getCoordinate(normalizedFieldValue);
+						} else {
+							result = new BigDecimal(normalizedFieldValue);
+						}
+					} else {
+						result = new BigDecimal(normalizedFieldValue);
+					}
 				} catch (Exception e) {
 					if (fieldDescriptor.getIsMandatory()) {
 						throw new CheckException(INVALID_TYPE_FIELD);
@@ -156,17 +231,8 @@ public class GenericMapper {
 
 			if (type.equalsIgnoreCase(INTEGER)) {
 				try {
+					String normalizedFieldValue = fieldValue.replace(",", ".");
 					result = Integer.parseInt(normalizedFieldValue);
-				} catch (Exception e) {
-					if (fieldDescriptor.getIsMandatory()) {
-						throw new CheckException(INVALID_TYPE_FIELD);
-					}
-				}
-			}
-
-			if (type.equalsIgnoreCase(COORDINATE)) {
-				try {
-					result = getCoordinate(normalizedFieldValue);
 				} catch (Exception e) {
 					if (fieldDescriptor.getIsMandatory()) {
 						throw new CheckException(INVALID_TYPE_FIELD);
@@ -178,6 +244,7 @@ public class GenericMapper {
 				try {
 					SynchronizedDateFormat formatter = new SynchronizedDateFormat(fieldDescriptor.getMask());
 					formatter.setLenient(false);
+					String normalizedFieldValue = fieldValue.replace(",", ".");
 					result = formatter.parse(normalizedFieldValue);
 				} catch (Exception e) {
 					if (fieldDescriptor.getIsMandatory()) {
@@ -191,7 +258,7 @@ public class GenericMapper {
 
 			if (type.equalsIgnoreCase(BOOLEAN)) {
 				try {
-					if (normalizedFieldValue.trim().equals("1") || normalizedFieldValue.trim().equalsIgnoreCase("true")) {
+					if (fieldValue.trim().equals("1") || fieldValue.trim().equalsIgnoreCase("true")) {
 						result = Boolean.TRUE;
 					} else {
 						result = Boolean.FALSE;
@@ -200,6 +267,14 @@ public class GenericMapper {
 					if (fieldDescriptor.getIsMandatory()) {
 						throw new CheckException(INVALID_TYPE_FIELD);
 					}
+				}
+			}
+
+			if (type.equalsIgnoreCase(ARRAY)) {
+				try {
+					result = getArray(fieldValue);
+				} catch (Exception e) {
+					throw new CheckException(INVALID_TYPE_FIELD);
 				}
 			}
 
@@ -252,11 +327,13 @@ public class GenericMapper {
 			Iterator<TableTreeData> ancestorsIter = ancestors.iterator();
 			while (ancestorsIter.hasNext() && !found) {
 				TableTreeData ancestor = ancestorsIter.next();
-				int index = sortedTablesList.indexOf(ancestor.getParentTable());
-				if (index != -1) {
-					found = true;
-					// We insert the table just before its ancestor
-					sortedTablesList.add(index, table.getFormat());
+				if (ancestor.getParentTable() != null) {
+					int index = sortedTablesList.indexOf(ancestor.getParentTable().getFormat());
+					if (index != -1) {
+						found = true;
+						// We insert the table just before its ancestor
+						sortedTablesList.add(index, table.getFormat());
+					}
 				}
 			}
 			if (!found) {
@@ -265,8 +342,8 @@ public class GenericMapper {
 				while (ancestorsIter.hasNext()) {
 					TableTreeData ancestor = ancestorsIter.next();
 
-					if (!sortedTablesList.contains(ancestor.getTable())) {
-						sortedTablesList.add(ancestor.getTable());
+					if (!sortedTablesList.contains(ancestor.getTable().getFormat())) {
+						sortedTablesList.add(ancestor.getTable().getFormat());
 					}
 				}
 			}
@@ -341,12 +418,11 @@ public class GenericMapper {
 			String sourceTableFormat = sourceTablesIter.next();
 
 			// Get the descriptor of the table
-			List<TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat);
+			Map<String, TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat, false);
 			TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(sourceTableFormat, schema);
-			String tableName = metadataDAO.getTableName(sourceTableFormat);
 
 			// Build the SELECT clause
-			Iterator<TableFieldData> sourceFieldsIter = sourceFields.iterator();
+			Iterator<TableFieldData> sourceFieldsIter = sourceFields.values().iterator();
 			while (sourceFieldsIter.hasNext()) {
 				TableFieldData sourceField = sourceFieldsIter.next();
 				if (SELECT.equals("")) {
@@ -359,22 +435,21 @@ public class GenericMapper {
 				} else {
 					ORDER += ", ";
 				}
-				SELECT += sourceField.getTableName() + "." + sourceField.getColumnName() + " AS " + sourceField.getFormat() + "_" + sourceField.getFieldName()
-						+ " ";
+				SELECT += sourceField.getTableName() + "." + sourceField.getColumnName() + " AS " + sourceField.getFormat() + "_" + sourceField.getData() + " ";
 				ORDER += sourceField.getTableName() + "." + sourceField.getColumnName();
 				this.readColumns.add(sourceField);
 			}
 
 			// Build the FROM clause
 			if (FROM.equals("")) {
-				FROM += " FROM " + tableName;
+				FROM += " FROM " + tableDescriptor.getTable().getTableName();
 			} else {
-				FROM += " LEFT JOIN " + tableName + " ON (";
+				FROM += " LEFT JOIN " + tableDescriptor.getTable().getTableName() + " ON (";
 				Iterator<String> keyIter = tableDescriptor.getKeys().iterator();
 				while (keyIter.hasNext()) {
 					String key = keyIter.next();
-					String parentTableName = metadataDAO.getTableName(tableDescriptor.getParentTable());
-					FROM += tableName + "." + key + " = " + parentTableName + "." + key;
+					String parentTableName = tableDescriptor.getParentTable().getTableName();
+					FROM += tableDescriptor.getTable().getTableName() + "." + key + " = " + parentTableName + "." + key;
 					if (keyIter.hasNext()) {
 						FROM += " AND ";
 					}
@@ -385,11 +460,11 @@ public class GenericMapper {
 			// Build the WHERE clause
 
 			// When we find a source field that match one of our criteria, we add the clause
-			sourceFieldsIter = sourceFields.iterator();
+			sourceFieldsIter = sourceFields.values().iterator();
 			while (sourceFieldsIter.hasNext()) {
 				TableFieldData sourceField = sourceFieldsIter.next();
 
-				if (criteriaFields.containsKey(sourceField.getFieldName())) {
+				if (criteriaFields.containsKey(sourceField.getData())) {
 					if (WHERE.equals("")) {
 						WHERE += " WHERE ";
 					} else {
@@ -398,7 +473,7 @@ public class GenericMapper {
 					WHERE += sourceField.getTableName() + "." + sourceField.getColumnName() + " = ";
 
 					// Change the criteria depending on the type of the value
-					GenericData value = criteriaFields.get(sourceField.getFieldName());
+					GenericData value = criteriaFields.get(sourceField.getData());
 					if (value.getType().equalsIgnoreCase(UnitTypes.INTEGER) || value.getType().equalsIgnoreCase(UnitTypes.NUMERIC)) {
 						WHERE += value.getValue();
 					} else {
@@ -424,12 +499,18 @@ public class GenericMapper {
 	 *            the tables we want to read
 	 * @param criteriaFields
 	 *            some static values that can be used in the WHERE criteria
+	 * @param providerId
+	 *            The identifier of the provider
+	 * @param page
+	 *            the page number
+	 * @param maxlines
+	 *            the number of lines per page
 	 * @return The list of values
 	 */
 	public List<Map<String, GenericData>> readData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields,
-			String countryCode, int page, int maxlines) throws Exception {
+			String providerId, int page, int maxlines) throws Exception {
 
-		String SQL = buildSelect(schema, sourceTables, criteriaFields, countryCode);
+		String SQL = buildSelect(schema, sourceTables, criteriaFields, providerId);
 
 		// Calculate the limits
 		String LIMIT = " LIMIT " + maxlines;
@@ -452,11 +533,13 @@ public class GenericMapper {
 	 *            the tables we want to read
 	 * @param criteriaFields
 	 *            some static values that can be used in the WHERE criteria
+	 * @param providerId
+	 *            the identifier of the provider
 	 * @return The list of values
 	 */
-	public int countData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, String countryCode) throws Exception {
+	public int countData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, String providerId) throws Exception {
 
-		String SQL = buildSelect(schema, sourceTables, criteriaFields, countryCode);
+		String SQL = buildSelect(schema, sourceTables, criteriaFields, providerId);
 
 		return genericDAO.countData(SQL);
 	}

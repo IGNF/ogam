@@ -208,10 +208,12 @@ public class SubmissionDAO {
 	/**
 	 * Create a new submission.
 	 * 
-	 * @param submissionType
-	 *            the submission type
 	 * @param providerId
-	 *            the identifier of the provider
+	 *            the identifier of the data provider
+	 * @param datasetId
+	 *            the dataset identifier
+	 * @param userLogin
+	 *            the user
 	 * @return the identifier of the new submission
 	 */
 	public Integer newSubmission(String providerId, String datasetId, String userLogin) throws Exception {

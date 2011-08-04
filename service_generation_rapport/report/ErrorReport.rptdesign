@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.20" id="1">
-    <property name="createdBy">Eclipse BIRT Designer Version 2.5.0.v20090603 Build &lt;2.5.0.v20090617-0630></property>
-    <property name="units">in</property>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.22" id="1">
     <property name="comments">Copyright (c) 2006 &lt;&lt;Your Company Name here>></property>
+    <property name="createdBy">Eclipse BIRT Designer Version 2.6.2.r262_v20110209 Build &lt;2.6.2.v20110214-1523></property>
     <html-property name="description">Creates a blank report with no predefined content.</html-property>
+    <property name="units">in</property>
     <text-property name="displayName">Blank Report</text-property>
     <property name="iconFile">/templates/blank_report.gif</property>
     <property name="layoutPreference">auto layout</property>
@@ -12,10 +12,10 @@
             <property name="valueType">static</property>
             <property name="isRequired">true</property>
             <property name="dataType">integer</property>
+            <property name="distinct">true</property>
             <property name="paramType">simple</property>
             <property name="concealValue">false</property>
             <property name="controlType">text-box</property>
-            <property name="distinct">true</property>
             <structure name="format">
                 <property name="category">Unformatted</property>
             </structure>
@@ -23,15 +23,53 @@
     </parameters>
     <data-sources>
         <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="Data Source" id="6">
+            <list-property name="privateDriverProperties">
+                <ex-property>
+                    <name>metadataBidiFormatStr</name>
+                    <value>ILYNN</value>
+                </ex-property>
+                <ex-property>
+                    <name>disabledMetadataBidiFormatStr</name>
+                </ex-property>
+                <ex-property>
+                    <name>contentBidiFormatStr</name>
+                    <value>ILYNN</value>
+                </ex-property>
+                <ex-property>
+                    <name>disabledContentBidiFormatStr</name>
+                </ex-property>
+            </list-property>
             <property name="odaDriverClass">org.postgresql.Driver</property>
-            <property name="odaURL">jdbc:postgresql://localhost:5432/efdac</property>
-            <property name="odaUser">efdac</property>
-            <encrypted-property name="odaPassword" encryptionID="base64">ZWZkYWM=</encrypted-property>
+            <property name="odaURL">jdbc:postgresql://localhost:5433/oison</property>
+            <property name="odaUser">oison</property>
+            <encrypted-property name="odaPassword" encryptionID="base64">b2lzb24=</encrypted-property>
             <property name="odaJndiName">java:/comp/env/jdbc/rawdata</property>
         </oda-data-source>
     </data-sources>
     <data-sets>
         <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="submission_description" id="446">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">submissiondate</property>
+                    <text-property name="displayName">submissiondate</text-property>
+                    <text-property name="heading">submissiondate</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">dataset_id</property>
+                    <text-property name="displayName">dataset_id</text-property>
+                    <text-property name="heading">dataset_id</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">step</property>
+                    <text-property name="displayName">step</text-property>
+                    <text-property name="heading">step</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">status</property>
+                    <text-property name="displayName">status</text-property>
+                    <text-property name="heading">status</text-property>
+                </structure>
+            </list-property>
             <list-property name="parameters">
                 <structure>
                     <property name="name">submissionid</property>
@@ -55,21 +93,16 @@
                     </structure>
                     <structure>
                         <property name="position">2</property>
-                        <property name="name">country</property>
+                        <property name="name">dataset_id</property>
                         <property name="dataType">string</property>
                     </structure>
                     <structure>
                         <property name="position">3</property>
-                        <property name="name">request_id</property>
-                        <property name="dataType">string</property>
-                    </structure>
-                    <structure>
-                        <property name="position">4</property>
                         <property name="name">step</property>
                         <property name="dataType">string</property>
                     </structure>
                     <structure>
-                        <property name="position">5</property>
+                        <property name="position">4</property>
                         <property name="name">status</property>
                         <property name="dataType">string</property>
                     </structure>
@@ -85,52 +118,43 @@
                 </structure>
                 <structure>
                     <property name="position">2</property>
-                    <property name="name">country</property>
-                    <property name="nativeName">country</property>
+                    <property name="name">dataset_id</property>
+                    <property name="nativeName">dataset_id</property>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="position">3</property>
-                    <property name="name">request_id</property>
-                    <property name="nativeName">request_id</property>
-                    <property name="dataType">string</property>
-                </structure>
-                <structure>
-                    <property name="position">4</property>
                     <property name="name">step</property>
                     <property name="nativeName">step</property>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
-                    <property name="position">5</property>
+                    <property name="position">4</property>
                     <property name="name">status</property>
                     <property name="nativeName">status</property>
                     <property name="dataType">string</property>
                 </structure>
             </list-property>
             <xml-property name="queryText"><![CDATA[select _creationdt as  submissiondate, 
-	m1.label as country, 
-	ds.request_id,
+	dataset_id,
 	step,
 	status
 from submission
-left join data_submission ds using (submission_id)
-left join mode m1 on (submission.country_code = m1.code and m1.unit = 'COUNTRY_CODE')
 where submission_id = ?;]]></xml-property>
         </oda-data-set>
         <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="submitted_files" id="447">
             <list-property name="columnHints">
                 <structure>
                     <property name="columnName">file_type</property>
-                    <property name="displayName">file_type</property>
+                    <text-property name="displayName">file_type</text-property>
                 </structure>
                 <structure>
                     <property name="columnName">file_name</property>
-                    <property name="displayName">file_name</property>
+                    <text-property name="displayName">file_name</text-property>
                 </structure>
                 <structure>
                     <property name="columnName">nb_line</property>
-                    <property name="displayName">nb_line</property>
+                    <text-property name="displayName">nb_line</text-property>
                 </structure>
             </list-property>
             <list-property name="parameters">
@@ -312,15 +336,15 @@ AND ce.submission_id = ?]]></xml-property>
             <list-property name="columnHints">
                 <structure>
                     <property name="columnName">check_id</property>
-                    <property name="displayName">check_id</property>
+                    <text-property name="displayName">check_id</text-property>
                 </structure>
                 <structure>
                     <property name="columnName">error_message</property>
-                    <property name="displayName">error_message</property>
+                    <text-property name="displayName">error_message</text-property>
                 </structure>
                 <structure>
                     <property name="columnName">count</property>
-                    <property name="displayName">count</property>
+                    <text-property name="displayName">count</text-property>
                 </structure>
             </list-property>
             <list-property name="parameters">
@@ -503,15 +527,15 @@ AND ce.submission_id = ?]]></xml-property>
             <list-property name="columnHints">
                 <structure>
                     <property name="columnName">check_id</property>
-                    <property name="displayName">check_id</property>
+                    <text-property name="displayName">check_id</text-property>
                 </structure>
                 <structure>
                     <property name="columnName">error_message</property>
-                    <property name="displayName">error_message</property>
+                    <text-property name="displayName">error_message</text-property>
                 </structure>
                 <structure>
                     <property name="columnName">count</property>
-                    <property name="displayName">count</property>
+                    <text-property name="displayName">count</text-property>
                 </structure>
             </list-property>
             <list-property name="parameters">
@@ -696,7 +720,7 @@ group by check_id]]></xml-property>
         <text id="920">
             <property name="style">Title</property>
             <property name="contentType">auto</property>
-            <text-property name="content"><![CDATA[Eforest check report]]></text-property>
+            <text-property name="content"><![CDATA[OGAM check report]]></text-property>
         </text>
         <text id="934">
             <property name="style">Title2</property>
@@ -718,16 +742,6 @@ group by check_id]]></xml-property>
                     <property name="dataType">date</property>
                 </structure>
                 <structure>
-                    <property name="name">country</property>
-                    <expression name="expression">"Country : " + dataSetRow["country"]</expression>
-                    <property name="dataType">string</property>
-                </structure>
-                <structure>
-                    <property name="name">request_id</property>
-                    <expression name="expression">"JRC Request : " + dataSetRow["request_id"]</expression>
-                    <property name="dataType">string</property>
-                </structure>
-                <structure>
                     <property name="name">step</property>
                     <expression name="expression">"Step : "+dataSetRow["step"]</expression>
                     <property name="dataType">string</property>
@@ -735,6 +749,12 @@ group by check_id]]></xml-property>
                 <structure>
                     <property name="name">status</property>
                     <expression name="expression">"Status : " + dataSetRow["status"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">dataset_id</property>
+                    <text-property name="displayName">dataset_id</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["dataset_id"]</expression>
                     <property name="dataType">string</property>
                 </structure>
             </list-property>
@@ -755,15 +775,9 @@ group by check_id]]></xml-property>
                 </row>
                 <row id="942">
                     <cell id="943">
-                        <data id="955">
-                            <property name="resultSetColumn">country</property>
-                        </data>
-                    </cell>
-                </row>
-                <row id="944">
-                    <cell id="945">
-                        <data id="956">
-                            <property name="resultSetColumn">request_id</property>
+                        <data id="1166">
+                            <property name="whiteSpace">nowrap</property>
+                            <property name="resultSetColumn">dataset_id</property>
                         </data>
                     </cell>
                 </row>
@@ -799,19 +813,19 @@ group by check_id]]></xml-property>
             <list-property name="boundDataColumns">
                 <structure>
                     <property name="name">file_type</property>
-                    <property name="displayName">file_type</property>
+                    <text-property name="displayName">file_type</text-property>
                     <expression name="expression">dataSetRow["file_type"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">file_name</property>
-                    <property name="displayName">file_name</property>
+                    <text-property name="displayName">file_name</text-property>
                     <expression name="expression">dataSetRow["file_name"].substr(dataSetRow["file_name"].lastIndexOf("\\")+1)</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">nb_line</property>
-                    <property name="displayName">nb_line</property>
+                    <text-property name="displayName">nb_line</text-property>
                     <expression name="expression">dataSetRow["nb_line"]</expression>
                     <property name="dataType">integer</property>
                 </structure>
@@ -877,19 +891,19 @@ group by check_id]]></xml-property>
             <list-property name="boundDataColumns">
                 <structure>
                     <property name="name">check_id</property>
-                    <property name="displayName">check_id</property>
+                    <text-property name="displayName">check_id</text-property>
                     <expression name="expression">dataSetRow["check_id"]</expression>
                     <property name="dataType">integer</property>
                 </structure>
                 <structure>
                     <property name="name">error_message</property>
-                    <property name="displayName">error_message</property>
+                    <text-property name="displayName">error_message</text-property>
                     <expression name="expression">dataSetRow["error_message"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">count</property>
-                    <property name="displayName">count</property>
+                    <text-property name="displayName">count</text-property>
                     <expression name="expression">dataSetRow["count"]</expression>
                     <property name="dataType">decimal</property>
                 </structure>
@@ -959,19 +973,19 @@ group by check_id]]></xml-property>
             <list-property name="boundDataColumns">
                 <structure>
                     <property name="name">check_id</property>
-                    <property name="displayName">check_id</property>
+                    <text-property name="displayName">check_id</text-property>
                     <expression name="expression">dataSetRow["check_id"]</expression>
                     <property name="dataType">integer</property>
                 </structure>
                 <structure>
                     <property name="name">error_message</property>
-                    <property name="displayName">error_message</property>
+                    <text-property name="displayName">error_message</text-property>
                     <expression name="expression">dataSetRow["error_message"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">count</property>
-                    <property name="displayName">count</property>
+                    <text-property name="displayName">count</text-property>
                     <expression name="expression">dataSetRow["count"]</expression>
                     <property name="dataType">decimal</property>
                 </structure>
@@ -1052,43 +1066,43 @@ group by check_id]]></xml-property>
             <list-property name="boundDataColumns">
                 <structure>
                     <property name="name">check_id</property>
-                    <property name="displayName">check_id</property>
+                    <text-property name="displayName">check_id</text-property>
                     <expression name="expression">dataSetRow["check_id"]</expression>
                     <property name="dataType">integer</property>
                 </structure>
                 <structure>
                     <property name="name">line_number</property>
-                    <property name="displayName">line_number</property>
+                    <text-property name="displayName">line_number</text-property>
                     <expression name="expression">dataSetRow["line_number"]</expression>
                     <property name="dataType">integer</property>
                 </structure>
                 <structure>
                     <property name="name">src_format</property>
-                    <property name="displayName">src_format</property>
+                    <text-property name="displayName">src_format</text-property>
                     <expression name="expression">dataSetRow["src_format"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">found_value</property>
-                    <property name="displayName">found_value</property>
+                    <text-property name="displayName">found_value</text-property>
                     <expression name="expression">dataSetRow["found_value"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">expected_value</property>
-                    <property name="displayName">expected_value</property>
+                    <text-property name="displayName">expected_value</text-property>
                     <expression name="expression">dataSetRow["expected_value"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">error_message</property>
-                    <property name="displayName">error_message</property>
+                    <text-property name="displayName">error_message</text-property>
                     <expression name="expression">dataSetRow["description"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">src_data</property>
-                    <property name="displayName">src_data</property>
+                    <text-property name="displayName">src_data</text-property>
                     <expression name="expression">dataSetRow["src_data"]</expression>
                     <property name="dataType">string</property>
                 </structure>
@@ -1215,43 +1229,43 @@ group by check_id]]></xml-property>
             <list-property name="boundDataColumns">
                 <structure>
                     <property name="name">check_id</property>
-                    <property name="displayName">check_id</property>
+                    <text-property name="displayName">check_id</text-property>
                     <expression name="expression">dataSetRow["check_id"]</expression>
                     <property name="dataType">integer</property>
                 </structure>
                 <structure>
                     <property name="name">line_number</property>
-                    <property name="displayName">line_number</property>
+                    <text-property name="displayName">line_number</text-property>
                     <expression name="expression">dataSetRow["line_number"]</expression>
                     <property name="dataType">integer</property>
                 </structure>
                 <structure>
                     <property name="name">src_format</property>
-                    <property name="displayName">src_format</property>
+                    <text-property name="displayName">src_format</text-property>
                     <expression name="expression">dataSetRow["src_format"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">found_value</property>
-                    <property name="displayName">found_value</property>
+                    <text-property name="displayName">found_value</text-property>
                     <expression name="expression">dataSetRow["found_value"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">expected_value</property>
-                    <property name="displayName">expected_value</property>
+                    <text-property name="displayName">expected_value</text-property>
                     <expression name="expression">dataSetRow["expected_value"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">error_message</property>
-                    <property name="displayName">error_message</property>
+                    <text-property name="displayName">error_message</text-property>
                     <expression name="expression">dataSetRow["description"]</expression>
                     <property name="dataType">string</property>
                 </structure>
                 <structure>
                     <property name="name">src_data</property>
-                    <property name="displayName">src_data</property>
+                    <text-property name="displayName">src_data</text-property>
                     <expression name="expression">dataSetRow["src_data"]</expression>
                     <property name="dataType">string</property>
                 </structure>

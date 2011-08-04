@@ -13,10 +13,9 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.business.Schemas;
 import fr.ifn.eforest.common.database.metadata.FieldData;
-import fr.ifn.eforest.common.database.metadata.DatasetData;
+import fr.ifn.eforest.common.database.metadata.FileFieldData;
+import fr.ifn.eforest.common.database.metadata.FileFormatData;
 import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.ModeData;
-import fr.ifn.eforest.common.database.metadata.RequestFormatData;
 import fr.ifn.eforest.common.database.metadata.TableTreeData;
 
 /**
@@ -41,15 +40,13 @@ public class MetadataServlet extends HttpServlet {
 	/**
 	 * The data access objects.
 	 */
-	private transient MetadataDAO metadataDAO = new MetadataDAO();
+	private MetadataDAO metadataDAO = new MetadataDAO();
 
 	/**
 	 * Input parameters.
 	 */
 
 	private static final String ACTION = "action";
-	private static final String ACTION_GET_COUNTRIES = "GetCountries";
-	private static final String ACTION_GET_JRC_REQUEST = "GetJRCRequests";
 	private static final String ACTION_GET_REQUEST_FILES = "GetRequestFiles";
 	private static final String ACTION_GET_FILE_FIELDS = "GetFileFields";
 	private static final String ACTION_GET_TABLES_TREE = "GetTablesTree";
@@ -81,24 +78,6 @@ public class MetadataServlet extends HttpServlet {
 			if (action == null) {
 				throw new Exception("The " + ACTION + " parameter is mandatory");
 			}
-
-			//
-			// Get Countries
-			//
-			if (action.equals(ACTION_GET_COUNTRIES)) {
-
-				out.print(getCountries());
-
-			} else
-
-			//
-			// Get JRC Requests
-			//
-			if (action.equals(ACTION_GET_JRC_REQUEST)) {
-
-				out.print(getJRCRequests());
-
-			} else
 
 			//
 			// Get the expected files for a request
@@ -150,48 +129,6 @@ public class MetadataServlet extends HttpServlet {
 	}
 
 	/**
-	 * Return a JSON String listing the available countries.
-	 * 
-	 * @return the list of available countries as a JSON string
-	 */
-	private String getCountries() throws Exception {
-		StringBuffer result = new StringBuffer();
-		List<ModeData> modesList = metadataDAO.getModes("COUNTRY_CODE");
-		result.append("[");
-		Iterator<ModeData> modeIter = modesList.iterator();
-		while (modeIter.hasNext()) {
-			ModeData mode = modeIter.next();
-			result.append("{mode:\"" + mode.getMode() + "\",label:\"" + mode.getLabel() + "\"}");
-			if (modeIter.hasNext()) {
-				result.append(",");
-			}
-		}
-		result.append("]");
-		return result.toString();
-	}
-
-	/**
-	 * Return a JSON String listing the available JRC Requests.
-	 * 
-	 * * @return the list of available JRC Requests as a JSON string
-	 */
-	private String getJRCRequests() throws Exception {
-		StringBuffer result = new StringBuffer();
-		List<DatasetData> requestList = metadataDAO.getDatasets();
-		result.append("[");
-		Iterator<DatasetData> requestIter = requestList.iterator();
-		while (requestIter.hasNext()) {
-			DatasetData jrcrequest = requestIter.next();
-			result.append("{id:\"" + jrcrequest.getRequestId() + "\",label:\"" + jrcrequest.getLabel() + "\"}");
-			if (requestIter.hasNext()) {
-				result.append(",");
-			}
-		}
-		result.append("]");
-		return result.toString();
-	}
-
-	/**
 	 * Return a JSON String listing the needed CSV files for a JRC Requests.
 	 * 
 	 * @param datasetId
@@ -200,11 +137,11 @@ public class MetadataServlet extends HttpServlet {
 	 */
 	private String getRequestFiles(String datasetId) throws Exception {
 		StringBuffer result = new StringBuffer();
-		List<RequestFormatData> requestList = metadataDAO.getRequestFiles(datasetId);
+		List<FileFormatData> requestList = metadataDAO.getDatasetFiles(datasetId);
 		result.append("[");
-		Iterator<RequestFormatData> requestIter = requestList.iterator();
+		Iterator<FileFormatData> requestIter = requestList.iterator();
 		while (requestIter.hasNext()) {
-			RequestFormatData requestedFile = requestIter.next();
+			FileFormatData requestedFile = requestIter.next();
 			result.append("{format:\"" + requestedFile.getFormat() + "\",type:\"" + requestedFile.getFileType() + "\"}");
 			if (requestIter.hasNext()) {
 				result.append(",");
@@ -225,10 +162,10 @@ public class MetadataServlet extends HttpServlet {
 		StringBuffer result = new StringBuffer();
 
 		// Get the fields of the file format
-		List<FieldData> fields = metadataDAO.getFileFields(fileformat);
+		List<FileFieldData> fields = metadataDAO.getFileFields(fileformat);
 
 		result.append("[");
-		Iterator<FieldData> fieldsIter = fields.iterator();
+		Iterator<FileFieldData> fieldsIter = fields.iterator();
 		while (fieldsIter.hasNext()) {
 			FieldData field = fieldsIter.next();
 			result.append("{label:\"" + field.getData() + "\"}");

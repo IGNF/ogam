@@ -15,8 +15,13 @@ public class SIGUtils {
 	private static final String PATTERN = "[+\\-]?[0-9]{1,2}[.][0-9]{1,2}[.][0-9]{1,2}";
 
 	/**
-	 * Method used to convert the GPS WGS 84 coordinate from the degrees format to the decimal format. (+/-DD.MM.SS => +/-DD.dddddd)</br> Simple method without round parameters.</br> The rounding
-	 * scale is set to 6 and the rounding mode to HALF_UP.</br> Example :</br> DegreesToDecimals("47.13.55")</br> return "47.231944".
+	 * Method used to convert the GPS WGS 84 coordinate from the degrees format to the decimal format. (+/-DD.MM.SS => +/-DD.dddddd)
+	 * 
+	 * Simple method without round parameters.
+	 * 
+	 * The rounding scale is set to 6 and the rounding mode to HALF_UP.
+	 * 
+	 * Example : DegreesToDecimals("47.13.55") return "47.231944".
 	 * 
 	 * @param coordinate
 	 *            the coordinate in DMS

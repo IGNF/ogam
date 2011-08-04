@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <doc>
    <sources>
-		<source src="../htdocs/public/js/extjs/source" match="*.js"/>
-		<source src="../htdocs/public/js/extjsux/basiccheckbox" match="*.js"/>
-		<source src="../htdocs/public/js/genapp/source/widgets" match="*.js"/>
+		<source src="../htdocs/ogam/public/js/extjs/src" match="*.js"/> 
+		<source src="../htdocs/ogam/public/js/extjsux/basiccheckbox" match="*.js"/>
+		<source src="../htdocs/ogam/public/js/genapp/source/widgets" match="*.js"/>
 	</sources>
 	<tags>
 		<tag name="author" title="Author"/>

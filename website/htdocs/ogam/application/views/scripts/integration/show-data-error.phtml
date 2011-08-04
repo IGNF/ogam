@@ -1,0 +1,17 @@
+<?php
+/**
+ * View for showing errors.
+ * @package views
+ */
+?>
+
+
+<h1>
+  <?=$this->translate('Data integration module');?> - <?=$this->translate('Error');?>
+</h1>
+<div class="error-msg">
+    <img class="status-img" src="<?= $this->baseUrl('img/Red_x.png') ?>" /><?= $this->errorMessage ?>
+</div>
+<div class="bottom-menu">
+    <a href="<?= $this->baseUrl('integration/show-data-page') ?>"><b><?=$this->translate('Data Submission');?></b></a>
+</div>
