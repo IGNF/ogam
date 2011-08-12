@@ -21,7 +21,7 @@ if(Genapp.form.NumberRangeField){
         minText : "La valeur minimum pour ce champ est {0}",
         maxText : "La valeur maximum pour ce champ est {0}",
         reverseText : "Le maximum doit être supérieur au minimum",
-        formatText : "Le format correct est '{0}'",
+        formatText : "Les formats corrects sont",
         nanText : "'{0}' n'est pas un nombre valide"
     });
 }

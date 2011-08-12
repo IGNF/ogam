@@ -17,6 +17,21 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
      */
     numberSeparator: ' - ',
     /**
+     * @cfg {String} maxNumberPrefix
+     * The prefix for the max number (defaults to <tt>'<= '</tt>)
+     */
+    maxNumberPrefix: '<= ',
+    /**
+     * @cfg {String} minNumberPrefix
+     * The prefix for the min number (defaults to <tt>'>= '</tt>)
+     */
+    minNumberPrefix: '>= ',
+    /**
+     * @cfg {Boolean} usePrefix if true, maxNumberPrefix and minNumberPrefix are used (defaults to true).
+     * Otherwise minValue and maxValue are used.
+     */
+    usePrefix: true,
+    /**
      * @cfg {String} minText Error text to display if the minimum value validation fails (defaults to "The minimum value for this field is {minValue}")
      */
     minText : "The minimum value for this field is {0}",
@@ -27,15 +42,15 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
     /**
      * @cfg {String} reverseText
      * The error text to display when the numbers are reversed (defaults to
-     * <tt>'The end number must be posterior to the start number'</tt>).
+     * <tt>'The max number must be posterior to the min number'</tt>).
      */
     reverseText : "The max number must be superior to the min number",
     /**
      * @cfg {String} formatText
      * The error text to display when the format isn't respected (defaults to
-     * <tt>'The correct format is 0.00 - 0.00'</tt>).
+     * <tt>'The correct formats are'</tt>).
      */
-    formatText : "The correct format is '{0}'",
+    formatText : "The correct formats are",
     /**
      * @cfg {Boolean} allowDecimals False to disallow decimal values (defaults to true)
      */
@@ -66,9 +81,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
      */
     nanText : "'{0}' is not a valid number",
     /**
-     * @cfg {String} baseChars The base set of characters to evaluate as valid numbers (defaults to '0123456789').
+     * @cfg {String} baseChars The base set of characters to evaluate as valid (defaults to '0123456789<>= ').
      */
-    baseChars : "0123456789 ",
+    baseChars : "0123456789<>= ",
     /**
      * @cfg {Boolean} hideValidationButton if true hide the menu validation button (defaults to true).
      */
@@ -80,7 +95,8 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
 
     // private
     initEvents : function(){
-        var allowed = this.baseChars + '';
+        var allowed = '';
+        allowed += this.baseChars; // ! this.baseChars can be null
         if (this.allowDecimals) {
             allowed += this.decimalSeparator;
         }
@@ -93,6 +109,7 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
 
     // private
     initComponent : function(){
+        var i;
         Genapp.form.NumberRangeField.superclass.initComponent.call(this);
 
         this.addEvents(
@@ -115,7 +132,7 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
                 format = format + "0";
             }
         }
-        format = format + this.numberSeparator + format;
+        this.formatText = this.formatText + " '{0}', '"+this.maxNumberPrefix+" {0}', '"+this.minNumberPrefix+" {0}', '{0} "+this.numberSeparator+" {0}'.";
         this.formatText = String.format(this.formatText, format);
     },
 
@@ -127,49 +144,63 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
         if(value.length < 1){ // if it's blank and textfield didn't flag it then it's valid
              return true;
         }
-
-        var values = value.split(this.numberSeparator);
-        // The value can be one number if min = max
-        if(values.length === 1){
-            var v = this.parseValue(values[0]);
-            if(isNaN(v)){
-                this.markInvalid(String.format(this.nanText, v));
-                return false;
-            }else{
-                return true;
+        var values = this.splitValue(value);
+        if(values === null){
+            this.markInvalid(this.formatText);
+            return false;
+        } else {
+            var minv = values.minValue;
+            var maxv = values.maxValue;
+            if(minv !== null){
+                minv = this.getNumber(minv);
+                if(minv === null){
+                    this.markInvalid(String.format(this.nanText, values.minValue));
+                    return false;
+                }
+                if(minv < this.minValue){
+                    this.markInvalid(String.format(this.minText, this.minValue));
+                    return false;
+                }
+                if(!this.hasGoodNumberOfDecimals(minv)){
+                    this.markInvalid(this.formatText);
+                    return false;
+                }
             }
-        }else if(values.length === 2){
-            var minv = this.parseValue(values[0]);
-            var maxv = this.parseValue(values[1]);
-            if(maxv === '' || minv === ''){
-                this.markInvalid(this.formatText);
-                return false;
+            if(maxv !== null){
+                maxv = this.getNumber(maxv);
+                if(maxv === null){
+                    this.markInvalid(String.format(this.nanText, values.maxValue));
+                    return false;
+                }
+                if(maxv > this.maxValue){
+                    this.markInvalid(String.format(this.maxText, this.maxValue));
+                    return false;
+                }
+                if(!this.hasGoodNumberOfDecimals(maxv)){
+                    this.markInvalid(this.formatText);
+                    return false;
+                }
             }
-            if(isNaN(minv)){
-                this.markInvalid(String.format(this.nanText, minv));
-                return false;
-            }
-            if(isNaN(maxv)){
-                this.markInvalid(String.format(this.nanText, maxv));
-                return false;
-            }
-            if(minv < this.minValue){
-                this.markInvalid(String.format(this.minText, this.minValue));
-                return false;
-            }
-            if(maxv > this.maxValue){
-                this.markInvalid(String.format(this.maxText, this.maxValue));
-                return false;
-            }
-            if((maxv - minv) < 0){
+            if(minv !== null && maxv !== null && (maxv - minv) < 0){
                 this.markInvalid(this.reverseText);
                 return false;
             }
             return true;
-        }else{
-            this.markInvalid(this.formatText);
-            return false;
         }
+    },
+
+    /**
+     * Check if the number provided has not to much decimals
+     * 
+     * @param {Number} value The number to check
+     * @return {boolean} Return 'true' if the number of decimals are respected
+     */
+    hasGoodNumberOfDecimals: function(value) {
+        var v = value * Math.pow(10,this.decimalPrecision);
+        if((v - parseInt(v, 10)) === 0){
+            return true;
+        }
+        return false;
     },
 
     /**
@@ -179,16 +210,18 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
      */
     getValue : function(){
         var value = Genapp.form.NumberRangeField.superclass.getValue.call(this);
-        var values = value.split(this.numberSeparator);
-        if(values.length === 1){
-            return String(this.fixPrecision(this.parseValue(values[0]))).replace(".", this.decimalSeparator);
-        }else if(values.length === 2){
-            return String(this.fixPrecision(this.parseValue(values[0]))).replace(".", this.decimalSeparator) 
-            + this.numberSeparator 
-            + String(this.fixPrecision(this.parseValue(values[1]))).replace(".", this.decimalSeparator);
-        }else{
-            return '';
-        }
+        value = this.formatNumberValue(value);
+        return value === null ? '' : value;
+    },
+
+    /**
+     * Returns the values.
+     * 
+     * @return {Object} The field values
+     */
+    getValues : function(){
+        var value = Genapp.form.NumberRangeField.superclass.getValue.call(this);
+        return this.getNumbersObject(this.splitValue(value));
     },
 
     /**
@@ -198,50 +231,60 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
      * @return {Ext.form.Field} this
      */
     setValue : function(v){
-        var minv = null;
-        var maxv = null;
-        if(Ext.isObject(v)){
-            if(typeof v.minValue !== 'undefined' && typeof v.maxValue !== 'undefined'){
-                minv = v.minValue;
-                maxv = v.maxValue;
-            }else{
-                return '';
-            }
-        }else{
-            if(typeof v === 'string'){
-                var values = v.split(this.numberSeparator);
-                if(values.length === 1){
-                    minv = maxv = this.parseValue(values[0]);
-                }else if(values.length === 2){
-                    minv = this.parseValue(values[0]);
-                    maxv = this.parseValue(values[1]);
-                }else{
-                    return '';
-                }
-            }else{
-                return '';
-            }
-        }
-        min = typeof minv === 'number' ? minv : parseFloat(String(minv).replace(this.decimalSeparator, "."));
-        max = typeof maxv === 'number' ? maxv : parseFloat(String(maxv).replace(this.decimalSeparator, "."));
-        mins = isNaN(min) ? '' : String(this.fixPrecision(min)).replace(".", this.decimalSeparator);
-        maxs = isNaN(max) ? '' : String(this.fixPrecision(max)).replace(".", this.decimalSeparator);
-
-        if(min === max){
-            v = mins;
-        }else if(min < max){
-            v = mins + this.numberSeparator + maxs;
-        }else{
-            v = maxs + this.numberSeparator + mins;
-        }
-
+        v = this.formatNumberValue(v);
         return Genapp.form.NumberRangeField.superclass.setValue.call(this, v);
     },
+    
+    /**
+     * Format the field.
+     * 
+     * @param {Mixed} value The value to set
+     * @return {String} The formated string value
+     */
+    formatNumberValue : function(v){
+        var minv, maxv, mins, maxs;
+        if(!Ext.isObject(v)){
+            v = this.splitValue(v);
+        }
+        v = this.getNumbersObject(v);
 
-    // private
-    parseValue : function(value){
-        value = parseFloat(String(value).replace(this.decimalSeparator, "."));
-        return isNaN(value) ? '' : value;
+        if(v !== null){
+            minv = v.minValue;
+            maxv = v.maxValue;
+            mins = isNaN(minv) ? '' : String(this.fixPrecision(minv)).replace(".", this.decimalSeparator);
+            maxs = isNaN(maxv) ? '' : String(this.fixPrecision(maxv)).replace(".", this.decimalSeparator);
+
+            if(this.usePrefix === true){
+                if(minv === null && maxv !== null){
+                    v = this.maxNumberPrefix + maxv;
+                } else if(minv !== null && maxv === null){
+                    v = this.minNumberPrefix + minv;
+                } else if(minv !== null && maxv !== null){
+                    if(minv === maxv){
+                        v = mins;
+                    } else {
+                        v = mins + this.numberSeparator + maxs;
+                    }
+                } else {
+                    v = '';
+                }
+            } else {
+                if(minv === null && maxv !== null){
+                    v = this.minValue + this.numberSeparator + maxs;
+                } else if(minv !== null && maxv === null){
+                    v = mins + this.numberSeparator + this.maxValue;
+                } else if(minv !== null && maxv !== null){
+                    if(minv === maxv){
+                        v = mins;
+                    } else {
+                        v = mins + this.numberSeparator + maxs;
+                    }
+                } else {
+                    v = '';
+                }
+            }
+        }
+        return v;
     },
 
     // private
@@ -251,6 +294,61 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
            return nan ? '' : value;
         }
         return parseFloat(parseFloat(value).toFixed(this.decimalPrecision));
+    },
+
+    // private
+    getNumber : function(value){
+        return Ext.num(String(value).replace(this.decimalSeparator, "."), null);
+    },
+
+    // private
+    getNumbersObject : function(obj){
+        if(!obj || !Ext.isObject(obj)){
+            return null;
+        }
+        var minv = this.getNumber(obj.minValue);
+        var maxv = this.getNumber(obj.maxValue);
+        if(minv !== null || maxv !== null){
+            return {minValue:minv, maxValue:maxv};
+        } else {
+            return null;
+        }
+    },
+
+    /**
+     * Return an object with the numbers found in the string
+     * 
+     * @param {String} value The string value to parse
+     * @return {object}/null an object with min and max values or null for failed match operations
+     * @hide
+     */
+    splitValue : function(value){
+        var minv, maxv, minnpIndex, maxnpIndex;
+        if(!value || !Ext.isString(value)){
+            return null;
+        }
+        var values = value.split(this.numberSeparator);
+        if(values.length === 1){
+            minnpIndex = value.indexOf(this.minNumberPrefix,0);
+            maxnpIndex = value.indexOf(this.maxNumberPrefix,0);
+            if(minnpIndex !== -1){
+            // Case ">= 00.00"
+                minv = value.substring(minnpIndex + this.minNumberPrefix.length);
+                return {minValue:minv, maxValue:null};
+            }else if(maxnpIndex !== -1){
+            // Case "<= 00.00"
+                maxv = value.substring(maxnpIndex + this.maxNumberPrefix.length);
+                return {minValue:null, maxValue:maxv};
+            }else{
+            // Case "00.00"
+                return {minValue:value, maxValue:value};
+            }
+        }else if(values.length === 2){
+            // Case "00.00 - 00.00"
+                return {minValue:values[0], maxValue:values[1]};
+        }else{
+            return null;
+        }
     },
 
     /**
@@ -273,45 +371,43 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
                 hideOnClick: false,
                 hideValidationButton: this.hideValidationButton
             });
+            
+            Ext.apply(this.menu.rangePicker.minField,  {
+                emptyText: this.setEmptyText ? this.minValue : null,
+                allowDecimals : this.allowDecimals,
+                decimalSeparator : this.decimalSeparator,
+                decimalPrecision : this.decimalPrecision,
+                allowNegative : this.allowNegative,
+                minValue : this.minValue,
+                maxValue : this.maxValue,
+                baseChars : this.baseChars
+            });
+            Ext.apply(this.menu.rangePicker.maxField,  {
+                emptyText : this.setEmptyText ? this.maxValue : null,
+                allowDecimals : this.allowDecimals,
+                decimalSeparator : this.decimalSeparator,
+                decimalPrecision : this.decimalPrecision,
+                allowNegative : this.allowNegative,
+                minValue : this.minValue,
+                maxValue : this.maxValue,
+                baseChars : this.baseChars
+            });
         }
         this.onFocus();
-        Ext.apply(this.menu.rangePicker.minField,  {
-            emptyText: this.setEmptyText ? this.minValue : null,
-            allowDecimals : this.allowDecimals,
-            decimalSeparator : this.decimalSeparator,
-            decimalPrecision : this.decimalPrecision,
-            allowNegative : this.allowNegative,
-            minValue : this.minValue,
-            maxValue : this.maxValue,
-            baseChars : this.baseChars
-        });
-        Ext.apply(this.menu.rangePicker.maxField,  {
-            emptyText : this.setEmptyText ? this.maxValue : null,
-            allowDecimals : this.allowDecimals,
-            decimalSeparator : this.decimalSeparator,
-            decimalPrecision : this.decimalPrecision,
-            allowNegative : this.allowNegative,
-            minValue : this.minValue,
-            maxValue : this.maxValue,
-            baseChars : this.baseChars
-        });
 
-        var values = this.getValue().split(this.numberSeparator);
-        if(values.length === 1){
-            var minv = this.parseValue(values[0]);
-            var maxv = minv;
-        }else if(values.length === 2){
-            var minv = this.parseValue(values[0]);
-            var maxv = this.parseValue(values[1]);
-        }else{
-            return;
+        var values = this.getValues();
+        if(values !== null){
+            this.menu.rangePicker.minField.setValue(values.minValue);
+            this.menu.rangePicker.maxField.setValue(values.maxValue);
+        } else {
+            if(this.getRawValue() !== ''){
+                return;
+            }
         }
-
-        this.menu.rangePicker.minField.setValue(minv);
-        this.menu.rangePicker.maxField.setValue(maxv);
 
         this.menu.show(this.el, "tl-bl?");
         this.menuEvents('on');
+        this.menu.rangePicker.minField.focus(true, 60);
     },
 
     //private
@@ -323,8 +419,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
 
     //private
     onSelect: function(m, d){
-        this.fireEvent('select', this, d);
         this.menu.hide();
+        this.setValue(d);
+        
     },
 
     //private
@@ -347,14 +444,6 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
     onDestroy : function(){
         Ext.destroy(this.menu, this.wrap);
         Genapp.form.NumberRangeField.superclass.onDestroy.call(this);
-    },
-
-    // private
-    beforeBlur : function(){
-        var v = this.getRawValue();
-        if(v){
-            this.setValue(v);
-        }
     }
 });
 Ext.reg('numberrangefield', Genapp.form.NumberRangeField);

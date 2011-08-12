@@ -41,7 +41,6 @@ Genapp.form.menu.NumberRangeMenu = Ext.extend( Ext.menu.Menu, {
             showSeparator: false,
             items: [this.rangePicker = new Genapp.form.picker.NumberRangePicker(this.initialConfig)]
         });
-        this.rangePicker.purgeListeners();
         Genapp.form.menu.NumberRangeMenu.superclass.initComponent.call(this);
         this.relayEvents(this.rangePicker, ["select"]);
     }
