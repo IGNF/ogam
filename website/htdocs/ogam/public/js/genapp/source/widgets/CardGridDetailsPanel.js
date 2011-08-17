@@ -53,7 +53,7 @@ Genapp.CardGridDetailsPanel = Ext.extend(Ext.Panel, {
             this.title = '<div style="width:'+ this.headerWidth + 'px;">'
             + this.cardGridDetailsPanelTitle + ' ' + this.initConf.featuresInformationSearchNumber
             + '</div>';
-            
+
             this.items = new Genapp.GridDetailsPanel({
                 initConf:this.initConf
             });

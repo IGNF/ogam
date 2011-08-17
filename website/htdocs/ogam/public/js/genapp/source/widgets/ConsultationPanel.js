@@ -952,7 +952,19 @@ listeners: {
             cls:'genapp-query-details-panel',
             scrollIncrement:91,
             scrollRepeatInterval:100,
-            idDelimiter:'___' // Avoid a conflict with the Genapp id separator('__')
+            idDelimiter:'___', // Avoid a conflict with the Genapp id separator('__')
+            listeners:{
+                'render': function(panel){
+                    panel.items.on('remove',
+                        function(item){
+                            if(this.items.getCount() === 0){
+                                this.ownerCt.collapse();
+                            }
+                        },
+                        panel
+                    );
+                }
+            }
         });
 
         this.detailsPanelPinned = true;
@@ -1026,7 +1038,19 @@ listeners: {
             cls:'genapp-query-locations-panel',
             scrollIncrement:91,
             scrollRepeatInterval:100,
-            idDelimiter:'___' // Avoid a conflict with the Genapp id separator('__')
+            idDelimiter:'___', // Avoid a conflict with the Genapp id separator('__')
+            listeners:{
+                'render': function(panel){
+                    panel.items.on('remove',
+                        function(item){
+                            if(this.items.getCount() === 0){
+                                this.ownerCt.collapse();
+                            }
+                        },
+                        panel
+                    );
+                }
+            }
         });
 
         this.featuresInformationPanelPinned = true;

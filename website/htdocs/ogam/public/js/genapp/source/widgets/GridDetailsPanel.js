@@ -164,7 +164,7 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
                 fixed:true,
                 menuDisabled:true,
                 align:'center',
-                width:70
+                width:50// 70 for three buttons
             });
             this.colModel = new Ext.grid.ColumnModel({
                 defaults: {
