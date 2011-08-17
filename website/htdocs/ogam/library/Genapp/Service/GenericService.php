@@ -383,24 +383,40 @@ class Genapp_Service_GenericService {
 	 */
 	private function _buildNumericWhereItem($tableField, $value) {
 
+
 		$sql = "";
-		$pos = strpos($value, " - ");
-		if ($pos != false) {
+		$posBetween = strpos($value, " - ");
+		$posInf = strpos($value, "<=");
+		$posSup = strpos($value, ">=");
 
-			$minValue = substr($value, 0, $pos);
-			$maxValue = substr($value, $pos + 3);
+		if ($posBetween !== false) {
 
+			$minValue = substr($value, 0, $posBetween);
+			$maxValue = substr($value, $posBetween + 3);
+			$sql2 = '';
+
+			if (!empty($minValue)) {
+				$sql2 .= $tableField->format.".".$tableField->columnName." >= ".$minValue." ";
+			}
+			if (!empty($maxValue)) {
+				if ($sql2 != "") {
+					$sql2 .= ' AND ';
+				}
+				$sql2 .= $tableField->format.".".$tableField->columnName." <= ".$maxValue." ";
+			}
+			$sql .= '(' . $sql2 .')';
+
+		} else if ($posInf !== false) {
+			$maxValue = trim(substr($value, $posInf + 2));
+			if (!empty($maxValue)) {
+				$sql .= $tableField->format.".".$tableField->columnName." <= ".$maxValue." ";
+			}
+		} else if ($posSup !== false) {
+			$minValue = trim(substr($value, $posSup + 2));
 			if (!empty($minValue)) {
 				$sql .= $tableField->format.".".$tableField->columnName." >= ".$minValue." ";
 			}
-			if (!empty($maxValue)) {
-				if ($sql != "") {
-					$sql .= ' AND ';
-				}
-				$sql .= $tableField->format.".".$tableField->columnName." <= ".$maxValue." ";
-			}
-
-		} else {
+		} else{
 			// One value, we make an equality comparison
 			$sql .= $tableField->format.".".$tableField->columnName." = ".$value;
 
@@ -527,8 +543,8 @@ class Genapp_Service_GenericService {
 					// Value is 1 or 0, stored in database as a char(1)
 					if (is_array($value)) {
 						$value = $value[0];
-					}
-					if (is_bool($value)) {
+						$sql .= " AND ".$column." = '".$value."'";
+					} else if (is_bool($value)) {
 						$sql .= " AND ".$column." = '".$value."'";
 					}
 					break;
@@ -559,17 +575,18 @@ class Genapp_Service_GenericService {
 				case "NUMERIC":
 					// Numeric values
 					if (is_array($value)) {
+
 						// Case of a list of values
 						$sql2 = '';
 						foreach ($value as $val) {
-							if ($val != null && $val != '' && (is_numeric($val) || is_string($value))) {
+							if ($val != null && $val != '') {
 								$sql2 .= $this->_buildNumericWhereItem($tableField, $val)." OR ";
 							}
 						}
 						if ($sql2 != '') {
 							$sql2 = substr($sql2, 0, -4); // remove the last OR
-							$sql .= " AND (".$sql2.")";
 						}
+						$sql .= " AND (".$sql2.")";
 					} else {
 						// Single value
 						if (is_numeric($value) || is_string($value)) {

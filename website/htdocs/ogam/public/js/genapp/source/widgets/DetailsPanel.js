@@ -69,6 +69,11 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
      */
     tipDefaultWidth: 300,
     /**
+     * @cfg {Number} titleCharsMaxLength
+     * The title Chars Max Length. (Default to 8)
+     */
+    titleCharsMaxLength : 8,
+    /**
      * @cfg {String} loadingMsg
      * The loading message (defaults to <tt>'Loading...'</tt>)
      */
@@ -129,7 +134,13 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
             url : Genapp.ajax_query_url + this.dataUrl,
             success :function(response, options){
                 var details = Ext.decode(response.responseText);
-                this.setTitle('<div style="width:'+ this.headerWidth + 'px;">'+details.title+'</div>');
+                var title = details.title;
+                if(details.title.length > this.titleCharsMaxLength){
+                    title = details.title.substring(0,this.titleCharsMaxLength) + '...';
+                }
+                this.setTitle('<div style="width:'+ this.headerWidth + 'px;"'
+                    +' ext:qtip="' + details.title + '"'
+                    +'>'+title+'</div>');
                 this.tpl.overwrite(this.body, details);
             },
             method: 'POST',

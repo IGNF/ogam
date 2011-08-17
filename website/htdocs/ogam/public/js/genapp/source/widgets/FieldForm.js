@@ -523,12 +523,13 @@ Ext.apply(Genapp.FieldForm.prototype, {
                 field.xtype = 'numberrangefield';
                 field.itemCls = 'trigger-field'; // For IE7 layout
                 // If RANGE we set the min and max values
-                if (record.type==='RANGE') {
+                if (record.subtype==='RANGE') {
                     field.minValue = record.params.min;
-                    field.maxValue = record.params.max;
+                    field.maxValue = record.params.max; 
+                    field.decimalPrecision = (record.params.decimals == null) ?  20 : record.params.decimals;
                 }
                 // IF INTEGER we remove the decimals
-                if (record.type==='INTEGER') {
+                if (record.subtype==='INTEGER') {
                     field.allowDecimals = false;
                     field.decimalPrecision = 0;
                 }
@@ -551,7 +552,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
                  break;
             case 'RADIO':
             case 'TEXT':
-                switch(record.type){
+                switch(record.subtype){
                     // TODO : BOOLEAN, COORDINATE
                     case 'INTEGER':
                         field.xtype  = 'numberfield';

@@ -24,9 +24,9 @@ Genapp.form.picker.NumberRangePicker = Ext.extend(Ext.Panel, {
     height:59,
     /**
      * @cfg {Number} width
-     * The width of this component in pixels (defaults to 176).
+     * The width of this component in pixels (defaults to 194).
      */
-    width:176,
+    width:194,
     /**
      * @cfg {Number} labelWidth The width of labels in pixels. This property cascades to child containers
      * and can be overridden on any child container (e.g., a fieldset can specify a different labelWidth
@@ -69,7 +69,7 @@ Genapp.form.picker.NumberRangePicker = Ext.extend(Ext.Panel, {
     // private
     initComponent : function(){
         Ext.apply(this, {
-                items: [
+            items: [
                 /**
                  * The min field.
                  * @property minField
@@ -86,7 +86,15 @@ Genapp.form.picker.NumberRangePicker = Ext.extend(Ext.Panel, {
                 this.maxField = new Genapp.form.TwinNumberField({
                     fieldLabel:this.maxFieldLabel
                 })
-            ]
+            ],
+            keys:[{
+                key: Ext.EventObject.ENTER,
+                fn: this.onOkButtonPress.createDelegate(this, [null,true])
+            },{
+                key: Ext.EventObject.TAB,
+                fn: this.onTabButtonPress,
+                scope: this
+            }]
         });
         if(!this.hideValidationButton){
             this.buttons = [{
@@ -109,6 +117,15 @@ Genapp.form.picker.NumberRangePicker = Ext.extend(Ext.Panel, {
                 maxValue: this.maxField.getValue()
             });
         }
+    },
+
+    // private
+    onTabButtonPress: function (keyCode, event){
+        var index = this.items.findIndex('id',event.target.id) + 1;
+        if(index >= this.items.getCount()){
+            index = 0;
+        }
+        this.items.get(index).focus(true);
     }
 });
 Ext.reg('numberrangepicker', Genapp.form.picker.NumberRangePicker);

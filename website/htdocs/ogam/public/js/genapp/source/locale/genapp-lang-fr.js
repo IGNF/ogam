@@ -21,7 +21,7 @@ if(Genapp.form.NumberRangeField){
         minText : "La valeur minimum pour ce champ est {0}",
         maxText : "La valeur maximum pour ce champ est {0}",
         reverseText : "Le maximum doit être supérieur au minimum",
-        formatText : "Le format correct est '{0}'",
+        formatText : "Les formats corrects sont",
         nanText : "'{0}' n'est pas un nombre valide"
     });
 }
@@ -94,8 +94,8 @@ if(Genapp.ConsultationPanel){
         editDataButtonTip : "Ouvre la page d'édition pour éditer les données."
     });
 }
-if(Genapp.DateRangePicker){
-    Ext.apply(Genapp.DateRangePicker.prototype, {
+if(Genapp.form.picker.DateRangePicker){
+    Ext.apply(Genapp.form.picker.DateRangePicker.prototype, {
         tbarStartDateButtonText:"Date de début ...",
         tbarRangeDateButtonText:"Intervalle",
         tbarEndDateButtonText:"... Date de fin",
@@ -164,8 +164,8 @@ if(Genapp.MapPanel){
         featureInfoControlTitle:"Voir les informations sur le point"
     });
 }
-if(Genapp.NumberRangePicker){
-    Ext.apply(Genapp.NumberRangePicker.prototype, {
+if(Genapp.form.picker.NumberRangePicker){
+    Ext.apply(Genapp.form.picker.NumberRangePicker.prototype, {
         minFieldLabel:"Min",
         maxFieldLabel:"Max",
         okButtonText:"ok"
@@ -202,5 +202,10 @@ if(Genapp.PredefinedRequestPanel){
 	    defaultCardPanelText:"Veuillez sélectionner une requête...",
 	    defaultErrorCardPanelText:"Désolé, le chargement a échoué...",
 	    criteriaPanelTitle:"Indiquez votre choix :"
+    });
+}
+if(Genapp.form.picker.TreePicker){
+    Ext.apply(Genapp.form.picker.TreePicker.prototype, {
+        okButtonText:"ok"
     });
 }
