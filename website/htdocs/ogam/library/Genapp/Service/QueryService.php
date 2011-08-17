@@ -400,7 +400,9 @@ class Genapp_Service_QueryService {
 				if ($tableField->type == "CODE") {
 					if ($tableField->subtype == "DYNAMIC") {
 						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getDynamodes($tableField->unit);
-					} else {
+					} if ($tableField->subtype == "TREE") {
+						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getTreeLabels($tableField->unit);
+					}else {
 						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
 					}
 				}
