@@ -400,9 +400,9 @@ class Genapp_Service_QueryService {
 				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 					if ($tableField->subtype == "DYNAMIC") {
 						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getDynamodes($tableField->unit);
-					} if ($tableField->subtype == "TREE") {
+					} else if ($tableField->subtype == "TREE") {
 						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getTreeLabels($tableField->unit);
-					}else {
+					} else {
 						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
 					}
 				}
@@ -426,11 +426,9 @@ class Genapp_Service_QueryService {
 						$json .= json_encode($label == null ? '' : $label).',';
 					} else if ($tableField->type == "ARRAY" && $value != "") {
 						// Split the array items
-						$this->logger->debug('trad for '.$value);
 						$arrayValues = explode(",", ereg_replace("[{-}]", "", $value));
 						$label ='';
 						foreach ($arrayValues as $arrayValue) {
-							$this->logger->debug('$arrayValue '.$arrayValue);
 							$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
 							$label .= ',';
 						}
