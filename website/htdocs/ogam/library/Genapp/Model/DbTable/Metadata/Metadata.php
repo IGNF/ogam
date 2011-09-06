@@ -88,7 +88,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $unit The unit
 	 * @return Array[mode => label]
 	 */
-	public function getDynamodes($unit, $query) {
+	public function getDynamodes($unit, $query = null) {
 		$db = $this->getAdapter();
 
 		$req = $this->_getDynamodeSQL($unit);
@@ -160,7 +160,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= "	FROM node_list ";
 		$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
 
-		$this->logger->info('getTreeModes : '.$req);
+		$this->logger->info('getTreeModes : '.$unit.' '.$parentcode.' '.$req);
 
 		$select = $db->prepare($req);
 		$select->execute(array($unit, $parentcode));
