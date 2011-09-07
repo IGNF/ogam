@@ -1,0 +1,14 @@
+<H1><?= $this->translate('Check result');?></H1>
+<H2><?= $this->translate('PHP Parameters');?></H2>
+<UL>
+<?php
+foreach ($this->phpParameters as $param) {
+    echo '<LI><B>'.$param['name'].'&nbsp;:</B>&nbsp;'.$param['value'];
+    if(empty($param['error'])){
+        echo '<SPAN style="color:green;">&nbsp;-&nbsp;ok</SPAN><BR/></LI>';
+    } else {
+        echo '<SPAN style="color:red;">&nbsp;-&nbsp;'.$param['error'].'</SPAN><BR/></LI>';
+    }
+}
+?>
+</UL>

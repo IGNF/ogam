@@ -17,6 +17,7 @@
 <table class="sectiontable">
 <tr>
     <th style="text-align:center"><?=$this->translate('Submission ID');?></th>
+    <th style="text-align:center"><?=$this->translate('Date');?></th>
     <th style="text-align:center"><?=$this->translate('Provider Id');?></th>
     <th style="text-align:center"><?=$this->translate('Dataset');?></th>
     <th style="text-align:center"><?=$this->translate('Step');?></th>
@@ -32,6 +33,7 @@ foreach ($this->submissions as $submission) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
     <td><?= $this->escape($submission->submissionId); ?></td>
+    <td><?= $this->escape($submission->date); ?></td>
     <td><?= $this->escape($submission->providerId); ?></td>
     <td><?= $this->escape($submission->datasetId); ?></td>
     <td><?= $this->escape($submission->step); ?></td>
@@ -108,10 +110,18 @@ foreach ($this->submissions as $submission) {
     </td>
     <td colspan=2>
         <?php if ($submission->status !== "DATARUNNING") : ?>
-            <table>
+            <table width="100%">
             <?php foreach ($submission->files as $file) : ?>
                 <tr><td><?= $file->fileType ?></td>
-                <td><?= $file->lineNumber ?></td></tr>
+                <td class="line-number"><?= $file->lineNumber ?></td></tr>
+                <tr><td colspan=2 class="file-name">
+                    <?php
+                        $fileName = $file->fileName;
+                        $fileName = strtr($fileName,'\\','/');
+                        $fileName = substr($fileName, strrpos($fileName,'/') + 1);
+                        echo $fileName;
+                    ?>
+                </td></tr>
             <?php endforeach; ?>
             </table>
         <?php endif; ?>

@@ -91,10 +91,7 @@ public class IntegrationService extends GenericMapper {
 
 			// Check that the file is not empty
 			if (csvFile.getRowsCount() == 0) {
-				CheckException e = new CheckException(EMPTY_FILE);
-				e.setSourceFormat(sourceFormat);
-				e.setSubmissionId(submissionId);
-				throw e;
+				return true;
 			}
 
 			// check that the file as the expected number of columns

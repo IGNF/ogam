@@ -110,6 +110,7 @@ body {
 
 .content {
 	background-color: #FFFFFF;
+    padding-bottom:15px;
 }
 
 .content h1,.content h2 {
@@ -257,15 +258,24 @@ div.moduletable_menu a:link,div.moduletable_menu a:active,div.moduletable_menu a
 
 tr.sectiontableentry0 td {
 	background-color: #EDEDED;
-	border-bottom: 1px dotted #CCCCCC;
-	border-top: 1px dotted #CCCCCC;
 	padding: 3px;
 	text-align: left;
+}
+
+tr td.file-name {
+    font-style: italic;
+    font-size: 0.8em;
+    padding:0px 3px 10px 3px!important;
+    line-height:0.8em;
 }
 
 tr.sectiontableentry1 td {
 	padding: 3px;
 	text-align: left;
+}
+
+tr td.line-number {
+    text-align: right;
 }
 
 .csv-export {
@@ -311,14 +321,6 @@ img.percentImage {
 	padding: 0;
 	margin: 5px 0 0 0;
 	background-position: 1px 0;
-}
-
-.percentLabel {
-	
-}
-
-.percentText {
-	
 }
 
 /**************************************/

@@ -397,9 +397,11 @@ class Genapp_Service_QueryService {
 			// Prepare the needed traductions
 			$traductions = array();
 			foreach ($resultColumns as $tableField) {
-				if ($tableField->type == "CODE") {
+				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 					if ($tableField->subtype == "DYNAMIC") {
 						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getDynamodes($tableField->unit);
+					} else if ($tableField->subtype == "TREE") {
+						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getTreeLabels($tableField->unit);
 					} else {
 						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
 					}
@@ -418,9 +420,23 @@ class Genapp_Service_QueryService {
 					$key = strtolower($tableField->format.'__'.$tableField->data);
 					$value = $line[$key];
 
+					// Manage code traduction
 					if ($tableField->type == "CODE" && $value != "") {
-						// Manage code traduction
 						$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+						$json .= json_encode($label == null ? '' : $label).',';
+					} else if ($tableField->type == "ARRAY" && $value != "") {
+						// Split the array items
+						$arrayValues = explode(",", ereg_replace("[{-}]", "", $value));
+						$label ='';
+						foreach ($arrayValues as $arrayValue) {
+							$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
+							$label .= ',';
+						}
+						if ($label!='') {
+							$label = substr($label, 0, -1);
+						}
+						$label = '['.$label.']';
+
 						$json .= json_encode($label == null ? '' : $label).',';
 					} else {
 						$json .= json_encode($value).',';
