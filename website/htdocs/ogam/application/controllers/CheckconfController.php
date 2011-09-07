@@ -11,6 +11,19 @@ require_once 'AbstractOGAMController.php';
  */
 class CheckconfController extends AbstractOGAMController {
 
+   /**
+     * Initialise the controler
+     */
+    public function init() {
+        parent::init();
+
+        // Set the current module name
+        $websiteSession = new Zend_Session_Namespace('website');
+        $websiteSession->module = "checkconf";
+        $websiteSession->moduleLabel = "Check Configuration";
+        $websiteSession->moduleURL = "checkconf";
+    }
+
     /**
      * The "index" action is the default action for all controllers.
      */
