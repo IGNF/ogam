@@ -3,7 +3,12 @@
 <UL>
 <?php
 foreach ($this->phpParameters as $param) {
-    echo '<LI><B>'.$param['name'].'&nbsp;:</B>&nbsp;'.$param['value'].'<SPAN style="color:red;">&nbsp;-&nbsp;'.$param['error'].'</SPAN><BR/></LI>';
+    echo '<LI><B>'.$param['name'].'&nbsp;:</B>&nbsp;'.$param['value'];
+    if(empty($param['error'])){
+        echo '<SPAN style="color:green;">&nbsp;-&nbsp;ok</SPAN><BR/></LI>';
+    } else {
+        echo '<SPAN style="color:red;">&nbsp;-&nbsp;'.$param['error'].'</SPAN><BR/></LI>';
+    }
 }
 ?>
 </UL>
