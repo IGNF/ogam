@@ -29,7 +29,7 @@ class Application_Model_DbTable_RawData_Submission extends Zend_Db_Table_Abstrac
 	public function getActiveSubmissions() {
 		$db = $this->getAdapter();
 
-		$req = " SELECT submission_id, step, status, provider_id, dataset_id, user_login, file_type, file_name, nb_line ";
+		$req = " SELECT submission_id, step, status, provider_id, dataset_id, user_login, file_type, file_name, nb_line, _creationdt ";
 		$req .= " FROM submission ";
 		$req .= " LEFT JOIN submission_file USING (submission_id) ";
 		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
@@ -54,6 +54,7 @@ class Application_Model_DbTable_RawData_Submission extends Zend_Db_Table_Abstrac
 				$submission->providerId = $row['provider_id'];
 				$submission->datasetId = $row['dataset_id'];
 				$submission->userLogin = $row['user_login'];
+				$submission->date = $row['_creationdt'];
 				$result[$submissionId] = $submission;
 			}
 			// Add file info

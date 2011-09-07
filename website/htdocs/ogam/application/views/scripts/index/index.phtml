@@ -88,6 +88,14 @@ if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {
 </li>
 <?php
 }
+
+if (!empty($permissions) && array_key_exists('CHECK_CONF',$permissions)) {
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'checkconf'), null, true) ?>" class="pagelink" ><?=$this->translate('Check Configuration');?></a>
+</li>
+<?php
+}
 ?>
 </ul>
 </div>
