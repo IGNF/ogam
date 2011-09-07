@@ -33,6 +33,7 @@ INSERT INTO permission(permission_code, permission_label) VALUES ('DOCUMENTATION
 INSERT INTO permission(permission_code, permission_label) VALUES ('EXPORT_RAW_DATA', 'Export the raw data as a CSV file');
 INSERT INTO permission(permission_code, permission_label) VALUES ('EXPORT_HARMONIZED_DATA', 'Export the harmonized data as a CSV file');
 INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_EDITION', 'Add / Update / Delete data');
+INSERT INTO permission(permission_code, permission_label) VALUES ('CHECK_CONF', 'Check the configuration');
 
 -- Add the permissions per role
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_USERS');
@@ -48,5 +49,6 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DO
 --INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'PRIVATE_DOCUMENTATION');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'EXPORT_HARMONIZED_DATA');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_EDITION');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CHECK_CONF');
 
 
