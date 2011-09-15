@@ -5,34 +5,34 @@
  */
 ?>
 <h1>
-   User Management Module - Users
+   <?=$this->translate('Users');?>
 </h1>
 
 
 <table class="sectiontable">
 <tr>
-	<th>Edit User</th>
-	<th>Change User Password</th>
-	<th>User Login</th>
-	<th>User Name</th>
-	<th>Country</th>
-	<th>Email</th>
-	<th>Role</th>
-	<th>Delete User</th>
+	<th><?=$this->translate('Edit User');?></th>
+	<th><?=$this->translate('Change Password');?></th>
+	<th><?=$this->translate('User Login');?></th>
+	<th><?=$this->translate('User Name');?></th>
+	<th><?=$this->translate('Country');?></th>
+	<th><?=$this->translate('Email');?></th>
+	<th><?=$this->translate('Role');?></th>
+	<th><?=$this->translate('Delete');?></th>
 </tr>
 <?
 $i = 0;
 foreach($this->users as $user) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
-	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-edit-user'), null, true)?>?userLogin=<?=$user->login;?>">Edit</a></td>
-	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-change-password'), null, true)?>?userLogin=<?=$user->login;?>">Change Password</a></td>
+	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-edit-user'), null, true)?>?userLogin=<?=$user->login;?>"><?=$this->translate('Edit');?></a></td>
+	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-change-password'), null, true)?>?userLogin=<?=$user->login;?>"><?=$this->translate('Change Password');?></a></td>
 	<td><?= $this->escape($user->login); ?></td>
 	<td><?= $this->escape($user->username); ?></td>
 	<td><?= $this->countries[$user->countryCode]; ?></td>
 	<td><?= $this->escape($user->email); ?></td>
 	<td><?= $this->escape($user->roleLabel); ?></td>
-	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('Are you sure?');">Delete</a></td>
+	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('Are you sure?');"><?=$this->translate('Delete');?></a></td>
 </tr>
 <?
 $i++;
@@ -41,7 +41,7 @@ $i++;
 </table>
  
 <p class="subTableLink">
-    <a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-create-user'), null, true) ?>">Create a new user</a>
+    <a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-create-user'), null, true) ?>"><?=$this->translate('Create User');?></a>
 <p/>
 
  

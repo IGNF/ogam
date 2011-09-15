@@ -116,7 +116,7 @@ class UsermanagementController extends AbstractOGAMController {
 		// Add the country element
 		//
 		$countryCode = $form->createElement('select', 'countryCode');
-		$countryCode->setLabel('Country Code');
+		$countryCode->setLabel('Country');
 		$countryCode->setRequired(true);
 		if ($user != null) {
 			$countryCode->setValue($user->countryCode);
