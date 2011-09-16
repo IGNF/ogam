@@ -141,7 +141,7 @@ foreach ($this->submissions as $submission) {
 ?>
     <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Confirm validation');?>');"></a></p>
     <? } ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('Are you sure?');"><?=$this->translate('Cancel Submission');?></a></p>
+    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Are you sure?');?>');"><?=$this->translate('Cancel Submission');?></a></p>
 </td></tr>
 <?
 	$i++;
