@@ -130,7 +130,7 @@ class IntegrationController extends AbstractOGAMController {
 				$fields = $this->metadataModel->getFileFields($requestedFile->format);
 				$fieldsDesc .= Zend_Registry::get('Zend_Translate')->translate('The expected fields are:');
 				foreach ($fields as $field) {
-					$fieldsDesc .= '<a href="#" title="';
+					$fieldsDesc .= '<span title="';
 					$fieldsDesc .= $field->definition; // the tooltip
 					if (!empty($field->mask)) {
 						$fieldsDesc .= ' : format = '.$field->mask;
@@ -141,9 +141,10 @@ class IntegrationController extends AbstractOGAMController {
 						$fieldsDesc .= '*';
 					}
 
-					$fieldsDesc .= '</a>';
+					$fieldsDesc .= '</span>';
 					$fieldsDesc .= ';&nbsp;';
 				}
+				$fieldsDesc = substr($fieldsDesc, 0, -7); // remove last comma
 			}
 
 			$fileelement->setDescription($fieldsDesc);
