@@ -648,43 +648,50 @@ class Genapp_Service_QueryService {
 		}
 
 		$json .= "], ";
-		$json .= "maps:[{title:'image',";
-		$json .= "url:'".$baseUrl."/proxy/gettile?";
-		$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[0]);
-		$json .= "&TRANSPARENT=true";
-		$json .= "&FORMAT=image%2FPNG";
-		$json .= "&SERVICE=WMS";
-		$json .= "&VERSION=1.1.1";
-		$json .= "&REQUEST=GetMap";
-		$json .= "&STYLES=";
-		$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
-		$json .= "&SRS=EPSG%3A".$visualisationSRS;
-		$json .= "&BBOX=".$bb['x_min'].",".$bb['y_min'].",".$bb['x_max'].",".$bb['y_max'];
-		$json .= "&WIDTH=300";
-		$json .= "&HEIGHT=300";
-		$json .= "&map.scalebar=STATUS+embed";
-		$json .= "&SESSION_ID=".session_id();
-		$json .= $mapservParams;
-		$json .= "'},"; // end of map
-		$json .= "{title:'overview',";
-		$json .= "url:'".$baseUrl."/proxy/gettile?";
-		$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[1]);
-		$json .= "&TRANSPARENT=true";
-		$json .= "&FORMAT=image%2FPNG";
-		$json .= "&SERVICE=WMS";
-		$json .= "&VERSION=1.1.1";
-		$json .= "&REQUEST=GetMap";
-		$json .= "&STYLES=";
-		$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
-		$json .= "&SRS=EPSG%3A".$visualisationSRS;
-		$json .= "&BBOX=".$bb2['x_min'].",".$bb2['y_min'].",".$bb2['x_max'].",".$bb2['y_max'];
-		$json .= "&WIDTH=300";
-		$json .= "&HEIGHT=300";
-		$json .= "&SESSION_ID=".session_id();
-		$json .= "&CLASS=REDSTAR";
-		$json .= "&map.scalebar=STATUS+embed";
-		$json .= $mapservParams;
-		$json .= "'}"; // end of overview map
+		$json .= "maps:[";
+		if (!empty($detailLayers)) {
+			if ($detailLayers[0] != "") {
+				$json .= "{title:'image',";
+				$json .= "url:'".$baseUrl."/proxy/gettile?";
+				$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[0]);
+				$json .= "&TRANSPARENT=true";
+				$json .= "&FORMAT=image%2FPNG";
+				$json .= "&SERVICE=WMS";
+				$json .= "&VERSION=1.1.1";
+				$json .= "&REQUEST=GetMap";
+				$json .= "&STYLES=";
+				$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
+				$json .= "&SRS=EPSG%3A".$visualisationSRS;
+				$json .= "&BBOX=".$bb['x_min'].",".$bb['y_min'].",".$bb['x_max'].",".$bb['y_max'];
+				$json .= "&WIDTH=300";
+				$json .= "&HEIGHT=300";
+				$json .= "&map.scalebar=STATUS+embed";
+				$json .= "&SESSION_ID=".session_id();
+				$json .= $mapservParams;
+				$json .= "'}"; // end of detail map
+			}
+			if ($detailLayers[1] != "") {
+				$json .= ",{title:'overview',";
+				$json .= "url:'".$baseUrl."/proxy/gettile?";
+				$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[1]);
+				$json .= "&TRANSPARENT=true";
+				$json .= "&FORMAT=image%2FPNG";
+				$json .= "&SERVICE=WMS";
+				$json .= "&VERSION=1.1.1";
+				$json .= "&REQUEST=GetMap";
+				$json .= "&STYLES=";
+				$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
+				$json .= "&SRS=EPSG%3A".$visualisationSRS;
+				$json .= "&BBOX=".$bb2['x_min'].",".$bb2['y_min'].",".$bb2['x_max'].",".$bb2['y_max'];
+				$json .= "&WIDTH=300";
+				$json .= "&HEIGHT=300";
+				$json .= "&SESSION_ID=".session_id();
+				$json .= "&CLASS=REDSTAR";
+				$json .= "&map.scalebar=STATUS+embed";
+				$json .= $mapservParams;
+				$json .= "'}"; // end of overview map
+			}
+		}
 		$json .= "]"; // end of maps
 		$json .= "}";
 
