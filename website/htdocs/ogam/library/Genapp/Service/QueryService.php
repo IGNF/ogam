@@ -686,7 +686,6 @@ class Genapp_Service_QueryService {
 				$json .= "&WIDTH=300";
 				$json .= "&HEIGHT=300";
 				$json .= "&SESSION_ID=".session_id();
-				$json .= "&CLASS=REDSTAR";
 				$json .= "&map.scalebar=STATUS+embed";
 				$json .= $mapservParams;
 				$json .= "'}"; // end of overview map
