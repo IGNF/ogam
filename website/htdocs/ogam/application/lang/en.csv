@@ -63,7 +63,8 @@ Check data;Check data
 Show report;Show report
 Validate data;Validate submission
 Cancel Submission;Cancel submission
-Confirm validation;Once validated the data will be available for agregation. Do you confirm?
+Confirm submission;Confirm submission
+Confirm_submission_warning;Once validated the data will be available for further processing. Do you confirm?
 Submit;Submit
 Error;Error
 The expected fields are:;The expected fields are:

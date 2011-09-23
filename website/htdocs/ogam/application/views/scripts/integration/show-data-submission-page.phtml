@@ -112,16 +112,19 @@ foreach ($this->submissions as $submission) {
         <?php if ($submission->status !== "DATARUNNING") : ?>
             <table width="100%">
             <?php foreach ($submission->files as $file) : ?>
-                <tr><td><?= $file->fileType ?></td>
-                <td class="line-number"><?= $file->lineNumber ?></td></tr>
-                <tr><td colspan=2 class="file-name">
+                <tr><td class="file-name">
+                	<span title="<?= $file->fileType ?>">
                     <?php
                         $fileName = $file->fileName;
                         $fileName = strtr($fileName,'\\','/');
                         $fileName = substr($fileName, strrpos($fileName,'/') + 1);
                         echo $fileName;
                     ?>
-                </td></tr>
+                    </span>
+                </td>
+                <td class="line-number"><?= $file->lineNumber ?></td>
+                </tr>
+                
             <?php endforeach; ?>
             </table>
         <?php endif; ?>
@@ -137,9 +140,9 @@ foreach ($this->submissions as $submission) {
 ?>
     <p><a href="<?= $this->url(array('controller'=>'proxy','action'=>'showreport'), null, true)?>?submissionId=<?=$submission->submissionId;?>" ><?=$this->translate('Show report');?></a></p>
     <? }
-	if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
+    if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Confirm validation');?>');"></a></p>
+    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Confirm_submission_warning');?>');"><?=$this->translate('Confirm submission');?></a></p>
     <? } ?>
     <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Are you sure?');?>');"><?=$this->translate('Cancel Submission');?></a></p>
 </td></tr>

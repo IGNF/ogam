@@ -171,6 +171,8 @@ Check data;Vérifier les données
 Show report;Afficher le rapport
 Validate data;Valider la soumission
 Cancel Submission;Annuler la soumission
+Confirm submission;Confirmer la soumission
+Confirm_submission_warning;Une fois validées, les données seront disponibles pour la suite des traitements. Voulez-vous confirmer ?
 Submit;Valider
 Error;Erreur
 The expected fields are:;Les champs attendus sont :
