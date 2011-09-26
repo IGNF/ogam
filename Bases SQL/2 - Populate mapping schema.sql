@@ -19,13 +19,17 @@ INSERT INTO scales(scale) VALUES (500000);   --  500 K
 INSERT INTO scales(scale) VALUES (250000);   --  250 K
 INSERT INTO scales(scale) VALUES (100000);   --  100 K
 
+
+DELETE FROM legend;
+DELETE FROM layer_definition;
+
 -- Define the layers
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('nuts_0', 'Country Boundaries', 'nuts_0', 1, 0, 0, 1, 60000000, 50000, 'resize', 'PNG', null, 1, null, 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('result_locations', 'Results', 'result_locations', 1, 0, 1, 0, null, null, null, 'PNG', null, 0, null, 0, 'REQUEST');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('all_locations', 'Plot Locations', 'all_locations', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 0, 'NONE');
-INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('all_harmonized_locations', 'Plot Locations', 'all_harmonized_locations', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 0, 'NONE');
---INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('all_locations_country', 'Plot Locations', 'all_locations_country', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 0, 'NONE');
---INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, country_code, has_sld, activate_type) VALUES ('all_harmonized_locations_country', 'Plot Locations', 'all_harmonized_locations_country', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null,  0, 'NONE');
+INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, provider_id, has_sld, activate_type) VALUES ('nuts_0', 'Country Boundaries', 'nuts_0', 1, 0, 0, 1, 60000000, 50000, 'resize', 'PNG', null, 1, null, 0, 'NONE');
+INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, provider_id, has_sld, activate_type) VALUES ('result_locations', 'Results', 'result_locations', 1, 0, 1, 0, null, null, null, 'PNG', null, 0, null, 0, 'REQUEST');
+INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, provider_id, has_sld, activate_type) VALUES ('all_locations', 'Plot Locations', 'all_locations', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 0, 'NONE');
+INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, provider_id, has_sld, activate_type) VALUES ('all_harmonized_locations', 'Plot Locations', 'all_harmonized_locations', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 0, 'NONE');
+--INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, provider_id, has_sld, activate_type) VALUES ('all_locations_country', 'Plot Locations', 'all_locations_country', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null, 0, 'NONE');
+--INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTransparent, isBaseLayer, isUntiled, isCached, maxscale, minscale, transitionEffect, imageFormat, opacity, has_legend, provider_id, has_sld, activate_type) VALUES ('all_harmonized_locations_country', 'Plot Locations', 'all_harmonized_locations_country', 1, 0, 1, 0, null, null, null, 'PNG', null, 1, null,  0, 'NONE');
 
 
 --
