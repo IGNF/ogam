@@ -39,9 +39,9 @@ public interface UnitTypes {
 	 * An array of codes.
 	 */
 	String ARRAY = "ARRAY";
-	
+
 	/**
-	 * An geometry object (not managed by the integration module, built using a trigger).
+	 * A geometry (as a WKT string, mapped to the GEOMETRY type of PostGIS).
 	 */
 	String GEOM = "GEOM";
 

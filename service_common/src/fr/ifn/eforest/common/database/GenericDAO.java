@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import fr.ifn.eforest.common.util.SqlStateSQL99;
 import fr.ifn.eforest.common.business.checks.CheckException;
+import fr.ifn.eforest.common.database.mapping.GeometryDAO;
 import fr.ifn.eforest.common.database.metadata.TableFieldData;
 import static fr.ifn.eforest.common.business.UnitTypes.*;
 import static fr.ifn.eforest.common.business.checks.CheckCodes.*;
@@ -31,6 +32,9 @@ import static fr.ifn.eforest.common.business.checks.CheckCodes.*;
 public class GenericDAO {
 
 	private Logger logger = Logger.getLogger(this.getClass());
+
+	// DAOs
+	private GeometryDAO geometryDAO = new GeometryDAO();
 
 	/**
 	 * Get a connexion to the database.
@@ -76,7 +80,6 @@ public class GenericDAO {
 			Iterator<String> columnsIter = tableColumns.keySet().iterator();
 			while (columnsIter.hasNext()) {
 				String sourceData = columnsIter.next();
-				TableFieldData destField = tableColumns.get(sourceData);
 
 				GenericData colData = valueColumns.get(sourceData);
 
@@ -88,8 +91,20 @@ public class GenericDAO {
 						colValues.append(", ");
 					}
 
-					colNames.append(destField.getColumnName());
-					colValues.append("?");
+					colNames.append(colData.getColumnName());
+					if (colData.getType().equalsIgnoreCase(GEOM)) {
+						// TODO : Check the format
+						if (colData.getValue() == null || colData.getValue().equals("")) {
+							colValues.append("null");
+						} else {
+							// We suppose that the SRID is the one expected in the table
+							TableFieldData tableData = tableColumns.get(sourceData);
+							Integer srid = geometryDAO.getSRID(tableData.getTableName(), tableData.getColumnName());
+							colValues.append("ST_GeomFromText('" + colData.getValue() + "', " + srid + ")");
+						}
+					} else {
+						colValues.append("?");
+					}
 
 				}
 			}
@@ -148,7 +163,9 @@ public class GenericDAO {
 							java.sql.Array array = con.createArrayOf("varchar", value);
 							ps.setArray(count, array);
 						}
-
+					} else if (colData.getType().equalsIgnoreCase(GEOM)) {
+						// Do nothing and don't increment the count
+						count--;
 					} else {
 						throw new Exception("Unexpected type");
 					}

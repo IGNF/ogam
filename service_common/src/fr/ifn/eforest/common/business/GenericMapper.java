@@ -188,7 +188,7 @@ public class GenericMapper {
 				throw new CheckException(MANDATORY_FIELD_MISSING);
 			}
 
-			if (type.equalsIgnoreCase(STRING)) {
+			if (type.equalsIgnoreCase(STRING) || type.equalsIgnoreCase(GEOM)) {
 				result = fieldValue;
 			}
 
