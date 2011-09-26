@@ -295,7 +295,7 @@ class IntegrationController extends AbstractOGAMController {
 
 		// Get the user info
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->$providerId;
+		$providerId = $userSession->user->providerId;
 
 		// Get the configuration info
 		$configuration = Zend_Registry::get("configuration");
