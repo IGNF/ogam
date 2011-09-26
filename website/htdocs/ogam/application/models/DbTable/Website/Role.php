@@ -141,7 +141,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 	public function updateRole($role) {
 		$db = $this->getAdapter();
 
-		$req = "UPDATE role SET role_label=?, role_def=?, is_europe_level=? WHERE role_code = ?";
+		$req = "UPDATE role SET role_label=?, role_def=?, WHERE role_code = ?";
 
 		$this->logger->info('updateRole : '.$req);
 
