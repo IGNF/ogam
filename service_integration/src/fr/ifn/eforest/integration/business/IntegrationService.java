@@ -31,7 +31,7 @@ import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
 import fr.ifn.eforest.integration.database.rawdata.CheckErrorDAO;
 
 /**
- * This service manages the intergration process.
+ * This service manages the integration process.
  */
 public class IntegrationService extends GenericMapper {
 
