@@ -478,7 +478,6 @@ class UsermanagementController extends AbstractOGAMController {
 			$roleCode = $f->filter($values['roleCode']);
 			$roleLabel = $f->filter($values['roleLabel']);
 			$roleDefinition = $f->filter($values['roleDefinition']);
-			$isEuropeLevel = $f->filter($values['isEuropeLevel']);
 			$rolepermissions = $values['rolepermissions'];
 
 			// Build the user
@@ -486,8 +485,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$role->roleCode = $roleCode;
 			$role->roleLabel = $roleLabel;
 			$role->roleDefinition = $roleDefinition;
-			$role->isEuropeLevel = $isEuropeLevel;
-
+		
 			if ($mode == 'edit') {
 				//
 				// EDIT the role
