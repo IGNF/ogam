@@ -71,6 +71,7 @@ class MapController extends AbstractOGAMController {
 		$resolutions = $this->_getResolutions($scales);
 		$resolString = implode(",", $resolutions);
 		$this->view->resolutions = $resolString;
+		$this->view->numZoomLevels = count($resolutions);
 
 		// Center the map on the country
 		$center = $this->boundingBoxModel->getCenter($countryCode);
