@@ -30,7 +30,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 	public function getRole($roleCode) {
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, role_label, role_def ";
+		$req = " SELECT role_code, role_label, role_definition ";
 		$req .= " FROM role ";
 		$req .= " WHERE role_code = ? ";
 		$this->logger->info('getRole : '.$req);
@@ -44,7 +44,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 			$role = new Application_Model_Website_Role();
 			$role->roleCode = $result['role_code'];
 			$role->roleLabel = $result['role_label'];
-			$role->roleDefinition = $result['role_def'];
+			$role->roleDefinition = $result['role_definition'];
 			return $role;
 		} else {
 			return null;
@@ -59,7 +59,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 	public function getRoles() {
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, role_label, role_def ";
+		$req = " SELECT role_code, role_label, role_definition ";
 		$req .= " FROM role ";
 		$req .= " ORDER BY role_code";
 		$this->logger->info('getRoles : '.$req);
@@ -74,7 +74,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 			$role = new Application_Model_Website_Role();
 			$role->roleCode = $result['role_code'];
 			$role->roleLabel = $result['role_label'];
-			$role->roleDefinition = $result['role_def'];
+			$role->roleDefinition = $result['role_definition'];
 			$roles[] = $role;
 		}
 
@@ -141,15 +141,15 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 	public function updateRole($role) {
 		$db = $this->getAdapter();
 
-		$req = "UPDATE role SET role_label=?, role_def=? WHERE role_code = ?";
+		$req = "UPDATE role SET role_label=?, role_definition=? WHERE role_code = ?";
 
 		$this->logger->info('updateRole : '.$req);
 
 		$query = $db->prepare($req);
 		$query->execute(array(
-			$role->roleLabel,
-			$role->roleDefinition,
-			$role->roleCode));
+		$role->roleLabel,
+		$role->roleDefinition,
+		$role->roleCode));
 	}
 
 	/**
@@ -193,16 +193,16 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 	public function createRole($role) {
 		$db = $this->getAdapter();
 
-		$req = " INSERT INTO role (role_code, role_label, role_def )";
+		$req = " INSERT INTO role (role_code, role_label, role_definition )";
 		$req .= " VALUES (?, ?, ?, ?)";
 
 		$this->logger->info('createRole : '.$req);
 
 		$query = $db->prepare($req);
 		$query->execute(array(
-			$role->roleCode,
-			$role->roleLabel,
-			$role->roleDefinition));
+		$role->roleCode,
+		$role->roleLabel,
+		$role->roleDefinition));
 	}
 
 	/**

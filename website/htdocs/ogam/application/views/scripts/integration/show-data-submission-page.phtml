@@ -150,10 +150,13 @@ foreach ($this->submissions as $submission) {
 ?>
     <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Confirm_submission_warning');?>');"><?=$this->translate('Confirm submission');?></a></p>
     <?php } 
+    var_dump($userSession);
     if ($submission->step != "VALIDATED" || (!empty($permissions) && array_key_exists('CANCEL_VALIDATED_SUBMISSION',$permissions))) {
+    	if ($submission->providerId == $userSession->providerID || (!empty($permissions) && array_key_exists('CANCEL_OTHER_PROVIDER_SUBMISSION',$permissions))) {
 ?>
     <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Are you sure?');?>');"><?=$this->translate('Cancel Submission');?></a></p>
-<?php  } ?>        
+<?php  }
+    } ?>        
 </td></tr>
 <?php
 	$i++;

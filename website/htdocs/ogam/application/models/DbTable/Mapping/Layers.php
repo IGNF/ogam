@@ -26,10 +26,10 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the list of available layers for the map.
 	 *
-	 * @param String $countryCode the country code
+	 * @param String $providerId the identifier of the provider
 	 * @return Array[Layer]
 	 */
-	public function getLayersList($countryCode) {
+	public function getLayersList($providerId = null) {
 
 		$db = $this->getAdapter();
 		$params = array();
@@ -41,11 +41,11 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$req .= " AND legend.is_layer = 1 ";
 
 		// Check the country code
-		if (empty($countryCode)) {
-			$req .= ' AND country_code IS NULL';
+		if ($providerId == null) {
+			$req .= ' AND provider_id IS NULL';
 		} else {
-			$req .= ' AND (country_code IS NULL OR country_code = ?)';
-			$params[] = $countryCode;
+			$req .= ' AND (provider_id IS NULL OR provider_id = ?)';
+			$params[] = $providerId;
 		}
 
 		// Check the user profile
@@ -156,10 +156,10 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 * Get the list of legend items for a given parendId.
 	 *
 	 * @param String $parentId the identifier of the category
-	 * @param String $countryCode the code of the country
+	 * @param String $providerId the identifier of the provider
 	 * @return Array[Legend]
 	 */
-	public function getLegend($parentId, $countryCode) {
+	public function getLegend($parentId, $providerId = null) {
 
 		Zend_Registry::get("logger")->info('getLegend : parentId : '.$parentId.' - countryCode : '.$countryCode);
 
@@ -173,11 +173,11 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$req .= " WHERE parent_id = '".$parentId."'";
 
 		// Check the country code
-		if (empty($countryCode)) {
-			$req .= ' AND country_code IS NULL';
+		if ($providerId == null) {
+			$req .= ' AND provider_id IS NULL';
 		} else {
-			$req .= ' AND (country_code IS NULL OR country_code = ?)';
-			$params[] = $countryCode;
+			$req .= ' AND (provider_id IS NULL OR provider_id = ?)';
+			$params[] = $providerId;
 		}
 
 		// Check the user profile

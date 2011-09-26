@@ -127,7 +127,7 @@ class MapController extends AbstractOGAMController {
 		$userSession = new Zend_Session_Namespace('user');
 
 		// TODO : Remove hardcoded value
-		$countryCode = "1";
+		$providerId = $userSession->user->providerId;
 
 		// Get some configutation parameters
 		$configuration = Zend_Registry::get("configuration");
@@ -136,7 +136,7 @@ class MapController extends AbstractOGAMController {
 		$proxyPath = $configuration->useMapProxy ? '/mapProxy.php' : '/proxy/gettile';
 
 		// Get the available layers
-		$layers = $this->layersModel->getLayersList($countryCode);
+		$layers = $this->layersModel->getLayersList($providerId);
 
 		// Get the available scales
 		$scales = $this->layersModel->getScales();
@@ -247,7 +247,7 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "session_id": "'.$sessionId.'"';
 
 			// Add the country code
-			$out .= ', "country_code": "'.$countryCode.'"';
+			$out .= ', "provider_id": "'.$providerId.'"';
 
 			$out .= '}';
 

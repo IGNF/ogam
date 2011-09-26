@@ -31,7 +31,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 
 		$req = " SELECT user_login as login, ";
 		$req .= " user_name as username, ";
-		$req .= " country_code, ";
+		$req .= " provider_id, ";
 		$req .= " email, ";
 		$req .= " active, ";
 		$req .= " role_label ";
@@ -52,7 +52,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 			$user = new Application_Model_Website_User();
 			$user->login = $result['login'];
 			$user->username = $result['username'];
-			$user->countryCode = $result['country_code'];
+			$user->providerId = $result['provider_id'];
 			$user->active = $result['active'];
 			$user->email = $result['email'];
 			$user->roleLabel = $result['role_label'];
@@ -74,7 +74,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 		$req = " SELECT users.user_login as login, ";
 		$req .= " user_password as password, ";
 		$req .= " user_name as username, ";
-		$req .= " country_code, ";
+		$req .= " provider_id, ";
 		$req .= " active, ";
 		$req .= " email, ";
 		$req .= " role_code ";
@@ -92,7 +92,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 			$user = new Application_Model_Website_User();
 			$user->login = $result['login'];
 			$user->username = $result['username'];
-			$user->countryCode = $result['country_code'];
+			$user->providerId = $result['providerId'];
 			$user->active = $result['active'];
 			$user->email = $result['email'];
 			$user->roleCode = $result['role_code'];
@@ -158,7 +158,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 
 		$req = " UPDATE users ";
-		$req .= " SET user_name = ?, country_code = ?, email = ?";
+		$req .= " SET user_name = ?, provider_id = ?, email = ?";
 		$req .= " WHERE user_login = ?";
 
 		$this->logger->info('updateUser : '.$req);
@@ -166,7 +166,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$user->username,
-			$user->countryCode,
+			$user->providerId,
 			$user->email,
 			$user->login));
 	}
@@ -179,7 +179,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 	public function createUser($user) {
 		$db = $this->getAdapter();
 
-		$req = " INSERT INTO users (user_login, user_password, user_name, country_code, email, active )";
+		$req = " INSERT INTO users (user_login, user_password, user_name, provider_id, email, active )";
 		$req .= " VALUES (?, ?, ?, ?, ?, '1')";
 
 		$this->logger->info('createUser : '.$req);
@@ -189,7 +189,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 			$user->login,
 			$user->password,
 			$user->username,
-			$user->countryCode,
+			$user->providerId,
 			$user->email));
 	}
 
