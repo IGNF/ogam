@@ -25,13 +25,13 @@ class Application_Model_DbTable_Mapping_BoundingBox extends Zend_Db_Table_Abstra
 	/**
 	 * Get the center and defaut zoom level of the map for the country.
 	 *
-	 * @param String $codeCountry the code of the country or 999 for europe
+	 * @param String $providerId the provider identifier
 	 * @return Center the center
 	 */
-	public function getCenter($codeCountry) {
+	public function getCenter($providerId) {
 		$db = $this->getAdapter();
 
-		if (empty($codeCountry)) {
+		if (empty($providerId)) {
 			$userSession = new Zend_Session_Namespace('user');
 			$providerId = $userSession->user->providerId;
 		}
@@ -43,7 +43,7 @@ class Application_Model_DbTable_Mapping_BoundingBox extends Zend_Db_Table_Abstra
 		Zend_Registry::get("logger")->info('getCenter : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array(providerId));
+		$select->execute(array($providerId));
 
 		$row = $select->fetch();
 		$center = new Application_Model_Mapping_Center();
