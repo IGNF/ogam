@@ -28,14 +28,9 @@ class Application_Model_Website_User {
 	var $password;
 
 	/**
-	 * The country code (ex: "1" for France).
+	 * The provider identifier (ex: "1" for France).
 	 */
-	var $countryCode;
-
-	/**
-	 * The country label (ex: France).
-	 */
-	var $countryLabel;
+	var $providerId;
 
 	/**
 	 * Indicate if the user is active (1 for true, 0 for false)

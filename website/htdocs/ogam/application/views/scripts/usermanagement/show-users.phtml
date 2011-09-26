@@ -29,7 +29,7 @@ foreach($this->users as $user) {
 	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-change-password'), null, true)?>?userLogin=<?=$user->login;?>"><?=$this->translate('Change Password');?></a></td>
 	<td><?= $this->escape($user->login); ?></td>
 	<td><?= $this->escape($user->username); ?></td>
-	<td><?= $this->countries[$user->countryCode]; ?></td>
+	<td><?= $this->providers[$user->providerId]; ?></td>
 	<td><?= $this->escape($user->email); ?></td>
 	<td><?= $this->escape($user->roleLabel); ?></td>
 	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('Are you sure?');"><?=$this->translate('Delete');?></a></td>

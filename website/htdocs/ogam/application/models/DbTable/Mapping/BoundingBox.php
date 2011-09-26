@@ -33,7 +33,7 @@ class Application_Model_DbTable_Mapping_BoundingBox extends Zend_Db_Table_Abstra
 
 		if (empty($codeCountry)) {
 			$userSession = new Zend_Session_Namespace('user');
-			$codeCountry = $userSession->user->countryCode;
+			$providerId = $userSession->user->providerId;
 		}
 
 		$req = " SELECT (bb_xmin + bb_xmax) / 2 as x_center, (bb_ymin + bb_ymax) / 2 as y_center, zoom_level
@@ -43,7 +43,7 @@ class Application_Model_DbTable_Mapping_BoundingBox extends Zend_Db_Table_Abstra
 		Zend_Registry::get("logger")->info('getCenter : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array($codeCountry));
+		$select->execute(array(providerId));
 
 		$row = $select->fetch();
 		$center = new Application_Model_Mapping_Center();

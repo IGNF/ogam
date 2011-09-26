@@ -23,8 +23,8 @@ $i = 0;
 foreach($this->validatedsubmissions as $validatedSubmission) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
-	<td><?= $validatedSubmission->jrcRequest ?></td>	
-	<td><?= $validatedSubmission->countryCode; ?></td>
+	<td><?= $validatedSubmission->datasetId ?></td>	
+	<td><?= $validatedSubmission->providerId ?></td>
 </tr>
 <?
 $i++;

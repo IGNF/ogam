@@ -92,7 +92,7 @@ class Application_Model_DbTable_Website_User extends Zend_Db_Table_Abstract {
 			$user = new Application_Model_Website_User();
 			$user->login = $result['login'];
 			$user->username = $result['username'];
-			$user->providerId = $result['providerId'];
+			$user->providerId = $result['provider_id'];
 			$user->active = $result['active'];
 			$user->email = $result['email'];
 			$user->roleCode = $result['role_code'];

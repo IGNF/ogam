@@ -336,7 +336,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$f = new Zend_Filter_StripTags();
 			$userLogin = $f->filter($values['login']);
 			$userName = $f->filter($values['username']);
-			$countryCode = $f->filter($values['countryCode']);
+			$providerId = $f->filter($values['providerId']);
 			$email = $f->filter($values['email']);
 			$roleCode = $f->filter($values['roleCode']);
 			if ($mode == 'create') {
@@ -354,7 +354,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$user = new Application_Model_Website_User();
 			$user->login = $userLogin;
 			$user->username = $userName;
-			$user->countryCode = $countryCode;
+			$user->providerId = $providerId;
 			$user->email = $email;
 
 			if ($mode == 'edit') {

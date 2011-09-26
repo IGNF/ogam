@@ -238,9 +238,7 @@ class IntegrationController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$userLogin = $userSession->user->login;
-
-		// In this demo project, the provider id is the country code of the connected user
-		$providerId = $userSession->user->countryCode;
+		$providerId = $userSession->user->$providerId;
 
 		// Send the request to the integration server
 		try {
@@ -296,7 +294,7 @@ class IntegrationController extends AbstractOGAMController {
 
 		// Get the user info
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->countryCode; // The provider identifier is the country code
+		$providerId = $userSession->user->$providerId;
 
 		// Get the configuration info
 		$configuration = Zend_Registry::get("configuration");

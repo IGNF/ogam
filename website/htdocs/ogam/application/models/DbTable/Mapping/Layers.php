@@ -161,7 +161,7 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 */
 	public function getLegend($parentId, $providerId = null) {
 
-		Zend_Registry::get("logger")->info('getLegend : parentId : '.$parentId.' - countryCode : '.$countryCode);
+		Zend_Registry::get("logger")->info('getLegend : parentId : '.$parentId.' - providerId : '.$providerId);
 
 		$db = $this->getAdapter();
 		$params = array();
