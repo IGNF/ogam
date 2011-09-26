@@ -238,7 +238,7 @@ class IntegrationController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$userLogin = $userSession->user->login;
-		$providerId = $userSession->user->$providerId;
+		$providerId = $userSession->user->providerId;
 
 		// Send the request to the integration server
 		try {
