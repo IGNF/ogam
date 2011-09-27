@@ -7,7 +7,7 @@
 /**
  * Represent an information about a table in the table hierarchical tree.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_TableTreeData {

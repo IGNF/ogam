@@ -7,7 +7,7 @@
 /**
  * Represent a Field of a File.
  * 
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_FileField extends Genapp_Object_Metadata_Field {

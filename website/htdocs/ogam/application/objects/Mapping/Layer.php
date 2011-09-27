@@ -7,7 +7,7 @@
 /**
  * Represent a map layer.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Mapping_Layer {

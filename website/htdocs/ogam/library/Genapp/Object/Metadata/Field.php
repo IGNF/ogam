@@ -7,7 +7,7 @@
 /**
  * Represent a Field.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_Field {

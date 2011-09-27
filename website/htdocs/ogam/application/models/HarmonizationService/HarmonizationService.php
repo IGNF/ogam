@@ -3,13 +3,12 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once APPLICATION_PATH.'/models/abstract_service/AbstractService.php';
 
 /**
  * This is a model allowing to access the harmonization service via HTTP calls.
  * @package models
  */
-class Application_Object_HarmonizationService_HarmonizationService extends Application_Object_AbstractService_AbstractService {
+class Application_Model_HarmonizationService_HarmonizationService extends Application_Model_AbstractService_AbstractService {
 
 	var $serviceUrl;
 	var $logger;
@@ -17,7 +16,7 @@ class Application_Object_HarmonizationService_HarmonizationService extends Appli
 	/**
 	 * Class constructor
 	 */
-	function Application_Object_HarmonizationService_HarmonizationService() {
+	function Application_Model_HarmonizationService_HarmonizationService() {
 
 		// Initialise the service URL
 		$configuration = Zend_Registry::get("configuration");

@@ -7,7 +7,7 @@
 /**
  * Represent an abstract Format.
  * 
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_Format {

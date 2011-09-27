@@ -7,7 +7,7 @@
 /**
  * Represent a Predefined Field.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Website_PredefinedField {

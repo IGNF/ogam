@@ -7,7 +7,7 @@
 /**
  * Represent a Table Format (a table in a database).
  * 
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_TableFormat extends Genapp_Object_Metadata_Format {

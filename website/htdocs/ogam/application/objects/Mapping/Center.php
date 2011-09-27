@@ -7,7 +7,7 @@
 /**
  * Represent the center of a map.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Mapping_Center {

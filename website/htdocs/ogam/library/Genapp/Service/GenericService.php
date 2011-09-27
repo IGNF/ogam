@@ -9,7 +9,7 @@
  *
  * This service handles transformations between data objects and generate generic SQL requests from the metadata.
  *
- * @package classes
+ * @package service
  */
 class Genapp_Service_GenericService {
 

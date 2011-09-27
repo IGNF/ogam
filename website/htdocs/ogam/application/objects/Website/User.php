@@ -7,7 +7,7 @@
 /**
  * Represent a user.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Website_User {

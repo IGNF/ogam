@@ -7,7 +7,7 @@
 /**
  * A Form Query is the list of criterias and result columns composing a request from the use.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Generic_FormQuery {

@@ -9,7 +9,7 @@
  *
  * This service handles the queries used to feed the query interface with ajax requests.
  *
- * @package classes
+ * @package service
  */
 class Genapp_Service_QueryService {
 

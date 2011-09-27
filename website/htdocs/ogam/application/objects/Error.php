@@ -7,7 +7,7 @@
 /**
  * Represent an error response from the integration service.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Error {

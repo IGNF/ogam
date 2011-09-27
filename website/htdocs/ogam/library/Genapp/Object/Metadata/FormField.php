@@ -3,7 +3,7 @@
 /**
  * Represent a Field of a Form.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {

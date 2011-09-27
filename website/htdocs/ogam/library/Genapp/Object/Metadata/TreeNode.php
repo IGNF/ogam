@@ -7,7 +7,7 @@
 /**
  * Represent a node in a tree with his children.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_TreeNode {

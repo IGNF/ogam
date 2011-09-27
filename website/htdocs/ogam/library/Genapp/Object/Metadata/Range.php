@@ -7,7 +7,7 @@
 /**
  * Represent a range of a unit.
  * 
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_Range {

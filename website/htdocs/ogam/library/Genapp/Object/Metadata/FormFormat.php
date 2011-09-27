@@ -7,7 +7,7 @@
 /**
  * Represent a Form Format (a logical bloc of the HTML Query page).
  * 
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_FormFormat extends Genapp_Object_Metadata_Format {

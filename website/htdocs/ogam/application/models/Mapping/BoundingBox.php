@@ -9,7 +9,7 @@
  * This is the model for managing countries bounding boxes.
  * @package models
  */
-class Application_Object_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
+class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 
 	var $logger;
 

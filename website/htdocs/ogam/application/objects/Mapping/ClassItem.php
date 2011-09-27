@@ -7,7 +7,7 @@
 /**
  * Represent a class of value.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 Class Application_Object_Mapping_ClassItem {

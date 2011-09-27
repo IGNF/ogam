@@ -8,14 +8,14 @@
  * This is a model allowing to access a java service.
  * @package models
  */
-class Application_Object_AbstractService_AbstractService {
+class Application_Model_AbstractService_AbstractService {
 
 	var $logger;
 
 	/**
 	 * Class constructor
 	 */
-	function Application_Object_AbstractService_AbstractService() {
+	function Application_Model_AbstractService_AbstractService() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");

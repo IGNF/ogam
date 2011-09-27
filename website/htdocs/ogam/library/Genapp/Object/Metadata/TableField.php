@@ -7,7 +7,7 @@
 /**
  * Represent a Field of a Database.
  * 
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_TableField extends Genapp_Object_Metadata_Field {

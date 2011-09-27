@@ -7,7 +7,7 @@
 /**
  * Represent a file of a submission.
  * 
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_RawData_SubmissionFile {

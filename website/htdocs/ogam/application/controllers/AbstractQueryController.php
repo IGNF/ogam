@@ -52,8 +52,8 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->genericModel = new Genapp_Model_Generic_Generic();
-		$this->resultLocationModel = new Application_Object_Mapping_ResultLocation();
-		$this->predefinedRequestModel = new Application_Object_Website_PredefinedRequest();
+		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
+		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
 
 		// The service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();

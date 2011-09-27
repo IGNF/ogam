@@ -8,7 +8,7 @@
  * This is a model allowing to access the integration service via HTTP calls.
  * @package models
  */
-class Application_Object_IntegrationService_IntegrationService extends Application_Object_AbstractService_AbstractService {
+class Application_Model_IntegrationService_IntegrationService extends Application_Model_AbstractService_AbstractService {
 
 	var $serviceUrl;
 	var $logger;
@@ -16,7 +16,7 @@ class Application_Object_IntegrationService_IntegrationService extends Applicati
 	/**
 	 * Class constructor
 	 */
-	function Application_Object_IntegrationService_IntegrationService() {
+	function Application_Model_IntegrationService_IntegrationService() {
 
 		// Initialise the service URL
 		$configuration = Zend_Registry::get("configuration");

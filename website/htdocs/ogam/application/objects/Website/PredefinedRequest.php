@@ -8,7 +8,7 @@
 /**
  * Represent a predefined request.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Website_PredefinedRequest {

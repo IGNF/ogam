@@ -7,7 +7,7 @@
 /**
  * Represent a grid definition.
  *
- * @package classes
+ * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Mapping_Grid {
