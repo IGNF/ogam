@@ -1,4 +1,4 @@
-package fr.ifn.eforest.integration.database.rawdata;
+package fr.ifn.ogam.integration.database.rawdata;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.checks.CheckException;
+import fr.ifn.ogam.common.business.checks.CheckException;
 
 /**
  * Data Access Object used to store check errors.

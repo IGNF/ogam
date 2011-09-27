@@ -1,4 +1,4 @@
-package fr.ifn.eforest.integration.servlet;
+package fr.ifn.ogam.integration.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 
-import fr.ifn.eforest.common.servlet.AbstractUploadServlet;
-import fr.ifn.eforest.common.business.ThreadLock;
-import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
-import fr.ifn.eforest.integration.business.submissions.datasubmission.DataService;
-import fr.ifn.eforest.integration.business.submissions.datasubmission.DataServiceThread;
+import fr.ifn.ogam.common.servlet.AbstractUploadServlet;
+import fr.ifn.ogam.common.business.ThreadLock;
+import fr.ifn.ogam.common.business.submissions.SubmissionStatus;
+import fr.ifn.ogam.integration.business.submissions.datasubmission.DataService;
+import fr.ifn.ogam.integration.business.submissions.datasubmission.DataServiceThread;
 
 /**
  * Data Servlet.

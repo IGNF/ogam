@@ -1,4 +1,4 @@
-package fr.ifn.eforest.integration.servlet;
+package fr.ifn.ogam.integration.servlet;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.Schemas;
-import fr.ifn.eforest.common.database.metadata.FieldData;
-import fr.ifn.eforest.common.database.metadata.FileFieldData;
-import fr.ifn.eforest.common.database.metadata.FileFormatData;
-import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.TableTreeData;
+import fr.ifn.ogam.common.business.Schemas;
+import fr.ifn.ogam.common.database.metadata.FieldData;
+import fr.ifn.ogam.common.database.metadata.FileFieldData;
+import fr.ifn.ogam.common.database.metadata.FileFormatData;
+import fr.ifn.ogam.common.database.metadata.MetadataDAO;
+import fr.ifn.ogam.common.database.metadata.TableTreeData;
 
 /**
  * Meta Data Servlet.

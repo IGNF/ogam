@@ -1,7 +1,7 @@
-package fr.ifn.eforest.integration.business;
+package fr.ifn.ogam.integration.business;
 
-import static fr.ifn.eforest.common.business.UnitTypes.*;
-import static fr.ifn.eforest.common.business.checks.CheckCodes.*;
+import static fr.ifn.ogam.common.business.UnitTypes.*;
+import static fr.ifn.ogam.common.business.checks.CheckCodes.*;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,23 +12,23 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.util.InconsistentNumberOfColumns;
-import fr.ifn.eforest.common.util.CSVFile;
-import fr.ifn.eforest.common.business.AbstractThread;
-import fr.ifn.eforest.common.business.Data;
-import fr.ifn.eforest.common.business.GenericMapper;
-import fr.ifn.eforest.common.business.MappingTypes;
-import fr.ifn.eforest.common.business.Schemas;
-import fr.ifn.eforest.common.business.UnitTypes;
-import fr.ifn.eforest.common.business.checks.CheckException;
-import fr.ifn.eforest.common.database.GenericDAO;
-import fr.ifn.eforest.common.database.GenericData;
-import fr.ifn.eforest.common.database.metadata.FileFieldData;
-import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.TableFieldData;
-import fr.ifn.eforest.common.database.metadata.TableFormatData;
-import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
-import fr.ifn.eforest.integration.database.rawdata.CheckErrorDAO;
+import fr.ifn.ogam.common.util.InconsistentNumberOfColumns;
+import fr.ifn.ogam.common.util.CSVFile;
+import fr.ifn.ogam.common.business.AbstractThread;
+import fr.ifn.ogam.common.business.Data;
+import fr.ifn.ogam.common.business.GenericMapper;
+import fr.ifn.ogam.common.business.MappingTypes;
+import fr.ifn.ogam.common.business.Schemas;
+import fr.ifn.ogam.common.business.UnitTypes;
+import fr.ifn.ogam.common.business.checks.CheckException;
+import fr.ifn.ogam.common.database.GenericDAO;
+import fr.ifn.ogam.common.database.GenericData;
+import fr.ifn.ogam.common.database.metadata.FileFieldData;
+import fr.ifn.ogam.common.database.metadata.MetadataDAO;
+import fr.ifn.ogam.common.database.metadata.TableFieldData;
+import fr.ifn.ogam.common.database.metadata.TableFormatData;
+import fr.ifn.ogam.common.database.rawdata.SubmissionDAO;
+import fr.ifn.ogam.integration.database.rawdata.CheckErrorDAO;
 
 /**
  * This service manages the integration process.

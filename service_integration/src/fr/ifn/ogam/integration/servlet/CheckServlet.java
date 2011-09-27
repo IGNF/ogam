@@ -1,4 +1,4 @@
-package fr.ifn.eforest.integration.servlet;
+package fr.ifn.ogam.integration.servlet;
 
 import java.io.IOException;
 
@@ -8,11 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.servlet.AbstractServlet;
-import fr.ifn.eforest.common.business.ThreadLock;
-import fr.ifn.eforest.integration.business.checks.CheckService;
-import fr.ifn.eforest.integration.business.checks.CheckServiceThread;
-import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
+import fr.ifn.ogam.common.servlet.AbstractServlet;
+import fr.ifn.ogam.common.business.ThreadLock;
+import fr.ifn.ogam.integration.business.checks.CheckService;
+import fr.ifn.ogam.integration.business.checks.CheckServiceThread;
+import fr.ifn.ogam.common.business.submissions.SubmissionStatus;
 
 /**
  * Check Servlet.

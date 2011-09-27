@@ -1,17 +1,17 @@
-package fr.ifn.eforest.integration.business.checks;
+package fr.ifn.ogam.integration.business.checks;
 
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
-import fr.ifn.eforest.common.business.submissions.SubmissionStep;
-import fr.ifn.eforest.common.database.checks.CheckData;
-import fr.ifn.eforest.common.database.checks.ChecksDAO;
-import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
-import fr.ifn.eforest.common.database.rawdata.SubmissionData;
-import fr.ifn.eforest.integration.database.rawdata.CheckErrorDAO;
+import fr.ifn.ogam.common.business.submissions.SubmissionStatus;
+import fr.ifn.ogam.common.business.submissions.SubmissionStep;
+import fr.ifn.ogam.common.database.checks.CheckData;
+import fr.ifn.ogam.common.database.checks.ChecksDAO;
+import fr.ifn.ogam.common.database.rawdata.SubmissionDAO;
+import fr.ifn.ogam.common.database.rawdata.SubmissionData;
+import fr.ifn.ogam.integration.database.rawdata.CheckErrorDAO;
 
 /**
  * Service managing the checks.

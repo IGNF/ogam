@@ -1,14 +1,14 @@
-package fr.ifn.eforest.integration.business.submissions.datasubmission;
+package fr.ifn.ogam.integration.business.submissions.datasubmission;
 
 import java.util.Date;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.AbstractThread;
-import fr.ifn.eforest.common.business.ThreadLock;
-import fr.ifn.eforest.common.database.rawdata.SubmissionData;
-import fr.ifn.eforest.integration.mail.EforestEmailer;
+import fr.ifn.ogam.common.business.AbstractThread;
+import fr.ifn.ogam.common.business.ThreadLock;
+import fr.ifn.ogam.common.database.rawdata.SubmissionData;
+import fr.ifn.ogam.integration.mail.OGAMEmailer;
 
 /**
  * Thread running the data importation.
@@ -31,7 +31,7 @@ public class DataServiceThread extends AbstractThread {
 	/**
 	 * Emailer service.
 	 */
-	EforestEmailer eforestEmailer = new EforestEmailer();
+	OGAMEmailer eforestEmailer = new OGAMEmailer();
 
 	/**
 	 * Constructs a DataServiceThread object.
@@ -68,7 +68,7 @@ public class DataServiceThread extends AbstractThread {
 			logger.debug("Data Upload process terminated successfully in " + (endDate.getTime() - startDate.getTime()) / 1000.00 + " sec.");
 
 			// Send a email
-			eforestEmailer.send("New data submission", submission);
+			OGAMEmailer.send("New data submission", submission);
 
 		} finally {
 			// Remove itself from the list of running checks

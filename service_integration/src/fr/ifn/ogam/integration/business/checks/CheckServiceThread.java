@@ -1,10 +1,10 @@
-package fr.ifn.eforest.integration.business.checks;
+package fr.ifn.ogam.integration.business.checks;
 
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.ThreadLock;
+import fr.ifn.ogam.common.business.ThreadLock;
 
 /**
  * Thread running the checks.

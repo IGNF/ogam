@@ -1,4 +1,4 @@
-package fr.ifn.eforest.integration.business;
+package fr.ifn.ogam.integration.business;
 
 /**
  * List the file types.

@@ -1,17 +1,17 @@
-package fr.ifn.eforest.integration.mail;
+package fr.ifn.ogam.integration.mail;
 
 import javax.mail.Session;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.util.Emailer;
-import fr.ifn.eforest.common.database.rawdata.SubmissionData;
-import fr.ifn.eforest.common.database.website.ApplicationParametersDAO;
+import fr.ifn.ogam.common.util.Emailer;
+import fr.ifn.ogam.common.database.rawdata.SubmissionData;
+import fr.ifn.ogam.common.database.website.ApplicationParametersDAO;
 
 /**
  * Class used to send the emails.
  */
-public class EforestEmailer {
+public class OGAMEmailer {
 
 	/**
 	 * The local logger.
@@ -22,7 +22,7 @@ public class EforestEmailer {
 	 * The emailer.
 	 */
 	private Emailer emailer = new Emailer();
-	private static final String FROM_NAME = "[Eforest]";
+	private static final String FROM_NAME = "[OGAM]";
 
 	/**
 	 * The DAOs.

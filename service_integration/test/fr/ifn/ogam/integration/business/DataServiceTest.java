@@ -1,15 +1,15 @@
-package fr.ifn.eforest.integration.business;
+package fr.ifn.ogam.integration.business;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.ifn.eforest.integration.AbstractEFDACTest;
-import fr.ifn.eforest.integration.business.checks.CheckService;
-import fr.ifn.eforest.integration.business.submissions.datasubmission.DataService;
-import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
-import fr.ifn.eforest.common.business.submissions.SubmissionStep;
-import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
-import fr.ifn.eforest.common.database.rawdata.SubmissionData;
+import fr.ifn.ogam.integration.AbstractEFDACTest;
+import fr.ifn.ogam.integration.business.checks.CheckService;
+import fr.ifn.ogam.integration.business.submissions.datasubmission.DataService;
+import fr.ifn.ogam.common.business.submissions.SubmissionStatus;
+import fr.ifn.ogam.common.business.submissions.SubmissionStep;
+import fr.ifn.ogam.common.database.rawdata.SubmissionDAO;
+import fr.ifn.ogam.common.database.rawdata.SubmissionData;
 
 //
 // Note : In order to use this Test Class correctly under Eclipse, you need to change the working directory to

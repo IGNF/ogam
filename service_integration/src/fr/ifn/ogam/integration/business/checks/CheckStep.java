@@ -1,4 +1,4 @@
-package fr.ifn.eforest.integration.business.checks;
+package fr.ifn.ogam.integration.business.checks;
 
 /**
  * List the different check steps.

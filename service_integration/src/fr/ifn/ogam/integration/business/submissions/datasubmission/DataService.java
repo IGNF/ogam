@@ -1,4 +1,4 @@
-package fr.ifn.eforest.integration.business.submissions.datasubmission;
+package fr.ifn.ogam.integration.business.submissions.datasubmission;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,20 +7,20 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.AbstractService;
-import fr.ifn.eforest.common.business.MappingTypes;
-import fr.ifn.eforest.common.business.Schemas;
-import fr.ifn.eforest.common.database.metadata.FileFormatData;
-import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.TableFormatData;
-import fr.ifn.eforest.common.database.GenericDAO;
-import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
-import fr.ifn.eforest.common.database.rawdata.SubmissionData;
-import fr.ifn.eforest.integration.business.IntegrationService;
-import fr.ifn.eforest.common.business.processing.ProcessingService;
-import fr.ifn.eforest.common.business.processing.ProcessingStep;
-import fr.ifn.eforest.common.business.submissions.SubmissionStatus;
-import fr.ifn.eforest.common.business.submissions.SubmissionStep;
+import fr.ifn.ogam.common.business.AbstractService;
+import fr.ifn.ogam.common.business.MappingTypes;
+import fr.ifn.ogam.common.business.Schemas;
+import fr.ifn.ogam.common.database.metadata.FileFormatData;
+import fr.ifn.ogam.common.database.metadata.MetadataDAO;
+import fr.ifn.ogam.common.database.metadata.TableFormatData;
+import fr.ifn.ogam.common.database.GenericDAO;
+import fr.ifn.ogam.common.database.rawdata.SubmissionDAO;
+import fr.ifn.ogam.common.database.rawdata.SubmissionData;
+import fr.ifn.ogam.integration.business.IntegrationService;
+import fr.ifn.ogam.common.business.processing.ProcessingService;
+import fr.ifn.ogam.common.business.processing.ProcessingStep;
+import fr.ifn.ogam.common.business.submissions.SubmissionStatus;
+import fr.ifn.ogam.common.business.submissions.SubmissionStep;
 
 /**
  * Service managing plot and tree data.

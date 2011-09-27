@@ -1,9 +1,9 @@
-package fr.ifn.eforest.integration;
+package fr.ifn.ogam.integration;
 
 //import fr.ifn.eforest.integration.business.DataServiceTest;
-import fr.ifn.eforest.integration.business.GenericMapperTest;
-import fr.ifn.eforest.integration.business.DataServiceTest;
-import fr.ifn.eforest.integration.database.MetadataTest;
+import fr.ifn.ogam.integration.business.GenericMapperTest;
+import fr.ifn.ogam.integration.business.DataServiceTest;
+import fr.ifn.ogam.integration.database.MetadataTest;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
