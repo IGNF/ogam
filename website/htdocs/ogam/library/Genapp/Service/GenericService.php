@@ -62,7 +62,7 @@ class Genapp_Service_GenericService {
 		$children = $this->genericModel->getChildren($data, $datasetId);
 
 		$childrenCount = 0;
-		if(!empty($children)){
+		if( !empty($children)) {
 			$childrenCount = count(current($children));
 		}
 		$json = '{"title":'.json_encode($data->tableFormat->label, JSON_HEX_APOS).', "children_count":'.$childrenCount.', "id":"'.$this->getIdFromData($data).'", "fields":[';
@@ -88,6 +88,7 @@ class Genapp_Service_GenericService {
 	 * Build and return the datum id
 	 *
 	 * @param DataObject $datum The datum
+	 * @return String the datum identifier
 	 */
 	public function getIdFromData($datum) {
 		$datumId = 'SCHEMA/'.$datum->tableFormat->schemaCode.'/FORMAT/'.$datum->tableFormat->format;
@@ -174,7 +175,7 @@ class Genapp_Service_GenericService {
 	 * @param array $tableFields The table fields
 	 * @return array The form fields ordered
 	 */
-	public function getFormFieldsOrdered(array $tableFields){
+	public function getFormFieldsOrdered(array $tableFields) {
 		$fieldsOrdered = array();
 		foreach ($tableFields as $tableField) {
 			// Get the form field corresponding to the table field
@@ -273,7 +274,7 @@ class Genapp_Service_GenericService {
 
 		// Add the joined tables
 		$i = 0;
-		foreach ($tables as $tableFormat => $tableTreeData) {
+		foreach ($tables as $tableTreeData) {
 			$i++;
 
 			// Join the table
@@ -416,10 +417,9 @@ class Genapp_Service_GenericService {
 			if (!empty($minValue)) {
 				$sql .= $tableField->format.".".$tableField->columnName." >= ".$minValue." ";
 			}
-		} else{
+		} else {
 			// One value, we make an equality comparison
 			$sql .= $tableField->format.".".$tableField->columnName." = ".$value;
-
 		}
 
 		return $sql;

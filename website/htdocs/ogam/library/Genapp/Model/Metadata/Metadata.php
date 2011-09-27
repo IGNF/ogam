@@ -58,27 +58,27 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		return $result;
 	}
-	
+
 	/**
-	* Get the labels and modes for a tree unit.
-	*
-	* @param String $unit The unit
-	* @return Array[mode => label]
-	*/
+	 * Get the labels and modes for a tree unit.
+	 *
+	 * @param String $unit The unit
+	 * @return Array[mode => label]
+	 */
 	public function getTreeLabels($unit) {
 		$db = $this->getAdapter();
 		$req = "SELECT code, label FROM mode_tree WHERE unit = ? ORDER BY position, code";
-	
+
 		$this->logger->info('getTreeLabels : '.$req);
-	
+
 		$select = $db->prepare($req);
 		$select->execute(array($unit));
-	
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$result[$row['code']] = $row['label'];
 		}
-	
+
 		return $result;
 	}
 
@@ -86,6 +86,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the unit modes for a dynamic list.
 	 *
 	 * @param String $unit The unit
+	 * @param String $query optional query filter
 	 * @return Array[mode => label]
 	 */
 	public function getDynamodes($unit, $query = null) {
@@ -93,8 +94,8 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$req = $this->_getDynamodeSQL($unit);
 
-		if(!empty($query)){
-			$req = "select * from ($req) as foo where label ilike '$query%'";
+		if (!empty($query)) {
+			$req = "select * from (".$req.") as foo where label ilike '".$query."%'";
 		}
 		$this->logger->info('getDynamicCodes : '.$req);
 
