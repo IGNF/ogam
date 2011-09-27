@@ -31,7 +31,7 @@ public class DataServiceThread extends AbstractThread {
 	/**
 	 * Emailer service.
 	 */
-	OGAMEmailer eforestEmailer = new OGAMEmailer();
+	OGAMEmailer ogamEmailer = new OGAMEmailer();
 
 	/**
 	 * Constructs a DataServiceThread object.
@@ -68,7 +68,7 @@ public class DataServiceThread extends AbstractThread {
 			logger.debug("Data Upload process terminated successfully in " + (endDate.getTime() - startDate.getTime()) / 1000.00 + " sec.");
 
 			// Send a email
-			OGAMEmailer.send("New data submission", submission);
+			ogamEmailer.send("New data submission", submission);
 
 		} finally {
 			// Remove itself from the list of running checks
