@@ -1,4 +1,4 @@
-package fr.ifn.eforest.harmonization.servlet;
+package fr.ifn.ogam.harmonization.servlet;
 
 import java.io.IOException;
 
@@ -8,11 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.servlet.AbstractServlet;
-import fr.ifn.eforest.common.business.ThreadLock;
-import fr.ifn.eforest.harmonization.business.HarmonizationService;
-import fr.ifn.eforest.harmonization.business.HarmonizationServiceThread;
-import fr.ifn.eforest.harmonization.business.HarmonizationStatus;
+import fr.ifn.ogam.common.servlet.AbstractServlet;
+import fr.ifn.ogam.common.business.ThreadLock;
+import fr.ifn.ogam.harmonization.business.HarmonizationService;
+import fr.ifn.ogam.harmonization.business.HarmonizationServiceThread;
+import fr.ifn.ogam.harmonization.business.HarmonizationStatus;
 
 /**
  * Harmonization Servlet. <br>

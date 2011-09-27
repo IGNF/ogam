@@ -1,4 +1,4 @@
-package fr.ifn.eforest.harmonization.business;
+package fr.ifn.ogam.harmonization.business;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,23 +9,23 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.AbstractService;
-import fr.ifn.eforest.common.business.Data;
-import fr.ifn.eforest.common.business.GenericMapper;
-import fr.ifn.eforest.common.business.MappingTypes;
-import fr.ifn.eforest.common.business.Schemas;
-import fr.ifn.eforest.common.business.UnitTypes;
-import fr.ifn.eforest.common.business.processing.ProcessingService;
-import fr.ifn.eforest.common.business.processing.ProcessingStep;
-import fr.ifn.eforest.common.database.GenericDAO;
-import fr.ifn.eforest.common.database.GenericData;
-import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.TableFieldData;
-import fr.ifn.eforest.common.database.metadata.TableFormatData;
-import fr.ifn.eforest.common.database.rawdata.SubmissionDAO;
-import fr.ifn.eforest.common.database.rawdata.SubmissionData;
-import fr.ifn.eforest.harmonization.database.harmonizeddata.HarmonisationProcessDAO;
-import fr.ifn.eforest.harmonization.database.harmonizeddata.HarmonizedDataDAO;
+import fr.ifn.ogam.common.business.AbstractService;
+import fr.ifn.ogam.common.business.Data;
+import fr.ifn.ogam.common.business.GenericMapper;
+import fr.ifn.ogam.common.business.MappingTypes;
+import fr.ifn.ogam.common.business.Schemas;
+import fr.ifn.ogam.common.business.UnitTypes;
+import fr.ifn.ogam.common.business.processing.ProcessingService;
+import fr.ifn.ogam.common.business.processing.ProcessingStep;
+import fr.ifn.ogam.common.database.GenericDAO;
+import fr.ifn.ogam.common.database.GenericData;
+import fr.ifn.ogam.common.database.metadata.MetadataDAO;
+import fr.ifn.ogam.common.database.metadata.TableFieldData;
+import fr.ifn.ogam.common.database.metadata.TableFormatData;
+import fr.ifn.ogam.common.database.rawdata.SubmissionDAO;
+import fr.ifn.ogam.common.database.rawdata.SubmissionData;
+import fr.ifn.ogam.harmonization.database.harmonizeddata.HarmonisationProcessDAO;
+import fr.ifn.ogam.harmonization.database.harmonizeddata.HarmonizedDataDAO;
 
 /**
  * Service managing data harmonization.

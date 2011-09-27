@@ -1,6 +1,6 @@
-package fr.ifn.eforest.harmonization;
+package fr.ifn.ogam.harmonization;
 
-import fr.ifn.eforest.harmonization.business.HarmonizationServiceTest;
+import fr.ifn.ogam.harmonization.business.HarmonizationServiceTest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

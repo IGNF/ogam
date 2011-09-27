@@ -1,4 +1,4 @@
-package fr.ifn.eforest.harmonization.business;
+package fr.ifn.ogam.harmonization.business;
 
 /**
  * List the harmonization status.

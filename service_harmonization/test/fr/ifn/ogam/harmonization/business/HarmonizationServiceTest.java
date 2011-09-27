@@ -1,6 +1,6 @@
-package fr.ifn.eforest.harmonization.business;
+package fr.ifn.ogam.harmonization.business;
 
-import fr.ifn.eforest.harmonization.AbstractEFDACTest;
+import fr.ifn.ogam.harmonization.AbstractEFDACTest;
 
 //
 // Note : In order to use this Test Class correctly under Eclipse, you need to change the working directory to

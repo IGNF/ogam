@@ -1,4 +1,4 @@
-package fr.ifn.eforest.harmonization.database.harmonizeddata;
+package fr.ifn.ogam.harmonization.database.harmonizeddata;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.database.rawdata.SubmissionData;
+import fr.ifn.ogam.common.database.rawdata.SubmissionData;
 
 /**
  * Data Access Object used to access the harmonization log.

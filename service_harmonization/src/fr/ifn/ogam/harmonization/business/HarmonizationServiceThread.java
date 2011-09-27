@@ -1,11 +1,11 @@
-package fr.ifn.eforest.harmonization.business;
+package fr.ifn.ogam.harmonization.business;
 
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.AbstractThread;
-import fr.ifn.eforest.common.business.ThreadLock;
+import fr.ifn.ogam.common.business.AbstractThread;
+import fr.ifn.ogam.common.business.ThreadLock;
 
 /**
  * Thread running the harmonization process.

@@ -9,7 +9,7 @@
 
 	<servlet>
 		<servlet-name>HarmonizationServlet</servlet-name>
-		<servlet-class>fr.ifn.eforest.harmonization.servlet.HarmonizationServlet</servlet-class>
+		<servlet-class>fr.ifn.ogam.harmonization.servlet.HarmonizationServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>

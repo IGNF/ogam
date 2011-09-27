@@ -1,4 +1,4 @@
-package fr.ifn.eforest.harmonization.database.harmonizeddata;
+package fr.ifn.ogam.harmonization.database.harmonizeddata;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
