@@ -16,8 +16,5 @@
 	<classpathentry kind="lib" path="service_common/lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="service_common/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="service_common/lib/JRI.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet-api.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
-	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jsp-api.jar"/>
 	<classpathentry kind="output" path="service_integration/classes"/>
 </classpath>
