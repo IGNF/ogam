@@ -394,7 +394,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 
 		// Get the current dataset to filter the results
 		$websiteSession = new Zend_Session_Namespace('website');
-		$datasetId = $websiteSession->datasetId ;
+		$datasetId = $websiteSession->datasetId;
 
 		// Get the identifier of the line from the session
 		if ($id == null) {

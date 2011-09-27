@@ -447,7 +447,6 @@ class DataEditionController extends AbstractOGAMController {
 
 		// Get back info from the session
 		$websiteSession = new Zend_Session_Namespace('website');
-		$datasetId = $websiteSession->datasetID;
 		$data = $websiteSession->data;
 
 		// Validate the form

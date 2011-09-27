@@ -35,12 +35,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initApplicationAutoloading() {
 		$this->logger->debug('_initApplicationAutoloading');
 		$resourceLoader = $this->getResourceLoader();
-		//$resourceLoader->addResourceType('objects', 'objects/', 'Object');
 		$resourceLoader->addResourceTypes(array(
 		            'objects' => array(
 		                'namespace' => 'Object',
-		                'path'      => 'objects',
-		)));
+		                'path'      => 'objects')));
 	}
 
 
@@ -147,19 +145,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Setup the translation with files specific to the app
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/lang/')) {
-			$translations = $this->_addTranslation(array(
-			CUSTOM_APPLICATION_PATH.'/lang'
-			), $translate);
+			$translations = $this->_addTranslation(array(CUSTOM_APPLICATION_PATH.'/lang'), $translate);
 		}
 
 		// Set the locale
-		// TODO: check if still needed (It's may be already done by zend_Locale...)
-		/*$browserLocales = Zend_Locale::getBrowser();
-		$locales = array_intersect(array_keys($browserLocales), array_keys($translations));
-		if (!empty($locales)) {
-		$locale = new Zend_Locale(current($locales));
-		}*/
-		switch($locale->getLanguage()){
+		switch ($locale->getLanguage()) {
 			case 'fr' : $locale = 'fr';break;
 			case 'fr_FR' : $locale = 'fr';break;
 			case 'en' : $locale = 'en';break;
