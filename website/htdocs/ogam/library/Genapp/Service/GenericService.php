@@ -752,7 +752,7 @@ class Genapp_Service_GenericService {
 	public function buildDataObject($schema, $format, $datasetId = null, $isForDisplay = false) {
 
 		// Prepare a data object to be filled
-		$data = new Genapp_Model_Generic_DataObject();
+		$data = new Genapp_Object_Generic_DataObject();
 
 		$data->datasetId = $datasetId;
 
