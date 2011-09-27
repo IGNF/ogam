@@ -29,7 +29,7 @@ class IntegrationController extends AbstractOGAMController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
 		// Initialise the model
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->integrationServiceModel = new Application_Model_IntegrationService_IntegrationService();
 		$this->submissionModel = new Application_Model_DbTable_RawData_Submission();
 

@@ -40,8 +40,8 @@ class DataEditionController extends AbstractOGAMController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
 		// Initialise the model
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
-		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->genericModel = new Genapp_Model_Generic_Generic();
 
 		// The generic service
 		$this->genericService = new Genapp_Service_GenericService();

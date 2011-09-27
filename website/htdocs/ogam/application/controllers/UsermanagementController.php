@@ -24,7 +24,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$websiteSession->moduleURL = "usermanagement";
 
 		// Initialise the models
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->userModel = new Application_Model_DbTable_Website_User();
 		$this->roleModel = new Application_Model_DbTable_Website_Role();
 	}

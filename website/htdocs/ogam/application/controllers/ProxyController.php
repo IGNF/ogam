@@ -233,7 +233,7 @@ class ProxyController extends AbstractOGAMController {
 
 		$uri = $this->_extractAfter($uri, "proxy/getInfo?");
 
-		$metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
 
 		// On effecture une requête mapserver "GetFeature" pour chaque layer
 		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;

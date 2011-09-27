@@ -50,8 +50,8 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
 		// Initialise the models
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
-		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_DbTable_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_DbTable_Website_PredefinedRequest();
 
@@ -501,7 +501,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
-					$formField = new Genapp_Model_Metadata_FormField();
+					$formField = new Genapp_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
