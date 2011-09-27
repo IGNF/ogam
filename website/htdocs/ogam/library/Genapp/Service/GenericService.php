@@ -38,7 +38,7 @@ class Genapp_Service_GenericService {
 		$this->logger = Zend_Registry::get("logger");
 
 		// Initialise the metadata models
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
@@ -58,7 +58,7 @@ class Genapp_Service_GenericService {
 		$this->logger->info('datumToDetailJSON');
 
 		// Get children for the current dataset
-		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
+		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$children = $this->genericModel->getChildren($data, $datasetId);
 
 		$childrenCount = 0;

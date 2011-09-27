@@ -47,8 +47,8 @@ class Genapp_Service_QueryService {
 		$this->logger = Zend_Registry::get("logger");
 
 		// Initialise the metadata models
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
-		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_DbTable_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_DbTable_Website_PredefinedRequest();
 

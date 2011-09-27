@@ -38,7 +38,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$this->visualisationSRS = $configuration->srs_visualisation;
 
 		// Initialise the metadata model
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 
 		// Initialise the generic service
 		$this->genericService = new Genapp_Service_GenericService();
