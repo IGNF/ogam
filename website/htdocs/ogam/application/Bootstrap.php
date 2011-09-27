@@ -10,12 +10,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	// The logger
 	var $logger = null;
 
-	// Do not call this function _initLog() !
+
 	/**
-	*
-	* Register the logger into Zend_Registry
-	* @throws Zend_Exception
-	*/
+	 * Register the logger into Zend_Registry
+	 * WARNING : Do not call this function _initLog() !
+	 * @throws Zend_Exception
+	 */
 	protected function _initRegisterLogger() {
 		$this->bootstrap('Log');
 		if (!$this->hasPluginResource('Log')) {
@@ -27,6 +27,22 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		}
 		Zend_Registry::set('logger', $this->logger);
 	}
+
+
+	/**
+	 * Autoloading
+	 */
+	protected function _initApplicationAutoloading() {
+		$this->logger->debug('_initApplicationAutoloading');
+		$resourceLoader = $this->getResourceLoader();
+		//$resourceLoader->addResourceType('objects', 'objects/', 'Object');
+		$resourceLoader->addResourceTypes(array(
+		            'objects' => array(
+		                'namespace' => 'Object',
+		                'path'      => 'objects',
+		)));
+	}
+
 
 	/**
 	 * Init the routing system
@@ -141,7 +157,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		/*$browserLocales = Zend_Locale::getBrowser();
 		$locales = array_intersect(array_keys($browserLocales), array_keys($translations));
 		if (!empty($locales)) {
-			$locale = new Zend_Locale(current($locales));
+		$locale = new Zend_Locale(current($locales));
 		}*/
 		switch($locale->getLanguage()){
 			case 'fr' : $locale = 'fr';break;
@@ -157,7 +173,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$translate->setLocale($locale);
 		Zend_Registry::set('Zend_Translate', $translate); // store in the registry for the view helper
 		Zend_Validate_Abstract::setDefaultTranslator($translate); // use the translator for validation
-		
+
 	}
 
 	/**
