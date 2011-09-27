@@ -214,16 +214,13 @@ class Genapp_Service_QueryService {
 	/**
 	 * Get the form fields for a data to edit.
 	 *
-	 * @param String $datasetId the identifier of the selected dataset
-	 * @param String $requestName the name of the predefined request if available
+	 * @param DataObject $data the data object to edit
 	 * @return JSON.
 	 */
 	public function getEditForm($data) {
 		$this->logger->debug('getEditForm');
 
 		// Get the HTML form fields corresponding to the data
-		$fields = array();
-
 		$json = '[';
 
 		//
@@ -427,12 +424,12 @@ class Genapp_Service_QueryService {
 					} else if ($tableField->type == "ARRAY" && $value != "") {
 						// Split the array items
 						$arrayValues = explode(",", ereg_replace("[{-}]", "", $value));
-						$label ='';
+						$label = '';
 						foreach ($arrayValues as $arrayValue) {
 							$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
 							$label .= ',';
 						}
-						if ($label!='') {
+						if ($label != '') {
 							$label = substr($label, 0, -1);
 						}
 						$label = '['.$label.']';
@@ -527,24 +524,6 @@ class Genapp_Service_QueryService {
 			$i += 2;
 		}
 		return $keyMap;
-	}
-
-	/**
-	 * Decode the identifiers
-	 *
-	 * @param array/string $id
-	 * @return Array the decoded id
-	 */
-	private function _decodeIds($ids = null) {
-		if (is_array($ids)) {
-			$keyMaps = array();
-			foreach ($ids as $id) {
-				$keyMaps[] = $this->_decodeId($id);
-			}
-			return $keyMaps;
-		} else {
-			return $this->_decodeId($id);
-		}
 	}
 
 	/**
