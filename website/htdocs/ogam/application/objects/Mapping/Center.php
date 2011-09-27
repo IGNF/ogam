@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Mapping_Center {
+class Application_Object_Mapping_Center {
 
 	/**
 	 * The x position of the center of the map

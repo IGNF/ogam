@@ -3,7 +3,6 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once APPLICATION_PATH.'/classes/website/PredefinedField.php';
 
 
 /**
@@ -12,7 +11,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Website_PredefinedRequest {
+class Application_Object_Website_PredefinedRequest {
 
 	/**
 	 * The request name.

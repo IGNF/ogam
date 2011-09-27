@@ -17,7 +17,7 @@ class ProxyController extends AbstractOGAMController {
 	public function init() {
 		parent::init();
 
-		$this->classDefinitionModel = new Application_Model_DbTable_Mapping_ClassDefinition();
+		$this->classDefinitionModel = new Application_Model_Mapping_ClassDefinition();
 	}
 
 	/**

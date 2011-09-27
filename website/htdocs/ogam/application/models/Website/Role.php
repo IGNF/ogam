@@ -8,7 +8,7 @@
  * This is the Role model.
  * @package models
  */
-class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
+class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 
 	var $logger;
 
@@ -41,7 +41,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 		$result = $query->fetch();
 
 		if (!empty($result)) {
-			$role = new Application_Model_Website_Role();
+			$role = new Application_Object_Website_Role();
 			$role->roleCode = $result['role_code'];
 			$role->roleLabel = $result['role_label'];
 			$role->roleDefinition = $result['role_definition'];
@@ -71,7 +71,7 @@ class Application_Model_DbTable_Website_Role extends Zend_Db_Table_Abstract {
 		$roles = array();
 
 		foreach ($results as $result) {
-			$role = new Application_Model_Website_Role();
+			$role = new Application_Object_Website_Role();
 			$role->roleCode = $result['role_code'];
 			$role->roleLabel = $result['role_label'];
 			$role->roleDefinition = $result['role_definition'];

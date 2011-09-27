@@ -52,8 +52,8 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->genericModel = new Genapp_Model_Generic_Generic();
-		$this->resultLocationModel = new Application_Model_DbTable_Mapping_ResultLocation();
-		$this->predefinedRequestModel = new Application_Model_DbTable_Website_PredefinedRequest();
+		$this->resultLocationModel = new Application_Object_Mapping_ResultLocation();
+		$this->predefinedRequestModel = new Application_Object_Website_PredefinedRequest();
 
 		// The service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();
@@ -154,7 +154,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		try {
 
 			// Create the predefined request object
-			$predefinedRequest = new Application_Model_Website_PredefinedRequest();
+			$predefinedRequest = new Application_Object_Website_PredefinedRequest();
 			$predefinedRequest->datasetID = $datasetId;
 			$predefinedRequest->schemaCode = $this->schema;
 			$predefinedRequest->requestName = 'TEST REQUEST'; // TODO : get from FORM
@@ -173,7 +173,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 						$criteriaFormat = substr($criteriaName, 0, $pos);
 						$criteriaData = substr($criteriaName, $pos + 2);
 
-						$field = new Application_Model_Website_PredefinedField();
+						$field = new Application_Object_Website_PredefinedField();
 						$field->format = $criteriaFormat;
 						$field->data = $criteriaData;
 						$field->value = $inputValue;
@@ -194,7 +194,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 					$columnFormat = substr($columnName, 0, $pos);
 					$columnData = substr($columnName, $pos + 2);
 
-					$field = new Application_Model_Website_PredefinedField();
+					$field = new Application_Object_Website_PredefinedField();
 					$field->format = $columnFormat;
 					$field->data = $columnData;
 

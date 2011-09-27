@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_ProcessStatus {
+class Application_Object_ProcessStatus {
 
 	/**
 	 * The status.

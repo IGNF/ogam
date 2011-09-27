@@ -3,13 +3,12 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'website/PredefinedRequest.php';
 
 /**
  * This is the PredefinedRequest model.
  * @package models
  */
-class Application_Model_DbTable_Website_PredefinedRequest extends Zend_Db_Table_Abstract {
+class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract {
 
 	var $logger;
 
@@ -115,7 +114,7 @@ class Application_Model_DbTable_Website_PredefinedRequest extends Zend_Db_Table_
 			throw Exception('Undefined predefined request');
 		}
 
-		$request = new Application_Model_Website_PredefinedRequest();
+		$request = new Application_Object_Website_PredefinedRequest();
 		$request->requestName = $result['request_name'];
 		$request->schemaCode = $result['schema_code'];
 		$request->datasetID = $result['dataset_id'];
@@ -136,7 +135,7 @@ class Application_Model_DbTable_Website_PredefinedRequest extends Zend_Db_Table_
 
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
-			$field = new Application_Model_Website_PredefinedField();
+			$field = new Application_Object_Website_PredefinedField();
 			$field->format = $result['format'];
 			$field->data = $result['data'];
 
@@ -198,7 +197,7 @@ class Application_Model_DbTable_Website_PredefinedRequest extends Zend_Db_Table_
 		$requestList = array();
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
-			$request = new Application_Model_Website_PredefinedRequest();
+			$request = new Application_Object_Website_PredefinedRequest();
 			$request->requestName = $result['request_name'];
 			$request->schemaCode = $result['schema_code'];
 			$request->datasetID = $result['dataset_id'];
@@ -242,7 +241,7 @@ class Application_Model_DbTable_Website_PredefinedRequest extends Zend_Db_Table_
 		$criteriaList = array();
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
-			$field = new Application_Model_Website_PredefinedField();
+			$field = new Application_Object_Website_PredefinedField();
 			$field->format = $result['format'];
 			$field->data = $result['data'];
 			$field->unit = $result['unit'];

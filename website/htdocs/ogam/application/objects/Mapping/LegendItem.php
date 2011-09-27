@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Mapping_LegendItem {
+class Application_Object_Mapping_LegendItem {
 
 	/**
 	 * The identifier of the item.

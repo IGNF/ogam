@@ -8,7 +8,7 @@
  * This is the model for managing result locations (for the web mapping).
  * @package models
  */
-class Application_Model_DbTable_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
+class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 
 	var $logger;
 

@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Website_User {
+class Application_Object_Website_User {
 
 	/**
 	 * The user login

@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Harmonizeddata_HarmonizationProcess {
+class Application_Object_Harmonizeddata_HarmonizationProcess {
 
 	/**
 	 * The harmonization identifier

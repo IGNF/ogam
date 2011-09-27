@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_RawData_SubmissionFile {
+class Application_Object_RawData_SubmissionFile {
 
 	/**
 	 * The name of the file

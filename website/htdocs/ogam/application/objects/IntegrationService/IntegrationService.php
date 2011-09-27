@@ -3,13 +3,12 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once APPLICATION_PATH.'/models/abstract_service/AbstractService.php';
 
 /**
  * This is a model allowing to access the integration service via HTTP calls.
  * @package models
  */
-class Application_Model_IntegrationService_IntegrationService extends Application_Model_AbstractService_AbstractService {
+class Application_Object_IntegrationService_IntegrationService extends Application_Object_AbstractService_AbstractService {
 
 	var $serviceUrl;
 	var $logger;
@@ -17,7 +16,7 @@ class Application_Model_IntegrationService_IntegrationService extends Applicatio
 	/**
 	 * Class constructor
 	 */
-	function Application_Model_IntegrationService_IntegrationService() {
+	function Application_Object_IntegrationService_IntegrationService() {
 
 		// Initialise the service URL
 		$configuration = Zend_Registry::get("configuration");

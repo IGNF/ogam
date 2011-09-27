@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-Class Application_Model_Mapping_ClassItem {
+Class Application_Object_Mapping_ClassItem {
 
 	/**
 	 * The min value.

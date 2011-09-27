@@ -25,8 +25,8 @@ class UsermanagementController extends AbstractOGAMController {
 
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->userModel = new Application_Model_DbTable_Website_User();
-		$this->roleModel = new Application_Model_DbTable_Website_Role();
+		$this->userModel = new Application_Model_Website_User();
+		$this->roleModel = new Application_Model_Website_Role();
 	}
 
 	/**
@@ -351,7 +351,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$this->logger->debug('userName : '.$userName);
 
 			// Build the user
-			$user = new Application_Model_Website_User();
+			$user = new Application_Object_Website_User();
 			$user->login = $userLogin;
 			$user->username = $userName;
 			$user->providerId = $providerId;
@@ -481,7 +481,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$rolepermissions = $values['rolepermissions'];
 
 			// Build the user
-			$role = new Application_Model_Website_Role();
+			$role = new Application_Object_Website_Role();
 			$role->roleCode = $roleCode;
 			$role->roleLabel = $roleLabel;
 			$role->roleDefinition = $roleDefinition;

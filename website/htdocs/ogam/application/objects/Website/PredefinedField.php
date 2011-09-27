@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Website_PredefinedField {
+class Application_Object_Website_PredefinedField {
 
 	/**
 	 * The field identifier (data)

@@ -72,7 +72,7 @@ class HarmonizationQueryController extends AbstractQueryController {
 		}
 
 		// Execute the request
-		$aggregationModel = new Application_Model_DbTable_Aggregation_Aggregation();
+		$aggregationModel = new Application_Model_Aggregation_Aggregation();
 		$result = $aggregationModel->getAggregatedData(session_id(), $filter);
 
 		if (sizeof($result) != 0) {

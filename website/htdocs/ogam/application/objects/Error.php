@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Error {
+class Application_Object_Error {
 
 	/**
 	 * The error code

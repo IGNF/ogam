@@ -3,13 +3,12 @@
  * © French National Forest Inventory 
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */ 
-//require_once 'mapping/ClassItem.php';
 
 /**
  * This is the model for managing SLD classes.
  * @package models
  */
-class Application_Model_DbTable_Mapping_ClassDefinition extends Zend_Db_Table_Abstract {
+class Application_Model_Mapping_ClassDefinition extends Zend_Db_Table_Abstract {
 
 	var $logger;
 
@@ -44,7 +43,7 @@ class Application_Model_DbTable_Mapping_ClassDefinition extends Zend_Db_Table_Ab
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$class = new Application_Model_Mapping_ClassItem();
+			$class = new Application_Object_Mapping_ClassItem();
 			$class->minValue = $row['min_value'];
 			$class->maxValue = $row['max_value'];
 			$class->color = $row['color'];
@@ -79,7 +78,7 @@ class Application_Model_DbTable_Mapping_ClassDefinition extends Zend_Db_Table_Ab
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$class = new Application_Model_Mapping_ClassItem();
+			$class = new Application_Object_Mapping_ClassItem();
 			$class->maxValue = $row['value'];
 			$class->color = $row['color'];
 			$class->label = $row['label'];

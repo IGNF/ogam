@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Website_Role {
+class Application_Object_Website_Role {
 
 	/**
 	 * The user role.

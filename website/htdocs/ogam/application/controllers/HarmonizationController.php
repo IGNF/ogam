@@ -28,9 +28,9 @@ class HarmonizationController extends AbstractOGAMController {
 
 		// Initialise the model
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->harmonizationModel = new Application_Model_DbTable_HarmonizedData_HarmonizationProcess();
+		$this->harmonizationModel = new Application_Model_HarmonizedData_HarmonizationProcess();
 		$this->harmonizationServiceModel = new Application_Model_HarmonizationService_HarmonizationService();
-		$this->submissionModel = new Application_Model_DbTable_RawData_Submission();
+		$this->submissionModel = new Application_Model_RawData_Submission();
 
 	}
 

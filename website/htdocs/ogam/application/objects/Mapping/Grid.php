@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Mapping_Grid {
+class Application_Object_Mapping_Grid {
 
 	/**
 	 * The logical name of the grid.

@@ -10,7 +10,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_Mapping_Layer {
+class Application_Object_Mapping_Layer {
 
 	/**
 	 * The logical name of the layer.

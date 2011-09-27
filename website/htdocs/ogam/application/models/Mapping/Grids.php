@@ -8,7 +8,7 @@
  * This is the model for managing aggregation grids.
  * @package models
  */
-class Application_Model_DbTable_Mapping_Grids extends Zend_Db_Table_Abstract {
+class Application_Model_Mapping_Grids extends Zend_Db_Table_Abstract {
 
 	var $logger;
 
@@ -38,7 +38,7 @@ class Application_Model_DbTable_Mapping_Grids extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$grid = new Application_Model_Mapping_Grid();
+			$grid = new Application_Object_Mapping_Grid();
 			$grid->name = $row['grid_name'];
 			$grid->label = $row['grid_label'];
 			$grid->tableName = $row['grid_table'];
@@ -69,7 +69,7 @@ class Application_Model_DbTable_Mapping_Grids extends Zend_Db_Table_Abstract {
 		$select->execute(array($gridName));
 
 		$row = $select->fetch();
-		$grid = new Application_Model_Mapping_Grid();
+		$grid = new Application_Object_Mapping_Grid();
 		$grid->name = $row['grid_name'];
 		$grid->label = $row['grid_label'];
 		$grid->tableName = $row['grid_table'];

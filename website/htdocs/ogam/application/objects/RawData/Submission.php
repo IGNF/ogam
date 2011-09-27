@@ -3,7 +3,6 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'raw_data/SubmissionFile.php';
 
 /**
  * Represent a submission.
@@ -13,7 +12,7 @@
  * @package classes
  * @SuppressWarnings checkUnusedVariables
  */
-class Application_Model_RawData_Submission {
+class Application_Object_RawData_Submission {
 
 	/**
 	 * The submission identifier

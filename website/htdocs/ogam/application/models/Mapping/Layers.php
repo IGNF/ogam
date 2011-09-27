@@ -3,14 +3,12 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'mapping/Layer.php';
-//require_once 'mapping/LegendItem.php';
 
 /**
  * This is the model for managing web mapping layers.
  * @package models
  */
-class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
+class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 	var $logger;
 
@@ -63,7 +61,7 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$layer = new Application_Model_Mapping_Layer();
+			$layer = new Application_Object_Mapping_Layer();
 			$layer->layerName = $row['layer_name'];
 			$layer->layerLabel = $row['layer_label'];
 			$layer->mapservLayers = $row['mapserv_layers'];
@@ -109,7 +107,7 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		$row = $select->fetch();
-		$layer = new Application_Model_Mapping_Layer();
+		$layer = new Application_Object_Mapping_Layer();
 		$layer->layerName = $row['layer_name'];
 		$layer->layerLabel = $row['layer_label'];
 		$layer->mapservLayers = $row['mapserv_layers'];
@@ -195,7 +193,7 @@ class Application_Model_DbTable_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$legendItem = new Application_Model_Mapping_LegendItem();
+			$legendItem = new Application_Object_Mapping_LegendItem();
 			$legendItem->itemId = $row['item_id'];
 			$legendItem->parentId = $row['parent_id'];
 			$legendItem->isLayer = $row['is_layer'];

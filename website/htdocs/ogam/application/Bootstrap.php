@@ -241,8 +241,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			$user = $userSession->user;
 
 			if (empty($user)) {
-				$userModel = new Application_Model_DbTable_Website_User();
-				$roleModel = new Application_Model_DbTable_Website_Role();
+				$userModel = new Application_Model_Website_User();
+				$roleModel = new Application_Model_Website_Role();
 				// Get the user informations
 				$user = $userModel->getUser($configuration->defaultUser);
 

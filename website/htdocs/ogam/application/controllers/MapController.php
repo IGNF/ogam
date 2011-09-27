@@ -18,8 +18,8 @@ class MapController extends AbstractOGAMController {
 		parent::init();
 
 		// Initialise the models
-		$this->layersModel = new Application_Model_DbTable_Mapping_Layers();
-		$this->boundingBoxModel = new Application_Model_DbTable_Mapping_BoundingBox();
+		$this->layersModel = new Application_Model_Mapping_Layers();
+		$this->boundingBoxModel = new Application_Model_Mapping_BoundingBox();
 	}
 
 	/**

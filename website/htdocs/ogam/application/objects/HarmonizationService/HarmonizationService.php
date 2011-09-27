@@ -9,7 +9,7 @@
  * This is a model allowing to access the harmonization service via HTTP calls.
  * @package models
  */
-class Application_Model_HarmonizationService_HarmonizationService extends Application_Model_AbstractService_AbstractService {
+class Application_Object_HarmonizationService_HarmonizationService extends Application_Object_AbstractService_AbstractService {
 
 	var $serviceUrl;
 	var $logger;
@@ -17,7 +17,7 @@ class Application_Model_HarmonizationService_HarmonizationService extends Applic
 	/**
 	 * Class constructor
 	 */
-	function Application_Model_HarmonizationService_HarmonizationService() {
+	function Application_Object_HarmonizationService_HarmonizationService() {
 
 		// Initialise the service URL
 		$configuration = Zend_Registry::get("configuration");

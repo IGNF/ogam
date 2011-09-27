@@ -9,7 +9,7 @@
  * This is the model for managing countries bounding boxes.
  * @package models
  */
-class Application_Model_DbTable_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
+class Application_Object_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 
 	var $logger;
 
@@ -46,7 +46,7 @@ class Application_Model_DbTable_Mapping_BoundingBox extends Zend_Db_Table_Abstra
 		$select->execute(array($providerId));
 
 		$row = $select->fetch();
-		$center = new Application_Model_Mapping_Center();
+		$center = new Application_Object_Mapping_Center();
 		$center->x_center = $row['x_center'];
 		$center->y_center = $row['y_center'];
 		$center->defaultzoom = $row['zoom_level'];

@@ -31,7 +31,7 @@ class IntegrationController extends AbstractOGAMController {
 		// Initialise the model
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->integrationServiceModel = new Application_Model_IntegrationService_IntegrationService();
-		$this->submissionModel = new Application_Model_DbTable_RawData_Submission();
+		$this->submissionModel = new Application_Model_RawData_Submission();
 
 		$configuration = Zend_Registry::get("configuration");
 		$this->fileMaxSize = $configuration->fileMaxSize;
@@ -251,7 +251,7 @@ class IntegrationController extends AbstractOGAMController {
 		}
 
 		// Store the submission information in session
-		$dataSubmission = new Application_Model_RawData_Submission();
+		$dataSubmission = new Application_Object_RawData_Submission();
 		$dataSubmission->submissionId = $submissionId;
 		$dataSubmission->providerId = $providerId;
 		$dataSubmission->datasetId = $datasetId;

@@ -3,21 +3,19 @@
  * © French National Forest Inventory 
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */ 
-//require_once 'Error.php';
-//require_once 'ProcessStatus.php';
 
 /**
  * This is a model allowing to access a java service.
  * @package models
  */
-class Application_Model_AbstractService_AbstractService {
+class Application_Object_AbstractService_AbstractService {
 
 	var $logger;
 
 	/**
 	 * Class constructor
 	 */
-	function Application_Model_AbstractService_AbstractService() {
+	function Application_Object_AbstractService_AbstractService() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
@@ -40,7 +38,7 @@ class Application_Model_AbstractService_AbstractService {
 			throw new Exception("Error during parsing: ".$e->getMessage());
 		}
 
-		$error = new Application_Model_Error();
+		$error = new Application_Object_Error();
 		$error->errorCode = $dom->ErrorCode;
 		$error->errorMessage = $dom->ErrorMessage;
 
@@ -84,7 +82,7 @@ class Application_Model_AbstractService_AbstractService {
 			throw new Exception("Error during parsing: ".$e->getMessage());
 		}
 
-		$status = new Application_Model_ProcessStatus();
+		$status = new Application_Object_ProcessStatus();
 		$status->status = (string) $dom->Value;
 
 		if ($dom->TaskName != null && $dom->TaskName != "") {
