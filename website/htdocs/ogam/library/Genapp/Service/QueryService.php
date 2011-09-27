@@ -375,7 +375,7 @@ class Genapp_Service_QueryService {
 			if ($sort != "") {
 				// $sort contains the form format and field
 				$split = explode("__", $sort);
-				$formField = new Genapp_Model_Metadata_FormField();
+				$formField = new Genapp_Object_Metadata_FormField();
 				$formField->format = $split[0];
 				$formField->data = $split[1];
 				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);

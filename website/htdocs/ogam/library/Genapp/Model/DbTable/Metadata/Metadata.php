@@ -165,13 +165,13 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$select = $db->prepare($req);
 		$select->execute(array($unit, $parentcode));
 
-		$resultTree = new Genapp_Model_Metadata_TreeNode(); // The root is empty
+		$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
 		foreach ($select->fetchAll() as $row) {
 
 			$parentCode = $row['parent_code'];
 
 			//Build the new node
-			$tree = new Genapp_Model_Metadata_TreeNode();
+			$tree = new Genapp_Object_Metadata_TreeNode();
 			$tree->code = $row['code'];
 			$tree->label = $row['label'];
 			$tree->isLeaf = $row['is_leaf'];
@@ -344,7 +344,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$datasetFile = new Genapp_Model_Metadata_DatasetFile();
+			$datasetFile = new Genapp_Object_Metadata_DatasetFile();
 			$datasetFile->fileType = $row['file_type'];
 			$datasetFile->format = $row['format'];
 			$datasetFile->label = $row['label'];
@@ -380,7 +380,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$fileField = new Genapp_Model_Metadata_FileField();
+			$fileField = new Genapp_Object_Metadata_FileField();
 			$fileField->data = $row['data'];
 			$fileField->format = $row['format'];
 			$fileField->label = $row['label'];
@@ -444,7 +444,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				$tableField = new Genapp_Model_Metadata_TableField();
+				$tableField = new Genapp_Object_Metadata_TableField();
 				$tableField->data = $row['data'];
 				$tableField->format = $row['format'];
 				$tableField->columnName = $row['column_name'];
@@ -505,7 +505,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$row = $select->fetch();
 		if ($row) {
-			$tableField = new Genapp_Model_Metadata_TableField();
+			$tableField = new Genapp_Object_Metadata_TableField();
 			$tableField->data = $row['data'];
 			$tableField->format = $row['format'];
 			$tableField->columnName = $row['column_name'];
@@ -556,7 +556,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$row = $select->fetch();
 
-			$tableFormat = new Genapp_Model_Metadata_TableFormat();
+			$tableFormat = new Genapp_Object_Metadata_TableFormat();
 			$tableFormat->format = $format;
 			$tableFormat->schemaCode = $schema;
 			$tableFormat->tableName = $row['table_name'];
@@ -608,7 +608,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$row = $select->fetch();
 
-			$tableFormat = new Genapp_Model_Metadata_TableFormat();
+			$tableFormat = new Genapp_Object_Metadata_TableFormat();
 			$tableFormat->format = $row['format'];
 			$tableFormat->schemaCode = $row['schema_code'];
 			$tableFormat->tableName = $row['table_name'];
@@ -673,7 +673,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				$formFormat = new Genapp_Model_Metadata_FormFormat();
+				$formFormat = new Genapp_Object_Metadata_FormFormat();
 				$formFormat->format = $row['format'];
 				$formFormat->label = $row['label'];
 				$formFormat->definition = $row['definition'];
@@ -752,7 +752,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				$formField = new Genapp_Model_Metadata_FormField();
+				$formField = new Genapp_Object_Metadata_FormField();
 				$formField->data = $row['data'];
 				$formField->format = $formFormat;
 				$formField->label = $row['label'];
@@ -809,7 +809,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$select->execute(array($format, $data));
 
 			$row = $select->fetch();
-			$formField = new Genapp_Model_Metadata_FormField();
+			$formField = new Genapp_Object_Metadata_FormField();
 			$formField->data = $row['data'];
 			$formField->format = $row['format'];
 			$formField->isCriteria = $row['is_criteria'];
@@ -858,7 +858,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$row = $select->fetch();
 		if ($row) {
-			$range = new Genapp_Model_Metadata_Range();
+			$range = new Genapp_Object_Metadata_Range();
 			$range->min = $row['min'];
 			$range->max = $row['max'];
 			return $range;
@@ -895,7 +895,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$tableField = new Genapp_Model_Metadata_TableField();
+			$tableField = new Genapp_Object_Metadata_TableField();
 			$tableField->sourceFormName = $row['src_format'];
 			$tableField->sourceFieldName = $row['src_data'];
 			$tableField->data = $row['dst_data'];
@@ -947,7 +947,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$select->execute(array($formField->format, $formField->data, $schema));
 
 			$row = $select->fetch();
-			$tableField = new Genapp_Model_Metadata_TableField();
+			$tableField = new Genapp_Object_Metadata_TableField();
 			$tableField->data = $row['data'];
 			$tableField->format = $row['format'];
 			$tableField->columnName = $row['column_name'];
@@ -1006,7 +1006,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$row = $select->fetch();
 
 			if (!empty($row)) {
-				$formField = new Genapp_Model_Metadata_FormField();
+				$formField = new Genapp_Object_Metadata_FormField();
 				$formField->data = $row['data'];
 				$formField->format = $row['format'];
 				$formField->label = $row['label'];
@@ -1075,7 +1075,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				throw new Exception("Table ancestor cannot be found");
 			}
 
-			$tableTreeData = new Genapp_Model_Metadata_TableTreeData();
+			$tableTreeData = new Genapp_Object_Metadata_TableTreeData();
 			$tableTreeData->tableFormat = $row['child_table'];
 			$tableTreeData->parentTable = $row['parent_table'];
 			$tableTreeData->keys = $row['join_key'];
@@ -1140,7 +1140,7 @@ class Genapp_Model_DbTable_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$field = new Genapp_Model_Metadata_Field();
+			$field = new Genapp_Object_Metadata_Field();
 			$field->data = $row['data'];
 			$field->format = $row['format'];
 			$field->label = $row['label'];
