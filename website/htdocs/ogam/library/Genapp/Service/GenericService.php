@@ -787,7 +787,7 @@ class Genapp_Service_GenericService {
 	 */
 	public function getFormQueryToTableData($schema, $formQuery) {
 
-		$result = new Genapp_Model_Generic_DataObject();
+		$result = new Genapp_Object_Generic_DataObject();
 
 		$result->datasetId = $formQuery->datasetId;
 

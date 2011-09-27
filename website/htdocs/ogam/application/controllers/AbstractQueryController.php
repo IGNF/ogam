@@ -299,7 +299,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		try {
 
 			// Parse the input parameters and create a request object
-			$formQuery = new Genapp_Model_Generic_FormQuery();
+			$formQuery = new Genapp_Object_Generic_FormQuery();
 			$formQuery->datasetId = $datasetId;
 			foreach ($_POST as $inputName => $inputValue) {
 				if (strpos($inputName, "criteria__") === 0 && !$this->_isEmptyCriteria($inputValue)) {
