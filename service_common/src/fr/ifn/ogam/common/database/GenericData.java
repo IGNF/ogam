@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database;
+package fr.ifn.ogam.common.database;
 
 /**
  * Generic data.

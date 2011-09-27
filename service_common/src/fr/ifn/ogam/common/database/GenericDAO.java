@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database;
+package fr.ifn.ogam.common.database;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -19,12 +19,12 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.util.SqlStateSQL99;
-import fr.ifn.eforest.common.business.checks.CheckException;
-import fr.ifn.eforest.common.database.mapping.GeometryDAO;
-import fr.ifn.eforest.common.database.metadata.TableFieldData;
-import static fr.ifn.eforest.common.business.UnitTypes.*;
-import static fr.ifn.eforest.common.business.checks.CheckCodes.*;
+import fr.ifn.ogam.common.util.SqlStateSQL99;
+import fr.ifn.ogam.common.business.checks.CheckException;
+import fr.ifn.ogam.common.database.mapping.GeometryDAO;
+import fr.ifn.ogam.common.database.metadata.TableFieldData;
+import static fr.ifn.ogam.common.business.UnitTypes.*;
+import static fr.ifn.ogam.common.business.checks.CheckCodes.*;
 
 /**
  * Data Access Object allowing to acces the raw_data tables.

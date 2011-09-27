@@ -1,7 +1,7 @@
-package fr.ifn.eforest.common.business;
+package fr.ifn.ogam.common.business;
 
 /**
- * Represent a process of the Eforest Application.
+ * Represent a process of the Application.
  */
 public class AbstractThread extends Thread {
 

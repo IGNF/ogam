@@ -1,7 +1,7 @@
-package fr.ifn.eforest.common.business;
+package fr.ifn.ogam.common.business;
 
 /**
- * Abstract Service for the Eforest application.
+ * Abstract Service for the application.
  */
 public class AbstractService {
 

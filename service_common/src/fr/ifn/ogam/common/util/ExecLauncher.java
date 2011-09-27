@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.util;
+package fr.ifn.ogam.common.util;
 
 /**
  * Utility class used to launch an external process from java.

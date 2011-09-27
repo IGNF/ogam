@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.business;
+package fr.ifn.ogam.common.business;
 
 /**
  * List the table Schemas.

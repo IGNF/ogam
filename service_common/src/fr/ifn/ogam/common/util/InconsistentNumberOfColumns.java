@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.util;
+package fr.ifn.ogam.common.util;
 
 /**
  * Exception thrown when the number of columns in the CSV file changes from line to line.

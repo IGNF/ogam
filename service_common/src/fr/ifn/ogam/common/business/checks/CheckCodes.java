@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.business.checks;
+package fr.ifn.ogam.common.business.checks;
 
 /**
  * List the check codes.

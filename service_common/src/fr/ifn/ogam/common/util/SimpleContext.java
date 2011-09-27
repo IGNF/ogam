@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.util;
+package fr.ifn.ogam.common.util;
 
 import javax.naming.Context;
 import javax.naming.Name;

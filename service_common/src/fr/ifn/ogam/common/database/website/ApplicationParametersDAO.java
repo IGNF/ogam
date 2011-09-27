@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.website;
+package fr.ifn.ogam.common.database.website;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.util.LocalCache;
+import fr.ifn.ogam.common.util.LocalCache;
 
 /**
  * Data Access Object used to access the application parameters.

@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.metadata;
+package fr.ifn.ogam.common.database.metadata;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,8 +17,8 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.util.LocalCache;
-import fr.ifn.eforest.common.business.MappingTypes;
+import fr.ifn.ogam.common.util.LocalCache;
+import fr.ifn.ogam.common.business.MappingTypes;
 
 /**
  * Data Access Object used to access metadata.

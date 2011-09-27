@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.processing;
+package fr.ifn.ogam.common.database.processing;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

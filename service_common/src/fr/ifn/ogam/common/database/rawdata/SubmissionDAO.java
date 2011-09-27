@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.rawdata;
+package fr.ifn.ogam.common.database.rawdata;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.submissions.SubmissionStep;
+import fr.ifn.ogam.common.business.submissions.SubmissionStep;
 
 /**
  * Data Access Object used to access the application parameters.

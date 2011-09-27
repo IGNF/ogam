@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.business;
+package fr.ifn.ogam.common.business;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,20 +11,20 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.util.SIGUtils;
-import fr.ifn.eforest.common.util.SynchronizedDateFormat;
-import fr.ifn.eforest.common.business.checks.CheckException;
-import fr.ifn.eforest.common.database.metadata.FieldData;
-import fr.ifn.eforest.common.database.metadata.FileFieldData;
-import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.RangeData;
-import fr.ifn.eforest.common.database.metadata.TableFieldData;
-import fr.ifn.eforest.common.database.metadata.TableFormatData;
-import fr.ifn.eforest.common.database.metadata.TableTreeData;
-import fr.ifn.eforest.common.database.GenericDAO;
-import fr.ifn.eforest.common.database.GenericData;
-import static fr.ifn.eforest.common.business.checks.CheckCodes.*;
-import static fr.ifn.eforest.common.business.UnitTypes.*;
+import fr.ifn.ogam.common.util.SIGUtils;
+import fr.ifn.ogam.common.util.SynchronizedDateFormat;
+import fr.ifn.ogam.common.business.checks.CheckException;
+import fr.ifn.ogam.common.database.metadata.FieldData;
+import fr.ifn.ogam.common.database.metadata.FileFieldData;
+import fr.ifn.ogam.common.database.metadata.MetadataDAO;
+import fr.ifn.ogam.common.database.metadata.RangeData;
+import fr.ifn.ogam.common.database.metadata.TableFieldData;
+import fr.ifn.ogam.common.database.metadata.TableFormatData;
+import fr.ifn.ogam.common.database.metadata.TableTreeData;
+import fr.ifn.ogam.common.database.GenericDAO;
+import fr.ifn.ogam.common.database.GenericData;
+import static fr.ifn.ogam.common.business.checks.CheckCodes.*;
+import static fr.ifn.ogam.common.business.UnitTypes.*;
 
 /**
  * Class used to copy some data from one source to another using the metadata.

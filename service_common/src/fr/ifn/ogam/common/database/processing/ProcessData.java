@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.processing;
+package fr.ifn.ogam.common.database.processing;
 
 /**
  * A Process is a SQL query that is launch after the integration or the copy of data.

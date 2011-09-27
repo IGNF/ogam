@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.mapping;
+package fr.ifn.ogam.common.database.mapping;
 
 /**
  * Describe a grid.

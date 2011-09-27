@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.business.processing;
+package fr.ifn.ogam.common.business.processing;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.AbstractThread;
-import fr.ifn.eforest.common.database.processing.ProcessData;
-import fr.ifn.eforest.common.database.processing.ProcessingDAO;
+import fr.ifn.ogam.common.business.AbstractThread;
+import fr.ifn.ogam.common.database.processing.ProcessData;
+import fr.ifn.ogam.common.database.processing.ProcessingDAO;
 
 /**
  * Service managing the post-process treatments.

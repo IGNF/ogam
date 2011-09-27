@@ -1,11 +1,11 @@
-package fr.ifn.eforest.common.business;
+package fr.ifn.ogam.common.business;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ifn.eforest.common.business.GenericMapper;
-import fr.ifn.eforest.common.database.metadata.MetadataDAO;
-import fr.ifn.eforest.common.database.metadata.TableFormatData;
+import fr.ifn.ogam.common.business.GenericMapper;
+import fr.ifn.ogam.common.database.metadata.MetadataDAO;
+import fr.ifn.ogam.common.database.metadata.TableFormatData;
 
 //
 // Note : In order to use this Test Class correctly under Eclipse, you need to change the working directory to

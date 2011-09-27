@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.rawdata;
+package fr.ifn.ogam.common.database.rawdata;
 
 /**
  * Submission data.

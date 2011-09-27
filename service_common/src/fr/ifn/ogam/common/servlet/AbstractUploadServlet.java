@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.servlet;
+package fr.ifn.ogam.common.servlet;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,8 +13,8 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-import fr.ifn.eforest.common.servlet.AbstractServlet;
-import fr.ifn.eforest.common.database.website.ApplicationParametersDAO;
+import fr.ifn.ogam.common.servlet.AbstractServlet;
+import fr.ifn.ogam.common.database.website.ApplicationParametersDAO;
 
 /**
  * Abstract Upload Servlet.

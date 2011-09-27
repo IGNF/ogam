@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.servlet;
+package fr.ifn.ogam.common.servlet;
 
 import java.util.Enumeration;
 
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.eforest.common.business.AbstractThread;
+import fr.ifn.ogam.common.business.AbstractThread;
 
 /**
  * Abstract Servlet for the eForest project.

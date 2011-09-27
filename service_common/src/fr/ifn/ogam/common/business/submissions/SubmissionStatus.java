@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.business.submissions;
+package fr.ifn.ogam.common.business.submissions;
 
 /**
  * List the submission status.

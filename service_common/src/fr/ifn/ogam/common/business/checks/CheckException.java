@@ -1,9 +1,9 @@
-package fr.ifn.eforest.common.business.checks;
+package fr.ifn.ogam.common.business.checks;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.ifn.eforest.common.database.checks.ChecksDAO;
+import fr.ifn.ogam.common.database.checks.ChecksDAO;
 
 /**
  * Exception linked to a check.

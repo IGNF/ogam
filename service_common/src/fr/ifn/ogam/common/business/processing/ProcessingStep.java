@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.business.processing;
+package fr.ifn.ogam.common.business.processing;
 
 /**
  * List the different processing steps.

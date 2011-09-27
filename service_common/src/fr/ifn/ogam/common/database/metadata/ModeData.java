@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.database.metadata;
+package fr.ifn.ogam.common.database.metadata;
 
 /**
  * A mode.

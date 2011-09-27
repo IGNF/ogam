@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.business;
+package fr.ifn.ogam.common.business;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 
-import fr.ifn.eforest.common.util.JNDIUnitTestHelper;
+import fr.ifn.ogam.common.util.JNDIUnitTestHelper;
 
 /**
  * Mother classe for the EFDAC service test classes.

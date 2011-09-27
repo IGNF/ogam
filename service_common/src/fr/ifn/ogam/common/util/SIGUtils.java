@@ -1,4 +1,4 @@
-package fr.ifn.eforest.common.util;
+package fr.ifn.ogam.common.util;
 
 import java.math.BigDecimal;
 import java.util.regex.Pattern;
