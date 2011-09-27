@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import fr.ifn.ogam.common.business.AbstractThread;
 
 /**
- * Abstract Servlet for the eForest project.
+ * Abstract Servlet for the project.
  */
 public abstract class AbstractServlet extends HttpServlet {
 
