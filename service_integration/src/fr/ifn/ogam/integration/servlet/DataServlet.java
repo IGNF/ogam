@@ -119,9 +119,17 @@ public class DataServlet extends AbstractUploadServlet {
 					throw new Exception("The " + SUBMISSION_ID + " parameter is mandatory");
 				}
 
-				Integer submissionID = Integer.valueOf(submissionIDStr);
+				// Try to get the instance of the checkservice for this submissionId
+				DataServiceThread process = (DataServiceThread) ThreadLock.getInstance().getProcess(submissionIDStr);
 
-				dataService.cancelSubmission(submissionID);
+				if (process != null) {
+					// There is a running thread, we stop it
+					process.setCancelled(true);
+				} else {
+					// We cancel the existing submission
+					Integer submissionID = Integer.valueOf(submissionIDStr);
+					dataService.cancelSubmission(submissionID);
+				}
 
 				out.print(generateResult("OK"));
 			} else

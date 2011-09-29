@@ -196,8 +196,10 @@ public class DataService extends AbstractService {
 
 			}
 
-			// Launch post-processing
-			processingService.processData(ProcessingStep.INTEGRATION, submission.getProviderId(), this.thread);
+			// Launch post-processing (if not cancelled)
+			if (this.thread == null || !this.thread.isCancelled()) {
+				processingService.processData(ProcessingStep.INTEGRATION, submission.getProviderId(), this.thread);
+			}
 
 			// Update the submission status
 			if (isSubmitValid) {
@@ -205,7 +207,12 @@ public class DataService extends AbstractService {
 			} else {
 				// Immediately cancel the submission data
 				cancelSubmission(submissionId);
-				submissionDAO.updateSubmissionStatus(submissionId, SubmissionStep.DATA_INSERTED, SubmissionStatus.ERROR);
+
+				if (this.thread != null && this.thread.isCancelled()) {
+					submissionDAO.updateSubmissionStatus(submissionId, SubmissionStep.SUBMISSION_CANCELLED, SubmissionStatus.ERROR);
+				} else {
+					submissionDAO.updateSubmissionStatus(submissionId, SubmissionStep.DATA_INSERTED, SubmissionStatus.ERROR);
+				}
 			}
 
 			logger.debug("data submitted");

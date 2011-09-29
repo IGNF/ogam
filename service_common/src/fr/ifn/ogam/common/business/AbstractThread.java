@@ -10,6 +10,9 @@ public class AbstractThread extends Thread {
 	private Integer currentCount;
 	private Integer totalCount;
 
+	// Ask for cancellation of the process
+	private volatile boolean cancelled = false;
+
 	/**
 	 * @return the currentName
 	 */
@@ -69,6 +72,21 @@ public class AbstractThread extends Thread {
 		setTaskName(name);
 		setCurrentCount(current);
 		setTotalCount(total);
+	}
+
+	/**
+	 * @return the cancelled
+	 */
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	/**
+	 * @param cancelled
+	 *            the cancelled to set
+	 */
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 }

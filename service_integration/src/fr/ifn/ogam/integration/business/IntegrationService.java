@@ -181,6 +181,10 @@ public class IntegrationService extends GenericMapper {
 
 					if (thread != null) {
 						thread.updateInfo("Inserting " + sourceFormat + " data", row, csvFile.getRowsCount());
+						
+						if (thread.isCancelled()) {
+							return false; // don't finish the job
+						}
 					}
 
 					// List of tables where to insert data
