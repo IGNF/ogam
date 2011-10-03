@@ -65,7 +65,7 @@ class Application_Object_Website_PredefinedField {
 	 */
 	function toJSON() {
 
-		$json = json_encode($this->format."_".$this->data); // name
+		$json = json_encode($this->format."__".$this->data); // name
 		$json .= ','.json_encode($this->format);
 		$json .= ','.json_encode($this->data);
 		$json .= ','.json_encode($this->value);

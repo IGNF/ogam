@@ -153,7 +153,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 },
                 scope: this
             },
-            items:  this.getFilledCriteriaConfig(),
+            items:  Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig(),
             tbar: [
                 {
                     // Filler
@@ -308,7 +308,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * @return {Array} An array of the default criteria config
      */
     getDefaultCriteriaConfig : function() {
-        var items = [];
+    	var items = [];
         this.criteriaDS.each(function(record){
             if(record.data.is_default){
                 // if the field have multiple default values, duplicate the criteria
@@ -335,11 +335,12 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
      * @return {Array} An array of the filled criteria config
      */
     getFilledCriteriaConfig : function() {
-        var items = [];
+    	var items = [];
         this.criteriaDS.each(function(record){
+        	var fieldValues, newRecord, i;
             // Check if there are some criteriaValues from the predefined request page
-            if(!Ext.isEmpty(this.criteriaValues)){
-                var fieldValues = this.criteriaValues['criteria__'+newRecord.data.name], i;
+            if(!Ext.isEmpty(this.form.criteriaValues)){
+                fieldValues = this.form.criteriaValues['criteria__'+record.data.name];
                 // Check if there are some criteriaValues for this criteria
                 if(!Ext.isEmpty(fieldValues)){
                     // Transform fieldValues in array if needed
@@ -348,15 +349,11 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                     }
                     // Duplicate the criteria if the field have multiple values
                     for (i = 0; i < fieldValues.length; i++) {
-                        var newRecord = record.copy();
+                        newRecord = record.copy();
                         newRecord.data.default_value = fieldValues[i];
-                        this.items.push(this.form.getDefaultCriteriaConfig(newRecord.data, false));
+                        this.items.push(this.form.getCriteriaConfig(newRecord.data, false));
                     }
-                } else { // There are no criteriaValues for this criteria
-                    this.items.push(this.form.getDefaultCriteriaConfig(record.data, false));
                 }
-            } else { // There are no criteriaValues from the predefined request page
-                this.items.push(this.form.getDefaultCriteriaConfig(record.data, false));
             }
         },{form:this, items:items});
         return items;
