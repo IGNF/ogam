@@ -127,6 +127,11 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 */
 	public function toDetailJSON() {
 		$return = '{"label":'.json_encode($this->label);
+
+		if ($this->inputType == 'NUMERIC' && $this->decimals != null && $this->decimals != "") {
+			$this->valueLabel = number_format($this->valueLabel, $this->decimals);
+		}
+		
 		$return .= ',"value":'.json_encode($this->valueLabel).'}';
 
 		return $return;
