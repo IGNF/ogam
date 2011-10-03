@@ -464,7 +464,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 			} else {
 
 				// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
-				if ($configuration->charset == 'UTF-8') {
+				if ($configuration->csvExportCharset == 'UTF-8') {
 					echo(chr(0xEF));
 					echo(chr(0xBB));
 					echo(chr(0xBF));
