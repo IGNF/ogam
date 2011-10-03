@@ -18,8 +18,8 @@ class MapController extends AbstractOGAMController {
 		parent::init();
 
 		// Initialise the models
-		$this->layersModel = new Application_Model_DbTable_Mapping_Layers();
-		$this->boundingBoxModel = new Application_Model_DbTable_Mapping_BoundingBox();
+		$this->layersModel = new Application_Model_Mapping_Layers();
+		$this->boundingBoxModel = new Application_Model_Mapping_BoundingBox();
 	}
 
 	/**
@@ -51,11 +51,9 @@ class MapController extends AbstractOGAMController {
 	public function getmapparametersAction() {
 		$this->logger->debug('getmapparametersAction');
 
-		// Get back the country code
+		// Get back the provider id for the current user
 		$userSession = new Zend_Session_Namespace('user');
-
-		// TODO : Remove hardcoded value
-		$countryCode = "1";
+		$providerId = $userSession->user->providerId;
 
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
@@ -71,9 +69,10 @@ class MapController extends AbstractOGAMController {
 		$resolutions = $this->_getResolutions($scales);
 		$resolString = implode(",", $resolutions);
 		$this->view->resolutions = $resolString;
+		$this->view->numZoomLevels = count($resolutions);
 
 		// Center the map on the country
-		$center = $this->boundingBoxModel->getCenter($countryCode);
+		$center = $this->boundingBoxModel->getCenter($providerId);
 		$this->view->defaultzoom = $center->defaultzoom;
 		$this->view->x_center = $center->x_center;
 		$this->view->y_center = $center->y_center;
@@ -98,6 +97,8 @@ class MapController extends AbstractOGAMController {
 
 	/**
 	 * Calculate the resolution array corresponding to the available scales.
+	 * 
+	 * @param Array[Integer] $scales The list of scales
 	 */
 	private function _getResolutions($scales) {
 
@@ -126,7 +127,7 @@ class MapController extends AbstractOGAMController {
 		$userSession = new Zend_Session_Namespace('user');
 
 		// TODO : Remove hardcoded value
-		$countryCode = "1";
+		$providerId = $userSession->user->providerId;
 
 		// Get some configutation parameters
 		$configuration = Zend_Registry::get("configuration");
@@ -135,7 +136,7 @@ class MapController extends AbstractOGAMController {
 		$proxyPath = $configuration->useMapProxy ? '/mapProxy.php' : '/proxy/gettile';
 
 		// Get the available layers
-		$layers = $this->layersModel->getLayersList($countryCode);
+		$layers = $this->layersModel->getLayersList($providerId);
 
 		// Get the available scales
 		$scales = $this->layersModel->getScales();
@@ -246,7 +247,7 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "session_id": "'.$sessionId.'"';
 
 			// Add the country code
-			$out .= ', "country_code": "'.$countryCode.'"';
+			$out .= ', "provider_id": "'.$providerId.'"';
 
 			$out .= '}';
 
@@ -322,10 +323,10 @@ class MapController extends AbstractOGAMController {
 
 		// Get back the country code
 		$userSession = new Zend_Session_Namespace('user');
-		$countryCode = $userSession->user->countryCode;
-		$this->logger->debug('countryCode : '.$countryCode);
+		$providerId = $userSession->user->providerId;
+		$this->logger->debug('providerId : '.$providerId);
 
-		$item = $this->_getLegendItems(-1, $countryCode);
+		$item = $this->_getLegendItems(-1, $providerId);
 
 		echo "[".$item."]";
 
@@ -338,14 +339,16 @@ class MapController extends AbstractOGAMController {
 	/**
 	 * Return the part of the legend model corresponding to the selected node.
 	 *
+	 * @param String $parentId The identifier of the parent node
+	 * @param String $providerId The identifier of the provider
 	 * @return String
 	 */
-	private function _getLegendItems($parentId, $countryCode) {
+	private function _getLegendItems($parentId, $providerId) {
 
-		$this->logger->debug('_getLegendItems : '.$parentId." ".$countryCode);
+		$this->logger->debug('_getLegendItems : '.$parentId." ".$providerId);
 
 		// Get the list of items corresponding to the asked level
-		$legendItems = $this->layersModel->getLegend($parentId, $countryCode);
+		$legendItems = $this->layersModel->getLegend($parentId, $providerId);
 
 		// Get the list of active layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
@@ -398,7 +401,7 @@ class MapController extends AbstractOGAMController {
 				$json .= '"leaf": false, ';
 
 				// Recursive call
-				$json .= '"children": ['.$this->_getLegendItems($legendItem->itemId, $countryCode).']';
+				$json .= '"children": ['.$this->_getLegendItems($legendItem->itemId, $providerId).']';
 			}
 			$json .= '}, ';
 		}

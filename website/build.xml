@@ -293,4 +293,27 @@
 			</fileset>
 		</jsdoctoolkit>
 	</target>
+	
+	<!-- Launch JUnit under Windows -->
+	<target name="_phpunitwindows" depends="_targetCheck" if="isWindows">
+		<echo>Windows</echo>
+		<exec executable="./test/runTests.bat" dir=".">
+			<arg value="${libraries.dir}/PHPUnit/phpunit.php" />
+		</exec>
+	</target>
+
+	<!-- Launch JUnit under Unix -->
+	<target name="_phpunitunix" depends="_targetCheck" if="isUnix">
+		<echo>Unix</echo>
+		<chmod file="./test/runTests.sh" perm="ugo+rx" />
+		<exec executable="./tests/runTests.sh" dir=".">
+			<arg value="${libraries.dir}/PHPUnit/phpunit.php" />
+		</exec>
+	</target>
+
+	<!-- Launch PHPUnit-->
+	<target name="phpunit" description="Launch PHPUnit" depends="_phpunitwindows, _phpunitunix">
+	</target>
+	
+	
 </project>

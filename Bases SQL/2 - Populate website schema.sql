@@ -9,10 +9,10 @@ INSERT INTO application_parameters (name, value, description) values ('fromMail'
 INSERT INTO application_parameters (name, value, description) values ('toMail','benoit.pesty@ifn.fr','The destination email');
 
 -- Create some roles
-INSERT INTO role(role_code, role_label, role_def) VALUES ('ADMIN','Administrator', 'Manages the web site');
+INSERT INTO role(role_code, role_label, role_definition) VALUES ('ADMIN','Administrator', 'Manages the web site');
 
 -- Create some users
-INSERT INTO users(user_login, user_password, user_name, country_code, active, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', '1', null); 
+INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', '1', null); 
 
 -- Link the users to their roles
 INSERT INTO role_to_user(user_login, role_code) VALUES ('admin', 'ADMIN');
@@ -34,6 +34,8 @@ INSERT INTO permission(permission_code, permission_label) VALUES ('EXPORT_RAW_DA
 INSERT INTO permission(permission_code, permission_label) VALUES ('EXPORT_HARMONIZED_DATA', 'Export the harmonized data as a CSV file');
 INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_EDITION', 'Add / Update / Delete data');
 INSERT INTO permission(permission_code, permission_label) VALUES ('CHECK_CONF', 'Check the configuration');
+INSERT INTO permission(permission_code, permission_label) VALUES ('CANCEL_VALIDATED_SUBMISSION', 'Cancel validated submission');
+INSERT INTO permission(permission_code, permission_label) VALUES ('CANCEL_OTHER_PROVIDER_SUBMISSION', 'Cancel other provider submission');
 
 -- Add the permissions per role
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_USERS');
@@ -50,5 +52,7 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DO
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'EXPORT_HARMONIZED_DATA');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_EDITION');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CHECK_CONF');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_VALIDATED_SUBMISSION');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_OTHER_PROVIDER_SUBMISSION');
 
 

@@ -9,7 +9,7 @@
  *
  * This service handles the queries used to feed the query interface with ajax requests.
  *
- * @package classes
+ * @package service
  */
 class Genapp_Service_QueryService {
 
@@ -47,10 +47,10 @@ class Genapp_Service_QueryService {
 		$this->logger = Zend_Registry::get("logger");
 
 		// Initialise the metadata models
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
-		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
-		$this->resultLocationModel = new Application_Model_DbTable_Mapping_ResultLocation();
-		$this->predefinedRequestModel = new Application_Model_DbTable_Website_PredefinedRequest();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->genericModel = new Genapp_Model_Generic_Generic();
+		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
+		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
 
 		// The service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();
@@ -214,16 +214,13 @@ class Genapp_Service_QueryService {
 	/**
 	 * Get the form fields for a data to edit.
 	 *
-	 * @param String $datasetId the identifier of the selected dataset
-	 * @param String $requestName the name of the predefined request if available
+	 * @param DataObject $data the data object to edit
 	 * @return JSON.
 	 */
 	public function getEditForm($data) {
 		$this->logger->debug('getEditForm');
 
 		// Get the HTML form fields corresponding to the data
-		$fields = array();
-
 		$json = '[';
 
 		//
@@ -375,7 +372,7 @@ class Genapp_Service_QueryService {
 			if ($sort != "") {
 				// $sort contains the form format and field
 				$split = explode("__", $sort);
-				$formField = new Genapp_Model_Metadata_FormField();
+				$formField = new Genapp_Object_Metadata_FormField();
 				$formField->format = $split[0];
 				$formField->data = $split[1];
 				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
@@ -397,13 +394,16 @@ class Genapp_Service_QueryService {
 			// Prepare the needed traductions
 			$traductions = array();
 			foreach ($resultColumns as $tableField) {
+				
+				$key = strtolower($tableField->format.'__'.$tableField->data);
+				
 				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 					if ($tableField->subtype == "DYNAMIC") {
-						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getDynamodes($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
 					} else if ($tableField->subtype == "TREE") {
-						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getTreeLabels($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
 					} else {
-						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
 					}
 				}
 			}
@@ -427,12 +427,12 @@ class Genapp_Service_QueryService {
 					} else if ($tableField->type == "ARRAY" && $value != "") {
 						// Split the array items
 						$arrayValues = explode(",", ereg_replace("[{-}]", "", $value));
-						$label ='';
+						$label = '';
 						foreach ($arrayValues as $arrayValue) {
 							$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
 							$label .= ',';
 						}
-						if ($label!='') {
+						if ($label != '') {
 							$label = substr($label, 0, -1);
 						}
 						$label = '['.$label.']';
@@ -527,24 +527,6 @@ class Genapp_Service_QueryService {
 			$i += 2;
 		}
 		return $keyMap;
-	}
-
-	/**
-	 * Decode the identifiers
-	 *
-	 * @param array/string $id
-	 * @return Array the decoded id
-	 */
-	private function _decodeIds($ids = null) {
-		if (is_array($ids)) {
-			$keyMaps = array();
-			foreach ($ids as $id) {
-				$keyMaps[] = $this->_decodeId($id);
-			}
-			return $keyMaps;
-		} else {
-			return $this->_decodeId($id);
-		}
 	}
 
 	/**
@@ -648,43 +630,49 @@ class Genapp_Service_QueryService {
 		}
 
 		$json .= "], ";
-		$json .= "maps:[{title:'image',";
-		$json .= "url:'".$baseUrl."/proxy/gettile?";
-		$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[0]);
-		$json .= "&TRANSPARENT=true";
-		$json .= "&FORMAT=image%2FPNG";
-		$json .= "&SERVICE=WMS";
-		$json .= "&VERSION=1.1.1";
-		$json .= "&REQUEST=GetMap";
-		$json .= "&STYLES=";
-		$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
-		$json .= "&SRS=EPSG%3A".$visualisationSRS;
-		$json .= "&BBOX=".$bb['x_min'].",".$bb['y_min'].",".$bb['x_max'].",".$bb['y_max'];
-		$json .= "&WIDTH=300";
-		$json .= "&HEIGHT=300";
-		$json .= "&map.scalebar=STATUS+embed";
-		$json .= "&SESSION_ID=".session_id();
-		$json .= $mapservParams;
-		$json .= "'},"; // end of map
-		$json .= "{title:'overview',";
-		$json .= "url:'".$baseUrl."/proxy/gettile?";
-		$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[1]);
-		$json .= "&TRANSPARENT=true";
-		$json .= "&FORMAT=image%2FPNG";
-		$json .= "&SERVICE=WMS";
-		$json .= "&VERSION=1.1.1";
-		$json .= "&REQUEST=GetMap";
-		$json .= "&STYLES=";
-		$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
-		$json .= "&SRS=EPSG%3A".$visualisationSRS;
-		$json .= "&BBOX=".$bb2['x_min'].",".$bb2['y_min'].",".$bb2['x_max'].",".$bb2['y_max'];
-		$json .= "&WIDTH=300";
-		$json .= "&HEIGHT=300";
-		$json .= "&SESSION_ID=".session_id();
-		$json .= "&CLASS=REDSTAR";
-		$json .= "&map.scalebar=STATUS+embed";
-		$json .= $mapservParams;
-		$json .= "'}"; // end of overview map
+		$json .= "maps:[";
+		if (!empty($detailLayers)) {
+			if ($detailLayers[0] != "") {
+				$json .= "{title:'image',";
+				$json .= "url:'".$baseUrl."/proxy/gettile?";
+				$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[0]);
+				$json .= "&TRANSPARENT=true";
+				$json .= "&FORMAT=image%2FPNG";
+				$json .= "&SERVICE=WMS";
+				$json .= "&VERSION=1.1.1";
+				$json .= "&REQUEST=GetMap";
+				$json .= "&STYLES=";
+				$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
+				$json .= "&SRS=EPSG%3A".$visualisationSRS;
+				$json .= "&BBOX=".$bb['x_min'].",".$bb['y_min'].",".$bb['x_max'].",".$bb['y_max'];
+				$json .= "&WIDTH=300";
+				$json .= "&HEIGHT=300";
+				$json .= "&map.scalebar=STATUS+embed";
+				$json .= "&SESSION_ID=".session_id();
+				$json .= $mapservParams;
+				$json .= "'}"; // end of detail map
+			}
+			if ($detailLayers[1] != "") {
+				$json .= ",{title:'overview',";
+				$json .= "url:'".$baseUrl."/proxy/gettile?";
+				$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[1]);
+				$json .= "&TRANSPARENT=true";
+				$json .= "&FORMAT=image%2FPNG";
+				$json .= "&SERVICE=WMS";
+				$json .= "&VERSION=1.1.1";
+				$json .= "&REQUEST=GetMap";
+				$json .= "&STYLES=";
+				$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
+				$json .= "&SRS=EPSG%3A".$visualisationSRS;
+				$json .= "&BBOX=".$bb2['x_min'].",".$bb2['y_min'].",".$bb2['x_max'].",".$bb2['y_max'];
+				$json .= "&WIDTH=300";
+				$json .= "&HEIGHT=300";
+				$json .= "&SESSION_ID=".session_id();
+				$json .= "&map.scalebar=STATUS+embed";
+				$json .= $mapservParams;
+				$json .= "'}"; // end of overview map
+			}
+		}
 		$json .= "]"; // end of maps
 		$json .= "}";
 

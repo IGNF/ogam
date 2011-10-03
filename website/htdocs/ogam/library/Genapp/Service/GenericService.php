@@ -9,7 +9,7 @@
  *
  * This service handles transformations between data objects and generate generic SQL requests from the metadata.
  *
- * @package classes
+ * @package service
  */
 class Genapp_Service_GenericService {
 
@@ -38,7 +38,7 @@ class Genapp_Service_GenericService {
 		$this->logger = Zend_Registry::get("logger");
 
 		// Initialise the metadata models
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
@@ -58,11 +58,11 @@ class Genapp_Service_GenericService {
 		$this->logger->info('datumToDetailJSON');
 
 		// Get children for the current dataset
-		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
+		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$children = $this->genericModel->getChildren($data, $datasetId);
 
 		$childrenCount = 0;
-		if(!empty($children)){
+		if( !empty($children)) {
 			$childrenCount = count(current($children));
 		}
 		$json = '{"title":'.json_encode($data->tableFormat->label, JSON_HEX_APOS).', "children_count":'.$childrenCount.', "id":"'.$this->getIdFromData($data).'", "fields":[';
@@ -88,6 +88,7 @@ class Genapp_Service_GenericService {
 	 * Build and return the datum id
 	 *
 	 * @param DataObject $datum The datum
+	 * @return String the datum identifier
 	 */
 	public function getIdFromData($datum) {
 		$datumId = 'SCHEMA/'.$datum->tableFormat->schemaCode.'/FORMAT/'.$datum->tableFormat->format;
@@ -174,7 +175,7 @@ class Genapp_Service_GenericService {
 	 * @param array $tableFields The table fields
 	 * @return array The form fields ordered
 	 */
-	public function getFormFieldsOrdered(array $tableFields){
+	public function getFormFieldsOrdered(array $tableFields) {
 		$fieldsOrdered = array();
 		foreach ($tableFields as $tableField) {
 			// Get the form field corresponding to the table field
@@ -273,7 +274,7 @@ class Genapp_Service_GenericService {
 
 		// Add the joined tables
 		$i = 0;
-		foreach ($tables as $tableFormat => $tableTreeData) {
+		foreach ($tables as $tableTreeData) {
 			$i++;
 
 			// Join the table
@@ -416,10 +417,9 @@ class Genapp_Service_GenericService {
 			if (!empty($minValue)) {
 				$sql .= $tableField->format.".".$tableField->columnName." >= ".$minValue." ";
 			}
-		} else{
+		} else {
 			// One value, we make an equality comparison
 			$sql .= $tableField->format.".".$tableField->columnName." = ".$value;
-
 		}
 
 		return $sql;
@@ -752,7 +752,7 @@ class Genapp_Service_GenericService {
 	public function buildDataObject($schema, $format, $datasetId = null, $isForDisplay = false) {
 
 		// Prepare a data object to be filled
-		$data = new Genapp_Model_Generic_DataObject();
+		$data = new Genapp_Object_Generic_DataObject();
 
 		$data->datasetId = $datasetId;
 
@@ -787,7 +787,7 @@ class Genapp_Service_GenericService {
 	 */
 	public function getFormQueryToTableData($schema, $formQuery) {
 
-		$result = new Genapp_Model_Generic_DataObject();
+		$result = new Genapp_Object_Generic_DataObject();
 
 		$result->datasetId = $formQuery->datasetId;
 

@@ -29,9 +29,9 @@ class UserController extends Zend_Controller_Action {
 		$this->logger = $bootstrap->getResource('log');
 
 		// Initialise the models
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
-		$this->userModel = new Application_Model_DbTable_Website_User();
-		$this->roleModel = new Application_Model_DbTable_Website_Role();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->userModel = new Application_Model_Website_User();
+		$this->roleModel = new Application_Model_Website_Role();
 
 		// Get the base URL from the config
 		$configuration = Zend_Registry::get("configuration");

@@ -28,6 +28,12 @@
     <th></th>
 </tr>
 <?
+
+// Get the user permissions
+$userSession = new Zend_Session_Namespace('user');
+$permissions = $userSession->permissions;
+
+
 $i = 0;
 foreach ($this->submissions as $submission) {
 ?>
@@ -112,38 +118,46 @@ foreach ($this->submissions as $submission) {
         <?php if ($submission->status !== "DATARUNNING") : ?>
             <table width="100%">
             <?php foreach ($submission->files as $file) : ?>
-                <tr><td><?= $file->fileType ?></td>
-                <td class="line-number"><?= $file->lineNumber ?></td></tr>
-                <tr><td colspan=2 class="file-name">
+                <tr><td class="file-name">
+                	<span title="<?= $file->fileType ?>">
                     <?php
                         $fileName = $file->fileName;
                         $fileName = strtr($fileName,'\\','/');
                         $fileName = substr($fileName, strrpos($fileName,'/') + 1);
                         echo $fileName;
                     ?>
-                </td></tr>
+                    </span>
+                </td>
+                <td class="line-number"><?= $file->lineNumber ?></td>
+                </tr>
+                
             <?php endforeach; ?>
             </table>
         <?php endif; ?>
     </td>
     
     <td>
-    <?
+    <?php
 	if ($submission->step === "INSERTED" && $submission->status === "OK") {
 ?>
     <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'check-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" ><?=$this->translate('Check data');?></a></p>
-    <? }
+    <?php }
 	if ($submission->step !== "INIT" && $submission->status !== "DATARUNNING") {
 ?>
     <p><a href="<?= $this->url(array('controller'=>'proxy','action'=>'showreport'), null, true)?>?submissionId=<?=$submission->submissionId;?>" ><?=$this->translate('Show report');?></a></p>
-    <? }
-	if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
+    <?php }
+    if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Confirm validation');?>');"></a></p>
-    <? } ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('Are you sure?');"><?=$this->translate('Cancel Submission');?></a></p>
+    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Confirm_submission_warning');?>');"><?=$this->translate('Confirm submission');?></a></p>
+    <?php } 
+    if ($submission->step != "VALIDATED" || (!empty($permissions) && array_key_exists('CANCEL_VALIDATED_SUBMISSION',$permissions))) {
+    	if ($submission->providerId == $userSession->user->providerId || (!empty($permissions) && array_key_exists('CANCEL_OTHER_PROVIDER_SUBMISSION',$permissions))) {
+?>
+    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Are you sure?');?>');"><?=$this->translate('Cancel Submission');?></a></p>
+<?php  }
+    } ?>        
 </td></tr>
-<?
+<?php
 	$i++;
 }
 ?>

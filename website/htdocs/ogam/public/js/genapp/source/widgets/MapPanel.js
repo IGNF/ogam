@@ -471,6 +471,7 @@ Genapp.MapPanel = Ext.extend(Ext.Panel, {
         this.map = new OpenLayers.Map(consultationMapDivId, {
             'controls' : [],
             'resolutions' : resolutions,
+            'numZoomLevels': Genapp.map.numZoomLevels, 
             'projection' : Genapp.map.projection,
             'units' : 'm',
             'tileSize' : new OpenLayers.Size(Genapp.map.tilesize, Genapp.map.tilesize),

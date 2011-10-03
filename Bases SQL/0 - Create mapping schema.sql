@@ -16,7 +16,7 @@ constraint PK_RESULT_LOCATION primary key (SESSION_ID, PROVIDER_ID, PLOT_CODE)
 WITH OIDS; -- Important : Needed by mapserv
 
 -- Ajout de la colonne point PostGIS
-SELECT AddGeometryColumn('mapping','result_location','the_geom',3035,'POINT',2);
+SELECT AddGeometryColumn('mapping','result_location','the_geom',2154,'GEOMETRY',2);
 
 -- Spatial Index on the_geom 
 CREATE INDEX IX_RESULT_LOCATION_SPATIAL_INDEX ON mapping.RESULT_LOCATION USING GIST
@@ -32,6 +32,7 @@ COMMENT ON COLUMN RESULT_LOCATION.PLOT_CODE IS 'The plot code';
 COMMENT ON COLUMN RESULT_LOCATION._CREATIONDT IS 'Creation date (used to know when to purge the base)';
         
 
+            
 /*==============================================================*/
 -- table SCALES : List the available map scales
 -- Warning : The map scales should match the tilecache configuration
@@ -64,7 +65,7 @@ CREATE TABLE layer_definition
   transitionEffect		VARCHAR(50),   -- Transition effect (resize or null)
   imageFormat			VARCHAR(10),   -- Image format (PNG or JPEG)
   opacity			    VARCHAR(3),	   -- Opacity (between 0 and 100), null if no transparency
-  country_code 		    VARCHAR(36),   -- If empty, the layer can be seen by any country, if not it is limited to one country
+  provider_id 		    VARCHAR(36),   -- If empty, the layer can be seen by any country, if not it is limited to one country
   has_sld               INT,           -- If value = 1 we add a SLD information
   activate_type          VARCHAR(36),   -- Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or HARMONIZATION)
   PRIMARY KEY  (layer_name)
@@ -83,7 +84,7 @@ COMMENT ON COLUMN layer_definition.has_legend IS 'If value = 1 is the layer has 
 COMMENT ON COLUMN layer_definition.transitionEffect IS 'Transition effect (resize or null)';
 COMMENT ON COLUMN layer_definition.imageFormat IS 'Image format (PNG or JPEG)';
 COMMENT ON COLUMN layer_definition.opacity IS 'Opacity (between 0 and 100), null if no transparency';
-COMMENT ON COLUMN layer_definition.country_code IS 'If empty, the layer can be seen by any country, if not it is limited to one country';
+COMMENT ON COLUMN layer_definition.provider_id IS 'If empty, the layer can be seen by any provider if not it is limited to one provider';
 COMMENT ON COLUMN layer_definition.has_sld IS 'If value = 1 we add a SLD information';
 COMMENT ON COLUMN layer_definition.activate_type IS 'Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or INTERPOLATION)';
 
@@ -141,6 +142,9 @@ COMMENT ON COLUMN bounding_box.bb_xmax IS 'Max longitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_ymax IS 'Max latitude coordinate';
 COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the country';
 
+
+
+SET SEARCH_PATH = mapping, public;
 
 
 /*==============================================================*/

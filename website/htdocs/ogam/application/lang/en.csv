@@ -63,10 +63,12 @@ Check data;Check data
 Show report;Show report
 Validate data;Validate submission
 Cancel Submission;Cancel submission
-Confirm validation;Once validated the data will be available for agregation. Do you confirm?
+Confirm submission;Confirm submission
+Confirm_submission_warning;Once validated the data will be available for further processing. Do you confirm?
 Submit;Submit
 Error;Error
 The expected fields are:;The expected fields are:
+Are you sure?;Are you sure?
 
 ﻿##########################
 #  Data harmonization    #
@@ -85,3 +87,27 @@ Confirm harmonization;Warning, this will delete and recreate all data for this d
 Check result;Check result
 PHP Parameters;PHP Parameters
 Error: %value% minimum;Error: %value% minimum
+
+##########################
+#  User Management       #
+##########################
+User Management Module;User Management Module
+Show the users;Show the users
+Show the roles;Show the roles
+Change Password;Change Password
+Create Role;Create Role
+Create User;Create User
+Edit Role;Edit Role
+Edit User;Edit User
+Roles;Roles
+Users;Users
+User Login;User Login
+User Name;User Name
+Provider;Provider
+Email;Email
+Role;Role
+Delete;Delete
+Edit;Edit
+Code;Code
+Label;Label
+Definition;Definition

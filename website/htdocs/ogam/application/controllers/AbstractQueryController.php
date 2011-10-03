@@ -50,10 +50,10 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
 		// Initialise the models
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
-		$this->genericModel = new Genapp_Model_DbTable_Generic_Generic();
-		$this->resultLocationModel = new Application_Model_DbTable_Mapping_ResultLocation();
-		$this->predefinedRequestModel = new Application_Model_DbTable_Website_PredefinedRequest();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->genericModel = new Genapp_Model_Generic_Generic();
+		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
+		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
 
 		// The service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();
@@ -154,7 +154,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		try {
 
 			// Create the predefined request object
-			$predefinedRequest = new Application_Model_Website_PredefinedRequest();
+			$predefinedRequest = new Application_Object_Website_PredefinedRequest();
 			$predefinedRequest->datasetID = $datasetId;
 			$predefinedRequest->schemaCode = $this->schema;
 			$predefinedRequest->requestName = 'TEST REQUEST'; // TODO : get from FORM
@@ -173,7 +173,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 						$criteriaFormat = substr($criteriaName, 0, $pos);
 						$criteriaData = substr($criteriaName, $pos + 2);
 
-						$field = new Application_Model_Website_PredefinedField();
+						$field = new Application_Object_Website_PredefinedField();
 						$field->format = $criteriaFormat;
 						$field->data = $criteriaData;
 						$field->value = $inputValue;
@@ -194,7 +194,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 					$columnFormat = substr($columnName, 0, $pos);
 					$columnData = substr($columnName, $pos + 2);
 
-					$field = new Application_Model_Website_PredefinedField();
+					$field = new Application_Object_Website_PredefinedField();
 					$field->format = $columnFormat;
 					$field->data = $columnData;
 
@@ -299,7 +299,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		try {
 
 			// Parse the input parameters and create a request object
-			$formQuery = new Genapp_Model_Generic_FormQuery();
+			$formQuery = new Genapp_Object_Generic_FormQuery();
 			$formQuery->datasetId = $datasetId;
 			foreach ($_POST as $inputName => $inputValue) {
 				if (strpos($inputName, "criteria__") === 0 && !$this->_isEmptyCriteria($inputValue)) {
@@ -394,7 +394,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 
 		// Get the current dataset to filter the results
 		$websiteSession = new Zend_Session_Namespace('website');
-		$datasetId = $websiteSession->datasetId ;
+		$datasetId = $websiteSession->datasetId;
 
 		// Get the identifier of the line from the session
 		if ($id == null) {
@@ -464,7 +464,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 			} else {
 
 				// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
-				if ($configuration->charset == 'UTF-8') {
+				if ($configuration->csvExportCharset == 'UTF-8') {
 					echo(chr(0xEF));
 					echo(chr(0xBB));
 					echo(chr(0xBF));
@@ -473,13 +473,26 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 				// Retrive the session-stored info
 				$resultColumns = $websiteSession->resultColumns; // array of TableField
 
-				// Prepare the needed traductions
+				// Prepare the needed traductions and the form info
 				$traductions = array();
 				foreach ($resultColumns as $tableField) {
-					if ($tableField->type == "CODE") {
-						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
+
+					$key = strtolower($tableField->format.'__'.$tableField->data);
+
+					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
+						if ($tableField->subtype == "DYNAMIC") {
+							$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
+						} else if ($tableField->subtype == "TREE") {
+							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
+						} else {
+							$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
+						}
 					}
+
+					// Get the full description of the form field
+					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
 				}
+				
 				// Display the default message
 				$this->_print('// *************************************************'."\n");
 				$this->_print('// Data Export'."\n");
@@ -501,7 +514,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
-					$formField = new Genapp_Model_Metadata_FormField();
+					$formField = new Genapp_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
@@ -519,8 +532,6 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 				$finished = false;
 				while (!$finished) {
 
-					// Pb with memory limit, with PHP 5.2 we don't have a garbage collector
-
 					// Define the position of the cursor in the dataset
 					$offset = " OFFSET ".($page * $maxLines)." ";
 
@@ -535,13 +546,39 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 
 							$key = strtolower($tableField->format.'__'.$tableField->data);
 							$value = $line[$key];
+							$formField = $formFields[$key];
 
-							if ($tableField->type == "CODE" && $value != "") {
-								// Manage code traduction
-								$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
-								$this->_print('"'.$label.'";');
+							if ($value == null) {
+								$this->_print(';');
 							} else {
-								$this->_print('"'.($value == null ? '' : $value).'";');
+								if ($tableField->type == "CODE") {
+									// Manage code traduction
+									$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+									$this->_print('"'.$label.'";');
+								} else if ($tableField->type == "ARRAY") {
+									// Split the array items
+									$arrayValues = explode(",", ereg_replace("[{-}]", "", $value));
+									$label = '';
+									foreach ($arrayValues as $arrayValue) {
+										$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
+										$label .= ',';
+									}
+									if ($label != '') {
+										$label = substr($label, 0, -1);
+									}
+									$label = '['.$label.']';
+									$this->_print('"'.$label.'";');
+
+								} else if ($formField->inputType == "NUMERIC") {
+									// Numeric value
+									if ($formField->decimals != null && $formField->decimals != "") {
+										$value = number_format($value, $formField->decimals);
+									}
+									$this->_print($value.';');
+								} else {
+									// Dafault case : String value
+									$this->_print('"'.$value.'";');
+								}
 							}
 						}
 						$this->_print("\n");

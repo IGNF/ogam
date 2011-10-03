@@ -10,12 +10,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	// The logger
 	var $logger = null;
 
-	// Do not call this function _initLog() !
+
 	/**
-	*
-	* Register the logger into Zend_Registry
-	* @throws Zend_Exception
-	*/
+	 * Register the logger into Zend_Registry
+	 * WARNING : Do not call this function _initLog() !
+	 * @throws Zend_Exception
+	 */
 	protected function _initRegisterLogger() {
 		$this->bootstrap('Log');
 		if (!$this->hasPluginResource('Log')) {
@@ -27,6 +27,20 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		}
 		Zend_Registry::set('logger', $this->logger);
 	}
+
+
+	/**
+	 * Autoloading
+	 */
+	protected function _initApplicationAutoloading() {
+		$this->logger->debug('_initApplicationAutoloading');
+		$resourceLoader = $this->getResourceLoader();
+		$resourceLoader->addResourceTypes(array(
+		            'objects' => array(
+		                'namespace' => 'Object',
+		                'path'      => 'objects')));
+	}
+
 
 	/**
 	 * Init the routing system
@@ -131,19 +145,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Setup the translation with files specific to the app
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/lang/')) {
-			$translations = $this->_addTranslation(array(
-			CUSTOM_APPLICATION_PATH.'/lang'
-			), $translate);
+			$translations = $this->_addTranslation(array(CUSTOM_APPLICATION_PATH.'/lang'), $translate);
 		}
 
 		// Set the locale
-		// TODO: check if still needed (It's may be already done by zend_Locale...)
-		/*$browserLocales = Zend_Locale::getBrowser();
-		$locales = array_intersect(array_keys($browserLocales), array_keys($translations));
-		if (!empty($locales)) {
-			$locale = new Zend_Locale(current($locales));
-		}*/
-		switch($locale->getLanguage()){
+		switch ($locale->getLanguage()) {
 			case 'fr' : $locale = 'fr';break;
 			case 'fr_FR' : $locale = 'fr';break;
 			case 'en' : $locale = 'en';break;
@@ -157,7 +163,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$translate->setLocale($locale);
 		Zend_Registry::set('Zend_Translate', $translate); // store in the registry for the view helper
 		Zend_Validate_Abstract::setDefaultTranslator($translate); // use the translator for validation
-		
+
 	}
 
 	/**
@@ -241,8 +247,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			$user = $userSession->user;
 
 			if (empty($user)) {
-				$userModel = new Application_Model_DbTable_Website_User();
-				$roleModel = new Application_Model_DbTable_Website_Role();
+				$userModel = new Application_Model_Website_User();
+				$roleModel = new Application_Model_Website_Role();
 				// Get the user informations
 				$user = $userModel->getUser($configuration->defaultUser);
 

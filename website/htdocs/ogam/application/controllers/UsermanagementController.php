@@ -24,9 +24,9 @@ class UsermanagementController extends AbstractOGAMController {
 		$websiteSession->moduleURL = "usermanagement";
 
 		// Initialise the models
-		$this->metadataModel = new Genapp_Model_DbTable_Metadata_Metadata();
-		$this->userModel = new Application_Model_DbTable_Website_User();
-		$this->roleModel = new Application_Model_DbTable_Website_Role();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->userModel = new Application_Model_Website_User();
+		$this->roleModel = new Application_Model_Website_Role();
 	}
 
 	/**
@@ -105,44 +105,44 @@ class UsermanagementController extends AbstractOGAMController {
 		//
 		// Add the user name element
 		//
-		$username = $form->createElement('text', 'username');
-		$username->setLabel('User Name');
-		$username->setRequired(true);
+		$usernameElem = $form->createElement('text', 'username');
+		$usernameElem->setLabel('User Name');
+		$usernameElem->setRequired(true);
 		if ($user != null) {
-			$username->setValue($user->username);
+			$usernameElem->setValue($user->username);
 		}
 
 		//
 		// Add the country element
 		//
-		$countryCode = $form->createElement('select', 'countryCode');
-		$countryCode->setLabel('Country Code');
-		$countryCode->setRequired(true);
+		$providerIdElem = $form->createElement('select', 'providerId');
+		$providerIdElem->setLabel('Provider');
+		$providerIdElem->setRequired(true);
 		if ($user != null) {
-			$countryCode->setValue($user->countryCode);
+			$providerIdElem->setValue($user->providerId);
 		}
-		$countries = $this->metadataModel->getModes('COUNTRY_CODE');
+		$providers = $this->metadataModel->getModes('PROVIDER_ID');
 
-		$countryCode->addMultiOptions($countries);
+		$providerIdElem->addMultiOptions($providers);
 
 		//
 		// Add the email element
 		//
-		$email = $form->createElement('text', 'email');
-		$email->setLabel('Email');
+		$emailElem = $form->createElement('text', 'email');
+		$emailElem->setLabel('Email');
 		if ($user != null && $user->email != null) {
-			$email->setValue($user->email);
+			$emailElem->setValue($user->email);
 		}
-		$email->addValidator('EmailAddress');
+		$emailElem->addValidator('EmailAddress');
 
 		//
 		// Add the role element
 		//
-		$roleCodeForm = $form->createElement('select', 'roleCode');
-		$roleCodeForm->setLabel('Role');
-		$roleCodeForm->setRequired(true);
+		$roleCodeElem = $form->createElement('select', 'roleCode');
+		$roleCodeElem->setLabel('Role');
+		$roleCodeElem->setRequired(true);
 		if ($role != null) {
-			$roleCodeForm->setValue($role->roleCode);
+			$roleCodeElem->setValue($role->roleCode);
 		}
 		// Add the list of available roles
 		$rolesList = $this->roleModel->getRoles();
@@ -150,7 +150,7 @@ class UsermanagementController extends AbstractOGAMController {
 		foreach ($rolesList as $roleItem) {
 			$multi[$roleItem->roleCode] = $roleItem->roleLabel;
 		}
-		$roleCodeForm->addMultiOptions($multi);
+		$roleCodeElem->addMultiOptions($multi);
 
 		//
 		// Create the submit button
@@ -170,10 +170,10 @@ class UsermanagementController extends AbstractOGAMController {
 			$form->addElement($password);
 			$form->addElement($confirmPassword);
 		}
-		$form->addElement($username);
-		$form->addElement($countryCode);
-		$form->addElement($email);
-		$form->addElement($roleCodeForm);
+		$form->addElement($usernameElem);
+		$form->addElement($providerIdElem);
+		$form->addElement($emailElem);
+		$form->addElement($roleCodeElem);
 		$form->addElement($modeElement);
 		$form->addElement($submitElement);
 
@@ -336,7 +336,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$f = new Zend_Filter_StripTags();
 			$userLogin = $f->filter($values['login']);
 			$userName = $f->filter($values['username']);
-			$countryCode = $f->filter($values['countryCode']);
+			$providerId = $f->filter($values['providerId']);
 			$email = $f->filter($values['email']);
 			$roleCode = $f->filter($values['roleCode']);
 			if ($mode == 'create') {
@@ -351,10 +351,10 @@ class UsermanagementController extends AbstractOGAMController {
 			$this->logger->debug('userName : '.$userName);
 
 			// Build the user
-			$user = new Application_Model_Website_User();
+			$user = new Application_Object_Website_User();
 			$user->login = $userLogin;
 			$user->username = $userName;
-			$user->countryCode = $countryCode;
+			$user->providerId = $providerId;
 			$user->email = $email;
 
 			if ($mode == 'edit') {
@@ -478,16 +478,14 @@ class UsermanagementController extends AbstractOGAMController {
 			$roleCode = $f->filter($values['roleCode']);
 			$roleLabel = $f->filter($values['roleLabel']);
 			$roleDefinition = $f->filter($values['roleDefinition']);
-			$isEuropeLevel = $f->filter($values['isEuropeLevel']);
 			$rolepermissions = $values['rolepermissions'];
 
 			// Build the user
-			$role = new Application_Model_Website_Role();
+			$role = new Application_Object_Website_Role();
 			$role->roleCode = $roleCode;
 			$role->roleLabel = $roleLabel;
 			$role->roleDefinition = $roleDefinition;
-			$role->isEuropeLevel = $isEuropeLevel;
-
+		
 			if ($mode == 'edit') {
 				//
 				// EDIT the role
@@ -541,13 +539,13 @@ class UsermanagementController extends AbstractOGAMController {
 		// Get the list of users
 		$users = $this->userModel->getUsers();
 
-		// Get the list of countries
-		$countries = $this->metadataModel->getModes('COUNTRY_CODE');
+		// Get the list of providers
+		$providers = $this->metadataModel->getModes('PROVIDER_ID');
 
 		$this->logger->debug('users : '.$users);
 
 		$this->view->users = $users;
-		$this->view->countries = $countries;
+		$this->view->providers = $providers;
 
 		return $this->render('show-users');
 

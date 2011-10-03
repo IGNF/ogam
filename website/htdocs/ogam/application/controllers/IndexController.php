@@ -7,10 +7,6 @@
 /**
  * IndexController is the default controller for this application
  *
- * Notice that we do not have to require 'Zend/Controller/Action.php', this
- * is because our application is using "autoloading" in the bootstrap.
- *
- * @see http://framework.zend.com/manual/en/zend.loader.html#zend.loader.load.autoload
  * @package controllers
  */
 class IndexController extends Zend_Controller_Action {

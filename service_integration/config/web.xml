@@ -9,17 +9,17 @@
 
 	<servlet>
 		<servlet-name>MetadataServlet</servlet-name>
-		<servlet-class>fr.ifn.eforest.integration.servlet.MetadataServlet</servlet-class>
+		<servlet-class>fr.ifn.ogam.integration.servlet.MetadataServlet</servlet-class>
 	</servlet>
 
 	<servlet>
 		<servlet-name>DataServlet</servlet-name>
-		<servlet-class>fr.ifn.eforest.integration.servlet.DataServlet</servlet-class>
+		<servlet-class>fr.ifn.ogam.integration.servlet.DataServlet</servlet-class>
 	</servlet>
 	
 	<servlet>
 		<servlet-name>CheckServlet</servlet-name>
-		<servlet-class>fr.ifn.eforest.integration.servlet.CheckServlet</servlet-class>
+		<servlet-class>fr.ifn.ogam.integration.servlet.CheckServlet</servlet-class>
 	</servlet>
 	
 	

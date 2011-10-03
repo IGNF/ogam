@@ -3,7 +3,6 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once APPLICATION_PATH.'/models/abstract_service/AbstractService.php';
 
 /**
  * This is a model allowing to access the integration service via HTTP calls.

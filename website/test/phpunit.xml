@@ -1,0 +1,23 @@
+<phpunit bootstrap="./test/application/Bootstrap.php" colors="true">
+
+    <testsuite name="OGAMTestSuite">
+        <directory>./test/application/</directory>
+    </testsuite>
+    
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./test/application/</directory>
+            <exclude>
+                <file>./test/application/Bootstrap.php</file>
+                <directory suffix=".phtml">./test/application/</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="junit" target="./hudson/junit/junit.xml"/>
+        <log type="coverage-xml" target="./hudson/junit/coverage.xml" />
+        <log type="coverage-html" target="./hudson/junit/coverage" />
+    </logging>  
+           
+</phpunit>

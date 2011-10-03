@@ -171,10 +171,12 @@ Check data;Vérifier les données
 Show report;Afficher le rapport
 Validate data;Valider la soumission
 Cancel Submission;Annuler la soumission
+Confirm submission;Confirmer la soumission
+Confirm_submission_warning;Une fois validées, les données seront disponibles pour la suite des traitements. Voulez-vous confirmer ?
 Submit;Valider
 Error;Erreur
-The expected fields are:;Les champs attendus sont :
-
+The expected fields are:;Les champs attendus sont : 
+Are you sure?;Etes-vous sur ?
 
 ﻿##########################
 #  Data harmonization    #
@@ -193,3 +195,28 @@ Confirm harmonization;Attention, les données de ce fournisseur vont être suppr
 Check result;Résultat de la vérification
 PHP Parameters;Paramètres PHP
 Error: %value% minimum;Erreur: %value% minimum
+
+
+##########################
+#  User Management       #
+##########################
+User Management Module;Administration des utilisateurs
+Show the users;Afficher les utilisateurs
+Show the roles;Afficher les rôles
+Change Password;Changer de mot de passe
+Create Role;Créer un rôle
+Create User;Créer un utilisateur
+Edit Role;Editer un rôle
+Edit User;Editer un utilisateur
+Roles;Rôles
+Users;Utilisateurs
+User Login;Login
+User Name;Nom
+Provider;Fournisseur
+Email;Email
+Role;Rôle
+Delete;Supprimer
+Edit;Editer
+Code;Code
+Label;Libellé
+Definition;Définition
