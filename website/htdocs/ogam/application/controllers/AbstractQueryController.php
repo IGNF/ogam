@@ -473,13 +473,26 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 				// Retrive the session-stored info
 				$resultColumns = $websiteSession->resultColumns; // array of TableField
 
-				// Prepare the needed traductions
+				// Prepare the needed traductions and the form info
 				$traductions = array();
 				foreach ($resultColumns as $tableField) {
-					if ($tableField->type == "CODE") {
-						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
+
+					$key = strtolower($tableField->format.'__'.$tableField->data);
+
+					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
+						if ($tableField->subtype == "DYNAMIC") {
+							$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
+						} else if ($tableField->subtype == "TREE") {
+							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
+						} else {
+							$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
+						}
 					}
+
+					// Get the full description of the form field
+					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
 				}
+				
 				// Display the default message
 				$this->_print('// *************************************************'."\n");
 				$this->_print('// Data Export'."\n");
@@ -519,8 +532,6 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 				$finished = false;
 				while (!$finished) {
 
-					// Pb with memory limit, with PHP 5.2 we don't have a garbage collector
-
 					// Define the position of the cursor in the dataset
 					$offset = " OFFSET ".($page * $maxLines)." ";
 
@@ -535,13 +546,39 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 
 							$key = strtolower($tableField->format.'__'.$tableField->data);
 							$value = $line[$key];
+							$formField = $formFields[$key];
 
-							if ($tableField->type == "CODE" && $value != "") {
-								// Manage code traduction
-								$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
-								$this->_print('"'.$label.'";');
+							if ($value == null) {
+								$this->_print(';');
 							} else {
-								$this->_print('"'.($value == null ? '' : $value).'";');
+								if ($tableField->type == "CODE") {
+									// Manage code traduction
+									$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+									$this->_print('"'.$label.'";');
+								} else if ($tableField->type == "ARRAY") {
+									// Split the array items
+									$arrayValues = explode(",", ereg_replace("[{-}]", "", $value));
+									$label = '';
+									foreach ($arrayValues as $arrayValue) {
+										$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
+										$label .= ',';
+									}
+									if ($label != '') {
+										$label = substr($label, 0, -1);
+									}
+									$label = '['.$label.']';
+									$this->_print('"'.$label.'";');
+
+								} else if ($formField->inputType == "NUMERIC") {
+									// Numeric value
+									if ($formField->decimals != null && $formField->decimals != "") {
+										$value = number_format($value, $formField->decimals);
+									}
+									$this->_print($value.';');
+								} else {
+									// Dafault case : String value
+									$this->_print('"'.$value.'";');
+								}
 							}
 						}
 						$this->_print("\n");

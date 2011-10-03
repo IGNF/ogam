@@ -394,13 +394,16 @@ class Genapp_Service_QueryService {
 			// Prepare the needed traductions
 			$traductions = array();
 			foreach ($resultColumns as $tableField) {
+				
+				$key = strtolower($tableField->format.'__'.$tableField->data);
+				
 				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 					if ($tableField->subtype == "DYNAMIC") {
-						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getDynamodes($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
 					} else if ($tableField->subtype == "TREE") {
-						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getTreeLabels($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
 					} else {
-						$traductions[strtolower($tableField->format.'__'.$tableField->data)] = $this->metadataModel->getModes($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
 					}
 				}
 			}
