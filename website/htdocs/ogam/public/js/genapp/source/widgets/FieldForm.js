@@ -153,7 +153,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 },
                 scope: this
             },
-            items:  this.getDefaultCriteriaConfig(),
+            items:  this.getFilledCriteriaConfig(),
             tbar: [
                 {
                     // Filler
@@ -315,30 +315,48 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
                 var defaultValue = record.data.default_value;
                 if(!Ext.isEmpty(defaultValue)){
                     var defaultValues = defaultValue.split(';'),
-                        criteriaValuesEmpty = Ext.isEmpty(this.form.criteriaValues),
                         i;
                     for (i = 0; i < defaultValues.length; i++) {
                         // clone the object
                         var newRecord = record.copy();
-                        if(criteriaValuesEmpty){
-                            newRecord.data.default_value = defaultValues[i];
-                        }else{
-                            var fieldValues = this.form.criteriaValues['criteria__'+newRecord.data.name];
-                            if(!Ext.isEmpty(fieldValues)){
-                                if(Ext.isArray(fieldValues)){
-                                    newRecord.data.default_value = fieldValues[i];
-                                }else{
-                                    newRecord.data.default_value = fieldValues;
-                                }
-                            }else{
-                                newRecord.data.default_value = defaultValues[i];
-                            }
-                        }
+                        newRecord.data.default_value = defaultValues[i];
                         this.items.push(this.form.getCriteriaConfig(newRecord.data, false));
                     }
                 } else {
                     this.items.push(this.form.getCriteriaConfig(record.data));
                 }
+            }
+        },{form:this, items:items});
+        return items;
+    },
+
+    /**
+     * Construct the filled criteria
+     * @return {Array} An array of the filled criteria config
+     */
+    getFilledCriteriaConfig : function() {
+        var items = [];
+        this.criteriaDS.each(function(record){
+            // Check if there are some criteriaValues from the predefined request page
+            if(!Ext.isEmpty(this.criteriaValues)){
+                var fieldValues = this.criteriaValues['criteria__'+newRecord.data.name], i;
+                // Check if there are some criteriaValues for this criteria
+                if(!Ext.isEmpty(fieldValues)){
+                    // Transform fieldValues in array if needed
+                    if(!Ext.isArray(fieldValues)){
+                        fieldValues = [fieldValues];
+                    }
+                    // Duplicate the criteria if the field have multiple values
+                    for (i = 0; i < fieldValues.length; i++) {
+                        var newRecord = record.copy();
+                        newRecord.data.default_value = fieldValues[i];
+                        this.items.push(this.form.getDefaultCriteriaConfig(newRecord.data, false));
+                    }
+                } else { // There are no criteriaValues for this criteria
+                    this.items.push(this.form.getDefaultCriteriaConfig(record.data, false));
+                }
+            } else { // There are no criteriaValues from the predefined request page
+                this.items.push(this.form.getDefaultCriteriaConfig(record.data, false));
             }
         },{form:this, items:items});
         return items;
