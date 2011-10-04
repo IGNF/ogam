@@ -2,11 +2,13 @@
 
     <testsuite name="OGAMTestSuite">
         <directory>./test/application/</directory>
+        <directory>./test/library/Genapp/</directory>
     </testsuite>
     
     <filter>
         <whitelist>
             <directory suffix=".php">./test/application/</directory>
+            <directory suffix=".php">./test/library/Genapp/</directory>
             <exclude>
                 <file>./test/application/Bootstrap.php</file>
                 <directory suffix=".phtml">./test/application/</directory>

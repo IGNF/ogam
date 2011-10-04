@@ -1,5 +1,4 @@
 <?php
-
 // ------------------------------------------ //
 //    Redefine parameters from index.php      //
 // ------------------------------------------ //
@@ -20,10 +19,10 @@ define('APPLICATION_LOG_PATH', './htdocs/logs');
 // Include the original application bootstrap //
 // ------------------------------------------ //
 include APPLICATION_PATH.'/../public/setup.php';
-include APPLICATION_PATH.'/Bootstrap.php';
 
-$frontController = Zend_Controller_Front::getInstance();
-$frontController->setParam('noErrorHandler', TRUE); // Desactivate the error handler 
+require_once 'Zend/Application.php';
+
+$application = new Zend_Application(APPLICATION_ENV, $ApplicationConf);
 
 
 
