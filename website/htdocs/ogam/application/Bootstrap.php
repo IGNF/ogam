@@ -194,8 +194,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * Define few constants
 	 */
 	protected function _initConstants() {
-		define('DPI', '72'); // Default number of dots per inch in mapserv
-		define('FACTOR', '39370.1'); // Inch to meter conversion factor
+		if (!defined('DPI')) {
+			define('DPI', '72'); // Default number of dots per inch in mapserv
+			define('FACTOR', '39370.1'); // Inch to meter conversion factor
+		}
 	}
 
 	/**
