@@ -306,7 +306,7 @@
 	<target name="_phpunitunix" depends="_targetCheck" if="isUnix">
 		<echo>Unix</echo>
 		<chmod file="./test/runTests.sh" perm="ugo+rx" />
-		<exec executable="./tests/runTests.sh" dir=".">
+		<exec executable="./test/runTests.sh" dir=".">
 			<arg value="${libraries.dir}/PHPUnit/phpunit.php" />
 		</exec>
 	</target>
