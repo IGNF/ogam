@@ -226,7 +226,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$db = $this->getAdapter();
 
 		// Get the request
-		$req = " SELECT format, data, value, fixed, input_type, type, subtype, data.unit, data.label, data.definition";
+		$req = " SELECT format, data, value, fixed, type, subtype, data.unit, data.label, data.definition, form_field.*";
 		$req .= " FROM predefined_request_criteria";
 		$req .= " JOIN form_field using (data, format)";
 		$req .= " JOIN data using (data)";
@@ -245,16 +245,25 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 			$field->format = $result['format'];
 			$field->data = $result['data'];
 			$field->unit = $result['unit'];
-			$field->value = $result['value'];
 			$field->fixed = $result['fixed'];
 			$field->inputType = $result['input_type'];
 			$field->type = $result['type'];
 			$field->subtype = $result['subtype'];
 			$field->label = $result['label'];
 			$field->definition = $result['definition'];
-
+			$field->isCriteria = 1; // a predefined field is always a criteria
+			$field->isResult = $result['is_result'];
+			$field->isDefaultResult = $result['is_default_result'];
+			$field->isDefaultCriteria = 1; // a predefined field is always a default criteria
+			$field->value = $result['value'];
+			$field->defaultValue = $result['value'];
+			$field->decimals = $result['decimals'];
+			$field->mask = $result['mask'];
+						
 			$criteriaList[$field->format.'__'.$field->data] = $field;
 		}
+		
+		$this->logger->info('getPredefinedRequestCriteria $criteriaList : '.print_r($criteriaList,true));
 
 		return $criteriaList;
 	}

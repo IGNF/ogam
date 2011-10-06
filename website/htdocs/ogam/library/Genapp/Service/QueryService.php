@@ -766,7 +766,7 @@ class Genapp_Service_QueryService {
 		foreach ($predefinedRequestCriterias as $criteria) {
 
 			$json .= '{';
-			$json .= $criteria->toJSON();
+			$json .= $criteria->toCriteriaJSON();
 
 			// add some specific options
 			if ($criteria->type == "CODE") {
@@ -774,7 +774,7 @@ class Genapp_Service_QueryService {
 				if ($criteria->subtype == "MODE") {
 					// For MODE subtypes we get the list of values
 					$options = $this->metadataModel->getModes($criteria->unit);
-					$json .= ',{"options":[';
+					$json .= ',"params":{"options":[';
 					foreach ($options as $code => $label) {
 						$json .= '['.json_encode($code).','.json_encode($label).'],';
 					}
@@ -785,7 +785,7 @@ class Genapp_Service_QueryService {
 			} else if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
 				// For the RANGE field, get the min and max values
 				$range = $this->metadataModel->getRange($criteria->data);
-				$json .= ',{"min":'.$range->min.',"max":'.$range->max.'}';
+				$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
 			} else {
 				$json .= ',{}'; // no options
 			}

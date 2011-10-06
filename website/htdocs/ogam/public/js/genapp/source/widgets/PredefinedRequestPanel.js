@@ -472,20 +472,20 @@ listeners: {
                         idProperty:'name',
                         fields:[
                                 {name:'name',mapping:'name'},
-                                {name:'format',mapping:'format'},
-                                {name:'data',mapping:'data'},
-                                {name:'default_value',mapping:'default_value'},
-                                {name:'fixed',mapping:'fixed'},
+                                {name:'label',mapping:'label'},
                                 {name:'inputType',mapping:'inputType'},  
+                                {name:'unit',mapping:'unit'},
                                 {name:'type',mapping:'type'},
                                 {name:'subtype',mapping:'subtype'},
-                                {name:'label',mapping:'label'},
-                                {name:'definition',mapping:'definition'}
+                                {name:'definition',mapping:'definition'},
+                                {name:'is_default',mapping:'is_default'},
+                                {name:'default_value',mapping:'default_value'},
+                                {name:'decimals',mapping:'decimals'},
+                                {name:'params',mapping:'params'}
                             ]
                     });
                     console.log(Ext.decode(response.responseText));
                     var result = myReader.readRecords(Ext.decode(response.responseText));
-                    console.log("result :"+result);
                     var requestCriteriaPanel = new Ext.form.FormPanel({
                         itemId: rec.data.request_name,
                         labelWidth: 130,
@@ -515,7 +515,7 @@ listeners: {
                 failure: function(response, opts) {
                     console.log('Request failure: ' + response.statusText);
                     console.log('Response:', response, 'Options:', opts);
-                    this.requestCriteriaCardPanel.getLayout().setActiveItem(1);
+                    this.requestCriteriaCardPanel.getLayout().setActiveItem(1); 
                 },
                 params: { request_name: rec.data.request_name },
                 scope:this
