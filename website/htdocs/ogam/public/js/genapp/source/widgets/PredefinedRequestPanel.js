@@ -461,28 +461,31 @@ listeners: {
     onGridRowSelect : function(sm, row, rec) {
         this.requestCriteriaCardPanel.setTitle('');
         this.requestCriteriaCardPanelFooterTBar.hide();
-        this.requestCriteriaCardPanel.getLayout().setActiveItem(0);
+        this.requestCriteriaCardPanel.getLayout().setActiveItem(0); // display "loading ..."
         if(Ext.isEmpty(this.requestCriteriaCardPanel.getComponent(rec.data.request_name))){
             Ext.Ajax.request({
                 url: Genapp.ajax_query_url + 'ajaxgetpredefinedrequestcriteria',
                 success: function(response, opts) {
                     var i;
-                    var myReader = new Ext.data.ArrayReader({
+                    var myReader = new Ext.data.JsonReader({
                         root:'criteria',
+                        idProperty:'name',
                         fields:[
-                            'name',
-                            'format',
-                            'data',
-                            'default_value', // value
-                            'fixed',
-                            'inputType',
-                            'type',
-                            'label',
-                            'definition',
-                            'params'
-                        ]
+                                {name:'name',mapping:'name'},
+                                {name:'format',mapping:'format'},
+                                {name:'data',mapping:'data'},
+                                {name:'default_value',mapping:'default_value'},
+                                {name:'fixed',mapping:'fixed'},
+                                {name:'inputType',mapping:'inputType'},  
+                                {name:'type',mapping:'type'},
+                                {name:'subtype',mapping:'subtype'},
+                                {name:'label',mapping:'label'},
+                                {name:'definition',mapping:'definition'}
+                            ]
                     });
+                    console.log(Ext.decode(response.responseText));
                     var result = myReader.readRecords(Ext.decode(response.responseText));
+                    console.log("result :"+result);
                     var requestCriteriaPanel = new Ext.form.FormPanel({
                         itemId: rec.data.request_name,
                         labelWidth: 130,

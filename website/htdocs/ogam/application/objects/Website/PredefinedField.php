@@ -46,6 +46,12 @@ class Application_Object_Website_PredefinedField {
 	 * The type of the data (CODE, STRING, RANGE, ...)
 	 */
 	var $type;
+	
+	
+	/**
+	 * The subtype of the data (for a CODE, can be DYNAMIC, TREE or MODE ...)
+	 */
+	var $subtype;
 
 	/**
 	 * The label.
@@ -65,15 +71,16 @@ class Application_Object_Website_PredefinedField {
 	 */
 	function toJSON() {
 
-		$json = json_encode($this->format."__".$this->data); // name
-		$json .= ','.json_encode($this->format);
-		$json .= ','.json_encode($this->data);
-		$json .= ','.json_encode($this->value);
-		$json .= ','.json_encode($this->fixed);
-		$json .= ','.json_encode($this->inputType);
-		$json .= ','.json_encode($this->type);
-		$json .= ','.json_encode($this->label);
-		$json .= ','.json_encode($this->definition);
+		$json = '"name":'.json_encode($this->format."_".$this->data); // name
+		$json .= ',"format":'.json_encode($this->format);
+		$json .= ',"data":'.json_encode($this->data);
+		$json .= ',"default_value":'.json_encode($this->value);
+		$json .= ',"fixed":'.json_encode($this->fixed);
+		$json .= ',"inputType":'.json_encode($this->inputType);
+		$json .= ',"type":'.json_encode($this->type);
+		$json .= ',"subtype":'.json_encode($this->subtype);
+		$json .= ',"label":'.json_encode($this->label);
+		$json .= ',"definition":'.json_encode($this->definition);
 
 		return $json;
 	}

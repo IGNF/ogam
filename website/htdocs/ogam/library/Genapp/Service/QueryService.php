@@ -765,14 +765,14 @@ class Genapp_Service_QueryService {
 
 		foreach ($predefinedRequestCriterias as $criteria) {
 
-			$json .= '[';
+			$json .= '{';
 			$json .= $criteria->toJSON();
 
 			// add some specific options
 			if ($criteria->type == "CODE") {
 
 				if ($criteria->subtype == "MODE") {
-
+					// For MODE subtypes we get the list of values
 					$options = $this->metadataModel->getModes($criteria->unit);
 					$json .= ',{"options":[';
 					foreach ($options as $code => $label) {
@@ -790,7 +790,7 @@ class Genapp_Service_QueryService {
 				$json .= ',{}'; // no options
 			}
 
-			$json .= '],';
+			$json .= '},';
 		}
 
 		if ($total != 0) {
