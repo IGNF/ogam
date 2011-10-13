@@ -81,6 +81,7 @@ class IntegrationController extends AbstractOGAMController {
 		foreach ($requests as $request) {
 			$datasetIds[$request['id']] = $request['label'];
 		}
+		$requestElement->setDisableTranslator(true); // disable translation
 		$requestElement->addMultiOptions($datasetIds);
 
 		//
@@ -149,6 +150,7 @@ class IntegrationController extends AbstractOGAMController {
 			}
 
 			$fileelement->setDescription($fieldsDesc);
+			$fileelement->setDisableTranslator(true); // disable translation
 			$fileelement->addDecorator('Description', array('escape' => false));
 			$fileelement->addValidator('Count', false, 1); // ensure only 1 file
 			$fileelement->addValidator('Size', false, $this->fileMaxSize * 1024 * 1000); // limit to 40 Mo
