@@ -41,6 +41,8 @@ Genapp.buildApplication = function(config){
     Ext.Ajax.timeout = 30000;
 
     Genapp.cardPanel = new Genapp.CardPanel(config);
+    
+    Genapp.hidePinButton = false;
 
     if(Genapp.config.historicActivated){
         // The only requirement for this to work is that you must have a hidden field and

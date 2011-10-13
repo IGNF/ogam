@@ -22,5 +22,7 @@ Genapp.configure = function() {
 			hideSeeChildrenButton : true
 		});
 	}
+	
+	Genapp.hidePinButton = false;
 }
 // ogam

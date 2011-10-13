@@ -848,19 +848,10 @@ listeners: {
         );
 
         this.queryPanelPinned = true;
-
-        var queryPanelConfig = {
-            region :'west',
-            title :this.queryPanelTitle,
-            collapsible : true,
-            margins:'0 5 0 0',
-            titleCollapse : true,
-            width :this.queryPanelWidth,
-            frame:true,
-            layout:'border',
-            cls: 'genapp_query_panel',
-            items : [ this.datasetPanel, this.formsPanel ],
-            tools:[{
+        
+        var tools = null; 
+        if (!Genapp.hidePinButton) {
+        	tools = [{
                 id:'pin',
                 qtip: this.queryPanelPinToolQtip,
                 hidden:true,
@@ -879,7 +870,21 @@ listeners: {
                     this.queryPanelPinned = false;
                 },
                 scope:this
-            }],
+            }]
+        };
+
+        var queryPanelConfig = {
+            region :'west',
+            title :this.queryPanelTitle,
+            collapsible : true,
+            margins:'0 5 0 0',
+            titleCollapse : true,
+            width :this.queryPanelWidth,
+            frame:true,
+            layout:'border',
+            cls: 'genapp_query_panel',
+            items : [ this.datasetPanel, this.formsPanel ],
+            tools:tools,
             bbar: [{
                 xtype: 'tbbutton',
                 text: this.queryPanelCancelButtonText,
@@ -968,6 +973,32 @@ listeners: {
         });
 
         this.detailsPanelPinned = true;
+        
+        
+        var tools = null;
+        if (!Genapp.hidePinButton) {
+	        	tools = [{
+	            id:'pin',
+	            qtip: this.detailsPanelCtPinToolQtip,
+	            hidden:true,
+	            handler: function(event, toolEl, panel){
+	                toolEl.hide();
+	                panel.header.child('.x-tool-unpin').show();
+	                this.detailsPanelPinned = true;
+	            },
+	            scope:this
+	        },{
+	            id:'unpin',
+	            qtip: this.detailsPanelCtUnpinToolQtip,
+	            handler: function(event, toolEl, panel){
+	                toolEl.hide();
+	                panel.header.child('.x-tool-pin').show();
+	                this.detailsPanelPinned = false;
+	            },
+	            scope:this
+	        }];
+        };
+        
         /**
          * The details panel container.
          * @property detailsPanelCt
@@ -985,26 +1016,7 @@ listeners: {
             titleCollapse : true,
             collapsed:true,
             items: this.detailsPanel,
-            tools:[{
-                id:'pin',
-                qtip: this.detailsPanelCtPinToolQtip,
-                hidden:true,
-                handler: function(event, toolEl, panel){
-                    toolEl.hide();
-                    panel.header.child('.x-tool-unpin').show();
-                    this.detailsPanelPinned = true;
-                },
-                scope:this
-            },{
-                id:'unpin',
-                qtip: this.detailsPanelCtUnpinToolQtip,
-                handler: function(event, toolEl, panel){
-                    toolEl.hide();
-                    panel.header.child('.x-tool-pin').show();
-                    this.detailsPanelPinned = false;
-                },
-                scope:this
-            }],
+            tools:tools,
             listeners:{
                 // Collapse the layersAndLegendsPanel on expand event
                 expand:function(){
