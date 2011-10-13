@@ -65,7 +65,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					$controllerName = strtolower($controllerName);
 					$this->logger->debug("Adding custom controller : ".$controllerName);
 					$customRoute = new Zend_Controller_Router_Route($controllerName.'/:action', array('module' => 'custom', 'controller' => $controllerName));
-					$router->addRoute('customQuery'.$controllerName, $customRoute);
+					$router->addRoute('customRoute_'.$controllerName, $customRoute);
 				}
 			}
 		}
