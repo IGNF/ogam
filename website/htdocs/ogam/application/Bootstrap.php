@@ -50,8 +50,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Vérifie que le contrôleur frontal est bien présent, et le récupère
 		$this->bootstrap('FrontController');
+		$this->bootstrap('Router');
+		
 		$front = $this->getResource('FrontController');
-
 		$router = $front->getRouter();
 
 		// Si un controleur existe dans custom alors on le prend en priorité à la place de default
@@ -64,7 +65,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					$controllerName = substr($file, 0, stripos($file, 'Controller.php'));
 					$controllerName = strtolower($controllerName);
 					$this->logger->debug("Adding custom controller : ".$controllerName);
-					$customRoute = new Zend_Controller_Router_Route($controllerName.'/:action', array('module' => 'custom', 'controller' => $controllerName));
+					$customRoute = new Zend_Controller_Router_Route("/".$controllerName.'/:action', array('module' => 'custom', 'controller' => $controllerName));
 					$router->addRoute('customRoute_'.$controllerName, $customRoute);
 				}
 			}
