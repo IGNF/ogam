@@ -11,11 +11,11 @@ DELETE FROM predefined_request_result;
 DELETE FROM predefined_request;
 
 -- Création d'un thème (groupe de requêtes)
-INSERT INTO predefined_request_group(group_name, label, definition, position) VALUES ('SPECIES', 'Map of distribution by species', 'Map of distribution by species', 1);
+INSERT INTO predefined_request_group(group_name, label, definition, position) VALUES ('SPECIES', 'Distribution par espèce', 'Distribution par espèce', 1);
 
 -- Création d'une requête prédéfinie
-INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('SPECIES', 'RAW_DATA', 'SPECIES', 'Map of distribution by species', 'Distribution of a given specie in forest plots', now());
-INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('DEP', 'RAW_DATA', 'SPECIES', 'Species by departement', 'Species by departement', now());
+INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('SPECIES', 'RAW_DATA', 'SPECIES', 'Distribution par espèce', 'Distribution par espèce en forêt', now());
+INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('DEP', 'RAW_DATA', 'SPECIES', 'Espèces par département', 'Espèces par département', now());
 
 
 -- Configuration des requêtes prédéfinies
