@@ -136,6 +136,8 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 	/**
 	 * Get the unit modes from a tree.
+	 * 
+	 * Return a hierarchy of nodes
 	 *
 	 * @param String $unit The unit
 	 * @param String $parentcode The identifier of the start node in the tree (by default the root node is *)
@@ -149,7 +151,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= "		FROM mode_tree ";
 		$req .= "		WHERE unit = ? ";
 		$req .= "		AND parent_code = ? ";
-		$req .= "	UNION ";
+		$req .= "	UNION ALL ";
 		$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
 		$req .= "		FROM mode_tree child ";
 		$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
@@ -161,15 +163,25 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= "	FROM node_list ";
 		$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
 
-		$this->logger->info('getTreeModes : '.$unit.' '.$parentcode.' '.$req);
+		$this->logger->info('getTreeModes : '.$unit.' '.$parentcode);
+		$this->logger->info('getTreeModes : '.$req);
 
 		$select = $db->prepare($req);
+		
+		$this->logger->info('Avant execute');
+		
 		$select->execute(array($unit, $parentcode));
+		
+		$this->logger->info('Après execute');
+		
 
 		$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
 		foreach ($select->fetchAll() as $row) {
-
+			
 			$parentCode = $row['parent_code'];
+			
+			$this->logger->info('getTreeModes : '.$parentCode);		
+				
 
 			//Build the new node
 			$tree = new Genapp_Object_Metadata_TreeNode();
@@ -180,12 +192,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			// Check if a parent can be found in the structure
 			$parentNode = $resultTree->getNode($parentCode);
 			if ($parentNode == null) {
-
 				// Add the new node to the result root
 				$resultTree->addChild($tree);
 
 			} else {
-
 				// Add it to the found parent
 				$parentNode->addChild($tree);
 
@@ -198,6 +208,8 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 	/**
 	 * Get all the children codes from a node of a tree.
+	 * 
+	 * Return an array of codes.
 	 *
 	 * @param String $unit The unit
 	 * @param String $code The identifier of the start node in the tree (by default the root node is *)
@@ -212,7 +224,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= "		FROM mode_tree ";
 		$req .= "		WHERE unit = ? ";
 		$req .= "		AND code = ? ";
-		$req .= "	UNION ";
+		$req .= "	UNION ALL ";
 		$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
 		$req .= "		FROM mode_tree child ";
 		$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
