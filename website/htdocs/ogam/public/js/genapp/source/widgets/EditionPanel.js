@@ -73,24 +73,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
      *      </p>
      */
     ref : 'editionPage',
-
-    width : 500,
-    height : 500,
-    
-    /**
-     * @cfg {Ext.form.FormPanel} inner form panel
-     */ 
-    
-    
-    items: [{
-        fieldLabel: 'First Name',
-        name: 'first',
-        allowBlank:false
-    }],
+    padding: 20,
+    autoScroll :true,
 
     // private
-    initComponent : function() {
-
+    initComponent : function () {
         /**
          * The form fields Data Store.
          * 
@@ -98,7 +85,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
          * @type Ext.data.JsonStore
          */
         this.formDS = new Ext.data.JsonStore({
-            url: Genapp.base_url + 'dataedition/ajaxgeteditform/SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA/PROVIDER_ID/1/PLOT_CODE/21573-F1000-6-6T/CYCLE/5/SPECIES_CODE/031.001.041',
+            url: Genapp.base_url + 'dataedition/ajaxgeteditform/SCHEMA/RAW_DATA/FORMAT/FICHE_OBSERVATION_DATA/PROVIDER_ID/1/PLOT_CODE/000020/ID_OBSERVATION/1',
             method: 'POST',
             autoLoad: true,
             fields:[
@@ -116,226 +103,63 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
                     {name:'editable',mapping:'editable'},       // is the field editable?
                     {name:'params',mapping:'params'} // reserved for min/max or list of codes
                 ],
-            idProperty : 'name',                
+            idProperty : 'name',
             listeners : {
                 'load': {
                     fn : function(store, records, options) {
-                         var i;
+                         var i, formItems = [];
                          for(i = 0; i<records.length; i++){
                             //alert(records[i].data);
                             //this.getEditFormConfig(records[i].data.id);
-                            }
+                             formItems.push(Genapp.FieldForm.prototype.getCriteriaConfig(records[i].data, true));
+                         }
+                         this.slipFS.add(formItems);
+                         this.slipFS.doLayout();
                         }
                     },
                     scope :this
                 }
             
         });
-        
-        /*var formPanel = new Ext.form.Panel({
-            
+
+        this.headerPanel = new Ext.BoxComponent({html:this.contentTitle});
+        this.messagePanel = new Ext.BoxComponent({html:this.message, cls:'message'});
+        this.parentsFS = new Ext.form.FieldSet({
+            title: '&nbsp;Parents Summary&nbsp;',
+            html:this.parentsLinks
+        });
+        this.slipFS = new Ext.form.FieldSet({
             url:'save-form.php',
-            frame:true,
-            title: 'Simple Form',
-            bodyStyle:'padding:5px 5px 0',
-            width: 350,
-            fieldDefaults: {
-                msgTarget: 'side',
-                labelWidth: 75
-            },
-            defaultType: 'textfield',
+            title: '&nbsp;' + this.dataTitle + '&nbsp;',
+            labelWidth: 150,
             defaults: {
-                anchor: '100%'
+                msgTarget: 'side',
+                width: 250
             },
-
-            items: [{
-                fieldLabel: 'First Name',
-                name: 'first',
-                allowBlank:false
-            },{
-                fieldLabel: 'Last Name',
-                name: 'last'
-            },{
-                fieldLabel: 'Company',
-                name: 'company'
-            }, {
-                fieldLabel: 'Email',
-                name: 'email',
-                vtype:'email'
-            }, {
-                xtype: 'timefield',
-                fieldLabel: 'Time',
-                name: 'time',
-                minValue: '8:00am',
-                maxValue: '6:00pm'
-            }],
-
+            buttonAlign : 'center',
             buttons: [{
-                text: 'Save'
+                text: 'Supprimer',
+                disabled: this.disableDeleteButton,
+                tooltip: this.deleteButtonTooltip
             },{
-                text: 'Cancel'
+                text: 'Valider'
             }]
-        });*/
-        
-    
-        
-        Genapp.EditionPanel.superclass.initComponent.call(this);
-    },
-    
-    
-    
-     /**
-     * Construct a edition form from the record.
-     * 
-     * @param {Ext.data.Record} record The form field to add
-     */
-    getEditFormConfig : function(record){
-     
-        var field = {};
-        field.name = record.name;
-
-        // Creates the ext field config
-        switch(record.inputType){
-            case 'SELECT':  // The input type SELECT correspond generally to a data type CODE
-                field.xtype = 'combo';
-                field.itemCls = 'trigger-field'; // For IE7 layout
-                field.hiddenName = field.name;
-                field.triggerAction = 'all';
-                field.typeAhead = true;
-                field.mode = 'local';
-                field.displayField = 'label';
-                field.valueField  = 'code';
-                field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
-                field.disableKeyFilter = true;
-                if (record.subtype === 'DYNAMIC') {
-                    field.store = new Ext.data.JsonStore({
-                        autoLoad: true,  
-                        root: 'codes',
-                        fields:[
-                                {name:'code',mapping:'code'},
-                                {name:'label',mapping:'label'}
-                                ],
-                        url: 'ajaxgetdynamiccodes/unit/'+record.unit
-                    });
-                } else {
-                    field.store = new Ext.data.ArrayStore({
-                        fields:['code','label'],
-                        data : record.params.options
-                    });
-                }
-                break;
-            case 'MULTIPLE':  // The input type MULTIPLE correspond generally to a data type ARRAY
-                field.xtype = 'combo';
-                field.itemCls = 'trigger-field'; // For IE7 layout
-                field.hiddenName = field.name;
-                field.triggerAction = 'all';
-                field.typeAhead = true;
-                field.mode = 'local';
-                field.displayField = 'label';
-                field.valueField  = 'code';
-                field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
-                field.disableKeyFilter = true;
-                if (record.subtype ==='DYNAMIC') {
-                    field.store = new Ext.data.JsonStore({
-                        autoLoad: true,  
-                        root: 'codes',
-                        fields:[
-                                {name:'code',mapping:'code'},
-                                {name:'label',mapping:'label'}
-                                ],
-                        url: 'ajaxgetdynamiccodes/unit/'+record.unit
-                    });
-                } else {
-                    field.store = new Ext.data.ArrayStore({
-                        fields:['code','label'],
-                        data : record.params.options
-                    });
-                }
-                break;
-            case 'DATE': // The input type DATE correspond generally to a data type DATE
-                field.xtype = 'daterangefield';
-                field.itemCls = 'trigger-field'; // For IE7 layout
-                field.format = Genapp.FieldForm.prototype.dateFormat;
-                break;
-            case 'NUMERIC': // The input type NUMERIC correspond generally to a data type NUMERIC or RANGE
-                field.xtype = 'numberrangefield';
-                field.itemCls = 'trigger-field'; // For IE7 layout
-                // If RANGE we set the min and max values
-                if (record.type === 'RANGE') {
-                    field.minValue = record.params.min;
-                    field.maxValue = record.params.max;
-                }
-                // IF INTEGER we remove the decimals
-                if (record.type === 'INTEGER') {
-                    field.allowDecimals = false;
-                    field.decimalPrecision = 0;
-                }
-                break;
-            case 'CHECKBOX':
-                 field.xtype = 'switch_checkbox';
-                 field.ctCls = 'improvedCheckbox';
-                 switch(record.default_value){
-                     case 1:
-                     case '1':
-                     case true:
-                     case 'true':
-                         field.inputValue = '1';
-                         break;
-                     default:
-                         field.inputValue = '0';
-                     break;
-                 }
-                 //field.boxLabel = record.label;
-                 break;
-            case 'RADIO':
-            case 'TEXT':
-                switch(record.type){
-                    // TODO : BOOLEAN, COORDINATE
-                    case 'INTEGER':
-                        field.xtype  = 'numberfield';
-                        field.allowDecimals = false;
-                        break;
-                    case 'NUMERIC':
-                        field.xtype  = 'numberfield';
-                        break;
-                    default : // STRING
-                        field.xtype  = 'textfield';
-                        break;
-                }
-                break;
-            case 'GEOM':
-                field.xtype = 'geometryfield';
-                field.itemCls = 'trigger-field'; // For IE7 layout
-                break;
-            case 'TREE': 
-                
-                // Add a Tree View
-                field.xtype = 'treeselectfield';
-                field.enableDD = false; //  drag and drop
-                field.animate = true; 
-                field.border = false;
-                field.rootVisible = false;
-                field.useArrows = true;
-                field.autoScroll = true;
-                field.containerScroll = true;
-                field.frame = false;
-                field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/1';  // TODO change depth depending on level
-                field.root = {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}; // root is always '*'                
-                               
-                
-                
-                break;    
-            default: 
-                field.xtype  = 'field';
-            break;
+        });
+        var childrenItems = [];
+        for(var i in this.childrenConfigOptions){
+            if (typeof this.childrenConfigOptions[i] !== 'function') {
+                childrenItems.push(new Ext.form.FieldSet(this.childrenConfigOptions[i]));
+            }
         }
-       
-        field.value = record.value;
-        field.fieldLabel = record.label;
+        this.childrenFS = new Ext.form.FieldSet({
+            title: '&nbsp;Children Summary&nbsp;',
+            items:childrenItems
+        });
         
-        return field;
+        this.items = [this.headerPanel, this.parentsFS, this.slipFS, this.childrenFS];
+
+        Genapp.EditionPanel.superclass.initComponent.call(this);
     }
-}
-);
+});
 
 Ext.reg('editionpage', Genapp.EditionPanel);

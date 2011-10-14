@@ -4,19 +4,34 @@
  * @package views
  */
 ?>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/adapter/ext/ext-base.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all-debug.js') ?>"></script>
+
 <!-- Production mode start
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/genapp.pack-min.js') ?>"></script>
 < Production mode end --> 
 
 <!-- Debug mode start -->
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/EditionPanel.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/EditionFormPanel.js') ?>"></script>
+
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/FieldForm.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/CardPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/DateRangeField.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/NumberRangeField.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/TwinNumberField.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/GeometryField.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/TreeField.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/menu/NumberRangeMenu.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/menu/DateRangeMenu.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/menu/TreeMenu.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/picker/NumberRangePicker.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/picker/DateRangePicker.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/picker/TreePicker.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/basiccheckbox/BasicCheckBox.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/datePatch/datePatchExtjs3.1.1.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/EditionPanel.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/EditionFormPanel.js') ?>"></script>
+
 <!-- Debug mode end -->
 
 <!-- Translations -->
@@ -38,47 +53,89 @@
 
 <script type="text/javascript">
     Ext.onReady(function(){
-    	Genapp.base_url = "<?= $this->baseUrl(); ?>/";
+        Genapp.base_url = "<?= $this->baseUrl(); ?>/";
+        Genapp.ajax_query_url = "<?= $this->baseUrl('dataedition') ?>/";
+        if (Genapp.CardPanel) {
+            Ext.apply(Genapp.CardPanel.prototype, {
+                shownPages : [ 'editionpage' ],
+                activeItem : 0,
+                widthToSubstract : 100, // 2*50 of margin 
+                heightToSubstract : 160 // 120 of header + 30 of footer
+            });
+        }
+        if (Genapp.EditionPanel) {
+            Ext.apply(Genapp.EditionPanel.prototype, 
+                <?php
+                    $patch = array();
+                    // message
+                    if (!empty($this->message)) {
+                        $patch['message'] = $this->message;
+                    }
+                    // contentTitle
+                    if ($this->mode == 'ADD') {
+                        $patch['contentTitle'] = '<h1>Add '. $this->escape($this->tableFormat->label) . '</h1>';
+                    } else {
+                        $patch['contentTitle'] = '<h1>Edit '. $this->escape($this->tableFormat->label) . '</h1>';
+                    }
+                    // parentsLinks
+                    $ancestors = array_reverse($this->ancestors);
+                    $parentsLinks = '';
+                    foreach ($ancestors as $ancestor) {
+                        $parentsLinks .= $this->generateEditLink($ancestor) . "<br/>";
+                    }
+                    if ($parentsLinks !== '') {
+                        $patch['parentsLinks'] = $parentsLinks;
+                    }
+                    // dataTitle
+                    $patch['dataTitle'] =  $this->escape($this->tableFormat->label);
+                    // disableDeleteButton & deleteButtonTooltip
+                    if (empty($this->children)) {
+                        // If the item has no child we can delete it
+                        $patch['disableDeleteButton'] = false;
+                        $patch['deleteButtonTooltip'] = 'Delete the data';
+                        //$this->generateDeleteLink($this->data);
+                    } else {
+                        $patch['disableDeleteButton'] = true;
+                        $patch['deleteButtonTooltip'] = 'Delete the data (not available because of children)';
+                    }
+                    // childrenConfigOptions
+                    if (!empty($this->children)) {
+                        // Iterate though the child tables
+                        $childrenConfigOptions = array();
+                        foreach ($this->children as $childFormat => $childrenLines) {
+                            $configOptions = array();
+                            $configOptions['buttonAlign'] = 'center';
+                            $configOptions['title'] = $this->escape($this->childrenTableLabels[$childFormat]);
 
-    	// Add the local class to the body
-        Ext.getBody().addClass(Genapp.config.localCls);
+                            // Add the edit links for each child of the current item
+                            $content = '';
+                            foreach ($childrenLines as $child) {
+                                $content .= $this->generateEditLink($child)."<br/>";
+                            }
+                            if ($content !== '') {
+                                $configOptions['html'] = $content;
+                            }
 
-        // Activate the tooltips system
-        // Init the singleton.  Any tag-based quick tips will start working.
-        Ext.QuickTips.init();
+                            // Add link to a new child
+                            //$data = clone $this->data;
+                            //$data->tableFormat->format = $childFormat;
+                            //echo $this->generateAddLink($data, $this->childrenTableLabels[$childFormat])."<br/>";
+                            $configOptions['buttons'] = array(array(
+                                'text' => 'Add a new child',
+                                'tooltip' => 'Add a new child'
+                            ));
 
-        // Apply a set of config properties to the singleton
-        Ext.apply(Ext.QuickTips.getQuickTip(), {
-            showDelay: 250,
-            dismissDelay: 0,
-            trackMouse: true
-        });
+                            array_push($childrenConfigOptions, $configOptions);
+                        }
+                        $patch['childrenConfigOptions'] = $childrenConfigOptions;
+                    }
+                    echo json_encode($patch);
+                ?>
+            );
+        }
+        Genapp.buildApplication();
 
-        // Turn on validation errors beside the field globally
-        Ext.form.Field.prototype.msgTarget = 'qtip'; // The side option poses problems rendering in IE7
-
-        // Set the form label separator
-        Ext.layout.FormLayout.prototype.labelSeparator = ' :';
-
-        // Set the blank image to a local one
-        Ext.BLANK_IMAGE_URL = Genapp.base_url + "img/s.gif";
-        
-        // Set the default timeout for AJAX calls
-        // The JS timeout must be inferior or equal to the PHP execution time to avoid the not catchable php timeout fatal error
-        Ext.Ajax.timeout = 30000;
-
-        Genapp.editionPanel = new Genapp.EditionPanel();
-        
-	    var win = new Ext.Window({
-	           width:500,
-	           id:'win',
-	           height:500,
-	           title:'Edit data',
-	           items:[Genapp.editionPanel]
-	       });
-	       win.show();
-
-    	
+        Genapp.cardPanel.on('resizewrapper',Genapp.util.resizeWrapper);
     });
 </script>
 
@@ -89,91 +146,3 @@
     <input type="hidden" id="x-history-field" />
     <iframe id="x-history-frame"></iframe>
 </form>
-
-
-
-
-<h1>
-<?php
-if ($this->mode == 'ADD') {
-	echo 'Add '.$this->tableFormat->label;
-} else {
-	echo 'Edit '.$this->tableFormat->label;
-}
-?>
-</h1>
-
-
-<!-- Rappel des infos sur les tables parentes -->
-<!-- Lien pour l'édition des tables parents -->
-<fieldset>
-<legend>Parents summary</legend>
-<?php
-$ancestors = array_reverse($this->ancestors);
-foreach ($ancestors as $ancestor) {
-	echo $this->generateEditLink($ancestor)."<br/>";
-}
-
-?>
-</fieldset>
-
-<div class="select-dataset-form">
-
-<!-- Affichage du formulaire d'édition -->
-<!--  Les élements faisant partie de la clé sont grisés -->
-<!--  Les autres valeurs sont éditables -->
-<fieldset>
-<legend><?= $this->tableFormat->label; ?></legend>
-<?= $this->form ?>
-</fieldset>
-
-
-
-<!-- Affichage les tables enfant (uniquement les valeurs de la clé) -->
-<!-- Lien vers l'édition d'un enfant existant -->
-<!-- Lien pour l'ajout d'un nouvel enfant -->
-<?php
-if (!empty($this->children)) {
-?>
-<fieldset>
-<legend>Children summary</legend>
-<?php
-	// Iterate though the child tables
-	foreach ($this->children as $childFormat => $childrenLines) {
-
-		echo "<fieldset><legend>".$this->childrenTableLabels[$childFormat]."</legend>";
-
-		// Add the edit links for each child of the current item
-		foreach ($childrenLines as $child) {
-			echo $this->generateEditLink($child)."<br/>";
-		}
-
-		// Add link to a new child
-		$data = clone $this->data;
-		$data->tableFormat->format = $childFormat;
-		echo $this->generateAddLink($data, $this->childrenTableLabels[$childFormat])."<br/>";
-
-		echo "</fieldset>";
-	}
-?>
-</fieldset>
-<?php } ?>
-
-</div>
-
-<br/>
-<?php
-
-if (empty($this->children)) {
-	// If the item has no child we can delete it
-	echo $this->generateDeleteLink($this->data);
-} else {
-	echo '<img src="'.$this->baseUrl('img/bin.gif').'" /> Delete data (not available because of children)';
-}
-
-?>
-
-
-<div class="message">
-<?= $this->message ?>
-</div>

@@ -77,6 +77,7 @@ Genapp.CardPanel = Ext.extend(Ext.TabPanel, {
      * 'predefinedrequestpage'
      * 'consultationpage'
      * 'docsearchpage'
+     * 'editionpage'
      */
     shownPages: ['predefinedrequestpage', 'consultationpage', 'docsearchpage'],
 
