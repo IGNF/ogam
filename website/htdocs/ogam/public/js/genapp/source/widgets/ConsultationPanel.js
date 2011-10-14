@@ -1066,6 +1066,32 @@ listeners: {
         });
 
         this.featuresInformationPanelPinned = true;
+        
+        var tools = null;
+        if (!Genapp.hidePinButton) {
+		    tools = [{
+	            id:'pin',
+	            qtip: this.featuresInformationPanelCtPinToolQtip,
+	            hidden:true,
+	            handler: function(event, toolEl, panel){
+	                toolEl.hide();
+	                panel.header.child('.x-tool-unpin').show();
+	                this.featuresInformationPanelPinned = true;
+	            },
+	            scope:this
+	        },{
+	            id:'unpin',
+	            qtip: this.featuresInformationPanelCtUnpinToolQtip,
+	            handler: function(event, toolEl, panel){
+	                toolEl.hide();
+	                panel.header.child('.x-tool-pin').show();
+	                this.featuresInformationPanelPinned = false;
+	            },
+	            scope:this
+	        }];
+        }
+        
+        
         /**
          * The features Information panel container.
          * @property featuresInformationPanelCt
@@ -1082,26 +1108,7 @@ listeners: {
             titleCollapse : true,
             collapsed:true,
             items: this.featuresInformationPanel,
-            tools:[{
-                id:'pin',
-                qtip: this.featuresInformationPanelCtPinToolQtip,
-                hidden:true,
-                handler: function(event, toolEl, panel){
-                    toolEl.hide();
-                    panel.header.child('.x-tool-unpin').show();
-                    this.featuresInformationPanelPinned = true;
-                },
-                scope:this
-            },{
-                id:'unpin',
-                qtip: this.featuresInformationPanelCtUnpinToolQtip,
-                handler: function(event, toolEl, panel){
-                    toolEl.hide();
-                    panel.header.child('.x-tool-pin').show();
-                    this.featuresInformationPanelPinned = false;
-                },
-                scope:this
-            }]
+            tools:tools
         });
         
         var centerPanelCtItems = [this.centerPanel];
