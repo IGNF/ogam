@@ -168,13 +168,8 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$select = $db->prepare($req);
 		
-		$this->logger->info('Avant execute');
-		
 		$select->execute(array($unit, $parentcode));
 		
-		$this->logger->info('Après execute');
-		
-
 		$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
 		foreach ($select->fetchAll() as $row) {
 			
