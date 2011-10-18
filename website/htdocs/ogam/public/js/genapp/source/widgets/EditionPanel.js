@@ -277,10 +277,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	    }
 	    
 	    if(!Ext.isEmpty(record.definition)){
-	    	field.tooltip = {
-	    			tip:record.definition,
-	    			width: 150
-	    	}
+	    	field.tooltip = record.definition;
+	    	// see http://www.rowlandsgroup.com/blog/tooltips-form-fields
+	    	// http://www.sencha.com/forum/showthread.php?28293-Tooltip-not-getting-displayed-FormPanel
 	    }
 	    
 	    field.fieldLabel = record.label;
