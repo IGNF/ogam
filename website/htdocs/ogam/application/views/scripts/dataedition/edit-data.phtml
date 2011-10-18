@@ -30,7 +30,6 @@
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/basiccheckbox/BasicCheckBox.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/datePatch/datePatchExtjs3.1.1.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/EditionPanel.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/EditionFormPanel.js') ?>"></script>
 
 <!-- Debug mode end -->
 
@@ -67,6 +66,10 @@
             Ext.apply(Genapp.EditionPanel.prototype, 
                 <?php
                     $patch = array();
+                    
+                    // unique identifier of the data
+                    $patch['dataId'] = $this->dataId;
+                    
                     // message
                     if (!empty($this->message)) {
                         $patch['message'] = $this->message;

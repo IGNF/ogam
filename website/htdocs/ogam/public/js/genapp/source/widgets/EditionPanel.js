@@ -59,6 +59,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
      *      </p>
      */
     id : 'edition_panel',
+    
+    /**
+     * @cfg {String} dataId Unique identifier of the data bieing edited.
+     */
+    dataId : '',
 
     /**
      * @cfg {String} ref
@@ -85,7 +90,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
          * @type Ext.data.JsonStore
          */
         this.formDS = new Ext.data.JsonStore({
-            url: Genapp.base_url + 'dataedition/ajaxgeteditform/SCHEMA/RAW_DATA/FORMAT/FICHE_OBSERVATION_DATA/PROVIDER_ID/1/PLOT_CODE/000020/ID_OBSERVATION/1',
+            url: Genapp.base_url + 'dataedition/ajaxgeteditform/'+ this.dataId,
             method: 'POST',
             autoLoad: true,
             fields:[

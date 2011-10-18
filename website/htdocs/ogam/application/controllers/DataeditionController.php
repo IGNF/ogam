@@ -343,7 +343,8 @@ class DataEditionController extends AbstractOGAMController {
 		$websiteSession->children = $children;
 
 		// Generate dynamically the corresponding form
-		$this->view->form = $this->_getEditDataForm($data, $mode);
+		//$this->view->form = $this->_getEditDataForm($data, $mode);
+		$this->view->dataId = $this->genericService->getIdFromData($data);
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->data = $data;
 		$this->view->ancestors = $ancestors;
@@ -523,7 +524,8 @@ class DataEditionController extends AbstractOGAMController {
 		$websiteSession->ancestors = $ancestors;
 
 		// Generate dynamically the corresponding form
-		$this->view->form = $this->_getEditDataForm($data, $mode);
+		//$this->view->form = $this->_getEditDataForm($data, $mode);
+		$this->view->dataId = $this->genericService->getIdFromData($data);
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->ancestors = $ancestors;
 		$this->view->data = $data;
