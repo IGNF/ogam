@@ -9,6 +9,8 @@ abstract class ControllerTestCase extends Zend_Test_PHPUnit_ControllerTestCase
 {
 	protected $application;
 
+	protected $logger;
+
 	/**
 	 * Set up the test case.
 	 *
@@ -22,11 +24,13 @@ abstract class ControllerTestCase extends Zend_Test_PHPUnit_ControllerTestCase
 			APPLICATION_PATH . '/configs/application.ini'
 			);
 			$this->application->bootstrap();
-			 
+
 			$bootstrap = $this->application->getBootstrap();
 			$front = $bootstrap->getResource('FrontController');
 			$front->setParam('bootstrap', $bootstrap);
 		}
+
+		$this->logger = Zend_Registry::get("logger");
 
 	}
 
