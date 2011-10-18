@@ -116,7 +116,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
                          for(i = 0; i<records.length; i++){
                             //alert(records[i].data);
                             //this.getEditFormConfig(records[i].data.id);
-                             formItems.push(Genapp.FieldForm.prototype.getCriteriaConfig(records[i].data, true));
+                             formItems.push(this.getCriteriaConfig(records[i].data, true));
                          }
                          this.slipFS.add(formItems);
                          this.slipFS.doLayout();
@@ -164,7 +164,155 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
         this.items = [this.headerPanel, this.parentsFS, this.slipFS, this.childrenFS];
 
         Genapp.EditionPanel.superclass.initComponent.call(this);
-    }
+    },
+
+
+	/**
+	 * Construct a FieldForm from the record
+	 * @param {Ext.data.Record} record The criteria combobox record to add
+	 * @param {Boolean} hideBin True to hide the bin
+	 * @hide
+	 */
+	getCriteriaConfig : function(record, hideBin){
+	    var field = {};
+	    field.name = 'criteria__' + record.name;
+	
+	    // Creates the ext field config
+	    switch(record.inputType){
+	        case 'SELECT':  // The input type SELECT correspond generally to a data type CODE
+	            field.xtype = 'combo';
+	            field.itemCls = 'trigger-field'; // For IE7 layout
+	            field.hiddenName = field.name;
+	            field.triggerAction = 'all';
+	            field.typeAhead = true;
+	            field.displayField = 'label';
+	            field.valueField  = 'code';
+	            field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
+	            if (record.subtype === 'DYNAMIC') {
+	                 field.mode = 'remote';
+	                 field.store = new Ext.data.JsonStore({
+	                    root: 'codes',
+	                    idProperty: 'code',
+	                    fields:[
+	                        {name:'code',mapping:'code'},
+	                        {name:'label',mapping:'label'}
+	                    ],
+	                    url: 'ajaxgetdynamiccodes',
+	                    baseParams:{'unit':record.unit}
+	                });
+	            } else {
+	                field.mode = 'local';
+	                field.store = new Ext.data.ArrayStore({
+	                    fields:['code','label'],
+	                    data : record.params.options
+	                });
+	            }
+	            break;
+	        case 'DATE': // The input type DATE correspond generally to a data type DATE
+	            field.xtype = 'daterangefield';
+	            field.itemCls = 'trigger-field'; // For IE7 layout
+	            field.format = Genapp.FieldForm.prototype.dateFormat;
+	            break;
+	        case 'NUMERIC': // The input type NUMERIC correspond generally to a data type NUMERIC or RANGE
+	            field.xtype = 'numberrangefield';
+	            field.itemCls = 'trigger-field'; // For IE7 layout
+	            // If RANGE we set the min and max values
+	            if (record.subtype==='RANGE') {
+	                field.minValue = record.params.min;
+	                field.maxValue = record.params.max; 
+	                field.decimalPrecision = (record.params.decimals == null) ?  20 : record.params.decimals;
+	            }
+	            // IF INTEGER we remove the decimals
+	            if (record.subtype==='INTEGER') {
+	                field.allowDecimals = false;
+	                field.decimalPrecision = 0;
+	            }
+	            break;
+	        case 'CHECKBOX':
+	             field.xtype = 'switch_checkbox';
+	             field.ctCls = 'improvedCheckbox';
+	             switch(record.default_value){
+	                 case 1:
+	                 case '1':
+	                 case true:
+	                 case 'true':
+	                     field.inputValue = '1';
+	                     break;
+	                 default:
+	                     field.inputValue = '0';
+	                 break;
+	             }
+	             //field.boxLabel = record.label;
+	             break;
+	        case 'RADIO':
+	        case 'TEXT':
+	            switch(record.subtype){
+	                // TODO : BOOLEAN, COORDINATE
+	                case 'INTEGER':
+	                    field.xtype  = 'numberfield';
+	                    field.allowDecimals = false;
+	                    break;
+	                case 'NUMERIC':
+	                    field.xtype  = 'numberfield';
+	                    break;
+	                default : // STRING
+	                    field.xtype  = 'textfield';
+	                    break;
+	            }
+	            break;
+	        case 'GEOM':
+	            field.xtype = 'geometryfield';
+	            field.itemCls = 'trigger-field'; // For IE7 layout
+	            break;
+	        case 'TREE':
+	            field.xtype = 'treefield';
+	            field.dataUrl = 'ajaxgettreenodes/unit/'+record.unit+'/depth/1';  // TODO change depth depending on level
+	            break;
+	        default: 
+	            field.xtype  = 'field';
+	        break;
+	    }
+	    if(!Ext.isEmpty(record.value)){
+	        field.value = record.value;
+	    }
+	    if(!Ext.isEmpty(record.fixed)){
+	        field.disabled = record.fixed;
+	    }
+	    field.fieldLabel = record.label;
+	
+	    if (!hideBin) {
+	        field.listeners = {
+	            'render':function(cmp){
+	                // Add the bin
+	                var binCt = Ext.get('x-form-el-' + cmp.id).parent();
+	                var labelDiv = binCt.child('.x-form-item-label');
+	                labelDiv.set({
+	                    'ext:qtitle':record.label,
+	                    'ext:qwidth':200,
+	                    'ext:qtip':record.definition
+	                });
+	                labelDiv.addClass('labelNextBin');
+	                var binDiv = binCt.createChild({
+	                    tag: "div",
+	                    cls: "filterBin"
+	                }, labelDiv);
+	                binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
+	                binDiv.on(
+	                    'click',
+	                    function(event,el,options){
+	                        cmp.ownerCt.remove(cmp);
+	                    },
+	                    this,
+	                    {
+	                        single:true
+	                    }
+	                );
+	            },
+	            scope:this
+	        };
+	    }
+	    return field;
+	}
 });
 
 Ext.reg('editionpage', Genapp.EditionPanel);

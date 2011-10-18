@@ -480,7 +480,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 
     /**
      * Construct a criteria from the record
-     * @param {Ext.data.Record} record The criteria combobox record to add
+     * @param {Ext.data.Record} record The criteria combobox record to add. A serialized FormField object.
      * @param {Boolean} hideBin True to hide the bin
      * @hide
      */
