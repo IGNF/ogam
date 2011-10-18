@@ -426,7 +426,7 @@ class Genapp_Service_QueryService {
 						$json .= json_encode($label == null ? '' : $label).',';
 					} else if ($tableField->type == "ARRAY" && $value != "") {
 						// Split the array items
-						$arrayValues = explode(",", ereg_replace("[{-}]", "", $value));
+						$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 						$label = '';
 						foreach ($arrayValues as $arrayValue) {
 							$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
@@ -709,7 +709,7 @@ class Genapp_Service_QueryService {
 		// Add the children
 		$json = "";
 		if (!empty($children)) {
-			foreach ($children as $format => $listChild) {
+			foreach ($children as $listChild) {
 				$json .= $this->genericService->dataToGridDetailJSON($id, $listChild);
 			}
 		} else {
