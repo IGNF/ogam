@@ -115,8 +115,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
                          var i, formItems = [];
                          for(i = 0; i<records.length; i++){
                             //alert(records[i].data);
-                            //this.getEditFormConfig(records[i].data.id);
-                             formItems.push(this.getCriteriaConfig(records[i].data, true));
+                             formItems.push(this.getFieldConfig(records[i].data, true));
                          }
                          this.slipFS.add(formItems);
                          this.slipFS.doLayout();
@@ -173,9 +172,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * @param {Boolean} hideBin True to hide the bin
 	 * @hide
 	 */
-	getCriteriaConfig : function(record, hideBin){
+	getFieldConfig : function(record, hideBin){
 	    var field = {};
-	    field.name = 'criteria__' + record.name;
+	    field.name = record.name;
 	
 	    // Creates the ext field config
 	    switch(record.inputType){
@@ -209,17 +208,15 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	            }
 	            break;
 	        case 'DATE': // The input type DATE correspond generally to a data type DATE
-	            field.xtype = 'daterangefield';
+	            field.xtype = 'datefield';
 	            field.itemCls = 'trigger-field'; // For IE7 layout
 	            field.format = Genapp.FieldForm.prototype.dateFormat;
 	            break;
 	        case 'NUMERIC': // The input type NUMERIC correspond generally to a data type NUMERIC or RANGE
-	            field.xtype = 'numberrangefield';
+	            field.xtype = 'numberfield';
 	            field.itemCls = 'trigger-field'; // For IE7 layout
 	            // If RANGE we set the min and max values
 	            if (record.subtype==='RANGE') {
-	                field.minValue = record.params.min;
-	                field.maxValue = record.params.max; 
 	                field.decimalPrecision = (record.params.decimals == null) ?  20 : record.params.decimals;
 	            }
 	            // IF INTEGER we remove the decimals
@@ -275,42 +272,19 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	    if(!Ext.isEmpty(record.value)){
 	        field.value = record.value;
 	    }
-	    if(!Ext.isEmpty(record.fixed)){
-	        field.disabled = record.fixed;
+	    if(!Ext.isEmpty(record.editable)){
+	        field.disabled = record.editable;
 	    }
+	    
+	    if(!Ext.isEmpty(record.definition)){
+	    	field.tooltip = {
+	    			tip:record.definition,
+	    			width: 150
+	    	}
+	    }
+	    
 	    field.fieldLabel = record.label;
-	
-	    if (!hideBin) {
-	        field.listeners = {
-	            'render':function(cmp){
-	                // Add the bin
-	                var binCt = Ext.get('x-form-el-' + cmp.id).parent();
-	                var labelDiv = binCt.child('.x-form-item-label');
-	                labelDiv.set({
-	                    'ext:qtitle':record.label,
-	                    'ext:qwidth':200,
-	                    'ext:qtip':record.definition
-	                });
-	                labelDiv.addClass('labelNextBin');
-	                var binDiv = binCt.createChild({
-	                    tag: "div",
-	                    cls: "filterBin"
-	                }, labelDiv);
-	                binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
-	                binDiv.on(
-	                    'click',
-	                    function(event,el,options){
-	                        cmp.ownerCt.remove(cmp);
-	                    },
-	                    this,
-	                    {
-	                        single:true
-	                    }
-	                );
-	            },
-	            scope:this
-	        };
-	    }
+		    
 	    return field;
 	}
 });
