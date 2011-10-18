@@ -189,6 +189,8 @@ public class GenericDAO {
 				throw new CheckException(INVALID_TYPE_FIELD);
 			} else if (SqlStateSQL99.ERRCODE_STRING_DATA_RIGHT_TRUNCATION.equalsIgnoreCase(sqle.getSQLState())) {
 				throw new CheckException(STRING_TOO_LONG);
+			} else if (SqlStateSQL99.ERRCODE_NOT_NULL_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
+				throw new CheckException(MANDATORY_FIELD_MISSING);
 			} else if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				CheckException ce = new CheckException(INTEGRITY_CONSTRAINT);
 				String message = sqle.getMessage();
