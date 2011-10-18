@@ -42,7 +42,7 @@ public class OGAMEmailer {
 			String toMail = parameterDAO.getApplicationParameter("toMail");
 			String fromMail = parameterDAO.getApplicationParameter("fromMail");
 
-			StringBuffer message = new StringBuffer("A new submission has been done on the Eforest web site\n\n");
+			StringBuffer message = new StringBuffer("A new submission has been done on the web site\n\n");
 			message.append("The submission id is: " + submission.getSubmissionId() + "\n");
 
 			try {
