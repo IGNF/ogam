@@ -23,6 +23,20 @@ class CheckconfController extends AbstractOGAMController {
 		$websiteSession->moduleLabel = "Check Configuration";
 		$websiteSession->moduleURL = "checkconf";
 	}
+	
+	/**
+	* Check if the authorization is valid this controler.
+	*/
+	function preDispatch() {
+	
+		parent::preDispatch();
+	
+		$userSession = new Zend_Session_Namespace('user');
+		$permissions = $userSession->permissions;
+		if (empty($permissions) || !array_key_exists('CHECK_CONF', $permissions)) {
+			throw new Zend_Auth_Exception('Permission denied for right : CHECK_CONF');
+		}
+	}
 
 	/**
 	 * The "index" action is the default action for all controllers.

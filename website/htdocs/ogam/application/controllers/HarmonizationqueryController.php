@@ -44,7 +44,7 @@ class HarmonizationQueryController extends AbstractQueryController {
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
 		if (empty($permissions) || !array_key_exists('DATA_QUERY_HARMONIZED', $permissions)) {
-			$this->_redirector->gotoUrl('/');
+			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY_HARMONIZED');
 		}
 	}
 

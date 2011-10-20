@@ -29,7 +29,7 @@ class ProxyController extends AbstractOGAMController {
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
 		if (empty($permissions)) { // user not logged
-			$this->_redirector->gotoUrl('/');
+			throw new Zend_Auth_Exception('User not logged');
 		}
 	}
 

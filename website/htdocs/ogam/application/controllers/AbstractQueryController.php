@@ -78,6 +78,8 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 		return $this->showQueryFormAction();
 	}
 
+
+
 	/**
 	 * Show the main query page.
 	 */
@@ -492,7 +494,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
 				}
-				
+
 				// Display the default message
 				$this->_print('// *************************************************'."\n");
 				$this->_print('// Data Export'."\n");

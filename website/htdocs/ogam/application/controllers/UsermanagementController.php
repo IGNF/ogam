@@ -49,7 +49,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$permissions = $userSession->permissions;
 		$role = $userSession->role;
 		if (empty($permissions) || !array_key_exists('MANAGE_USERS', $permissions)) {
-			$this->_redirector->gotoUrl('/');
+			throw new Zend_Auth_Exception('Permission denied for right : MANAGE_USERS');
 		}
 	}
 

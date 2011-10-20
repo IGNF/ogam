@@ -58,7 +58,7 @@ class DataEditionController extends AbstractOGAMController {
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
 		if (empty($permissions) || !array_key_exists('DATA_EDITION', $permissions)) {
-			$this->_redirector->gotoUrl('/');
+			throw new Zend_Auth_Exception('Permission denied for right : DATA_EDITION');
 		}
 	}
 
