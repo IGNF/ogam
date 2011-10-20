@@ -226,22 +226,23 @@ class Genapp_Service_QueryService {
 		//
 		// The key elements as labels
 		//
-		foreach ($data->editableFields as $tablefield) {
-			$formField = $this->genericService->getTableToFormMapping($tablefield);
-			if (!empty($formField)) {
-				$formField->value = $tablefield->value;
-				$formField->editable = false;
-				$json .= "{".$formField->toEditJSON()."},";
-			}
-		}
-		//
-		// The value elements as edit forms
-		//
 		foreach ($data->infoFields as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield);
 			if (!empty($formField)) {
 				$formField->value = $tablefield->value;
 				$formField->editable = true;
+				$json .= "{".$formField->toEditJSON()."},";
+			}
+		}
+		
+		//
+		// The editable elements as edit forms
+		//
+		foreach ($data->editableFields as $tablefield) {
+			$formField = $this->genericService->getTableToFormMapping($tablefield);
+			if (!empty($formField)) {
+				$formField->value = $tablefield->value;
+				$formField->editable = false;
 				$json .= "{".$formField->toEditJSON()."},";
 			}
 		}
