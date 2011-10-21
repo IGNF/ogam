@@ -53,7 +53,9 @@
 <!-- Translations -->
 <?php $locale = Zend_Registry::get('Zend_Locale'); ?>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/src/locale/ext-lang-'.$locale.'.js') ?>"></script>
+<?php if ($locale != 'en') {?>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/locale/genapp-lang-'.$locale.'.js') ?>"></script>
+<?php }?>
 
 <!-- Conf genapp -->
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp.conf.js') ?>"></script>
