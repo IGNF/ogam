@@ -294,10 +294,11 @@ class Genapp_Service_QueryService {
 
 			// Identify the field carrying the location information
 			$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
-			$locationField = $this->metadataModel->getLocationTableFields($this->schema, array_keys($tables));
+			$locationField = $this->metadataModel->getLocationTableFields($this->schema, array_keys($tables));		
+			$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
 
 			// Run the request to store a temporary result table (for the web mapping)
-			$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField->format, $visualisationSRS);
+			$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
 
 			// Calculate the number of lines of result
 			$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count ".$fromwhere);

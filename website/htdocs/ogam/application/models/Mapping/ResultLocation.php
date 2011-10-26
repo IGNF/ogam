@@ -26,16 +26,34 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $sqlWhere the FROM / WHERE part of the SQL Request
 	 * @param String $sessionId the user session id.
-	 * @param String $locationtable the location table.
+	 * @param TableField $locationField the location field.
+	 * @param TableFormat $locationTable the location table
 	 * @param String $visualisationSRS the projection system used for visualisation.
 	 */
-	public function fillLocationResult($sqlWhere, $sessionId, $locationtable, $visualisationSRS) {
+	public function fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS) {
 		$db = $this->getAdapter();
 		$db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
 
 		if ($sqlWhere != null) {
-			$request = " INSERT INTO result_location (session_id, provider_id, plot_code, the_geom ) ";
-			$request .= " SELECT DISTINCT '".$sessionId."', ".$locationtable.".provider_id, ".$locationtable.".plot_code, st_transform(".$locationtable.".the_geom,".$visualisationSRS.") as the_geom ";
+			$keys = $locationTable->primaryKeys;
+
+				
+			$request = " INSERT INTO result_location (session_id, ";
+			// Ajout des clés primaires 
+			foreach ($keys as $key) {
+				$request .= $key.", ";
+			}
+			$request .= " the_geom ) ";
+
+			$request .= " SELECT DISTINCT '".$sessionId."', ";
+				
+			// Ajout des clés primaires de la table portant l'info géométrique
+			foreach ($keys as $key) {
+				$request .= $locationTable->format.".".$key.", ";
+			}
+				
+			// Ajout de la colonne portant la géométrie
+			$request .= " st_transform(".$locationTable->format.".".$locationField->columnName.",".$visualisationSRS.") as the_geom ";
 			$request .= $sqlWhere;
 
 			$this->logger->info('fillLocationResult : '.$request);
