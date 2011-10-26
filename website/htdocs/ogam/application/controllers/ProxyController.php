@@ -10,6 +10,17 @@ require_once 'AbstractOGAMController.php';
  * @package controllers
  */
 class ProxyController extends AbstractOGAMController {
+	
+	/**
+	* The generic service.
+	*/
+	private $genericService;
+	
+	/**
+	* The models.
+	*/
+	private $metadataModel;
+	private $classDefinitionModel;
 
 	/**
 	 * Initialise the controler
@@ -17,7 +28,12 @@ class ProxyController extends AbstractOGAMController {
 	public function init() {
 		parent::init();
 
+		// Initialise the models
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->classDefinitionModel = new Application_Model_Mapping_ClassDefinition();
+		
+		// The service used to build generic info from the metadata
+		$this->genericService = new Genapp_Service_GenericService();
 	}
 
 	/**
@@ -216,7 +232,7 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Get the country code and the plot code for a given plot location.
+	 * Get the plot location informations from a coordinate.
 	 */
 	function getinfoAction() {
 
@@ -228,8 +244,12 @@ class ProxyController extends AbstractOGAMController {
 		$sessionId = session_id();
 
 		$websiteSession = new Zend_Session_Namespace('website');
-		$locationFormat = $websiteSession->locationFormat; // The format carrying the location info
-		$schema = $websiteSession->schema; // The format carrying the location info
+		$schema = $websiteSession->schema; // the schema used
+		$queryObject = $websiteSession->queryObject; // the last query done
+		
+		$tables = $this->genericService->getAllFormats($schema, $queryObject); // Extract the location table from the last query
+		$locationField = $this->metadataModel->getLocationTableFields($schema, array_keys($tables)); // Extract the location field from the available tables
+		$locationTableInfo = $this->metadataModel->getTableFormat($schema, $locationField->format); // Get info about the location table
 
 		$uri = $this->_extractAfter($uri, "proxy/getInfo?");
 
@@ -247,11 +267,10 @@ class ProxyController extends AbstractOGAMController {
 			fclose($handle);
 		}
 
-		// On parse le résultat (à l'ancienne) et on affiche les données
-
-		// Découpe du bloc display
-		$this->logger->debug('Découpe du bloc display');
-		if (strpos($gml, ":display>")) {
+		// Get the infos to display
+		$this->logger->debug('Get the infos to display');				
+		if (strpos($gml, ":display>")) { // we have at least one plot found
+			
 
 			$dom = new DomDocument();
 			$dom->loadXML($gml);
@@ -260,7 +279,7 @@ class ProxyController extends AbstractOGAMController {
 			$displayNodes = $dom->getElementsByTagName("display");
 
 			// The id is used to avoid to display two time the same result (it's a id for the result dataset)
-			$id = array($schema.$locationFormat);
+			$id = array();
 			// The columns config to setup the grid columnModel
 			$columns = array();
 			// The columns max length to setup the column width
@@ -271,30 +290,38 @@ class ProxyController extends AbstractOGAMController {
 			$locationsData = array();
 			foreach ($displayNodes as $displayIndex => $displayNode) {
 				$locationData = array();
-				// Get the locations ids
+				
 				$params = $this->_getParams($displayNode);
 				$nextNode = $displayNode->nextSibling;
-				// TODO : remove the hard coded keys
-				array_push($id, $params['provider_id'].$params['plot_code']);
-				array_push($locationData, 'SCHEMA/'.$schema.'/FORMAT/'.$locationFormat.'/PROVIDER_ID/'.$params['provider_id'].'/PLOT_CODE/'.$params['plot_code']);
+				
+				// Get the locations identifiers
+				$key = 'SCHEMA/'.$schema.'/FORMAT/'.$locationTableInfo->format;
+				foreach ($locationTableInfo->primaryKeys as $tablePK) {
+					$key .= '/'.strtoupper($tablePK).'/'.$params[strtolower($tablePK)];
+				}				
+				$id[] = $key;
+				$locationData[] = $key;
+				
+				$this->logger->debug('$key : '.$key);
+				
 				// Get the other fields
+				// Other fields are stored in a <ms:display_xxxxxxxxx> bloc of the WFS result
 				while ($nextNode != null) {
 					if ($nextNode->nodeType == XML_ELEMENT_NODE && stripos($nextNode->nodeName, 'display_') !== false) {
 						// Get the params
 						$tableParams = $this->_getParams($nextNode);
 						// Setup the location data and the column max length
 						foreach ($tableParams as $columnName => $value) {
-							array_push($locationData, $value);
+							$locationData[] = $value;
 							if (empty($columnsMaxLength[$columnName])) {
 								$columnsMaxLength[$columnName] = array();
 							}
-							array_push($columnsMaxLength[$columnName], strlen($value));
+							$columnsMaxLength[$columnName][] = strlen($value);
 						}
 						// Setup the fields and columns config
 						if ($displayIndex == ($displayNodes->length - 1)) {
 							// Get the table name
-							$table = substr($nextNode->nodeName, 11);
-							$this->logger->debug('Table name: '.$table);
+							$table = substr($nextNode->nodeName, strlen('ms:display_'));
 							// Get the table format
 							$tableFormat = $metadataModel->getTableFormatFromTableName($schema, $table);
 							$format = $tableFormat->format;
@@ -309,7 +336,7 @@ class ProxyController extends AbstractOGAMController {
 								// Set the column model and the location fields
 								$dataIndex = $tableField->format.'__'.$tableField->data;
 								// Adds the column header to prevent it from being truncated too and 2 for the header margins
-								array_push($columnsMaxLength[$columnName], strlen($tableField->label) + 2);
+								$columnsMaxLength[$columnName][] = strlen($tableField->label) + 2;
 								$column = array(
 									'header' => $tableField->label,
 									'dataIndex' => $dataIndex,
@@ -317,30 +344,30 @@ class ProxyController extends AbstractOGAMController {
 									'tooltip' => $tableField->definition,
 									'width' => max($columnsMaxLength[$columnName]) * 7
 								);
-								array_push($columns, $column);
-								array_push($locationFields, $dataIndex);
+								$columns[] = $column;
+								$locationFields[] = $dataIndex;
 							}
 						}
 					}
 					$nextNode = $nextNode->nextSibling;
 				}
-				array_push($locationsData, $locationData);
+				$locationsData[] = $locationData;
 			}
+			
 			// We must sort the array here because it can't be done
 			// into the mapfile sql request to avoid a lower performance
 			sort($id);
 
 			// Check if the location table has a child table
 			$hasChild = false;
-			$locationTableFormat = $metadataModel->getTableFormat($schema, $locationFormat);
-			$children = $metadataModel->getChildrenTableLabels($locationTableFormat);
+			$children = $metadataModel->getChildrenTableLabels($locationTableInfo);
 			if (!empty($children)) {
 				$hasChild = true;
 			}
 
 			//$this->logger->debug('$locationsData: ' . print_r($locationsData,true));
 
-			echo '{'.'success:true'.', id:'.json_encode(implode('', $id)).', title:'.json_encode($locationTableFormat->label.' ('.count($locationsData).')').', hasChild:'.json_encode($hasChild).', columns:'.json_encode($columns).', fields:'.json_encode($locationFields).', data:'.json_encode($locationsData).'}';
+			echo '{success:true'.', id:'.json_encode(implode('', $id)).', title:'.json_encode($locationTableInfo->label.' ('.count($locationsData).')').', hasChild:'.json_encode($hasChild).', columns:'.json_encode($columns).', fields:'.json_encode($locationFields).', data:'.json_encode($locationsData).'}';
 		} else {
 			echo '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
 		}
@@ -357,15 +384,15 @@ class ProxyController extends AbstractOGAMController {
 	 * @return Array[String => String] The params
 	 */
 	private function _getParams($domNode) {
-		$child = array();
+		$params = array();
 		foreach ($domNode->childNodes as $childNode) {
 			if ($childNode->nodeType == XML_ELEMENT_NODE) {
 				$name = str_replace('ms:', '', $childNode->nodeName);
 				$name = str_replace('myns:', '', $name);
-				$child[$name] = $childNode->nodeValue;
+				$params[$name] = $childNode->nodeValue;
 			}
 		}
-		return $child;
+		return $params;
 	}
 
 	/**

@@ -313,8 +313,7 @@ class Genapp_Service_QueryService {
 			$websiteSession->SQLSelect = $select;
 			$websiteSession->SQLFromWhere = $fromwhere;
 			$websiteSession->queryObject = $queryObject;
-			$websiteSession->count = $countResult[0]['count'];
-			$websiteSession->locationFormat = $locationField->format;
+			$websiteSession->count = $countResult[0]['count']; // result count
 			$websiteSession->schema = $this->schema;
 
 			// Send the result as a JSON String
