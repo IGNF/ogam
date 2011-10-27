@@ -38,6 +38,8 @@ class ProxyController extends AbstractOGAMController {
 
 	/**
 	 * No authorization check.
+	 * 
+	 * @throws Exception when user not loggued.
 	 */
 	function preDispatch() {
 		parent::preDispatch();
@@ -117,7 +119,7 @@ class ProxyController extends AbstractOGAMController {
 			$layerName = $this->_extractParam($uri, "LAYERS");
 
 			if (strpos($layerName, "interpolation") !== FALSE) {
-				$sld = $this->_generateRasterSLD($layerName);
+				$sld = $this->_generateRasterSLD($layerName, 'average_value');
 			} else {
 				$sld = $this->_generateSLD($layerName, 'average_value');
 			}
@@ -509,8 +511,7 @@ class ProxyController extends AbstractOGAMController {
 		$this->logger->debug('_generateSLD : '.$layerName);
 
 		// Define the classes
-		// TODO : Remove the hardcoded reference to BASAL_AREA
-		$classes = $this->classDefinitionModel->getClassDefinition('BASAL_AREA');
+		$classes = $this->classDefinitionModel->getClassDefinition($variableName);
 
 		// Generate the SLD string
 		$sld = '<StyledLayerDescriptor version="1.0.0"';
@@ -567,13 +568,12 @@ class ProxyController extends AbstractOGAMController {
 	 * @param String $layerName The name of the layer
 	 * @param String $variableName The name of the variable
 	 */
-	private function _generateRasterSLD($layerName) {
+	private function _generateRasterSLD($layerName, $variableName) {
 
 		$this->logger->debug('_generateRasterSLD : '.$layerName);
 
 		// Define the classes
-		// TODO : Remove the hardcoded reference to BASAL_AREA
-		$classes = $this->classDefinitionModel->getRasterClassDefinition('BASAL_AREA');
+		$classes = $this->classDefinitionModel->getRasterClassDefinition($variableName);
 
 		// Generate the SLD string
 		$sld = '<StyledLayerDescriptor version="1.0.0"';
