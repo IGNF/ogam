@@ -12,6 +12,12 @@ require_once 'AbstractOGAMController.php';
 class CheckconfController extends AbstractOGAMController {
 
 	/**
+	 * The models.
+	 */
+	private $postgreSQLModel;
+	private $metadataSystemModel;
+
+	/**
 	 * Initialise the controler
 	 */
 	public function init() {
@@ -22,15 +28,18 @@ class CheckconfController extends AbstractOGAMController {
 		$websiteSession->module = "checkconf";
 		$websiteSession->moduleLabel = "Check Configuration";
 		$websiteSession->moduleURL = "checkconf";
+
+		$this->postgreSQLModel = new Application_Model_System_Postgresql();
+		$this->metadataSystemModel = new Application_Model_System_Metadata();
 	}
-	
+
 	/**
-	* Check if the authorization is valid this controler.
-	*/
+	 * Check if the authorization is valid this controler.
+	 */
 	function preDispatch() {
-	
+
 		parent::preDispatch();
-	
+
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
 		if (empty($permissions) || !array_key_exists('CHECK_CONF', $permissions)) {
@@ -42,15 +51,21 @@ class CheckconfController extends AbstractOGAMController {
 	 * The "index" action is the default action for all controllers.
 	 */
 	public function indexAction() {
-		$this->logger->debug('CheckConf index');
 
+		// Check the PHP config
 		$this->checkPhpParameters();
+
+		// Check the database
+		$this->checkDatabase();
 	}
 
 	/**
 	 * Checks the php parameters
 	 */
 	function checkPhpParameters() {
+
+		$this->logger->debug('Checking PHP parameters');
+
 		/**
 		 * Note:
 		 * "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).
@@ -71,7 +86,8 @@ class CheckconfController extends AbstractOGAMController {
 		$postMaxSizeMsg = array(
             'name' => 'post_max_size',
             'value' => $postMaxSize);
-		if ($postMaxSizeInt < $postMaxSizeMinInt || $postMaxSizeChar !== $postMaxSizeMinChar) {
+
+		if ($postMaxSizeMinInt!= null && $postMaxSizeInt < $postMaxSizeMinInt) {
 			$postMaxSizeMsg['error'] = str_replace('%value%', $postMaxSizeMin, $errorMsg);
 		}
 		array_push($phpParameters, $postMaxSizeMsg);
@@ -86,12 +102,124 @@ class CheckconfController extends AbstractOGAMController {
 		$uploadMaxFilesizeMsg = array(
             'name' => 'upload_max_filesize',
             'value' => $uploadMaxFilesize);
-		if ($uploadMaxFilesizeInt < $uploadMaxFilesizeMinInt || $uploadMaxFilesizeChar !== $uploadMaxFilesizeMinChar) {
+		if ($uploadMaxFilesizeMin != null && $uploadMaxFilesizeInt < $uploadMaxFilesizeMinInt) {
 			$uploadMaxFilesizeMsg['error'] = str_replace('%value%', $uploadMaxFilesizeMin, $errorMsg);
 		}
 		array_push($phpParameters, $uploadMaxFilesizeMsg);
 
 		// Add the parameters to the view
 		$this->view->phpParameters = $phpParameters;
+	}
+
+
+	/**
+	 * Checks the database access.
+	 */
+	function checkDatabase() {
+
+		$this->logger->debug('Checking database');
+
+		//
+		// Check if the expected tables are found
+		//
+
+		$expectedTables = $this->metadataSystemModel->getTables();
+
+		$existingTables = $this->postgreSQLModel->getTables();
+
+		$missingTablesMsg = array();
+		$primaryKeysMsg = array();
+		foreach ($expectedTables as $key => $table) {
+			if (!array_key_exists($key,$existingTables)) {
+				$missingTablesMsg[] = 'Expected table '.$table->tableName.' of schema '.$table->schemaName.' is not found';
+			} else {
+				$foundTable = $existingTables[$key];
+				
+				//
+				//  TODO : Check primary keys
+				//
+				$primaryKeysMsg[] = 'PK '.$foundTable->primaryKeys.' not compatible with metadata PK '.$table->primaryKeys;
+				
+			}
+		}
+		$this->view->missingTablesMsg = $missingTablesMsg;
+		$this->view->primaryKeysMsg = $primaryKeysMsg;
+
+
+		//
+		// Check if the expected fields are found
+		//
+
+		$expectedFields = $this->metadataSystemModel->getFields();
+
+		$existingFields = $this->postgreSQLModel->getFields();
+
+		$missingFieldsMsg = array();
+		$fieldTypeMsg = array();
+		foreach ($expectedFields as $key => $field) {
+			if (!array_key_exists($key,$existingFields)) {
+				$missingFieldsMsg[] = 'Expected data '.$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is not found';
+			} else {
+
+				//
+				// Check field type
+				//
+				$foundField = $existingFields[$key];
+
+				switch ($field->type) {
+					case "ARRAY":
+						if ($foundField->type != 'ARRAY') {
+							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+						}
+						break;
+					case "STRING":
+						if ($foundField->type != 'CHARACTER VARYING' && $foundField->type != 'CHARACTER' && $foundField->type != 'TEXT') {
+							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+						}
+						break;
+					case "NUMERIC":
+						if ($foundField->type != 'DOUBLE PRECISION') {
+							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+						}
+						break;
+					case "DATE":
+						if ($foundField->type != 'DATE' && $foundField->type != 'TIMESTAMP') {
+							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+						}
+						break;
+					case "CODE":
+						if ($foundField->type != 'CHARACTER VARYING' && $foundField->type != 'CHARACTER' && $foundField->type != 'TEXT') {
+							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+						}
+						break;
+					case "GEOM":
+						if ($foundField->type != 'USER-DEFINED') {
+							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+						}
+						break;
+					case "INTEGER":
+						if ($foundField->type != 'INTEGER') {
+							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+						}
+						break;
+					case "BOOLEAN":
+						if ($foundField->type != 'CHARACTER') {
+							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+						}
+						break;
+					default:
+						$fieldTypeMsg[] = "Unknow field type for data ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName;
+				}
+			
+		
+			}
+		}
+		$this->view->fieldTypeMsg = $fieldTypeMsg;
+		$this->view->missingFieldsMsg = $missingFieldsMsg;
+
+
+
+
+
 	}
 }

@@ -87,6 +87,8 @@ Confirm harmonization;Warning, this will delete and recreate all data for this d
 Check result;Check result
 PHP Parameters;PHP Parameters
 Error: %value% minimum;Error: %value% minimum
+Expected value;Expected value
+Database;Database
 
 ##########################
 #  User Management       #

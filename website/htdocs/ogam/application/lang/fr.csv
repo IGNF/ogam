@@ -195,6 +195,8 @@ Confirm harmonization;Attention, les données de ce fournisseur vont être suppr
 Check result;Résultat de la vérification
 PHP Parameters;Paramètres PHP
 Error: %value% minimum;Erreur: %value% minimum
+Expected value;Valeur attendue
+Database;Base de données
 
 
 ##########################
