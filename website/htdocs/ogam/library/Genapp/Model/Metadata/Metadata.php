@@ -586,7 +586,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the information about a table format.
 	 *
-	 * @param String $schema the schema name
+	 * @param String $schema the schema code
 	 * @param String $table the table name
 	 * @return TableFormat
 	 */
