@@ -18,10 +18,10 @@ class Genapp_Object_Metadata_TableFormat extends Genapp_Object_Metadata_Format {
 	var $tableName;
 
 	/**
-	 * The schema.
+	 * The schema identifier.
 	 */
 	var $schemaCode;
-
+	
 	/**
 	 * The primary key.
 	 */
