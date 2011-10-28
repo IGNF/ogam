@@ -38,7 +38,7 @@ class Application_Model_System_Postgresql extends Zend_Db_Table_Abstract {
 		$req = " SELECT     UPPER(table_name) AS table, ";
 		$req .= "           UPPER(table_schema) AS schema, ";
 		$req .= "           UPPER(constraint_name) as primary_key, ";
-		$req .= "           array_to_string(array_agg(UPPER(CAST(c.column_name AS text))),',') as pk_columns ";
+		$req .= "           string_agg(UPPER(c.column_name),',') as pk_columns ";
 		$req .= " FROM information_schema.tables ";
 		$req .= " LEFT JOIN information_schema.table_constraints USING (table_catalog, table_schema, table_name) ";
 		$req .= " LEFT JOIN information_schema.constraint_column_usage AS c USING (table_catalog, table_schema, table_name, constraint_name)  ";
