@@ -354,12 +354,14 @@ COMMENT ON COLUMN DATASET_FIELDS.DATA IS 'The table field associed with the data
 /*==============================================================*/
 create table TABLE_SCHEMA (
 SCHEMA_CODE          VARCHAR(36)             not null,
+SCHEMA_NAME          VARCHAR(36)             not null,
 LABEL                VARCHAR(36)             null,
 DESCRIPTION          VARCHAR(255)            null,
 constraint PK_TABLE_SCHEMA primary key (SCHEMA_CODE)
 );
 
 COMMENT ON COLUMN TABLE_SCHEMA.SCHEMA_CODE IS 'The code of the schema';
+COMMENT ON COLUMN TABLE_SCHEMA.SCHEMA_CODE IS 'The name of the schema (name in the database)';
 COMMENT ON COLUMN TABLE_SCHEMA.LABEL IS 'The label of the schema';
 COMMENT ON COLUMN TABLE_SCHEMA.DESCRIPTION IS 'The description of the schema';
 
