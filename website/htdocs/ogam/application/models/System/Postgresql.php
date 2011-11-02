@@ -55,13 +55,11 @@ class Application_Model_System_Postgresql extends Zend_Db_Table_Abstract {
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
 			
-			$this->logger->debug('$$result : '.print_r($result,true));
-
 			$table = new Application_Object_System_Table();
 
 			$table->tableName = $result['table'];
 			$table->schemaName = $result['schema'];
-			$table->primaryKeys = $result['pk_columns'];
+			$table->setPrimaryKeys($row['pk_columns']);
 
 			$tables[$table->schemaName.'_'.$table->tableName] = $table;
 

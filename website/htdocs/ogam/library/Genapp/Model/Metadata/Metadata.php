@@ -569,10 +569,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableFormat->schemaCode = $schema;
 			$tableFormat->tableName = $row['table_name'];
 			$tableFormat->label = $row['label'];
-			$pks = explode(",", $row['primary_key']);
-			foreach ($pks as $pk) {
-				$tableFormat->primaryKeys[] = trim($pk); // we need to trim all the values
-			}
+			$tableFormat->setPrimaryKeys($row['primary_key']);			
 
 			if ($this->useCache) {
 				$this->cache->save($tableFormat, $key);
@@ -621,10 +618,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableFormat->schemaCode = $row['schema_code'];
 			$tableFormat->tableName = $row['table_name'];
 			$tableFormat->label = $row['label'];
-			$pks = explode(",", $row['primary_key']);
-			foreach ($pks as $pk) {
-				$tableFormat->primaryKeys[] = trim($pk); // we need to trim all the values
-			}
+			$tableFormat->setPrimaryKeys($row['primary_key']);
 
 			if ($this->useCache) {
 				$this->cache->save($tableFormat, $key);

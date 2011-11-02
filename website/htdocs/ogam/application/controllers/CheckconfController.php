@@ -134,12 +134,15 @@ class CheckconfController extends AbstractOGAMController {
 				$missingTablesMsg[] = 'Expected table '.$table->tableName.' of schema '.$table->schemaName.' is not found';
 			} else {
 				$foundTable = $existingTables[$key];
-				
+
 				//
-				//  TODO : Check primary keys
+				//  Check the primary keys
 				//
-				$primaryKeysMsg[] = 'PK '.$foundTable->primaryKeys.' not compatible with metadata PK '.$table->primaryKeys;
-				
+				$diff = array_diff($foundTable->primaryKeys, $table->primaryKeys);
+				if (!empty($diff)) {
+					$primaryKeysMsg[] = 'PK '.$foundTable->primaryKeys.' not compatible with metadata PK '.$table->primaryKeys;
+				}
+
 			}
 		}
 		$this->view->missingTablesMsg = $missingTablesMsg;
@@ -210,16 +213,12 @@ class CheckconfController extends AbstractOGAMController {
 					default:
 						$fieldTypeMsg[] = "Unknow field type for data ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName;
 				}
-			
-		
+					
+
 			}
 		}
 		$this->view->fieldTypeMsg = $fieldTypeMsg;
 		$this->view->missingFieldsMsg = $missingFieldsMsg;
-
-
-
-
 
 	}
 }

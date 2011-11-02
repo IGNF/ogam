@@ -51,7 +51,7 @@ class Application_Model_System_Metadata extends Zend_Db_Table_Abstract {
 				
 			$table->tableName = $result['table_name'];
 			$table->schemaName = $result['schema_name'];
-			$table->primaryKeys = $result['primary_key'];
+			$table->setPrimaryKeys($row['primary_key']);
 				
 			$tables[$table->schemaName.'_'.$table->tableName] = $table;
 				

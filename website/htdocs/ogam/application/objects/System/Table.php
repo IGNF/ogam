@@ -26,5 +26,18 @@ class Application_Object_System_Table {
 	* The pks.
 	*/
 	var $primaryKeys = array();
+	
+	/**
+	* Set the primary keys
+	*
+	* @param String $keys
+	*/
+	public function setPrimaryKeys($keys) {
+		$this->primaryKeys = array();
+		$pks = explode(",", $keys);
+		foreach ($pks as $pk) {
+			$this->primaryKeys[] = trim($pk); // we need to trim all the values
+		}
+	}
 
 }
