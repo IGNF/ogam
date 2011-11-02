@@ -59,6 +59,31 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		return $result;
 	}
 
+
+	/**
+	 * Get the label of a mode.
+	 *
+	 * @param String $unit The unit
+	 * @param String $mode The mode
+	 * @return String label
+	 */
+	public function getMode($unit, $mode) {
+		$db = $this->getAdapter();
+		$req = "SELECT code, label FROM mode WHERE unit = ? AND code = ? ORDER BY position, code";
+
+		$this->logger->info('getMode : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($unit, $mode));
+
+		$row = $select->fetch();
+		if ($row) {
+			return $row['label'];
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Get the labels and modes for a tree unit.
 	 *
@@ -136,7 +161,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 	/**
 	 * Get the unit modes from a tree.
-	 * 
+	 *
 	 * Return a hierarchy of nodes
 	 *
 	 * @param String $unit The unit
@@ -167,16 +192,16 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$this->logger->info('getTreeModes : '.$req);
 
 		$select = $db->prepare($req);
-		
+
 		$select->execute(array($unit, $parentcode));
-		
+
 		$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
 		foreach ($select->fetchAll() as $row) {
-			
-			$parentCode = $row['parent_code'];
-			
-			$this->logger->info('getTreeModes : '.$parentCode);		
 				
+			$parentCode = $row['parent_code'];
+				
+			$this->logger->info('getTreeModes : '.$parentCode);
+
 
 			//Build the new node
 			$tree = new Genapp_Object_Metadata_TreeNode();
@@ -203,7 +228,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 	/**
 	 * Get all the children codes from a node of a tree.
-	 * 
+	 *
 	 * Return an array of codes.
 	 *
 	 * @param String $unit The unit
@@ -244,29 +269,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		return $result;
 	}
 
-	/**
-	 * Get the label of a mode.
-	 *
-	 * @param String $unit The unit
-	 * @param String $mode The mode
-	 * @return String label
-	 */
-	public function getMode($unit, $mode) {
-		$db = $this->getAdapter();
-		$req = "SELECT code, label FROM mode WHERE unit = ? AND code = ? ORDER BY position, code";
-
-		$this->logger->info('getMode : '.$req);
-
-		$select = $db->prepare($req);
-		$select->execute(array($unit, $mode));
-
-		$row = $select->fetch();
-		if ($row) {
-			return $row['label'];
-		} else {
-			return null;
-		}
-	}
 
 	/**
 	 * Get the available datasets for display.
@@ -301,29 +303,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " ORDER BY dataset_id";
 
 		$this->logger->info('getDatasetsForUpload : '.$req);
-
-		$select = $db->prepare($req);
-		$select->execute(array());
-
-		return $select->fetchAll();
-	}
-
-	/**
-	 * Get the available datasets.
-	 *
-	 * @param Boolean $forDisplay indicate if we want to list the datasets available for display
-	 * @return Array[dataset_id => label]
-	 */
-	public function getDatasets($forDisplay = false) {
-		$db = $this->getAdapter();
-		$req = "SELECT dataset_id as id, label, is_default ";
-		$req .= " FROM dataset ";
-		if ($forDisplay) {
-			$req .= " INNER JOIN dataset_fields using (dataset_id) ";
-		}
-		$req .= " ORDER BY dataset_id";
-
-		$this->logger->info('getDatasets : '.$req);
 
 		$select = $db->prepare($req);
 		$select->execute(array());
@@ -569,7 +548,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableFormat->schemaCode = $schema;
 			$tableFormat->tableName = $row['table_name'];
 			$tableFormat->label = $row['label'];
-			$tableFormat->setPrimaryKeys($row['primary_key']);			
+			$tableFormat->setPrimaryKeys($row['primary_key']);
 
 			if ($this->useCache) {
 				$this->cache->save($tableFormat, $key);

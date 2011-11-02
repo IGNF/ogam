@@ -234,7 +234,7 @@ class Genapp_Service_QueryService {
 				$json .= "{".$formField->toEditJSON()."},";
 			}
 		}
-		
+
 		//
 		// The editable elements as edit forms
 		//
@@ -294,7 +294,7 @@ class Genapp_Service_QueryService {
 
 			// Identify the field carrying the location information
 			$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
-			$locationField = $this->metadataModel->getLocationTableFields($this->schema, array_keys($tables));		
+			$locationField = $this->metadataModel->getLocationTableFields($this->schema, array_keys($tables));
 			$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
 
 			// Run the request to store a temporary result table (for the web mapping)
@@ -395,9 +395,9 @@ class Genapp_Service_QueryService {
 			// Prepare the needed traductions
 			$traductions = array();
 			foreach ($resultColumns as $tableField) {
-				
+
 				$key = strtolower($tableField->format.'__'.$tableField->data);
-				
+
 				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 					if ($tableField->subtype == "DYNAMIC") {
 						$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
