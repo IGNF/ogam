@@ -37,10 +37,10 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		$query = $db->prepare($req);
 		$query->execute(array(
-			$predefinedRequest->requestName,
-			$predefinedRequest->schemaCode,
-			$predefinedRequest->datasetID,
-			$predefinedRequest->definition));
+		$predefinedRequest->requestName,
+		$predefinedRequest->schemaCode,
+		$predefinedRequest->datasetID,
+		$predefinedRequest->definition));
 
 		// Save the request results columns
 		$resultColumns = $predefinedRequest->resultsList;
@@ -52,9 +52,9 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 			$query = $db->prepare($req);
 			$query->execute(array(
-				$predefinedRequest->requestName,
-				$resultColumn->format,
-				$resultColumn->data));
+			$predefinedRequest->requestName,
+			$resultColumn->format,
+			$resultColumn->data));
 		}
 
 		// Save the request results criterias
@@ -67,10 +67,10 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 			$query = $db->prepare($req);
 			$query->execute(array(
-				$predefinedRequest->requestName,
-				$resultCriteria->format,
-				$resultCriteria->data,
-				$resultCriteria->value));
+			$predefinedRequest->requestName,
+			$resultCriteria->format,
+			$resultCriteria->data,
+			$resultCriteria->value));
 		}
 
 	}
@@ -259,11 +259,9 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 			$field->defaultValue = $result['value'];
 			$field->decimals = $result['decimals'];
 			$field->mask = $result['mask'];
-						
+
 			$criteriaList[$field->format.'__'.$field->data] = $field;
 		}
-		
-		$this->logger->info('getPredefinedRequestCriteria $criteriaList : '.print_r($criteriaList,true));
 
 		return $criteriaList;
 	}
