@@ -35,6 +35,8 @@ class CheckconfController extends AbstractOGAMController {
 
 	/**
 	 * Check if the authorization is valid this controler.
+	 *
+	 * @throws an Exception if the user doesn't have the rights
 	 */
 	function preDispatch() {
 
@@ -79,15 +81,13 @@ class CheckconfController extends AbstractOGAMController {
 		// Checks the post_max_size php parameters
 		$postMaxSizeMin = $configuration->post_max_size;
 		$postMaxSizeMinInt = substr($postMaxSizeMin, 0, -1);
-		$postMaxSizeMinChar = substr($postMaxSizeMin, -1, 1);
 		$postMaxSize = ini_get("post_max_size");
 		$postMaxSizeInt = substr($postMaxSize, 0, -1);
-		$postMaxSizeChar = substr($postMaxSize, -1, 1);
 		$postMaxSizeMsg = array(
             'name' => 'post_max_size',
             'value' => $postMaxSize);
 
-		if ($postMaxSizeMinInt!= null && $postMaxSizeInt < $postMaxSizeMinInt) {
+		if ($postMaxSizeMinInt != null && $postMaxSizeInt < $postMaxSizeMinInt) {
 			$postMaxSizeMsg['error'] = str_replace('%value%', $postMaxSizeMin, $errorMsg);
 		}
 		array_push($phpParameters, $postMaxSizeMsg);
@@ -95,10 +95,8 @@ class CheckconfController extends AbstractOGAMController {
 		// Checks the upload_max_filesize php parameters
 		$uploadMaxFilesizeMin = $configuration->upload_max_filesize;
 		$uploadMaxFilesizeMinInt = substr($uploadMaxFilesizeMin, 0, -1);
-		$uploadMaxFilesizeMinChar = substr($uploadMaxFilesizeMin, -1, 1);
 		$uploadMaxFilesize = ini_get("upload_max_filesize");
 		$uploadMaxFilesizeInt = substr($uploadMaxFilesize, 0, -1);
-		$uploadMaxFilesizeChar = substr($uploadMaxFilesize, -1, 1);
 		$uploadMaxFilesizeMsg = array(
             'name' => 'upload_max_filesize',
             'value' => $uploadMaxFilesize);
@@ -130,7 +128,7 @@ class CheckconfController extends AbstractOGAMController {
 		$missingTablesMsg = array();
 		$primaryKeysMsg = array();
 		foreach ($expectedTables as $key => $table) {
-			if (!array_key_exists($key,$existingTables)) {
+			if (!array_key_exists($key, $existingTables)) {
 				$missingTablesMsg[] = 'Expected table '.$table->tableName.' of schema '.$table->schemaName.' is not found';
 			} else {
 				$foundTable = $existingTables[$key];
@@ -160,7 +158,7 @@ class CheckconfController extends AbstractOGAMController {
 		$missingFieldsMsg = array();
 		$fieldTypeMsg = array();
 		foreach ($expectedFields as $key => $field) {
-			if (!array_key_exists($key,$existingFields)) {
+			if (!array_key_exists($key, $existingFields)) {
 				$missingFieldsMsg[] = 'Expected data '.$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is not found';
 			} else {
 

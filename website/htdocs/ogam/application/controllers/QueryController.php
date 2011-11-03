@@ -37,6 +37,8 @@ class QueryController extends AbstractQueryController {
 
 	/**
 	 * Check if the authorization is valid this controler.
+	 * 
+	 * @throws an Exception if the user doesn't have the rights
 	 */
 	function preDispatch() {
 
