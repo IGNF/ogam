@@ -76,14 +76,15 @@ class IntegrationController extends AbstractOGAMController {
 		$requestElement = $form->createElement('select', 'DATASET_ID');
 		$requestElement->setLabel('Dataset');
 		$requestElement->setRequired(true);
-		$requests = $this->metadataModel->getDatasetsForUpload();
+		$datasets = $this->metadataModel->getDatasetsForUpload();
 		$datasetIds = array();
-		foreach ($requests as $request) {
-			$datasetIds[$request['id']] = $request['label'];
+		foreach ($datasets as $dataset) {
+			$datasetIds[$dataset->id] = $dataset->label;
 		}
 		$requestElement->setDisableTranslator(true); // disable translation
 		$requestElement->addMultiOptions($datasetIds);
-
+		
+		
 		//
 		// Add the submit element
 		//
