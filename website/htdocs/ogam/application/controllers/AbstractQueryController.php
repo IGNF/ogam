@@ -559,7 +559,7 @@ abstract class AbstractQueryController extends AbstractOGAMController {
 									$this->_print('"'.$label.'";');
 								} else if ($tableField->type == "ARRAY") {
 									// Split the array items
-									$arrayValues = explode(",", ereg_replace("[{-}]", "", $value));
+									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$label = '';
 									foreach ($arrayValues as $arrayValue) {
 										$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
