@@ -59,7 +59,7 @@ class Application_Model_System_Postgresql extends Zend_Db_Table_Abstract {
 
 			$table->tableName = $result['table'];
 			$table->schemaName = $result['schema'];
-			$table->setPrimaryKeys($row['pk_columns']);
+			$table->setPrimaryKeys($result['pk_columns']);
 
 			$tables[$table->schemaName.'_'.$table->tableName] = $table;
 
