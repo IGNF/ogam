@@ -62,7 +62,7 @@ class Genapp_Service_GenericService {
 		$children = $this->genericModel->getChildren($data, $datasetId);
 
 		$childrenCount = 0;
-		if( !empty($children)) {
+		if(!empty($children)) {
 			$childrenCount = count(current($children));
 		}
 		$json = '{"title":'.json_encode($data->tableFormat->label, JSON_HEX_APOS).', "children_count":'.$childrenCount.', "id":"'.$this->getIdFromData($data).'", "fields":[';
