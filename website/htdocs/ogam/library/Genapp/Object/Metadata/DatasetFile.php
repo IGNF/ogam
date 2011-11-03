@@ -13,22 +13,22 @@
 class Genapp_Object_Metadata_DatasetFile {
 
 	/**
-	 * The type of the file
+	 * The type of the file.
 	 */
 	var $fileType;
 	
 	/**
-	 * The file identifier 
+	 * The file identifier. 
 	 */
 	var $format;
 	
 	/**
-	 * The description of the file
+	 * The description of the file.
 	 */
 	var $label;
 	
 	/**
-	 * The path of the file (used during data upload) 
+	 * The path of the file (used during data upload). 
 	 */
 	var $filePath;
 

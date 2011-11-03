@@ -178,7 +178,17 @@ class Genapp_Service_QueryService {
 		$json .= '"is_default"';
 		$json .= ']';
 		$json .= '},';
-		$json .= '"rows":'.json_encode($datasetIds).'}';
+		$json .= '"rows":[';
+		
+		foreach ($datasetIds as $dataset) {
+			$json .= '{'.$dataset->toJSON().'},';
+		}
+		$json = substr($json, 0, -1); // remove last comma
+		
+		json_encode($datasetIds);
+		
+		
+		$json .= ']}';
 
 		return $json;
 	}

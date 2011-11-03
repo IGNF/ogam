@@ -167,7 +167,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $unit The unit
 	 * @param String $parentcode The identifier of the start node in the tree (by default the root node is *)
 	 * @param Integer $levels The number of levels of depth (if 0 then no limitation)
-	 * @return TreeNodes
+	 * @return Genapp_Object_Metadata_TreeNode
 	 */
 	public function getTreeModes($unit, $parentcode = '*', $levels = 1) {
 		$db = $this->getAdapter();
@@ -201,7 +201,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$parentCode = $row['parent_code'];
 				
 			$this->logger->info('getTreeModes : '.$parentCode);
-
 
 			//Build the new node
 			$tree = new Genapp_Object_Metadata_TreeNode();
@@ -273,7 +272,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the available datasets for display.
 	 *
-	 * @return Array[dataset_id => label]
+	 * @return Array[Genapp_Object_Metadata_Dataset]
 	 */
 	public function getDatasetsForDisplay() {
 		$db = $this->getAdapter();
@@ -287,13 +286,21 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$select = $db->prepare($req);
 		$select->execute(array());
 
-		return $select->fetchAll();
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$dataset = new Genapp_Object_Metadata_Dataset();
+			$dataset->id = $row['id'];
+			$dataset->label = $row['label'];
+			$dataset->isDefault = $row['is_default'];
+			$result[] = $dataset;
+		}
+		return $result;
 	}
 
 	/**
 	 * Get the available datasets for upload.
 	 *
-	 * @return Array[dataset_id => label]
+	 * @return Array[Genapp_Object_Metadata_Dataset]
 	 */
 	public function getDatasetsForUpload() {
 		$db = $this->getAdapter();
@@ -306,15 +313,23 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$select = $db->prepare($req);
 		$select->execute(array());
-
-		return $select->fetchAll();
+		
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$dataset = new Genapp_Object_Metadata_Dataset();
+			$dataset->id = $row['id'];
+			$dataset->label = $row['label'];
+			$dataset->isDefault = $row['is_default'];
+			$result[] = $dataset;
+		}
+		return $result;
 	}
 
 	/**
 	 * Get the requested files for a data submission for a given dataset.
 	 *
 	 * @param String $datasetId The identifier of the dataset
-	 * @return Array[DatasetFile]
+	 * @return Array[Genapp_Object_Metadata_DatasetFile]
 	 */
 	public function getRequestedFiles($datasetId) {
 		$db = $this->getAdapter();
@@ -344,7 +359,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the list of requested fields for the file.
 	 *
 	 * @param String $fileFormat the file format
-	 * @return Array[FormField]
+	 * @return Array[Genapp_Object_Metadata_FileField]
 	 */
 	public function getFileFields($fileFormat) {
 
@@ -390,7 +405,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $datasetID the dataset identifier (optional)
 	 * @param String $schema the schema identifier
 	 * @param String $format the format
-	 * @return Array[TableField]
+	 * @return Array[Genapp_Object_Metadata_TableField]
 	 */
 	public function getTableFields($datasetID, $schema, $format) {
 
@@ -461,7 +476,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $schema the schema identifier
 	 * @param Array[String] $tables a list of formats
-	 * @return Array[TableField]
+	 * @return Array[Genapp_Object_Metadata_TableField]
 	 * @throws an exceptionif the tables contain no geographical information
 	 */
 	public function getLocationTableFields($schema, $tables) {
@@ -515,7 +530,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $schema the schema identifier
 	 * @param String $format the format
-	 * @return TableFormat
+	 * @return Genapp_Object_Metadata_TableFormat
 	 */
 	public function getTableFormat($schema, $format) {
 
@@ -564,7 +579,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $schema the schema code
 	 * @param String $table the table name
-	 * @return TableFormat
+	 * @return Genapp_Object_Metadata_TableFormat
 	 */
 	public function getTableFormatFromTableName($schema, $table) {
 
@@ -613,7 +628,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $datasetId The identifier of the dataset
 	 * @param String $schemaCode The logical name of the schema (RAW_DATA or HARMONIZED_DATA)
-	 * @return Array[FormFormat]
+	 * @return Array[Genapp_Object_Metadata_FormFormat]
 	 */
 	public function getForms($datasetId, $schemaCode) {
 
@@ -676,7 +691,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $formFormat the name of the form format
 	 * @param String $schema the name of the database schema
 	 * @param String $mode if 'criteria' we're looking for a criteria, if 'result' we're looking for a result.
-	 * @return Array[FormField]
+	 * @return Array[Genapp_Object_Metadata_FormField]
 	 */
 	public function getFormFields($dataset, $formFormat, $schema, $mode) {
 
@@ -767,7 +782,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $format The logical name of the form
 	 * @param String $data The logical name of the field
-	 * @return FormField
+	 * @return Genapp_Object_Metadata_FormField
 	 */
 	public function getFormField($format, $data) {
 
@@ -820,7 +835,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the range of a field.
 	 *
 	 * @param String $data the data
-	 * @return Range
+	 * @return Genapp_Object_Metadata_Range
 	 */
 	public function getRange($data) {
 
@@ -853,7 +868,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the list of available columns of a table.
 	 *
 	 * @param String $format the logical name of the table
-	 * @return array[TableField]
+	 * @return array[Genapp_Object_Metadata_TableField]
 	 */
 	public function getTableColumnsForDisplay($format) {
 		$db = $this->getAdapter();
@@ -897,7 +912,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $schema the name of the schema (RAW_DATA or HARMONIZED_DATA)
 	 * @param FormField $formField the form field
-	 * @return TableField
+	 * @return Genapp_Object_Metadata_TableField
 	 */
 	public function getFormToTableMapping($schema, $formField) {
 
@@ -953,7 +968,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the form field corresponding to the table field.
 	 *
 	 * @param TableField $tableField the table field
-	 * @return array[FormField]
+	 * @return Array[Genapp_Object_Metadata_FormField]
 	 */
 	public function getTableToFormMapping($tableField) {
 
@@ -1022,7 +1037,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $tableFormat the table format
 	 * @param String $fieldName the name of the field that is using this table (used for complementary data)
 	 * @param String $schemaCode the name of the schema
-	 * @return Array[TableTreeData]
+	 * @return Array[Genapp_Object_Metadata_TableTreeData]
 	 * @throws Exception if the table is not found
 	 */
 	public function getTablesTree($tableFormat, $fieldName, $schemaCode) {
@@ -1086,7 +1101,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $datasetId the dataset identifier
 	 * @param Array[TableTreeData] $availableTables the available tables
 	 * @param String $schema the schema
-	 * @return Array[Field]
+	 * @return Array[Genapp_Object_Metadata_Field]
 	 */
 	public function getQuantitativeFields($datasetId, $availableTables, $schema) {
 
