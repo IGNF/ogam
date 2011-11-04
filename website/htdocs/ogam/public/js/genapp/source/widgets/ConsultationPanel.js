@@ -130,6 +130,16 @@ listeners: {
      */
     hideAggregationButton : false,
     /**
+     * @cfg {Boolean} hideCancelButton
+     * if true hide the cancel button (defaults to false).
+     */
+    hideCancelButton : false,
+    /**
+     * @cfg {Boolean} hideResetButton
+     * if true hide the reset button (defaults to false).
+     */
+    hideResetButton : false,
+    /**
      * @cfg {Boolean} hidePrintMapButton
      * if true hide the Print Map Button (defaults to false).
      */
@@ -872,6 +882,39 @@ listeners: {
                 scope:this
             }]
         };
+        
+        // Cancel button 
+        var cancelButton = null;
+        if (!this.hideCancelButton) {
+        	cancelButton = {
+                    xtype: 'tbbutton',
+                    text: this.queryPanelCancelButtonText,
+                    tooltipType: 'title',
+                    tooltip: this.queryPanelCancelButtonTooltip,
+                    cls: 'genapp_query_formspanel_cancel_button',
+                    scope: this,
+                    handler: this.cancelRequest
+                };
+        } else {
+        	cancelButton =  {xtype: 'tbspacer'};
+        }
+        
+        // Cancel the current request button
+        var resetButton = null;
+        if (!this.hideResetButton) {
+        	resetButton = {
+                    xtype: 'tbbutton',
+                    text: this.queryPanelResetButtonText,
+                    tooltipType: 'title',
+                    tooltip: this.queryPanelResetButtonTooltip,
+                    cls: 'genapp_query_formspanel_reset_button',
+                    scope: this,
+                    handler: this.resetRequest
+                };
+        } else {
+        	resetButton =  {xtype: 'tbspacer'};
+        }
+       
 
         var queryPanelConfig = {
             region :'west',
@@ -885,27 +928,12 @@ listeners: {
             cls: 'genapp_query_panel',
             items : [ this.datasetPanel, this.formsPanel ],
             tools:tools,
-            bbar: [{
-                xtype: 'tbbutton',
-                text: this.queryPanelCancelButtonText,
-                tooltipType: 'title',
-                tooltip: this.queryPanelCancelButtonTooltip,
-                cls: 'genapp_query_formspanel_cancel_button',
-                scope: this,
-                handler: this.cancelRequest
-            },{
-                xtype: 'tbseparator'
-            },{
-                xtype: 'tbbutton',
-                text: this.queryPanelResetButtonText,
-                tooltipType: 'title',
-                tooltip: this.queryPanelResetButtonTooltip,
-                cls: 'genapp_query_formspanel_reset_button',
-                scope: this,
-                handler: this.resetRequest
-            },{
-                xtype: 'tbfill'
-            },{
+            bbar: [
+                cancelButton,
+                {xtype: 'tbseparator'},
+                resetButton,
+                {xtype: 'tbfill'},
+              {
                 xtype: 'tbbutton',
                 text: this.queryPanelSearchButtonText,
                 tooltipType: 'title',
