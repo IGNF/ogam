@@ -823,7 +823,7 @@ listeners: {
                 if(!this.hideGridCsvExportMenuItem){
                     csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
                         text:this.gridCsvExportMenuItemText,
-                        handler:this.exportCSV.createDelegate(this,['grid-csv-export']),
+                        handler:this.exportCSV.createDelegate(this,['csv-export']),
                         iconCls:'genapp-query-center-panel-grid-csv-export-menu-item-icon'
                     }));
                 }                
