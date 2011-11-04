@@ -145,8 +145,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 							// alert(records[i].data);
 							formItems.push(this.getFieldConfig(records[i].data, true));
 						}
-						this.dataEditForm.add(formItems);
-						this.dataEditForm.doLayout();
+						this.dataEditFS.add(formItems);
+						this.dataEditFS.doLayout();
 					}
 				},
 				scope : this
@@ -199,10 +199,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		});
 		
 		
-		this.dataEditForm = new Ext.FormPanel(); // We define the form
-		this.dataEditForm.items = [this.dataEditFS]; // we add the field set
+		//this.dataEditForm = new Ext.FormPanel(); // We define the form
+		//this.dataEditForm.items = [this.dataEditFS]; // we add the field set
 
-		this.items = [ this.headerPanel, this.parentsFS, this.dataEditForm, this.childrenFS ];
+		this.items = [ this.headerPanel, this.parentsFS, this.dataEditFS, this.childrenFS ];
 
 		Genapp.EditionPanel.superclass.initComponent.call(this);
 	},
