@@ -760,7 +760,7 @@ class Genapp_Service_GenericService {
 		$data->tableFormat = $this->metadataModel->getTableFormat($schema, $format);
 
 		// Get all the description of the Table Fields corresponding to the format
-		$tableFields = $this->metadataModel->getTableFields($datasetId, $schema, $format);
+		$tableFields = $this->metadataModel->getTableFields($schema, $format, $datasetId);
 
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
@@ -820,7 +820,7 @@ class Genapp_Service_GenericService {
 			if (!in_array($tableField->format, $tables)) {
 
 				// Get the ancestors of the table
-				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $tableField->data, $schema);
+				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $schema);
 
 				// Reverse the order of the list and store by indexing with the table name
 				// The root table (LOCATION) should appear first

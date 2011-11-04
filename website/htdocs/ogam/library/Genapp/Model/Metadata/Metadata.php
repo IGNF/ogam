@@ -197,9 +197,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
 		foreach ($select->fetchAll() as $row) {
-				
+
 			$parentCode = $row['parent_code'];
-				
+
 			$this->logger->info('getTreeModes : '.$parentCode);
 
 			//Build the new node
@@ -313,7 +313,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$select = $db->prepare($req);
 		$select->execute(array());
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$dataset = new Genapp_Object_Metadata_Dataset();
@@ -402,12 +402,12 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the list of table fields for a given table format.
 	 * If the dataset is specified, we filter on the fields of the dataset.
 	 *
-	 * @param String $datasetID the dataset identifier (optional)
 	 * @param String $schema the schema identifier
 	 * @param String $format the format
+	 * @param String $datasetID the dataset identifier (optional)
 	 * @return Array[Genapp_Object_Metadata_TableField]
 	 */
-	public function getTableFields($datasetID, $schema, $format) {
+	public function getTableFields($schema, $format, $datasetID = null) {
 
 		$db = $this->getAdapter();
 
@@ -436,6 +436,8 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " AND table_format.schema_code = ? ";
 			$req .= " AND table_field.format = ? ";
 			$req .= " ORDER BY table_field.position ";
+				
+			$this->logger->info('getTableFields : '.$req);
 
 			$select = $db->prepare($req);
 			if ($datasetID != null) {
@@ -575,7 +577,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the information about a table format.
+	 * Get the information about a table format from the physical table name.
+	 *
+	 * This function is used in the proxy controller because we receive a physical table name from mapserver.
 	 *
 	 * @param String $schema the schema code
 	 * @param String $table the table name
@@ -720,7 +724,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			// Check the field type (result or criteria)
 			if ($mode == "result") {
 				$req .= " AND is_result = '1'";
-			} else if ($mode == "criteria") {
+			} else {
 				$req .= " AND is_criteria = '1'";
 			}
 
@@ -821,6 +825,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$formField->unit = $row['unit'];
 			$formField->decimals = $row['decimals'];
 			$formField->mask = $row['mask'];
+			$formField->position = $row['position'];
 
 			if ($this->useCache) {
 				$this->cache->save($formField, $key);
@@ -834,23 +839,22 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the range of a field.
 	 *
-	 * @param String $data the data
+	 * @param String $unit the unit
 	 * @return Genapp_Object_Metadata_Range
 	 */
-	public function getRange($data) {
+	public function getRange($unit) {
 
-		$this->logger->info('getRange : '.$data);
+		$this->logger->info('getRange : '.$unit);
 
 		$db = $this->getAdapter();
 		$req = "SELECT min, max
-                FROM data
-                LEFT JOIN range USING (unit)
-                WHERE data.data = ?";
+                FROM range
+                WHERE unit = ?";
 
 		$this->logger->info('getRange : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array($data));
+		$select->execute(array($unit));
 
 		$row = $select->fetch();
 		if ($row) {
@@ -862,49 +866,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			return null;
 		}
 
-	}
-
-	/**
-	 * Get the list of available columns of a table.
-	 *
-	 * @param String $format the logical name of the table
-	 * @return array[Genapp_Object_Metadata_TableField]
-	 */
-	public function getTableColumnsForDisplay($format) {
-		$db = $this->getAdapter();
-		$req = " SELECT field_mapping.src_data, field_mapping.src_format, field_mapping.dst_data, field_mapping.dst_format, ";
-		$req .= " table_field.column_name, data.label, data.definition, unit.type, unit.subtype, unit.unit ";
-		$req .= " FROM table_field ";
-		$req .= " LEFT JOIN field_mapping on (field_mapping.dst_format = table_field.format AND field_mapping.dst_data = table_field.data) ";
-		$req .= " LEFT JOIN form_field on (field_mapping.src_format = form_field.format AND field_mapping.src_data = form_field.data) ";
-		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
-		$req .= " LEFT JOIN unit on (data.unit = unit.unit)";
-		$req .= " WHERE table_field.format = ? ";
-		$req .= " AND mapping_type = 'FORM' ";
-		$req .= " AND form_field.is_result = '1'";
-		$req .= " ORDER BY table_field.position ";
-
-		$this->logger->info('getTableColumnsForDisplay : '.$req);
-
-		$select = $db->prepare($req);
-		$select->execute(array($format));
-
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$tableField = new Genapp_Object_Metadata_TableField();
-			$tableField->sourceFormName = $row['src_format'];
-			$tableField->sourceFieldName = $row['src_data'];
-			$tableField->data = $row['dst_data'];
-			$tableField->format = $row['dst_format'];
-			$tableField->label = $row['label'];
-			$tableField->definition = $row['definition'];
-			$tableField->unit = $row['unit'];
-			$tableField->subtype = $row['subtype'];
-			$tableField->columnName = $row['column_name'];
-			$result[] = $tableField;
-		}
-
-		return $result;
 	}
 
 	/**
@@ -1035,16 +996,15 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the ancestors of the table format in the table tree.
 	 *
 	 * @param String $tableFormat the table format
-	 * @param String $fieldName the name of the field that is using this table (used for complementary data)
 	 * @param String $schemaCode the name of the schema
 	 * @return Array[Genapp_Object_Metadata_TableTreeData]
 	 * @throws Exception if the table is not found
 	 */
-	public function getTablesTree($tableFormat, $fieldName, $schemaCode) {
+	public function getTablesTree($tableFormat, $schemaCode) {
 
-		$this->logger->info('getTablesTree : tableFormat:'.$tableFormat.' fieldName:'.$fieldName.' schemaCode:'.$schemaCode);
+		$this->logger->info('getTablesTree : tableFormat:'.$tableFormat.' schemaCode:'.$schemaCode);
 
-		$key = 'getTablesTree_'.$tableFormat.'_'.$fieldName.'_'.$schemaCode;
+		$key = 'getTablesTree_'.$tableFormat.'_'.$schemaCode;
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1077,13 +1037,12 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableTreeData->keys = $row['join_key'];
 			$tableTreeData->identifiers = $row['primary_key'];
 			$tableTreeData->tableName = $row['table_name'];
-			$tableTreeData->fieldName = $fieldName;
 
 			$result[] = $tableTreeData;
 
 			// Recursively call the function if needed
 			if ($tableTreeData->parentTable != "*") {
-				$result = array_merge($result, $this->getTablesTree($tableTreeData->parentTable, $fieldName, $schemaCode));
+				$result = array_merge($result, $this->getTablesTree($tableTreeData->parentTable, $schemaCode));
 			}
 
 			if ($this->useCache) {
@@ -1095,60 +1054,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		}
 	}
 
-	/**
-	 * Get fields available for aggregation or interpolation.
-	 *
-	 * @param String $datasetId the dataset identifier
-	 * @param Array[TableTreeData] $availableTables the available tables
-	 * @param String $schema the schema
-	 * @return Array[Genapp_Object_Metadata_Field]
-	 */
-	public function getQuantitativeFields($datasetId, $availableTables, $schema) {
-
-		$this->logger->info('getQuantitativeFields : '.$datasetId);
-
-		$db = $this->getAdapter();
-
-		// Get the list of available formats
-		$formats = "";
-		foreach ($availableTables as $availableTable) {
-			$formats .= "'".$availableTable->tableFormat."', ";
-		}
-		$formats = substr($formats, 0, -2);
-		$this->logger->info('availableTables : '.$formats);
-
-		// Prepare the request
-		$req = " SELECT dataset_fields.format, data.data, data.label, unit.unit, unit.type, unit.subtype ";
-		$req .= " FROM dataset_fields ";
-		$req .= " LEFT JOIN data using (data) ";
-		$req .= " LEFT JOIN unit using (unit) ";
-		$req .= " LEFT JOIN table_field on (dataset_fields.format = table_field.format and data.data = table_field.data) ";
-		$req .= " WHERE dataset_id = ? ";
-		$req .= " AND schema_code = '".$schema."' ";
-		$req .= " AND dataset_fields.format IN (".$formats.") ";
-		$req .= " AND table_field.is_aggregatable = '1' ";
-		$req .= " AND type IN ('NUMERIC', 'RANGE') ";
-
-		$this->logger->info('getQuantitativeFields : '.$req);
-
-		$select = $db->prepare($req);
-		$select->execute(array($datasetId));
-
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$field = new Genapp_Object_Metadata_Field();
-			$field->data = $row['data'];
-			$field->format = $row['format'];
-			$field->label = $row['label'];
-			$field->unit = $row['unit'];
-			$field->subtype = $row['subtype'];
-			$field->type = $row['type'];
-
-			$result[] = $field;
-		}
-
-		return $result;
-	}
 
 	/**
 	 * Get the labels of the children tables of a line of data.

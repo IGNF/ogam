@@ -89,7 +89,7 @@ class Genapp_Service_QueryService {
 				}
 				// For the RANGE field, get the min and max values
 				if ($field->type == "NUMERIC" && $field->subtype == "RANGE") {
-					$range = $this->metadataModel->getRange($field->data);
+					$range = $this->metadataModel->getRange($field->unit);
 					$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
 				}
 				$json .= '},';
@@ -795,7 +795,7 @@ class Genapp_Service_QueryService {
 				// For DYNAMIC and TREE subtypes, the list is populated using an ajax request
 			} else if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
 				// For the RANGE field, get the min and max values
-				$range = $this->metadataModel->getRange($criteria->data);
+				$range = $this->metadataModel->getRange($criteria->unit);
 				$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
 			} else {
 				$json .= ',{}'; // no options
