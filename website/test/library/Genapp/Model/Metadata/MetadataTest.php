@@ -153,8 +153,6 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertEquals(count($datasets), 2);
 	}
 
-
-
 	/**
 	 * Test la fonction getDatasetsForUpload.
 	 */
@@ -168,5 +166,297 @@ class MetadataTest extends ControllerTestCase {
 		//  On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($datasets), 2);
 	}
+
+	/**
+	 * Test la fonction getRequestedFiles.
+	 */
+	public function testGetRequestedFiles() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		$datasets = $metadataModel->getRequestedFiles('SPECIES');
+
+		//  On vérifie que l'on a ramené le bon compte de modalités
+		$this->assertEquals(count($datasets), 3);
+
+		// Les fichiers attendus sont ordonnés
+		$this->assertEquals($datasets[0]->format, 'LOCATION_FILE');
+		$this->assertEquals($datasets[1]->format, 'PLOT_FILE');
+		$this->assertEquals($datasets[2]->format, 'SPECIES_FILE');
+	}
+
+	/**
+	 * Test la fonction getFileFields.
+	 */
+	public function testGetFileFields() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		$fields = $metadataModel->getFileFields('LOCATION_FILE');
+
+		//  On vérifie que l'on a ramené le bon compte de modalités
+		$this->assertEquals(count($fields), 6);
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($fields[0]->data, 'PLOT_CODE');
+		$this->assertEquals($fields[1]->data, 'LATITUDE');
+		$this->assertEquals($fields[2]->data, 'LONGITUDE');
+		$this->assertEquals($fields[3]->data, 'COMMUNES');
+		$this->assertEquals($fields[4]->data, 'DEPARTEMENT');
+		$this->assertEquals($fields[5]->data, 'COMMENT');
+	}
+
+	/**
+	 * Test la fonction getTableFields.
+	 */
+	public function testGetTableFields() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		$fields = $metadataModel->getTableFields('RAW_DATA', 'LOCATION_DATA');
+
+
+
+		//  On vérifie que l'on a ramené le bon compte de modalités
+		$this->assertEquals(count($fields), 10);
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($fields['SUBMISSION_ID']->data, 'SUBMISSION_ID');
+		$this->assertEquals($fields['PROVIDER_ID']->data, 'PROVIDER_ID');
+		$this->assertEquals($fields['PLOT_CODE']->data, 'PLOT_CODE');
+		$this->assertEquals($fields['LATITUDE']->data, 'LATITUDE');
+		$this->assertEquals($fields['LONGITUDE']->data, 'LONGITUDE');
+		$this->assertEquals($fields['COMMUNES']->data, 'COMMUNES');
+		$this->assertEquals($fields['DEPARTEMENT']->data, 'DEPARTEMENT');
+		$this->assertEquals($fields['COMMENT']->data, 'COMMENT');
+		$this->assertEquals($fields['THE_GEOM']->data, 'THE_GEOM');
+		$this->assertEquals($fields['LINE_NUMBER']->data, 'LINE_NUMBER');
+
+		//
+		// Same thing but filter with a dataset specified
+		//
+		$fields = $metadataModel->getTableFields('RAW_DATA', 'LOCATION_DATA', 'SPECIES');
+
+
+		//  On vérifie que l'on a ramené le bon compte de modalités
+		$this->assertEquals(count($fields), 10);
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($fields['SUBMISSION_ID']->data, 'SUBMISSION_ID');
+		$this->assertEquals($fields['PROVIDER_ID']->data, 'PROVIDER_ID');
+		$this->assertEquals($fields['PLOT_CODE']->data, 'PLOT_CODE');
+		$this->assertEquals($fields['LATITUDE']->data, 'LATITUDE');
+		$this->assertEquals($fields['LONGITUDE']->data, 'LONGITUDE');
+		$this->assertEquals($fields['COMMUNES']->data, 'COMMUNES');
+		$this->assertEquals($fields['DEPARTEMENT']->data, 'DEPARTEMENT');
+		$this->assertEquals($fields['COMMENT']->data, 'COMMENT');
+		$this->assertEquals($fields['THE_GEOM']->data, 'THE_GEOM');
+		$this->assertEquals($fields['LINE_NUMBER']->data, 'LINE_NUMBER');
+
+	}
+
+	/**
+	 * Test la fonction getTableFormat.
+	 */
+	public function testGetTableFormat() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		$tableFormat = $metadataModel->getTableFormat('RAW_DATA', 'LOCATION_DATA');
+
+		//
+		$this->assertEquals($tableFormat->tableName, 'LOCATION');
+		$this->assertEquals($tableFormat->label, 'Location');
+		$this->assertEquals(count($tableFormat->primaryKeys), 2); // 2 colonnes dans la PK
+	}
+
+	/**
+	 * Test la fonction getTableFormatFromTableName.
+	 */
+	public function testGetTableFormatFromTableName() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		$tableFormat = $metadataModel->getTableFormatFromTableName('RAW_DATA', 'LOCATION');
+
+		//
+		$this->assertEquals($tableFormat->format, 'LOCATION_DATA');
+
+	}
+
+	/**
+	 * Test la fonction getForms.
+	 */
+	public function testGetForms() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		$forms = $metadataModel->getForms('SPECIES', 'RAW_DATA');
+
+		$this->assertEquals(count($forms), 3);
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($forms[0]->format, 'LOCATION_FORM');
+		$this->assertEquals($forms[1]->format, 'PLOT_FORM');
+		$this->assertEquals($forms[2]->format, 'SPECIES_FORM');
+	}
+
+	/**
+	 * Test la fonction getFormFields.
+	 */
+	public function testGetFormFields() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		//
+		// Get the result fields available for the form 'plot'
+		//
+		$formFields = $metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'result');
+
+		$this->assertEquals(count($formFields), 6);
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($formFields[0]->data, 'PROVIDER_ID');
+		$this->assertEquals($formFields[1]->data, 'PLOT_CODE');
+		$this->assertEquals($formFields[2]->data, 'CYCLE');
+		$this->assertEquals($formFields[3]->data, 'INV_DATE');
+		$this->assertEquals($formFields[4]->data, 'IS_FOREST_PLOT');
+		$this->assertEquals($formFields[5]->data, 'COMMENT');
+
+
+		//
+		// Same thing for the criterias
+		//
+		$formFields = $metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'criteria');
+
+		$this->assertEquals(count($formFields), 5);
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($formFields[0]->data, 'PROVIDER_ID');
+		$this->assertEquals($formFields[1]->data, 'PLOT_CODE');
+		$this->assertEquals($formFields[2]->data, 'CYCLE');
+		$this->assertEquals($formFields[3]->data, 'INV_DATE');
+		$this->assertEquals($formFields[4]->data, 'IS_FOREST_PLOT');
+
+	}
+
+	/**
+	 * Test la fonction getFormField.
+	 */
+	public function testGetFormField() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		$formField = $metadataModel->getFormField('PLOT_FORM', 'IS_FOREST_PLOT');
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($formField->label, 'Is a forest plot');
+		$this->assertEquals($formField->type, 'BOOLEAN');
+	}
+
+
+	/**
+	 * Test la fonction getRange.
+	 */
+	public function testGetRange() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		$range = $metadataModel->getRange('PERCENTAGE');
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($range->min, 0);
+		$this->assertEquals($range->max, 100);
+	}
+
+	/**
+	 * Test la fonction getFormToTableMapping.
+	 */
+	public function testGetFormToTableMapping() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		// first we get a form field
+		$formField = $metadataModel->getFormField('PLOT_FORM', 'IS_FOREST_PLOT');
+
+		// then we get the corresponding table field
+		$tableField = $metadataModel->getFormToTableMapping('RAW_DATA', $formField);
+
+		//$this->logger->debug('testGetFormToTableMapping : '.print_r($tableField,true));
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($tableField->columnName, 'IS_FOREST_PLOT');
+	}
+
+	/**
+	 * Test la fonction getTableToFormMapping.
+	 */
+	public function testGetTableToFormMapping() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		// first we get a form field
+		$formField = $metadataModel->getFormField('PLOT_FORM', 'IS_FOREST_PLOT');
+
+		// then we get the corresponding table field
+		$tableField = $metadataModel->getFormToTableMapping('RAW_DATA', $formField);
+
+		// then we get back the form field
+		$formField2 = $metadataModel->getTableToFormMapping($tableField);
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($formField, $formField2);
+	}
+
+	/**
+	 * Test la fonction getTablesTree.
+	 */
+	public function testGetTablesTree() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		$tablesTree = $metadataModel->getTablesTree('SPECIES_DATA', 'RAW_DATA');
+
+		$this->assertEquals(count($tablesTree), 3);
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($tablesTree[0]->tableFormat, 'SPECIES_DATA');
+		$this->assertEquals($tablesTree[1]->tableFormat, 'PLOT_DATA');
+		$this->assertEquals($tablesTree[2]->tableFormat, 'LOCATION_DATA');
+	}
+
+	/**
+	 * Test la fonction getChildrenTableLabels.
+	 */
+	public function testGetChildrenTableLabels() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		// First we get a table format
+		$tableFormat = $metadataModel->getTableFormat('RAW_DATA', 'PLOT_DATA');
+
+		// Then we get the available children
+		$childTables = $metadataModel->getChildrenTableLabels($tableFormat);
+
+		$this->assertEquals(count($childTables), 2);
+
+		// Les données attendues sont ordonnées
+		$this->assertEquals($childTables['SPECIES_DATA'], 'Species Data');
+		$this->assertEquals($childTables['TREE_DATA'], 'Tree data');
+	}
+
 
 }

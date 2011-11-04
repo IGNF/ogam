@@ -328,7 +328,7 @@ class ProxyController extends AbstractOGAMController {
 							$tableFormat = $metadataModel->getTableFormatFromTableName($schema, $table);
 							$format = $tableFormat->format;
 							// Get the table fields
-							$tableFields = $metadataModel->getTableFields(null, $schema, $format);
+							$tableFields = $metadataModel->getTableFields($schema, $format, null);
 							$tFOrdered = array();
 							foreach ($tableFields as $tableField) {
 								$tFOrdered[$tableField->columnName] = $tableField;

@@ -152,7 +152,7 @@ class DataEditionController extends AbstractOGAMController {
 			$elem->addValidator(new Zend_Validate_Float(array('locale' => 'en_EN')));
 
 			// Check min and max
-			$range = $this->metadataModel->getRange($tableField->data);
+			$range = $this->metadataModel->getRange($tableField->unit);
 			$elem->addValidator(new Zend_Validate_LessThan(array('max' => $range->max)));
 			$elem->addValidator(new Zend_Validate_GreaterThan(array('min' => $range->min)));
 			$elem->setValue($tableField->value);
