@@ -826,6 +826,11 @@ listeners: {
                         handler:this.exportCSV.createDelegate(this,['csv-export']),
                         iconCls:'genapp-query-center-panel-grid-csv-export-menu-item-icon'
                     }));
+                    csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
+                        text:'KML export',
+                        handler:this.exportCSV.createDelegate(this,['kml-export']),
+                        iconCls:'genapp-query-center-panel-grid-csv-export-menu-item-icon'
+                    }));
                 }                
                 // Hide the csv export button if there are no menu items
                 if(Ext.isEmpty(csvExportMenuItems)){
