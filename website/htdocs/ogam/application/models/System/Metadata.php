@@ -103,5 +103,45 @@ class Application_Model_System_Metadata extends Zend_Db_Table_Abstract {
 		return $fields;
 	
 	}
+	
+	/**
+	* List the available tables.
+	*
+	* @return The list of tables
+	* @throws an exception if the request is not found
+	*/
+	public function getForeignKeys() {
+		$db = $this->getAdapter();
+	
+		$keys = array();
+	
+		// Get the request
+		$req = " SELECT UPPER(t.table_name) as table, UPPER(st.table_name) as source_table, UPPER(join_key) as keys ";
+		$req .= " FROM table_tree ";
+		$req .= " INNER JOIN table_format t on (child_table = t.format)";
+		$req .= " INNER JOIN table_format st on (parent_table = st.format)";
+		$req .= " WHERE parent_table != '*' ";
+	
+		$this->logger->info('getForeignKeys : '.$req);
+	
+		$query = $db->prepare($req);
+		$query->execute(array());
+	
+		$results = $query->fetchAll();
+		foreach ($results as $result) {
+	
+			$key = new Application_Object_System_ForeignKey();
+
+			$key->table = $result['table'];
+			$key->sourceTable = $result['source_table'];
+			$key->setForeignKeys($result['keys']);
+
+			$keys[$key->table.'__'.$key->sourceTable] = $key;
+	
+		}
+	
+		return $keys;
+	
+	}
 
 }

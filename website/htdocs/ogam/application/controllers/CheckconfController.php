@@ -217,6 +217,39 @@ class CheckconfController extends AbstractOGAMController {
 		}
 		$this->view->fieldTypeMsg = $fieldTypeMsg;
 		$this->view->missingFieldsMsg = $missingFieldsMsg;
+		
+		
+		
+		
+		//
+		// Check the foreign keys
+		//
+		
+		$expectedFKs = $this->metadataSystemModel->getForeignKeys();
+		
+		$existingFKs = $this->postgreSQLModel->getForeignKeys();
+		
+		$missingFKsMsg = array();
+		foreach ($expectedFKs as $foreignKey) {
+			
+			$id = $foreignKey->table.'__'.$foreignKey->sourceTable;
+			
+			if (!array_key_exists($id, $existingFKs)) {
+				$missingFKsMsg[] = 'Foreign key between table '.$foreignKey->table.' and table '.$foreignKey->sourceTable.' described in the metadata doesn\'t exist in the system';
+			} else {
+				$foundFK = $existingTables[$id];
+		
+				//
+				//  Check the primary keys
+				//
+				$diff = array_diff($foundFK->foreignKeys, $foreignKey->foreignKeys);
+				if (!empty($diff)) {
+					$missingFKsMsg[] = 'Foreign key '.$foundFK->foreignKeys.' between table '.$foreignKey->table.' and table '.$foreignKey->sourceTable.' does not match the metadata definition : '.$foreignKey->foreignKeys;
+				}
+		
+			}
+		}
+		$this->view->missingFKsMsg = $missingFKsMsg;
 
 	}
 }
