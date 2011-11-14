@@ -122,9 +122,7 @@ COMMENT ON COLUMN legend.position IS 'Position of the layer in its group';
 /*==============================================================*/
 CREATE TABLE bounding_box
 (
-  code_country character varying NOT NULL, -- code_country get in the metadata code table
-  country_name character varying, -- the name of the country
-  nuts_code character varying, -- the NUTS_0 code
+  provider_id character varying NOT NULL, -- code_country get in the metadata code table
   bb_xmin numeric, -- min longitude coordinate
   bb_ymin numeric, -- min latitude coordinate
   bb_xmax numeric, -- max longitude coordinate
@@ -133,16 +131,12 @@ CREATE TABLE bounding_box
   CONSTRAINT bounding_box_pk PRIMARY KEY (code_country)
 ) WITHOUT OIDS;
 
-COMMENT ON COLUMN bounding_box.code_country IS 'The code of the country (as found in the metadata code table)';
-COMMENT ON COLUMN bounding_box.country_name IS 'The name of the country';
-COMMENT ON COLUMN bounding_box.nuts_code IS 'The NUTS_0 code';
+COMMENT ON COLUMN bounding_box.provider_id IS 'The provider id (as found in the metadata code table)';
 COMMENT ON COLUMN bounding_box.bb_xmin IS 'Min longitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_ymin IS 'Min latitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_xmax IS 'Max longitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_ymax IS 'Max latitude coordinate';
-COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the country';
-
-
+COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the data provider';
 
 SET SEARCH_PATH = mapping, public;
 
