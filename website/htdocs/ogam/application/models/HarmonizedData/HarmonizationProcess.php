@@ -3,7 +3,6 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'harmonized_data/HarmonizationProcess.php';
 
 /**
  * This is a model allowing access to the harmonization process information.
