@@ -185,6 +185,12 @@ class UserController extends Zend_Controller_Action {
 				// Get the User Permissions
 				$permissions = $this->roleModel->getRolePermissions($role->roleCode);
 				$userSession->permissions = $permissions;
+				
+				// Get the accessible schemas
+				$schemas = $this->roleModel->getRoleSchemas($role->roleCode);
+				$userSession->schemas = $schemas;
+				
+				$this->logger->debug('schemas '.print_r($schemas,true));
 
 				// Redirect to the main page
 				$configuration = Zend_Registry::get("configuration");

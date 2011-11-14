@@ -107,6 +107,33 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 
 		return $permissions;
 	}
+	
+	/**
+	* Get the schemas accessible by the role.
+	*
+	* @param String the role code
+	* @return Array[schemaCode]
+	*/
+	public function getRoleSchemas($roleCode) {
+		
+		$db = $this->getAdapter();
+	
+		$req = " SELECT schema_code ";
+		$req .= " FROM role_to_schema ";
+		$req .= " WHERE role_code = ?";
+		$this->logger->info('getRoleSchemas : '.$req);
+	
+		$query = $db->prepare($req);
+		$query->execute(array($roleCode));
+	
+		$results = $query->fetchAll();
+		$schemas = array();
+		foreach ($results as $result) {
+			$schemas[] = $result['schema_code'];
+		}
+	
+		return $schemas;
+	}
 
 	/**
 	 * Get the all the available permissions.
@@ -182,7 +209,38 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 				$query->execute(array($role->roleCode, $permission));
 			}
 		}
-
+	}
+	
+	/**
+	* Update the role schemas.
+	*
+	* @param Role role
+	* @param Array[String] schemas
+	*/
+	public function updateRoleSchemas($role, $schemas) {
+		$db = $this->getAdapter();
+	
+		// Clean the previous permissions
+		$req = "DELETE FROM role_to_schema";
+		$req .= " WHERE role_code = ?";
+	
+		$this->logger->info('deleteRoleSchemas : '.$req);
+	
+		$query = $db->prepare($req);
+		$query->execute(array($role->roleCode));
+	
+		// Insert the new ones
+		if (!empty($schemas)) {
+			foreach ($schemas as $schema) {	
+				$req = "INSERT INTO role_to_schema(role_code, schema_code) VALUES (?, ?)";
+	
+				$this->logger->info('updateRoleSchemas : '.$req);
+	
+				$query = $db->prepare($req);
+				$query->execute(array($role->roleCode, $schema));
+			}
+		}
+	
 	}
 
 	/**
@@ -212,6 +270,12 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 */
 	public function deleteRole($roleCode) {
 		$db = $this->getAdapter();
+		
+		// Delete the schemas linked to the role
+		$req = " DELETE FROM role_to_schema WHERE role_code = ?";
+		$this->logger->info('deleteRoleSchemas : '.$req);
+		$query = $db->prepare($req);
+		$query->execute(array($roleCode));
 
 		// Delete the permissions linked to the role
 		$req = " DELETE FROM permission_per_role WHERE role_code = ?";
@@ -222,7 +286,6 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		// Delete the role
 		$req = " DELETE FROM role WHERE role_code = ?";
 		$this->logger->info('deleteRole : '.$req);
-
 		$query = $db->prepare($req);
 		$query->execute(array($roleCode));
 	}

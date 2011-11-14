@@ -49,7 +49,7 @@ if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {
 </li>
 <?php
 }
-// if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
+if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
 ?>
 <!-- 
 <li>
@@ -57,11 +57,11 @@ if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {
 </li>
  -->
 <?php
-// }
-if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
+}
+if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_array("RAW_DATA", $userSession->schemas)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
+<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/schema/RAW_DATA" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
 </li>
 <?php
 } 
@@ -73,10 +73,10 @@ if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions))
 <?php
 }
 
-if (!empty($permissions) && array_key_exists('DATA_QUERY_HARMONIZED',$permissions)) {	
+if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_array("HARMONIZED_DATA", $userSession->schemas)) {
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'harmonizationquery'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
+<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/schema/HARMONIZED_DATA" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
 </li>
 <?php
 }

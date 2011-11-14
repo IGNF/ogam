@@ -115,7 +115,7 @@ class UsermanagementController extends AbstractOGAMController {
 		}
 
 		//
-		// Add the country element
+		// Add the provider element
 		//
 		$providerIdElem = $form->createElement('select', 'providerId');
 		$providerIdElem->setLabel('Provider');
@@ -230,9 +230,10 @@ class UsermanagementController extends AbstractOGAMController {
 	 * @param String the mode of the form ('create' or 'edit')
 	 * @param Role the role
 	 * @param Array[String] the permissions
+	 * @param Array[String] the schemas
 	 * @return a Zend Form
 	 */
-	private function _getRoleForm($mode = null, $role = null, $permissions = null) {
+	private function _getRoleForm($mode = null, $role = null, $permissions = null, $schemas = null) {
 
 		$form = new Zend_Form();
 		$form->setAction($this->baseUrl.'/usermanagement/validate-role');
@@ -280,6 +281,20 @@ class UsermanagementController extends AbstractOGAMController {
 			$rolepermissions->setValue(array_keys($permissions)); // set the selected permissions
 		}
 		$rolepermissions->setLabel('Permissions');
+		
+		// Schemas
+		// get all available schemas
+		$allschemas = $this->metadataModel->getSchemas();
+		$schemasList = array();
+		foreach ($allschemas as $schema) {
+			$schemasList[$schema->code] = $schema->label; 
+		}		
+		$roleschemas = new Zend_Form_Element_MultiCheckbox('roleschemas', array(
+					'multiOptions' => $schemasList)); // set the list of available schemas
+		if (!empty($schemas)) {
+			$roleschemas->setValue($schemas); // set the selected schemas
+		}
+		$roleschemas->setLabel('Schemas');
 
 		//
 		// Create the submit button
@@ -299,6 +314,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$form->addElement($roleDefinition);
 		$form->addElement($modeElement);
 		$form->addElement($rolepermissions);
+		$form->addElement($roleschemas);
 		$form->addElement($submitElement);
 
 		return $form;
@@ -481,6 +497,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$roleLabel = $f->filter($values['roleLabel']);
 			$roleDefinition = $f->filter($values['roleDefinition']);
 			$rolepermissions = $values['rolepermissions'];
+			$schemas = $values['roleschemas'];
 
 			// Build the user
 			$role = new Application_Object_Website_Role();
@@ -498,6 +515,9 @@ class UsermanagementController extends AbstractOGAMController {
 
 				// Update the permissions
 				$this->roleModel->updateRolePermissions($role, $rolepermissions);
+				
+				// Update the schemas
+				$this->roleModel->updateRoleSchemas($role, $schemas);
 
 			} else {
 				//
@@ -509,6 +529,9 @@ class UsermanagementController extends AbstractOGAMController {
 
 				// Update the permissions
 				$this->roleModel->updateRolePermissions($role, $rolepermissions);
+				
+				// Update the schemas
+				$this->roleModel->updateRoleSchemas($role, $schemas);
 
 			}
 
@@ -629,9 +652,12 @@ class UsermanagementController extends AbstractOGAMController {
 
 		// Get the Permissions
 		$permissions = $this->roleModel->getRolePermissions($role->roleCode);
-
+		
+		// Get the Schemas
+		$schemas = $this->roleModel->getRoleSchemas($role->roleCode);
+		
 		// Generate the form
-		$form = $this->_getRoleForm('edit', $role, $permissions);
+		$form = $this->_getRoleForm('edit', $role, $permissions, $schemas);
 		$this->view->form = $form;
 
 		$this->render('show-edit-role');
@@ -647,7 +673,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->logger->debug('showCreateRoleAction');
 
 		// Generate the form
-		$form = $this->_getRoleForm('create', null, null);
+		$form = $this->_getRoleForm('create', null, null, null);
 		$this->view->form = $form;
 
 		// Eventually add an error message

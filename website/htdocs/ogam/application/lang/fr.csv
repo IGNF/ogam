@@ -135,7 +135,8 @@ Welcome;Bienvenue sur le site web OGAM !
 Data Integration;Integration de données
 Data Edition;Edition des données
 Visualize Raw Data;Visualisation des données brutes
-Query Data;Visualisation des données brutes
+Query Data (RAW_DATA);Visualisation des données brutes
+Query Data (HARMONIZED_DATA);Visualisation des données harmonisées
 Data Harmonization;Harmonisation des données
 Visualize Harmonized Data;Visualisation des données harmonisées
 Query Harmonized Data;Visualisation des données harmonisées

@@ -9,6 +9,27 @@ require_once TEST_PATH.'ControllerTestCase.php';
  * @package controllers
  */
 class MetadataTest extends ControllerTestCase {
+	
+	/**
+	* Test la fonction getSchemas.
+	*/
+	public function testGetSchemas() {
+	
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+	
+		// On vérifie que le user "admin" existe
+		$schemas = $metadataModel->getSchemas();
+	
+		// On vérifie que l'on a ramené la bonne modalité
+		$this->assertEquals(count($schemas), 5);
+		
+		$rawSchema = $schemas['RAW_DATA'];
+		$this->assertEquals($rawSchema->code, 'RAW_DATA');
+		$this->assertEquals($rawSchema->name, 'RAW_DATA');
+		$this->assertEquals($rawSchema->label, 'Raw Data');
+		$this->assertEquals($rawSchema->description, 'Contains raw data');
+	}
 
 	/**
 	 * Test la fonction getModes.

@@ -22,7 +22,7 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the center and defaut zoom level of the map for the country.
+	 * Get the center and defaut zoom level of the map for the provider.
 	 *
 	 * @param String $providerId the provider identifier
 	 * @return Center the center

@@ -58,6 +58,34 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		return $result;
 	}
+	
+	/**
+	* Get the available schemas.
+	*
+	* @return Array[schemaCode]
+	*/
+	public function getSchemas() {
+		$db = $this->getAdapter();
+		$req = "SELECT * FROM table_schema ORDER BY table_schema";
+	
+		$this->logger->info('getSchemas : '.$req);
+	
+		$select = $db->prepare($req);
+		$select->execute(array());
+	
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$schema = new Genapp_Object_Metadata_Schema();
+			$schema->code = $row['schema_code'];
+			$schema->name = $row['schema_name'];
+			$schema->label = $row['label'];
+			$schema->description = $row['description'];
+			
+			$result[$schema->code] = $schema;
+		}
+	
+		return $result;
+	}
 
 
 	/**

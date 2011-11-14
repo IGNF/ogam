@@ -38,7 +38,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$req .= " WHERE (name is not null) ";
 		$req .= " AND legend.is_layer = 1 ";
 
-		// Check the country code
+		// Check the provider id
 		if ($providerId == null) {
 			$req .= ' AND provider_id IS NULL';
 		} else {
@@ -170,7 +170,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$req .= " LEFT OUTER JOIN layer_definition  ON (legend.name = layer_definition.layer_name) ";
 		$req .= " WHERE parent_id = '".$parentId."'";
 
-		// Check the country code
+		// Check the provider id
 		if ($providerId == null) {
 			$req .= ' AND provider_id IS NULL';
 		} else {

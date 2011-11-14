@@ -27,7 +27,8 @@ Welcome;Welcome to the OGAM web site !
 Data Integration;Data Integration
 Data Edition;Data Edition
 Visualize Raw Data;Visualize Raw Data
-Query Data;Visualize Raw Data
+Query Data (RAW_DATA);Visualize Raw Data
+Query Data (HARMONIZED_DATA);Visualize Harmonized Data
 Data Harmonization;Data Harmonization
 Visualize Harmonized Data;Visualize Harmonized Data
 Query Harmonized Data;Visualize Harmonized Data

@@ -22,7 +22,7 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 	}
 
 	/**
-	 * Get the status of the last harmonization process for a given country and dataset
+	 * Get the status of the last harmonization process for a given provider and dataset
 	 *
 	 * @param Submission $activeSubmission a submission
 	 * @return HarmonizationProcess The completed process info

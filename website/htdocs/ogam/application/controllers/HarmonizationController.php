@@ -6,7 +6,7 @@
 require_once 'AbstractOGAMController.php';
 
 /**
- * HarmonizationController is the controller that manages the data harmonization process.
+ * HarmonizationController is the controller that manages the data harmonization process (copy data from one schema to another).
  * @package controllers
  */
 class HarmonizationController extends AbstractOGAMController {
