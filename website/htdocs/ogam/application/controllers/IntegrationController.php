@@ -410,11 +410,7 @@ class IntegrationController extends AbstractOGAMController {
 
 		// Forward the user to the next step
 		$submission = $this->submissionModel->getSubmission($submissionId);
-		if ($submission->type == 'LOCATION') {
-			$this->_redirector->gotoUrl('/integration/show-plot-location-page');
-		} else {
-			$this->_redirector->gotoUrl('/integration/show-data-page');
-		}
+		$this->_redirector->gotoUrl('/integration/show-data-page');		
 	}
 
 	/**
