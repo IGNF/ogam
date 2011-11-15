@@ -128,7 +128,7 @@ CREATE TABLE bounding_box
   bb_xmax numeric, -- max longitude coordinate
   bb_ymax numeric, -- max latitude coordinate
   zoom_level int, -- default zoom level for the country
-  CONSTRAINT bounding_box_pk PRIMARY KEY (code_country)
+  CONSTRAINT bounding_box_pk PRIMARY KEY (provider_id)
 ) WITHOUT OIDS;
 
 COMMENT ON COLUMN bounding_box.provider_id IS 'The provider id (as found in the metadata code table)';
