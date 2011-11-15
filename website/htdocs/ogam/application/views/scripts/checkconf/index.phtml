@@ -17,6 +17,19 @@ foreach ($this->phpParameters as $param) {
 <H2><?= $this->translate('Database');?>&nbsp;*</H2>
 
 
+<H4>Checking for missing schemas</H4>
+<?php 
+if (count($this->missingSchemasMsg)==0) {
+	echo '<SPAN style="color:green;">ok</SPAN>';
+} else {
+	echo '<UL>';
+	foreach ($this->missingSchemasMsg as $msg) {
+		echo '<LI><SPAN style="color:red;">'.$msg.'</SPAN></LI>';
+	}
+	echo '</UL>';
+}
+?>
+
 
 <H4>Checking for missing tables</H4>
 <?php 
@@ -25,7 +38,7 @@ if (count($this->missingTablesMsg)==0) {
 } else {
 	echo '<UL>';
 	foreach ($this->missingTablesMsg as $msg) {
-		echo '<LI><B>'.$msg.'</B></LI>';
+		echo '<LI><SPAN style="color:red;">'.$msg.'</SPAN></LI>';
 	}
 	echo '</UL>';
 }
@@ -38,7 +51,7 @@ if (count($this->primaryKeysMsg)==0) {
 } else {
 	echo '<UL>';
 	foreach ($this->primaryKeysMsg as $msg) {
-		echo '<LI><B>'.$msg.'</B></LI>';
+		echo '<LI><SPAN style="color:red;">'.$msg.'</SPAN></LI>';
 	}
 	echo '</UL>';
 }
@@ -52,7 +65,7 @@ if (count($this->missingFieldsMsg)==0) {
 } else {
 	echo '<UL>';
 	foreach ($this->missingFieldsMsg as $msg) {
-		echo '<LI><B>'.$msg.'</B></LI>';
+		echo '<LI><SPAN style="color:red;">'.$msg.'</SPAN></LI>';
 	}
 	echo '</UL>';
 }
@@ -66,7 +79,7 @@ if (count($this->fieldTypeMsg)==0) {
 } else {
 	echo '<UL>';
 	foreach ($this->fieldTypeMsg as $msg) {
-		echo '<LI><B>'.$msg.'</B></LI>';
+		echo '<LI><SPAN style="color:red;">'.$msg.'</SPAN></LI>';
 	}
 	echo '</UL>';
 }
@@ -79,7 +92,7 @@ if (count($this->missingFKsMsg)==0) {
 } else {
 	echo '<UL>';
 	foreach ($this->missingFKsMsg as $msg) {
-		echo '<LI><B>'.$msg.'</B></LI>';
+		echo '<LI><SPAN style="color:red;">'.$msg.'</SPAN></LI>';
 	}
 	echo '</UL>';
 }

@@ -54,7 +54,7 @@ class Application_Model_System_Postgresql extends Zend_Db_Table_Abstract {
 
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
-				
+
 			$table = new Application_Object_System_Table();
 
 			$table->tableName = $result['table'];
@@ -144,7 +144,7 @@ class Application_Model_System_Postgresql extends Zend_Db_Table_Abstract {
 		foreach ($results as $result) {
 
 			$key = new Application_Object_System_ForeignKey();
-			
+
 			$this->logger->info('found  : '.$result['table']);
 
 			$key->table = $result['table'];
@@ -160,5 +160,34 @@ class Application_Model_System_Postgresql extends Zend_Db_Table_Abstract {
 	}
 
 
+	/**
+	 * List the schemas.
+	 *
+	 * @return Array[String] The list of schemas
+	 * @throws an exception if the request is not found
+	 */
+	public function getSchemas() {
+		$db = $this->getAdapter();
+
+		$schemas = array();
+
+		// Get the request
+		$req = " SELECT DISTINCT UPPER(table_schema) as table_schema ";
+		$req .= " FROM  information_schema.tables ";
+		$req .= " WHERE table_schema NOT IN ('pg_catalog', 'information_schema') ";
+
+		$this->logger->info('getSchemas : '.$req);
+
+		$query = $db->prepare($req);
+		$query->execute(array());
+
+		$results = $query->fetchAll();
+		foreach ($results as $result) {
+			$schemas[] = $result['table_schema'];
+		}
+
+		return $schemas;
+
+	}
 
 }

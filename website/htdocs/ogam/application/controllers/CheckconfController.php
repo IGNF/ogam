@@ -16,6 +16,7 @@ class CheckconfController extends AbstractOGAMController {
 	 */
 	private $postgreSQLModel;
 	private $metadataSystemModel;
+	private $metadataModel;
 
 	/**
 	 * Initialise the controler
@@ -31,6 +32,7 @@ class CheckconfController extends AbstractOGAMController {
 
 		$this->postgreSQLModel = new Application_Model_System_Postgresql();
 		$this->metadataSystemModel = new Application_Model_System_Metadata();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 	}
 
 	/**
@@ -117,40 +119,79 @@ class CheckconfController extends AbstractOGAMController {
 
 		$this->logger->debug('Checking database');
 
-		//
+		// Check the schemas
+		$this->_checkSchemas();
+
 		// Check if the expected tables are found
-		//
+		$this->_checkTables();
 
-		$expectedTables = $this->metadataSystemModel->getTables();
+		// Check if the expected fields are found
+		$this->_checkFields();
 
-		$existingTables = $this->postgreSQLModel->getTables();
+		// Checks the foreign keys
+		$this->_checkForeignKeys();
 
-		$missingTablesMsg = array();
-		$primaryKeysMsg = array();
-		foreach ($expectedTables as $key => $table) {
-			if (!array_key_exists($key, $existingTables)) {
-				$missingTablesMsg[] = 'Expected table '.$table->tableName.' of schema '.$table->schemaName.' is not found';
+	}
+
+	/**
+	 * Checks the schemas.
+	 */
+	private function _checkSchemas() {
+
+		// Get the list of expected schema objects
+		$expectedSchemas = $this->metadataModel->getSchemas();
+
+		$existingSchemas = $this->postgreSQLModel->getSchemas();
+
+		$missingSchemasMsg = array();
+		foreach ($expectedSchemas as $expectedSchema) {
+				
+			if (!in_array(strtoupper($expectedSchema->name), $existingSchemas)) {
+				$missingSchemasMsg[] = 'Schema '.$expectedSchema->label.' described in the metadata doesn\'t exist in the system';
+			}
+		}
+		$this->view->missingSchemasMsg = $missingSchemasMsg;
+
+	}
+
+	/**
+	 * Checks the foreign keys.
+	 */
+	private function _checkForeignKeys() {
+
+
+		$expectedFKs = $this->metadataSystemModel->getForeignKeys();
+
+		$existingFKs = $this->postgreSQLModel->getForeignKeys();
+
+		$missingFKsMsg = array();
+		foreach ($expectedFKs as $foreignKey) {
+
+			$id = $foreignKey->table.'__'.$foreignKey->sourceTable;
+
+			if (!array_key_exists($id, $existingFKs)) {
+				$missingFKsMsg[] = 'Foreign key between table '.$foreignKey->table.' and table '.$foreignKey->sourceTable.' described in the metadata doesn\'t exist in the system';
 			} else {
-				$foundTable = $existingTables[$key];
+				$foundFK = $existingTables[$id];
 
 				//
 				//  Check the primary keys
 				//
-				$diff = array_diff($foundTable->primaryKeys, $table->primaryKeys);
+				$diff = array_diff($foundFK->foreignKeys, $foreignKey->foreignKeys);
 				if (!empty($diff)) {
-					$primaryKeysMsg[] = 'PK '.$foundTable->primaryKeys.' not compatible with metadata PK '.$table->primaryKeys;
+					$missingFKsMsg[] = 'Foreign key '.$foundFK->foreignKeys.' between table '.$foreignKey->table.' and table '.$foreignKey->sourceTable.' does not match the metadata definition : '.$foreignKey->foreignKeys;
 				}
 
 			}
 		}
-		$this->view->missingTablesMsg = $missingTablesMsg;
-		$this->view->primaryKeysMsg = $primaryKeysMsg;
+		$this->view->missingFKsMsg = $missingFKsMsg;
 
+	}
 
-		//
-		// Check if the expected fields are found
-		//
-
+	/**
+	 * Check if the expected fields are found.
+	 */
+	private function _checkFields() {
 		$expectedFields = $this->metadataSystemModel->getFields();
 
 		$existingFields = $this->postgreSQLModel->getFields();
@@ -217,39 +258,38 @@ class CheckconfController extends AbstractOGAMController {
 		}
 		$this->view->fieldTypeMsg = $fieldTypeMsg;
 		$this->view->missingFieldsMsg = $missingFieldsMsg;
-		
-		
-		
-		
-		//
-		// Check the foreign keys
-		//
-		
-		$expectedFKs = $this->metadataSystemModel->getForeignKeys();
-		
-		$existingFKs = $this->postgreSQLModel->getForeignKeys();
-		
-		$missingFKsMsg = array();
-		foreach ($expectedFKs as $foreignKey) {
-			
-			$id = $foreignKey->table.'__'.$foreignKey->sourceTable;
-			
-			if (!array_key_exists($id, $existingFKs)) {
-				$missingFKsMsg[] = 'Foreign key between table '.$foreignKey->table.' and table '.$foreignKey->sourceTable.' described in the metadata doesn\'t exist in the system';
+	}
+
+
+	/**
+	 * Check if the expected tables are found.
+	 */
+	private function _checkTables() {
+
+		$expectedTables = $this->metadataSystemModel->getTables();
+
+		$existingTables = $this->postgreSQLModel->getTables();
+
+		$missingTablesMsg = array();
+		$primaryKeysMsg = array();
+		foreach ($expectedTables as $key => $table) {
+			if (!array_key_exists($key, $existingTables)) {
+				$missingTablesMsg[] = 'Expected table '.$table->tableName.' of schema '.$table->schemaName.' is not found';
 			} else {
-				$foundFK = $existingTables[$id];
-		
+				$foundTable = $existingTables[$key];
+
 				//
 				//  Check the primary keys
 				//
-				$diff = array_diff($foundFK->foreignKeys, $foreignKey->foreignKeys);
+				$diff = array_diff($foundTable->primaryKeys, $table->primaryKeys);
 				if (!empty($diff)) {
-					$missingFKsMsg[] = 'Foreign key '.$foundFK->foreignKeys.' between table '.$foreignKey->table.' and table '.$foreignKey->sourceTable.' does not match the metadata definition : '.$foreignKey->foreignKeys;
+					$primaryKeysMsg[] = 'PK '.$foundTable->primaryKeys.' not compatible with metadata PK '.$table->primaryKeys;
 				}
-		
+
 			}
 		}
-		$this->view->missingFKsMsg = $missingFKsMsg;
-
+		$this->view->missingTablesMsg = $missingTablesMsg;
+		$this->view->primaryKeysMsg = $primaryKeysMsg;
 	}
+
 }
