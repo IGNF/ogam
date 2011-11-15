@@ -53,6 +53,19 @@ COMMENT ON COLUMN ROLE.ROLE_CODE IS 'Code of the role';
 COMMENT ON COLUMN ROLE.ROLE_LABEL IS 'Label';
 COMMENT ON COLUMN ROLE.ROLE_DEFINITION IS 'Definition of the role';
 
+/*==============================================================*/
+/* Table : ROLE_TO_SCHEMA                                                 */
+/*==============================================================*/
+create table ROLE_TO_SCHEMA (
+ROLE_CODE            VARCHAR(36)             	not null,
+SCHEMA_CODE       	 VARCHAR(100)             	not null,
+constraint PK_ROLE_TO_SCHEMA  primary key (ROLE_CODE, SCHEMA_CODE)
+);
+
+COMMENT ON TABLE ROLE_TO_SCHEMA IS 'A link a role to a list of accessible database schemas';
+COMMENT ON COLUMN ROLE_TO_SCHEMA.ROLE_CODE IS 'Code of the role';
+COMMENT ON COLUMN ROLE_TO_SCHEMA.SCHEMA_CODE IS 'Code of the schema (as defined in the metadata)';
+
 
 /*==============================================================*/
 /* Table : ROLE_TO_USER                                         */
