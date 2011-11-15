@@ -172,7 +172,7 @@ class CheckconfController extends AbstractOGAMController {
 			if (!array_key_exists($id, $existingFKs)) {
 				$missingFKsMsg[] = 'Foreign key between table '.$foreignKey->table.' and table '.$foreignKey->sourceTable.' described in the metadata doesn\'t exist in the system';
 			} else {
-				$foundFK = $existingTables[$id];
+				$foundFK = $existingFKs[$id];
 
 				//
 				//  Check the primary keys
