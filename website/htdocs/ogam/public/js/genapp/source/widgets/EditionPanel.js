@@ -91,7 +91,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		 * @type Ext.data.JsonStore
 		 */
 		this.formDS = new Ext.data.JsonStore({
-			url : Genapp.base_url + 'dataedition/ajaxgeteditform/' + this.dataId,
+			url : Genapp.base_url + 'dataedition/ajax-get-edit-form/' + this.dataId,
 			method : 'POST',
 			autoLoad : true,
 			fields : [ {
@@ -147,7 +147,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 							// alert(records[i].data);
 							formItems.push(this.getFieldConfig(records[i].data, true));
 						}
-						console.log(formItems);
 						this.dataEditFS.add(formItems);
 						this.dataEditForm.doLayout();
 					}

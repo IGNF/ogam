@@ -117,6 +117,78 @@ class Genapp_Service_QueryService {
 	}
 
 	/**
+	 * Generate the JSON structure corresponding to a field to edit.
+	 *
+	 * @param FormField $field a form field
+	 */
+	private function _generateEditFieldJSON($field) {
+
+		$json .= "{".$field->toEditJSON();
+		// For the SELECT field, get the list of options
+		if ($field->type == "CODE" || $field->type == "ARRAY") {
+
+			if ($field->subtype == "MODE") {
+				$options = $this->metadataModel->getModes($field->unit);
+				$json .= ',"params":{"options":[';
+				foreach ($options as $code => $label) {
+					$json .= '['.json_encode($code).','.json_encode($label).'],';
+				}
+				$json = substr($json, 0, -1);
+				$json .= ']}';
+			}
+			// For DYNAMIC and TREE modes, the list is populated using an ajax request
+		}
+		// For the RANGE field, get the min and max values
+		if ($field->type == "NUMERIC" && $field->subtype == "RANGE") {
+			$range = $this->metadataModel->getRange($field->unit);
+			$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
+		}
+		$json .= "},";
+
+		return $json;
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of edit fields.
+	 *
+	 * @param DataObject $data the data object to edit
+	 */
+	private function _generateEditFormJSON($data) {
+
+		$json = '{"success":true,"data":[';
+
+		//
+		// The key elements as labels
+		//
+		foreach ($data->infoFields as $tablefield) {
+			$formField = $this->genericService->getTableToFormMapping($tablefield);
+			if (!empty($formField)) {
+				$formField->value = $tablefield->value;
+				$formField->editable = true;
+				$json .= $this->_generateEditFieldJSON($formField);
+			}
+		}
+
+		//
+		// The editable elements as edit forms
+		//
+		foreach ($data->editableFields as $tablefield) {
+			$formField = $this->genericService->getTableToFormMapping($tablefield);
+			if (!empty($formField)) {
+				$formField->value = $tablefield->value;
+				$formField->editable = false;
+				$json .= $this->_generateEditFieldJSON($formField);
+			}
+		}
+
+		$json = substr($json, 0, -1);
+
+		$json .= ']}';
+
+		return $json;
+	}
+
+	/**
 	 * AJAX function : Get the predefined request.
 	 *
 	 * @param String $requestName The request name
@@ -179,15 +251,15 @@ class Genapp_Service_QueryService {
 		$json .= ']';
 		$json .= '},';
 		$json .= '"rows":[';
-		
+
 		foreach ($datasetIds as $dataset) {
 			$json .= '{'.$dataset->toJSON().'},';
 		}
 		$json = substr($json, 0, -1); // remove last comma
-		
+
 		json_encode($datasetIds);
-		
-		
+
+
 		$json .= ']}';
 
 		return $json;
@@ -230,37 +302,7 @@ class Genapp_Service_QueryService {
 	public function getEditForm($data) {
 		$this->logger->debug('getEditForm');
 
-		// Get the HTML form fields corresponding to the data
-		$json = '[';
-
-		//
-		// The key elements as labels
-		//
-		foreach ($data->infoFields as $tablefield) {
-			$formField = $this->genericService->getTableToFormMapping($tablefield);
-			if (!empty($formField)) {
-				$formField->value = $tablefield->value;
-				$formField->editable = true;
-				$json .= "{".$formField->toEditJSON()."},";
-			}
-		}
-
-		//
-		// The editable elements as edit forms
-		//
-		foreach ($data->editableFields as $tablefield) {
-			$formField = $this->genericService->getTableToFormMapping($tablefield);
-			if (!empty($formField)) {
-				$formField->value = $tablefield->value;
-				$formField->editable = false;
-				$json .= "{".$formField->toEditJSON()."},";
-			}
-		}
-
-		$json = substr($json, 0, -1);
-		$json .= ']';
-
-		return $json;
+		return $this->_generateEditFormJSON($data);
 
 	}
 

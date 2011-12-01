@@ -421,7 +421,7 @@ class DataEditionController extends AbstractOGAMController {
 			$this->view->message = '';
 			$this->view->mode = 'EDIT';
 
-			return $this->render('edit-data');
+			echo '{"success":false,"errorMessage":'.json_encode("Invalid form").'}';
 		}
 
 		// Update the data descriptor with the values submitted
@@ -433,14 +433,14 @@ class DataEditionController extends AbstractOGAMController {
 			$this->genericModel->updateData($data);
 		} catch (Exception $e) {
 			$this->logger->err($e->getMessage());
-			return $this->showEditDataAction($data, $e->getMessage());
+			echo '{"success":false,"errorMessage":'.json_encode($e->getMessage()).'}';
 		}
 		
 		// No View, we send directly the JSON
         $this->_helper->layout()->disableLayout();
         $this->_helper->viewRenderer->setNoRender();
         $this->getResponse()->setHeader('Content-type', 'application/json');
-        return "{success:true}";
+        return '{"success":true}';
 	}
 
 	/**
@@ -542,13 +542,13 @@ class DataEditionController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the list of available datasets
+	 * AJAX function : Get the AJAX structure corresponding to the edition form
 	 *
 	 * @return JSON The list of forms
 	 */
-	public function ajaxgeteditformAction() {
+	public function ajaxGetEditFormAction() {
 
-		$this->logger->debug('ajaxgeteditformAction');
+		$this->logger->debug('ajaxGetEditFormAction');
 
 		// Get the parameters from the URL
 		$request = $this->getRequest();
