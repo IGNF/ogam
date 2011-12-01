@@ -61,7 +61,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	id : 'edition_panel',
 
 	/**
-	 * @cfg {String} dataId Unique identifier of the data bieing edited.
+	 * @cfg {String} dataId Unique identifier of the data being edited.
 	 */
 	dataId : '',
 
@@ -82,7 +82,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	autoScroll : true,
 
 	// private
-	initComponent : function() {
+	initComponent : function () {
 		/**
 		 * The form fields Data Store.
 		 * 
@@ -141,12 +141,14 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				'load' : {
 					fn : function(store, records, options) {
 						var i, formItems = [];
-						for (i = 0; i < records.length; i++) {
+						
+						for (i = 0; i < 1/*records.length*/; i++) {
 							// alert(records[i].data);
 							formItems.push(this.getFieldConfig(records[i].data, true));
 						}
+						console.log(formItems);
 						this.dataEditFS.add(formItems);
-						this.dataEditFS.doLayout();
+						this.dataEditForm.doLayout();
 					}
 				},
 				scope : this
@@ -199,10 +201,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		});
 		
 		
-		//this.dataEditForm = new Ext.FormPanel(); // We define the form
-		//this.dataEditForm.items = [this.dataEditFS]; // we add the field set
-
-		this.items = [ this.headerPanel, this.parentsFS, this.dataEditFS, this.childrenFS ];
+		this.dataEditForm = new Ext.FormPanel({
+		    items : this.dataEditFS
+		}); 
+		
+		this.items = [ this.headerPanel, this.parentsFS, this.dataEditForm, this.childrenFS ];
 
 		Genapp.EditionPanel.superclass.initComponent.call(this);
 	},
@@ -349,7 +352,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	editData : function() {
 		this.dataEditForm.getForm().submit({
-			url : Genapp.ajax_query_url + 'validateEditData',
+			url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
 			timeout : 480000,
 			success : this.editSuccess,
 			failure : this.editFailure,

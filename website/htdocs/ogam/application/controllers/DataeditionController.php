@@ -400,8 +400,8 @@ class DataEditionController extends AbstractOGAMController {
 	 *
 	 * @return the HTML view
 	 */
-	public function validateEditDataAction() {
-		$this->logger->debug('validateEditDataAction');
+	public function ajaxValidateEditDataAction() {
+		$this->logger->debug('ajaxValidateEditDataAction');
 
 		// Get back info from the session
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -435,9 +435,12 @@ class DataEditionController extends AbstractOGAMController {
 			$this->logger->err($e->getMessage());
 			return $this->showEditDataAction($data, $e->getMessage());
 		}
-
-		// Forward the user to the next step
-		return $this->showEditDataAction($data, 'Data successfully edited');
+		
+		// No View, we send directly the JSON
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender();
+        $this->getResponse()->setHeader('Content-type', 'application/json');
+        return "{success:true}";
 	}
 
 	/**
