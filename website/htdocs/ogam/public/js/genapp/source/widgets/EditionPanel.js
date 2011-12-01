@@ -83,6 +83,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 	// private
 	initComponent : function () {
+	    this.items = [];
 		/**
 		 * The form fields Data Store.
 		 * 
@@ -163,11 +164,13 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			html : this.message,
 			cls : 'message'
 		});
-		this.parentsFS = new Ext.form.FieldSet({
-			title : '&nbsp;Parents Summary&nbsp;',
-			html : this.parentsLinks
-		});
-		
+		if(!Ext.isEmpty(this.parentsLinks)){
+		    this.parentsFS = new Ext.form.FieldSet({
+	            title : '&nbsp;Parents Summary&nbsp;',
+	            html : this.parentsLinks
+	        });
+		    this.items.push(this.parentsFS);
+		}
 		this.dataEditFS = new Ext.form.FieldSet({
 			title : '&nbsp;' + this.dataTitle + '&nbsp;',
 			labelWidth : 150,
@@ -192,7 +195,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var childrenItems = [];
 		for ( var i in this.childrenConfigOptions) {
 			if (typeof this.childrenConfigOptions[i] !== 'function') {
-				childrenItems.push(new Ext.form.FieldSet(this.childrenConfigOptions[i]));
+			    var cCO = this.childrenConfigOptions[i];
+			    var addChildButton = cCO['buttons'][0];
+			    addChildButton.handler = function(){document.location = Genapp.base_url + 'dataedition/show-add-data/' + this.dataId;}
+			    addChildButton.scope = this;
+			    console.log('cCO',cCO);
+				childrenItems.push(new Ext.form.FieldSet(cCO));
 			}
 		}
 		this.childrenFS = new Ext.form.FieldSet({
@@ -205,7 +213,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		    items : this.dataEditFS
 		}); 
 		
-		this.items = [ this.headerPanel, this.parentsFS, this.dataEditForm, this.childrenFS ];
+		this.items.push(this.headerPanel);
+		this.items.push(this.dataEditForm);
+		this.items.push(this.childrenFS);
 
 		Genapp.EditionPanel.superclass.initComponent.call(this);
 	},
