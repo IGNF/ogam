@@ -209,7 +209,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		
 		
 		this.dataEditForm = new Ext.FormPanel({
-		    items : this.dataEditFS
+		    items : this.dataEditFS,
+		    border : false
 		}); 
 		
 		this.items.push(this.headerPanel);
