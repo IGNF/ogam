@@ -372,8 +372,6 @@ class DataEditionController extends AbstractOGAMController {
 		// Get the data object corresponding to the parameters
 		$data = $this->_getDataFromRequest($request);
 
-		//$this->logger->info('$data : '.print_r($data, true));
-
 		// Check if the data has children
 		$children = $this->genericModel->getChildren($data);
 
