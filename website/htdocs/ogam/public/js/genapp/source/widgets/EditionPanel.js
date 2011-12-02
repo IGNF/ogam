@@ -368,7 +368,19 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			failure : this.editFailure,
 			scope : this
 		});
-	}
+    },
+
+    /**
+     * Delete the data
+     */
+    deleteData : function() {
+        Ext.Ajax.request({
+            url: Genapp.ajax_query_url + 'ajax-delete-data',
+            success : this.editSuccess,
+            failure : this.editFailure,
+            params: { dataId : this.dataId }
+        });
+    }
 });
 
 Ext.reg('editionpage', Genapp.EditionPanel);
