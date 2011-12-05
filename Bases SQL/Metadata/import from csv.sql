@@ -168,7 +168,8 @@ alter table DATASET_FILES
 -- Units of type CODE should have an entry in the CODE table
 SELECT UNIT, 'This unit of type CODE is not described in the MODE table'
 FROM unit
-WHERE TYPE = 'CODE' AND SUBTYPE = 'MODE'
+WHERE (type = 'CODE' OR type = 'ARRAY') 
+AND subtype = 'MODE'
 AND unit not in (SELECT UNIT FROM MODE WHERE MODE.UNIT=UNIT)
 UNION
 -- Units of type RANGE should have an entry in the RANGE table
@@ -256,4 +257,16 @@ OR (input_type = 'TEXT' AND type <> 'STRING')
 OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')
 OR (input_type = 'GEOM' AND type <> 'GEOM')
 OR (input_type = 'TREE' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TREE'))
-
+-- TREE_MODEs should be defined
+SELECT unit, 'The unit should have at least one MODE_TREE defined'
+FROM unit 
+WHERE (type = 'CODE' OR type = 'ARRAY') 
+AND subtype = 'TREE' 
+AND (SELECT count(*) FROM mode_tree WHERE mode_tree.unit = unit.unit) = 0
+UNION
+-- DYNAMODEs should be defined
+SELECT unit, 'The unit should have at least one DYNAMODE defined'
+FROM unit 
+WHERE (type = 'CODE' OR type = 'ARRAY') 
+AND subtype = 'DYNAMIC' 
+AND (SELECT count(*) FROM dynamode WHERE dynamode.unit = unit.unit) = 0
