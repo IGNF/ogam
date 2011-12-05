@@ -216,10 +216,10 @@ class QueryController extends AbstractOGAMController {
 						$field->data = $criteriaData;
 						$field->value = $inputValue;
 
-						if (isset($predefinedRequest->criteriaList[$criteriaFormat.'__'.$criteriaData])) {
-							$predefinedRequest->criteriaList[$criteriaFormat.'__'.$criteriaData]->value .= ";".$field->value;
+						if (isset($predefinedRequest->criteriaList[$field->getName()])) {
+							$predefinedRequest->criteriaList[$field->getName()]->value .= ";".$field->value;
 						} else {
-							$predefinedRequest->criteriaList[$criteriaFormat.'__'.$criteriaData] = $field;
+							$predefinedRequest->criteriaList[$field->getName()] = $field;
 						}
 					}
 				}
@@ -236,7 +236,7 @@ class QueryController extends AbstractOGAMController {
 					$field->format = $columnFormat;
 					$field->data = $columnData;
 
-					$predefinedRequest->resultsList[$columnFormat.'__'.$columnData] = $field;
+					$predefinedRequest->resultsList[$field->getName()] = $field;
 				}
 			}
 
@@ -519,7 +519,7 @@ class QueryController extends AbstractOGAMController {
 				$traductions = array();
 				foreach ($resultColumns as $tableField) {
 
-					$key = strtolower($tableField->format.'__'.$tableField->data);
+					$key = strtolower($tableField->getName());
 
 					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 						if ($tableField->subtype == "DYNAMIC") {
@@ -560,7 +560,7 @@ class QueryController extends AbstractOGAMController {
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
-					$key = $tableField->format.'__'.$tableField->data;
+					$key = $tableField->getName();
 					$filter .= " ORDER BY ".$key." ".$sortDir.", id";
 				} else {
 					$filter .= " ORDER BY id";
@@ -586,7 +586,7 @@ class QueryController extends AbstractOGAMController {
 
 						foreach ($resultColumns as $tableField) {
 
-							$key = strtolower($tableField->format.'__'.$tableField->data);
+							$key = strtolower($tableField->getName());
 							$value = $line[$key];
 							$formField = $formFields[$key];
 
@@ -688,7 +688,7 @@ class QueryController extends AbstractOGAMController {
 				$traductions = array();
 				foreach ($resultColumns as $tableField) {
 
-					$key = strtolower($tableField->format.'__'.$tableField->data);
+					$key = strtolower($tableField->getName());
 
 					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 						if ($tableField->subtype == "DYNAMIC") {
@@ -722,7 +722,7 @@ class QueryController extends AbstractOGAMController {
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
-					$key = $tableField->format.'__'.$tableField->data;
+					$key = $tableField->getName();
 					$filter .= " ORDER BY ".$key." ".$sortDir.", id";
 				} else {
 					$filter .= " ORDER BY id";
@@ -750,7 +750,7 @@ class QueryController extends AbstractOGAMController {
 						foreach ($resultColumns as $tableField) {
 
 
-							$key = strtolower($tableField->format.'__'.$tableField->data);
+							$key = strtolower($tableField->getName());
 							$value = $line[$key];
 							$formField = $formFields[$key];
 

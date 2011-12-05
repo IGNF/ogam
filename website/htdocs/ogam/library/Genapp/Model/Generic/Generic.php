@@ -90,14 +90,15 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		// Fill the values with data from the table
 		foreach ($data->editableFields as $field) {
-			$field->value = $row[strtolower($field->format.'__'.$field->data)];
+			$key = strtolower($field->getName());
+			$field->value = $row[$key];
 
 			// Store additional info for geometry type
 			if ($field->unit == "GEOM") {
-				$field->xmin = $row[strtolower($field->format.'__'.$field->data).'_x_min'];
-				$field->xmax = $row[strtolower($field->format.'__'.$field->data).'_x_max'];
-				$field->ymin = $row[strtolower($field->format.'__'.$field->data).'_y_min'];
-				$field->ymax = $row[strtolower($field->format.'__'.$field->data).'_y_max'];
+				$field->xmin = $row[strtolower($key).'_x_min'];
+				$field->xmax = $row[strtolower($key).'_x_max'];
+				$field->ymin = $row[strtolower($key).'_y_min'];
+				$field->ymax = $row[strtolower($key).'_y_max'];
 			} else if ($field->type == "ARRAY") {
 
 				// For array field we transform the value in a array object
@@ -145,7 +146,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			// Fill the values with data from the table
 			foreach ($child->getFields() as $field) {
 
-				$field->value = $row[strtolower($field->format.'__'.$field->data)];
+				$field->value = $row[strtolower($field->getName())];
 
 				if ($field->type == "ARRAY") {
 					// For array field we transform the value in a array object

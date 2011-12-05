@@ -41,7 +41,7 @@ class Genapp_Object_Generic_DataObject {
 	 * @param TableField $field a field
 	 */
 	public function addInfoField($field) {
-		$this->infoFields[$field->format.'__'.$field->data] = $field;
+		$this->infoFields[$field->getName()] = $field;
 	}
 
 	/**
@@ -69,7 +69,7 @@ class Genapp_Object_Generic_DataObject {
 	 * @param TableField $field a field
 	 */
 	public function addEditableField($field) {
-		$this->editableFields[$field->format.'__'.$field->data] = $field;
+		$this->editableFields[$field->getName()] = $field;
 	}
 
 	/**

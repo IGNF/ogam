@@ -121,14 +121,14 @@ class Genapp_Service_QueryService {
 	 *
 	 * @param FormField $field a form field
 	 */
-	private function _generateEditFieldJSON($field) {
+	private function _generateEditFieldJSON($formField) {
 
-		$json .= "{".$field->toEditJSON();
+		$json .= "{".$formField->toEditJSON();
 		// For the SELECT field, get the list of options
-		if ($field->type == "CODE" || $field->type == "ARRAY") {
+		if ($formField->type == "CODE" || $formField->type == "ARRAY") {
 
-			if ($field->subtype == "MODE") {
-				$options = $this->metadataModel->getModes($field->unit);
+			if ($formField->subtype == "MODE") {
+				$options = $this->metadataModel->getModes($formField->unit);
 				$json .= ',"params":{"options":[';
 				foreach ($options as $code => $label) {
 					$json .= '['.json_encode($code).','.json_encode($label).'],';
@@ -139,8 +139,8 @@ class Genapp_Service_QueryService {
 			// For DYNAMIC and TREE modes, the list is populated using an ajax request
 		}
 		// For the RANGE field, get the min and max values
-		if ($field->type == "NUMERIC" && $field->subtype == "RANGE") {
-			$range = $this->metadataModel->getRange($field->unit);
+		if ($formField->type == "NUMERIC" && $formField->subtype == "RANGE") {
+			$range = $this->metadataModel->getRange($formField->unit);
 			$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
 		}
 		$json .= "},";
@@ -161,11 +161,13 @@ class Genapp_Service_QueryService {
 		// The key elements as labels
 		//
 		foreach ($data->infoFields as $tablefield) {
-			$formField = $this->genericService->getTableToFormMapping($tablefield);
+			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
 				$formField->value = $tablefield->value;
 				$formField->editable = false;
-				$json .= $this->_generateEditFieldJSON($formField);
+				$formField->data = $tablefield->data; 			// The name of the data is the table one
+				$formField->format = $tablefield->format; 			// The name of the data is the table one
+				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
 			}
 		}
 
@@ -173,11 +175,13 @@ class Genapp_Service_QueryService {
 		// The editable elements as edit forms
 		//
 		foreach ($data->editableFields as $tablefield) {
-			$formField = $this->genericService->getTableToFormMapping($tablefield);
+			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
 				$formField->value = $tablefield->value;
 				$formField->editable = true;
-				$json .= $this->_generateEditFieldJSON($formField);
+				$formField->data = $tablefield->data; 			// The name of the data is the table one
+				$formField->format = $tablefield->format; 			// The name of the data is the table one
+				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
 			}
 		}
 
@@ -214,16 +218,16 @@ class Genapp_Service_QueryService {
 				$criteria->isDefaultCriteria = '0';
 				$criteria->defaultValue = '';
 
-				if (array_key_exists($criteria->format.'__'.$criteria->data, $savedRequest->criteriaList)) {
+				if (array_key_exists($criteria->getName(), $savedRequest->criteriaList)) {
 					$criteria->isDefaultCriteria = '1';
-					$criteria->defaultValue = $savedRequest->criteriaList[$criteria->format.'__'.$criteria->data]->value;
+					$criteria->defaultValue = $savedRequest->criteriaList[$criteria->getName()]->value;
 				}
 			}
 
 			foreach ($form->resultsList as $result) {
 				$result->isDefaultResult = '0';
 
-				if (array_key_exists($result->format.'__'.$result->data, $savedRequest->resultsList)) {
+				if (array_key_exists($result->getName(), $savedRequest->resultsList)) {
 					$result->isDefaultResult = '1';
 				}
 			}
@@ -429,7 +433,7 @@ class Genapp_Service_QueryService {
 				$formField->format = $split[0];
 				$formField->data = $split[1];
 				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
-				$key = $tableField->format.'__'.$tableField->data;
+				$key = $tableField->getName();
 				$filter .= " ORDER BY ".$key." ".$sortDir.", id";
 			} else {
 				$filter .= " ORDER BY id"; // default sort to ensure consistency
@@ -448,7 +452,7 @@ class Genapp_Service_QueryService {
 			$traductions = array();
 			foreach ($resultColumns as $tableField) {
 
-				$key = strtolower($tableField->format.'__'.$tableField->data);
+				$key = strtolower($tableField->getName());
 
 				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 					if ($tableField->subtype == "DYNAMIC") {
@@ -470,7 +474,7 @@ class Genapp_Service_QueryService {
 
 				foreach ($resultColumns as $tableField) {
 
-					$key = strtolower($tableField->format.'__'.$tableField->data);
+					$key = strtolower($tableField->getName());
 					$value = $line[$key];
 
 					// Manage code traduction

@@ -86,7 +86,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 * @return JSON the form field descriptor
 	 */
 	public function toJSON() {
-		$return = '"name":'.json_encode($this->format.'__'.$this->data);
+		$return = '"name":'.json_encode($this->getName());
 		$return .= ',"data":'.json_encode($this->data);
 		$return .= ',"format":'.json_encode($this->format);
 		$return .= ',"label":'.json_encode($this->label);
@@ -105,7 +105,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 * @return JSON the form field descriptor
 	 */
 	public function toEditJSON() {
-		$return = '"name":'.json_encode($this->format.'__'.$this->data);
+		$return = '"name":'.json_encode($this->getName());
 		$return .= ',"data":'.json_encode($this->data);
 		$return .= ',"format":'.json_encode($this->format);
 		$return .= ',"label":'.json_encode($this->label);
@@ -143,7 +143,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 * @return JSON the criteria field descriptor
 	 */
 	public function toCriteriaJSON() {
-		$return = '"name":'.json_encode($this->format."__".$this->data);
+		$return = '"name":'.json_encode($this->getName());
 		$return .= ',"label":'.json_encode($this->label);
 		$return .= ',"inputType":'.json_encode($this->inputType);
 		$return .= ',"unit":'.json_encode($this->unit);
@@ -162,7 +162,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 * @return JSON the result field descriptor
 	 */
 	public function toResultJSON() {
-		$return = '"name":'.json_encode($this->format.'__'.$this->data);
+		$return = '"name":'.json_encode($this->getName());
 		$return .= ',"label":'.json_encode($this->label);
 		$return .= ',"definition":'.json_encode($this->definition);
 		$return .= ',"is_default":'.$this->isDefaultResult;

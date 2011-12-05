@@ -139,7 +139,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 			$field->format = $result['format'];
 			$field->data = $result['data'];
 
-			$request->resultsList[$field->format.'__'.$field->data] = $field;
+			$request->resultsList[$field->getName()] = $field;
 		}
 
 		// Get the request result columns
@@ -260,7 +260,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 			$field->decimals = $result['decimals'];
 			$field->mask = $result['mask'];
 
-			$criteriaList[$field->format.'__'.$field->data] = $field;
+			$criteriaList[$field->getName()] = $field;
 		}
 
 		return $criteriaList;

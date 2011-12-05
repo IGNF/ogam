@@ -421,10 +421,16 @@ class DataEditionController extends AbstractOGAMController {
 
 			echo '{"success":false,"errorMessage":'.json_encode("Invalid form").'}';
 		}
+		
+		$this->logger->debug('$data : '.print_r($data,true));
 
 		// Update the data descriptor with the values submitted
 		foreach ($data->editableFields as $field) {
-			$field->value = $this->_getParam($field->data);
+			
+			$this->logger->debug('looking for : '.print_r($field->getName(),true));
+			$this->logger->debug('found : '.$this->_getParam($field->getName()));
+			
+			$field->value = $this->_getParam($field->getName());
 		}
 
 		try {

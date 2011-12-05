@@ -701,18 +701,18 @@ class Genapp_Service_GenericService {
 		$sql = "";
 
 		if ($field->type == "DATE") {
-			$sql .= "to_char(".$field->format.".".$field->columnName.", 'YYYY/MM/DD') as ".$field->format."__".$field->data;
+			$sql .= "to_char(".$field->format.".".$field->columnName.", 'YYYY/MM/DD') as ".$field->getName();
 		} else if ($field->unit == "GEOM") {
 			// Special case for THE_GEOM
 			$sql .= "asText(st_transform(".$field->format.".".$field->columnName.",".$this->visualisationSRS.")) as location, ";
-			$sql .= "asText(st_transform(".$field->format.".".$field->columnName.",".$this->visualisationSRS.")) as ".$field->format."__".$field->data.", ";
-			$sql .= 'ymin(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->format."__".$field->data.'_y_min, ';
-			$sql .= 'ymax(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->format."__".$field->data.'_y_max, ';
-			$sql .= 'xmin(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->format."__".$field->data.'_x_min, ';
-			$sql .= 'xmax(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->format."__".$field->data.'_x_max ';
+			$sql .= "asText(st_transform(".$field->format.".".$field->columnName.",".$this->visualisationSRS.")) as ".$field->getName().", ";
+			$sql .= 'ymin(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_y_min, ';
+			$sql .= 'ymax(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_y_max, ';
+			$sql .= 'xmin(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_x_min, ';
+			$sql .= 'xmax(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_x_max ';
 
 		} else {
-			$sql .= $field->format.".".$field->columnName." as ".$field->format."__".$field->data;
+			$sql .= $field->format.".".$field->columnName." as ".$field->getName();
 		}
 
 		return $sql;
