@@ -66,20 +66,18 @@
             Ext.apply(Genapp.EditionPanel.prototype, 
                 <?php
                     $patch = array();
-                    
+
                     // unique identifier of the data
                     $patch['dataId'] = $this->dataId;
-                    
+
                     // message
                     if (!empty($this->message)) {
                         $patch['message'] = $this->message;
                     }
-                    // contentTitle
-                    if ($this->mode == 'ADD') {
-                        $patch['contentTitle'] = '<h1>Add '. $this->escape($this->tableFormat->label) . '</h1>';
-                    } else {
-                        $patch['contentTitle'] = '<h1>Edit '. $this->escape($this->tableFormat->label) . '</h1>';
-                    }
+
+                    // mode
+                    $patch['mode'] = $this->mode;
+
                     // parentsLinks
                     $ancestors = array_reverse($this->ancestors);
                     $parentsLinks = '';
@@ -95,11 +93,9 @@
                     if (empty($this->children)) {
                         // If the item has no child we can delete it
                         $patch['disableDeleteButton'] = false;
-                        $patch['deleteButtonTooltip'] = 'Delete the data';
                         //$this->generateDeleteLink($this->data);
                     } else {
                         $patch['disableDeleteButton'] = true;
-                        $patch['deleteButtonTooltip'] = 'Delete the data (not available because of children)';
                     }
                     // childrenConfigOptions
                     if (!empty($this->children)) {

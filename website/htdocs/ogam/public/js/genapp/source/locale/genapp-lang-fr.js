@@ -214,10 +214,13 @@ if(Genapp.EditionPanel){
         title : 'Edition',
         parentsFSTitle : 'Parents',
         dataEditFSDeleteButtonText : 'Supprimer',
+        dataEditFSDeleteButtonTooltip : 'Supprimer la donnée (Désactivé s\'il existe des enfants)',
         dataEditFSValidateButtonText : 'Valider',
         dataEditFSValidateButtonTooltip : 'Sauvegarder les modifications',
         childrenFSTitle : 'Enfants',
         childrenFSAddNewChildButtonText : 'Nouvelle fiche',
-        childrenFSAddNewChildButtonTooltip : 'Ajouter une nouvelle fiche'
+        childrenFSAddNewChildButtonTooltip : 'Ajouter une nouvelle fiche',
+        contentTitleAddPrefix : 'Ajout d\'une',
+        contentTitleEditPrefix : 'Edition d\'une'
     });
 }

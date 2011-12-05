@@ -90,25 +90,37 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
      */
     dataEditFSDeleteButtonText : 'Delete',
     /**
-     * @cfg {String} dataId The data Edit FieldSet Validate Button Text (defaults to 'Validate').
+     * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete Button Tooltip (defaults to 'Delete the data (Disabled if exist children)').
+     */
+    dataEditFSDeleteButtonTooltip : 'Delete the data (Disabled if exist children)',
+    /**
+     * @cfg {String} dataEditFSValidateButtonText The data Edit FieldSet Validate Button Text (defaults to 'Validate').
      */
     dataEditFSValidateButtonText : 'Validate',
     /**
-     * @cfg {String} dataId The data Edit FieldSet Validate Button Tooltip (defaults to 'Save changes').
+     * @cfg {String} dataEditFSValidateButtonTooltip The data Edit FieldSet Validate Button Tooltip (defaults to 'Save changes').
      */
     dataEditFSValidateButtonTooltip : 'Save changes',
     /**
-     * @cfg {String} dataId The children FieldSet Title (defaults to 'Children Summary').
+     * @cfg {String} childrenFSTitle The children FieldSet Title (defaults to 'Children Summary').
      */
     childrenFSTitle : 'Children Summary',
     /**
-     * @cfg {String} dataId The children FieldSet Add New Child Button Text (defaults to 'New child').
+     * @cfg {String} childrenFSAddNewChildButtonText The children FieldSet Add New Child Button Text (defaults to 'New child').
      */
     childrenFSAddNewChildButtonText : 'New child',
     /**
-     * @cfg {String} dataId The children FieldSet Add New Child Button Tooltip (defaults to 'Add a new child').
+     * @cfg {String} childrenFSAddNewChildButtonTooltip The children FieldSet Add New Child Button Tooltip (defaults to 'Add a new child').
      */
     childrenFSAddNewChildButtonTooltip : 'Add a new child',
+    /**
+     * @cfg {String} contentTitleAddPrefix The content Title Add Prefix (defaults to 'Add').
+     */
+    contentTitleAddPrefix : 'Add',
+    /**
+     * @cfg {String} contentTitleEditPrefix The content Title Edit Prefix (defaults to 'Edit').
+     */
+    contentTitleEditPrefix : 'Edit',
     
     layout:'column',
 
@@ -189,8 +201,14 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 	    var centerPanelItems = [];
 	    // Header
+	    var contentTitlePrefix = '';console.log('this.mode : ' + this.mode);
+	    switch(this.mode){
+	        case 'ADD': contentTitlePrefix = this.contentTitleAddPrefix + '&nbsp'; break;
+	        case 'EDIT': contentTitlePrefix = this.contentTitleEditPrefix + '&nbsp'; break;
+	    }
+
 		this.headerPanel = new Ext.BoxComponent({
-			html : this.contentTitle
+			html : '<h1>' + contentTitlePrefix + this.dataTitle.toLowerCase() + '<h1>'
 		});
 		centerPanelItems.push(this.headerPanel);
 
@@ -224,7 +242,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
             buttons : [ {
                 text : this.dataEditFSDeleteButtonText,
                 disabled : this.disableDeleteButton,
-                tooltip : this.deleteButtonTooltip,
+                tooltip : this.dataEditFSDeleteButtonTooltip,
                 handler : this.deleteData,
                 scope : this
             }, {
