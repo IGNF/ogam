@@ -123,7 +123,7 @@
                             }
 
                             // Add link to a new child
-                            $configOptions['AddChildURL'] = $this->generateAddLink($this->data->schema, $childFormat, $this->data->infoFields);
+                            $configOptions['AddChildURL'] = $this->generateAddLink($this->data->tableFormat->schemaCode, $childFormat, $this->data->infoFields);
 
                             array_push($childrenConfigOptions, $configOptions);
                         }
