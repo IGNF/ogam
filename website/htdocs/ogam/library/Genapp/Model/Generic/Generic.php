@@ -175,59 +175,33 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		$this->logger->info('updateData');
+		$this->logger->info('updateData ');
 
 		// Get the values from the data table
-		$sql = "UPDATE ".$tableFormat->schemaCode.".".$tableFormat->tableName;
+		$sql = "UPDATE ".$tableFormat->schemaCode.".".$tableFormat->tableName." ".$tableFormat->format;
 		$sql .= " SET ";
 
 		// updates of the data.
 		foreach ($data->editableFields as $field) {
 			/* @var $field TableField */
+			
+			$this->logger->info('$field :  '.print_r($field,true));
 
-			if ($field->data != "LINE_NUMBER") { // Hardcoded value
-				if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
-					// Numeric values
-					$sql .= $field->columnName." = ".$field->value;
-				} else if ($field->type == "ARRAY") {
-					// Arrays
-					// $field->value should be an array
-					$array = $field->value;
-					$sql .= $field->columnName." = '{";
-					foreach ($array as $value) {
-						$sql .= $value.",";
-					}
-					$sql = substr($sql, 0, -1); // remove last comma
-					$sql .= "}'";
-				} else {
-					// Text values
-					$sql .= $field->columnName." = '".$field->value."'";
-				}
-				$sql .= ",";
+			if ($field->data != "LINE_NUMBER") {
+				// Hardcoded value
+				$sql .= $this->genericService->buildUpdateItem($field);
+				$sql .= ", ";
 			}
 		}
 		// remove last comma
-		$sql = substr($sql, 0, -1);
+		$sql = substr($sql, 0, -2);
 
 		$sql .= " WHERE(1 = 1)";
 
 		// Build the WHERE clause with the info from the PK.
 		foreach ($data->infoFields as $primaryKey) {
-			/* @var $primaryKey TableField */
-
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-			if (!($tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
-
-				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER" || $field->type == "RANGE") {
-					$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
-				} else if ($primaryKey->type == "ARRAY") {
-					// Arrays
-					// $primaryKey->value should contain a unique value (String)
-					$sql .= " AND ANY(".$primaryKey->columnName.") = '".$primaryKey->value."'";
-				} else {
-					$sql .= " AND ".$primaryKey->columnName." = '".$primaryKey->value."'";
-				}
-			}
+			$sql .= $this->genericService->buildWhereItem($primaryKey);
 		}
 
 		$this->logger->info('updateData : '.$sql);
@@ -315,7 +289,8 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		// updates of the data.
 		foreach ($data->infoFields as $field) {
-			if ($field->value != null) { // Primary keys that are not set should be serials ...
+			if ($field->value != null) {
+				// Primary keys that are not set should be serials ...
 				$columns .= $field->columnName.", ";
 				if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
 					$values .= $field->value.", ";
@@ -335,7 +310,8 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			}
 		}
 		foreach ($data->editableFields as $field) {
-			if ($field->value != null) { // Primary keys that are not set should be serials ...
+			if ($field->value != null) {
+				// Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
 					$columns .= $field->columnName.", ";
 					if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
@@ -472,7 +448,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$select = $db->prepare($sql);
 		$select->execute();
 
-		// For each potential child table listed, we search for the actual lines of data available		
+		// For each potential child table listed, we search for the actual lines of data available
 		foreach ($select->fetchAll() as $row) {
 			$childTable = $row['child_table'];
 

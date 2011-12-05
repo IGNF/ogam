@@ -367,8 +367,6 @@ class ProxyController extends AbstractOGAMController {
 				$hasChild = true;
 			}
 
-			//$this->logger->debug('$locationsData: ' . print_r($locationsData,true));
-
 			echo '{success:true'.', id:'.json_encode(implode('', $id)).', title:'.json_encode($locationTableInfo->label.' ('.count($locationsData).')').', hasChild:'.json_encode($hasChild).', columns:'.json_encode($columns).', fields:'.json_encode($locationFields).', data:'.json_encode($locationsData).'}';
 		} else {
 			echo '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';

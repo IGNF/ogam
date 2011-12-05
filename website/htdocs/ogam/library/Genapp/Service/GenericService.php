@@ -436,10 +436,15 @@ class Genapp_Service_GenericService {
 	 */
 	public function arrayToSQLString($arrayValues) {
 		$string = "{";
-		foreach ($arrayValues as $value) {
-			$string .= $value.",";
+
+		if (is_array($arrayValues)) {
+			foreach ($arrayValues as $value) {
+				$string .= $value.",";
+			}
+			$string = substr($string, 0, -1); // Remove last comma
+		} else {
+			$string = $arrayValues;
 		}
-		$string = substr($string, 0, -1); // Remove last comma
 		$string .= "}";
 
 		return $string;
@@ -570,7 +575,6 @@ class Genapp_Service_GenericService {
 						}
 					}
 					break;
-					break;
 				case "INTEGER":
 				case "NUMERIC":
 					// Numeric values
@@ -689,6 +693,53 @@ class Genapp_Service_GenericService {
 
 		return $sql;
 	}
+
+	/**
+	 * Build the WHERE clause corresponding to one criteria.
+	 *
+	 * @param TableField $tableField a criteria.
+	 * @return String the WHERE part of the SQL query (ex : BASAL_AREA = 6.05)
+	 */
+	public function buildUpdateItem($tableField) {
+
+		$sql = "";
+
+		$value = $tableField->value;
+		$column = $tableField->columnName;
+
+
+		switch ($tableField->type) {
+
+			case "BOOLEAN":
+				// Value is 1 or 0, stored in database as a char(1)
+				$sql = $column." = ".($value == true ? '1' : '0');
+				break;
+			case "DATE":
+				$sql = $column." = to_date('".$value."', 'YYYY/MM/DD')";
+				break;
+			case "INTEGER":
+			case "NUMERIC":
+				$sql = $column." = ".$value;
+				break;
+			case "ARRAY":
+				$sql = $column." = ".$this->arrayToSQLString($value);
+				break;
+			case "CODE":
+				$sql = $column." = '".$value."'";
+				break;
+			case "GEOM":
+				$sql = $column." = transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS.")";
+				break;
+			case "STRING":
+			default:
+				// Single value
+				$sql = $column." = '".$value."'";
+				break;
+		}
+
+		return $sql;
+	}
+
 
 	/**
 	 * Build the SELECT part for one field.

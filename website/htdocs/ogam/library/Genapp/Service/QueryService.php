@@ -330,8 +330,6 @@ class Genapp_Service_QueryService {
 		// Transform the form request object into a table data object
 		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
 
-		//$this->logger->debug('$queryObject : '.print_r($queryObject, true));
-
 		if (sizeof($formQuery->results) == 0) {
 			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
 		} else {

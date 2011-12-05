@@ -50,7 +50,7 @@ class DataEditionController extends AbstractOGAMController {
 
 	/**
 	 * Check if the authorization is valid this controler.
-	 * 
+	 *
 	 * @throws an Exception if the user doesn't have the rights
 	 */
 	function preDispatch() {
@@ -326,8 +326,6 @@ class DataEditionController extends AbstractOGAMController {
 
 		}
 
-		//$this->logger->info('$data : '.print_r($data, true));
-
 		// If the object is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
@@ -421,15 +419,9 @@ class DataEditionController extends AbstractOGAMController {
 
 			echo '{"success":false,"errorMessage":'.json_encode("Invalid form").'}';
 		}
-		
-		$this->logger->debug('$data : '.print_r($data,true));
 
 		// Update the data descriptor with the values submitted
 		foreach ($data->editableFields as $field) {
-			
-			$this->logger->debug('looking for : '.print_r($field->getName(),true));
-			$this->logger->debug('found : '.$this->_getParam($field->getName()));
-			
 			$field->value = $this->_getParam($field->getName());
 		}
 
@@ -439,12 +431,12 @@ class DataEditionController extends AbstractOGAMController {
 			$this->logger->err($e->getMessage());
 			echo '{"success":false,"errorMessage":'.json_encode($e->getMessage()).'}';
 		}
-		
+
 		// No View, we send directly the JSON
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender();
-        $this->getResponse()->setHeader('Content-type', 'application/json');
-        return '{"success":true}';
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+		return '{"success":true}';
 	}
 
 	/**
@@ -517,8 +509,6 @@ class DataEditionController extends AbstractOGAMController {
 
 			$data = $this->_getDataFromRequest($request);
 		}
-
-		// $this->logger->info('$data : '.print_r($data, true));
 
 		// If the objet is not existing then we are in create mode instead of edit mode
 
