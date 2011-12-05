@@ -11,36 +11,29 @@ class Genapp_View_Helper_GenerateAddLink extends Zend_View_Helper_Abstract {
 	/**
 	 * Generate a link corresponding to a data object
 	 *
-	 * @param DataObject $data The data object to link to 
-	 * @param String $tableLabel The label of the table to display
+	 * @param String $schema The schema
+	 * @param String $format The format
+	 * @param Array $infoFields The primary keys
 	 * @return the HTML link
 	 */
-	function generateAddLink($data, $tableLabel) {
-
-		$tableFormat = $data->tableFormat->format;
+	function generateAddLink($schema, $format, $infoFields) {
 
 		// Build the URL to link to the parent items
 		$urlArray = array('controller' => 'dataedition', 'action' => 'show-add-data');
 
 		// Add the schema
-		$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
+		$urlArray['SCHEMA'] = $schema;
 
 		// Add the format		
-		$urlArray['FORMAT'] = $tableFormat;
+		$urlArray['FORMAT'] = $format;
 
 		// Add the PK elements
-		foreach ($data->infoFields as $infoField) {
+		foreach ($infoFields as $infoField) {
 			$urlArray[$infoField->data] = $infoField->value;
 		}
 
-		// Add the other elements as a tooltip
-		$tooltip = "";
-		foreach ($data->getFields() as $field) {
-			$tooltip .= $field->data.": ".$field->value."<br/>";
-		}
-
 		// output the result
-		return '<a href="'.$this->view->url($urlArray, null, true).'" class="tooltip">(+) Add '.$tableLabel.'<em><span></span>'.$tooltip.'</em></a>';
+		return $this->view->url($urlArray, null, true);
 	}
 
 }

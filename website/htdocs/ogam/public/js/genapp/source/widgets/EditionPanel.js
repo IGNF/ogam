@@ -80,6 +80,35 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	ref : 'editionPage',
 	padding : 20,
 	autoScroll : true,
+	
+	/**
+     * @cfg {String} parentsFSTitle The parents FieldSet Title (defaults to 'Parents Summary').
+     */
+	parentsFSTitle : 'Parents Summary',
+	/**
+     * @cfg {String} dataEditFSDeleteButtonText The data Edit FieldSet Delete Button Text (defaults to 'Delete').
+     */
+    dataEditFSDeleteButtonText : 'Delete',
+    /**
+     * @cfg {String} dataId The data Edit FieldSet Validate Button Text (defaults to 'Validate').
+     */
+    dataEditFSValidateButtonText : 'Validate',
+    /**
+     * @cfg {String} dataId The data Edit FieldSet Validate Button Tooltip (defaults to 'Save changes').
+     */
+    dataEditFSValidateButtonTooltip : 'Save changes',
+    /**
+     * @cfg {String} dataId The children FieldSet Title (defaults to 'Children Summary').
+     */
+    childrenFSTitle : 'Children Summary',
+    /**
+     * @cfg {String} dataId The children FieldSet Add New Child Button Text (defaults to 'New child').
+     */
+    childrenFSAddNewChildButtonText : 'New child',
+    /**
+     * @cfg {String} dataId The children FieldSet Add New Child Button Tooltip (defaults to 'Add a new child').
+     */
+    childrenFSAddNewChildButtonTooltip : 'Add a new child',
 
 	// private
 	initComponent : function () {
@@ -173,7 +202,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		// Parents
 		if(!Ext.isEmpty(this.parentsLinks)){
 		    this.parentsFS = new Ext.form.FieldSet({
-	            title : '&nbsp;Parents Summary&nbsp;',
+	            title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
 	            html : this.parentsLinks
 	        });
 		    this.items.push(this.parentsFS);
@@ -189,14 +218,14 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			},
 			buttonAlign : 'center',
 			buttons : [ {
-				text : 'Supprimer',
+				text : this.dataEditFSDeleteButtonText,
 				disabled : this.disableDeleteButton,
 				tooltip : this.deleteButtonTooltip,
 				handler : this.deleteData,
 				scope : this
 			}, {
-				text : 'Valider',
-				tooltip: 'Click here to save changes',
+				text : this.dataEditFSValidateButtonText,
+				tooltip: this.dataEditFSValidateButtonTooltip,
 				handler : this.editData,
 				scope : this
 			} ]
@@ -213,15 +242,21 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		for ( var i in this.childrenConfigOptions) {
 			if (typeof this.childrenConfigOptions[i] !== 'function') {
 			    var cCO = this.childrenConfigOptions[i];
-			    var addChildButton = cCO['buttons'][0];
-			    addChildButton.handler = function(){document.location = Genapp.base_url + 'dataedition/show-add-data/' + this.dataId;}
-			    addChildButton.scope = this;
+			    cCO['buttons'] = [];
+			    cCO['buttons'][0] = {
+		            text : this.childrenFSAddNewChildButtonText,
+                    tooltip : this.childrenFSAddNewChildButtonTooltip,
+                    handler : (function(location){
+                        document.location = location;
+                    }).createCallback(cCO['AddChildURL']),
+                    scope : this
+                };
 			    console.log('cCO',cCO);
 				childrenItems.push(new Ext.form.FieldSet(cCO));
 			}
 		}
 		this.childrenFS = new Ext.form.FieldSet({
-			title : '&nbsp;Children Summary&nbsp;',
+			title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
 			items : childrenItems
 		});
 		this.items.push(this.childrenFS);
@@ -350,7 +385,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		if (!Ext.isEmpty(record.editable) && record.editable == false) {
 			field.readOnly = true;
 			field.fieldClass = "x-item-disabled";
-			field.hideTrigger = true;
 		}
 
 		if (!Ext.isEmpty(record.definition)) {
@@ -390,18 +424,31 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
         });
     },
 
+    /**
+     * Ajax success common function
+     */
     editSuccess :  function(response, opts) {
         var obj = Ext.decode(response.responseText);
         if(!Ext.isEmpty(obj.message)){
             this.messagePanel.update(obj.message);
         }
+        if(!Ext.isEmpty(obj.errorMessage)){
+            this.messagePanel.update(obj.errorMessage);
+            console.log('Server-side failure with status code (1): ' + response.status);
+            console.log('errorMessage : ' + response.errorMessage);
+        }
     },
 
+    /**
+     * Ajax failure common function
+     */
     editFailure : function(response, opts) {console.log(response);
         var obj = Ext.decode(response.responseText);
         if(!Ext.isEmpty(obj.errorMessage)){
             this.messagePanel.update(obj.errorMessage);
         }
+        console.log('Server-side failure with status code (2): ' + response.status);
+        console.log('errorMessage : ' + response.errorMessage);
     }
 });
 

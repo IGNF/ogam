@@ -121,14 +121,9 @@
                                 $content = $this->translate('No %value% found.');
                                 $configOptions['html'] = str_replace('%value%', strtolower($this->escape($this->childrenTableLabels[$childFormat])), $content);
                             }
+
                             // Add link to a new child
-                            //$data = clone $this->data;
-                            //$data->tableFormat->format = $childFormat;
-                            //echo $this->generateAddLink($data, $this->childrenTableLabels[$childFormat])."<br/>";
-                            $configOptions['buttons'] = array(array(
-                                'text' => 'Add a new child',
-                                'tooltip' => 'Add a new child'
-                            ));
+                            $configOptions['AddChildURL'] = $this->generateAddLink($this->data->schema, $childFormat, $this->data->infoFields);
 
                             array_push($childrenConfigOptions, $configOptions);
                         }

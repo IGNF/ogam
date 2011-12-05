@@ -195,7 +195,7 @@ if(Genapp.PredefinedRequestPanel){
 	    groupLabelColumnHeader:"Libellé du Groupe",
 	    groupPositionColumnHeader:"Classement du Groupe",
 	    resetButtonText:"Annuler",
-	    resetButtonTooltip:"Réinitialise le formulaire avec les valeurs par défaut",	    
+	    resetButtonTooltip:"Réinitialise le formulaire avec les valeurs par défaut",
 	    launchRequestButtonText:"OK",
 	    launchRequestButtonTooltip:"Lance la requête dans la page de consultation",
 	    loadingText:"Chargement...",
@@ -207,5 +207,17 @@ if(Genapp.PredefinedRequestPanel){
 if(Genapp.form.picker.TreePicker){
     Ext.apply(Genapp.form.picker.TreePicker.prototype, {
         okButtonText:"ok"
+    });
+}
+if(Genapp.EditionPanel){
+    Ext.apply(Genapp.EditionPanel.prototype, {
+        title : 'Edition',
+        parentsFSTitle : 'Parents',
+        dataEditFSDeleteButtonText : 'Supprimer',
+        dataEditFSValidateButtonText : 'Valider',
+        dataEditFSValidateButtonTooltip : 'Sauvegarder les modifications',
+        childrenFSTitle : 'Enfants',
+        childrenFSAddNewChildButtonText : 'Nouvelle fiche',
+        childrenFSAddNewChildButtonTooltip : 'Ajouter une nouvelle fiche'
     });
 }
