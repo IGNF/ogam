@@ -351,8 +351,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		if (!Ext.isEmpty(record.value)) {
 			field.value = record.value;
 		}
-		if (!Ext.isEmpty(record.editable)) {
-			field.disabled = !record.editable;
+		if (!Ext.isEmpty(record.editable) && record.editable == false) {
+			field.readOnly = true;
+			field.fieldClass = "x-item-disabled";
 			field.hideTrigger = true;
 		}
 
