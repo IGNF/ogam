@@ -70,6 +70,9 @@ class QueryController extends AbstractOGAMController {
 		// Check if the schema is specified in the request
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $this->_request->getParam("schema");
+		
+		$this->logger->debug('********** SCHEMA ******** '.$schema);
+		
 		if ($schema != null) {
 			$this->schema = $schema;
 			$websiteSession->schema = $schema;

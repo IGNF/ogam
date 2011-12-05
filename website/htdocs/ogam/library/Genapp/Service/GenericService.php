@@ -435,7 +435,7 @@ class Genapp_Service_GenericService {
 	 * @return the String representation of the array
 	 */
 	public function arrayToSQLString($arrayValues) {
-		$string = "{";
+		$string = "'{";
 
 		if (is_array($arrayValues)) {
 			foreach ($arrayValues as $value) {
@@ -443,9 +443,9 @@ class Genapp_Service_GenericService {
 			}
 			$string = substr($string, 0, -1); // Remove last comma
 		} else {
-			$string = $arrayValues;
+			$string .= $arrayValues;
 		}
-		$string .= "}";
+		$string .= "}'";
 
 		return $string;
 	}
@@ -602,7 +602,7 @@ class Genapp_Service_GenericService {
 					if (is_array($value)) {
 						// Case of a list of values
 						$stringValue = $this->arrayToSQLString($value);
-						$sql .= " AND ".$column." @> '".$stringValue."'";
+						$sql .= " AND ".$column." @> ".$stringValue;
 					} else if (is_string($value)) {
 						// Single value
 						$sql .= " AND ANY(".$column.") = '".$value."'";

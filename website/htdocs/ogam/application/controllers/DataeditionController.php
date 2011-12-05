@@ -45,6 +45,8 @@ class DataEditionController extends AbstractOGAMController {
 
 		// The generic service
 		$this->genericService = new Genapp_Service_GenericService();
+		
+		$this->translator = Zend_Registry::get('Zend_Translate');
 
 	}
 
@@ -417,7 +419,7 @@ class DataEditionController extends AbstractOGAMController {
 			$this->view->message = '';
 			$this->view->mode = 'EDIT';
 
-			echo '{"success":false,"errorMessage":'.json_encode("Invalid form").'}';
+			echo '{"success":false,"errorMessage":'.json_encode($this->translator->translate("Invalid form")).'}';
 		}
 
 		// Update the data descriptor with the values submitted
@@ -427,6 +429,8 @@ class DataEditionController extends AbstractOGAMController {
 
 		try {
 			$this->genericModel->updateData($data);
+			echo '{"success":true, "message":'.json_encode($this->translator->translate("Data saved")).'}';
+				
 		} catch (Exception $e) {
 			$this->logger->err($e->getMessage());
 			echo '{"success":false,"errorMessage":'.json_encode($e->getMessage()).'}';
@@ -436,7 +440,6 @@ class DataEditionController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
-		return '{"success":true}';
 	}
 
 	/**

@@ -266,7 +266,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 						name : 'label',
 						mapping : 'label'
 					} ],
-					url : 'ajaxgetdynamiccodes',
+					url : Genapp.base_url + '/query/ajaxgetdynamiccodes',
 					baseParams : {
 						'unit' : record.unit
 					}
@@ -337,12 +337,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			break;
 		case 'TREE':
 			field.xtype = 'treefield';
-			field.dataUrl = 'ajaxgettreenodes/unit/' + record.unit + '/depth/1'; // TODO
-																					// change
-																					// depth
-																					// depending
-																					// on
-																					// level
+			// TODO : change depth depending on level
+			field.dataUrl = Genapp.base_url + '/query/ajaxgettreenodes/unit/' + record.unit + '/depth/1'; 
 			break;
 		default:
 			field.xtype = 'field';
@@ -399,11 +395,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
         if(!Ext.isEmpty(obj.message)){
             this.messagePanel.update(obj.message);
         }
-        if(!Ext.isEmpty(obj.errorMessage)){
-            this.messagePanel.update(obj.errorMessage);
-            console.log('Server-side failure with status code (1): ' + response.status);
-            console.log('errorMessage : ' + response.errorMessage);
-        }
     },
 
     editFailure : function(response, opts) {console.log(response);
@@ -411,8 +402,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
         if(!Ext.isEmpty(obj.errorMessage)){
             this.messagePanel.update(obj.errorMessage);
         }
-        console.log('Server-side failure with status code (2): ' + response.status);
-        console.log('errorMessage : ' + response.errorMessage);
     }
 });
 

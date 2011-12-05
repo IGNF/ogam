@@ -228,8 +228,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$parentCode = $row['parent_code'];
 
-			$this->logger->info('getTreeModes : '.$parentCode);
-
 			//Build the new node
 			$tree = new Genapp_Object_Metadata_TreeNode();
 			$tree->code = $row['code'];
