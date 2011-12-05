@@ -123,7 +123,7 @@ class Genapp_Service_QueryService {
 	 */
 	private function _generateEditFieldJSON($formField) {
 
-		$json .= "{".$formField->toEditJSON();
+		$json = "{".$formField->toEditJSON();
 		// For the SELECT field, get the list of options
 		if ($formField->type == "CODE" || $formField->type == "ARRAY") {
 
