@@ -83,7 +83,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 	// private
 	initComponent : function () {
-	    this.items = [];
 		/**
 		 * The form fields Data Store.
 		 * 
@@ -144,7 +143,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 					fn : function(store, records, options) {
 						var i, formItems = [];
 						
-						for (i = 0; i < 1/*records.length*/; i++) {
+						for (i = 0; i < records.length; i++) {
 							// alert(records[i].data);
 							formItems.push(this.getFieldConfig(records[i].data, true));
 						}
@@ -157,13 +156,21 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		});
 
+	    this.items = [];
+	    // Header
 		this.headerPanel = new Ext.BoxComponent({
 			html : this.contentTitle
 		});
+		this.items.push(this.headerPanel);
+
+		// Message
 		this.messagePanel = new Ext.BoxComponent({
 			html : this.message,
 			cls : 'message'
 		});
+		this.items.push(this.messagePanel);
+
+		// Parents
 		if(!Ext.isEmpty(this.parentsLinks)){
 		    this.parentsFS = new Ext.form.FieldSet({
 	            title : '&nbsp;Parents Summary&nbsp;',
@@ -171,6 +178,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	        });
 		    this.items.push(this.parentsFS);
 		}
+
+		// Data
 		this.dataEditFS = new Ext.form.FieldSet({
 			title : '&nbsp;' + this.dataTitle + '&nbsp;',
 			labelWidth : 150,
@@ -192,6 +201,14 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				scope : this
 			} ]
 		});
+		this.dataEditForm = new Ext.FormPanel({
+            items : this.dataEditFS,
+            border : false,
+            url: Genapp.ajax_query_url + 'ajax-validate-edit-data'
+        });
+        this.items.push(this.dataEditForm);
+
+        // Children
 		var childrenItems = [];
 		for ( var i in this.childrenConfigOptions) {
 			if (typeof this.childrenConfigOptions[i] !== 'function') {
@@ -207,15 +224,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			title : '&nbsp;Children Summary&nbsp;',
 			items : childrenItems
 		});
-		
-		
-		this.dataEditForm = new Ext.FormPanel({
-		    items : this.dataEditFS,
-		    border : false
-		}); 
-		
-		this.items.push(this.headerPanel);
-		this.items.push(this.dataEditForm);
 		this.items.push(this.childrenFS);
 
 		Genapp.EditionPanel.superclass.initComponent.call(this);
@@ -344,7 +352,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			field.value = record.value;
 		}
 		if (!Ext.isEmpty(record.editable)) {
-			field.disabled = record.editable;
+			field.disabled = !record.editable;
+			field.hideTrigger = true;
 		}
 
 		if (!Ext.isEmpty(record.definition)) {
@@ -362,12 +371,13 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * Submit the form to save the edited data
 	 */
 	editData : function() {
-		this.dataEditForm.getForm().submit({
-			url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
-			timeout : 480000,
-			success : this.editSuccess,
-			failure : this.editFailure,
-			scope : this
+		Ext.Ajax.request({
+		    form: this.dataEditForm.getForm().getEl(),
+		    url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
+		    timeout : 480000,
+            success : this.editSuccess,
+            failure : this.editFailure,
+            scope : this
 		});
     },
 
@@ -381,6 +391,27 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
             failure : this.editFailure,
             params: { dataId : this.dataId }
         });
+    },
+
+    editSuccess :  function(response, opts) {
+        var obj = Ext.decode(response.responseText);
+        if(!Ext.isEmpty(obj.message)){
+            this.messagePanel.update(obj.message);
+        }
+        if(!Ext.isEmpty(obj.errorMessage)){
+            this.messagePanel.update(obj.errorMessage);
+            console.log('Server-side failure with status code (1): ' + response.status);
+            console.log('errorMessage : ' + response.errorMessage);
+        }
+    },
+
+    editFailure : function(response, opts) {console.log(response);
+        var obj = Ext.decode(response.responseText);
+        if(!Ext.isEmpty(obj.errorMessage)){
+            this.messagePanel.update(obj.errorMessage);
+        }
+        console.log('Server-side failure with status code (2): ' + response.status);
+        console.log('errorMessage : ' + response.errorMessage);
     }
 });
 

@@ -164,7 +164,7 @@ class Genapp_Service_QueryService {
 			$formField = $this->genericService->getTableToFormMapping($tablefield);
 			if (!empty($formField)) {
 				$formField->value = $tablefield->value;
-				$formField->editable = true;
+				$formField->editable = false;
 				$json .= $this->_generateEditFieldJSON($formField);
 			}
 		}
@@ -176,7 +176,7 @@ class Genapp_Service_QueryService {
 			$formField = $this->genericService->getTableToFormMapping($tablefield);
 			if (!empty($formField)) {
 				$formField->value = $tablefield->value;
-				$formField->editable = false;
+				$formField->editable = true;
 				$json .= $this->_generateEditFieldJSON($formField);
 			}
 		}
