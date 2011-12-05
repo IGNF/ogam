@@ -184,8 +184,6 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// updates of the data.
 		foreach ($data->editableFields as $field) {
 			/* @var $field TableField */
-			
-			$this->logger->info('$field :  '.print_r($field,true));
 
 			if ($field->data != "LINE_NUMBER") {
 				// Hardcoded value
