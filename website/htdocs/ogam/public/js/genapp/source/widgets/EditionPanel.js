@@ -109,6 +109,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
      * @cfg {String} dataId The children FieldSet Add New Child Button Tooltip (defaults to 'Add a new child').
      */
     childrenFSAddNewChildButtonTooltip : 'Add a new child',
+    
+    layout:'column',
 
 	// private
 	initComponent : function () {
@@ -176,7 +178,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 							// alert(records[i].data);
 							formItems.push(this.getFieldConfig(records[i].data, true));
 						}
-						this.dataEditFS.add(formItems);
+						this.dataEditForm.add(formItems);
 						this.dataEditForm.doLayout();
 					}
 				},
@@ -185,19 +187,19 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		});
 
-	    this.items = [];
+	    var centerPanelItems = [];
 	    // Header
 		this.headerPanel = new Ext.BoxComponent({
 			html : this.contentTitle
 		});
-		this.items.push(this.headerPanel);
+		centerPanelItems.push(this.headerPanel);
 
 		// Message
 		this.messagePanel = new Ext.BoxComponent({
 			html : this.message,
 			cls : 'message'
 		});
-		this.items.push(this.messagePanel);
+		centerPanelItems.push(this.messagePanel);
 
 		// Parents
 		if(!Ext.isEmpty(this.parentsLinks)){
@@ -205,37 +207,38 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	            title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
 	            html : this.parentsLinks
 	        });
-		    this.items.push(this.parentsFS);
+		    centerPanelItems.push(this.parentsFS);
 		}
 
 		// Data
+        this.dataEditForm = new Ext.FormPanel({
+            border : false,
+            url: Genapp.ajax_query_url + 'ajax-validate-edit-data',
+            labelWidth : 150,
+            width : 410,
+            defaults : {
+                msgTarget : 'side',
+                width : 250
+            },
+            buttonAlign : 'center',
+            buttons : [ {
+                text : this.dataEditFSDeleteButtonText,
+                disabled : this.disableDeleteButton,
+                tooltip : this.deleteButtonTooltip,
+                handler : this.deleteData,
+                scope : this
+            }, {
+                text : this.dataEditFSValidateButtonText,
+                tooltip: this.dataEditFSValidateButtonTooltip,
+                handler : this.editData,
+                scope : this
+            } ]
+        });
 		this.dataEditFS = new Ext.form.FieldSet({
 			title : '&nbsp;' + this.dataTitle + '&nbsp;',
-			labelWidth : 150,
-			defaults : {
-				msgTarget : 'side',
-				width : 250
-			},
-			buttonAlign : 'center',
-			buttons : [ {
-				text : this.dataEditFSDeleteButtonText,
-				disabled : this.disableDeleteButton,
-				tooltip : this.deleteButtonTooltip,
-				handler : this.deleteData,
-				scope : this
-			}, {
-				text : this.dataEditFSValidateButtonText,
-				tooltip: this.dataEditFSValidateButtonTooltip,
-				handler : this.editData,
-				scope : this
-			} ]
+            items : this.dataEditForm
 		});
-		this.dataEditForm = new Ext.FormPanel({
-            items : this.dataEditFS,
-            border : false,
-            url: Genapp.ajax_query_url + 'ajax-validate-edit-data'
-        });
-        this.items.push(this.dataEditForm);
+        centerPanelItems.push(this.dataEditFS);
 
         // Children
 		var childrenItems = [];
@@ -259,7 +262,26 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
 			items : childrenItems
 		});
-		this.items.push(this.childrenFS);
+		centerPanelItems.push(this.childrenFS);
+		
+		this.items = [{
+		    xtype: 'box',
+		    html: '&nbsp;',
+		    columnWidth: .5,
+		    border: false
+		},{
+		    items:centerPanelItems,
+		    width : 430,
+            border: false,
+		    defaults : {
+		        width : 430
+		    }
+		},{
+		    xtype: 'box',
+		    html: '&nbsp;',
+		    columnWidth: .5,
+            border: false
+		}];
 
 		Genapp.EditionPanel.superclass.initComponent.call(this);
 	},
