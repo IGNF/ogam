@@ -809,18 +809,21 @@ class Genapp_Service_GenericService {
 
 		// Get the description of the table
 		$data->tableFormat = $this->metadataModel->getTableFormat($schema, $format);
-		
+
 		// Get all the description of the Table Fields corresponding to the format
 		$tableFields = $this->metadataModel->getTableFields($schema, $format, $datasetId);
 
+		$this->logger->debug('$tableFields : '.print_r($tableFields,true));
+
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
-			if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
-				// Primary keys are displayed as info fields
-				$data->addInfoField($tableField);
-			} else {
-				if ($isForDisplay || !$tableField->isCalculated) {
-					// Fields that are calculated by a trigger should not be edited
+			// Fields that are calculated by a trigger should not be edited					
+			if ($isForDisplay || ($tableField->isCalculated == false)) {
+				if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
+					// Primary keys are displayed as info fields
+					$data->addInfoField($tableField);
+				} else {						
+					// Editable fields are displayed as form fields
 					$data->addEditableField($tableField);
 				}
 			}
