@@ -45,7 +45,7 @@ class DataEditionController extends AbstractOGAMController {
 
 		// The generic service
 		$this->genericService = new Genapp_Service_GenericService();
-		
+
 		$this->translator = Zend_Registry::get('Zend_Translate');
 
 	}
@@ -95,8 +95,9 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param TableField $tableField the table descriptor of the data
 	 * @param FormField $formField the form descriptor of the data
 	 * @param Boolean $isKey is the field a primary key ?
+	 * @param Boolean $complete indicate if the function must generate all the list of codes
 	 */
-	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
+	private function _getFormElement($form, $tableField, $formField, $isKey = false, $complete) {
 
 		// Warning : $formField can be null if no mapping is defined with $tableField
 
@@ -161,16 +162,21 @@ class DataEditionController extends AbstractOGAMController {
 
 		} else if ($tableField->type == "CODE") {
 
-			// The field is a single code
-
-			if ($tableField->subtype == "DYNAMIC") {
-				$modes = $this->metadataModel->getDynamodes($tableField->unit);
-			} else {
-				$modes = $this->metadataModel->getModes($tableField->unit);
-			}
-
 			$elem = $form->createElement('select', $tableField->data);
-			$elem->addMultiOptions($modes);
+
+			if ($complete == true)  {
+				// for performance reasons, we don't list the codes for form validation
+					
+				// The field is a single code
+				if ($tableField->subtype == "DYNAMIC") {
+					$modes = $this->metadataModel->getDynamodes($tableField->unit);
+				} else if ($tableField->subtype == "TREE") {
+					$modes = $this->metadataModel->getTreeLabels($tableField->unit);
+				} else {
+					$modes = $this->metadataModel->getModes($tableField->unit);
+				}
+				$elem->addMultiOptions($modes);
+			}
 			$elem->setValue($tableField->value);
 
 		} else if ($tableField->type == "BOOLEAN") {
@@ -181,18 +187,23 @@ class DataEditionController extends AbstractOGAMController {
 
 		} else if ($tableField->type == "ARRAY") {
 
-			// The field is a list of codes
-
-			// Get the list of available values
-			if ($tableField->subtype == "DYNAMIC") {
-				$modes = $this->metadataModel->getDynamodes($tableField->unit);
-			} else {
-				$modes = $this->metadataModel->getModes($tableField->unit);
-			}
-
 			// Build a multiple select box
 			$elem = $form->createElement('multiselect', $tableField->data);
-			$elem->addMultiOptions($modes);
+
+			// The field is a list of codes
+			if ($complete == true)  {
+				// for performance reasons, we don't list the codes for form validation
+					
+				// Get the list of available values
+				if ($tableField->subtype == "DYNAMIC") {
+					$modes = $this->metadataModel->getDynamodes($tableField->unit);
+				} else if ($tableField->subtype == "TREE") {
+					$modes = $this->metadataModel->getTreeLabels($tableField->unit);
+				} else {
+					$modes = $this->metadataModel->getModes($tableField->unit);
+				}
+				$elem->addMultiOptions($modes);
+			}
 			$elem->setValue($tableField->value);
 
 		} else {
@@ -217,10 +228,12 @@ class DataEditionController extends AbstractOGAMController {
 	 * Build and return the data form.
 	 *
 	 * @param DataObject $data The descriptor of the expected data.
+	 * @param String $mode ('ADD' or 'EDIT')
+	 * @param Boolean $complete indicate if the function must generate all the list of codes
 	 */
-	private function _getEditDataForm($data, $mode) {
+	private function _getEditDataForm($data, $mode, $complete = true) {
 
-		$this->logger->debug('_getEditDataForm :  mode = '.$mode);
+		$this->logger->debug('_getEditDataForm :  mode = '.$mode.' complete = '.$complete);
 
 		$form = new Zend_Form();
 		if ($mode == 'ADD') {
@@ -242,7 +255,7 @@ class DataEditionController extends AbstractOGAMController {
 			if ($tablefield->data != "SUBMISSION_ID") {
 				$formField = $this->genericService->getTableToFormMapping($tablefield);
 
-				$elem = $this->_getFormElement($form, $tablefield, $formField, true);
+				$elem = $this->_getFormElement($form, $tablefield, $formField, true, $complete);
 				$elem->class = 'dataedit_key';
 				$form->addElement($elem);
 			}
@@ -257,7 +270,7 @@ class DataEditionController extends AbstractOGAMController {
 			// Hardcoded value : We don't edit the line number (it's a technical element)
 			if ($tablefield->data != "LINE_NUMBER") {
 				$formField = $this->genericService->getTableToFormMapping($tablefield);
-				$elem = $this->_getFormElement($form, $tablefield, $formField, false);
+				$elem = $this->_getFormElement($form, $tablefield, $formField, false, $complete);
 				$elem->class = 'dataedit_field';
 				$form->addElement($elem);
 			}
@@ -345,7 +358,6 @@ class DataEditionController extends AbstractOGAMController {
 		$websiteSession->children = $children;
 
 		// Generate dynamically the corresponding form
-		//$this->view->form = $this->_getEditDataForm($data, $mode);
 		$this->view->dataId = $this->genericService->getIdFromData($data);
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->data = $data;
@@ -406,7 +418,7 @@ class DataEditionController extends AbstractOGAMController {
 		$data = $websiteSession->data;
 
 		// Validate the form
-		$form = $this->_getEditDataForm($data, 'EDIT');
+		$form = $this->_getEditDataForm($data, 'EDIT', false);
 
 		if (!$form->isValidPartial($_POST)) {
 
@@ -430,7 +442,7 @@ class DataEditionController extends AbstractOGAMController {
 		try {
 			$this->genericModel->updateData($data);
 			echo '{"success":true, "message":'.json_encode($this->translator->translate("Data saved")).'}';
-				
+
 		} catch (Exception $e) {
 			$this->logger->err($e->getMessage());
 			echo '{"success":false,"errorMessage":'.json_encode($e->getMessage()).'}';
@@ -455,7 +467,7 @@ class DataEditionController extends AbstractOGAMController {
 		$data = $websiteSession->data;
 
 		// Validate the form
-		$form = $this->_getEditDataForm($data, 'ADD');
+		$form = $this->_getEditDataForm($data, 'ADD', false);
 		if (!$form->isValidPartial($_POST)) {
 
 			// On réaffiche le formulaire avec les messages d'erreur
@@ -526,7 +538,6 @@ class DataEditionController extends AbstractOGAMController {
 		$websiteSession->ancestors = $ancestors;
 
 		// Generate dynamically the corresponding form
-		//$this->view->form = $this->_getEditDataForm($data, $mode);
 		$this->view->dataId = $this->genericService->getIdFromData($data);
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->ancestors = $ancestors;
