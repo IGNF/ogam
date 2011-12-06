@@ -824,7 +824,7 @@ class Genapp_Service_QueryService {
 			$json .= $criteria->toCriteriaJSON();
 
 			// add some specific options
-			if ($criteria->type == "CODE") {
+			if ($criteria->type == "CODE" || $criteria->type == "ARRAY") {
 
 				if ($criteria->subtype == "MODE") {
 					// For MODE subtypes we get the list of values
