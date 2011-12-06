@@ -135,8 +135,8 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
                     isDrawingMap:true,
                     featureWKT: this.getRawValue(),
                     hideMapDetails: this.hideMapDetails,
-                    minZoomLevel: this.mapWindowMinZoomLevel,
-                    resultsBBox: Ext.getCmp('consultation_panel').mapPanel.resultsBBox
+                    minZoomLevel: this.mapWindowMinZoomLevel //,
+                    //resultsBBox: Ext.getCmp('consultation_panel').mapPanel.resultsBBox
                 }),
                 buttons: [{
                     text: this.mapWindowCancelButtonText,
