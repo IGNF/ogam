@@ -76,25 +76,24 @@
                 <?php
                     $patch = array();
 
-                    // unique identifier of the data
+                    // Unique identifier of the data
                     $patch['dataId'] = $this->dataId;
+                    // mode
+                    $patch['mode'] = $this->mode;
 
                     // message
                     if (!empty($this->message)) {
                         $patch['message'] = $this->message;
                     }
 
-                    // mode
-                    $patch['mode'] = $this->mode;
-
                     // parentsLinks
-                    $ancestors = array_reverse($this->ancestors);
-                    $parentsLinks = array();
-                    foreach ($ancestors as $ancestor) {
-                        $parentsLinks[] = $this->generateEditLink($ancestor);
-                    }
-                    if (!empty($parentsLinks)) {
-                        $patch['parentsLinks'] = $parentsLinks;
+                    if(!empty($this->ancestors)){
+	                    $ancestors = array_reverse($this->ancestors);
+	                    $parentsLinks = array();
+	                    foreach ($ancestors as $ancestor) {
+	                        $parentsLinks[] = $this->generateEditLink($ancestor);
+	                    }
+	                    $patch['parentsLinks'] = $parentsLinks;
                     }
 
                     // dataTitle
@@ -109,33 +108,31 @@
                     }
 
                     // childrenConfigOptions
-                    if (!empty($this->children)) {
-                        // Iterate though the child tables
-                        $childrenConfigOptions = array();
-                        foreach ($this->children as $childFormat => $childrenLines) {
-                            $configOptions = array();
-                            $configOptions['buttonAlign'] = 'center';
-                            $configOptions['title'] = $this->escape($this->childrenTableLabels[$childFormat]);
+                    $childrenConfigOptions = array();
+                    foreach ($this->childrenTableLabels as $childFormat => $childTableLabel) {
+                        $configOptions = array();
+                        $configOptions['buttonAlign'] = 'center';
+                        $configOptions['title'] = $this->escape($childTableLabel);
 
-                            // Add the edit links for each child of the current item
-                            $childrenLinks = array();
-                            foreach ($childrenLines as $child) {
+                        // Add the edit links for each child of the current item
+                        $childrenLinks = array();
+                        if(!empty($this->children)){
+                            foreach ($this->children[$childFormat] as $child) {
                                 $childrenLinks[] = $this->generateEditLink($child);
                             }
-                            if (!empty($childrenLinks)) {
-                                $configOptions['childrenLinks'] = $childrenLinks;
-                            } else {
-                                $content = $this->translate('No %value% found.');
-                                $configOptions['html'] = str_replace('%value%', strtolower($this->escape($this->childrenTableLabels[$childFormat])), $content);
-                            }
-
-                            // Add link to a new child
-                            $configOptions['AddChildURL'] = $this->generateAddLink($this->data->tableFormat->schemaCode, $childFormat, $this->data->infoFields);
-
-                            array_push($childrenConfigOptions, $configOptions);
+                            $configOptions['childrenLinks'] = $childrenLinks;
                         }
-                        $patch['childrenConfigOptions'] = $childrenConfigOptions;
+                        if (empty($childrenLinks)) {
+                            $content = $this->translate('No %value% found.');
+                            $configOptions['html'] = str_replace('%value%', strtolower($this->escape($this->childrenTableLabels[$childFormat])), $content);
+                        }
+
+                        // Add link to a new child
+                        $configOptions['AddChildURL'] = $this->generateAddLink($this->data->tableFormat->schemaCode, $childFormat, $this->data->infoFields);
+
+                        array_push($childrenConfigOptions, $configOptions);
                     }
+                    $patch['childrenConfigOptions'] = $childrenConfigOptions;
 
                     echo json_encode($patch);
                 ?>

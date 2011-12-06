@@ -218,10 +218,10 @@ if(Genapp.EditionPanel){
         dataEditFSValidateButtonText : 'Valider',
         dataEditFSValidateButtonTooltip : 'Sauvegarder les modifications',
         childrenFSTitle : 'Enfants',
-        childrenFSAddNewChildButtonText : 'Nouvelle fiche',
-        childrenFSAddNewChildButtonTooltip : 'Ajouter une nouvelle fiche',
-        contentTitleAddPrefix : 'Ajout d\'une',
-        contentTitleEditPrefix : 'Edition d\'une',
-        tipEditPrefix : 'Editer la'
+        childrenFSAddNewChildButtonText : 'Ajouter',
+        childrenFSAddNewChildButtonTooltip : 'Ajouter un nouvel enfant',
+        contentTitleAddPrefix : 'Ajout d\'un(e)',
+        contentTitleEditPrefix : 'Edition d\'un(e)',
+        tipEditPrefix : 'Editer le/la/l\''
     });
 }

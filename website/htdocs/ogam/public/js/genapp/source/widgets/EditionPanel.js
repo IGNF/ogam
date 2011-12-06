@@ -109,7 +109,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
     /**
      * @cfg {String} childrenFSAddNewChildButtonText The children FieldSet Add New Child Button Text (defaults to 'New child').
      */
-    childrenFSAddNewChildButtonText : 'New child',
+    childrenFSAddNewChildButtonText : 'Add',
     /**
      * @cfg {String} childrenFSAddNewChildButtonTooltip The children FieldSet Add New Child Button Tooltip (defaults to 'Add a new child').
      */
@@ -130,6 +130,14 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
      * @cfg {Numeric} tipDefaultWidth The tip Default Width (defaults to '400').
      */
     tipDefaultWidth : 350,
+    /**
+     * @cfg {String} addMode The constant for the add mode (defaults to 'ADD').
+     */
+    addMode : 'ADD',
+    /**
+     * @cfg {String} editMode The constant for the edit mode (defaults to 'EDIT').
+     */
+    editMode : 'EDIT',
 
 	layout : 'column',
 
@@ -140,11 +148,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var contentTitlePrefix = '';
 		var getFormURL = '';
 		switch (this.mode) {
-		case 'ADD':
+		case this.addMode:
 			contentTitlePrefix = this.contentTitleAddPrefix + '&nbsp';
 			getFormURL = Genapp.base_url + 'dataedition/ajax-get-add-form/' + this.dataId;
 			break;
-		case 'EDIT':
+		case this.editMode:
 			contentTitlePrefix = this.contentTitleEditPrefix + '&nbsp';
 			getFormURL = Genapp.base_url + 'dataedition/ajax-get-edit-form/' + this.dataId;
 			break;
@@ -212,7 +220,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 						var i, formItems = [];
 
 						for (i = 0; i < records.length; i++) {
-							// alert(records[i].data);
 							formItems.push(this.getFieldConfig(records[i].data, true));
 						}
 						this.dataEditForm.add(formItems);
@@ -278,37 +285,39 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		centerPanelItems.push(this.dataEditFS);
 
 		// Children
-		var childrenItems = [];
-		for ( var i in this.childrenConfigOptions) {
-			if (typeof this.childrenConfigOptions[i] !== 'function') {
-			    var cCO = this.childrenConfigOptions[i];
-			    // title
-			    cCO['title'] = '&nbsp;' + cCO['title'] + '&nbsp;';
-
-			    // html
-			    if(Ext.isEmpty(cCO['html'])){
-			        cCO['html'] = this.getEditLinks(cCO['childrenLinks']);
-			        delete cCO['childrenLinks'];
-			    }
-
-			    // buttons
-			    cCO['buttons'] = [];
-			    cCO['buttons'][0] = {
-		            text : this.childrenFSAddNewChildButtonText,
-                    tooltip : this.childrenFSAddNewChildButtonTooltip,
-                    handler : (function(location){
-                        document.location = location;
-                    }).createCallback(cCO['AddChildURL']),
-                    scope : this
-                };
-				childrenItems.push(new Ext.form.FieldSet(cCO));
-			}
+		if(!Ext.isEmpty(this.childrenConfigOptions)){
+    		var childrenItems = [];
+    		for ( var i in this.childrenConfigOptions) {
+    			if (typeof this.childrenConfigOptions[i] !== 'function') {
+    			    var cCO = this.childrenConfigOptions[i];
+    			    // title
+    			    cCO['title'] = '&nbsp;' + cCO['title'] + '&nbsp;';
+    
+    			    // html
+    			    if(Ext.isEmpty(cCO['html'])){
+    			        cCO['html'] = this.getEditLinks(cCO['childrenLinks']);
+    			        delete cCO['childrenLinks'];
+    			    }
+    
+    			    // buttons
+    			    cCO['buttons'] = [];
+    			    cCO['buttons'][0] = {
+    		            text : this.childrenFSAddNewChildButtonText,
+                        tooltip : this.childrenFSAddNewChildButtonTooltip,
+                        handler : (function(location){
+                            document.location = location;
+                        }).createCallback(cCO['AddChildURL']),
+                        scope : this
+                    };
+    				childrenItems.push(new Ext.form.FieldSet(cCO));
+    			}
+    		}
+    		this.childrenFS = new Ext.form.FieldSet({
+    			title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
+    			items : childrenItems
+    		});
+    		centerPanelItems.push(this.childrenFS);
 		}
-		this.childrenFS = new Ext.form.FieldSet({
-			title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
-			items : childrenItems
-		});
-		centerPanelItems.push(this.childrenFS);
 
 		this.items = [ {
 			xtype : 'box',
@@ -522,6 +531,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
         console.log('errorMessage : ' + response.errorMessage);
     },
 
+    /**
+     * Generate the html links
+     * 
+     * @param {Object} links A links object
+     * @return {String} The html links
+     */
     getEditLinks : function(links){
         var html = '', tipContent;
         for( var i in links){
@@ -531,6 +546,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
                 for( var data in links[i].fields){
                     var value = links[i].fields[data];
                     if (typeof value !== 'function') {
+                        value = Ext.isEmpty(value) ? ' -' : value;
                         tipContent += '<b>' + data + ' : </b>' + value + '</br>';
                     }
                 }

@@ -35,13 +35,13 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 		// Add the fields to generate the tooltip
 		$fields = array();
 		foreach ($data->getFields() as $field) {
-			$fields[$field->data] = $field->value;
+			$fields[$field->data] = $this->view->escape($field->value);
 		}
 
 		// output the result
 		return array(
 		    'url' => $this->view->url($urlArray, null, true),
-		    'text' => $data->tableFormat->label,
+		    'text' => $this->view->escape($data->tableFormat->label),
 		    'fields' => $fields
 		);
 	}
