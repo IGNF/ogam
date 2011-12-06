@@ -87,63 +87,75 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	parentsFSTitle : 'Parents Summary',
 	/**
-     * @cfg {String} dataEditFSDeleteButtonText The data Edit FieldSet Delete Button Text (defaults to 'Delete').
-     */
-    dataEditFSDeleteButtonText : 'Delete',
-    /**
-     * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete Button Tooltip (defaults to 'Delete the data (Disabled if exist children)').
-     */
-    dataEditFSDeleteButtonTooltip : 'Delete the data (Disabled if exist children)',
-    /**
-     * @cfg {String} dataEditFSValidateButtonText The data Edit FieldSet Validate Button Text (defaults to 'Validate').
-     */
-    dataEditFSValidateButtonText : 'Validate',
-    /**
-     * @cfg {String} dataEditFSValidateButtonTooltip The data Edit FieldSet Validate Button Tooltip (defaults to 'Save changes').
-     */
-    dataEditFSValidateButtonTooltip : 'Save changes',
-    /**
-     * @cfg {String} childrenFSTitle The children FieldSet Title (defaults to 'Children Summary').
-     */
-    childrenFSTitle : 'Children Summary',
-    /**
-     * @cfg {String} childrenFSAddNewChildButtonText The children FieldSet Add New Child Button Text (defaults to 'New child').
-     */
-    childrenFSAddNewChildButtonText : 'Add',
-    /**
-     * @cfg {String} childrenFSAddNewChildButtonTooltip The children FieldSet Add New Child Button Tooltip (defaults to 'Add a new child').
-     */
-    childrenFSAddNewChildButtonTooltip : 'Add a new child',
-    /**
-     * @cfg {String} contentTitleAddPrefix The content Title Add Prefix (defaults to 'Add').
-     */
-    contentTitleAddPrefix : 'Add',
-    /**
-     * @cfg {String} contentTitleEditPrefix The content Title Edit Prefix (defaults to 'Edit').
-     */
-    contentTitleEditPrefix : 'Edit',
-    /**
-     * @cfg {String} tooltipEditPrefix The tooltip Edit Prefix (defaults to 'Edit the').
-     */
-    tipEditPrefix : 'Edit the',
-    /**
-     * @cfg {Numeric} tipDefaultWidth The tip Default Width (defaults to '400').
-     */
-    tipDefaultWidth : 350,
-    /**
-     * @cfg {String} addMode The constant for the add mode (defaults to 'ADD').
-     */
-    addMode : 'ADD',
-    /**
-     * @cfg {String} editMode The constant for the edit mode (defaults to 'EDIT').
-     */
-    editMode : 'EDIT',
+	 * @cfg {String} dataEditFSDeleteButtonText The data Edit FieldSet Delete
+	 *      Button Text (defaults to 'Delete').
+	 */
+	dataEditFSDeleteButtonText : 'Delete',
+	/**
+	 * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete
+	 *      Button Tooltip (defaults to 'Delete the data (Disabled if exist
+	 *      children)').
+	 */
+	dataEditFSDeleteButtonTooltip : 'Delete the data (Disabled if exist children)',
+	/**
+	 * @cfg {String} dataEditFSValidateButtonText The data Edit FieldSet
+	 *      Validate Button Text (defaults to 'Validate').
+	 */
+	dataEditFSValidateButtonText : 'Validate',
+	/**
+	 * @cfg {String} dataEditFSValidateButtonTooltip The data Edit FieldSet
+	 *      Validate Button Tooltip (defaults to 'Save changes').
+	 */
+	dataEditFSValidateButtonTooltip : 'Save changes',
+	/**
+	 * @cfg {String} childrenFSTitle The children FieldSet Title (defaults to
+	 *      'Children Summary').
+	 */
+	childrenFSTitle : 'Children Summary',
+	/**
+	 * @cfg {String} childrenFSAddNewChildButtonText The children FieldSet Add
+	 *      New Child Button Text (defaults to 'New child').
+	 */
+	childrenFSAddNewChildButtonText : 'Add',
+	/**
+	 * @cfg {String} childrenFSAddNewChildButtonTooltip The children FieldSet
+	 *      Add New Child Button Tooltip (defaults to 'Add a new child').
+	 */
+	childrenFSAddNewChildButtonTooltip : 'Add a new child',
+	/**
+	 * @cfg {String} contentTitleAddPrefix The content Title Add Prefix
+	 *      (defaults to 'Add').
+	 */
+	contentTitleAddPrefix : 'Add',
+	/**
+	 * @cfg {String} contentTitleEditPrefix The content Title Edit Prefix
+	 *      (defaults to 'Edit').
+	 */
+	contentTitleEditPrefix : 'Edit',
+	/**
+	 * @cfg {String} tooltipEditPrefix The tooltip Edit Prefix (defaults to
+	 *      'Edit the').
+	 */
+	tipEditPrefix : 'Edit the',
+	/**
+	 * @cfg {Numeric} tipDefaultWidth The tip Default Width (defaults to '400').
+	 */
+	tipDefaultWidth : 350,
+	/**
+	 * @cfg {String} addMode The constant for the add mode (defaults to 'ADD').
+	 */
+	addMode : 'ADD',
+	/**
+	 * @cfg {String} editMode The constant for the edit mode (defaults to
+	 *      'EDIT').
+	 */
+	editMode : 'EDIT',
 
 	layout : 'column',
 
 	// private
 	initComponent : function() {
-		
+
 		// Header
 		var contentTitlePrefix = '';
 		var getFormURL = '';
@@ -157,8 +169,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			getFormURL = Genapp.base_url + 'dataedition/ajax-get-edit-form/' + this.dataId;
 			break;
 		}
-		
-		
+
 		/**
 		 * The form fields Data Store.
 		 * 
@@ -205,6 +216,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				mapping : 'value'
 			}, // the current value
 			{
+				name : 'valueLabel',
+				mapping : 'valueLabel'
+			}, // the label of the current value
+			{
 				name : 'editable',
 				mapping : 'editable'
 			}, // is the field editable?
@@ -232,7 +247,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		});
 
 		var centerPanelItems = [];
-		
 
 		this.headerPanel = new Ext.BoxComponent({
 			html : '<h1>' + contentTitlePrefix + this.dataTitle.toLowerCase() + '<h1>'
@@ -247,12 +261,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		centerPanelItems.push(this.messagePanel);
 
 		// Parents
-		if(!Ext.isEmpty(this.parentsLinks)){
-		    this.parentsFS = new Ext.form.FieldSet({
-	            title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
-	            html : this.getEditLinks(this.parentsLinks)
-	        });
-		    centerPanelItems.push(this.parentsFS);
+		if (!Ext.isEmpty(this.parentsLinks)) {
+			this.parentsFS = new Ext.form.FieldSet({
+				title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
+				html : this.getEditLinks(this.parentsLinks)
+			});
+			centerPanelItems.push(this.parentsFS);
 		}
 
 		// Data
@@ -285,38 +299,38 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		centerPanelItems.push(this.dataEditFS);
 
 		// Children
-		if(!Ext.isEmpty(this.childrenConfigOptions)){
-    		var childrenItems = [];
-    		for ( var i in this.childrenConfigOptions) {
-    			if (typeof this.childrenConfigOptions[i] !== 'function') {
-    			    var cCO = this.childrenConfigOptions[i];
-    			    // title
-    			    cCO['title'] = '&nbsp;' + cCO['title'] + '&nbsp;';
-    
-    			    // html
-    			    if(Ext.isEmpty(cCO['html'])){
-    			        cCO['html'] = this.getEditLinks(cCO['childrenLinks']);
-    			        delete cCO['childrenLinks'];
-    			    }
-    
-    			    // buttons
-    			    cCO['buttons'] = [];
-    			    cCO['buttons'][0] = {
-    		            text : this.childrenFSAddNewChildButtonText,
-                        tooltip : this.childrenFSAddNewChildButtonTooltip,
-                        handler : (function(location){
-                            document.location = location;
-                        }).createCallback(cCO['AddChildURL']),
-                        scope : this
-                    };
-    				childrenItems.push(new Ext.form.FieldSet(cCO));
-    			}
-    		}
-    		this.childrenFS = new Ext.form.FieldSet({
-    			title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
-    			items : childrenItems
-    		});
-    		centerPanelItems.push(this.childrenFS);
+		if (!Ext.isEmpty(this.childrenConfigOptions)) {
+			var childrenItems = [];
+			for ( var i in this.childrenConfigOptions) {
+				if (typeof this.childrenConfigOptions[i] !== 'function') {
+					var cCO = this.childrenConfigOptions[i];
+					// title
+					cCO['title'] = '&nbsp;' + cCO['title'] + '&nbsp;';
+
+					// html
+					if (Ext.isEmpty(cCO['html'])) {
+						cCO['html'] = this.getEditLinks(cCO['childrenLinks']);
+						delete cCO['childrenLinks'];
+					}
+
+					// buttons
+					cCO['buttons'] = [];
+					cCO['buttons'][0] = {
+						text : this.childrenFSAddNewChildButtonText,
+						tooltip : this.childrenFSAddNewChildButtonTooltip,
+						handler : (function(location) {
+							document.location = location;
+						}).createCallback(cCO['AddChildURL']),
+						scope : this
+					};
+					childrenItems.push(new Ext.form.FieldSet(cCO));
+				}
+			}
+			this.childrenFS = new Ext.form.FieldSet({
+				title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
+				items : childrenItems
+			});
+			centerPanelItems.push(this.childrenFS);
 		}
 
 		this.items = [ {
@@ -356,8 +370,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		// Creates the ext field config
 		switch (record.inputType) {
-		case 'SELECT': // The input type SELECT correspond generally to a data
-			// type CODE
+		case 'SELECT':
+			// The input type SELECT correspond to a data type CODE or ARRAY
 			field.xtype = 'combo';
 			field.itemCls = 'trigger-field'; // For IE7 layout
 			field.hiddenName = field.name;
@@ -368,6 +382,25 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
 			if (record.subtype === 'DYNAMIC') {
 				field.mode = 'remote';
+
+				// Fill the list of codes / labels for default values
+				var codes = [];
+				if (record.type === 'CODE') {
+					codes.push({
+						code : record.value,
+						label : record.valueLabel
+					});
+				} else { // case of ARRAY
+					if (record.valueLabel) {
+						for ( var i = 0; i < record.value.length; i++) {
+							codes.push({
+								code : record.value[i],
+								label : record.valueLabel[i]
+							});
+						}
+					}
+				}
+
 				field.store = new Ext.data.JsonStore({
 					root : 'codes',
 					idProperty : 'code',
@@ -382,11 +415,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 					baseParams : {
 						'unit' : record.unit
 					},
-					data:{
-					    codes:[{
-					        code : record.value,
-					        label : record.valueLabel
-					    }]
+					data : {
+						codes : codes
 					}
 				});
 			} else {
@@ -496,20 +526,20 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		});
 	},
 
-    /**
-     * Delete the data
-     */
-    deleteData : function() {
-        Ext.Ajax.request({
-            url: Genapp.ajax_query_url + 'ajax-delete-data',
-            success : this.editSuccess,
-            failure : this.editFailure,
-            params : {
+	/**
+	 * Delete the data
+	 */
+	deleteData : function() {
+		Ext.Ajax.request({
+			url : Genapp.ajax_query_url + 'ajax-delete-data',
+			success : this.editSuccess,
+			failure : this.editFailure,
+			params : {
 				dataId : this.dataId
 			},
-            scope : this
-        });
-    },
+			scope : this
+		});
+	},
 
 	/**
 	 * Ajax success common function
@@ -526,46 +556,45 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		}
 	},
 
-    /**
-     * Ajax failure common function
-     */
-    editFailure : function(response, opts) {console.log(response);
-        var obj = Ext.decode(response.responseText);
-        if(!Ext.isEmpty(obj.errorMessage)){
-            this.messagePanel.update(obj.errorMessage);
-        }
-        console.log('Server-side failure with status code (2): ' + response.status);
-        console.log('errorMessage : ' + response.errorMessage);
-    },
+	/**
+	 * Ajax failure common function
+	 */
+	editFailure : function(response, opts) {
+		console.log(response);
+		var obj = Ext.decode(response.responseText);
+		if (!Ext.isEmpty(obj.errorMessage)) {
+			this.messagePanel.update(obj.errorMessage);
+		}
+		console.log('Server-side failure with status code (2): ' + response.status);
+		console.log('errorMessage : ' + response.errorMessage);
+	},
 
-    /**
-     * Generate the html links
-     * 
-     * @param {Object} links A links object
-     * @return {String} The html links
-     */
-    getEditLinks : function(links){
-        var html = '', tipContent;
-        for( var i in links){
-            if (typeof links[i] !== 'function') {
-                var tipTitle = this.tipEditPrefix + '&nbsp' + links[i].text.toLowerCase() + ' :';
-                tipContent = '';
-                for( var data in links[i].fields){
-                    var value = links[i].fields[data];
-                    if (typeof value !== 'function') {
-                        value = Ext.isEmpty(value) ? ' -' : value;
-                        tipContent += '<b>' + data + ' : </b>' + value + '</br>';
-                    }
-                }
-                html += '<a href="' + links[i].url + '" '
-                + 'ext:qtitle="<u>' + tipTitle + '</u>" '
-                + 'ext:qwidth="' + this.tipDefaultWidth + '" '
-                + 'ext:qtip="' + tipContent + '" '
-                + '>' + links[i].text + '</a><br/>';
-            }
-        }
-        return html;
-    }
+	/**
+	 * Generate the html links
+	 * 
+	 * @param {Object}
+	 *            links A links object
+	 * @return {String} The html links
+	 */
+	getEditLinks : function(links) {
+		var html = '', tipContent;
+		for ( var i in links) {
+			if (typeof links[i] !== 'function') {
+				var tipTitle = this.tipEditPrefix + '&nbsp' + links[i].text.toLowerCase() + ' :';
+				tipContent = '';
+				for ( var data in links[i].fields) {
+					var value = links[i].fields[data];
+					if (typeof value !== 'function') {
+						value = Ext.isEmpty(value) ? ' -' : value;
+						tipContent += '<b>' + data + ' : </b>' + value + '</br>';
+					}
+				}
+				html += '<a href="' + links[i].url + '" ' + 'ext:qtitle="<u>' + tipTitle + '</u>" ' + 'ext:qwidth="' + this.tipDefaultWidth + '" '
+						+ 'ext:qtip="' + tipContent + '" ' + '>' + links[i].text + '</a><br/>';
+			}
+		}
+		return html;
+	}
 });
 
 Ext.reg('editionpage', Genapp.EditionPanel);

@@ -124,10 +124,10 @@ class Genapp_Service_QueryService {
 	private function _generateEditFieldJSON($formField) {
 
 		$json = "{";
-		
+
 		// For the SELECT field, get the list of options
 		if ($formField->type == "CODE" || $formField->type == "ARRAY") {
-			
+				
 			// Get the modes => Label
 			if ($formField->subtype == "DYNAMIC") {
 				$modes = $this->metadataModel->getDynamodes($formField->unit);
@@ -136,12 +136,22 @@ class Genapp_Service_QueryService {
 			} else {
 				$modes = $this->metadataModel->getModes($formField->unit);
 			}
-			
+				
 			// Populate the label of the currently selected value
-			$formField->valueLabel = $modes[$formField->value];
+			if ($formField->type == "ARRAY") {
+				$labels = array(); 
+				foreach ($formField->value as $mode) {
+					$labels[] = $modes[$mode];
+				}
+				$formField->valueLabel = $labels;
+			} else {
+				$formField->valueLabel = $modes[$formField->value];
+			}
+				
+			$this->logger->debug('$formField : '.print_r($formField,true));
 
 			$json .= $formField->toEditJSON();
-			
+				
 			// Populate the list of available values
 			if ($formField->subtype == "MODE") {
 				$json .= ',"params":{"options":[';
@@ -152,13 +162,13 @@ class Genapp_Service_QueryService {
 				$json .= ']}';
 			}
 			// For DYNAMIC and TREE modes, the list is populated using an ajax request
-			
-			
+				
+				
 		} else {
-			$json .= $formField->toEditJSON();			
+			$json .= $formField->toEditJSON();
 		}
-		
-		
+
+
 		// For the RANGE field, get the min and max values
 		if ($formField->type == "NUMERIC" && $formField->subtype == "RANGE") {
 			$range = $this->metadataModel->getRange($formField->unit);
