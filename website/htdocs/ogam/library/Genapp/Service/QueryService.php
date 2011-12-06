@@ -147,8 +147,6 @@ class Genapp_Service_QueryService {
 			} else {
 				$formField->valueLabel = $modes[$formField->value];
 			}
-				
-			$this->logger->debug('$formField : '.print_r($formField,true));
 
 			$json .= $formField->toEditJSON();
 				
