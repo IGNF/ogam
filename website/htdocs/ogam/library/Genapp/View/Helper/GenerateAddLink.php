@@ -14,7 +14,7 @@ class Genapp_View_Helper_GenerateAddLink extends Zend_View_Helper_Abstract {
 	 * @param String $schema The schema
 	 * @param String $format The format
 	 * @param Array $infoFields The primary keys
-	 * @return the HTML link
+	 * @return String the URL for the link
 	 */
 	function generateAddLink($schema, $format, $infoFields) {
 
