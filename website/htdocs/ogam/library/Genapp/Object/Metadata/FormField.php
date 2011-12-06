@@ -64,7 +64,8 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	var $value;
 
 	/**
-	 * The label corresponding to value of the field (this is not defined in the metadata databae, it's the raw value of the data).
+	 * The label corresponding to value of the field.
+	 * This is not defined in the metadata databae, it's the raw value of the data for codes.
 	 */
 	var $valueLabel;
 
