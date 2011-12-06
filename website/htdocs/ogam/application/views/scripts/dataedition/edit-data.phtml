@@ -89,23 +89,25 @@
 
                     // parentsLinks
                     $ancestors = array_reverse($this->ancestors);
-                    $parentsLinks = '';
+                    $parentsLinks = array();
                     foreach ($ancestors as $ancestor) {
-                        $parentsLinks .= $this->generateEditLink($ancestor) . "<br/>";
+                        $parentsLinks[] = $this->generateEditLink($ancestor);
                     }
-                    if ($parentsLinks !== '') {
+                    if (!empty($parentsLinks)) {
                         $patch['parentsLinks'] = $parentsLinks;
                     }
+
                     // dataTitle
                     $patch['dataTitle'] =  $this->escape($this->tableFormat->label);
-                    // disableDeleteButton & deleteButtonTooltip
+
+                    // disableDeleteButton
                     if (empty($this->children)) {
                         // If the item has no child we can delete it
                         $patch['disableDeleteButton'] = false;
-                        //$this->generateDeleteLink($this->data);
                     } else {
                         $patch['disableDeleteButton'] = true;
                     }
+
                     // childrenConfigOptions
                     if (!empty($this->children)) {
                         // Iterate though the child tables
@@ -116,12 +118,12 @@
                             $configOptions['title'] = $this->escape($this->childrenTableLabels[$childFormat]);
 
                             // Add the edit links for each child of the current item
-                            $content = '';
+                            $childrenLinks = array();
                             foreach ($childrenLines as $child) {
-                                $content .= $this->generateEditLink($child)."<br/>";
+                                $childrenLinks[] = $this->generateEditLink($child);
                             }
-                            if ($content !== '') {
-                                $configOptions['html'] = $content;
+                            if (!empty($childrenLinks)) {
+                                $configOptions['childrenLinks'] = $childrenLinks;
                             } else {
                                 $content = $this->translate('No %value% found.');
                                 $configOptions['html'] = str_replace('%value%', strtolower($this->escape($this->childrenTableLabels[$childFormat])), $content);
@@ -134,6 +136,7 @@
                         }
                         $patch['childrenConfigOptions'] = $childrenConfigOptions;
                     }
+
                     echo json_encode($patch);
                 ?>
             );

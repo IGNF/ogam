@@ -221,6 +221,7 @@ if(Genapp.EditionPanel){
         childrenFSAddNewChildButtonText : 'Nouvelle fiche',
         childrenFSAddNewChildButtonTooltip : 'Ajouter une nouvelle fiche',
         contentTitleAddPrefix : 'Ajout d\'une',
-        contentTitleEditPrefix : 'Edition d\'une'
+        contentTitleEditPrefix : 'Edition d\'une',
+        tipEditPrefix : 'Editer la'
     });
 }

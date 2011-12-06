@@ -137,6 +137,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
                     hideMapDetails: this.hideMapDetails,
                     minZoomLevel: this.mapWindowMinZoomLevel //,
                     //resultsBBox: Ext.getCmp('consultation_panel').mapPanel.resultsBBox
+                    // TODO: done for OISON, check the impact
                 }),
                 buttons: [{
                     text: this.mapWindowCancelButtonText,

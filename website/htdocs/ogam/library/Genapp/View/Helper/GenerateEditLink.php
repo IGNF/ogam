@@ -32,14 +32,17 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 			$urlArray[$infoField->data] = $infoField->value;
 		}
 
-		// Add the other elements as a tooltip
-		$tooltip = "";
+		// Add the fields to generate the tooltip
+		$fields = array();
 		foreach ($data->getFields() as $field) {
-			$tooltip .= $field->data.": ".$field->value."<br/>";
+			$fields[$field->data] = $field->value;
 		}
 
 		// output the result
-		return '<a href="'.$this->view->url($urlArray, null, true).'" class="tooltip">Edit '.$data->tableFormat->label.'<em><span></span>'.$tooltip.'</em></a>';
+		return array(
+		    'url' => $this->view->url($urlArray, null, true),
+		    'text' => $data->tableFormat->label,
+		    'fields' => $fields
+		);
 	}
-
 }
