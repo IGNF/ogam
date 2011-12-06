@@ -207,6 +207,8 @@ class DataEditionController extends AbstractOGAMController {
 			$elem->setValue($tableField->value);
 
 		} else {
+			
+			// TODO : Manage GEOM fields
 
 			// Default
 			$elem = $form->createElement('text', $tableField->data);

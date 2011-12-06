@@ -7,11 +7,14 @@
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/adapter/ext/ext-base.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all-debug.js') ?>"></script>
+
+<?php if ($this->data->hasGeometry()) { ?>
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/mapfish/MapFish.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/mapfish/mapfish_patches.js') ?>"></script>
-
 <script type="text/javascript" src="<?= $this->baseUrl('map/getMapParameters') ?>" ></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/FeatureInfoControl.js') ?>"></script>
+<?php } ?>
 
 <!-- Production mode start
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/genapp.pack-min.js') ?>"></script>

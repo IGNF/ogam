@@ -98,5 +98,24 @@ class Genapp_Object_Generic_DataObject {
 
 		return $formats;
 	}
+	
+	/**
+	* Tell if the data object contains at least one geometry field.
+	*
+	* @return Boolean true is one geomtry field is present
+	*/
+	public function hasGeometry() {
+	
+		$hasGeom = false;
+	
+		foreach ($this->getFields() as $field) {
+			if ($field->type == 'GEOM') {
+				$hasGeom = true;
+				break;
+			}
+		}
+	
+		return $hasGeom;
+	}
 
 }
