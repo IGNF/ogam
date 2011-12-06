@@ -232,8 +232,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
         this.dataEditForm = new Ext.FormPanel({
             border : false,
             url: Genapp.ajax_query_url + 'ajax-validate-edit-data',
-            labelWidth : 150,
-            width : 410,
+            labelWidth : 200,
             defaults : {
                 msgTarget : 'side',
                 width : 250
@@ -289,10 +288,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		    border: false
 		},{
 		    items:centerPanelItems,
-		    width : 430,
+		    width : 500,
             border: false,
 		    defaults : {
-		        width : 430
+		        width : 500
 		    }
 		},{
 		    xtype: 'box',
