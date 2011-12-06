@@ -80,52 +80,79 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	ref : 'editionPage',
 	padding : 20,
 	autoScroll : true,
-	
+
 	/**
-     * @cfg {String} parentsFSTitle The parents FieldSet Title (defaults to 'Parents Summary').
-     */
+	 * @cfg {String} parentsFSTitle The parents FieldSet Title (defaults to
+	 *      'Parents Summary').
+	 */
 	parentsFSTitle : 'Parents Summary',
 	/**
-     * @cfg {String} dataEditFSDeleteButtonText The data Edit FieldSet Delete Button Text (defaults to 'Delete').
-     */
-    dataEditFSDeleteButtonText : 'Delete',
-    /**
-     * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete Button Tooltip (defaults to 'Delete the data (Disabled if exist children)').
-     */
-    dataEditFSDeleteButtonTooltip : 'Delete the data (Disabled if exist children)',
-    /**
-     * @cfg {String} dataEditFSValidateButtonText The data Edit FieldSet Validate Button Text (defaults to 'Validate').
-     */
-    dataEditFSValidateButtonText : 'Validate',
-    /**
-     * @cfg {String} dataEditFSValidateButtonTooltip The data Edit FieldSet Validate Button Tooltip (defaults to 'Save changes').
-     */
-    dataEditFSValidateButtonTooltip : 'Save changes',
-    /**
-     * @cfg {String} childrenFSTitle The children FieldSet Title (defaults to 'Children Summary').
-     */
-    childrenFSTitle : 'Children Summary',
-    /**
-     * @cfg {String} childrenFSAddNewChildButtonText The children FieldSet Add New Child Button Text (defaults to 'New child').
-     */
-    childrenFSAddNewChildButtonText : 'New child',
-    /**
-     * @cfg {String} childrenFSAddNewChildButtonTooltip The children FieldSet Add New Child Button Tooltip (defaults to 'Add a new child').
-     */
-    childrenFSAddNewChildButtonTooltip : 'Add a new child',
-    /**
-     * @cfg {String} contentTitleAddPrefix The content Title Add Prefix (defaults to 'Add').
-     */
-    contentTitleAddPrefix : 'Add',
-    /**
-     * @cfg {String} contentTitleEditPrefix The content Title Edit Prefix (defaults to 'Edit').
-     */
-    contentTitleEditPrefix : 'Edit',
-    
-    layout:'column',
+	 * @cfg {String} dataEditFSDeleteButtonText The data Edit FieldSet Delete
+	 *      Button Text (defaults to 'Delete').
+	 */
+	dataEditFSDeleteButtonText : 'Delete',
+	/**
+	 * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete
+	 *      Button Tooltip (defaults to 'Delete the data (Disabled if exist
+	 *      children)').
+	 */
+	dataEditFSDeleteButtonTooltip : 'Delete the data (Disabled if exist children)',
+	/**
+	 * @cfg {String} dataEditFSValidateButtonText The data Edit FieldSet
+	 *      Validate Button Text (defaults to 'Validate').
+	 */
+	dataEditFSValidateButtonText : 'Validate',
+	/**
+	 * @cfg {String} dataEditFSValidateButtonTooltip The data Edit FieldSet
+	 *      Validate Button Tooltip (defaults to 'Save changes').
+	 */
+	dataEditFSValidateButtonTooltip : 'Save changes',
+	/**
+	 * @cfg {String} childrenFSTitle The children FieldSet Title (defaults to
+	 *      'Children Summary').
+	 */
+	childrenFSTitle : 'Children Summary',
+	/**
+	 * @cfg {String} childrenFSAddNewChildButtonText The children FieldSet Add
+	 *      New Child Button Text (defaults to 'New child').
+	 */
+	childrenFSAddNewChildButtonText : 'New child',
+	/**
+	 * @cfg {String} childrenFSAddNewChildButtonTooltip The children FieldSet
+	 *      Add New Child Button Tooltip (defaults to 'Add a new child').
+	 */
+	childrenFSAddNewChildButtonTooltip : 'Add a new child',
+	/**
+	 * @cfg {String} contentTitleAddPrefix The content Title Add Prefix
+	 *      (defaults to 'Add').
+	 */
+	contentTitleAddPrefix : 'Add',
+	/**
+	 * @cfg {String} contentTitleEditPrefix The content Title Edit Prefix
+	 *      (defaults to 'Edit').
+	 */
+	contentTitleEditPrefix : 'Edit',
+
+	layout : 'column',
 
 	// private
-	initComponent : function () {
+	initComponent : function() {
+		
+		// Header
+		var contentTitlePrefix = '';
+		var getFormURL = '';
+		switch (this.mode) {
+		case 'ADD':
+			contentTitlePrefix = this.contentTitleAddPrefix + '&nbsp';
+			getFormURL = Genapp.base_url + 'dataedition/ajax-get-add-form/' + this.dataId;
+			break;
+		case 'EDIT':
+			contentTitlePrefix = this.contentTitleEditPrefix + '&nbsp';
+			getFormURL = Genapp.base_url + 'dataedition/ajax-get-edit-form/' + this.dataId;
+			break;
+		}
+		
+		
 		/**
 		 * The form fields Data Store.
 		 * 
@@ -133,9 +160,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		 * @type Ext.data.JsonStore
 		 */
 		this.formDS = new Ext.data.JsonStore({
-			url : Genapp.base_url + 'dataedition/ajax-get-edit-form/' + this.dataId,
+			url : getFormURL,
 			method : 'POST',
-			root: 'data',
+			root : 'data',
 			autoLoad : true,
 			fields : [ {
 				name : 'name',
@@ -185,7 +212,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				'load' : {
 					fn : function(store, records, options) {
 						var i, formItems = [];
-						
+
 						for (i = 0; i < records.length; i++) {
 							// alert(records[i].data);
 							formItems.push(this.getFieldConfig(records[i].data, true));
@@ -199,13 +226,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		});
 
-	    var centerPanelItems = [];
-	    // Header
-	    var contentTitlePrefix = '';console.log('this.mode : ' + this.mode);
-	    switch(this.mode){
-	        case 'ADD': contentTitlePrefix = this.contentTitleAddPrefix + '&nbsp'; break;
-	        case 'EDIT': contentTitlePrefix = this.contentTitleEditPrefix + '&nbsp'; break;
-	    }
+		var centerPanelItems = [];
+		
 
 		this.headerPanel = new Ext.BoxComponent({
 			html : '<h1>' + contentTitlePrefix + this.dataTitle.toLowerCase() + '<h1>'
@@ -220,58 +242,58 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		centerPanelItems.push(this.messagePanel);
 
 		// Parents
-		if(!Ext.isEmpty(this.parentsLinks)){
-		    this.parentsFS = new Ext.form.FieldSet({
-	            title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
-	            html : this.parentsLinks
-	        });
-		    centerPanelItems.push(this.parentsFS);
+		if (!Ext.isEmpty(this.parentsLinks)) {
+			this.parentsFS = new Ext.form.FieldSet({
+				title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
+				html : this.parentsLinks
+			});
+			centerPanelItems.push(this.parentsFS);
 		}
 
 		// Data
-        this.dataEditForm = new Ext.FormPanel({
-            border : false,
-            url: Genapp.ajax_query_url + 'ajax-validate-edit-data',
-            labelWidth : 200,
-            defaults : {
-                msgTarget : 'side',
-                width : 250
-            },
-            buttonAlign : 'center',
-            buttons : [ {
-                text : this.dataEditFSDeleteButtonText,
-                disabled : this.disableDeleteButton,
-                tooltip : this.dataEditFSDeleteButtonTooltip,
-                handler : this.deleteData,
-                scope : this
-            }, {
-                text : this.dataEditFSValidateButtonText,
-                tooltip: this.dataEditFSValidateButtonTooltip,
-                handler : this.editData,
-                scope : this
-            } ]
-        });
+		this.dataEditForm = new Ext.FormPanel({
+			border : false,
+			url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
+			labelWidth : 200,
+			defaults : {
+				msgTarget : 'side',
+				width : 250
+			},
+			buttonAlign : 'center',
+			buttons : [ {
+				text : this.dataEditFSDeleteButtonText,
+				disabled : this.disableDeleteButton,
+				tooltip : this.dataEditFSDeleteButtonTooltip,
+				handler : this.deleteData,
+				scope : this
+			}, {
+				text : this.dataEditFSValidateButtonText,
+				tooltip : this.dataEditFSValidateButtonTooltip,
+				handler : this.editData,
+				scope : this
+			} ]
+		});
 		this.dataEditFS = new Ext.form.FieldSet({
 			title : '&nbsp;' + this.dataTitle + '&nbsp;',
-            items : this.dataEditForm
+			items : this.dataEditForm
 		});
-        centerPanelItems.push(this.dataEditFS);
+		centerPanelItems.push(this.dataEditFS);
 
-        // Children
+		// Children
 		var childrenItems = [];
 		for ( var i in this.childrenConfigOptions) {
 			if (typeof this.childrenConfigOptions[i] !== 'function') {
-			    var cCO = this.childrenConfigOptions[i];
-			    cCO['buttons'] = [];
-			    cCO['buttons'][0] = {
-		            text : this.childrenFSAddNewChildButtonText,
-                    tooltip : this.childrenFSAddNewChildButtonTooltip,
-                    handler : (function(location){
-                        document.location = location;
-                    }).createCallback(cCO['AddChildURL']),
-                    scope : this
-                };
-			    console.log('cCO',cCO);
+				var cCO = this.childrenConfigOptions[i];
+				cCO['buttons'] = [];
+				cCO['buttons'][0] = {
+					text : this.childrenFSAddNewChildButtonText,
+					tooltip : this.childrenFSAddNewChildButtonTooltip,
+					handler : (function(location) {
+						document.location = location;
+					}).createCallback(cCO['AddChildURL']),
+					scope : this
+				};
+				console.log('cCO', cCO);
 				childrenItems.push(new Ext.form.FieldSet(cCO));
 			}
 		}
@@ -280,25 +302,25 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			items : childrenItems
 		});
 		centerPanelItems.push(this.childrenFS);
-		
-		this.items = [{
-		    xtype: 'box',
-		    html: '&nbsp;',
-		    columnWidth: .5,
-		    border: false
-		},{
-		    items:centerPanelItems,
-		    width : 500,
-            border: false,
-		    defaults : {
-		        width : 500
-		    }
-		},{
-		    xtype: 'box',
-		    html: '&nbsp;',
-		    columnWidth: .5,
-            border: false
-		}];
+
+		this.items = [ {
+			xtype : 'box',
+			html : '&nbsp;',
+			columnWidth : .5,
+			border : false
+		}, {
+			items : centerPanelItems,
+			width : 500,
+			border : false,
+			defaults : {
+				width : 500
+			}
+		}, {
+			xtype : 'box',
+			html : '&nbsp;',
+			columnWidth : .5,
+			border : false
+		} ];
 
 		Genapp.EditionPanel.superclass.initComponent.call(this);
 	},
@@ -319,7 +341,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		// Creates the ext field config
 		switch (record.inputType) {
 		case 'SELECT': // The input type SELECT correspond generally to a data
-						// type CODE
+			// type CODE
 			field.xtype = 'combo';
 			field.itemCls = 'trigger-field'; // For IE7 layout
 			field.hiddenName = field.name;
@@ -354,13 +376,13 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			}
 			break;
 		case 'DATE': // The input type DATE correspond generally to a data
-						// type DATE
+			// type DATE
 			field.xtype = 'datefield';
 			field.itemCls = 'trigger-field'; // For IE7 layout
 			field.format = Genapp.FieldForm.prototype.dateFormat;
 			break;
 		case 'NUMERIC': // The input type NUMERIC correspond generally to a data
-						// type NUMERIC or RANGE
+			// type NUMERIC or RANGE
 			field.xtype = 'numberfield';
 			field.itemCls = 'trigger-field'; // For IE7 layout
 			// If RANGE we set the min and max values
@@ -412,7 +434,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		case 'TREE':
 			field.xtype = 'treefield';
 			// TODO : change depth depending on level
-			field.dataUrl = Genapp.base_url + '/query/ajaxgettreenodes/unit/' + record.unit + '/depth/1'; 
+			field.dataUrl = Genapp.base_url + '/query/ajaxgettreenodes/unit/' + record.unit + '/depth/1';
 			break;
 		default:
 			field.xtype = 'field';
@@ -442,53 +464,56 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	editData : function() {
 		Ext.Ajax.request({
-		    form: this.dataEditForm.getForm().getEl(),
-		    url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
-		    timeout : 480000,
-            success : this.editSuccess,
-            failure : this.editFailure,
-            scope : this
+			form : this.dataEditForm.getForm().getEl(),
+			url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
+			timeout : 480000,
+			success : this.editSuccess,
+			failure : this.editFailure,
+			scope : this
 		});
-    },
+	},
 
-    /**
-     * Delete the data
-     */
-    deleteData : function() {
-        Ext.Ajax.request({
-            url: Genapp.ajax_query_url + 'ajax-delete-data',
-            success : this.editSuccess,
-            failure : this.editFailure,
-            params: { dataId : this.dataId }
-        });
-    },
+	/**
+	 * Delete the data
+	 */
+	deleteData : function() {
+		Ext.Ajax.request({
+			url : Genapp.ajax_query_url + 'ajax-delete-data',
+			success : this.editSuccess,
+			failure : this.editFailure,
+			params : {
+				dataId : this.dataId
+			}
+		});
+	},
 
-    /**
-     * Ajax success common function
-     */
-    editSuccess :  function(response, opts) {
-        var obj = Ext.decode(response.responseText);
-        if(!Ext.isEmpty(obj.message)){
-            this.messagePanel.update(obj.message);
-        }
-        if(!Ext.isEmpty(obj.errorMessage)){
-            this.messagePanel.update(obj.errorMessage);
-            console.log('Server-side failure with status code (1): ' + response.status);
-            console.log('errorMessage : ' + response.errorMessage);
-        }
-    },
+	/**
+	 * Ajax success common function
+	 */
+	editSuccess : function(response, opts) {
+		var obj = Ext.decode(response.responseText);
+		if (!Ext.isEmpty(obj.message)) {
+			this.messagePanel.update(obj.message);
+		}
+		if (!Ext.isEmpty(obj.errorMessage)) {
+			this.messagePanel.update(obj.errorMessage);
+			console.log('Server-side failure with status code (1): ' + response.status);
+			console.log('errorMessage : ' + response.errorMessage);
+		}
+	},
 
-    /**
-     * Ajax failure common function
-     */
-    editFailure : function(response, opts) {console.log(response);
-        var obj = Ext.decode(response.responseText);
-        if(!Ext.isEmpty(obj.errorMessage)){
-            this.messagePanel.update(obj.errorMessage);
-        }
-        console.log('Server-side failure with status code (2): ' + response.status);
-        console.log('errorMessage : ' + response.errorMessage);
-    }
+	/**
+	 * Ajax failure common function
+	 */
+	editFailure : function(response, opts) {
+		console.log(response);
+		var obj = Ext.decode(response.responseText);
+		if (!Ext.isEmpty(obj.errorMessage)) {
+			this.messagePanel.update(obj.errorMessage);
+		}
+		console.log('Server-side failure with status code (2): ' + response.status);
+		console.log('errorMessage : ' + response.errorMessage);
+	}
 });
 
 Ext.reg('editionpage', Genapp.EditionPanel);

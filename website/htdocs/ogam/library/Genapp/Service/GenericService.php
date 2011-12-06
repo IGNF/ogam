@@ -809,7 +809,7 @@ class Genapp_Service_GenericService {
 
 		// Get the description of the table
 		$data->tableFormat = $this->metadataModel->getTableFormat($schema, $format);
-
+		
 		// Get all the description of the Table Fields corresponding to the format
 		$tableFields = $this->metadataModel->getTableFields($schema, $format, $datasetId);
 

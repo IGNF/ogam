@@ -207,7 +207,7 @@ class DataEditionController extends AbstractOGAMController {
 			$elem->setValue($tableField->value);
 
 		} else {
-			
+
 			// TODO : Manage GEOM fields
 
 			// Default
@@ -253,19 +253,15 @@ class DataEditionController extends AbstractOGAMController {
 		//
 		foreach ($data->infoFields as $tablefield) {
 
-			// Hardcoded value : We don't display the submission id (it's a technical element)
-			if ($tablefield->data != "SUBMISSION_ID") {
-				$formField = $this->genericService->getTableToFormMapping($tablefield);
+			$formField = $this->genericService->getTableToFormMapping($tablefield);
 
-				$elem = $this->_getFormElement($form, $tablefield, $formField, true, $complete);
-				$elem->class = 'dataedit_key';
-				$form->addElement($elem);
-			}
-
+			$elem = $this->_getFormElement($form, $tablefield, $formField, true, $complete);
+			$elem->class = 'dataedit_key';
+			$form->addElement($elem);
 		}
 
 		//
-		// The key elements as labels
+		// The editable elements as form fields
 		//
 		foreach ($data->editableFields as $tablefield) {
 
@@ -312,9 +308,6 @@ class DataEditionController extends AbstractOGAMController {
 				$infoField->value = $params[$infoField->data];
 			}
 		}
-
-		// Complete the data object with the values from the database.
-		$data = $this->genericModel->getDatum($data);
 
 		return $data;
 	}
@@ -484,12 +477,13 @@ class DataEditionController extends AbstractOGAMController {
 			return $this->render('edit-data');
 		}
 
-		// Insert the data descriptor with the values submitted
+		// Fill the data descriptor with the values submitted
 		foreach ($data->editableFields as $field) {
 			$field->value = $this->_getParam($field->data);
 		}
 
 		try {
+			// Insert the data
 			$this->genericModel->insertData($data);
 		} catch (Exception $e) {
 			$this->logger->err($e->getMessage());
@@ -559,6 +553,35 @@ class DataEditionController extends AbstractOGAMController {
 	public function ajaxGetEditFormAction() {
 
 		$this->logger->debug('ajaxGetEditFormAction');
+
+
+		// Get the parameters from the URL
+		$request = $this->getRequest();
+		$data = $this->_getDataFromRequest($request);
+
+		// Complete the data object with the existing values from the database.
+		$data = $this->genericModel->getDatum($data);
+
+		// The service used to manage the query module
+		$this->queryService = new Genapp_Service_QueryService($data->tableFormat->schemaCode);
+
+		echo $this->queryService->getEditForm($data);
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * AJAX function : Get the AJAX structure corresponding to the add form
+	 *
+	 * @return JSON The list of forms
+	 */
+	public function ajaxGetAddFormAction() {
+
+		$this->logger->debug('ajaxGetEditFormAction');
+
 
 		// Get the parameters from the URL
 		$request = $this->getRequest();
