@@ -30,6 +30,11 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	// private
 	initComponent : function() {
 		this.hiddenName = this.name;
+		this.getStore().add([ new Ext.data.Record({
+            id : this.value,
+            text : this.valueLabel
+        }) ]);
+        this.setValue(this.value);
 		Genapp.form.TreeField.superclass.initComponent.call(this);
 	},
 

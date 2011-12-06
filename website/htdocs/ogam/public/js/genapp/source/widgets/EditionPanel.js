@@ -381,6 +381,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 					url : Genapp.base_url + '/query/ajaxgetdynamiccodes',
 					baseParams : {
 						'unit' : record.unit
+					},
+					data:{
+					    codes:[{
+					        code : record.value,
+					        label : record.valueLabel
+					    }]
 					}
 				});
 			} else {
@@ -449,6 +455,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			break;
 		case 'TREE':
 			field.xtype = 'treefield';
+			field.valueLabel = record.valueLabel;
 			// TODO : change depth depending on level
 			field.dataUrl = Genapp.base_url + '/query/ajaxgettreenodes/unit/' + record.unit + '/depth/1';
 			break;

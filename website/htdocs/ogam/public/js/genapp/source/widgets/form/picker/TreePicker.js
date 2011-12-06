@@ -53,6 +53,7 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
     baseAttr: {singleClickExpand:true},
     root : {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}, // root is always '*'
     listeners:{
+        /* TODO: For OISON Check if still need
         'load':{// Expand by default the root children
             fn:function(node){
                 if(node.getDepth() === 0){
@@ -60,7 +61,7 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
                 }
             },
             single:true
-        },
+        },*/
         'dblclick':{// Select the node on double click
             fn:function(node, event){
                 this.fireEvent('select', node.attributes);
