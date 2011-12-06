@@ -538,7 +538,7 @@ class DataEditionController extends AbstractOGAMController {
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->ancestors = $ancestors;
 		$this->view->data = $data;
-		$this->view->children = array(); // No children in edition mode
+		$this->view->children = array(); // No children in add mode
 		$this->view->mode = $mode;
 		$this->view->message = $message;
 
