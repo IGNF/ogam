@@ -180,8 +180,6 @@ public class GenericMapper {
 
 			Object result = null;
 
-			// Just in case, replace the comma with a dot
-
 			String type = fieldDescriptor.getType();
 
 			if (fieldValue.equalsIgnoreCase("") && fieldDescriptor.getIsMandatory()) {
@@ -209,6 +207,7 @@ public class GenericMapper {
 
 			if (type.equalsIgnoreCase(NUMERIC)) {
 				try {
+					// Just in case, replace the comma with a dot
 					String normalizedFieldValue = fieldValue.replace(",", ".");
 
 					if (fieldDescriptor.getSubtype() != null) {

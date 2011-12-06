@@ -820,6 +820,11 @@ public class MetadataDAO {
 				field.setTableName(rs.getString("table_name"));
 				field.setDefinition(rs.getString("definition"));
 				field.setLabel(rs.getString("label"));
+				String iscalculated = rs.getString("is_calculated");
+				if (iscalculated != null) {
+					field.setIsCalculated(iscalculated.equalsIgnoreCase("1"));
+				}
+				
 				result.put(field.getData(), field);
 			}
 
@@ -884,6 +889,10 @@ public class MetadataDAO {
 				field.setTableName(rs.getString("table_name"));
 				field.setDefinition(rs.getString("definition"));
 				field.setLabel(rs.getString("label"));
+				String iscalculated = rs.getString("is_calculated");
+				if (iscalculated != null) {
+					field.setIsCalculated(iscalculated.equalsIgnoreCase("1"));
+				}
 				return field;
 			} else {
 				return null;
@@ -1268,6 +1277,10 @@ public class MetadataDAO {
 				field.setTableName(rs.getString("table_name"));
 				field.setDefinition(rs.getString("definition"));
 				field.setLabel(rs.getString("label"));
+				String iscalculated = rs.getString("is_calculated");
+				if (iscalculated != null) {
+					field.setIsCalculated(iscalculated.equalsIgnoreCase("1"));
+				}
 
 				String sourceData = rs.getString("src_data");
 
@@ -1336,6 +1349,11 @@ public class MetadataDAO {
 				field.setTableName(rs.getString("table_name"));
 				field.setDefinition(rs.getString("definition"));
 				field.setLabel(rs.getString("label"));
+				String iscalculated = rs.getString("is_calculated");
+				if (iscalculated != null) {
+					field.setIsCalculated(iscalculated.equalsIgnoreCase("1"));
+				}
+				
 				result.put(field.getData(), field);
 			}
 
@@ -1398,6 +1416,10 @@ public class MetadataDAO {
 				field.setTableName(rs.getString("table_name"));
 				field.setDefinition(rs.getString("definition"));
 				field.setLabel(rs.getString("label"));
+				String iscalculated = rs.getString("is_calculated");
+				if (iscalculated != null) {
+					field.setIsCalculated(iscalculated.equalsIgnoreCase("1"));
+				}
 
 				String sourceData = rs.getString("src_data");
 				result.put(sourceData, field);

@@ -5,14 +5,14 @@ package fr.ifn.ogam.common.database.metadata;
  */
 public class TableFieldData extends FieldData {
 
-	// The logical name of the table
-	private String format;
-
 	// The physical name of the table
 	private String tableName;
 
 	// The physical name of the column
 	private String columnName;
+
+	// Indicated if the field is calculated by a trigger
+	private Boolean isCalculated = false;
 
 	/**
 	 * @return the tableName
@@ -72,6 +72,21 @@ public class TableFieldData extends FieldData {
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	/**
+	 * @return the isCalculated
+	 */
+	public Boolean getIsCalculated() {
+		return isCalculated;
+	}
+
+	/**
+	 * @param isCalculated
+	 *            the isCalculated to set
+	 */
+	public void setIsCalculated(Boolean isCalculated) {
+		this.isCalculated = isCalculated;
 	}
 
 	/**
