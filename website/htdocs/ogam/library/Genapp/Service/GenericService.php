@@ -62,7 +62,7 @@ class Genapp_Service_GenericService {
 		$children = $this->genericModel->getChildren($data, $datasetId);
 
 		$childrenCount = 0;
-		if(!empty($children)) {
+		if (!empty($children)) {
 			$childrenCount = count(current($children));
 		}
 		$json = '{"title":'.json_encode($data->tableFormat->label, JSON_HEX_APOS).', "children_count":'.$childrenCount.', "id":"'.$this->getIdFromData($data).'", "fields":[';
@@ -815,12 +815,12 @@ class Genapp_Service_GenericService {
 
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
-			// Fields that are calculated by a trigger should not be edited					
+			// Fields that are calculated by a trigger should not be edited
 			if ($isForDisplay || ($tableField->isCalculated == false)) {
 				if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
 					// Primary keys are displayed as info fields
 					$data->addInfoField($tableField);
-				} else {						
+				} else {
 					// Editable fields are displayed as form fields
 					$data->addEditableField($tableField);
 				}
