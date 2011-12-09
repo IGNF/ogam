@@ -283,7 +283,7 @@ class CheckconfController extends AbstractOGAMController {
 				//
 				$diff = array_diff($foundTable->primaryKeys, $table->primaryKeys);
 				if (!empty($diff)) {
-					$primaryKeysMsg[] = 'Table '.$table->tableName.' PK ('. implode(",",$foundTable->primaryKeys).') not compatible with metadata PK ('. implode(",",$table->primaryKeys).')';
+					$primaryKeysMsg[] = 'Table '.$table->tableName.' PK ('. implode(",", $foundTable->primaryKeys).') not compatible with metadata PK ('. implode(",", $table->primaryKeys).')';
 				}
 
 			}

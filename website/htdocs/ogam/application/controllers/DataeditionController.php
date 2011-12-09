@@ -511,10 +511,6 @@ class DataEditionController extends AbstractOGAMController {
 		// If data is set then we don't need to read from database
 		if ($data == null) {
 
-			// Get back the dataset identifier
-			$websiteSession = new Zend_Session_Namespace('website');
-			$datasetId = $websiteSession->datasetID;
-
 			// Get the parameters from the URL
 			$request = $this->getRequest();
 
