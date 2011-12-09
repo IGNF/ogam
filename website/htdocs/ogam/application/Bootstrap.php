@@ -90,7 +90,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$view->doctype('XHTML1_STRICT');
 		$view->headTitle()->setSeparator(' - ')->append($view->translate('Layout Head Title'));
 		$view->headMeta()->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8'); //->appendHttpEquiv('Content-Language', 'fr-FR')
-		$view->headMeta()->appendName('robots', 'index, follow')->appendName('keywords', $view->translate('Layout Head Meta Keywords'))->appendName('description', $view->translate('Layout Head Meta Description'));
+		$view->headMeta()->appendName('robots', 'index, follow');
+		$view->headMeta()->appendName('keywords', $view->translate('Layout Head Meta Keywords'));
+		$view->headMeta()->appendName('description', $view->translate('Layout Head Meta Description'));
 		$view->headLink()->appendStylesheet($baseUrl.'css/global.css');
 		$view->contactEmailPrefix = $configuration->contactEmailPrefix;
 		$view->contactEmailSufix = $configuration->contactEmailSufix;
@@ -140,9 +142,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Setup the translation
 		// !!! Note: the translate local correspond to the file name only.
-		$translations = $this->_addTranslation(array(
-		APPLICATION_PATH.'/lang'
-		), $translate);
+		$translations = $this->_addTranslation(array(APPLICATION_PATH.'/lang'), $translate);
 
 		// Setup the translation with files specific to the app
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/lang/')) {
