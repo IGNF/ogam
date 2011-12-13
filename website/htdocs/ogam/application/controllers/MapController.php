@@ -50,8 +50,8 @@ class MapController extends AbstractOGAMController {
 	/**
 	 * Get the parameters used to initialise a map.
 	 */
-	public function getmapparametersAction() {
-		$this->logger->debug('getmapparametersAction');
+	public function getMapParametersAction() {
+		$this->logger->debug('getMapParametersAction');
 
 		// Get back the provider id for the current user
 		$userSession = new Zend_Session_Namespace('user');
