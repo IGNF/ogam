@@ -41,7 +41,7 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	/**
 	 * The function that handle the trigger's click event. Implements the
 	 * default empty TriggerField.onTriggerClick function to display the
-	 * NumberRangePicker
+	 * TreePicker
 	 * 
 	 * @method onTriggerClick
 	 * @hide
