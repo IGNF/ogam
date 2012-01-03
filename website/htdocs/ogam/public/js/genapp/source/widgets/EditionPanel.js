@@ -493,7 +493,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			field.xtype = 'taxreffield';
 			field.valueLabel = record.valueLabel;
 			// TODO : change depth depending on level
-			field.dataUrl = Genapp.base_url + '/query/ajaxgettreenodes/unit/' + record.unit + '/depth/1';
+			field.dataUrl = Genapp.base_url + '/query/ajaxgettaxrefnodes/depth/1';
 			break;
 		default:
 			field.xtype = 'field';
