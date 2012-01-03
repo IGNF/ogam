@@ -5,31 +5,26 @@
  */
 
 /**
- * Represent a node in a tree with his children.
+ * Represent a node in a taxonomic referential.
  *
  * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
-class Genapp_Object_Metadata_TreeNode {
+class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNode {
 
 	/**
-	 * The code.
-	 */
-	var $code;
-
+	* The vernacular name of the taxon.
+	*/
+	var $vernacularName = false;
+	
 	/**
-	 * The label.
+	 * Indicate that the taxon is a reference.
 	 */
-	var $label;
-
-	/**
-	 * Is a leaf node.
-	 */
-	var $isLeaf;
+	var $isReference = false;
 
 	/**
 	 * The childs.
-	 * @var Array[TreeNodes]
+	 * @var Array[TaxrefNodes]
 	 */
 	var $children = array();
 
@@ -84,6 +79,9 @@ class Genapp_Object_Metadata_TreeNode {
 			if ($this->isLeaf) {
 				$return .= ',"leaf":true';
 			}
+			$return .= ',"vernacularName":'.json_encode($this->vernacularName);
+			$return .= ',"isReference":'.json_encode($this->isReference);
+			
 			if (!empty($this->children)) {
 				$return .= ',"children": [';
 				foreach ($this->children as $child) {

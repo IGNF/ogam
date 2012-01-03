@@ -24,6 +24,7 @@ class QueryController extends AbstractOGAMController {
 	protected $genericModel;
 	protected $resultLocationModel;
 	protected $predefinedRequestModel;
+	protected $taxonomicModel;
 
 	/**
 	 * The generic service.
@@ -90,10 +91,11 @@ class QueryController extends AbstractOGAMController {
 
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->taxonomicModel = new Genapp_Model_Referential_TaxonomicReferential();
 		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
-
+		
 		// Declare the service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();
 
@@ -874,6 +876,28 @@ class QueryController extends AbstractOGAMController {
 		// Send the result as a JSON String
 		echo '['.$tree->toJSON().']';
 
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+	
+	/**
+	* AJAX function : Nodes of a taxonomic referential under a given node.
+	*
+	* @return JSON.
+	*/
+	public function ajaxgettaxrefnodesAction() {
+		$this->logger->debug('ajaxgettaxrefnodesAction');
+	
+		$code = $this->getRequest()->getPost('node');
+		$depth = $this->getRequest()->getParam('depth');
+	
+		$tree = $this->taxonomicModel->getTaxrefModes($code, $depth);
+	
+		// Send the result as a JSON String
+		echo '['.$tree->toJSON().']';
+	
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
