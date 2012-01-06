@@ -97,8 +97,7 @@ class UserController extends Zend_Controller_Action {
 	 */
 	public function showLoginFormAction($errorMessage = null) {
 
-		$this->logger->debug('Start of UserController->showLoginFormAction($errorMessage)');
-		$this->logger->debug('$errorMessage : '.$errorMessage);
+		$this->logger->debug('showLoginFormAction'.$errorMessage);
 
 		// Generate a salt and store id in session
 		$salt = md5(uniqid(rand(), true));
@@ -118,6 +117,62 @@ class UserController extends Zend_Controller_Action {
 		}
 
 		$this->render('show-login-form');
+	}
+	
+	/**
+	* Build and return the change password form.
+	*/
+	private function _getChangePasswordForm() {
+	
+		$form = new Zend_Form();
+		$form->setAction($this->baseUrl.'/user/validate-change-password');
+		$form->setMethod('post');
+	
+		// Create and configure old password element:
+		$oldpassword = $form->createElement('password', 'oldpassword');
+		$oldpassword->setLabel('Old Password');
+		$oldpassword->setRequired(true);
+	
+		// Create and configure password element:
+		$newpassword = $form->createElement('password', 'password');
+		$newpassword->setLabel('New Password');
+		$newpassword->setRequired(true);
+	
+		// Create and configure confirm-password element:
+		$confirmPassword = $form->createElement('password', 'confirmpassword');
+		$confirmPassword->setLabel('Confirm New Password');
+		$confirmPassword->setRequired(true);
+	
+		$submit = $form->createElement('submit', 'submit');
+		$submit->setLabel('Submit');
+	
+		$form->addElement($oldpassword);
+		$form->addElement($newpassword);
+		$form->addElement($confirmPassword);
+		$form->addElement($submit);
+	
+		return $form;
+	}
+	
+	/**
+	* Return the change password form.
+	*
+	* @param String $errorMessage a potential error message
+	*/
+	public function showChangePasswordAction($errorMessage = null) {
+	
+		$this->logger->debug('showChangePasswordFormAction'.$errorMessage);
+		$this->logger->debug('$errorMessage : '.$errorMessage);
+	
+		// Get the login form
+		$this->view->form = $this->_getChangePasswordForm();
+	
+		// Eventually add an error message
+		if (!empty($errorMessage)) {
+			$this->view->form->getElement('password')->addError($errorMessage);
+		}
+	
+		$this->render('show-change-password');
 	}
 
 	/**
@@ -205,6 +260,67 @@ class UserController extends Zend_Controller_Action {
 		} catch (Exception $e) {
 			$this->logger->err('Exception '.$e);
 			$this->showLoginFormAction("Unexpected error : ".$e->getMessage());
+		}
+	}
+	
+	/**
+	* Check update the user password.
+	*
+	* @return a view.
+	*/
+	public function validateChangePasswordAction() {
+		$this->logger->debug('validateChangePasswordAction');
+	
+		// Check the validity of the POST
+		if (!$this->getRequest()->isPost()) {
+			$this->logger->debug('form is not a POST');
+			return $this->showChangePasswordAction('form is not a POST');
+		}
+	
+		// Check the validity of the form
+		$form = $this->_getChangePasswordForm();
+	
+		if (!$form->isValid($_POST)) {
+			// Failed validation, redisplay form
+			$this->logger->debug('form is not valid');
+			$this->view->form = $form;
+			return $this->render('show-change-password');
+	
+		} else {
+			$values = $form->getValues();
+	
+			$f = new Zend_Filter_StripTags();
+			$oldpassword = $f->filter($values['oldpassword']);
+			$password = $f->filter($values['password']);
+			$confirmpassword = $f->filter($values['confirmpassword']);
+			
+			// Check that the new password if confirmed
+			if ($password != $confirmpassword) {
+				return $this->showChangePasswordAction("Password does not match confirmation");
+			}
+			
+			// Get the user login
+			$userSession = new Zend_Session_Namespace('user');
+			$login = $userSession->user->login;
+			
+			$this->logger->debug('Login : '.$login);
+	
+			// Check that the old password is correct
+			$storedPassword = $this->userModel->getPassword($login);
+			$cryptedOldPassword = sha1($oldpassword);
+	
+			if ($storedPassword != $cryptedOldPassword) {
+				return $this->showChangePasswordAction("Old password is not correct");
+			}
+	
+			// Encrypt the password
+			$cryptedPassword = sha1($password);
+	
+			// Update the user password
+			$this->userModel->updatePassword($login, $cryptedPassword);
+	
+			// Return to the index
+			$this->_redirect('/index');
 		}
 	}
 

@@ -114,6 +114,11 @@ Edit;Edit
 Code;Code
 Label;Label
 Definition;Definition
+Old Password;Old Password
+New Password;New Password
+Confirm New Password;Confirm New Password
+Password does not match confirmation;Password does not match confirmation
+Old password is not correct;Old password is not correct
 
 
 ##########################

@@ -223,6 +223,11 @@ Edit;Editer
 Code;Code
 Label;Libellé
 Definition;Définition
+Old Password;Ancien mot de passe
+New Password;Nouveau mot de passe
+Confirm New Password;Confirmer le nouveau mot de passe
+Password does not match confirmation;Le mot de passe ne correspond pas
+Old password is not correct;L'ancien mot de passe n'est pas correct
 
 
 ##########################

@@ -69,16 +69,19 @@
         <div id="header-login" class="header-login" style="float: right">
 <?php
         $configuration = Zend_Registry::get("configuration");
-        if($configuration->autoLogin != 1){
-        $userSession = new Zend_Session_Namespace('user');
-        $user = $userSession->user;
-        if (!empty($user)) {
-             ?><a href="<?= $this->url(array('controller'=>'user', 'action'=>'logout'), 'default', true) ?>" ><?=$this->translate('Log out');?></a>
-<?php
-         } else {
-            ?><a href="<?= $this->url(array('controller'=>'user', 'action'=>'index'), 'default', true) ?>" ><?=$this->translate('Log in');?></a>
-<?php
-         }
+        if ($configuration->autoLogin != 1) {
+	        $userSession = new Zend_Session_Namespace('user');
+	        $user = $userSession->user;
+	        if (!empty($user)) {
+	             ?>
+	             <a href="<?= $this->url(array('controller'=>'user', 'action'=>'show-change-password'), 'default', true) ?>" ><?=$this->translate('Change Password');?></a>
+	             &nbsp;
+	             <a href="<?= $this->url(array('controller'=>'user', 'action'=>'logout'), 'default', true) ?>" ><?=$this->translate('Log out');?></a>
+	<?php
+	         } else {
+	            ?><a href="<?= $this->url(array('controller'=>'user', 'action'=>'index'), 'default', true) ?>" ><?=$this->translate('Log in');?></a>
+	<?php
+	         }
         }
 ?>
         </div>
