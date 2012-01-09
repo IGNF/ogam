@@ -110,26 +110,6 @@ listeners: {
      */
     hideCsvExportButton : false,
     /**
-     * @cfg {Boolean} hideGridCsvExportMenuItem
-     * if true hide the grid csv export menu item (defaults to false).
-     */
-    hideGridCsvExportMenuItem : false,
-    /**
-     * @cfg {Boolean} hideAggregationCsvExportMenuItem
-     * if true hide the aggregation csv export menu item (defaults to false).
-     */
-    hideAggregationCsvExportMenuItem : false,
-    /**
-     * @cfg {Boolean} hideInterpolationButton
-     * if true hide the interpolation button (defaults to false).
-     */
-    hideInterpolationButton : false,
-    /**
-     * @cfg {Boolean} hideAggregationButton
-     * if true hide the aggregation button (defaults to false).
-     */
-    hideAggregationButton : false,
-    /**
      * @cfg {Boolean} hideCancelButton
      * if true hide the cancel button (defaults to false).
      */
@@ -214,21 +194,6 @@ listeners: {
      * The grid Csv Export Menu Item Text (defaults to <tt>'Results'</tt>)
      */
     gridCsvExportMenuItemText : 'Results',
-    /**
-     * @cfg {String} aggregationCsvExportMenuItemText
-     * The aggregation Csv Export Menu Item Text (defaults to <tt>'Aggregation cells'</tt>)
-     */
-    aggregationCsvExportMenuItemText : 'Aggregation cells',
-    /**
-     * @cfg {String} interpolationButtonText
-     * The interpolation Button Text (defaults to <tt>'Interpolation'</tt>)
-     */
-    interpolationButtonText: 'Interpolation',
-    /**
-     * @cfg {String} aggregationButtonText
-     * The aggregation Button Text (defaults to <tt>'Aggregation'</tt>)
-     */
-    aggregationButtonText: 'Aggregation',
     /**
      * @cfg {String} printMapButtonText
      * The print Map Button Text (defaults to <tt>'Print map'</tt>)
@@ -403,62 +368,9 @@ listeners: {
         <li>Uncheck 'Browse in same window'</li> \
         </ul></div>",
     /**
-     * @cfg {Ext.SplitButton} aggregationButton
-     * The aggregation button
-     */
-    /**
-     * @cfg {Ext.SplitButton} interpolationButton
-     * The interpolation button
-     */
-    /**
      * @cfg {Ext.Button} csvExportButton
      * The csv export button
      */
-    /**
-     * @cfg {Ext.menu.Item} gridCsvExportMenuItem
-     * The grid csv export menu item
-     */
-    /**
-     * @cfg {Ext.menu.Item} aggregationCsvExportMenuItem
-     * The aggregation csv export menu item
-     */
-    /**
-     * @cfg {Ext.menu.Menu} aggregationButtonMenu
-     * The aggregation button menu
-     */
-    /**
-     * @cfg {Ext.form.ComboBox} aggregationButtonMenuDataCombo
-     * The aggregation button menu data combo
-     */
-    /**
-     * @cfg {Ext.form.ComboBox} aggregationButtonMenuGridsCombo
-     * The aggregation button menu grids combo
-     */
-    /**
-     * @cfg {Ext.menu.Menu} interpolationButtonMenu
-     * The interpolation button menu
-     */
-    /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuDataCombo
-     * The interpolation button menu data combo
-     */
-    /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuGridsCombo
-     * The interpolation button menu grids combo
-     */
-    /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuMethodsCombo
-     * The interpolation button menu methods combo
-     */
-    /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuMaxDistanceText
-     * The interpolation button menu max distance text
-     */
-    /**
-     * @cfg {Ext.form.ComboBox} interpolationButtonMenuMaxDistanceTextDefaultValue
-     * The interpolation button menu max distance text default value (default to 5000)
-     */
-    interpolationButtonMenuMaxDistanceTextDefaultValue: 5000,
     /**
      * @cfg {Ext.Button} mapPrintButton
      * The map print button
@@ -1459,9 +1371,7 @@ listeners: {
         }
         // Hide the aggregated layer and legend
         this.geoPanel.disableLayersAndLegends(this.geoPanel.layersActivation['request'], true, false, true);
-        this.geoPanel.disableLayersAndLegends(this.geoPanel.layersActivation['aggregation'], true, true, true);
-        this.geoPanel.disableLayersAndLegends(this.geoPanel.layersActivation['interpolation'], true, true, true);
-
+       
         // Init the mapResultLayers
         if(!this.mapResultLayers){
             var rla = this.geoPanel.layersActivation['request'];

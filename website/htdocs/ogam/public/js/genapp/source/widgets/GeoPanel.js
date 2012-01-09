@@ -234,10 +234,7 @@ Genapp.GeoPanel = Ext
 					 * @cfg {Object} layersActivation A object containing few
 					 *      arrays of layers ordered by activation type
 					 *      (defaults to <tt>{}</tt>) {
-					 *      'request':[resultLayer, resultLayer0, resultLayer1],
-					 *      'aggregation':[aggregatedLayer0, aggregatedLayer1,
-					 *      aggregatedLayer2],
-					 *      'interpolation':[interpolatedLayer] }
+					 *      'request':[resultLayer, resultLayer0, resultLayer1]
 					 */
 					layersActivation : {},
 

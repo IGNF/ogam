@@ -40,8 +40,6 @@ if(Genapp.ConsultationPanel){
         datasetPanelTitle :"Type de données",
         formsPanelTitle :"Formulaires :",
         csvExportButtonText: "Export CSV",
-        aggregationButtonText: "Agrégation",
-        interpolationButtonText: "Interpolation",
         printMapButtonText: "Imprimer la carte",
         gridViewEmptyText : "Pas de résultat...",
         gridPanelTitle :"Résultats",
