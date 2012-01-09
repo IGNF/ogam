@@ -441,12 +441,7 @@ Genapp.GeoPanel = Ext
 							this.addLegalMentions();
 						}
 
-						// Gets the layer tree model to initialise the Tree
-						Ext.Ajax.request({
-							url : Genapp.base_url + 'map/get-tree-layers',
-							success : this.initLayerTree,
-							scope : this
-						});
+						
 
 						// Init the toolbar
 						this.initToolbar();
@@ -519,6 +514,13 @@ Genapp.GeoPanel = Ext
 						// Reset the layers of the map
 						// 
 						this.resetMapLayers(this.map);
+						
+						// Gets the layer tree model to initialise the Layer Tree
+						Ext.Ajax.request({
+							url : Genapp.base_url + 'map/get-tree-layers',
+							success : this.initLayerTree,
+							scope : this
+						});
 
 						// Refresh the panel
 						this.layerPanel.doLayout();
