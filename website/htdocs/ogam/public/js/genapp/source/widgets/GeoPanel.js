@@ -743,11 +743,10 @@ Genapp.GeoPanel = Ext
 
 						// LayerContainer is used to get All Layers from the map
 						/*
-						var layerList = new GeoExt.tree.LayerContainer({
-							// Take the layers from the map
-							layerStore : this.mapPanel.layers,
-							expanded : true
-						}); */
+						 * var layerList = new GeoExt.tree.LayerContainer({ //
+						 * Take the layers from the map layerStore :
+						 * this.mapPanel.layers, expanded : true });
+						 */
 
 						// Add a Tree Panel
 						this.layerTree = new Ext.tree.TreePanel({
@@ -766,8 +765,6 @@ Genapp.GeoPanel = Ext
 						this.layerPanel.doLayout();
 
 					},
-
-					
 
 					/**
 					 * Initialize the map toolbar
@@ -1116,11 +1113,13 @@ Genapp.GeoPanel = Ext
 					 *            forceDisable parameter (default to true) The
 					 *            forceDisable is used by the
 					 *            'toggleLayersAndLegendsForZoom' function to
-					 *            avoid to enable, a node disable for another
+					 *            avoid to enable, a node disabled for another
 					 *            cause that the zoom range.
 					 */
 					enableLayersAndLegends : function(layerNames, check, setForceDisable) {
 
+						/*
+						
 						// The tabPanels must be activated before to show a
 						// child component
 						var isLayerPanelVisible = this.layerPanel.isVisible(), i;
@@ -1136,11 +1135,7 @@ Genapp.GeoPanel = Ext
 									this.layerTree.getNodeById(nodeId).enable();
 								}
 								this.layerTree.getNodeById(nodeId).getUI().show();
-								/*
-								 * var layers =
-								 * this.layerTree.nodeIdToLayers[nodeId];
-								 * layers[0].display(true);
-								 */
+				
 								if (check === true) {
 									// Note: the redraw must be done before to
 									// check the node
@@ -1160,6 +1155,8 @@ Genapp.GeoPanel = Ext
 						if (isLayerPanelVisible) {
 							this.layersAndLegendsPanel.activate(this.layerPanel);
 						}
+						
+						*/
 					},
 
 					/**
@@ -1183,6 +1180,8 @@ Genapp.GeoPanel = Ext
 					 *            cause that the zoom range.
 					 */
 					disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) {
+						
+						/*
 
 						var i;
 						if (!Ext.isEmpty(layerNames)) {
@@ -1200,15 +1199,11 @@ Genapp.GeoPanel = Ext
 									if (setForceDisable !== false) {
 										node.forceDisable = true;
 									}
-									/*
-									 * var layers =
-									 * this.layerTree.nodeIdToLayers[nodeId];
-									 * layers[0].display(false);
-									 */
 								}
 								this.setLegendsVisible([ layerNames[i] ], false);
 							}
 						}
+						*/
 					},
 
 					/**
@@ -1220,20 +1215,10 @@ Genapp.GeoPanel = Ext
 					 */
 					toggleLayersAndLegendsForZoom : function(layer) {
 						if (!Ext.isEmpty(this.layerTree)) {
-							var nodeId = this.layerTree.layerToNodeIds[layer.name];
-							if (!Ext.isEmpty(nodeId)) {
-								var node = this.layerTree.getNodeById(nodeId);
-								if (!Ext.isEmpty(node) && !node.hidden) {
-									if (!layer.calculateInRange()) {
-										node.zoomDisable = true;
-										this.disableLayersAndLegends([ layer.name ], false, false, false);
-									} else {
-										node.zoomDisable = false;
-										if (node.forceDisable !== true) {
-											this.enableLayersAndLegends([ layer.name ], false, false);
-										}
-									}
-								}
+							if (layer.calculateInRange()) {
+								this.enableLayersAndLegends([ layer.name ], false, false);
+							} else {
+								this.disableLayersAndLegends([ layer.name ], false, false, false);
 							}
 						}
 					},
