@@ -365,8 +365,6 @@ class MapController extends AbstractOGAMController {
 
 			$json .= '{';
 			$json .= '"text": "'.$legendItem->label.'", ';
-			$json .= '"maxscale": "'.$legendItem->maxScale.'", ';
-			$json .= '"minscale": "'.$legendItem->minScale.'", ';
 
 			$json .= '"expanded": ';
 			if ($legendItem->isExpended == 1) {

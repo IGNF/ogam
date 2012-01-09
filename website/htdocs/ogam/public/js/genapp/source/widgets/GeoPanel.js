@@ -313,10 +313,10 @@ Genapp.GeoPanel = Ext
 					/**
 					 * The layer tree object (linked to the layer panel).
 					 * 
-					 * @type {GeoExt.tree.LayerContainer}
-					 * @property layertree
+					 * @type {Ext.tree.TreePanel}
+					 * @property layerTree
 					 */
-					layertree : null,
+					layerTree : null,
 
 					/**
 					 * The legends panel.
@@ -444,7 +444,7 @@ Genapp.GeoPanel = Ext
 						// Gets the layer tree model to initialise the Tree
 						Ext.Ajax.request({
 							url : Genapp.base_url + 'map/get-tree-layers',
-							success : this.initTree,
+							success : this.initLayerTree,
 							scope : this
 						});
 
@@ -736,11 +736,10 @@ Genapp.GeoPanel = Ext
 					/**
 					 * Initialize the layer tree.
 					 */
-					initTree : function(response) {
+					initLayerTree : function(response) {
 
 						// Decode the JSON
 						var responseJSON = Ext.decode(response.responseText);
-						var treeConfig = this.buildLayerTree(responseJSON);
 
 						// LayerContainer is used to get All Layers from the map
 						/*
@@ -752,8 +751,10 @@ Genapp.GeoPanel = Ext
 
 						// Add a Tree Panel
 						this.layerTree = new Ext.tree.TreePanel({
+							autoScroll : true,
 							root : {
 								nodeType : "async",
+								text : 'Map Layers',
 								children : responseJSON,
 								expanded : true
 							}
@@ -766,46 +767,7 @@ Genapp.GeoPanel = Ext
 
 					},
 
-					/**
-					 * Initialize the layer tree
-					 * 
-					 * @hide
-					 */
-					buildLayerTree : function(layerTreeModel) {
-
-						// TODO : Configure layers from the model instead of
-						// taking them from the map
-
-						var treeConfig = [ 
-						    new Ext.tree.TreeNode({
-							text : "Zonages environnementaux",
-							expanded : true, 
-							children : [
-							    {
-								nodeType : "gx_layer",
-								text : "ZNIEFF 1",
-								layer : "znieff1",
-								isLeaf : true
-							}, {
-								nodeType : "gx_layer",
-								text : "ZNIEFF 2",
-								layer : "znieff2",
-								isLeaf : true
-							}]
-						}), {
-							nodeType : "gx_layer",
-							text : "Orthophoto",
-							layer : "ortho",
-							isLeaf : true
-						}, {
-							nodeType : "gx_layer",
-							text : "Ref IGN",
-							layer : "refign",
-							isLeaf : true
-						} ];
-
-						return treeConfig;
-					},
+					
 
 					/**
 					 * Initialize the map toolbar
@@ -1165,18 +1127,18 @@ Genapp.GeoPanel = Ext
 
 						this.layersAndLegendsPanel.activate(this.layerPanel);
 						for (i = 0; i < layerNames.length; i++) {
-							var nodeId = this.layertree.layerToNodeIds[layerNames[i]];
+							var nodeId = this.layerTree.layerToNodeIds[layerNames[i]];
 							if (!Ext.isEmpty(nodeId)) {
 								if (setForceDisable !== false) {
-									this.layertree.getNodeById(nodeId).forceDisable = false;
+									this.layerTree.getNodeById(nodeId).forceDisable = false;
 								}
-								if (this.layertree.getNodeById(nodeId).zoomDisable !== true) {
-									this.layertree.getNodeById(nodeId).enable();
+								if (this.layerTree.getNodeById(nodeId).zoomDisable !== true) {
+									this.layerTree.getNodeById(nodeId).enable();
 								}
-								this.layertree.getNodeById(nodeId).getUI().show();
+								this.layerTree.getNodeById(nodeId).getUI().show();
 								/*
 								 * var layers =
-								 * this.layertree.nodeIdToLayers[nodeId];
+								 * this.layerTree.nodeIdToLayers[nodeId];
 								 * layers[0].display(true);
 								 */
 								if (check === true) {
@@ -1186,7 +1148,7 @@ Genapp.GeoPanel = Ext
 									// images before the new one
 									var layers = this.map.getLayersByName(layerNames[i]);
 									layers[0].redraw(true);
-									this.layertree.setNodeChecked(nodeId, true);
+									this.layerTree.setNodeChecked(nodeId, true);
 								}
 							}
 						}
@@ -1225,12 +1187,12 @@ Genapp.GeoPanel = Ext
 						var i;
 						if (!Ext.isEmpty(layerNames)) {
 							for (i = 0; i < layerNames.length; i++) {
-								var nodeId = this.layertree.layerToNodeIds[layerNames[i]];
+								var nodeId = this.layerTree.layerToNodeIds[layerNames[i]];
 								if (!Ext.isEmpty(nodeId)) {
 									if (uncheck === true) {
-										this.layertree.setNodeChecked(nodeId, false);
+										this.layerTree.setNodeChecked(nodeId, false);
 									}
-									var node = this.layertree.getNodeById(nodeId);
+									var node = this.layerTree.getNodeById(nodeId);
 									if (hide === true) {
 										node.getUI().hide();
 									}
@@ -1240,7 +1202,7 @@ Genapp.GeoPanel = Ext
 									}
 									/*
 									 * var layers =
-									 * this.layertree.nodeIdToLayers[nodeId];
+									 * this.layerTree.nodeIdToLayers[nodeId];
 									 * layers[0].display(false);
 									 */
 								}
@@ -1257,10 +1219,10 @@ Genapp.GeoPanel = Ext
 					 *            layer The layer to check
 					 */
 					toggleLayersAndLegendsForZoom : function(layer) {
-						if (!Ext.isEmpty(this.layertree)) {
-							var nodeId = this.layertree.layerToNodeIds[layer.name];
+						if (!Ext.isEmpty(this.layerTree)) {
+							var nodeId = this.layerTree.layerToNodeIds[layer.name];
 							if (!Ext.isEmpty(nodeId)) {
-								var node = this.layertree.getNodeById(nodeId);
+								var node = this.layerTree.getNodeById(nodeId);
 								if (!Ext.isEmpty(node) && !node.hidden) {
 									if (!layer.calculateInRange()) {
 										node.zoomDisable = true;
