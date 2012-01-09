@@ -299,6 +299,16 @@ class Genapp_Service_GenericService {
 		}
 
 		$sql = $from.$where;
+		
+		
+		// Right management
+		// Get back the provider id of the user
+		$userSession = new Zend_Session_Namespace('user');
+		$providerId = $userSession->user->providerId;
+		$permissions = $userSession->permissions;
+		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER',$permissions)) {
+			$sql .= " AND ".$rootTable->getLogicalName().".provider_id = '".$providerId."'";
+		}
 
 		// Return the completed SQL request
 		return $sql;

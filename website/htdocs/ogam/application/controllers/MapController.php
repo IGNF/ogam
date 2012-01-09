@@ -16,7 +16,7 @@ class MapController extends AbstractOGAMController {
 	 */
 	public function init() {
 		parent::init();
-		
+
 		// Initialise the models
 		$this->layersModel = new Application_Model_Mapping_Layers();
 		$this->boundingBoxModel = new Application_Model_Mapping_BoundingBox();
@@ -24,7 +24,7 @@ class MapController extends AbstractOGAMController {
 
 	/**
 	 * Check if the authorization is valid this controler.
-	 * 
+	 *
 	 * @throws an Exception if the user doesn't have the rights
 	 */
 	function preDispatch() {
@@ -72,12 +72,21 @@ class MapController extends AbstractOGAMController {
 		$resolString = implode(",", $resolutions);
 		$this->view->resolutions = $resolString;
 		$this->view->numZoomLevels = count($resolutions);
+		
+		$this->logger->debug('$configuration->usePerProviderCenter : '.$configuration->usePerProviderCenter);
 
-		// Center the map on the country
-		$center = $this->boundingBoxModel->getCenter($providerId);
-		$this->view->defaultzoom = $center->defaultzoom;
-		$this->view->x_center = $center->x_center;
-		$this->view->y_center = $center->y_center;
+		if ($configuration->usePerProviderCenter == 1) {
+			// Center the map on the provider location
+			$center = $this->boundingBoxModel->getCenter($providerId);
+			$this->view->defaultzoom = $center->defaultzoom;
+			$this->view->x_center = $center->x_center;
+			$this->view->y_center = $center->y_center;
+		} else {
+			// Use default settings
+			$this->view->defaultzoom = $configuration->zoom_level;
+			$this->view->x_center = ($configuration->bbox->x_min + $configuration->bbox->x_max) / 2;
+			$this->view->y_center = ($configuration->bbox->y_min + $configuration->bbox->y_max) / 2;
+		}
 
 		// Feature parameters
 		if (empty($configuration->featureinfo->margin)) {
@@ -99,7 +108,7 @@ class MapController extends AbstractOGAMController {
 
 	/**
 	 * Calculate the resolution array corresponding to the available scales.
-	 * 
+	 *
 	 * @param Array[Integer] $scales The list of scales
 	 */
 	private function _getResolutions($scales) {
@@ -125,10 +134,8 @@ class MapController extends AbstractOGAMController {
 
 		$this->logger->debug('getlayersAction');
 
-		// Get back the country code
+		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
-
-		// TODO : Remove hardcoded value
 		$providerId = $userSession->user->providerId;
 
 		// Get some configutation parameters
@@ -403,7 +410,7 @@ class MapController extends AbstractOGAMController {
 				// The item is a node
 				$json .= '"isLeaf": false, ';
 				$json .= '"nodeType" : "async", ';
-				
+
 				// Recursive call
 				$json .= '"children": ['.$this->_getLegendItems($legendItem->itemId, $providerId).']';
 			}
