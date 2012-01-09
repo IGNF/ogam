@@ -140,8 +140,8 @@ if(Genapp.FieldForm){
         columnsPanelTbarRemoveAllButtonTooltip:"Supprimer toutes les colonnes"
     });
 }
-if(Genapp.MapPanel){
-    Ext.apply(Genapp.MapPanel.prototype, {
+if(Genapp.GeoPanel){
+    Ext.apply(Genapp.GeoPanel.prototype, {
         title :"Carte",
         tabTip: "La carte avec les localisations des résultats de la requête",
         layerPanelTitle:"Couches",

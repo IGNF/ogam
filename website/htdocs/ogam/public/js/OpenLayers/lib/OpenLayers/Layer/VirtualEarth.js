@@ -1,16 +1,23 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
 /**
+ * @requires OpenLayers/Layer/SphericalMercator.js
  * @requires OpenLayers/Layer/EventPane.js
  * @requires OpenLayers/Layer/FixedZoomLevels.js
+ * @requires OpenLayers/Lang.js
  */
 
 /**
  * Class: OpenLayers.Layer.VirtualEarth
- * 
+ * Instances of OpenLayers.Layer.VirtualEarth are used to display the data from
+ *     the Bing Maps AJAX Control (see e.g. 
+ *     http://msdn.microsoft.com/library/bb429619.aspx). Create a VirtualEarth 
+ *     layer with the <OpenLayers.Layer.VirtualEarth> constructor.
+ *     
  * Inherits from:
  *  - <OpenLayers.Layer.EventPane>
  *  - <OpenLayers.Layer.FixedZoomLevels>
@@ -27,9 +34,9 @@ OpenLayers.Layer.VirtualEarth = OpenLayers.Class(
     
     /** 
      * Constant: MAX_ZOOM_LEVEL
-     * {Integer} 17
+     * {Integer} 19
      */
-    MAX_ZOOM_LEVEL: 17,
+    MAX_ZOOM_LEVEL: 19,
 
     /** 
      * Constant: RESOLUTIONS
@@ -53,7 +60,9 @@ OpenLayers.Layer.VirtualEarth = OpenLayers.Class(
         0.000171661376953125, 
         0.0000858306884765625, 
         0.00004291534423828125,
-        0.00002145767211914062
+        0.00002145767211914062, 
+        0.00001072883605957031,
+        0.00000536441802978515
     ],
 
     /**
@@ -63,16 +72,48 @@ OpenLayers.Layer.VirtualEarth = OpenLayers.Class(
     type: null,
 
     /**
+     * APIProperty: wrapDateLine
+     * {Boolean} Allow user to pan forever east/west.  Default is true.  
+     *     Setting this to false only restricts panning if 
+     *     <sphericalMercator> is true. 
+     */
+    wrapDateLine: true,
+
+    /**
      * APIProperty: sphericalMercator
      * {Boolean} Should the map act as a mercator-projected map? This will
      *     cause all interactions with the map to be in the actual map
      *     projection, which allows support for vector drawing, overlaying
      *     other maps, etc. 
      */
-    sphericalMercator: false, 
+    sphericalMercator: false,
+    
+    /**
+     * APIProperty: animationEnabled
+     * {Boolean} If set to true, the transition between zoom levels will be
+     *     animated. Set to false to match the zooming experience of other
+     *     layer types. Default is true.
+     */
+    animationEnabled: true, 
 
     /** 
      * Constructor: OpenLayers.Layer.VirtualEarth
+     * Creates a new instance of a OpenLayers.Layer.VirtualEarth. If you use an
+     *     instance of OpenLayers.Layer.VirtualEarth in you map, you should set 
+     *     the <OpenLayers.Map> option restrictedExtent to a meaningful value,
+     *     e.g.:
+     * (code)
+     * var map = new OpenLayers.Map( 'map', {
+     *     // other map options
+     *     restrictedExtent : OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508)
+     * } );
+     * 
+     * var veLayer = new OpenLayers.Layer.VirtualEarth (
+     *     "Virtual Earth Layer"
+     * );
+     * 
+     * map.addLayer( veLayer );
+     * (end)
      * 
      * Parameters:
      * name - {String}
@@ -112,10 +153,13 @@ OpenLayers.Layer.VirtualEarth = OpenLayers.Class(
                 // http://blogs.msdn.com/virtualearth/archive/2007/09/28/locking-a-virtual-earth-map.aspx
                 //
                 this.mapObject.LoadMap(null, null, this.type, true);
-                this.mapObject.AttachEvent("onmousedown", function() {return true; });
+                this.mapObject.AttachEvent("onmousedown", OpenLayers.Function.True);
 
             } catch (e) { }
             this.mapObject.HideDashboard();
+            if(typeof this.mapObject.SetAnimationEnabled == "function") {
+                this.mapObject.SetAnimationEnabled(this.animationEnabled);
+            }
         }
 
         //can we do smooth panning? this is an unpublished method, so we need 
@@ -128,6 +172,13 @@ OpenLayers.Layer.VirtualEarth = OpenLayers.Class(
             this.dragPanMapObject = null;
         }
 
+    },
+
+    /**
+     * Method: onMapResize
+     */
+    onMapResize: function() {
+        this.mapObject.Resize(this.map.size.w, this.map.size.h);
     },
 
     /** 

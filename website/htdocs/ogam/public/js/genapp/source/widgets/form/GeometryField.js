@@ -130,7 +130,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
                  * @property mapPanel
                  * @type Genapp.MapPanel
                  */
-                items:this.mapPanel = new Genapp.MapPanel({
+                items:this.mapPanel = new Genapp.GeoPanel({
                     title:'',
                     isDrawingMap:true,
                     featureWKT: this.getRawValue(),

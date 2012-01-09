@@ -1,6 +1,7 @@
-/* Copyright 2006-2008 MetaCarta, Inc., published under the Clear BSD license.
- * See http://svn.openlayers.org/trunk/openlayers/license.txt for the full text
- * of the license. */
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
  
 /**
@@ -56,14 +57,14 @@ OpenLayers.Layer.MapServer.Untiled = OpenLayers.Class(OpenLayers.Layer.MapServer
             obj = new OpenLayers.Layer.MapServer.Untiled(this.name,
                                                          this.url,
                                                          this.params,
-                                                         this.options);
+                                                         this.getOptions());
         }
 
         //get all additions from superclasses
         obj = OpenLayers.Layer.MapServer.prototype.clone.apply(this, [obj]);
 
         // copy/set any non-init, non-simple values here
-
+        
         return obj;
     }, 
 

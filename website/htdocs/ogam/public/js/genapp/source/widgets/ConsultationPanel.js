@@ -745,10 +745,10 @@ listeners: {
 
         /**
          * The map panel.
-         * @property mapPanel
-         * @type Genapp.MapPanel
+         * @property geoPanel
+         * @type Genapp.GeoPanel
          */
-        this.mapPanel = new Genapp.MapPanel({
+        this.geoPanel = new Genapp.GeoPanel({
             hideMapDetails: this.hideMapDetails,
             listeners:{
                 'activate': function (panel) {
@@ -774,7 +774,7 @@ listeners: {
             plain:true,
             region :'center',
             title :this.centerPanelTitle,
-            items :[this.mapPanel, this.gridPanel]
+            items :[this.geoPanel, this.gridPanel]
         });
 
         this.centerPanel.on(
@@ -1054,11 +1054,11 @@ listeners: {
                 // Collapse the layersAndLegendsPanel on expand event
                 expand:function(){
                     // The map panel must be rendered and activated to resize correctly the map div
-                    if(this.centerPanel.getActiveTab() instanceof Genapp.MapPanel){
-                        this.mapPanel.layersAndLegendsPanel.collapse();
+                    if(this.centerPanel.getActiveTab() instanceof Genapp.GeoPanel){
+                        this.geoPanel.layersAndLegendsPanel.collapse();
                     }else{
-                        this.centerPanel.activate(this.mapPanel);
-                        this.mapPanel.layersAndLegendsPanel.collapse();
+                        this.centerPanel.activate(this.geoPanel);
+                        this.geoPanel.layersAndLegendsPanel.collapse();
                         this.centerPanel.activate(this.gridPanel);
                     }
                 },
@@ -1427,8 +1427,8 @@ listeners: {
         var consultationPanel = Ext
                 .getCmp('consultation_panel');
         consultationPanel.centerPanel
-                .activate(consultationPanel.mapPanel);
-        consultationPanel.mapPanel.zoomToFeature(id, wkt);
+                .activate(consultationPanel.geoPanel);
+        consultationPanel.geoPanel.zoomToFeature(id, wkt);
     },
 
     /**
@@ -1458,17 +1458,17 @@ listeners: {
             this.csvExportButton.disable();
         }
         // Hide the aggregated layer and legend
-        this.mapPanel.disableLayersAndLegends(this.mapPanel.layersActivation['request'], true, false, true);
-        this.mapPanel.disableLayersAndLegends(this.mapPanel.layersActivation['aggregation'], true, true, true);
-        this.mapPanel.disableLayersAndLegends(this.mapPanel.layersActivation['interpolation'], true, true, true);
+        this.geoPanel.disableLayersAndLegends(this.geoPanel.layersActivation['request'], true, false, true);
+        this.geoPanel.disableLayersAndLegends(this.geoPanel.layersActivation['aggregation'], true, true, true);
+        this.geoPanel.disableLayersAndLegends(this.geoPanel.layersActivation['interpolation'], true, true, true);
 
         // Init the mapResultLayers
         if(!this.mapResultLayers){
-            var rla = this.mapPanel.layersActivation['request'];
+            var rla = this.geoPanel.layersActivation['request'];
             this.mapResultLayers = [];
             if(!Ext.isEmpty(rla)){
                 for(i = 0; i<rla.length;i++){
-                    var layer = this.mapPanel.map.getLayersByName(rla[i])[0];
+                    var layer = this.geoPanel.map.getLayersByName(rla[i])[0];
                     //The layer visibility must be set to true to handle the 'loadend' event
                     layer.events.register("loadend", this, function(info){
                         this.mapResultLayersLoadEnd[info.object.name] = 1;
@@ -1495,26 +1495,26 @@ listeners: {
         }
 
         if(!this.mapMask){
-            this.mapMask = new Ext.LoadMask(this.mapPanel.getEl(), {msg:this.mapMaskMsg});
+            this.mapMask = new Ext.LoadMask(this.geoPanel.getEl(), {msg:this.mapMaskMsg});
         }
 
         // The panel must be rendered and active to show the mask correctly
         if(this.showGridOnSubmit){
-            this.centerPanel.activate(this.mapPanel);
+            this.centerPanel.activate(this.geoPanel);
             this.mapMask.show();
             this.centerPanel.activate(this.gridPanel);
             this.gridPanel.loadMask.show();
         }else{
             this.centerPanel.activate(this.gridPanel);
             this.gridPanel.loadMask.show();
-            this.centerPanel.activate(this.mapPanel);
+            this.centerPanel.activate(this.geoPanel);
             this.mapMask.show();
         }
         for(i = 0; i<this.mapResultLayersLoadEnd.length;i++){
             var layer = this.mapResultLayersLoadEnd[i];
             layer.display(false);
         }
-        this.mapPanel.clean();
+        this.geoPanel.clean();
         this.clearGrid();
 
         Ext.Ajax.on('beforerequest', 
@@ -1608,11 +1608,11 @@ listeners: {
 
                 // The grid panel must be rendered and activated to resize correctly
                 // the grid's view in proportion of the columns number
-                if(this.centerPanel.getActiveTab() instanceof Genapp.MapPanel){
+                if(this.centerPanel.getActiveTab() instanceof Genapp.GeoPanel){
                     this.centerPanel.activate(this.gridPanel);
                     // Updates of the column model
                     this.gridPanel.getColumnModel().setConfig(newCM);
-                    this.centerPanel.activate(this.mapPanel);
+                    this.centerPanel.activate(this.geoPanel);
                 }else{
                     // Updates of the column model
                     this.gridPanel.getColumnModel().setConfig(newCM);
@@ -1639,7 +1639,7 @@ listeners: {
                         this.getResultsBBox();
                         if(this.autoZoomOnResultsFeatures !== true){
                             // Display the results layer
-                            this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
+                            this.geoPanel.enableLayersAndLegends(this.geoPanel.layersActivation['request'],true, true);
                         }
 
                         // Collapse the panel only if the form is valid
@@ -1794,12 +1794,12 @@ listeners: {
      */
     printMap : function (button, event) {
         // Get the BBOX
-        var center = this.mapPanel.map.center,
-            zoom = this.mapPanel.map.zoom,
+        var center = this.geoPanel.map.center,
+            zoom = this.geoPanel.map.zoom,
             i;
 
         // Get the layers
-        var activatedLayers = this.mapPanel.map.getLayersBy('visibility', true);
+        var activatedLayers = this.geoPanel.map.getLayersBy('visibility', true);
         var activatedLayersNames = '';
         for (i=0; i<activatedLayers.length; i++) {
             if (activatedLayers[i].printable !== false) {
@@ -1946,16 +1946,16 @@ listeners: {
                     throw('');
                 } else {
                     if (!Ext.isEmpty(response.resultsbbox)) {
-                        this.mapPanel.resultsBBox = response.resultsbbox;
+                        this.geoPanel.resultsBBox = response.resultsbbox;
                     } else {
-                        this.mapPanel.resultsBBox = null;
+                        this.geoPanel.resultsBBox = null;
                     }
                     if (this.autoZoomOnResultsFeatures === true) {
-                        if (this.mapPanel.resultsBBox !== null) {
-                           this.mapPanel.zoomOnBBox(this.mapPanel.resultsBBox);
+                        if (this.geoPanel.resultsBBox !== null) {
+                           this.geoPanel.zoomOnBBox(this.geoPanel.resultsBBox);
                         }
                         // Display the results layer
-                        this.mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'],true, true);
+                        this.geoPanel.enableLayersAndLegends(this.geoPanel.layersActivation['request'],true, true);
                     }
                 }
             } catch(err) {

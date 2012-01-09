@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -87,6 +88,34 @@ OpenLayers.Event = {
      */
     element: function(event) {
         return event.target || event.srcElement;
+    },
+
+    /**
+     * Method: isSingleTouch
+     * Determine whether event was caused by a single touch
+     *
+     * Parameters:
+     * event - {Event}
+     *
+     * Returns:
+     * {Boolean}
+     */
+    isSingleTouch: function(event) {
+        return event.touches && event.touches.length == 1;
+    },
+
+    /**
+     * Method: isMultiTouch
+     * Determine whether event was caused by a multi touch
+     *
+     * Parameters:
+     * event - {Event}
+     *
+     * Returns:
+     * {Boolean}
+     */
+    isMultiTouch: function(event) {
+        return event.touches && event.touches.length > 1;
     },
 
     /**
@@ -368,7 +397,8 @@ OpenLayers.Events = OpenLayers.Class({
         "mouseover", "mouseout",
         "mousedown", "mouseup", "mousemove", 
         "click", "dblclick", "rightclick", "dblrightclick",
-        "resize", "focus", "blur"
+        "resize", "focus", "blur",
+        "touchstart", "touchmove", "touchend"
     ],
 
     /** 
@@ -448,8 +478,8 @@ OpenLayers.Events = OpenLayers.Class({
      * Construct an OpenLayers.Events object.
      *
      * Parameters:
-     * object - {Object} The js object to which this Events object  is being
-     * added element - {DOMElement} A dom element to respond to browser events
+     * object - {Object} The js object to which this Events object  is being added
+     * element - {DOMElement} A dom element to respond to browser events
      * eventTypes - {Array(String)} Array of custom application events 
      * fallThrough - {Boolean} Allow events to fall through after these have
      *                         been handled?
@@ -550,17 +580,33 @@ OpenLayers.Events = OpenLayers.Class({
     },
     
     /**
-     * Method: on
+     * APIMethod: on
      * Convenience method for registering listeners with a common scope.
+     *     Internally, this method calls <register> as shown in the examples
+     *     below.
      *
      * Example use:
      * (code)
+     * // register a single listener for the "loadstart" event
+     * events.on({"loadstart": loadStartListener});
+     *
+     * // this is equivalent to the following
+     * events.register("loadstart", undefined, loadStartListener);
+     *
+     * // register multiple listeners to be called with the same `this` object
      * events.on({
      *     "loadstart": loadStartListener,
      *     "loadend": loadEndListener,
      *     scope: object
      * });
+     *
+     * // this is equivalent to the following
+     * events.register("loadstart", object, loadStartListener);
+     * events.register("loadend", object, loadEndListener);
      * (end)
+     *
+     * Parameters:
+     *  object - {Object}     
      */
     on: function(object) {
         for(var type in object) {
@@ -641,16 +687,29 @@ OpenLayers.Events = OpenLayers.Class({
     },
     
     /**
-     * Method: un
+     * APIMethod: un
      * Convenience method for unregistering listeners with a common scope.
+     *     Internally, this method calls <unregister> as shown in the examples
+     *     below.
      *
      * Example use:
      * (code)
+     * // unregister a single listener for the "loadstart" event
+     * events.un({"loadstart": loadStartListener});
+     *
+     * // this is equivalent to the following
+     * events.unregister("loadstart", undefined, loadStartListener);
+     *
+     * // unregister multiple listeners with the same `this` object
      * events.un({
      *     "loadstart": loadStartListener,
      *     "loadend": loadEndListener,
      *     scope: object
      * });
+     *
+     * // this is equivalent to the following
+     * events.unregister("loadstart", object, loadStartListener);
+     * events.unregister("loadend", object, loadEndListener);
      * (end)
      */
     un: function(object) {
@@ -715,7 +774,7 @@ OpenLayers.Events = OpenLayers.Class({
 
         // fast path
         if(!listeners || listeners.length == 0) {
-            return;
+            return undefined;
         }
 
         // prep evt object with object & div references
@@ -731,7 +790,8 @@ OpenLayers.Events = OpenLayers.Class({
         // execute all callbacks registered for specified type
         // get a clone of the listeners array to
         // allow for splicing during callbacks
-        var listeners = listeners.slice(), continueChain;
+        listeners = listeners.slice();
+        var continueChain;
         for (var i=0, len=listeners.length; i<len; i++) {
             var callback = listeners[i];
             // bind the context to callback.obj
@@ -759,10 +819,30 @@ OpenLayers.Events = OpenLayers.Class({
      * evt - {Event} 
      */
     handleBrowserEvent: function (evt) {
+        var type = evt.type, listeners = this.listeners[type];
+        if(!listeners || listeners.length == 0) {
+            // noone's listening, bail out
+            return;
+        }
+        // add clientX & clientY to all events - corresponds to average x, y
+        var touches = evt.touches;
+        if (touches && touches[0]) {
+            var x = 0;
+            var y = 0;
+            var num = touches.length;
+            var touch;
+            for (var i=0; i<num; ++i) {
+                touch = touches[i];
+                x += touch.clientX;
+                y += touch.clientY;
+            }
+            evt.clientX = x / num;
+            evt.clientY = y / num;
+        }
         if (this.includeXY) {
             evt.xy = this.getMousePosition(evt);
         } 
-        this.triggerEvent(evt.type, evt);
+        this.triggerEvent(type, evt);
     },
 
     /**
@@ -774,7 +854,17 @@ OpenLayers.Events = OpenLayers.Class({
     clearMouseCache: function() { 
         this.element.scrolls = null;
         this.element.lefttop = null;
-        this.element.offsets = null;
+        // OpenLayers.Util.pagePosition needs to use
+        // element.getBoundingClientRect to correctly calculate the offsets
+        // for the iPhone, but once the page is scrolled, getBoundingClientRect
+        // returns incorrect offsets. So our best bet is to not invalidate the
+        // offsets once we have them, and hope that the page was not scrolled
+        // when we did the initial calculation.
+        var body = document.body;
+        if (body && !((body.scrollTop != 0 || body.scrollLeft != 0) &&
+                                    navigator.userAgent.match(/iPhone/i))) {
+            this.element.offsets = null;
+        }
     },      
 
     /**
@@ -796,11 +886,10 @@ OpenLayers.Events = OpenLayers.Class({
         }
         
         if (!this.element.scrolls) {
+            var viewportElement = OpenLayers.Util.getViewportElement();
             this.element.scrolls = [
-                (document.documentElement.scrollLeft
-                         || document.body.scrollLeft),
-                (document.documentElement.scrollTop
-                         || document.body.scrollTop)
+                viewportElement.scrollLeft,
+                viewportElement.scrollTop
             ];
         }
 
@@ -813,9 +902,8 @@ OpenLayers.Events = OpenLayers.Class({
         
         if (!this.element.offsets) {
             this.element.offsets = OpenLayers.Util.pagePosition(this.element);
-            this.element.offsets[0] += this.element.scrolls[0];
-            this.element.offsets[1] += this.element.scrolls[1];
         }
+
         return new OpenLayers.Pixel(
             (evt.clientX + this.element.scrolls[0]) - this.element.offsets[0]
                          - this.element.lefttop[0], 

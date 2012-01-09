@@ -1,12 +1,14 @@
-/* Copyright (c) 2006-2007 MetaCarta, Inc., published under a modified BSD license.
- * See http://svn.openlayers.org/trunk/openlayers/repository-license.txt 
- * for the full text of the license. */
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
 /**
  * @requires OpenLayers/Format/XML.js
  * @requires OpenLayers/Feature/Vector.js
  * @requires OpenLayers/Geometry/Point.js
  * @requires OpenLayers/Geometry/LineString.js
+ * @requires OpenLayers/Projection.js
  */
 
 /**
@@ -53,6 +55,9 @@ OpenLayers.Format.GPX = OpenLayers.Class(OpenLayers.Format.XML, {
      *     this instance.
      */
     initialize: function(options) {
+        // GPX coordinates are always in longlat WGS84
+        this.externalProjection = new OpenLayers.Projection("EPSG:4326");
+
         OpenLayers.Format.XML.prototype.initialize.apply(this, [options]);
     },
     
@@ -129,7 +134,7 @@ OpenLayers.Format.GPX = OpenLayers.Class(OpenLayers.Format.XML, {
     * Method: extractSegment
     *
     * Parameters:
-    * segment - {<DOMElement>} a trkseg or rte node to parse
+    * segment - {DOMElement} a trkseg or rte node to parse
     * segmentType - {String} nodeName of waypoints that form the line
     *
     * Returns:
@@ -157,10 +162,10 @@ OpenLayers.Format.GPX = OpenLayers.Class(OpenLayers.Format.XML, {
         // node is either a wpt, trk or rte
         // attributes are children of the form <attr>value</attr>
         var attributes = {};
-        var attrNode = node.firstChild;
+        var attrNode = node.firstChild, value, name;
         while(attrNode) {
             if(attrNode.nodeType == 1) {
-                var value = attrNode.firstChild;
+                value = attrNode.firstChild;
                 if(value.nodeType == 3 || value.nodeType == 4) {
                     name = (attrNode.prefix) ?
                         attrNode.nodeName.split(":")[1] :

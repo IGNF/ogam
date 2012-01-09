@@ -1,10 +1,12 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
  * @requires OpenLayers/Request/XMLHttpRequest.js
  * @requires OpenLayers/Console.js
+ * @requires OpenLayers/Lang.js
  */
 
 OpenLayers.ProxyHost = "";
@@ -43,9 +45,9 @@ OpenLayers.nullHandler = function(request) {
 };
 
 /** 
- * APIFunction: loadURL
- * Background load a document.  For more flexibility in using XMLHttpRequest,
- *     see the <OpenLayers.Request> methods.
+ * APIFunction: OpenLayers.loadURL
+ * Background load a document.
+ * *Deprecated*.  Use <OpenLayers.Request.GET> method instead.
  *
  * Parameters:
  * uri - {String} URI of source doc
@@ -84,7 +86,7 @@ OpenLayers.loadURL = function(uri, params, caller,
 };
 
 /** 
- * Function: parseXMLString
+ * Function: OpenLayers.parseXMLString
  * Parse XML into a doc structure
  * 
  * Parameters:

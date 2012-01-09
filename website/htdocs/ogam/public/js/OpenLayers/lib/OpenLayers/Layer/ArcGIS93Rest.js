@@ -1,5 +1,6 @@
-/* Copyright (c) 2008 Avencia, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -45,7 +46,7 @@ OpenLayers.Layer.ArcGIS93Rest = OpenLayers.Class(OpenLayers.Layer.Grid, {
      * Example:
      * (code)
      * var arcims = new OpenLayers.Layer.ArcGIS93Rest("MyName",
-     *                                    "http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer", 
+     *                                    "http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer/export", 
      *                                    {
      *                                      layers: "0,1,2"
      *                                    });
@@ -113,7 +114,7 @@ OpenLayers.Layer.ArcGIS93Rest = OpenLayers.Class(OpenLayers.Layer.Grid, {
             obj = new OpenLayers.Layer.ArcGIS93Rest(this.name,
                                            this.url,
                                            this.params,
-                                           this.options);
+                                           this.getOptions());
         }
 
         //get all additions from superclasses
@@ -231,22 +232,5 @@ OpenLayers.Layer.ArcGIS93Rest = OpenLayers.Class(OpenLayers.Layer.Grid, {
                                                              newArguments);
     },
 
-    /**
-     * Method: addTile
-     * addTile creates a tile, initializes it, and adds it to the layer div. 
-     *
-     * Parameters:
-     * bounds - {<OpenLayers.Bounds>}
-     * position - {<OpenLayers.Pixel>}
-     * 
-     * Returns:
-     * {<OpenLayers.Tile.Image>} The added OpenLayers.Tile.Image
-     */
-    addTile:function(bounds,position) {
-        return new OpenLayers.Tile.Image(this, position, bounds, 
-                                         null, this.tileSize);
-    },
-
-    
     CLASS_NAME: "OpenLayers.Layer.ArcGIS93Rest"
 });

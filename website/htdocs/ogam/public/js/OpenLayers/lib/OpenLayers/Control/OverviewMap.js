@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /** 
@@ -121,6 +122,12 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
     resolutionFactor: 1,
 
     /**
+     * APIProperty: maximized
+     * {Boolean} Start as maximized (visible). Defaults to false.
+     */
+    maximized: false,
+
+    /**
      * Constructor: OpenLayers.Control.OverviewMap
      * Create a new overview map
      *
@@ -143,15 +150,25 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
         if (!this.mapDiv) { // we've already been destroyed
             return;
         }
-        this.handlers.click.destroy();
+        if (this.handlers.click) {
+            this.handlers.click.destroy();
+        }
+        if (this.handlers.drag) {
+            this.handlers.drag.destroy();
+        }
 
-        this.mapDiv.removeChild(this.extentRectangle);
+        this.ovmap && this.ovmap.eventsDiv.removeChild(this.extentRectangle);
         this.extentRectangle = null;
-        this.rectEvents.destroy();
-        this.rectEvents = null;
 
-        this.ovmap.destroy();
-        this.ovmap = null;
+        if (this.rectEvents) {
+            this.rectEvents.destroy();
+            this.rectEvents = null;
+        }
+
+        if (this.ovmap) {
+            this.ovmap.destroy();
+            this.ovmap = null;
+        }
         
         this.element.removeChild(this.mapDiv);
         this.mapDiv = null;
@@ -170,7 +187,7 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
             this.div.removeChild(this.minimizeDiv);
             this.minimizeDiv = null;
         }
-        
+
         this.map.events.un({
             "moveend": this.update,
             "changebaselayer": this.baseLayerDraw,
@@ -212,7 +229,6 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
         this.extentRectangle.style.position = 'absolute';
         this.extentRectangle.style.zIndex = 1000;  //HACK
         this.extentRectangle.className = this.displayClass+'ExtentRectangle';
-        this.mapDiv.appendChild(this.extentRectangle);
 
         this.element.appendChild(this.mapDiv);  
 
@@ -278,7 +294,10 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
         }
         
         this.map.events.register('moveend', this, this.update);
-
+        
+        if (this.maximized) {
+            this.maximizeControl();
+        }
         return this.div;
     },
     
@@ -470,6 +489,7 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
                         {controls: [], maxResolution: 'auto', 
                          fallThrough: false}, this.mapOptions);
         this.ovmap = new OpenLayers.Map(this.mapDiv, options);
+        this.ovmap.eventsDiv.appendChild(this.extentRectangle);
         
         // prevent ovmap from being destroyed when the page unloads, because
         // the OverviewMap control has to do this (and does it).

@@ -1,10 +1,21 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
+ * @requires OpenLayers/Console.js
  * @requires OpenLayers/Protocol.js
  * @requires OpenLayers/Feature/Vector.js
+ * @requires OpenLayers/Filter/Spatial.js
+ * @requires OpenLayers/Filter/Comparison.js
+ * @requires OpenLayers/Filter/Logical.js
+ * @requires OpenLayers/Request/XMLHttpRequest.js
+ */
+
+/**
+ * TODO: remove this dependency in 3.0
+ * @requires OpenLayers/Format/QueryStringFilter.js
  */
 
 /**
@@ -63,6 +74,26 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
     readWithPOST: false,
 
     /**
+     * Property: wildcarded.
+     * {Boolean} If true percent signs are added around values
+     *     read from LIKE filters, for example if the protocol
+     *     read method is passed a LIKE filter whose property
+     *     is "foo" and whose value is "bar" the string
+     *     "foo__ilike=%bar%" will be sent in the query string;
+     *     defaults to false.
+     */
+    wildcarded: false,
+
+    /**
+     * APIProperty: srsInBBOX
+     * {Boolean} Include the SRS identifier in BBOX query string parameter.  
+     *     Default is false.  If true and the layer has a projection object set,
+     *     any BBOX filter will be serialized with a fifth item identifying the
+     *     projection.  E.g. bbox=-1000,-1000,1000,1000,EPSG:900913
+     */
+    srsInBBOX: false,
+
+    /**
      * Constructor: OpenLayers.Protocol.HTTP
      * A class for giving layers generic HTTP protocol.
      *
@@ -79,9 +110,20 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
      * scope - {Object}
      */
     initialize: function(options) {
+        options = options || {};
         this.params = {};
         this.headers = {};
         OpenLayers.Protocol.prototype.initialize.apply(this, arguments);
+
+        if (!this.filterToParams && OpenLayers.Format.QueryStringFilter) {
+            var format = new OpenLayers.Format.QueryStringFilter({
+                wildcarded: this.wildcarded,
+                srsInBBOX: this.srsInBBOX
+            });
+            this.filterToParams = function(filter, params) {
+                return format.write(filter, params);
+            }
+        }
     },
     
     /**
@@ -93,24 +135,22 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
         this.headers = null;
         OpenLayers.Protocol.prototype.destroy.apply(this);
     },
-   
+
     /**
-     * Method: createCallback
-     * Returns a function that applies the given public method with resp and
-     *     options arguments.
+     * APIMethod: filterToParams
+     * Optional method to translate an <OpenLayers.Filter> object into an object
+     *     that can be serialized as request query string provided.  If a custom
+     *     method is not provided, the filter will be serialized using the 
+     *     <OpenLayers.Protocol.simpleFilterSerializer> method.
      *
      * Parameters:
-     * method - {Function} The method to be applied by the callback.
-     * response - {<OpenLayers.Protocol.Response>} The protocol response object.
-     * options - {Object} Options sent to the protocol method (read, create,
-     *     update, or delete).
+     * filter - {<OpenLayers.Filter>} filter to convert.
+     * params - {Object} The parameters object.
+     *
+     * Returns:
+     * {Object} The resulting parameters object.
      */
-    createCallback: function(method, response, options) {
-        return OpenLayers.Function.bind(function() {
-            method.apply(this, [response, options]);
-        }, this);
-    },
-
+    
     /**
      * APIMethod: read
      * Construct a request for reading new features.
@@ -123,10 +163,8 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
      * url - {String} Url for the request.
      * params - {Object} Parameters to get serialized as a query string.
      * headers - {Object} Headers to be set on the request.
-     * filter - {<OpenLayers.Filter.BBOX>} If a bbox filter is sent, it will be
-     *     serialized according to the OpenSearch Geo extension
-     *     (bbox=minx,miny,maxx,maxy).  Note that a BBOX filter as the child
-     *     of a logical filter will not be serialized.
+     * filter - {<OpenLayers.Filter>} Filter to get serialized as a
+     *     query string.
      * readWithPOST - {Boolean} If the request should be done with POST.
      *
      * Returns:
@@ -136,19 +174,19 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
      *     is then populated with the the features received from the server.
      */
     read: function(options) {
+        OpenLayers.Protocol.prototype.read.apply(this, arguments);
+        options = options || {};
+        options.params = OpenLayers.Util.applyDefaults(
+            options.params, this.options.params);
         options = OpenLayers.Util.applyDefaults(options, this.options);
+        if (options.filter && this.filterToParams) {
+            options.params = this.filterToParams(
+                options.filter, options.params
+            );
+        }
         var readWithPOST = (options.readWithPOST !== undefined) ?
                            options.readWithPOST : this.readWithPOST;
         var resp = new OpenLayers.Protocol.Response({requestType: "read"});
-
-        if(options.filter && options.filter instanceof OpenLayers.Filter.Spatial) {
-            if(options.filter.type == OpenLayers.Filter.Spatial.BBOX) {
-                options.params = OpenLayers.Util.extend(options.params, {
-                    bbox: options.filter.value.toArray()
-                });
-            }
-        }
-
         if(readWithPOST) {
             resp.priv = OpenLayers.Request.POST({
                 url: options.url,
@@ -166,7 +204,6 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
                 headers: options.headers
             });
         }
-
         return resp;
     },
 
@@ -183,7 +220,7 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
     handleRead: function(resp, options) {
         this.handleResponse(resp, options);
     },
-    
+
     /**
      * APIMethod: create
      * Construct a request for writing newly created features.
@@ -250,7 +287,10 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
      *     the feature received from the server.
      */
     update: function(feature, options) {
-        var url = options.url || feature.url || this.options.url;
+        options = options || {};
+        var url = options.url ||
+                  feature.url ||
+                  this.options.url + "/" + feature.fid;
         options = OpenLayers.Util.applyDefaults(options, this.options);
 
         var resp = new OpenLayers.Protocol.Response({
@@ -298,7 +338,10 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
      *     completes.
      */
     "delete": function(feature, options) {
-        var url = options.url || feature.url || this.options.url;
+        options = options || {};
+        var url = options.url ||
+                  feature.url ||
+                  this.options.url + "/" + feature.fid;
         options = OpenLayers.Util.applyDefaults(options, this.options);
 
         var resp = new OpenLayers.Protocol.Response({

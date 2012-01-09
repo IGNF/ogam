@@ -31,7 +31,7 @@
 #
 # Note: This is a very rough initial version of this code.
 #
-# -- Copyright 2005-2008 MetaCarta, Inc. / OpenLayers project --
+# -- Copyright 2005-2011 OpenLayers contributors / OpenLayers project --
 #
 
 # TODO: Allow files to be excluded. e.g. `Crossbrowser/DebugMode.js`?
@@ -43,7 +43,11 @@ import sys
 
 SUFFIX_JAVASCRIPT = ".js"
 
-RE_REQUIRE = "@requires:? (.*)\n" # TODO: Ensure in comment?
+RE_REQUIRE = "@requires?:? (.*)\n" # TODO: Ensure in comment?
+
+class MissingImport(Exception):
+    """Exception raised when a listed import is not found in the lib."""
+
 class SourceFile:
     """
     Represents a Javascript source code file.
@@ -94,6 +98,7 @@ class Config:
 
         [exclude]
         3rd/logger.js
+        exclude/this/dir
 
     All headings are required.
 
@@ -122,6 +127,20 @@ class Config:
         self.include =  lines[lines.index("[include]") + 1:lines.index("[exclude]")]
         self.exclude =  lines[lines.index("[exclude]") + 1:]
 
+def undesired(filepath, excludes):
+    # exclude file if listed
+    exclude = filepath in excludes
+    if not exclude:
+        # check if directory is listed
+        for excludepath in excludes:
+            if not excludepath.endswith("/"):
+                excludepath += "/"
+            if filepath.startswith(excludepath):
+                exclude = True
+                break
+    return exclude
+            
+
 def run (sourceDirectory, outputFilename = None, configFile = None):
     cfg = None
     if configFile:
@@ -138,15 +157,13 @@ def run (sourceDirectory, outputFilename = None, configFile = None):
                 if cfg and cfg.include:
                     if filepath in cfg.include or filepath in cfg.forceFirst:
                         allFiles.append(filepath)
-                elif (not cfg) or (filepath not in cfg.exclude):
+                elif (not cfg) or (not undesired(filepath, cfg.exclude)):
                     allFiles.append(filepath)
 
     ## Header inserted at the start of each file in the output
     HEADER = "/* " + "=" * 70 + "\n    %s\n" + "   " + "=" * 70 + " */\n\n"
 
     files = {}
-
-    order = [] # List of filepaths to output, in a dependency satisfying order 
 
     ## Import file source code
     ## TODO: Do import when we walk the directories above?
@@ -164,41 +181,31 @@ def run (sourceDirectory, outputFilename = None, configFile = None):
     resolution_pass = 1
 
     while not complete:
-        order = [] # List of filepaths to output, in a dependency satisfying order 
-        nodes = []
-        routes = []
+        complete = True
+
         ## Resolve the dependencies
         print "Resolution pass %s... " % resolution_pass
         resolution_pass += 1 
 
         for filepath, info in files.items():
-            nodes.append(filepath)
-            for neededFilePath in info.requires:
-                routes.append((neededFilePath, filepath))
-
-        for dependencyLevel in toposort(nodes, routes):
-            for filepath in dependencyLevel:
-                order.append(filepath)
-                if not files.has_key(filepath):
-                    print "Importing: %s" % filepath
-                    fullpath = os.path.join(sourceDirectory, filepath).strip()
-                    content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
-                    files[filepath] = SourceFile(filepath, content) # TODO: Chop path?
-        
-
-
-        # Double check all dependencies have been met
-        complete = True
-        try:
-            for fp in order:
-                if max([order.index(rfp) for rfp in files[fp].requires] +
-                       [order.index(fp)]) != order.index(fp):
+            for path in info.requires:
+                if not files.has_key(path):
                     complete = False
-        except:
-            complete = False
+                    fullpath = os.path.join(sourceDirectory, path).strip()
+                    if os.path.exists(fullpath):
+                        print "Importing: %s" % path
+                        content = open(fullpath, "U").read() # TODO: Ensure end of line @ EOF?
+                        files[path] = SourceFile(path, content) # TODO: Chop path?
+                    else:
+                        raise MissingImport("File '%s' not found (required by '%s')." % (path, filepath))
         
-        print    
+    # create dictionary of dependencies
+    dependencies = {}
+    for filepath, info in files.items():
+        dependencies[filepath] = info.requires
 
+    print "Sorting..."
+    order = toposort(dependencies) #[x for x in toposort(dependencies)]
 
     ## Move forced first and last files to the required position
     if cfg:

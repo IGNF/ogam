@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -8,10 +9,13 @@
  * @requires OpenLayers/Layer/Vector.js
  * @requires OpenLayers/Layer/Markers.js
  * @requires OpenLayers/Console.js
+ * @requires OpenLayers/Lang.js
  */
 
 /**
  * Class: OpenLayers.Layer.WFS
+ * *Deprecated*.  To be removed in 3.0.  Instead use OpenLayers.Layer.Vector
+ *     with a Protocol.WFS and one or more Strategies.
  * 
  * Inherits from:
  *  - <OpenLayers.Layer.Vector>
@@ -34,8 +38,13 @@ OpenLayers.Layer.WFS = OpenLayers.Class(
     
     /**
      * APIProperty: ratio
-     * {Float} the ratio of image/tile size to map size (this is the untiled
-     *     buffer)
+     * {Float} The ratio property determines the size of the serverside query
+     *    relative to the map viewport size. By default, we load an area twice
+     *    as big as the map, to allow for panning without immediately reload.
+     *    Setting this to 1 will cause the area of the WFS request to match
+     *    the map area exactly. It is recommended to set this to some number
+     *    at least slightly larger than 1, otherwise accidental clicks can
+     *    cause a data reload, by moving the map only 1 pixel.
      */
     ratio: 2,
 
@@ -119,6 +128,9 @@ OpenLayers.Layer.WFS = OpenLayers.Class(
             !OpenLayers.Feature.Vector) {
             this.vectorMode = false;
         }    
+
+        // Uppercase params
+        params = OpenLayers.Util.upperCaseObject(params);
         
         // Turn off error reporting, browsers like Safari may work
         // depending on the setup, and we don't want an unneccesary alert.
@@ -435,7 +447,7 @@ OpenLayers.Layer.WFS = OpenLayers.Class(
             obj = new OpenLayers.Layer.WFS(this.name,
                                            this.url,
                                            this.params,
-                                           this.options);
+                                           this.getOptions());
         }
 
         //get all additions from superclasses

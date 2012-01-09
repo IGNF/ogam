@@ -1,3 +1,8 @@
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
+
 /**
  * @requires OpenLayers/Format/WFST/v1.js
  * @requires OpenLayers/Format/Filter/v1_0_0.js
@@ -20,6 +25,14 @@ OpenLayers.Format.WFST.v1_0_0 = OpenLayers.Class(
      * {String} WFS version number.
      */
     version: "1.0.0",
+
+    /**
+     * APIProperty: srsNameInQuery
+     * {Boolean} If true the reference system is passed in Query requests
+     *     via the "srsName" attribute to the "wfs:Query" element, this
+     *     property defaults to false as it isn't WFS 1.0.0 compliant.
+     */
+    srsNameInQuery: false,
     
     /**
      * Property: schemaLocations
@@ -47,6 +60,29 @@ OpenLayers.Format.WFST.v1_0_0 = OpenLayers.Class(
     initialize: function(options) {
         OpenLayers.Format.Filter.v1_0_0.prototype.initialize.apply(this, [options]);
         OpenLayers.Format.WFST.v1.prototype.initialize.apply(this, [options]);
+    },
+    
+    /**
+     * Method: readNode
+     * Shorthand for applying one of the named readers given the node
+     *     namespace and local name.  Readers take two args (node, obj) and
+     *     generally extend or modify the second.
+     *
+     * Parameters:
+     * node - {DOMElement} The node to be read (required).
+     * obj - {Object} The object to be modified (optional).
+     * first - {Boolean} Should be set to true for the first node read. This
+     *     is usually the readNode call in the read method. Without this being
+     *     set, auto-configured properties will stick on subsequent reads.
+     *
+     * Returns:
+     * {Object} The input object, modified (or a new one if none was provided).
+     */
+    readNode: function(node, obj, first) {
+        // Not the superclass, only the mixin classes inherit from
+        // Format.GML.v2. We need this because we don't want to get readNode
+        // from the superclass's superclass, which is OpenLayers.Format.XML.
+        return OpenLayers.Format.GML.v2.prototype.readNode.apply(this, [node, obj]);
     },
     
     /**
@@ -97,16 +133,21 @@ OpenLayers.Format.WFST.v1_0_0 = OpenLayers.Class(
                     featureNS: this.featureNS,
                     featurePrefix: this.featurePrefix,
                     featureType: this.featureType,
-                    srsName: this.srsName
+                    srsName: this.srsName,
+                    srsNameInQuery: this.srsNameInQuery
                 }, options);
+                var prefix = options.featurePrefix;
                 var node = this.createElementNSPlus("wfs:Query", {
                     attributes: {
-                        typeName: (options.featureNS ? options.featurePrefix + ":" : "") +
+                        typeName: (prefix ? prefix + ":" : "") +
                             options.featureType
                     }
                 });
+                if(options.srsNameInQuery && options.srsName) {
+                    node.setAttribute("srsName", options.srsName);
+                }
                 if(options.featureNS) {
-                    node.setAttribute("xmlns:" + options.featurePrefix, options.featureNS);
+                    node.setAttribute("xmlns:" + prefix, options.featureNS);
                 }
                 if(options.propertyNames) {
                     for(var i=0,len = options.propertyNames.length; i<len; i++) {

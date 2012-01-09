@@ -1,7 +1,7 @@
-/* Copyright (c) 2006 MetaCarta, Inc., published under the Clear BSD license.
- * See http://svn.openlayers.org/trunk/openlayers/license.txt 
- * for the full text of the license. */
-
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
 /**
  * @requires OpenLayers/Control/DragFeature.js
@@ -43,6 +43,17 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
      *      Default is true.
      */
     toggle: true,
+    
+    /**
+     * APIProperty: standalone
+     * {Boolean} Set to true to create a control without SelectFeature
+     *     capabilities. Default is false.  If standalone is true, to modify
+     *     a feature, call the <selectFeature> method with the target feature.
+     *     Note that you must call the <unselectFeature> method to finish
+     *     feature modification in standalone mode (before starting to modify
+     *     another feature).
+     */
+    standalone: false,
 
     /**
      * Property: layer
@@ -102,12 +113,21 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
      * {Object} A symbolizer to be used for virtual vertices.
      */
     virtualStyle: null,
+    
+    /**
+     * APIProperty: vertexRenderIntent
+     * {String} The renderIntent to use for vertices. If no <virtualStyle> is
+     * provided, this renderIntent will also be used for virtual vertices, with
+     * a fillOpacity and strokeOpacity of 0.3. Default is null, which means
+     * that the layer's default style will be used for vertices.
+     */
+    vertexRenderIntent: null,
 
     /**
      * APIProperty: mode
      * {Integer} Bitfields specifying the modification mode. Defaults to
      *      OpenLayers.Control.ModifyFeature.RESHAPE. To set the mode to a
-     *      combination of options, use the | operator. or example, to allow
+     *      combination of options, use the | operator. For example, to allow
      *      the control to both resize and rotate features, use the following
      *      syntax
      * (code)
@@ -182,17 +202,20 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
      *     control.
      */
     initialize: function(layer, options) {
+        options = options || {};
         this.layer = layer;
         this.vertices = [];
         this.virtualVertices = [];
         this.virtualStyle = OpenLayers.Util.extend({},
-            this.layer.style || this.layer.styleMap.createSymbolizer());
+            this.layer.style ||
+            this.layer.styleMap.createSymbolizer(null, options.vertexRenderIntent)
+        );
         this.virtualStyle.fillOpacity = 0.3;
         this.virtualStyle.strokeOpacity = 0.3;
         this.deleteCodes = [46, 68];
         this.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
-        if(!(this.deleteCodes instanceof Array)) {
+        if(!(OpenLayers.Util.isArray(this.deleteCodes))) {
             this.deleteCodes = [this.deleteCodes];
         }
         var control = this;
@@ -207,9 +230,11 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
             onUnselect: this.unselectFeature,
             scope: this
         };
-        this.selectControl = new OpenLayers.Control.SelectFeature(
-            layer, selectOptions
-        );
+        if(this.standalone === false) {
+            this.selectControl = new OpenLayers.Control.SelectFeature(
+                layer, selectOptions
+            );
+        }
 
         // configure the drag control
         var dragOptions = {
@@ -223,6 +248,22 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
             },
             onComplete: function(feature) {
                 control.dragComplete.apply(control, [feature]);
+            },
+            featureCallbacks: {
+                over: function(feature) {
+                    /**
+                     * In normal mode, the feature handler is set up to allow
+                     * dragging of all points.  In standalone mode, we only
+                     * want to allow dragging of sketch vertices and virtual
+                     * vertices - or, in the case of a modifiable point, the
+                     * point itself.
+                     */
+                    if(control.standalone !== true || feature._sketch ||
+                       control.feature === feature) {
+                        control.dragControl.overFeature.apply(
+                            control.dragControl, [feature]);
+                    }
+                }
             }
         };
         this.dragControl = new OpenLayers.Control.DragFeature(
@@ -244,7 +285,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     destroy: function() {
         this.layer = null;
-        this.selectControl.destroy();
+        this.standalone || this.selectControl.destroy();
         this.dragControl.destroy();
         OpenLayers.Control.prototype.destroy.apply(this, []);
     },
@@ -257,7 +298,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
      * {Boolean} Successfully activated the control.
      */
     activate: function() {
-        return (this.selectControl.activate() &&
+        return ((this.standalone || this.selectControl.activate()) &&
                 this.handlers.keyboard.activate() &&
                 OpenLayers.Control.prototype.activate.apply(this, arguments));
     },
@@ -277,11 +318,19 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
             this.layer.removeFeatures(this.virtualVertices, {silent: true});
             this.vertices = [];
             this.dragControl.deactivate();
-            if(this.feature && this.feature.geometry && this.feature.layer) {
-                this.selectControl.unselect.apply(this.selectControl,
-                                                  [this.feature]);
+            var feature = this.feature;
+            var valid = feature && feature.geometry && feature.layer;
+            if(this.standalone === false) {
+                if(valid) {
+                    this.selectControl.unselect.apply(this.selectControl,
+                                                      [feature]);
+                }
+                this.selectControl.deactivate();
+            } else {
+                if(valid) {
+                    this.unselectFeature(feature);
+                }
             }
-            this.selectControl.deactivate();
             this.handlers.keyboard.deactivate();
             deactivated = true;
         }
@@ -302,18 +351,28 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
     },
 
     /**
-     * Method: selectFeature
-     * Called when the select feature control selects a feature.
+     * APIMethod: selectFeature
+     * Select a feature for modification in standalone mode. In non-standalone
+     * mode, this method is called when the select feature control selects a
+     * feature. Register a listener to the beforefeaturemodified event and
+     * return false to prevent feature modification.
      *
      * Parameters:
      * feature - {<OpenLayers.Feature.Vector>} the selected feature.
      */
     selectFeature: function(feature) {
-        this.feature = feature;
-        this.modified = false;
-        this.resetVertices();
-        this.dragControl.activate();
-        this.onModificationStart(this.feature);
+        if (!this.standalone || this.beforeSelectFeature(feature) !== false) {
+            this.feature = feature;
+            this.modified = false;
+            this.resetVertices();
+            this.dragControl.activate();
+            this.onModificationStart(this.feature);
+        }
+        // keep track of geometry modifications
+        var modified = feature.modified;
+        if (feature.geometry && !(modified && modified.geometry)) {
+            this._originalGeometry = feature.geometry.clone();
+        }
     },
 
     /**
@@ -364,7 +423,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
         // only change behavior if the feature is not in the vertices array
         if(feature != this.feature && !feature.geometry.parent &&
            feature != this.dragHandle && feature != this.radiusHandle) {
-            if(this.feature) {
+            if(this.standalone === false && this.feature) {
                 // unselect the currently selected feature
                 this.selectControl.clickFeature.apply(this.selectControl,
                                                       [this.feature]);
@@ -374,8 +433,8 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
                OpenLayers.Util.indexOf(this.geometryTypes,
                                        feature.geometry.CLASS_NAME) != -1) {
                 // select the point
-                this.selectControl.clickFeature.apply(this.selectControl,
-                                                      [feature]);
+                this.standalone || this.selectControl.clickFeature.apply(
+                                            this.selectControl, [feature]);
                 /**
                  * TBD: These lines improve workflow by letting the user
                  *     immediately start dragging after the mouse down.
@@ -452,7 +511,8 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
                 this.layer.destroyFeatures(this.virtualVertices, {silent: true});
                 this.virtualVertices = [];
             }
-            this.layer.drawFeature(this.feature, this.selectControl.renderIntent);
+            this.layer.drawFeature(this.feature, this.standalone ? undefined :
+                                            this.selectControl.renderIntent);
         }
         // keep the vertex on top so it gets the mouseout after dragging
         // this should be removed in favor of an option to draw under or
@@ -484,6 +544,13 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
         if(this.feature.state != OpenLayers.State.INSERT &&
            this.feature.state != OpenLayers.State.DELETE) {
             this.feature.state = OpenLayers.State.UPDATE;
+            if (this.modified && this._originalGeometry) {
+                var feature = this.feature;
+                feature.modified = OpenLayers.Util.extend(feature.modified, {
+                    geometry: this._originalGeometry
+                });
+                delete this._originalGeometry;
+            }
         }
     },
     
@@ -558,8 +625,15 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
                vertex.geometry.parent) {
                 // remove the vertex
                 vertex.geometry.parent.removeComponent(vertex.geometry);
-                this.layer.drawFeature(this.feature,
+                this.layer.events.triggerEvent("vertexremoved", {
+                    vertex: vertex.geometry,
+                    feature: this.feature,
+                    pixel: evt.xy
+                });
+                this.layer.drawFeature(this.feature, this.standalone ?
+                                       undefined :
                                        this.selectControl.renderIntent);
+                this.modified = true;
                 this.resetVertices();
                 this.setFeatureState();
                 this.onModification(this.feature);
@@ -583,6 +657,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
             if(geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
                 vertex = new OpenLayers.Feature.Vector(geometry);
                 vertex._sketch = true;
+                vertex.renderIntent = control.vertexRenderIntent;
                 control.vertices.push(vertex);
             } else {
                 var numVert = geometry.components.length;
@@ -594,6 +669,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
                     if(component.CLASS_NAME == "OpenLayers.Geometry.Point") {
                         vertex = new OpenLayers.Feature.Vector(component);
                         vertex._sketch = true;
+                        vertex.renderIntent = control.vertexRenderIntent;
                         control.vertices.push(vertex);
                     } else {
                         collectComponentVertices(component);
@@ -708,7 +784,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
      * map - {<OpenLayers.Map>} The control's map.
      */
     setMap: function(map) {
-        this.selectControl.setMap(map);
+        this.standalone || this.selectControl.setMap(map);
         this.dragControl.setMap(map);
         OpenLayers.Control.prototype.setMap.apply(this, arguments);
     },

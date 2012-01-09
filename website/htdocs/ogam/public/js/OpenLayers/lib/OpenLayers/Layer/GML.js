@@ -1,17 +1,22 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
  * @requires OpenLayers/Layer/Vector.js
  * @requires OpenLayers/Request/XMLHttpRequest.js
  * @requires OpenLayers/Console.js
+ * @requires OpenLayers/Lang.js
  */
 
 /**
  * Class: OpenLayers.Layer.GML
  * Create a vector layer by parsing a GML file. The GML file is
  *     passed in as a parameter.
+ * *Deprecated*.  To be removed in 3.0.  Instead use OpenLayers.Layer.Vector
+ *     with Protocol.HTTP and Strategy.Fixed. Provide the protocol with a 
+ *     format parameter to get the parser you want for your data.
  *
  * Inherits from:
  *  - <OpenLayers.Layer.Vector>
@@ -128,7 +133,7 @@ OpenLayers.Layer.GML = OpenLayers.Class(OpenLayers.Layer.Vector, {
     /**
      * Method: requestSuccess
      * Process GML after it has been loaded.
-     * Called by initialise() and loadUrl() after the GML has been loaded.
+     * Called by initialize() and loadUrl() after the GML has been loaded.
      *
      * Parameters:
      * request - {String} 
@@ -156,7 +161,7 @@ OpenLayers.Layer.GML = OpenLayers.Class(OpenLayers.Layer.Vector, {
     /**
      * Method: requestFailure
      * Process a failed loading of GML.
-     * Called by initialise() and loadUrl() if there was a problem loading GML.
+     * Called by initialize() and loadUrl() if there was a problem loading GML.
      *
      * Parameters:
      * request - {String} 

@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
  
@@ -56,7 +57,7 @@ OpenLayers.Layer.WMS.Untiled = OpenLayers.Class(OpenLayers.Layer.WMS, {
             obj = new OpenLayers.Layer.WMS.Untiled(this.name,
                                                    this.url,
                                                    this.params,
-                                                   this.options);
+                                                   this.getOptions());
         }
 
         //get all additions from superclasses

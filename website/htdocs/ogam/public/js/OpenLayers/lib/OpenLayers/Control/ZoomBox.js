@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -51,12 +52,13 @@ OpenLayers.Control.ZoomBox = OpenLayers.Class(OpenLayers.Control, {
      */
     zoomBox: function (position) {
         if (position instanceof OpenLayers.Bounds) {
+            var bounds;
             if (!this.out) {
                 var minXY = this.map.getLonLatFromPixel(
                             new OpenLayers.Pixel(position.left, position.bottom));
                 var maxXY = this.map.getLonLatFromPixel(
                             new OpenLayers.Pixel(position.right, position.top));
-                var bounds = new OpenLayers.Bounds(minXY.lon, minXY.lat,
+                bounds = new OpenLayers.Bounds(minXY.lon, minXY.lat,
                                                maxXY.lon, maxXY.lat);
             } else {
                 var pixWidth = Math.abs(position.right-position.left);
@@ -70,7 +72,7 @@ OpenLayers.Control.ZoomBox = OpenLayers.Class(OpenLayers.Control, {
                 var xmax = center.lon + (extent.getWidth()/2)*zoomFactor;
                 var ymin = center.lat - (extent.getHeight()/2)*zoomFactor;
                 var ymax = center.lat + (extent.getHeight()/2)*zoomFactor;
-                var bounds = new OpenLayers.Bounds(xmin, ymin, xmax, ymax);
+                bounds = new OpenLayers.Bounds(xmin, ymin, xmax, ymax);
             }
             // always zoom in/out 
             var lastZoom = this.map.getZoom(); 

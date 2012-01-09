@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -55,10 +56,12 @@ OpenLayers.Format.WMSDescribeLayer.v1_1 = OpenLayers.Class(
         var root = data.documentElement;
         var children = root.childNodes; 
         var describelayer = [];
+        var childNode, nodeName;
         for(var i=0; i<children.length; ++i) { 
             childNode = children[i];
             nodeName = childNode.nodeName; 
             if (nodeName == 'LayerDescription') {
+                var layerName = childNode.getAttribute('name');
                 var owsType = '';
                 var owsURL = '';
                 var typeName = '';
@@ -77,7 +80,7 @@ OpenLayers.Format.WMSDescribeLayer.v1_1 = OpenLayers.Class(
                     }
                 }
                 // look for Query child
-                query = childNode.getElementsByTagName('Query');
+                var query = childNode.getElementsByTagName('Query');
                 if(query.length > 0) {
                     typeName = query[0].getAttribute('typeName');
                     if (!typeName) {
@@ -85,7 +88,8 @@ OpenLayers.Format.WMSDescribeLayer.v1_1 = OpenLayers.Class(
                         typeName = query[0].getAttribute('typename');
                     }
                 }
-                describelayer.push({owsType: owsType, owsURL: owsURL, typeName: typeName}); 
+                describelayer.push({layerName: layerName, owsType: owsType, 
+                    owsURL: owsURL, typeName: typeName}); 
             }
         }
         return describelayer;

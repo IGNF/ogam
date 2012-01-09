@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -19,7 +20,7 @@ OpenLayers.Strategy.Fixed = OpenLayers.Class(OpenLayers.Strategy, {
      * APIProperty: preload
      * {Boolean} Load data before layer made visible. Enabling this may result
      *   in considerable overhead if your application loads many data layers
-     *   that are not visible by default. Default is true.
+     *   that are not visible by default. Default is false.
      */
     preload: false,
 
@@ -31,17 +32,6 @@ OpenLayers.Strategy.Fixed = OpenLayers.Class(OpenLayers.Strategy, {
      * options - {Object} Optional object whose properties will be set on the
      *     instance.
      */
-    initialize: function(options) {
-        OpenLayers.Strategy.prototype.initialize.apply(this, [options]);
-    },
-
-    /**
-     * APIMethod: destroy
-     * Clean up the strategy.
-     */
-    destroy: function() {
-        OpenLayers.Strategy.prototype.destroy.apply(this, arguments);
-    },
 
     /**
      * Method: activate
@@ -97,12 +87,14 @@ OpenLayers.Strategy.Fixed = OpenLayers.Class(OpenLayers.Strategy, {
      * options - {Object} options to pass to protocol read.
      */
     load: function(options) {
-        this.layer.events.triggerEvent("loadstart");
-        this.layer.protocol.read(OpenLayers.Util.applyDefaults({
-            callback: this.merge,
-            scope: this
+        var layer = this.layer;
+        layer.events.triggerEvent("loadstart");
+        layer.protocol.read(OpenLayers.Util.applyDefaults({
+            callback: OpenLayers.Function.bind(this.merge, this,
+                layer.map.getProjectionObject()),
+            filter: layer.filter
         }, options));
-        this.layer.events.un({
+        layer.events.un({
             "visibilitychanged": this.load,
             scope: this
         });
@@ -111,25 +103,28 @@ OpenLayers.Strategy.Fixed = OpenLayers.Class(OpenLayers.Strategy, {
     /**
      * Method: merge
      * Add all features to the layer.
+     *
+     * Parameters:
+     * mapProjection - {OpenLayers.Projection} the map projection
+     * resp - {Object} options to pass to protocol read.
      */
-    merge: function(resp) {
-        this.layer.destroyFeatures();
+    merge: function(mapProjection, resp) {
+        var layer = this.layer;
+        layer.destroyFeatures();
         var features = resp.features;
         if (features && features.length > 0) {
-            var remote = this.layer.projection;
-            var local = this.layer.map.getProjectionObject();
-            if(!local.equals(remote)) {
+            if(!mapProjection.equals(layer.projection)) {
                 var geom;
                 for(var i=0, len=features.length; i<len; ++i) {
                     geom = features[i].geometry;
                     if(geom) {
-                        geom.transform(remote, local);
+                        geom.transform(layer.projection, mapProjection);
                     }
                 }
             }
-            this.layer.addFeatures(features);
+            layer.addFeatures(features);
         }
-        this.layer.events.triggerEvent("loadend");
+        layer.events.triggerEvent("loadend");
     },
 
     CLASS_NAME: "OpenLayers.Strategy.Fixed"

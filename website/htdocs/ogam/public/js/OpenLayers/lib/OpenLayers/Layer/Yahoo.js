@@ -1,11 +1,14 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
 /**
+ * @requires OpenLayers/Layer/SphericalMercator.js
  * @requires OpenLayers/Layer/EventPane.js
  * @requires OpenLayers/Layer/FixedZoomLevels.js
+ * @requires OpenLayers/Lang.js
  */
 
 /**
@@ -62,6 +65,14 @@ OpenLayers.Layer.Yahoo = OpenLayers.Class(
      */
     type: null,
     
+    /**
+     * APIProperty: wrapDateLine
+     * {Boolean} Allow user to pan forever east/west.  Default is true.  
+     *     Setting this to false only restricts panning if 
+     *     <sphericalMercator> is true. 
+     */
+    wrapDateLine: true,
+
     /**
      * APIProperty: sphericalMercator
      * {Boolean} Should the map act as a mercator-projected map? This will

@@ -1,6 +1,12 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2011 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
+
+/**
+ * @requires OpenLayers/Util.js
+ * @requires OpenLayers/BaseTypes.js
+ */
 
 /**
  * Namespace: OpenLayers.Element
@@ -39,29 +45,41 @@ OpenLayers.Element = {
 
     /**
      * APIFunction: hide
-     * Hide element(s) passed in
+     * *Deprecated*. Hide element(s) passed in
      * 
      * Parameters:
      * element - {DOMElement} Actually user can pass any number of elements
      */
     hide: function() {
+        OpenLayers.Console.warn(OpenLayers.i18n("methodDeprecated", {
+            newMethod: "element.style.display = 'none';"
+        }));
+
         for (var i=0, len=arguments.length; i<len; i++) {
             var element = OpenLayers.Util.getElement(arguments[i]);
-            element.style.display = 'none';
+            if (element) {
+                element.style.display = 'none';
+            }
         }
     },
 
     /**
      * APIFunction: show
-     * Show element(s) passed in
+     * *Deprecated*. Show element(s) passed in
      * 
      * Parameters:
      * element - {DOMElement} Actually user can pass any number of elements
      */
     show: function() {
+        OpenLayers.Console.warn(OpenLayers.i18n("methodDeprecated", {
+            newMethod: "element.style.display = '';"
+        }));
+
         for (var i=0, len=arguments.length; i<len; i++) {
             var element = OpenLayers.Util.getElement(arguments[i]);
-            element.style.display = '';
+            if (element) {
+                element.style.display = '';
+            }
         }
     },
 
@@ -93,6 +111,7 @@ OpenLayers.Element = {
 
     /**
      * APIFunction: getDimensions
+     * *Deprecated*. Returns dimensions of the element passed in.
      *  
      * Parameters:
      * element - {DOMElement}
@@ -112,12 +131,13 @@ OpenLayers.Element = {
         var els = element.style;
         var originalVisibility = els.visibility;
         var originalPosition = els.position;
+        var originalDisplay = els.display;
         els.visibility = 'hidden';
         els.position = 'absolute';
         els.display = '';
         var originalWidth = element.clientWidth;
         var originalHeight = element.clientHeight;
-        els.display = 'none';
+        els.display = originalDisplay;
         els.position = originalPosition;
         els.visibility = originalVisibility;
         return {width: originalWidth, height: originalHeight};
