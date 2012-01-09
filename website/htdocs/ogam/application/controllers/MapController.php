@@ -313,6 +313,7 @@ class MapController extends AbstractOGAMController {
 		// No View, we send directly the javascript
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 
 	}
 
@@ -335,6 +336,7 @@ class MapController extends AbstractOGAMController {
 		// No View, we send directly the javascript
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 
 	}
 
@@ -396,12 +398,14 @@ class MapController extends AbstractOGAMController {
 
 			// The item is a leaf
 			if ($legendItem->isLayer == 1) {
-				$json .= '"leaf": true, ';
-				$json .= '"layerName": "'.$legendItem->layerName.'" ';
+				$json .= '"isLeaf": true, ';
+				$json .= '"nodeType" : "gx_layer", ';
+				$json .= '"layer": "'.$legendItem->layerName.'" ';
 			} else {
 				// The item is a node
-				$json .= '"leaf": false, ';
-
+				$json .= '"isLeaf": false, ';
+				$json .= '"nodeType" : "async", ';
+				
 				// Recursive call
 				$json .= '"children": ['.$this->_getLegendItems($legendItem->itemId, $providerId).']';
 			}

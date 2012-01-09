@@ -740,19 +740,23 @@ Genapp.GeoPanel = Ext
 
 						// Decode the JSON
 						var responseJSON = Ext.decode(response.responseText);
-						var layerTreeModel = this.buildLayerTree(responseJSON);
+						var treeConfig = this.buildLayerTree(responseJSON);
 
-						// Build the layer list
+						// LayerContainer is used to get All Layers from the map
+						/*
 						var layerList = new GeoExt.tree.LayerContainer({
 							// Take the layers from the map
 							layerStore : this.mapPanel.layers,
-							leaf : false,
 							expanded : true
-						});
+						}); */
 
 						// Add a Tree Panel
 						this.layerTree = new Ext.tree.TreePanel({
-							root : layerList
+							root : {
+								nodeType : "async",
+								children : responseJSON,
+								expanded : true
+							}
 						});
 
 						// TODO : add GeoExt.LayerOpacitySlider
@@ -772,32 +776,32 @@ Genapp.GeoPanel = Ext
 						// TODO : Configure layers from the model instead of
 						// taking them from the map
 
-						var treeConfig = [ {
-							nodeType : "gx_baselayercontainer"
-						}, {
-							nodeType : "gx_overlaylayercontainer",
-							expanded : true,
-							// render the nodes inside this container with a
-							// radio button,
-							// and assign them the group "foo".
-							loader : {
-								baseAttrs : {
-									radioGroup : "foo",
-									uiProvider : "layernodeui"
-								}
-							}
+						var treeConfig = [ 
+						    new Ext.tree.TreeNode({
+							text : "Zonages environnementaux",
+							expanded : true, 
+							children : [
+							    {
+								nodeType : "gx_layer",
+								text : "ZNIEFF 1",
+								layer : "znieff1",
+								isLeaf : true
+							}, {
+								nodeType : "gx_layer",
+								text : "ZNIEFF 2",
+								layer : "znieff2",
+								isLeaf : true
+							}]
+						}), {
+							nodeType : "gx_layer",
+							text : "Orthophoto",
+							layer : "ortho",
+							isLeaf : true
 						}, {
 							nodeType : "gx_layer",
-							layer : "Tasmania (Group Layer)",
-							isLeaf : false,
-							// create subnodes for the layers in the LAYERS
-							// param. If we assign
-							// a loader to a LayerNode and do not provide a
-							// loader class, a
-							// LayerParamLoader will be assumed.
-							loader : {
-								param : "LAYERS"
-							}
+							text : "Ref IGN",
+							layer : "refign",
+							isLeaf : true
 						} ];
 
 						return treeConfig;
