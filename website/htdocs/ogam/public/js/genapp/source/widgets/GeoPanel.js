@@ -395,7 +395,7 @@ Genapp.GeoPanel = Ext
 							layoutConfig : {
 								animate : true
 							}
-						})
+						});
 
 						// Create the layer and legend panel
 						this.layersAndLegendsPanel = new Ext.TabPanel({
@@ -739,13 +739,13 @@ Genapp.GeoPanel = Ext
 					initTree : function(response) {
 
 						// Decode the JSON
-						var layerTreeModel = Ext.decode(response.responseText);
+						var responseJSON = Ext.decode(response.responseText);
+						var layerTreeModel = this.buildLayerTree(responseJSON);
 
 						// Build the layer list
 						var layerList = new GeoExt.tree.LayerContainer({
-							layerStore : this.mapPanel.layers, // Take the
-							// layers from
-							// the map
+							// Take the layers from the map
+							layerStore : this.mapPanel.layers,
 							leaf : false,
 							expanded : true
 						});
@@ -754,6 +754,8 @@ Genapp.GeoPanel = Ext
 						this.layerTree = new Ext.tree.TreePanel({
 							root : layerList
 						});
+
+						// TODO : add GeoExt.LayerOpacitySlider
 
 						this.layerPanel.add(this.layerTree);
 						this.layerPanel.doLayout();
@@ -767,46 +769,38 @@ Genapp.GeoPanel = Ext
 					 */
 					buildLayerTree : function(layerTreeModel) {
 
-						var layertree = new Ext.tree.TreePanel({
-							root : {
-								children : layerTreeModel
-							},
-							enableDD : true,
-							autoScroll : true,
-							title : "Layers"
-						});
-
 						// TODO : Configure layers from the model instead of
 						// taking them from the map
 
-						// TODO : add GeoExt.LayerOpacitySlider
+						var treeConfig = [ {
+							nodeType : "gx_baselayercontainer"
+						}, {
+							nodeType : "gx_overlaylayercontainer",
+							expanded : true,
+							// render the nodes inside this container with a
+							// radio button,
+							// and assign them the group "foo".
+							loader : {
+								baseAttrs : {
+									radioGroup : "foo",
+									uiProvider : "layernodeui"
+								}
+							}
+						}, {
+							nodeType : "gx_layer",
+							layer : "Tasmania (Group Layer)",
+							isLeaf : false,
+							// create subnodes for the layers in the LAYERS
+							// param. If we assign
+							// a loader to a LayerNode and do not provide a
+							// loader class, a
+							// LayerParamLoader will be assumed.
+							loader : {
+								param : "LAYERS"
+							}
+						} ];
 
-						/*
-						 * var treeConfig = [{ nodeType: "gx_baselayercontainer" }, {
-						 * nodeType: "gx_overlaylayercontainer", expanded: true, //
-						 * render the nodes inside this container with a radio
-						 * button, // and assign them the group "foo". loader: {
-						 * baseAttrs: { radioGroup: "foo", uiProvider:
-						 * "layernodeui" } } }, { nodeType: "gx_layer", layer:
-						 * "Tasmania (Group Layer)", isLeaf: false, // create
-						 * subnodes for the layers in the LAYERS param. If we
-						 * assign // a loader to a LayerNode and do not provide
-						 * a loader class, a // LayerParamLoader will be
-						 * assumed. loader: { param: "LAYERS" } }];
-						 */
-
-						/*
-						 * var layertree = new GeoExt.tree.LayerContainer({
-						 * border : false, map : this.map, layerStore :
-						 * layerTreeModel, enableDD : true, listeners : {
-						 * 'afterrender' : function() { for ( var i = 0; i <
-						 * this.map.layers.length; i++) {
-						 * this.toggleLayersAndLegendsForZoom(this.map.layers[i]); } },
-						 * scope : this }, // TODO : add
-						 * GeoExt.LayerOpacitySlider });
-						 */
-
-						return layertree;
+						return treeConfig;
 					},
 
 					/**
