@@ -412,9 +412,11 @@ class DataEditionController extends AbstractOGAMController {
 		$websiteSession = new Zend_Session_Namespace('website');
 		$data = $websiteSession->data;
 
-		// Validate the form
-		$form = $this->_getEditDataForm($data, 'EDIT', false);
+		// Get the mode
+		$mode = $this->_getParam('MODE');
 
+		// Validate the form
+		$form = $this->_getEditDataForm($data, $mode, false);
 		if (!$form->isValidPartial($_POST)) {
 
 			// On réaffiche le formulaire avec les messages d'erreur
@@ -424,7 +426,7 @@ class DataEditionController extends AbstractOGAMController {
 			$this->view->data = $data;
 			$this->view->children = $websiteSession->children;
 			$this->view->message = '';
-			$this->view->mode = 'EDIT';
+			$this->view->mode = $mode;
 
 			echo '{"success":false,"errorMessage":'.json_encode($this->translator->translate("Invalid form")).'}';
 		}
@@ -435,7 +437,11 @@ class DataEditionController extends AbstractOGAMController {
 		}
 
 		try {
-			$this->genericModel->updateData($data);
+			if ($mode == 'ADD') {
+				$this->genericModel->insertData($data);
+			} else {
+				$this->genericModel->updateData($data);
+			}
 			echo '{"success":true, "message":'.json_encode($this->translator->translate("Data saved")).'}';
 
 		} catch (Exception $e) {

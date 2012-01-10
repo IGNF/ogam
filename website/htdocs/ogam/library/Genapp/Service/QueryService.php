@@ -414,10 +414,23 @@ class Genapp_Service_QueryService {
 				$json .= '{'.$formField->toJSON().', "hidden":false},';
 			}
 			// Add the identifier of the line
-			$json .= '{"name":"id","label":"Identifier of the line","inputType":"TEXT","definition":"The plot identifier", "hidden":true},';
+			$json .= '{"name":"id","label":"Identifier of the line","inputType":"TEXT","definition":"The plot identifier", "hidden":true}';
 			// Add the plot location in WKT
-			$json .= '{"name":"location_centroid","label":"Location centroid","inputType":"TEXT","definition":"The plot location", "hidden":true}';
+			$json .= ',{"name":"location_centroid","label":"Location centroid","inputType":"TEXT","definition":"The plot location", "hidden":true}';
+			
+			
+			// Right management : add the provider id of the data
+			$userSession = new Zend_Session_Namespace('user');
+			$providerId = $userSession->user->providerId;
+			$permissions = $userSession->permissions;
+			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER',$permissions)) {
+				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
+			}
+			
 			$json .= ']';
+			
+			
+			
 			if ($withSQL) {
 				$json .= ', "SQL":'.json_encode($select.$fromwhere);
 			}
@@ -528,10 +541,18 @@ class Genapp_Service_QueryService {
 				}
 
 				// Add the line id
-				$json .= json_encode($line['id']).',';
+				$json .= json_encode($line['id']);
 
 				// Add the plot location in WKT
-				$json .= json_encode($line['location_centroid']); // The last column is the location center
+				$json .= ','.json_encode($line['location_centroid']); // The last column is the location center
+				
+				// Right management : add the provider id of the data
+				$userSession = new Zend_Session_Namespace('user');
+				$providerId = $userSession->user->providerId;
+				$permissions = $userSession->permissions;
+				if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER',$permissions)) {
+					$json .= ','.json_encode($line['_provider_id']);
+				}
 
 				$json .= '],';
 			}

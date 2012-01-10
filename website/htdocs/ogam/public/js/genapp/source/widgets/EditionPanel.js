@@ -305,6 +305,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			handler : this.editData,
 			scope : this
 		});
+		
+		if (this.mode == "EDIT") {
+			var buttons = [ this.deleteButton, this.validateButton ];
+		} else {
+			var buttons = [ this.validateButton ];
+		}
 
 		// Data
 		this.dataEditForm = new Ext.FormPanel({
@@ -316,7 +322,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				width : 250
 			},
 			buttonAlign : 'center',
-			buttons : [ this.deleteButton, this.validateButton ]
+			buttons : buttons
 		});
 
 		this.dataEditFS = new Ext.form.FieldSet({
@@ -403,6 +409,15 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				dataProvider = item.value;
 			}
 		}
+		
+		// Add a hidden field for the mode (ADD or EDIT)
+		modeItem = {
+				xtype: 'hidden',
+				name: 'MODE',
+				hiddenName: 'MODE',
+				value: this.mode
+		};
+		formItems.push(modeItem);
 
 		// Add the fields to the Form Panel
 		this.dataEditForm.add(formItems);

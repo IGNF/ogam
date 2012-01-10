@@ -297,9 +297,6 @@ class Genapp_Service_GenericService {
 		foreach ($dataObject->infoFields as $tableField) {
 			$where .= $this->buildWhereItem($tableField, true);
 		}
-
-		$sql = $from.$where;
-		
 		
 		// Right management
 		// Get back the provider id of the user
@@ -307,8 +304,14 @@ class Genapp_Service_GenericService {
 		$providerId = $userSession->user->providerId;
 		$permissions = $userSession->permissions;
 		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER',$permissions)) {
-			$sql .= " AND ".$rootTable->getLogicalName().".provider_id = '".$providerId."'";
+			$where .= " AND ".$rootTable->getLogicalName().".provider_id = '".$providerId."'";
 		}
+		
+
+		$sql = $from.$where;
+		
+		
+		
 
 		// Return the completed SQL request
 		return $sql;
@@ -358,6 +361,15 @@ class Genapp_Service_GenericService {
 
 		// Add the location centroid (for zooming on the map)
 		$select .= ", astext(centroid(st_transform(".$locationField->format.".".$locationField->columnName.",".$this->visualisationSRS."))) as location_centroid ";
+		
+		// Right management
+		// Get back the provider id of the data
+		$userSession = new Zend_Session_Namespace('user');
+		$providerId = $userSession->user->providerId;
+		$permissions = $userSession->permissions;
+		if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER',$permissions)) {
+			$select .= ", ".$leftTable->getLogicalName().".provider_id as _provider_id";
+		}
 
 		// Return the completed SQL request
 		return $select;
