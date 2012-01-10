@@ -504,7 +504,7 @@ listeners: {
                             }
                         }
                     });
-                    for(i = 0; i < result.records.length; i++){
+                    for (i = 0; i < result.records.length; i++) {
                         // Add the field
                         requestCriteriaPanel.add(Genapp.FieldForm.prototype.getCriteriaConfig(result.records[i].data, true));
                     }

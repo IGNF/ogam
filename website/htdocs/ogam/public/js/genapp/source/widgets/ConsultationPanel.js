@@ -446,7 +446,7 @@ listeners: {
             listeners : {
                 'load': {
                     fn : function(store, records, options) {
-                        for(i = 0; i<records.length; i++){
+                        for (i = 0; i<records.length; i++) {
                             if(records[i].data.is_default === '1'){
                                 this.datasetComboBox.setValue(records[i].data.id);
                                 this.updateDatasetFormsPanel(records[i].data.id);

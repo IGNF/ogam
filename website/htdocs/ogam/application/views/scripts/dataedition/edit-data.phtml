@@ -10,8 +10,7 @@
 
 <?php if ($this->data->hasGeometry()) { ?>
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/mapfish/MapFish.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/mapfish/mapfish_patches.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/GeoExt/script/GeoExt.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('map/get-map-parameters') ?>" ></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/FeatureInfoControl.js') ?>"></script>
 <?php } ?>
@@ -23,7 +22,9 @@
 <!-- Debug mode start -->
 
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/FieldForm.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/MapPanel.js') ?>"></script>
+<?php if ($this->data->hasGeometry()) { ?>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/GeoPanel.js') ?>"></script>
+<?php } ?>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/CardPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/DateRangeField.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/NumberRangeField.js') ?>"></script>
@@ -49,6 +50,7 @@
 
 <!-- Conf genapp -->
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp.conf.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('dataedition/getParameters') ?>" ></script>
 
 <link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/extjs/resources/css/ext-all.css') ?>" />
 

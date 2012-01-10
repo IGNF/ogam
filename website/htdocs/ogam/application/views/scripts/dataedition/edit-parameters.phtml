@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * Parameters for the result grid.
+ * @package views
+ */
+?>
+
+if (Genapp.EditionPanel) {
+    Ext.apply(Genapp.EditionPanel.prototype, {
+        checkEditionRights : <?=$this->checkEditionRights?>,       
+    });    
+}
+
+// User info
+Genapp.userProviderId = '<?=$this->userProviderId?>';

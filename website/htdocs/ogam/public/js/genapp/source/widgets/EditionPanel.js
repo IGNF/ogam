@@ -96,7 +96,13 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 *      Button Tooltip (defaults to 'Delete the data (Disabled if exist
 	 *      children)').
 	 */
-	dataEditFSDeleteButtonTooltip : 'Delete the data (Disabled if exist children)',
+	dataEditFSDeleteButtonTooltip : 'Delete the data',
+	/**
+	 * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete
+	 *      Button Tooltip (defaults to 'Delete the data (Disabled if exist
+	 *      children)').
+	 */
+	dataEditFSDeleteButtonDisabledTooltip : 'Data cannot be deleted (children exit)',
 	/**
 	 * @cfg {String} dataEditFSValidateButtonText The data Edit FieldSet
 	 *      Validate Button Text (defaults to 'Validate').
@@ -107,6 +113,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 *      Validate Button Tooltip (defaults to 'Save changes').
 	 */
 	dataEditFSValidateButtonTooltip : 'Save changes',
+	/**
+	 * @cfg {String} dataEditFSValidateButtonDisabledTooltip The data Edit
+	 *      FieldSet
+	 */
+	dataEditFSValidateButtonDisabledTooltip : 'Data cannot be edited (not enought rights)',
 	/**
 	 * @cfg {String} childrenFSTitle The children FieldSet Title (defaults to
 	 *      'Children Summary').
@@ -152,6 +163,23 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	editMode : 'EDIT',
 
 	layout : 'column',
+
+	/**
+	 * @cfg {Ext.FormPanel} the form panel.
+	 */
+	dataEditForm : null,
+	/**
+	 * @cfg {Ext.form.FieldSet} the fieldset (that contains the form).
+	 */
+	dataEditFS : null,
+	/**
+	 * @cfg {Ext.Button} the delete button.
+	 */
+	deleteButton : null,
+	/**
+	 * @cfg {Ext.Button} the validate button.
+	 */
+	validateButton : null,
 
 	// private
 	initComponent : function() {
@@ -230,20 +258,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			],
 			idProperty : 'name',
 			listeners : {
-				'load' : {
-					fn : function(store, records, options) {
-						var i, formItems = [];
-
-						for (i = 0; i < records.length; i++) {
-							formItems.push(this.getFieldConfig(records[i].data, true));
-						}
-						this.dataEditForm.add(formItems);
-						this.dataEditForm.doLayout();
-					}
-				},
+				'load' : this.buildFieldForm,
 				scope : this
 			}
-
 		});
 
 		var centerPanelItems = [];
@@ -269,6 +286,26 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			centerPanelItems.push(this.parentsFS);
 		}
 
+		// Delete Button
+		this.deleteButton = new Ext.Button({
+			text : this.dataEditFSDeleteButtonText,
+			disabled : this.disableDeleteButton,
+			tooltip : this.dataEditFSDeleteButtonTooltip,
+			handler : this.deleteData,
+			scope : this
+		});
+		if (this.disableDeleteButton) {
+			this.deleteButton.tooltip = this.dataEditFSDeleteButtonDisabledTooltip;
+		}
+
+		// Validate Button
+		this.validateButton = new Ext.Button({
+			text : this.dataEditFSValidateButtonText,
+			tooltip : this.dataEditFSValidateButtonTooltip,
+			handler : this.editData,
+			scope : this
+		});
+
 		// Data
 		this.dataEditForm = new Ext.FormPanel({
 			border : false,
@@ -279,19 +316,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				width : 250
 			},
 			buttonAlign : 'center',
-			buttons : [ {
-				text : this.dataEditFSDeleteButtonText,
-				disabled : this.disableDeleteButton,
-				tooltip : this.dataEditFSDeleteButtonTooltip,
-				handler : this.deleteData,
-				scope : this
-			}, {
-				text : this.dataEditFSValidateButtonText,
-				tooltip : this.dataEditFSValidateButtonTooltip,
-				handler : this.editData,
-				scope : this
-			} ]
+			buttons : [ this.deleteButton, this.validateButton ]
 		});
+
 		this.dataEditFS = new Ext.form.FieldSet({
 			title : '&nbsp;' + this.dataTitle + '&nbsp;',
 			items : this.dataEditForm
@@ -356,12 +383,52 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	},
 
 	/**
+	 * Add the form items to the field form.
+	 * 
+	 * @param {Ext.data.Record}
+	 *            records The records
+	 */
+	buildFieldForm : function(store, records) {
+
+		var dataProvider = '';
+
+		// Transform the JSON to an array of Form Field objects
+		var formItems = [];
+		for ( var i = 0; i < records.length; i++) {
+			var item = this.getFieldConfig(records[i].data, true);
+			formItems.push(item);
+
+			if (item.name.indexOf('PROVIDER_ID') !== -1) { // detect the
+															// provider id
+				dataProvider = item.value;
+			}
+		}
+
+		// Add the fields to the Form Panel
+		this.dataEditForm.add(formItems);
+
+		// Check the rights on the data for the validate button
+		if (this.checkEditionRights) {
+
+			// Look for the provider of the data
+			if (Genapp.userProviderId !== dataProvider) {
+				this.validateButton.disable();
+				this.validateButton.setTooltip(this.dataEditFSValidateButtonDisabledTooltip);
+			}
+		}
+
+		// Redo the layout
+		this.dataEditForm.doLayout();
+	},
+
+	/**
 	 * Construct a FieldForm from the record
 	 * 
 	 * @param {Ext.data.Record}
 	 *            record The criteria combobox record to add
 	 * @param {Boolean}
 	 *            hideBin True to hide the bin
+	 * @return a Form Field
 	 * @hide
 	 */
 	getFieldConfig : function(record, hideBin) {

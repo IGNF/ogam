@@ -593,5 +593,28 @@ class DataEditionController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
+	
+	/**
+	* Get the parameters.
+	*/
+	public function getparametersAction() {
+		$this->logger->debug('getparametersAction');
+	
+		$userSession = new Zend_Session_Namespace('user');
+		$permissions = $userSession->permissions;
+		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
+	
+		$this->view->userProviderId = $userSession->user->providerId;
+	
+		if (!empty($permissions)) {
+			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+				$this->view->checkEditionRights = 'true';
+			}
+	
+		}
+		$this->_helper->layout()->disableLayout();
+		$this->render('edit-parameters');
+		$this->getResponse()->setHeader('Content-type', 'application/javascript');
+	}
 
 }
