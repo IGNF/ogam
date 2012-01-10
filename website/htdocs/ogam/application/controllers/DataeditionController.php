@@ -449,50 +449,6 @@ class DataEditionController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
-	/**
-	 * Add the edited data in database.
-	 *
-	 * @return the HTML view
-	 */
-	public function validateAddDataAction() {
-		$this->logger->debug('validateAddDataAction');
-
-		// Get back info from the session
-		$websiteSession = new Zend_Session_Namespace('website');
-		$data = $websiteSession->data;
-
-		// Validate the form
-		$form = $this->_getEditDataForm($data, 'ADD', false);
-		if (!$form->isValidPartial($_POST)) {
-
-			// On réaffiche le formulaire avec les messages d'erreur
-			$this->view->form = $form;
-			$this->view->ancestors = $websiteSession->ancestors;
-			$this->view->tableFormat = $data->tableFormat;
-			$this->view->data = $data;
-			$this->view->children = array(); // No children in edition mode
-			$this->view->message = '';
-			$this->view->mode = 'ADD';
-
-			return $this->render('edit-data');
-		}
-
-		// Fill the data descriptor with the values submitted
-		foreach ($data->editableFields as $field) {
-			$field->value = $this->_getParam($field->data);
-		}
-
-		try {
-			// Insert the data
-			$this->genericModel->insertData($data);
-		} catch (Exception $e) {
-			$this->logger->err($e->getMessage());
-			return $this->showAddDataAction($data, $e->getMessage());
-		}
-
-		// Forward the user to the next step
-		return $this->showEditDataAction($data, 'Data successfully inserted');
-	}
 
 	/**
 	 * Add a new data.
@@ -593,24 +549,24 @@ class DataEditionController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
-	
+
 	/**
-	* Get the parameters.
-	*/
+	 * Get the parameters.
+	 */
 	public function getparametersAction() {
 		$this->logger->debug('getparametersAction');
-	
+
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
 		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
-	
+
 		$this->view->userProviderId = $userSession->user->providerId;
-	
+
 		if (!empty($permissions)) {
 			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
 				$this->view->checkEditionRights = 'true';
 			}
-	
+
 		}
 		$this->_helper->layout()->disableLayout();
 		$this->render('edit-parameters');
