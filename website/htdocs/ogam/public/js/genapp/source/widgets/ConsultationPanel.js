@@ -422,12 +422,16 @@ listeners: {
      * The edit Data Button Title (defaults to <tt>'Edit the data'</tt>)
      */
     editDataButtonTitle : "Edit the data",
-    /**
+     /**
      * @cfg {String} editDataButtonTip
      * The edit Data Button Tip (defaults to <tt>'Go to the edition page to edit the page.'</tt>)
      */
     editDataButtonTip : "Go to the edition page to edit the data.",
-
+    /**
+     * @cfg {String} cannotEditTip
+     */
+    cannotEditTip : "You do not the rights to edit this data",
+   
     // private
     initComponent : function() {
         /**
@@ -1189,12 +1193,20 @@ listeners: {
      */
     renderRightTools : function(value, metadata, record,
             rowIndex, colIndex, store) {
-        var stringFormat = '<div class="genapp-query-grid-edit" '
+    	
+    	var stringFormat = '';
+    	
+    	// If we don't check data rights or if the data belongs to the provider, we display the edit link
+    	if (!this.checkEditionRights || Genapp.userProviderId == record.data._provider_id) {    	
+        stringFormat = '<div class="genapp-query-grid-edit" '
                 +'onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"'
                 +'ext:qtitle="' + this.editDataButtonTitle + '"'
                 +'ext:qwidth="' + this.tipDefaultWidth + '"'
                 +'ext:qtip="' + this.editDataButtonTip + '"'
             +'></div>';
+    	} else {
+    		stringFormat = '<div ext:qtip="'+ this.cannotEditTip +'">&nbsp;</div>';
+    	}
         return String.format(stringFormat, record.data.id);
     },
 

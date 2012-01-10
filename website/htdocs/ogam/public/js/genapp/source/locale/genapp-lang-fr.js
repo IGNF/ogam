@@ -89,7 +89,8 @@ if(Genapp.ConsultationPanel){
         seeOnMapButtonTitle : "Voir sur la carte",
         seeOnMapButtonTip : "Affiche la carte, puis zoom et centre sur la localisation.",
         editDataButtonTitle : "Editer les données",
-        editDataButtonTip : "Ouvre la page d'édition pour éditer les données."
+        editDataButtonTip : "Ouvre la page d'édition pour éditer les données.",
+        cannotEditTip : "Vous n'avez pas le droit d'éditer cette donnée."
     });
 }
 if(Genapp.form.picker.DateRangePicker){

@@ -252,7 +252,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 
 		$req = " INSERT INTO role (role_code, role_label, role_definition )";
-		$req .= " VALUES (?, ?, ?, ?)";
+		$req .= " VALUES (?, ?, ?)";
 
 		$this->logger->info('createRole : '.$req);
 

@@ -404,8 +404,12 @@ class QueryController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		$this->view->hideGridCsvExportMenuItem = 'true'; // By defaut the export is hidden
+		$this->view->hideGridCsvExportMenuItem = 'true'; // By default the export is hidden
 		$this->view->hideGridDataEditButton = 'true';
+		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
+		
+		$this->view->userProviderId = $userSession->user->providerId;
+		
 		if (!empty($permissions)) {
 			if ($this->schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) {
 				$this->view->hideGridCsvExportMenuItem = 'false';
@@ -415,6 +419,9 @@ class QueryController extends AbstractOGAMController {
 			}
 			if (($this->schema == 'RAW_DATA' || $this->schema == 'HARMONIZED_DATA') && array_key_exists('DATA_EDITION', $permissions)) {
 				$this->view->hideGridDataEditButton = 'false';
+			}
+			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+				$this->view->checkEditionRights = 'true';
 			}
 
 		}
