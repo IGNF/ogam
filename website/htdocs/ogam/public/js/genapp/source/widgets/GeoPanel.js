@@ -435,10 +435,8 @@ Genapp.GeoPanel = Ext
 
 						// Show the legal mentions on the map
 						if (!this.hideLegalMentions) {
-							this.addLegalMentions();
+							this.mapPanel.addListener('render', this.addLegalMentions, this);
 						}
-
-						
 
 						// Init the toolbar
 						this.initToolbar();
@@ -449,9 +447,9 @@ Genapp.GeoPanel = Ext
 					/**
 					 * Add the legal mentions to the map
 					 */
-					addLegalMentions : function() {
+					addLegalMentions : function(cmp) {
 						// Create the link
-						this.createChild({
+						cmp.el.createChild({
 							tag : 'div',
 							cls : 'genapp-map-panel-legal-mentions',
 							children : [ {
@@ -460,7 +458,7 @@ Genapp.GeoPanel = Ext
 								href : this.legalMentionsLinkHref,
 								html : this.legalMentionsLinkText
 							} ]
-						}, this.child('.olMapViewport', true)).on('click', Ext.emptyFn, null, {
+						}, cmp.el.child('.olMapViewport', true)).on('click', Ext.emptyFn, null, {
 							// stop the event propagation to avoid conflicts
 							// with the underlying map
 							stopPropagation : true
