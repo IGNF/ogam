@@ -479,6 +479,16 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
+/***** Tree Picker *********************************************************************/
+
+.genapp-taxref-picker-reference-node{
+    font-style: italic;
+}
+.genapp-taxref-picker-synonym-node{
+    font-weight: bold;
+}
+/*************************************************************************************************/
+
 /***** Geometry Field *********************************************************************/
 
 .x-form-field-wrap .x-form-map-trigger{

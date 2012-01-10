@@ -21,6 +21,36 @@ Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
 		Genapp.form.TaxrefField.superclass.initComponent.call(this);
 	},
 
+    /**
+     * The function that handle the trigger's click event. Implements the
+     * default empty TriggerField.onTriggerClick function to display the
+     * TaxrefPicker
+     * 
+     * @method onTriggerClick
+     * @hide
+     */
+    onTriggerClick : function() {
+        if (this.disabled) {
+            return;
+        }
+        if (!this.menu) {
+            /**
+             * The field menu (displayed on a trigger click).
+             * 
+             * @property menu
+             * @type Genapp.form.menu.TaxrefMenu
+             */
+            this.menu = new Genapp.form.menu.TaxrefMenu({
+                hideOnClick : false,
+                hideValidationButton : this.hideValidationButton,
+                dataUrl : this.dataUrl
+            });
+        }
+        this.onFocus();
+
+        this.menu.show(this.el, "tl-bl?");
+        this.menuEvents('on');
+    },
 
 	// private
 	onDestroy : function() {
