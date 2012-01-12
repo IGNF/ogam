@@ -231,7 +231,7 @@ UNION
 -- the INPUT_TYPE is not in the list
 SELECT format||'_'||data, 'The INPUT_TYPE type is not in the list'
 FROM form_field 
-WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE')
+WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE', 'TAXREF')
 UNION
 -- the UNIT type is not in the list
 SELECT unit||'_'||type, 'The UNIT type is not in the list'
