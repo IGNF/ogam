@@ -288,6 +288,9 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// updates of the data.
 		foreach ($data->infoFields as $field) {
 			if ($field->value != null) {
+				
+				$this->logger->info('$field : '.$field->columnName." value ".print_r($field->value, true));
+				
 				// Primary keys that are not set should be serials ...
 				$columns .= $field->columnName.", ";
 				if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
@@ -296,12 +299,16 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 					// Arrays
 					// $field->value should be an array
 					$array = $field->value;
-					$sql .= "'{";
-					foreach ($array as $value) {
-						$sql .= $value.",";
+					$arrayStr .= "'{";
+					foreach ($array as $value) {						
+						$arrayStr .= $value.",";
 					}
-					$sql = substr($sql, 0, -1); // remove last comma
-					$sql .= "}', ";
+					if (count($array) !== 0) {
+						$arrayStr .= substr($arrayStr, 0, -1); // remove last comma
+					}
+					$arrayStr .= "}', ";
+
+					$values .= $arrayStr;
 				} else {
 					$values .= "'".$field->value."', ";
 				}
@@ -309,6 +316,9 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		}
 		foreach ($data->editableFields as $field) {
 			if ($field->value != null) {
+				
+				$this->logger->info('$field : '.$field->columnName." value ".print_r($field->value, true));
+				
 				// Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
 					$columns .= $field->columnName.", ";
@@ -318,12 +328,16 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 						// Arrays
 						// $field->value should be an array
 						$array = $field->value;
-						$sql .= "'{";
+						$arrayStr .= "'{";
 						foreach ($array as $value) {
-							$sql .= $value.",";
+							$arrayStr .= $value.",";
 						}
-						$sql = substr($sql, 0, -1); // remove last comma
-						$sql .= "}', ";
+						if (count($array) !== 0) {
+							$arrayStr .= substr($arrayStr, 0, -1); // remove last comma
+						}
+						$arrayStr .= "}', ";
+
+						$values .= $arrayStr;
 					} else {
 						// Text values
 						$values .= "'".$field->value."', ";
@@ -387,7 +401,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		if ($parentTable != "*") {
 
 			// Build an empty parent object
-			$parent = $this->genericService->buildDataObject($tableFormat->schemaCode, $parentTable, null, $isForDisplay);
+			$parent = $this->genericService->buildDataObject($tableFormat->schemaCode, $parentTable, null);
 
 			// Fill the PK values (we hope that the child contain the fields of the parent pk)
 			foreach ($parent->infoFields as $key) {

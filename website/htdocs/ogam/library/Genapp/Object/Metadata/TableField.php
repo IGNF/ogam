@@ -23,6 +23,13 @@ class Genapp_Object_Metadata_TableField extends Genapp_Object_Metadata_Field {
 	 * @var bool
 	 */
 	var $isCalculated;
+	
+	
+	/**
+	* Indicate if the field is editable.
+	* @var bool
+	*/
+	var $isEditable;
 
 	/**
 	 * The value of the field (this is not defined in the metadata database, it's the raw value of the data).

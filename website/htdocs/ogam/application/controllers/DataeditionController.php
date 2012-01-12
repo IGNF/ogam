@@ -538,12 +538,15 @@ class DataEditionController extends AbstractOGAMController {
 	 */
 	public function ajaxGetAddFormAction() {
 
-		$this->logger->debug('ajaxGetEditFormAction');
+		$this->logger->debug('ajaxGetAddFormAction');
 
 
 		// Get the parameters from the URL
 		$request = $this->getRequest();
 		$data = $this->_getDataFromRequest($request);
+		
+		// Complete the empty foreign key elements with info from the parent table
+		$this->logger->debug('data'.print_r($data,true));
 
 		// The service used to manage the query module
 		$this->queryService = new Genapp_Service_QueryService($data->tableFormat->schemaCode);

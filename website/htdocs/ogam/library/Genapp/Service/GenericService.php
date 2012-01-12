@@ -297,7 +297,7 @@ class Genapp_Service_GenericService {
 		foreach ($dataObject->infoFields as $tableField) {
 			$where .= $this->buildWhereItem($tableField, true);
 		}
-		
+
 		// Right management
 		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
@@ -306,12 +306,12 @@ class Genapp_Service_GenericService {
 		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER',$permissions)) {
 			$where .= " AND ".$rootTable->getLogicalName().".provider_id = '".$providerId."'";
 		}
-		
+
 
 		$sql = $from.$where;
-		
-		
-		
+
+
+
 
 		// Return the completed SQL request
 		return $sql;
@@ -361,7 +361,7 @@ class Genapp_Service_GenericService {
 
 		// Add the location centroid (for zooming on the map)
 		$select .= ", astext(centroid(st_transform(".$locationField->format.".".$locationField->columnName.",".$this->visualisationSRS."))) as location_centroid ";
-		
+
 		// Right management
 		// Get back the provider id of the data
 		$userSession = new Zend_Session_Namespace('user');
@@ -633,9 +633,9 @@ class Genapp_Service_GenericService {
 					break;
 				case "CODE":
 					if ($tableField->subtype == 'TREE') {
-						
+
 						// Case of a code in a generic TREE
-						
+
 						if (is_array($value)) {
 							$value = $value[0];
 						}
@@ -652,12 +652,12 @@ class Genapp_Service_GenericService {
 						$sql .= " AND ".$column." IN (".$sql2.")";
 
 					} else if ($tableField->subtype == 'TAXREF') {
-						
+
 						// Case of a code in a Taxonomic referential
-						
+
 						// TODO : Get the reference Taxon and look for it and its childrens
-						
-						
+
+
 
 					} else {
 
@@ -830,10 +830,9 @@ class Genapp_Service_GenericService {
 	 * @param String $schema the name of the schema
 	 * @param String $format the name of the format
 	 * @param String $datasetId the dataset identifier
-	 * @param Boolean $isForDisplay indicate if we only want to display the data or if for update/insert
 	 * @return DataObject the DataObject structure (with no values set)
 	 */
-	public function buildDataObject($schema, $format, $datasetId = null, $isForDisplay = false) {
+	public function buildDataObject($schema, $format, $datasetId = null) {
 
 		// Prepare a data object to be filled
 		$data = new Genapp_Object_Generic_DataObject();
@@ -848,76 +847,74 @@ class Genapp_Service_GenericService {
 
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
-			// Fields that are calculated by a trigger should not be edited
-			if ($isForDisplay || ($tableField->isCalculated == false)) {
-				if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
-					// Primary keys are displayed as info fields
-					$data->addInfoField($tableField);
-				} else {
-					// Editable fields are displayed as form fields
-					$data->addEditableField($tableField);
-				}
+			if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
+				// Primary keys are displayed as info fields
+			$data->addInfoField($tableField);
+		} else {
+			// Editable fields are displayed as form fields
+			$data->addEditableField($tableField);
+		}
+			
+	}
+
+	return $data;
+}
+
+/**
+ *  Transform the form request object into a table data object.
+ *
+ * @param String $schema the schema
+ * @param FormQuery $formQuery the list of form fields
+ * @return DataObject $dataObject a data object (with data from different tables)
+ */
+public function getFormQueryToTableData($schema, $formQuery) {
+
+	$result = new Genapp_Object_Generic_DataObject();
+
+	$result->datasetId = $formQuery->datasetId;
+
+	foreach ($formQuery->criterias as $formField) {
+		$tableField = $this->getFormToTableMapping($schema, $formField, true);
+		$result->addInfoField($tableField);
+	}
+
+	foreach ($formQuery->results as $formField) {
+		$tableField = $this->getFormToTableMapping($schema, $formField);
+		$result->addEditableField($tableField);
+	}
+
+	return $result;
+}
+
+/**
+ *  Get the hierarchy of tables needed for a data object.
+ *
+ * @param String $schema the schema
+ * @param DataObject $dataObject the list of table fields
+ * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
+ */
+public function getAllFormats($schema, $dataObject) {
+
+	// Prepare the list of needed tables
+	$tables = array();
+	foreach ($dataObject->getFields() as $tableField) {
+
+		if (!in_array($tableField->format, $tables)) {
+
+			// Get the ancestors of the table
+			$ancestors = $this->metadataModel->getTablesTree($tableField->format, $schema);
+
+			// Reverse the order of the list and store by indexing with the table name
+			// The root table (LOCATION) should appear first
+			$ancestors = array_reverse($ancestors);
+			foreach ($ancestors as $ancestor) {
+				$tables[$ancestor->getLogicalName()] = $ancestor;
 			}
-		}
 
-		return $data;
+		}
 	}
 
-	/**
-	 *  Transform the form request object into a table data object.
-	 *
-	 * @param String $schema the schema
-	 * @param FormQuery $formQuery the list of form fields
-	 * @return DataObject $dataObject a data object (with data from different tables)
-	 */
-	public function getFormQueryToTableData($schema, $formQuery) {
-
-		$result = new Genapp_Object_Generic_DataObject();
-
-		$result->datasetId = $formQuery->datasetId;
-
-		foreach ($formQuery->criterias as $formField) {
-			$tableField = $this->getFormToTableMapping($schema, $formField, true);
-			$result->addInfoField($tableField);
-		}
-
-		foreach ($formQuery->results as $formField) {
-			$tableField = $this->getFormToTableMapping($schema, $formField);
-			$result->addEditableField($tableField);
-		}
-
-		return $result;
-	}
-
-	/**
-	 *  Get the hierarchy of tables needed for a data object.
-	 *
-	 * @param String $schema the schema
-	 * @param DataObject $dataObject the list of table fields
-	 * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
-	 */
-	public function getAllFormats($schema, $dataObject) {
-
-		// Prepare the list of needed tables
-		$tables = array();
-		foreach ($dataObject->getFields() as $tableField) {
-
-			if (!in_array($tableField->format, $tables)) {
-
-				// Get the ancestors of the table
-				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $schema);
-
-				// Reverse the order of the list and store by indexing with the table name
-				// The root table (LOCATION) should appear first
-				$ancestors = array_reverse($ancestors);
-				foreach ($ancestors as $ancestor) {
-					$tables[$ancestor->getLogicalName()] = $ancestor;
-				}
-
-			}
-		}
-
-		return $tables;
-	}
+	return $tables;
+}
 
 }

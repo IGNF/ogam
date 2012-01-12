@@ -127,7 +127,7 @@ class Genapp_Service_QueryService {
 
 		// For the SELECT field, get the list of options
 		if ($formField->type == "CODE" || $formField->type == "ARRAY") {
-				
+
 			// Get the modes => Label
 			if ($formField->subtype == "DYNAMIC") {
 				$modes = $this->metadataModel->getDynamodes($formField->unit);
@@ -136,10 +136,10 @@ class Genapp_Service_QueryService {
 			} else {
 				$modes = $this->metadataModel->getModes($formField->unit);
 			}
-				
+
 			// Populate the label of the currently selected value
 			if ($formField->type == "ARRAY") {
-				$labels = array(); 
+				$labels = array();
 				foreach ($formField->value as $mode) {
 					$labels[] = $modes[$mode];
 				}
@@ -149,7 +149,7 @@ class Genapp_Service_QueryService {
 			}
 
 			$json .= $formField->toEditJSON();
-				
+
 			// Populate the list of available values
 			if ($formField->subtype == "MODE") {
 				$json .= ',"params":{"options":[';
@@ -160,8 +160,8 @@ class Genapp_Service_QueryService {
 				$json .= ']}';
 			}
 			// For DYNAMIC and TREE modes, the list is populated using an ajax request
-				
-				
+
+
 		} else {
 			$json .= $formField->toEditJSON();
 		}
@@ -186,28 +186,11 @@ class Genapp_Service_QueryService {
 
 		$json = '{"success":true,"data":[';
 
-		//
-		// The key elements as labels
-		//
-		foreach ($data->infoFields as $tablefield) {
+		foreach ($data->getFields() as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
 				$formField->value = $tablefield->value;
-				$formField->editable = false;
-				$formField->data = $tablefield->data; 			// The name of the data is the table one
-				$formField->format = $tablefield->format; 			// The name of the data is the table one
-				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
-			}
-		}
-
-		//
-		// The editable elements as edit forms
-		//
-		foreach ($data->editableFields as $tablefield) {
-			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
-			if (!empty($formField)) {
-				$formField->value = $tablefield->value;
-				$formField->editable = true;
+				$formField->editable = $tablefield->isEditable;
 				$formField->data = $tablefield->data; 			// The name of the data is the table one
 				$formField->format = $tablefield->format; 			// The name of the data is the table one
 				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
@@ -417,8 +400,8 @@ class Genapp_Service_QueryService {
 			$json .= '{"name":"id","label":"Identifier of the line","inputType":"TEXT","definition":"The plot identifier", "hidden":true}';
 			// Add the plot location in WKT
 			$json .= ',{"name":"location_centroid","label":"Location centroid","inputType":"TEXT","definition":"The plot location", "hidden":true}';
-			
-			
+				
+				
 			// Right management : add the provider id of the data
 			$userSession = new Zend_Session_Namespace('user');
 			$providerId = $userSession->user->providerId;
@@ -426,11 +409,11 @@ class Genapp_Service_QueryService {
 			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER',$permissions)) {
 				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
 			}
-			
+				
 			$json .= ']';
-			
-			
-			
+				
+				
+				
 			if ($withSQL) {
 				$json .= ', "SQL":'.json_encode($select.$fromwhere);
 			}
@@ -545,7 +528,7 @@ class Genapp_Service_QueryService {
 
 				// Add the plot location in WKT
 				$json .= ','.json_encode($line['location_centroid']); // The last column is the location center
-				
+
 				// Right management : add the provider id of the data
 				$userSession = new Zend_Session_Namespace('user');
 				$providerId = $userSession->user->providerId;
@@ -657,7 +640,7 @@ class Genapp_Service_QueryService {
 		$keyMap = $this->_decodeId($id);
 
 		// Prepare a data object to be filled
-		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
+		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
 
 		// Complete the primary key info with the session values
 		foreach ($data->infoFields as $infoField) {
@@ -798,7 +781,7 @@ class Genapp_Service_QueryService {
 		// $keyMap["FORMAT"] = 'LOCATION_COMPL_DATA';
 
 		// Prepare a data object to be filled
-		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
+		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
 
 		// Complete the primary key
 		foreach ($data->infoFields as $infoField) {
