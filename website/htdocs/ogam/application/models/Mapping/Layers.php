@@ -196,6 +196,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$legendItem = new Application_Object_Mapping_LegendItem();
 			$legendItem->itemId = $row['item_id'];
 			$legendItem->parentId = $row['parent_id'];
+			$legendItem->isBaseLayer = $row['isbaselayer'];
 			$legendItem->isLayer = $row['is_layer'];
 			$legendItem->isChecked = $row['is_checked'];
 			$legendItem->isExpended = $row['is_expended'];

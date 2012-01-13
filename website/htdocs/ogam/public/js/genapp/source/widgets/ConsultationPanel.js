@@ -430,7 +430,7 @@ listeners: {
     /**
      * @cfg {String} cannotEditTip
      */
-    cannotEditTip : "You do not the rights to edit this data",
+    cannotEditTip : "You don't have the rights to edit this data",
    
     // private
     initComponent : function() {
@@ -820,7 +820,7 @@ listeners: {
         	cancelButton =  {xtype: 'tbspacer'};
         }
         
-        // Cancel the current request button
+        // Request button
         var resetButton = null;
         if (!this.hideResetButton) {
         	resetButton = {
@@ -1392,7 +1392,7 @@ listeners: {
                 for(i = 0; i<rla.length;i++){
                     var layer = this.geoPanel.map.getLayersByName(rla[i])[0];
                     //The layer visibility must be set to true to handle the 'loadend' event
-                    layer.events.register("loadend", this, function(info){
+                    layer.events.register("loadend", this, function(info){console.log("loadend");
                         this.mapResultLayersLoadEnd[info.object.name] = 1;
                         // Hide the map mask if all the result layers are loaded
                         var count = 0;

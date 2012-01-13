@@ -403,13 +403,13 @@ class MapController extends AbstractOGAMController {
 
 			// The item is a leaf
 			if ($legendItem->isLayer == 1) {
-				$json .= '"isLeaf": true, ';
-				$json .= '"nodeType" : "gx_layer", ';
+				$json .= '"leaf": true, ';
+				$json .= '"nodeType" : "gx_layer", '; // TODO : Do this on the js side
 				$json .= '"layer": "'.$legendItem->layerName.'" ';
 			} else {
 				// The item is a node
-				$json .= '"isLeaf": false, ';
-				$json .= '"nodeType" : "async", ';
+				$json .= '"leaf": false, ';
+                $json .= '"nodeType" : "async", '; // TODO : Do this on the js side
 
 				// Recursive call
 				$json .= '"children": ['.$this->_getLegendItems($legendItem->itemId, $providerId).']';
