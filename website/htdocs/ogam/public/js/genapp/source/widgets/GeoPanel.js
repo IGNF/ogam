@@ -1259,7 +1259,7 @@ Genapp.GeoPanel = Ext
 					 *            cause that the zoom range.
 					 */
 					enableLayersAndLegends : function(layerNames, check, setForceDisable) {
-
+							/*
 						// The tabPanels must be activated before to show a
 						// child component
 						var isLayerPanelVisible = this.layerPanel.isVisible(), i;
@@ -1295,6 +1295,7 @@ Genapp.GeoPanel = Ext
 						if (isLayerPanelVisible) {
 							this.layersAndLegendsPanel.activate(this.layerPanel);
 						}
+						*/
 					},
 
 					/**
@@ -1318,7 +1319,7 @@ Genapp.GeoPanel = Ext
 					 *            cause that the zoom range.
 					 */
 					disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) {
-					    var i;
+					  /*  var i;
 						if (!Ext.isEmpty(layerNames)) {
 							for (i = 0; i < layerNames.length; i++) {
 								var nodeId = this.layerTree.layerToNodeIds[layerNames[i]];
@@ -1338,6 +1339,7 @@ Genapp.GeoPanel = Ext
 								this.setLegendsVisible([ layerNames[i] ], false);
 							}
 						}
+						*/
 					},
 
 					/**

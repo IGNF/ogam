@@ -305,7 +305,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			handler : this.editData,
 			scope : this
 		});
-		
+
 		if (this.mode == "EDIT") {
 			var buttons = [ this.deleteButton, this.validateButton ];
 		} else {
@@ -405,17 +405,17 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			formItems.push(item);
 
 			if (item.name.indexOf('PROVIDER_ID') !== -1) { // detect the
-															// provider id
+				// provider id
 				dataProvider = item.value;
 			}
 		}
-		
+
 		// Add a hidden field for the mode (ADD or EDIT)
 		modeItem = {
-				xtype: 'hidden',
-				name: 'MODE',
-				hiddenName: 'MODE',
-				value: this.mode
+			xtype : 'hidden',
+			name : 'MODE',
+			hiddenName : 'MODE',
+			value : this.mode
 		};
 		formItems.push(modeItem);
 
