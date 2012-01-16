@@ -728,10 +728,10 @@ class Genapp_Service_GenericService {
 	}
 
 	/**
-	 * Build the WHERE clause corresponding to one criteria.
+	 * Build the update part of a SQL request corresponding to a table field.
 	 *
 	 * @param TableField $tableField a criteria.
-	 * @return String the WHERE part of the SQL query (ex : BASAL_AREA = 6.05)
+	 * @return String the update part of the SQL query (ex : BASAL_AREA = 6.05)
 	 */
 	public function buildUpdateItem($tableField) {
 
@@ -752,7 +752,12 @@ class Genapp_Service_GenericService {
 				break;
 			case "INTEGER":
 			case "NUMERIC":
-				$sql = $column." = ".$value;
+				if ($field->value == "") {
+					$sql = $column." = null";
+				} else {
+					$value = str_replace(",", ".", $value);
+					$sql = $column." = ".$value;
+				}
 				break;
 			case "ARRAY":
 				$sql = $column." = ".$this->arrayToSQLString($value);
@@ -769,6 +774,46 @@ class Genapp_Service_GenericService {
 				$sql = $column." = '".$value."'";
 				break;
 		}
+
+		return $sql;
+	}
+
+	/**
+	 * Build the insert value clause corresponding to one criteria.
+	 *
+	 * @param TableField $tableField a criteria.
+	 * @return String the insert part of the SQL query (ex : BASAL_AREA = 6.05)
+	 */
+	public function buildInsertValueItem($field) {
+
+		$sql = "";
+
+		if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
+			$sql .= str_replace(",", ".", $field->value);
+		} else if ($field->type == "ARRAY") {
+			// Arrays
+
+			// $field->value should be an array
+			$arrayStr .= "'{";
+
+			if (is_array($field->value)) {
+
+				foreach ($field->value as $value) {
+					$arrayStr .= $value.",";
+				}
+				if (count($field->value) !== 0) {
+					$arrayStr .= substr($arrayStr, 0, -1); // remove last comma
+				}
+			} else {
+				$arrayStr .= $field->value;
+			}
+			$arrayStr .= "}'";
+
+			$sql .= $arrayStr;
+		} else {
+			$sql .= "'".$field->value."'";
+		}
+
 
 		return $sql;
 	}
@@ -849,72 +894,72 @@ class Genapp_Service_GenericService {
 		foreach ($tableFields as $tableField) {
 			if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
 				// Primary keys are displayed as info fields
-			$data->addInfoField($tableField);
-		} else {
-			// Editable fields are displayed as form fields
-			$data->addEditableField($tableField);
-		}
-			
-	}
-
-	return $data;
-}
-
-/**
- *  Transform the form request object into a table data object.
- *
- * @param String $schema the schema
- * @param FormQuery $formQuery the list of form fields
- * @return DataObject $dataObject a data object (with data from different tables)
- */
-public function getFormQueryToTableData($schema, $formQuery) {
-
-	$result = new Genapp_Object_Generic_DataObject();
-
-	$result->datasetId = $formQuery->datasetId;
-
-	foreach ($formQuery->criterias as $formField) {
-		$tableField = $this->getFormToTableMapping($schema, $formField, true);
-		$result->addInfoField($tableField);
-	}
-
-	foreach ($formQuery->results as $formField) {
-		$tableField = $this->getFormToTableMapping($schema, $formField);
-		$result->addEditableField($tableField);
-	}
-
-	return $result;
-}
-
-/**
- *  Get the hierarchy of tables needed for a data object.
- *
- * @param String $schema the schema
- * @param DataObject $dataObject the list of table fields
- * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
- */
-public function getAllFormats($schema, $dataObject) {
-
-	// Prepare the list of needed tables
-	$tables = array();
-	foreach ($dataObject->getFields() as $tableField) {
-
-		if (!in_array($tableField->format, $tables)) {
-
-			// Get the ancestors of the table
-			$ancestors = $this->metadataModel->getTablesTree($tableField->format, $schema);
-
-			// Reverse the order of the list and store by indexing with the table name
-			// The root table (LOCATION) should appear first
-			$ancestors = array_reverse($ancestors);
-			foreach ($ancestors as $ancestor) {
-				$tables[$ancestor->getLogicalName()] = $ancestor;
+				$data->addInfoField($tableField);
+			} else {
+				// Editable fields are displayed as form fields
+				$data->addEditableField($tableField);
 			}
 
 		}
+
+		return $data;
 	}
 
-	return $tables;
-}
+	/**
+	 *  Transform the form request object into a table data object.
+	 *
+	 * @param String $schema the schema
+	 * @param FormQuery $formQuery the list of form fields
+	 * @return DataObject $dataObject a data object (with data from different tables)
+	 */
+	public function getFormQueryToTableData($schema, $formQuery) {
+
+		$result = new Genapp_Object_Generic_DataObject();
+
+		$result->datasetId = $formQuery->datasetId;
+
+		foreach ($formQuery->criterias as $formField) {
+			$tableField = $this->getFormToTableMapping($schema, $formField, true);
+			$result->addInfoField($tableField);
+		}
+
+		foreach ($formQuery->results as $formField) {
+			$tableField = $this->getFormToTableMapping($schema, $formField);
+			$result->addEditableField($tableField);
+		}
+
+		return $result;
+	}
+
+	/**
+	 *  Get the hierarchy of tables needed for a data object.
+	 *
+	 * @param String $schema the schema
+	 * @param DataObject $dataObject the list of table fields
+	 * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
+	 */
+	public function getAllFormats($schema, $dataObject) {
+
+		// Prepare the list of needed tables
+		$tables = array();
+		foreach ($dataObject->getFields() as $tableField) {
+
+			if (!in_array($tableField->format, $tables)) {
+
+				// Get the ancestors of the table
+				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $schema);
+
+				// Reverse the order of the list and store by indexing with the table name
+				// The root table (LOCATION) should appear first
+				$ancestors = array_reverse($ancestors);
+				foreach ($ancestors as $ancestor) {
+					$tables[$ancestor->getLogicalName()] = $ancestor;
+				}
+
+			}
+		}
+
+		return $tables;
+	}
 
 }

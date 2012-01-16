@@ -175,7 +175,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
-		$this->logger->info('updateData ');
+		$this->logger->info('updateData');
 
 		// Get the values from the data table
 		$sql = "UPDATE ".$tableFormat->schemaCode.".".$tableFormat->tableName." ".$tableFormat->format;
@@ -185,7 +185,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		foreach ($data->editableFields as $field) {
 			/* @var $field TableField */
 
-			if ($field->data != "LINE_NUMBER") {
+			if ($field->data != "LINE_NUMBER" && $field->isEditable) {
 				// Hardcoded value
 				$sql .= $this->genericService->buildUpdateItem($field);
 				$sql .= ", ";
@@ -288,60 +288,21 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// updates of the data.
 		foreach ($data->infoFields as $field) {
 			if ($field->value != null) {
-				
-				$this->logger->info('$field : '.$field->columnName." value ".print_r($field->value, true));
-				
+
 				// Primary keys that are not set should be serials ...
 				$columns .= $field->columnName.", ";
-				if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
-					$values .= $field->value.", ";
-				} else if ($field->type == "ARRAY") {
-					// Arrays
-					// $field->value should be an array
-					$array = $field->value;
-					$arrayStr .= "'{";
-					foreach ($array as $value) {						
-						$arrayStr .= $value.",";
-					}
-					if (count($array) !== 0) {
-						$arrayStr .= substr($arrayStr, 0, -1); // remove last comma
-					}
-					$arrayStr .= "}', ";
-
-					$values .= $arrayStr;
-				} else {
-					$values .= "'".$field->value."', ";
-				}
+				$values .= $this->genericService->buildInsertValueItem($field);
+				$values .= ", ";
 			}
 		}
 		foreach ($data->editableFields as $field) {
-			if ($field->value != null) {
-				
-				$this->logger->info('$field : '.$field->columnName." value ".print_r($field->value, true));
-				
+			if ($field->value != null && $field->isEditable) {
+
 				// Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
 					$columns .= $field->columnName.", ";
-					if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
-						$values .= $field->value.", ";
-					} else if ($field->type == "ARRAY") {
-						// Arrays
-						// $field->value should be an array
-						$array = $field->value;
-						$arrayStr .= "'{";
-						foreach ($array as $value) {
-							$arrayStr .= $value.",";
-						}
-						if (count($array) !== 0) {
-							$arrayStr .= substr($arrayStr, 0, -1); // remove last comma
-						}
-						$arrayStr .= "}', ";
-
-						$values .= $arrayStr;
-					} else {
-						// Text values
-						$values .= "'".$field->value."', ";
-					}
+					$values .= $this->genericService->buildInsertValueItem($field);
+					$values .= ", ";
 				}
 			}
 		}

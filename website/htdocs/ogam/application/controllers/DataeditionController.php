@@ -432,7 +432,7 @@ class DataEditionController extends AbstractOGAMController {
 		}
 
 		// Update the data descriptor with the values submitted
-		foreach ($data->editableFields as $field) {
+		foreach ($data->getFields() as $field) {
 			$field->value = $this->_getParam($field->getName());
 		}
 
