@@ -450,143 +450,150 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var field = {};
 		field.name = record.name;
 
-		// Creates the ext field config
-		switch (record.inputType) {
-		case 'SELECT':
-			// The input type SELECT correspond to a data type CODE or ARRAY
-			field.xtype = 'combo';
-			field.itemCls = 'trigger-field'; // For IE7 layout
-			field.hiddenName = field.name;
-			field.triggerAction = 'all';
-			field.typeAhead = true;
-			field.displayField = 'label';
-			field.valueField = 'code';
-			field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
-			if (record.subtype === 'DYNAMIC') {
-				field.mode = 'remote';
+		if (!Ext.isEmpty(record.editable) && record.editable == false) {
+			field.xtype = 'hidden';
+			// field.readOnly = true;
+			// field.fieldClass = "x-item-disabled";
+		} else {
 
-				// Fill the list of codes / labels for default values
-				var codes = [];
-				if (record.type === 'CODE') {
-					codes.push({
-						code : record.value,
-						label : record.valueLabel
-					});
-				} else { // case of ARRAY
-					if (record.valueLabel) {
-						for ( var i = 0; i < record.value.length; i++) {
-							codes.push({
-								code : record.value[i],
-								label : record.valueLabel[i]
-							});
+			// Creates the ext field config
+			switch (record.inputType) {
+			case 'SELECT':
+				// The input type SELECT correspond to a data type CODE or ARRAY
+				field.xtype = 'combo';
+				field.itemCls = 'trigger-field'; // For IE7 layout
+				field.hiddenName = field.name;
+				field.triggerAction = 'all';
+				field.typeAhead = true;
+				field.displayField = 'label';
+				field.valueField = 'code';
+				field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
+				if (record.subtype === 'DYNAMIC') {
+					field.mode = 'remote';
+
+					// Fill the list of codes / labels for default values
+					var codes = [];
+					if (record.type === 'CODE') {
+						codes.push({
+							code : record.value,
+							label : record.valueLabel
+						});
+					} else { // case of ARRAY
+						if (record.valueLabel) {
+							for ( var i = 0; i < record.value.length; i++) {
+								codes.push({
+									code : record.value[i],
+									label : record.valueLabel[i]
+								});
+							}
 						}
 					}
-				}
 
-				field.store = new Ext.data.JsonStore({
-					root : 'codes',
-					idProperty : 'code',
-					fields : [ {
-						name : 'code',
-						mapping : 'code'
-					}, {
-						name : 'label',
-						mapping : 'label'
-					} ],
-					url : Genapp.base_url + '/query/ajaxgetdynamiccodes',
-					baseParams : {
-						'unit' : record.unit
-					},
-					data : {
-						codes : codes
-					}
-				});
-			} else {
-				field.mode = 'local';
-				field.store = new Ext.data.ArrayStore({
-					fields : [ 'code', 'label' ],
-					data : record.params.options
-				});
-			}
-			break;
-		case 'DATE': // The input type DATE correspond generally to a data
-			// type DATE
-			field.xtype = 'datefield';
-			field.itemCls = 'trigger-field'; // For IE7 layout
-			field.format = Genapp.FieldForm.prototype.dateFormat;
-			break;
-		case 'NUMERIC': // The input type NUMERIC correspond generally to a data
-			// type NUMERIC or RANGE
-			field.xtype = 'numberfield';
-			field.itemCls = 'trigger-field'; // For IE7 layout
-			// If RANGE we set the min and max values
-			if (record.subtype === 'RANGE') {
-				field.decimalPrecision = (record.params.decimals == null) ? 20 : record.params.decimals;
-			}
-			// IF INTEGER we remove the decimals
-			if (record.subtype === 'INTEGER') {
-				field.allowDecimals = false;
-				field.decimalPrecision = 0;
-			}
-			break;
-		case 'CHECKBOX':
-			field.xtype = 'switch_checkbox';
-			field.ctCls = 'improvedCheckbox';
-			switch (record.default_value) {
-			case 1:
-			case '1':
-			case true:
-			case 'true':
-				field.inputValue = '1';
+					field.store = new Ext.data.JsonStore({
+						root : 'codes',
+						idProperty : 'code',
+						fields : [ {
+							name : 'code',
+							mapping : 'code'
+						}, {
+							name : 'label',
+							mapping : 'label'
+						} ],
+						url : Genapp.base_url + '/query/ajaxgetdynamiccodes',
+						baseParams : {
+							'unit' : record.unit
+						},
+						data : {
+							codes : codes
+						}
+					});
+				} else {
+					field.mode = 'local';
+					field.store = new Ext.data.ArrayStore({
+						fields : [ 'code', 'label' ],
+						data : record.params.options
+					});
+				}
+				break;
+			case 'DATE': // The input type DATE correspond generally to a
+				// data
+				// type DATE
+				field.xtype = 'datefield';
+				field.itemCls = 'trigger-field'; // For IE7 layout
+				field.format = Genapp.FieldForm.prototype.dateFormat;
+				break;
+			case 'NUMERIC': // The input type NUMERIC correspond generally to a
+				// data
+				// type NUMERIC or RANGE
+				field.xtype = 'numberfield';
+				field.itemCls = 'trigger-field'; // For IE7 layout
+				// If RANGE we set the min and max values
+				if (record.subtype === 'RANGE') {
+					field.decimalPrecision = (record.params.decimals == null) ? 20 : record.params.decimals;
+				}
+				// IF INTEGER we remove the decimals
+				if (record.subtype === 'INTEGER') {
+					field.allowDecimals = false;
+					field.decimalPrecision = 0;
+				}
+				break;
+			case 'CHECKBOX':
+				field.xtype = 'switch_checkbox';
+				field.ctCls = 'improvedCheckbox';
+				switch (record.default_value) {
+				case 1:
+				case '1':
+				case true:
+				case 'true':
+					field.inputValue = '1';
+					break;
+				default:
+					field.inputValue = '0';
+					break;
+				}
+				// field.boxLabel = record.label;
+				break;
+			case 'RADIO':
+			case 'TEXT':
+				switch (record.subtype) {
+				// TODO : BOOLEAN, COORDINATE
+				case 'INTEGER':
+					field.xtype = 'numberfield';
+					field.allowDecimals = false;
+					break;
+				case 'NUMERIC':
+					field.xtype = 'numberfield';
+					break;
+				default: // STRING
+					field.xtype = 'textfield';
+					break;
+				}
+				break;
+			case 'GEOM':
+				field.xtype = 'geometryfield';
+				field.itemCls = 'trigger-field'; // For IE7 layout
+				break;
+			case 'TREE':
+				field.xtype = 'treefield';
+				field.valueLabel = record.valueLabel;
+				// TODO : change depth depending on level
+				field.dataUrl = Genapp.base_url + '/query/ajaxgettreenodes/unit/' + record.unit + '/depth/1';
+				break;
+			case 'TAXREF':
+				field.xtype = 'taxreffield';
+				field.valueLabel = record.valueLabel;
+				// TODO : change depth depending on level
+				field.dataUrl = Genapp.base_url + '/query/ajaxgettaxrefnodes/depth/1';
 				break;
 			default:
-				field.inputValue = '0';
+				field.xtype = 'field';
 				break;
 			}
-			// field.boxLabel = record.label;
-			break;
-		case 'RADIO':
-		case 'TEXT':
-			switch (record.subtype) {
-			// TODO : BOOLEAN, COORDINATE
-			case 'INTEGER':
-				field.xtype = 'numberfield';
-				field.allowDecimals = false;
-				break;
-			case 'NUMERIC':
-				field.xtype = 'numberfield';
-				break;
-			default: // STRING
-				field.xtype = 'textfield';
-				break;
-			}
-			break;
-		case 'GEOM':
-			field.xtype = 'geometryfield';
-			field.itemCls = 'trigger-field'; // For IE7 layout
-			break;
-		case 'TREE':
-			field.xtype = 'treefield';
-			field.valueLabel = record.valueLabel;
-			// TODO : change depth depending on level
-			field.dataUrl = Genapp.base_url + '/query/ajaxgettreenodes/unit/' + record.unit + '/depth/1';
-			break;
-		case 'TAXREF':
-			field.xtype = 'taxreffield';
-			field.valueLabel = record.valueLabel;
-			// TODO : change depth depending on level
-			field.dataUrl = Genapp.base_url + '/query/ajaxgettaxrefnodes/depth/1';
-			break;
-		default:
-			field.xtype = 'field';
-			break;
+
 		}
+
 		if (!Ext.isEmpty(record.value)) {
 			field.value = record.value;
-		}
-		if (!Ext.isEmpty(record.editable) && record.editable == false) {
-			field.readOnly = true;
-			field.fieldClass = "x-item-disabled";
 		}
 
 		if (!Ext.isEmpty(record.definition)) {
