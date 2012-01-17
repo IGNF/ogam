@@ -1,10 +1,10 @@
-// Declare the Genapp namespace
+// Declare the Genapp namespaces
 Ext.namespace('Genapp.util'); // Contains few common useful functions
 Ext.namespace('Genapp.globalVars'); // ??
 Ext.namespace('Genapp.config'); // Contains the static config parameters used to initialize the application
 
 // Set the defaults config values
-Genapp.config.historicActivated = true; // TODO: create a config.js file ?
+Genapp.config.historicActivated = true; 
 Genapp.config.localCls = 'en';
 
 /**
