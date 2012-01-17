@@ -752,7 +752,7 @@ class Genapp_Service_GenericService {
 				break;
 			case "INTEGER":
 			case "NUMERIC":
-				if ($field->value == "") {
+				if ($value == "") {
 					$sql = $column." = null";
 				} else {
 					$value = str_replace(",", ".", $value);

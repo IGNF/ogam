@@ -144,11 +144,15 @@ class Genapp_Service_QueryService {
 			if ($formField->type == "ARRAY") {
 				$labels = array();
 				foreach ($formField->value as $mode) {
-					$labels[] = $modes[$mode];
+					if (isset($modes[$mode])) {
+						$labels[] = $modes[$mode];
+					}
 				}
 				$formField->valueLabel = $labels;
 			} else {
-				$formField->valueLabel = $modes[$formField->value];
+				if (isset($modes[$formField->value])) {
+					$formField->valueLabel = $modes[$formField->value];
+				}
 			}
 
 			$json .= $formField->toEditJSON();
