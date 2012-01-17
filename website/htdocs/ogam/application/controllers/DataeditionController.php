@@ -172,6 +172,8 @@ class DataEditionController extends AbstractOGAMController {
 					$modes = $this->metadataModel->getDynamodes($tableField->unit);
 				} else if ($tableField->subtype == "TREE") {
 					$modes = $this->metadataModel->getTreeLabels($tableField->unit);
+				} else if ($tableField->subtype == "TAXREF") {
+					$modes = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
 				} else {
 					$modes = $this->metadataModel->getModes($tableField->unit);
 				}
@@ -199,6 +201,8 @@ class DataEditionController extends AbstractOGAMController {
 					$modes = $this->metadataModel->getDynamodes($tableField->unit);
 				} else if ($tableField->subtype == "TREE") {
 					$modes = $this->metadataModel->getTreeLabels($tableField->unit);
+				} else if ($tableField->subtype == "TAXREF") {
+					$modes = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
 				} else {
 					$modes = $this->metadataModel->getModes($tableField->unit);
 				}
@@ -544,7 +548,7 @@ class DataEditionController extends AbstractOGAMController {
 		// Get the parameters from the URL
 		$request = $this->getRequest();
 		$data = $this->_getDataFromRequest($request);
-		
+
 		// Complete the empty foreign key elements with info from the parent table
 		$this->logger->debug('data'.print_r($data,true));
 

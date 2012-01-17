@@ -6,9 +6,9 @@
 
 /**
  * This is the model used to access a Taxonomic referential.
- * 
+ *
  * This model is based on the structure of the French Taxonomic Referential : http://inpn.mnhn.fr/programme/referentiel-taxonomique-taxref
- * 
+ *
  * @package models
  */
 class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstract {
@@ -51,9 +51,9 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 	 * @return Genapp_Object_Metadata_TreeNode
 	 */
 	public function getTaxrefModes($parentcode = '*', $levels = 1) {
-		
+
 		$db = $this->getAdapter();
-		
+
 		$req = "WITH RECURSIVE node_list( cd_nom, cd_taxsup, lb_nom, nom_vern, is_leaf, is_reference, level) AS (  ";
 		$req .= "	    SELECT cd_nom, cd_taxsup, lb_nom, nom_vern, is_leaf, ";
 		$req .= "		       CASE WHEN cd_nom = cd_ref THEN 1 ELSE 0 END, ";
@@ -111,7 +111,42 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 		return $resultTree;
 	}
 
-	
+	/**
+	 * Get the taxons labels.
+	 *
+	 * @param String $unit the unit of the referential
+	 * @param String $value the value searched (optional)
+	 * @return Array[String, String]
+	 */
+	public function getTaxrefLabels($unit, $value = null) {
+
+		$db = $this->getAdapter();
+
+		$req = "	SELECT cd_nom, lb_nom ";
+		$req .= "	FROM taxref ";
+		if ($value != null) {
+			if (is_array($value)) {
+				$req .= " WHERE  cd_nom IN ('".implode("','",$value)."')";
+			} else {
+				$req .= " WHERE  cd_nom = '".$value."'";
+			}
+		}
+		$req .= "	ORDER BY lb_nom ";
+
+		$this->logger->info('getTaxrefLabels '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array());
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[$row['cd_nom']] = $row['lb_nom'];
+		}
+
+		return $result;
+	}
+
+
 
 
 }

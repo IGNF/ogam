@@ -48,6 +48,7 @@ class Genapp_Service_QueryService {
 
 		// Initialise the metadata models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->taxonomicReferentialModel = new Genapp_Model_Referential_TaxonomicReferential();
 		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
@@ -131,8 +132,10 @@ class Genapp_Service_QueryService {
 			// Get the modes => Label
 			if ($formField->subtype == "DYNAMIC") {
 				$modes = $this->metadataModel->getDynamodes($formField->unit);
-			} else if ($formField->subtype == "TREE") {
-				$modes = $this->metadataModel->getTreeLabels($formField->unit);
+			} else if ($formField->subtype == "TREE" ) {
+				$modes = $this->metadataModel->getTreeLabels($formField->unit, $formField->value);
+			} else if ($formField->subtype == "TAXREF") {
+				$modes = $this->taxonomicReferentialModel->getTaxrefLabels($formField->unit, $formField->value);
 			} else {
 				$modes = $this->metadataModel->getModes($formField->unit);
 			}
@@ -193,6 +196,7 @@ class Genapp_Service_QueryService {
 				$formField->editable = $tablefield->isEditable;
 				$formField->data = $tablefield->data; 			// The name of the data is the table one
 				$formField->format = $tablefield->format; 			// The name of the data is the table one
+
 				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
 			}
 		}
@@ -400,8 +404,8 @@ class Genapp_Service_QueryService {
 			$json .= '{"name":"id","label":"Identifier of the line","inputType":"TEXT","definition":"The plot identifier", "hidden":true}';
 			// Add the plot location in WKT
 			$json .= ',{"name":"location_centroid","label":"Location centroid","inputType":"TEXT","definition":"The plot location", "hidden":true}';
-				
-				
+
+
 			// Right management : add the provider id of the data
 			$userSession = new Zend_Session_Namespace('user');
 			$providerId = $userSession->user->providerId;
@@ -409,11 +413,11 @@ class Genapp_Service_QueryService {
 			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER',$permissions)) {
 				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
 			}
-				
+
 			$json .= ']';
-				
-				
-				
+
+
+
 			if ($withSQL) {
 				$json .= ', "SQL":'.json_encode($select.$fromwhere);
 			}
@@ -482,6 +486,8 @@ class Genapp_Service_QueryService {
 						$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
 					} else if ($tableField->subtype == "TREE") {
 						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
+					} else if ($formField->subtype == "TAXREF") {
+						$traductions[$key] = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
 					} else {
 						$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
 					}

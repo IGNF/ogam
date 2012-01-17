@@ -58,21 +58,21 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		return $result;
 	}
-	
+
 	/**
-	* Get the available schemas.
-	*
-	* @return Array[schemaCode]
-	*/
+	 * Get the available schemas.
+	 *
+	 * @return Array[schemaCode]
+	 */
 	public function getSchemas() {
 		$db = $this->getAdapter();
 		$req = "SELECT * FROM table_schema ORDER BY table_schema";
-	
+
 		$this->logger->info('getSchemas : '.$req);
-	
+
 		$select = $db->prepare($req);
 		$select->execute(array());
-	
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$schema = new Genapp_Object_Metadata_Schema();
@@ -80,10 +80,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$schema->name = $row['schema_name'];
 			$schema->label = $row['label'];
 			$schema->description = $row['description'];
-			
+
 			$result[$schema->code] = $schema;
 		}
-	
+
 		return $result;
 	}
 
@@ -116,11 +116,22 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the labels and modes for a tree unit.
 	 *
 	 * @param String $unit The unit
+	 * @param String $value the searched value (optional)
 	 * @return Array[mode => label]
 	 */
-	public function getTreeLabels($unit) {
+	public function getTreeLabels($unit, $value = null) {
 		$db = $this->getAdapter();
-		$req = "SELECT code, label FROM mode_tree WHERE unit = ? ORDER BY position, code";
+		$req = "SELECT code, label ";
+		$req .= " FROM mode_tree ";
+		$req .= " WHERE unit = ?";
+		if ($value != null) {
+			if (is_array($value)) {
+				$req .= " AND code IN ('".implode("','",$value)."')";
+			} else {
+				$req .= " AND code = '".$value."'";
+			}
+		}
+		$req .= " ORDER BY position, code";
 
 		$this->logger->info('getTreeLabels : '.$req);
 
@@ -462,7 +473,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " AND table_format.schema_code = ? ";
 			$req .= " AND table_field.format = ? ";
 			$req .= " ORDER BY table_field.position ";
-				
+
 			$this->logger->info('getTableFields : '.$req);
 
 			$select = $db->prepare($req);
