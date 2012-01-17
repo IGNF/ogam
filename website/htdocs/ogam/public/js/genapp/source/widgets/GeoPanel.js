@@ -959,6 +959,7 @@ Genapp.GeoPanel = Ext
 								onSelect : function(feature) {
 									this.vectorLayer.destroyFeatures([ feature ])
 								},
+								scope : this,
 								type : OpenLayers.Control.TYPE_TOOL
 							});
 
