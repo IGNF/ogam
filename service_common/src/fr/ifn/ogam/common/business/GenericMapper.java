@@ -79,6 +79,24 @@ public class GenericMapper {
 			throw ce;
 		}
 	}
+	
+	/**
+	 * Check that a code value correspond to an existing Taxon in a referential.
+	 * 
+	 * @param unit
+	 *            the unit of the field to check
+	 * @param fieldValue
+	 *            the code to check
+	 */
+	protected void checkTaxrefCode(String unit, String fieldValue) throws Exception {
+
+		List<String> modes = metadataDAO.getTaxrefCode(unit);
+
+		if (!modes.contains(fieldValue)) {
+			CheckException ce = new CheckException(INVALID_CODE_FIELD);
+			throw ce;
+		}
+	}
 
 	/**
 	 * Check that a code value correspond to an existing code in a tree of codes.
@@ -196,6 +214,8 @@ public class GenericMapper {
 						checkTreeCode(fieldDescriptor.getUnit(), fieldValue);
 					} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.DYNAMIC)) {
 						checkDynaCode(fieldDescriptor.getUnit(), fieldValue);
+					} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.TAXREF)) {
+						checkTaxrefCode(fieldDescriptor.getUnit(), fieldValue);
 					} else {
 						checkCode(fieldDescriptor.getUnit(), fieldValue);
 					}
@@ -417,7 +437,7 @@ public class GenericMapper {
 			String sourceTableFormat = sourceTablesIter.next();
 
 			// Get the descriptor of the table
-			Map<String, TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat, false);
+			Map<String, TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat);
 			TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(sourceTableFormat, schema);
 
 			// Build the SELECT clause

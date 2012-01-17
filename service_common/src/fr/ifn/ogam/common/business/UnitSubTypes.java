@@ -29,5 +29,10 @@ public interface UnitSubTypes {
 	 * A mode selected in a table using a dynamic SQL request. For CODE type.
 	 */
 	String DYNAMIC = "DYNAMIC";
+	
+	/**
+	 * A mode selected in a taxonomic referential. For CODE type.
+	 */
+	String TAXREF = "TAXREF";
 
 }

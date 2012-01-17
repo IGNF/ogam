@@ -34,6 +34,7 @@ public class MetadataDAO {
 	private static LocalCache modesCache = LocalCache.getLocalCache();
 	private static LocalCache dynamodeSQLCache = LocalCache.getLocalCache();
 	private static LocalCache dynamodeCache = LocalCache.getLocalCache();
+	private static LocalCache taxrefmodeCache = LocalCache.getLocalCache();
 	private static LocalCache modeExistCache = LocalCache.getLocalCache();
 	private static LocalCache treemodeExistCache = LocalCache.getLocalCache();
 	private static LocalCache rangeCache = LocalCache.getLocalCache();
@@ -154,6 +155,11 @@ public class MetadataDAO {
 	 * Get the list of modes of a given unit.
 	 */
 	private static final String GET_MODES_STMT = "SELECT code, label FROM mode WHERE unit = ? ORDER BY position, code";
+
+	/**
+	 * Get the list of modes of a given unit from a taxonomic referential.
+	 */
+	private static final String GET_TAXREF_MODES_STMT = "SELECT cd_nom, lb_nom FROM taxref ORDER BY lb_nom";
 
 	/**
 	 * Get the one mode of a given unit.
@@ -786,11 +792,9 @@ public class MetadataDAO {
 	 * 
 	 * @param tableformat
 	 *            the logical name of the table
-	 * @param ignoreCalculated
-	 *            if true ignore the fields that are calculated by a trigged
 	 * @return the list of fields of the table
 	 */
-	public Map<String, TableFieldData> getTableFields(String tableformat, Boolean ignoreCalculated) throws Exception {
+	public Map<String, TableFieldData> getTableFields(String tableformat) throws Exception {
 		Map<String, TableFieldData> result = new HashMap<String, TableFieldData>();
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -800,9 +804,6 @@ public class MetadataDAO {
 			con = getConnection();
 
 			String req = GET_TABLE_FIELDS_STMT;
-			if (ignoreCalculated) {
-				req += " AND is_calculated <> '1'";
-			}
 			logger.trace(req);
 
 			ps = con.prepareStatement(req);
@@ -824,7 +825,7 @@ public class MetadataDAO {
 				if (iscalculated != null) {
 					field.setIsCalculated(iscalculated.equalsIgnoreCase("1"));
 				}
-				
+
 				result.put(field.getData(), field);
 			}
 
@@ -1353,7 +1354,7 @@ public class MetadataDAO {
 				if (iscalculated != null) {
 					field.setIsCalculated(iscalculated.equalsIgnoreCase("1"));
 				}
-				
+
 				result.put(field.getData(), field);
 			}
 
@@ -1642,6 +1643,70 @@ public class MetadataDAO {
 
 				// fill the cache
 				dynamodeCache.put(unit, result);
+
+			}
+
+			return result;
+
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing resultset : " + e.getMessage());
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing connexion : " + e.getMessage());
+			}
+		}
+	}
+
+	/**
+	 * Get a list of modes for a taxonomic referential.
+	 * 
+	 * @param unit
+	 *            the unit
+	 * @return List<String> the list of modes
+	 */
+	public List<String> getTaxrefCode(String unit) throws Exception {
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			List<String> result = (List<String>) taxrefmodeCache.get(unit);
+
+			// If cache is empty
+			if (result == null) {
+
+				result = new ArrayList<String>();
+
+				con = getConnection();
+
+				// Execute the statement
+				ps = con.prepareStatement(GET_TAXREF_MODES_STMT);
+				rs = ps.executeQuery();
+
+				while (rs.next()) {
+					result.add(rs.getString("cd_nom"));
+				}
+
+				// fill the cache
+				taxrefmodeCache.put(unit, result);
 
 			}
 
