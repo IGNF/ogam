@@ -116,12 +116,14 @@ class MapController extends AbstractOGAMController {
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
 		$tilesize = $configuration->tilesize; // Tile size in pixels
+		$dpi = $configuration->mapserver_dpi; // Default number of dots per inch in mapserv
+		$factor = $configuration->mapserver_inch_per_kilometer; // Inch to meter conversion factor
 
 		// WARNING : Bounding box must match the tilecache configuration and tile size
 
 		$resolutions = array();
 		foreach ($scales as $scale) {
-			$res = $scale * (2 * $tilesize) / (DPI * FACTOR);
+			$res = $scale * (2 * $tilesize) / ($dpi * $factor);
 			$resolutions[$scale] = $res;
 		}
 		return $resolutions;
