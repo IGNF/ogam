@@ -1392,7 +1392,7 @@ listeners: {
                 for(i = 0; i<rla.length;i++){
                     var layer = this.geoPanel.map.getLayersByName(rla[i])[0];
                     //The layer visibility must be set to true to handle the 'loadend' event
-                    layer.events.register("loadend", this, function(info){console.log("loadend");
+                    layer.events.register("loadend", this, function(info){
                         this.mapResultLayersLoadEnd[info.object.name] = 1;
                         // Hide the map mask if all the result layers are loaded
                         var count = 0;

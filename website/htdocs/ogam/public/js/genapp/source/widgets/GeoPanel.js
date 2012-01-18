@@ -407,7 +407,7 @@ Genapp.GeoPanel = Ext
 						}
 
 						// Create the Toolbar
-                        this.mapToolbar = new Ext.Toolbar({});
+                        this.mapToolbar = new Ext.Toolbar();
                         
                         // Creates the map Object (OpenLayers)
                         this.map = this.initMap();
@@ -477,11 +477,23 @@ Genapp.GeoPanel = Ext
 
 						var layersObject = Ext.decode(response.responseText), i;
 						
-						var layersObject = {// TODO : to remove after dev (only by SG not by BP!!)
+						/*var layersObject = {// TODO : to remove after dev (only by SG not by BP!!)
 						        "url_array_cached":["http://oison.ifn.fr/cgi-bin/tilecache?&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"],
 						        "url_array_tiled":["http://localhost/oison/proxy/gettile?SESSION_ID=sojf804i6259ji9jl7rnj06asqpscbtl"],
 						        "layers":[
-						            {
+                                    {
+                                        "untiled":false, "name":"hydrographie", "url":"url_array_cached", "hasLegend": true,
+                                        "params":{"layers" : ["hydrographie"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+                                        "options":{"buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Hydrographie", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894]}
+                                    },{
+                                        "untiled":false, "name":"refign", "url":"url_array_cached", "hasLegend": false,
+                                        "params":{"layers" : ["refign"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+                                        "options":{"buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Référentiel IGN", "resolutions": [1763.8879363894, 881.9439681947, 352.77758727788, 176.38879363894, 88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
+                                    },{
+                                        "untiled":false, "name":"BD Ortho", "url":"url_array_cached", "hasLegend": false,
+                                        "params":{"layers" : ["ortho"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+                                        "options":{"buffer": 0, "transitionEffect": "resize", "visibility": false, "isBaseLayer": false,"label":"BD Ortho", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894]}
+                                    },{
 						                "untiled":true, "name":"result_locations", "url":"url_array_tiled", "hasLegend": false,
 						                "params":{"layers" : ["result_locations"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": true, "isChecked": false, "activateType": "REQUEST", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
 						                "options":{"buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Resultats"}
@@ -521,25 +533,9 @@ Genapp.GeoPanel = Ext
 						                "untiled":false, "name":"communes", "url":"url_array_cached", "hasLegend": true, 
 						                "params":{"layers" : ["communes"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
 						                "options":{"buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Communes", "resolutions": [88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
-						            },{
-						                "untiled":false, "name":"hydrographie", "url":"url_array_cached", "hasLegend": true, 
-						                "params":{"layers" : ["hydrographie"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Hydrographie", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894]}
-						            },{
-						                "untiled":false, "name":"refign", "url":"url_array_cached", "hasLegend": false, 
-						                "params":{"layers" : ["refign"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Référentiel IGN", "resolutions": [1763.8879363894, 881.9439681947, 352.77758727788, 176.38879363894, 88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
-						            },{
-						                "untiled":false, "name":"ortho", "url":"url_array_cached", "hasLegend": false, 
-						                "params":{"layers" : ["ortho"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"BD Ortho", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894]}
-						            }/*,{
-                                        "untiled":false, "name":"Localisation", "url":"url_array_cached22", "hasLegend": false, 
-                                        "params":{"layers" : ["hydrographie", "refign", "ortho"], "transparent": true, "format": "image/PNG", "activateType": "NONE"}, 
-                                        "options":{"isBaseLayer": false, "buffer": 0, "displayInLayerSwitcher": false, "visibility": false, "resolutions": [1763.8879363894, 881.9439681947, 352.77758727788, 176.38879363894, 88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
-                                    }*/
+						            }
 						        ]
-						};
+						};*/
 
 						// Store the base URLs
 						this.urlArrayTiled = layersObject.url_array_tiled;
@@ -797,23 +793,23 @@ Genapp.GeoPanel = Ext
 						var responseJSON = Ext.decode(response.responseText);
 						
 						var responseJSON = [// TODO : to remove after dev (only by SG not by BP!!)
-    						 {"text": "Resultats", "expanded": false, "checked": false, "hidden": false, "disabled": true, "leaf": true, /*"nodeType" : "gx_layer", */"layer": "result_locations" },
-    						 {"text": "Emplacements existants", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, /*"nodeType" : "gx_layer", */"layer": "all_locations" }, 
-    						 {"text": "Zonages environnementaux", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "async",
-    						     "children": [
+    						 {"text": "Resultats", "expanded": false, "checked": false, "hidden": false, "disabled": true, "leaf": true, "nodeType" : "gx_layer", "layer": "result_locations" },
+    						 {"text": "Emplacements existants", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "all_locations" }, 
+    						 {"text": "Zonages environnementaux", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "gx_layercontainer", "layers":["apb","sic","znieff1","znieff2","zps"]
+    						     /*"children": [
     						         {"text": "Arrêté de protection de biotope", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "apb" },
     						         {"text": "Site d'importance communautaire", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "sic" },
     						         {"text": "ZNIEFF 1", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "znieff1" },
     						         {"text": "ZNIEFF 2", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "znieff2" },
     						         {"text": "Zone de protection spéciale", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "zps" }
-    						     ]
+    						     ]*/
     						 },
-    						 {"text": "Limites administratives", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "async",
-    						     "children": [
+    						 {"text": "Limites administratives", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "gx_layercontainer", "layers":["regions","departements","communes"]
+    						     /*"children": [
     						         {"text": "Régions", "expanded": false, "checked": true, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "regions" },
     						         {"text": "Départements", "expanded": false, "checked": true, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "departements" },
     						         {"text": "Communes", "expanded": false, "checked": true, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "communes" }
-    						     ]
+    						     ]*/
     						 }/*,{
     						        nodeType: "gx_layer",
     						        layer: "Localisation",
@@ -826,83 +822,50 @@ Genapp.GeoPanel = Ext
     						            param: "LAYERS"
     						        }
     						    }*/,
-    						 {"text": "Localisation", "expanded": true, "checked": true, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "async",
+    						 {"text": "Localisation", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "gx_layercontainer", "layers":["hydrographie","refign","ortho"]/*,
+    						        loader: {
+                                        filter: function(record) { console.log("record : " , record);
+                                            return record.get("layer").name.indexOf("hydrographie") !== -1 
+                                            || record.get("layer").name.indexOf("refign") !== -1 
+                                            || record.get("layer").name.indexOf("ortho") !== -1 ;
+                                        }
+                                    }*//*
     						     "children": [
     						         {"text": "Hydrographie", "expanded": false, "checked": true, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "hydrographie" },
     						         {"text": "Référentiel IGN", "expanded": false, "checked": true, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "refign" },
     						         {"text": "BD Ortho", "expanded": false, "checked": true, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "ortho" }
-    						     ]
+    						     ]*/
     						 }
 						 ];
-
-						// LayerContainer is used to get All Layers from the map
-						/*
-						 * var layerList = new GeoExt.tree.LayerContainer({ //
-						 * Take the layers from the map layerStore :
-						 * this.mapPanel.layers, expanded : true });
-						 */
+						
+						// Create The loader filter for the parent node
+						for(var i = 0; i< responseJSON.length; i++){
+						    if(!Ext.isEmpty(responseJSON[i].layers)){
+						        var filter = function(record, layers) {
+						            for( var j = 0; j < layers.length; j++){
+						                if(record.get("layer").name.indexOf(layers[j]) !== -1){
+						                    return true;
+						                }
+						            }
+						            return false;
+                                };
+						        responseJSON[i].loader = {
+						                "filter" : filter.createDelegate(this, [responseJSON[i].layers], true)
+						        };
+						    }
+						}
+					
 
 						// Add a Tree Panel
-						this.layerTree = new Ext.tree.TreePanel({
-							autoScroll : true,
-                            rootVisible : false,
-							root : {
-								nodeType : "async",
-								children : responseJSON,
-								leaf: false,
-								expanded : true
-							},
-    				        enableDD: true,
-    				        title : '',
-    			            border : false,
-    			            /*listeners:{ TODO: check if still need with geoext
-    			                'afterrender':function(){
-    			                    for (var i = 0; i < this.map.layers.length; i++){
-    			                        this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
-    			                    }
-    			                },
-    			                scope:this
-    			            },*/
-    			            listeners: {
-    			                // Toggle the children checkbox on the parent checkbox change
-    			                'checkchange': function(node, checked) { 
-    			                    if (checked === true) {
-    			                        for(var i = 0; i < node.childNodes.length; i++){
-    			                            var child = node.childNodes[i];
-    			                            if(!child.ui.isChecked()){
-    			                                child.ui.toggleCheck(true);
-    			                            }
-    			                        }
-    			                    } else {
-    			                        for(var i = 0; i < node.childNodes.length; i++){
-                                            var child = node.childNodes[i];
-                                            if(child.ui.isChecked()){
-                                                child.ui.toggleCheck(false);
-                                            }
-                                        }
-    			                    }
-    			                }
-    			            },
-    			            plugins : [
-    			               {
-    			                    init: function(layerTree) {
-    			                        layerTree.getRootNode().cascade(
-    			                        function(child) {
-    			                            if(child.attributes.disabled == true){
-    			                                child.forceDisable = true;
-    			                            }else{
-    			                                child.forceDisable = false;
-    			                            }
-    			                        }
-    			                        );
-    			                    }
-    			                }/*, TODO: look for an equivalent with geoext
-    			                mapfish.widgets.LayerTree.createContextualMenuPlugin(['opacitySlide'])*/
-    			                ]
-						});
+						this.layerTree = new Genapp.tree.LayerTreePanel({"rootChildren":responseJSON});
+				        // Toggle layers and legends for zoom
+						this.on('afterrender', function(treePanel) {
+				            for (var i = 0; i < this.map.layers.length; i++){
+				                this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
+				            }
+				        }, this);
 
 						// TODO : add GeoExt.LayerOpacitySlider
-
 						this.layerPanel.add(this.layerTree);
 						this.layerPanel.doLayout();
 
@@ -959,7 +922,6 @@ Genapp.GeoPanel = Ext
 								onSelect : function(feature) {
 									this.vectorLayer.destroyFeatures([ feature ])
 								},
-								scope : this,
 								type : OpenLayers.Control.TYPE_TOOL
 							});
 
@@ -1260,14 +1222,14 @@ Genapp.GeoPanel = Ext
 					 *            cause that the zoom range.
 					 */
 					enableLayersAndLegends : function(layerNames, check, setForceDisable) {
-							/*
+
 						// The tabPanels must be activated before to show a
 						// child component
 						var isLayerPanelVisible = this.layerPanel.isVisible(), i;
 
 						this.layersAndLegendsPanel.activate(this.layerPanel);
 						for (i = 0; i < layerNames.length; i++) {
-							var nodeId = this.layerTree.layerToNodeIds[layerNames[i]];
+							var nodeId = this.layerTree.getLayerNodeId(layerNames[i]);
 							if (!Ext.isEmpty(nodeId)) {
 								if (setForceDisable !== false) {
 									this.layerTree.getNodeById(nodeId).forceDisable = false;
@@ -1284,7 +1246,7 @@ Genapp.GeoPanel = Ext
 									// images before the new one
 									var layers = this.map.getLayersByName(layerNames[i]);
 									layers[0].redraw(true);
-									this.layerTree.setNodeChecked(nodeId, true);
+									this.layerTree.toggleNodeCheckbox(nodeId, true);
 								}
 							}
 						}
@@ -1296,7 +1258,6 @@ Genapp.GeoPanel = Ext
 						if (isLayerPanelVisible) {
 							this.layersAndLegendsPanel.activate(this.layerPanel);
 						}
-						*/
 					},
 
 					/**
@@ -1320,13 +1281,13 @@ Genapp.GeoPanel = Ext
 					 *            cause that the zoom range.
 					 */
 					disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) {
-					  /*  var i;
+					    var i;
 						if (!Ext.isEmpty(layerNames)) {
 							for (i = 0; i < layerNames.length; i++) {
-								var nodeId = this.layerTree.layerToNodeIds[layerNames[i]];
+								var nodeId = this.layerTree.getLayerNodeId(layerNames[i]);
 								if (!Ext.isEmpty(nodeId)) {
 									if (uncheck === true) {
-										this.layerTree.setNodeChecked(nodeId, false);
+										this.layerTree.toggleNodeCheckbox(nodeId, false);
 									}
 									var node = this.layerTree.getNodeById(nodeId);
 									if (hide === true) {
@@ -1340,7 +1301,6 @@ Genapp.GeoPanel = Ext
 								this.setLegendsVisible([ layerNames[i] ], false);
 							}
 						}
-						*/
 					},
 
 					/**
