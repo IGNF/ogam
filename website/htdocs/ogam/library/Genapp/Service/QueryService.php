@@ -490,7 +490,7 @@ class Genapp_Service_QueryService {
 						$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
 					} else if ($tableField->subtype == "TREE") {
 						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
-					} else if ($formField->subtype == "TAXREF") {
+					} else if ($tableField->subtype == "TAXREF") {
 						$traductions[$key] = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
 					} else {
 						$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
