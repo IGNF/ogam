@@ -191,17 +191,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 *
-	 * Define few constants
-	 */
-	protected function _initConstants() {
-		if (!defined('DPI')) {
-			define('DPI', '72'); // Default number of dots per inch in mapserv
-			define('FACTOR', '39370.1'); // Inch to meter conversion factor
-		}
-	}
-
-	/**
 	 * Register the *.ini files.
 	 *
 	 * Take by default the files in ogam/application/config and if present overrides with custom/application/config.
