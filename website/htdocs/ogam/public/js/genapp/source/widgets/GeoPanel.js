@@ -477,22 +477,22 @@ Genapp.GeoPanel = Ext
 
 						var layersObject = Ext.decode(response.responseText), i;
 						
-						/*var layersObject = {// TODO : to remove after dev (only by SG not by BP!!)
+						var layersObject = {// TODO : to remove after dev (only by SG not by BP!!)
 						        "url_array_cached":["http://oison.ifn.fr/cgi-bin/tilecache?&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"],
 						        "url_array_tiled":["http://localhost/oison/proxy/gettile?SESSION_ID=sojf804i6259ji9jl7rnj06asqpscbtl"],
 						        "layers":[
                                     {
                                         "untiled":false, "name":"hydrographie", "url":"url_array_cached", "hasLegend": true,
                                         "params":{"layers" : ["hydrographie"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-                                        "options":{"buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Hydrographie", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894]}
+                                        "options":{"nodeGroup":"localisation", "buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Hydrographie", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894]}
                                     },{
                                         "untiled":false, "name":"refign", "url":"url_array_cached", "hasLegend": false,
                                         "params":{"layers" : ["refign"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-                                        "options":{"buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Référentiel IGN", "resolutions": [1763.8879363894, 881.9439681947, 352.77758727788, 176.38879363894, 88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
+                                        "options":{"nodeGroup":"localisation", "buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Référentiel IGN", "resolutions": [1763.8879363894, 881.9439681947, 352.77758727788, 176.38879363894, 88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894], "checkedGroup":"baselayer"}
                                     },{
-                                        "untiled":false, "name":"BD Ortho", "url":"url_array_cached", "hasLegend": false,
+                                        "untiled":false, "name":"ortho", "url":"url_array_cached", "hasLegend": false,
                                         "params":{"layers" : ["ortho"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-                                        "options":{"buffer": 0, "transitionEffect": "resize", "visibility": false, "isBaseLayer": false,"label":"BD Ortho", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894]}
+                                        "options":{"nodeGroup":"localisation", "buffer": 0, "transitionEffect": "resize", "visibility": false, "isBaseLayer": false,"label":"BD Ortho", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894], "checkedGroup":"baselayer"}
                                     },{
 						                "untiled":true, "name":"result_locations", "url":"url_array_tiled", "hasLegend": false,
 						                "params":{"layers" : ["result_locations"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": true, "isChecked": false, "activateType": "REQUEST", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
@@ -504,38 +504,38 @@ Genapp.GeoPanel = Ext
 						            },{
 						                "untiled":false, "name":"apb", "url":"url_array_cached", "hasLegend": true, 
 						                "params":{"layers" : ["apb"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Arrêté de protection de biotope"}
+						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Arrêté de protection de biotope"}
 						            },{
 						                "untiled":false, "name":"sic", "url":"url_array_cached", "hasLegend": true, 
 						                "params":{"layers" : ["sic"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Site d\'importance communautaire"}
+						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Site d\'importance communautaire"}
 						            },{
 						                "untiled":false, "name":"znieff1", "url":"url_array_cached", "hasLegend": true, 
 						                "params":{"layers" : ["znieff1"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "visibility": false, "isBaseLayer": false,"label":"ZNIEFF 1"}
+						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"ZNIEFF 1"}
 						            },{
 						                "untiled":false, "name":"znieff2", "url":"url_array_cached", "hasLegend": true, 
 						                "params":{"layers" : ["znieff2"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "visibility": false, "isBaseLayer": false,"label":"ZNIEFF 2"}
+						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"ZNIEFF 2"}
 						            },{
 						                "untiled":false, "name":"zps", "url":"url_array_cached", "hasLegend": true, 
 						                "params":{"layers" : ["zps"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Zone de protection spéciale"}
+						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Zone de protection spéciale"}
 						            },{
 						                "untiled":false, "name":"regions", "url":"url_array_cached", "hasLegend": true, 
 						                "params":{"layers" : ["regions"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Régions", "resolutions": [3527.7758727788, 1763.8879363894, 881.9439681947, 352.77758727788]}
+						                "options":{"nodeGroup":"limites", "buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Régions", "resolutions": [3527.7758727788, 1763.8879363894, 881.9439681947, 352.77758727788]}
 						            },{
 						                "untiled":false, "name":"departements", "url":"url_array_cached", "hasLegend": true, 
 						                "params":{"layers" : ["departements"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Départements", "resolutions": [352.77758727788, 176.38879363894, 88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
+						                "options":{"nodeGroup":"limites", "buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Départements", "resolutions": [352.77758727788, 176.38879363894, 88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
 						            },{
 						                "untiled":false, "name":"communes", "url":"url_array_cached", "hasLegend": true, 
 						                "params":{"layers" : ["communes"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
-						                "options":{"buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Communes", "resolutions": [88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
+						                "options":{"nodeGroup":"limites", "buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Communes", "resolutions": [88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
 						            }
 						        ]
-						};*/
+						};
 
 						// Store the base URLs
 						this.urlArrayTiled = layersObject.url_array_tiled;
@@ -692,7 +692,7 @@ Genapp.GeoPanel = Ext
 							'eventListeners' : {// Hide the legend if needed
 								changelayer : function(o) {
 									if (o.property === 'visibility') {
-										//this.toggleLayersAndLegendsForZoom(o.layer); TODO: check if still need with geoext
+										this.toggleLayersAndLegendsForZoom(o.layer);
 									}
 								},
 								scope : this
@@ -795,7 +795,7 @@ Genapp.GeoPanel = Ext
 						var responseJSON = [// TODO : to remove after dev (only by SG not by BP!!)
     						 {"text": "Resultats", "expanded": false, "checked": false, "hidden": false, "disabled": true, "leaf": true, "nodeType" : "gx_layer", "layer": "result_locations" },
     						 {"text": "Emplacements existants", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "all_locations" }, 
-    						 {"text": "Zonages environnementaux", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "gx_layercontainer", "layers":["apb","sic","znieff1","znieff2","zps"]
+    						 {"text": "Zonages environnementaux", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "gx_layercontainer", "nodeGroup":"zonages"
     						     /*"children": [
     						         {"text": "Arrêté de protection de biotope", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "apb" },
     						         {"text": "Site d'importance communautaire", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "sic" },
@@ -804,7 +804,7 @@ Genapp.GeoPanel = Ext
     						         {"text": "Zone de protection spéciale", "expanded": false, "checked": false, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "zps" }
     						     ]*/
     						 },
-    						 {"text": "Limites administratives", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "gx_layercontainer", "layers":["regions","departements","communes"]
+    						 {"text": "Limites administratives", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "gx_layercontainer", "nodeGroup":"limites"
     						     /*"children": [
     						         {"text": "Régions", "expanded": false, "checked": true, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "regions" },
     						         {"text": "Départements", "expanded": false, "checked": true, "hidden": false, "disabled": false, "leaf": true, "nodeType" : "gx_layer", "layer": "departements" },
@@ -822,7 +822,7 @@ Genapp.GeoPanel = Ext
     						            param: "LAYERS"
     						        }
     						    }*/,
-    						 {"text": "Localisation", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "gx_layercontainer", "layers":["hydrographie","refign","ortho"]/*,
+    						 {"text": "Localisation", "expanded": true, "checked": false, "hidden": false, "disabled": false, "leaf": false, "nodeType" : "gx_layercontainer", "nodeGroup":"localisation"/*,
     						        loader: {
                                         filter: function(record) { console.log("record : " , record);
                                             return record.get("layer").name.indexOf("hydrographie") !== -1 
@@ -837,24 +837,6 @@ Genapp.GeoPanel = Ext
     						     ]*/
     						 }
 						 ];
-						
-						// Create The loader filter for the parent node
-						for(var i = 0; i< responseJSON.length; i++){
-						    if(!Ext.isEmpty(responseJSON[i].layers)){
-						        var filter = function(record, layers) {
-						            for( var j = 0; j < layers.length; j++){
-						                if(record.get("layer").name.indexOf(layers[j]) !== -1){
-						                    return true;
-						                }
-						            }
-						            return false;
-                                };
-						        responseJSON[i].loader = {
-						                "filter" : filter.createDelegate(this, [responseJSON[i].layers], true)
-						        };
-						    }
-						}
-					
 
 						// Add a Tree Panel
 						this.layerTree = new Genapp.tree.LayerTreePanel({"rootChildren":responseJSON});

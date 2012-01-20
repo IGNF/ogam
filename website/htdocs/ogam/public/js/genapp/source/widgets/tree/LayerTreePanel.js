@@ -18,31 +18,14 @@ Genapp.tree.LayerTreePanel = Ext.extend( Ext.tree.TreePanel, {
     enableDD: true,
     title : '',
     border : false,
+    /**
+     * Read-only. An object containing the node id for each layer name. {layerName: nodeId, ...}
+     * @type Object
+     */
     layerNodeIds: [],
-    listeners: {
-        // Toggle the children checkbox on the parent checkbox change
-        'checkchange': function(node, checked) { 
-            if (checked === true) {
-                for(var i = 0; i < node.childNodes.length; i++){
-                    var child = node.childNodes[i];
-                    if(!child.ui.isChecked()){
-                        child.ui.toggleCheck(true);
-                    }
-                }
-            } else {
-                for(var i = 0; i < node.childNodes.length; i++){
-                    var child = node.childNodes[i];
-                    if(child.ui.isChecked()){
-                        child.ui.toggleCheck(false);
-                    }
-                }
-            }
-        },
-        'scope':this
-    },
 
     plugins : [
-       {
+       { // TODO: Check if its still working
             init: function(layerTree) {
                 layerTree.getRootNode().cascade(
                 function(child) {
@@ -60,17 +43,91 @@ Genapp.tree.LayerTreePanel = Ext.extend( Ext.tree.TreePanel, {
     
     // private
     initComponent: function(){
+        // Add a loader to the root children node config if needed
+        for(var i = 0; i< this.rootChildren.length; i++){
+            this.addLoaderToNodeConfig(this.rootChildren[i]);
+        }
+        // Create the tree root node
         this.root = new Ext.tree.AsyncTreeNode({
             children : this.rootChildren,
             leaf: false,
             expanded : true
         });
-        this.on('afterrender', function(treePanel) {
-            var root = treePanel.getRootNode();
-            this.setNodeText(root);
-            this.setLayerNodeIds(root);
-        }, this);
+        // Set the layersNodeIds object
+        this.on('afterrender', this.setLayerNodeIds.createDelegate(this, [this.root], false));
+        // Toggle the children on the parent node 'checkchange' event
+        this.on('checkchange', this.toggleChildrenOnParentToggle, this);
+
         Genapp.tree.LayerTreePanel.superclass.initComponent.call(this);
+    },
+
+    /**
+     * Add a loader to the node config if needed
+     * 
+     * @param {Ext.tree.TreeNode} nodeCfg The node config
+     * @hide
+     */ 
+    addLoaderToNodeConfig : function(nodeCfg){
+        if(!Ext.isEmpty(nodeCfg.nodeGroup)){
+            // Return the layers with the good nodeGroup
+            var filter = function(record) {
+                    var layerNodeGroup = record.get("layer").options.nodeGroup;
+                    if(!Ext.isEmpty(layerNodeGroup) && layerNodeGroup.indexOf(nodeCfg.nodeGroup) !== -1){
+                        return true;
+                    }
+                return false;
+            };
+            nodeCfg.loader = new GeoExt.tree.LayerLoader({
+                // Add the new filter
+                "filter" : filter,
+                // Override the default addLayerNode function to add the layer options
+                "addLayerNode": function(node, layerRecord, index) {
+                    index = index || 0;
+                    if (this.filter(layerRecord) === true) {
+                        var child = this.createNode({
+                            nodeType: 'gx_layer',
+                            layer: layerRecord.getLayer(),
+                            layerStore: this.store,
+                            // New params
+                            checkedGroup: layerRecord.getLayer().options.checkedGroup,
+                            text: layerRecord.getLayer().options.label
+                        });
+                        var sibling = node.item(index);
+                        if(sibling) {
+                            node.insertBefore(child, sibling);
+                        } else {
+                            node.appendChild(child);
+                        }
+                        child.on("move", this.onChildMove, this);
+                    }
+                }
+            });
+        }
+    },
+
+    /**
+     * Toggle the children checkbox on the parent checkbox change
+     * 
+     * @param {Ext.tree.TreeNode} node The parent node
+     * @param {Boolean} checked The checked status
+     * @hide
+     */
+    toggleChildrenOnParentToggle : function(node, checked) {
+        if (checked === true) {
+            for(var i = 0; i < node.childNodes.length; i++){
+                var child = node.childNodes[i];
+                if(!child.ui.isChecked()){
+                    child.ui.toggleCheck(true);
+                }
+            }
+        } else {
+            for(var i = 0; i < node.childNodes.length; i++){
+                var child = node.childNodes[i];
+                if(child.ui.isChecked()){
+                    child.ui.toggleCheck(false);
+                }
+            }
+        }
     },
 
     /**
@@ -97,23 +154,6 @@ Genapp.tree.LayerTreePanel = Ext.extend( Ext.tree.TreePanel, {
      */
     getLayerNodeId : function(layerName){
         return this.layerNodeIds[layerName];
-    },
-
-    /**
-     * Set the text node to the layer label
-     * 
-     * @param {Ext.tree.TreeNode} node The current node where set the layer text
-     * @hide
-     */
-    setNodeText : function (node){
-        for(var i = 0; i < node.childNodes.length; i++){
-            var child = node.childNodes[i];
-            if(!Ext.isEmpty(child.layer)){
-                child.setText(child.layer.options.label);
-            } else if(!child.isLeaf()) {
-                this.setNodeText(child);
-            }
-        }
     },
 
     /**
