@@ -574,6 +574,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			case 'GEOM':
 				field.xtype = 'geometryfield';
 				field.itemCls = 'trigger-field'; // For IE7 layout
+				field.hideSearchButton = true;
 				break;
 			case 'TREE':
 				field.xtype = 'treefield';
