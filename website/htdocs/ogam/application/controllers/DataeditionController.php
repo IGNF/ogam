@@ -46,6 +46,13 @@ class DataEditionController extends AbstractOGAMController {
 		// The generic service
 		$this->genericService = new Genapp_Service_GenericService();
 
+		// Check if the schema is specified in the request
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $this->_request->getParam("schema");
+		if ($schema != null) {
+			$websiteSession->schema = $schema;
+		} 
+
 		$this->translator = Zend_Registry::get('Zend_Translate');
 
 	}
