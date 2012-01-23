@@ -790,6 +790,8 @@ class Genapp_Service_GenericService {
 
 		if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
 			$sql .= str_replace(",", ".", $field->value);
+		} else if ($field->type == "GEOM") {			
+			$sql .= "ST_transform(ST_GeomFromText('".$field->value."',".$this->visualisationSRS."),".$this->databaseSRS.")";
 		} else if ($field->type == "ARRAY") {
 			// Arrays
 
