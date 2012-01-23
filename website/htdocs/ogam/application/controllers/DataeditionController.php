@@ -348,6 +348,7 @@ class DataEditionController extends AbstractOGAMController {
 		// Get the childs of the data objet from the database (to generate links)
 		$children = $this->genericModel->getChildren($data);
 
+		// Get the labels linked to the children table (to display the links)
 		$childrenTableLabels = $this->metadataModel->getChildrenTableLabels($data->tableFormat);
 
 		// Store the data descriptor in session
@@ -487,7 +488,8 @@ class DataEditionController extends AbstractOGAMController {
 		// Get the ancestors of the data objet from the database (to generate a summary)
 		$ancestors = $this->genericModel->getAncestors($data);
 
-		// Get the childs of the data objet from the database (to generate links)
+		// Get the labels linked to the children table (to display the links)
+		$childrenTableLabels = $this->metadataModel->getChildrenTableLabels($data->tableFormat);
 
 		// Store the data descriptor in session
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -500,6 +502,7 @@ class DataEditionController extends AbstractOGAMController {
 		$this->view->ancestors = $ancestors;
 		$this->view->data = $data;
 		$this->view->children = array(); // No children in add mode
+		$this->view->childrenTableLabels = $childrenTableLabels;
 		$this->view->mode = $mode;
 		$this->view->message = $message;
 
@@ -547,9 +550,6 @@ class DataEditionController extends AbstractOGAMController {
 		// Get the parameters from the URL
 		$request = $this->getRequest();
 		$data = $this->_getDataFromRequest($request);
-
-		// Complete the empty foreign key elements with info from the parent table
-		$this->logger->debug('data'.print_r($data,true));
 
 		// The service used to manage the query module
 		$this->queryService = new Genapp_Service_QueryService($data->tableFormat->schemaCode);
