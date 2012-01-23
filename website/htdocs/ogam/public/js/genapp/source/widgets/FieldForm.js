@@ -639,6 +639,8 @@ Ext.apply(Genapp.FieldForm.prototype, {
 		case 'GEOM':
 			field.xtype = 'geometryfield';
 			field.itemCls = 'trigger-field'; // For IE7 layout
+			field.hideDrawPointButton = true;
+			field.hideDrawLineButton = true;
 			break;
 		case 'TREE':
 			field.xtype = 'treefield';

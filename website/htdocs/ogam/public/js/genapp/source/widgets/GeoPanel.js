@@ -155,6 +155,26 @@ Genapp.GeoPanel = Ext
 					 */
 					zoomToFeaturesControlTitle : "Zoom to the features",
 					/**
+					 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Point"
+					 *      button
+					 */
+					hideDrawPointButton : false,
+					/**
+					 * @cfg {String} drawPointControlTitle The drawFeature
+					 *      Control Title (defaults to <tt>'Draw a polygon'</tt>)
+					 */
+					drawPointControlTitle : "Draw a point",
+					/**
+					 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Line"
+					 *      button
+					 */
+					hideDrawLineButton : false,
+					/**
+					 * @cfg {String} drawLineControlTitle The drawFeature
+					 *      Control Title (defaults to <tt>'Draw a polygon'</tt>)
+					 */
+					drawLineControlTitle : "Draw a line",
+					/**
 					 * @cfg {String} drawFeatureControlTitle The drawFeature
 					 *      Control Title (defaults to <tt>'Draw a polygon'</tt>)
 					 */
@@ -347,16 +367,16 @@ Genapp.GeoPanel = Ext
 						 */
 						this.addEvents('afterinit');
 
-                        // Create a zoom slider
-                        var zSlider = new GeoExt.ZoomSlider({
-                            vertical : true,
-                            height : 150,
-                            x : 18,
-                            y : 85,
-                            plugins : new GeoExt.ZoomSliderTip({
-                                template : '<div><b>{zoom}</b></div>'
-                            })
-                        });
+						// Create a zoom slider
+						var zSlider = new GeoExt.ZoomSlider({
+							vertical : true,
+							height : 150,
+							x : 18,
+							y : 85,
+							plugins : new GeoExt.ZoomSliderTip({
+								template : '<div><b>{zoom}</b></div>'
+							})
+						});
 
 						// Create the layer panel
 						this.layerPanel = new Ext.Panel({
@@ -407,11 +427,11 @@ Genapp.GeoPanel = Ext
 						}
 
 						// Create the Toolbar
-                        this.mapToolbar = new Ext.Toolbar();
-                        
-                        // Creates the map Object (OpenLayers)
-                        this.map = this.initMap();
-                        
+						this.mapToolbar = new Ext.Toolbar();
+
+						// Creates the map Object (OpenLayers)
+						this.map = this.initMap();
+
 						// Create the map panel
 						this.mapPanel = new GeoExt.MapPanel({
 							region : 'center',
@@ -433,13 +453,13 @@ Genapp.GeoPanel = Ext
 
 						// Init the toolbar
 						this.initToolbar();
-						
-	                    // Add the layers and the layers tree
-                        Ext.Ajax.request({
-                            url : Genapp.base_url + 'map/getLayers',
-                            scope : this,
-                            success : this.addLayersAndLayersTree
-                        });
+
+						// Add the layers and the layers tree
+						Ext.Ajax.request({
+							url : Genapp.base_url + 'map/getLayers',
+							scope : this,
+							success : this.addLayersAndLayersTree
+						});
 
 						Genapp.GeoPanel.superclass.initComponent.call(this);
 					},
@@ -466,8 +486,9 @@ Genapp.GeoPanel = Ext
 					},
 
 					/**
-					 * Build the layers from a JSON response and add it to the map.
-					 * Get the layers tree from the server and build the layers tree.
+					 * Build the layers from a JSON response and add it to the
+					 * map. Get the layers tree from the server and build the
+					 * layers tree.
 					 */
 					addLayersAndLayersTree : function(response) {
 
@@ -476,6 +497,7 @@ Genapp.GeoPanel = Ext
 						this.layersActivation = {};
 
 						var layersObject = Ext.decode(response.responseText), i;
+
 						
 						var layersObject = {// TODO : to remove after dev (only by SG not by BP!!)
 						        "url_array_cached":["http://oison.ifn.fr/cgi-bin/tilecache?&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"],
@@ -537,6 +559,7 @@ Genapp.GeoPanel = Ext
 						        ]
 						};
 
+
 						// Store the base URLs
 						this.urlArrayTiled = layersObject.url_array_tiled;
 						this.urlArrayCached = layersObject.url_array_cached;
@@ -568,12 +591,13 @@ Genapp.GeoPanel = Ext
 
 						this.setMapLayers(this.map);
 
-                        // Gets the layer tree model to initialise the Layer Tree
-                        Ext.Ajax.request({
-                            url : Genapp.base_url + 'map/get-tree-layers',
-                            success : this.initLayerTree,
-                            scope : this
-                        });
+						// Gets the layer tree model to initialise the Layer
+						// Tree
+						Ext.Ajax.request({
+							url : Genapp.base_url + 'map/get-tree-layers',
+							success : this.initLayerTree,
+							scope : this
+						});
 					},
 
 					/**
@@ -791,6 +815,7 @@ Genapp.GeoPanel = Ext
 
 						// Decode the JSON
 						var responseJSON = Ext.decode(response.responseText);
+
 						
 						var responseJSON = [// TODO : to remove after dev (only by SG not by BP!!)
     						 {"text": "Resultats", "expanded": false, "checked": false, "hidden": false, "disabled": true, "leaf": true, "nodeType" : "gx_layer", "layer": "result_locations" },
@@ -867,6 +892,38 @@ Genapp.GeoPanel = Ext
 						// Drawing tools
 						//
 						if (this.isDrawingMap) {
+
+							// Draw point button
+							if (!this.hideDrawPointButton) {
+								var drawPointControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point);
+
+								var drawPointButton = new GeoExt.Action({
+									control : drawPointControl,
+									map : this.map,
+									tooltip : this.drawPointControlTitle,
+									toggleGroup : "drawControl",
+									group : "drawControl",
+									checked : false,
+									iconCls : 'drawpoint'
+								});
+								this.mapToolbar.add(drawPointButton);
+							}
+
+							// Draw line button
+							if (!this.hideDrawLineButton) {
+								var drawLineControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path);
+
+								var drawLineButton = new GeoExt.Action({
+									control : drawLineControl,
+									map : this.map,
+									tooltip : this.drawLineControlTitle,
+									toggleGroup : "drawControl",
+									group : "drawControl",
+									checked : false,
+									iconCls : 'drawline'
+								});
+								this.mapToolbar.add(drawLineButton);
+							}
 
 							// Draw polygon button
 							var drawPolygonControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Polygon);
@@ -1221,7 +1278,7 @@ Genapp.GeoPanel = Ext
 									this.layerTree.getNodeById(nodeId).enable();
 								}
 								this.layerTree.getNodeById(nodeId).getUI().show();
-				
+
 								if (check === true) {
 									// Note: the redraw must be done before to
 									// check the node
@@ -1264,7 +1321,7 @@ Genapp.GeoPanel = Ext
 					 *            cause that the zoom range.
 					 */
 					disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) {
-					    var i;
+						var i;
 						if (!Ext.isEmpty(layerNames)) {
 							for (i = 0; i < layerNames.length; i++) {
 								var nodeId = this.layerTree.getLayerNodeId(layerNames[i]);
