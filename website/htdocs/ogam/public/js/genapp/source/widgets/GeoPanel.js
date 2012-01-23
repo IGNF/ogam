@@ -501,59 +501,59 @@ Genapp.GeoPanel = Ext
 						
 						var layersObject = {// TODO : to remove after dev (only by SG not by BP!!)
 						        "url_array_cached":["http://oison.ifn.fr/cgi-bin/tilecache?&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"],
-						        "url_array_tiled":["http://localhost/oison/proxy/gettile?SESSION_ID=sojf804i6259ji9jl7rnj06asqpscbtl"],
+						        "url_array_tiled":["http://localhost/oison/proxy/gettile?SESSION_ID=ha92ol357inleos25i7irc90do5mho5n"],
 						        "layers":[
                                     {
                                         "untiled":false, "name":"hydrographie", "url":"url_array_cached", "hasLegend": true,
-                                        "params":{"layers" : ["hydrographie"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+                                        "params":{"layers" : ["hydrographie"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
                                         "options":{"nodeGroup":"localisation", "buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Hydrographie", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894]}
                                     },{
                                         "untiled":false, "name":"refign", "url":"url_array_cached", "hasLegend": false,
-                                        "params":{"layers" : ["refign"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+                                        "params":{"layers" : ["refign"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
                                         "options":{"nodeGroup":"localisation", "buffer": 0, "transitionEffect": "resize", "visibility": true, "isBaseLayer": false,"label":"Référentiel IGN", "resolutions": [1763.8879363894, 881.9439681947, 352.77758727788, 176.38879363894, 88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894], "checkedGroup":"baselayer"}
                                     },{
                                         "untiled":false, "name":"ortho", "url":"url_array_cached", "hasLegend": false,
-                                        "params":{"layers" : ["ortho"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+                                        "params":{"layers" : ["ortho"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
                                         "options":{"nodeGroup":"localisation", "buffer": 0, "transitionEffect": "resize", "visibility": false, "isBaseLayer": false,"label":"BD Ortho", "resolutions": [8.819439681947, 3.5277758727788, 1.7638879363894], "checkedGroup":"baselayer"}
                                     },{
 						                "untiled":true, "name":"result_locations", "url":"url_array_tiled", "hasLegend": false,
-						                "params":{"layers" : ["result_locations"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": true, "isChecked": false, "activateType": "REQUEST", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+						                "params":{"layers" : ["result_locations"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": true, "isChecked": false, "activateType": "REQUEST", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
 						                "options":{"buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Resultats"}
 						            },{
 						                "untiled":true, "name":"all_locations", "url":"url_array_tiled", "hasLegend": true,
-						                "params":{"layers" : ["all_locations"], "transparent": true, "format": "image/PNG", "isHidden": true, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"},
+						                "params":{"layers" : ["all_locations"], "transparent": true, "format": "image/PNG", "isHidden": true, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"},
 						                "options":{"buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Emplacements existants"}
 						            },{
 						                "untiled":false, "name":"apb", "url":"url_array_cached", "hasLegend": true, 
-						                "params":{"layers" : ["apb"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+						                "params":{"layers" : ["apb"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
 						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Arrêté de protection de biotope"}
 						            },{
 						                "untiled":false, "name":"sic", "url":"url_array_cached", "hasLegend": true, 
-						                "params":{"layers" : ["sic"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+						                "params":{"layers" : ["sic"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
 						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Site d\'importance communautaire"}
 						            },{
 						                "untiled":false, "name":"znieff1", "url":"url_array_cached", "hasLegend": true, 
-						                "params":{"layers" : ["znieff1"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+						                "params":{"layers" : ["znieff1"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
 						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"ZNIEFF 1"}
 						            },{
 						                "untiled":false, "name":"znieff2", "url":"url_array_cached", "hasLegend": true, 
-						                "params":{"layers" : ["znieff2"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+						                "params":{"layers" : ["znieff2"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
 						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"ZNIEFF 2"}
 						            },{
 						                "untiled":false, "name":"zps", "url":"url_array_cached", "hasLegend": true, 
-						                "params":{"layers" : ["zps"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+						                "params":{"layers" : ["zps"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": false, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
 						                "options":{"nodeGroup":"zonages", "buffer": 0, "visibility": false, "isBaseLayer": false,"label":"Zone de protection spéciale"}
 						            },{
 						                "untiled":false, "name":"regions", "url":"url_array_cached", "hasLegend": true, 
-						                "params":{"layers" : ["regions"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+						                "params":{"layers" : ["regions"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
 						                "options":{"nodeGroup":"limites", "buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Régions", "resolutions": [3527.7758727788, 1763.8879363894, 881.9439681947, 352.77758727788]}
 						            },{
 						                "untiled":false, "name":"departements", "url":"url_array_cached", "hasLegend": true, 
-						                "params":{"layers" : ["departements"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+						                "params":{"layers" : ["departements"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
 						                "options":{"nodeGroup":"limites", "buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Départements", "resolutions": [352.77758727788, 176.38879363894, 88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
 						            },{
 						                "untiled":false, "name":"communes", "url":"url_array_cached", "hasLegend": true, 
-						                "params":{"layers" : ["communes"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "sojf804i6259ji9jl7rnj06asqpscbtl", "provider_id": "1"}, 
+						                "params":{"layers" : ["communes"], "transparent": true, "format": "image/PNG", "isHidden": false, "isDisabled": false, "isChecked": true, "activateType": "NONE", "hasSLD": false, "session_id": "ha92ol357inleos25i7irc90do5mho5n", "provider_id": "1"}, 
 						                "options":{"nodeGroup":"limites", "buffer": 0, "visibility": true, "isBaseLayer": false,"label":"Communes", "resolutions": [88.19439681947, 35.277758727788, 17.638879363894, 8.819439681947, 3.5277758727788, 1.7638879363894]}
 						            }
 						        ]
@@ -866,8 +866,15 @@ Genapp.GeoPanel = Ext
 						// Add a Tree Panel
 						this.layerTree = new Genapp.tree.LayerTreePanel({"rootChildren":responseJSON});
 				        // Toggle layers and legends for zoom
-						this.on('afterrender', function(treePanel) {
-				            for (var i = 0; i < this.map.layers.length; i++){
+						this.layerTree.on('afterrender', function(treePanel) {
+					        this.layerTree.eachLayerChild(function(child){
+					            if(child.attributes.disabled == true){
+					                child.forceDisable = true;
+					            }else{
+					                child.forceDisable = false;
+					            }
+					        });
+						    for (var i = 0; i < this.map.layers.length; i++){
 				                this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
 				            }
 				        }, this);
@@ -1269,8 +1276,9 @@ Genapp.GeoPanel = Ext
 
 						this.layersAndLegendsPanel.activate(this.layerPanel);
 						for (i = 0; i < layerNames.length; i++) {
-							var nodeId = this.layerTree.getLayerNodeId(layerNames[i]);
-							if (!Ext.isEmpty(nodeId)) {
+							var node = this.layerTree.getNodeByLayerName(layerNames[i]);
+							if (!Ext.isEmpty(node)) {
+							    var nodeId = node.id;
 								if (setForceDisable !== false) {
 									this.layerTree.getNodeById(nodeId).forceDisable = false;
 								}
@@ -1324,8 +1332,9 @@ Genapp.GeoPanel = Ext
 						var i;
 						if (!Ext.isEmpty(layerNames)) {
 							for (i = 0; i < layerNames.length; i++) {
-								var nodeId = this.layerTree.getLayerNodeId(layerNames[i]);
-								if (!Ext.isEmpty(nodeId)) {
+								var node = this.layerTree.getNodeByLayerName(layerNames[i]);
+								if (!Ext.isEmpty(node)) {
+									var nodeId = node.id;
 									if (uncheck === true) {
 										this.layerTree.toggleNodeCheckbox(nodeId, false);
 									}
@@ -1350,15 +1359,22 @@ Genapp.GeoPanel = Ext
 					 * @param {OpenLayers.Layer}
 					 *            layer The layer to check
 					 */
-					toggleLayersAndLegendsForZoom : function(layer) {
-						if (!Ext.isEmpty(this.layerTree)) {
-							if (layer.calculateInRange()) {
-								this.enableLayersAndLegends([ layer.name ], false, false);
-							} else {
-								this.disableLayersAndLegends([ layer.name ], false, false, false);
-							}
-						}
-					},
+				    toggleLayersAndLegendsForZoom : function(layer){
+				        if (!Ext.isEmpty(this.layerTree)) {
+				            var node = this.layerTree.getNodeByLayerName(layer.name);
+				            if(!Ext.isEmpty(node) && !node.hidden){
+			                    if (!layer.calculateInRange()) {
+			                        node.zoomDisable = true;
+			                        this.disableLayersAndLegends([layer.name], false, false, false);
+			                    } else {
+			                        node.zoomDisable = false;
+			                        if (node.forceDisable !== true) {
+			                            this.enableLayersAndLegends([layer.name], false, false);
+			                        }
+			                    }
+			                }
+				        }
+				    },
 
 					/**
 					 * Convenience function to hide or show a legend by boolean.

@@ -24,23 +24,6 @@ Genapp.tree.LayerTreePanel = Ext.extend( Ext.tree.TreePanel, {
      */
     layerNodeIds: [],
 
-    plugins : [
-       { // TODO: Check if its still working
-            init: function(layerTree) {
-                layerTree.getRootNode().cascade(
-                function(child) {
-                    if(child.attributes.disabled == true){
-                        child.forceDisable = true;
-                    }else{
-                        child.forceDisable = false;
-                    }
-                }
-                );
-            }
-        }/*, TODO: look for an equivalent with geoext
-        mapfish.widgets.LayerTree.createContextualMenuPlugin(['opacitySlide'])*/
-        ],
-    
     // private
     initComponent: function(){
         // Add a loader to the root children node config if needed
@@ -53,8 +36,6 @@ Genapp.tree.LayerTreePanel = Ext.extend( Ext.tree.TreePanel, {
             leaf: false,
             expanded : true
         });
-        // Set the layersNodeIds object
-        this.on('afterrender', this.setLayerNodeIds.createDelegate(this, [this.root], false));
         // Toggle the children on the parent node 'checkchange' event
         this.on('checkchange', this.toggleChildrenOnParentToggle, this);
 
@@ -81,7 +62,7 @@ Genapp.tree.LayerTreePanel = Ext.extend( Ext.tree.TreePanel, {
                 // Add the new filter
                 "filter" : filter,
                 // Override the default addLayerNode function to add the layer options
-                "addLayerNode": function(node, layerRecord, index) {
+                "addLayerNode" : function(node, layerRecord, index) {
                     index = index || 0;
                     if (this.filter(layerRecord) === true) {
                         var child = this.createNode({
@@ -100,6 +81,11 @@ Genapp.tree.LayerTreePanel = Ext.extend( Ext.tree.TreePanel, {
                         }
                         child.on("move", this.onChildMove, this);
                     }
+                },
+                // Set the layersNodeIds object when the node order has changed
+                listeners:{
+                    "load" : this.setLayerNodeIds,
+                    scope: this
                 }
             });
         }
@@ -133,27 +119,49 @@ Genapp.tree.LayerTreePanel = Ext.extend( Ext.tree.TreePanel, {
     /**
      * Set the layerNodeIds array
      * 
-     * @param {Ext.tree.TreeNode} node The current node where search the layer
      * @hide
      */
-    setLayerNodeIds : function(node){
-        for(var i = 0; i < node.childNodes.length; i++){
-            var child = node.childNodes[i];
-            if(!Ext.isEmpty(child.layer)){
-                this.layerNodeIds[child.layer.name] = child.id;
-            } else if(!child.isLeaf()) {
-                this.setLayerNodeIds(child);
+    setLayerNodeIds : function(){
+        this.eachLayerChild(function(child){
+            this.layerNodeIds[child.layer.name] = child.id;
+        }, this);
+    },
+
+    /**
+     * Call the callback function for each layer child
+     * 
+     * @param {Function} fn The callback
+     * @param {Object} scope The scope for the callback
+     * @param {Array} args The arguments for the callback
+     * @param {Ext.tree.TreeNode} node The child parent node
+     */
+    eachLayerChild : function(fn, scope, args, node){
+        node = Ext.isEmpty(node) ? this.root : node;
+        if(!Ext.isEmpty(node) && !Ext.isEmpty(node.childNodes)){
+            for(var i = 0; i < node.childNodes.length; i++){
+                var child = node.childNodes[i];
+                if(!Ext.isEmpty(child.layer)){
+                    if(fn.apply(scope || child, args || [child]) === false){
+                        break;
+                    }
+                } else if(!child.isLeaf()) {
+                    this.eachLayerChild(fn, scope, args, child);
+                }
             }
         }
     },
 
     /**
-     * Return the node id for the passed layer name
+     * Return the node for the passed layer name
      * 
-     * @param {String} layerName The layer name
+     * @param {Ext.tree.TreeNode} layerName The layer name
      */
-    getLayerNodeId : function(layerName){
-        return this.layerNodeIds[layerName];
+    getNodeByLayerName : function(layerName){
+        var nodeId = this.layerNodeIds[layerName];
+        if (Ext.isEmpty(nodeId)) {
+            this.setLayerNodeIds();
+        }
+        return this.getNodeById(nodeId);
     },
 
     /**
