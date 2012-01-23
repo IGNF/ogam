@@ -794,7 +794,7 @@ class Genapp_Service_GenericService {
 			// Arrays
 
 			// $field->value should be an array
-			$arrayStr .= "'{";
+			$arrayStr = "'{";
 
 			if (is_array($field->value)) {
 
