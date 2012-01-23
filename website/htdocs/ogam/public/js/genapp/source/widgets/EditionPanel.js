@@ -332,38 +332,40 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		centerPanelItems.push(this.dataEditFS);
 
 		// Children
-		if (!Ext.isEmpty(this.childrenConfigOptions)) {
-			var childrenItems = [];
-			for ( var i in this.childrenConfigOptions) {
-				if (typeof this.childrenConfigOptions[i] !== 'function') {
-					var cCO = this.childrenConfigOptions[i];
-					// title
-					cCO['title'] = '&nbsp;' + cCO['title'] + '&nbsp;';
+		if (this.mode == "EDIT") {
+			if (!Ext.isEmpty(this.childrenConfigOptions)) {
+				var childrenItems = [];
+				for ( var i in this.childrenConfigOptions) {
+					if (typeof this.childrenConfigOptions[i] !== 'function') {
+						var cCO = this.childrenConfigOptions[i];
+						// title
+						cCO['title'] = '&nbsp;' + cCO['title'] + '&nbsp;';
 
-					// html
-					if (Ext.isEmpty(cCO['html'])) {
-						cCO['html'] = this.getEditLinks(cCO['childrenLinks']);
-						delete cCO['childrenLinks'];
+						// html
+						if (Ext.isEmpty(cCO['html'])) {
+							cCO['html'] = this.getEditLinks(cCO['childrenLinks']);
+							delete cCO['childrenLinks'];
+						}
+
+						// buttons
+						cCO['buttons'] = [];
+						cCO['buttons'][0] = {
+							text : this.childrenFSAddNewChildButtonText,
+							tooltip : this.childrenFSAddNewChildButtonTooltip,
+							handler : (function(location) {
+								document.location = location;
+							}).createCallback(cCO['AddChildURL']),
+							scope : this
+						};
+						childrenItems.push(new Ext.form.FieldSet(cCO));
 					}
-
-					// buttons
-					cCO['buttons'] = [];
-					cCO['buttons'][0] = {
-						text : this.childrenFSAddNewChildButtonText,
-						tooltip : this.childrenFSAddNewChildButtonTooltip,
-						handler : (function(location) {
-							document.location = location;
-						}).createCallback(cCO['AddChildURL']),
-						scope : this
-					};
-					childrenItems.push(new Ext.form.FieldSet(cCO));
 				}
+				this.childrenFS = new Ext.form.FieldSet({
+					title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
+					items : childrenItems
+				});
+				centerPanelItems.push(this.childrenFS);
 			}
-			this.childrenFS = new Ext.form.FieldSet({
-				title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
-				items : childrenItems
-			});
-			centerPanelItems.push(this.childrenFS);
 		}
 
 		this.items = [ {
