@@ -12,12 +12,6 @@ require_once 'AbstractOGAMController.php';
 class QueryController extends AbstractOGAMController {
 
 	/**
-	 * The name of the schema where the data is stored.
-	 * @var String
-	 */
-	private $schema;
-
-	/**
 	 * The models.
 	 */
 	protected $metadataModel;
@@ -43,7 +37,7 @@ class QueryController extends AbstractOGAMController {
 	 */
 	function preDispatch() {
 
-		parent::preDispatch();		
+		parent::preDispatch();
 
 		// Check if the user can query data
 		$userSession = new Zend_Session_Namespace('user');
@@ -51,11 +45,14 @@ class QueryController extends AbstractOGAMController {
 		if (empty($permissions) || !array_key_exists('DATA_QUERY', $permissions)) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
+		
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $websiteSession->schema;
 
 		// Check if the user has access to the schema
 		$schemas = $userSession->schemas;
-		if (!in_array($this->schema, $schemas)) {
-			throw new Zend_Auth_Exception('Permission denied for schema : '.$this->schema);
+		if (!in_array($schema, $schemas)) {
+			throw new Zend_Auth_Exception('Permission denied for schema : '.$schema);
 		}
 	}
 
@@ -64,27 +61,24 @@ class QueryController extends AbstractOGAMController {
 	 */
 	public function init() {
 		parent::init();
-		
+
 		// Load the redirector helper
 		$this->_redirector = $this->_helper->getHelper('Redirector');
-		
+
 		// Check if the schema is specified in the request
 		$websiteSession = new Zend_Session_Namespace('website');
-		$schema = $this->_request->getParam("schema");
-				
+		$schema = $this->_request->getParam("SCHEMA");
+
 		if ($schema != null) {
-			$this->schema = $schema;
 			$websiteSession->schema = $schema;
-		} else {
-			$this->schema = $websiteSession->schema; // get back the current schema from the session
 		}
-		
-		$this->logger->debug('init schema : '.$this->schema);
+
+		$this->logger->debug('init schema : '.$websiteSession->schema);
 
 		// Set the current module name
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->module = "query";
-		$websiteSession->moduleLabel = "Query Data (".$this->schema.")";
+		$websiteSession->moduleLabel = "Query Data (".$websiteSession->schema.")";
 		$websiteSession->moduleURL = "query";
 
 		// Initialise the models
@@ -93,12 +87,12 @@ class QueryController extends AbstractOGAMController {
 		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
-		
+
 		// Declare the service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();
 
 		// Declare the service used to manage the query module
-		$this->queryService = new Genapp_Service_QueryService($this->schema);
+		$this->queryService = new Genapp_Service_QueryService($websiteSession->schema);
 
 		// Reinit the actie layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
@@ -197,7 +191,8 @@ class QueryController extends AbstractOGAMController {
 			// Create the predefined request object
 			$predefinedRequest = new Application_Object_Website_PredefinedRequest();
 			$predefinedRequest->datasetID = $datasetId;
-			$predefinedRequest->schemaCode = $this->schema;
+			$websiteSession = new Zend_Session_Namespace('website');
+			$predefinedRequest->schemaCode = $websiteSession->schema;
 			$predefinedRequest->requestName = 'TEST REQUEST'; // TODO : get from FORM
 			$predefinedRequest->description = 'TEST REQUEST'; // TODO : get from FORM
 
@@ -404,20 +399,24 @@ class QueryController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
+
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $websiteSession->schema;
+
 		$this->view->hideGridCsvExportMenuItem = 'true'; // By default the export is hidden
 		$this->view->hideGridDataEditButton = 'true';
 		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
-		
+
 		$this->view->userProviderId = $userSession->user->providerId;
-		
+
 		if (!empty($permissions)) {
-			if ($this->schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) {
+			if ($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) {
 				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
-			if ($this->schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions)) {
+			if ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions)) {
 				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
-			if (($this->schema == 'RAW_DATA' || $this->schema == 'HARMONIZED_DATA') && array_key_exists('DATA_EDITION', $permissions)) {
+			if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && array_key_exists('DATA_EDITION', $permissions)) {
 				$this->view->hideGridDataEditButton = 'false';
 			}
 			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
@@ -487,6 +486,9 @@ class QueryController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
+		
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $websiteSession->schema;
 
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
@@ -498,7 +500,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset='.$configuration->csvExportCharset.';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport.csv', true);
 
-		if (($this->schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($this->schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
+		if (array_key_exists('EXPORT_RAW_DATA', $permissions)) {
 
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -571,7 +573,7 @@ class QueryController extends AbstractOGAMController {
 					$formField = new Genapp_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
-					$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
+					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
 					$key = $tableField->getName();
 					$filter .= " ORDER BY ".$key." ".$sortDir.", id";
 				} else {
@@ -665,6 +667,9 @@ class QueryController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
+		
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $websiteSession->schema;
 
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
@@ -676,7 +681,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset='.$configuration->csvExportCharset.';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport.kml', true);
 
-		if (($this->schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($this->schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
+		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
 
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -735,7 +740,7 @@ class QueryController extends AbstractOGAMController {
 					$formField = new Genapp_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
-					$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
+					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
 					$key = $tableField->getName();
 					$filter .= " ORDER BY ".$key." ".$sortDir.", id";
 				} else {
@@ -890,23 +895,23 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
-	
+
 	/**
-	* AJAX function : Nodes of a taxonomic referential under a given node.
-	*
-	* @return JSON.
-	*/
+	 * AJAX function : Nodes of a taxonomic referential under a given node.
+	 *
+	 * @return JSON.
+	 */
 	public function ajaxgettaxrefnodesAction() {
 		$this->logger->debug('ajaxgettaxrefnodesAction');
-	
+
 		$code = $this->getRequest()->getPost('node');
 		$depth = $this->getRequest()->getParam('depth');
-	
+
 		$tree = $this->taxonomicModel->getTaxrefModes($code, $depth);
-	
+
 		// Send the result as a JSON String
 		echo '['.$tree->toJSON().']';
-	
+
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();

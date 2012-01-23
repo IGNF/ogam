@@ -53,7 +53,7 @@ if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {
 if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_array("RAW_DATA", $userSession->schemas)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/schema/RAW_DATA" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
+<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/RAW_DATA" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
 </li>
 <?php
 } 

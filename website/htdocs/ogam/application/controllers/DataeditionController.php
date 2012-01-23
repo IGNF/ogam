@@ -48,7 +48,7 @@ class DataEditionController extends AbstractOGAMController {
 
 		// Check if the schema is specified in the request
 		$websiteSession = new Zend_Session_Namespace('website');
-		$schema = $this->_request->getParam("schema");
+		$schema = $this->_request->getParam("SCHEMA");
 		if ($schema != null) {
 			$websiteSession->schema = $schema;
 		} 
