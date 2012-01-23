@@ -480,7 +480,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 						});
 					} else { // case of ARRAY
 						if (record.valueLabel) {
-							for ( var i = 0; i < record.value.length; i++) {
+							for ( var i = 0; i < record.valueLabel.length; i++) {
 								codes.push({
 									code : record.value[i],
 									label : record.valueLabel[i]
