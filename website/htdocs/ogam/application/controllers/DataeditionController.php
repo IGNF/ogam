@@ -450,11 +450,18 @@ class DataEditionController extends AbstractOGAMController {
 
 		try {
 			if ($mode == 'ADD') {
-				$this->genericModel->insertData($data);
+				$data = $this->genericModel->insertData($data);
 			} else {
 				$this->genericModel->updateData($data);
 			}
-			echo '{"success":true, "message":'.json_encode($this->translator->translate("Data saved")).'}';
+			echo '{"success":true, ';
+			if ($mode == 'ADD') {
+				// Build the URL to link to the parent items
+				$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$this->genericService->getIdFromData($data);
+				echo '"rediretLink":'.json_encode($redirectURL).',';
+			}
+			echo '"message":'.json_encode($this->translator->translate("Data saved"));
+			echo '}';
 
 		} catch (Exception $e) {
 			$this->logger->err($e->getMessage());

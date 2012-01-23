@@ -269,6 +269,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * Insert a line of data from a table.
 	 *
 	 * @param DataObject $data the shell of the data object to insert.
+	 * @return DataObject $data the eventually edited data object.
 	 * @throws an exception if an error occur during insert
 	 */
 	public function insertData($data) {
@@ -284,6 +285,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$sql = "INSERT INTO ".$tableFormat->schemaCode.".".$tableFormat->tableName;
 		$columns = "";
 		$values = "";
+		$return = "";
 
 		// updates of the data.
 		foreach ($data->infoFields as $field) {
@@ -293,6 +295,19 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				$columns .= $field->columnName.", ";
 				$values .= $this->genericService->buildInsertValueItem($field);
 				$values .= ", ";
+
+			} else {
+				$this->logger->info('field '.$field->columnName." ".$field->isCalculated);
+
+				// Case of a calculated PK (for example a serial)
+				if ($field->isCalculated) {
+					if ($return == "") {
+						$return.= " RETURNING ";
+					} else {
+						$return.= ", ";
+					}
+					$return .= $field->columnName;
+				}
 			}
 		}
 		foreach ($data->editableFields as $field) {
@@ -310,7 +325,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$columns = substr($columns, 0, -2);
 		$values = substr($values, 0, -2);
 
-		$sql .= "(".$columns.") VALUES (".$values.")";
+		$sql .= "(".$columns.") VALUES (".$values.")".$return;
 
 		$this->logger->info('insertData : '.$sql);
 
@@ -322,6 +337,19 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			$this->logger->err('Error while inserting data  : '.$e->getMessage());
 			throw new Exception("Error while inserting data  : ".$e->getMessage());
 		}
+
+		if ($return !== "") {
+
+			foreach ($request->fetchAll() as $row) {
+				foreach ($data->infoFields as $field) {
+					if ($field->isCalculated) {
+						$field->value = $row[strtolower($field->columnName)];
+					}
+				}
+			}
+		}
+
+		return $data;
 
 	}
 

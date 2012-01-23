@@ -642,10 +642,19 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * Ajax success common function
 	 */
 	editSuccess : function(response, opts) {
+		
+		// We set the current mode to EDIT
+		this.mode == "EDIT";
+		
 		var obj = Ext.decode(response.responseText);
 		if (!Ext.isEmpty(obj.message)) {
 			this.messagePanel.update(obj.message);
 		}
+		
+		if (!Ext.isEmpty(obj.rediretLink)) {
+			window.location = obj.rediretLink;
+		}
+		
 		if (!Ext.isEmpty(obj.errorMessage)) {
 			this.messagePanel.update(obj.errorMessage);
 			console.log('Server-side failure with status code (1): ' + response.status);
