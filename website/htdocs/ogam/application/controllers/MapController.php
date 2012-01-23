@@ -39,15 +39,6 @@ class MapController extends AbstractOGAMController {
 	}
 
 	/**
-	 * The "index" action is the default action for all controllers.
-	 */
-	public function indexAction() {
-		$this->logger->debug('User index');
-
-		$this->showMapAction();
-	}
-
-	/**
 	 * Get the parameters used to initialise a map.
 	 */
 	public function getMapParametersAction() {

@@ -30,6 +30,7 @@
 $userSession = new Zend_Session_Namespace('user');
 $permissions = $userSession->permissions;
 $role = $userSession->role;
+$user = $userSession->user;
 ?>
 <div class="left-column">
 <?
@@ -47,15 +48,6 @@ if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {
 <li>
 <a href="<?= $this->url(array('controller'=>'integration'), 'default', true) ?>" class="pagelink" ><?=$this->translate('Data Integration');?></a>
 </li>
-<?php
-}
-if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
-?>
-<!-- 
-<li>
-<a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Edition');?></a>
-</li>
- -->
 <?php
 }
 if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_array("RAW_DATA", $userSession->schemas)) {	
@@ -76,7 +68,7 @@ if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions))
 if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_array("HARMONIZED_DATA", $userSession->schemas)) {
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/schema/HARMONIZED_DATA" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
+<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/HARMONIZED_DATA" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
 </li>
 <?php
 }
