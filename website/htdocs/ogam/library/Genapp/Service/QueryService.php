@@ -143,12 +143,14 @@ class Genapp_Service_QueryService {
 			// Populate the label of the currently selected value
 			if ($formField->type == "ARRAY") {
 				$labels = array();
-				foreach ($formField->value as $mode) {
-					if (isset($modes[$mode])) {
-						$labels[] = $modes[$mode];
+				if (isset($formField->value)) {
+					foreach ($formField->value as $mode) {
+						if (isset($modes[$mode])) {
+							$labels[] = $modes[$mode];
+						}
 					}
+					$formField->valueLabel = $labels;
 				}
-				$formField->valueLabel = $labels;
 			} else {
 				if (isset($modes[$formField->value])) {
 					$formField->valueLabel = $modes[$formField->value];
