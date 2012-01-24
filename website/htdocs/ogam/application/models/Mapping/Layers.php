@@ -62,6 +62,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$layer = new Application_Object_Mapping_Layer();
+			$layer->parentId = $row['parent_id'];
 			$layer->layerName = $row['layer_name'];
 			$layer->layerLabel = $row['layer_label'];
 			$layer->mapservLayers = $row['mapserv_layers'];
@@ -81,6 +82,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$layer->activateType = $row['activate_type'];
 			$layer->hasLegend = $row['has_legend'];
 			$layer->hasSLD = $row['has_sld'];
+			$layer->checkedGroup = $row['checked_group'];
 			$result[] = $layer;
 		}
 		return $result;

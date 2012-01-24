@@ -256,6 +256,16 @@ class MapController extends AbstractOGAMController {
 			// Options
 			$out .= ', "options":{"buffer": 0';
 
+			// Node Group
+			if (!empty($layer->parentId)) {
+				$out .= ', "nodeGroup": "'.$layer->parentId.'"';
+			}
+
+			// Checked Group
+			if (!empty($layer->checkedGroup)) {
+				$out .= ', "checkedGroup": "'.$layer->checkedGroup.'"';
+			}
+
 			// Transition effect
 			if (!empty($layer->transitionEffect)) {
 				$out .= ', "transitionEffect": "'.$layer->transitionEffect.'"';
@@ -402,10 +412,9 @@ class MapController extends AbstractOGAMController {
 			} else {
 				// The item is a node
 				$json .= '"leaf": false, ';
-                $json .= '"nodeType" : "async", '; // TODO : Do this on the js side
+                $json .= '"nodeType" : "gx_layercontainer", '; // TODO : Do this on the js side
+                $json .= '"nodeGroup": "'.$legendItem->itemId.'", ';
 
-				// Recursive call
-				$json .= '"children": ['.$this->_getLegendItems($legendItem->itemId, $providerId).']';
 			}
 			$json .= '}, ';
 		}
