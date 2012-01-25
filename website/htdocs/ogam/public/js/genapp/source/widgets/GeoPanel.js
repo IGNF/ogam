@@ -1296,9 +1296,10 @@ Genapp.GeoPanel = Ext
 
 					// private
 					beforeDestroy : function() {
+					    Genapp.GeoPanel.superclass.beforeDestroy.call(this);
 						if (this.map) {
 							this.map.destroy();
 						}
-						Genapp.GeoPanel.superclass.beforeDestroy.call(this);
+						// TODO: destroy here all the new objects created in this class
 					}
 				});
