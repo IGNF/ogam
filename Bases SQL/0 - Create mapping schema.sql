@@ -102,6 +102,7 @@ CREATE TABLE legend
 	is_expended INT, 					-- if value = 1 then the node is expended by default
 	name VARCHAR(50)    NOT NULL, 		-- logical name of the layer or label of the node
 	position INT, 						-- position of the layer in its group 
+	checked_group 		VARCHAR(36),    -- Allow to regroup layers. If two layers are in the same group, they will appear with a radio button in the layer tree
   	PRIMARY KEY  (item_id)
 ) WITHOUT OIDS;
 
@@ -114,6 +115,7 @@ COMMENT ON COLUMN legend.is_disabled IS 'If value = 1 then the item is displayed
 COMMENT ON COLUMN legend.is_expended IS 'If value = 1 then the node is expended by default';
 COMMENT ON COLUMN legend.name IS 'Logical name of the layer or label of the node';
 COMMENT ON COLUMN legend.position IS 'Position of the layer in its group';
+COMMENT ON COLUMN legend.checked_group IS 'Group of layers';
 
 
 

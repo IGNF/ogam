@@ -35,14 +35,14 @@ INSERT INTO layer_definition(layer_name, layer_label, mapserv_layers, isTranspar
 --
 -- Define the layers legend
 --
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (1, -1, 1, 1, 0, 1, 0, 'result_locations',1);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (2, -1, 1, 0, 1, 0, 0, 'all_locations',2);
---INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (3, -1, 1, 0, 1, 0, 0, 'all_locations_country',3);
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (4, -1, 1, 0, 1, 0, 0, 'all_harmonized_locations',4);
---INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (5, -1, 1, 0, 1, 0, 0, 'all_harmonized_locations_country',5);
+INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (1, -1, 1, 1, 0, 1, 0, 'result_locations', null, 1);
+INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (2, -1, 1, 0, 1, 0, 0, 'all_locations', null, 2);
+--INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (3, -1, 1, 0, 1, 0, 0, 'all_locations_country', null, 3);
+INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (4, -1, 1, 0, 1, 0, 0, 'all_harmonized_locations', null, 4);
+--INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (5, -1, 1, 0, 1, 0, 0, 'all_harmonized_locations_country', null, 5);
 
 
-INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, position) VALUES (20, -1, 1, 1, 0, 0, 0, 'nuts_0',20);
+INSERT INTO legend(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (20, -1, 1, 1, 0, 0, 0, 'nuts_0', null, 20);
 
 
 --
