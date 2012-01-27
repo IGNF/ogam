@@ -667,25 +667,29 @@ Ext.apply(Genapp.FieldForm.prototype, {
 		if (!hideBin) {
 			field.listeners = {
 				'render' : function(cmp) {
-					// Add the bin
-					var binCt = Ext.get('x-form-el-' + cmp.id).parent();
-					var labelDiv = binCt.child('.x-form-item-label');
-					labelDiv.set({
-						'ext:qtitle' : record.label,
-						'ext:qwidth' : 200,
-						'ext:qtip' : record.definition
-					});
-					labelDiv.addClass('labelNextBin');
-					var binDiv = binCt.createChild({
-						tag : "div",
-						cls : "filterBin"
-					}, labelDiv);
-					binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
-					binDiv.on('click', function(event, el, options) {
-						cmp.ownerCt.remove(cmp);
-					}, this, {
-						single : true
-					});
+                    if(cmp.inputType != 'hidden'){
+                        // Add the tooltip
+                        var binCt = Ext.get('x-form-el-' + cmp.id).parent();
+                        var labelDiv = binCt.child('.x-form-item-label');
+                        Ext.QuickTips.register({
+                            target: labelDiv,
+                            title : record.label,
+                            text: record.definition,
+                            width : 200
+                        });
+    	                // Add the bin
+    					labelDiv.addClass('labelNextBin');
+    					var binDiv = binCt.createChild({
+    						tag : "div",
+    						cls : "filterBin"
+    					}, labelDiv);
+    					binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
+    					binDiv.on('click', function(event, el, options) {
+    						cmp.ownerCt.remove(cmp);
+    					}, this, {
+    						single : true
+    					});
+                    }
 				},
 				scope : this
 			};

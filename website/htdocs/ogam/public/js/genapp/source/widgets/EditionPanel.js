@@ -599,10 +599,23 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			field.value = record.value;
 		}
 
+		// Add the tooltip
 		if (!Ext.isEmpty(record.definition)) {
-			field.tooltip = record.definition;
-			// see http://www.rowlandsgroup.com/blog/tooltips-form-fields
-			// http://www.sencha.com/forum/showthread.php?28293-Tooltip-not-getting-displayed-FormPanel
+		    field.listeners = {
+                'render' : function(cmp) {
+	                if(cmp.inputType != 'hidden'){
+	                    var binCt = Ext.get('x-form-el-' + cmp.id).parent();
+	                    var labelDiv = binCt.child('.x-form-item-label');
+	                    Ext.QuickTips.register({
+                            target: labelDiv,
+                            title : record.label,
+                            text: record.definition,
+                            width : 200
+                        });
+	                }
+                },
+                scope : this
+            };
 		}
 
 		field.fieldLabel = record.label;

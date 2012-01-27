@@ -349,6 +349,11 @@ Genapp.GeoPanel = Ext
 					 *      <tt> m (L2e)</tt>)
 					 */
 					projectionLabel : " m (L2e)",
+					
+					/**
+                     * @cfg {Integer} maxFeatures The maximum of authorized 
+                     * features in the drawing mode (default to 'undefined')
+                     */
 
 					/**
 					 * Initialisation of the component.
@@ -708,12 +713,14 @@ Genapp.GeoPanel = Ext
 						// For the GEOM criteria
 						// TODO : Split this in another file
 						if (this.isDrawingMap) {
-							this.vectorLayer.preFeatureInsert = function(feature) {
-								if (this.features.length > 1) {
-									// remove first drawn feature:
-									this.removeFeatures([ this.features[0] ]);
-								}
-							};
+						    if(!Ext.isEmpty(this.maxFeatures)){
+    							this.vectorLayer.preFeatureInsert = function(feature) {
+    								if (this.features.length > this.maxFeatures) {
+    									// remove first drawn feature:
+    									this.removeFeatures([ this.features[0] ]);
+    								}
+    							};
+						    }
 
 							var sfDraw = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
 								multiple : false,
