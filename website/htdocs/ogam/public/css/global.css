@@ -102,10 +102,11 @@ body {
 }
 
 .top {
-	background-color: #EDEDED;
 	border-bottom: 1px dotted #CCCCCC;
 	border-top: 1px dotted #CCCCCC;
 	padding: 2px 5px;
+	background-color: #EEEEEE; 
+	height: 21px;
 }
 
 .content {
