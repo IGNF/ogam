@@ -32,6 +32,12 @@ class Genapp_Object_Metadata_TableField extends Genapp_Object_Metadata_Field {
 	var $isEditable;
 
 	/**
+	* Indicate if the field is insertable.
+	* @var bool
+	*/
+	var $isInsertable;
+	
+	/**
 	 * The value of the field (this is not defined in the metadata database, it's the raw value of the data).
 	 * In case of a query request, can contain an array of authorised values (will generate a OR clause).
 	 * @var mixed

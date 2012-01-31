@@ -70,11 +70,18 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	var $valueLabel;
 
 	/**
-	 * Indicate if the field is editable.
+	 * Indicate if the field is editable (for the edition module).
 	 *
 	 * @var Boolean
 	 */
 	var $editable;
+	
+	/**
+	* Indicate if the field is insertable (for the edition module).
+	*
+	* @var Boolean
+	*/
+	var $insertable;
 
 	/**
 	 * The field position in the form
@@ -119,6 +126,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 		$return .= ',"value":'.json_encode($this->value);
 		$return .= ',"valueLabel":'.json_encode($this->valueLabel);
 		$return .= ',"editable":'.json_encode($this->editable);
+		$return .= ',"insertable":'.json_encode($this->insertable);		
 		return $return;
 	}
 
