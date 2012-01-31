@@ -457,8 +457,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			// field.readOnly = true;
 			// field.fieldClass = "x-item-disabled";
 		} else {
-			
-			field.itemCls = 'trigger-field columnLabelColor'; 
+
+			field.itemCls = 'trigger-field columnLabelColor';
 
 			// Creates the ext field config
 			switch (record.inputType) {
@@ -592,28 +592,28 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			}
 
 		}
-		
+
 		if (!Ext.isEmpty(record.value)) {
 			field.value = record.value;
 		}
 
 		// Add the tooltip
 		if (!Ext.isEmpty(record.definition)) {
-		    field.listeners = {
-                'render' : function(cmp) {
-	                if(cmp.inputType != 'hidden'){
-	                    var binCt = Ext.get('x-form-el-' + cmp.id).parent();
-	                    var labelDiv = binCt.child('.x-form-item-label');	                    
-	                    Ext.QuickTips.register({
-                            target: labelDiv,
-                            title : record.label,
-                            text: record.definition,
-                            width : 200
-                        });
-	                }
-                },
-                scope : this
-            };
+			field.listeners = {
+				'render' : function(cmp) {
+					if (cmp.inputType != 'hidden') {
+						var binCt = Ext.get('x-form-el-' + cmp.id).parent();
+						var labelDiv = binCt.child('.x-form-item-label');
+						Ext.QuickTips.register({
+							target : labelDiv,
+							title : record.label,
+							text : record.definition,
+							width : 200
+						});
+					}
+				},
+				scope : this
+			};
 		}
 
 		field.fieldLabel = record.label;
@@ -654,19 +654,19 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * Ajax success common function
 	 */
 	editSuccess : function(response, opts) {
-		
+
 		// We set the current mode to EDIT
 		this.mode == "EDIT";
-		
+
 		var obj = Ext.decode(response.responseText);
 		if (!Ext.isEmpty(obj.message)) {
 			this.messagePanel.update(obj.message);
 		}
-		
+
 		if (!Ext.isEmpty(obj.rediretLink)) {
 			window.location = obj.rediretLink;
 		}
-		
+
 		if (!Ext.isEmpty(obj.errorMessage)) {
 			this.messagePanel.update(obj.errorMessage);
 			console.log('Server-side failure with status code (1): ' + response.status);
