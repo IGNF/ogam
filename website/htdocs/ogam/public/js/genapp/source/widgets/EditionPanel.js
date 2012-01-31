@@ -284,7 +284,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		// Parents
 		if (!Ext.isEmpty(this.parentsLinks)) {
 			this.parentsFS = new Ext.form.FieldSet({
-				title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
+				//title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
 				html : this.getEditLinks(this.parentsLinks)
 			});
 			centerPanelItems.push(this.parentsFS);
