@@ -236,3 +236,6 @@ Old password is not correct;L'ancien mot de passe n'est pas correct
 No %value% found.;Aucune %value% trouvée.
 Invalid form;Invalid form
 Data saved;Données sauvegardées
+Item cannot be deleted because it has children;La donnée ne peut pas être effacée car d'autres données sont liées
+Error while deleting data;Erreur lors de la suppression
+Data deleted;Donnée supprimée

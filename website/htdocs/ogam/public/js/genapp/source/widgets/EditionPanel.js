@@ -644,12 +644,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	deleteData : function() {
 		Ext.Ajax.request({
-			url : Genapp.ajax_query_url + 'ajax-delete-data',
-			success : this.editSuccess,
-			failure : this.editFailure,
-			params : {
-				dataId : this.dataId
-			},
+			url : Genapp.ajax_query_url + 'ajax-delete-data/'+this.dataId,
+			success : this.deleteSuccess,
+			failure : this.deleteFailure,
 			scope : this
 		});
 	},
@@ -667,8 +664,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			this.messagePanel.update(obj.message);
 		}
 
-		if (!Ext.isEmpty(obj.rediretLink)) {
-			window.location = obj.rediretLink;
+		if (!Ext.isEmpty(obj.redirectLink)) {
+			window.location = obj.redirectLink;
 		}
 
 		if (!Ext.isEmpty(obj.errorMessage)) {
@@ -682,6 +679,42 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * Ajax failure common function
 	 */
 	editFailure : function(response, opts) {
+		console.log(response);
+		var obj = Ext.decode(response.responseText);
+		if (!Ext.isEmpty(obj.errorMessage)) {
+			this.messagePanel.update(obj.errorMessage);
+		}
+		console.log('Server-side failure with status code (2): ' + response.status);
+		console.log('errorMessage : ' + response.errorMessage);
+	},
+	
+	/**
+	 * Ajax success common function
+	 */
+	deleteSuccess : function(response, opts) {
+
+		// Display a confirmation of the deletion
+		var obj = Ext.decode(response.responseText);
+		if (!Ext.isEmpty(obj.message)) {
+			this.messagePanel.update(obj.message);
+		}
+
+		// Return to the index page
+		if (!Ext.isEmpty(obj.redirectLink)) {
+			window.location = obj.redirectLink;
+		}
+
+		if (!Ext.isEmpty(obj.errorMessage)) {
+			this.messagePanel.update(obj.errorMessage);
+			console.log('Server-side failure with status code (1): ' + response.status);
+			console.log('errorMessage : ' + response.errorMessage);
+		}
+	},
+
+	/**
+	 * Ajax failure common function
+	 */
+	deleteFailure : function(response, opts) {
 		console.log(response);
 		var obj = Ext.decode(response.responseText);
 		if (!Ext.isEmpty(obj.errorMessage)) {

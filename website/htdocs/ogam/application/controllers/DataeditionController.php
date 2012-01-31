@@ -51,7 +51,7 @@ class DataEditionController extends AbstractOGAMController {
 		$schema = $this->_request->getParam("SCHEMA");
 		if ($schema != null) {
 			$websiteSession->schema = $schema;
-		} 
+		}
 
 		$this->translator = Zend_Registry::get('Zend_Translate');
 
@@ -382,35 +382,63 @@ class DataEditionController extends AbstractOGAMController {
 	 *
 	 * @return the index view.
 	 **/
-	public function deleteDataAction() {
-		$this->logger->debug('deleteDataAction');
+	public function ajaxDeleteDataAction() {
+		$this->logger->debug('ajaxDeleteDataAction');
 
 		// Get the parameters from the URL
 		$request = $this->getRequest();
 
-		// Get the data object corresponding to the parameters
 		$data = $this->_getDataFromRequest($request);
 
 		// Check if the data has children
 		$children = $this->genericModel->getChildren($data);
 
-		if (!empty($children)) {
+		// Count the number of existing children (not only the table definitions)
+		$childrenCount = 0;
+		foreach ($children as $child) {
+			$childrenCount += count($child);
+		}
+
+		// Get the ancestors
+		$ancestors = $this->genericModel->getAncestors($data);
+
+		if ($childrenCount > 0) {
 			// Redirect to the index page
-			return $this->showIndexAction('Item cannot be deleted because it has children');
+			$result = '{"success":false, "errorMessage":'.json_encode($this->translator->translate("Item cannot be deleted because it has children")).'}';
 		} else {
 			// Delete the data
 			try {
 				$this->genericModel->deleteData($data);
 			} catch (Exception $e) {
 				$this->logger->err($e->getMessage());
-				return $this->showIndexAction($e->getMessage());
+				$result = '{"success":false, "errorMessage":'.json_encode($this->translator->translate("Error while deleting data")).'}';
 			}
 
-			// Redirect to the index page
-			return $this->showIndexAction('Item deleted');
+
+			$result = '{"success":true';
+
+			// Redirect to the index page by default
+			$redirectURL = $this->getRequest()->getBasePath();
+			// If the data has an ancestor, we redirect to this ancestor
+			if (!empty($ancestors)) {
+				$parent = $ancestors[0];
+				$redirectURL .= '/dataedition/show-edit-data/'.$this->genericService->getIdFromData($parent);
+			}
+
+			$result .= ', "redirectLink":'.json_encode($redirectURL);
+
+
+			$result .= ', "message":'.json_encode($this->translator->translate("Data deleted")).'}';
 		}
 
+		echo $result;
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
+
 
 	/**
 	 * Save the edited data in database.
@@ -456,9 +484,9 @@ class DataEditionController extends AbstractOGAMController {
 			}
 			echo '{"success":true, ';
 			if ($mode == 'ADD') {
-				// Build the URL to link to the parent items
+				// Build the URL to link to the current item
 				$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$this->genericService->getIdFromData($data);
-				echo '"rediretLink":'.json_encode($redirectURL).',';
+				echo '"redirectLink":'.json_encode($redirectURL).',';
 			}
 			echo '"message":'.json_encode($this->translator->translate("Data saved"));
 			echo '}';

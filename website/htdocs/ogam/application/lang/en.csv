@@ -127,3 +127,6 @@ Old password is not correct;Old password is not correct
 No %value% found.;No %value% found.
 Invalid form;Invalid form
 Data saved;Data saved
+Item cannot be deleted because it has children;Item cannot be deleted because it has children
+Error while deleting data;Error while deleting data
+Data deleted;Data deleted
