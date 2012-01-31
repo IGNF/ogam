@@ -82,6 +82,13 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	* @var Boolean
 	*/
 	var $insertable;
+	
+	/**
+	* Indicate if the field is required (for the edition module).
+	*
+	* @var Boolean
+	*/
+	var $required;
 
 	/**
 	 * The field position in the form
@@ -126,7 +133,8 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 		$return .= ',"value":'.json_encode($this->value);
 		$return .= ',"valueLabel":'.json_encode($this->valueLabel);
 		$return .= ',"editable":'.json_encode($this->editable);
-		$return .= ',"insertable":'.json_encode($this->insertable);		
+		$return .= ',"insertable":'.json_encode($this->insertable);
+		$return .= ',"required":'.json_encode($this->required);
 		return $return;
 	}
 

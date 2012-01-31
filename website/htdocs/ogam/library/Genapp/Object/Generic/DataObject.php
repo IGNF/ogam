@@ -62,6 +62,15 @@ class Genapp_Object_Generic_DataObject {
 	public function getInfoFields() {
 		return $this->infoFields;
 	}
+	
+	/**
+	* Return the editableFields array .
+	*
+	* @return TableField the editableFields array
+	*/
+	public function getEditableFields() {
+		return $this->editableFields;
+	}
 
 	/**
 	 * Add a field element.

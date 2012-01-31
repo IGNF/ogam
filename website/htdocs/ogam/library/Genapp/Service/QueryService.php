@@ -196,12 +196,26 @@ class Genapp_Service_QueryService {
 
 		$json = '{"success":true,"data":[';
 
-		foreach ($data->getFields() as $tablefield) {
+		foreach ($data->getInfoFields() as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
 				$formField->value = $tablefield->value;
 				$formField->editable = $tablefield->isEditable;
 				$formField->insertable = $tablefield->isInsertable;
+				$formField->required = !$tablefield->isCalculated; // If the field is not calculated and if it is part of the key
+				$formField->data = $tablefield->data; 			// The name of the data is the table one
+				$formField->format = $tablefield->format; 			// The name of the data is the table one
+
+				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
+			}
+		}
+		foreach ($data->getEditableFields() as $tablefield) {
+			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
+			if (!empty($formField)) {
+				$formField->value = $tablefield->value;
+				$formField->editable = $tablefield->isEditable;
+				$formField->insertable = $tablefield->isInsertable;
+				$formField->required = false; // Never mandatory
 				$formField->data = $tablefield->data; 			// The name of the data is the table one
 				$formField->format = $tablefield->format; 			// The name of the data is the table one
 
