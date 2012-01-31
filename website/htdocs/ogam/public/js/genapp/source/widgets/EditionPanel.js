@@ -98,6 +98,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	dataEditFSDeleteButtonTooltip : 'Delete the data',
 	/**
+	 * @cfg {String} dataEditFSDeleteButtonConfirm The data Edit FieldSet Delete
+	 *      Button Confirmation message.
+	 */
+	dataEditFSDeleteButtonConfirm : 'Do you really want to delete this data?',
+	/**
 	 * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete
 	 *      Button Tooltip (defaults to 'Delete the data (Disabled if exist
 	 *      children)').
@@ -284,7 +289,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		// Parents
 		if (!Ext.isEmpty(this.parentsLinks)) {
 			this.parentsFS = new Ext.form.FieldSet({
-				//title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
+				// title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
 				html : this.getEditLinks(this.parentsLinks)
 			});
 			centerPanelItems.push(this.parentsFS);
@@ -295,7 +300,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			text : this.dataEditFSDeleteButtonText,
 			disabled : this.disableDeleteButton,
 			tooltip : this.dataEditFSDeleteButtonTooltip,
-			handler : this.deleteData,
+			handler : this.askDataDeletion,
 			scope : this
 		});
 		if (this.disableDeleteButton) {
@@ -365,7 +370,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 					}
 				}
 				this.childrenFS = new Ext.form.FieldSet({
-					//title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
+					// title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
 					items : childrenItems,
 					cls : 'columnLabelColor'
 				});
@@ -457,8 +462,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var field = {};
 		field.name = record.name;
 
-		if ((this.mode == "EDIT" && !Ext.isEmpty(record.editable) && record.editable == false) ||
-			(this.mode == "ADD" && !Ext.isEmpty(record.insertable) && record.insertable == false)) {
+		if ((this.mode == "EDIT" && !Ext.isEmpty(record.editable) && record.editable == false)
+				|| (this.mode == "ADD" && !Ext.isEmpty(record.insertable) && record.insertable == false)) {
 			field.xtype = 'hidden';
 		} else {
 
@@ -640,11 +645,18 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	},
 
 	/**
+	 * Ask for deletion of the data
+	 */
+	askDataDeletion : function() {
+		Ext.Msg.confirm('Confirm Deletion', this.dataEditFSDeleteButtonConfirm, this.deleteData(this.dataId));
+	},
+
+	/**
 	 * Delete the data
 	 */
-	deleteData : function() {
+	deleteData : function(dataId) {
 		Ext.Ajax.request({
-			url : Genapp.ajax_query_url + 'ajax-delete-data/'+this.dataId,
+			url : Genapp.ajax_query_url + 'ajax-delete-data/' + dataId,
 			success : this.deleteSuccess,
 			failure : this.deleteFailure,
 			scope : this
@@ -687,7 +699,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		console.log('Server-side failure with status code (2): ' + response.status);
 		console.log('errorMessage : ' + response.errorMessage);
 	},
-	
+
 	/**
 	 * Ajax success common function
 	 */

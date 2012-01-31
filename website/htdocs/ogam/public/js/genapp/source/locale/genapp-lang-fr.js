@@ -216,6 +216,7 @@ if(Genapp.EditionPanel){
         parentsFSTitle : 'Parents',
         dataEditFSDeleteButtonText : 'Supprimer',
         dataEditFSDeleteButtonTooltip : 'Supprimer la donnée',
+        dataEditFSDeleteButtonConfirm : 'Voulez-vous vraiment effacer cette donnée ?',
         dataEditFSDeleteButtonDisabledTooltip : 'La donnée ne peut pas être supprimée (des enfants existent)',
         dataEditFSValidateButtonText : 'Valider',
         dataEditFSValidateButtonTooltip : 'Sauvegarder les modifications',
