@@ -63,7 +63,7 @@ class MapController extends AbstractOGAMController {
 		$resolString = implode(",", $resolutions);
 		$this->view->resolutions = $resolString;
 		$this->view->numZoomLevels = count($resolutions);
-		
+
 		$this->logger->debug('$configuration->usePerProviderCenter : '.$configuration->usePerProviderCenter);
 
 		if ($configuration->usePerProviderCenter == 1) {
@@ -367,6 +367,9 @@ class MapController extends AbstractOGAMController {
 		// Get the list of active layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
 		$activatedLayers = $mappingSession->activatedLayers;
+		if ($activatedLayers == null) {
+			$activatedLayers = array();
+		}
 
 		$json = "";
 
@@ -412,8 +415,8 @@ class MapController extends AbstractOGAMController {
 			} else {
 				// The item is a node
 				$json .= '"leaf": false, ';
-                $json .= '"nodeType" : "gx_layercontainer", '; // TODO : Do this on the js side
-                $json .= '"nodeGroup": "'.$legendItem->itemId.'", ';
+				$json .= '"nodeType" : "gx_layercontainer", '; // TODO : Do this on the js side
+				$json .= '"nodeGroup": "'.$legendItem->itemId.'", ';
 
 			}
 			$json .= '}, ';
