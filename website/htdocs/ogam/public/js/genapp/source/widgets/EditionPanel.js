@@ -366,7 +366,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				}
 				this.childrenFS = new Ext.form.FieldSet({
 					title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
-					items : childrenItems
+					items : childrenItems,
+					cls : 'columnLabelColor'
 				});
 				centerPanelItems.push(this.childrenFS);
 			}
