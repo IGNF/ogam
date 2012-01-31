@@ -20,7 +20,7 @@ class IndexController extends Zend_Controller_Action {
 		// Set the current module name
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->module = "";
-		
+
 		// Initialise the logger
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$this->logger = $bootstrap->getResource('log');
@@ -34,7 +34,11 @@ class IndexController extends Zend_Controller_Action {
 
 		$this->logger->debug('index');
 
-		$this->render('index');
+		try {
+			$this->render('custom-index');
+		} catch (Exception $e) {
+			$this->render('index');
+		}
 
 	}
 
