@@ -261,6 +261,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				mapping : 'insertable'
 			}, // is the field insertable?
 			{
+				name : 'required',
+				mapping : 'required'
+			}, // is the field required?
+			{
 				name : 'params',
 				mapping : 'params'
 			} // reserved for min/max or list of codes
@@ -467,6 +471,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			field.xtype = 'hidden';
 		} else {
 
+			// Set the CSS for the field
 			field.itemCls = 'trigger-field columnLabelColor';
 
 			// Creates the ext field config
@@ -602,11 +607,17 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		}
 
+		// Set the default value
 		if (!Ext.isEmpty(record.value)) {
 			field.value = record.value;
 		}
 
-		// Add the tooltip
+		// Check if the field is mandatory
+		if (record.required) {
+			field.allowBlank = false;
+		}
+
+		// Add a tooltip
 		if (!Ext.isEmpty(record.definition)) {
 			field.listeners = {
 				'render' : function(cmp) {
@@ -625,6 +636,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			};
 		}
 
+		// Set the label
 		field.fieldLabel = record.label;
 
 		return field;
