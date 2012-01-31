@@ -22,6 +22,7 @@ class Genapp_Service_QueryService {
 	 * The models.
 	 */
 	var $metadataModel;
+	var $taxonomicReferentialModel;
 	var $genericModel;
 	var $resultLocationModel;
 	var $predefinedRequestModel;

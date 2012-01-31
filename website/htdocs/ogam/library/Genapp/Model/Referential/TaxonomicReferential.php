@@ -147,6 +147,48 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 	}
 
 
+	/**
+	 * Get all the children codes from a taxon.
+	 *
+	 * Return an array of codes.
+	 *
+	 * @param String $code The identifier of the start node in the tree (by default the root node is *)
+	 * @param Integer $levels The number of levels of depth (if 0 then no limitation)
+	 * @return Array[String]
+	 */
+	public function getTaxrefChildrenCodes( $code = '*', $levels = 1) {
+		$this->logger->info('getTaxrefChildrenCodes : '.$code.'_'.$levels);
+		$db = $this->getAdapter();
+		$req = "WITH RECURSIVE node_list( cd_nom, level) AS ( ";
+		$req .= "	    SELECT cd_nom, 1 ";
+		$req .= "		FROM taxref ";
+		$req .= "		WHERE cd_nom = ? ";
+		$req .= "	UNION ALL ";
+		$req .= "		SELECT child.cd_nom, level + 1 ";
+		$req .= "		FROM taxref child ";
+		$req .= "		INNER JOIN node_list on child.cd_taxsup = node_list.cd_nom ";
+		if ($levels != 0) {
+			$req .= "		WHERE level < ".$levels." ";
+		}
+		$req .= "	) ";
+		$req .= "	SELECT * ";
+		$req .= "	FROM node_list ";
+		$req .= "	ORDER BY level, cd_nom "; // level is used to ensure correct construction of the structure
+
+		$this->logger->info('getTaxrefChildrenCodes : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($code));
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[] = $row['cd_nom'];
+		}
+
+		return $result;
+	}
+
+
 
 
 }

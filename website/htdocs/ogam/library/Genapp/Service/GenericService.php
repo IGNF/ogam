@@ -22,6 +22,7 @@ class Genapp_Service_GenericService {
 	 * The models.
 	 */
 	var $metadataModel;
+	var $taxonomicReferentialModel;
 
 	/**
 	 * The projection systems.
@@ -39,6 +40,7 @@ class Genapp_Service_GenericService {
 
 		// Initialise the metadata models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->taxonomicReferentialModel = new Genapp_Model_Referential_TaxonomicReferential();
 
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
@@ -621,6 +623,10 @@ class Genapp_Service_GenericService {
 					}
 					break;
 				case "ARRAY":
+					
+					// TODO : Subtype TREE
+					// TODO : Subtype TAXREF
+					
 					if (is_array($value)) {
 						// Case of a list of values
 						$stringValue = $this->arrayToSQLString($value);
@@ -632,9 +638,9 @@ class Genapp_Service_GenericService {
 
 					break;
 				case "CODE":
+					
+					// Case of a code in a generic TREE					
 					if ($tableField->subtype == 'TREE') {
-
-						// Case of a code in a generic TREE
 
 						if (is_array($value)) {
 							$value = $value[0];
@@ -652,10 +658,21 @@ class Genapp_Service_GenericService {
 						$sql .= " AND ".$column." IN (".$sql2.")";
 
 					} else if ($tableField->subtype == 'TAXREF') {
-
 						// Case of a code in a Taxonomic referential
-
-						// TODO : Get the reference Taxon and look for it and its childrens
+						if (is_array($value)) {
+							$value = $value[0];
+						}
+						
+						// Get all the children of a selected taxon
+						$nodeCodes = $this->taxonomicReferentialModel->getTaxrefChildrenCodes($value, 0);
+					
+						$sql2 = '';
+						foreach ($nodeCodes as $nodeCode) {
+							$sql2 .= "'".$nodeCode."',";
+						}
+						$sql2 = substr($sql2, 0, -1); // remove last comma
+						
+						$sql .= " AND ".$column." IN (".$sql2.")";				
 
 
 
