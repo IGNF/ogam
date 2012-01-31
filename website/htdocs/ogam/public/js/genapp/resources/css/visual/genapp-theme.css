@@ -1,9 +1,9 @@
 /***** Form Panel Toolbars **********************************************************************************/
 .genapp-tb-btn .x-btn-mc .x-btn-text{
-    background:transparent url(../../../extjs/resources/images/green-ifn/panel/tool-sprites.gif) no-repeat scroll;
+    background:transparent url(../../../extjs/resources/images/gray-extend/panel/tool-sprites.gif) no-repeat scroll;
 }
 .x-panel-tbar-noheader .x-toolbar, .x-panel-mc .x-panel-tbar .x-toolbar {
-    border-color:#75AA1C;
+    border-color:#D0D0D0;
 }
 
 /*************************************************************************************************/
@@ -13,10 +13,10 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     background-image: url(../images/disk.png);
 }
 .genapp-query-request-panel-ct-xcollapsed-vertical-label-div{
-    background-image: url(../images/green-ifn/request.gif);
+    background-image: url(../images/gray-extend/request.gif);
 }
 .fr .genapp-query-request-panel-ct-xcollapsed-vertical-label-div{
-    background-image: url(../images/green-ifn/request_fr.gif);
+    background-image: url(../images/gray-extend/request_fr.gif);
 }
 .genapp_query_formspanel_cancel_button button{
     font-weight: bold; 
@@ -26,15 +26,6 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 .genapp_query_formspanel_search_button button{
     font-weight: bold; 
-}
-.genapp-query-field-form-panel .x-panel-ml,.genapp-query-field-form-panel .x-panel-mr{
-    background-image:url(../../../extjs/resources/images/green-ifn/panel/left-right.gif);
-}
-.genapp-query-field-form-panel .x-panel-bl,.genapp-query-field-form-panel .x-panel-br{
-    background-image:url(../../../extjs/resources/images/green-ifn/panel/corners-sprite.gif);
-}
-.genapp-query-field-form-panel .x-panel-bc{
-    background-image:url(../../../extjs/resources/images/green-ifn/panel/top-bottom.gif);
 }
 /*************************************************************************************************/
 
@@ -75,7 +66,7 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     background-image: none !important;
 }
 .x-btn button.genapp-query-center-panel-print-map-button-icon{
-    background-image: url(../images/printer.png);
+	background-image: url(../images/printer.png);
 }
 /*************************************************************************************************/
 
@@ -143,16 +134,11 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 /*************************************************************************************************/
 
 /** Details Panel ********************************************************************************/
-.genapp-query-details-panel .x-tab-strip-top .x-tab-right,
-.genapp-query-details-panel .x-tab-strip-top .x-tab-left,
-.genapp-query-details-panel .x-tab-strip-top .x-tab-strip-inner {
-    background-image:url(../../../extjs/resources/images/green-ifn/tabs/tabs-sprite-lighter.gif);
-}
 .genapp-query-details-panel-ct-xcollapsed-vertical-label-div{
-    background-image: url(../images/green-ifn/details.gif);
+    background-image: url(../images/gray-extend/details.gif);
 }
 .fr .genapp-query-details-panel-ct-xcollapsed-vertical-label-div{
-    background-image: url(../images/green-ifn/details_fr.gif);
+    background-image: url(../images/gray-extend/details_fr.gif);
 }
 .genapp-query-details-panel p{
     color:#606060;
@@ -195,71 +181,69 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 .filterBin{
     background:transparent url(../images/bin.gif) no-repeat scroll !important;
 }
-.labelNextBin{
-
-    color: #606060;
-}
 /*************************************************************************************************/
 
 /***** Column Form Panel Body ************************************************************************/
-.columnLabelBin{
+.columnLabelBinColor{
     background:transparent url(../images/bin.gif) no-repeat scroll !important;
 }
-.columnLabel{
+.columnLabelColor {
     color: #606060;
 }
 .x-toolbar div.xtb-text{
-    color: #404040;
+    color: #606060;
 }
 /*************************************************************************************************/
 
 /***** Map Right panel *********************************************************************/
 .genapp-query-map-right-panel-xcollapsed-vertical-label-div{
-    background-image: url(../images/green-ifn/layers_and_legends.gif);
+    background-image: url(../images/gray-extend/layers_and_legends.gif);
 }
 .fr .genapp-query-map-right-panel-xcollapsed-vertical-label-div{
-    background-image: url(../images/green-ifn/layers_and_legends_fr.gif);
+    background-image: url(../images/gray-extend/layers_and_legends_fr.gif);
 }
 /*************************************************************************************************/
 
 /***** Date Range Picker *********************************************************************/
-.x-menu-date-range-item .x-panel-body{
-    background-color: #e0ecbc;
+.x-menu-date-range-item, .x-menu-date-range-item .x-panel-body{
+    background-color: #EFEFEF;
 }
 .x-menu-plain .x-date-picker {
-    border-color:#75AA1C;
+    border-color:#DODODO;
 }
 .x-date-range-menu {
-    border-color:#75AA1C !important;
+    border-color:#898989 !important;
 }
 .x-date-mp {
-    border-color:#75AA1C;
+    border-color:#D0D0D0;
 }
 /*************************************************************************************************/
 
 /***** Number Range Picker *********************************************************************/
 .x-menu-number-range-item .x-panel-footer{
-    background-image:url(../../../extjs/resources/images/green-ifn/shared/glass-bg.gif);
-    border-top:#75AA1C 1px solid;
+    background-color:#EBEBEB;
+    background-image:url(../../../extjs/resources/images/gray-extend/shared/glass-bg.gif);
+    border-top:#D0D0D0 1px solid;
 }
 .x-menu-number-range-item label{
     color:#606060;
 }
 .x-menu-number-range-item .x-form-field-wrap .x-form-trigger{
-    background-image:url(../../../extjs/resources/images/green-ifn/form/clear-trigger.gif);
+    background-image:url(../../../extjs/resources/images/gray-extend/form/clear-trigger.gif);
 }
 /*************************************************************************************************/
 
 /***** Tree Picker *********************************************************************/
 .x-menu-tree-item .x-panel-footer{
-    background-image:url(../../../extjs/resources/images/green-ifn/shared/glass-bg.gif);
-    border-top:#75AA1C 1px solid;
+    background-color:#EBEBEB;
+    background-image:url(../../../extjs/resources/images/gray-extend/shared/glass-bg.gif);
+    border-top:#D0D0D0 1px solid;
 }
 /*************************************************************************************************/
 
 /***** Geometry Field *********************************************************************/
 .x-form-field-wrap .x-form-map-trigger{
-    background-image: url(../images/green-ifn/map-trigger.gif);
+    background-image: url(../images/gray-extend/map-trigger.gif);
 }
 .drawpoint {
     background-image:url(../images/mapfish/draw_point_off.png) !important;
@@ -281,42 +265,13 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 }
 /*************************************************************************************************/
 
-/**** Panel **************************************************************************************/
-.x-panel-ml, .x-panel-mr{
-    background-image:url(../../../extjs/resources/images/green-ifn/panel/left-right-bwrap.gif);
-}
-.x-panel-bl, .x-panel-br{
-    background-image:url(../../../extjs/resources/images/green-ifn/panel/corners-sprite-bwrap.gif);
-}
-.x-panel-bc{
-    background-image:url(../../../extjs/resources/images/green-ifn/panel/top-bottom-bwrap.gif);
-}
-/*************************************************************************************************/
-
-/**** Input **************************************************************************************/
-.x-toolbar .x-form-field-trigger-wrap input{
-    border-top: 1px solid #75AA1C !important;
-    border-right: 1px solid #b7cc7f !important;
-    border-bottom: 1px solid #75AA1C !important;
-    border-left: 1px solid #75AA1C !important;
-}
-.x-form-field-trigger-wrap input{
-    border: 1px solid #b7cc7f !important;
-}
-.x-grid-panel .x-toolbar input{
-    background-color:#e0ecbc;
-    border: 1px solid #75AA1C;
-    height:14px !important;
-}
-/*************************************************************************************************/
-
 /***** Predefined Request Panel ******************************************************************/
 
 .genapp-request-criteria-panel-criteria-hint {
     font-style: italic;
 }
 .genapp-predefined-request-grid-panel-description-title {
-    font-weight: bold;
+	font-weight: bold;
 }
 /*************************************************************************************************/
 

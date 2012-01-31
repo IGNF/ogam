@@ -457,13 +457,14 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			// field.readOnly = true;
 			// field.fieldClass = "x-item-disabled";
 		} else {
+			
+			field.itemCls = 'trigger-field columnLabelColor'; 
 
 			// Creates the ext field config
 			switch (record.inputType) {
 			case 'SELECT':
 				// The input type SELECT correspond to a data type CODE or ARRAY
 				field.xtype = 'combo';
-				field.itemCls = 'trigger-field'; // For IE7 layout
 				field.hiddenName = field.name;
 				field.triggerAction = 'all';
 				field.typeAhead = true;
@@ -521,14 +522,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				// data
 				// type DATE
 				field.xtype = 'datefield';
-				field.itemCls = 'trigger-field'; // For IE7 layout
 				field.format = Genapp.FieldForm.prototype.dateFormat;
 				break;
 			case 'NUMERIC': // The input type NUMERIC correspond generally to a
 				// data
 				// type NUMERIC or RANGE
 				field.xtype = 'numberfield';
-				field.itemCls = 'trigger-field'; // For IE7 layout
 				// If RANGE we set the min and max values
 				if (record.subtype === 'RANGE') {
 					field.decimalPrecision = (record.params.decimals == null) ? 20 : record.params.decimals;
@@ -573,7 +572,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				break;
 			case 'GEOM':
 				field.xtype = 'geometryfield';
-				field.itemCls = 'trigger-field'; // For IE7 layout
 				field.hideSearchButton = true;
 				break;
 			case 'TREE':
@@ -594,7 +592,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			}
 
 		}
-
+		
 		if (!Ext.isEmpty(record.value)) {
 			field.value = record.value;
 		}
@@ -605,7 +603,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
                 'render' : function(cmp) {
 	                if(cmp.inputType != 'hidden'){
 	                    var binCt = Ext.get('x-form-el-' + cmp.id).parent();
-	                    var labelDiv = binCt.child('.x-form-item-label');
+	                    var labelDiv = binCt.child('.x-form-item-label');	                    
 	                    Ext.QuickTips.register({
                             target: labelDiv,
                             title : record.label,

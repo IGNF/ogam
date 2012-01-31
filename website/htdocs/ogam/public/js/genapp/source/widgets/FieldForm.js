@@ -440,7 +440,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
 				xtype : 'box',
 				autoEl : {
 					tag : 'div',
-					cls : 'columnLabelBin',
+					cls : 'columnLabelBin columnLabelBinColor',
 					html : '&nbsp;&nbsp;&nbsp;&nbsp;'
 				},
 				listeners : {
@@ -457,7 +457,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
 				xtype : 'box',
 				autoEl : {
 					tag : 'span',
-					cls : 'columnLabel',
+					cls : 'columnLabel columnLabelColor',
 					'ext:qtitle' : Genapp.util.htmlStringFormat(record.label),
 					'ext:qwidth' : 200,
 					'ext:qtip' : Genapp.util.htmlStringFormat(record.definition),
@@ -678,6 +678,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
                             width : 200
                         });
     	                // Add the bin
+    					labelDiv.addClass('columnLabelColor');
     					labelDiv.addClass('labelNextBin');
     					var binDiv = binCt.createChild({
     						tag : "div",
