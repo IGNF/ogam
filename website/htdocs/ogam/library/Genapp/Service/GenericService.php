@@ -623,23 +623,50 @@ class Genapp_Service_GenericService {
 					}
 					break;
 				case "ARRAY":
-					
-					// TODO : Subtype TREE
-					// TODO : Subtype TAXREF
-					
-					if (is_array($value)) {
+
+					// Case of a code in a generic TREE
+					if ($tableField->subtype == 'TREE') {
+
+						if (is_array($value)) {
+							$value = $value[0];
+						}
+
+						// Get all the children of a selected node
+						$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
+
 						// Case of a list of values
-						$stringValue = $this->arrayToSQLString($value);
-						$sql .= " AND ".$column." @> ".$stringValue;
-					} else if (is_string($value)) {
-						// Single value
-						$sql .= " AND ANY(".$column.") = '".$value."'";
+						$stringValue = $this->arrayToSQLString($nodeCodes);
+						$sql .= " AND ".$column." && ".$stringValue;
+
+					} else if ($tableField->subtype == 'TAXREF') {
+						// Case of a code in a Taxonomic referential
+						if (is_array($value)) {
+							$value = $value[0];
+						}
+
+						// Get all the children of a selected taxon
+						$nodeCodes = $this->taxonomicReferentialModel->getTaxrefChildrenCodes($value, 0);
+							
+						// Case of a list of values
+						$stringValue = $this->arrayToSQLString($nodeCodes);
+						$sql .= " AND ".$column." && ".$stringValue;
+
+					} else {
+							
+						if (is_array($value)) {
+							// Case of a list of values
+							$stringValue = $this->arrayToSQLString($value);
+							$sql .= " AND ".$column." && ".$stringValue;
+						} else if (is_string($value)) {
+							// Single value
+							$sql .= " AND ANY(".$column.") = '".$value."'";
+						}
 					}
 
 					break;
 				case "CODE":
-					
-					// Case of a code in a generic TREE					
+
+					// Case of a code in a generic TREE
 					if ($tableField->subtype == 'TREE') {
 
 						if (is_array($value)) {
@@ -662,17 +689,17 @@ class Genapp_Service_GenericService {
 						if (is_array($value)) {
 							$value = $value[0];
 						}
-						
+
 						// Get all the children of a selected taxon
 						$nodeCodes = $this->taxonomicReferentialModel->getTaxrefChildrenCodes($value, 0);
-					
+							
 						$sql2 = '';
 						foreach ($nodeCodes as $nodeCode) {
 							$sql2 .= "'".$nodeCode."',";
 						}
 						$sql2 = substr($sql2, 0, -1); // remove last comma
-						
-						$sql .= " AND ".$column." IN (".$sql2.")";				
+
+						$sql .= " AND ".$column." IN (".$sql2.")";
 
 
 
@@ -807,7 +834,7 @@ class Genapp_Service_GenericService {
 
 		if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
 			$sql .= str_replace(",", ".", $field->value);
-		} else if ($field->type == "GEOM") {			
+		} else if ($field->type == "GEOM") {
 			$sql .= "ST_transform(ST_GeomFromText('".$field->value."',".$this->visualisationSRS."),".$this->databaseSRS.")";
 		} else if ($field->type == "ARRAY") {
 			// Arrays
