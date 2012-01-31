@@ -252,6 +252,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				mapping : 'editable'
 			}, // is the field editable?
 			{
+				name : 'insertable',
+				mapping : 'insertable'
+			}, // is the field insertable?
+			{
 				name : 'params',
 				mapping : 'params'
 			} // reserved for min/max or list of codes
@@ -452,10 +456,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var field = {};
 		field.name = record.name;
 
-		if (!Ext.isEmpty(record.editable) && record.editable == false) {
+		if ((this.mode == "EDIT" && !Ext.isEmpty(record.editable) && record.editable == false) ||
+			(this.mode == "ADD" && !Ext.isEmpty(record.insertable) && record.insertable == false)) {
 			field.xtype = 'hidden';
-			// field.readOnly = true;
-			// field.fieldClass = "x-item-disabled";
 		} else {
 
 			field.itemCls = 'trigger-field columnLabelColor';

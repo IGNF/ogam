@@ -192,11 +192,8 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 				width : this.mapWindowWidth,
 				height : this.mapWindowHeight,
 				closeAction : 'destroy',
-				// please do not overwrite !!!
-				draggable : false, // both of these lines
-				resizable : false, // are useful for mapfish, cf
-				// https://trac.mapfish.org/trac/mapfish/ticket/84
-				// please do not overwrite !!!
+				draggable : false, 
+				resizable : false, 
 				modal : true,
 				scope : true,
 				items : this.mapPanel,
