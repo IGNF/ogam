@@ -9,7 +9,7 @@ alter table FORM_FORMAT drop constraint FK_FORM_FOR_HERITAGE__FORMAT;
 alter table TABLE_FORMAT drop constraint FK_TABLE_FO_HERITAGE__FORMAT;
 alter table FILE_FIELD drop constraint FK_FILE_FIE_HERITAGE__FIELD;
 alter table FORM_FIELD drop constraint FK_FORM_FIE_HERITAGE__FIELD;            
-alter table TABLE_FIELD drop constraint FK_TABLE_FI_HERITAGE__FIELD;
+--alter table TABLE_FIELD drop constraint FK_TABLE_FI_HERITAGE__FIELD;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_DATASET;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_FIELD;
 alter table DATASET_FILES drop constraint FK_DATASET_FILES_FORMAT;
@@ -257,6 +257,7 @@ OR (input_type = 'TEXT' AND type <> 'STRING')
 OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')
 OR (input_type = 'GEOM' AND type <> 'GEOM')
 OR (input_type = 'TREE' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TREE'))
+UNION
 -- TREE_MODEs should be defined
 SELECT unit, 'The unit should have at least one MODE_TREE defined'
 FROM unit 

@@ -274,6 +274,7 @@ FORMAT               VARCHAR(36)          not null,
 COLUMN_NAME          VARCHAR(36)          null,
 IS_CALCULATED        CHAR(1)		      null,
 IS_EDITABLE          CHAR(1)		      null,
+IS_INSERTABLE        CHAR(1)		      null,
 POSITION             INT4                 null,
 COMMENT		         VARCHAR(255)         null,
 constraint PK_TABLE_FIELD primary key (DATA, FORMAT)
@@ -284,6 +285,7 @@ COMMENT ON COLUMN TABLE_FIELD.FORMAT IS 'The name of the table format containing
 COMMENT ON COLUMN TABLE_FIELD.COLUMN_NAME IS 'The real name of the column';
 COMMENT ON COLUMN TABLE_FIELD.IS_CALCULATED IS 'Indicate if the field should be provided for insertion (value = 0) or if it is calculated by a trigger function (value = 1)';
 COMMENT ON COLUMN TABLE_FIELD.IS_EDITABLE IS 'Indicate if the field is editable (value = 1)';
+COMMENT ON COLUMN TABLE_FIELD.IS_INSERTABLE IS 'Indicate if the field can be inserted/added in the edition module (value = 1)';
 COMMENT ON COLUMN TABLE_FIELD.POSITION IS 'The position of this field in the table (for the detail panel and the edition module)';
 COMMENT ON COLUMN TABLE_FIELD.COMMENT IS 'Any comment';
 
