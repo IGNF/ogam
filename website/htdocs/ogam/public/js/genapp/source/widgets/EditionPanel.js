@@ -320,6 +320,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			text : this.dataEditFSValidateButtonText,
 			tooltip : this.dataEditFSValidateButtonTooltip,
 			handler : this.editData,
+			formBind: true, // The button is desactivated if the form is not valid
 			scope : this
 		});
 
@@ -331,6 +332,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		// Data
 		this.dataEditForm = new Ext.FormPanel({
+			monitorValid : true,
 			border : false,
 			url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
 			labelWidth : 200,
