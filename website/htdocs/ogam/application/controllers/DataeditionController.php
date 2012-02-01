@@ -245,7 +245,7 @@ class DataEditionController extends AbstractOGAMController {
 			// Hardcoded value : We don't edit the line number (it's a technical element)
 			if ($tablefield->data != "LINE_NUMBER") {
 				$formField = $this->genericService->getTableToFormMapping($tablefield);
-				$elem = $this->_getFormElement($form, $tablefield, $formField, false, $complete);
+				$elem = $this->_getFormElement($form, $tablefield, $formField, false);
 				$elem->class = 'dataedit_field';
 				$form->addElement($elem);
 			}
