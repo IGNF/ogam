@@ -96,7 +96,7 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 			$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
 			foreach ($select->fetchAll() as $row) {
 
-				$parentCode = $row['parent_code'];
+				$parentCode = $row['cd_taxsup'];
 
 				//Build the new node
 				$tree = new Genapp_Object_Referential_TaxrefNode();
