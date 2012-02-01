@@ -102,9 +102,8 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param TableField $tableField the table descriptor of the data
 	 * @param FormField $formField the form descriptor of the data
 	 * @param Boolean $isKey is the field a primary key ?
-	 * @param Boolean $complete indicate if the function must generate all the list of codes
 	 */
-	private function _getFormElement($form, $tableField, $formField, $isKey = false, $complete) {
+	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
 
 		// Warning : $formField can be null if no mapping is defined with $tableField
 
@@ -170,22 +169,6 @@ class DataEditionController extends AbstractOGAMController {
 		} else if ($tableField->type == "CODE") {
 
 			$elem = $form->createElement('select', $tableField->data);
-
-			if ($complete == true)  {
-				// for performance reasons, we don't list the codes for form validation
-					
-				// The field is a single code
-				if ($tableField->subtype == "DYNAMIC") {
-					$modes = $this->metadataModel->getDynamodeLabels($tableField->unit);
-				} else if ($tableField->subtype == "TREE") {
-					$modes = $this->metadataModel->getTreeLabels($tableField->unit);
-				} else if ($tableField->subtype == "TAXREF") {
-					$modes = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
-				} else {
-					$modes = $this->metadataModel->getModeLabels($tableField->unit);
-				}
-				$elem->addMultiOptions($modes);
-			}
 			$elem->setValue($tableField->value);
 
 		} else if ($tableField->type == "BOOLEAN") {
@@ -198,23 +181,6 @@ class DataEditionController extends AbstractOGAMController {
 
 			// Build a multiple select box
 			$elem = $form->createElement('multiselect', $tableField->data);
-
-			// The field is a list of codes
-			if ($complete == true)  {
-				// for performance reasons, we don't list the codes for form validation
-					
-				// Get the list of available values
-				if ($tableField->subtype == "DYNAMIC") {
-					$modes = $this->metadataModel->getDynamodeLabels($tableField->unit);
-				} else if ($tableField->subtype == "TREE") {
-					$modes = $this->metadataModel->getTreeLabels($tableField->unit);
-				} else if ($tableField->subtype == "TAXREF") {
-					$modes = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
-				} else {
-					$modes = $this->metadataModel->getModeLabels($tableField->unit);
-				}
-				$elem->addMultiOptions($modes);
-			}
 			$elem->setValue($tableField->value);
 
 		} else {
@@ -244,9 +210,9 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param String $mode ('ADD' or 'EDIT')
 	 * @param Boolean $complete indicate if the function must generate all the list of codes
 	 */
-	private function _getEditDataForm($data, $mode, $complete = true) {
+	private function _getEditDataForm($data, $mode) {
 
-		$this->logger->debug('_getEditDataForm :  mode = '.$mode.' complete = '.$complete);
+		$this->logger->debug('_getEditDataForm :  mode = '.$mode);
 
 		$form = new Zend_Form();
 		if ($mode == 'ADD') {
@@ -266,7 +232,7 @@ class DataEditionController extends AbstractOGAMController {
 
 			$formField = $this->genericService->getTableToFormMapping($tablefield);
 
-			$elem = $this->_getFormElement($form, $tablefield, $formField, true, $complete);
+			$elem = $this->_getFormElement($form, $tablefield, $formField, true);
 			$elem->class = 'dataedit_key';
 			$form->addElement($elem);
 		}
@@ -456,7 +422,7 @@ class DataEditionController extends AbstractOGAMController {
 		$mode = $this->_getParam('MODE');
 
 		// Validate the form
-		$form = $this->_getEditDataForm($data, $mode, false);
+		$form = $this->_getEditDataForm($data, $mode);
 		if (!$form->isValidPartial($_POST)) {
 
 			// On réaffiche le formulaire avec les messages d'erreur
@@ -559,7 +525,6 @@ class DataEditionController extends AbstractOGAMController {
 	public function ajaxGetEditFormAction() {
 
 		$this->logger->debug('ajaxGetEditFormAction');
-
 
 		// Get the parameters from the URL
 		$request = $this->getRequest();

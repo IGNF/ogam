@@ -54,6 +54,7 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 
 		$key = 'getTaxrefModes_'.$parentcode.'_'.$levels;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace(' ', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -139,6 +140,7 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 
 		$key = 'getTaxrefLabels_'.$unit.'_'.$value;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace(' ', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -155,9 +157,9 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 			$req .= "	FROM taxref ";
 			if ($value != null) {
 				if (is_array($value)) {
-					$req .= " WHERE  cd_nom IN ('".implode("','",$value)."')";
+					$req .= " WHERE cd_nom IN ('".implode("','",$value)."')";
 				} else {
-					$req .= " WHERE  cd_nom = '".$value."'";
+					$req .= " WHERE cd_nom = '".$value."'";
 				}
 			}
 			$req .= "	ORDER BY lb_nom ";

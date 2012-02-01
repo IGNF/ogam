@@ -6,7 +6,7 @@
 
 /**
  * Represent a Field of a Database.
- * 
+ *
  * @package objects
  * @SuppressWarnings checkUnusedVariables
  */
@@ -23,38 +23,31 @@ class Genapp_Object_Metadata_TableField extends Genapp_Object_Metadata_Field {
 	 * @var bool
 	 */
 	var $isCalculated;
-	
-	
+
+
 	/**
-	* Indicate if the field is editable.
-	* @var bool
-	*/
+	 * Indicate if the field is editable.
+	 * @var bool
+	 */
 	var $isEditable;
 
 	/**
-	* Indicate if the field is insertable.
-	* @var bool
-	*/
-	var $isInsertable;
-	
-	/**
-	 * The value of the field (this is not defined in the metadata database, it's the raw value of the data).
-	 * In case of a query request, can contain an array of authorised values (will generate a OR clause).
-	 * @var mixed
+	 * Indicate if the field is insertable.
+	 * @var bool
 	 */
-	var $value;
+	var $isInsertable;
 
 	/**
-	 * These fields are only filled when the table field is of unit GEOM.	
+	 * These fields are only filled when the table field is of unit GEOM.
 	 */
 	var $xmin;
 	var $xmax;
 	var $ymin;
 	var $ymax;
 	var $center;
-	
+
 	/**
-	 * The position of the table field to be displayed. This is used in the detail panel and in the data edition module. 
+	 * The position of the table field to be displayed. This is used in the detail panel and in the data edition module.
 	 */
 	var $position;
 

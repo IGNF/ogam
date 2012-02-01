@@ -573,7 +573,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 					baseParams : {
 						'unit' : record.unit
 					}
-				});
+				});				
 			} else {
 				// Subtype == CODE (other possibilities are not available)
 				field.mode = 'remote';

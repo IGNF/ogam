@@ -104,6 +104,8 @@ class Genapp_Service_QueryService {
 		return $json;
 	}
 
+
+
 	/**
 	 * Generate the JSON structure corresponding to a field to edit.
 	 *
@@ -115,43 +117,7 @@ class Genapp_Service_QueryService {
 
 		$json = "{";
 
-		// For the SELECT field, get the list of options
-		if ($formField->type == "CODE" || $formField->type == "ARRAY") {
-
-			// Get the modes => Label
-			if ($formField->subtype == "DYNAMIC") {
-				$modes = $this->metadataModel->getDynamodeLabels($formField->unit, $formField->value);
-			} else if ($formField->subtype == "TREE" ) {
-				$modes = $this->metadataModel->getTreeLabels($formField->unit, $formField->value);
-			} else if ($formField->subtype == "TAXREF") {
-				$modes = $this->taxonomicReferentialModel->getTaxrefLabels($formField->unit, $formField->value);
-			} else {
-				$modes = $this->metadataModel->getModeLabels($formField->unit, $formField->value);
-			}
-
-			// Populate the label of the currently selected value
-			if ($formField->type == "ARRAY") {
-				$labels = array();
-				if (isset($formField->value)) {
-					foreach ($formField->value as $mode) {
-						if (isset($modes[$mode])) {
-							$labels[] = $modes[$mode];
-						}
-					}
-					$formField->valueLabel = $labels;
-				}
-			} else {
-				if (isset($modes[$formField->value])) {
-					$formField->valueLabel = $modes[$formField->value];
-				}
-			}
-
-			$json .= $formField->toEditJSON();
-
-
-		} else {
-			$json .= $formField->toEditJSON();
-		}
+		$json .= $formField->toEditJSON();
 
 
 		// For the RANGE field, get the min and max values
@@ -177,6 +143,7 @@ class Genapp_Service_QueryService {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
 				$formField->value = $tablefield->value;
+				$formField->valueLabel = $tablefield->valueLabel;
 				$formField->editable = $tablefield->isEditable;
 				$formField->insertable = $tablefield->isInsertable;
 				$formField->required = !$tablefield->isCalculated; // If the field is not calculated and if it is part of the key
@@ -190,6 +157,7 @@ class Genapp_Service_QueryService {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
 				$formField->value = $tablefield->value;
+				$formField->valueLabel = $tablefield->valueLabel;
 				$formField->editable = $tablefield->isEditable;
 				$formField->insertable = $tablefield->isInsertable;
 				$formField->required = false; // Never mandatory
@@ -782,9 +750,6 @@ class Genapp_Service_QueryService {
 	public function ajaxgetchildren($id) {
 		$keyMap = $this->_decodeId($id);
 
-		// Patch RTM TODO: trouver une autre solution
-		// $keyMap["FORMAT"] = 'LOCATION_COMPL_DATA';
-
 		// Prepare a data object to be filled
 		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
 
@@ -866,8 +831,6 @@ class Genapp_Service_QueryService {
 				// For the RANGE field, get the min and max values
 				$range = $this->metadataModel->getRange($criteria->unit);
 				$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
-			} else {
-				$json .= ',{}'; // no options
 			}
 
 			$json .= '},';

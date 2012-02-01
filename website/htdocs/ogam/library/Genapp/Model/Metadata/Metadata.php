@@ -47,6 +47,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$key = 'getModeLabels_'.$unit.'_'.$code;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace(' ', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -62,19 +63,19 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " FROM mode ";
 			$req .= " WHERE unit = ? ";
 			if ($code != null) {
-				$req .= " AND code = ?";
+				if (is_array($code)) {
+					$req .= " AND code IN ('".implode("','",$code)."')";
+				} else {
+					$req .= " AND code = '".$code."'";
+				}
 			}
 			$req .= " ORDER BY position, code";
 
 			$this->logger->info('getModeLabels : '.$req);
 
 			$select = $db->prepare($req);
-			if ($code != null) {
-				$select->execute(array($unit, $code));
-			} else {
-				$select->execute(array($unit));
-			}
-
+			$select->execute(array($unit));
+				
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
 				$result[$row['code']] = $row['label'];
@@ -129,6 +130,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$key = 'getMode_'.$unit.'_'.$mode;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace(' ', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -173,6 +175,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$key = 'getTreeLabels_'.$unit.'_'.$value;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace(' ', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -228,6 +231,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$key = 'getDynamodeLabels_'.$unit.'_'.$code.'_'.$query;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace(' ', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -247,17 +251,17 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$req .= " FROM (".$req.") as foo ";
 				$req .= " WHERE label ilike '".$query."%'";
 				if ($code != null) {
-					$req .= " AND code = ?";
+					if (is_array($code)) {
+						$req .= " AND code IN ('".implode("','",$code)."')";
+					} else {
+						$req .= " AND code = '".$code."'";
+					}
 				}
 			}
 			$this->logger->info('getDynamodeLabels : '.$req);
 
 			$select = $db->prepare($req);
-			if ($code != null) {
-				$select->execute(array($code));
-			} else {
-				$select->execute(array());
-			}
+			$select->execute(array());
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {

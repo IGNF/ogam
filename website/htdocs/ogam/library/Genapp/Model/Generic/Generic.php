@@ -100,11 +100,13 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				$field->ymin = $row[strtolower($key).'_y_min'];
 				$field->ymax = $row[strtolower($key).'_y_max'];
 			} else if ($field->type == "ARRAY") {
-
 				// For array field we transform the value in a array object
 				$field->value = $this->genericService->stringToArray($field->value);
 
 			}
+
+			// Fill the value labels for the field
+			$field = $this->genericService->fillValueLabel($field);
 
 		}
 
@@ -134,7 +136,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName." AS ".$tableFormat->format;
 		$sql .= " WHERE(1 = 1) ".$this->genericService->buildWhere($data->infoFields);
 
-		$this->logger->info('getDatum : '.$sql);
+		$this->logger->info('getData : '.$sql);
 
 		$select = $db->prepare($sql);
 		$select->execute();
@@ -153,6 +155,9 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 					$field->value = $this->genericService->stringToArray($field->value);
 
 				}
+
+				// Fill the value labels for the field
+				$field = $this->genericService->fillValueLabel($field);
 			}
 
 			$result[] = $child;

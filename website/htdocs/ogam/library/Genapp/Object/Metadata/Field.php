@@ -47,6 +47,27 @@ class Genapp_Object_Metadata_Field {
 	 */
 	var $definition;
 
+
+	/**
+	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).
+	 * Can be an array in case of a select multiple (will generate a OR clause).
+	 * @var mixed
+	 *
+	 * Examples of valid values :
+	 * toto
+	 * 12.6
+	 * 0.2 - 0.6
+	 * 2010/05/12
+	 * 2010/05/12 - 2010/06/30
+	 * POINT(3.51, 4.65)
+	 */
+	var $value;
+
+	/**
+	 * The label corresponding to value of the field.
+	 */
+	var $valueLabel;
+
 	/**
 	 * Return the unique identifier of the field.
 	 */

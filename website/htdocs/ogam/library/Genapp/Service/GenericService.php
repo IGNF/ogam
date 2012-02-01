@@ -215,7 +215,7 @@ class Genapp_Service_GenericService {
 			// Fill the label
 			if ($formField->type == "CODE") {
 				$formField->valueLabel = $this->metadataModel->getMode($tableField->unit, $tableField->value);
-			} 
+			}
 		}
 
 		return $formField;
@@ -1003,6 +1003,59 @@ class Genapp_Service_GenericService {
 		}
 
 		return $tables;
+	}
+
+	/**
+	 * Fill the (Form or Table) field with the labels corresponding to the code value.
+	 *
+	 * @param Field $field a form field
+	 * @return String the value label
+	 */
+	public function fillValueLabel($field) {
+
+		
+		// By default we keep the value as a label
+		$field->valueLabel = $field->value;
+
+		// For the SELECT field, get the list of options
+		if ($field->type == "CODE" || $field->type == "ARRAY") {
+
+			// Get the modes => Label
+			if ($field->subtype == "DYNAMIC") {
+				$modes = $this->metadataModel->getDynamodeLabels($field->unit, $field->value);
+			} else if ($field->subtype == "TREE" ) {
+				$modes = $this->metadataModel->getTreeLabels($field->unit, $field->value);
+			} else if ($field->subtype == "TAXREF") {
+				$modes = $this->taxonomicReferentialModel->getTaxrefLabels($field->unit, $field->value);
+			} else {
+				$modes = $this->metadataModel->getModeLabels($field->unit, $field->value);
+			}
+
+			// Populate the label of the currently selected value
+			if ($field->type == "ARRAY") {
+				$labels = array();
+				if (isset($field->value)) {
+					foreach ($field->value as $mode) {
+						if (isset($modes[$mode])) {
+							$labels[] = $modes[$mode];
+						}
+					}
+					$field->valueLabel = $labels;
+				}
+			} else {
+				if (isset($modes[$field->value])) {
+					$field->valueLabel = $modes[$field->value];
+				}
+			}
+
+		}
+		
+		$this->logger->debug('getValueLabel '.print_r($field,true));
+		
+
+		return $field;
+
+
 	}
 
 }

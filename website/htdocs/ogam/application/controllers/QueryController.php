@@ -18,7 +18,7 @@ class QueryController extends AbstractOGAMController {
 	protected $genericModel;
 	protected $resultLocationModel;
 	protected $predefinedRequestModel;
-	protected $taxonomicModel;
+	protected $taxonomicReferentialModel;
 
 	/**
 	 * The generic service.
@@ -83,7 +83,7 @@ class QueryController extends AbstractOGAMController {
 
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->taxonomicModel = new Genapp_Model_Referential_TaxonomicReferential();
+		$this->taxonomicReferentialModel = new Genapp_Model_Referential_TaxonomicReferential();
 		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
