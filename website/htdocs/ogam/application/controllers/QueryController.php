@@ -907,7 +907,7 @@ class QueryController extends AbstractOGAMController {
 		$code = $this->getRequest()->getPost('node');
 		$depth = $this->getRequest()->getParam('depth');
 
-		$tree = $this->taxonomicModel->getTaxrefModes($code, $depth);
+		$tree = $this->taxonomicReferentialModel->getTaxrefModes($code, $depth);
 
 		// Send the result as a JSON String
 		echo '['.$tree->toJSON().']';
