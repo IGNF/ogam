@@ -133,11 +133,11 @@ class Genapp_Service_GenericService {
 				$formFields = $this->getFormFieldsOrdered($datum->getFields());
 				foreach ($formFields as $formField) {
 					// We keep only the result fields (The columns availables)
-					array_push($locationData, $formField->valueLabel);
+					array_push($locationData, $formField->getValueLabel());
 					if (empty($columnsMaxLength[$formField->data])) {
 						$columnsMaxLength[$formField->data] = array();
 					}
-					array_push($columnsMaxLength[$formField->data], strlen($formField->valueLabel));
+					array_push($columnsMaxLength[$formField->data], strlen($formField->getValueLabel()));
 				}
 				array_push($locationsData, $locationData);
 			}
@@ -215,10 +215,7 @@ class Genapp_Service_GenericService {
 			// Fill the label
 			if ($formField->type == "CODE") {
 				$formField->valueLabel = $this->metadataModel->getMode($tableField->unit, $tableField->value);
-			} else {
-				$formField->valueLabel = $tableField->value;
-			}
-
+			} 
 		}
 
 		return $formField;

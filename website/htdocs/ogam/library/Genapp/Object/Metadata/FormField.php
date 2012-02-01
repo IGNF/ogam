@@ -65,7 +65,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 
 	/**
 	 * The label corresponding to value of the field.
-	 * This is not defined in the metadata databae, it's the raw value of the data for codes.
+	 * This is not defined in the metadata database, it's the raw value of the data for codes.
 	 */
 	var $valueLabel;
 
@@ -75,19 +75,19 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 * @var Boolean
 	 */
 	var $editable;
-	
+
 	/**
-	* Indicate if the field is insertable (for the edition module).
-	*
-	* @var Boolean
-	*/
+	 * Indicate if the field is insertable (for the edition module).
+	 *
+	 * @var Boolean
+	 */
 	var $insertable;
-	
+
 	/**
-	* Indicate if the field is required (for the edition module).
-	*
-	* @var Boolean
-	*/
+	 * Indicate if the field is required (for the edition module).
+	 *
+	 * @var Boolean
+	 */
 	var $required;
 
 	/**
@@ -131,7 +131,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 		$return .= ',"definition":'.json_encode($this->definition);
 		$return .= ',"decimals":'.json_encode($this->decimals);
 		$return .= ',"value":'.json_encode($this->value);
-		$return .= ',"valueLabel":'.json_encode($this->valueLabel);
+		$return .= ',"valueLabel":'.json_encode($this->getValueLabel());
 		$return .= ',"editable":'.json_encode($this->editable);
 		$return .= ',"insertable":'.json_encode($this->insertable);
 		$return .= ',"required":'.json_encode($this->required);
@@ -149,8 +149,8 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 		if ($this->inputType == 'NUMERIC' && $this->decimals != null && $this->decimals != "") {
 			$this->valueLabel = number_format($this->valueLabel, $this->decimals);
 		}
-		
-		$return .= ',"value":'.json_encode($this->valueLabel).'}';
+
+		$return .= ',"value":'.json_encode($this->getValueLabel()).'}';
 
 		return $return;
 	}
@@ -196,6 +196,18 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 			if (gettype($value) == 'object') {
 				$this->$name = clone ($this->$name);
 			}
+		}
+	}
+
+	/**
+	 * Return the label corresponding to the value.
+	 * For a code, will return the description.
+	 */
+	function getValueLabel() {
+		if ($this->valueLabel != null) {
+			return $this->valueLabel;
+		} else {
+			return $this->value;
 		}
 	}
 

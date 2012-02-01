@@ -163,9 +163,9 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
 				'add' : function(container, cmp, index) {
 					var subName = cmp.name, i = 0, foundComponents, tmpName = '', criteriaPanel = cmp.ownerCt, className = 'first-child';
 					if (container.defaultType === 'panel') { // The add event
-																// is not only
-																// called for
-																// the items
+						// is not only
+						// called for
+						// the items
 						// Add a class to the first child for IE7 layout
 						if (index === 0) {
 							if (cmp.rendered) {
@@ -548,7 +548,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 		// Creates the ext field config
 		switch (record.inputType) {
 		case 'SELECT': // The input type SELECT correspond generally to a data
-						// type CODE
+			// type CODE
 			field.xtype = 'combo';
 			field.itemCls = 'trigger-field'; // For IE7 layout
 			field.hiddenName = field.name;
@@ -575,21 +575,33 @@ Ext.apply(Genapp.FieldForm.prototype, {
 					}
 				});
 			} else {
-				field.mode = 'local';
-				field.store = new Ext.data.ArrayStore({
-					fields : [ 'code', 'label' ],
-					data : record.params.options
+				// Subtype == CODE (other possibilities are not available)
+				field.mode = 'remote';
+				field.store = new Ext.data.JsonStore({
+					root : 'codes',
+					idProperty : 'code',
+					fields : [ {
+						name : 'code',
+						mapping : 'code'
+					}, {
+						name : 'label',
+						mapping : 'label'
+					} ],
+					url : Genapp.base_url + '/query/ajaxgetcodes',
+					baseParams : {
+						'unit' : record.unit
+					}
 				});
 			}
 			break;
 		case 'DATE': // The input type DATE correspond generally to a data
-						// type DATE
+			// type DATE
 			field.xtype = 'daterangefield';
 			field.itemCls = 'trigger-field'; // For IE7 layout
 			field.format = Genapp.FieldForm.prototype.dateFormat;
 			break;
 		case 'NUMERIC': // The input type NUMERIC correspond generally to a data
-						// type NUMERIC or RANGE
+			// type NUMERIC or RANGE
 			field.xtype = 'numberrangefield';
 			field.itemCls = 'trigger-field'; // For IE7 layout
 			// If RANGE we set the min and max values
@@ -667,30 +679,30 @@ Ext.apply(Genapp.FieldForm.prototype, {
 		if (!hideBin) {
 			field.listeners = {
 				'render' : function(cmp) {
-                    if(cmp.inputType != 'hidden'){
-                        // Add the tooltip
-                        var binCt = Ext.get('x-form-el-' + cmp.id).parent();
-                        var labelDiv = binCt.child('.x-form-item-label');
-                        Ext.QuickTips.register({
-                            target: labelDiv,
-                            title : record.label,
-                            text: record.definition,
-                            width : 200
-                        });
-    	                // Add the bin
-    					labelDiv.addClass('columnLabelColor');
-    					labelDiv.addClass('labelNextBin');
-    					var binDiv = binCt.createChild({
-    						tag : "div",
-    						cls : "filterBin"
-    					}, labelDiv);
-    					binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
-    					binDiv.on('click', function(event, el, options) {
-    						cmp.ownerCt.remove(cmp);
-    					}, this, {
-    						single : true
-    					});
-                    }
+					if (cmp.inputType != 'hidden') {
+						// Add the tooltip
+						var binCt = Ext.get('x-form-el-' + cmp.id).parent();
+						var labelDiv = binCt.child('.x-form-item-label');
+						Ext.QuickTips.register({
+							target : labelDiv,
+							title : record.label,
+							text : record.definition,
+							width : 200
+						});
+						// Add the bin
+						labelDiv.addClass('columnLabelColor');
+						labelDiv.addClass('labelNextBin');
+						var binDiv = binCt.createChild({
+							tag : "div",
+							cls : "filterBin"
+						}, labelDiv);
+						binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
+						binDiv.on('click', function(event, el, options) {
+							cmp.ownerCt.remove(cmp);
+						}, this, {
+							single : true
+						});
+					}
 				},
 				scope : this
 			};

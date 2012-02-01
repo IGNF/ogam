@@ -123,7 +123,7 @@ class UsermanagementController extends AbstractOGAMController {
 		if ($user != null) {
 			$providerIdElem->setValue($user->providerId);
 		}
-		$providers = $this->metadataModel->getModes('PROVIDER_ID');
+		$providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
 
 		$providerIdElem->addMultiOptions($providers);
 
@@ -565,7 +565,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$users = $this->userModel->getUsers();
 
 		// Get the list of providers
-		$providers = $this->metadataModel->getModes('PROVIDER_ID');
+		$providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
 
 		$this->logger->debug('users : '.$users);
 

@@ -176,13 +176,13 @@ class DataEditionController extends AbstractOGAMController {
 					
 				// The field is a single code
 				if ($tableField->subtype == "DYNAMIC") {
-					$modes = $this->metadataModel->getDynamodes($tableField->unit);
+					$modes = $this->metadataModel->getDynamodeLabels($tableField->unit);
 				} else if ($tableField->subtype == "TREE") {
 					$modes = $this->metadataModel->getTreeLabels($tableField->unit);
 				} else if ($tableField->subtype == "TAXREF") {
 					$modes = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
 				} else {
-					$modes = $this->metadataModel->getModes($tableField->unit);
+					$modes = $this->metadataModel->getModeLabels($tableField->unit);
 				}
 				$elem->addMultiOptions($modes);
 			}
@@ -205,13 +205,13 @@ class DataEditionController extends AbstractOGAMController {
 					
 				// Get the list of available values
 				if ($tableField->subtype == "DYNAMIC") {
-					$modes = $this->metadataModel->getDynamodes($tableField->unit);
+					$modes = $this->metadataModel->getDynamodeLabels($tableField->unit);
 				} else if ($tableField->subtype == "TREE") {
 					$modes = $this->metadataModel->getTreeLabels($tableField->unit);
 				} else if ($tableField->subtype == "TAXREF") {
 					$modes = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
 				} else {
-					$modes = $this->metadataModel->getModes($tableField->unit);
+					$modes = $this->metadataModel->getModeLabels($tableField->unit);
 				}
 				$elem->addMultiOptions($modes);
 			}

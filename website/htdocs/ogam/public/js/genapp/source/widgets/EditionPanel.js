@@ -320,7 +320,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			text : this.dataEditFSValidateButtonText,
 			tooltip : this.dataEditFSValidateButtonTooltip,
 			handler : this.editData,
-			formBind: true, // The button is desactivated if the form is not valid
+			formBind : true, // The button is desactivated if the form is not
+			// valid
 			scope : this
 		});
 
@@ -491,37 +492,40 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				field.displayField = 'label';
 				field.valueField = 'code';
 				field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
-				if (record.subtype === 'DYNAMIC') {
-					field.mode = 'remote';
+				field.mode = 'remote';
 
-					// Fill the list of codes / labels for default values
-					var codes = [];
-					if (record.type === 'CODE') {
-						codes.push({
-							code : record.value,
-							label : record.valueLabel
-						});
-					} else { // case of ARRAY
-						if (record.valueLabel) {
-							for ( var i = 0; i < record.valueLabel.length; i++) {
-								codes.push({
-									code : record.value[i],
-									label : record.valueLabel[i]
-								});
-							}
+				// Fill the list of codes / labels for default values
+				var codes = [];
+				if (record.type === 'CODE') {
+					codes.push({
+						code : record.value,
+						label : record.valueLabel
+					});
+				} else { // case of ARRAY
+					if (record.valueLabel) {
+						for ( var i = 0; i < record.valueLabel.length; i++) {
+							codes.push({
+								code : record.value[i],
+								label : record.valueLabel[i]
+							});
 						}
 					}
+				}
 
+				var storeFields = [ {
+					name : 'code',
+					mapping : 'code'
+				}, {
+					name : 'label',
+					mapping : 'label'
+				} ];
+
+				if (record.subtype === 'DYNAMIC') {
+					// Case of a DYNAMODE unit list of codes
 					field.store = new Ext.data.JsonStore({
 						root : 'codes',
 						idProperty : 'code',
-						fields : [ {
-							name : 'code',
-							mapping : 'code'
-						}, {
-							name : 'label',
-							mapping : 'label'
-						} ],
+						fields : storeFields,
 						url : Genapp.base_url + '/query/ajaxgetdynamiccodes',
 						baseParams : {
 							'unit' : record.unit
@@ -531,10 +535,19 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 						}
 					});
 				} else {
-					field.mode = 'local';
-					field.store = new Ext.data.ArrayStore({
-						fields : [ 'code', 'label' ],
-						data : record.params.options
+					// Case of a MODE unit list of codes (other cases are not
+					// handled)
+					field.store = new Ext.data.JsonStore({
+						root : 'codes',
+						idProperty : 'code',
+						fields : storeFields,
+						url : Genapp.base_url + '/query/ajaxgetcodes',
+						baseParams : {
+							'unit' : record.unit
+						},
+						data : {
+							codes : codes
+						}
 					});
 				}
 				break;

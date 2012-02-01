@@ -75,20 +75,6 @@ class Genapp_Service_QueryService {
 			$json .= '{'.$form->toJSON().',"criteria":[';
 			foreach ($form->criteriaList as $field) {
 				$json .= '{'.$field->toCriteriaJSON();
-				// For the SELECT field, get the list of options
-				if ($field->type == "CODE" || $field->type == "ARRAY") {
-
-					if ($field->subtype == "MODE") {
-						$options = $this->metadataModel->getModes($field->unit);
-						$json .= ',"params":{"options":[';
-						foreach ($options as $code => $label) {
-							$json .= '['.json_encode($code).','.json_encode($label).'],';
-						}
-						$json = substr($json, 0, -1);
-						$json .= ']}';
-					}
-					// For DYNAMIC and TREE modes, the list is populated using an ajax request
-				}
 				// For the RANGE field, get the min and max values
 				if ($field->type == "NUMERIC" && $field->subtype == "RANGE") {
 					$range = $this->metadataModel->getRange($field->unit);
@@ -121,6 +107,8 @@ class Genapp_Service_QueryService {
 	/**
 	 * Generate the JSON structure corresponding to a field to edit.
 	 *
+	 * Fill the JSON object with complementary information from the metadata and referential databases (labels).
+	 *
 	 * @param FormField $field a form field
 	 */
 	private function _generateEditFieldJSON($formField) {
@@ -132,13 +120,13 @@ class Genapp_Service_QueryService {
 
 			// Get the modes => Label
 			if ($formField->subtype == "DYNAMIC") {
-				$modes = $this->metadataModel->getDynamodes($formField->unit);
+				$modes = $this->metadataModel->getDynamodeLabels($formField->unit, $formField->value);
 			} else if ($formField->subtype == "TREE" ) {
 				$modes = $this->metadataModel->getTreeLabels($formField->unit, $formField->value);
 			} else if ($formField->subtype == "TAXREF") {
 				$modes = $this->taxonomicReferentialModel->getTaxrefLabels($formField->unit, $formField->value);
 			} else {
-				$modes = $this->metadataModel->getModes($formField->unit);
+				$modes = $this->metadataModel->getModeLabels($formField->unit, $formField->value);
 			}
 
 			// Populate the label of the currently selected value
@@ -159,17 +147,6 @@ class Genapp_Service_QueryService {
 			}
 
 			$json .= $formField->toEditJSON();
-
-			// Populate the list of available values
-			if ($formField->subtype == "MODE") {
-				$json .= ',"params":{"options":[';
-				foreach ($modes as $code => $label) {
-					$json .= '['.json_encode($code).','.json_encode($label).'],';
-				}
-				$json = substr($json, 0, -1);
-				$json .= ']}';
-			}
-			// For DYNAMIC and TREE modes, the list is populated using an ajax request
 
 
 		} else {
@@ -505,13 +482,13 @@ class Genapp_Service_QueryService {
 
 				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 					if ($tableField->subtype == "DYNAMIC") {
-						$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
 					} else if ($tableField->subtype == "TREE") {
 						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
 					} else if ($tableField->subtype == "TAXREF") {
 						$traductions[$key] = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
 					} else {
-						$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 					}
 				}
 			}
@@ -885,20 +862,7 @@ class Genapp_Service_QueryService {
 			$json .= $criteria->toCriteriaJSON();
 
 			// add some specific options
-			if ($criteria->type == "CODE" || $criteria->type == "ARRAY") {
-
-				if ($criteria->subtype == "MODE") {
-					// For MODE subtypes we get the list of values
-					$options = $this->metadataModel->getModes($criteria->unit);
-					$json .= ',"params":{"options":[';
-					foreach ($options as $code => $label) {
-						$json .= '['.json_encode($code).','.json_encode($label).'],';
-					}
-					$json = substr($json, 0, -1);
-					$json .= ']}';
-				}
-				// For DYNAMIC and TREE subtypes, the list is populated using an ajax request
-			} else if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
+			if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
 				// For the RANGE field, get the min and max values
 				$range = $this->metadataModel->getRange($criteria->unit);
 				$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';

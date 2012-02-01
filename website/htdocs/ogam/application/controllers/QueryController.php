@@ -535,13 +535,13 @@ class QueryController extends AbstractOGAMController {
 
 					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 						if ($tableField->subtype == "DYNAMIC") {
-							$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
+							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
 						} else if ($tableField->subtype == "TREE") {
 							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
 						} else if ($tableField->subtype == "TAXREF") {
 							$traductions[$key] = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
 						} else {
-							$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
+							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 						}
 					}
 
@@ -709,13 +709,13 @@ class QueryController extends AbstractOGAMController {
 
 					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 						if ($tableField->subtype == "DYNAMIC") {
-							$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
+							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
 						} else if ($tableField->subtype == "TREE") {
 							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
 						} else if ($tableField->subtype == "TAXREF") {
 							$traductions[$key] = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
 						} else {
-							$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
+							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 						}
 					}
 
@@ -932,7 +932,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('$unit : '.$unit);
 		$this->logger->debug('$query : '.$query);
 
-		$codes = $this->metadataModel->getDynamodes($unit, $query);
+		$codes = $this->metadataModel->getDynamodeLabels($unit, null, $query);
 
 		// Send the result as a JSON String
 		$json = '{"codes":[';
@@ -946,6 +946,38 @@ class QueryController extends AbstractOGAMController {
 
 		echo $json;
 
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+	
+	/**
+	* AJAX function : Return the list of available codes for a MODE unit.
+	*
+	* @return JSON.
+	*/
+	public function ajaxgetcodesAction() {
+		$this->logger->debug('ajaxgetdynamiccodesAction');
+	
+		$unit = $this->getRequest()->getParam('unit');
+	
+		$this->logger->debug('$unit : '.$unit);
+	
+		$codes = $this->metadataModel->getModeLabels($unit);
+	
+		// Send the result as a JSON String
+		$json = '{"codes":[';
+		foreach ($codes as $code => $label) {
+			$json .= '{"code":'.json_encode($code).', "label":'.json_encode($label).'},';
+		}
+		if (!empty($codes)) {
+			$json = substr($json, 0, -1);
+		}
+		$json .= ']}';
+	
+		echo $json;
+	
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();

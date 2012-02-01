@@ -40,11 +40,12 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the unit modes.
 	 *
 	 * @param String $unit The unit
+	 * @param String $code a code
 	 * @return Array[mode => label]
 	 */
-	public function getModes($unit) {
+	public function getModeLabels($unit, $code = null) {
 
-		$key = 'getModes_'.$unit;
+		$key = 'getModeLabels_'.$unit.'_'.$code;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
 
 		$this->logger->debug($key);
@@ -57,12 +58,22 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		if (empty($cachedResult)) {
 
 			$db = $this->getAdapter();
-			$req = "SELECT code, label FROM mode WHERE unit = ? ORDER BY position, code";
+			$req = "SELECT code, label ";
+			$req .= " FROM mode ";
+			$req .= " WHERE unit = ? ";
+			if ($code != null) {
+				$req .= " AND code = ?";
+			}
+			$req .= " ORDER BY position, code";
 
-			$this->logger->info('getModes : '.$req);
+			$this->logger->info('getModeLabels : '.$req);
 
 			$select = $db->prepare($req);
-			$select->execute(array($unit));
+			if ($code != null) {
+				$select->execute(array($unit, $code));
+			} else {
+				$select->execute(array($unit));
+			}
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
@@ -209,12 +220,13 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * Get the unit modes for a dynamic list.
 	 *
 	 * @param String $unit The unit
-	 * @param String $query optional query filter
+	 * @param String $code A code
+	 * @param String $query an optional query filter
 	 * @return Array[mode => label]
 	 */
-	public function getDynamodes($unit, $query = null) {
+	public function getDynamodeLabels($unit, $code = null, $query = null) {
 
-		$key = 'getDynamodes_'.$unit.'_'.$query;
+		$key = 'getDynamodeLabels_'.$unit.'_'.$code.'_'.$query;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
 
 		$this->logger->debug($key);
@@ -231,12 +243,21 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req = $this->_getDynamodeSQL($unit);
 
 			if (!empty($query)) {
-				$req = "select * from (".$req.") as foo where label ilike '".$query."%'";
+				$req = "SELECT * ";
+				$req .= " FROM (".$req.") as foo ";
+				$req .= " WHERE label ilike '".$query."%'";
+				if ($code != null) {
+					$req .= " AND code = ?";
+				}
 			}
-			$this->logger->info('getDynamicCodes : '.$req);
+			$this->logger->info('getDynamodeLabels : '.$req);
 
 			$select = $db->prepare($req);
-			$select->execute(array());
+			if ($code != null) {
+				$select->execute(array($code));
+			} else {
+				$select->execute(array());
+			}
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
