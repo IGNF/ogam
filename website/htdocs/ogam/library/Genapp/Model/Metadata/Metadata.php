@@ -43,20 +43,39 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[mode => label]
 	 */
 	public function getModes($unit) {
-		$db = $this->getAdapter();
-		$req = "SELECT code, label FROM mode WHERE unit = ? ORDER BY position, code";
 
-		$this->logger->info('getModes : '.$req);
+		$key = 'getModes_'.$unit;
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
 
-		$select = $db->prepare($req);
-		$select->execute(array($unit));
+		$this->logger->debug($key);
 
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$result[$row['code']] = $row['label'];
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
 		}
 
-		return $result;
+		if (empty($cachedResult)) {
+
+			$db = $this->getAdapter();
+			$req = "SELECT code, label FROM mode WHERE unit = ? ORDER BY position, code";
+
+			$this->logger->info('getModes : '.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($unit));
+
+			$result = array();
+			foreach ($select->fetchAll() as $row) {
+				$result[$row['code']] = $row['label'];
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
 	}
 
 	/**
@@ -96,19 +115,39 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return String label
 	 */
 	public function getMode($unit, $mode) {
-		$db = $this->getAdapter();
-		$req = "SELECT code, label FROM mode WHERE unit = ? AND code = ? ORDER BY position, code";
 
-		$this->logger->info('getMode : '.$req);
+		$key = 'getMode_'.$unit.'_'.$mode;
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
 
-		$select = $db->prepare($req);
-		$select->execute(array($unit, $mode));
+		$this->logger->debug($key);
 
-		$row = $select->fetch();
-		if ($row) {
-			return $row['label'];
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+
+		if (empty($cachedResult)) {
+
+			$db = $this->getAdapter();
+			$req = "SELECT code, label FROM mode WHERE unit = ? AND code = ? ORDER BY position, code";
+
+			$this->logger->info('getMode : '.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($unit, $mode));
+
+			$row = $select->fetch();
+			if ($row) {
+				$result = $row['label'];
+			} else {
+				$result = null;
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
 		} else {
-			return null;
+			return $cachedResult;
 		}
 	}
 
@@ -120,30 +159,50 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[mode => label]
 	 */
 	public function getTreeLabels($unit, $value = null) {
-		$db = $this->getAdapter();
-		$req = "SELECT code, label ";
-		$req .= " FROM mode_tree ";
-		$req .= " WHERE unit = ?";
-		if ($value != null) {
-			if (is_array($value)) {
-				$req .= " AND code IN ('".implode("','",$value)."')";
-			} else {
-				$req .= " AND code = '".$value."'";
+
+		$key = 'getTreeLabels_'.$unit.'_'.$value;
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+
+		$this->logger->debug($key);
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+
+		if (empty($cachedResult)) {
+
+
+
+			$db = $this->getAdapter();
+			$req = "SELECT code, label ";
+			$req .= " FROM mode_tree ";
+			$req .= " WHERE unit = ?";
+			if ($value != null) {
+				if (is_array($value)) {
+					$req .= " AND code IN ('".implode("','",$value)."')";
+				} else {
+					$req .= " AND code = '".$value."'";
+				}
 			}
+			$req .= " ORDER BY position, code";
+
+			$this->logger->info('getTreeLabels : '.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($unit));
+
+			$result = array();
+			foreach ($select->fetchAll() as $row) {
+				$result[$row['code']] = $row['label'];
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
 		}
-		$req .= " ORDER BY position, code";
-
-		$this->logger->info('getTreeLabels : '.$req);
-
-		$select = $db->prepare($req);
-		$select->execute(array($unit));
-
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$result[$row['code']] = $row['label'];
-		}
-
-		return $result;
 	}
 
 	/**
@@ -154,24 +213,43 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[mode => label]
 	 */
 	public function getDynamodes($unit, $query = null) {
-		$db = $this->getAdapter();
 
-		$req = $this->_getDynamodeSQL($unit);
+		$key = 'getDynamodes_'.$unit.'_'.$query;
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
 
-		if (!empty($query)) {
-			$req = "select * from (".$req.") as foo where label ilike '".$query."%'";
-		}
-		$this->logger->info('getDynamicCodes : '.$req);
+		$this->logger->debug($key);
 
-		$select = $db->prepare($req);
-		$select->execute(array());
-
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$result[$row['code']] = $row['label'];
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
 		}
 
-		return $result;
+		if (empty($cachedResult)) {
+
+
+			$db = $this->getAdapter();
+
+			$req = $this->_getDynamodeSQL($unit);
+
+			if (!empty($query)) {
+				$req = "select * from (".$req.") as foo where label ilike '".$query."%'";
+			}
+			$this->logger->info('getDynamicCodes : '.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array());
+
+			$result = array();
+			foreach ($select->fetchAll() as $row) {
+				$result[$row['code']] = $row['label'];
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
 	}
 
 	/**
@@ -209,57 +287,76 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Genapp_Object_Metadata_TreeNode
 	 */
 	public function getTreeModes($unit, $parentcode = '*', $levels = 1) {
-		$db = $this->getAdapter();
-		$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
-		$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
-		$req .= "		FROM mode_tree ";
-		$req .= "		WHERE unit = ? ";
-		$req .= "		AND parent_code = ? ";
-		$req .= "	UNION ALL ";
-		$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
-		$req .= "		FROM mode_tree child ";
-		$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
-		if ($levels != 0) {
-			$req .= "		WHERE level < ".$levels." ";
+
+		$key = 'getTreeModes_'.$unit.'_'.$parentcode.'_'.$levels;
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+
+		$this->logger->debug($key);
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
 		}
-		$req .= "	) ";
-		$req .= "	SELECT * ";
-		$req .= "	FROM node_list ";
-		$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
 
-		$this->logger->info('getTreeModes : '.$unit.' '.$parentcode);
-		$this->logger->info('getTreeModes : '.$req);
+		if (empty($cachedResult)) {
 
-		$select = $db->prepare($req);
 
-		$select->execute(array($unit, $parentcode));
+			$db = $this->getAdapter();
+			$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
+			$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
+			$req .= "		FROM mode_tree ";
+			$req .= "		WHERE unit = ? ";
+			$req .= "		AND parent_code = ? ";
+			$req .= "	UNION ALL ";
+			$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
+			$req .= "		FROM mode_tree child ";
+			$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
+			if ($levels != 0) {
+				$req .= "		WHERE level < ".$levels." ";
+			}
+			$req .= "	) ";
+			$req .= "	SELECT * ";
+			$req .= "	FROM node_list ";
+			$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
 
-		$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
-		foreach ($select->fetchAll() as $row) {
+			$this->logger->info('getTreeModes : '.$unit.' '.$parentcode);
+			$this->logger->info('getTreeModes : '.$req);
 
-			$parentCode = $row['parent_code'];
+			$select = $db->prepare($req);
 
-			//Build the new node
-			$tree = new Genapp_Object_Metadata_TreeNode();
-			$tree->code = $row['code'];
-			$tree->label = $row['label'];
-			$tree->isLeaf = $row['is_leaf'];
+			$select->execute(array($unit, $parentcode));
 
-			// Check if a parent can be found in the structure
-			$parentNode = $resultTree->getNode($parentCode);
-			if ($parentNode == null) {
-				// Add the new node to the result root
-				$resultTree->addChild($tree);
+			$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
+			foreach ($select->fetchAll() as $row) {
 
-			} else {
-				// Add it to the found parent
-				$parentNode->addChild($tree);
+				$parentCode = $row['parent_code'];
+
+				//Build the new node
+				$tree = new Genapp_Object_Metadata_TreeNode();
+				$tree->code = $row['code'];
+				$tree->label = $row['label'];
+				$tree->isLeaf = $row['is_leaf'];
+
+				// Check if a parent can be found in the structure
+				$parentNode = $resultTree->getNode($parentCode);
+				if ($parentNode == null) {
+					// Add the new node to the result root
+					$resultTree->addChild($tree);
+
+				} else {
+					// Add it to the found parent
+					$parentNode->addChild($tree);
+
+				}
 
 			}
 
+			if ($this->useCache) {
+				$this->cache->save($resultTree, $key);
+			}
+			return $resultTree;
+		} else {
+			return $cachedResult;
 		}
-
-		return $resultTree;
 	}
 
 	/**
@@ -273,36 +370,55 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[String]
 	 */
 	public function getTreeChildrenCodes($unit, $code = '*', $levels = 1) {
-		$this->logger->info('getTreeChildrenCodes : '.$unit.'_'.$code.'_'.$levels);
-		$db = $this->getAdapter();
-		$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
-		$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
-		$req .= "		FROM mode_tree ";
-		$req .= "		WHERE unit = ? ";
-		$req .= "		AND code = ? ";
-		$req .= "	UNION ALL ";
-		$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
-		$req .= "		FROM mode_tree child ";
-		$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
-		if ($levels != 0) {
-			$req .= "		WHERE level < ".$levels." ";
-		}
-		$req .= "	) ";
-		$req .= "	SELECT * ";
-		$req .= "	FROM node_list ";
-		$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
 
-		$this->logger->info('getTreeChildrenCodes : '.$req);
+		$key = 'getTreeChildrenCodes_'.$unit.'_'.$code.'_'.$levels;
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
 
-		$select = $db->prepare($req);
-		$select->execute(array($unit, $code));
+		$this->logger->debug($key);
 
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$result[] = $row['code'];
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
 		}
 
-		return $result;
+		if (empty($cachedResult)) {
+
+
+			$db = $this->getAdapter();
+			$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
+			$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
+			$req .= "		FROM mode_tree ";
+			$req .= "		WHERE unit = ? ";
+			$req .= "		AND code = ? ";
+			$req .= "	UNION ALL ";
+			$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
+			$req .= "		FROM mode_tree child ";
+			$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
+			if ($levels != 0) {
+				$req .= "		WHERE level < ".$levels." ";
+			}
+			$req .= "	) ";
+			$req .= "	SELECT * ";
+			$req .= "	FROM node_list ";
+			$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
+
+			$this->logger->info('getTreeChildrenCodes : '.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($unit, $code));
+
+			$result = array();
+			foreach ($select->fetchAll() as $row) {
+				$result[] = $row['code'];
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
 	}
 
 
@@ -446,8 +562,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTableFields($schema, $format, $datasetID = null) {
 
-		$db = $this->getAdapter();
-
 		$this->logger->debug('getTableFields : '.$datasetID.'_'.$schema.'_'.$format);
 
 		$key = 'getTableFields_'.$datasetID.'_'.$schema.'_'.$format;
@@ -456,6 +570,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		}
 
 		if (empty($cachedResult)) {
+
+			$db = $this->getAdapter();
+
+
 
 			// Get the fields specified by the format
 			$req = "SELECT DISTINCT table_field.*, data.label, data.unit, unit.type, unit.subtype, data.definition ";
@@ -491,7 +609,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$tableField->columnName = $row['column_name'];
 				$tableField->isCalculated = $row['is_calculated'];
 				$tableField->isEditable = $row['is_editable'];
-				$tableField->isInsertable = $row['is_insertable'];				
+				$tableField->isInsertable = $row['is_insertable'];
 				$tableField->position = $row['position'];
 				$tableField->label = $row['label'];
 				$tableField->unit = $row['unit'];
