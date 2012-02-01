@@ -148,7 +148,7 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 
 
 	/**
-	 * Get all the children codes from a taxon.
+	 * Get all the children codes from the reference taxon of a taxon.
 	 *
 	 * Return an array of codes.
 	 *
@@ -160,7 +160,7 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 		$this->logger->info('getTaxrefChildrenCodes : '.$code.'_'.$levels);
 		$db = $this->getAdapter();
 		$req = "WITH RECURSIVE node_list( cd_nom, level) AS ( ";
-		$req .= "	    SELECT cd_nom, 1 ";
+		$req .= "	    SELECT cd_ref, 1 "; // we get the reference taxon as a base for the search
 		$req .= "		FROM taxref ";
 		$req .= "		WHERE cd_nom = ? ";
 		$req .= "	UNION ALL ";
