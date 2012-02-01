@@ -17,24 +17,46 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	 *      button (defaults to true).
 	 */
 	hideValidationButton : false,
-	store : new Ext.data.ArrayStore({
-		// store configs
-		autoDestroy : true,
-		// reader configs
-		idIndex : 0,
-		fields : [ 'id', 'text' ]
-	}),
+	
+	/**
+	 * The datastore
+	 */
+	store : null,
+	
+	/**
+	 * Value field in the store
+	 */
 	valueField : 'id',
+	
+	/**
+	 * Display field in the store,
+	 */
 	displayField : 'text',
 
 	// private
 	initComponent : function() {
+		
+		// Create the datastore
+		this.store = new Ext.data.ArrayStore({
+			// store configs
+			autoDestroy : true,
+			// reader configs
+			idIndex : 0,
+			fields : [ 'id', 'text' ]
+		});
+		
+		// Set the submit name of the field
 		this.hiddenName = this.name;
+		
+		// Add the default value to the store
 		this.getStore().add([ new Ext.data.Record({
             id : this.value,
             text : this.valueLabel
         }) ]);
+		
+		// Set the current value to the default value
         this.setValue(this.value);
+        
 		Genapp.form.TreeField.superclass.initComponent.call(this);
 	},
 
