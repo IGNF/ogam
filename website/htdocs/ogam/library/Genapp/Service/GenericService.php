@@ -1050,8 +1050,6 @@ class Genapp_Service_GenericService {
 
 		}
 		
-		$this->logger->debug('getValueLabel '.print_r($field,true));
-		
 
 		return $field;
 

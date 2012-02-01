@@ -104,7 +104,11 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				$field->value = $this->genericService->stringToArray($field->value);
 
 			}
+		}
 
+		// Fill the values with data from the table
+		foreach ($data->getFields() as $field) {
+				
 			// Fill the value labels for the field
 			$field = $this->genericService->fillValueLabel($field);
 
