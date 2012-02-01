@@ -119,6 +119,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	dataEditFSValidateButtonTooltip : 'Save changes',
 	/**
+	 * @cfg {String} dataEditFSSavingMessage.
+	 */
+	dataEditFSSavingMessage : 'Saving...',
+	/**
 	 * @cfg {String} dataEditFSValidateButtonDisabledTooltip The data Edit
 	 *      FieldSet
 	 */
@@ -646,13 +650,13 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * Submit the form to save the edited data
 	 */
 	editData : function() {
-		Ext.Ajax.request({
-			form : this.dataEditForm.getForm().getEl(),
+		this.dataEditForm.getForm().submit({
 			url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
 			timeout : 480000,
 			success : this.editSuccess,
 			failure : this.editFailure,
-			scope : this
+			scope : this,
+			waitMsg : this.dataEditFSSavingMessage
 		});
 	},
 
@@ -676,14 +680,20 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	},
 
 	/**
-	 * Ajax success common function
+	 * Ajax Edit success.
+	 * 
+	 * @param {Ext.form.BasicForm}
+	 *            form
+	 * @param {Ext.form.Action}
+	 *            action
 	 */
-	editSuccess : function(response, opts) {
+	editSuccess : function(form, action) {
 
 		// We set the current mode to EDIT
 		this.mode == "EDIT";
 
-		var obj = Ext.decode(response.responseText);
+		var obj = Ext.util.JSON.decode(action.response.responseText);
+
 		if (!Ext.isEmpty(obj.message)) {
 			this.messagePanel.update(obj.message);
 		}
@@ -694,22 +704,26 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		if (!Ext.isEmpty(obj.errorMessage)) {
 			this.messagePanel.update(obj.errorMessage);
-			console.log('Server-side failure with status code (1): ' + response.status);
-			console.log('errorMessage : ' + response.errorMessage);
+			console.log('Server-side failure with status code (1): ' + action.response.status);
+			console.log('errorMessage : ' + action.response.errorMessage);
 		}
 	},
 
 	/**
-	 * Ajax failure common function
+	 * Ajax Edit failure.
+	 * 
+	 * @param {Ext.form.BasicForm}
+	 *            form
+	 * @param {Ext.form.Action}
+	 *            action
 	 */
-	editFailure : function(response, opts) {
-		console.log(response);
-		var obj = Ext.decode(response.responseText);
+	editFailure : function(form, action) {
+		var obj = Ext.util.JSON.decode(action.response.responseText);
 		if (!Ext.isEmpty(obj.errorMessage)) {
 			this.messagePanel.update(obj.errorMessage);
 		}
-		console.log('Server-side failure with status code (2): ' + response.status);
-		console.log('errorMessage : ' + response.errorMessage);
+		console.log('Server-side failure with status code (2): ' + action.response.status);
+		console.log('errorMessage : ' + action.response.errorMessage);
 	},
 
 	/**
