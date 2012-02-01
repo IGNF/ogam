@@ -221,6 +221,7 @@ if(Genapp.EditionPanel){
         dataEditFSValidateButtonText : 'Valider',
         dataEditFSValidateButtonTooltip : 'Sauvegarder les modifications',
         dataEditFSSavingMessage : 'Sauvegarde en cours ...',
+        dataEditFSLoadingMessage : 'Chargement ...',
         dataEditFSValidateButtonDisabledTooltip : 'La donnée ne peut pas être éditée (droits manquants)',
         childrenFSTitle : 'Enfants',
         childrenFSAddNewChildButtonText : 'Ajouter',

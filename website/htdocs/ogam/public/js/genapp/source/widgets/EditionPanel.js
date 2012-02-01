@@ -123,6 +123,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	dataEditFSSavingMessage : 'Saving...',
 	/**
+	 * @cfg {String} dataEditFSSavingMessage.
+	 */
+	dataEditFSLoadingMessage : 'Loading...',
+	/**
 	 * @cfg {String} dataEditFSValidateButtonDisabledTooltip The data Edit
 	 *      FieldSet
 	 */
@@ -189,6 +193,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * @cfg {Ext.Button} the validate button.
 	 */
 	validateButton : null,
+	
+	/**
+	 * @cfg {Ext.LoadMask} Loading mask
+	 */
+	loadMask : null,
 
 	// private
 	initComponent : function() {
@@ -277,7 +286,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			listeners : {
 				'load' : this.buildFieldForm,
 				scope : this
-			}
+			},
+			waitMsg :'Loading...'
 		});
 
 		var centerPanelItems = [];
@@ -330,6 +340,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		} else {
 			var buttons = [ this.validateButton ];
 		}
+		
+		
 
 		// Data
 		this.dataEditForm = new Ext.FormPanel({
@@ -344,6 +356,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			buttonAlign : 'center',
 			buttons : buttons
 		});
+		
+		// Loading mask
+		this.loadMask = new Ext.LoadMask(Ext.getBody(), {
+			msg : this.dataEditFSLoadingMessage
+		});
+		this.loadMask.show();   
 
 		this.dataEditFS = new Ext.form.FieldSet({
 			title : '&nbsp;' + this.dataTitle + '&nbsp;',
@@ -454,6 +472,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				this.validateButton.setTooltip(this.dataEditFSValidateButtonDisabledTooltip);
 			}
 		}
+		
+		this.loadMask.hide();   
 
 		// Redo the layout
 		this.dataEditForm.doLayout();
