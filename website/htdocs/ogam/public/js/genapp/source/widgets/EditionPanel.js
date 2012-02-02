@@ -506,10 +506,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 				if (record.type = 'ARRAY') {
 					field.xtype = 'superboxselect';
+					field.hiddenName = field.name + '[]';
 				} else {
 					field.xtype = 'combo';
+					field.hiddenName = field.name;
 				}
-				field.hiddenName = field.name;
+				
 				field.triggerAction = 'all';
 				field.typeAhead = true;
 				field.displayField = 'label';
