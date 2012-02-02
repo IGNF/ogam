@@ -51,7 +51,6 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
     containerScroll : true,
     frame : false,
     baseAttr: {singleClickExpand:true},
-    root : {nodeType: 'async', text:'Tree Root', id:'*', draggable : false}, // root is always '*'
     listeners:{
         /* TODO: For OISON Check if still need
         'load':{// Expand by default the root children
@@ -71,6 +70,11 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 
     // private
     initComponent : function(){
+        /*
+         * The root must be declared here and not in the static part of the class
+         * to avoid a conflict between the instance of the class
+         */
+        this.root = new Ext.tree.AsyncTreeNode({draggable : false, id :'*'}); // root is always '*'
         if(!this.hideValidationButton){
             this.buttons = [{
                 xtype:'button',

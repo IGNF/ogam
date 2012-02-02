@@ -26,8 +26,8 @@ Genapp.form.picker.TaxrefPicker = Ext.extend(Genapp.form.picker.TreePicker, {
 
     // private
     initComponent : function(){
-        this.root.listeners = {'load': { fn: this.italicFct, scope:this, single:true}, scope:this};
         Genapp.form.picker.TaxrefPicker.superclass.initComponent.call(this);
+        this.root.listeners = {'load': { fn: this.italicFct, scope:this, single:true}, scope:this};
     }
 });
 Ext.reg('taxrefpicker', Genapp.form.picker.TaxrefPicker);
