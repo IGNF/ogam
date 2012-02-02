@@ -193,7 +193,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * @cfg {Ext.Button} the validate button.
 	 */
 	validateButton : null,
-	
+
 	/**
 	 * @cfg {Ext.LoadMask} Loading mask
 	 */
@@ -287,7 +287,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				'load' : this.buildFieldForm,
 				scope : this
 			},
-			waitMsg :'Loading...'
+			waitMsg : 'Loading...'
 		});
 
 		var centerPanelItems = [];
@@ -340,8 +340,6 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		} else {
 			var buttons = [ this.validateButton ];
 		}
-		
-		
 
 		// Data
 		this.dataEditForm = new Ext.FormPanel({
@@ -356,12 +354,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			buttonAlign : 'center',
 			buttons : buttons
 		});
-		
+
 		// Loading mask
 		this.loadMask = new Ext.LoadMask(Ext.getBody(), {
 			msg : this.dataEditFSLoadingMessage
 		});
-		this.loadMask.show();   
+		this.loadMask.show();
 
 		this.dataEditFS = new Ext.form.FieldSet({
 			title : '&nbsp;' + this.dataTitle + '&nbsp;',
@@ -472,8 +470,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				this.validateButton.setTooltip(this.dataEditFSValidateButtonDisabledTooltip);
 			}
 		}
-		
-		this.loadMask.hide();   
+
+		this.loadMask.hide();
 
 		// Redo the layout
 		this.dataEditForm.doLayout();
@@ -505,7 +503,12 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			switch (record.inputType) {
 			case 'SELECT':
 				// The input type SELECT correspond to a data type CODE or ARRAY
-				field.xtype = 'combo';
+
+				if (record.type = 'ARRAY') {
+					field.xtype = 'superboxselect';
+				} else {
+					field.xtype = 'combo';
+				}
 				field.hiddenName = field.name;
 				field.triggerAction = 'all';
 				field.typeAhead = true;
