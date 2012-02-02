@@ -509,6 +509,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 					field.stackItems = true;
 					field.hiddenName = field.name + '[]';
 					field.allowAddNewData = true;
+					field.forceFormValue = false;
 				} else {
 					field.xtype = 'combo';
 					field.hiddenName = field.name;
