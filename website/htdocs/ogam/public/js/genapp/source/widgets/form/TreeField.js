@@ -17,25 +17,38 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	 *      button (defaults to true).
 	 */
 	hideValidationButton : false,
-	
+
 	/**
 	 * The datastore
 	 */
 	store : null,
-	
+
 	/**
 	 * Value field in the store
 	 */
 	valueField : 'id',
-	
+
 	/**
 	 * Display field in the store,
 	 */
 	displayField : 'text',
 
+	/**
+	 * Manage multiple values,
+	 */
+	muliple : false,
+
+	/**
+	 * The field menu (displayed on a trigger click).
+	 * 
+	 * @property menu
+	 * @type Genapp.form.menu.TreeMenu
+	 */
+	menu : null,
+
 	// private
 	initComponent : function() {
-		
+
 		// Create the datastore
 		this.store = new Ext.data.ArrayStore({
 			// store configs
@@ -44,19 +57,19 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 			idIndex : 0,
 			fields : [ 'id', 'text' ]
 		});
-		
+
 		// Set the submit name of the field
 		this.hiddenName = this.name;
-		
+
 		// Add the default value to the store
 		this.getStore().add([ new Ext.data.Record({
-            id : this.value,
-            text : this.valueLabel
-        }) ]);
-		
+			id : this.value,
+			text : this.valueLabel
+		}) ]);
+
 		// Set the current value to the default value
-        this.setValue(this.value);
-        
+		this.setValue(this.value);
+
 		Genapp.form.TreeField.superclass.initComponent.call(this);
 	},
 
@@ -73,16 +86,11 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 			return;
 		}
 		if (!this.menu) {
-			/**
-			 * The field menu (displayed on a trigger click).
-			 * 
-			 * @property menu
-			 * @type Genapp.form.menu.TreeMenu
-			 */
 			this.menu = new Genapp.form.menu.TreeMenu({
 				hideOnClick : false,
 				hideValidationButton : this.hideValidationButton,
-				dataUrl : this.dataUrl
+				dataUrl : this.dataUrl,
+				multiple : this.multiple
 			});
 		}
 		this.onFocus();
@@ -99,14 +107,28 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	},
 
 	// private
-	onSelect : function(value) {
+	onSelect : function(selectedValue) {
 		this.menu.hide();
-		if (value !== null) {
-			this.getStore().add([ new Ext.data.Record({
-				id : value.id,
-				text : value.text
-			}) ]);
-			this.setValue(value.id);
+		if (selectedValue !== null) {
+
+			if (selectedValue instanceof Array) {
+				var valueId = [];
+				for ( var i = 0; i < selectedValue.length; i++) {
+					var attributes = selectedValue[i].attributes;
+					this.getStore().add([ new Ext.data.Record({
+						id : attributes.id,
+						text : attributes.text
+					}) ]);
+					valueId.push(attributes.id);
+				}
+				this.setValue(valueId);
+			} else {
+				this.getStore().add([ new Ext.data.Record({
+					id : selectedValue.attributes.id,
+					text : selectedValue.attributes.text
+				}) ]);
+				this.setValue(selectedValue.attributes.id);
+			}
 		}
 	},
 

@@ -4,96 +4,118 @@
  * @class Genapp.form.picker.TreePicker
  * @extends Ext.TreePanel
  * @constructor Create a new TreePicker
- * @param {Object} config The config object
+ * @param {Object}
+ *            config The config object
  * @xtype treepicker
  */
 Ext.namespace('Genapp.form.picker');
 
 Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
-    /**
-     * @cfg {Number} height
-     * The height of this component in pixels (defaults to 300).
-     */
-    height:300,
-    /**
-     * @cfg {Number} width
-     * The width of this component in pixels (defaults to 300).
-     */
-    width:300,
-    /**
-     * @cfg {String} buttonAlign
-     * The alignment of any {@link #buttons} added to this panel.  Valid values are 'right',
-     * 'left' and 'center' (defaults to 'center').
-     */
-    buttonAlign: 'center',
-    /**
-     * @cfg {String} cls
-     * An optional extra CSS class that will be added to this component's Element (defaults to 'x-menu-number-range-item').
-     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
-     */
-    cls: 'x-menu-tree-item',
-    /**
-     * @cfg {String} okButtonText
-     * The ok Button Text (defaults to <tt>'ok'</tt>)
-     */
-    okButtonText:"ok",
-    /**
-     * @cfg {Boolean} hideValidationButton if true hide the menu validation button (defaults to true).
-     */
-    hideValidationButton : true,
-    padding:5,
-    enableDD : false,
-    animate : true, 
-    border : false,
-    rootVisible : false,
-    useArrows : true,
-    autoScroll : true,
-    containerScroll : true,
-    frame : false,
-    baseAttr: {singleClickExpand:true},
-    listeners:{
-        /* TODO: For OISON Check if still need
-        'load':{// Expand by default the root children
-            fn:function(node){
-                if(node.getDepth() === 0){
-                    node.expandChildNodes();
-                }
-            },
-            single:true
-        },*/
-        'dblclick':{// Select the node on double click
-            fn:function(node, event){
-                this.fireEvent('select', node.attributes);
-            }
-        }
-    },
+	/**
+	 * @cfg {Number} height The height of this component in pixels (defaults to
+	 *      300).
+	 */
+	height : 300,
+	/**
+	 * @cfg {Number} width The width of this component in pixels (defaults to
+	 *      300).
+	 */
+	width : 300,
+	/**
+	 * @cfg {String} buttonAlign The alignment of any {@link #buttons} added to
+	 *      this panel. Valid values are 'right', 'left' and 'center' (defaults
+	 *      to 'center').
+	 */
+	buttonAlign : 'center',
+	/**
+	 * @cfg {String} cls An optional extra CSS class that will be added to this
+	 *      component's Element (defaults to 'x-menu-number-range-item'). This
+	 *      can be useful for adding customized styles to the component or any
+	 *      of its children using standard CSS rules.
+	 */
+	cls : 'x-menu-tree-item',
+	/**
+	 * @cfg {String} okButtonText The ok Button Text (defaults to <tt>'ok'</tt>)
+	 */
+	okButtonText : "ok",
 
-    // private
-    initComponent : function(){
-        /*
-         * The root must be declared here and not in the static part of the class
-         * to avoid a conflict between the instance of the class
-         */
-        this.root = new Ext.tree.AsyncTreeNode({draggable : false, id :'*'}); // root is always '*'
-        if(!this.hideValidationButton){
-            this.buttons = [{
-                xtype:'button',
-                text:this.okButtonText,
-                width:'auto',
-                handler:this.onOkButtonPress.createDelegate(this)
-            }];
-            this.height = this.height + 28;
-        }
+	/**
+	 * Manage multiple values,
+	 */
+	multiple : false,
 
-        Genapp.form.picker.TreePicker.superclass.initComponent.call(this);
-    },
+	/**
+	 * @cfg {Boolean} hideValidationButton if true hide the menu validation
+	 *      button (defaults to true).
+	 */
+	hideValidationButton : true,
+	padding : 5,
+	enableDD : false,
+	animate : true,
+	border : false,
+	rootVisible : false,
+	useArrows : true,
+	autoScroll : true,
+	containerScroll : true,
+	frame : false,
+	baseAttr : {
+		singleClickExpand : true
+	},
+	listeners : {
+		/*
+		 * TODO: For OISON Check if still need 'load':{// Expand by default the
+		 * root children fn:function(node){ if(node.getDepth() === 0){
+		 * node.expandChildNodes(); } }, single:true },
+		 */
+		'dblclick' : {// Select the node on double click
+			fn : function(node, event) {
+				this.fireEvent('select', node.attributes);
+			}
+		}
+	},
 
-    // private
-    onOkButtonPress: function (button, state){
-        if(state){
-            var selectedNode = this.getSelectionModel().getSelectedNode();
-            this.fireEvent('select', selectedNode === null ? null : selectedNode.attributes);
-        }
-    }
+	// private
+	initComponent : function() {
+		/*
+		 * The root must be instancied here and not in the static part of the
+		 * class to avoid a conflict between the instance of the class
+		 */
+		this.root = new Ext.tree.AsyncTreeNode({
+			draggable : false,
+			id : '*'
+		}); // root is always '*'
+		if (!this.hideValidationButton) {
+			this.buttons = [ {
+				xtype : 'button',
+				text : this.okButtonText,
+				width : 'auto',
+				handler : this.onOkButtonPress.createDelegate(this)
+			} ];
+			this.height = this.height + 28;
+		}
+
+		// Allow multiple selection in the picker
+		if (this.multiple) {
+			this.selModel = new Ext.tree.MultiSelectionModel();
+		}
+
+		Genapp.form.picker.TreePicker.superclass.initComponent.call(this);
+	},
+
+	/**
+	 * Launched when the OK button is pressed
+	 */
+	onOkButtonPress : function(button, state) {
+		if (state) {
+			if (this.multiple) {
+				var selectedNodes = this.getSelectionModel().getSelectedNodes();
+				this.fireEvent('select', selectedNodes === null ? null : selectedNodes);
+			} else {
+				var selectedNode = this.getSelectionModel().getSelectedNode();
+				this.fireEvent('select', selectedNode === null ? null : selectedNode);
+
+			}
+		}
+	}
 });
 Ext.reg('treepicker', Genapp.form.picker.TreePicker);
