@@ -504,14 +504,16 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			case 'SELECT':
 				// The input type SELECT correspond to a data type CODE or ARRAY
 
-				if (record.type = 'ARRAY') {
+				if (record.type == 'ARRAY') {
 					field.xtype = 'superboxselect';
+					field.stackItems = true;
 					field.hiddenName = field.name + '[]';
+					field.allowAddNewData = true;
 				} else {
 					field.xtype = 'combo';
 					field.hiddenName = field.name;
 				}
-				
+
 				field.triggerAction = 'all';
 				field.typeAhead = true;
 				field.displayField = 'label';
@@ -521,12 +523,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 				// Fill the list of codes / labels for default values
 				var codes = [];
-				if (record.type === 'CODE') {
-					codes.push({
-						code : record.value,
-						label : record.valueLabel
-					});
-				} else { // case of ARRAY
+				if (record.type == 'ARRAY') {
 					if (record.valueLabel) {
 						for ( var i = 0; i < record.valueLabel.length; i++) {
 							codes.push({
@@ -535,6 +532,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 							});
 						}
 					}
+				} else { // case of ARRAY
+					codes.push({
+						code : record.value,
+						label : record.valueLabel
+					});
 				}
 
 				var storeFields = [ {
@@ -653,7 +655,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		// Set the default value
 		if (!Ext.isEmpty(record.value)) {
-			field.value = record.value;
+			if (record.value instanceof Array) {
+				field.value = record.value.join(",");
+			} else {
+				field.value = record.value;
+			}
 		}
 
 		// Check if the field is mandatory
