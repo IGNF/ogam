@@ -6,7 +6,7 @@
 .x-superboxselect-btns {position: absolute; right: 1px; top: 0; overflow:hidden; padding:2px;}
 .x-superboxselect-btns div {float: left; width: 16px; height: 16px; margin-top: 4px;}
 .x-superboxselect-btn-clear {background: url(clear.png) no-repeat scroll left 0px;}
-.x-superboxselect-btn-expand {background: url(expand.png) no-repeat scroll left 0px;}
+.x-superboxselect-btn-expand {background: url(expand2.png) no-repeat scroll left 0px;}
 .x-superboxselect-btn-over {background-position: left -16px}
 .x-superboxselect-btn-hide {display:none;}
 .x-superboxselect li {float: left; margin: 1px 1px 2px 1px; padding: 0;line-height: 18px;}
