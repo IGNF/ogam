@@ -192,6 +192,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 			}, this);
 
 			// TODO : Remove dependency on consultationPanel
+			// Apparemment non déclenché (l'évènement afterinit n'existe pas).
 			this.mapPanel.on('afterinit', function(mapPanel) {
 				var consultationPanel = Ext.getCmp('consultation_panel');
 				mapPanel.map.setCenter(consultationPanel.mapPanel.map.getCenter());

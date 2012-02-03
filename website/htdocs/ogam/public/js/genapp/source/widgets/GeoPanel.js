@@ -252,7 +252,8 @@ Genapp.GeoPanel = Ext
 					projectionLabel : " m (L2e)",
 
 					/**
-					 * @cfg {OpenLayers.Control.ZoomToFeatures} zoom to vector feature Control
+					 * @cfg {OpenLayers.Control.ZoomToFeatures} zoom to vector
+					 *      feature Control
 					 */
 					zoomToFeatureControl : null,
 
@@ -366,12 +367,19 @@ Genapp.GeoPanel = Ext
 							scope : this,
 							success : this.addLayersAndLayersTree
 						});
-						
 
-						// Zoom to the selected feature
-						if (this.zoomToFeatureOnInit) {
-							this.zoomToFeatureControl.trigger();
-						}
+						// Capture des évènements
+						Ext.util.Observable.capture(this, function(e) {
+							console.log(e);
+						});
+
+						// Auto-Zoom to the selected feature
+						this.on('afterlayout', function(mapPanel) {
+							if (this.zoomToFeatureOnInit) {
+								this.zoomToFeatureControl.activate();
+								this.zoomToFeatureControl.trigger();
+							}
+						});
 
 						Genapp.GeoPanel.superclass.initComponent.call(this);
 					},
@@ -712,7 +720,10 @@ Genapp.GeoPanel = Ext
 								map : this.map,
 								maxZoomLevel : 9,
 								ratio : 1.05,
-								autoActivate : true
+								autoActivate : false
+							// otherwise will
+							// desactivate after
+							// first init
 							});
 							var zoomToFeatureButton = new GeoExt.Action({
 								control : this.zoomToFeatureControl,
