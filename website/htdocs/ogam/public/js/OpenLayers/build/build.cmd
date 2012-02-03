@@ -1,1 +1,1 @@
-python build.py lite
+python build.py full
