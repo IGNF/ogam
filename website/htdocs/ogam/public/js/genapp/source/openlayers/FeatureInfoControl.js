@@ -6,8 +6,13 @@
  * Class: OpenLayers.Control.FeatureInfoControl. Implements a very simple
  * control that generates a WKT request.
  */
-OpenLayers.Control.FeatureInfoControl = OpenLayers.Class.create();
-OpenLayers.Control.FeatureInfoControl.prototype = OpenLayers.Class.inherit(OpenLayers.Control, {
+OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
+
+	/**
+	 * Property: handler {Object} Reference to the <OpenLayers.Handler> for this
+	 * control
+	 */
+	handler : null,
 
 	/**
 	 * Property: type {String} The type of <OpenLayers.Control> -- When added to
@@ -23,13 +28,10 @@ OpenLayers.Control.FeatureInfoControl.prototype = OpenLayers.Class.inherit(OpenL
 	 */
 	initialize : function(map, options) {
 		OpenLayers.Control.prototype.initialize.apply(this, [ options ]);
-	},
 
-	draw : function() {
 		this.handler = new OpenLayers.Handler.FeatureInfo(this, {
 			'click' : this.click
 		});
-		// this.activate();
 	},
 
 	/**

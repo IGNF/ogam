@@ -237,6 +237,8 @@ class ProxyController extends AbstractOGAMController {
 	 * Get the plot location informations from a coordinate.
 	 */
 	function getinfoAction() {
+		
+		$this->logger->debug('getinfoAction');
 
 		$uri = $_SERVER["REQUEST_URI"];
 
@@ -268,6 +270,8 @@ class ProxyController extends AbstractOGAMController {
 			}
 			fclose($handle);
 		}
+		
+		//$this->logger->debug('$gml '.$gml);
 
 		// Get the infos to display
 		$this->logger->debug('Get the infos to display');				

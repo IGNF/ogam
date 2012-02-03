@@ -842,12 +842,17 @@ Genapp.GeoPanel = Ext
 						//
 						// Get info on the feature
 						//
+
 						var featureInfoControl = new OpenLayers.Control.FeatureInfoControl();
+
 						var featureInfoButton = new GeoExt.Action({
 							control : featureInfoControl,
 							map : this.map,
+							toggleGroup : "navControl",
+							group : "navControl",
+							checked : false,
 							tooltip : this.featureInfoControlTitle,
-							iconCls : 'feature-info',
+							iconCls : 'feature-info'
 						});
 						this.mapToolbar.add(featureInfoButton);
 
@@ -866,7 +871,7 @@ Genapp.GeoPanel = Ext
 							tooltip : this.zoomBoxInControlTitle,
 							toggleGroup : "navControl",
 							group : "navControl",
-							checked : true,
+							checked : false,
 							iconCls : 'zoomin'
 						});
 						this.mapToolbar.add(zoomInButton);
@@ -903,7 +908,7 @@ Genapp.GeoPanel = Ext
 							tooltip : this.navigationControlTitle,
 							toggleGroup : "navControl",
 							group : "navControl",
-							checked : false,
+							checked : true,
 							iconCls : 'pan'
 						});
 
@@ -1149,7 +1154,7 @@ Genapp.GeoPanel = Ext
 					 */
 					disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) {
 						var i;
-						if (!Ext.isEmpty(layerNames)) {
+						if (!Ext.isEmpty(layerNames) && (this.layerTree != null)) {
 							for (i = 0; i < layerNames.length; i++) {
 								var node = this.layerTree.getNodeByLayerName(layerNames[i]);
 								if (!Ext.isEmpty(node)) {
