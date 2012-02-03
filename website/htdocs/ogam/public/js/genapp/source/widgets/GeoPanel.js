@@ -44,7 +44,7 @@ Genapp.GeoPanel = Ext
 					zoomToMaxExtentControlTitle : "Zoom to max extend",
 					featureInfoControlTitle : "Get the plot location information",
 					legalMentionsLinkText : 'Legal Mentions',
-					
+
 					/**
 					 * @cfg {Boolean} frame See {@link Ext.Panel#frame}.
 					 *      Default to true.
@@ -698,6 +698,20 @@ Genapp.GeoPanel = Ext
 						//
 						if (this.isDrawingMap) {
 
+							// Zoom to features button
+							var zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
+								map : this.map,
+								maxZoomLevel : 9,
+								ratio : 1.05,
+								autoActivate : true
+							});
+							var zoomToFeatureButton = new GeoExt.Action({
+								control : zoomToFeatureControl,
+								iconCls : 'zoomstations',
+								tooltip : this.zoomToFeaturesControlTitle,
+							});
+							this.mapToolbar.add(zoomToFeatureButton);
+
 							// Draw point button
 							if (!this.hideDrawPointButton) {
 								var drawPointControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point);
@@ -887,7 +901,7 @@ Genapp.GeoPanel = Ext
 						this.mapToolbar.addSeparator();
 
 						// Zoom to the Results
-						var zoomToFeatureButton = new GeoExt.Action({
+						var zoomToResultButton = new GeoExt.Action({
 							handler : this.zoomOnResultsBBox,
 							scope : this,
 							map : this.map,
@@ -896,7 +910,7 @@ Genapp.GeoPanel = Ext
 							iconCls : 'zoomstations'
 						});
 
-						this.mapToolbar.add(zoomToFeatureButton);
+						this.mapToolbar.add(zoomToResultButton);
 
 						// Zoom to max extend
 						var zoomToMaxControl = new OpenLayers.Control.ZoomToMaxExtent({
