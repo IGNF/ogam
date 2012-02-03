@@ -8,7 +8,14 @@
  */
 OpenLayers.Control.FeatureInfoControl = OpenLayers.Class.create();
 OpenLayers.Control.FeatureInfoControl.prototype = OpenLayers.Class.inherit(OpenLayers.Control, {
-	type : OpenLayers.Control.TYPE_TOOL,
+
+	/**
+	 * Property: type {String} The type of <OpenLayers.Control> -- When added to
+	 * a <Control.Panel>, 'type' is used by the panel to determine how to handle
+	 * our events.
+	 */
+	type : OpenLayers.Control.TYPE_TOGGLE,
+
 	/**
 	 * Constructor: OpenLayers.Control.FeatureInfoControl
 	 * 
