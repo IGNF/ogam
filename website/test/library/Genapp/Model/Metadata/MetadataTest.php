@@ -32,15 +32,15 @@ class MetadataTest extends ControllerTestCase {
 	}
 
 	/**
-	 * Test la fonction getModes.
+	 * Test la fonction getModeLabels.
 	 */
-	public function testGetModes() {
+	public function testGetModeLabels() {
 
 		// On charge le modèle
 		$metadataModel = new Genapp_Model_Metadata_Metadata();
 
 		// On vérifie que le user "admin" existe
-		$modes = $metadataModel->getModes('PROVIDER_ID');
+		$modes = $metadataModel->getModeLabels('PROVIDER_ID');
 
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($modes), 1);
@@ -77,14 +77,14 @@ class MetadataTest extends ControllerTestCase {
 	}
 
 	/**
-	 * Test la fonction getDynamodes.
+	 * Test la fonction getDynamodeLabels.
 	 */
-	public function testGetDynamodes() {
+	public function testGetDynamodeLabels() {
 
 		// On charge le modèle
 		$metadataModel = new Genapp_Model_Metadata_Metadata();
 
-		$departements = $metadataModel->getDynamodes('DEPARTEMENT');
+		$departements = $metadataModel->getDynamodeLabels('DEPARTEMENT');
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($departements), 97);

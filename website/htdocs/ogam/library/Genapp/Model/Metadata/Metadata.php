@@ -46,8 +46,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getModeLabels($unit, $code = null) {
 
 		$key = 'getModeLabels_'.$unit.'_'.$code;
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -129,8 +130,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getMode($unit, $mode) {
 
 		$key = 'getMode_'.$unit.'_'.$mode;
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -174,8 +176,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getTreeLabels($unit, $value = null) {
 
 		$key = 'getTreeLabels_'.$unit.'_'.$value;
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -230,8 +233,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getDynamodeLabels($unit, $code = null, $query = null) {
 
 		$key = 'getDynamodeLabels_'.$unit.'_'.$code.'_'.$query;
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -314,7 +318,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getTreeModes($unit, $parentcode = '*', $levels = 1) {
 
 		$key = 'getTreeModes_'.$unit.'_'.$parentcode.'_'.$levels;
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
+		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -397,7 +403,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getTreeChildrenCodes($unit, $code = '*', $levels = 1) {
 
 		$key = 'getTreeChildrenCodes_'.$unit.'_'.$code.'_'.$levels;
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
+		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -775,7 +783,11 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->debug('getTableFormatFromTableName : '.$schema.' '.$table);
 
-		$key = 'getTableFormatFromTableName'.$schema.' '.$table;
+		$key = 'getTableFormatFromTableName_'.$schema.'_'.$table;
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
+		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
+
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
