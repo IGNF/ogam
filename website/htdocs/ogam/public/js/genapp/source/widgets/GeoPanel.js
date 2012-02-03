@@ -368,11 +368,6 @@ Genapp.GeoPanel = Ext
 							success : this.addLayersAndLayersTree
 						});
 
-						// Capture des évènements
-						Ext.util.Observable.capture(this, function(e) {
-							console.log(e);
-						});
-
 						// Auto-Zoom to the selected feature
 						this.on('afterlayout', function(mapPanel) {
 							if (this.zoomToFeatureOnInit) {
