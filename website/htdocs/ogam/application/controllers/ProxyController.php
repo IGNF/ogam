@@ -10,15 +10,15 @@ require_once 'AbstractOGAMController.php';
  * @package controllers
  */
 class ProxyController extends AbstractOGAMController {
-	
+
 	/**
-	* The generic service.
-	*/
+	 * The generic service.
+	 */
 	private $genericService;
-	
+
 	/**
-	* The models.
-	*/
+	 * The models.
+	 */
 	private $metadataModel;
 	private $classDefinitionModel;
 
@@ -31,14 +31,14 @@ class ProxyController extends AbstractOGAMController {
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->classDefinitionModel = new Application_Model_Mapping_ClassDefinition();
-		
+
 		// The service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();
 	}
 
 	/**
 	 * No authorization check.
-	 * 
+	 *
 	 * @throws Exception when user not loggued.
 	 */
 	function preDispatch() {
@@ -46,7 +46,8 @@ class ProxyController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		if (empty($permissions)) { // user not logged
+		if (empty($permissions)) {
+			// user not logged
 			throw new Zend_Auth_Exception('User not logged');
 		}
 	}
@@ -237,7 +238,7 @@ class ProxyController extends AbstractOGAMController {
 	 * Get the plot location informations from a coordinate.
 	 */
 	function getinfoAction() {
-		
+
 		$this->logger->debug('getinfoAction');
 
 		$uri = $_SERVER["REQUEST_URI"];
@@ -250,7 +251,7 @@ class ProxyController extends AbstractOGAMController {
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema; // the schema used
 		$queryObject = $websiteSession->queryObject; // the last query done
-		
+
 		$tables = $this->genericService->getAllFormats($schema, $queryObject); // Extract the location table from the last query
 		$locationField = $this->metadataModel->getLocationTableFields($schema, array_keys($tables)); // Extract the location field from the available tables
 		$locationTableInfo = $this->metadataModel->getTableFormat($schema, $locationField->format); // Get info about the location table
@@ -270,13 +271,14 @@ class ProxyController extends AbstractOGAMController {
 			}
 			fclose($handle);
 		}
-		
+
 		//$this->logger->debug('$gml '.$gml);
 
 		// Get the infos to display
-		$this->logger->debug('Get the infos to display');				
-		if (strpos($gml, ":display>")) { // we have at least one plot found
-			
+		$this->logger->debug('Get the infos to display');
+		if (strpos($gml, ":display>")) {
+			// we have at least one plot found
+				
 
 			$dom = new DomDocument();
 			$dom->loadXML($gml);
@@ -296,22 +298,22 @@ class ProxyController extends AbstractOGAMController {
 			$locationsData = array();
 			foreach ($displayNodes as $displayIndex => $displayNode) {
 				$locationData = array();
-				
+
 				$params = $this->_getParams($displayNode);
 				$nextNode = $displayNode->nextSibling;
-				
+
 				// Get the locations identifiers
 				$key = 'SCHEMA/'.$schema.'/FORMAT/'.$locationTableInfo->format;
 				foreach ($locationTableInfo->primaryKeys as $tablePK) {
 					if (isset($params[strtolower($tablePK)])) {
-					$key .= '/'.strtoupper($tablePK).'/'.$params[strtolower($tablePK)];
+						$key .= '/'.strtoupper($tablePK).'/'.$params[strtolower($tablePK)];
 					}
-				}				
+				}
 				$id[] = $key;
 				$locationData[] = $key;
-				
+
 				$this->logger->debug('$key : '.$key);
-				
+
 				// Get the other fields
 				// Other fields are stored in a <ms:display_xxxxxxxxx> bloc of the WFS result
 				while ($nextNode != null) {
@@ -361,7 +363,7 @@ class ProxyController extends AbstractOGAMController {
 				}
 				$locationsData[] = $locationData;
 			}
-			
+				
 			// We must sort the array here because it can't be done
 			// into the mapfile sql request to avoid a lower performance
 			sort($id);
