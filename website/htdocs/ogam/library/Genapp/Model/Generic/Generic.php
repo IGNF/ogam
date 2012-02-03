@@ -108,7 +108,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		// Fill the values with data from the table
 		foreach ($data->getFields() as $field) {
-				
+
 			// Fill the value labels for the field
 			$field = $this->genericService->fillValueLabel($field);
 
@@ -311,9 +311,9 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				// Case of a calculated PK (for example a serial)
 				if ($field->isCalculated) {
 					if ($return == "") {
-						$return.= " RETURNING ";
+						$return .= " RETURNING ";
 					} else {
-						$return.= ", ";
+						$return .= ", ";
 					}
 					$return .= $field->columnName;
 				}

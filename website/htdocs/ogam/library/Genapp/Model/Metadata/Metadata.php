@@ -64,7 +64,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " WHERE unit = ? ";
 			if ($code != null) {
 				if (is_array($code)) {
-					$req .= " AND code IN ('".implode("','",$code)."')";
+					$req .= " AND code IN ('".implode("','", $code)."')";
 				} else {
 					$req .= " AND code = '".$code."'";
 				}
@@ -75,7 +75,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$select = $db->prepare($req);
 			$select->execute(array($unit));
-				
+
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
 				$result[$row['code']] = $row['label'];
@@ -193,7 +193,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " WHERE unit = ?";
 			if ($value != null) {
 				if (is_array($value)) {
-					$req .= " AND code IN ('".implode("','",$value)."')";
+					$req .= " AND code IN ('".implode("','", $value)."')";
 				} else {
 					$req .= " AND code = '".$value."'";
 				}
@@ -252,7 +252,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$req .= " WHERE label ilike '".$query."%'";
 				if ($code != null) {
 					if (is_array($code)) {
-						$req .= " AND code IN ('".implode("','",$code)."')";
+						$req .= " AND code IN ('".implode("','", $code)."')";
 					} else {
 						$req .= " AND code = '".$code."'";
 					}

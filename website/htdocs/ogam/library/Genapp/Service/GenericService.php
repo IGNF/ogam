@@ -302,7 +302,7 @@ class Genapp_Service_GenericService {
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
 		$permissions = $userSession->permissions;
-		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER',$permissions)) {
+		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER', $permissions)) {
 			$where .= " AND ".$rootTable->getLogicalName().".provider_id = '".$providerId."'";
 		}
 
@@ -366,7 +366,7 @@ class Genapp_Service_GenericService {
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
 		$permissions = $userSession->permissions;
-		if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER',$permissions)) {
+		if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
 			$select .= ", ".$leftTable->getLogicalName().".provider_id as _provider_id";
 		}
 
@@ -1013,7 +1013,7 @@ class Genapp_Service_GenericService {
 	 */
 	public function fillValueLabel($field) {
 
-		
+
 		// By default we keep the value as a label
 		$field->valueLabel = $field->value;
 
@@ -1023,7 +1023,7 @@ class Genapp_Service_GenericService {
 			// Get the modes => Label
 			if ($field->subtype == "DYNAMIC") {
 				$modes = $this->metadataModel->getDynamodeLabels($field->unit, $field->value);
-			} else if ($field->subtype == "TREE" ) {
+			} else if ($field->subtype == "TREE") {
 				$modes = $this->metadataModel->getTreeLabels($field->unit, $field->value);
 			} else if ($field->subtype == "TAXREF") {
 				$modes = $this->taxonomicReferentialModel->getTaxrefLabels($field->unit, $field->value);
@@ -1049,7 +1049,7 @@ class Genapp_Service_GenericService {
 			}
 
 		}
-		
+
 
 		return $field;
 

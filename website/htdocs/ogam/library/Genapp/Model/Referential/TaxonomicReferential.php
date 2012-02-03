@@ -157,7 +157,7 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 			$req .= "	FROM taxref ";
 			if ($value != null) {
 				if (is_array($value)) {
-					$req .= " WHERE cd_nom IN ('".implode("','",$value)."')";
+					$req .= " WHERE cd_nom IN ('".implode("','", $value)."')";
 				} else {
 					$req .= " WHERE cd_nom = '".$value."'";
 				}
@@ -193,7 +193,7 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 	 * @param Integer $levels The number of levels of depth (if 0 then no limitation)
 	 * @return Array[String]
 	 */
-	public function getTaxrefChildrenCodes( $code = '*', $levels = 1) {
+	public function getTaxrefChildrenCodes($code = '*', $levels = 1) {
 
 
 		$key = 'getTaxrefChildrenCodes_'.$code.'_'.$levels;

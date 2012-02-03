@@ -181,6 +181,8 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	/**
 	 * Return the label corresponding to the value.
 	 * For a code, will return the description.
+	 * 
+	 * @return String the label
 	 */
 	function getValueLabel() {
 		if ($this->valueLabel != null) {

@@ -375,9 +375,8 @@ class Genapp_Service_QueryService {
 
 			// Right management : add the provider id of the data
 			$userSession = new Zend_Session_Namespace('user');
-			$providerId = $userSession->user->providerId;
 			$permissions = $userSession->permissions;
-			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER',$permissions)) {
+			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
 				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
 			}
 
@@ -506,7 +505,7 @@ class Genapp_Service_QueryService {
 				$userSession = new Zend_Session_Namespace('user');
 				$providerId = $userSession->user->providerId;
 				$permissions = $userSession->permissions;
-				if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER',$permissions)) {
+				if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
 					$json .= ','.json_encode($line['_provider_id']);
 				}
 

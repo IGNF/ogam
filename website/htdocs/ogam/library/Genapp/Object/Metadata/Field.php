@@ -70,6 +70,8 @@ class Genapp_Object_Metadata_Field {
 
 	/**
 	 * Return the unique identifier of the field.
+	 * 
+	 * @return String the identifier of the field
 	 */
 	function getName() {
 		return $this->format.'__'. $this->data;
