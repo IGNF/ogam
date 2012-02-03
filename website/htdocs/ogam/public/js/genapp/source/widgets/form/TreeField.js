@@ -46,7 +46,9 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	 */
 	menu : null,
 
-	// private
+	/**
+	 * Initialise the component.
+	 */
 	initComponent : function() {
 
 		// Create the datastore

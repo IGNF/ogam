@@ -11,6 +11,12 @@
 Ext.namespace('Genapp.form.picker');
 
 Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
+
+	/**
+	 * Internationalization.
+	 */
+	okButtonText : "ok",
+
 	/**
 	 * @cfg {Number} height The height of this component in pixels (defaults to
 	 *      300).
@@ -34,10 +40,6 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 	 *      of its children using standard CSS rules.
 	 */
 	cls : 'x-menu-tree-item',
-	/**
-	 * @cfg {String} okButtonText The ok Button Text (defaults to <tt>'ok'</tt>)
-	 */
-	okButtonText : "ok",
 
 	/**
 	 * Manage multiple values,
@@ -49,6 +51,14 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 	 *      button (defaults to true).
 	 */
 	hideValidationButton : true,
+
+	/**
+	 * Validation button
+	 * 
+	 * @type Ext.Button
+	 */
+	validationButton : null,
+
 	padding : 5,
 	enableDD : false,
 	animate : true,
@@ -62,11 +72,6 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 		singleClickExpand : true
 	},
 	listeners : {
-		/*
-		 * TODO: For OISON Check if still need 'load':{// Expand by default the
-		 * root children fn:function(node){ if(node.getDepth() === 0){
-		 * node.expandChildNodes(); } }, single:true },
-		 */
 		'dblclick' : {// Select the node on double click
 			fn : function(node, event) {
 				this.fireEvent('select', node.attributes);
@@ -74,7 +79,9 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 		}
 	},
 
-	// private
+	/**
+	 * Initialise the component.
+	 */
 	initComponent : function() {
 		/*
 		 * The root must be instancied here and not in the static part of the
@@ -84,13 +91,17 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 			draggable : false,
 			id : '*'
 		}); // root is always '*'
+
+		this.validationButton = {
+			xtype : 'button',
+			text : this.okButtonText,
+			width : 'auto',
+			handler : this.onOkButtonPress.createDelegate(this)
+		};
+
+		// Add the validation button
 		if (!this.hideValidationButton) {
-			this.buttons = [ {
-				xtype : 'button',
-				text : this.okButtonText,
-				width : 'auto',
-				handler : this.onOkButtonPress.createDelegate(this)
-			} ];
+			this.buttons = [ this.validationButton ];
 			this.height = this.height + 28;
 		}
 
@@ -103,7 +114,7 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 	},
 
 	/**
-	 * Launched when the OK button is pressed
+	 * Launched when the OK button is pressed.
 	 */
 	onOkButtonPress : function(button, state) {
 		if (state) {

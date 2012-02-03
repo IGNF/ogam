@@ -11,54 +11,30 @@
 Ext.namespace('Genapp.form');
 
 Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
-    /**
-     * @cfg {String} numberSeparator
-     * The separator text to display between the numbers (defaults to <tt>' - '</tt>)
-     */
+   
+	/**
+	 * Internationalization.
+	 */ 
     numberSeparator: ' - ',
-    /**
-     * @cfg {String} maxNumberPrefix
-     * The prefix for the max number (defaults to <tt>'<= '</tt>)
-     */
+    decimalSeparator : ".",
     maxNumberPrefix: '<= ',
-    /**
-     * @cfg {String} minNumberPrefix
-     * The prefix for the min number (defaults to <tt>'>= '</tt>)
-     */
     minNumberPrefix: '>= ',
+    minText : "The minimum value for this field is {0}",
+    maxText : "The maximum value for this field is {0}",
+    reverseText : "The max number must be superior to the min number",
+    formatText : "The correct formats are",
+    nanText : "'{0}' is not a valid number",
+    
     /**
      * @cfg {Boolean} usePrefix if true, maxNumberPrefix and minNumberPrefix are used (defaults to true).
      * Otherwise minValue and maxValue are used.
      */
     usePrefix: true,
-    /**
-     * @cfg {String} minText Error text to display if the minimum value validation fails (defaults to "The minimum value for this field is {minValue}")
-     */
-    minText : "The minimum value for this field is {0}",
-    /**
-     * @cfg {String} maxText Error text to display if the maximum value validation fails (defaults to "The maximum value for this field is {maxValue}")
-     */
-    maxText : "The maximum value for this field is {0}",
-    /**
-     * @cfg {String} reverseText
-     * The error text to display when the numbers are reversed (defaults to
-     * <tt>'The max number must be posterior to the min number'</tt>).
-     */
-    reverseText : "The max number must be superior to the min number",
-    /**
-     * @cfg {String} formatText
-     * The error text to display when the format isn't respected (defaults to
-     * <tt>'The correct formats are'</tt>).
-     */
-    formatText : "The correct formats are",
+       
     /**
      * @cfg {Boolean} allowDecimals False to disallow decimal values (defaults to true)
      */
     allowDecimals : true,
-    /**
-     * @cfg {String} decimalSeparator Character(s) to allow as the decimal separator (defaults to '.')
-     */
-    decimalSeparator : ".",
     /**
      * @cfg {Number} decimalPrecision The maximum precision to display after the decimal separator (defaults to 2)
      */
@@ -76,11 +52,6 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
      */
     maxValue : Number.MAX_VALUE,
     /**
-     * @cfg {String} nanText Error text to display if the value is not a valid number.  For example, this can happen
-     * if a valid character like '.' or '-' is left in the field with no number (defaults to "{value} is not a valid number")
-     */
-    nanText : "'{0}' is not a valid number",
-    /**
      * @cfg {String} baseChars The base set of characters to evaluate as valid (defaults to '0123456789<>= ').
      */
     baseChars : "0123456789<>= ",
@@ -93,7 +64,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
      */
     setEmptyText : false,
 
-    // private
+    /**
+     * Initialise the events management.
+     */
     initEvents : function(){
         var allowed = '';
         allowed += this.baseChars; // ! this.baseChars can be null
@@ -107,7 +80,9 @@ Genapp.form.NumberRangeField = Ext.extend(Ext.form.TriggerField,  {
         Genapp.form.NumberRangeField.superclass.initEvents.call(this);
     },
 
-    // private
+    /**
+     * Initialise the component.
+     */
     initComponent : function(){
         var i;
         Genapp.form.NumberRangeField.superclass.initComponent.call(this);

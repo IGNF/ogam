@@ -11,45 +11,18 @@
 Ext.namespace('Genapp.form');
 
 Genapp.form.DateRangeField = Ext.extend(Ext.form.DateField, {
-    /**
-     * @cfg {String} minText
-     * The error text to display when the date in the cell is before <tt>{@link #minValue}</tt> (defaults to
-     * <tt>'The date in this field must be after {minValue}'</tt>).
-     */
+	
+	/**
+	 * Internationalization.
+	 */ 
     minText: "The dates in this field must be equal to or after {0}",
-    /**
-     * @cfg {String} maxText
-     * The error text to display when the date in the cell is after <tt>{@link #maxValue}</tt> (defaults to
-     * <tt>'The date in this field must be before {maxValue}'</tt>).
-     */
     maxText: "The dates in this field must be equal to or before {0}",
-    /**
-     * @cfg {String} reverseText
-     * The error text to display when the dates are reversed (defaults to
-     * <tt>'The end date must be posterior to the start date'</tt>).
-     */
     reverseText: "The end date must be posterior to the start date",
-    /**
-     * @cfg {String} notEqualText
-     * The error text to display when the dates are equal (defaults to
-     * <tt>'The end date can't be equal to the start date'</tt>).
-     */
     notEqualText: "The end date can't be equal to the start date",
-    /**
-     * @cfg {String} dateSeparator
-     * The separator text to display between the dates (defaults to <tt>' - '</tt>)
-     */
     dateSeparator: ' - ',
-    /**
-     * @cfg {String} endDatePrefix
-     * The prefix for the end date (defaults to <tt>'<= '</tt>)
-     */
     endDatePrefix: '<= ',
-    /**
-     * @cfg {String} startDatePrefix
-     * The prefix for the start date (defaults to <tt>'>= '</tt>)
-     */
     startDatePrefix: '>= ',
+    
     /**
      * @cfg {Boolean} usePrefix if true, endDatePrefix and startDatePrefix are used (defaults to true).
      * Otherwise minValue and maxValue are used.

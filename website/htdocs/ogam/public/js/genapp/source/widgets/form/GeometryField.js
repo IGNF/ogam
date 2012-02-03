@@ -14,34 +14,15 @@ Ext.namespace('Genapp.form');
 Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 
 	/**
-	 * @cfg {String} listUrl The url to get the Geometry's list (defaults to
-	 *      undefined)
-	 */
-	/**
-	 * @cfg {String} fieldLabel The label text to display next to this field
-	 *      (defaults to 'Geometry * ')
-	 */
+	 * Internationalization.
+	 */ 
 	fieldLabel : 'Location',
-	/**
-	 * @cfg {String} mapWindowTitle The map window title (defaults to 'Draw the
-	 *      search zone on the map :')
-	 */
 	mapWindowTitle : 'Draw the search zone on the map :',
-	/**
-	 * @cfg {String} mapWindowValidateButtonText The map windows validate button
-	 *      text (defaults to 'Validate')
-	 */
 	mapWindowValidateButtonText : 'Validate',
-	/**
-	 * @cfg {String} mapWindowValidateAndSearchButtonText The map windows
-	 *      validate and search button text (defaults to 'Validate and search')
-	 */
 	mapWindowValidateAndSearchButtonText : 'Validate and search',
-	/**
-	 * @cfg {String} mapWindowCancelButtonText The map windows cancel button
-	 *      text (defaults to 'Cancel')
-	 */
 	mapWindowCancelButtonText : 'Cancel',
+	
+	
 	/**
 	 * @cfg {String} triggerClass An additional CSS class used to style the
 	 *      trigger button. The trigger will always get the class
@@ -123,7 +104,9 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 	 */
 	mapWindow : null,
 
-	// private
+	/**
+	 * Initialise the component.
+	 */
 	initComponent : function() {
 		Genapp.form.GeometryField.superclass.initComponent.call(this);
 
