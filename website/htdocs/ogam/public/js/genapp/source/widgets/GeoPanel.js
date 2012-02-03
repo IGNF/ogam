@@ -840,6 +840,18 @@ Genapp.GeoPanel = Ext
 						});
 
 						//
+						// Get info on the feature
+						//
+						var featureInfoControl = new OpenLayers.Control.FeatureInfoControl();
+						var featureInfoButton = new GeoExt.Action({
+							control : featureInfoControl,
+							map : this.map,
+							tooltip : this.featureInfoControlTitle,
+							iconCls : 'feature-info',
+						});
+						this.mapToolbar.add(featureInfoButton);
+
+						//
 						// Navigation controls
 						//
 
