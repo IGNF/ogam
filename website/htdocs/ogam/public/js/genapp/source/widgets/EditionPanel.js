@@ -634,6 +634,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			case 'GEOM':
 				field.xtype = 'geometryfield';
 				field.hideSearchButton = true;
+				field.zoomToFeatureOnInit = true;
 				break;
 			case 'TREE':
 				field.xtype = 'treefield';

@@ -15,14 +15,13 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 
 	/**
 	 * Internationalization.
-	 */ 
+	 */
 	fieldLabel : 'Location',
 	mapWindowTitle : 'Draw the search zone on the map :',
 	mapWindowValidateButtonText : 'Validate',
 	mapWindowValidateAndSearchButtonText : 'Validate and search',
 	mapWindowCancelButtonText : 'Cancel',
-	
-	
+
 	/**
 	 * @cfg {String} triggerClass An additional CSS class used to style the
 	 *      trigger button. The trigger will always get the class
@@ -47,13 +46,11 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 	 */
 	hideSearchButton : false,
 	/**
-	 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Point"
-	 *      button
+	 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Point" button
 	 */
 	hideDrawPointButton : false,
 	/**
-	 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Line"
-	 *      button
+	 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Line" button
 	 */
 	hideDrawLineButton : false,
 	/**
@@ -87,6 +84,10 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 	 *      (defaults to <tt>0</tt>)
 	 */
 	mapWindowMinZoomLevel : 0,
+	/**
+	 * @cfg {Boolean} zoom to features extend on init.
+	 */
+	zoomToFeatureOnInit : false,
 
 	/**
 	 * The map panel.
@@ -138,11 +139,8 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 				hideMapDetails : this.hideMapDetails,
 				hideDrawPointButton : this.hideDrawPointButton,
 				hideDrawLineButton : this.hideDrawLineButton,
-				minZoomLevel : this.mapWindowMinZoomLevel
-			// ,
-			// resultsBBox:
-			// Ext.getCmp('consultation_panel').mapPanel.resultsBBox
-			// TODO: done for OISON, check the impact
+				minZoomLevel : this.mapWindowMinZoomLevel,
+				zoomToFeatureOnInit : this.zoomToFeatureOnInit
 			});
 
 			// Define the buttons
@@ -175,8 +173,8 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 				width : this.mapWindowWidth,
 				height : this.mapWindowHeight,
 				closeAction : 'destroy',
-				draggable : false, 
-				resizable : false, 
+				draggable : false,
+				resizable : false,
 				modal : true,
 				scope : true,
 				items : this.mapPanel,
@@ -200,6 +198,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 				mapPanel.map.zoomTo(consultationPanel.mapPanel.map.getZoom() - this.mapWindowMinZoomLevel);
 				mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'], true, true);
 			}, this);
+
 		}
 		this.mapWindow.show();
 	},

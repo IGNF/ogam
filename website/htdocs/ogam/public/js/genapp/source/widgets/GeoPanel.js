@@ -132,6 +132,10 @@ Genapp.GeoPanel = Ext
 					 */
 					hideLegalMentions : true,
 					/**
+					 * @cfg {Boolean} zoom to features extend on init.
+					 */
+					zoomToFeatureOnInit : false,
+					/**
 					 * @cfg {String} legalMentionsLinkHref The user Manual Link
 					 *      Href (defaults to
 					 *      <tt>'Genapp.base_url + 'map/show-legal-mentions''</tt>)
@@ -248,10 +252,9 @@ Genapp.GeoPanel = Ext
 					projectionLabel : " m (L2e)",
 
 					/**
-					 * @cfg {Integer} maxFeatures The maximum of authorized
-					 *      features in the drawing mode (default to
-					 *      'undefined')
+					 * @cfg {OpenLayers.Control.ZoomToFeatures} zoom to vector feature Control
 					 */
+					zoomToFeatureControl : null,
 
 					/**
 					 * Initialisation of the component.
@@ -363,6 +366,12 @@ Genapp.GeoPanel = Ext
 							scope : this,
 							success : this.addLayersAndLayersTree
 						});
+						
+
+						// Zoom to the selected feature
+						if (this.zoomToFeatureOnInit) {
+							this.zoomToFeatureControl.trigger();
+						}
 
 						Genapp.GeoPanel.superclass.initComponent.call(this);
 					},
@@ -699,14 +708,14 @@ Genapp.GeoPanel = Ext
 						if (this.isDrawingMap) {
 
 							// Zoom to features button
-							var zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
+							this.zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
 								map : this.map,
 								maxZoomLevel : 9,
 								ratio : 1.05,
 								autoActivate : true
 							});
 							var zoomToFeatureButton = new GeoExt.Action({
-								control : zoomToFeatureControl,
+								control : this.zoomToFeatureControl,
 								iconCls : 'zoomstations',
 								tooltip : this.zoomToFeaturesControlTitle,
 							});
