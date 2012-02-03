@@ -16,6 +16,35 @@ Genapp.GeoPanel = Ext
 		.extend(
 				Ext.Panel,
 				{
+
+					/**
+					 * Internationalization.
+					 */
+					title : 'Map',
+					tabTip : 'The map with the request\'s results\'s location',
+					layerPanelTitle : "Layers",
+					layerPanelTabTip : "The layers's tree",
+					legendPanelTitle : "Legends",
+					legendPanelTabTip : "The layers's legends",
+					panZoomBarControlTitle : "Zoom",
+					navigationControlTitle : "Drag the map",
+					selectFeatureControlTitle : "Select Feature",
+					invalidWKTMsg : "The feature cannot be displayed",
+					zoomToFeaturesControlTitle : "Zoom to the features",
+					zoomToResultControlTitle : "Zoom to the results",
+					drawPointControlTitle : "Draw a point",
+					drawLineControlTitle : "Draw a line",
+					drawFeatureControlTitle : "Draw a polygon",
+					modifyFeatureControlTitle : "Update the feature",
+					tbarDeleteFeatureButtonTooltip : "Delete the feature",
+					tbarPreviousButtonTooltip : "Previous Position",
+					tbarNextButtonTooltip : "Next Position",
+					zoomBoxInControlTitle : "Zoom in",
+					zoomBoxOutControlTitle : "Zoom out",
+					zoomToMaxExtentControlTitle : "Zoom to max extend",
+					featureInfoControlTitle : "Get the plot location information",
+					legalMentionsLinkText : 'Legal Mentions',
+					
 					/**
 					 * @cfg {Boolean} frame See {@link Ext.Panel#frame}.
 					 *      Default to true.
@@ -41,20 +70,7 @@ Genapp.GeoPanel = Ext
 					 *      config option.
 					 */
 					titleCollapse : true,
-					/**
-					 * @cfg {String} title The title text to be used as
-					 *      innerHTML (html tags are accepted) to display in the
-					 *      panel {@link #header} (defaults to 'Map'). When a
-					 *      title is specified the {@link #header} element will
-					 *      automatically be created and displayed unless
-					 *      {@link #header} is explicitly set to false. If you
-					 *      do not want to specify a title at config time, but
-					 *      you may want one later, you must either specify a
-					 *      non-empty title (a blank space ' ' will do) or
-					 *      header:true so that the container element will get
-					 *      created.
-					 */
-					title : 'Map',
+
 					/**
 					 * @cfg {Boolean} header true to create the Panel's header
 					 *      element explicitly, false to skip creating it. If a
@@ -82,16 +98,7 @@ Genapp.GeoPanel = Ext
 					 *      map. (Default to null)
 					 */
 					featureWKT : null,
-					/**
-					 * @cfg {String} tabTip A string to be used as innerHTML
-					 *      (html tags are accepted) to show in a tooltip when
-					 *      mousing over the tab of a Ext.Panel which is an item
-					 *      of a {@link Ext.TabPanel}. {@link Ext.QuickTips}.init()
-					 *      must be called in order for the tips to render.
-					 *      Default to 'The map with the request's results's
-					 *      location'
-					 */
-					tabTip : 'The map with the request\'s results\'s location',
+
 					/**
 					 * @cfg {Boolean} hideLayersAndLegendVerticalLabel if true
 					 *      hide the layers and legends vertical label (defaults
@@ -108,122 +115,17 @@ Genapp.GeoPanel = Ext
 					 *      width (defaults to 170)
 					 */
 					rightPanelWidth : 170,
-					/**
-					 * @cfg {String} layerPanelTitle The layer Panel Title
-					 *      (defaults to <tt>'Layers'</tt>)
-					 */
-					layerPanelTitle : "Layers",
-					/**
-					 * @cfg {String} layerPanelTabTip The layer Panel Tab Tip
-					 *      (defaults to <tt>'The layers's tree'</tt>)
-					 */
-					layerPanelTabTip : "The layers's tree",
-					/**
-					 * @cfg {String} legendPanelTitle The legend Panel Title
-					 *      (defaults to <tt>'Legends'</tt>)
-					 */
-					legendPanelTitle : "Legends",
-					/**
-					 * @cfg {String} legendPanelTabTip The legend Panel Tab Tip
-					 *      (defaults to <tt>'The layers's legends'</tt>)
-					 */
-					legendPanelTabTip : "The layers's legends",
-					/**
-					 * @cfg {String} panZoomBarControlTitle The panZoomBar
-					 *      Control Title (defaults to <tt>'Zoom'</tt>)
-					 */
-					panZoomBarControlTitle : "Zoom",
-					/**
-					 * @cfg {String} navigationControlTitle The navigation
-					 *      Control Title (defaults to <tt>'Drag the map'</tt>)
-					 */
-					navigationControlTitle : "Drag the map",
-					/**
-					 * @cfg {String} selectFeatureControlTitle The selectFeature
-					 *      Control Title (defaults to <tt>'Select Feature'</tt>)
-					 */
-					selectFeatureControlTitle : "Select Feature",
-					/**
-					 * @cfg {String} invalidWKTMsg The invalid WKT Msg (defaults
-					 *      to <tt>'The feature cannot be displayed'</tt>)
-					 */
-					invalidWKTMsg : "The feature cannot be displayed",
-					/**
-					 * @cfg {String} zoomToFeaturesControlTitle The
-					 *      zoomToFeatures Control Title (defaults to
-					 *      <tt>'Zoom to the features'</tt>)
-					 */
-					zoomToFeaturesControlTitle : "Zoom to the features",
+
 					/**
 					 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Point"
 					 *      button
 					 */
 					hideDrawPointButton : false,
 					/**
-					 * @cfg {String} drawPointControlTitle The drawFeature
-					 *      Control Title (defaults to <tt>'Draw a polygon'</tt>)
-					 */
-					drawPointControlTitle : "Draw a point",
-					/**
 					 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Line"
 					 *      button
 					 */
 					hideDrawLineButton : false,
-					/**
-					 * @cfg {String} drawLineControlTitle The drawFeature
-					 *      Control Title (defaults to <tt>'Draw a polygon'</tt>)
-					 */
-					drawLineControlTitle : "Draw a line",
-					/**
-					 * @cfg {String} drawFeatureControlTitle The drawFeature
-					 *      Control Title (defaults to <tt>'Draw a polygon'</tt>)
-					 */
-					drawFeatureControlTitle : "Draw a polygon",
-					/**
-					 * @cfg {String} modifyFeatureControlTitle The modifyFeature
-					 *      Control Title (defaults to
-					 *      <tt>'Update the feature'</tt>)
-					 */
-					modifyFeatureControlTitle : "Update the feature",
-					/**
-					 * @cfg {String} tbarDeleteFeatureButtonTooltip The tbar
-					 *      Delete Feature Button Tooltip (defaults to
-					 *      <tt>'Delete the feature'</tt>)
-					 */
-					tbarDeleteFeatureButtonTooltip : "Delete the feature",
-					/**
-					 * @cfg {String} tbarPreviousButtonTooltip The tbar Previous
-					 *      Button Tooltip (defaults to
-					 *      <tt>'Previous Position'</tt>)
-					 */
-					tbarPreviousButtonTooltip : "Previous Position",
-					/**
-					 * @cfg {String} tbarNextButtonTooltip The tbar Next Button
-					 *      Tooltip (defaults to <tt>'Next Position'</tt>)
-					 */
-					tbarNextButtonTooltip : "Next Position",
-					/**
-					 * @cfg {String} zoomBoxInControlTitle The zoomBox In
-					 *      Control Title (defaults to <tt>'Zoom in'</tt>)
-					 */
-					zoomBoxInControlTitle : "Zoom in",
-					/**
-					 * @cfg {String} zoomBoxOutControlTitle The zoomBox Out
-					 *      Control Title (defaults to <tt>'Zoom out'</tt>)
-					 */
-					zoomBoxOutControlTitle : "Zoom out",
-					/**
-					 * @cfg {String} zoomToMaxExtentControlTitle The zoomToMax
-					 *      Extent Control Title (defaults to
-					 *      <tt>'Zoom to max extend'</tt>)
-					 */
-					zoomToMaxExtentControlTitle : "Zoom to max extend",
-					/**
-					 * @cfg {String} featureInfoControlTitle The feature Info
-					 *      Control Title (defaults to
-					 *      <tt>'Get the plot location information'</tt>)
-					 */
-					featureInfoControlTitle : "Get the plot location information",
 					/**
 					 * @cfg {Boolean} hideLegalMentions if true hide the legal
 					 *      mentions link.
@@ -235,11 +137,6 @@ Genapp.GeoPanel = Ext
 					 *      <tt>'Genapp.base_url + 'map/show-legal-mentions''</tt>)
 					 */
 					legalMentionsLinkHref : Genapp.base_url + 'map/show-legal-mentions',
-					/**
-					 * @cfg {String} legalMentionsLinkText The legal mentions
-					 *      LinkText (defaults to <tt>'User Manual'</tt>)
-					 */
-					legalMentionsLinkText : 'Legal Mentions',
 					/**
 					 * @cfg {Integer} minZoomLevel The min zoom level for the
 					 *      map (defaults to <tt>0</tt>)
@@ -349,11 +246,12 @@ Genapp.GeoPanel = Ext
 					 *      <tt> m (L2e)</tt>)
 					 */
 					projectionLabel : " m (L2e)",
-					
+
 					/**
-                     * @cfg {Integer} maxFeatures The maximum of authorized 
-                     * features in the drawing mode (default to 'undefined')
-                     */
+					 * @cfg {Integer} maxFeatures The maximum of authorized
+					 *      features in the drawing mode (default to
+					 *      'undefined')
+					 */
 
 					/**
 					 * Initialisation of the component.
@@ -658,10 +556,10 @@ Genapp.GeoPanel = Ext
 							'maxExtent' : new OpenLayers.Bounds(Genapp.map.x_min, Genapp.map.y_min, Genapp.map.x_max, Genapp.map.y_max),
 							'eventListeners' : {// Hide the legend if needed
 								"changelayer" : function(o) {
-                                    if (o.property === 'visibility') {
-                                        this.toggleLayersAndLegendsForZoom(o.layer);
-                                    }
-                                },
+									if (o.property === 'visibility') {
+										this.toggleLayersAndLegendsForZoom(o.layer);
+									}
+								},
 								scope : this
 							}
 						});
@@ -713,14 +611,14 @@ Genapp.GeoPanel = Ext
 						// For the GEOM criteria
 						// TODO : Split this in another file
 						if (this.isDrawingMap) {
-						    if(!Ext.isEmpty(this.maxFeatures)){
-    							this.vectorLayer.preFeatureInsert = function(feature) {
-    								if (this.features.length > this.maxFeatures) {
-    									// remove first drawn feature:
-    									this.removeFeatures([ this.features[0] ]);
-    								}
-    							};
-						    }
+							if (!Ext.isEmpty(this.maxFeatures)) {
+								this.vectorLayer.preFeatureInsert = function(feature) {
+									if (this.features.length > this.maxFeatures) {
+										// remove first drawn feature:
+										this.removeFeatures([ this.features[0] ]);
+									}
+								};
+							}
 
 							var sfDraw = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
 								multiple : false,
@@ -762,20 +660,22 @@ Genapp.GeoPanel = Ext
 						var responseJSON = Ext.decode(response.responseText);
 
 						// Add a Tree Panel
-						this.layerTree = new Genapp.tree.LayerTreePanel({"rootChildren":responseJSON});
-				        // Toggle layers and legends for zoom
+						this.layerTree = new Genapp.tree.LayerTreePanel({
+							"rootChildren" : responseJSON
+						});
+						// Toggle layers and legends for zoom
 						this.layerTree.on('afterrender', function(treePanel) {
-					        this.layerTree.eachLayerChild(function(child){
-					            if(child.attributes.disabled == true){
-					                child.forceDisable = true;
-					            }else{
-					                child.forceDisable = false;
-					            }
-					        });
-						    for (var i = 0; i < this.map.layers.length; i++){
-				                this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
-				            }
-				        }, this);
+							this.layerTree.eachLayerChild(function(child) {
+								if (child.attributes.disabled == true) {
+									child.forceDisable = true;
+								} else {
+									child.forceDisable = false;
+								}
+							});
+							for ( var i = 0; i < this.map.layers.length; i++) {
+								this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
+							}
+						}, this);
 
 						// TODO : add GeoExt.LayerOpacitySlider
 						this.layerPanel.add(this.layerTree);
@@ -986,17 +886,12 @@ Genapp.GeoPanel = Ext
 						// Séparateur
 						this.mapToolbar.addSeparator();
 
-						// Zoom to feature
-						var zoomToFeatureControl = new OpenLayers.Control.ZoomToMaxExtent({
-							map : this.map,
-							active : true
-						});
-
+						// Zoom to the Results
 						var zoomToFeatureButton = new GeoExt.Action({
 							handler : this.zoomOnResultsBBox,
 							scope : this,
 							map : this.map,
-							tooltip : this.zoomToFeaturesControlTitle,
+							tooltip : this.zoomToResultControlTitle,
 							checked : false,
 							iconCls : 'zoomstations'
 						});
@@ -1076,7 +971,7 @@ Genapp.GeoPanel = Ext
 							var ratio = 1;
 
 							// The maximum zoom level to zoom to
-							var maxZoomLevel = map.numZoomLevels - 1;
+							var maxZoomLevel = this.map.numZoomLevels - 1;
 
 							// Parse the feature location and create a Feature
 							// Object
@@ -1176,7 +1071,7 @@ Genapp.GeoPanel = Ext
 						for (i = 0; i < layerNames.length; i++) {
 							var node = this.layerTree.getNodeByLayerName(layerNames[i]);
 							if (!Ext.isEmpty(node)) {
-							    var nodeId = node.id;
+								var nodeId = node.id;
 								if (setForceDisable !== false) {
 									this.layerTree.getNodeById(nodeId).forceDisable = false;
 								}
@@ -1257,22 +1152,22 @@ Genapp.GeoPanel = Ext
 					 * @param {OpenLayers.Layer}
 					 *            layer The layer to check
 					 */
-				    toggleLayersAndLegendsForZoom : function(layer){
-				        if (!Ext.isEmpty(this.layerTree)) {
-				            var node = this.layerTree.getNodeByLayerName(layer.name);
-				            if(!Ext.isEmpty(node) && !node.hidden){
-			                    if (!layer.calculateInRange()) {
-			                        node.zoomDisable = true;
-			                        this.disableLayersAndLegends([layer.name], false, false, false);
-			                    } else {
-			                        node.zoomDisable = false;
-			                        if (node.forceDisable !== true) {
-			                            this.enableLayersAndLegends([layer.name], false, false);
-			                        }
-			                    }
-			                }
-				        }
-				    },
+					toggleLayersAndLegendsForZoom : function(layer) {
+						if (!Ext.isEmpty(this.layerTree)) {
+							var node = this.layerTree.getNodeByLayerName(layer.name);
+							if (!Ext.isEmpty(node) && !node.hidden) {
+								if (!layer.calculateInRange()) {
+									node.zoomDisable = true;
+									this.disableLayersAndLegends([ layer.name ], false, false, false);
+								} else {
+									node.zoomDisable = false;
+									if (node.forceDisable !== true) {
+										this.enableLayersAndLegends([ layer.name ], false, false);
+									}
+								}
+							}
+						}
+					},
 
 					/**
 					 * Convenience function to hide or show a legend by boolean.
@@ -1303,10 +1198,11 @@ Genapp.GeoPanel = Ext
 
 					// private
 					beforeDestroy : function() {
-					    Genapp.GeoPanel.superclass.beforeDestroy.call(this);
+						Genapp.GeoPanel.superclass.beforeDestroy.call(this);
 						if (this.map) {
 							this.map.destroy();
 						}
-						// TODO: destroy here all the new objects created in this class
+						// TODO: destroy here all the new objects created in
+						// this class
 					}
 				});

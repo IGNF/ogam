@@ -152,6 +152,7 @@ if(Genapp.GeoPanel){
         selectFeatureControlTitle:"Sélectionner la géométrie",
         invalidWKTMsg:"La géométrie ne peut être affichée",
         zoomToFeaturesControlTitle:"Zoomer sur la sélection",
+        zoomToResultControlTitle : "Zoomer sur le résultat",
         drawPointControlTitle:"Dessiner un point",
         drawLineControlTitle:"Dessiner une ligne",
         drawFeatureControlTitle:"Dessiner un polygone",
