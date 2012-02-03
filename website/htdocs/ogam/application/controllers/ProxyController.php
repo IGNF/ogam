@@ -303,7 +303,9 @@ class ProxyController extends AbstractOGAMController {
 				// Get the locations identifiers
 				$key = 'SCHEMA/'.$schema.'/FORMAT/'.$locationTableInfo->format;
 				foreach ($locationTableInfo->primaryKeys as $tablePK) {
+					if (isset($params[strtolower($tablePK)])) {
 					$key .= '/'.strtoupper($tablePK).'/'.$params[strtolower($tablePK)];
+					}
 				}				
 				$id[] = $key;
 				$locationData[] = $key;
