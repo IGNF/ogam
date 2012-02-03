@@ -28,7 +28,7 @@ Genapp.form.menu.TaxrefMenu = Ext.extend(Genapp.form.menu.TreeMenu, {
 
 		// Initialise the picker linked to this menu
 		this.taxrefPicker = new Genapp.form.picker.TaxrefPicker(this.initialConfig);
-		this.treePicker.multiple = this.multiple;
+		this.taxrefPicker.multiple = this.multiple;
 
 		Ext.apply(this, {
 			plain : true,
