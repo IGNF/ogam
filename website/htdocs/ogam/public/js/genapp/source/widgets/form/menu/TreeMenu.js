@@ -45,6 +45,7 @@ Genapp.form.menu.TreeMenu = Ext.extend(Ext.menu.Menu, {
 	// private
 	initComponent : function() {
 
+		// Initialise the Tree picker
 		this.treePicker = new Genapp.form.picker.TreePicker(this.initialConfig);
 		this.treePicker.multiple = this.multiple;
 
