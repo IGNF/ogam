@@ -208,6 +208,9 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     float:left;
     margin: 0 2px;
 }
+.genapp-query-grid-details-panel-edit-link a {
+    margin-left: 20px;
+}
 /*************************************************************************************************/
 
 /** Details Panel ********************************************************************************/
@@ -249,6 +252,9 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     padding:0 5px;
 }
 .genapp-query-details-panel-see-children{
+    margin-top:10px;
+}
+.genapp-query-details-panel-edit-link {
     margin-top:10px;
 }
 /*************************************************************************************************/

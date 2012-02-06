@@ -105,7 +105,7 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
         var stringFormat = '';
         if (!this.hideDetails) {
             stringFormat = '<div class="genapp-query-grid-details-panel-slip" '
-                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"'
+                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'ajaxgetdetails\');"'
                 +'ext:qtitle="' + this.openDetailsButtonTitle + '"'
                 +'ext:qwidth="' + this.tipDefaultWidth + '"'
                 +'ext:qtip="' + this.openDetailsButtonTip + '"'

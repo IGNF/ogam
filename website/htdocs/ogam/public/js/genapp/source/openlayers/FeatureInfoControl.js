@@ -94,7 +94,7 @@ OpenLayers.Handler.FeatureInfo.prototype = OpenLayers.Class.inherit(OpenLayers.H
 				var result = Ext.decode(response.responseText);
 				if (!Ext.isEmpty(result.data)) {
 					if (Genapp.map.featureinfo_maxfeatures === 1) {
-						Genapp.cardPanel.consultationPage.openDetails(result.data[0][0], 'getdetails');
+						Genapp.cardPanel.consultationPage.openDetails(result.data[0][0], 'ajaxgetdetails');
 					} else {
 						Genapp.cardPanel.consultationPage.openFeaturesInformationSelection(result);
 					}

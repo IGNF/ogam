@@ -106,6 +106,7 @@ if(Genapp.DetailsPanel){
         loadingMsg:"Cgmt...",
         seeChildrenButtonTitle: 'Afficher les enfants',
         seeChildrenButtonTip: 'Afficher les enfants dans le tableau des détails.',
+        editLinkLabel: 'Editer cette donnée',
         seeChildrenTextSingular: '&gt;&gt;&gt; Voir l\'unique enfant',
         seeChildrenTextPlural: '&gt;&gt;&gt; Voir les {children_count} enfants'
     });

@@ -674,8 +674,8 @@ class Genapp_Service_QueryService {
 		}
 
 		// Title of the detail message
-		$json = "{title:'".$title."', ";
-		$json .= "formats:[";
+		$json = '{"title":"'.$title.'", ';
+		$json .= '"formats":[';
 		// List all the formats, starting with the ancestors
 		foreach ($ancestors as $ancestor) {
 			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
@@ -688,8 +688,10 @@ class Genapp_Service_QueryService {
 		if ($dataJSON !== '') {
 			$json .= $dataJSON;
 		}
-
 		$json .= "], ";
+
+
+		// Add the localisation maps
 		$json .= "maps:[";
 		if (!empty($detailLayers)) {
 			if ($detailLayers[0] != "") {
@@ -734,6 +736,7 @@ class Genapp_Service_QueryService {
 			}
 		}
 		$json .= "]"; // end of maps
+
 		$json .= "}";
 
 		return $json;

@@ -58,6 +58,12 @@ class Genapp_Service_GenericService {
 	public function datumToDetailJSON($data, $datasetId = null) {
 
 		$this->logger->info('datumToDetailJSON');
+		
+		$this->logger->info('$data : '.print_r($data,true));
+
+		// Get the user rights
+		$userSession = new Zend_Session_Namespace('user');
+		$permissions = $userSession->permissions;
 
 		// Get children for the current dataset
 		$this->genericModel = new Genapp_Model_Generic_Generic();
@@ -81,7 +87,17 @@ class Genapp_Service_GenericService {
 		} else {
 			return '';
 		}
-		$json .= $fields."]}";
+		$json .= $fields."]";
+
+
+		// Add the edit link
+		if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {
+			$json .= ',"editURL":'.json_encode($this->getIdFromData($data));
+		} else {
+			$json .= ',"editURL":null';
+		}
+
+		$json .= '}';
 
 		return $json;
 	}

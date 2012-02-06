@@ -1149,7 +1149,7 @@ listeners: {
         var stringFormat = '';
         if (!this.hideDetails) {
             stringFormat = '<div class="genapp-query-grid-slip" '
-                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');" '
+                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'ajaxgetdetails\');" '
                 +'ext:qtitle="' + this.openGridDetailsButtonTitle + '"'
                 +'ext:qwidth="' + this.tipDefaultWidth + '"'
                 +'ext:qtip="' + this.openGridDetailsButtonTip + '"'
@@ -1198,7 +1198,7 @@ listeners: {
     	
     	// If we don't check data rights or if the data belongs to the provider, we display the edit link
     	if (!this.checkEditionRights || Genapp.userProviderId == record.data._provider_id) {    	
-        stringFormat = '<div class="genapp-query-grid-edit" '
+        stringFormat = '<div class="genapp-query-grid-edit genapp-query-grid-editUI" '
                 +'onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"'
                 +'ext:qtitle="' + this.editDataButtonTitle + '"'
                 +'ext:qwidth="' + this.tipDefaultWidth + '"'

@@ -9,6 +9,12 @@
  * @param {Object} config The config object
  */
 Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
+	
+	/**
+	 * Internationalization.
+	 */ 
+	editLinkLabel : 'Edit this data',
+	
     /**
      * @cfg {Number} headerWidth
      * The tab header width. (Default to 60)
@@ -111,6 +117,11 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
                                     this.seeChildrenTextPlural,
                                 '</tpl>',
                         '</div>',
+                    '</tpl>',
+                    '<tpl if="editURL">',
+                		'<div class="genapp-query-grid-details-panel-edit-link genapp-query-grid-editUI">', 
+                			'<a href="' + Genapp.base_url + 'dataedition/show-edit-data/{editURL}" target="dataEdition">'+ this.editLinkLabel +'</a>',	                    
+                		'</div>',
                     '</tpl>',
                 '</fieldset>',
             '</tpl>',

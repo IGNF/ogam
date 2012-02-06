@@ -435,7 +435,7 @@ class QueryController extends AbstractOGAMController {
 	 * @param String $id The identifier of the line
 	 * @return JSON representing the detail of the result line.
 	 */
-	public function getdetailsAction($id = null) {
+	public function ajaxgetdetailsAction($id = null) {
 
 		$this->logger->debug('getDetailsAction : '.$id);
 

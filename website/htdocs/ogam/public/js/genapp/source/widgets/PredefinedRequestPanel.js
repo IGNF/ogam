@@ -484,7 +484,6 @@ listeners: {
                                 {name:'params',mapping:'params'}
                             ]
                     });
-                    console.log(Ext.decode(response.responseText));
                     var result = myReader.readRecords(Ext.decode(response.responseText));
                     var requestCriteriaPanel = new Ext.form.FormPanel({
                         itemId: rec.data.request_name,
