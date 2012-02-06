@@ -560,6 +560,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 			if (record.subtype === 'DYNAMIC') {
 				field.mode = 'remote';
 				field.store = new Ext.data.JsonStore({
+				    autoLoad:true,
 					root : 'codes',
 					idProperty : 'code',
 					fields : [ {
@@ -573,11 +574,12 @@ Ext.apply(Genapp.FieldForm.prototype, {
 					baseParams : {
 						'unit' : record.unit
 					}
-				});				
+				});
 			} else {
 				// Subtype == CODE (other possibilities are not available)
 				field.mode = 'remote';
 				field.store = new Ext.data.JsonStore({
+					autoLoad:true,
 					root : 'codes',
 					idProperty : 'code',
 					fields : [ {
@@ -676,36 +678,49 @@ Ext.apply(Genapp.FieldForm.prototype, {
 		}
 		field.fieldLabel = record.label;
 
-		if (!hideBin) {
-			field.listeners = {
-				'render' : function(cmp) {
-					if (cmp.inputType != 'hidden') {
-						// Add the tooltip
-						var binCt = Ext.get('x-form-el-' + cmp.id).parent();
-						var labelDiv = binCt.child('.x-form-item-label');
-						Ext.QuickTips.register({
-							target : labelDiv,
-							title : record.label,
-							text : record.definition,
-							width : 200
-						});
-						// Add the bin
-						labelDiv.addClass('columnLabelColor');
-						labelDiv.addClass('labelNextBin');
-						var binDiv = binCt.createChild({
-							tag : "div",
-							cls : "filterBin"
-						}, labelDiv);
-						binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
-						binDiv.on('click', function(event, el, options) {
-							cmp.ownerCt.remove(cmp);
-						}, this, {
-							single : true
-						});
-					}
-				},
-				scope : this
-			};
+	
+	    if(Ext.isEmpty(field.listeners)){
+	        field.listeners = {
+	            scope : this
+	        };
+	    }
+		field.listeners.render = function(cmp) {
+			if (cmp.xtype != 'hidden') {
+
+				// Add the tooltip
+				var binCt = Ext.get('x-form-el-' + cmp.id).parent();
+				var labelDiv = binCt.child('.x-form-item-label');
+				Ext.QuickTips.register({
+					target : labelDiv,
+					title : record.label,
+					text : record.definition,
+					width : 200
+				});
+
+                // Add the bin
+			    if (!hideBin) {
+					labelDiv.addClass('columnLabelColor');
+					labelDiv.addClass('labelNextBin');
+					var binDiv = binCt.createChild({
+						tag : "div",
+						cls : "filterBin"
+					}, labelDiv);
+					binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
+					binDiv.on('click', function(event, el, options) {
+    						cmp.ownerCt.remove(cmp);
+    					}, this, {
+    						single : true
+    					});
+				}
+
+				// Refresh the field value after the store load
+			    // Check if the field is a 'combo' and with a mode set to 'remote'
+				if (cmp.xtype === 'combo' && !Ext.isEmpty(cmp.getStore().proxy)) {
+				    cmp.getStore().on('load', function(store, records, options){
+				        this.reset();
+				    }, cmp)
+				}
+			}
 		}
 		return field;
 	}
