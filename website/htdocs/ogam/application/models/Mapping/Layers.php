@@ -74,7 +74,6 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$layer->minscale = $row['minscale'];
 			$layer->transitionEffect = $row['transitioneffect'];
 			$layer->imageFormat = $row['imageformat'];
-			$layer->opacity = $row['opacity'];
 			$layer->isDefault = $row['is_checked'];
 			$layer->isHidden = $row['is_hidden'];
 			$layer->isDisabled = $row['is_disabled'];
@@ -121,7 +120,6 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$layer->minscale = $row['minscale'];
 		$layer->transitionEffect = $row['transitioneffect'];
 		$layer->imageFormat = $row['imageformat'];
-		$layer->opacity = $row['opacity'];
 		$layer->activateType = $row['activate_type'];
 		$layer->hasSLD = $row['has_sld'];
 

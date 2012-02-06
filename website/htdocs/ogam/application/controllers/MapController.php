@@ -288,11 +288,6 @@ class MapController extends AbstractOGAMController {
 			// Label
 			$out .= ',"label":"'.addslashes($layer->layerLabel).'"';
 
-			// Opacity
-			if ($layer->opacity != "") {
-				$out .= ', "opacity":'.($layer->opacity / 100);
-			}
-
 			// Scale min/max management
 			if ($layer->maxscale != "" || $layer->minscale != "") {
 				$out .= ', "resolutions": [';

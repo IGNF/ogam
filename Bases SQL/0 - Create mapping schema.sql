@@ -63,7 +63,6 @@ CREATE TABLE layer_definition
   has_legend    		INT, 	   	   -- If value = 1 is the layer has a legend that should be displayed
   transitionEffect		VARCHAR(50),   -- Transition effect (resize or null)
   imageFormat			VARCHAR(10),   -- Image format (PNG or JPEG)
-  opacity			    VARCHAR(3),	   -- Opacity (between 0 and 100), null if no transparency
   provider_id 		    VARCHAR(36),   -- If empty, the layer can be seen by any country, if not it is limited to one country
   has_sld               INT,           -- If value = 1 we add a SLD information
   activate_type         VARCHAR(36),   -- Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or HARMONIZATION)
@@ -83,7 +82,6 @@ COMMENT ON COLUMN layer_definition.minscale IS 'Min scale of apparition';
 COMMENT ON COLUMN layer_definition.has_legend IS 'If value = 1 is the layer has a legend that should be displayed';
 COMMENT ON COLUMN layer_definition.transitionEffect IS 'Transition effect (resize or null)';
 COMMENT ON COLUMN layer_definition.imageFormat IS 'Image format (PNG or JPEG)';
-COMMENT ON COLUMN layer_definition.opacity IS 'Opacity (between 0 and 100), null if no transparency';
 COMMENT ON COLUMN layer_definition.provider_id IS 'If empty, the layer can be seen by any provider if not it is limited to one provider';
 COMMENT ON COLUMN layer_definition.has_sld IS 'If value = 1 we add a SLD information';
 COMMENT ON COLUMN layer_definition.activate_type IS 'Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or INTERPOLATION)';
