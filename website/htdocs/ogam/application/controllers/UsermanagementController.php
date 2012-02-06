@@ -40,7 +40,7 @@ class UsermanagementController extends AbstractOGAMController {
 
 	/**
 	 * Check if the authorization is valid this controler.
-	 * 
+	 *
 	 * @throws an Exception if the user doesn't have the rights
 	 */
 	function preDispatch() {
@@ -197,11 +197,6 @@ class UsermanagementController extends AbstractOGAMController {
 		$loginElem = $form->createElement('hidden', 'login');
 		$loginElem->setValue($login);
 
-		// Create and configure old password element:
-		$oldpassword = $form->createElement('password', 'oldpassword');
-		$oldpassword->setLabel('Old Password');
-		$oldpassword->setRequired(true);
-
 		// Create and configure password element:
 		$newpassword = $form->createElement('password', 'password');
 		$newpassword->setLabel('New Password');
@@ -216,7 +211,6 @@ class UsermanagementController extends AbstractOGAMController {
 		$submit->setLabel('Submit');
 
 		$form->addElement($loginElem);
-		$form->addElement($oldpassword);
 		$form->addElement($newpassword);
 		$form->addElement($confirmPassword);
 		$form->addElement($submit);
@@ -281,14 +275,14 @@ class UsermanagementController extends AbstractOGAMController {
 			$rolepermissions->setValue(array_keys($permissions)); // set the selected permissions
 		}
 		$rolepermissions->setLabel('Permissions');
-		
+
 		// Schemas
 		// get all available schemas
 		$allschemas = $this->metadataModel->getSchemas();
 		$schemasList = array();
 		foreach ($allschemas as $schema) {
-			$schemasList[$schema->code] = $schema->label; 
-		}		
+			$schemasList[$schema->code] = $schema->label;
+		}
 		$roleschemas = new Zend_Form_Element_MultiCheckbox('roleschemas', array(
 					'multiOptions' => $schemasList)); // set the list of available schemas
 		if (!empty($schemas)) {
@@ -407,7 +401,7 @@ class UsermanagementController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Check update the user password.
+	 * Set a new user password.
 	 *
 	 * @return a view.
 	 */
@@ -434,7 +428,6 @@ class UsermanagementController extends AbstractOGAMController {
 
 			$f = new Zend_Filter_StripTags();
 			$login = $f->filter($values['login']);
-			$oldpassword = $f->filter($values['oldpassword']);
 			$password = $f->filter($values['password']);
 			$confirmpassword = $f->filter($values['confirmpassword']);
 
@@ -445,12 +438,7 @@ class UsermanagementController extends AbstractOGAMController {
 
 			// Check that the old password is correct
 			$storedPassword = $this->userModel->getPassword($login);
-			$cryptedOldPassword = sha1($oldpassword);
-
-			if ($storedPassword != $cryptedOldPassword) {
-				return $this->showChangePasswordAction("Old password is not correct", $login);
-			}
-
+				
 			// Encrypt the password
 			$cryptedPassword = sha1($password);
 
@@ -504,7 +492,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$role->roleCode = $roleCode;
 			$role->roleLabel = $roleLabel;
 			$role->roleDefinition = $roleDefinition;
-		
+
 			if ($mode == 'edit') {
 				//
 				// EDIT the role
@@ -515,7 +503,7 @@ class UsermanagementController extends AbstractOGAMController {
 
 				// Update the permissions
 				$this->roleModel->updateRolePermissions($role, $rolepermissions);
-				
+
 				// Update the schemas
 				$this->roleModel->updateRoleSchemas($role, $schemas);
 
@@ -529,7 +517,7 @@ class UsermanagementController extends AbstractOGAMController {
 
 				// Update the permissions
 				$this->roleModel->updateRolePermissions($role, $rolepermissions);
-				
+
 				// Update the schemas
 				$this->roleModel->updateRoleSchemas($role, $schemas);
 
@@ -652,10 +640,10 @@ class UsermanagementController extends AbstractOGAMController {
 
 		// Get the Permissions
 		$permissions = $this->roleModel->getRolePermissions($role->roleCode);
-		
+
 		// Get the Schemas
 		$schemas = $this->roleModel->getRoleSchemas($role->roleCode);
-		
+
 		// Generate the form
 		$form = $this->_getRoleForm('edit', $role, $permissions, $schemas);
 		$this->view->form = $form;
