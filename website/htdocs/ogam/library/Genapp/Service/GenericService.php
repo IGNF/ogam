@@ -859,7 +859,7 @@ class Genapp_Service_GenericService {
 					$arrayStr .= $value.",";
 				}
 				if (count($field->value) !== 0) {
-					$arrayStr .= substr($arrayStr, 0, -1); // remove last comma
+					$arrayStr = substr($arrayStr, 0, -1); // remove last comma
 				}
 			} else {
 				$arrayStr .= $field->value;
