@@ -109,6 +109,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$layer->hasLegend = $row['has_legend'];
 			$layer->hasSLD = $row['has_sld'];
 			$layer->checkedGroup = $row['checked_group'];
+			$layer->isVector = $row['isvector'];
 			$result[] = $layer;
 		}
 		return $result;
@@ -149,6 +150,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$layer->imageFormat = $row['imageformat'];
 		$layer->activateType = $row['activate_type'];
 		$layer->hasSLD = $row['has_sld'];
+		$layer->isVector = $row['isvector'];
 
 		return $layer;
 	}
