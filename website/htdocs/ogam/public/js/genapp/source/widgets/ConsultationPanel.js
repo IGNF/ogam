@@ -667,6 +667,7 @@ listeners: {
          */
         this.geoPanel = new Genapp.GeoPanel({
             hideMapDetails: this.hideMapDetails,
+            hideLayerSelector : false,
             listeners:{
                 'activate': function (panel) {
                     if(!this.hideCsvExportButton){
@@ -758,6 +759,7 @@ listeners: {
                         xtype:'splitbutton',
                         text:this.exportButtonText,
                         disabled:true,
+                        handler:this.exportCSV.createDelegate(this,['csv-export']),
                         menu: this.csvExportButtonMenu = new Ext.menu.Menu({
                             items: csvExportMenuItems
                         })

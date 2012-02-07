@@ -44,6 +44,7 @@ Genapp.GeoPanel = Ext
 					zoomToMaxExtentControlTitle : "Zoom to max extend",
 					featureInfoControlTitle : "Get the plot location information",
 					legalMentionsLinkText : 'Legal Mentions',
+					layerSelectorButtonLabel : 'Select layer',
 
 					/**
 					 * @cfg {Boolean} frame See {@link Ext.Panel#frame}.
@@ -125,14 +126,15 @@ Genapp.GeoPanel = Ext
 					 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Line"
 					 *      button
 					 */
-					hideLayerSelector: false,
+					hideLayerSelector : false,
 					/**
 					 * @cfg {Boolean} hideLegalMentions if true hide the legal
 					 *      mentions link.
 					 */
 					hideLegalMentions : true,
 					/**
-					 * @cfg {Boolean} hideLayerSelector if true hide the layer selector.
+					 * @cfg {Boolean} hideLayerSelector if true hide the layer
+					 *      selector.
 					 */
 					hideLayerSelector : true,
 					/**
@@ -247,6 +249,22 @@ Genapp.GeoPanel = Ext
 					 * @type Ext.Panel
 					 */
 					legendPanel : null,
+					
+					/**
+					 * The vector layer selector button.
+					 * 
+					 * @property selectorButton
+					 * @type Ext.Button
+					 */
+					selectorButton : null,
+					
+					/**
+					 * The currently selected vector layer.
+					 * 
+					 * @property selectedVectorLayer
+					 * @type String
+					 */
+					selectedVectorLayer : null,
 
 					/**
 					 * @cfg {String} projectionLabel The projection to be
@@ -817,6 +835,30 @@ Genapp.GeoPanel = Ext
 
 						this.mapToolbar.addFill();
 
+						//
+						// Layer Based Tools
+						//
+						if (!this.hideLayerSelector) {
+							
+							// Create a layer selector
+							var layerSelector = {
+									xtype : 'layerselector'
+							};							
+
+							// Create a button
+							this.selectorButton = {
+								text : this.layerSelectorButtonLabel,
+								menu : [layerSelector]								
+							};
+							
+							// Link the selector to the panel for future reference
+							layerSelector.geoPanel = this;
+														
+							this.mapToolbar.add(this.selectorButton);
+
+							this.mapToolbar.addFill();
+
+						}
 
 						//
 						// Navigation history : back and next
@@ -1251,6 +1293,9 @@ Genapp.GeoPanel = Ext
 						Genapp.GeoPanel.superclass.beforeDestroy.call(this);
 						if (this.map) {
 							this.map.destroy();
+						}
+						if (this.selectorButton) {
+							this.selectorButton.destroy();
 						}
 						// TODO: destroy here all the new objects created in
 						// this class

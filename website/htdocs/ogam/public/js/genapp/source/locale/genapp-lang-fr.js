@@ -166,7 +166,8 @@ if(Genapp.GeoPanel){
         zoomBoxInControlTitle:"Zoom en avant",
         zoomBoxOutControlTitle:"Zoom en arrière",
         zoomToMaxExtentControlTitle:"Zoom arrière maximum",
-        featureInfoControlTitle:"Voir les informations sur le point"
+        featureInfoControlTitle:"Voir les informations sur le point",
+        layerSelectorButtonLabel : 'Choisir couche',
     });
 }
 if(Genapp.form.picker.NumberRangePicker){
