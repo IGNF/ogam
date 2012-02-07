@@ -363,7 +363,7 @@ Genapp.GeoPanel = Ext
 
 						// Add the layers and the layers tree
 						Ext.Ajax.request({
-							url : Genapp.base_url + 'map/getLayers',
+							url : Genapp.base_url + 'map/ajaxgetlayers',
 							scope : this,
 							success : this.addLayersAndLayersTree
 						});
@@ -447,7 +447,7 @@ Genapp.GeoPanel = Ext
 						// Gets the layer tree model to initialise the Layer
 						// Tree
 						Ext.Ajax.request({
-							url : Genapp.base_url + 'map/get-tree-layers',
+							url : Genapp.base_url + 'map/ajaxgettreelayers',
 							success : this.initLayerTree,
 							scope : this
 						});
@@ -689,7 +689,6 @@ Genapp.GeoPanel = Ext
 							}
 						}, this);
 
-						// TODO : add GeoExt.LayerOpacitySlider
 						this.layerPanel.add(this.layerTree);
 						this.layerPanel.doLayout();
 

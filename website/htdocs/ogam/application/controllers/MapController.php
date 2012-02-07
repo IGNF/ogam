@@ -121,11 +121,38 @@ class MapController extends AbstractOGAMController {
 	}
 
 	/**
+	 * Return the list of vector layers as a JSON.
+	 */
+	public function ajaxgetvectorlayersAction() {
+
+		$this->logger->debug('getvectorlayersAction');
+
+		// Get the available layers
+		$layerNames = $this->layersModel->getVectorLayersList();
+		
+		$json = '{"success":true';
+		$json .= ', layerNames : [';
+		foreach ($layerNames as $layerName) {
+			$json .= json_encode($layerName).',';
+		}
+		$json = substr($json, 0, -1);
+		$json .= ']';
+		$json .= '}';
+		
+		echo $json;
+
+		// No View, we send directly the javascript
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
 	 * Return the list of available layers as a JSON.
 	 */
-	public function getlayersAction() {
+	public function ajaxgetlayersAction() {
 
-		$this->logger->debug('getlayersAction');
+		$this->logger->debug('ajaxgetlayersAction');
 
 		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
@@ -325,9 +352,9 @@ class MapController extends AbstractOGAMController {
 	/**
 	 * Return the model corresponding to the legend.
 	 */
-	public function getTreeLayersAction() {
+	public function ajaxgettreelayersAction() {
 
-		$this->logger->debug('getTreeLayersAction');
+		$this->logger->debug('ajaxgettreelayersAction');
 
 		// Get back the country code
 		$userSession = new Zend_Session_Namespace('user');
@@ -455,9 +482,9 @@ class MapController extends AbstractOGAMController {
 	/**
 	 * Show a PDF containing the map selected by the user.
 	 */
-	function ajaxgeneratemapAction() {
+	function generatemapAction() {
 
-		$this->logger->debug('ajaxgeneratemapAction');
+		$this->logger->debug('generatemapAction');
 
 		// Get the map parameters
 		$center = $this->_getParam('center');
@@ -500,7 +527,7 @@ class MapController extends AbstractOGAMController {
 		$reportUrl = $reportServiceURL."/run?__format=pdf&__report=report/".$mapReport;
 		$reportUrl .= "&WMSURL=".urlencode($wmsURL);
 
-		$this->logger->debug('ajaxgeneratemap URL : '.$reportUrl);
+		$this->logger->debug('generatemap URL : '.$reportUrl);
 
 		// Set the header for a PDF output
 		header("Cache-control: private\n");

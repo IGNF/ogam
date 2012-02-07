@@ -859,8 +859,8 @@ class QueryController extends AbstractOGAMController {
 			$resultsbbox = $this->resultLocationModel->getResultsBBox(session_id());
 
 			// Send the result as a JSON String
-			$json = '{success:true,';
-			$json .= 'resultsbbox:\''.$resultsbbox.'\'}';
+			$json = '{"success":true,';
+			$json .= '"resultsbbox":\''.$resultsbbox.'\'}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : '.$e);
 			$json = "{success:false,errorMessage:'".json_encode($e->getMessage())."'}";
@@ -888,7 +888,10 @@ class QueryController extends AbstractOGAMController {
 		$tree = $this->metadataModel->getTreeModes($unit, $code, $depth);
 
 		// Send the result as a JSON String
-		echo '['.$tree->toJSON().']';
+		// TODO : $json = '{"success":true';
+		$json .= '['.$tree->toJSON().']';
+		
+		echo $json;
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -910,7 +913,10 @@ class QueryController extends AbstractOGAMController {
 		$tree = $this->taxonomicReferentialModel->getTaxrefModes($code, $depth);
 
 		// Send the result as a JSON String
-		echo '['.$tree->toJSON().']';
+		// TODO : $json = '{"success":true';
+		$json .= '['.$tree->toJSON().']';
+		
+		echo $json;
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -935,7 +941,8 @@ class QueryController extends AbstractOGAMController {
 		$codes = $this->metadataModel->getDynamodeLabels($unit, null, $query);
 
 		// Send the result as a JSON String
-		$json = '{"codes":[';
+		$json = '{"success":true';
+		$json .= ', "codes":[';
 		foreach ($codes as $code => $label) {
 			$json .= '{"code":'.json_encode($code).', "label":'.json_encode($label).'},';
 		}
@@ -967,7 +974,8 @@ class QueryController extends AbstractOGAMController {
 		$codes = $this->metadataModel->getModeLabels($unit);
 	
 		// Send the result as a JSON String
-		$json = '{"codes":[';
+		$json = '{"success":true';
+		$json .= ', "codes":[';
 		foreach ($codes as $code => $label) {
 			$json .= '{"code":'.json_encode($code).', "label":'.json_encode($label).'},';
 		}

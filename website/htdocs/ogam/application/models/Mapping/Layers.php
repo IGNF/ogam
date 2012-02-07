@@ -20,6 +20,33 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 	}
+	
+	/**
+	* Get the list of available vector layers for the map.
+	*
+	* @return Array[String] The layer names
+	*/
+	public function getVectorLayersList() {
+	
+		$db = $this->getAdapter();
+		$params = array();
+	
+		$req = " SELECT layer_name ";
+		$req .= " FROM layer_definition ";
+		$req .= " WHERE isVector = 1 ";	
+		$req .= " ORDER BY layer_name";
+	
+		Zend_Registry::get("logger")->info('getVectorLayersList : '.$req);
+	
+		$select = $db->prepare($req);
+		$select->execute();
+	
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[] = $row['layer_name'];
+		}
+		return $result;
+	}
 
 	/**
 	 * Get the list of available layers for the map.

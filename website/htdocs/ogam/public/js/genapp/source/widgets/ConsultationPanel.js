@@ -1730,7 +1730,7 @@ listeners: {
         }
         activatedLayersNames = activatedLayersNames.substr(0,activatedLayersNames.length - 1);
 
-        Genapp.util.post(Genapp.base_url + 'map/ajaxgeneratemap', {
+        Genapp.util.post(Genapp.base_url + 'map/generatemap', {
             center: center, 
             zoom : zoom, 
             layers: activatedLayersNames
