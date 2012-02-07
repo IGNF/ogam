@@ -889,6 +889,7 @@ class QueryController extends AbstractOGAMController {
 
 		// Send the result as a JSON String
 		// TODO : $json = '{"success":true';
+		$json = '';
 		$json .= '['.$tree->toJSON().']';
 		
 		echo $json;
@@ -914,6 +915,7 @@ class QueryController extends AbstractOGAMController {
 
 		// Send the result as a JSON String
 		// TODO : $json = '{"success":true';
+		$json = '';
 		$json .= '['.$tree->toJSON().']';
 		
 		echo $json;
