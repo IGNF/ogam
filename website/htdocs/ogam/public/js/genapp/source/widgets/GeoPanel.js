@@ -125,12 +125,16 @@ Genapp.GeoPanel = Ext
 					 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Line"
 					 *      button
 					 */
-					hideDrawLineButton : false,
+					hideLayerSelector: false,
 					/**
 					 * @cfg {Boolean} hideLegalMentions if true hide the legal
 					 *      mentions link.
 					 */
 					hideLegalMentions : true,
+					/**
+					 * @cfg {Boolean} hideLayerSelector if true hide the layer selector.
+					 */
+					hideLayerSelector : true,
 					/**
 					 * @cfg {Boolean} zoom to features extend on init.
 					 */
@@ -812,6 +816,7 @@ Genapp.GeoPanel = Ext
 						}
 
 						this.mapToolbar.addFill();
+
 
 						//
 						// Navigation history : back and next
