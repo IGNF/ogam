@@ -10,6 +10,11 @@
  * @xtype editionpanel
  */
 Genapp.EditionPanel = Ext.extend(Ext.Panel, {
+	
+	/**
+	 * Internationalization.
+	 */ 
+	geoMapWindowTitle : 'Draw the localisation',
 
 	/**
 	 * @cfg {String} title The title text to be used as innerHTML (html tags are
@@ -635,6 +640,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				field.xtype = 'geometryfield';
 				field.hideSearchButton = true;
 				field.zoomToFeatureOnInit = true;
+				field.mapWindowTitle = this.geoMapWindowTitle;
 				break;
 			case 'TREE':
 				field.xtype = 'treefield';

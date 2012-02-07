@@ -232,6 +232,7 @@ if(Genapp.EditionPanel){
         childrenFSAddNewChildButtonTooltip : 'Ajouter un nouvel enfant',
         contentTitleAddPrefix : 'Ajout d\'un(e)',
         contentTitleEditPrefix : 'Edition d\'un(e)',
-        tipEditPrefix : 'Editer le/la/l\''
+        tipEditPrefix : 'Editer le/la/l\'',
+        geoMapWindowTitle : 'Saisir la localisation'
     });
 }
