@@ -113,8 +113,6 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 		this.menu.hide();
 		if (selectedValue !== null) {
 			
-			console.log(selectedValue);
-
 			if (selectedValue instanceof Array) {
 				var valueId = [];
 				for ( var i = 0; i < selectedValue.length; i++) {
