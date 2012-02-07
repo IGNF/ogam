@@ -4,9 +4,17 @@
  * @package views
  */
 ?>
+
+<!-- Production mode start
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/adapter/ext/ext-base.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all.js') ?>"></script>
+< Production mode end --> 
+<!-- Debug mode start -->
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/adapter/ext/ext-base-debug.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all-debug.js') ?>"></script>
+<!-- Debug mode end -->
+
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
 
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/GeoExt/script/GeoExt.js') ?>"></script>
@@ -39,6 +47,7 @@
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/picker/TaxrefPicker.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/tree/LayerTreePanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/tree/ContextMenuPlugin.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/map/LayerSelector.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/rowExpander/RowExpander.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/basiccheckbox/BasicCheckBox.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/superboxselect/SuperBoxSelect.js') ?>"></script>
