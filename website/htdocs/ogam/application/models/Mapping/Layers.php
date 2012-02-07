@@ -31,7 +31,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 		$params = array();
 	
-		$req = " SELECT layer_name ";
+		$req = " SELECT layer_name, layer_label ";
 		$req .= " FROM layer_definition ";
 		$req .= " WHERE isVector = 1 ";	
 		$req .= " ORDER BY layer_name";
@@ -43,7 +43,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$result[] = $row['layer_name'];
+			$result[$row['layer_name']] = $row['layer_label'];
 		}
 		return $result;
 	}

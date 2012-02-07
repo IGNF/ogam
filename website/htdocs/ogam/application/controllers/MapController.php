@@ -132,8 +132,9 @@ class MapController extends AbstractOGAMController {
 		
 		$json = '{"success":true';
 		$json .= ', layerNames : [';
-		foreach ($layerNames as $layerName) {
-			$json .= json_encode($layerName).',';
+		foreach ($layerNames as $layerName => $layerLabel) {
+			$json .= '{"code":'.json_encode($layerName).',';
+			$json .= '"label":'. json_encode($layerLabel).'},';
 		}
 		$json = substr($json, 0, -1);
 		$json .= ']';
