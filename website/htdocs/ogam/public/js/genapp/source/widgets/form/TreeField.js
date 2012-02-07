@@ -112,6 +112,8 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	onSelect : function(selectedValue) {
 		this.menu.hide();
 		if (selectedValue !== null) {
+			
+			console.log(selectedValue);
 
 			if (selectedValue instanceof Array) {
 				var valueId = [];
@@ -126,10 +128,10 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 				this.setValue(valueId);
 			} else {
 				this.getStore().add([ new Ext.data.Record({
-					id : selectedValue.attributes.id,
-					text : selectedValue.attributes.text
+					id : selectedValue.id,
+					text : selectedValue.text
 				}) ]);
-				this.setValue(selectedValue.attributes.id);
+				this.setValue(selectedValue.id);
 			}
 		}
 	},
