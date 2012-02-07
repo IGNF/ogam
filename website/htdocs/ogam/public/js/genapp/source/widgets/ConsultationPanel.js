@@ -185,15 +185,16 @@ listeners: {
      */
     formsPanelTitle :'Forms Panel',
     /**
-     * @cfg {String} csvExportButtonText
-     * The csv Export Button Text (defaults to <tt>'Export CSV'</tt>)
+     * @cfg {String} exportButtonText
+     * The csv Export Button Text (defaults to <tt>'Export'</tt>)
      */
-    csvExportButtonText: 'Csv Export',
+    exportButtonText: 'Export',
     /**
-     * @cfg {String} gridCsvExportMenuItemText
-     * The grid Csv Export Menu Item Text (defaults to <tt>'Results'</tt>)
+     * @cfg {String} csvExportMenuItemText
+     * The grid Csv Export Menu Item Text (defaults to <tt>'Export CSV'</tt>)
      */
-    gridCsvExportMenuItemText : 'Results',
+    csvExportMenuItemText : 'Export CSV',
+    kmlExportMenuItemText : 'Export KML',
     /**
      * @cfg {String} printMapButtonText
      * The print Map Button Text (defaults to <tt>'Print map'</tt>)
@@ -738,12 +739,12 @@ listeners: {
                 var csvExportMenuItems = [];
                 if(!this.hideGridCsvExportMenuItem){
                     csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
-                        text:this.gridCsvExportMenuItemText,
+                        text:this.csvExportMenuItemText,
                         handler:this.exportCSV.createDelegate(this,['csv-export']),
                         iconCls:'genapp-query-center-panel-grid-csv-export-menu-item-icon'
                     }));
                     csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
-                        text:'KML export',
+                        text:this.kmlExportMenuItemText,
                         handler:this.exportCSV.createDelegate(this,['kml-export']),
                         iconCls:'genapp-query-center-panel-grid-csv-export-menu-item-icon'
                     }));
@@ -755,7 +756,7 @@ listeners: {
                 if(!this.hideCsvExportButton){
                     this.csvExportButton = addTopButton({
                         xtype:'splitbutton',
-                        text:this.csvExportButtonText,
+                        text:this.exportButtonText,
                         disabled:true,
                         menu: this.csvExportButtonMenu = new Ext.menu.Menu({
                             items: csvExportMenuItems
