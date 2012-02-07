@@ -370,7 +370,7 @@ Genapp.GeoPanel = Ext
 
 						// Auto-Zoom to the selected feature
 						this.on('afterlayout', function(mapPanel) {
-							if (this.zoomToFeatureOnInit) {
+							if (this.zoomToFeatureOnInit && this.vectorLayer.features && this.vectorLayer.features.length > 0) {
 								this.zoomToFeatureControl.activate();
 								this.zoomToFeatureControl.trigger();
 							}
