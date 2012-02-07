@@ -515,6 +515,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 					field.hiddenName = field.name + '[]';
 					field.allowAddNewData = true;
 					field.forceFormValue = false;
+					field.hideClearButton = true;
+					field.removeValuesFromStore = false; // pb de perf avec les communes
 				} else {
 					field.xtype = 'combo';
 					field.hiddenName = field.name;

@@ -1,6 +1,10 @@
 Ext.namespace('Ext.ux.form');
 /**
- * <p>SuperBoxSelect is an extension of the ComboBox component that displays selected items as labelled boxes within the form field. As seen on facebook, hotmail and other sites.</p>
+ * <p>
+ * SuperBoxSelect is an extension of the ComboBox component that displays
+ * selected items as labelled boxes within the form field. As seen on facebook,
+ * hotmail and other sites.
+ * </p>
  * 
  * @author <a href="mailto:dan.humphrey@technomedia.co.uk">Dan Humphrey</a>
  * @class Ext.ux.form.SuperBoxSelect
@@ -15,60 +19,86 @@ Ext.ux.form.SuperBoxSelect = function(config) {
     Ext.ux.form.SuperBoxSelect.superclass.constructor.call(this,config);
     this.addEvents(
         /**
-         * Fires before an item is added to the component via user interaction. Return false from the callback function to prevent the item from being added.
-         * @event beforeadditem
-         * @memberOf Ext.ux.form.SuperBoxSelect
-         * @param {SuperBoxSelect} this
-         * @param {Mixed} value The value of the item to be added
-         * @param {Record} rec The record being added
-         * @param {Mixed} filtered Any filtered query data (if using queryFilterRe)
-         */
+		 * Fires before an item is added to the component via user interaction.
+		 * Return false from the callback function to prevent the item from
+		 * being added.
+		 * 
+		 * @event beforeadditem
+		 * @memberOf Ext.ux.form.SuperBoxSelect
+		 * @param {SuperBoxSelect}
+		 *            this
+		 * @param {Mixed}
+		 *            value The value of the item to be added
+		 * @param {Record}
+		 *            rec The record being added
+		 * @param {Mixed}
+		 *            filtered Any filtered query data (if using queryFilterRe)
+		 */
         'beforeadditem',
 
         /**
-         * Fires after a new item is added to the component.
-         * @event additem
-         * @memberOf Ext.ux.form.SuperBoxSelect
-         * @param {SuperBoxSelect} this
-         * @param {Mixed} value The value of the item which was added
-         * @param {Record} record The store record which was added
-         */
+		 * Fires after a new item is added to the component.
+		 * 
+		 * @event additem
+		 * @memberOf Ext.ux.form.SuperBoxSelect
+		 * @param {SuperBoxSelect}
+		 *            this
+		 * @param {Mixed}
+		 *            value The value of the item which was added
+		 * @param {Record}
+		 *            record The store record which was added
+		 */
         'additem',
 
         /**
-         * Fires when the allowAddNewData config is set to true, and a user attempts to add an item that is not in the data store.
-         * @event newitem
-         * @memberOf Ext.ux.form.SuperBoxSelect
-         * @param {SuperBoxSelect} this
-         * @param {Mixed} value The new item's value
-         * @param {Mixed} filtered Any filtered query data (if using queryFilterRe)
-         */
+		 * Fires when the allowAddNewData config is set to true, and a user
+		 * attempts to add an item that is not in the data store.
+		 * 
+		 * @event newitem
+		 * @memberOf Ext.ux.form.SuperBoxSelect
+		 * @param {SuperBoxSelect}
+		 *            this
+		 * @param {Mixed}
+		 *            value The new item's value
+		 * @param {Mixed}
+		 *            filtered Any filtered query data (if using queryFilterRe)
+		 */
         'newitem',
 
         /**
-         * Fires when an item's remove button is clicked. Return false from the callback function to prevent the item from being removed.
-         * @event beforeremoveitem
-         * @memberOf Ext.ux.form.SuperBoxSelect
-         * @param {SuperBoxSelect} this
-         * @param {Mixed} value The value of the item to be removed
-         */
+		 * Fires when an item's remove button is clicked. Return false from the
+		 * callback function to prevent the item from being removed.
+		 * 
+		 * @event beforeremoveitem
+		 * @memberOf Ext.ux.form.SuperBoxSelect
+		 * @param {SuperBoxSelect}
+		 *            this
+		 * @param {Mixed}
+		 *            value The value of the item to be removed
+		 */
         'beforeremoveitem',
 
         /**
-         * Fires after an item has been removed.
-         * @event removeitem
-         * @memberOf Ext.ux.form.SuperBoxSelect
-         * @param {SuperBoxSelect} this
-         * @param {Mixed} value The value of the item which was removed
-         * @param {Record} record The store record which was removed
-         */
+		 * Fires after an item has been removed.
+		 * 
+		 * @event removeitem
+		 * @memberOf Ext.ux.form.SuperBoxSelect
+		 * @param {SuperBoxSelect}
+		 *            this
+		 * @param {Mixed}
+		 *            value The value of the item which was removed
+		 * @param {Record}
+		 *            record The store record which was removed
+		 */
         'removeitem',
         /**
-         * Fires after the component values have been cleared.
-         * @event clear
-         * @memberOf Ext.ux.form.SuperBoxSelect
-         * @param {SuperBoxSelect} this
-         */
+		 * Fires after the component values have been cleared.
+		 * 
+		 * @event clear
+		 * @memberOf Ext.ux.form.SuperBoxSelect
+		 * @param {SuperBoxSelect}
+		 *            this
+		 */
         'clear'
     );
     
@@ -78,136 +108,187 @@ Ext.ux.form.SuperBoxSelect = function(config) {
  */
 Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.ComboBox,{
     /**
-     * @cfg {Boolean} addNewDataOnBlur Allows adding new items when the user tabs from the input element.
-     */
+	 * @cfg {Boolean} addNewDataOnBlur Allows adding new items when the user
+	 *      tabs from the input element.
+	 */
     addNewDataOnBlur : false,
     /**
-     * @cfg {Boolean} allowAddNewData When set to true, allows items to be added (via the setValueEx and addItem methods) that do not already exist in the data store. Defaults to false.
-     */
+	 * @cfg {Boolean} allowAddNewData When set to true, allows items to be added
+	 *      (via the setValueEx and addItem methods) that do not already exist
+	 *      in the data store. Defaults to false.
+	 */
     allowAddNewData: false,
     /**
-     * @cfg {Boolean} allowQueryAll When set to false, prevents the trigger arrow from rendering, and the DOWN key from triggering a query all. Defaults to true.
-     */
+	 * @cfg {Boolean} allowQueryAll When set to false, prevents the trigger
+	 *      arrow from rendering, and the DOWN key from triggering a query all.
+	 *      Defaults to true.
+	 */
     allowQueryAll : true,
     /**
-     * @cfg {Boolean} backspaceDeletesLastItem When set to false, the BACKSPACE key will focus the last selected item. When set to true, the last item will be immediately deleted. Defaults to true.
-     */
+	 * @cfg {Boolean} backspaceDeletesLastItem When set to false, the BACKSPACE
+	 *      key will focus the last selected item. When set to true, the last
+	 *      item will be immediately deleted. Defaults to true.
+	 */
     backspaceDeletesLastItem: true,
     /**
-     * @cfg {String} classField The underlying data field that will be used to supply an additional class to each item.
-     */
+	 * @cfg {String} classField The underlying data field that will be used to
+	 *      supply an additional class to each item.
+	 */
     classField: null,
 
     /**
-     * @cfg {String} clearBtnCls An additional class to add to the in-field clear button.
-     */
+	 * @cfg {String} clearBtnCls An additional class to add to the in-field
+	 *      clear button.
+	 */
     clearBtnCls: '',
     /**
-     * @cfg {Boolean} clearLastQueryOnEscape When set to true, the escape key will clear the lastQuery, enabling the previous query to be repeated. 
-     */
+	 * @cfg {Boolean} clearLastQueryOnEscape When set to true, the escape key
+	 *      will clear the lastQuery, enabling the previous query to be
+	 *      repeated.
+	 */
     clearLastQueryOnEscape : false,
     /**
-     * @cfg {Boolean} clearOnEscape When set to true, the escape key will clear the input text when the component is not expanded.
-     */
+	 * @cfg {Boolean} clearOnEscape When set to true, the escape key will clear
+	 *      the input text when the component is not expanded.
+	 */
     clearOnEscape : false,
     
     /**
-     * @cfg {String/XTemplate} displayFieldTpl A template for rendering the displayField in each selected item. Defaults to null.
-     */
+	 * @cfg {String/XTemplate} displayFieldTpl A template for rendering the
+	 *      displayField in each selected item. Defaults to null.
+	 */
     displayFieldTpl: null,
 
     /**
-     * @cfg {String} extraItemCls An additional css class to apply to each item.
-     */
+	 * @cfg {String} extraItemCls An additional css class to apply to each item.
+	 */
     extraItemCls: '',
 
     /**
-     * @cfg {String/Object/Function} extraItemStyle Additional css style(s) to apply to each item. Should be a valid argument to Ext.Element.applyStyles.
-     */
+	 * @cfg {String/Object/Function} extraItemStyle Additional css style(s) to
+	 *      apply to each item. Should be a valid argument to
+	 *      Ext.Element.applyStyles.
+	 */
     extraItemStyle: '',
 
     /**
-     * @cfg {String} expandBtnCls An additional class to add to the in-field expand button.
-     */
+	 * @cfg {String} expandBtnCls An additional class to add to the in-field
+	 *      expand button.
+	 */
     expandBtnCls: '',
 
     /**
-     * @cfg {Boolean} fixFocusOnTabSelect When set to true, the component will not lose focus when a list item is selected with the TAB key. Defaults to true.
-     */
+	 * @cfg {Boolean} fixFocusOnTabSelect When set to true, the component will
+	 *      not lose focus when a list item is selected with the TAB key.
+	 *      Defaults to true.
+	 */
     fixFocusOnTabSelect: true,
     /**
-     * @cfg {Boolean} forceFormValue When set to true, the component will always return a value to the parent form getValues method, and when the parent form is submitted manually. Defaults to false, meaning the component will only be included in the parent form submission (or getValues) if at least 1 item has been selected.  
-     */
+	 * @cfg {Boolean} forceFormValue When set to true, the component will always
+	 *      return a value to the parent form getValues method, and when the
+	 *      parent form is submitted manually. Defaults to false, meaning the
+	 *      component will only be included in the parent form submission (or
+	 *      getValues) if at least 1 item has been selected.
+	 */
     forceFormValue: true,
     /**
-     * @cfg {Boolean} forceSameValueQuery When set to true, the component will always query the server even when the last query was the same. Defaults to false.  
-     */
+	 * @cfg {Boolean} forceSameValueQuery When set to true, the component will
+	 *      always query the server even when the last query was the same.
+	 *      Defaults to false.
+	 */
     forceSameValueQuery : false,
     /**
-     * @cfg {Number} itemDelimiterKey A key code which terminates keying in of individual items, and adds the current
-     * item to the list. Defaults to the ENTER key.
-     */
+	 * @cfg {Number} itemDelimiterKey A key code which terminates keying in of
+	 *      individual items, and adds the current item to the list. Defaults to
+	 *      the ENTER key.
+	 */
     itemDelimiterKey: Ext.EventObject.ENTER,    
     /**
-     * @cfg {Boolean} navigateItemsWithTab When set to true the tab key will navigate between selected items. Defaults to true.
-     */
+	 * @cfg {Boolean} navigateItemsWithTab When set to true the tab key will
+	 *      navigate between selected items. Defaults to true.
+	 */
     navigateItemsWithTab: true,
     /**
-     * @cfg {Boolean} pinList When set to true and the list is opened via the arrow button, the select list will be pinned to allow for multiple selections. Defaults to true.
-     */
+	 * @cfg {Boolean} pinList When set to true and the list is opened via the
+	 *      arrow button, the select list will be pinned to allow for multiple
+	 *      selections. Defaults to true.
+	 */
     pinList: true,
 
     /**
-     * @cfg {Boolean} preventDuplicates When set to true unique item values will be enforced. Defaults to true.
-     */
+	 * @cfg {Boolean} preventDuplicates When set to true unique item values will
+	 *      be enforced. Defaults to true.
+	 */
     preventDuplicates: true,
     /**
-     * @cfg {String|Regex} queryFilterRe Used to filter input values before querying the server, specifically useful when allowAddNewData is true as the filtered portion of the query will be passed to the newItem callback.
-     */
+	 * @cfg {String|Regex} queryFilterRe Used to filter input values before
+	 *      querying the server, specifically useful when allowAddNewData is
+	 *      true as the filtered portion of the query will be passed to the
+	 *      newItem callback.
+	 */
     queryFilterRe: '',
     /**
-     * @cfg {String} queryValuesDelimiter Used to delimit multiple values queried from the server when mode is remote.
-     */
+	 * @cfg {String} queryValuesDelimiter Used to delimit multiple values
+	 *      queried from the server when mode is remote.
+	 */
     queryValuesDelimiter: '|',
     
     /**
-     * @cfg {String} queryValuesIndicator A request variable that is sent to the server (as true) to indicate that we are querying values rather than display data (as used in autocomplete) when mode is remote.
-     */
+	 * @cfg {String} queryValuesIndicator A request variable that is sent to the
+	 *      server (as true) to indicate that we are querying values rather than
+	 *      display data (as used in autocomplete) when mode is remote.
+	 */
     queryValuesIndicator: 'valuesqry',
 
     /**
-     * @cfg {Boolean} removeValuesFromStore When set to true, selected records will be removed from the store. Defaults to true.
-     */
+	 * @cfg {Boolean} removeValuesFromStore When set to true, selected records
+	 *      will be removed from the store. Defaults to true.
+	 */
     removeValuesFromStore: true,
 
     /**
-     * @cfg {String} renderFieldBtns When set to true, will render in-field buttons for clearing the component, and displaying the list for selection. Defaults to true.
-     */
+	 * @cfg {String} renderFieldBtns When set to true, will render in-field
+	 *      buttons for clearing the component, and displaying the list for
+	 *      selection. Defaults to true.
+	 */
     renderFieldBtns: true,
     
     /**
-     * @cfg {Boolean} stackItems When set to true, the items will be stacked 1 per line. Defaults to false which displays the items inline.
-     */
+	 * @cfg {Boolean} stackItems When set to true, the items will be stacked 1
+	 *      per line. Defaults to false which displays the items inline.
+	 */
     stackItems: false,
 
     /**
-     * @cfg {String} styleField The underlying data field that will be used to supply additional css styles to each item.
-     */
+	 * @cfg {String} styleField The underlying data field that will be used to
+	 *      supply additional css styles to each item.
+	 */
     styleField : null,
     
      /**
-     * @cfg {Boolean} supressClearValueRemoveEvents When true, the removeitem event will not be fired for each item when the clearValue method is called, or when the clear button is used. Defaults to false.
-     */
+		 * @cfg {Boolean} supressClearValueRemoveEvents When true, the
+		 *      removeitem event will not be fired for each item when the
+		 *      clearValue method is called, or when the clear button is used.
+		 *      Defaults to false.
+		 */
     supressClearValueRemoveEvents : false,
     
     /**
-     * @cfg {String/Boolean} validationEvent The event that should initiate field validation. Set to false to disable automatic validation (defaults to 'blur').
-     */
+	 * @cfg {String/Boolean} validationEvent The event that should initiate
+	 *      field validation. Set to false to disable automatic validation
+	 *      (defaults to 'blur').
+	 */
 	validationEvent : 'blur',
 	
+	/**
+	 * @cfg {Boolean} Hide the Clear all button
+	 */
+	hideClearButton : false,
+	
     /**
-     * @cfg {String} valueDelimiter The delimiter to use when joining and splitting value arrays and strings.
-     */
+	 * @cfg {String} valueDelimiter The delimiter to use when joining and
+	 *      splitting value arrays and strings.
+	 */
     valueDelimiter: ',',
     initComponent:function() {
        Ext.apply(this, {
@@ -315,10 +396,12 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
             cls: 'x-superboxselect-btns'
         });
         
+        if (!this.hideClearButton) {
         this.buttonClear = this.buttonWrap.createChild({
             tag:'div',
             cls: 'x-superboxselect-btn-clear ' + this.clearBtnCls
         });
+    	}
         
         if(this.allowQueryAll){
             this.buttonExpand = this.buttonWrap.createChild({
@@ -332,6 +415,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         return this;
     },
     initButtonEvents : function() {
+    	  if (!this.hideClearButton) {
         this.buttonClear.addClassOnOver('x-superboxselect-btn-over').on('click', function(e) {
             e.stopEvent();
             if (this.disabled) {
@@ -340,6 +424,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
             this.clearValue();
             this.el.focus();
         }, this);
+    	}
         
         if(this.allowQueryAll){
             this.buttonExpand.addClassOnOver('x-superboxselect-btn-over').on('click', function(e) {
@@ -357,7 +442,9 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         }
     },
     removeButtonEvents : function() {
+    	  if (!this.hideClearButton) {
         this.buttonClear.removeAllListeners();
+    	  }
         if(this.allowQueryAll){
             this.buttonExpand.removeAllListeners();
         }
@@ -494,7 +581,8 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
                     qtip    : msg,
                     qclass  : 'x-form-invalid-tip'
                 });
-                if (Ext.QuickTips) { // fix for floating editors interacting with DND
+                if (Ext.QuickTips) { // fix for floating editors interacting
+										// with DND
                     Ext.QuickTips.enable();
                 }
                 break;
@@ -698,11 +786,14 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         }
     },
     /**
-     * Clears all values from the component.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name clearValue
-     * @param {Boolean} supressRemoveEvent [Optional] When true, the 'removeitem' event will not fire for each item that is removed.    
-     */
+	 * Clears all values from the component.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name clearValue
+	 * @param {Boolean}
+	 *            supressRemoveEvent [Optional] When true, the 'removeitem'
+	 *            event will not fire for each item that is removed.
+	 */
     clearValue : function(supressRemoveEvent){
         Ext.ux.form.SuperBoxSelect.superclass.clearValue.call(this);
         this.preventMultipleRemoveEvents = supressRemoveEvent || this.supressClearValueRemoveEvents || false;
@@ -773,11 +864,11 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         if(this.itemDelimiterKey === e.getKey()){
             e.stopEvent();
             if (val !== "") {
-                if (ctrl || !this.isExpanded())  {  //ctrl+enter for new items
+                if (ctrl || !this.isExpanded())  {  // ctrl+enter for new items
                 	this.fireNewItemEvent(val);
                 } else {
                 	this.onViewClick();
-                    //removed from 3.0.1
+                    // removed from 3.0.1
                     if(this.unsetDelayCheck){
                         this.delayedCheck = true;
                         this.unsetDelayCheck.defer(10, this);
@@ -788,7 +879,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
                     return;
                 }
                 this.onViewClick();
-                //removed from 3.0.1
+                // removed from 3.0.1
                 if(this.unsetDelayCheck){
                     this.delayedCheck = true;
                     this.unsetDelayCheck.defer(10, this);
@@ -802,7 +893,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
             return;
         }
         
-        //select first item
+        // select first item
         if(e.getKey() === e.HOME){
             e.stopEvent();
             if(this.items.getCount() > 0){
@@ -813,7 +904,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
             }
             return true;
         }
-        //backspace remove
+        // backspace remove
         if(e.getKey() === e.BACKSPACE){
             e.stopEvent();
             if(this.currentFocus) {
@@ -866,19 +957,19 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
             this.clearCurrentFocus();
             return;
         }
-        //arrow nav
+        // arrow nav
         if(e.getKey() === e.LEFT || (e.getKey() === e.UP && !this.isExpanded())){
             e.stopEvent();
             this.collapse();
-            //get last item
+            // get last item
             it = this.items.get(this.items.getCount()-1);
             if(this.navigateItemsWithTab){ 
-                //focus last el
+                // focus last el
                 if(it){
                     it.focus(); 
                 }
             }else{
-                //focus prev item
+                // focus prev item
                 if(this.currentFocus){
                     idx = this.items.indexOfKey(this.currentFocus.key);
                     this.clearCurrentFocus();
@@ -917,7 +1008,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
             this.collapse();
             it = this.items.itemAt(0);
             if(this.navigateItemsWithTab){ 
-                //focus first el
+                // focus first el
                 if(it){
                     it.focus(); 
                 }
@@ -965,10 +1056,10 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         return this;
     },
     /**
-     * @private
-     * 
-     * Use clearValue instead
-     */
+	 * @private
+	 * 
+	 * Use clearValue instead
+	 */
     removeAllItems: function(){
     	this.items.each(function(item){
             item.preDestroy(true);
@@ -1053,11 +1144,20 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         return new this.recordConstructor(recordData);
     },
     /**
-     * Adds an array of items to the SuperBoxSelect component if the {@link #Ext.ux.form.SuperBoxSelect-allowAddNewData} config is set to true.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name addItem
-     * @param {Array} newItemObjects An Array of object literals containing the property names and values for an item. The property names must match those specified in {@link #Ext.ux.form.SuperBoxSelect-displayField}, {@link #Ext.ux.form.SuperBoxSelect-valueField} and {@link #Ext.ux.form.SuperBoxSelect-classField} 
-     */
+	 * Adds an array of items to the SuperBoxSelect component if the
+	 * {@link #Ext.ux.form.SuperBoxSelect-allowAddNewData} config is set to
+	 * true.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name addItem
+	 * @param {Array}
+	 *            newItemObjects An Array of object literals containing the
+	 *            property names and values for an item. The property names must
+	 *            match those specified in
+	 *            {@link #Ext.ux.form.SuperBoxSelect-displayField},
+	 *            {@link #Ext.ux.form.SuperBoxSelect-valueField} and
+	 *            {@link #Ext.ux.form.SuperBoxSelect-classField}
+	 */
     addItems : function(newItemObjects){
     	if (Ext.isArray(newItemObjects)) {
 			Ext.each(newItemObjects, function(item) {
@@ -1068,22 +1168,38 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
 		}
     },
     /**
-     * Adds a new non-existing item to the SuperBoxSelect component if the {@link #Ext.ux.form.SuperBoxSelect-allowAddNewData} config is set to true.
-     * This method should be used in place of addItem from within the newitem event handler.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name addNewItem
-     * @param {Object} newItemObject An object literal containing the property names and values for an item. The property names must match those specified in {@link #Ext.ux.form.SuperBoxSelect-displayField}, {@link #Ext.ux.form.SuperBoxSelect-valueField} and {@link #Ext.ux.form.SuperBoxSelect-classField} 
-     */
+	 * Adds a new non-existing item to the SuperBoxSelect component if the
+	 * {@link #Ext.ux.form.SuperBoxSelect-allowAddNewData} config is set to
+	 * true. This method should be used in place of addItem from within the
+	 * newitem event handler.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name addNewItem
+	 * @param {Object}
+	 *            newItemObject An object literal containing the property names
+	 *            and values for an item. The property names must match those
+	 *            specified in {@link #Ext.ux.form.SuperBoxSelect-displayField},
+	 *            {@link #Ext.ux.form.SuperBoxSelect-valueField} and
+	 *            {@link #Ext.ux.form.SuperBoxSelect-classField}
+	 */
     addNewItem : function(newItemObject){
     	this.addItem(newItemObject,true);
     },
     /**
-     * Adds an item to the SuperBoxSelect component if the {@link #Ext.ux.form.SuperBoxSelect-allowAddNewData} config is set to true.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name addItem
-     * @param {Object} newItemObject An object literal containing the property names and values for an item. The property names must match those specified in {@link #Ext.ux.form.SuperBoxSelect-displayField}, {@link #Ext.ux.form.SuperBoxSelect-valueField} and {@link #Ext.ux.form.SuperBoxSelect-classField} 
-     */
-    addItem : function(newItemObject, /*hidden param*/ forcedAdd){
+	 * Adds an item to the SuperBoxSelect component if the
+	 * {@link #Ext.ux.form.SuperBoxSelect-allowAddNewData} config is set to
+	 * true.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name addItem
+	 * @param {Object}
+	 *            newItemObject An object literal containing the property names
+	 *            and values for an item. The property names must match those
+	 *            specified in {@link #Ext.ux.form.SuperBoxSelect-displayField},
+	 *            {@link #Ext.ux.form.SuperBoxSelect-valueField} and
+	 *            {@link #Ext.ux.form.SuperBoxSelect-classField}
+	 */
+    addItem : function(newItemObject, /* hidden param */ forcedAdd){
         
         var val = newItemObject[this.valueField];
 
@@ -1094,7 +1210,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
             return;
         }
         
-        //use existing record if found
+        // use existing record if found
         var record = this.findRecord(this.valueField, val);
         if (record) {
             this.addRecord(record);
@@ -1191,11 +1307,13 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         if (!this.renderFieldBtns || !this.rendered) {
             return this;
         }
+        if (!this.hideClearButton) {
         var cls = 'x-superboxselect-btn-hide';
         if (this.items.getCount() === 0) {
             this.buttonClear.addClass(cls);
         } else {
             this.buttonClear.removeClass(cls);
+        }
         }
         return this;
     },
@@ -1207,11 +1325,12 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         return false;
     },
     /**
-     * Returns an array of records associated with the selected items.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name getSelectedRecords
-     * @return {Array} An array of records associated with the selected items. 
-     */
+	 * Returns an array of records associated with the selected items.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name getSelectedRecords
+	 * @return {Array} An array of records associated with the selected items.
+	 */
     getSelectedRecords : function(){
     	var  ret =[];
     	if(this.removeValuesFromStore){
@@ -1228,11 +1347,13 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
     	return ret;
     },
     /**
-     * Returns an item which contains the passed HTML Element.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name findSelectedItem
-     * @param {HTMLElement} el The LI HTMLElement of a selected item in the list  
-     */
+	 * Returns an item which contains the passed HTML Element.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name findSelectedItem
+	 * @param {HTMLElement}
+	 *            el The LI HTMLElement of a selected item in the list
+	 */
     findSelectedItem : function(el){
         var ret;
         this.items.each(function(item){
@@ -1244,11 +1365,14 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         return ret;
     },
     /**
-     * Returns a record associated with the item which contains the passed HTML Element.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name findSelectedRecord
-     * @param {HTMLElement} el The LI HTMLElement of a selected item in the list  
-     */
+	 * Returns a record associated with the item which contains the passed HTML
+	 * Element.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name findSelectedRecord
+	 * @param {HTMLElement}
+	 *            el The LI HTMLElement of a selected item in the list
+	 */
     findSelectedRecord : function(el){
         var ret, item = this.findSelectedItem(el);
         if(item){
@@ -1258,12 +1382,14 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         return ret;
     },
     /**
-     * Returns a selected record associated with the passed value.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name findSelectedRecordByValue
-     * @param {Mixed} val The value to lookup
-     * @return {Record} The matching Record. 
-     */
+	 * Returns a selected record associated with the passed value.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name findSelectedRecordByValue
+	 * @param {Mixed}
+	 *            val The value to lookup
+	 * @return {Record} The matching Record.
+	 */
     findSelectedRecordByValue : function(val){
     	var ret;
     	if(this.removeValuesFromStore){
@@ -1279,11 +1405,15 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
     	return ret;
     },
     /**
-     * Returns a String value containing a concatenated list of item values. The list is concatenated with the {@link #Ext.ux.form.SuperBoxSelect-valueDelimiter}.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name getValue
-     * @return {String} a String value containing a concatenated list of item values. 
-     */
+	 * Returns a String value containing a concatenated list of item values. The
+	 * list is concatenated with the
+	 * {@link #Ext.ux.form.SuperBoxSelect-valueDelimiter}.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name getValue
+	 * @return {String} a String value containing a concatenated list of item
+	 *         values.
+	 */
     getValue : function() {
         var ret = [];
         this.items.each(function(item){
@@ -1292,20 +1422,26 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         return ret.join(this.valueDelimiter);
     },
     /**
-     * Returns the count of the selected items.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name getCount
-     * @return {Number} the number of selected items. 
-     */
+	 * Returns the count of the selected items.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name getCount
+	 * @return {Number} the number of selected items.
+	 */
     getCount : function() {
         return this.items.getCount();
     },
     /**
-     * Returns an Array of item objects containing the {@link #Ext.ux.form.SuperBoxSelect-displayField}, {@link #Ext.ux.form.SuperBoxSelect-valueField}, {@link #Ext.ux.form.SuperBoxSelect-classField} and {@link #Ext.ux.form.SuperBoxSelect-styleField} properties.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name getValueEx
-     * @return {Array} an array of item objects. 
-     */
+	 * Returns an Array of item objects containing the
+	 * {@link #Ext.ux.form.SuperBoxSelect-displayField},
+	 * {@link #Ext.ux.form.SuperBoxSelect-valueField},
+	 * {@link #Ext.ux.form.SuperBoxSelect-classField} and
+	 * {@link #Ext.ux.form.SuperBoxSelect-styleField} properties.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name getValueEx
+	 * @return {Array} an array of item objects.
+	 */
     getValueEx : function() {
         var ret = [];
         this.items.each(function(item){
@@ -1335,11 +1471,15 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         }
     },
     /**
-     * Adds an existing value to the SuperBoxSelect component.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name setValue
-     * @param {String|Array} value An array of item values, or a String value containing a delimited list of item values. (The list should be delimited with the {@link #Ext.ux.form.SuperBoxSelect-valueDelimiter) 
-     */
+	 * Adds an existing value to the SuperBoxSelect component.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name setValue
+	 * @param {String|Array}
+	 *            value An array of item values, or a String value containing a
+	 *            delimited list of item values. (The list should be delimited
+	 *            with the {@link #Ext.ux.form.SuperBoxSelect-valueDelimiter) 
+	 */
     addValue : function(value){
         
         if(Ext.isEmpty(value)){
@@ -1363,15 +1503,20 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         
         if(this.mode === 'remote'){
             var q = this.remoteLookup.join(this.queryValuesDelimiter); 
-            this.doQuery(q,false, true); //3rd param to specify a values query
+            this.doQuery(q,false, true); // 3rd param to specify a values
+											// query
         }
     },
     /**
-     * Sets the value of the SuperBoxSelect component.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name setValue
-     * @param {String|Array} value An array of item values, or a String value containing a delimited list of item values. (The list should be delimited with the {@link #Ext.ux.form.SuperBoxSelect-valueDelimiter) 
-     */
+	 * Sets the value of the SuperBoxSelect component.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name setValue
+	 * @param {String|Array}
+	 *            value An array of item values, or a String value containing a
+	 *            delimited list of item values. (The list should be delimited
+	 *            with the {@link #Ext.ux.form.SuperBoxSelect-valueDelimiter) 
+	 */
     setValue : function(value){
         if(!this.rendered){
             this.value = value;
@@ -1383,11 +1528,19 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
                 
     },
     /**
-     * Sets the value of the SuperBoxSelect component, adding new items that don't exist in the data store if the {@link #Ext.ux.form.SuperBoxSelect-allowAddNewData} config is set to true.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name setValue
-     * @param {Array} data An Array of item objects containing the {@link #Ext.ux.form.SuperBoxSelect-displayField}, {@link #Ext.ux.form.SuperBoxSelect-valueField} and {@link #Ext.ux.form.SuperBoxSelect-classField} properties.  
-     */
+	 * Sets the value of the SuperBoxSelect component, adding new items that
+	 * don't exist in the data store if the
+	 * {@link #Ext.ux.form.SuperBoxSelect-allowAddNewData} config is set to
+	 * true.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name setValue
+	 * @param {Array}
+	 *            data An Array of item objects containing the
+	 *            {@link #Ext.ux.form.SuperBoxSelect-displayField},
+	 *            {@link #Ext.ux.form.SuperBoxSelect-valueField} and
+	 *            {@link #Ext.ux.form.SuperBoxSelect-classField} properties.
+	 */
     setValueEx : function(data){
         if(!this.rendered){
             this.value = data;
@@ -1413,12 +1566,16 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         },this);
     },
     /**
-     * Returns true if the SuperBoxSelect component has a selected item with a value matching the 'val' parameter.
-     * @methodOf Ext.ux.form.SuperBoxSelect
-     * @name hasValue
-     * @param {Mixed} val The value to test.
-     * @return {Boolean} true if the component has the selected value, false otherwise.
-     */
+	 * Returns true if the SuperBoxSelect component has a selected item with a
+	 * value matching the 'val' parameter.
+	 * 
+	 * @methodOf Ext.ux.form.SuperBoxSelect
+	 * @name hasValue
+	 * @param {Mixed}
+	 *            val The value to test.
+	 * @return {Boolean} true if the component has the selected value, false
+	 *         otherwise.
+	 */
     hasValue: function(val){
         var has = false;
         this.items.each(function(item){
@@ -1565,7 +1722,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         }
     },
     onStoreLoad : function(store, records, options){
-        //accomodating for bug in Ext 3.0.0 where options.params are empty
+        // accomodating for bug in Ext 3.0.0 where options.params are empty
         var q = options.params[this.queryParam] || store.baseParams[this.queryParam] || "",
             isValuesQuery = options.params[this.queryValuesIndicator] || store.baseParams[this.queryValuesIndicator];
         
@@ -1576,7 +1733,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
                 }
             }, this);
         }
-        //queried values
+        // queried values
         if(isValuesQuery){
            
             var params = q.split(this.queryValuesDelimiter);
@@ -1594,7 +1751,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
             }
         }
 
-        //queried display (autocomplete) & addItem
+        // queried display (autocomplete) & addItem
         if(q !== '' && this.allowAddNewData){
             Ext.each(this.remoteLookup,function(r){
                 if(typeof r === "object" && r[this.valueField] === q){
@@ -1606,7 +1763,8 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
                     var rec = this.createRecord(r);
                     this.store.add(rec);
                     this.addRecord(rec);
-                    this.addedRecords.push(rec); //keep track of records added to store
+                    this.addedRecords.push(rec); // keep track of records
+													// added to store
                     (function(){
                         if(this.isExpanded()){
                             this.collapse();
