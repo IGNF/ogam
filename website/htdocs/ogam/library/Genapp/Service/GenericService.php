@@ -58,9 +58,7 @@ class Genapp_Service_GenericService {
 	public function datumToDetailJSON($data, $datasetId = null) {
 
 		$this->logger->info('datumToDetailJSON');
-		
-		$this->logger->info('$data : '.print_r($data,true));
-
+	
 		// Get the user rights
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
