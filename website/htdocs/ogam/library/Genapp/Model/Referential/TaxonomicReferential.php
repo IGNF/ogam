@@ -50,9 +50,9 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 	 * @param Integer $levels The number of levels of depth (if 0 then no limitation), relative to the root node
 	 * @return Genapp_Object_Metadata_TreeNode
 	 */
-	public function getTaxrefModes($parentcode = '*', $levels = 1) {
+	public function getTaxrefChildren($parentcode = '*', $levels = 1) {
 
-		$key = 'getTaxrefModes_'.$parentcode.'_'.$levels;
+		$key = 'getTaxrefChildren_'.$parentcode.'_'.$levels;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
 		$key = str_replace(' ', '_', $key);
 
@@ -86,8 +86,8 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 			$req .= "	FROM node_list ";
 			$req .= "	ORDER BY level, cd_taxsup, cd_nom, is_reference desc, lb_nom "; // level is used to ensure correct construction of the structure
 
-			$this->logger->info('getTaxrefModes : '.$parentcode);
-			$this->logger->info('getTaxrefModes : '.$req);
+			$this->logger->info('getTaxrefChildren : '.$parentcode);
+			$this->logger->info('getTaxrefChildren : '.$req);
 
 			$select = $db->prepare($req);
 

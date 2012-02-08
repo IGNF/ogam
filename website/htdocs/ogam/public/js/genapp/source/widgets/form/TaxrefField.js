@@ -43,7 +43,7 @@ Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
             this.menu = new Genapp.form.menu.TaxrefMenu({
                 hideOnClick : false,
                 hideValidationButton : this.hideValidationButton,
-                dataUrl : this.dataUrl
+                dataUrl : this.nodeUrl
             });
         }
         this.onFocus();

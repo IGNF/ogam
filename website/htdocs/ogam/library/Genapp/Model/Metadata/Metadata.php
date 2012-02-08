@@ -223,6 +223,72 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get the labels and modes for a tree unit filtered by query.
+	 *
+	 * @param String $unit The unit
+	 * @param String $query the searched text (optional)
+	 * @param String $start the number of the first row to return (optional)
+	 * @param String $limit the max number of row to return (optional)
+	 * @return Array[Array[code => ..., label => ...]]
+	 */
+	public function getTreeModes($unit, $query, $start, $limit) {
+
+		$key = 'getTreeLabels_'.$query.'_'.$start.'_'.$limit;
+
+		$this->logger->debug($key);
+
+
+			$db = $this->getAdapter();
+			$req = "SELECT code, label ";
+			$req .= " FROM mode_tree ";
+			$req .= " WHERE unit = ?";
+			if ($query != null) {
+					$req .= " AND code ilike '%".$query."%'";
+			}
+			$req .= " ORDER BY position, code";
+			if ($start != null && $limit != null) {
+					$req .= " LIMIT $limit OFFSET $start";
+			}
+
+			$this->logger->info('getTreeLabels : '.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($unit));
+
+			return $select->fetchAll();
+	}
+
+	/**
+	 * Get the count of modes for a tree unit filtered by query.
+	 *
+	 * @param String $unit The unit
+	 * @param String $query the searched text (optional)
+	 * @return Array[Array[code => ..., label => ...]]
+	 */
+	public function getTreeModesCount($unit, $query) {
+
+		$key = 'getTreeModesCount_'.$query;
+
+		$this->logger->debug($key);
+
+
+			$db = $this->getAdapter();
+			$req = "SELECT count(code) ";
+			$req .= " FROM mode_tree ";
+			$req .= " WHERE unit = ?";
+			if ($query != null) {
+					$req .= " AND code ilike '%".$query."%'";
+			}
+
+			$this->logger->info('getTreeModesCount : '.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($unit));
+
+			return $select->fetchColumn(0);
+	}
+
+	/**
 	 * Get the unit modes for a dynamic list.
 	 *
 	 * @param String $unit The unit
@@ -315,9 +381,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param Integer $levels The number of levels of depth (if 0 then no limitation)
 	 * @return Genapp_Object_Metadata_TreeNode
 	 */
-	public function getTreeModes($unit, $parentcode = '*', $levels = 1) {
+	public function getTreeChildren($unit, $parentcode = '*', $levels = 1) {
 
-		$key = 'getTreeModes_'.$unit.'_'.$parentcode.'_'.$levels;
+		$key = 'getTreeChildren_'.$unit.'_'.$parentcode.'_'.$levels;
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
@@ -349,8 +415,8 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	FROM node_list ";
 			$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
 
-			$this->logger->info('getTreeModes : '.$unit.' '.$parentcode);
-			$this->logger->info('getTreeModes : '.$req);
+			$this->logger->info('getTreeChildren : '.$unit.' '.$parentcode);
+			$this->logger->info('getTreeChildren : '.$req);
 
 			$select = $db->prepare($req);
 

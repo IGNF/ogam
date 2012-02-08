@@ -560,6 +560,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 			if (record.subtype === 'DYNAMIC') {
 				field.mode = 'remote';
 				field.store = new Ext.data.JsonStore({
+		            autoDestroy : true,
 				    autoLoad:true,
 					root : 'codes',
 					idProperty : 'code',
@@ -570,7 +571,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 						name : 'label',
 						mapping : 'label'
 					} ],
-					url : Genapp.base_url + '/query/ajaxgetdynamiccodes',
+					url : Genapp.base_url + 'query/ajaxgetdynamiccodes',
 					baseParams : {
 						'unit' : record.unit
 					}
@@ -579,6 +580,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 				// Subtype == CODE (other possibilities are not available)
 				field.mode = 'remote';
 				field.store = new Ext.data.JsonStore({
+				    autoDestroy : true,
 					autoLoad:true,
 					root : 'codes',
 					idProperty : 'code',
@@ -589,7 +591,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 						name : 'label',
 						mapping : 'label'
 					} ],
-					url : Genapp.base_url + '/query/ajaxgetcodes',
+					url : Genapp.base_url + 'query/ajaxgetcodes',
 					baseParams : {
 						'unit' : record.unit
 					}
@@ -659,12 +661,15 @@ Ext.apply(Genapp.FieldForm.prototype, {
 		case 'TREE':
 			field.xtype = 'treefield';
 			// TODO change depth depending on level
-			field.dataUrl = Genapp.base_url + '/query/ajaxgettreenodes/unit/' + record.unit + '/depth/1';
+			field.nodeUrl = Genapp.base_url + 'query/ajaxgettreenodes/unit/' + record.unit + '/depth/1';
+			field.codeUrl = Genapp.base_url + 'query/ajaxgettreecodes';
+			field.unit = record.unit;
 			break;
 		case 'TAXREF':
 			field.xtype = 'taxreffield';
 			// TODO change depth depending on level
-			field.dataUrl = Genapp.base_url + '/query/ajaxgettaxrefnodes/depth/1';
+			field.nodeUrl = Genapp.base_url + 'query/ajaxgettaxrefnodes/depth/1';
+	        field.codeUrl = Genapp.base_url + 'query/ajaxgettaxrefcodes';
 			break;
 		default:
 			field.xtype = 'field';

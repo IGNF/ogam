@@ -1,4 +1,9 @@
 Genapp.config.localCls = 'fr';
+if(Genapp.form.TreeField){
+    Ext.apply(Genapp.form.TreeField.prototype, {
+        emptyText:"Sélectionner..."
+    });
+}
 if(Genapp.form.DateRangeField){
     Ext.apply(Genapp.form.DateRangeField.prototype, {
         minText : "Les dates contenues dans ce champ doivent être égales ou postérieures au {0}",

@@ -885,7 +885,7 @@ class QueryController extends AbstractOGAMController {
 		$code = $this->getRequest()->getPost('node');
 		$depth = $this->getRequest()->getParam('depth');
 
-		$tree = $this->metadataModel->getTreeModes($unit, $code, $depth);
+		$tree = $this->metadataModel->getTreeChildren($unit, $code, $depth);
 
 		// Send the result as a JSON String
 		// TODO : $json = '{"success":true';
@@ -911,7 +911,7 @@ class QueryController extends AbstractOGAMController {
 		$code = $this->getRequest()->getPost('node');
 		$depth = $this->getRequest()->getParam('depth');
 
-		$tree = $this->taxonomicReferentialModel->getTaxrefModes($code, $depth);
+		$tree = $this->taxonomicReferentialModel->getTaxrefChildren($code, $depth);
 
 		// Send the result as a JSON String
 		// TODO : $json = '{"success":true';
@@ -967,7 +967,7 @@ class QueryController extends AbstractOGAMController {
 	* @return JSON.
 	*/
 	public function ajaxgetcodesAction() {
-		$this->logger->debug('ajaxgetdynamiccodesAction');
+		$this->logger->debug('ajaxgetcodesAction');
 	
 		$unit = $this->getRequest()->getParam('unit');
 	
@@ -985,6 +985,38 @@ class QueryController extends AbstractOGAMController {
 			$json = substr($json, 0, -1);
 		}
 		$json .= ']}';
+	
+		echo $json;
+	
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	* AJAX function : Return the list of available codes for a MODE unit and a filter text.
+	*
+	* @return JSON.
+	*/
+	public function ajaxgettreecodesAction() {
+		$this->logger->debug('ajaxgettreecodesAction');
+
+		$unit = $this->getRequest()->getParam('unit');
+		$query = $this->getRequest()->getParam('query');
+		$start = $this->getRequest()->getParam('start');
+		$limit = $this->getRequest()->getParam('limit');
+
+		$this->logger->debug('$unit : '.$unit);
+		$this->logger->debug('$query : '.$query);
+		$this->logger->debug('$start : '.$start);
+		$this->logger->debug('$limit : '.$limit);
+
+		$codes = $this->metadataModel->getTreeModes($unit, $query, $start, $limit);
+		$count = $this->metadataModel->getTreeModesCount($unit, $query);
+	
+		// Send the result as a JSON String
+		$json = '{"rows":'.json_encode($codes).', "results":'.$count.'}';
 	
 		echo $json;
 	
