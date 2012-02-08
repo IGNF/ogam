@@ -190,7 +190,6 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 
 		$this->logger->debug($key);
 
-
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -199,10 +198,10 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 
 			$db = $this->getAdapter();
 
-			$req = "	SELECT cd_nom as code, lb_nom as label"; // The alias are defined in the javascript reader
+			$req = "	SELECT cd_nom, is_leaf, CASE WHEN cd_nom = cd_ref THEN 1 ELSE 0 END as is_reference, nom_complet, nom_valide, nom_vern ";
 			$req .= "	FROM taxref ";
 			if ($query != null) {
-				$req .= " WHERE cd_nom ilike '%".$query."%'";
+				$req .= " WHERE nom_complet ilike '%".$query."%' or nom_valide ilike '%".$query."%' or nom_vern ilike '%".$query."%'";
 			}
 			$req .= "	ORDER BY lb_nom ";
 			if ($start != null && $limit != null) {
@@ -214,7 +213,20 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 			$select = $db->prepare($req);
 			$select->execute(array());
 
-			$result = $select->fetchAll();
+			$result = array();
+			foreach ($select->fetchAll() as $row) {
+
+				//Build the new node
+				$node = new Genapp_Object_Referential_TaxrefNode();
+				$node->code = $row['cd_nom'];
+				$node->isLeaf = $row['is_leaf'];
+				$node->isReference = $row['is_reference'];
+				$node->fullName = $row['nom_complet'];
+				$node->validName = $row['nom_valide'];
+				$node->vernacularName = $row['nom_vern'];
+
+				$result[] = $node->formatForList();
+			}
 
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
@@ -251,7 +263,7 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 			$req = "	SELECT count(cd_nom) ";
 			$req .= "	FROM taxref ";
 			if ($query != null) {
-				$req .= " WHERE cd_nom ilike '%".$query."%'";
+				$req .= " WHERE nom_complet ilike '%".$query."%' or nom_valide ilike '%".$query."%' or nom_vern ilike '%".$query."%'";
 			}
 
 			$this->logger->info('getTaxrefModesCount :'.$req);

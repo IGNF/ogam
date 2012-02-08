@@ -61,44 +61,51 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	listWidth: 300,
 	selectOnFocus: true,
 
+	store: {
+        xtype: 'jsonstore',
+        autoDestroy : true,
+        remoteSort : true,
+        root : 'rows',
+        idProperty : 'code',
+        totalProperty: 'results',
+        fields : [ {
+            name : 'code',
+            mapping : 'code'
+        }, {
+            name : 'label',
+            mapping : 'label'
+        } ],
+        url : Genapp.ajax_query_url + 'ajaxgettreecodes'
+    },
+
+    baseNodeUrl : Genapp.base_url + 'query/ajaxgettreenodes/',
+
 	/**
 	 * Initialise the component.
 	 */
 	initComponent : function() {
 
-		// Create the datastore
-		this.store = new Ext.data.JsonStore({
-            autoDestroy : true,
-            remoteSort : true,
-            root : 'rows',
-            idProperty : 'code',
-            totalProperty: 'results',
-            fields : [ {
-                name : 'code',
-                mapping : 'code'
-            }, {
-                name : 'label',
-                mapping : 'label'
-            } ],
-            url : this.codeUrl,
-            baseParams : {
-                'unit' : this.unit
-            }
-        });
-
 		// Set the submit name of the field
 		this.hiddenName = this.name;
 
-		// Add the default value to the store
-		this.getStore().add([ new Ext.data.Record({
-			code : this.value,
-			label : this.valueLabel
-		}) ]);
-
-		// Set the current value to the default value
-		this.setValue(this.value);
-
 		Genapp.form.TreeField.superclass.initComponent.call(this);
+		
+	    // TODO change depth depending on level
+		this.nodeUrl = this.baseNodeUrl;
+		if(!Ext.isEmpty(this.unit)){
+		    this.nodeUrl += 'unit/' + this.unit + '/';
+		}
+		this.nodeUrl += 'depth/1';
+		
+	    // Add the default value to the store
+        this.store.setBaseParam('unit', this.unit);
+        this.getStore().add([ new Ext.data.Record({
+            code : this.value,
+            label : this.valueLabel
+        }) ]);
+
+        // Set the current value to the default value
+        this.setValue(this.value);
 	},
 
 	/**

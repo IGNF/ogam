@@ -660,16 +660,10 @@ Ext.apply(Genapp.FieldForm.prototype, {
 			break;
 		case 'TREE':
 			field.xtype = 'treefield';
-			// TODO change depth depending on level
-			field.nodeUrl = Genapp.base_url + 'query/ajaxgettreenodes/unit/' + record.unit + '/depth/1';
-			field.codeUrl = Genapp.base_url + 'query/ajaxgettreecodes';
 			field.unit = record.unit;
 			break;
 		case 'TAXREF':
 			field.xtype = 'taxreffield';
-			// TODO change depth depending on level
-			field.nodeUrl = Genapp.base_url + 'query/ajaxgettaxrefnodes/depth/1';
-	        field.codeUrl = Genapp.base_url + 'query/ajaxgettaxrefcodes';
 			break;
 		default:
 			field.xtype = 'field';

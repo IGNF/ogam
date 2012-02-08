@@ -15,11 +15,24 @@ Ext.namespace('Genapp.form');
 
 Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
 	
+    store: {
+        xtype: 'jsonstore',
+        autoDestroy : true,
+        remoteSort : true,
+        root : 'rows',
+        idProperty : 'code',
+        totalProperty: 'results',
+        fields : [ {
+            name : 'code',
+            mapping : 'code'
+        }, {
+            name : 'label',
+            mapping : 'label'
+        } ],
+        url : Genapp.ajax_query_url + 'ajaxgettaxrefcodes'
+    },
 
-	// private
-	initComponent : function() {
-		Genapp.form.TaxrefField.superclass.initComponent.call(this);
-	},
+    baseNodeUrl : Genapp.base_url + 'query/ajaxgettaxrefnodes/',
 
     /**
      * The function that handle the trigger's click event. Implements the
@@ -50,13 +63,6 @@ Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
 
         this.menu.show(this.el, "tl-bl?");
         this.menuEvents('on');
-    },
-
-	// private
-	onDestroy : function() {
-		Ext.destroy(this.menu, this.wrap);
-		Genapp.form.TaxrefField.superclass.onDestroy.call(this);
-	}
-
+    }
 });
 Ext.reg('taxreffield', Genapp.form.TaxrefField);

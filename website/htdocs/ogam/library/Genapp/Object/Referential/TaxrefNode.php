@@ -13,11 +13,6 @@
 class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNode {
 
 	/**
-	* The vernacular name of the taxon.
-	*/
-	var $vernacularName = false;
-	
-	/**
 	 * Indicate that the taxon is a reference.
 	 */
 	var $isReference = false;
@@ -27,6 +22,21 @@ class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNo
 	 * @var Array[TaxrefNodes]
 	 */
 	var $children = array();
+
+	/**
+	* The vernacular name of the taxon.
+	*/
+	var $vernacularName;
+
+	/**
+	 * Indicate that the taxon is a reference.
+	 */
+	var $fullName;
+
+	/**
+	 * Indicate that the taxon is a reference.
+	 */
+	var $validName;
 
 	/**
 	 * Add a child.
@@ -91,6 +101,33 @@ class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNo
 				$return .= ']';
 			}
 			$return .= '}';
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Return a array to full a select list.
+	 *
+	 * @return array the array formated
+	 */
+	public function formatForList() {
+
+		$return = array();
+		if (!empty($this->code)) {
+			// We return the root itself plus the children
+			$return['code'] = $this->code;
+			if ($this->isReference) {
+				$return['label'] = '<b>'.$this->fullName.'</b>';
+			}else{
+				$return['label'] = $this->fullName;
+			}
+			if(!empty($this->vernacularName)){
+				$return['label'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->vernacularName.'</i>';
+			}
+			if(!empty($this->validName)){
+				$return['label'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->validName.'</i>';
+			}
 		}
 
 		return $return;
