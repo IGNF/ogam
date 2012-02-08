@@ -206,7 +206,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 	/**
 	 *
-	 * Set the metadata cache
+	 * Check the caches
 	 * @throws Zend_Exception
 	 */
 	protected function _initSetCache() {
@@ -219,8 +219,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Cachemanager object is empty.');
 		}
 		$dbCache = $cachemanager->getCache('database');
-
-		Zend_Db_Table_Abstract::setDefaultMetadataCache($dbCache);
+		if (empty($dbCache)) {
+			throw new Zend_Exception('DB cache object is empty.');
+		}
+		$languageCache = $cachemanager->getCache('language');
+		if (empty($languageCache)) {
+			throw new Zend_Exception('Language cache object is empty.');
+		}
 	}
 
 	/**

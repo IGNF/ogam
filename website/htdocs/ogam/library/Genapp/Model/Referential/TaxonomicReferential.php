@@ -23,20 +23,10 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 
-		$cacheFrontendOptions = array(
-			'lifetime' => 7200, // Cache lifetime in seconds
-			'automatic_serialization' => true
-		);
-
 		$configuration = Zend_Registry::get("configuration");
-		$this->cacheDir = $configuration->cachedDir;
 		$this->useCache = $configuration->useCache;
-		$cacheBackendOptions = array(
-			'cache_dir' => $this->cacheDir // Cache directory
-		);
 
-		// créer un objet Zend_Cache_Core
-		$this->cache = Zend_Cache::factory('Core', 'File', $cacheFrontendOptions, $cacheBackendOptions);
+		$this->cache = $this->getDefaultMetadataCache();
 	}
 
 
