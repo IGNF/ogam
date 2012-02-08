@@ -213,7 +213,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the labels and modes for a tree unit filtered by query.
+	 * Return the labels and modes for a tree unit filtered by query.
 	 *
 	 * @param String $unit The unit
 	 * @param String $query the searched text (optional)
@@ -253,7 +253,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $unit The unit
 	 * @param String $query the searched text (optional)
-	 * @return Array[Array[code => ..., label => ...]]
+	 * @return Integer
 	 */
 	public function getTreeModesCount($unit, $query) {
 

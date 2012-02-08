@@ -33,13 +33,6 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	 */
 	displayField : 'label',
 
-    /**
-     * @cfg {Boolean} typeAhead true to populate and autoselect the remainder of the text being
-     * typed after a configurable delay ({@link #typeAheadDelay}) if it matches a known value (defaults
-     * to true)
-     */
-    typeAhead : true,
-
 	/**
      * @cfg {String} emptyText The default text to place into an empty field (defaults to 'Select...').
      */

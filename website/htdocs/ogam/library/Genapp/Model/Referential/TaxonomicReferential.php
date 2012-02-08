@@ -173,6 +173,102 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 		}
 	}
 
+	/**
+	 * Return the code and name for a taxref filtered by query.
+	 *
+	 * @param String $query the searched text (optional)
+	 * @param String $start the number of the first row to return (optional)
+	 * @param String $limit the max number of row to return (optional)
+	 * @return Array[Array[cd_nom => ..., lb_nom => ...]]
+	 */
+	public function getTaxrefModes($query = null, $start = null, $limit = null) {
+
+		$key = 'getTaxrefModes_'.$query.'_'.$start.'_'.$limit;
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace(' ', '_', $key);
+		$key = str_replace('%', '_pct_', $key);
+
+		$this->logger->debug($key);
+
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+
+		if (empty($cachedResult)) {
+
+			$db = $this->getAdapter();
+
+			$req = "	SELECT cd_nom as code, lb_nom as label"; // The alias are defined in the javascript reader
+			$req .= "	FROM taxref ";
+			if ($query != null) {
+				$req .= " WHERE cd_nom ilike '%".$query."%'";
+			}
+			$req .= "	ORDER BY lb_nom ";
+			if ($start != null && $limit != null) {
+				$req .= " LIMIT $limit OFFSET $start";
+			}
+
+			$this->logger->info('getTaxrefModes :'.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array());
+
+			$result = $select->fetchAll();
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
+	}
+
+	/**
+	 * Return the count of code for a taxref filtered by query.
+	 *
+	 * @param String $query the searched text (optional)
+	 * @return Integer
+	 */
+	public function getTaxrefModesCount($query = null) {
+
+		$key = 'getTaxrefModesCount_'.$query;
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace(' ', '_', $key);
+		$key = str_replace('%', '_pct_', $key);
+
+		$this->logger->debug($key);
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+
+		if (empty($cachedResult)) {
+
+			$db = $this->getAdapter();
+
+			$req = "	SELECT count(cd_nom) ";
+			$req .= "	FROM taxref ";
+			if ($query != null) {
+				$req .= " WHERE cd_nom ilike '%".$query."%'";
+			}
+
+			$this->logger->info('getTaxrefModesCount :'.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array());
+
+			$result = $select->fetchColumn(0);
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
+	}
 
 	/**
 	 * Get all the children codes from the reference taxon of a taxon.

@@ -1025,4 +1025,34 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
+
+	/**
+	* AJAX function : Return the list of available codes for a taxref and a filter text.
+	*
+	* @return JSON.
+	*/
+	public function ajaxgettaxrefcodesAction() {
+		$this->logger->debug('ajaxgettaxrefcodesAction');
+
+		$query = $this->getRequest()->getParam('query');
+		$start = $this->getRequest()->getParam('start');
+		$limit = $this->getRequest()->getParam('limit');
+
+		$this->logger->debug('$query : '.$query);
+		$this->logger->debug('$start : '.$start);
+		$this->logger->debug('$limit : '.$limit);
+
+		$codes = $this->taxonomicReferentialModel->getTaxrefModes($query, $start, $limit);
+		$count = $this->taxonomicReferentialModel->getTaxrefModesCount($query);
+	
+		// Send the result as a JSON String
+		$json = '{"rows":'.json_encode($codes).', "results":'.$count.'}';
+	
+		echo $json;
+	
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
 }
