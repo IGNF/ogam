@@ -1030,10 +1030,9 @@ class QueryController extends AbstractOGAMController {
 		if (!empty($codes)) {
 			$json = substr($json, 0, -1);
 		}
-		$json .= ', "results":'.$count.'}';
-		$json .= ']}';
-		
-		echo $json;
+		$json .= ']';
+		$json .= ', "results":'.$count;
+		$json .= '}';
 
 		echo $json;
 
