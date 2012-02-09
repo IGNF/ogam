@@ -1022,7 +1022,18 @@ class QueryController extends AbstractOGAMController {
 		}
 
 		// Send the result as a JSON String
-		$json = '{"rows":'.json_encode($codes).', "results":'.$count.'}';
+		$json = '{"success":true';
+		$json .= ', "rows":[';
+		foreach ($codes as $code => $label) {
+			$json .= '{"code":'.json_encode($code).', "label":'.json_encode($label).'},';
+		}
+		if (!empty($codes)) {
+			$json = substr($json, 0, -1);
+		}
+		$json .= ', "results":'.$count.'}';
+		$json .= ']}';
+		
+		echo $json;
 
 		echo $json;
 
