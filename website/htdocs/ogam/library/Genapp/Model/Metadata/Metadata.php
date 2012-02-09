@@ -233,7 +233,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " FROM mode_tree ";
 			$req .= " WHERE unit = ?";
 			if ($query != null) {
-					$req .= " AND code ilike '%".$query."%'";
+					$req .= " AND label ilike '%".$query."%'";
 			}
 			$req .= " ORDER BY position, code";
 			if ($start != null && $limit != null) {
@@ -267,7 +267,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " FROM mode_tree ";
 			$req .= " WHERE unit = ?";
 			if ($query != null) {
-					$req .= " AND code ilike '%".$query."%'";
+					$req .= " AND label ilike '%".$query."%'";
 			}
 
 			$this->logger->info('getTreeModesCount : '.$req);
