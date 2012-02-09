@@ -1014,7 +1014,7 @@ class QueryController extends AbstractOGAMController {
 
 		$codes = $this->metadataModel->getTreeModes($unit, $query, $start, $limit);
 
-		if (count($codes) < $limit ) {
+		if (count($codes) < $limit) {
 			// optimisation
 			$count = count($codes);
 		} else {
@@ -1060,7 +1060,7 @@ class QueryController extends AbstractOGAMController {
 
 		$codes = $this->taxonomicReferentialModel->getTaxrefModes($query, $start, $limit);
 
-		if (count($codes) < $limit ) {
+		if (count($codes) < $limit) {
 			// optimisation
 			$count = count($codes);
 		} else {
