@@ -24,8 +24,8 @@ class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNo
 	var $children = array();
 
 	/**
-	* The vernacular name of the taxon.
-	*/
+	 * The vernacular name of the taxon.
+	 */
 	var $vernacularName;
 
 	/**
@@ -91,7 +91,7 @@ class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNo
 			}
 			$return .= ',"vernacularName":'.json_encode($this->vernacularName);
 			$return .= ',"isReference":'.json_encode($this->isReference);
-			
+
 			if (!empty($this->children)) {
 				$return .= ',"children": [';
 				foreach ($this->children as $child) {
@@ -119,13 +119,13 @@ class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNo
 			$return['code'] = $this->code;
 			if ($this->isReference) {
 				$return['label'] = '<b>'.$this->fullName.'</b>';
-			}else{
+			} else {
 				$return['label'] = $this->fullName;
 			}
-			if(!empty($this->vernacularName)){
+			if (!empty($this->vernacularName)) {
 				$return['label'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->vernacularName.'</i>';
 			}
-			if(!empty($this->validName)){
+			if (!empty($this->validName)) {
 				$return['label'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->validName.'</i>';
 			}
 		}

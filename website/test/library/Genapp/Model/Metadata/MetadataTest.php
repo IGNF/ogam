@@ -9,21 +9,21 @@ require_once TEST_PATH.'ControllerTestCase.php';
  * @package controllers
  */
 class MetadataTest extends ControllerTestCase {
-	
+
 	/**
-	* Test la fonction getSchemas.
-	*/
+	 * Test la fonction getSchemas.
+	 */
 	public function testGetSchemas() {
-	
+
 		// On charge le modèle
 		$metadataModel = new Genapp_Model_Metadata_Metadata();
-	
+
 		// On vérifie que le user "admin" existe
 		$schemas = $metadataModel->getSchemas();
-	
+
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($schemas), 5);
-		
+
 		$rawSchema = $schemas['RAW_DATA'];
 		$this->assertEquals($rawSchema->code, 'RAW_DATA');
 		$this->assertEquals($rawSchema->name, 'RAW_DATA');
@@ -93,13 +93,13 @@ class MetadataTest extends ControllerTestCase {
 	/**
 	 * Test la fonction getTreeModes.
 	 */
-	public function testGetTreeModes() {
+	public function testGetTreeChildren() {
 
 		// On charge le modèle
 		$metadataModel = new Genapp_Model_Metadata_Metadata();
 
 		// Requête par défaut, on ramène le noeud racine avec 1 niveau de descendants
-		$taxonsTree = $metadataModel->getTreeModes('ID_TAXON');
+		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON');
 		$this->assertEquals(count($taxonsTree->children),1); // Il doit y avoir 1 enfant (Fauna)
 		$taxon = $taxonsTree->children[0];
 		$this->assertEquals($taxon->code, -1); // le noeud sous la racine est -1
@@ -107,19 +107,19 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertEquals(count($taxon->children), 0); //pas d'enfants à ce noeud
 
 		// Idem
-		$taxonsTree = $metadataModel->getTreeModes('ID_TAXON', '*');
+		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON', '*');
 		$this->assertEquals(count($taxonsTree->children),1); // Il doit y avoir 1 enfant (Fauna)
 
 		// Idem
-		$taxonsTree = $metadataModel->getTreeModes('ID_TAXON', '*', 1);
+		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON', '*', 1);
 		$this->assertEquals(count($taxonsTree->children), 1);
 
 		// 1 niveau à partir de Fauna
-		$taxonsTree = $metadataModel->getTreeModes('ID_TAXON', '-1', 1);
+		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON', '-1', 1);
 		$this->assertEquals(count($taxonsTree->children), 10); // Il y a 10 enfants à Fauna
 
 		// 2 niveaux à partir de la racine
-		$taxonsTree = $metadataModel->getTreeModes('ID_TAXON', '*', 2);
+		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON', '*', 2);
 		$this->assertEquals(count($taxonsTree->children), 1); // On retrouve fauna
 		$taxon = $taxonsTree->children[0];
 		$this->assertEquals(count($taxon->children), 10); // Il y a 10 enfants à Fauna
@@ -159,6 +159,27 @@ class MetadataTest extends ControllerTestCase {
 		// Un noeud avec des enfants
 		$taxons = $metadataModel->getTreeChildrenCodes('ID_TAXON', '22', 2);
 		$this->assertEquals(count($taxons), 6);
+	}
+
+	/**
+	 * Test la fonction getTreeModes.
+	 */
+	public function testGetTreeModes() {
+
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		// Réquête par défaut, on ramène le noeud racine sur 1 niveau
+		$modes = $metadataModel->getTreeModes('ID_TAXON', 'Habrotrocha');
+		$count = $metadataModel->getTreeModesCount('ID_TAXON', 'Habrotrocha');
+		
+		$this->assertEquals(count($modes), 3);
+		$this->assertEquals($count, 3);
+		
+		$this->assertEquals($modes["1014"], "Habrotrocha angusticollis");
+		$this->assertEquals($modes["1015"], "Habrotrocha ligula ligula");
+		$this->assertEquals($modes["1016"], "Habrotrocha pulchra");
+
 	}
 
 	/**

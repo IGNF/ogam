@@ -219,33 +219,38 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $query the searched text (optional)
 	 * @param String $start the number of the first row to return (optional)
 	 * @param String $limit the max number of row to return (optional)
-	 * @return Array[Array[code => ..., label => ...]]
+	 * @return Array[code => label]
 	 */
-	public function getTreeModes($unit, $query, $start, $limit) {
+	public function getTreeModes($unit, $query, $start = null, $limit = null) {
 
-		$key = 'getTreeLabels_'.$query.'_'.$start.'_'.$limit;
+		$key = 'getTreeModes_'.$unit.'_'.$query.'_'.$start.'_'.$limit;
 
 		$this->logger->debug($key);
 
 
-			$db = $this->getAdapter();
-			$req = "SELECT code, label ";
-			$req .= " FROM mode_tree ";
-			$req .= " WHERE unit = ?";
-			if ($query != null) {
-					$req .= " AND unaccent_string(label) ilike unaccent_string('%".$query."%')";
-			}
-			$req .= " ORDER BY position, code";
-			if ($start != null && $limit != null) {
-					$req .= " LIMIT $limit OFFSET $start";
-			}
+		$db = $this->getAdapter();
+		$req = "SELECT code, label ";
+		$req .= " FROM mode_tree ";
+		$req .= " WHERE unit = ?";
+		if ($query != null) {
+			$req .= " AND unaccent_string(label) ilike unaccent_string('%".$query."%')";
+		}
+		$req .= " ORDER BY position, code";
+		if ($start != null && $limit != null) {
+			$req .= " LIMIT ".$limit." OFFSET ".$start;
+		}
 
-			$this->logger->info('getTreeLabels : '.$req);
+		$this->logger->info('getTreeModes : '.$req);
 
-			$select = $db->prepare($req);
-			$select->execute(array($unit));
+		$select = $db->prepare($req);
+		$select->execute(array($unit));
+		
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[$row['code']] = $row['label'];
+		}
 
-			return $select->fetchAll();
+		return $result;
 	}
 
 	/**
@@ -257,25 +262,26 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeModesCount($unit, $query) {
 
-		$key = 'getTreeModesCount_'.$query;
+		$key = 'getTreeModesCount_'.$unit.'_'.$query;
 
 		$this->logger->debug($key);
 
+		$db = $this->getAdapter();
+		$req = "SELECT count(code) ";
+		$req .= " FROM mode_tree ";
+		$req .= " WHERE unit = ?";
+		if ($query != null) {
+			$req .= " AND unaccent_string(label) ilike unaccent_string('%".$query."%')";
+		}
 
-			$db = $this->getAdapter();
-			$req = "SELECT count(code) ";
-			$req .= " FROM mode_tree ";
-			$req .= " WHERE unit = ?";
-			if ($query != null) {
-					$req .= " AND unaccent_string(label) ilike unaccent_string('%".$query."%')";
-			}
+		$this->logger->info('getTreeModesCount : '.$req);
 
-			$this->logger->info('getTreeModesCount : '.$req);
+		$select = $db->prepare($req);
+		$select->execute(array($unit));
+		
+		$result = array();
 
-			$select = $db->prepare($req);
-			$select->execute(array($unit));
-
-			return $select->fetchColumn(0);
+		return $select->fetchColumn(0);
 	}
 
 	/**

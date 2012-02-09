@@ -205,7 +205,7 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 			}
 			$req .= "	ORDER BY lb_nom ";
 			if ($start != null && $limit != null) {
-				$req .= " LIMIT $limit OFFSET $start";
+				$req .= " LIMIT ".$limit." OFFSET ".$start;
 			}
 
 			$this->logger->info('getTaxrefModes :'.$req);
@@ -341,8 +341,5 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 			return $cachedResult;
 		}
 	}
-
-
-
 
 }
