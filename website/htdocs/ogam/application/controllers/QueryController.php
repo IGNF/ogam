@@ -1013,7 +1013,13 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('$limit : '.$limit);
 
 		$codes = $this->metadataModel->getTreeModes($unit, $query, $start, $limit);
-		$count = $this->metadataModel->getTreeModesCount($unit, $query);
+
+		if (count($codes) < $limit ) {
+			// optimisation
+			$count = count($codes);
+		} else {
+			$count = $this->metadataModel->getTreeModesCount($unit, $query);
+		}
 
 		// Send the result as a JSON String
 		$json = '{"rows":'.json_encode($codes).', "results":'.$count.'}';
