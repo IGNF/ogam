@@ -45,7 +45,7 @@ class QueryController extends AbstractOGAMController {
 		if (empty($permissions) || !array_key_exists('DATA_QUERY', $permissions)) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
-		
+
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
 
@@ -486,7 +486,7 @@ class QueryController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		
+
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
 
@@ -667,7 +667,7 @@ class QueryController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		
+
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
 
@@ -891,7 +891,7 @@ class QueryController extends AbstractOGAMController {
 		// TODO : $json = '{"success":true';
 		$json = '';
 		$json .= '['.$tree->toJSON().']';
-		
+
 		echo $json;
 
 		// No View, we send directly the JSON
@@ -917,7 +917,7 @@ class QueryController extends AbstractOGAMController {
 		// TODO : $json = '{"success":true';
 		$json = '';
 		$json .= '['.$tree->toJSON().']';
-		
+
 		echo $json;
 
 		// No View, we send directly the JSON
@@ -960,21 +960,21 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
-	
+
 	/**
-	* AJAX function : Return the list of available codes for a MODE unit.
-	*
-	* @return JSON.
-	*/
+	 * AJAX function : Return the list of available codes for a MODE unit.
+	 *
+	 * @return JSON.
+	 */
 	public function ajaxgetcodesAction() {
 		$this->logger->debug('ajaxgetcodesAction');
-	
+
 		$unit = $this->getRequest()->getParam('unit');
-	
+
 		$this->logger->debug('$unit : '.$unit);
-	
+
 		$codes = $this->metadataModel->getModeLabels($unit);
-	
+
 		// Send the result as a JSON String
 		$json = '{"success":true';
 		$json .= ', "codes":[';
@@ -985,9 +985,9 @@ class QueryController extends AbstractOGAMController {
 			$json = substr($json, 0, -1);
 		}
 		$json .= ']}';
-	
+
 		echo $json;
-	
+
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -995,10 +995,10 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	* AJAX function : Return the list of available codes for a MODE unit and a filter text.
-	*
-	* @return JSON.
-	*/
+	 * AJAX function : Return the list of available codes for a MODE unit and a filter text.
+	 *
+	 * @return JSON.
+	 */
 	public function ajaxgettreecodesAction() {
 		$this->logger->debug('ajaxgettreecodesAction');
 
@@ -1014,12 +1014,12 @@ class QueryController extends AbstractOGAMController {
 
 		$codes = $this->metadataModel->getTreeModes($unit, $query, $start, $limit);
 		$count = $this->metadataModel->getTreeModesCount($unit, $query);
-	
+
 		// Send the result as a JSON String
 		$json = '{"rows":'.json_encode($codes).', "results":'.$count.'}';
-	
+
 		echo $json;
-	
+
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -1027,10 +1027,10 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	* AJAX function : Return the list of available codes for a taxref and a filter text.
-	*
-	* @return JSON.
-	*/
+	 * AJAX function : Return the list of available codes for a taxref and a filter text.
+	 *
+	 * @return JSON.
+	 */
 	public function ajaxgettaxrefcodesAction() {
 		$this->logger->debug('ajaxgettaxrefcodesAction');
 
@@ -1043,13 +1043,19 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('$limit : '.$limit);
 
 		$codes = $this->taxonomicReferentialModel->getTaxrefModes($query, $start, $limit);
-		$count = $this->taxonomicReferentialModel->getTaxrefModesCount($query);
-	
+
+		if (count($codes) < $limit ) {
+			// optimisation
+			$count = count($codes);
+		} else {
+			$count = $this->taxonomicReferentialModel->getTaxrefModesCount($query);
+		}
+
 		// Send the result as a JSON String
 		$json = '{"rows":'.json_encode($codes).', "results":'.$count.'}';
-	
+
 		echo $json;
-	
+
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
