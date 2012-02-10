@@ -58,7 +58,7 @@ class Genapp_Service_GenericService {
 	public function datumToDetailJSON($data, $datasetId = null) {
 
 		$this->logger->info('datumToDetailJSON');
-	
+
 		// Get the user rights
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
@@ -308,7 +308,7 @@ class Genapp_Service_GenericService {
 		//
 		$where = " WHERE (1 = 1) ";
 		foreach ($dataObject->infoFields as $tableField) {
-			$where .= $this->buildWhereItem($tableField, true);
+			$where .= $this->buildWhereItem($tableField, false);
 		}
 
 		// Right management
@@ -400,7 +400,7 @@ class Genapp_Service_GenericService {
 
 		// Build the WHERE clause with the info from the PK.
 		foreach ($criterias as $tableField) {
-			$sql .= $this->buildWhereItem($tableField, false); // exact match
+			$sql .= $this->buildWhereItem($tableField, true); // exact match
 		}
 
 		return $sql;
@@ -565,10 +565,10 @@ class Genapp_Service_GenericService {
 	 * Build the WHERE clause corresponding to one criteria.
 	 *
 	 * @param TableField $tableField a criteria.
-	 * @param Boolean $useLike if true, use a like %% instead of an exact equal.
+	 * @param Boolean $exact if true, will use an exact equal (no like %% and no IN (xxx) for trees).
 	 * @return String the WHERE part of the SQL query (ex : 'AND BASAL_AREA = 6.05')
 	 */
-	public function buildWhereItem($tableField, $useLike = false) {
+	public function buildWhereItem($tableField, $exact = false) {
 
 		$sql = "";
 
@@ -642,12 +642,17 @@ class Genapp_Service_GenericService {
 							$value = $value[0];
 						}
 
-						// Get all the children of a selected node
-						$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
+						if ($exact) {
+							$sql .= " AND ".$column." = '".$value."'";
+						} else {
+							// Get all the children of a selected node
+							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
+							$nodeCodes[] = $value; // add the value itself
 
-						// Case of a list of values
-						$stringValue = $this->arrayToSQLString($nodeCodes);
-						$sql .= " AND ".$column." && ".$stringValue;
+							// Case of a list of values
+							$stringValue = $this->arrayToSQLString($nodeCodes);
+							$sql .= " AND ".$column." && ".$stringValue;
+						}
 
 					} else if ($tableField->subtype == 'TAXREF') {
 						// Case of a code in a Taxonomic referential
@@ -655,22 +660,35 @@ class Genapp_Service_GenericService {
 							$value = $value[0];
 						}
 
-						// Get all the children of a selected taxon
-						$nodeCodes = $this->taxonomicReferentialModel->getTaxrefChildrenCodes($value, 0);
-							
-						// Case of a list of values
-						$stringValue = $this->arrayToSQLString($nodeCodes);
-						$sql .= " AND ".$column." && ".$stringValue;
+						if ($exact) {
+							$sql .= " AND ".$column." = '".$value."'";
+						} else {
+							// Get all the children of a selected taxon
+							$nodeCodes = $this->taxonomicReferentialModel->getTaxrefChildrenCodes($value, 0);
+							$nodeCodes[] = $value; // add the value itself
+
+							// Case of a list of values
+							$stringValue = $this->arrayToSQLString($nodeCodes);
+							$sql .= " AND ".$column." && ".$stringValue;
+						}
 
 					} else {
-							
+
+						$stringValue = $this->arrayToSQLString($value);
 						if (is_array($value)) {
 							// Case of a list of values
-							$stringValue = $this->arrayToSQLString($value);
-							$sql .= " AND ".$column." && ".$stringValue;
+							if ($exact) {
+								$sql .= " AND ".$column." = ".$stringValue;
+							} else {
+								$sql .= " AND ".$column." && ".$stringValue;
+							}
 						} else if (is_string($value)) {
 							// Single value
-							$sql .= " AND ANY(".$column.") = '".$value."'";
+							if ($exact) {
+								$sql .= " AND ".$column." = ".$stringValue;
+							} else {
+								$sql .= " AND ANY(".$column.") = '".$value."'";
+							}
 						}
 					}
 
@@ -684,16 +702,21 @@ class Genapp_Service_GenericService {
 							$value = $value[0];
 						}
 
-						// Get all the children of a selected node
-						$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
+						if ($exact) {
+							$sql .= " AND ".$column." = '".$value."'";
+						} else {
+							// Get all the children of a selected node
+							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
+							$nodeCodes[] = $value; // add the value itself
 
-						$sql2 = '';
-						foreach ($nodeCodes as $nodeCode) {
-							$sql2 .= "'".$nodeCode."',";
+							$sql2 = '';
+							foreach ($nodeCodes as $nodeCode) {
+								$sql2 .= "'".$nodeCode."',";
+							}
+							$sql2 = substr($sql2, 0, -1); // remove last comma
+
+							$sql .= " AND ".$column." IN (".$sql2.")";
 						}
-						$sql2 = substr($sql2, 0, -1); // remove last comma
-
-						$sql .= " AND ".$column." IN (".$sql2.")";
 
 					} else if ($tableField->subtype == 'TAXREF') {
 						// Case of a code in a Taxonomic referential
@@ -701,17 +724,22 @@ class Genapp_Service_GenericService {
 							$value = $value[0];
 						}
 
-						// Get all the children of a selected taxon
-						$nodeCodes = $this->taxonomicReferentialModel->getTaxrefChildrenCodes($value, 0);
-							
-						$sql2 = '';
-						foreach ($nodeCodes as $nodeCode) {
-							$sql2 .= "'".$nodeCode."',";
+						if ($exact) {
+							$sql .= " AND ".$column." = '".$value."'";
+						} else {
+
+							// Get all the children of a selected taxon
+							$nodeCodes = $this->taxonomicReferentialModel->getTaxrefChildrenCodes($value, 0);
+							$nodeCodes[] = $value; // add the value itself
+
+							$sql2 = '';
+							foreach ($nodeCodes as $nodeCode) {
+								$sql2 .= "'".$nodeCode."',";
+							}
+							$sql2 = substr($sql2, 0, -1); // remove last comma
+
+							$sql .= " AND ".$column." IN (".$sql2.")";
 						}
-						$sql2 = substr($sql2, 0, -1); // remove last comma
-
-						$sql .= " AND ".$column." IN (".$sql2.")";
-
 
 
 					} else {
@@ -739,7 +767,11 @@ class Genapp_Service_GenericService {
 					if (is_array($value)) {
 						$value = $value[0];
 					}
-					$sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+					if ($exact) {
+						$sql .= " AND ST_Equals(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+					} else {
+						$sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+					}
 					break;
 				case "STRING":
 				default:
@@ -750,10 +782,10 @@ class Genapp_Service_GenericService {
 						$oradded = false;
 						foreach ($value as $val) {
 							if ($val != null && $val != '' && is_string($val)) {
-								if ($useLike) {
-									$sql .= $column." ILIKE '%".$val."%'";
-								} else {
+								if ($exact) {
 									$sql .= $column." = '".$val."'";
+								} else {
+									$sql .= $column." ILIKE '%".$val."%'";
 								}
 								$sql .= " OR ";
 								$oradded = true;
@@ -767,10 +799,10 @@ class Genapp_Service_GenericService {
 						if (is_string($value)) {
 							// Single value
 							$sql .= " AND ".$column;
-							if ($useLike) {
-								$sql .= " LIKE '%".$value."%'";
-							} else {
+							if ($exact) {
 								$sql .= " = '".$value."'";
+							} else {
+								$sql .= " ILIKE '%".$value."%'";
 							}
 						}
 					}

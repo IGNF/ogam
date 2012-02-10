@@ -208,7 +208,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// Build the WHERE clause with the info from the PK.
 		foreach ($data->infoFields as $primaryKey) {
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-			$sql .= $this->genericService->buildWhereItem($primaryKey);
+			$sql .= $this->genericService->buildWhereItem($primaryKey, true);
 		}
 
 		$this->logger->info('updateData : '.$sql);
