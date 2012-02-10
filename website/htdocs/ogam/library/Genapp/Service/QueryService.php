@@ -142,8 +142,16 @@ class Genapp_Service_QueryService {
 		foreach ($data->getInfoFields() as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
-				$formField->value = $tablefield->value;
-				$formField->valueLabel = $tablefield->valueLabel;
+				if(is_array($tablefield->value)){
+					$formField->value = implode(',',$tablefield->value);
+				} else {
+					$formField->value = $tablefield->value;
+				}
+				if(is_array($tablefield->valueLabel)){
+					$formField->valueLabel = implode(',',$tablefield->valueLabel);
+				} else {
+					$formField->valueLabel = $tablefield->valueLabel;
+				}
 				$formField->editable = $tablefield->isEditable;
 				$formField->insertable = $tablefield->isInsertable;
 				$formField->required = !$tablefield->isCalculated; // If the field is not calculated and if it is part of the key
@@ -156,8 +164,16 @@ class Genapp_Service_QueryService {
 		foreach ($data->getEditableFields() as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
-				$formField->value = $tablefield->value;
-				$formField->valueLabel = $tablefield->valueLabel;
+				if(is_array($tablefield->value)){
+					$formField->value = implode(',',$tablefield->value);
+				} else {
+					$formField->value = $tablefield->value;
+				}
+				if(is_array($tablefield->valueLabel)){
+					$formField->valueLabel = implode(',',$tablefield->valueLabel);
+				} else {
+					$formField->valueLabel = $tablefield->valueLabel;
+				}
 				$formField->editable = $tablefield->isEditable;
 				$formField->insertable = $tablefield->isInsertable;
 				$formField->required = false; // Never mandatory

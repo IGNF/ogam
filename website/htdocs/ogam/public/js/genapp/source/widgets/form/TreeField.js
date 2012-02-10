@@ -98,26 +98,12 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 		this.nodeUrl += 'depth/1';
 
 		this.store.setBaseParam('unit', this.unit);
-		
+
 	    // Add the default value to the store
-		if (!(this.value instanceof Array)) {
-            var rc = {};
-            rc[this.valueField] = this.value;
-            rc[this.displayField] = this.valueLabel;
-            this.getStore().add(new Ext.data.Record(rc));
-            console.log('this.value : ',this.value);
-            console.log('this.valueLabel : ',this.valueLabel);
-		} else {
-            var valueFields = [];
-            var displayFields = [];
-            for ( var i = 0; i < this.value.length; i++) {
-                var attributes = record[i].attributes;
-                valueFields.push(attributes.id);
-                displayFields.push(attributes.text);
-            }
-            this.addArrayToStore(valueFields, displayFields);
-            this.setValue(valueFields.toString());
-		}
+        var rc = {};
+        rc[this.valueField] = this.value;
+        rc[this.displayField] = this.valueLabel;
+        this.getStore().add(new Ext.data.Record(rc));
 
         // Set the current value to the default value
         this.setValue(this.value);
