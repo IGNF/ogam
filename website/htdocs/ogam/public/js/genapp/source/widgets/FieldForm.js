@@ -660,10 +660,12 @@ Ext.apply(Genapp.FieldForm.prototype, {
 			break;
 		case 'TREE':
 			field.xtype = 'treefield';
+			field.valueLabel = record.valueLabel;
 			field.unit = record.unit;
 			break;
 		case 'TAXREF':
-			field.xtype = 'taxreffield';
+            field.xtype = 'taxreffield';
+            field.valueLabel = record.valueLabel;
 			break;
 		default:
 			field.xtype = 'field';

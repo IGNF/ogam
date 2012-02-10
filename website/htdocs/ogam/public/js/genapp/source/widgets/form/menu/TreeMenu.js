@@ -30,11 +30,6 @@ Genapp.form.menu.TreeMenu = Ext.extend(Ext.menu.Menu, {
 	cls : 'x-tree-menu',
 
 	/**
-	 * Manage multiple values,
-	 */
-	multiple : false,
-
-	/**
 	 * The {@link Genapp.form.picker.TreePicker} instance for this TreeMenu
 	 * 
 	 * @property treePicker
@@ -47,7 +42,6 @@ Genapp.form.menu.TreeMenu = Ext.extend(Ext.menu.Menu, {
 
 		// Initialise the Tree picker
 		this.treePicker = new Genapp.form.picker.TreePicker(this.initialConfig);
-		this.treePicker.multiple = this.multiple;
 
 		Ext.apply(this, {
 			plain : true,

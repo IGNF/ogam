@@ -39,46 +39,36 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
 
 		$this->logger->debug($key);
 
+		// No cache to avoid to increase the number of cache files for all combination
 
-		if ($this->useCache) {
-			$cachedResult = $this->cache->load($key);
+		$db = $this->getAdapter();
+		$req = "SELECT code, label ";
+		$req .= " FROM mode ";
+		$req .= " WHERE unit = ? ";
+		if ($code != null) {
+			if (is_array($code)) {
+				$req .= " AND code IN ('".implode("','", $code)."')";
+			} else {
+				$req .= " AND code = '".$code."'";
+			}
+		}
+		$req .= " ORDER BY position, code";
+
+		$this->logger->info('getModeLabels : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($unit));
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[$row['code']] = $row['label'];
 		}
 
-		if (empty($cachedResult)) {
-
-			$db = $this->getAdapter();
-			$req = "SELECT code, label ";
-			$req .= " FROM mode ";
-			$req .= " WHERE unit = ? ";
-			if ($code != null) {
-				if (is_array($code)) {
-					$req .= " AND code IN ('".implode("','", $code)."')";
-				} else {
-					$req .= " AND code = '".$code."'";
-				}
-			}
-			$req .= " ORDER BY position, code";
-
-			$this->logger->info('getModeLabels : '.$req);
-
-			$select = $db->prepare($req);
-			$select->execute(array($unit));
-
-			$result = array();
-			foreach ($select->fetchAll() as $row) {
-				$result[$row['code']] = $row['label'];
-			}
-
-			if ($this->useCache) {
-				$this->cache->save($result, $key);
-			}
-			return $result;
-		} else {
-			return $cachedResult;
-		}
+		return $result;
 	}
 
 	/**
@@ -165,51 +155,39 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeLabels($unit, $value = null) {
 
-		$key = 'getTreeLabels_'.$unit.'_'.$value;
+		$key = 'getTreeLabels_'.$unit.'_'.implode("_", $value);
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
 
 		$this->logger->debug($key);
 
-		if ($this->useCache) {
-			$cachedResult = $this->cache->load($key);
+		// No cache to avoid to increase the number of cache files for all combination
+
+		$db = $this->getAdapter();
+		$req = "SELECT code, label ";
+		$req .= " FROM mode_tree ";
+		$req .= " WHERE unit = ?";
+		if ($value != null) {
+			if (is_array($value)) {
+				$req .= " AND code IN ('".implode("','", $value)."')";
+			} else {
+				$req .= " AND code = '".$value."'";
+			}
 		}
+		$req .= " ORDER BY position, code";
 
-		if (empty($cachedResult)) {
+		$this->logger->info('getTreeLabels : '.$req);
 
+		$select = $db->prepare($req);
+		$select->execute(array($unit));
 
-
-			$db = $this->getAdapter();
-			$req = "SELECT code, label ";
-			$req .= " FROM mode_tree ";
-			$req .= " WHERE unit = ?";
-			if ($value != null) {
-				if (is_array($value)) {
-					$req .= " AND code IN ('".implode("','", $value)."')";
-				} else {
-					$req .= " AND code = '".$value."'";
-				}
-			}
-			$req .= " ORDER BY position, code";
-
-			$this->logger->info('getTreeLabels : '.$req);
-
-			$select = $db->prepare($req);
-			$select->execute(array($unit));
-
-			$result = array();
-			foreach ($select->fetchAll() as $row) {
-				$result[$row['code']] = $row['label'];
-			}
-
-			if ($this->useCache) {
-				$this->cache->save($result, $key);
-			}
-			return $result;
-		} else {
-			return $cachedResult;
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[$row['code']] = $row['label'];
 		}
+		return $result;
 	}
 
 	/**
@@ -298,49 +276,38 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
 
 		$this->logger->debug($key);
 
-		if ($this->useCache) {
-			$cachedResult = $this->cache->load($key);
-		}
+		// No cache to avoid to increase the number of cache files for all combination
 
-		if (empty($cachedResult)) {
+		$db = $this->getAdapter();
+		$req = $this->_getDynamodeSQL($unit);
 
-
-			$db = $this->getAdapter();
-
-			$req = $this->_getDynamodeSQL($unit);
-
-			if (!empty($query)) {
-				$req = "SELECT * ";
-				$req .= " FROM (".$req.") as foo ";
-				$req .= " WHERE label ilike '".$query."%'";
-				if ($code != null) {
-					if (is_array($code)) {
-						$req .= " AND code IN ('".implode("','", $code)."')";
-					} else {
-						$req .= " AND code = '".$code."'";
-					}
+		if (!empty($query)) {
+			$req = "SELECT * ";
+			$req .= " FROM (".$req.") as foo ";
+			$req .= " WHERE label ilike '".$query."%'";
+			if ($code != null) {
+				if (is_array($code)) {
+					$req .= " AND code IN ('".implode("','", $code)."')";
+				} else {
+					$req .= " AND code = '".$code."'";
 				}
 			}
-			$this->logger->info('getDynamodeLabels : '.$req);
-
-			$select = $db->prepare($req);
-			$select->execute(array());
-
-			$result = array();
-			foreach ($select->fetchAll() as $row) {
-				$result[$row['code']] = $row['label'];
-			}
-
-			if ($this->useCache) {
-				$this->cache->save($result, $key);
-			}
-			return $result;
-		} else {
-			return $cachedResult;
 		}
+		$this->logger->info('getDynamodeLabels : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array());
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[$row['code']] = $row['label'];
+		}
+
+		return $result;
 	}
 
 	/**

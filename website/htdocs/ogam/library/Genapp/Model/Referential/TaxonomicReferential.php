@@ -129,48 +129,39 @@ class Genapp_Model_Referential_TaxonomicReferential extends Zend_Db_Table_Abstra
 	public function getTaxrefLabels($unit, $value = null) {
 
 		$key = 'getTaxrefLabels_'.$unit.'_'.$value;
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like the * character
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
 
 		$this->logger->debug($key);
 
+		// No cache to avoid to increase the number of cache files for all combination
 
-		if ($this->useCache) {
-			$cachedResult = $this->cache->load($key);
+		$db = $this->getAdapter();
+
+		$req = "	SELECT cd_nom, lb_nom ";
+		$req .= "	FROM taxref ";
+		if ($value != null) {
+			if (is_array($value)) {
+				$req .= " WHERE cd_nom IN ('".implode("','", $value)."')";
+			} else {
+				$req .= " WHERE cd_nom = '".$value."'";
+			}
+		}
+		$req .= "	ORDER BY lb_nom ";
+
+		$this->logger->info('getTaxrefLabels '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array());
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[$row['cd_nom']] = $row['lb_nom'];
 		}
 
-		if (empty($cachedResult)) {
-
-			$db = $this->getAdapter();
-
-			$req = "	SELECT cd_nom, lb_nom ";
-			$req .= "	FROM taxref ";
-			if ($value != null) {
-				if (is_array($value)) {
-					$req .= " WHERE cd_nom IN ('".implode("','", $value)."')";
-				} else {
-					$req .= " WHERE cd_nom = '".$value."'";
-				}
-			}
-			$req .= "	ORDER BY lb_nom ";
-
-			$this->logger->info('getTaxrefLabels '.$req);
-
-			$select = $db->prepare($req);
-			$select->execute(array());
-
-			$result = array();
-			foreach ($select->fetchAll() as $row) {
-				$result[$row['cd_nom']] = $row['lb_nom'];
-			}
-
-			if ($this->useCache) {
-				$this->cache->save($result, $key);
-			}
-			return $result;
-		} else {
-			return $cachedResult;
-		}
+		return $result;
 	}
 
 	/**

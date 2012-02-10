@@ -13,7 +13,11 @@
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/adapter/ext/ext-base-debug.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all-debug.js') ?>"></script>
 <!-- Debug mode end -->
-
+<script type="text/javascript">
+    Ext.namespace('Genapp');
+    Genapp.base_url = "<?= $this->baseUrl('dataedition/..'); ?>/";
+    Genapp.ajax_query_url = "<?= $this->baseUrl('dataedition') ?>/";
+</script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
 
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.js') ?>"></script>
@@ -76,8 +80,6 @@
 
 <script type="text/javascript">
     Ext.onReady(function(){
-        Genapp.base_url = "<?= $this->baseUrl('dataedition/..'); ?>/";
-        Genapp.ajax_query_url = "<?= $this->baseUrl('dataedition') ?>/";
         if (Genapp.CardPanel) {
             Ext.apply(Genapp.CardPanel.prototype, {
                 shownPages : [ 'editionpage' ],

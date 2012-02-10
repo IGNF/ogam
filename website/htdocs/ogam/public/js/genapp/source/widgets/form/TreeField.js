@@ -69,10 +69,10 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
         idProperty : 'code',
         totalProperty: 'results',
         fields : [ {
-            name : 'code',
+            name : 'code', // Must be equal to this.valueField
             mapping : 'code'
         }, {
-            name : 'label',
+            name : 'label', // Must be equal to this.displayField
             mapping : 'label'
         } ],
         url : Genapp.ajax_query_url + 'ajaxgettreecodes'
@@ -96,13 +96,28 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 		    this.nodeUrl += 'unit/' + this.unit + '/';
 		}
 		this.nodeUrl += 'depth/1';
+
+		this.store.setBaseParam('unit', this.unit);
 		
 	    // Add the default value to the store
-        this.store.setBaseParam('unit', this.unit);
-        this.getStore().add([ new Ext.data.Record({
-            code : this.value,
-            label : this.valueLabel
-        }) ]);
+		if (!(this.value instanceof Array)) {
+            var rc = {};
+            rc[this.valueField] = this.value;
+            rc[this.displayField] = this.valueLabel;
+            this.getStore().add(new Ext.data.Record(rc));
+            console.log('this.value : ',this.value);
+            console.log('this.valueLabel : ',this.valueLabel);
+		} else {
+            var valueFields = [];
+            var displayFields = [];
+            for ( var i = 0; i < this.value.length; i++) {
+                var attributes = record[i].attributes;
+                valueFields.push(attributes.id);
+                displayFields.push(attributes.text);
+            }
+            this.addArrayToStore(valueFields, displayFields);
+            this.setValue(valueFields.toString());
+		}
 
         // Set the current value to the default value
         this.setValue(this.value);
@@ -142,41 +157,28 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	},
 
 	// private
-	onSelect : function(record, index) {console.log(record)
+	onSelect : function(record, index) {
         if(this.fireEvent('beforeselect', this, record, index) !== false){
     	    if (!Ext.isEmpty(record)){
+                // Case of an array
+                if (record instanceof Array) {
+                    this.onArraySelect(record, index);
+                }
     	        // Case where the selection is done in the tree
     	        if (record instanceof Ext.tree.AsyncTreeNode
     	                || record instanceof Ext.tree.TreeNode) {
             		if(this.menu){
             		    this.menu.hide();
             		}
-        			if (record instanceof Array) {
-        				var valueId = [];
-        				for ( var i = 0; i < record.length; i++) {
-        					var attributes = record[i].attributes;
-        					if(Ext.isEmpty(this.getStore().getById(attributes.id))){
-            					this.getStore().add([ new Ext.data.Record({
-            						code : attributes.id,
-            						label : attributes.text
-            					}) ]);
-        					}
-        					valueId.push(attributes.id);
-        				}
-        				this.setValue(valueId);
-        				this.collapse();
-                        this.fireEvent('select', this, record, index);
-        			} else {
-        			    if(Ext.isEmpty(this.getStore().getById(record.attributes.id))){
-            				this.getStore().add([ new Ext.data.Record({
-            					code : record.attributes.id,
-            					label : record.attributes.text
-            				}) ]);
-        			    }
-        				this.setValue(record.attributes.id);
-        				this.collapse();
-                        this.fireEvent('select', this, record, index);
-            		}
+    			    if(Ext.isEmpty(this.getStore().getById(record.attributes.id))){
+    			        var rc = {};
+    			        rc[this.valueField] = record.attributes.id;
+    			        rc[this.displayField] = record.attributes.text;
+        				this.getStore().add([ new Ext.data.Record(rc) ]);
+    			    }
+    				this.setValue(record.attributes.id);
+    				this.collapse();
+                    this.fireEvent('select', this, record, index);
         	    }
     	        // Case where the selection is done in the list
     	        if(record instanceof Ext.data.Record) {
@@ -185,6 +187,54 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
     	            this.fireEvent('select', this, record, index);
         	    }
     	    }
+        }
+	},
+
+	// private
+	onArraySelect : function(record, index) {
+        // Case where the selection is done in the tree
+        if (record[0] instanceof Ext.tree.AsyncTreeNode
+                || record[0] instanceof Ext.tree.TreeNode) {
+            if(this.menu){
+                this.menu.hide();
+            }
+            var valueFields = [];
+            var displayFields = [];
+            for ( var i = 0; i < record.length; i++) {
+                var attributes = record[i].attributes;
+                valueFields.push(attributes.id);
+                displayFields.push(attributes.text);
+            }
+            this.addArrayToStore(valueFields, displayFields);
+            this.setValue(valueFields.toString());
+            this.collapse();
+            this.fireEvent('select', this, record, index);
+        }
+        // Case where the selection is done in the list
+        // Not possible for now. Wait for EXTJS4
+        if(record[0] instanceof Ext.data.Record) {
+            var valueFields = [];
+            var displayFields = [];
+            for ( var i = 0; i < record.length; i++) {
+                var data = record[i].data;
+                valueFields.push(data[this.valueField]);
+                displayFields.push(data[this.displayField]);
+            }
+            this.addArrayToStore(valueFields, displayFields);
+            this.setValue(valueFields.toString());
+            this.setValue(values);
+            this.collapse();
+            this.fireEvent('select', this, record, index);
+        }
+	},
+
+	//private
+	addArrayToStore : function(valueFields, displayFields){
+        if(Ext.isEmpty(this.getStore().getById(valueFields.toString()))){
+            var rc = {};
+            rc[this.valueField] = valueFields.toString();
+            rc[this.displayField] = displayFields.toString();
+            this.getStore().add([ new Ext.data.Record(rc) ]);
         }
 	},
 
