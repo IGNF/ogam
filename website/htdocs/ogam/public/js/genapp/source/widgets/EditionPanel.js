@@ -528,10 +528,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				field.valueField = 'code';
 				field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
 				field.mode = 'remote';
-				
-				console.log('record.type : ' + record.type);
-				console.log('record.valueLabel : ' + record.valueLabel);
-
+			
 				// Fill the list of codes / labels for default values
 				var codes = [];
 				if (record.type == 'ARRAY') {					
