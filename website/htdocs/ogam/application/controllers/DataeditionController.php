@@ -384,7 +384,7 @@ class DataEditionController extends AbstractOGAMController {
 			$result = '{"success":true';
 
 			// Redirect to the index page by default
-			$redirectURL = $this->getRequest()->getBasePath();
+			$redirectURL = $this->view->baseUrl('dataedition/..');
 			// If the data has an ancestor, we redirect to this ancestor
 			if (!empty($ancestors)) {
 				$parent = $ancestors[0];
