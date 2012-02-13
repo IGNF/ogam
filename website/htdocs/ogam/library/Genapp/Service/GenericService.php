@@ -89,7 +89,7 @@ class Genapp_Service_GenericService {
 
 
 		// Add the edit link
-		if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {
+		if (!empty($permissions) && array_key_exists('DATA_EDITION', $permissions)) {
 			$json .= ',"editURL":'.json_encode($this->getIdFromData($data));
 		} else {
 			$json .= ',"editURL":null';
