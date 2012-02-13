@@ -31,16 +31,13 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $unit The unit
 	 * @param String $code a code
+	 * @param String $query a part of a label
 	 * @return Array[mode => label]
 	 */
-	public function getModeLabels($unit, $code = null) {
+	public function getModeLabels($unit, $code = null, $query = null) {
 
 		$key = 'getModeLabels_'.$unit.'_'.$code;
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
-		$key = str_replace(' ', '_', $key);
-		$key = str_replace('-', '_', $key);
-		$key = str_replace('.', '_', $key);
-
+		
 		$this->logger->debug($key);
 
 		// No cache to avoid to increase the number of cache files for all combination
@@ -49,13 +46,16 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req = "SELECT code, label ";
 		$req .= " FROM mode ";
 		$req .= " WHERE unit = ? ";
+		if (!empty($query)) {
+			$req .= " AND label ilike '".$query."%'";
+		}
 		if ($code != null) {
 			if (is_array($code)) {
 				$req .= " AND code IN ('".implode("','", $code)."')";
 			} else {
 				$req .= " AND code = '".$code."'";
 			}
-		}
+		}	
 		$req .= " ORDER BY position, code";
 
 		$this->logger->info('getModeLabels : '.$req);
@@ -277,11 +277,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getDynamodeLabels($unit, $code = null, $query = null) {
 
 		$key = 'getDynamodeLabels_'.$unit.'_'.$code.'_'.$query;
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
-		$key = str_replace(' ', '_', $key);
-		$key = str_replace('-', '_', $key);
-		$key = str_replace('.', '_', $key);
-
+		
 		$this->logger->debug($key);
 
 		// No cache to avoid to increase the number of cache files for all combination
@@ -289,21 +285,23 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 		$req = $this->_getDynamodeSQL($unit);
 
+		$req2 = "SELECT * ";
+		$req2 .= " FROM (".$req.") as foo ";
+		$req2 .= " WHERE (1 = 1) ";
 		if (!empty($query)) {
-			$req = "SELECT * ";
-			$req .= " FROM (".$req.") as foo ";
-			$req .= " WHERE label ilike '".$query."%'";
-			if ($code != null) {
-				if (is_array($code)) {
-					$req .= " AND code IN ('".implode("','", $code)."')";
-				} else {
-					$req .= " AND code = '".$code."'";
-				}
+			$req2 .= " AND label ilike '".$query."%'";
+		}
+		if ($code != null) {
+			if (is_array($code)) {
+				$req2 .= " AND code IN ('".implode("','", $code)."')";
+			} else {
+				$req2 .= " AND code = '".$code."'";
 			}
 		}
-		$this->logger->info('getDynamodeLabels : '.$req);
 
-		$select = $db->prepare($req);
+		$this->logger->info('getDynamodeLabels : '.$req2);
+
+		$select = $db->prepare($req2);
 		$select->execute(array());
 
 		$result = array();

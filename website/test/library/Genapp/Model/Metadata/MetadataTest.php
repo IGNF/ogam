@@ -39,12 +39,25 @@ class MetadataTest extends ControllerTestCase {
 		// On charge le modèle
 		$metadataModel = new Genapp_Model_Metadata_Metadata();
 
-		// On vérifie que le user "admin" existe
-		$modes = $metadataModel->getModeLabels('PROVIDER_ID');
+		// On récupère la liste des esp^èces
+		$modes = $metadataModel->getModeLabels('SPECIES_CODE');
 
 		// On vérifie que l'on a ramené la bonne modalité
+		$this->assertEquals(count($modes), 303);
+		
+		// On filtre sur un code
+		$modes = $metadataModel->getModeLabels('SPECIES_CODE', '999');
+		
+		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($modes), 1);
-		$this->assertEquals($modes['1'], 'France');
+		$this->assertEquals($modes['999'], 'Other broadleaves');
+		
+		// On filtre sur un libellé
+		$modes = $metadataModel->getModeLabels('SPECIES_CODE', null, 'Acacia');
+		
+		// On vérifie que l'on a ramené la bonne modalité
+		$this->assertEquals(count($modes), 11);		
+		
 	}
 
 	/**
@@ -88,6 +101,18 @@ class MetadataTest extends ControllerTestCase {
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($departements), 97);
+		
+		// Test avec un bout de libellé
+		$departements = $metadataModel->getDynamodeLabels('DEPARTEMENT', '45');
+		
+		// On vérifie que l'on a ramené le bon compte de modalités
+		$this->assertEquals(count($departements), 1);
+		
+		// Test avec un code
+		$departements = $metadataModel->getDynamodeLabels('DEPARTEMENT', null, 'LOIR');
+		
+		// On vérifie que l'on a ramené le bon compte de modalités
+		$this->assertEquals(count($departements), 4);
 	}
 
 	/**
