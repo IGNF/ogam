@@ -155,7 +155,11 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeLabels($unit, $value = null) {
 
-		$key = 'getTreeLabels_'.$unit.'_'.implode("_", $value);
+		if (is_array($value)) {
+			$key = 'getTreeLabels_'.$unit.'_'.implode("_", $value);
+		} else {
+			$key = 'getTreeLabels_'.$unit.'_'.$value;
+		}
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
@@ -222,7 +226,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$select = $db->prepare($req);
 		$select->execute(array($unit));
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$result[$row['code']] = $row['label'];
@@ -256,7 +260,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$select = $db->prepare($req);
 		$select->execute(array($unit));
-		
+
 		$result = array();
 
 		return $select->fetchColumn(0);
