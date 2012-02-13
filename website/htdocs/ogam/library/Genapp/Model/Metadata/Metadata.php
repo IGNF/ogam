@@ -160,10 +160,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		} else {
 			$key = 'getTreeLabels_'.$unit.'_'.$value;
 		}
-		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
-		$key = str_replace(' ', '_', $key);
-		$key = str_replace('-', '_', $key);
-		$key = str_replace('.', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -352,6 +348,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -437,6 +434,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
 
 		$this->logger->debug($key);
 
