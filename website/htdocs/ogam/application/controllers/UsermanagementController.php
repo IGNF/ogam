@@ -435,9 +435,6 @@ class UsermanagementController extends AbstractOGAMController {
 			if ($password != $confirmpassword) {
 				return $this->showChangePasswordAction("Password does not match confirmation", $login);
 			}
-
-			// Check that the old password is correct
-			$storedPassword = $this->userModel->getPassword($login);
 				
 			// Encrypt the password
 			$cryptedPassword = sha1($password);
