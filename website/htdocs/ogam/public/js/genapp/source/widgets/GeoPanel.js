@@ -993,7 +993,7 @@ Genapp.GeoPanel = Ext
 						// Zoom to max extend
 						var zoomToMaxControl = new OpenLayers.Control.ZoomToMaxExtent({
 							map : this.map,
-							active : true
+							active : false
 						});
 
 						var zoomToMaxButton = new GeoExt.Action({
