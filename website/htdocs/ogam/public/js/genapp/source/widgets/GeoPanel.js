@@ -237,7 +237,7 @@ Genapp.GeoPanel = Ext
 					/**
 					 * The layer tree object (linked to the layer panel).
 					 * 
-					 * @type {Ext.tree.TreePanel}
+					 * @type {Genapp.tree.LayerTreePanel}
 					 * @property layerTree
 					 */
 					layerTree : null,

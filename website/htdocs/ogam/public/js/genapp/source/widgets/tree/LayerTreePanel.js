@@ -152,13 +152,6 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	},
 
 	/**
-	 * Display the contextual menu.
-	 */
-	displayContextualMenu : function() {
-		alert('toto : ');
-	},
-
-	/**
 	 * Call the callback function for each layer child
 	 * 
 	 * @param {Function}

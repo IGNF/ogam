@@ -1562,9 +1562,9 @@ listeners: {
                         this.requestConn = null;
 
                         this.getResultsBBox();
-                        if(this.autoZoomOnResultsFeatures !== true){
+                        if (this.autoZoomOnResultsFeatures !== true) {
                             // Display the results layer
-                            this.geoPanel.enableLayersAndLegends(this.geoPanel.layersActivation['request'],true, true);
+                            this.geoPanel.enableLayersAndLegends(this.geoPanel.layersActivation['request'], true, true);
                         }
 
                         // Collapse the panel only if the form is valid
@@ -1880,7 +1880,7 @@ listeners: {
                            this.geoPanel.zoomOnBBox(this.geoPanel.resultsBBox);
                         }
                         // Display the results layer
-                        this.geoPanel.enableLayersAndLegends(this.geoPanel.layersActivation['request'],true, true);
+                        this.geoPanel.enableLayersAndLegends(this.geoPanel.layersActivation['request'], true, true);
                     }
                 }
             } catch(err) {
