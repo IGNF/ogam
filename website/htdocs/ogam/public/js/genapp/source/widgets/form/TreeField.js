@@ -75,7 +75,7 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
             name : 'label', // Must be equal to this.displayField
             mapping : 'label'
         } ],
-        url : Genapp.ajax_query_url + 'ajaxgettreecodes'
+        url : Genapp.base_url + 'query/ajaxgettreecodes'
     },
 
     baseNodeUrl : Genapp.base_url + 'query/ajaxgettreenodes/',

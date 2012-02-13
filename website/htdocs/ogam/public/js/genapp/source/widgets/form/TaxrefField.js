@@ -29,7 +29,7 @@ Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
             name : 'label',
             mapping : 'label'
         } ],
-        url : Genapp.ajax_query_url + 'ajaxgettaxrefcodes'
+        url : Genapp.base_url  + 'query/ajaxgettaxrefcodes'
     },
 
     baseNodeUrl : Genapp.base_url + 'query/ajaxgettaxrefnodes/',
