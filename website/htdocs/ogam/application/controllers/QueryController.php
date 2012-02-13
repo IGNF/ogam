@@ -935,7 +935,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('ajaxgetdynamiccodesAction');
 
 		$unit = $this->getRequest()->getParam('unit');
-		$query = $this->getRequest()->getParam('query');
+		$query = pg_escape_string($this->getRequest()->getParam('query'));
 
 		$this->logger->debug('$unit : '.$unit);
 		$this->logger->debug('$query : '.$query);
@@ -1003,7 +1003,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('ajaxgettreecodesAction');
 
 		$unit = $this->getRequest()->getParam('unit');
-		$query = $this->getRequest()->getParam('query');
+		$query = pg_escape_string($this->getRequest()->getParam('query'));
 		$start = $this->getRequest()->getParam('start');
 		$limit = $this->getRequest()->getParam('limit');
 
@@ -1050,7 +1050,7 @@ class QueryController extends AbstractOGAMController {
 	public function ajaxgettaxrefcodesAction() {
 		$this->logger->debug('ajaxgettaxrefcodesAction');
 
-		$query = $this->getRequest()->getParam('query');
+		$query = pg_escape_string($this->getRequest()->getParam('query'));
 		$start = $this->getRequest()->getParam('start');
 		$limit = $this->getRequest()->getParam('limit');
 
