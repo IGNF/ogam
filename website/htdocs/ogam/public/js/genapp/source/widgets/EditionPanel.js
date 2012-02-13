@@ -10,10 +10,10 @@
  * @xtype editionpanel
  */
 Genapp.EditionPanel = Ext.extend(Ext.Panel, {
-	
+
 	/**
 	 * Internationalization.
-	 */ 
+	 */
 	geoMapWindowTitle : 'Draw the localisation',
 
 	/**
@@ -516,7 +516,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 					field.allowAddNewData = true;
 					field.forceFormValue = false;
 					field.hideClearButton = true;
-					field.removeValuesFromStore = false; // pb de perf avec les communes
+					field.removeValuesFromStore = false; // pb de perf avec
+					// les communes
 				} else {
 					field.xtype = 'combo';
 					field.hiddenName = field.name;
@@ -528,11 +529,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				field.valueField = 'code';
 				field.emptyText = Genapp.FieldForm.prototype.criteriaPanelTbarComboEmptyText;
 				field.mode = 'remote';
-			
+
 				// Fill the list of codes / labels for default values
 				var codes = [];
-				if (record.type == 'ARRAY') {					
-					if (record.valueLabel) { // to avoid null pointer 
+				if (record.type == 'ARRAY') {
+					if (record.valueLabel) { // to avoid null pointer
 						for ( var i = 0; i < record.valueLabel.length; i++) {
 							codes.push({
 								code : record.value[i],
@@ -540,7 +541,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 							});
 						}
 					}
-				} else { 
+				} else {
 					// case of CODE (single value)
 					codes.push({
 						code : record.value,
@@ -652,7 +653,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 					field.multiple = true;
 					field.name = field.name + '[]';
 				}
-	            field.unit = record.unit;
+				field.unit = record.unit;
 				break;
 			case 'TAXREF':
 				field.xtype = 'taxreffield';
@@ -722,7 +723,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * Ask for deletion of the data
 	 */
 	askDataDeletion : function() {
-		Ext.Msg.confirm('Confirm Deletion', this.dataEditFSDeleteButtonConfirm, this.deleteData(this.dataId));
+		Ext.Msg.confirm('Confirm Deletion', this.dataEditFSDeleteButtonConfirm, function(btn, text) {
+			if (btn == 'yes') {
+				this.deleteData(this.dataId);
+			}
+		}, this);
 	},
 
 	/**
