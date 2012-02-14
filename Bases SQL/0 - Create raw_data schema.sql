@@ -202,6 +202,7 @@ TREE_ID              INT4                 not null default nextval('tree_id_seq'
 SPECIES_CODE		 VARCHAR(36)          null,
 DBH					 FLOAT8	              null,
 HEIGHT	 			 FLOAT8	              null,
+PHOTO	 			 VARCHAR(255)         null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
 constraint PK_TREE_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID),
@@ -217,6 +218,7 @@ COMMENT ON COLUMN TREE_DATA.TREE_ID IS 'The identifier of the tree';
 COMMENT ON COLUMN TREE_DATA.SPECIES_CODE IS 'The code of the specie of the tree';
 COMMENT ON COLUMN TREE_DATA.DBH IS 'The diameter at breast height (in m)';
 COMMENT ON COLUMN TREE_DATA.HEIGHT IS 'The tree height (in m)';
+COMMENT ON COLUMN TREE_DATA.PHOTO IS 'A picture of the tree';
 COMMENT ON COLUMN TREE_DATA.COMMENT IS 'A comment about the species';
 COMMENT ON COLUMN TREE_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 

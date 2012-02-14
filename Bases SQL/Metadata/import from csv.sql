@@ -9,7 +9,7 @@ alter table FORM_FORMAT drop constraint FK_FORM_FOR_HERITAGE__FORMAT;
 alter table TABLE_FORMAT drop constraint FK_TABLE_FO_HERITAGE__FORMAT;
 alter table FILE_FIELD drop constraint FK_FILE_FIE_HERITAGE__FIELD;
 alter table FORM_FIELD drop constraint FK_FORM_FIE_HERITAGE__FIELD;            
---alter table TABLE_FIELD drop constraint FK_TABLE_FI_HERITAGE__FIELD;
+alter table TABLE_FIELD drop constraint FK_TABLE_FI_HERITAGE__FIELD;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_DATASET;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_FIELD;
 alter table DATASET_FILES drop constraint FK_DATASET_FILES_FORMAT;
@@ -231,12 +231,12 @@ UNION
 -- the INPUT_TYPE is not in the list
 SELECT format||'_'||data, 'The INPUT_TYPE type is not in the list'
 FROM form_field 
-WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE', 'TAXREF')
+WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE', 'TAXREF', 'IMAGE')
 UNION
 -- the UNIT type is not in the list
 SELECT unit||'_'||type, 'The UNIT type is not in the list'
 FROM unit 
-WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'DATE', 'INTEGER', 'NUMERIC', 'STRING', 'GEOM')
+WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'DATE', 'INTEGER', 'NUMERIC', 'STRING', 'GEOM', 'IMAGE')
 UNION
 -- the subtype is not consistent with the type
 SELECT unit||'_'||type, 'The UNIT subtype is not consistent with the type'
@@ -256,6 +256,7 @@ OR (input_type = 'SELECT' AND NOT (type = 'ARRAY' or TYPE = 'CODE') AND (subtype
 OR (input_type = 'TEXT' AND type <> 'STRING')
 OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')
 OR (input_type = 'GEOM' AND type <> 'GEOM')
+OR (input_type = 'IMAGE' AND type <> 'IMAGE')
 OR (input_type = 'TREE' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TREE'))
 UNION
 -- TREE_MODEs should be defined
