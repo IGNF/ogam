@@ -37,7 +37,11 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getModeLabels($unit, $code = null, $query = null) {
 
 		$key = 'getModeLabels_'.$unit.'_'.$code;
-		
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
+		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
+
 		$this->logger->debug($key);
 
 		// No cache to avoid to increase the number of cache files for all combination
@@ -55,7 +59,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			} else {
 				$req .= " AND code = '".$code."'";
 			}
-		}	
+		}
 		$req .= " ORDER BY position, code";
 
 		$this->logger->info('getModeLabels : '.$req);
@@ -113,6 +117,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
 
 		$this->logger->debug($key);
 
@@ -273,7 +278,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getDynamodeLabels($unit, $code = null, $query = null) {
 
 		$key = 'getDynamodeLabels_'.$unit.'_'.$code.'_'.$query;
-		
+
 		$this->logger->debug($key);
 
 		// No cache to avoid to increase the number of cache files for all combination
