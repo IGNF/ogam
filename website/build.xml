@@ -58,27 +58,8 @@
 		</condition>
 	</target>
 
-	<!-- Concats the CSS themes files ('gray extend' and 'green-ifn') -->
-	<target name="concatCssThemes" description="Concats the CSS themes files ('gray extend' and 'green-ifn')">
-		<!-- Clean up -->
-		<delete file="${cps.resrcs.dir}/${cps.name}-gray-extend-all.css" quiet="true" />
-		<delete file="${cps.resrcs.dir}/${cps.name}-green-ifn-all.css" quiet="true" />
-
-		<!-- Concatenation of the gray extend CSS file -->
-		<concat destfile="${cps.resrcs.dir}/${cps.name}-gray-extend-all.css">
-			<fileset file="${cps.resrcs.dir}/structure/genapp.css" />
-			<fileset file="${cps.resrcs.dir}/visual/genapp-gray-extend.css" />
-		</concat>
-
-		<!-- Concatenation of the green ifn CSS file -->
-		<concat destfile="${cps.resrcs.dir}/${cps.name}-green-ifn-all.css">
-			<fileset file="${cps.resrcs.dir}/structure/genapp.css" />
-			<fileset file="${cps.resrcs.dir}/visual/genapp-green-ifn.css" />
-		</concat>
-	</target>
-
 	<!-- Compress the CSS and JS files  -->
-	<target name="compressCssAndJs" depends="concatCssThemes" description="Compress the CSS and JS files">
+	<target name="compressCssAndJs" description="Compress the CSS and JS files">
 
 		<!-- Clean up -->
 		<delete file="${cps.js.pack.path}" quiet="true" />
@@ -86,15 +67,44 @@
 		<delete file="${cps.css.pack.path}" quiet="true" />
 		<delete file="${cps.css.min.path}" quiet="true" />
 
-
 		<!-- Concatenation of all the JS in one file -->
 		<concat destfile="${cps.js.pack.path}">
-			<fileset id="sounds_fileset" dir="${cps.src.dir}" includes="**/*.js" excludes="**/locale/*,**/genapp.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/basiccheckbox/BasicCheckBox.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/datePatch/datePatchExtjs3.1.1.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/rowExpander/RowExpander.js" />
+			<fileset file="${src.dir}ogam/public/js/extjsux/superboxselect/SuperBoxSelect.js" />
+			<fileset file="${cps.src.dir}/widgets/CardGridDetailsPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/CardPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/ConsultationPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/DetailsPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/DocSearchPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/EditionPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/FieldForm.js" />
+			<fileset file="${cps.src.dir}/widgets/GeoPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/GridDetailPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/PdfComponent.js" />
+			<fileset file="${cps.src.dir}/widgets/PredefinedRequestPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/form/menu/DateRangeMenu.js" />
+			<fileset file="${cps.src.dir}/widgets/form/menu/NumberRangeMenu.js" />
+			<fileset file="${cps.src.dir}/widgets/form/menu/TreeMenu.js" />
+			<fileset file="${cps.src.dir}/widgets/form/menu/TaxrefMenu.js" />
+			<fileset file="${cps.src.dir}/widgets/form/picker/DateRangePicker.js" />
+			<fileset file="${cps.src.dir}/widgets/form/picker/NumberRangePicker.js" />
+			<fileset file="${cps.src.dir}/widgets/form/picker/TreePicker.js" />
+			<fileset file="${cps.src.dir}/widgets/form/picker/TaxrefPicker.js" />
+			<fileset file="${cps.src.dir}/widgets/form/DateRangeField.js" />
+			<fileset file="${cps.src.dir}/widgets/form/GeometryField.js" />
+			<fileset file="${cps.src.dir}/widgets/form/NumberRangeField.js" />
+			<fileset file="${cps.src.dir}/widgets/form/TreeField.js" />
+			<fileset file="${cps.src.dir}/widgets/form/TaxrefField.js" />
+			<fileset file="${cps.src.dir}/widgets/form/TwinNumberField.js" />
+			<fileset file="${cps.src.dir}/widgets/tree/LayerTreePanel.js" />
+			<fileset file="${cps.src.dir}/widgets/tree/ContextMenuPlugin.js" />
+			<fileset file="${cps.src.dir}/widgets/map/LayerSelector.js" />
 
-			<fileset dir="${custom.js}" includes="**/*.js" erroronmissingdir="false" />
+			<fileset dir="${inherent.js.new}" includes="**/*.js" erroronmissingdir="false" />
+			<fileset dir="${inherent.js.patch}" includes="**/*.js" erroronmissingdir="false" />
+			<fileset dir="${inherent.js.substitute}" includes="**/*.js" erroronmissingdir="false" />
 		</concat>
 
 
@@ -104,7 +114,9 @@
 			<fileset file="${src.dir}ogam/public/js/extjsux/basiccheckbox/BasicCheckBox.css" />
 			<fileset file="${src.dir}ogam/public/css/extjsux.css" />
 
-			<fileset dir="${custom.css}" includes="**/*.css" erroronmissingdir="false" />
+			<fileset dir="${inherent.css.new}" includes="**/*.css" erroronmissingdir="false" />
+			<fileset dir="${inherent.css.patch}" includes="**/*.css" erroronmissingdir="false" />
+			<fileset dir="${inherent.css.substitute}" includes="**/*.css" erroronmissingdir="false" />
 		</concat>
 
 		<!-- Compress the concatened files on the main directory -->
@@ -125,19 +137,6 @@
 		</copy>
 	</target>
 
-	<!-- Compress Mapfish -->
-	<target name="compressMapfish" description="Compress the Mapfish Library" depends="_targetCheck" if="isWindows">
-
-		<delete file="${src.dir}ogam/public/js/mapfish/build/MapFish.js" />
-
-		<exec executable="cmd" dir="${src.dir}public/js/mapfish/build">
-			<arg line="/c build.cmd" />
-		</exec>
-
-		<copy todir="${src.dir}ogam/public/js/mapfish" overwrite="true" verbose="true" file="${src.dir}ogam/public/js/mapfish/build/MapFish.js">
-		</copy>
-
-	</target>
 
 	<!-- Suppression des répertoires de travail -->
 	<target name="_clean">
@@ -167,7 +166,14 @@
 				<exclude name="**/js/extjs/*.html" />
 				<exclude name="**/js/extjs/test/**" />
 				<exclude name="**/js/extjs/welcome/**" />
-				<exclude name="**/js/mapfish/mapfish/**" />
+				<exclude name="**/js/extjs/resources/images/access/**" />
+				<exclude name="**/js/extjs/resources/images/default/**" />
+				<exclude name="**/js/extjs/resources/images/gray/**" />
+				<exclude name="**/js/extjs/resources/images/green-ifn/**" />
+				<exclude name="**/js/extjs/resources/images/vista/**" />
+				<exclude name="**/js/extjs/resources/images/yourtheme/**" />
+				<exclude name="**/js/GeoExt/docs/**" />
+				<exclude name="**/js/GeoExt/examples/**" />
 				<exclude name="**/js/OpenLayers/apidoc_config/**" />
 				<exclude name="**/js/OpenLayers/art/**" />
 				<exclude name="**/js/OpenLayers/build/**" />
@@ -293,7 +299,7 @@
 			</fileset>
 		</jsdoctoolkit>
 	</target>
-	
+
 	<!-- Launch JUnit under Windows -->
 	<target name="_phpunitwindows" depends="_targetCheck" if="isWindows">
 		<echo>Windows</echo>
@@ -314,6 +320,6 @@
 	<!-- Launch PHPUnit-->
 	<target name="phpunit" description="Launch PHPUnit" depends="_phpunitwindows, _phpunitunix">
 	</target>
-	
-	
+
+
 </project>
