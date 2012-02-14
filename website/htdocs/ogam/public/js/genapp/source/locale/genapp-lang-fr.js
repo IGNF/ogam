@@ -252,3 +252,8 @@ if (Genapp.EditionPanel) {
 		geoMapWindowTitle : 'Saisir la localisation'
 	});
 }
+if (Genapp.form.ImageField) {
+	Ext.apply(Genapp.form.ImageField.prototype, {
+		emptyImageUploadFieldTest : 'Sélectionner une image'
+	});
+}

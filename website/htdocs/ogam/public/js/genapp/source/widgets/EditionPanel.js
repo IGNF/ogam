@@ -167,7 +167,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	tipEditPrefix : 'Edit the',
 	/**
-	 * @cfg {Numeric} tipDefaultWidth The tip Default Width (defaults to '400').
+	 * @cfg {Numeric} tipDefaultWidth The tip Default Width (defaults to '350').
 	 */
 	tipDefaultWidth : 350,
 	/**
@@ -350,7 +350,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		this.dataEditForm = new Ext.FormPanel({
 			monitorValid : true,
 			border : false,
-			url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
+			url : Genapp.base_url + 'dataedition/ajax-validate-edit-data',
 			labelWidth : 200,
 			defaults : {
 				msgTarget : 'side',
@@ -659,6 +659,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				field.xtype = 'taxreffield';
 				field.valueLabel = record.valueLabel;
 				break;
+			case 'IMAGE':
+				field.xtype = 'imagefield';
+				field.id = this.dataId + "/" + record.name;
+				field.rootPanel = this;
+				break;
 			default:
 				field.xtype = 'field';
 				break;
@@ -710,7 +715,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	editData : function() {
 		this.dataEditForm.getForm().submit({
-			url : Genapp.ajax_query_url + 'ajax-validate-edit-data',
+			url : Genapp.base_url + 'dataedition/ajax-validate-edit-data',
 			timeout : 480000,
 			success : this.editSuccess,
 			failure : this.editFailure,
@@ -735,7 +740,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 */
 	deleteData : function(dataId) {
 		Ext.Ajax.request({
-			url : Genapp.ajax_query_url + 'ajax-delete-data/' + dataId,
+			url : Genapp.base_url + 'dataedition/ajax-delete-data/' + dataId,
 			success : this.deleteSuccess,
 			failure : this.deleteFailure,
 			scope : this
