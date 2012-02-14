@@ -62,12 +62,12 @@ class Genapp_Object_Generic_DataObject {
 	public function getInfoFields() {
 		return $this->infoFields;
 	}
-	
+
 	/**
-	* Return the editableFields array .
-	*
-	* @return TableField the editableFields array
-	*/
+	 * Return the editableFields array .
+	 *
+	 * @return TableField the editableFields array
+	 */
 	public function getEditableFields() {
 		return $this->editableFields;
 	}
@@ -107,24 +107,37 @@ class Genapp_Object_Generic_DataObject {
 
 		return $formats;
 	}
-	
+
 	/**
-	* Tell if the data object contains at least one geometry field.
-	*
-	* @return Boolean true is one geomtry field is present
-	*/
+	 * Tell if the data object contains at least one geometry field.
+	 *
+	 * @return Boolean true is one geomtry field is present
+	 */
 	public function hasGeometry() {
-	
+
 		$hasGeom = false;
-	
+
 		foreach ($this->getFields() as $field) {
 			if ($field->type == 'GEOM') {
 				$hasGeom = true;
 				break;
 			}
 		}
-	
+
 		return $hasGeom;
+	}
+
+	/**
+	 * Build and return the datum id
+	 *
+	 * @return String the datum identifier
+	 */
+	public function getId() {
+		$datumId = 'SCHEMA/'.$this->tableFormat->schemaCode.'/FORMAT/'.$this->tableFormat->format;
+		foreach ($this->getInfoFields() as $field) {
+			$datumId .= '/'.$field->data.'/'.$field->value;
+		}
+		return $datumId;
 	}
 
 }

@@ -71,7 +71,7 @@ class Genapp_Service_GenericService {
 		if (!empty($children)) {
 			$childrenCount = count(current($children));
 		}
-		$json = '{"title":'.json_encode($data->tableFormat->label, JSON_HEX_APOS).', "children_count":'.$childrenCount.', "id":"'.$this->getIdFromData($data).'", "fields":[';
+		$json = '{"title":'.json_encode($data->tableFormat->label, JSON_HEX_APOS).', "children_count":'.$childrenCount.', "id":"'.$data->getId().'", "fields":[';
 		$fields = '';
 		// Get the form field corresponding to the table field
 		$formFields = $this->getFormFieldsOrdered($data->getFields());
@@ -90,7 +90,7 @@ class Genapp_Service_GenericService {
 
 		// Add the edit link
 		if (!empty($permissions) && array_key_exists('DATA_EDITION', $permissions)) {
-			$json .= ',"editURL":'.json_encode($this->getIdFromData($data));
+			$json .= ',"editURL":'.json_encode($data->getId());
 		} else {
 			$json .= ',"editURL":null';
 		}
@@ -98,20 +98,6 @@ class Genapp_Service_GenericService {
 		$json .= '}';
 
 		return $json;
-	}
-
-	/**
-	 * Build and return the datum id
-	 *
-	 * @param DataObject $datum The datum
-	 * @return String the datum identifier
-	 */
-	public function getIdFromData($datum) {
-		$datumId = 'SCHEMA/'.$datum->tableFormat->schemaCode.'/FORMAT/'.$datum->tableFormat->format;
-		foreach ($datum->infoFields as $field) {
-			$datumId .= '/'.$field->data.'/'.$field->value;
-		}
-		return $datumId;
 	}
 
 	/**
@@ -143,7 +129,7 @@ class Genapp_Service_GenericService {
 			foreach ($data as $datum) {
 				$locationData = array();
 				// Addition of the row id
-				$locationData[0] = $this->getIdFromData($datum);
+				$locationData[0] = $datum->getId();
 				$formFields = $this->getFormFieldsOrdered($datum->getFields());
 				foreach ($formFields as $formField) {
 					// We keep only the result fields (The columns availables)

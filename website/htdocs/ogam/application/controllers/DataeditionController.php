@@ -340,7 +340,7 @@ class DataEditionController extends AbstractOGAMController {
 		$websiteSession->children = $children;
 
 		// Generate dynamically the corresponding form
-		$this->view->dataId = $this->genericService->getIdFromData($data);
+		$this->view->dataId = $data->getId();
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->data = $data;
 		$this->view->ancestors = $ancestors;
@@ -365,6 +365,9 @@ class DataEditionController extends AbstractOGAMController {
 
 		$data = $this->_getDataFromRequest($request);
 
+		// Complete the data object with the existing values from the database.
+		$data = $this->genericModel->getDatum($data);
+
 		// Check if the data has children
 		$children = $this->genericModel->getChildren($data);
 
@@ -381,23 +384,26 @@ class DataEditionController extends AbstractOGAMController {
 			// Redirect to the index page
 			$result = '{"success":false, "errorMessage":'.json_encode($this->translator->translate("Item cannot be deleted because it has children")).'}';
 		} else {
-					
+
 			// Delete the images linked to the data if present
 			foreach ($data->getFields() as $field) {
-				if ($field->type = "IMAGE") {
-					$this->_deleteDirectory();
+				if ($field->type == "IMAGE"  && $field->value != "") {
+					$uploadDir = $this->configuration->image_upload_dir;
+					$dir = $uploadDir."/".$data->getId()."/".$field->getName();
+					$this->_deleteDirectory($dir);
 				}
-				
 			}
-			
+
 			// Delete the data
+
 			try {
 				$this->genericModel->deleteData($data);
 			} catch (Exception $e) {
 				$this->logger->err($e->getMessage());
 				$result = '{"success":false, "errorMessage":'.json_encode($this->translator->translate("Error while deleting data")).'}';
 			}
-			
+
+
 			$result = '{"success":true';
 
 			// Redirect to the index page by default
@@ -405,7 +411,7 @@ class DataEditionController extends AbstractOGAMController {
 			// If the data has an ancestor, we redirect to this ancestor
 			if (!empty($ancestors)) {
 				$parent = $ancestors[0];
-				$redirectURL .= '/dataedition/show-edit-data/'.$this->genericService->getIdFromData($parent);
+				$redirectURL .= '/dataedition/show-edit-data/'.$parent->getId();
 			}
 
 			$result .= ', "redirectLink":'.json_encode($redirectURL);
@@ -468,7 +474,7 @@ class DataEditionController extends AbstractOGAMController {
 			echo '{"success":true, ';
 			if ($mode == 'ADD') {
 				// Build the URL to link to the current item
-				$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$this->genericService->getIdFromData($data);
+				$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$data->getId();
 				echo '"redirectLink":'.json_encode($redirectURL).',';
 			}
 			echo '"message":'.json_encode($this->translator->translate("Data saved"));
@@ -522,7 +528,7 @@ class DataEditionController extends AbstractOGAMController {
 		$websiteSession->ancestors = $ancestors;
 
 		// Generate dynamically the corresponding form
-		$this->view->dataId = $this->genericService->getIdFromData($data);
+		$this->view->dataId = $data->getId();
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->ancestors = $ancestors;
 		$this->view->data = $data;
@@ -657,6 +663,8 @@ class DataEditionController extends AbstractOGAMController {
 	 * @return boolean
 	 */
 	private	function _deleteDirectory($dir) {
+		$this->logger->debug('deleteDirectory '.$dir);
+
 		if (!file_exists($dir)) return true;
 		if (!is_dir($dir) || is_link($dir)) return unlink($dir);
 		foreach (scandir($dir) as $item) {
