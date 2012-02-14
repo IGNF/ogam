@@ -73,6 +73,7 @@
 			<fileset file="${src.dir}ogam/public/js/extjsux/datePatch/datePatchExtjs3.1.1.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/rowExpander/RowExpander.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/superboxselect/SuperBoxSelect.js" />
+			<fileset file="${src.dir}ogam/public/js/extjsux/fileuploadfield/fileuploadfield.js" />
 			<fileset file="${cps.src.dir}/widgets/CardGridDetailsPanel.js" />
 			<fileset file="${cps.src.dir}/widgets/CardPanel.js" />
 			<fileset file="${cps.src.dir}/widgets/ConsultationPanel.js" />
@@ -95,6 +96,7 @@
 			<fileset file="${cps.src.dir}/widgets/form/DateRangeField.js" />
 			<fileset file="${cps.src.dir}/widgets/form/GeometryField.js" />
 			<fileset file="${cps.src.dir}/widgets/form/NumberRangeField.js" />
+			<fileset file="${cps.src.dir}/widgets/form/ImageField.js" />
 			<fileset file="${cps.src.dir}/widgets/form/TreeField.js" />
 			<fileset file="${cps.src.dir}/widgets/form/TaxrefField.js" />
 			<fileset file="${cps.src.dir}/widgets/form/TwinNumberField.js" />
