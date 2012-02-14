@@ -30,11 +30,6 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 	uploadWindow : null,
 
 	/**
-	 * The panel where this form is attached
-	 */
-	rootPanel : null,
-
-	/**
 	 * Initialise the component.
 	 */
 	initComponent : function() {
@@ -55,7 +50,7 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 		Genapp.form.ImageField.superclass.initComponent.apply(this, arguments);
 
 		// Upload the file as soon as it is selected
-		this.on('fileselected', this.selectFile, this);
+		// this.on('fileselected', this.selectFile, this);
 
 	},
 
@@ -87,7 +82,13 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 					xtype : 'hidden',
 					name : 'id',
 					value : this.id
-				}, this ]
+				}, this // ugly but works OK
+				// {
+				// xtype : 'fileuploadfield',
+				// name : 'file',
+				// value : this.value
+				// }
+				]
 			});
 
 			// Automatically launch the upload after render
@@ -122,9 +123,9 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 				scope : this
 			});
 		}
-		
-		// Set the image name as a hidden field
-		this.rootPanel.add(this);
+
+		// Set the value as a hidden field ???
+		// alert("value : " + this.value);
 
 	},
 
@@ -132,7 +133,7 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 	 * Upload success
 	 */
 	onUploadSuccess : function() {
-		this.uploadWindow.close();
+		// this.uploadWindow.close();
 		console.log('success');
 	},
 
@@ -140,7 +141,7 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 	 * Upload failure
 	 */
 	onUploadFailure : function() {
-		this.uploadWindow.close();
+		// this.uploadWindow.close();
 		console.log('failure');
 	},
 
@@ -148,6 +149,7 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 	 * Destroy the component
 	 */
 	onDestroy : function() {
+		console.log('destroy');
 		Ext.destroy(this.imageForm);
 		Genapp.form.ImageField.superclass.onDestroy.call(this);
 	}

@@ -145,7 +145,7 @@ class CheckconfController extends AbstractOGAMController {
 
 		$missingSchemasMsg = array();
 		foreach ($expectedSchemas as $expectedSchema) {
-				
+
 			if (!in_array(strtoupper($expectedSchema->name), $existingSchemas)) {
 				$missingSchemasMsg[] = 'Schema '.$expectedSchema->label.' described in the metadata doesn\'t exist in the system';
 			}
@@ -246,6 +246,11 @@ class CheckconfController extends AbstractOGAMController {
 						break;
 					case "BOOLEAN":
 						if ($foundField->type != 'CHARACTER') {
+							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+						}
+						break;
+					case "IMAGE":
+						if ($foundField->type != 'CHARACTER VARYING' && $foundField->type != 'CHARACTER' && $foundField->type != 'TEXT') {
 							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
 						}
 						break;

@@ -662,7 +662,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			case 'IMAGE':
 				field.xtype = 'imagefield';
 				field.id = this.dataId + "/" + record.name;
-				field.rootPanel = this;
+				field.hiddenName = field.name;
 				break;
 			default:
 				field.xtype = 'field';

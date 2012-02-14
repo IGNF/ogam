@@ -25,6 +25,11 @@ class DataEditionController extends AbstractOGAMController {
 	private $genericService;
 
 	/**
+	 * The config.
+	 */
+	private $configuration;
+
+	/**
 	 * Initialise the controler
 	 */
 	public function init() {
@@ -45,6 +50,10 @@ class DataEditionController extends AbstractOGAMController {
 
 		// The generic service
 		$this->genericService = new Genapp_Service_GenericService();
+
+		// The config
+		$this->configuration = Zend_Registry::get("configuration");
+
 
 		// Check if the schema is specified in the request
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -604,8 +613,7 @@ class DataEditionController extends AbstractOGAMController {
 		$adapter = new Zend_File_Transfer_Adapter_Http();
 
 		// Get upload directory from the config
-		$configuration = Zend_Registry::get("configuration");
-		$uploadDir = $configuration->image_upload_dir;
+		$uploadDir = $this->configuration->image_upload_dir;
 
 		$formData = $this->_request->getPost();
 
@@ -616,14 +624,15 @@ class DataEditionController extends AbstractOGAMController {
 		$destination = $uploadDir.'/'.$id;
 
 		// Create the directory and set the rights
-		mkdir($destination, 0666, true);
+		$this->_deleteDirectory($destination);
+		mkdir($destination, $this->configuration->image_dir_rights, true);
 
 		// Receive the file
 		$adapter->setDestination($destination);
 		if (!$adapter->receive()) {
 			$messages = $adapter->getMessages();
 			$this->logger->err(implode("\n", $messages));
-			echo '{"success":false, "errorMessage":'.json_encode($messages).'}';
+			echo '{"success":false, "errors":'.json_encode($messages).'}';
 		} else {
 			echo '{"success":true}';
 		}
@@ -631,6 +640,25 @@ class DataEditionController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * Delete a directory and its content recursively.
+	 *
+	 * @param String $dir
+	 * @return boolean
+	 */
+	private	function _deleteDirectory($dir) {
+		if (!file_exists($dir)) return true;
+		if (!is_dir($dir) || is_link($dir)) return unlink($dir);
+		foreach (scandir($dir) as $item) {
+			if ($item == '.' || $item == '..') continue;
+			if (!$this->_deleteDirectory($dir . "/" . $item)) {
+				chmod($dir . "/" . $item, $this->configuration->image_dir_rights);
+				if (!$this->_deleteDirectory($dir . "/" . $item)) return false;
+			};
+		}
+		return rmdir($dir);
 	}
 
 }
