@@ -592,4 +592,45 @@ class DataEditionController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/javascript');
 	}
 
+	/**
+	 * Upload an image and store it on the disk.
+	 *
+	 * @return JSON
+	 */
+	public function imageuploadAction() {
+
+		$this->logger->debug('imageuploadAction');
+
+		$adapter = new Zend_File_Transfer_Adapter_Http();
+
+		// Get upload directory from the config
+		$configuration = Zend_Registry::get("configuration");
+		$uploadDir = $configuration->image_upload_dir;
+
+		$formData = $this->_request->getPost();
+
+		// Get the identifier of the data
+		$id = $formData['id'];
+
+		// Set the destination directory
+		$destination = $uploadDir.'/'.$id;
+
+		// Create the directory and set the rights
+		mkdir($destination, 0666, true);
+
+		// Receive the file
+		$adapter->setDestination($destination);
+		if (!$adapter->receive()) {
+			$messages = $adapter->getMessages();
+			$this->logger->err(implode("\n", $messages));
+			echo '{"success":false, "errorMessage":'.json_encode($messages).'}';
+		} else {
+			echo '{"success":true}';
+		}
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
 }

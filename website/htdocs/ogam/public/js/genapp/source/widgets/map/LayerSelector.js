@@ -4,7 +4,7 @@ Ext.namespace('Genapp.map');
  * 
  * @class Genapp.map.FieldForm
  * @extends Ext.form.Combobox
- */
+ */;
 
 Genapp.map.LayerSelector = Ext.extend(Ext.form.ComboBox, {
 	
@@ -55,7 +55,14 @@ Genapp.map.LayerSelector = Ext.extend(Ext.form.ComboBox, {
 
 		// call parent init component
 		Genapp.map.LayerSelector.superclass.initComponent.apply(this, arguments);
-
+	},
+	
+	/**
+	 * Destroy the component
+	 */
+	onDestroy : function() {
+		Ext.destroy(this.geoPanel);
+		Genapp.map.LayerSelector.superclass.onDestroy.call(this);
 	}
 });
 
