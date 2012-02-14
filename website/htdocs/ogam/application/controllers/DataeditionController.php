@@ -641,6 +641,14 @@ class DataEditionController extends AbstractOGAMController {
 		$this->_deleteDirectory($destination);
 		mkdir($destination, $this->configuration->image_dir_rights, true);
 
+		// Filter the file extensions
+		if ($this->configuration->image_extensions != null) {
+			$adapter->addValidator('Extension', false, $this->configuration->image_extensions);
+		}
+		if ($this->configuration->image_max_size != null) {
+			$adapter->addValidator('FilesSize', false, $this->configuration->image_max_size);
+		}
+
 		// Receive the file
 		$adapter->setDestination($destination);
 		if (!$adapter->receive()) {
