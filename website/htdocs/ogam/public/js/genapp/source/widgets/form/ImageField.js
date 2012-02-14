@@ -50,7 +50,7 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 		Genapp.form.ImageField.superclass.initComponent.apply(this, arguments);
 
 		// Upload the file as soon as it is selected
-		// this.on('fileselected', this.selectFile, this);
+		this.on('fileselected', this.selectFile, this);
 
 	},
 
@@ -113,7 +113,7 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 		// Submit the image
 		if (this.imageForm.getForm().isValid()) {
 			this.imageForm.getForm().submit({
-				url : Genapp.base_url + 'dataedition/imageupload',
+				url : Genapp.base_url + 'dataedition/ajaximageupload',
 				method : 'POST',
 				enctype : 'multipart/form-data',
 				waitTitle : 'Connexion au serveur ...',

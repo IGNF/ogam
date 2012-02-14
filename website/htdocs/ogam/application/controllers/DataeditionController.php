@@ -381,6 +381,15 @@ class DataEditionController extends AbstractOGAMController {
 			// Redirect to the index page
 			$result = '{"success":false, "errorMessage":'.json_encode($this->translator->translate("Item cannot be deleted because it has children")).'}';
 		} else {
+					
+			// Delete the images linked to the data if present
+			foreach ($data->getFields() as $field) {
+				if ($field->type = "IMAGE") {
+					$this->_deleteDirectory();
+				}
+				
+			}
+			
 			// Delete the data
 			try {
 				$this->genericModel->deleteData($data);
@@ -388,8 +397,7 @@ class DataEditionController extends AbstractOGAMController {
 				$this->logger->err($e->getMessage());
 				$result = '{"success":false, "errorMessage":'.json_encode($this->translator->translate("Error while deleting data")).'}';
 			}
-
-
+			
 			$result = '{"success":true';
 
 			// Redirect to the index page by default
@@ -606,9 +614,9 @@ class DataEditionController extends AbstractOGAMController {
 	 *
 	 * @return JSON
 	 */
-	public function imageuploadAction() {
+	public function ajaximageuploadAction() {
 
-		$this->logger->debug('imageuploadAction');
+		$this->logger->debug('ajaximageuploadAction');
 
 		$adapter = new Zend_File_Transfer_Adapter_Http();
 
