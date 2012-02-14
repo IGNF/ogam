@@ -37,7 +37,7 @@ class IndexController extends Zend_Controller_Action {
 		try {
 			$this->render('custom-index');
 		} catch (Exception $e) {
-			$this->logger->error($e->getMessage());
+			$this->logger->err($e->getMessage());
 			$this->render('index');
 		}
 
