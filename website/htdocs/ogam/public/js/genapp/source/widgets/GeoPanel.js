@@ -477,8 +477,6 @@ Genapp.GeoPanel = Ext
 							displayInLayerSwitcher : false,
 							extractAttributes : false
 						});
-						
-						
 
 						this.setMapLayers(this.map);
 
@@ -883,10 +881,6 @@ Genapp.GeoPanel = Ext
 								checked : false,
 								iconCls : 'zoomin'
 							});
-
-							// Sur activation :
-							// Chargement du layer en GML
-							// snappingControl.setTargets(this.layerSelector.selectedVectorLayer);
 
 							this.mapToolbar.add(snappingButton);
 
