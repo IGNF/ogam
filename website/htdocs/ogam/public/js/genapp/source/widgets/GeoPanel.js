@@ -470,13 +470,25 @@ Genapp.GeoPanel = Ext
 						}
 
 						// Define the WFS layer, used as a grid for snapping
-						this.wfsLayer = new OpenLayers.Layer.WFS("WFS Layer", this.urlWFS, {
-							typename : 'communes'
-						}, {
-							printable : false, // This layers is never printed
-							displayInLayerSwitcher : false,
-							extractAttributes : false
-						});
+						if (!this.hideLayerSelector) {
+
+							// Set the style
+							var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
+								strokeColor : "green",
+								strokeWidth : 3,
+								strokeOpacity : 1,
+							}, OpenLayers.Feature.Vector.style["default"]));
+
+							this.wfsLayer = new OpenLayers.Layer.WFS("WFS Layer", this.urlWFS, {
+								typename : 'communes'
+							}, {
+								printable : false,
+								displayInLayerSwitcher : false,
+								extractAttributes : false,
+								styleMap : styleMap
+							});
+
+						}
 
 						this.setMapLayers(this.map);
 
@@ -879,10 +891,13 @@ Genapp.GeoPanel = Ext
 								toggleGroup : "LayerTools",
 								group : "LayerTools",
 								checked : false,
-								iconCls : 'zoomin'
+								iconCls : 'snapping'
 							});
 
 							this.mapToolbar.add(snappingButton);
+
+							// Link the layer selector to the snapping tool
+							Genapp.eventManager.on('selectLayer', this.layerSelected, this);
 
 							this.mapToolbar.addSeparator();
 
@@ -1314,6 +1329,19 @@ Genapp.GeoPanel = Ext
 								}
 							}
 						}
+					},
+
+					/**
+					 * A layer has been selected in the layer selector
+					 */
+					layerSelected : function(value) {
+						
+						console.log("geopanel layerSelected");
+
+						// Change the WFS layer
+						this.wfsLayer.typename = value.data.code;
+						this.wfsLayer.redraw();
+
 					},
 
 					// private

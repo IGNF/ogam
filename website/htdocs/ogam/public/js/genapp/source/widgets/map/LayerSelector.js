@@ -85,11 +85,14 @@ Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 	 */
 	layerSelected : function(value) {
 
+		console.log("layerselector layerSelected");
+
 		// Store the selected value
 		this.selectedVectorLayer = value.data.code;
 
-		// And change the button title
+		// Change the button title
 		this.setText(value.data.label);
+
 	},
 
 	/**

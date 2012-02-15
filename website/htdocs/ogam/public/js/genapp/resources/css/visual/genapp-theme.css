@@ -92,6 +92,27 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 .next {
     background-image:url(../images/arrow_rotate_anticlockwise.png) !important;
 }
+.drawpoint {
+    background-image:url(../images/draw_point_off.png) !important;
+}
+.drawline {
+    background-image:url(../images/draw_line_off.png) !important;
+}
+.drawpolygon {
+    background-image:url(../images/draw_polygon_off.png) !important;
+}
+.modifyfeature {
+    background-image:url(../images/move_vertex_off.png) !important;
+}
+.deletefeature {
+    background-image:url(../images/cross.png) !important;
+}
+.zoomstations {
+    background-image:url(../images/arrow_in.png) !important;
+}
+.snapping {
+    background-image:url(../images/snapping.png) !important;
+}
 .genapp-map-panel-legal-mentions a{
     font-family:Arial;
     font-size:smaller;
@@ -244,24 +265,6 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 /***** Geometry Field *********************************************************************/
 .x-form-field-wrap .x-form-map-trigger{
     background-image: url(../images/gray-extend/map-trigger.gif);
-}
-.drawpoint {
-    background-image:url(../images/draw_point_off.png) !important;
-}
-.drawline {
-    background-image:url(../images/draw_line_off.png) !important;
-}
-.drawpolygon {
-    background-image:url(../images/draw_polygon_off.png) !important;
-}
-.modifyfeature {
-    background-image:url(../images/move_vertex_off.png) !important;
-}
-.deletefeature {
-    background-image:url(../images/cross.png) !important;
-}
-.zoomstations {
-    background-image:url(../images/arrow_in.png) !important;
 }
 /*************************************************************************************************/
 
