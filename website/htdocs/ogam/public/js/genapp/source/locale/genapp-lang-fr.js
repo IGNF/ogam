@@ -175,7 +175,6 @@ if (Genapp.GeoPanel) {
 		zoomBoxOutControlTitle : "Zoom en arrière",
 		zoomToMaxExtentControlTitle : "Zoom arrière maximum",
 		featureInfoControlTitle : "Voir les informations sur le point",
-		layerSelectorButtonLabel : 'Choisir couche',
 	});
 }
 if (Genapp.tree.ContextMenuPlugin) {
@@ -255,5 +254,10 @@ if (Genapp.EditionPanel) {
 if (Genapp.form.ImageField) {
 	Ext.apply(Genapp.form.ImageField.prototype, {
 		emptyImageUploadFieldTest : 'Sélectionner une image'
+	});
+}
+if (Genapp.map.LayerSelector) {
+	Ext.apply(Genapp.map.LayerSelector.prototype, {
+		layerSelectorButtonLabel : 'Choisir couche',
 	});
 }

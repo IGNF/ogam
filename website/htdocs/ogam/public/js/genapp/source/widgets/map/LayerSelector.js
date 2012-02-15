@@ -3,26 +3,44 @@ Ext.namespace('Genapp.map');
  * Display the list of available Vector Layers.
  * 
  * @class Genapp.map.FieldForm
- * @extends Ext.form.Combobox
- */;
+ * @extends Ext.menu.Item
+ */
+;
 
-Genapp.map.LayerSelector = Ext.extend(Ext.form.ComboBox, {
-	
+Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
+
 	/**
-	 * @cfg {Genapp.GeoPanel} A layer selector is always linked to a geoPanel 
+	 * Internationalization.
 	 */
-	geoPanel : null,
+	layerSelectorButtonLabel : 'Select layer',
+
+	/**
+	 * @cfg {Ext.form.ComboBox} The selection Box
+	 */
+	selectorBox : null,
+
+	/**
+	 * The currently selected vector layer.
+	 * 
+	 * @property selectedVectorLayer
+	 * @type String
+	 */
+	selectedVectorLayer : null,
 
 	/**
 	 * Initialize the component
 	 */
 	initComponent : function() {
 
-		var config = {
+		// Register event used to link the combobox to the button
+		Genapp.eventManager.addEvents('selectLayer');
+
+		// Create a selection combobox
+		this.selectorBox = {
+
+			xtype : 'combo',
 			mode : 'remote',
-
 			triggerAction : 'all',
-
 			store : new Ext.data.JsonStore({
 				autoLoad : true,
 				root : 'layerNames',
@@ -35,32 +53,50 @@ Genapp.map.LayerSelector = Ext.extend(Ext.form.ComboBox, {
 				} ],
 				url : Genapp.base_url + '/map/ajaxgetvectorlayers'
 			}),
+			listeners : {
+				select : function(combo, value) {
+					// Forward the event to the button
+					Genapp.eventManager.fireEvent('selectLayer', value);
+				}
+			},
 
 			valueField : 'code',
 			displayField : 'label',
+		}
 
-			listeners : {
-				select : function(combo, value) {
-					// Store the selected value
-					this.geoPanel.selectedVectorLayer = value.data.code;
-					
-					// And change the button title
-					this.geoPanel.selectorButton.text = value.data.label;
-				}
-			}
+		// The config for the menu item
+		var config = {
+			text : this.layerSelectorButtonLabel,
+			menu : [ this.selectorBox ]
 		}
 
 		// apply config
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
 
+		// Add events listening
+		Genapp.eventManager.on('selectLayer', this.layerSelected, this);
+
 		// call parent init component
 		Genapp.map.LayerSelector.superclass.initComponent.apply(this, arguments);
 	},
-	
+
+	/**
+	 * A layer has been selected
+	 */
+	layerSelected : function(value) {
+
+		// Store the selected value
+		this.selectedVectorLayer = value.data.code;
+
+		// And change the button title
+		this.setText(value.data.label);
+	},
+
 	/**
 	 * Destroy the component
 	 */
 	onDestroy : function() {
+		Ext.destroy(this.selectorBox);
 		Ext.destroy(this.geoPanel);
 		Genapp.map.LayerSelector.superclass.onDestroy.call(this);
 	}

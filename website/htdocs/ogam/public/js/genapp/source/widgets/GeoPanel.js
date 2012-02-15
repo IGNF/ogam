@@ -44,7 +44,6 @@ Genapp.GeoPanel = Ext
 					zoomToMaxExtentControlTitle : "Zoom to max extend",
 					featureInfoControlTitle : "Get the plot location information",
 					legalMentionsLinkText : 'Legal Mentions',
-					layerSelectorButtonLabel : 'Select layer',
 
 					/**
 					 * @cfg {Boolean} frame See {@link Ext.Panel#frame}.
@@ -249,22 +248,14 @@ Genapp.GeoPanel = Ext
 					 * @type Ext.Panel
 					 */
 					legendPanel : null,
-					
+
 					/**
-					 * The vector layer selector button.
+					 * The vector layer selector.
 					 * 
-					 * @property selectorButton
-					 * @type Ext.Button
+					 * @property layerSelector
+					 * @type Genapp.map.LayerSelector
 					 */
-					selectorButton : null,
-					
-					/**
-					 * The currently selected vector layer.
-					 * 
-					 * @property selectedVectorLayer
-					 * @type String
-					 */
-					selectedVectorLayer : null,
+					layerSelector : null,
 
 					/**
 					 * @cfg {String} projectionLabel The projection to be
@@ -839,22 +830,13 @@ Genapp.GeoPanel = Ext
 						// Layer Based Tools
 						//
 						if (!this.hideLayerSelector) {
-							
-							// Create a layer selector
-							var layerSelector = {
-									xtype : 'layerselector'
-							};							
 
-							// Create a button
-							this.selectorButton = {
-								text : this.layerSelectorButtonLabel,
-								menu : [layerSelector]								
+							// Create a layer selector
+							this.layerSelector = {
+								xtype : 'layerselector'
 							};
-							
-							// Link the selector to the panel for future reference
-							layerSelector.geoPanel = this;
-														
-							this.mapToolbar.add(this.selectorButton);
+
+							this.mapToolbar.add(this.layerSelector);
 
 							this.mapToolbar.addFill();
 
