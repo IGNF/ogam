@@ -178,6 +178,14 @@ Genapp.GeoPanel = Ext
 					vectorLayer : null,
 
 					/**
+					 * The WFS layer.
+					 * 
+					 * @type {OpenLayers.Layer.Vector}
+					 * @property wfsLayer
+					 */
+					wfsLayer : null,
+
+					/**
 					 * The base layer.
 					 * 
 					 * @type {OpenLayers.Layer}
@@ -269,6 +277,11 @@ Genapp.GeoPanel = Ext
 					 *      feature Control
 					 */
 					zoomToFeatureControl : null,
+
+					/**
+					 * @cfg { OpenLayers.Control.Snapping) snapping control
+					 */
+					snappingControl : null,
 
 					/**
 					 * Initialisation of the component.
@@ -429,6 +442,7 @@ Genapp.GeoPanel = Ext
 						// Store the base URLs
 						this.urlArrayTiled = layersObject.url_array_tiled;
 						this.urlArrayCached = layersObject.url_array_cached;
+						this.urlWFS = layersObject.url_wfs;
 
 						// Rebuild the list of available layers
 						for (i = 0; i < layersObject.layers.length; i++) {
@@ -454,6 +468,17 @@ Genapp.GeoPanel = Ext
 								this.buildLegend(layerObject);
 							}
 						}
+
+						// Define the WFS layer, used as a grid for snapping
+						this.wfsLayer = new OpenLayers.Layer.WFS("WFS Layer", this.urlWFS, {
+							typename : 'communes'
+						}, {
+							printable : false, // This layers is never printed
+							displayInLayerSwitcher : false,
+							extractAttributes : false
+						});
+						
+						
 
 						this.setMapLayers(this.map);
 
@@ -547,6 +572,12 @@ Genapp.GeoPanel = Ext
 						// Add the available layers
 						for ( var i = 0; i < this.layersList.length; i++) {
 							map.addLayer(this.layersList[i]);
+						}
+
+						// Add the WFS layer
+						if (!this.hideLayerSelector && this.wfsLayer != null) {
+							map.addLayer(this.wfsLayer);
+							this.snappingControl.addTargetLayer(this.wfsLayer);
 						}
 
 						// Add the vector layer
@@ -831,14 +862,35 @@ Genapp.GeoPanel = Ext
 						//
 						if (!this.hideLayerSelector) {
 
-							// Create a layer selector
+							// Layer selector
 							this.layerSelector = {
 								xtype : 'layerselector'
 							};
-
 							this.mapToolbar.add(this.layerSelector);
 
-							this.mapToolbar.addFill();
+							// Snapping tool
+							this.snappingControl = new OpenLayers.Control.Snapping({
+								layer : this.vectorLayer,
+								targets : [ this.vectorLayer ],
+								greedy : false
+							});
+							var snappingButton = new GeoExt.Action({
+								control : this.snappingControl,
+								map : this.map,
+								tooltip : 'Snapping',
+								toggleGroup : "LayerTools",
+								group : "LayerTools",
+								checked : false,
+								iconCls : 'zoomin'
+							});
+
+							// Sur activation :
+							// Chargement du layer en GML
+							// snappingControl.setTargets(this.layerSelector.selectedVectorLayer);
+
+							this.mapToolbar.add(snappingButton);
+
+							this.mapToolbar.addSeparator();
 
 						}
 

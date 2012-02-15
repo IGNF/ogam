@@ -144,6 +144,35 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
+	 * Get a WFS from Mapserver
+	 */
+	function getwfsAction() {
+
+		$uri = $_SERVER["REQUEST_URI"];
+
+		$configuration = Zend_Registry::get("configuration");
+		$mapserverURL = $configuration->mapserver_url;
+		$mapserverURL = $mapserverURL."&";
+
+		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/getwfs?");
+		$this->logger->debug('redirect getwfs : '.$uri);
+
+		// Send the request to Mapserver and forward the response data
+		$handle = fopen($uri, "rb");
+		if ($handle) {
+			while (!feof($handle)) {
+				echo fread($handle, 8192);
+			}
+			fclose($handle);
+		}
+
+		// No View, we send directly the output
+		// header("Content-Type: image/png");
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+	}
+
+	/**
 	 * Get a Tile from Tilecache
 	 */
 	function getcachedtileAction() {
@@ -278,7 +307,7 @@ class ProxyController extends AbstractOGAMController {
 		$this->logger->debug('Get the infos to display');
 		if (strpos($gml, ":display>")) {
 			// we have at least one plot found
-				
+
 
 			$dom = new DomDocument();
 			$dom->loadXML($gml);
@@ -363,7 +392,7 @@ class ProxyController extends AbstractOGAMController {
 				}
 				$locationsData[] = $locationData;
 			}
-				
+
 			// We must sort the array here because it can't be done
 			// into the mapfile sql request to avoid a lower performance
 			sort($id);

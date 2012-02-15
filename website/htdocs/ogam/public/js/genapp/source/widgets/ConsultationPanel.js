@@ -746,7 +746,7 @@ Genapp.ConsultationPanel = Ext
 						 */
 						this.geoPanel = new Genapp.GeoPanel({
 							hideMapDetails : this.hideMapDetails,
-							hideLayerSelector : false,
+							hideLayerSelector : true,
 							listeners : {
 								'activate' : function(panel) {
 									if (!this.hideCsvExportButton) {

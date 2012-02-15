@@ -657,6 +657,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 			field.itemCls = 'trigger-field'; // For IE7 layout
 			field.hideDrawPointButton = true;
 			field.hideDrawLineButton = true;
+			field.hideLayerSelector = false;
 			break;
 		case 'TREE':
 			field.xtype = 'treefield';

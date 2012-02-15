@@ -25,7 +25,7 @@ Genapp.form.ImageField = Ext.extend(Ext.ux.form.FileUploadField, {
 	imageForm : null,
 
 	/**
-	 * Window used to displaythe uplad form
+	 * Window used to display the uplad form
 	 */
 	uploadWindow : null,
 

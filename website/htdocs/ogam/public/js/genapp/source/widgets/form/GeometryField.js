@@ -54,6 +54,10 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 	 */
 	hideDrawLineButton : false,
 	/**
+	 * @cfg {Boolean} hideLayerSelector Hide the Layer selector and related tools 
+	 */
+	hideLayerSelector : false,
+	/**
 	 * @cfg {Boolean} maximizable True to display the 'maximize' tool button and
 	 *      allow the user to maximize the window, false to hide the button and
 	 *      disallow maximizing the window (defaults to true). Note that when a
@@ -139,6 +143,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 				hideMapDetails : this.hideMapDetails,
 				hideDrawPointButton : this.hideDrawPointButton,
 				hideDrawLineButton : this.hideDrawLineButton,
+				hideLayerSelector : this.hideLayerSelector,
 				minZoomLevel : this.mapWindowMinZoomLevel,
 				zoomToFeatureOnInit : this.zoomToFeatureOnInit
 			});
