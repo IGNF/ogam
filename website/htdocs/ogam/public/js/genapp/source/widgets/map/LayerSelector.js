@@ -97,7 +97,6 @@ Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 	 */
 	onDestroy : function() {
 		Ext.destroy(this.selectorBox);
-		Ext.destroy(this.geoPanel);
 		Genapp.map.LayerSelector.superclass.onDestroy.call(this);
 	}
 });
