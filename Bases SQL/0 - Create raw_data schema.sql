@@ -97,18 +97,32 @@ COMMENT ON COLUMN LOCATION.LINE_NUMBER IS 'The position of the line of data in t
 COMMENT ON COLUMN LOCATION.THE_GEOM IS 'The geometry of the location';
 
 
-		
 -- Spatial Index on the_geom 
 CREATE INDEX IX_LOCATION_SPATIAL_INDEX ON raw_data.location USING GIST
             ( the_geom GIST_GEOMETRY_OPS );
-            
+
+ALTER TABLE raw_data.location 
+  ADD CONSTRAINT fk_location_submission_id FOREIGN KEY (submission_id) 
+      REFERENCES raw_data.submission (submission_id)
+      ON UPDATE RESTRICT ON DELETE RESTRICT;
+CREATE INDEX fki_location_submission_id ON raw_data.location(submission_id);
+
 /*========================================================================*/
 /*	Add a trigger to fill the the_geom column of the location table       */
 /*========================================================================*/
 CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
+    BEGIN
     NEW.the_geom = public.GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);
+    EXCEPTION
+    WHEN internal_error THEN
+        IF SQLERRM = 'parse error - invalid geometry' THEN
+            RAISE EXCEPTION USING ERRCODE = '09001', MESSAGE = SQLERRM;
+        ELSIF SQLERRM = 'geometry requires more points' THEN
+            RAISE EXCEPTION USING ERRCODE = '09002', MESSAGE = SQLERRM;
+        END IF;
+    END;
     RETURN NEW;
 END;
 $BODY$
@@ -119,8 +133,7 @@ CREATE TRIGGER geom_trigger
   ON raw_data.LOCATION
   FOR EACH ROW
   EXECUTE PROCEDURE raw_data.geomfromcoordinate();
-            
-            
+
 
 /*==============================================================*/
 /* Table : PLOT_DATA                                            */
