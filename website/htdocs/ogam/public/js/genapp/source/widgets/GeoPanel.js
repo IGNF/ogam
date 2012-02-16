@@ -487,7 +487,9 @@ Genapp.GeoPanel = Ext
 								displayInLayerSwitcher : false,
 								extractAttributes : false,
 								styleMap : styleMap,
-								visibility : false // the layer is not visible by default
+								visibility : false
+							// the layer is not visible
+							// by default
 							});
 
 						}
@@ -1352,16 +1354,56 @@ Genapp.GeoPanel = Ext
 
 					},
 
-					// private
-					beforeDestroy : function() {
-						Genapp.GeoPanel.superclass.beforeDestroy.call(this);
+					/**
+					 * Destroy this component.
+					 */
+					destroy : function() {
+						this.baseLayer = null;
+						this.wktFormat = null;
+						this.layersActivation = null;
+						this.layersList = null;
+
 						if (this.map) {
 							this.map.destroy();
+							this.map = null;
 						}
 						if (this.selectorButton) {
 							this.selectorButton.destroy();
+							this.selectorButton = null;
 						}
-						// TODO: destroy here all the new objects created in
-						// this class
+						if (this.vectorLayer) {
+							this.vectorLayer.destroy();
+							this.vectorLayer = null;
+						}
+						if (this.wfsLayer) {
+							this.wfsLayer.destroy();
+							this.wfsLayer = null;
+						}
+						if (this.mapPanel) {
+							this.mapPanel.destroy();
+							this.mapPanel = null;
+						}
+						if (this.mapToolbar) {
+							this.mapToolbar.destroy();
+							this.mapToolbar = null;
+						}
+						if (this.layersAndLegendsPanel) {
+							this.layersAndLegendsPanel.destroy();
+							this.layersAndLegendsPanel = null;
+						}
+						if (this.layerPanel) {
+							this.layerPanel.destroy();
+							this.layerPanel = null;
+						}
+						if (this.layerTree) {
+							this.layerTree.destroy();
+							this.layerTree = null;
+						}
+						if (this.legendPanel) {
+							this.legendPanel.destroy();
+							this.legendPanel = null;
+						}
+						Genapp.GeoPanel.superclass.beforeDestroy.call(this);
+
 					}
 				});
