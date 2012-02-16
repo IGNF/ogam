@@ -474,6 +474,7 @@ Genapp.GeoPanel = Ext
 
 							// Set the style
 							var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
+								fillOpacity : 0,
 								strokeColor : "green",
 								strokeWidth : 3,
 								strokeOpacity : 1,
@@ -1335,12 +1336,12 @@ Genapp.GeoPanel = Ext
 					 * A layer has been selected in the layer selector
 					 */
 					layerSelected : function(value) {
-						
-						console.log("geopanel layerSelected");
 
 						// Change the WFS layer
-						this.wfsLayer.typename = value.data.code;
-						this.wfsLayer.redraw();
+						this.wfsLayer.params.TYPENAME = value.data.code;
+
+						// Force a refresh
+						this.wfsLayer.moveTo(null, true, false);
 
 					},
 
