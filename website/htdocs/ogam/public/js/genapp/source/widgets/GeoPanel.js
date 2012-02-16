@@ -481,12 +481,13 @@ Genapp.GeoPanel = Ext
 							}, OpenLayers.Feature.Vector.style["default"]));
 
 							this.wfsLayer = new OpenLayers.Layer.WFS("WFS Layer", this.urlWFS, {
-								typename : 'communes'
+								typename : ''
 							}, {
 								printable : false,
 								displayInLayerSwitcher : false,
 								extractAttributes : false,
-								styleMap : styleMap
+								styleMap : styleMap,
+								visibility : false // the layer is not visible by default
 							});
 
 						}
@@ -1337,11 +1338,17 @@ Genapp.GeoPanel = Ext
 					 */
 					layerSelected : function(value) {
 
-						// Change the WFS layer
-						this.wfsLayer.params.TYPENAME = value.data.code;
+						if (value.data.code != null) {
+							// Change the WFS layer
+							this.wfsLayer.params.TYPENAME = value.data.code;
+							this.wfsLayer.setVisibility(true);
 
-						// Force a refresh
-						this.wfsLayer.moveTo(null, true, false);
+							// Force a refresh
+							this.wfsLayer.moveTo(null, true, false);
+						} else {
+							// Hide the layer
+							this.wfsLayer.setVisibility(false);
+						}
 
 					},
 
