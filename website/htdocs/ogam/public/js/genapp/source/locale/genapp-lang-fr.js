@@ -174,7 +174,10 @@ if (Genapp.GeoPanel) {
 		zoomBoxInControlTitle : "Zoom en avant",
 		zoomBoxOutControlTitle : "Zoom en arrière",
 		zoomToMaxExtentControlTitle : "Zoom arrière maximum",
-		featureInfoControlTitle : "Voir les informations sur le point",
+		locationInfoControlTitle : "Voir les informations sur le point",
+		selectFeatureControlTitle : "Selectionner un contour de sur la couche sélectionnée",
+		featureInfoControlTitle : "Voir les informations sur la couche sélectionnée",
+		
 	});
 }
 if (Genapp.tree.ContextMenuPlugin) {
@@ -259,5 +262,10 @@ if (Genapp.form.ImageField) {
 if (Genapp.map.LayerSelector) {
 	Ext.apply(Genapp.map.LayerSelector.prototype, {
 		layerSelectorButtonLabel : 'Choisir une couche',
+	});
+}
+if (OpenLayers.Control.FeatureInfoControl) {
+	Ext.apply(OpenLayers.Control.FeatureInfoControl.prototype, {
+		popupTitle : 'Information sur la couche',
 	});
 }

@@ -113,6 +113,9 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 .snapping {
     background-image:url(../images/snapping.png) !important;
 }
+.selectFeature {
+    background-image:url(../images/select_feature.png) !important;
+}
 .genapp-map-panel-legal-mentions a{
     font-family:Arial;
     font-size:smaller;

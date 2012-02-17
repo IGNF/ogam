@@ -415,6 +415,81 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
+	 * Get informations about a feature.
+	 *
+	 * The function will call Mapserver with a WFS request.
+	 * The returned number of features should be maximum 1.
+	 */
+	function getfeatureinfoAction() {
+
+		$this->logger->debug('getfeatureinfoAction');
+
+		$uri = $_SERVER["REQUEST_URI"];
+
+		$configuration = Zend_Registry::get("configuration");
+		$mapserverURL = $configuration->mapserver_url;
+		$mapserverURL = $mapserverURL."&";
+		$sessionId = session_id();
+
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $websiteSession->schema; // the schema used
+		$queryObject = $websiteSession->queryObject; // the last query done
+
+		$uri = $this->_extractAfter($uri, "proxy/getfeatureinfo?");
+
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+
+		// On effecture une requête mapserver "GetFeature" pour chaque layer
+		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
+		$uri .= "&MAXFEATURES=1";
+		$this->logger->debug('redirect getinfo : '.$uri);
+		$gml = "";
+		$handle = fopen($uri, "rb");
+		if ($handle) {
+			while (!feof($handle)) {
+				$gml .= fread($handle, 8192);
+			}
+			fclose($handle);
+		}
+
+		//$this->logger->debug('$gml '.$gml);
+
+		// Get the infos to display
+		$this->logger->debug('Get the infos to display');
+		if (strpos($gml, ":display>")) {
+			// we have at least one plot found
+
+
+			$dom = new DomDocument();
+			$dom->loadXML($gml);
+
+			// List the items to display
+			$displayNodes = $dom->getElementsByTagName("display");
+				
+			$displayItems = array();
+				
+			foreach ($displayNodes->item(0)->childNodes as $item) {
+				if ($item->nodeType == XML_ELEMENT_NODE) {
+					$name = str_replace('ms:', '', $item->nodeName);
+					$name = str_replace('myns:', '', $name);
+					$value = $item->nodeValue;
+
+					$displayItems[$name] = $value;
+				}
+			}
+
+				
+			echo '{"success":true'.', "fields":'.json_encode($displayItems).'}';
+		} else {
+			echo '{"success":true, "fields":[]}';
+		}
+
+		// No View, we send directly the output
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+	}
+
+	/**
 	 * Extract some parameters from a WFS XLM response.
 	 *
 	 * @param String $domNode the XML node

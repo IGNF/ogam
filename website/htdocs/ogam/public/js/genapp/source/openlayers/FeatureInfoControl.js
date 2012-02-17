@@ -7,12 +7,32 @@
  * control that generates a WKT request.
  */
 OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
+	
+	/**
+	 * Internationalization.
+	 */
+	popupTitle : 'Feature information',
 
 	/**
-	 * Property: handler {Object} Reference to the <OpenLayers.Handler> for this
-	 * control
+	 * @cfg {OpenLayers.Handler} handler Reference to the handler for this
+	 *      control
 	 */
 	handler : null,
+
+	/**
+	 * @cfg {String} layerName The layer name
+	 */
+	layerName : null,
+
+	/**
+	 * @cfg {OpenLayers.map} map The map
+	 */
+	map : null,
+
+	/**
+	 * @cfg {GeoExt.Popup} popup a popup
+	 */
+	popup : null,
 
 	/**
 	 * Property: type {String} The type of <OpenLayers.Control> -- When added to
@@ -30,8 +50,48 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 		OpenLayers.Control.prototype.initialize.apply(this, [ options ]);
 
 		this.handler = new OpenLayers.Handler.FeatureInfo(this, {
-			'click' : this.click
+			'click' : this.click,
+			'control' : this
 		});
+	},
+
+	/**
+	 * Display a popup with the information from the selected feature.
+	 */
+	displayPopup : function(longlat, featureInfo) {
+
+		// Create a popup
+		popup = new GeoExt.Popup({
+			title : this.popupTitle,
+			location : longlat,
+			width : 200,
+			map : this.map,
+			html : this.json2html(featureInfo.fields),
+			maximizable : false,
+			collapsible : false,
+			unpinnable : false
+		});
+		popup.show();
+	},
+
+	/**
+	 * Format a JSON object into an HTML string.
+	 */
+	json2html : function(obj, depth) {
+		if (typeof depth == 'undefined') {
+			depth = 0;
+		}
+		if (typeof obj == 'object' && obj) {
+			var html = '<ul>';
+			for ( var item in obj) {
+				if (obj.hasOwnProperty(item)) {
+					html += '<li>' + item + ': ';
+					html += (typeof obj[item] == 'object' && obj[item] && depth < 10) ? Ext.util.Format.obj2ULtree(obj[item], (depth + 1)) : obj[item];
+					html += '</li>';
+				}
+			}
+		}
+		return html + '</ul>';
 	},
 
 	/**
@@ -55,6 +115,21 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 		return OpenLayers.Control.prototype.deactivate.apply(this, arguments);
 	},
 
+	/**
+	 * Destroy the control.
+	 */
+	destroy : function() {
+		if (this.handler != null) {
+			this.handler.destroy();
+			this.handler = null;
+		}
+		if (this.popup != null) {
+			this.popup.destroy();
+			this.popup = null;
+		}
+		return OpenLayers.Control.prototype.destroy.apply(this, arguments);
+	},
+
 	CLASS_NAME : "OpenLayers.Control.FeatureInfoControl"
 });
 
@@ -74,6 +149,14 @@ OpenLayers.Handler.FeatureInfo.prototype = OpenLayers.Class.inherit(OpenLayers.H
 	 */
 	alertRequestFailedMsg : 'Sorry, the feature info request failed...',
 
+	/**
+	 * @cfg {OpenLayers.Control.FeatureInfoControl} control The control
+	 */
+	control : null,
+
+	/**
+	 * Handle the click event.
+	 */
 	click : function(evt) {
 		// Calcul de la coordonnée correspondant au point cliqué par
 		// l'utilisateur
@@ -81,24 +164,15 @@ OpenLayers.Handler.FeatureInfo.prototype = OpenLayers.Class.inherit(OpenLayers.H
 		var ll = this.map.getLonLatFromPixel(px);
 
 		// Construction d'une URL pour faire une requête WFS sur le point
-		var url = Genapp.base_url + "proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=" + Genapp.map.featureinfo_typename + "&BBOX="
+		var url = Genapp.base_url + "proxy/getfeatureinfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=" + this.control.layerName + "&BBOX="
 				+ (ll.lon - Genapp.map.featureinfo_margin) + "," + (ll.lat + Genapp.map.featureinfo_margin) + "," + (ll.lon + Genapp.map.featureinfo_margin)
 				+ "," + (ll.lat - Genapp.map.featureinfo_margin);
-
-		if (Genapp.map.featureinfo_maxfeatures !== 0) {
-			url = url + "&MAXFEATURES=" + Genapp.map.featureinfo_maxfeatures;
-		}
 
 		OpenLayers.loadURL(url, '', this, function(response) {
 			try {
 				var result = Ext.decode(response.responseText);
-				if (!Ext.isEmpty(result.data)) {
-					if (Genapp.map.featureinfo_maxfeatures === 1) {
-						Genapp.cardPanel.consultationPage.openDetails(result.data[0][0], 'ajaxgetdetails');
-					} else {
-						Genapp.cardPanel.consultationPage.openFeaturesInformationSelection(result);
-					}
-				}
+				this.control.displayPopup(ll, result);
+
 			} catch (e) {
 				Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 			}
@@ -108,4 +182,5 @@ OpenLayers.Handler.FeatureInfo.prototype = OpenLayers.Class.inherit(OpenLayers.H
 
 		Event.stop(evt);
 	}
+
 });
