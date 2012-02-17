@@ -19,8 +19,15 @@
 </script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
 
+<!-- Production mode start
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/GeoExt/script/GeoExt.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/GeoExt/GeoExt.js') ?>"></script>
+< Production mode end --> 
+<!-- Debug mode start -->
+<script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/lib/OpenLayers.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/GeoExt/lib/GeoExt.js') ?>"></script>
+<!-- Debug mode end -->
+
 <script type="text/javascript" src="<?= $this->baseUrl('map/get-map-parameters') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/FeatureInfoControl.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/LocationInfoControl.js') ?>"></script>
