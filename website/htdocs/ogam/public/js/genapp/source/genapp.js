@@ -114,3 +114,25 @@ Genapp.util.post = function(url, params) {
 	temp.submit();
 	return temp;
 }; // The last semicolon is important, otherwise YUICompressor will fail
+
+
+
+/**
+ * Override default ExtJS 3.0 Form Layout to add a star to mandatory fields.
+ */
+Ext.override(Ext.layout.FormLayout, {
+    getTemplateArgs: function(field) {
+        var noLabelSep = !field.fieldLabel || field.hideLabel;
+        var labelSep = (typeof field.labelSeparator == 'undefined' ? this.labelSeparator : field.labelSeparator);
+        if (!field.allowBlank) labelSep = '<span style="color: rgb(255, 0, 0); padding-left: 2px;">*</span>' + labelSep;
+        return {
+            id: field.id,
+            label: field.fieldLabel,
+            labelStyle: field.labelStyle||this.labelStyle||'',
+            elementStyle: this.elementStyle||'',
+            labelSeparator: noLabelSep ? '' : labelSep,
+            itemCls: (field.itemCls||this.container.itemCls||'') + (field.hideLabel ? ' x-hide-label' : ''),
+            clearCls: field.clearCls || 'x-form-clear-left'
+        };
+    }
+});
