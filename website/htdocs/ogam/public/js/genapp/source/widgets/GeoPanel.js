@@ -135,9 +135,14 @@ Genapp.GeoPanel = Ext
 					hideLegalMentions : true,
 					/**
 					 * @cfg {Boolean} hideLayerSelector if true hide the layer
-					 *      selector.
+					 *      selector. The layer selector is required for the
+					 *      following tools.
 					 */
 					hideLayerSelector : true,
+					hideSnappingButton : true,
+					hideGetFeatureButton : true,
+					hideFeatureInfoButton : true,
+
 					/**
 					 * @cfg {Boolean} zoom to features extend on init.
 					 */
@@ -951,9 +956,15 @@ Genapp.GeoPanel = Ext
 								iconCls : 'feature-info'
 							});
 
-							this.mapToolbar.add(snappingButton);
-							this.mapToolbar.add(getFeatureButton);
-							this.mapToolbar.add(featureInfoButton);
+							if (!this.hideSnappingButton) {
+								this.mapToolbar.add(snappingButton);
+							}
+							if (!this.hideGetFeatureButton) {
+								this.mapToolbar.add(getFeatureButton);
+							}
+							if (!this.hideFeatureInfoButton) {
+								this.mapToolbar.add(featureInfoButton);
+							}
 							this.mapToolbar.add(this.layerSelector);
 
 							// Separator
@@ -1475,7 +1486,7 @@ Genapp.GeoPanel = Ext
 							this.legendPanel.destroy();
 							this.legendPanel = null;
 						}
-						Genapp.GeoPanel.superclass.beforeDestroy.call(this);
+						Genapp.GeoPanel.superclass.destroy.call(this);
 
 					}
 				});

@@ -646,6 +646,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				field.zoomToFeatureOnInit = true;
 				field.mapWindowTitle = this.geoMapWindowTitle;
 				field.hideLayerSelector = false;
+				field.hideSnappingButton = false;
+				field.hideGetFeatureButton = false;
+				field.hideFeatureInfoButton = false;
 				break;
 			case 'TREE':
 				field.xtype = 'treefield';
