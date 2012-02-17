@@ -560,8 +560,8 @@ Ext.apply(Genapp.FieldForm.prototype, {
 			if (record.subtype === 'DYNAMIC') {
 				field.mode = 'remote';
 				field.store = new Ext.data.JsonStore({
-		            autoDestroy : true,
-				    autoLoad:true,
+					autoDestroy : true,
+					autoLoad : true,
 					root : 'codes',
 					idProperty : 'code',
 					fields : [ {
@@ -580,8 +580,8 @@ Ext.apply(Genapp.FieldForm.prototype, {
 				// Subtype == CODE (other possibilities are not available)
 				field.mode = 'remote';
 				field.store = new Ext.data.JsonStore({
-				    autoDestroy : true,
-					autoLoad:true,
+					autoDestroy : true,
+					autoLoad : true,
 					root : 'codes',
 					idProperty : 'code',
 					fields : [ {
@@ -657,7 +657,6 @@ Ext.apply(Genapp.FieldForm.prototype, {
 			field.itemCls = 'trigger-field'; // For IE7 layout
 			field.hideDrawPointButton = true;
 			field.hideDrawLineButton = true;
-			field.hideLayerSelector = false;
 			break;
 		case 'TREE':
 			field.xtype = 'treefield';
@@ -665,8 +664,8 @@ Ext.apply(Genapp.FieldForm.prototype, {
 			field.unit = record.unit;
 			break;
 		case 'TAXREF':
-            field.xtype = 'taxreffield';
-            field.valueLabel = record.valueLabel;
+			field.xtype = 'taxreffield';
+			field.valueLabel = record.valueLabel;
 			break;
 		default:
 			field.xtype = 'field';
@@ -680,12 +679,11 @@ Ext.apply(Genapp.FieldForm.prototype, {
 		}
 		field.fieldLabel = record.label;
 
-	
-	    if(Ext.isEmpty(field.listeners)){
-	        field.listeners = {
-	            scope : this
-	        };
-	    }
+		if (Ext.isEmpty(field.listeners)) {
+			field.listeners = {
+				scope : this
+			};
+		}
 		field.listeners.render = function(cmp) {
 			if (cmp.xtype != 'hidden') {
 
@@ -699,8 +697,8 @@ Ext.apply(Genapp.FieldForm.prototype, {
 					width : 200
 				});
 
-                // Add the bin
-			    if (!hideBin) {
+				// Add the bin
+				if (!hideBin) {
 					labelDiv.addClass('columnLabelColor');
 					labelDiv.addClass('labelNextBin');
 					var binDiv = binCt.createChild({
@@ -709,18 +707,19 @@ Ext.apply(Genapp.FieldForm.prototype, {
 					}, labelDiv);
 					binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
 					binDiv.on('click', function(event, el, options) {
-    						cmp.ownerCt.remove(cmp);
-    					}, this, {
-    						single : true
-    					});
+						cmp.ownerCt.remove(cmp);
+					}, this, {
+						single : true
+					});
 				}
 
 				// Refresh the field value after the store load
-			    // Check if the field is a 'combo' and with a mode set to 'remote'
+				// Check if the field is a 'combo' and with a mode set to
+				// 'remote'
 				if (cmp.xtype === 'combo' && !Ext.isEmpty(cmp.getStore().proxy)) {
-				    cmp.getStore().on('load', function(store, records, options){
-				        this.reset();
-				    }, cmp)
+					cmp.getStore().on('load', function(store, records, options) {
+						this.reset();
+					}, cmp)
 				}
 			}
 		}
