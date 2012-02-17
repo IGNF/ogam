@@ -375,7 +375,7 @@ GeoExt.tree.LayerNode = Ext.extend(Ext.tree.AsyncTreeNode, {
      */
     destroy: function() {
         var layer = this.layer;
-        if (layer instanceof OpenLayers.Layer) {
+        if (layer instanceof OpenLayers.Layer && layer.events != null) {
             layer.events.un({
                 "visibilitychanged": this.onLayerVisibilityChanged,
                 scope: this
