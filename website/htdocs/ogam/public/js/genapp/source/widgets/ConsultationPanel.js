@@ -1348,7 +1348,7 @@ Genapp.ConsultationPanel = Ext
 						}
 					},
 
-					// TODO: patch rtm to delete??
+					// TODO: patch rtm to delete
 					launchLocationRequest : function(id, value) {
 						if (!Ext.isEmpty(value)) {
 							var form = this.formsPanel.get('LOCALISATION_FORM');
