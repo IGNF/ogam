@@ -144,7 +144,8 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Get a WFS from Mapserver
+	 * Get a WFS from Mapserver.
+	 * Used to get a list of features in the WFSLayer layer, used for snapping for example.
 	 */
 	function getwfsAction() {
 
@@ -266,9 +267,9 @@ class ProxyController extends AbstractOGAMController {
 	/**
 	 * Get the plot location informations from a coordinate.
 	 */
-	function getinfoAction() {
+	function getlocationinfoAction() {
 
-		$this->logger->debug('getinfoAction');
+		$this->logger->debug('getlocationinfoAction');
 
 		$uri = $_SERVER["REQUEST_URI"];
 
@@ -285,7 +286,7 @@ class ProxyController extends AbstractOGAMController {
 		$locationField = $this->metadataModel->getLocationTableFields($schema, array_keys($tables)); // Extract the location field from the available tables
 		$locationTableInfo = $this->metadataModel->getTableFormat($schema, $locationField->format); // Get info about the location table
 
-		$uri = $this->_extractAfter($uri, "proxy/getInfo?");
+		$uri = $this->_extractAfter($uri, "proxy/getlocationinfo?");
 
 		$metadataModel = new Genapp_Model_Metadata_Metadata();
 

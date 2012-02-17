@@ -83,7 +83,7 @@ OpenLayers.Handler.LocationInfo.prototype = OpenLayers.Class.inherit(OpenLayers.
 		var ll = this.map.getLonLatFromPixel(px);
 
 		// Construction d'une URL pour faire une requête WFS sur le point
-		var url = Genapp.base_url + "proxy/getInfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=" + Genapp.map.featureinfo_typename + "&BBOX="
+		var url = Genapp.base_url + "proxy/getlocationinfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=" + Genapp.map.featureinfo_typename + "&BBOX="
 				+ (ll.lon - Genapp.map.featureinfo_margin) + "," + (ll.lat + Genapp.map.featureinfo_margin) + "," + (ll.lon + Genapp.map.featureinfo_margin)
 				+ "," + (ll.lat - Genapp.map.featureinfo_margin);
 
