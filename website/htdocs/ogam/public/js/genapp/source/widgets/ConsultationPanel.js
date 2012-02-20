@@ -378,12 +378,6 @@ Genapp.ConsultationPanel = Ext
 					 */
 					featuresInformationPanelCtHeight : 185,
 					/**
-					 * @cfg {Ext.LoadMask} mask The consultation page mask
-					 */
-					/**
-					 * @cfg {Ext.LoadMask} mapMask The map Mask
-					 */
-					/**
 					 * @cfg {String} mapMaskMsg The map Mask Msg (defaults to
 					 *      <tt>'Loading...'</tt>)
 					 */
