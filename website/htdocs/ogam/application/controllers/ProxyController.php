@@ -145,7 +145,9 @@ class ProxyController extends AbstractOGAMController {
 
 	/**
 	 * Get a WFS from Mapserver.
-	 * Used to get a list of features in the WFSLayer layer, used for snapping for example.
+	 * Used to get a list of features in the WFSLayer layer.
+	 * 
+	 * Used for snapping and for getFeature tool.
 	 */
 	function getwfsAction() {
 
@@ -442,7 +444,6 @@ class ProxyController extends AbstractOGAMController {
 
 		// On effecture une requête mapserver "GetFeature" pour chaque layer
 		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
-		$uri .= "&MAXFEATURES=1";
 		$this->logger->debug('redirect getinfo : '.$uri);
 		$gml = "";
 		$handle = fopen($uri, "rb");

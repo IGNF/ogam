@@ -45,8 +45,11 @@ Genapp.buildApplication = function(config) {
 	// avoid the not catchable php timeout fatal error
 	Ext.Ajax.timeout = 30000;
 
-	// Define an event manager
+	// Define an applicative event manager
 	Genapp.eventManager = new Ext.util.Observable();
+	// Know events :
+	// selectLayer : when a layer is selected in the LayerSelector combobox
+	// getFeature : when a feature is selected using GetFeatureControl
 
 	Genapp.cardPanel = new Genapp.CardPanel(config);
 

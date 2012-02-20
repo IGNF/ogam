@@ -3,15 +3,10 @@
  */
 
 /**
- * Class: OpenLayers.Control.FeatureInfoControl. Implements a very simple
- * control that generates a WKT request to get feature info and display it.
+ * Class: OpenLayers.Control.GetFeatureControl. Implements a very simple control
+ * that generates a WKT request to get a feature geometry and add it to the map.
  */
-OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
-
-	/**
-	 * Internationalization.
-	 */
-	popupTitle : 'Feature information',
+OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 
 	/**
 	 * @cfg {OpenLayers.Handler} handler Reference to the handler for this
@@ -30,11 +25,6 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	map : null,
 
 	/**
-	 * @cfg {GeoExt.Popup} popup a popup
-	 */
-	popup : null,
-
-	/**
 	 * Property: type {String} The type of <OpenLayers.Control> -- When added to
 	 * a <Control.Panel>, 'type' is used by the panel to determine how to handle
 	 * our events.
@@ -42,59 +32,25 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	type : OpenLayers.Control.TYPE_TOGGLE,
 
 	/**
-	 * Constructor: OpenLayers.Control.FeatureInfoControl
+	 * Constructor: OpenLayers.Control.GetFeatureControl
 	 * 
 	 * Parameters: options - {Object}
 	 */
 	initialize : function(map, options) {
 		OpenLayers.Control.prototype.initialize.apply(this, [ options ]);
 
-		this.handler = new OpenLayers.Handler.FeatureInfo(this, {
+		this.handler = new OpenLayers.Handler.GetFeature(this, {
 			'click' : this.click,
 			'control' : this
 		});
 	},
 
 	/**
-	 * Display a popup with the information from the selected feature.
+	 * This function is called when a feature is received. Fire a event with the
+	 * received feature.
 	 */
-	displayPopup : function(longlat, featureInfo) {
-
-		// If not empty (size of the prototype is 1)
-		if (featureInfo.fields && Object.keys(featureInfo.fields).length > 1) {
-			// Create a popup
-			popup = new GeoExt.Popup({
-				title : this.popupTitle,
-				location : longlat,
-				width : 200,
-				map : this.map,
-				html : this.json2html(featureInfo.fields),
-				maximizable : false,
-				collapsible : false,
-				unpinnable : false
-			});
-			popup.show();
-		}
-	},
-
-	/**
-	 * Format a JSON object into an HTML string.
-	 */
-	json2html : function(obj, depth) {
-		if (typeof depth == 'undefined') {
-			depth = 0;
-		}
-		if (typeof obj == 'object' && obj) {
-			var html = '<ul>';
-			for ( var item in obj) {
-				if (obj.hasOwnProperty(item)) {
-					html += '<li>' + item + ': ';
-					html += (typeof obj[item] == 'object' && obj[item] && depth < 10) ? Ext.util.Format.obj2ULtree(obj[item], (depth + 1)) : obj[item];
-					html += '</li>';
-				}
-			}
-		}
-		return html + '</ul>';
+	getFeature : function(feature) {
+		Genapp.eventManager.fireEvent('getFeature', feature);
 	},
 
 	/**
@@ -126,21 +82,17 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 			this.handler.destroy();
 			this.handler = null;
 		}
-		if (this.popup != null) {
-			this.popup.destroy();
-			this.popup = null;
-		}
 		return OpenLayers.Control.prototype.destroy.apply(this, arguments);
 	},
 
-	CLASS_NAME : "OpenLayers.Control.FeatureInfoControl"
+	CLASS_NAME : "OpenLayers.Control.GetFeatureControl"
 });
 
 /**
  * The handler for the control
  */
-OpenLayers.Handler.FeatureInfo = OpenLayers.Class.create();
-OpenLayers.Handler.FeatureInfo.prototype = OpenLayers.Class.inherit(OpenLayers.Handler, {
+OpenLayers.Handler.GetFeature = OpenLayers.Class.create();
+OpenLayers.Handler.GetFeature.prototype = OpenLayers.Class.inherit(OpenLayers.Handler, {
 	/**
 	 * @cfg {String} alertErrorTitle The alert Error Title (defaults to
 	 *      <tt>'Error :'</tt>)
@@ -158,6 +110,14 @@ OpenLayers.Handler.FeatureInfo.prototype = OpenLayers.Class.inherit(OpenLayers.H
 	control : null,
 
 	/**
+	 * The gml format used to read the response.
+	 * 
+	 * @type {OpenLayers.Format.GML}
+	 * @property wktFormat
+	 */
+	gmlFormat : new OpenLayers.Format.GML(),
+
+	/**
 	 * Handle the click event.
 	 */
 	click : function(evt) {
@@ -167,14 +127,14 @@ OpenLayers.Handler.FeatureInfo.prototype = OpenLayers.Class.inherit(OpenLayers.H
 		var ll = this.map.getLonLatFromPixel(px);
 
 		// Construction d'une URL pour faire une requête WFS sur le point
-		var url = Genapp.base_url + "proxy/getfeatureinfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=" + this.control.layerName + "&BBOX=" + ll.lon
-				+ "," + ll.lat + "," + ll.lon + "," + ll.lat;
+		var url = Genapp.base_url + "proxy/getwfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=" + this.control.layerName + "&BBOX=" + ll.lon + ","
+				+ ll.lat + "," + ll.lon + "," + ll.lat;
 		url = url + "&MAXFEATURES=1";
 
 		OpenLayers.loadURL(url, '', this, function(response) {
 			try {
-				var result = Ext.decode(response.responseText);
-				this.control.displayPopup(ll, result);
+				var feature = this.gmlFormat.read(response.responseText);
+				this.control.getFeature(feature);
 
 			} catch (e) {
 				Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);

@@ -913,32 +913,25 @@ Genapp.GeoPanel = Ext
 								iconCls : 'snapping'
 							});
 
-							// Link the layer selector to the snapping tool
+							// Listen for the layer selector events
 							Genapp.eventManager.on('selectLayer', this.layerSelected, this);
 
 							// Get Feature tool
-							this.getFeatureControl = new OpenLayers.Control.GetFeature({
-								protocol : null,
-								box : true,
-								hover : false,
-								multipleKey : "shiftKey",
-								toggleKey : "ctrlKey"
-							});
-							this.getFeatureControl.events.register("featureselected", this, function(e) {
-								this.vectorLayer.addFeatures([ e.feature ]);
-							});
-							this.getFeatureControl.events.register("featureunselected", this, function(e) {
-								this.vectorLayer.removeFeatures([ e.feature ]);
+							this.getFeatureControl = new OpenLayers.Control.GetFeatureControl({
+								map : this.map
 							});
 							var getFeatureButton = new GeoExt.Action({
 								control : this.getFeatureControl,
 								map : this.map,
 								tooltip : this.selectFeatureControlTitle,
-								toggleGroup : "LayerTools",
+								toggleGroup : "drawControl",
 								group : "LayerTools",
 								checked : false,
 								iconCls : 'selectFeature'
 							});
+
+							// Listen the get feature tool events
+							Genapp.eventManager.on('getFeature', this.getFeature, this);
 
 							// Feature Info Tool
 							this.featureInfoControl = new OpenLayers.Control.FeatureInfoControl({
@@ -949,7 +942,7 @@ Genapp.GeoPanel = Ext
 							var featureInfoButton = new GeoExt.Action({
 								control : this.featureInfoControl,
 								map : this.map,
-								toggleGroup : "LayerTools",
+								toggleGroup : "drawControl",
 								group : "LayerTools",
 								checked : false,
 								tooltip : this.featureInfoControlTitle,
@@ -1022,7 +1015,7 @@ Genapp.GeoPanel = Ext
 						var locationInfoButton = new GeoExt.Action({
 							control : locationInfoControl,
 							map : this.map,
-							toggleGroup : "navControl",
+							toggleGroup : "drawControl",
 							group : "navControl",
 							checked : false,
 							tooltip : this.locationInfoControlTitle,
@@ -1424,14 +1417,30 @@ Genapp.GeoPanel = Ext
 									featureType : this.wfsLayer.params.TYPENAME
 								});
 							}
-							// Set the feature info control
+							// Set the layer name in other tools
 							if (this.featureInfoControl != null) {
 								this.featureInfoControl.layerName = value.data.code;
+							}
+							if (this.getFeatureControl != null) {
+								this.getFeatureControl.layerName = value.data.code;
 							}
 
 						} else {
 							// Hide the layer
 							this.wfsLayer.setVisibility(false);
+						}
+
+					},
+
+					/**
+					 * A feature has been selected using the GetFeatureControl
+					 * tool.
+					 */
+					getFeature : function(feature) {
+
+						// Add the feature to the vector layer
+						if (this.vectorLayer != null) {
+							this.vectorLayer.addFeatures(feature);
 						}
 
 					},
