@@ -50,6 +50,7 @@ Genapp.buildApplication = function(config) {
 	// Know events :
 	// selectLayer : when a layer is selected in the LayerSelector combobox
 	// getFeature : when a feature is selected using GetFeatureControl
+	// getLocationInfo : when a location information is received using LocationInfoControl
 
 	Genapp.cardPanel = new Genapp.CardPanel(config);
 

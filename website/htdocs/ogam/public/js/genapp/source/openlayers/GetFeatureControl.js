@@ -38,6 +38,9 @@ OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 	 */
 	initialize : function(map, options) {
 		OpenLayers.Control.prototype.initialize.apply(this, [ options ]);
+		
+		// Register events
+		Genapp.eventManager.addEvents('getFeature');
 
 		this.handler = new OpenLayers.Handler.GetFeature(this, {
 			'click' : this.click,

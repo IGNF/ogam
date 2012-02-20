@@ -1173,6 +1173,9 @@ Genapp.ConsultationPanel = Ext
 							this.items = [ this.queryPanel, this.centerPanelCt ];
 						}
 
+						// Add events listening
+						Genapp.eventManager.on('getLocationInfo', this.getLocationInfo, this);
+
 						Genapp.ConsultationPanel.superclass.initComponent.call(this);
 					},
 
@@ -1994,6 +1997,19 @@ Genapp.ConsultationPanel = Ext
 							},
 							scope : this
 						});
+					},
+
+					/**
+					 * Display the detail panel for a location.
+					 * 
+					 * Called when a location info event is received.
+					 */
+					getLocationInfo : function(result) {
+						if (Genapp.map.featureinfo_maxfeatures === 1) {
+							this.openDetails(result.data[0][0], 'ajaxgetdetails');
+						} else {
+							this.openFeaturesInformationSelection(result);
+						}
 					},
 
 					/**

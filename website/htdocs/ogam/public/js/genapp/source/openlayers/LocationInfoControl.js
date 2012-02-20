@@ -3,8 +3,8 @@
  */
 
 /**
- * Class: LocationInfoControl. 
- * Implements a very simple control that generates a WKT request.
+ * Class: LocationInfoControl. Implements a very simple control that generates a
+ * WKT request.
  * 
  * Get information about a location
  */
@@ -30,10 +30,22 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 */
 	initialize : function(map, options) {
 		OpenLayers.Control.prototype.initialize.apply(this, [ options ]);
+		
+		// Register events
+		Genapp.eventManager.addEvents('getLocationInfo');
 
 		this.handler = new OpenLayers.Handler.LocationInfo(this, {
-			'click' : this.click
+			'click' : this.click,
+			'control' : this
 		});
+	},
+
+	/**
+	 * This function is called when a location info is received. Fire a event
+	 * with the received info.
+	 */
+	getLocationInfo : function(result) {
+		Genapp.eventManager.fireEvent('getLocationInfo', result);
 	},
 
 	/**
@@ -76,6 +88,14 @@ OpenLayers.Handler.LocationInfo.prototype = OpenLayers.Class.inherit(OpenLayers.
 	 */
 	alertRequestFailedMsg : 'Sorry, the feature info request failed...',
 
+	/**
+	 * @cfg {OpenLayers.Control.FeatureInfoControl} control The control
+	 */
+	control : null,
+
+	/**
+	 * Handle the click event.
+	 */
 	click : function(evt) {
 		// Calcul de la coordonnée correspondant au point cliqué par
 		// l'utilisateur
@@ -95,11 +115,7 @@ OpenLayers.Handler.LocationInfo.prototype = OpenLayers.Class.inherit(OpenLayers.
 			try {
 				var result = Ext.decode(response.responseText);
 				if (!Ext.isEmpty(result.data)) {
-					if (Genapp.map.featureinfo_maxfeatures === 1) {
-						Genapp.cardPanel.consultationPage.openDetails(result.data[0][0], 'ajaxgetdetails');
-					} else {
-						Genapp.cardPanel.consultationPage.openFeaturesInformationSelection(result);
-					}
+					this.control.getLocationInfo(result);
 				}
 			} catch (e) {
 				Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
