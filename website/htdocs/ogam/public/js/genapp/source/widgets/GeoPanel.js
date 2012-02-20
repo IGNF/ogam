@@ -879,11 +879,12 @@ Genapp.GeoPanel = Ext
 								iconCls : 'deletefeature'
 							});
 							this.mapToolbar.add(deleteFeatureButton);
+							
+							// Separator
+							this.mapToolbar.addSeparator();
 
 						}
-
-						// Separator
-						this.mapToolbar.addSeparator();
+						
 
 						this.mapToolbar.addFill();
 
