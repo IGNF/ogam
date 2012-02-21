@@ -129,7 +129,7 @@ class MapController extends AbstractOGAMController {
 
 		// Get the available layers
 		$layerNames = $this->layersModel->getVectorLayersList();
-		
+
 		$json = '{"success":true';
 		$json .= ', layerNames : [';
 		foreach ($layerNames as $layerName => $layerLabel) {
@@ -139,7 +139,7 @@ class MapController extends AbstractOGAMController {
 		$json = substr($json, 0, -1);
 		$json .= ']';
 		$json .= '}';
-		
+
 		echo $json;
 
 		// No View, we send directly the javascript
@@ -196,17 +196,9 @@ class MapController extends AbstractOGAMController {
 			$out = substr($out, 0, -1);
 		}
 		echo $out.'],';
-		
+
 		// Build the base URL for mapserver tiles
-		$out = '"url_wfs":[';
-		foreach ($tileBaseURLs as $pathBaseURL) {
-			$out .= '"'.$pathBaseURL.'/proxy/getwfs?SESSION_ID='.$sessionId.'",'; 
-		}
-		// Remove the last comma
-		if (!empty($tileBaseURLs)) {
-			$out = substr($out, 0, -1);
-		}
-		echo $out.'],';
+		echo '"url_wfs":"'.$tileBaseURLs[0].'/proxy/getwfs?SESSION_ID='.$sessionId.'",';
 
 		// For each available layer, build the corresponding URL and definition
 		$out = '"layers":[';
