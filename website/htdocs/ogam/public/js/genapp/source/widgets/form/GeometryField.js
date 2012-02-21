@@ -188,6 +188,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 			// because Ext does not clean everything (mapWindow still instanceof
 			// Ext.Window):
 			this.mapWindow.on('destroy', function() {
+			    delete this.mapPanel;
 				delete this.mapWindow;
 				if (this.submitRequest === true) {
 					Ext.getCmp('consultation_panel').submitRequest();

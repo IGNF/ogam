@@ -19,16 +19,20 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	enableDD : true,
 	title : '',
 	border : false,
-	/**
-	 * Read-only. An object containing the node id for each layer name.
-	 * {layerName: nodeId, ...}
-	 * 
-	 * @type Object
-	 */
-	layerNodeIds : [],
 
 	// private
 	initComponent : function() {
+
+	    /**
+	     * Read-only. An object containing the node id for each layer name.
+	     * {layerName: nodeId, ...}
+	     * Note: Must stay in the initComponent to avoid conflicts between 
+	     * the instances of this class
+	     * 
+	     * @type Object
+	     */
+	    this.layerNodeIds = []; 
+
 		// Add a loader to the root children node config if needed
 		for ( var i = 0; i < this.rootChildren.length; i++) {
 			this.addLoaderToNodeConfig(this.rootChildren[i]);
