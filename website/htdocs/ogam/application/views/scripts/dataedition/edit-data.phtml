@@ -17,7 +17,6 @@
     Ext.namespace('Genapp');
     Genapp.base_url = "<?= $this->baseUrl('dataedition/..'); ?>/";
 </script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
 
 <!-- Production mode start
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.js') ?>"></script>
@@ -29,9 +28,6 @@
 <!-- Debug mode end -->
 
 <script type="text/javascript" src="<?= $this->baseUrl('map/get-map-parameters') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/FeatureInfoControl.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/LocationInfoControl.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/GetFeatureControl.js') ?>"></script>
 
 
 
@@ -40,11 +36,14 @@
 < Production mode end -->
 
 <!-- Debug mode start -->
-<script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/rowExpander/RowExpander.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/FeatureInfoControl.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/LocationInfoControl.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/openlayers/GetFeatureControl.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/basiccheckbox/BasicCheckBox.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/superboxselect/SuperBoxSelect.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/datePatch/datePatchExtjs3.1.1.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/fileuploadfield/fileuploadfield.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/rowExpander/RowExpander.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjsux/superboxselect/SuperBoxSelect.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/GeoPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/FieldForm.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/CardPanel.js') ?>"></script>
@@ -67,7 +66,7 @@
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/tree/LayerTreePanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/tree/ContextMenuPlugin.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/map/LayerSelector.js') ?>"></script>
-<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/genapp/resources/css/visual/genapp-theme.css') ?>" />
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
 <!-- Debug mode end -->
 
 <!-- Translations -->

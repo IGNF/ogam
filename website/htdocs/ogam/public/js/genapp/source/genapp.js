@@ -3,6 +3,11 @@ Ext.namespace('Genapp.util'); // Contains few common useful functions
 Ext.namespace('Genapp.globalVars'); // ??
 Ext.namespace('Genapp.config'); // Contains the static config parameters used to
 // initialize the application
+Ext.namespace('Genapp.form');
+Ext.namespace('Genapp.form.menu');
+Ext.namespace('Genapp.form.picker');
+Ext.namespace('Genapp.map');
+Ext.namespace('Genapp.tree');
 
 // Set the defaults config values
 Genapp.config.historicActivated = true;
