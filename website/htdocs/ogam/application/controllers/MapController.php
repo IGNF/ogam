@@ -198,7 +198,7 @@ class MapController extends AbstractOGAMController {
 		echo $out.'],';
 		
 		// Build the base URL for mapserver tiles
-		$out = '"url_wfs":';
+		$out = '"url_wfs":[';
 		foreach ($tileBaseURLs as $pathBaseURL) {
 			$out .= '"'.$pathBaseURL.'/proxy/getwfs?SESSION_ID='.$sessionId.'",'; 
 		}
@@ -206,7 +206,7 @@ class MapController extends AbstractOGAMController {
 		if (!empty($tileBaseURLs)) {
 			$out = substr($out, 0, -1);
 		}
-		echo $out.',';
+		echo $out.'],';
 
 		// For each available layer, build the corresponding URL and definition
 		$out = '"layers":[';
