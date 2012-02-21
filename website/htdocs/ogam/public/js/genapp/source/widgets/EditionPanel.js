@@ -413,7 +413,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		this.items = [ {
 			xtype : 'box',
 			html : '&nbsp;',
-			columnWidth : .5,
+			columnWidth : 0.5,
 			border : false
 		}, {
 			items : centerPanelItems,
@@ -425,7 +425,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		}, {
 			xtype : 'box',
 			html : '&nbsp;',
-			columnWidth : .5,
+			columnWidth : 0.5,
 			border : false
 		} ];
 
@@ -496,8 +496,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var field = {};
 		field.name = record.name;
 
-		if ((this.mode == "EDIT" && !Ext.isEmpty(record.editable) && record.editable == false)
-				|| (this.mode == "ADD" && !Ext.isEmpty(record.insertable) && record.insertable == false)) {
+		if ((this.mode == "EDIT" && !Ext.isEmpty(record.editable) && record.editable === false)
+				|| (this.mode == "ADD" && !Ext.isEmpty(record.insertable) && record.insertable === false)) {
 			field.xtype = 'hidden';
 		} else {
 
@@ -600,7 +600,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				field.xtype = 'numberfield';
 				// If RANGE we set the min and max values
 				if (record.subtype === 'RANGE') {
-					field.decimalPrecision = (record.params.decimals == null) ? 20 : record.params.decimals;
+					field.decimalPrecision = (record.params.decimals === null) ? 20 : record.params.decimals;
 				}
 				// IF INTEGER we remove the decimals
 				if (record.subtype === 'INTEGER') {
@@ -758,7 +758,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	editSuccess : function(form, action) {
 
 		// We set the current mode to EDIT
-		this.mode == "EDIT";
+		this.mode = "EDIT";
 
 		var obj = Ext.util.JSON.decode(action.response.responseText);
 

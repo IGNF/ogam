@@ -81,7 +81,7 @@ OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 	 * Destroy the control.
 	 */
 	destroy : function() {
-		if (this.handler != null) {
+		if (this.handler !== null) {
 			this.handler.destroy();
 			this.handler = null;
 		}

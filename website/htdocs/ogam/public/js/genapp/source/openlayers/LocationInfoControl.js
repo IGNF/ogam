@@ -30,7 +30,7 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 */
 	initialize : function(map, options) {
 		OpenLayers.Control.prototype.initialize.apply(this, [ options ]);
-		
+
 		// Register events
 		Genapp.eventManager.addEvents('getLocationInfo');
 

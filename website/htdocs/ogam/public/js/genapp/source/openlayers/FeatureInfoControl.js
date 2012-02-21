@@ -81,11 +81,12 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 * Format a JSON object into an HTML string.
 	 */
 	json2html : function(obj, depth) {
+		var html = '';
 		if (typeof depth == 'undefined') {
 			depth = 0;
 		}
 		if (typeof obj == 'object' && obj) {
-			var html = '<ul>';
+			html += '<ul>';
 			for ( var item in obj) {
 				if (obj.hasOwnProperty(item)) {
 					html += '<li>' + item + ': ';
@@ -93,8 +94,9 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 					html += '</li>';
 				}
 			}
+			html += '</ul>';
 		}
-		return html + '</ul>';
+		return html;
 	},
 
 	/**
@@ -122,11 +124,11 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 * Destroy the control.
 	 */
 	destroy : function() {
-		if (this.handler != null) {
+		if (this.handler !== null) {
 			this.handler.destroy();
 			this.handler = null;
 		}
-		if (this.popup != null) {
+		if (this.popup !== null) {
 			this.popup.destroy();
 			this.popup = null;
 		}
