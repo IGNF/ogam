@@ -24,8 +24,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$this->useCache = $configuration->useCache;
 
 		$this->cache = $this->getDefaultMetadataCache();
-		
-		$this->genericModel = new Genapp_Model_Generic_Generic();
 	}
 
 	/**
@@ -38,7 +36,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getModeLabels($unit, $code = null, $query = null) {
 
-		$key = $this->genericModel->formatCacheKey('getModeLabels_'.$unit.'_'.$code);
+		$key = $this->formatCacheKey('getModeLabels_'.$unit.'_'.$code);
 
 		$this->logger->debug($key);
 
@@ -111,7 +109,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getMode($unit, $mode) {
 
-		$key = $this->genericModel->formatCacheKey('getMode_'.$unit.'_'.$mode);
+		$key = $this->formatCacheKey('getMode_'.$unit.'_'.$mode);
 
 		$this->logger->debug($key);
 
@@ -155,9 +153,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getTreeLabels($unit, $value = null) {
 
 		if (is_array($value)) {
-			$key = $this->genericModel->formatCacheKey('getTreeLabels_'.$unit.'_'.implode("_", $value));
+			$key = $this->formatCacheKey('getTreeLabels_'.$unit.'_'.implode("_", $value));
 		} else {
-			$key = $this->genericModel->formatCacheKey('getTreeLabels_'.$unit.'_'.$value);
+			$key = $this->formatCacheKey('getTreeLabels_'.$unit.'_'.$value);
 		}
 
 		$this->logger->debug($key);
@@ -200,7 +198,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeModes($unit, $query, $start = null, $limit = null) {
 
-		$key = $this->genericModel->formatCacheKey('getTreeModes_'.$unit.'_'.$query.'_'.$start.'_'.$limit);
+		$key = $this->formatCacheKey('getTreeModes_'.$unit.'_'.$query.'_'.$start.'_'.$limit);
 
 		$this->logger->debug($key);
 
@@ -239,7 +237,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeModesCount($unit, $query) {
 
-		$key = $this->genericModel->formatCacheKey('getTreeModesCount_'.$unit.'_'.$query);
+		$key = $this->formatCacheKey('getTreeModesCount_'.$unit.'_'.$query);
 
 		$this->logger->debug($key);
 
@@ -271,7 +269,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getDynamodeLabels($unit, $code = null, $query = null) {
 
-		$key = $this->genericModel->formatCacheKey('getDynamodeLabels_'.$unit.'_'.$code.'_'.$query);
+		$key = $this->formatCacheKey('getDynamodeLabels_'.$unit.'_'.$code.'_'.$query);
 
 		$this->logger->debug($key);
 
@@ -343,7 +341,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeChildren($unit, $parentcode = '*', $levels = 1) {
 
-		$key = $this->genericModel->formatCacheKey('getTreeChildren_'.$unit.'_'.$parentcode.'_'.$levels);
+		$key = $this->formatCacheKey('getTreeChildren_'.$unit.'_'.$parentcode.'_'.$levels);
 
 		$this->logger->debug($key);
 
@@ -425,7 +423,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeChildrenCodes($unit, $code = '*', $levels = 1) {
 
-		$key = $this->genericModel->formatCacheKey('getTreeChildrenCodes_'.$unit.'_'.$code.'_'.$levels);
+		$key = $this->formatCacheKey('getTreeChildrenCodes_'.$unit.'_'.$code.'_'.$levels);
 
 		$this->logger->debug($key);
 
@@ -617,7 +615,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->debug('getTableFields : '.$datasetID.'_'.$schema.'_'.$format);
 
-		$key = $this->genericModel->formatCacheKey('getTableFields_'.$datasetID.'_'.$schema.'_'.$format);
+		$key = $this->formatCacheKey('getTableFields_'.$datasetID.'_'.$schema.'_'.$format);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -752,7 +750,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->debug('getTableFormat : '.$schema.' '.$format);
 
-		$key = $this->genericModel->formatCacheKey('getTableFormat'.$schema.'_'.$format);
+		$key = $this->formatCacheKey('getTableFormat'.$schema.'_'.$format);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -803,7 +801,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->debug('getTableFormatFromTableName : '.$schema.' '.$table);
 
-		$key = $this->genericModel->formatCacheKey('getTableFormatFromTableName_'.$schema.'_'.$table);
+		$key = $this->formatCacheKey('getTableFormatFromTableName_'.$schema.'_'.$table);
 
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
@@ -849,7 +847,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getForms($datasetId, $schemaCode) {
 
-		$key = $this->genericModel->formatCacheKey('getForms_'.$datasetId."_".$schemaCode);
+		$key = $this->formatCacheKey('getForms_'.$datasetId."_".$schemaCode);
 		$this->logger->info('getForms : '.$key);
 
 		if ($this->useCache) {
@@ -916,7 +914,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getFormFields : '.$dataset.' '.$formFormat.' '.$schema);
 
-		$key = $this->genericModel->formatCacheKey('getFormFields_'.$mode.'_'.$dataset.'_'.$formFormat.'_'.$schema);
+		$key = $this->formatCacheKey('getFormFields_'.$mode.'_'.$dataset.'_'.$formFormat.'_'.$schema);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1005,7 +1003,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getFormField($format, $data) {
 
-		$key = $this->genericModel->formatCacheKey('formfield_'.$format.'_'.$data);
+		$key = $this->formatCacheKey('formfield_'.$format.'_'.$data);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1094,7 +1092,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getFormToTableMapping : '.$formField->format." ".$formField->data." ".$schema);
 
-		$key = $this->genericModel->formatCacheKey('formtotablemapping_'.$formField->format.'_'.$formField->data.'_'.$schema);
+		$key = $this->formatCacheKey('formtotablemapping_'.$formField->format.'_'.$formField->data.'_'.$schema);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1152,7 +1150,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getTableToFormMapping : '.$tableField->format." ".$tableField->data);
 
-		$key = $this->genericModel->formatCacheKey('getTableToFormMapping'.$tableField->format.'_'.$tableField->data);
+		$key = $this->formatCacheKey('getTableToFormMapping'.$tableField->format.'_'.$tableField->data);
 
 		// Get the form description corresponding to the table field
 		$result = null;
@@ -1221,7 +1219,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getTablesTree : tableFormat:'.$tableFormat.' schemaCode:'.$schemaCode);
 
-		$key = $this->genericModel->formatCacheKey('getTablesTree_'.$tableFormat.'_'.$schemaCode);
+		$key = $this->formatCacheKey('getTablesTree_'.$tableFormat.'_'.$schemaCode);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1307,5 +1305,20 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		}
 
 		return $childrenLabels;
+	}
+	
+	/**
+	 * 
+	 * Format the provided string to use it like a cache key
+	 * @param String $key
+	 * @return String
+	 */
+	public function formatCacheKey($key){
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
+		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
+		
+		return $key;
 	}
 }
