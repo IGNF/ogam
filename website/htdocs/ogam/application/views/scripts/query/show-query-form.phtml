@@ -19,8 +19,15 @@
     Genapp.base_url = "<?= $this->baseUrl('query/..'); ?>/";
     Genapp.ajax_query_url = "<?= $this->baseUrl('query') ?>/";
 </script>
+
+<!-- Production mode start
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/GeoExt/script/GeoExt.js') ?>"></script>
+< Production mode end --> 
+<!-- Debug mode start -->
+<script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/lib/OpenLayers.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/GeoExt/lib/GeoExt.js') ?>"></script>
+<!-- Debug mode end -->
 
 <script type="text/javascript" src="<?= $this->baseUrl('map/get-map-parameters') ?>" ></script>
 
