@@ -116,7 +116,6 @@ alter table FILE_FIELD
    add constraint FK_FILE_FIE_HERITAGE__FIELD foreign key (DATA, FORMAT)
       references metadata.FIELD (DATA, FORMAT)
       on delete restrict on update restrict;
-      
 
 alter table FILE_FORMAT
    add constraint FK_FILE_FOR_HERITAGE__FORMAT foreign key (FORMAT)
@@ -127,8 +126,7 @@ alter table FORM_FIELD
    add constraint FK_FORM_FIE_HERITAGE__FIELD foreign key (DATA, FORMAT)
       references metadata.FIELD (DATA, FORMAT)
       on delete restrict on update restrict;
-  
-      
+
 alter table FORM_FORMAT
    add constraint FK_FORM_FOR_HERITAGE__FORMAT foreign key (FORMAT)
       references metadata.FORMAT (FORMAT)
@@ -138,7 +136,6 @@ alter table TABLE_FIELD
    add constraint FK_TABLE_FI_HERITAGE__FIELD foreign key (DATA, FORMAT)
       references FIELD (DATA, FORMAT)
       on delete restrict on update restrict;
-      
 
 alter table TABLE_FORMAT
    add constraint FK_TABLE_FO_HERITAGE__FORMAT foreign key (FORMAT)

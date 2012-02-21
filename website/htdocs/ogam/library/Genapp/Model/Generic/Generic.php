@@ -485,4 +485,19 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		return $children;
 	}
 
+	/**
+	 * 
+	 * Format the provided string to use it like a cache key
+	 * @param String $key
+	 * @return String
+	 */
+	public function formatCacheKey($key){
+		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
+		$key = str_replace(' ', '_', $key);
+		$key = str_replace('-', '_', $key);
+		$key = str_replace('.', '_', $key);
+		
+		return $key;
+	}
+
 }
