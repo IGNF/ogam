@@ -612,7 +612,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 			if (record.subtype === 'RANGE') {
 				field.minValue = record.params.min;
 				field.maxValue = record.params.max;
-				field.decimalPrecision = (record.params.decimals == null) ? 20 : record.params.decimals;
+				field.decimalPrecision = (record.params.decimals === null) ? 20 : record.params.decimals;
 			}
 			// IF INTEGER we remove the decimals
 			if (record.subtype === 'INTEGER') {
@@ -722,7 +722,9 @@ Ext.apply(Genapp.FieldForm.prototype, {
 					}, cmp)
 				}
 			}
-		}
+
+		};
+
 		return field;
 	}
 });

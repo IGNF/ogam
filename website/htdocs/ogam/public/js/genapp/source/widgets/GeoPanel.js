@@ -28,7 +28,6 @@ Genapp.GeoPanel = Ext
 					legendPanelTabTip : "The layers's legends",
 					panZoomBarControlTitle : "Zoom",
 					navigationControlTitle : "Drag the map",
-					selectFeatureControlTitle : "Select Feature",
 					invalidWKTMsg : "The feature cannot be displayed",
 					zoomToFeaturesControlTitle : "Zoom to the features",
 					zoomToResultControlTitle : "Zoom to the results",
@@ -123,11 +122,6 @@ Genapp.GeoPanel = Ext
 					 *      button
 					 */
 					hideDrawPointButton : false,
-					/**
-					 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Line"
-					 *      button
-					 */
-					hideLayerSelector : false,
 					/**
 					 * @cfg {Boolean} hideLegalMentions if true hide the legal
 					 *      mentions link.
@@ -490,7 +484,7 @@ Genapp.GeoPanel = Ext
 								fillOpacity : 0,
 								strokeColor : "green",
 								strokeWidth : 3,
-								strokeOpacity : 1,
+								strokeOpacity : 1
 							}, OpenLayers.Feature.Vector.style["default"]));
 
 							this.wfsLayer = new OpenLayers.Layer.WFS("WFS Layer", this.urlWFS, {
@@ -602,7 +596,7 @@ Genapp.GeoPanel = Ext
 						}
 
 						// Add the WFS layer
-						if (!this.hideLayerSelector && this.wfsLayer != null) {
+						if (!this.hideLayerSelector && this.wfsLayer !== null) {
 							map.addLayer(this.wfsLayer);
 							this.snappingControl.addTargetLayer(this.wfsLayer);
 						}
@@ -749,7 +743,7 @@ Genapp.GeoPanel = Ext
 						// Toggle layers and legends for zoom
 						this.layerTree.on('afterrender', function(treePanel) {
 							this.layerTree.eachLayerChild(function(child) {
-								if (child.attributes.disabled == true) {
+								if (child.attributes.disabled === true) {
 									child.forceDisable = true;
 								} else {
 									child.forceDisable = false;
@@ -793,7 +787,7 @@ Genapp.GeoPanel = Ext
 							var zoomToFeatureButton = new GeoExt.Action({
 								control : this.zoomToFeatureControl,
 								iconCls : 'zoomstations',
-								tooltip : this.zoomToFeaturesControlTitle,
+								tooltip : this.zoomToFeaturesControlTitle
 							});
 							this.mapToolbar.add(zoomToFeatureButton);
 
@@ -863,7 +857,7 @@ Genapp.GeoPanel = Ext
 							var deleteFeatureControl = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
 								displayClass : 'olControlModifyFeature',
 								onSelect : function(feature) {
-									this.vectorLayer.destroyFeatures([ feature ])
+									this.vectorLayer.destroyFeatures([ feature ]);
 								},
 								scope : this,
 								type : OpenLayers.Control.TYPE_TOOL
@@ -879,12 +873,11 @@ Genapp.GeoPanel = Ext
 								iconCls : 'deletefeature'
 							});
 							this.mapToolbar.add(deleteFeatureButton);
-							
+
 							// Separator
 							this.mapToolbar.addSeparator();
 
 						}
-						
 
 						this.mapToolbar.addFill();
 
@@ -1322,7 +1315,7 @@ Genapp.GeoPanel = Ext
 					 */
 					disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) {
 						var i;
-						if (!Ext.isEmpty(layerNames) && (this.layerTree != null)) {
+						if (!Ext.isEmpty(layerNames) && (this.layerTree !== null)) {
 							for (i = 0; i < layerNames.length; i++) {
 								var node = this.layerTree.getNodeByLayerName(layerNames[i]);
 								if (!Ext.isEmpty(node)) {
@@ -1400,7 +1393,7 @@ Genapp.GeoPanel = Ext
 					 */
 					layerSelected : function(value) {
 
-						if (value.data.code != null) {
+						if (value.data.code !== null) {
 							// Change the WFS layer typename
 							this.wfsLayer.params.TYPENAME = value.data.code;
 
@@ -1411,7 +1404,7 @@ Genapp.GeoPanel = Ext
 							this.wfsLayer.moveTo(null, true, false);
 
 							// Set the getfeature control
-							if (this.getFeatureControl != null) {
+							if (this.getFeatureControl !== null) {
 								this.getFeatureControl.protocol = new OpenLayers.Protocol.WFS({
 									version : this.wfsLayer.params.VERSION,
 									url : this.wfsLayer.url,
@@ -1419,10 +1412,10 @@ Genapp.GeoPanel = Ext
 								});
 							}
 							// Set the layer name in other tools
-							if (this.featureInfoControl != null) {
+							if (this.featureInfoControl !== null) {
 								this.featureInfoControl.layerName = value.data.code;
 							}
-							if (this.getFeatureControl != null) {
+							if (this.getFeatureControl !== null) {
 								this.getFeatureControl.layerName = value.data.code;
 							}
 
@@ -1440,7 +1433,7 @@ Genapp.GeoPanel = Ext
 					getFeature : function(feature) {
 
 						// Add the feature to the vector layer
-						if (this.vectorLayer != null) {
+						if (this.vectorLayer !== null) {
 							this.vectorLayer.addFeatures(feature);
 						}
 

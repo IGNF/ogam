@@ -885,9 +885,8 @@ Genapp.ConsultationPanel = Ext
 									this.queryPanelPinned = false;
 								},
 								scope : this
-							} ]
+							} ];
 						}
-						;
 
 						// Cancel button
 						var cancelButton = null;
@@ -1034,7 +1033,6 @@ Genapp.ConsultationPanel = Ext
 								scope : this
 							} ];
 						}
-						;
 
 						/**
 						 * The details panel container.
@@ -1706,7 +1704,7 @@ Genapp.ConsultationPanel = Ext
 					 * Render an Icon for the data grid.
 					 */
 					renderIcon : function(val) {
-						if (val != null) {
+						if (val !== null) {
 							return '<a href="' + val + '">' + '<img src="' + Genapp.base_url + '/js/genapp/resources/images/picture.png" /></a>';
 						}
 					},

@@ -5,7 +5,6 @@ Ext.namespace('Genapp.map');
  * @class Genapp.map.FieldForm
  * @extends Ext.menu.Item
  */
-;
 
 Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 
@@ -61,14 +60,14 @@ Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 			},
 
 			valueField : 'code',
-			displayField : 'label',
-		}
+			displayField : 'label'
+		};
 
 		// The config for the menu item
 		var config = {
 			text : this.layerSelectorButtonLabel,
 			menu : [ this.selectorBox ]
-		}
+		};
 
 		// apply config
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -84,7 +83,7 @@ Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 	 * A layer has been selected
 	 */
 	layerSelected : function(value) {
-	
+
 		// Store the selected value
 		this.selectedVectorLayer = value.data.code;
 
