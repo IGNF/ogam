@@ -1,9 +1,9 @@
 /**
- * A ConsultationPanel correspond to the complete page for querying request results.
+ * A DocSearchPage.
  * 
- * @class Genapp.ConsultationPanel
+ * @class Genapp.DocSearchPage
  * @extends Ext.Panel
- * @constructor Create a new Consultation Panel
+ * @constructor Create a new DocSearchPage 
  * @param {Object} config The config object
  * @xtype consultationpanel
  */
