@@ -263,6 +263,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					// Get the User Permissions
 					$permissions = $roleModel->getRolePermissions($role->roleCode);
 					$userSession->permissions = $permissions;
+
+					// Get the accessible schemas
+					$schemas = $roleModel->getRoleSchemas($role->roleCode);
+					$userSession->schemas = $schemas;
 				}
 			}
 		}

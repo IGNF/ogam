@@ -52,7 +52,7 @@ class QueryController extends AbstractOGAMController {
 		// Check if the user has access to the schema
 		$schemas = $userSession->schemas;
 		if (!in_array($schema, $schemas)) {
-			throw new Zend_Auth_Exception('Permission denied for schema : '.$schema);
+			throw new Zend_Auth_Exception('Permission denied for schema : "'.$schema.'"');
 		}
 	}
 
