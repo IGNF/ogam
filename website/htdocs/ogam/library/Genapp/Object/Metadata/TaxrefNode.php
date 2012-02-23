@@ -119,16 +119,17 @@ class Genapp_Object_Metadata_TaxrefNode extends Genapp_Object_Metadata_TreeNode 
 		if (!empty($this->code)) {
 			// We return the root itself plus the children
 			$return['code'] = $this->code;
+			$return['label'] = $this->name;
 			if ($this->isReference) {
-				$return['label'] = '<b>'.$this->completeName.'</b>';
+				$return['description'] = '<b>'.$this->completeName.'</b>';
 			} else {
-				$return['label'] = $this->completeName;
+				$return['description'] = $this->completeName;
 			}
 			if (!empty($this->vernacularName)) {
-				$return['label'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->vernacularName.'</i>';
+				$return['description'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->vernacularName.'</i>';
 			}
 			if (!empty($this->name)) {
-				$return['label'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->name.'</i>';
+				$return['description'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->name.'</i>';
 			}
 		}
 
