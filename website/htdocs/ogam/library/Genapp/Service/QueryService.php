@@ -680,13 +680,13 @@ class Genapp_Service_QueryService {
 				$json .= $ancestorJSON.',';
 			}
 		}
+
 		// Add the current data
 		$dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
 		if ($dataJSON !== '') {
 			$json .= $dataJSON;
 		}
 		$json .= "], ";
-
 
 		// Add the localisation maps
 		$json .= "maps:[";

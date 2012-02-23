@@ -74,7 +74,7 @@ class Genapp_Service_GenericService {
 		// Get the form field corresponding to the table field
 		$formFields = $this->getFormFieldsOrdered($data->getFields());
 		foreach ($formFields as $formField) {
-				
+			
 			// Add the corresponding JSON
 			$fields .= $formField->toDetailJSON().",";
 		}
@@ -208,13 +208,9 @@ class Genapp_Service_GenericService {
 		// Copy the values
 		if ($copyValues == true && $formField != null && $tableField->value != null) {
 
-			// Copy the value
+			// Copy the value and label
 			$formField->value = $tableField->value;
-
-			// Fill the label
-			if ($formField->type == "CODE") {
-				$formField->valueLabel = $this->metadataModel->getMode($tableField->unit, $tableField->value);
-			}
+			$formField->valueLabel = $tableField->valueLabel;
 		}
 
 		return $formField;
@@ -1066,19 +1062,20 @@ class Genapp_Service_GenericService {
 			if ($field->type == "ARRAY") {
 				$labels = array();
 				if (isset($field->value)) {
+						
 					foreach ($field->value as $mode) {
 						if (isset($modes[$mode])) {
 							$labels[] = $modes[$mode];
 						}
 					}
 					$field->valueLabel = $labels;
+						
 				}
 			} else {
 				if (isset($modes[$field->value])) {
 					$field->valueLabel = $modes[$field->value];
 				}
 			}
-
 		}
 
 
