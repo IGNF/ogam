@@ -74,6 +74,7 @@ class Genapp_Service_GenericService {
 		// Get the form field corresponding to the table field
 		$formFields = $this->getFormFieldsOrdered($data->getFields());
 		foreach ($formFields as $formField) {
+				
 			// Add the corresponding JSON
 			$fields .= $formField->toDetailJSON().",";
 		}

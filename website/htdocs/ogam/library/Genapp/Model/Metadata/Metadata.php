@@ -1382,7 +1382,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$parentCode = $row['parent_code'];
 
 				//Build the new node
-				$tree = new Genapp_Object_Referential_TaxrefNode();
+				$tree = new Genapp_Object_Metadata_TaxrefNode();
 				$tree->code = $row['code'];
 				$tree->name = $row['name'];
 				$tree->completeName = $row['complete_name'];
@@ -1498,7 +1498,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			foreach ($select->fetchAll() as $row) {
 
 				//Build the new node
-				$node = new Genapp_Object_Referential_TaxrefNode();
+				$node = new Genapp_Object_Metadata_TaxrefNode();
 				$node->code = $row['code'];
 				$node->name = $row['name'];
 				$node->completeName = $row['complete_name'];
