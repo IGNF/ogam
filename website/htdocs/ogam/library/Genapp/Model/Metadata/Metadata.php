@@ -1611,7 +1611,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				$result[] = $row['cd_nom'];
+				$result[] = $row['code'];
 			}
 
 			if ($this->useCache) {
