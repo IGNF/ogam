@@ -22,7 +22,6 @@ class Genapp_Service_QueryService {
 	 * The models.
 	 */
 	var $metadataModel;
-	var $taxonomicReferentialModel;
 	var $genericModel;
 	var $resultLocationModel;
 	var $predefinedRequestModel;
@@ -49,7 +48,6 @@ class Genapp_Service_QueryService {
 
 		// Initialise the metadata models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->taxonomicReferentialModel = new Genapp_Model_Referential_TaxonomicReferential();
 		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
@@ -453,7 +451,7 @@ class Genapp_Service_QueryService {
 					} else if ($tableField->subtype == "TREE") {
 						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
 					} else if ($tableField->subtype == "TAXREF") {
-						$traductions[$key] = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
 					} else {
 						$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 					}

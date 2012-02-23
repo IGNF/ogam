@@ -184,6 +184,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		foreach ($select->fetchAll() as $row) {
 			$result[$row['code']] = $row['label'];
 		}
+
 		return $result;
 	}
 
@@ -361,9 +362,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	UNION ALL ";
 			$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
 			$req .= "		FROM mode_tree child ";
-			$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
+			$req .= "		INNER JOIN node_list on (child.parent_code = node_list.code) ";
+			$req .= "		WHERE child.unit = ? ";
 			if ($levels != 0) {
-				$req .= "		WHERE level < ".$levels." ";
+				$req .= "		AND level < ".$levels." ";
 			}
 			$req .= "	) ";
 			$req .= "	SELECT * ";
@@ -375,7 +377,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$select = $db->prepare($req);
 
-			$select->execute(array($unit, $parentcode));
+			$select->execute(array($unit, $parentcode, $unit));
 
 			$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
 			foreach ($select->fetchAll() as $row) {
@@ -444,9 +446,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	UNION ALL ";
 			$req .= "		SELECT child.unit, child.code, child.parent_code, child.label, child.definition, child.position, child.is_leaf, level + 1 ";
 			$req .= "		FROM mode_tree child ";
-			$req .= "		INNER JOIN node_list on child.parent_code = node_list.code ";
+			$req .= "		INNER JOIN node_list on (child.parent_code = node_list.code) ";
+			$req .= "		WHERE child.unit = ? ";
 			if ($levels != 0) {
-				$req .= "		WHERE level < ".$levels." ";
+				$req .= "		AND level < ".$levels." ";
 			}
 			$req .= "	) ";
 			$req .= "	SELECT * ";
@@ -456,7 +459,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$this->logger->info('getTreeChildrenCodes : '.$req);
 
 			$select = $db->prepare($req);
-			$select->execute(array($unit, $code));
+			$select->execute(array($unit, $code, $unit));
 
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
@@ -1306,9 +1309,9 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		return $childrenLabels;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Format the provided string to use it like a cache key
 	 * @param String $key
 	 * @return String
@@ -1318,7 +1321,305 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
 		$key = str_replace('.', '_', $key);
-		
+
 		return $key;
+	}
+
+
+
+	/**
+	 * Get the taxons.
+	 *
+	 * Return a hierarchy of taxons
+	 *
+	 * @param String $unit The unit
+	 * @param String $parentcode The identifier of the start node in the tree (by default the root node is *)
+	 * @param Integer $levels The number of levels of depth (if 0 then no limitation), relative to the root node
+	 * @return Genapp_Object_Metadata_TreeNode
+	 */
+	public function getTaxrefChildren($unit, $parentcode = '*', $levels = 1) {
+
+		$key = $this->formatCacheKey('getTaxrefChildren_'.$unit.'_'.$parentcode.'_'.$levels);
+
+		$this->logger->debug($key);
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+
+		if (empty($cachedResult)) {
+
+			$db = $this->getAdapter();
+
+			$req = "WITH RECURSIVE node_list( unit, code, parent_code, name, complete_name, vernacular_name, is_reference, is_leaf, level) AS (  ";
+			$req .= "	    SELECT unit, code, parent_code, name, complete_name, vernacular_name, is_reference, is_leaf, 1";
+			$req .= "		FROM mode_taxref ";
+			$req .= "		WHERE unit = ? ";
+			$req .= "		AND parent_code = ? ";
+			$req .= "	UNION ALL ";
+			$req .= "		SELECT child.unit, child.code, child.parent_code, child.name, child.complete_name, child.vernacular_name, child.is_reference, child.is_leaf, level + 1 ";
+			$req .= "		FROM mode_taxref child ";
+			$req .= "		INNER JOIN node_list on (child.parent_code = node_list.code AND child.unit = node_list.unit) ";
+			$req .= "		WHERE child.unit = ? ";
+			if ($levels != 0) {
+				$req .= "		AND level < ".$levels." ";
+			}
+			$req .= "	) ";
+			$req .= "	SELECT * ";
+			$req .= "	FROM node_list ";
+			$req .= "	ORDER BY level, parent_code, code, is_reference desc, name "; // level is used to ensure correct construction of the structure
+				
+			$this->logger->info('getTaxrefChildren : '.$parentcode);
+			$this->logger->info('getTaxrefChildren : '.$req);
+
+			$select = $db->prepare($req);
+
+			$select->execute(array($unit, $parentcode, $unit));
+
+			$resultTree = new Genapp_Object_Metadata_TreeNode(); // The root is empty
+			foreach ($select->fetchAll() as $row) {
+
+				$parentCode = $row['parent_code'];
+
+				//Build the new node
+				$tree = new Genapp_Object_Referential_TaxrefNode();
+				$tree->code = $row['code'];
+				$tree->name = $row['name'];
+				$tree->completeName = $row['complete_name'];
+				$tree->vernacularName = $row['vernacular_name'];
+				$tree->isLeaf = $row['is_leaf'];
+				$tree->isReference = $row['is_reference'];
+
+				// Check if a parent can be found in the structure
+				$parentNode = $resultTree->getNode($parentCode);
+				if ($parentNode == null) {
+					// Add the new node to the result root
+					$resultTree->addChild($tree);
+
+				} else {
+					// Add it to the found parent
+					$parentNode->addChild($tree);
+
+				}
+
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($resultTree, $key);
+			}
+			return $resultTree;
+		} else {
+			return $cachedResult;
+		}
+	}
+
+	/**
+	 * Get the taxons labels.
+	 *
+	 * @param String $unit the unit of the referential
+	 * @param String $value the value searched (optional)
+	 * @return Array[String, String]
+	 */
+	public function getTaxrefLabels($unit, $value = null) {
+
+		$key = $this->formatCacheKey('getTaxrefLabels_'.$unit.'_'.$value);
+
+		$this->logger->debug($key);
+
+		// No cache to avoid to increase the number of cache files for all combination
+
+		$db = $this->getAdapter();
+
+		$req = "	SELECT code, name ";
+		$req .= "	FROM mode_taxref ";
+		$req .= "	WHERE unit = ? ";
+		if ($value != null) {
+			if (is_array($value)) {
+				$req .= " AND code IN ('".implode("','", $value)."')";
+			} else {
+				$req .= " AND code = '".$value."'";
+			}
+		}
+		$req .= "	ORDER BY name ";
+
+		$this->logger->info('getTaxrefLabels '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($unit));
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$result[$row['code']] = $row['name'];
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Return the code and name for a taxref filtered by query.
+	 *
+	 * @param String $unit The unit
+	 * @param String $query the searched text (optional)
+	 * @param String $start the number of the first row to return (optional)
+	 * @param String $limit the max number of row to return (optional)
+	 * @return Array[Array[cd_nom => ..., lb_nom => ...]]
+	 */
+	public function getTaxrefModes($unit, $query = null, $start = null, $limit = null) {
+
+		$key = $this->formatCacheKey('getTaxrefModes_'.$unit.'_'.$query.'_'.$start.'_'.$limit);
+
+		$this->logger->debug($key);
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+
+		if (empty($cachedResult)) {
+
+			$db = $this->getAdapter();
+
+			$req = "	SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name ";
+			$req .= "	FROM mode_taxref ";
+			$req .= "	WHERE unit = ? ";
+			if ($query != null) {
+				$req .= " AND name ilike '%".$query."%' or complete_name ilike '%".$query."%' or vernacular_name ilike '%".$query."%'";
+			}
+			$req .= "	ORDER BY name ";
+			if ($start != null && $limit != null) {
+				$req .= " LIMIT ".$limit." OFFSET ".$start;
+			}
+
+			$this->logger->info('getTaxrefModes :'.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($unit));
+
+			$result = array();
+			foreach ($select->fetchAll() as $row) {
+
+				//Build the new node
+				$node = new Genapp_Object_Referential_TaxrefNode();
+				$node->code = $row['code'];
+				$node->name = $row['name'];
+				$node->completeName = $row['complete_name'];
+				$node->vernacularName = $row['vernacular_name'];
+				$node->isLeaf = $row['is_leaf'];
+				$node->isReference = $row['is_reference'];
+
+				$result[] = $node->formatForList();
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
+	}
+
+	/**
+	 * Return the count of code for a taxref filtered by query.
+	 *
+	 * @param String $unit The unit
+	 * @param String $query the searched text (optional)
+	 * @return Integer
+	 */
+	public function getTaxrefModesCount($unit, $query = null) {
+
+		$key = $this->formatCacheKey('getTaxrefModesCount_'.$unit.'_'.$query);
+
+		$this->logger->debug($key);
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+
+		if (empty($cachedResult)) {
+
+			$db = $this->getAdapter();
+
+			$req = "	SELECT count(code) ";
+			$req .= "	FROM mode_taxref ";
+			$req .= "	WHERE unit = ? ";
+			if ($query != null) {
+				$req .= " AND name ilike '%".$query."%' or complete_name ilike '%".$query."%' or vernacular_name ilike '%".$query."%'";
+			}
+
+			$this->logger->info('getTaxrefModesCount :'.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($unit));
+
+			$result = $select->fetchColumn(0);
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
+	}
+
+	/**
+	 * Get all the children codes from the reference taxon of a taxon.
+	 *
+	 * Return an array of codes.
+	 *
+	 * @param String $unit The unit
+	 * @param String $code The identifier of the start node in the tree (by default the root node is *)
+	 * @param Integer $levels The number of levels of depth (if 0 then no limitation)
+	 * @return Array[String]
+	 */
+	public function getTaxrefChildrenCodes($unit, $code = '*', $levels = 1) {
+
+		$key = $this->formatCacheKey('getTaxrefChildrenCodes_'.$unit.'_'.$code.'_'.$levels);
+
+		$this->logger->debug($key);
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+
+		if (empty($cachedResult)) {
+
+			$this->logger->info('getTaxrefChildrenCodes : '.$code.'_'.$levels);
+			$db = $this->getAdapter();
+			$req = "WITH RECURSIVE node_list( code, level) AS ( ";
+			$req .= "	    SELECT code, 1 "; // we get the reference taxon as a base for the search
+			$req .= "		FROM mode_taxref ";
+			$req .= "		WHERE unit = ? ";
+			$req .= "		AND code = ? ";
+			$req .= "	UNION ALL ";
+			$req .= "		SELECT child.code, level + 1 ";
+			$req .= "		FROM mode_taxref child ";
+			$req .= "		INNER JOIN node_list on (child.parent_code = node_list.code) ";
+			$req .= "		WHERE child.unit = ? ";
+			if ($levels != 0) {
+				$req .= "		AND level < ".$levels." ";
+			}
+			$req .= "	) ";
+			$req .= "	SELECT * ";
+			$req .= "	FROM node_list ";
+			$req .= "	ORDER BY level, code "; // level is used to ensure correct construction of the structure
+
+			$this->logger->info('getTaxrefChildrenCodes : '.$req);
+
+			$select = $db->prepare($req);
+			$select->execute(array($unit, $code, $unit));
+
+			$result = array();
+			foreach ($select->fetchAll() as $row) {
+				$result[] = $row['cd_nom'];
+			}
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
 	}
 }

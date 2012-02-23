@@ -146,7 +146,7 @@ class ProxyController extends AbstractOGAMController {
 	/**
 	 * Get a WFS from Mapserver.
 	 * Used to get a list of features in the WFSLayer layer.
-	 * 
+	 *
 	 * Used for snapping and for getFeature tool.
 	 */
 	function getwfsAction() {
@@ -234,7 +234,6 @@ class ProxyController extends AbstractOGAMController {
 		// If the layer needs activation, we suppose it needs a SLD.
 		$activation = $this->_extractParam($uri, "HASSLD");
 		$this->logger->debug('uri : '.$uri);
-		$this->logger->debug('activation : '.$activation);
 		if (strtolower($activation) == "true") {
 
 			// Get the layer name
@@ -467,9 +466,9 @@ class ProxyController extends AbstractOGAMController {
 
 			// List the items to display
 			$displayNodes = $dom->getElementsByTagName("display");
-				
+
 			$displayItems = array();
-				
+
 			foreach ($displayNodes->item(0)->childNodes as $item) {
 				if ($item->nodeType == XML_ELEMENT_NODE) {
 					$name = str_replace('ms:', '', $item->nodeName);
@@ -480,7 +479,7 @@ class ProxyController extends AbstractOGAMController {
 				}
 			}
 
-				
+
 			echo '{"success":true'.', "fields":'.json_encode($displayItems).'}';
 		} else {
 			echo '{"success":true, "fields":[]}';

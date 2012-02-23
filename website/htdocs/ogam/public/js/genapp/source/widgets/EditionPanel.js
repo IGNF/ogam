@@ -658,6 +658,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			case 'TAXREF':
 				field.xtype = 'taxreffield';
 				field.valueLabel = record.valueLabel;
+				field.unit = record.unit;
 				break;
 			case 'IMAGE':
 				field.xtype = 'imagefield';

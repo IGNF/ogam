@@ -22,7 +22,6 @@ class Genapp_Service_GenericService {
 	 * The models.
 	 */
 	var $metadataModel;
-	var $taxonomicReferentialModel;
 
 	/**
 	 * The projection systems.
@@ -40,7 +39,6 @@ class Genapp_Service_GenericService {
 
 		// Initialise the metadata models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->taxonomicReferentialModel = new Genapp_Model_Referential_TaxonomicReferential();
 
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
@@ -650,7 +648,7 @@ class Genapp_Service_GenericService {
 							$sql .= " AND ".$column." = '".$value."'";
 						} else {
 							// Get all the children of a selected taxon
-							$nodeCodes = $this->taxonomicReferentialModel->getTaxrefChildrenCodes($value, 0);
+							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($tableField->unit, $value, 0);
 							$nodeCodes[] = $value; // add the value itself
 
 							// Case of a list of values
@@ -715,7 +713,7 @@ class Genapp_Service_GenericService {
 						} else {
 
 							// Get all the children of a selected taxon
-							$nodeCodes = $this->taxonomicReferentialModel->getTaxrefChildrenCodes($value, 0);
+							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($tableField->unit, $value, 0);
 							$nodeCodes[] = $value; // add the value itself
 
 							$sql2 = '';
@@ -1058,7 +1056,7 @@ class Genapp_Service_GenericService {
 			} else if ($field->subtype == "TREE") {
 				$modes = $this->metadataModel->getTreeLabels($field->unit, $field->value);
 			} else if ($field->subtype == "TAXREF") {
-				$modes = $this->taxonomicReferentialModel->getTaxrefLabels($field->unit, $field->value);
+				$modes = $this->metadataModel->getTaxrefLabels($field->unit, $field->value);
 			} else {
 				$modes = $this->metadataModel->getModeLabels($field->unit, $field->value);
 			}

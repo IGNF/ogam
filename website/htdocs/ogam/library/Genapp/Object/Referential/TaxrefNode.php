@@ -24,19 +24,21 @@ class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNo
 	var $children = array();
 
 	/**
+	 * The short name of the taxon.
+	 */
+	var $name;
+
+	/**
+	 * The complete name of the taxon.
+	 */
+	var $completeName;
+
+	/**
 	 * The vernacular name of the taxon.
 	 */
 	var $vernacularName;
 
-	/**
-	 * Indicate that the taxon is a reference.
-	 */
-	var $fullName;
 
-	/**
-	 * Indicate that the taxon is a reference.
-	 */
-	var $validName;
 
 	/**
 	 * Add a child.
@@ -84,7 +86,7 @@ class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNo
 			$return = substr($return, 0, -1); // remove the last comma
 		} else {
 			// We return the root itself plus the children
-			$return .= '{"text":'.json_encode($this->label);
+			$return .= '{"text":'.json_encode($this->name);
 			$return .= ',"id":'.json_encode($this->code);
 			if ($this->isLeaf) {
 				$return .= ',"leaf":true';
@@ -118,15 +120,15 @@ class Genapp_Object_Referential_TaxrefNode extends Genapp_Object_Metadata_TreeNo
 			// We return the root itself plus the children
 			$return['code'] = $this->code;
 			if ($this->isReference) {
-				$return['label'] = '<b>'.$this->fullName.'</b>';
+				$return['label'] = '<b>'.$this->completeName.'</b>';
 			} else {
-				$return['label'] = $this->fullName;
+				$return['label'] = $this->completeName;
 			}
 			if (!empty($this->vernacularName)) {
 				$return['label'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->vernacularName.'</i>';
 			}
-			if (!empty($this->validName)) {
-				$return['label'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->validName.'</i>';
+			if (!empty($this->name)) {
+				$return['label'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->name.'</i>';
 			}
 		}
 

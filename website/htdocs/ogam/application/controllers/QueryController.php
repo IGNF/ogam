@@ -18,7 +18,6 @@ class QueryController extends AbstractOGAMController {
 	protected $genericModel;
 	protected $resultLocationModel;
 	protected $predefinedRequestModel;
-	protected $taxonomicReferentialModel;
 
 	/**
 	 * The generic service.
@@ -83,7 +82,6 @@ class QueryController extends AbstractOGAMController {
 
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->taxonomicReferentialModel = new Genapp_Model_Referential_TaxonomicReferential();
 		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
@@ -539,7 +537,7 @@ class QueryController extends AbstractOGAMController {
 						} else if ($tableField->subtype == "TREE") {
 							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
 						} else if ($tableField->subtype == "TAXREF") {
-							$traductions[$key] = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
+							$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
 						} else {
 							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 						}
@@ -713,7 +711,7 @@ class QueryController extends AbstractOGAMController {
 						} else if ($tableField->subtype == "TREE") {
 							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
 						} else if ($tableField->subtype == "TAXREF") {
-							$traductions[$key] = $this->taxonomicReferentialModel->getTaxrefLabels($tableField->unit);
+							$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
 						} else {
 							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 						}
@@ -908,10 +906,11 @@ class QueryController extends AbstractOGAMController {
 	public function ajaxgettaxrefnodesAction() {
 		$this->logger->debug('ajaxgettaxrefnodesAction');
 
+		$unit = $this->getRequest()->getParam('unit');
 		$code = $this->getRequest()->getPost('node');
 		$depth = $this->getRequest()->getParam('depth');
 
-		$tree = $this->taxonomicReferentialModel->getTaxrefChildren($code, $depth);
+		$tree = $this->metadataModel->getTaxrefChildren($unit, $code, $depth);
 
 		// Send the result as a JSON String
 		// TODO : $json = '{"success":true';
@@ -1050,6 +1049,7 @@ class QueryController extends AbstractOGAMController {
 	public function ajaxgettaxrefcodesAction() {
 		$this->logger->debug('ajaxgettaxrefcodesAction');
 
+		$unit = $this->getRequest()->getParam('unit');
 		$query = pg_escape_string($this->getRequest()->getParam('query'));
 		$start = $this->getRequest()->getParam('start');
 		$limit = $this->getRequest()->getParam('limit');
@@ -1058,13 +1058,13 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('$start : '.$start);
 		$this->logger->debug('$limit : '.$limit);
 
-		$codes = $this->taxonomicReferentialModel->getTaxrefModes($query, $start, $limit);
+		$codes = $this->metadataModel->getTaxrefModes($unit, $query, $start, $limit);
 
 		if (count($codes) < $limit) {
 			// optimisation
 			$count = count($codes);
 		} else {
-			$count = $this->taxonomicReferentialModel->getTaxrefModesCount($query);
+			$count = $this->metadataModel->getTaxrefModesCount($unit, $query);
 		}
 
 		// Send the result as a JSON String

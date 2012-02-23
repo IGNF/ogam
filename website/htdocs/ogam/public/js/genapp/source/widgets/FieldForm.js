@@ -666,6 +666,7 @@ Ext.apply(Genapp.FieldForm.prototype, {
 		case 'TAXREF':
 			field.xtype = 'taxreffield';
 			field.valueLabel = record.valueLabel;
+			field.unit = record.unit;
 			break;
 		default:
 			field.xtype = 'field';
