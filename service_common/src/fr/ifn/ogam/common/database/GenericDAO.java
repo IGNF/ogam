@@ -131,6 +131,8 @@ public class GenericDAO {
 						ps.setString(count, (String) colData.getValue());
 					} else if (colData.getType().equalsIgnoreCase(IMAGE)) {
 						ps.setString(count, (String) colData.getValue());
+					} else if (colData.getType().equalsIgnoreCase(GEOM)) {
+						ps.setObject(count, colData.getValue());
 					} else if (colData.getType().equalsIgnoreCase(NUMERIC)) {
 						if (colData.getValue() == null) {
 							ps.setNull(count, java.sql.Types.DECIMAL);
@@ -345,6 +347,8 @@ public class GenericDAO {
 
 					} else if (field.getType().equalsIgnoreCase(IMAGE)) {
 						data.setValue(rs.getString(columnName));
+					} else if (field.getType().equalsIgnoreCase(GEOM)) {
+						data.setValue(rs.getObject(columnName));
 					} else if (field.getType().equalsIgnoreCase(NUMERIC)) {
 						data.setValue(rs.getBigDecimal(columnName));
 					} else if (field.getType().equalsIgnoreCase(INTEGER)) {
@@ -368,7 +372,7 @@ public class GenericDAO {
 							}
 						}
 					} else {
-						throw new Exception("Unexpected type");
+						throw new Exception("Unexpected type : " + field.getType() + " for field " + field.getData());
 					}
 
 					resultLine.put(data.getFormat(), data);

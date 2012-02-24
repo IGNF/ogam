@@ -79,7 +79,7 @@ public class GenericMapper {
 			throw ce;
 		}
 	}
-	
+
 	/**
 	 * Check that a code value correspond to an existing Taxon in a referential.
 	 * 
@@ -204,7 +204,7 @@ public class GenericMapper {
 				throw new CheckException(MANDATORY_FIELD_MISSING);
 			}
 
-			if (type.equalsIgnoreCase(STRING) || type.equalsIgnoreCase(GEOM) || type.equalsIgnoreCase(IMAGE)) {
+			if (type.equalsIgnoreCase(STRING) || type.equalsIgnoreCase(GEOM) || type.equalsIgnoreCase(IMAGE) || type.equalsIgnoreCase(GEOM)) {
 				result = fieldValue;
 			}
 
