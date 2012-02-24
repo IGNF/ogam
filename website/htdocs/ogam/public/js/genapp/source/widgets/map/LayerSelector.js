@@ -17,6 +17,12 @@ Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 	 * @cfg {Ext.form.ComboBox} The selection Box
 	 */
 	selectorBox : null,
+	
+	/**
+	 * @cfg {String} The identifier of the geopanel.
+	 * Used to filter the events listening.
+	 */
+	geoPanelId : null,
 
 	/**
 	 * The currently selected vector layer.
@@ -55,8 +61,9 @@ Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 			listeners : {
 				select : function(combo, value) {
 					// Forward the event to the button
-					Genapp.eventManager.fireEvent('selectLayer', value);
-				}
+					Genapp.eventManager.fireEvent('selectLayer', value, this.geoPanelId);
+				},
+				scope : this
 			},
 
 			valueField : 'code',
@@ -82,7 +89,7 @@ Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 	/**
 	 * A layer has been selected
 	 */
-	layerSelected : function(value) {
+	layerSelected : function(value, geoPanelId) {
 
 		// Store the selected value
 		this.selectedVectorLayer = value.data.code;

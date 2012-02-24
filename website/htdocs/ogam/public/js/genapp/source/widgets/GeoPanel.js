@@ -888,7 +888,8 @@ Genapp.GeoPanel = Ext
 
 							// Layer selector
 							this.layerSelector = {
-								xtype : 'layerselector'
+								xtype : 'layerselector',
+								geoPanelId : this.id
 							};
 
 							// Snapping tool
@@ -1391,37 +1392,39 @@ Genapp.GeoPanel = Ext
 					/**
 					 * A layer has been selected in the layer selector
 					 */
-					layerSelected : function(value) {
+					layerSelected : function(value, geoPanelId) {
 
-						if (value.data.code !== null) {
-							// Change the WFS layer typename
-							this.wfsLayer.params.TYPENAME = value.data.code;
+						if (geoPanelId == this.id) {
+							if (value.data.code !== null) {
+								// Change the WFS layer typename
+								this.wfsLayer.params.TYPENAME = value.data.code;
 
-							// Make it visible
-							this.wfsLayer.setVisibility(true);
+								// Make it visible
+								this.wfsLayer.setVisibility(true);
 
-							// Force a refresh (rebuild the WFS URL)
-							this.wfsLayer.moveTo(null, true, false);
+								// Force a refresh (rebuild the WFS URL)
+								this.wfsLayer.moveTo(null, true, false);
 
-							// Set the getfeature control
-							if (this.getFeatureControl !== null) {
-								this.getFeatureControl.protocol = new OpenLayers.Protocol.WFS({
-									version : this.wfsLayer.params.VERSION,
-									url : this.wfsLayer.url,
-									featureType : this.wfsLayer.params.TYPENAME
-								});
+								// Set the getfeature control
+								if (this.getFeatureControl !== null) {
+									this.getFeatureControl.protocol = new OpenLayers.Protocol.WFS({
+										version : this.wfsLayer.params.VERSION,
+										url : this.wfsLayer.url,
+										featureType : this.wfsLayer.params.TYPENAME
+									});
+								}
+								// Set the layer name in other tools
+								if (this.featureInfoControl !== null) {
+									this.featureInfoControl.layerName = value.data.code;
+								}
+								if (this.getFeatureControl !== null) {
+									this.getFeatureControl.layerName = value.data.code;
+								}
+
+							} else {
+								// Hide the layer
+								this.wfsLayer.setVisibility(false);
 							}
-							// Set the layer name in other tools
-							if (this.featureInfoControl !== null) {
-								this.featureInfoControl.layerName = value.data.code;
-							}
-							if (this.getFeatureControl !== null) {
-								this.getFeatureControl.layerName = value.data.code;
-							}
-
-						} else {
-							// Hide the layer
-							this.wfsLayer.setVisibility(false);
 						}
 
 					},
