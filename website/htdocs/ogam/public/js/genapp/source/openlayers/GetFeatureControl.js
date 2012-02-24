@@ -18,7 +18,7 @@ OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 	 * @cfg {String} layerName The layer name
 	 */
 	layerName : null,
-
+	
 	/**
 	 * @cfg {OpenLayers.map} map The map
 	 */
@@ -53,7 +53,7 @@ OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 	 * received feature.
 	 */
 	getFeature : function(feature) {
-		Genapp.eventManager.fireEvent('getFeature', feature);
+		Genapp.eventManager.fireEvent('getFeature', feature, this.map.id);
 	},
 
 	/**

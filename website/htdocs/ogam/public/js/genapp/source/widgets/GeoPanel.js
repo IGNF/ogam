@@ -1004,7 +1004,8 @@ Genapp.GeoPanel = Ext
 						//
 
 						var locationInfoControl = new OpenLayers.Control.LocationInfoControl({
-							layerName : Genapp.map.featureinfo_typename
+							layerName : Genapp.map.featureinfo_typename,
+							geoPanelId : this.id
 						});
 
 						var locationInfoButton = new GeoExt.Action({
@@ -1433,11 +1434,13 @@ Genapp.GeoPanel = Ext
 					 * A feature has been selected using the GetFeatureControl
 					 * tool.
 					 */
-					getFeature : function(feature) {
+					getFeature : function(feature, mapId) {
 
-						// Add the feature to the vector layer
-						if (this.vectorLayer !== null) {
-							this.vectorLayer.addFeatures(feature);
+						if (mapId == this.map.id) {
+							// Add the feature to the vector layer
+							if (this.vectorLayer !== null) {
+								this.vectorLayer.addFeatures(feature);
+							}
 						}
 
 					},

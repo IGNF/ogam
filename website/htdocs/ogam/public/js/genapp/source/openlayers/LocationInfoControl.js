@@ -17,6 +17,11 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	handler : null,
 
 	/**
+	 * @cfg {OpenLayers.map} map The map
+	 */
+	map : null,
+
+	/**
 	 * Property: type {String} The type of <OpenLayers.Control> -- When added to
 	 * a <Control.Panel>, 'type' is used by the panel to determine how to handle
 	 * our events.
@@ -45,7 +50,7 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 * with the received info.
 	 */
 	getLocationInfo : function(result) {
-		Genapp.eventManager.fireEvent('getLocationInfo', result);
+		Genapp.eventManager.fireEvent('getLocationInfo', result, this.map.id);
 	},
 
 	/**

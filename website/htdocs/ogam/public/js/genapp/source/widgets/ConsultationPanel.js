@@ -1996,11 +1996,13 @@ Genapp.ConsultationPanel = Ext
 					 * 
 					 * Called when a location info event is received.
 					 */
-					getLocationInfo : function(result) {
-						if (Genapp.map.featureinfo_maxfeatures === 1) {
-							this.openDetails(result.data[0][0], 'ajaxgetdetails');
-						} else {
-							this.openFeaturesInformationSelection(result);
+					getLocationInfo : function(result, mapId) {
+						if (this.geoPanel.map.id == mapId) {
+							if (Genapp.map.featureinfo_maxfeatures === 1) {
+								this.openDetails(result.data[0][0], 'ajaxgetdetails');
+							} else {
+								this.openFeaturesInformationSelection(result);
+							}
 						}
 					},
 
