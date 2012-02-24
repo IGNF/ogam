@@ -129,6 +129,8 @@ public class GenericDAO {
 						ps.setString(count, (String) colData.getValue());
 					} else if (colData.getType().equalsIgnoreCase(CODE)) {
 						ps.setString(count, (String) colData.getValue());
+					} else if (colData.getType().equalsIgnoreCase(IMAGE)) {
+						ps.setString(count, (String) colData.getValue());
 					} else if (colData.getType().equalsIgnoreCase(NUMERIC)) {
 						if (colData.getValue() == null) {
 							ps.setNull(count, java.sql.Types.DECIMAL);
@@ -332,6 +334,16 @@ public class GenericDAO {
 					if (field.getType().equalsIgnoreCase(STRING)) {
 						data.setValue(rs.getString(columnName));
 					} else if (field.getType().equalsIgnoreCase(CODE)) {
+						data.setValue(rs.getString(columnName));
+					} else if (field.getType().equalsIgnoreCase(ARRAY)) {
+						java.sql.Array arrayRes = rs.getArray(columnName);
+
+						Object arrayRes2 = arrayRes.getArray();
+						String[] res = (String[]) arrayRes2; // Cast in a array of strings
+
+						data.setValue(res);
+
+					} else if (field.getType().equalsIgnoreCase(IMAGE)) {
 						data.setValue(rs.getString(columnName));
 					} else if (field.getType().equalsIgnoreCase(NUMERIC)) {
 						data.setValue(rs.getBigDecimal(columnName));
