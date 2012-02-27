@@ -225,7 +225,7 @@ class CheckconfController extends AbstractOGAMController {
 						}
 						break;
 					case "DATE":
-						if ($foundField->type != 'DATE' && $foundField->type != 'TIMESTAMP') {
+						if ($foundField->type != 'DATE' && $foundField->type != 'TIMESTAMP' && $foundField->type != 'TIMESTAMP WITHOUT TIME ZONE') {
 							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
 						}
 						break;
@@ -240,7 +240,7 @@ class CheckconfController extends AbstractOGAMController {
 						}
 						break;
 					case "INTEGER":
-						if ($foundField->type != 'INTEGER') {
+						if ($foundField->type != 'INTEGER' && $foundField->type != 'SMALLINT') {
 							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
 						}
 						break;
