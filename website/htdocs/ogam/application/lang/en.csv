@@ -28,10 +28,10 @@ Data Integration;Data Integration
 Data Edition;Data Edition
 Visualize Raw Data;Visualize Raw Data
 Query Data (RAW_DATA);Visualize Raw Data
-Query Data (HARMONIZED_DATA);Visualize Harmonized Data
-Data Harmonization;Data Harmonization
-Visualize Harmonized Data;Visualize Harmonized Data
-Query Harmonized Data;Visualize Harmonized Data
+Query Data (HARMONIZED_DATA);Visualize Validated Data
+Data Harmonization;Data Copy
+Visualize Harmonized Data;Visualize Validated Data
+Query Harmonized Data;Visualize Validated Data
 User Administration;User Administration
 Check Configuration;Check the configuration
 Manage Users;User Administration
@@ -72,13 +72,13 @@ The expected fields are:;The expected fields are:
 Are you sure?;Are you sure?
 
 ﻿##########################
-#  Data harmonization    #
+#  Data Copy             #
 ##########################
-Data harmonization module;Data harmonization module
-Harmonize Data;Harmonize Data
+Data harmonization module;Data copy
+Harmonize Data;Copy Data
 Back;Back
-Launch Harmonization;Launch Harmonization
-Harmonization Date;Harmonization Date
+Launch Harmonization;Launch Copy
+Harmonization Date;Copy Date
 Confirm harmonization;Warning, this will delete and recreate all data for this data provider in the harmonized database.
 
 

@@ -136,10 +136,10 @@ Data Integration;Integration de données
 Data Edition;Edition des données
 Visualize Raw Data;Visualisation des données brutes
 Query Data (RAW_DATA);Visualisation des données brutes
-Query Data (HARMONIZED_DATA);Visualisation des données harmonisées
-Data Harmonization;Harmonisation des données
-Visualize Harmonized Data;Visualisation des données harmonisées
-Query Harmonized Data;Visualisation des données harmonisées
+Query Data (HARMONIZED_DATA);Visualisation des données validées
+Data Harmonization;Recopie des données
+Visualize Harmonized Data;Visualisation des données validées
+Query Harmonized Data;Visualisation des données validées
 User Administration;Administration des utilisateurs
 Check Configuration;Vérifier la configuration
 Manage Users;Administration des utilisateurs
@@ -180,13 +180,13 @@ The expected fields are:;Les champs attendus sont :
 Are you sure?;Etes-vous sur ?
 
 ﻿##########################
-#  Data harmonization    #
+#  Data Copy             #
 ##########################
-Data harmonization module;Module d'harmonisation
-Harmonize Data;Harmoniser les données
+Data harmonization module;Recopie des données
+Harmonize Data;Recopier les données
 Back;Retour
-Launch Harmonization;Lancer l'harmonization
-Harmonization Date;Date d'harmonization
+Launch Harmonization;Lancer la copie
+Harmonization Date;Date de recopie
 Confirm harmonization;Attention, les données de ce fournisseur vont être supprimées et recréées
 
 
