@@ -53,7 +53,7 @@ public class HarmonizationService extends AbstractService {
 	private ProcessingService processingService = new ProcessingService();
 
 	// Maximum number of lines of data in memory
-	private static final int MAX_LINES = 1000;
+	private static final int MAX_LINES = 5000;
 
 	/**
 	 * Constructor.
