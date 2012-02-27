@@ -396,7 +396,7 @@ public class GenericMapper {
 				TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(tableFormat, schema);
 
 				// If the parent table is listed, we insert the table just before
-				if (sortedTablesList.contains(tableDescriptor.getParentTable())) {
+				if (sortedTablesList.contains(tableDescriptor.getParentTable().getFormat())) {
 					sortedTablesList.add(sortedTablesList.indexOf(tableDescriptor.getParentTable()), tableFormat);
 				} else {
 					// If not found, we add the table at the end of the list
