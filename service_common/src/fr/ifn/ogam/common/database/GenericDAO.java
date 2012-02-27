@@ -131,8 +131,6 @@ public class GenericDAO {
 						ps.setString(count, (String) colData.getValue());
 					} else if (colData.getType().equalsIgnoreCase(IMAGE)) {
 						ps.setString(count, (String) colData.getValue());
-					} else if (colData.getType().equalsIgnoreCase(GEOM)) {
-						ps.setObject(count, colData.getValue());
 					} else if (colData.getType().equalsIgnoreCase(NUMERIC)) {
 						if (colData.getValue() == null) {
 							ps.setNull(count, java.sql.Types.DECIMAL);
