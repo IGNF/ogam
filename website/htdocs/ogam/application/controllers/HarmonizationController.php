@@ -68,7 +68,7 @@ class HarmonizationController extends AbstractOGAMController {
 		$this->logger->debug('showHarmonizationPageAction');
 
 		// Get the list of available harmonization (active submissions)
-		$activeSubmissions = $this->submissionModel->getActiveSubmissions();
+		$activeSubmissions = $this->submissionModel->getSubmissionsForHarmonization();
 
 		$harmonisationProcesses = array();
 
