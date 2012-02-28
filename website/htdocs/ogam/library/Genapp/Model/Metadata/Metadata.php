@@ -1367,7 +1367,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	) ";
 			$req .= "	SELECT * ";
 			$req .= "	FROM node_list ";
-			$req .= "	ORDER BY level, parent_code, code, is_reference desc, name "; // level is used to ensure correct construction of the structure
+			$req .= "	ORDER BY level, parent_code, name "; // level is used to ensure correct construction of the structure
 				
 			$this->logger->info('getTaxrefChildren : '.$parentcode);
 			$this->logger->info('getTaxrefChildren : '.$req);
