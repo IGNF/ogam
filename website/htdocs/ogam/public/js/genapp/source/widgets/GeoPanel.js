@@ -1256,43 +1256,46 @@ Genapp.GeoPanel = Ext
 					 *            cause that the zoom range.
 					 */
 					enableLayersAndLegends : function(layerNames, check, setForceDisable) {
-
-						// The tabPanels must be activated before to show a
-						// child component
-						var isLayerPanelVisible = this.layerPanel.isVisible(), i;
-
-						this.layersAndLegendsPanel.activate(this.layerPanel);
-						for (i = 0; i < layerNames.length; i++) {
-							var node = this.layerTree.getNodeByLayerName(layerNames[i]);
-							if (!Ext.isEmpty(node)) {
-								var nodeId = node.id;
-								if (setForceDisable !== false) {
-									this.layerTree.getNodeById(nodeId).forceDisable = false;
-								}
-								if (this.layerTree.getNodeById(nodeId).zoomDisable !== true) {
-									this.layerTree.getNodeById(nodeId).enable();
-								}
-								this.layerTree.getNodeById(nodeId).getUI().show();
-
-								if (check === true) {
-									// Note: the redraw must be done before to
-									// check the node
-									// to avoid to redisplay the old layer
-									// images before the new one
-									var layers = this.map.getLayersByName(layerNames[i]);
-									layers[0].redraw(true);
-									this.layerTree.toggleNodeCheckbox(nodeId, true);
-								}
-							}
-						}
-
-						this.layersAndLegendsPanel.activate(this.legendPanel);
-						this.setLegendsVisible(layerNames, true);
-
-						// Keep the current activated panel activated
-						if (isLayerPanelVisible) {
-							this.layersAndLegendsPanel.activate(this.layerPanel);
-						}
+					    if(!Ext.isEmpty(layerNames)){
+    						// The tabPanels must be activated before to show a
+    						// child component
+    						var isLayerPanelVisible = this.layerPanel.isVisible(), i;
+    
+    						this.layersAndLegendsPanel.activate(this.layerPanel);
+    						for (i = 0; i < layerNames.length; i++) {
+    							var node = this.layerTree.getNodeByLayerName(layerNames[i]);
+    							if (!Ext.isEmpty(node)) {
+    								var nodeId = node.id;
+    								if (setForceDisable !== false) {
+    									this.layerTree.getNodeById(nodeId).forceDisable = false;
+    								}
+    								if (this.layerTree.getNodeById(nodeId).zoomDisable !== true) {
+    									this.layerTree.getNodeById(nodeId).enable();
+    								}
+    								this.layerTree.getNodeById(nodeId).getUI().show();
+    
+    								if (check === true) {
+    									// Note: the redraw must be done before to
+    									// check the node
+    									// to avoid to redisplay the old layer
+    									// images before the new one
+    									var layers = this.map.getLayersByName(layerNames[i]);
+    									layers[0].redraw(true);
+    									this.layerTree.toggleNodeCheckbox(nodeId, true);
+    								}
+    							}
+    						}
+    
+    						this.layersAndLegendsPanel.activate(this.legendPanel);
+    						this.setLegendsVisible(layerNames, true);
+    
+    						// Keep the current activated panel activated
+    						if (isLayerPanelVisible) {
+    							this.layersAndLegendsPanel.activate(this.layerPanel);
+    						}
+    					} else {
+    					    console.warn('EnableLayersAndLegends : layerNames parameter is empty.');
+    					}
 					},
 
 					/**

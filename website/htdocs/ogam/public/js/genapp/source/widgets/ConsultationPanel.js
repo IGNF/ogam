@@ -459,6 +459,11 @@ Genapp.ConsultationPanel = Ext
 					 *      (Default to 300)
 					 */
 					tipDefaultWidth : 300,
+	                /**
+                     * @cfg {Number} tipImageDefaultWidth The tip Image Default Width.
+                     *      (Default to 200)
+                     */
+                    tipImageDefaultWidth : 200,
 					/**
 					 * @cfg {String} openGridDetailsButtonTitle The open Grid
 					 *      Details Button Title (defaults to
@@ -1600,8 +1605,10 @@ Genapp.ConsultationPanel = Ext
 										columnConf.format = this.dateFormat;
 										break;
 									case 'IMAGE':
+									    columnConf.header = '';
+									    columnConf.width = 30;
 										columnConf.sortable = false;
-										columnConf.renderer = this.renderIcon;
+										columnConf.renderer = this.renderIcon.createDelegate(this, [Genapp.util.htmlStringFormat(columns[i].label)], true);
 										break;
 									default:
 										columnConf.xtype = 'gridcolumn';
@@ -1703,9 +1710,16 @@ Genapp.ConsultationPanel = Ext
 					/**
 					 * Render an Icon for the data grid.
 					 */
-					renderIcon : function(val) {
-						if (val !== null) {
-							return '<a href="' + val + '">' + '<img src="' + Genapp.base_url + '/js/genapp/resources/images/picture.png" /></a>';
+					renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
+						if (value !== null) {
+							return '<img src="' + Genapp.base_url + '/js/genapp/resources/images/picture.png"'
+							+ 'ext:qtitle="' + columnLabel + ' :"'
+							+ 'ext:qwidth="' + this.tipImageDefaultWidth + '"'
+							+ 'ext:qtip="'
+							+ Genapp.util.htmlStringFormat('<img width="' + (this.tipImageDefaultWidth - 12) 
+							+ '" src="' + Genapp.base_url + '/img/' + value 
+							+'" />') 
+							+ '">';
 						}
 					},
 
