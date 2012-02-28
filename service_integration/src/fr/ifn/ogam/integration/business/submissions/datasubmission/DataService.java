@@ -198,7 +198,7 @@ public class DataService extends AbstractService {
 
 			// Launch post-processing (if not cancelled)
 			if (this.thread == null || !this.thread.isCancelled()) {
-				processingService.processData(ProcessingStep.INTEGRATION, submission.getProviderId(), this.thread);
+				processingService.processData(ProcessingStep.INTEGRATION, submission, this.thread);
 			}
 
 			// Update the submission status

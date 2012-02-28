@@ -7,8 +7,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import fr.ifn.ogam.common.business.AbstractThread;
+import fr.ifn.ogam.common.business.Data;
 import fr.ifn.ogam.common.database.processing.ProcessData;
 import fr.ifn.ogam.common.database.processing.ProcessingDAO;
+import fr.ifn.ogam.common.database.rawdata.SubmissionData;
 
 /**
  * Service managing the post-process treatments.
@@ -30,12 +32,12 @@ public class ProcessingService {
 	 * 
 	 * @param step
 	 *            the step of the process (INTEGRATION or HARMONIZATION)
-	 * @param providerId
-	 *            the identifier of the data provider
+	 * @param SubmissionData
+	 *            the submission
 	 * @param thread
 	 *            the thread to notify during the process advancement
 	 */
-	public void processData(String step, String providerId, AbstractThread thread) throws Exception {
+	public void processData(String step, SubmissionData submission, AbstractThread thread) throws Exception {
 
 		List<ProcessData> processesList;
 
@@ -51,6 +53,13 @@ public class ProcessingService {
 			Iterator<ProcessData> processesIter = processesList.iterator();
 			while (processesIter.hasNext()) {
 				ProcessData process = processesIter.next();
+
+				// Fill the statement with contextual info
+				String stmt = process.getStatement();
+				stmt = stmt.replaceAll("\\%" + Data.DATASET_ID + "\\%", submission.getDatasetId());
+				stmt = stmt.replaceAll("\\%" + Data.PROVIDER_ID + "\\%", submission.getProviderId());
+				stmt = stmt.replaceAll("\\%" + Data.SUBMISSION_ID + "\\%", "" + submission.getSubmissionId());
+				process.setStatement(stmt);
 
 				// Keep the thread informed of the current status
 				thread.setCurrentCount(0);

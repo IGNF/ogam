@@ -238,7 +238,7 @@ public class DataServlet extends AbstractUploadServlet {
 					throw new Exception("A process is already running for this provider and dataset");
 				}
 
-				// Launch the harmonization thread
+				// Launch the thread
 				process = new DataServiceThread(submissionId, requestParameters);
 				process.start();
 
