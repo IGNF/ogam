@@ -222,7 +222,10 @@ public class HarmonizationService extends AbstractService {
 			}
 
 			// Launch post-processing
-			processingService.processData(ProcessingStep.HARMONIZATION, providerId, this.thread);
+			SubmissionData submission = new SubmissionData();
+			submission.setDatasetId(datasetId);
+			submission.setProviderId(providerId);
+			processingService.processData(ProcessingStep.HARMONIZATION, submission, this.thread);
 
 			// Log the process in the log table
 			harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);
