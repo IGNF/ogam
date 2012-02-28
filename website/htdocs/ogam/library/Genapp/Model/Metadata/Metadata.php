@@ -78,7 +78,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getSchemas() {
 		$db = $this->getAdapter();
-		$req = "SELECT * FROM table_schema ORDER BY table_schema";
+		$req = "SELECT * FROM table_schema WHERE schema_code NOT IN ('METADATA', 'PUBLIC', 'WEBSITE') ORDER BY table_schema";
 
 		$this->logger->info('getSchemas : '.$req);
 

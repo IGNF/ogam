@@ -237,7 +237,7 @@ div.moduletable_menu a:link,div.moduletable_menu a:active,div.moduletable_menu a
 
 .login-form,.create-user-form,.data-harmonization-form,.create-data-submission-form,.create-plot-location-submission-form,.create-strata-submission-form,.show-upload-strata-form,.create-aggregation-form,.create-interpolation-form,.show-upload-data-form,.show-upload-plot-location-form,.show-change-password-form,.show-create-role-form,.show-edit-role-form,.show-edit-user-form
 	{
-	width: 250px;
+	width: 500px;
 	text-align: left;
 	background-color: #EDEDED;
 	padding: 0px 40px;
@@ -251,6 +251,10 @@ div.moduletable_menu a:link,div.moduletable_menu a:active,div.moduletable_menu a
 }
 
 .show-upload-data-form,.show-upload-plot-location-form {
+	width: 1000px;
+}
+
+.show-edit-role-form {
 	width: 1000px;
 }
 

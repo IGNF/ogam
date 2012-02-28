@@ -275,6 +275,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$rolepermissions->setValue(array_keys($permissions)); // set the selected permissions
 		}
 		$rolepermissions->setLabel('Permissions');
+		
 
 		// Schemas
 		// get all available schemas
