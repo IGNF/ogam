@@ -1711,7 +1711,7 @@ Genapp.ConsultationPanel = Ext
 					 * Render an Icon for the data grid.
 					 */
 					renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
-						if (value !== null) {
+						if (!Ext.isEmpty(value)) {
 							return '<img src="' + Genapp.base_url + '/js/genapp/resources/images/picture.png"'
 							+ 'ext:qtitle="' + columnLabel + ' :"'
 							+ 'ext:qwidth="' + this.tipImageDefaultWidth + '"'

@@ -189,14 +189,18 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     color:#505050;
     font-size:12px;
 }
-.genapp-query-details-panel-see-children{
-    font-weight:bold;
-    color:#505050;
-    font-size:12px;
-    cursor: pointer;
+.genapp-query-details-panel-fieldset-title{
+    float: left;
 }
-.genapp-query-details-panel-see-children:hover{
-    text-decoration: underline;
+.genapp-query-details-panel-see-children{
+    cursor: pointer;
+    background:transparent url(../images/sitemap.png) no-repeat;
+    float: left;
+}
+.genapp-query-details-panel-edit-link{
+    cursor: pointer;
+    background:transparent url(../images/page_white_edit.png) no-repeat;
+    float: left;
 }
 /*************************************************************************************************/
 
@@ -233,7 +237,7 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     background-color: #EFEFEF;
 }
 .x-menu-plain .x-date-picker {
-    border-color:#DODODO;
+    border-color:#D0D0D0;
 }
 .x-date-range-menu {
     border-color:#898989 !important;

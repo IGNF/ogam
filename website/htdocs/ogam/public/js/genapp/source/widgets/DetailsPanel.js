@@ -9,12 +9,12 @@
  * @param {Object} config The config object
  */
 Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
-	
-	/**
-	 * Internationalization.
-	 */ 
-	editLinkLabel : 'Edit this data',
-	
+
+    /**
+     * Internationalization.
+     */ 
+    editLinkButtonTitle : 'Edit this data',
+    editLinkButtonTip : 'Edit this data in the edition page.',
     /**
      * @cfg {Number} headerWidth
      * The tab header width. (Default to 60)
@@ -50,25 +50,20 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
      */
     hideSeeChildrenButton: false,
     /**
-     * @cfg {String} seeChildrenButtonTitle
-     * The see Children Button Title (defaults to <tt>'Display the children'</tt>)
-     */
-    seeChildrenButtonTitle: 'Display the children',
-    /**
      * @cfg {String} seeChildrenButtonTip
      * The see Children Button Tip (defaults to <tt>'Display the children of the data into the grid details panel.'</tt>)
      */
     seeChildrenButtonTip: 'Display the children of the data into the grid details panel.',
     /**
-     * @cfg {String} seeChildrenTextSingular
-     * The see Children Text Singular (defaults to <tt>'&gt;&gt;&gt; See the only child'</tt>)
+     * @cfg {String} seeChildrenButtonTitleSingular
+     * The see Children Button Title Singular (defaults to <tt>'See the only child'</tt>)
      */
-    seeChildrenTextSingular: '&gt;&gt;&gt; See the only child',
+    seeChildrenButtonTitleSingular: 'See the only child',
     /**
-     * @cfg {String} seeChildrenTextPlural
-     * The see Children Text Plural (defaults to <tt>'&gt;&gt;&gt; See the {children_count} children'</tt>)
+     * @cfg {String} seeChildrenButtonTitlePlural
+     * The see Children Button Title Plural (defaults to <tt>'See the children'</tt>)
      */
-    seeChildrenTextPlural: '&gt;&gt;&gt; See the {children_count} children',
+    seeChildrenButtonTitlePlural: 'See the children',
     /**
      * @cfg {Number} tipDefaultWidth
      * The tip Default Width. (Default to 300)
@@ -100,29 +95,35 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
             '</tpl>',
             '<tpl for="formats">',
                 '<fieldset>',
-                    '<legend align="top"> {title} </legend>',
-                    '<tpl for="fields">',
-                        '<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? "-" : values.value]}</p>',
-                    '</tpl>',
-                    '<tpl if="!'+ this.hideSeeChildrenButton +'">',
-                        '<div class="genapp-query-details-panel-see-children" ',
-                            'onclick="Genapp.cardPanel.consultationPage.displayChildren(\'{id}\');"',
-                            'ext:qtitle="' + this.seeChildrenButtonTitle + '" ',
-                            'ext:qwidth="' + this.tipDefaultWidth + '" ',
-                            'ext:qtip="' + this.seeChildrenButtonTip + '">',
-                                '<tpl if="children_count == 1">',
-                                    this.seeChildrenTextSingular,
-                                '</tpl>',
-                                '<tpl if="children_count &gt; 1">',
-                                    this.seeChildrenTextPlural,
-                                '</tpl>',
-                        '</div>',
-                    '</tpl>',
-                    '<tpl if="editURL">',
-                		'<div class="genapp-query-grid-details-panel-edit-link genapp-query-grid-editUI">', 
-                			'<a href="' + Genapp.base_url + 'dataedition/show-edit-data/{editURL}" target="dataEdition">'+ this.editLinkLabel +'</a>',	                    
-                		'</div>',
-                    '</tpl>',
+                    '<legend align="top">',
+                        '<div class="genapp-query-details-panel-fieldset-title">{title}</div>',
+                        '<tpl if="!'+ this.hideSeeChildrenButton +' && children_count != 0">',
+                            '<div class="genapp-query-details-panel-see-children" ',
+                                'onclick="Genapp.cardPanel.consultationPage.displayChildren(\'{id}\');"',
+                                'ext:qtitle="{[(values.children_count == 1) ? "'+ this.seeChildrenButtonTitleSingular +'" : "'+this.seeChildrenButtonTitlePlural+' (" + values.children_count + ")"]}" ',
+                                'ext:qwidth="' + this.tipDefaultWidth + '" ',
+                                'ext:qtip="' + this.seeChildrenButtonTip + '">&nbsp;',
+                            '</div>',
+                        '</tpl>',
+                        '<tpl if="editURL">',
+                            '<div class="genapp-query-details-panel-edit-link" ',
+                                'onclick="window.open(\'' + Genapp.base_url + 'dataedition/show-edit-data/{editURL}\')"',
+                                'ext:qtitle="' + this.editLinkButtonTitle + '"',
+                                'ext:qwidth="' + this.tipDefaultWidth + '" ',
+                                'ext:qtip="' + this.editLinkButtonTip + '">&nbsp;',
+                            '</div>',
+                        '</tpl>',
+                    '</legend>',
+                    '<div class="genapp-query-details-panel-fieldset-body">',
+                        '<tpl for="fields">',
+                            '<tpl if="type != \'IMAGE\'">',
+                                '<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? "-" : values.value]}</p>',
+                            '</tpl>',
+                            '<tpl if="type == \'IMAGE\'">',
+                                '{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/\' + values.value + \'\">\']}',
+                            '</tpl>',
+                        '</tpl>',
+                    '</div>',
                 '</fieldset>',
             '</tpl>',
             {

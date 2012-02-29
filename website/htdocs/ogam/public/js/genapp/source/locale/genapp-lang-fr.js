@@ -114,11 +114,11 @@ if (Genapp.form.picker.DateRangePicker) {
 if (Genapp.DetailsPanel) {
 	Ext.apply(Genapp.DetailsPanel.prototype, {
 		loadingMsg : "Cgmt...",
-		seeChildrenButtonTitle : 'Afficher les enfants',
+	    seeChildrenButtonTitleSingular : 'Voir l\'unique enfant',
+	    seeChildrenButtonTitlePlural : 'Voir les enfants',
 		seeChildrenButtonTip : 'Afficher les enfants dans le tableau des détails.',
-		editLinkLabel : 'Editer cette donnée',
-		seeChildrenTextSingular : '&gt;&gt;&gt; Voir l\'unique enfant',
-		seeChildrenTextPlural : '&gt;&gt;&gt; Voir les {children_count} enfants'
+        editLinkButtonTitle : 'Editer les données',
+        editLinkButtonTip : 'Ouvre la page d\'édition pour éditer les données.'
 	});
 }
 if (Genapp.CardGridDetailsPanel) {

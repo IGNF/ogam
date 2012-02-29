@@ -129,7 +129,8 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 			$this->valueLabel = number_format($this->valueLabel, $this->decimals);
 		}
 
-		$return .= ',"value":'.json_encode($this->getValueLabel()).'}';
+		$return .= ',"value":'.json_encode($this->getValueLabel());
+		$return .= ',"type":'.json_encode($this->inputType).'}';
 
 		return $return;
 	}

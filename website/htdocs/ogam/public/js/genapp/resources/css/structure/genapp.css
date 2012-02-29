@@ -229,6 +229,10 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     float:left;
     margin:6px 10px 10px 0;
 }
+img.genapp-query-details-image-field{
+    width:285px;
+    margin:15px 0 5px 0;
+}
 .genapp-query-details-panel fieldset,
 .genapp-query-details-panel table{
     width:287px;
@@ -251,11 +255,22 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .genapp-query-details-panel legend{
     padding:0 5px;
 }
-.genapp-query-details-panel-see-children{
-    margin-top:10px;
+.genapp-query-details-panel fieldset p {
+    margin-top: 2px;
 }
-.genapp-query-details-panel-edit-link {
-    margin-top:10px;
+.genapp-query-details-panel-fieldset-title{
+    margin-right: 10px;
+}
+.genapp-query-details-panel-fieldset-body{
+    margin: 5px 0;
+}
+.genapp-query-details-panel-see-children{
+    width:16px;
+    height:16px;
+}
+.genapp-query-details-panel-edit-link{
+    width:16px;
+    height:16px;
 }
 /*************************************************************************************************/
 
