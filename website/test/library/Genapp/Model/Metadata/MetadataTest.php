@@ -22,7 +22,7 @@ class MetadataTest extends ControllerTestCase {
 		$schemas = $metadataModel->getSchemas();
 
 		// On vérifie que l'on a ramené la bonne modalité
-		$this->assertEquals(count($schemas), 5);
+		$this->assertEquals(count($schemas), 2);
 
 		$rawSchema = $schemas['RAW_DATA'];
 		$this->assertEquals($rawSchema->code, 'RAW_DATA');
