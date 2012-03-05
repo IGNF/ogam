@@ -39,14 +39,13 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$userSession = new Zend_Session_Namespace('user');
 		$role = $userSession->role;
 		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		$params[] = $role->roleCode;
 		
 		$req .= " ORDER BY layer_name";
 	
 		Zend_Registry::get("logger")->info('getVectorLayersList : '.$req);
 	
 		$select = $db->prepare($req);
-		$select->execute();
+		$select->execute(array($role->roleCode));
 	
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
