@@ -66,6 +66,13 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CA
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_OTHER_PROVIDER_SUBMISSION');
 
 
+--
+-- Restriction d'accès aux dataset
+--
+INSERT INTO DATASET_ROLE_RESTRICTION (ROLE_CODE, DATASET_ID) VALUES ('ADMIN', 'SPECIES');
+
+
+
 
 --
 -- Définition des requêtes prédéfinies

@@ -34,6 +34,13 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$req = " SELECT layer_name, layer_label ";
 		$req .= " FROM layer_definition ";
 		$req .= " WHERE isVector = 1 ";	
+		
+		// Check the user profile
+		$userSession = new Zend_Session_Namespace('user');
+		$role = $userSession->role;
+		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
+		$params[] = $role->roleCode;
+		
 		$req .= " ORDER BY layer_name";
 	
 		Zend_Registry::get("logger")->info('getVectorLayersList : '.$req);
@@ -76,7 +83,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		// Check the user profile
 		$userSession = new Zend_Session_Namespace('user');
 		$role = $userSession->role;
-		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_profile_restriction WHERE role_code = ?))';
+		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
 		$params[] = $role->roleCode;
 
 		$req .= " ORDER BY (parent_id, position) DESC";
@@ -210,7 +217,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		// Check the user profile
 		$userSession = new Zend_Session_Namespace('user');
 		$role = $userSession->role;
-		$req = $req.' AND (layer_name NOT IN (SELECT layer_name FROM layer_profile_restriction WHERE role_code = ?))';
+		$req = $req.' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
 		$params[] = $role->roleCode;
 
 		$req = $req." ORDER BY position";

@@ -486,12 +486,18 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req = "SELECT DISTINCT dataset_id as id, label, is_default ";
 		$req .= " FROM dataset ";
 		$req .= " INNER JOIN dataset_fields using (dataset_id) ";
+
+		// Check the role restrictions
+		$userSession = new Zend_Session_Namespace('user');
+		$role = $userSession->role;
+		$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
+			
 		$req .= " ORDER BY dataset_id";
 
 		$this->logger->info('getDatasetsForDisplay : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array());
+		$select->execute(array($role->roleCode));
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
@@ -514,12 +520,19 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req = "SELECT DISTINCT dataset_id as id, label, is_default ";
 		$req .= " FROM dataset ";
 		$req .= " INNER JOIN dataset_files using (dataset_id) ";
+
+		// Check the role restrictions
+		$userSession = new Zend_Session_Namespace('user');
+		$role = $userSession->role;
+		$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
+
+
 		$req .= " ORDER BY dataset_id";
 
 		$this->logger->info('getDatasetsForUpload : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array());
+		$select->execute(array($role->roleCode));
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
@@ -1064,8 +1077,8 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$db = $this->getAdapter();
 		$req = "SELECT min, max
-                FROM range
-                WHERE unit = ?";
+		FROM range
+		WHERE unit = ?";
 
 		$this->logger->info('getRange : '.$req);
 
@@ -1368,7 +1381,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	SELECT * ";
 			$req .= "	FROM node_list ";
 			$req .= "	ORDER BY level, parent_code, name "; // level is used to ensure correct construction of the structure
-				
+
 			$this->logger->info('getTaxrefChildren : '.$parentcode);
 			$this->logger->info('getTaxrefChildren : '.$req);
 

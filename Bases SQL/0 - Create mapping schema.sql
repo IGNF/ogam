@@ -146,15 +146,15 @@ SET SEARCH_PATH = mapping, public;
 /* Table: layer_profile_restriction                             */
 /* Mark some layers as forbidden for some user profiles         */
 /*==============================================================*/
-CREATE TABLE layer_profile_restriction
+CREATE TABLE layer_role_restriction
 (
   layer_name 			VARCHAR(50)    NOT NULL,   -- Logical name of the layer
   role_code				VARCHAR(36)    NOT NULL,   -- Role for whom this layer is forbidden
   PRIMARY KEY  (layer_name, role_code)
 ) WITHOUT OIDS;
 
-COMMENT ON COLUMN layer_profile_restriction.layer_name IS 'Logical name of the layer';
-COMMENT ON COLUMN layer_profile_restriction.role_code IS 'Role for whom this layer is forbidden';
+COMMENT ON COLUMN layer_role_restriction.layer_name IS 'Logical name of the layer';
+COMMENT ON COLUMN layer_role_restriction.role_code IS 'Role for whom this layer is forbidden';
 
 
         
