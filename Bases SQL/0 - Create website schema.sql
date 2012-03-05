@@ -108,6 +108,31 @@ COMMENT ON COLUMN PERMISSION_PER_ROLE.ROLE_CODE IS 'The role';
 COMMENT ON COLUMN PERMISSION_PER_ROLE.PERMISSION_CODE IS 'A permission';
 
 
+/*==============================================================*/
+/* Table : DATASET_ROLE_RESTRICTION                             */
+/*==============================================================*/
+create table DATASET_ROLE_RESTRICTION (
+DATASET_ID           VARCHAR(36)          NOT NULL,
+ROLE_CODE            VARCHAR(36)          NOT NULL,
+constraint PK_DATASET_ROLE_RESTRICTION primary key (DATASET_ID, ROLE_CODE)
+);
+
+COMMENT ON COLUMN DATASET_ROLE_RESTRICTION.DATASET_ID IS 'The logical name of the dataset';
+COMMENT ON COLUMN DATASET_ROLE_RESTRICTION.ROLE_CODE IS 'Code of the role';
+
+ALTER TABLE metadata.dataset_role_restriction 
+ADD CONSTRAINT fk_dataset_role_restriction_dataset_id 
+FOREIGN KEY (dataset_id) REFERENCES metadata.dataset (dataset_id)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE metadata.dataset_role_restriction 
+ADD CONSTRAINT fk_dataset_role_restriction_role_code 
+FOREIGN KEY (role_code) REFERENCES website."role" (role_code)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+
+
 alter table PERMISSION_PER_ROLE
    add constraint FK_PERMISSI_PERMISSIO_ROLE foreign key (ROLE_CODE)
       references ROLE (ROLE_CODE)
