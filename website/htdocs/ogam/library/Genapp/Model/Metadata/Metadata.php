@@ -489,15 +489,19 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		// Check the role restrictions
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->role;
-		$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
-			
+		$params = array();
+		if ($userSession != null && $userSession->role != null) {
+			$role = $userSession->role;
+			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
+			$params[] = $role->roleCode;
+		}
+
 		$req .= " ORDER BY dataset_id";
 
 		$this->logger->info('getDatasetsForDisplay : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array($role->roleCode));
+		$select->execute($params);
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
@@ -521,18 +525,21 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " FROM dataset ";
 		$req .= " INNER JOIN dataset_files using (dataset_id) ";
 
-		// Check the role restrictions
+	// Check the role restrictions
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->role;
-		$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
-
+		$params = array();
+		if ($userSession != null && $userSession->role != null) {
+			$role = $userSession->role;
+			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
+			$params[] = $role->roleCode;
+		}
 
 		$req .= " ORDER BY dataset_id";
 
 		$this->logger->info('getDatasetsForUpload : '.$req);
 
 		$select = $db->prepare($req);
-		$select->execute(array($role->roleCode));
+		$select->execute($params);
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
