@@ -738,7 +738,8 @@ Genapp.GeoPanel = Ext
 
 						// Add a Tree Panel
 						this.layerTree = new Genapp.tree.LayerTreePanel({
-							"rootChildren" : responseJSON
+							"rootChildren" : responseJSON,
+							map : this.map
 						});
 						// Toggle layers and legends for zoom
 						this.layerTree.on('afterrender', function(treePanel) {

@@ -20,18 +20,31 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	title : '',
 	border : false,
 
+	/**
+	 * Read-only. An object containing the node id for each layer name.
+	 * {layerName: nodeId, ...} Note: Must stay in the initComponent to avoid
+	 * conflicts between the instances of this class
+	 * 
+	 * @type Object
+	 */
+	layerNodeIds : null,
+
+	/**
+	 * @cfg {OpenLayers.map} map The map linked to this layer Tree.
+	 */
+	map : null,
+
+	store : null,
+
 	// private
 	initComponent : function() {
 
-	    /**
-	     * Read-only. An object containing the node id for each layer name.
-	     * {layerName: nodeId, ...}
-	     * Note: Must stay in the initComponent to avoid conflicts between 
-	     * the instances of this class
-	     * 
-	     * @type Object
-	     */
-	    this.layerNodeIds = []; 
+		this.store = new GeoExt.data.LayerStore({
+			map : this.map,
+			initDir : GeoExt.data.LayerStore.MAP_TO_STORE
+		});
+
+		this.layerNodeIds = [];
 
 		// Add a loader to the root children node config if needed
 		for ( var i = 0; i < this.rootChildren.length; i++) {
@@ -56,14 +69,30 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 				aggressive : true,
 				plugins : new GeoExt.LayerOpacitySliderTip()
 			}
-		})
-
-		);
+		}));
 
 		// Toggle the children on the parent node 'checkchange' event
 		this.on('checkchange', this.toggleChildrenOnParentToggle, this);
 
 		Genapp.tree.LayerTreePanel.superclass.initComponent.call(this);
+	},
+
+	/**
+	 * Filter the layers to be loaded.
+	 * 
+	 * Layers that are loaded are the ones with the good nodeGroup.
+	 * 
+	 * @param record
+	 *            a record corresponding to a layer
+	 * @param nodeGroup
+	 *            the name of the group we want to load
+	 */
+	filterGroup : function(record, nodeGroup) {
+		var layerNodeGroup = record.getLayer().options.nodeGroup;
+		if (!Ext.isEmpty(layerNodeGroup) && layerNodeGroup.indexOf(nodeGroup) !== -1) {
+			return true;
+		}
+		return false;
 	},
 
 	/**
@@ -75,17 +104,14 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	 */
 	addLoaderToNodeConfig : function(nodeCfg) {
 		if (!Ext.isEmpty(nodeCfg.nodeGroup)) {
-			// Return the layers with the good nodeGroup
-			var filter = function(record) {
-				var layerNodeGroup = record.get("layer").options.nodeGroup;
-				if (!Ext.isEmpty(layerNodeGroup) && layerNodeGroup.indexOf(nodeCfg.nodeGroup) !== -1) {
-					return true;
-				}
-				return false;
-			};
+
 			nodeCfg.loader = new GeoExt.tree.LayerLoader({
-				// Add the new filter
-				"filter" : filter,
+
+				store : this.store,
+
+				// Add the filter
+				"filter" : this.filterGroup.createDelegate(this, nodeCfg.nodeGroup, true),
+
 				// Override the default addLayerNode function to add the layer
 				// options
 				"addLayerNode" : function(node, layerRecord, index) {
@@ -97,7 +123,7 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 							layerStore : this.store,
 							// New params
 							checkedGroup : layerRecord.getLayer().options.checkedGroup,
-							text : layerRecord.getLayer().options.label
+							text : layerRecord.getLayer().options.label,
 						});
 
 						var sibling = node.item(index);
@@ -112,7 +138,8 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 				listeners : {
 					"load" : this.setLayerNodeIds,
 					scope : this
-				}
+				},
+				scope : this
 			});
 		}
 	},
@@ -127,18 +154,26 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	 * @hide
 	 */
 	toggleChildrenOnParentToggle : function(node, checked) {
-		if (checked === true) {
-			for ( var i = 0; i < node.childNodes.length; i++) {
-				var child = node.childNodes[i];
-				if (!child.ui.isChecked()) {
-					child.ui.toggleCheck(true);
+
+		if (node.firstChild == null) {
+			return; // The node has no child
+		}
+
+		// Check that the event have been launched on this instance
+		if (this.map.id == node.firstChild.layerStore.map.id) {
+			if (checked === true) {
+				for ( var i = 0; i < node.childNodes.length; i++) {
+					var child = node.childNodes[i];
+					if (!child.ui.isChecked()) {
+						child.ui.toggleCheck(true);
+					}
 				}
-			}
-		} else {
-			for ( var i = 0; i < node.childNodes.length; i++) {
-				var child = node.childNodes[i];
-				if (child.ui.isChecked()) {
-					child.ui.toggleCheck(false);
+			} else {
+				for ( var i = 0; i < node.childNodes.length; i++) {
+					var child = node.childNodes[i];
+					if (child.ui.isChecked()) {
+						child.ui.toggleCheck(false);
+					}
 				}
 			}
 		}
