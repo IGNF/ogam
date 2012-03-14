@@ -228,6 +228,24 @@ New Password;Nouveau mot de passe
 Confirm New Password;Confirmer le nouveau mot de passe
 Password does not match confirmation;Le mot de passe ne correspond pas
 Old password is not correct;L'ancien mot de passe n'est pas correct
+Role Code;Code rôle
+Role Label;Libellé du rôle
+Role Definition;Définition du rôle 
+Permissions;Permissions
+Schemas Permissions;Permissions sur les schémas de base de données
+Dataset Restrictions;Restrictions sur les datasets 
+Layer Restrictions;Restrictions sur les couches carto
+
+# User Rights
+Manage users;Administration des utilisateurs 
+Provide data;Intégration de données
+Visualise raw data;Visualisation des données brutes
+Launch the harmonization process;Lancer la recopie des données
+Export the raw data as a CSV file;Exporter les données brutes en CSV
+Add / Update / Delete data;Editer les données
+Check the configuration;Vérifier la configuration du système
+Cancel validated submission;Annuler une soumission validée
+Cancel other provider submission;Annuler la soumission d'un autre fournisseur
 
 
 ##########################

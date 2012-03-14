@@ -119,7 +119,24 @@ New Password;New Password
 Confirm New Password;Confirm New Password
 Password does not match confirmation;Password does not match confirmation
 Old password is not correct;Old password is not correct
+Role Code;Role Code
+Role Label;Role Label
+Role Definition;Role Definition
+Permissions;Permissions
+Schemas Permissions;Schemas Permissions
+Dataset Restrictions;Dataset Restrictions
+Layer Restrictions;Layer Restrictions
 
+# User Rights
+Manage users;Manage users
+Provide data;Provide data
+Visualise raw data;Visualise raw data
+Launch the harmonization process;Launch the harmonization process
+Export the raw data as a CSV file;Export the raw data as a CSV file
+Add / Update / Delete data;Add / Update / Delete data
+Check the configuration;Check the system configuration
+Cancel validated submission;Cancel validated submission
+Cancel other provider submission;Cancel other provider submission
 
 ##########################
 #  Data Edition          #
