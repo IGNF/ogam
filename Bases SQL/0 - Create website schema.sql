@@ -131,6 +131,30 @@ FOREIGN KEY (role_code) REFERENCES website."role" (role_code)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 
+/*==============================================================*/
+/* Table: layer_profile_restriction                             */
+/* Mark some layers as forbidden for some user profiles         */
+/*==============================================================*/
+CREATE TABLE layer_role_restriction
+(
+  layer_name 			VARCHAR(50)    NOT NULL,   -- Logical name of the layer
+  role_code				VARCHAR(36)    NOT NULL,   -- Role for whom this layer is forbidden
+  PRIMARY KEY  (layer_name, role_code)
+) WITHOUT OIDS;
+
+COMMENT ON COLUMN layer_role_restriction.layer_name IS 'Logical name of the layer';
+COMMENT ON COLUMN layer_role_restriction.role_code IS 'Role for whom this layer is forbidden';
+
+ALTER TABLE layer_role_restriction 
+ADD CONSTRAINT fk_layer_role_restriction_layer_name 
+FOREIGN KEY (layer_name) REFERENCES mapping.layer_definition(layer_name)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE layer_role_restriction 
+ADD CONSTRAINT fk_layer_role_restriction_role_code 
+FOREIGN KEY (role_code) REFERENCES website."role" (role_code)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
 
 
 alter table PERMISSION_PER_ROLE
