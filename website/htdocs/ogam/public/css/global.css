@@ -387,3 +387,7 @@ a.tooltip:hover em span {
 	padding: 0;
 	border: 0;
 }
+
+dt {
+	font-weight: bold;
+}

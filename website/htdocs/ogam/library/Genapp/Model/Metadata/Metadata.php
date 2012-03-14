@@ -474,6 +474,33 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			return $cachedResult;
 		}
 	}
+	
+	/**
+	 * Get all the available datasets.
+	 *
+	 * @return Array[Genapp_Object_Metadata_Dataset]
+	 */
+	public function getDatasets() {
+		$db = $this->getAdapter();
+		$req = "SELECT DISTINCT dataset_id as id, label, is_default ";
+		$req .= " FROM dataset ";
+		$req .= " ORDER BY dataset_id";
+	
+		$this->logger->info('getDatasetsForDisplay : '.$req);
+	
+		$select = $db->prepare($req);
+		$select->execute($params);
+	
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$dataset = new Genapp_Object_Metadata_Dataset();
+			$dataset->id = $row['id'];
+			$dataset->label = $row['label'];
+			$dataset->isDefault = $row['is_default'];
+			$result[] = $dataset;
+		}
+		return $result;
+	}
 
 
 	/**

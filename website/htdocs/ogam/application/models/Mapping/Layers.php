@@ -20,33 +20,33 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 	}
-	
+
 	/**
-	* Get the list of available vector layers for the map.
-	*
-	* @return Array[String] The layer names
-	*/
+	 * Get the list of available vector layers for the map.
+	 *
+	 * @return Array[String] The layer names
+	 */
 	public function getVectorLayersList() {
-	
+
 		$db = $this->getAdapter();
 		$params = array();
-	
+
 		$req = " SELECT layer_name, layer_label ";
 		$req .= " FROM layer_definition ";
-		$req .= " WHERE isVector = 1 ";	
-		
+		$req .= " WHERE isVector = 1 ";
+
 		// Check the user profile
 		$userSession = new Zend_Session_Namespace('user');
 		$role = $userSession->role;
 		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		
+
 		$req .= " ORDER BY layer_name";
-	
+
 		Zend_Registry::get("logger")->info('getVectorLayersList : '.$req);
-	
+
 		$select = $db->prepare($req);
 		$select->execute(array($role->roleCode));
-	
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$result[$row['layer_name']] = $row['layer_label'];
@@ -88,6 +88,57 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$req .= " ORDER BY (parent_id, position) DESC";
 
 		Zend_Registry::get("logger")->info('getLayersList : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute($params);
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			$layer = new Application_Object_Mapping_Layer();
+			$layer->parentId = $row['parent_id'];
+			$layer->layerName = $row['layer_name'];
+			$layer->layerLabel = $row['layer_label'];
+			$layer->mapservLayers = $row['mapserv_layers'];
+			$layer->isTransparent = $row['istransparent'];
+			$layer->isBaseLayer = $row['isbaselayer'];
+			$layer->isUntiled = $row['isuntiled'];
+			$layer->isCached = $row['iscached'];
+			$layer->maxscale = $row['maxscale'];
+			$layer->minscale = $row['minscale'];
+			$layer->transitionEffect = $row['transitioneffect'];
+			$layer->imageFormat = $row['imageformat'];
+			$layer->isDefault = $row['is_checked'];
+			$layer->isHidden = $row['is_hidden'];
+			$layer->isDisabled = $row['is_disabled'];
+			$layer->isChecked = $row['is_checked'];
+			$layer->activateType = $row['activate_type'];
+			$layer->hasLegend = $row['has_legend'];
+			$layer->hasSLD = $row['has_sld'];
+			$layer->checkedGroup = $row['checked_group'];
+			$layer->isVector = $row['isvector'];
+			$result[] = $layer;
+		}
+		return $result;
+	}
+
+	/**
+	 * Get the list of all available layers.
+	 *
+	 * @return Array[Layer]
+	 */
+	public function getAllLayersList() {
+
+		$db = $this->getAdapter();
+		$params = array();
+
+		$req = " SELECT * ";
+		$req .= " FROM layer_definition ";
+		$req .= " LEFT JOIN legend ON (legend.name = layer_definition.layer_name ) ";
+		$req .= " WHERE (name is not null) ";
+		$req .= " AND legend.is_layer = 1 ";
+		$req .= " ORDER BY (parent_id, position) DESC";
+
+		Zend_Registry::get("logger")->info('getAllLayersList : '.$req);
 
 		$select = $db->prepare($req);
 		$select->execute($params);
