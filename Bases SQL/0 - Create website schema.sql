@@ -197,7 +197,7 @@ constraint PK_PREDEFINED_REQUEST primary key (REQUEST_NAME)
 
 alter table PREDEFINED_REQUEST
 add constraint FK_PREDEFINED_REQUEST_DATASET foreign key (DATASET_ID)
-      references DATASET (DATASET_ID)
+      references METADATA.DATASET (DATASET_ID)
       on delete restrict on update restrict;
       
 COMMENT ON COLUMN PREDEFINED_REQUEST.REQUEST_NAME IS 'The request name';

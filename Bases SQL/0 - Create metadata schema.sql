@@ -132,13 +132,13 @@ CREATE INDEX mode_taxref_parent_code_idx
   ON metadata.mode_taxref USING btree (parent_code);
   
 CREATE INDEX mode_taxref_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent_string(NAME));
+  ON metadata.mode_taxref USING btree (raw_data.unaccent_string(NAME));
   
 CREATE INDEX mode_taxref_COMPLETE_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent_string(COMPLETE_NAME));
+  ON metadata.mode_taxref USING btree (raw_data.unaccent_string(COMPLETE_NAME));
   
 CREATE INDEX mode_taxref_VERNACULAR_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent_string(VERNACULAR_NAME));
+  ON metadata.mode_taxref USING btree (raw_data.unaccent_string(VERNACULAR_NAME));
 
 
 

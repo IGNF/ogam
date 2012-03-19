@@ -165,16 +165,3 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.HEIGHT IS 'The tree height (in m)';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.PHOTO IS 'A picture of the tree';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
 
-
-
-
-      
-GRANT ALL ON SCHEMA harmonized_data TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonization_process_harmonization_process_id_seq TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonization_process TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonization_process_submissions TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonized_location TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonized_plot_data TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonized_species_data TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonized_tree_data TO ogam;
-GRANT EXECUTE ON FUNCTION harmonized_data.geomfromcoordinate() TO ogam;      

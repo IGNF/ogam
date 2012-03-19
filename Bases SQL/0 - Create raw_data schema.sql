@@ -273,24 +273,6 @@ COMMENT ON COLUMN CHECK_ERROR.EXPECTED_VALUE IS 'The expected value (if availabl
 COMMENT ON COLUMN CHECK_ERROR.ERROR_MESSAGE IS 'The error message';
 COMMENT ON COLUMN CHECK_ERROR._CREATIONDT IS 'The creation date';
 
-       
-   
-
-
-
-
-GRANT ALL ON SCHEMA raw_data TO ogam;
-GRANT ALL ON TABLE raw_data.check_error_check_error_id_seq TO ogam;
-GRANT ALL ON TABLE raw_data.submission_id_seq TO ogam;
-GRANT ALL ON TABLE raw_data.tree_id_seq TO ogam;
-GRANT ALL ON TABLE raw_data.check_error TO ogam;
-GRANT ALL ON TABLE raw_data."location" TO ogam;
-GRANT ALL ON TABLE raw_data.plot_data TO ogam;
-GRANT ALL ON TABLE raw_data.species_data TO ogam;
-GRANT ALL ON TABLE raw_data.tree_data TO ogam;
-GRANT ALL ON TABLE raw_data.submission TO ogam;
-GRANT ALL ON TABLE raw_data.submission_file TO ogam;
-GRANT EXECUTE ON FUNCTION raw_data.geomfromcoordinate() TO ogam;
 
 
 

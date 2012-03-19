@@ -2,8 +2,6 @@ SET SEARCH_PATH = website;
 
 -- TEST DATABASE Parameters
 INSERT INTO application_parameters (name, value, description) values ('UploadDirectory','/var/tmp/ogam_upload','Directory where the CSV files are uploaded');
-INSERT INTO application_parameters (name, value, description) values ('InterpolationResultDirectory','C:/workspace/OGAM/Mapserv/generated_content/','Directory where the ESRI ASCII files are generated');
-INSERT INTO application_parameters (name, value, description) values ('RInstallDirectory','C:/Program Files/R/R-2.10.0/bin/','Directory of installation of R');
 INSERT INTO application_parameters (name, value, description) values ('Test','OK','For test purposes');
 INSERT INTO application_parameters (name, value, description) values ('fromMail','OGAM@ifn.fr','The application email');
 INSERT INTO application_parameters (name, value, description) values ('toMail','benoit.pesty@ifn.fr','The destination email');
