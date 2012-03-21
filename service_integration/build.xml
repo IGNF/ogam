@@ -5,7 +5,7 @@
     <!-- Properties are immutable: 
     whoever sets a property first freezes it for the rest of the build;
     they are most definitely not variables. -->
-    <property file="../configs/service_integration/build.ppts"/>
+    <property file="../services_configs/service_integration/build.ppts"/>
 
 	<!-- Définition des properties -->
 	<property name="application.name" value="OGAM" />
@@ -124,7 +124,7 @@
 		</copy>
 
 		<copy file="./config/${deploy.name}.xml" todir="${deploy.dir}/../conf/Catalina/localhost" failonerror="false" />
-		<copy file="../configs/service_integration/${deploy.name}.xml" todir="${deploy.dir}/../conf/Catalina/localhost" failonerror="false" />
+		<copy file="../services_configs/service_integration/${deploy.name}.xml" todir="${deploy.dir}/../conf/Catalina/localhost" failonerror="false" />
 	</target>
 
 
