@@ -64,9 +64,10 @@
             ?>
             </span>
         </div>
-   
 
         <div id="header-login" class="header-login" style="float: right">
+            <a href="?lang=fr" ><div class="fr-flag" title="<?=$this->translate('Translate this page in french');?>">&nbsp;</div></a>
+            <a href="?lang=en" ><div class="en-flag" title="<?=$this->translate('Translate this page in english');?>">&nbsp;</div></a>
 <?php
         $configuration = Zend_Registry::get("configuration");
         if ($configuration->autoLogin != 1) {

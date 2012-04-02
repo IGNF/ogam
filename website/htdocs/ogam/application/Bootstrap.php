@@ -11,6 +11,21 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	var $logger = null;
 
 
+    /**
+     * Addition of plugins to the Front Controller.
+     */
+    protected function _initPlugins()
+    {
+        require_once('Genapp/Controller/Plugin/Bootstrap.php');
+
+        $this->bootstrap('View');
+        $view = $this->getResource('View');
+
+        $front = Zend_Controller_Front::getInstance();
+        // Pour la gestion de la langue de l'application
+        $front->registerPlugin(new Genapp_Controller_Plugin_Bootstrap($view));
+    }
+
 	/**
 	 * Register the logger into Zend_Registry
 	 * WARNING : Do not call this function _initLog() !
@@ -124,6 +139,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		$this->bootstrap('Locale');
 		$this->bootstrap('Translate');
+		$this->bootstrap('frontController');
 		if (!$this->hasPluginResource('Translate')) {
 			throw new Zend_Exception('Translate not enabled in application.ini');
 		}
@@ -149,19 +165,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			$translations = $this->_addTranslation(array(CUSTOM_APPLICATION_PATH.'/lang'), $translate);
 		}
 
-		// Set the locale
-		switch ($locale->getLanguage()) {
-			case 'fr' : $locale = 'fr';break;
-			case 'fr_FR' : $locale = 'fr';break;
-			case 'en' : $locale = 'en';break;
-			case 'en_GB' : $locale = 'en';break;
-			case 'en_US' : $locale = 'en';break;
-			default : $locale = current(array_keys($locale->getDefault()));
-		}
-		$locale = new Zend_Locale($locale);
-		Zend_Registry::set('Zend_Locale', $locale);
-
-		$translate->setLocale($locale);
 		Zend_Registry::set('Zend_Translate', $translate); // store in the registry for the view helper
 		Zend_Validate_Abstract::setDefaultTranslator($translate); // use the translator for validation
 

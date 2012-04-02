@@ -89,9 +89,24 @@ body {
 }
 
 .header-login {
-	width: 300px;
 	text-align: right;
 	font-weight: bold;
+}
+
+.fr-flag {
+    background-image: url(../img/fr_flag.png) !important;
+    width: 30px;
+    height: 16px;
+    margin-top: 3px;
+    float: left;
+}
+
+.en-flag {
+    background-image: url(../img/en_flag.png) !important;
+    width: 30px;
+    height:16px;
+    margin-top: 3px;
+    float: left;
 }
 
 .banner {
