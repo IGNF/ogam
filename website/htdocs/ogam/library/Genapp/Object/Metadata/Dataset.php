@@ -23,6 +23,11 @@ class Genapp_Object_Metadata_Dataset {
 	var $label;
 	
 	/**
+	 * The definition.
+	 */
+	var $definition;
+	
+	/**
 	 * Indicate if the dataset is displayed by default.
 	 */
 	var $isDefault;
@@ -36,6 +41,7 @@ class Genapp_Object_Metadata_Dataset {
 	
 		$json = '"id":'.json_encode($this->id);
 		$json .= ',"label":'.json_encode($this->label);
+		$json .= ',"definition":'.json_encode($this->definition);
 		$json .= ',"is_default":'.json_encode($this->isDefault);
 	
 		return $json;

@@ -510,7 +510,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getDatasetsForDisplay() {
 		$db = $this->getAdapter();
-		$req = "SELECT DISTINCT dataset_id as id, label, is_default ";
+		$req = "SELECT DISTINCT dataset_id as id, label, definition, is_default ";
 		$req .= " FROM dataset ";
 		$req .= " INNER JOIN dataset_fields using (dataset_id) ";
 
@@ -535,6 +535,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$dataset = new Genapp_Object_Metadata_Dataset();
 			$dataset->id = $row['id'];
 			$dataset->label = $row['label'];
+			$dataset->definition = $row['definition'];
 			$dataset->isDefault = $row['is_default'];
 			$result[] = $dataset;
 		}

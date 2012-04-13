@@ -232,6 +232,7 @@ class Genapp_Service_QueryService {
 		$json .= '"fields":[';
 		$json .= '"id",';
 		$json .= '"label",';
+		$json .= '"definition",';
 		$json .= '"is_default"';
 		$json .= ']';
 		$json .= '},';

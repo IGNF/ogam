@@ -522,6 +522,7 @@ Genapp.ConsultationPanel = Ext
 											if (records[i].data.is_default === '1') {
 												this.datasetComboBox.setValue(records[i].data.id);
 												this.updateDatasetFormsPanel(records[i].data.id);
+												this.updateDatasetPanelToolTip(records[i].data);
 												break;
 											}
 										}
@@ -558,6 +559,7 @@ Genapp.ConsultationPanel = Ext
 								'select' : {
 									fn : function(combo, record, index) {
 										this.updateDatasetFormsPanel(record.data.id);
+										this.updateDatasetPanelToolTip(record.data);
 									},
 									scope : this
 								}
@@ -578,19 +580,11 @@ Genapp.ConsultationPanel = Ext
 							margins : '10 0 5 0',
 							cls : 'genapp_query_panel_dataset_panel',
 							title : this.datasetPanelTitle,
-							items : this.datasetComboBox
-						/*
-						 * Modifications en cours pour renecofor (CAD: Benoit
-						 * pas toucher! ;-)), tools:[{ id:'help',
-						 * handler:function(){ }, scope:this }], listeners:{
-						 * 'render':function(cmp){ new Ext.ToolTip({ anchor:
-						 * 'left', target: cmp.getEl(), title: 'Basal Area by
-						 * Species', html:'The "Basal Area by Species" protocol
-						 * is...',//this.resetButtonTooltip, showDelay:
-						 * Ext.QuickTips.getQuickTip().showDelay, dismissDelay:
-						 * Ext.QuickTips.getQuickTip().dismissDelay }); },
-						 * scope:this }
-						 */
+							items : this.datasetComboBox,
+						    tools:[{
+						        id:'help',
+						        scope:this 
+						    }]
 						});
 
 						/**
@@ -1791,6 +1785,23 @@ Genapp.ConsultationPanel = Ext
 						this.updateFormsPanel({
 							datasetId : datasetId
 						});
+					},
+
+					/**
+					 * Update the dataset panel tooltip
+					 * 
+					 * @param {Object}
+                     *            datasetRecordData The data of the selected dataset record
+					 */
+					updateDatasetPanelToolTip : function(datasetRecordData){
+					    this.datasetPanelToolTip = new Ext.ToolTip({
+                            anchor: 'left',
+                            target: this.datasetPanel.getEl(),
+                            title: datasetRecordData.label,
+                            html:datasetRecordData.definition,
+                            showDelay: Ext.QuickTips.getQuickTip().showDelay,
+                            dismissDelay: Ext.QuickTips.getQuickTip().dismissDelay
+                        });
 					},
 
 					/**
