@@ -123,7 +123,7 @@ Change login;Changer d'utilisateur
 Contact Us;Nous contacter
 Layout Head Title;Application OGAM
 Layout Head Meta Keywords;eforest, efdac, jrc, forêt
-Layout Head Meta Description;European Forest Data Center
+Layout Head Meta Description;Centre de donnée sur les forêts européennes
 Layout Copyright;Copyright © IFN 2010. Reproduction autorisée à condition que la source soit mentionnée.
 Layout Pathway Home;Accueil
 Translate this page in french;Traduire cette page en français
@@ -191,7 +191,6 @@ Launch Harmonization;Lancer la copie
 Harmonization Date;Date de recopie
 Confirm harmonization;Attention, les données de ce fournisseur vont être supprimées et recréées
 
-
 ##########################
 #  Check configuration   #
 ##########################
@@ -200,7 +199,6 @@ PHP Parameters;Paramètres PHP
 Error: %value% minimum;Erreur: %value% minimum
 Expected value;Valeur attendue
 Database;Base de données
-
 
 ##########################
 #  User Management       #
@@ -248,7 +246,6 @@ Add / Update / Delete data;Editer les données
 Check the configuration;Vérifier la configuration du système
 Cancel validated submission;Annuler une soumission validée
 Cancel other provider submission;Annuler la soumission d'un autre fournisseur
-
 
 ##########################
 #  Data Edition          #
