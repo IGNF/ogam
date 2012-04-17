@@ -352,15 +352,15 @@ COMMENT ON COLUMN FIELD_MAPPING.MAPPING_TYPE IS 'The type of mapping (FORM, FIEL
 create table DATASET (
 DATASET_ID           VARCHAR(36)          not null,
 LABEL                VARCHAR(255)         null,
-DEFINITION           VARCHAR(512)         null,
 IS_DEFAULT           CHAR(1)              null,
+DEFINITION           VARCHAR(512)         null,
 constraint PK_DATASET primary key (DATASET_ID)
 );
 
 COMMENT ON COLUMN DATASET.DATASET_ID IS 'The logical name of the dataset';
 COMMENT ON COLUMN DATASET.LABEL IS 'The label of the dataset';
-COMMENT ON COLUMN DATASET.DEFINITION IS 'The definition of the dataset (used in tooltips)';
 COMMENT ON COLUMN DATASET.IS_DEFAULT IS 'Indicate if the dataset is selected by default (only 1 possible)';
+COMMENT ON COLUMN DATASET.DEFINITION IS 'The definition of the dataset (used in tooltips)';
 
 /*==============================================================*/
 /* Table : DATASET_FILES                                        */
