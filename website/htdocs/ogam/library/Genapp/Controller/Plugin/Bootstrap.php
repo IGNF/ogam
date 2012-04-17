@@ -11,12 +11,6 @@ class Genapp_Controller_Plugin_Bootstrap extends Zend_Controller_Plugin_Abstract
 	private $_langs = array('fr', 'en');
 
 	/**
-	 * Local name space
-	 * @var
-	 */
-	protected $_localeNamespace;
-
-	/**
 	 * Objet Zend_View
 	 * @var Zend_View
 	 */
@@ -31,7 +25,6 @@ class Genapp_Controller_Plugin_Bootstrap extends Zend_Controller_Plugin_Abstract
 	public function __construct($view)
 	{
 	    $this->_view = $view;
-	    $this->_localeNamespace = new Zend_Session_Namespace(__CLASS__);
 	}
 
     /**
@@ -60,14 +53,15 @@ class Genapp_Controller_Plugin_Bootstrap extends Zend_Controller_Plugin_Abstract
 
         // The language parameter
         $lang = $Request->getParam('lang', null);
+        $localeNamespace = new Zend_Session_Namespace(__CLASS__);
 
         if (null === $lang) {
             // Language set in the session ?
-            if (empty($this->_localeNamespace->lang)) {
+            if (empty($localeNamespace->lang)) {
                 // Get the client language
                 $lang = $this->_getLangBrowser();
             } else {
-                $lang = $this->_localeNamespace->lang;
+                $lang = $localeNamespace->lang;
             }
         }
 
@@ -91,7 +85,7 @@ class Genapp_Controller_Plugin_Bootstrap extends Zend_Controller_Plugin_Abstract
         $translate->getAdapter()->setLocale($locale);
 
         // Save the language in session and in the view
-        $this->_view->local = $this->_localeNamespace->lang = $lang;
+        $this->_view->local = $localeNamespace->lang = $lang;
 
         // Addition of a META balise in the view for the language
         $this->_view->headMeta()->appendHttpEquiv('Content-Language', $lang);

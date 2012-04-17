@@ -139,7 +139,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		$this->bootstrap('Locale');
 		$this->bootstrap('Translate');
-		$this->bootstrap('frontController');
 		if (!$this->hasPluginResource('Translate')) {
 			throw new Zend_Exception('Translate not enabled in application.ini');
 		}
