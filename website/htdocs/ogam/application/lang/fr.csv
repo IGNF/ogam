@@ -162,7 +162,7 @@ Submit Data;Soumettre des données
 Submission ID;Id de soumission
 Date;Date
 Provider Id;Id fournisseur 
-Dataset;Dataset
+Dataset;Lot de donnée
 Step;Etape
 Status;Statut
 File;Fichier
@@ -180,6 +180,7 @@ Submit;Valider
 Error;Erreur
 The expected fields are:;Les champs attendus sont : 
 Are you sure?;Etes-vous sur ?
+No submission found;Aucune soumission trouvée.
 
 ﻿##########################
 #  Data Copy             #
