@@ -208,8 +208,12 @@ User Management Module;User Management Module
 Show the users;Show the users
 Show the roles;Show the roles
 Change Password;Change Password
+Password Change;Password Change
+Password Change for user:;Password Change for user:
 Create Role;Create Role
 Create User;Create User
+Edit Role;Role edition
+Edit User;User edition
 Roles;Roles
 Users;Users
 User Login;User Login

@@ -344,7 +344,7 @@ img.percentImage {
 	background-position: 1px 0;
 }
 
-.no-submission {
+.no-submission, .password-change-user-name{
     margin: 50px 0;
     text-align: center;
 }
