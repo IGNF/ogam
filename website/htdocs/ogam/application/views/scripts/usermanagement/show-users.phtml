@@ -11,28 +11,28 @@
 
 <table class="sectiontable">
 <tr>
-	<th><?=$this->translate('Edit User');?></th>
-	<th><?=$this->translate('Change Password');?></th>
+	<th></th>
+	<th></th>
 	<th><?=$this->translate('User Login');?></th>
 	<th><?=$this->translate('User Name');?></th>
 	<th><?=$this->translate('Provider');?></th>
 	<th><?=$this->translate('Email');?></th>
 	<th><?=$this->translate('Role');?></th>
-	<th><?=$this->translate('Delete');?></th>
+	<th></th>
 </tr>
 <?
 $i = 0;
 foreach($this->users as $user) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
-	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-edit-user'), null, true)?>?userLogin=<?=$user->login;?>"><?=$this->translate('Edit');?></a></td>
-	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-change-password'), null, true)?>?userLogin=<?=$user->login;?>"><?=$this->translate('Change Password');?></a></td>
+	<td class="edit-cell"><a title="<?=$this->translate('Edit');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-edit-user'), null, true)?>?userLogin=<?=$user->login;?>"></a></td>
+	<td class="change-password-cell"><a title="<?=$this->translate('Change Password');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-change-password'), null, true)?>?userLogin=<?=$user->login;?>"></a></td>
 	<td><?= $this->escape($user->login); ?></td>
 	<td><?= $this->escape($user->username); ?></td>
 	<td><?= $this->providers[$user->providerId]; ?></td>
 	<td><?= $this->escape($user->email); ?></td>
 	<td><?= $this->escape($user->roleLabel); ?></td>
-	<td><a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('Are you sure?');"><?=$this->translate('Delete');?></a></td>
+	<td class="delete-cell"><a title="<?=$this->translate('Delete');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('Are you sure?');"></a></td>
 </tr>
 <?
 $i++;

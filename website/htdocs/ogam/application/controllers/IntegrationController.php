@@ -118,7 +118,7 @@ class IntegrationController extends AbstractOGAMController {
 		// Get the submission object from the database
 		$submission = $this->submissionModel->getSubmission($submissionId);
 		$requestedFiles = $this->metadataModel->getRequestedFiles($submission->datasetId);
-
+		$translator = Zend_Registry::get('Zend_Translate');
 		//
 		// For each requested file, add a file upload element
 		//
@@ -126,12 +126,12 @@ class IntegrationController extends AbstractOGAMController {
 
 			$fileelement = new Zend_Form_Element_File($requestedFile->format);
 
-			$fileelement->setLabel('Upload '.$requestedFile->label.': ');
+			$fileelement->setLabel($translator->translate($requestedFile->label.': '));
 			$fieldsDesc = '';
 			if ($showDetail) {
 				// Get some more informations in the metadata base
 				$fields = $this->metadataModel->getFileFields($requestedFile->format);
-				$fieldsDesc .= Zend_Registry::get('Zend_Translate')->translate('The expected fields are:');
+				$fieldsDesc .= $translator->translate('The expected fields are:');
 				foreach ($fields as $field) {
 					$fieldsDesc .= '<span title="';
 					$fieldsDesc .= $field->definition; // the tooltip
@@ -151,7 +151,8 @@ class IntegrationController extends AbstractOGAMController {
 			}
 
 			$fileelement->setDescription($fieldsDesc);
-			$fileelement->setDisableTranslator(true); // disable translation
+			$fileelement->setValue('toto');
+			//$fileelement->setDisableTranslator(true); // disable translation to avoid the file name translation
 			$fileelement->addDecorator('Description', array('escape' => false));
 			$fileelement->addValidator('Count', false, 1); // ensure only 1 file
 			$fileelement->addValidator('Size', false, $this->fileMaxSize * 1024 * 1000); // limit to 40 Mo

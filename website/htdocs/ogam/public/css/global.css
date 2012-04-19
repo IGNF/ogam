@@ -343,9 +343,25 @@ img.percentImage {
 	margin: 5px 0 0 0;
 	background-position: 1px 0;
 }
+
 .no-submission {
     margin: 50px 0;
     text-align: center;
+}
+
+.edit-cell a{
+    background: url(../img/page_white_edit.png) top left no-repeat;
+    padding: 1px 8px;
+}
+
+.change-password-cell a{
+    background: url(../img/key.png) top left no-repeat;
+    padding: 1px 8px;
+}
+
+.delete-cell a{
+    background: url(../img/delete.png) top left no-repeat;
+    padding: 1px 8px;
 }
 
 /**************************************/
