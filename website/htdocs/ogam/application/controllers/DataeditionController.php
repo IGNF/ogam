@@ -223,7 +223,7 @@ class DataEditionController extends AbstractOGAMController {
 
 		$this->logger->debug('_getEditDataForm :  mode = '.$mode);
 
-		$form = new Zend_Form();
+		$form = new Genapp_Form();
 		if ($mode == 'ADD') {
 			$form->setAction($this->baseUrl.'/dataedition/validate-add-data');
 		} else {

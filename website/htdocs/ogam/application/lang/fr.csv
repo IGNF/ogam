@@ -209,7 +209,7 @@ Show the users;Afficher les utilisateurs
 Show the roles;Afficher les rôles
 Change Password;Changer de mot de passe
 Password Change;Modification d'un mot de passe
-Password Change for user:;Modification du mot de passe de l'utilisateur :
+Password Change for user:;Modification du mot de passe pour l'utilisateur :
 Create Role;Créer un rôle
 Create User;Créer un utilisateur
 Edit Role;Edition d'un rôle
@@ -231,7 +231,7 @@ New Password;Nouveau mot de passe
 Confirm New Password;Confirmer le mot de passe
 Password does not match confirmation;Le mot de passe ne correspond pas
 Old password is not correct;L'ancien mot de passe n'est pas correct
-Role Code;Code rôle
+Role Code;Code du rôle
 Role Label;Libellé du rôle
 Role Definition;Définition du rôle 
 Permissions;Permissions
@@ -240,15 +240,21 @@ Dataset Restrictions;Restrictions sur les datasets
 Layer Restrictions;Restrictions sur les couches carto
 
 # User Rights
-Manage users;Administration des utilisateurs 
-Provide data;Intégration de données
-Visualise raw data;Visualisation des données brutes
-Launch the harmonization process;Lancer la recopie des données
+Manage users;Administrer les utilisateurs
+Provide data;Intégrer des données
+Visualise data;Visualiser les données de son fournisseur
+Visualise data from other provider;Visualiser les données d'un autre fournisseur
+Launch the harmonization process;Valider les données de son fournisseur
 Export the raw data as a CSV file;Exporter les données brutes en CSV
-Add / Update / Delete data;Editer les données
+Add / Update / Delete data;Editer les données de son fournisseur
+Add / Update / Delete data from another provider;Editer les données d'un autre fournisseur
 Check the configuration;Vérifier la configuration du système
-Cancel validated submission;Annuler une soumission validée
+Cancel validated submission;Annuler une soumission validée par son fournisseur
 Cancel other provider submission;Annuler la soumission d'un autre fournisseur
+
+# Schemas
+Harmonized Data;Données validées
+Raw Data;Données brutes
 
 ##########################
 #  Data Edition          #

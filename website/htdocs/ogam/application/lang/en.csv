@@ -242,13 +242,19 @@ Layer Restrictions;Layer Restrictions
 # User Rights
 Manage users;Manage users
 Provide data;Provide data
-Visualise raw data;Visualise raw data
+Visualise data;Visualise data
+Visualise data from other provider;Visualise data from other provider
 Launch the harmonization process;Launch the harmonization process
 Export the raw data as a CSV file;Export the raw data as a CSV file
 Add / Update / Delete data;Add / Update / Delete data
-Check the configuration;Check the system configuration
+Add / Update / Delete data from another provider;Add / Update / Delete data from another provider
+Check the configuration;Check the configuration
 Cancel validated submission;Cancel validated submission
 Cancel other provider submission;Cancel other provider submission
+
+# Schemas
+Harmonized Data;Harmonized Data
+Raw Data;Raw Data
 
 ##########################
 #  Data Edition          #

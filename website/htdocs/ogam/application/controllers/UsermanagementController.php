@@ -65,7 +65,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	private function _getUserForm($mode = null, $user = null, $role = null) {
 
-		$form = new Zend_Form();
+		$form = new Genapp_Form();
 		$form->setAction($this->baseUrl.'/usermanagement/validate-user');
 		$form->setMethod('post');
 
@@ -187,7 +187,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	private function _getChangePasswordForm($login = null) {
 
-		$form = new Zend_Form();
+		$form = new Genapp_Form();
 		$form->setAction($this->baseUrl.'/usermanagement/validate-user-password');
 		$form->setMethod('post');
 
@@ -229,7 +229,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	private function _getRoleForm($mode = null, $role = null) {
 
-		$form = new Zend_Form();
+		$form = new Genapp_Form();
 		$form->setAction($this->baseUrl.'/usermanagement/validate-role');
 		$form->setMethod('post');
 
@@ -270,7 +270,7 @@ class UsermanagementController extends AbstractOGAMController {
 		// Permissions
 		// Get all the Permissions
 		$allpermissions = $this->roleModel->getAllPermissions();
-		$rolepermissions = new Zend_Form_Element_MultiCheckbox('rolepermissions', array(
+		$rolepermissions = $form->createElement('multicheckbox', 'rolepermissions', array(
 				'multiOptions' => $allpermissions)); // set the list of available permissions
 		if ($role != null) {
 			$permissions = $this->roleModel->getRolePermissions($role->roleCode);
@@ -286,7 +286,7 @@ class UsermanagementController extends AbstractOGAMController {
 		foreach ($allschemas as $schema) {
 			$schemasList[$schema->code] = $schema->label;
 		}
-		$roleschemas = new Zend_Form_Element_MultiCheckbox('roleschemas', array(
+		$roleschemas = $form->createElement('multicheckbox', 'roleschemas', array(
 				'multiOptions' => $schemasList)); // set the list of available schemas
 		if ($role != null) {
 			// Get the Schemas
@@ -301,7 +301,7 @@ class UsermanagementController extends AbstractOGAMController {
 		foreach ($allDatasets as $dataset) {
 			$datasetList[$dataset->id] = $dataset->label;
 		}
-		$datasetsRestriction = new Zend_Form_Element_MultiCheckbox('datasetRestrictions', array(
+		$datasetsRestriction = $form->createElement('multicheckbox', 'datasetRestrictions', array(
 				'multiOptions' => $datasetList));
 		if ($role != null) {
 			// Get the Schemas
@@ -317,7 +317,7 @@ class UsermanagementController extends AbstractOGAMController {
 		foreach ($allLayers as $layer) {
 			$layersList[$layer->layerName] = $layer->layerLabel;
 		}
-		$layersRestriction = new Zend_Form_Element_MultiCheckbox('layerRestrictions', array(
+		$layersRestriction = $form->createElement('multicheckbox', 'layerRestrictions', array(
 				'multiOptions' => $layersList));
 		if ($role != null) {
 			// Get the Schemas

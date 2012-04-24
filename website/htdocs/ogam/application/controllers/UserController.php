@@ -52,7 +52,7 @@ class UserController extends Zend_Controller_Action {
 	 */
 	private function _getLoginForm($salt) {
 
-		$form = new Zend_Form();
+		$form = new Genapp_Form();
 		$form->setAction($this->baseUrl.'/user/validate-login');
 		$form->setMethod('post');
 
@@ -124,7 +124,7 @@ class UserController extends Zend_Controller_Action {
 	*/
 	private function _getChangePasswordForm() {
 	
-		$form = new Zend_Form();
+		$form = new Genapp_Form();
 		$form->setAction($this->baseUrl.'/user/validate-change-password');
 		$form->setMethod('post');
 	

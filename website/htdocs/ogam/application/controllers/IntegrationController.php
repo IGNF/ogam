@@ -68,7 +68,7 @@ class IntegrationController extends AbstractOGAMController {
 	 */
 	private function _getDataSubmissionForm() {
 
-		$form = new Zend_Form();
+		$form = new Genapp_Form();
 		$form->setAction($this->baseUrl.'/integration/validate-create-data-submission');
 		$form->setMethod('post');
 
@@ -104,7 +104,7 @@ class IntegrationController extends AbstractOGAMController {
 	 */
 	private function _getDataUploadForm($showDetail = false) {
 
-		$form = new Zend_Form();
+		$form = new Genapp_Form();
 		$form->setAction($this->baseUrl.'/integration/validate-upload-data');
 		$form->setAttrib('enctype', 'multipart/form-data');
 		$form->setMethod('post');
