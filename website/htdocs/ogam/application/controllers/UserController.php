@@ -148,7 +148,7 @@ class UserController extends Zend_Controller_Action {
 	
 		// Create and configure confirm-password element:
 		$confirmPassword = $form->createElement('password', 'confirmpassword');
-		$confirmPassword->setLabel('Confirm New Password');
+		$confirmPassword->setLabel('Confirm Password');
 		$confirmPassword->setRequired(true);
 	
 		$submit = $form->createElement('submit', 'submit');
