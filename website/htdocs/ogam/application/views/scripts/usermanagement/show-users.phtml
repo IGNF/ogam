@@ -32,7 +32,7 @@ foreach($this->users as $user) {
 	<td><?= $this->providers[$user->providerId]; ?></td>
 	<td><?= $this->escape($user->email); ?></td>
 	<td><?= $this->escape($user->roleLabel); ?></td>
-	<td class="delete-cell"><a title="<?=$this->translate('Delete');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('Are you sure?');"></a></td>
+	<td class="delete-cell"><a title="<?=$this->translate('Delete');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('<?=$this->translate('Are you sure?')?>');"></a></td>
 </tr>
 <?
 $i++;
