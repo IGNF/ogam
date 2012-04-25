@@ -250,29 +250,6 @@ div.moduletable_menu a:link,div.moduletable_menu a:active,div.moduletable_menu a
 	text-decoration: none;
 }
 
-.login-form,.create-user-form,.data-harmonization-form,.create-data-submission-form,.create-plot-location-submission-form,.create-strata-submission-form,.show-upload-strata-form,.create-aggregation-form,.create-interpolation-form,.show-upload-data-form,.show-upload-plot-location-form,.show-change-password-form,.show-create-role-form,.show-edit-role-form,.show-edit-user-form
-	{
-	width: 500px;
-	text-align: left;
-	background-color: #EDEDED;
-	padding: 0px 40px;
-	border-bottom: 1px dotted #CCCCCC;
-	border-top: 1px dotted #CCCCCC;
-	margin: 50px auto;
-}
-
-.show-upload-data-form,.show-upload-plot-location-form {
-	width: 1000px;
-}
-
-.show-edit-role-form {
-	width: 1000px;
-}
-
-.show-create-role-form label input,.show-edit-role-form label input {
-	margin-right: 10px;
-}
-
 tr.sectiontableentry0 td {
 	background-color: #EDEDED;
 	padding: 3px;
@@ -361,7 +338,7 @@ img.percentImage {
 }
 
 /**************************************/
-/* Mise en forme des formulaires Zend */
+/**      Zend Form CSS               **/
 /**************************************/
 
 .form-super-ct {
@@ -374,7 +351,10 @@ img.percentImage {
 }
 .form-ct {
     margin:0 auto;
-    width:400px;
+    width:350px;
+}
+.zend_form .element, .zend_form .button{
+    position: relative;
 }
 .zend_form .multicheckbox label{
     margin-left:30px;
@@ -386,30 +366,97 @@ img.percentImage {
 }
 .zend_form .multicheckbox input{
     width:auto;
+    margin-top:6px;
 }
 .zend_form input{
     width:200px;
-    float:right;
+    position: absolute;
+    right: 0;
 }
 .zend_form select{
-   width:204px;
-   float: right;
+   width: 204px;
+   position: absolute;
+   right: 0;
 }
-.zend_form input.button{
-    float:none;
-    margin-left:300px;
-    width:100px;
+.zend_form .file input{
+    width: auto;
+}
+.zend_form .button{
     margin-top:20px;
+    height: 25px;
+}
+.zend_form .button input{
+    width:100px;
+}
+.zend_form .hint-title{
+    font-weight: bold;
+}
+.zend_form .file .hint{
+    background-color:#F0F0F0;
+    margin: 10px 0;
 }
 
-.message {
-	color: #60BB60;
-	text-align: center;
-	font-size: 16px;
+/**************************************/
+/**      Zend Form CSS               **/
+/**           Special cases          **/
+/**************************************/
+
+/** Integration Part
+/**************************************/
+
+/** data-submission-form **/
+.data-submission-form .form-ct {
+    width:500px;
+}
+.data-submission-form .zend_form select{
+   width: 400px;
+}
+
+/** data-upload-form **/
+.data-upload-form .form-ct {
+    width:450px;
+}
+.data-upload-form .zend_form .file .hint{
+    width:1000px;
+    margin-left:-275px;
+}
+.data-upload-form .zend_form label{
+    font-weight: bold;
+}
+
+/** User Part
+/**************************************/
+
+/** change-current-user-password-form **/
+.change-current-user-password-form .form-ct {
+    width:370px;
+}
+
+/** login-form **/
+.login-form .form-ct {
+    width:300px;
+}
+
+/** User Management Part
+/**************************************/
+
+/** user-form **/
+.user-form .form-ct {
+    width:290px;
+}
+
+/** change-user-password-form **/
+.change-user-password-form .form-ct {
+    width:370px;
+}
+
+/** role-form **/
+.role-form .form-ct {
+    width:370px;
 }
 
 /************************************************************/
-/* Tooltips en CSS                                          */
+/*      Tooltips CSS                                        */
 /* TODO : Replace with something more consistent with ExtJS */
 /************************************************************/
 a.tooltip {

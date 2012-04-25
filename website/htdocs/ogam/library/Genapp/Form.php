@@ -20,6 +20,11 @@ class Genapp_Form extends Zend_Form
         array('decorator'=>'HtmlTag', 'options'=>array('class'=>'form-super-ct'))
     );
 
+    function init(){
+        $this->addDecorator('HtmlTag', array('class' => $this->getName()));
+        $this->setMethod('post');
+    }
+
     /**
      * Create an element
      *
@@ -42,8 +47,22 @@ class Genapp_Form extends Zend_Form
                 $element->addDecorator('ViewHelper');
                 break;
             CASE 'submit':
-                $element->addDecorator('ViewHelper');
-                $element->setAttrib('class', 'button');
+                $element->addDecorator('ViewHelper')
+                        ->addDecorator('HtmlTag', array(
+                            'tag' => 'div',
+                            'class'=> 'button'
+                        ));
+                break;
+            CASE 'file':
+                $element->addDecorator('File')
+                        ->addDecorator('Errors')
+                        ->addDecorator('Description', array('tag' => 'p', 'class' => 'description'))
+                        ->addDecorator('Label')
+                        ->addDecorator('HtmlTag', array(
+                            'tag' => 'div',
+                            'class'=> $type.' element',
+                            'id'  => array('callback' => array(get_class($element), 'resolveElementId'))
+                        ));
                 break;
             CASE 'multicheckbox':
                 $element->addDecorator('ViewHelper')

@@ -52,9 +52,13 @@ class UserController extends Zend_Controller_Action {
 	 */
 	private function _getLoginForm($salt) {
 
-		$form = new Genapp_Form();
-		$form->setAction($this->baseUrl.'/user/validate-login');
-		$form->setMethod('post');
+		$form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'login-form',
+		        'action'=>$this->baseUrl.'/user/validate-login'
+		        )
+		    )
+		);
 
 		// Create and configure login element:
 		$login = $form->createElement('text', 'login');
@@ -124,9 +128,13 @@ class UserController extends Zend_Controller_Action {
 	*/
 	private function _getChangePasswordForm() {
 	
-		$form = new Genapp_Form();
-		$form->setAction($this->baseUrl.'/user/validate-change-password');
-		$form->setMethod('post');
+		$form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'change-current-user-password-form',
+		        'action'=>$this->baseUrl.'/user/validate-change-password'
+		        )
+		    )
+		);
 	
 		// Create and configure old password element:
 		$oldpassword = $form->createElement('password', 'oldpassword');

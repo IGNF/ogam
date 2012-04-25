@@ -150,7 +150,7 @@ Manage Users;User Administration
 #   User login           #
 ##########################
 User Module;User Module
-Please login:;Please login:
+Authentication;Authentication
 Login;Login
 Password;Password
 
@@ -211,6 +211,7 @@ Change Password;Change Password
 Password Change;Password Change
 Password Change for user:;Password Change for user:
 Create Role;Create Role
+Changing your password;Changing your password
 Create User;Create User
 Edit Role;Role edition
 Edit User;User edition

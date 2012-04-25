@@ -150,7 +150,7 @@ Manage Users;Administration des utilisateurs
 #   User login           #
 ##########################
 User Module;Module utilisateur
-Please login:;Veuillez vous connecter :
+Authentication;Authentification
 Login;Identifiant
 Password;Mot de passe
 
@@ -210,6 +210,7 @@ Show the roles;Afficher les rôles
 Change Password;Changer de mot de passe
 Password Change;Modification d'un mot de passe
 Password Change for user:;Modification du mot de passe pour l'utilisateur :
+Changing your password;Modification de votre mot de passe
 Create Role;Créer un rôle
 Create User;Créer un utilisateur
 Edit Role;Edition d'un rôle

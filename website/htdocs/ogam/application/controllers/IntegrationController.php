@@ -68,9 +68,13 @@ class IntegrationController extends AbstractOGAMController {
 	 */
 	private function _getDataSubmissionForm() {
 
-		$form = new Genapp_Form();
-		$form->setAction($this->baseUrl.'/integration/validate-create-data-submission');
-		$form->setMethod('post');
+        $form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'data-submission-form',
+		        'action'=>$this->baseUrl.'/integration/validate-create-data-submission'
+		        )
+		    )
+		);
 
 		//
 		// Add the dataset element
@@ -104,10 +108,14 @@ class IntegrationController extends AbstractOGAMController {
 	 */
 	private function _getDataUploadForm($showDetail = false) {
 
-		$form = new Genapp_Form();
-		$form->setAction($this->baseUrl.'/integration/validate-upload-data');
-		$form->setAttrib('enctype', 'multipart/form-data');
-		$form->setMethod('post');
+        $form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'data-upload-form',
+		        'action'=>$this->baseUrl.'/integration/validate-upload-data',
+                'enctype'=>'multipart/form-data'
+		        )
+		    )
+		);
 
 		// Get the submission Id from the session
 		$dataSession = new Zend_Session_Namespace('submission');
@@ -124,16 +132,16 @@ class IntegrationController extends AbstractOGAMController {
 		//
 		foreach ($requestedFiles as $requestedFile) {
 
-			$fileelement = new Zend_Form_Element_File($requestedFile->format);
+			$fileelement = $form->createElement('file', $requestedFile->format);
 
 			$fileelement->setLabel($translator->translate($requestedFile->label.': '));
-			$fieldsDesc = '';
+			$fieldsDesc = '<span class="hint-title">';
 			if ($showDetail) {
 				// Get some more informations in the metadata base
 				$fields = $this->metadataModel->getFileFields($requestedFile->format);
 				$fieldsDesc .= $translator->translate('The expected fields are:');
 				foreach ($fields as $field) {
-					$fieldsDesc .= '<span title="';
+					$fieldsDesc .= '</span><span title="';
 					$fieldsDesc .= $field->definition; // the tooltip
 					if (!empty($field->mask)) {
 						$fieldsDesc .= ' : format = '.$field->mask;

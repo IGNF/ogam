@@ -65,9 +65,13 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	private function _getUserForm($mode = null, $user = null, $role = null) {
 
-		$form = new Genapp_Form();
-		$form->setAction($this->baseUrl.'/usermanagement/validate-user');
-		$form->setMethod('post');
+	    $form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'user-form',
+		        'action'=>$this->baseUrl.'/usermanagement/validate-user'
+		        )
+		    )
+		);
 
 		//
 		// Add the login element:
@@ -187,9 +191,13 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	private function _getChangePasswordForm($login = null) {
 
-		$form = new Genapp_Form();
-		$form->setAction($this->baseUrl.'/usermanagement/validate-user-password');
-		$form->setMethod('post');
+		$form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'change-user-password-form',
+		        'action'=>$this->baseUrl.'/usermanagement/validate-user-password'
+		        )
+		    )
+		);
 
 		$this->logger->debug('_getChangePasswordForm login : '.$login);
 
@@ -229,9 +237,13 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	private function _getRoleForm($mode = null, $role = null) {
 
-		$form = new Genapp_Form();
-		$form->setAction($this->baseUrl.'/usermanagement/validate-role');
-		$form->setMethod('post');
+	    $form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'role-form',
+		        'action'=>$this->baseUrl.'/usermanagement/validate-role'
+		        )
+		    )
+		);
 
 		//
 		// Add the role code
