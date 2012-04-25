@@ -347,7 +347,6 @@ img.percentImage {
     border-top: 2px dotted #CCCCCC;
     margin: 50px auto;
     padding: 22px 40px;
-    /*text-align: right; *//* For the buttons */
 }
 .form-ct {
     margin:0 auto;
@@ -501,4 +500,27 @@ a.tooltip:hover em span {
 
 dt {
 	font-weight: bold;
+}
+
+/************************************************************/
+/*      Checkconf Page                                      */
+/************************************************************/
+.checkconf-page{
+    background-color: #F7F7F7;
+    border-bottom: 2px dotted #CCCCCC;
+    border-top: 2px dotted #CCCCCC;
+    margin: 50px auto;
+    padding: 22px 40px;
+}
+.checkconf-page h2{
+    margin: 20px 0;
+}
+.checkconf-page h4{
+    margin: 10px 0;
+}
+.checkconf-page .green{
+    color: green;
+}
+.checkconf-page .red{
+    color: red;
 }

@@ -147,7 +147,7 @@ class CheckconfController extends AbstractOGAMController {
 		foreach ($expectedSchemas as $expectedSchema) {
 
 			if (!in_array(strtoupper($expectedSchema->name), $existingSchemas)) {
-				$missingSchemasMsg[] = 'Schema '.$expectedSchema->label.' described in the metadata doesn\'t exist in the system';
+				$missingSchemasMsg[] = sprintf($this->view->translate("The schema '%s' described in the metadata doesn't exist in the system."),$expectedSchema->label);
 			}
 		}
 		$this->view->missingSchemasMsg = $missingSchemasMsg;
@@ -170,7 +170,7 @@ class CheckconfController extends AbstractOGAMController {
 			$id = $foreignKey->table.'__'.$foreignKey->sourceTable;
 
 			if (!array_key_exists($id, $existingFKs)) {
-				$missingFKsMsg[] = 'Foreign key between table '.$foreignKey->table.' and table '.$foreignKey->sourceTable.' described in the metadata doesn\'t exist in the system';
+				$missingFKsMsg[] = sprintf($this->view->translate("The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system."),$foreignKey->table, $foreignKey->sourceTable);
 			} else {
 				$foundFK = $existingFKs[$id];
 
@@ -179,7 +179,7 @@ class CheckconfController extends AbstractOGAMController {
 				//
 				$diff = array_diff($foundFK->foreignKeys, $foreignKey->foreignKeys);
 				if (!empty($diff)) {
-					$missingFKsMsg[] = 'Foreign key '.$foundFK->foreignKeys.' between table '.$foreignKey->table.' and table '.$foreignKey->sourceTable.' does not match the metadata definition : '.$foreignKey->foreignKeys;
+					$missingFKsMsg[] = sprintf($this->view->translate("The foreign key '%s' between the table '%s' and the table '%s' does not match the metadata definition: '%s'."),$foundFK->foreignKeys, $foreignKey->table, $foreignKey->sourceTable, $foreignKey->foreignKeys);
 				}
 
 			}
@@ -200,62 +200,63 @@ class CheckconfController extends AbstractOGAMController {
 		$fieldTypeMsg = array();
 		foreach ($expectedFields as $key => $field) {
 			if (!array_key_exists($key, $existingFields)) {
-				$missingFieldsMsg[] = 'Expected data '.$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is not found';
+				$missingFieldsMsg[] = sprintf($this->view->translate("The Expected data '%s' of the table '%s' of the schema '%s' is not found."),$field->columnName, $field->tableName, $field->schemaName);
 			} else {
 
 				//
 				// Check field type
 				//
 				$foundField = $existingFields[$key];
+				$msg = sprintf($this->view->translate("The field '%s' of the table '%s' of the schema '%s' is of type '%s' which is incompatible with the metadata definition: '%s'."),$field->columnName, $field->tableName, $field->schemaName, $foundField->type, $field->type);
 
 				switch ($field->type) {
 					case "ARRAY":
 						if ($foundField->type != 'ARRAY') {
-							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "STRING":
 						if ($foundField->type != 'CHARACTER VARYING' && $foundField->type != 'CHARACTER' && $foundField->type != 'TEXT') {
-							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "NUMERIC":
 						if ($foundField->type != 'DOUBLE PRECISION') {
-							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "DATE":
 						if ($foundField->type != 'DATE' && $foundField->type != 'TIMESTAMP' && $foundField->type != 'TIMESTAMP WITHOUT TIME ZONE') {
-							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "CODE":
 						if ($foundField->type != 'CHARACTER VARYING' && $foundField->type != 'CHARACTER' && $foundField->type != 'TEXT') {
-							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "GEOM":
 						if ($foundField->type != 'USER-DEFINED') {
-							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "INTEGER":
 						if ($foundField->type != 'INTEGER' && $foundField->type != 'SMALLINT') {
-							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "BOOLEAN":
 						if ($foundField->type != 'CHARACTER') {
-							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "IMAGE":
 						if ($foundField->type != 'CHARACTER VARYING' && $foundField->type != 'CHARACTER' && $foundField->type != 'TEXT') {
-							$fieldTypeMsg[] = "The field ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName.' is of type '.$foundField->type.' which is incompatible with the metadata definition '.$field->type;
+							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					default:
-						$fieldTypeMsg[] = "Unknow field type for data ".$field->columnName.' for table '.$field->tableName.' of schema '.$field->schemaName;
+						$fieldTypeMsg[] = sprintf($this->view->translate("Unknow field type for the data '%s' of the table '%s' of the schema '%s'."), $field->columnName, $field->tableName, $field->schemaName);
 				}
 					
 
@@ -279,7 +280,7 @@ class CheckconfController extends AbstractOGAMController {
 		$primaryKeysMsg = array();
 		foreach ($expectedTables as $key => $table) {
 			if (!array_key_exists($key, $existingTables)) {
-				$missingTablesMsg[] = 'Expected table '.$table->tableName.' of schema '.$table->schemaName.' is not found';
+				$missingTablesMsg[] = sprintf($this->view->translate("The expected table '%s' of the schema '%s' is not found."), $table->tableName, $table->schemaName);
 			} else {
 				$foundTable = $existingTables[$key];
 
@@ -288,7 +289,7 @@ class CheckconfController extends AbstractOGAMController {
 				//
 				$diff = array_diff($foundTable->primaryKeys, $table->primaryKeys);
 				if (!empty($diff)) {
-					$primaryKeysMsg[] = 'Table '.$table->tableName.' PK ('. implode(",", $foundTable->primaryKeys).') not compatible with metadata PK ('. implode(",", $table->primaryKeys).')';
+					$primaryKeysMsg[] = sprintf($this->view->translate("The PK (%s) of the table '%s' is not compatible with the metadata PK (%s)."), implode(",", $foundTable->primaryKeys), $table->tableName, implode(",", $table->primaryKeys));
 				}
 
 			}
