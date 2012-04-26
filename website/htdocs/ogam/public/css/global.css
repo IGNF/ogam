@@ -77,7 +77,7 @@ body {
 	left: 40px;
 	right: 40px;
 	z-index: -1;
-	bottom: 30px;
+	bottom: 40px;
 }
 
 .header {
@@ -127,7 +127,6 @@ body {
 
 .content {
 	background-color: #FFFFFF;
-    padding-bottom:15px;
 }
 
 .content h1,.content h2 {
