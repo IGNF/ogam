@@ -320,19 +320,32 @@ img.percentImage {
     margin: 50px 0;
     text-align: center;
 }
-
+.view-cell a{
+    background: url(../img/magnifier.png) top left no-repeat;
+    padding: 1px 8px;
+}
 .edit-cell a{
     background: url(../img/page_white_edit.png) top left no-repeat;
     padding: 1px 8px;
 }
-
 .change-password-cell a{
     background: url(../img/key.png) top left no-repeat;
     padding: 1px 8px;
 }
-
 .delete-cell a{
     background: url(../img/delete.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.index-cell a{
+    background: url(../img/folder_link.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.optimize-cell a{
+    background: url(../img/compress.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.files-list-cell a{
+    background: url(../img/folder_explore.png) top left no-repeat;
     padding: 1px 8px;
 }
 

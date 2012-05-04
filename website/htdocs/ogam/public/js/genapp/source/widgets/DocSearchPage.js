@@ -135,7 +135,7 @@ listeners: {
                     fieldLabel: 'Référence'
                 },{
                     xtype: 'textfield',
-                    fieldLabel: 'Texte'
+                    fieldLabel: 'Recherche dans le corps de texte'
                 }],
                 buttons:[{
                     xtype: 'button',
