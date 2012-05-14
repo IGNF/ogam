@@ -136,7 +136,9 @@ class MapController extends AbstractOGAMController {
 			$json .= '{"code":'.json_encode($layerName).',';
 			$json .= '"label":'. json_encode($layerLabel).'},';
 		}
-		$json = substr($json, 0, -1);
+		if(!empty($layerNames)){
+			$json = substr($json, 0, -1);
+		}
 		$json .= ']';
 		$json .= '}';
 
@@ -442,7 +444,7 @@ class MapController extends AbstractOGAMController {
 				// The item is a node
 				$json .= '"leaf": false, ';
 				$json .= '"nodeType" : "gx_layercontainer", '; // TODO : Do this on the js side
-				$json .= '"nodeGroup": "'.$legendItem->itemId.'", ';
+				$json .= '"nodeGroup": "'.$legendItem->itemId.'" ';
 
 			}
 			$json .= '}, ';
