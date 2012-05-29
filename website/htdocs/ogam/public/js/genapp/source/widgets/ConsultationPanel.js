@@ -219,6 +219,15 @@ Genapp.ConsultationPanel = Ext
 					 */
 					hideDetailsVerticalLabel : false,
 					/**
+					 * @cfg {Boolean} hideLayerSelector if true hide the layer
+					 *      selector. The layer selector is required for the
+					 *      following tools.
+					 */
+					hideLayerSelector : false,
+					hideSnappingButton : true,
+					hideGetFeatureButton : true,
+					hideFeatureInfoButton : false,
+					/**
 					 * @cfg {Boolean} showGridOnSubmit if true activate the Grid
 					 *      Panel on the form submit (defaults to false).
 					 */
@@ -739,10 +748,10 @@ Genapp.ConsultationPanel = Ext
 						 */
 						this.geoPanel = new Genapp.GeoPanel({
 							hideMapDetails : this.hideMapDetails,
-							hideLayerSelector : false,
-							hideSnappingButton : true,
-							hideGetFeatureButton : true,
-							hideFeatureInfoButton : false,
+							hideLayerSelector : this.hideLayerSelector,
+							hideSnappingButton : this.hideSnappingButton,
+							hideGetFeatureButton : this.hideGetFeatureButton,
+							hideFeatureInfoButton : this.hideFeatureInfoButton,
 							listeners : {
 								'activate' : function(panel) {
 									if (!this.hideCsvExportButton) {
