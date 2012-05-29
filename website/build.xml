@@ -103,6 +103,7 @@
 			<fileset file="${cps.src.dir}/widgets/tree/LayerTreePanel.js" />
 			<fileset file="${cps.src.dir}/widgets/tree/ContextMenuPlugin.js" />
 			<fileset file="${cps.src.dir}/widgets/map/LayerSelector.js" />
+			<fileset file="${cps.src.dir}/source/genapp.js" />
 
 			<fileset dir="${inherent.js.new}" includes="**/*.js" erroronmissingdir="false" />
 			<fileset dir="${inherent.js.patch}" includes="**/*.js" erroronmissingdir="false" />
