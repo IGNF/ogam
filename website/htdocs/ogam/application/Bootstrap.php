@@ -11,20 +11,20 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	var $logger = null;
 
 
-    /**
-     * Addition of plugins to the Front Controller.
-     */
-    protected function _initPlugins()
-    {
-        require_once('Genapp/Controller/Plugin/Bootstrap.php');
+	/**
+	 * Addition of plugins to the Front Controller.
+	 */
+	protected function _initPlugins()
+	{
+		require_once('Genapp/Controller/Plugin/Bootstrap.php');
 
-        $this->bootstrap('View');
-        $view = $this->getResource('View');
+		$this->bootstrap('View');
+		$view = $this->getResource('View');
 
-        $front = Zend_Controller_Front::getInstance();
-        // Pour la gestion de la langue de l'application
-        $front->registerPlugin(new Genapp_Controller_Plugin_Bootstrap($view));
-    }
+		$front = Zend_Controller_Front::getInstance();
+		// Pour la gestion de la langue de l'application
+		$front->registerPlugin(new Genapp_Controller_Plugin_Bootstrap($view));
+	}
 
 	/**
 	 * Register the logger into Zend_Registry
@@ -51,9 +51,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->logger->debug('_initApplicationAutoloading');
 		$resourceLoader = $this->getResourceLoader();
 		$resourceLoader->addResourceTypes(array(
-		            'objects' => array(
-		                'namespace' => 'Object',
-		                'path'      => 'objects')));
+				'objects' => array(
+						'namespace' => 'Object',
+						'path'      => 'objects')));
 	}
 
 
@@ -66,7 +66,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		// Vérifie que le contrôleur frontal est bien présent, et le récupère
 		$this->bootstrap('FrontController');
 		$this->bootstrap('Router');
-		
+
 		$front = $this->getResource('FrontController');
 		$router = $front->getRouter();
 
@@ -250,6 +250,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				$roleModel = new Application_Model_Website_Role();
 				// Get the user informations
 				$user = $userModel->getUser($configuration->defaultUser);
+
+				$this->logger->debug('Autologin default user : '.$user->login);
 
 				if (!is_null($user)) {
 					// Store the user in session
