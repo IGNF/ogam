@@ -31,11 +31,8 @@ Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
         this.template += '</div>';
 
         this.store = new Ext.data.JsonStore({
-            // store configs
             autoDestroy: true,
             autoLoad:true,
-            // reader configs
-            //idIndex: 5,
             fields: this.fields,
             data: this.hits
         });
@@ -48,14 +45,7 @@ Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
                     width: 120,
                     sortable: true
                 },
-                columns: this.columns/*[
-                    {header: 'Titre', width: 200, dataIndex: 'title'},
-                    {header: 'Sujet', width: 200, dataIndex: 'subject'},
-                    {header: 'Auteurs', dataIndex: 'authors'},
-                    {header: 'Parution', width: 50, dataIndex: 'publication_date'},
-                    {header: 'Publication', dataIndex: 'publication'},
-                    {id: 'reference', header: 'Référence', width: 50, dataIndex: 'reference'}
-                ]*/
+                columns: this.columns
             }),
             sm: new Ext.grid.RowSelectionModel({
                 singleSelect:true,
@@ -76,6 +66,10 @@ Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
                 'rowdblclick':function(grid, rowIndex, event){
                     this.onEnter();
                 },
+                'viewready':function(grid){
+                    grid.getSelectionModel().selectFirstRow();
+                    grid.getView().focusRow(0);
+                },
                 scope:this
             }
         });
@@ -91,23 +85,8 @@ Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
                 publication:'-',
                 reference:'-'
             },
-            /*margins:{
-                top: 5,
-                right: 0,
-                bottom: 0,
-                left: 0
-            },*/
             tpl:new Ext.Template(
-                    this.template
-                /*'<div class="doc-search-page-doc-slip-panel-div">',
-                    '<p><b>Titre :</b> {title}</p>',
-                    '<p><b>Auteurs :</b> {authors}</p>',
-                    '<p><b>Sujet :</b> {subject}</p>',
-                    '<p><b>Année de publication :</b> {publication_date}</p>',
-                    '<p><b>Publication :</b> {publication}</p>',
-                    '<p><b>Référence :</b> {reference}</p>',
-                '</div>'*/,
-                // a configuration object:
+                    this.template,
                 {
                     compiled: true,      // compile immediately
                     disableFormats: true // See Notes below.
@@ -120,25 +99,13 @@ Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
             this.docSlipPanel
         ];
 
-        // Only for the demo, remove this listeners after
-        /*this.westBottomPanel.on(
-            'expand',
-            function(){
-                this.gridPanel.getSelectionModel().selectFirstRow.defer(300, this.gridPanel.getSelectionModel());
-            },
-            this,
-            {single:true}
-        );*/
         Genapp.DocSearchResultPanel.superclass.initComponent.call(this);
     },
 
     onEnter: function() {
         var sm = this.gridPanel.getSelectionModel();
         var sels = sm.getSelections();
-        //for (var i = 0, len = sels.length; i < len; i++) {
-            //var rowIdx = g.getStore().indexOf(sels[0]);
-            this.fireEvent('pdfselect',sels[0].data);
-        //}
+        this.fireEvent('pdfselect',sels[0].data);
     }
 });
 Ext.reg('docsearchresultpanel', Genapp.DocSearchResultPanel);

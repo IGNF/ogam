@@ -12,11 +12,7 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
     title:'Filtre(s)',
     frame:true,
     textFieldLabel: 'Text search in the document body',
-    /**
-     * @cfg {String} alertRequestFailedMsg The alert Request
-     *      Failed Msg (defaults to
-     *      <tt>'Sorry, the request failed...'</tt>)
-     */
+    alertErrorTitle: 'An error occured',
     alertRequestFailedMsg : 'Sorry, the request failed...',
 
     // private
@@ -38,7 +34,7 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
                     fieldLabel: this.textFieldLabel,
                     enableKeyEvents: true,
                     listeners:{
-                        'keydown':function(cmp, event){console.log('titi');
+                        'keydown':function(cmp, event){
                             if(event.keyCode === event.ENTER){
                                 this.launchFilteredRequest();
                             }
@@ -75,13 +71,16 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
             timeout : 480000,
             success : function(form, action) {
                 this.fireEvent('requestResponse',action.result.hits);
-            },// TODO: failure function
+            },
             failure : function(form, action) {
-                /*if (action.result && action.result.errorMessage) {
-                    Ext.Msg.alert(this.alertErrorTitle, action.result.errorMessage);
+                if (action.result && action.result.success == false) {
+                    // Two case possibles: errorMessage or errors (errors fields message(s))
+                    if(action.result.errorMessage){
+                        Ext.Msg.alert(this.alertErrorTitle, action.result.errorMessage);
+                    }
                 } else {
                     Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
-                }*/
+                }
             },
             scope : this
         });
@@ -101,7 +100,6 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
                 name: field.name,
                 fieldLabel: field.label,
                 mode: 'local',
-                editable: false,
                 store: new Ext.data.ArrayStore({
                     id: 0,
                     fields: [
@@ -137,13 +135,9 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
             success: function(response, opts) {
                 fields = Ext.decode(response.responseText);
                 this.addMetadataFields(fields);
-            },// TODO: failure function
-            failure: function(response, opts) { console.log(response); console.log(opts);
-                if (action.result && action.result.errorMessage) {
-                    Ext.Msg.alert(this.alertErrorTitle, action.result.errorMessage);
-                } else {
+            },
+            failure: function(response, opts) {
                     Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
-                }
             },
             scope: this
          });
