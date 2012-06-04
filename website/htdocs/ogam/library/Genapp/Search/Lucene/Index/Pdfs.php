@@ -8,7 +8,7 @@ class Genapp_Search_Lucene_Index_Pdfs
      * @param Zend_Search_Lucene_Proxy $luceneIndex The Lucene index object.
      * @return Zend_Search_Lucene_Proxy
      */
-    public static function index($pdfPath, $luceneIndex)
+    public static function index($pdfPath, $luceneIndex, $filesMetadata)
     {
         // Load the PDF document.
         $pdf = Zend_Pdf::load($pdfPath);
@@ -23,34 +23,33 @@ class Genapp_Search_Lucene_Index_Pdfs
          */
         $indexValues = array(
             'Filename'     => $pdfPath,
-            'Key'          => $key,
-            'Title'        => '',
-            'Author'       => '',
-            'Subject'      => '',
-            'Keywords'     => '',
-            'Creator'      => '',
-            'Producer'     => '',
-            'CreationDate' => '',
-            'ModDate'      => '',
-            'Contents'     => '',
+            'Key'          => $key
         );
-  
+
+        // Short File name
+		$splitedFilename = preg_split("/[\\/\\\\]+/",$pdfPath);
+		$shortFileName = $splitedFilename[count($splitedFilename)- 1];
+
+		// Small file name and Extension
+		$smallFilename	= preg_split("/[\\.]+/",$shortFileName);
+		$extension = array_pop($smallFilename);
+		$smallFilename = implode(".", $smallFilename);
+
+		// Set the 'FileName', 'ShortFileName', 'Extension'
+        if(in_array('ShortFileName', $filesMetadata)){
+            $indexValues['ShortFileName'] = $shortFileName;
+        }
+        if(in_array('SmallFileName', $filesMetadata)){
+            $indexValues['SmallFileName'] = $smallFilename;
+        }
+        if(in_array('Extension', $filesMetadata)){
+            $indexValues['Extension'] = $extension;
+        }
+
         // Go through each meta data item and add to index array.
         foreach ($pdf->properties as $meta => $metaValue) {
             switch ($meta) {
-                case 'Title':
-                    $indexValues['Title'] = $pdf->properties['Title'];
-                    break;
-                case 'Subject':
-                    $indexValues['Subject'] = $pdf->properties['Subject'];
-                    break;
-                case 'Author':
-                    $indexValues['Author'] = $pdf->properties['Author'];
-                    break;
-                case 'Keywords':
-                    $indexValues['Keywords'] = $pdf->properties['Keywords'];
-                    break;
-                case 'CreationDate':
+                /* case 'CreationDate':
                     $dateCreated = $pdf->properties['CreationDate'];
   
                     $distance = substr($dateCreated, 16, 2);
@@ -66,9 +65,15 @@ class Genapp_Search_Lucene_Index_Pdfs
                         substr($dateCreated,  2, 4), //year
                         $distance); //distance
                     $indexValues['CreationDate'] = $dateCreated;
-                    break;
-                case 'Date':
-                    $indexValues['Date'] = $pdf->properties['Date'];
+                    break;*/
+                default:
+                    if(in_array($meta, $filesMetadata)){
+                    	$config = Zend_Registry::get('configuration');
+                    	//$filesCharset = $config->indices->$indexKey->filesCharset;
+			            //$value = iconv('ISO-8859-1', "UTF-8", $pdf->properties[$meta]);
+                        //$indexValues[$meta] = $value;
+                        $indexValues[$meta] = $pdf->properties[$meta];
+                    }
                     break;
             }
         }
@@ -79,7 +84,7 @@ class Genapp_Search_Lucene_Index_Pdfs
          */
         $pdfParse                = new Genapp_Search_Helper_PdfParser();
         $indexValues['Contents'] = $pdfParse->pdf2txt($pdf->render());
-  
+
         // Create the document using the values
         $doc = new Genapp_Search_Lucene_Document($indexValues);
         if ($doc !== false) {

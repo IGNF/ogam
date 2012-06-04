@@ -16,46 +16,26 @@ class Genapp_Search_Lucene_Document extends Zend_Search_Lucene_Document
         }
   
         Zend_Search_Lucene_Analysis_Analyzer::setDefault(
-            new Zend_Search_Lucene_Analysis_Analyzer_Common_TextNum_CaseInsensitive());
+            new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8Num_CaseInsensitive());
 
         // Add the Filename field to the document as a Keyword field.
         $this->addField(Zend_Search_Lucene_Field::Keyword('Filename', $values['Filename']));
         // Add the Key field to the document as a Keyword.
         $this->addField(Zend_Search_Lucene_Field::Keyword('Key', $values['Key']));
   
-        if (isset($values['Title']) && $values['Title'] != '') {
-            // Add the Title field to the document as a Text field.
-            $this->addField(Zend_Search_Lucene_Field::Text('Title', $values['Title']));
+        foreach($values as $meta => $value){
+            if($value != '' && $meta != 'Contents'){
+				// Add the field like a keyword (not tokenized) for an enum search
+				// Note : The encoding option is important for some particular case
+                $this->addField(Zend_Search_Lucene_Field::Keyword($meta, $value, 'ISO-8859-1'));
+                // Add the field like a text (tokenized) for an free text search
+                $this->addField(Zend_Search_Lucene_Field::Text($meta.'_asText', $value, 'ISO-8859-1'));
+            }
         }
-  
-        if (isset($values['Subject']) && $values['Subject'] != '') {
-            // Add the Subject field to the document as a Text field.
-            $this->addField(Zend_Search_Lucene_Field::Text('Subject', $values['Subject']));
-        }
-  
-        if (isset($values['Author']) && $values['Author'] != '') {
-            // Add the Author field to the document as a Text field.
-            $this->addField(Zend_Search_Lucene_Field::Text('Author', $values['Author']));
-        }
-  
-        if (isset($values['Keywords']) && $values['Keywords'] != '') {
-            // Add the Keywords field to the document as a Keyword field.
-            $this->addField(Zend_Search_Lucene_Field::Keyword('Keywords', $values['Keywords']));
-        }
-  
-        if (isset($values['CreationDate']) && $values['CreationDate'] != '') {
-            // Add the CreationDate field to the document as a Text field.
-            $this->addField(Zend_Search_Lucene_Field::Text('CreationDate', $values['CreationDate']));
-        }
-  
-        if (isset($values['ModDate']) && $values['ModDate'] != '') {
-            // Add the ModDate field to the document as a Text field.
-            $this->addField(Zend_Search_Lucene_Field::Text('ModDate', $values['ModDate']));
-        }
-  
+
         if (isset($values['Contents']) && $values['Contents'] != '') {
             // Add the Contents field to the document as an UnStored field.
-            $this->addField(Zend_Search_Lucene_Field::UnStored('Contents', $values['Contents']));
+            $this->addField(Zend_Search_Lucene_Field::UnStored('Contents', $values['Contents'], 'ISO-8859-1'));
         }
     }
 }

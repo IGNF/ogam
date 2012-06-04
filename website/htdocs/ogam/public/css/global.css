@@ -324,6 +324,18 @@ img.percentImage {
     background: url(../img/magnifier.png) top left no-repeat;
     padding: 1px 8px;
 }
+.pdf-cell a {
+    background: url(../img/icon_pdf.gif) top left no-repeat;
+    padding: 1px 8px;
+}
+.view-content-cell a {
+    background: url(../img/page_white_magnify.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.view-meta-cell a {
+    background: url(../img/page_white_database.png) top left no-repeat;
+    padding: 1px 8px;
+}
 .edit-cell a{
     background: url(../img/page_white_edit.png) top left no-repeat;
     padding: 1px 8px;
@@ -347,6 +359,9 @@ img.percentImage {
 .files-list-cell a{
     background: url(../img/folder_explore.png) top left no-repeat;
     padding: 1px 8px;
+}
+.file_contents {
+    padding: 0 40px 40px 40px;
 }
 
 /**************************************/

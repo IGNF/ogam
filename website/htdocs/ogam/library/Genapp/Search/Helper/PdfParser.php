@@ -59,7 +59,8 @@ class Genapp_Search_Helper_PdfParser
          * our string. Also extract alphanumerical information to reduce
          * redundant data.
          */
-        $result_data = trim(preg_replace('/([^a-z0-9 ])/i', ' ', $result_data));
+        // Commented per SG because remove the accent...
+        // $result_data = trim(preg_replace('/([^a-z0-9 ])/i', ' ', $result_data));
   
         // Return the data extracted from the document.
         if ($result_data == "") {
@@ -113,7 +114,8 @@ class Genapp_Search_Helper_PdfParser
         }
   
         // Remove any stray characters left over.
-        $result = preg_replace('/\b([^a|i])\b/i', ' ', $result);
+        // Commented per SG because add spaces and strange behaviour...
+        //$result = preg_replace('/\b([^a|i])\b/i', ' ', $result);
         return trim($result);
     }
   

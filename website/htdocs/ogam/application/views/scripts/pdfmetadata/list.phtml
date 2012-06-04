@@ -3,6 +3,8 @@
 <table class="sectiontable">
 <tr>
 	<th></th>
+	<th></th>
+	<th></th>
 	<th><?=$this->translate('File');?></th>
 	<th></th>
 	<th></th>
@@ -13,9 +15,17 @@ $i = 0;
 foreach ($this->files as $file) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
-	<td class="view-cell"><a href="<?= $this->url(array('controller'=>'pdfmetadata',
-                                 'action'=>'viewmeta', 'INDEX_KEY'=>$this->indexKey,
-                                 'file' =>urlencode($file) ),'default', true)?>" title="<?=$this->translate('View PDF Meta')?>"></a></td>
+    <td class="pdf-cell"><a href="<?= $this->url(array('controller'=>'pdfmetadata',
+                                 'action'=>'viewpdf',
+                                 'file' =>urlencode($file) ),'default', true)?>" title="<?=$this->translate('View the PDF')?>"></a></td>
+    <td class="view-content-cell"><a href="<?= $this->url(array('controller'=>'fileindexation',
+                                 'action'=>'parsepdf',
+                                 'INDEX_KEY'=>$this->indexKey,
+                                 'file' =>urlencode($file) ),'default', true)?>" title="<?=$this->translate('View the file content')?>"></a></td>
+	<td class="view-meta-cell"><a href="<?= $this->url(array('controller'=>'pdfmetadata',
+                                 'action'=>'viewmeta',
+                                 'INDEX_KEY'=>$this->indexKey,
+                                 'file' =>urlencode($file) ),'default', true)?>" title="<?=$this->translate('View the file metadata')?>"></a></td>
 	<td><?=$file?></td>
 	<td class="edit-cell"><a href="<?= ""/*$this->url(array('controller'=>'pdfmetadata',
                                  'action'=>'editmeta',
