@@ -9,11 +9,14 @@
  */
 Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
 
-    title:'Filtre(s)',
+    title:'Filter(s)',
     frame:true,
     textFieldLabel: 'Text search in the document body',
     alertErrorTitle: 'An error occured',
     alertRequestFailedMsg : 'Sorry, the request failed...',
+    resetButtonText: 'Reset the filters',
+    filterButtonText: 'Filter',
+    fieldLabels:{},
 
     // private
     initComponent : function() {
@@ -48,14 +51,14 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
                 }],
                 buttons:[{
                     xtype: 'button',
-                    text: 'Effacer filtres',
+                    text: this.resetButtonText,
                     handler:function(){
                         this.formPanel.form.reset();
                     },
                     scope:this
                 },{
                     xtype: 'button',
-                    text: 'Filtrer',
+                    text: this.filterButtonText,
                     handler:this.launchFilteredRequest,
                     scope:this
                 }]
@@ -98,7 +101,7 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
             this.formPanel.insert(i, {
                 xtype: 'combo',
                 name: field.name,
-                fieldLabel: field.label,
+                fieldLabel: this.fieldLabels[field.label],
                 mode: 'local',
                 store: new Ext.data.ArrayStore({
                     id: 0,

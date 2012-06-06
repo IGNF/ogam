@@ -269,3 +269,41 @@ if (OpenLayers.Control.FeatureInfoControl) {
 		popupTitle : 'Information sur la couche',
 	});
 }
+if (Genapp.DocSearchPage) {
+    Ext.apply(Genapp.DocSearchPage.prototype, {
+        title : 'Documents',
+    });
+}
+if (Genapp.DocSearchRequestPanel) {
+    Ext.apply(Genapp.DocSearchRequestPanel.prototype, {
+        title : 'Filtre(s)',
+        textFieldLabel: 'Recherche dans le corps du document',
+        alertErrorTitle: 'Une erreur est apparue',
+        alertRequestFailedMsg : 'Désolé, la requête a échoué',
+        resetButtonText: 'Effacer les filtres',
+        filterButtonText: 'Filtrer',
+        fieldLabels: {
+            'Title' : 'Titre',
+            'Author' : 'Auteur',
+            'Subject' : 'Sujet',
+            'Parution' : 'Parution',
+            'Publication' : 'Publication',
+            'SmallFileName' : 'Référence'
+        }
+    });
+}
+if (Genapp.DocSearchResultPanel) {
+    Ext.apply(Genapp.DocSearchResultPanel.prototype, {
+        title : 'Resultat(s)',
+        columnLabels: {
+            'id' : 'Identifiant',
+            'score' : 'Score',
+            'Title' : 'Titre',
+            'Author' : 'Auteur',
+            'Subject' : 'Sujet',
+            'Parution' : 'Parution',
+            'Publication' : 'Publication',
+            'SmallFileName' : 'Référence'
+        }
+    });
+}

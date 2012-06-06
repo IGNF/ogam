@@ -9,10 +9,11 @@
  */
 Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
 
-    title:'Resultat(s)',
+    title:'Result(s)',
     frame:true,
     layout:'border',
-    docSlipPanelHeight:150,
+    docSlipPanelHeight:140,
+    columnLabels: {},
 
     // private
     initComponent : function() {
@@ -24,8 +25,14 @@ Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
         for (meta in this.hits[0]) {
             if (typeof this.hits[0][meta] !== 'function') {
                 this.fields.push(meta);
-                this.columns.push({'header': meta, 'dataIndex':meta});
-                this.template += '<p><b>'+meta+' :</b> {'+meta+'}</p>';
+                var colCfg = {'header': this.columnLabels[meta], 'dataIndex':meta};
+                if(meta == 'id' || meta == 'score'){
+                    colCfg['hidden'] = true;
+                }
+                this.columns.push(colCfg);
+                if(meta != 'id' && meta != 'score'){
+                    this.template += '<p><b>'+this.columnLabels[meta]+' :</b> {'+meta+'}</p>';
+                }
             }
         }
         this.template += '</div>';
@@ -77,14 +84,6 @@ Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
         this.docSlipPanel = new Ext.form.FieldSet({
             region:'south',
             height:this.docSlipPanelHeight,
-            data:{
-                title:'-',
-                subject:'-',
-                authors:'-',
-                publication_date:'-',
-                publication:'-',
-                reference:'-'
-            },
             tpl:new Ext.Template(
                     this.template,
                 {
