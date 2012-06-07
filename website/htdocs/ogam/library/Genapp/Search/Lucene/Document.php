@@ -8,7 +8,7 @@ class Genapp_Search_Lucene_Document extends Zend_Search_Lucene_Document
      * @param array $values An associative array of values to be used
      *                      in the document.
      */
-    public function __construct($values)
+    public function __construct($values, $charset)
     {
         // If the Filename or the Key values are not set then reject the document.
         if (!isset($values['Filename']) && !isset($values['key'])) {
@@ -27,15 +27,15 @@ class Genapp_Search_Lucene_Document extends Zend_Search_Lucene_Document
             if($value != '' && $meta != 'Contents'){
 				// Add the field like a keyword (not tokenized) for an enum search
 				// Note : The encoding option is important for some particular case
-                $this->addField(Zend_Search_Lucene_Field::Keyword($meta, $value, 'ISO-8859-1'));
+                $this->addField(Zend_Search_Lucene_Field::Keyword($meta, $value, $charset));
                 // Add the field like a text (tokenized) for an free text search
-                $this->addField(Zend_Search_Lucene_Field::Text($meta.'_asText', $value, 'ISO-8859-1'));
+                $this->addField(Zend_Search_Lucene_Field::Text($meta.'_asText', $value, $charset));
             }
         }
 
         if (isset($values['Contents']) && $values['Contents'] != '') {
             // Add the Contents field to the document as an UnStored field.
-            $this->addField(Zend_Search_Lucene_Field::UnStored('Contents', $values['Contents'], 'ISO-8859-1'));
+            $this->addField(Zend_Search_Lucene_Field::UnStored('Contents', $values['Contents'], $charset));
         }
     }
 }

@@ -8,7 +8,7 @@ class Genapp_Search_Lucene_Index_Pdfs
      * @param Zend_Search_Lucene_Proxy $luceneIndex The Lucene index object.
      * @return Zend_Search_Lucene_Proxy
      */
-    public static function index($pdfPath, $luceneIndex, $filesMetadata)
+    public static function index($pdfPath, $luceneIndex, $filesMetadata, $filesCharset)
     {
         // Load the PDF document.
         $pdf = Zend_Pdf::load($pdfPath);
@@ -68,10 +68,6 @@ class Genapp_Search_Lucene_Index_Pdfs
                     break;*/
                 default:
                     if(in_array($meta, $filesMetadata)){
-                    	$config = Zend_Registry::get('configuration');
-                    	//$filesCharset = $config->indices->$indexKey->filesCharset;
-			            //$value = iconv('ISO-8859-1', "UTF-8", $pdf->properties[$meta]);
-                        //$indexValues[$meta] = $value;
                         $indexValues[$meta] = $pdf->properties[$meta];
                     }
                     break;
@@ -86,7 +82,7 @@ class Genapp_Search_Lucene_Index_Pdfs
         $indexValues['Contents'] = $pdfParse->pdf2txt($pdf->render());
 
         // Create the document using the values
-        $doc = new Genapp_Search_Lucene_Document($indexValues);
+        $doc = new Genapp_Search_Lucene_Document($indexValues, $filesCharset);
         if ($doc !== false) {
             // If the document creation was sucessful then add it to our index.
             $luceneIndex->addDocument($doc);

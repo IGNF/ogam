@@ -64,7 +64,7 @@ class FileindexationController extends AbstractOGAMController {
 
 	public function parsepdfAction(){
 
-		$indexKey = $this->_getParam("INDEX_KEY");
+		$indexKey = $this->_getIndexKey();
 		$file = urldecode($this->_getParam("file"));
 
 		$pdf = Zend_Pdf::load($file);
@@ -80,7 +80,7 @@ class FileindexationController extends AbstractOGAMController {
 
 	public function indexpdfsAction() {
 
-        $indexKey = $this->_getParam("INDEX_KEY");
+        $indexKey = $this->_getIndexKey();
 
 	    $config = Zend_Registry::get("configuration");
 	    // The 'create' function is used to remove the old index
@@ -92,7 +92,12 @@ class FileindexationController extends AbstractOGAMController {
         }
 	    if (count($globOut) > 0) { // make sure the glob array has something in it
 	        foreach ($globOut as $filename) {
-	            $index = Genapp_Search_Lucene_Index_Pdfs::index($filename, $index, $config->indices->$indexKey->filesMetadata->toArray());
+	            $index = Genapp_Search_Lucene_Index_Pdfs::index(
+	            	$filename,
+	            	$index,
+	            	$config->indices->$indexKey->filesMetadata->toArray(),
+	            	$config->indices->$indexKey->filesCharset
+	            );
 	        }
 	    }
 	    $index->commit();
@@ -127,8 +132,7 @@ class FileindexationController extends AbstractOGAMController {
 	}
 
 	public function searchAction()
-	{Zend_Registry::get('logger')->debug('ici0');
-	Zend_Registry::get('logger')->debug($this->_getParam("Title"));
+	{
 		$indexKey = $this->_getIndexKey();
 	    $input = $this->_getSearchFilterInput($indexKey);
 	        if ($input->isValid()) {
@@ -205,15 +209,9 @@ class FileindexationController extends AbstractOGAMController {
     public function getmetadatafieldsAction()
     {
         // Get the params
-    	$indexKey = $this->_getParam("INDEX_KEY");
+    	$indexKey = $this->_getIndexKey();
 
-    	// Check the index key
     	$config = Zend_Registry::get('configuration');
-    	$validIndexKeys = array_keys($config->indices->toArray());
-    	if(!in_array($indexKey, $validIndexKeys)){
-    		throw new Exception('Invalid INDEX_KEY');
-    	}
-
 		$filesMetadata = $config->indices->$indexKey->filesMetadata->toArray();
 
     	$metaValues = $this->_getPdfsMetadataValues($indexKey);
@@ -317,7 +315,7 @@ class FileindexationController extends AbstractOGAMController {
 
     public function optimizeAction()
     {
-        $indexKey = $this->_getParam("INDEX_KEY");
+        $indexKey = $this->_getIndexKey();
 
         // Open existing index
         $config = Zend_Registry::get('configuration');
