@@ -69,13 +69,11 @@ class FileindexationController extends AbstractOGAMController {
 
 		$pdf = Zend_Pdf::load($file);
 		$pdfParse = new Genapp_Search_Helper_PdfParser();
-		$content = $pdfParse->pdf2txt($pdf->render());
+		$config = Zend_Registry::get('configuration');
+		$content = iconv($config->indices->$indexKey->filesCharset,'UTF-8',$pdfParse->pdf2txt($pdf->render()));
 		$this->view->file = $file;
 		$this->view->content = $content;
 		$this->view->indexKey = $indexKey;
-
-		$config = Zend_Registry::get('configuration');
-        $this->getResponse()->setHeader('Content-type', 'text/html; charset='.$config->indices->$indexKey->filesCharset);
 	}
 
 	public function indexpdfsAction() {

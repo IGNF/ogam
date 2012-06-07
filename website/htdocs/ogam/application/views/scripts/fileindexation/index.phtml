@@ -14,16 +14,16 @@ foreach ($this->indices as $indexKey => $index) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
 	<td class="files-list-cell"><a title="<?=$this->translate('View the files list');?>" href="<?= $this->url(array('controller'=>'pdfmetadata','action'=>'list', 'INDEX_KEY'=>$indexKey), 'default', true)?>"></a></td>
-	<td>
+	<td class="index-label-cell">
 	    <p><b><?=$this->translate($indexKey.'Label')?></b></p>
 	    <p><?=$this->translate($indexKey.'Definition')?></p>
 	</td>
 	<td>
-	    <p><?=$this->translate('Index size: ') . $index['indexSize']; ?></p>
-        <p><?=$this->translate('Number of documents: ') . $index['documentsCount']; ?></p>
-        <p><b><?=$this->translate('Index directory: ') . '</b><p>'.$index['indexDirectory'].'</p>'?></p>
+	    <p><?=$this->translate('Index size:') .'&nbsp;'. $index['indexSize']; ?></p>
+        <p><?=$this->translate('Number of documents:') .'&nbsp;'. $index['documentsCount']; ?></p>
+        <p><b><?=$this->translate('Index directory:') .'&nbsp;'. '</b><p>'.$index['indexDirectory'].'</p>'?></p>
         <p><b><?php 
-            echo $this->translate('Files directories: ').'</b>';
+            echo $this->translate('Files directories:').'&nbsp;'.'</b>';
 	        foreach ($index['filesDirectories'] as $filesDirectory) {
 	            echo "<p>$filesDirectory</p>";
 	        }

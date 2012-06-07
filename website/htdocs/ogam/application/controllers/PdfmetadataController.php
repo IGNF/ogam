@@ -4,7 +4,6 @@
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
 require_once 'AbstractOGAMController.php';
-require_once '../application/form/PdfMeta.php';
 
 class PdfmetadataController extends AbstractOGAMController {
 	/**
@@ -85,11 +84,11 @@ class PdfmetadataController extends AbstractOGAMController {
 
         $this->view->file = $pdfPath;
         $this->view->indexKey = $indexKey;
-        $this->view->metaValues = $pdf->properties;
-        
         $config = Zend_Registry::get('configuration');
-        $this->getResponse()->setHeader('Content-type', 'text/html; charset='.$config->indices->$indexKey->filesCharset);
-        
+        foreach($pdf->properties as $name => $value){
+            $pdf->properties[$name] = iconv($config->indices->$indexKey->filesCharset,'UTF-8', $value);
+        }
+        $this->view->metaValues = $pdf->properties;
     }
 
     // TODO: Rebuild this function to edit a dynamic metadata form

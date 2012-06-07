@@ -281,3 +281,49 @@ Data saved;Data saved
 Item cannot be deleted because it has children;Item cannot be deleted because it has children
 Error while deleting data;Error while deleting data
 Data deleted;Data deleted
+
+################################
+#  fileindexation / index      #
+################################
+Indices;Index
+Index;Index
+Details;Details
+View the files list;View the files list
+pdfIndexLabel;Index for the pdfs
+pdfIndexDefinition;Index of all the pdfs included in the selected directories
+Index size:;Index size:
+Number of documents:;Number of documents:
+Index directory:;Index directory:
+Files directories:;Files directories:
+Index the files presents into the files directories;Index the files presents into the files directories
+Optimize the index;Optimize the index
+
+################################
+#  fileindexation / parsepdf   #
+################################
+File Content;File Content
+Content of the file:;Content of the file:
+
+################################
+#  pdfmetadata / editmeta      #
+################################
+
+################################
+#  pdfmetadata / list          #
+################################
+Indexed files list;Indexed files list
+Files;Files
+View the file;View the file
+View the file content;View the file content
+View the file metadata;View the file metadata
+Edit the Metadata;Edit the Metadata
+Remove the file of the index;Remove the file of the index
+Not implemented;Not implemented
+
+################################
+#  pdfmetadata / viewmeta      #
+################################
+File metadata;File metadata
+Meta data of the file:;Meta data of the file:
+Meta Name;Meta Name
+Meta Value;Meta Value

@@ -352,6 +352,9 @@ img.percentImage {
     background: url(../img/folder_link.png) top left no-repeat;
     padding: 1px 8px;
 }
+.index-label-cell{
+    width: 200px;
+}
 .optimize-cell a{
     background: url(../img/compress.png) top left no-repeat;
     padding: 1px 8px;
