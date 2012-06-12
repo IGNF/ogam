@@ -272,6 +272,7 @@ if (OpenLayers.Control.FeatureInfoControl) {
 if (Genapp.DocSearchPage) {
     Ext.apply(Genapp.DocSearchPage.prototype, {
         title : 'Documents',
+        centerPanelTitle : 'Document'
     });
 }
 if (Genapp.DocSearchRequestPanel) {
@@ -298,6 +299,7 @@ if (Genapp.DocSearchResultPanel) {
         columnLabels: {
             'id' : 'Identifiant',
             'score' : 'Score',
+            'url' : 'Url',
             'Title' : 'Titre',
             'Author' : 'Auteur',
             'Subject' : 'Sujet',
@@ -305,5 +307,18 @@ if (Genapp.DocSearchResultPanel) {
             'Publication' : 'Publication',
             'SmallFileName' : 'Référence'
         }
+    });
+}
+if (Genapp.PDFComponent) {
+    Ext.apply(Genapp.PDFComponent.prototype, {
+        defaultMessage : 'Veuillez selectionner un document...',
+        defaultHtml: '<h4>Le contenu de cette page requiert Adobe Acrobat Reader.</h4> \
+            <p>Vous devez avoir Adobe Acrobat Reader installé sur votre ordinateur \
+            afin de pouvoir lire les documents de type &quot;PDF&quot;. \
+            <p>Télécharger <a href="http://www.adobe.com/products/acrobat/readstep2.html"> \
+            Adobe Acrobat Reader</a>.</p> \
+            <p><a href="http://www.adobe.com/products/acrobat/readstep2.html">\
+            <img src="http://www.adobe.com/images/shared/download_buttons/get_adobe_reader.gif" \
+            width="88" height="31" border="0" alt="Télécharger Adobe Acrobat Reader." />'
     });
 }

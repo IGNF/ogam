@@ -10,10 +10,14 @@
 Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
 
     title:'Result(s)',
+    columnLabels: {
+        'id' : 'Identifier',
+        'score' : 'Score',
+        'url' : 'Url'
+    },
     frame:true,
     layout:'border',
-    docSlipPanelHeight:140,
-    columnLabels: {},
+    docSlipPanelHeight:150,
 
     // private
     initComponent : function() {
@@ -25,13 +29,13 @@ Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
         for (meta in this.hits[0]) {
             if (typeof this.hits[0][meta] !== 'function') {
                 this.fields.push(meta);
-                var colCfg = {'header': this.columnLabels[meta], 'dataIndex':meta};
-                if(meta == 'id' || meta == 'score'){
+                var colCfg = {'header': this.getColumnLabel(meta), 'dataIndex':meta};
+                if(meta == 'id' || meta == 'score' || meta == 'url'){
                     colCfg['hidden'] = true;
                 }
                 this.columns.push(colCfg);
-                if(meta != 'id' && meta != 'score'){
-                    this.template += '<p><b>'+this.columnLabels[meta]+' :</b> {'+meta+'}</p>';
+                if(meta != 'id' && meta != 'score' && meta != 'url'){
+                    this.template += '<p><b>'+this.getColumnLabel(meta)+' :</b> {'+meta+'}</p>';
                 }
             }
         }
@@ -105,6 +109,13 @@ Genapp.DocSearchResultPanel = Ext.extend(Ext.Panel, {
         var sm = this.gridPanel.getSelectionModel();
         var sels = sm.getSelections();
         this.fireEvent('pdfselect',sels[0].data);
+    },
+
+    getColumnLabel: function(meta) {
+        if(!Ext.isEmpty(this.columnLabels[meta])){
+            return this.columnLabels[meta];
+        }
+        return meta;
     }
 });
 Ext.reg('docsearchresultpanel', Genapp.DocSearchResultPanel);

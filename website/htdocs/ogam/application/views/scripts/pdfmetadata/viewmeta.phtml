@@ -26,6 +26,6 @@ $i++;
  
 <p class="subTableLink">
     <a href="<?= ""/*$this->url(array('controller'=>'pdfmetadata', 'action'=>'editmeta', 'file' =>urlencode($this->file) ),'default', true) */?>" title="<?=$this->translate('Edit the Metadata')?>" onClick="alert('<?=$this->translate("Not implemented");?>')"><?= $this->translate("Edit the Metadata")?></a>
-    &nbsp;/&nbsp;&nbsp;<a href="<?= $this->url(array('controller'=>'fileindexation', action=>'parsepdf', 'file' =>urlencode($this->file), 'INDEX_KEY'=>$this->indexKey), 'default', true) ?>"><?= $this->translate('View the file content');?></a>
-    &nbsp;/&nbsp;&nbsp;<a href="<?= $this->url(array('controller'=>'pdfmetadata', action=>'list', 'INDEX_KEY'=>$this->indexKey), 'default', true) ?>"><?= $this->translate('Back');?></a>
+    &nbsp;/&nbsp;&nbsp;<a href="<?= $this->url(array('controller'=>'fileindexation', 'action'=>'parsepdf', 'file' =>urlencode($this->file), 'INDEX_KEY'=>$this->indexKey), 'default', true) ?>"><?= $this->translate('View the file content');?></a>
+    &nbsp;/&nbsp;&nbsp;<a href="<?= $this->url(array('controller'=>'pdfmetadata', 'action'=>'list', 'INDEX_KEY'=>$this->indexKey), 'default', true) ?>"><?= $this->translate('Back');?></a>
 </p>

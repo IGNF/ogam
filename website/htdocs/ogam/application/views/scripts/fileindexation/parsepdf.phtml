@@ -7,5 +7,5 @@
 <p class="file_contents"><?= $this->content;?></p>
 
 <p class="subTableLink">
-    <a href="<?= $this->url(array('controller'=>'pdfmetadata', action=>'list', 'INDEX_KEY'=>$this->indexKey), 'default', true) ?>"><?= $this->translate('Back');?></a>
+    <a href="<?= $this->url(array('controller'=>'pdfmetadata', 'action'=>'list', 'INDEX_KEY'=>$this->indexKey), 'default', true) ?>"><?= $this->translate('Back');?></a>
 </p>

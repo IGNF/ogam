@@ -84,12 +84,10 @@ class FileindexationController extends AbstractOGAMController {
 	    // The 'create' function is used to remove the old index
 	    $index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
 
-	    $globOut = array();
-	    foreach ($config->indices->$indexKey->filesDirectories as $filesDirectory) {
-	        $globOut = array_merge($globOut, glob($filesDirectory . '*.pdf'));
-        }
-	    if (count($globOut) > 0) { // make sure the glob array has something in it
-	        foreach ($globOut as $filename) {
+        $filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
+
+	    if (count($filesList) > 0) { // make sure the glob array has something in it
+	        foreach ($filesList as $filename) {
 	            $index = Genapp_Search_Lucene_Index_Pdfs::index(
 	            	$filename,
 	            	$index,
@@ -172,6 +170,7 @@ class FileindexationController extends AbstractOGAMController {
 	            	$result = array();
 			        $result['id'] = $hit->id;
 			        $result['score'] = $hit->score;
+			        $result['url'] = $hit->url;
 
 				    foreach($filesMetadata as $meta){
 			    		$result[$meta] = $hit->getDocument()->$meta;
@@ -251,13 +250,10 @@ class FileindexationController extends AbstractOGAMController {
 			$cachedResult = $fileindexCache->load($cacheKey);
 		}
 		if (empty($cachedResult)) {
-	        $globOut = array();
-		    foreach ($config->indices->$indexKey->filesDirectories as $filesDirectory) {
-		        $globOut = array_merge($globOut, glob($filesDirectory . '*.pdf'));
-	        }
-		    if (count($globOut) > 0) { // make sure the glob array has something in it
+	        $filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
+		    if (count($filesList) > 0) { // make sure the glob array has something in it
 		    	$indexValues = array();
-		        foreach ($globOut as $filename) {
+		        foreach ($filesList as $filename) {
 			        $pdf = Zend_Pdf::load($filename);
 	
 			        $filesMetadata = $config->indices->$indexKey->filesMetadata->toArray();

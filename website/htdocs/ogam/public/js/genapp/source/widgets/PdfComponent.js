@@ -20,7 +20,17 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
      * The pdf url. Defaults to null.
      */
     url: null,
+    defaultMessage: 'Please select a document...',
+    defaultHtml: '<h4>Content on this page requires Adobe Acrobat Reader.</h4> \
+        <p>You must have the free Adobe Reader program installed on your computer \
+        to view the documents marked &quot;(PDF).&quot; \
+        <p>Download the <a href="http://www.adobe.com/products/acrobat/readstep2.html"> \
+        free Adobe Reader program</a>.</p> \
+        <p><a href="http://www.adobe.com/products/acrobat/readstep2.html">\
+        <img src="http://www.adobe.com/images/shared/download_buttons/get_adobe_reader.gif" \
+        width="88" height="31" border="0" alt="Get Adobe Reader." />',
 
+    // Please don't remove this comment !
     // This two methods don't work on IE (the object tag can't be move?)
     /*onRender : function(ct, position){
         this.autoEl = {
@@ -53,7 +63,7 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
             } else{
                 this.el = Ext.get(Ext.DomHelper.overwrite(this.ownerCt.body.dom, {
                     tag:'span',
-                    html:'Veuillez selectionner un document...'
+                    html:this.defaultMessage
                 }));
             }
         },this);
@@ -75,6 +85,7 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
      * @private
      */
     updateElement : function(){
+        // Please don't remove this comment !
         // This methods does't work on IE (the object can't be updated?)
         //this.el.set({"data": url}); 
         this.el = Ext.get(Ext.DomHelper.overwrite(this.ownerCt.body.dom, {
@@ -83,15 +94,7 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
             type:this.mimeType,
             width:'100%',
             height:'100%',
-            html:'<h4>Content on this page requires Adobe Acrobat Reader.</h4> \
-                <p>You must have the free Adobe Reader program installed on your computer \
-                to view the documents marked &quot;(PDF).&quot; \
-                <p>Download the <a href="http://www.adobe.com/products/acrobat/readstep2.html"> \
-                free Adobe Reader program</a>.</p> \
-                <p><a href="http://www.adobe.com/products/acrobat/readstep2.html">\
-                <img src="http://www.adobe.com/images/shared/download_buttons/get_adobe_reader.gif" \
-                width="88" height="31" border="0" alt="Get Adobe Reader." />\
-                </a></p></p>Direct link to the document: <a href="'+this.url+'">'+this.url+'</a>'
+            html:this.defaultHtml,
         }));
     },
 
@@ -102,7 +105,7 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
         if(this.url !== null){
             this.el = Ext.get(Ext.DomHelper.overwrite(this.ownerCt.body.dom, {
                 tag:'span',
-                html:'Veuillez selectionner un document...'
+                html:this.defaultMessage
             }));
             this.url = null;
         }

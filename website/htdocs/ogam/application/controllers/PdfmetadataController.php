@@ -46,12 +46,10 @@ class PdfmetadataController extends AbstractOGAMController {
         $indexKey = $this->_getParam("INDEX_KEY");
         $config = Zend_Registry::get('configuration');
 
-        $globOut = array();
-        foreach ($config->indices->$indexKey->filesDirectories as $filesDirectory) {
-            $globOut = array_merge($globOut, glob($filesDirectory . '*.pdf'));
-        }
-        if(count($globOut)>0) { // make sure the glob array has something in it
-            $this->view->files = $globOut;
+        $filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
+
+        if(count($filesList)>0) { // make sure the glob array has something in it
+            $this->view->files = $filesList;
         }else {
             $this->view->message = 'No files found.<br />';
         }
@@ -69,8 +67,7 @@ class PdfmetadataController extends AbstractOGAMController {
         $this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 
-        $config = Zend_Registry::get('configuration');
-        $this->getResponse()->setHeader('Content-type', 'application/pdf; charset='.$config->indices->$indexKey->filesCharset);
+        $this->getResponse()->setHeader('Content-type', 'application/pdf;');
         $this->getResponse()->setHeader('Content-Disposition', 'attachment; filename='.$shortFileName);
         echo $pdf->render();
     }

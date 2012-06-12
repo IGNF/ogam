@@ -96,8 +96,8 @@ listeners: {
      *      <tt>'Sorry, the request failed...'</tt>)
      */
     alertRequestFailedMsg : 'Sorry, the request failed...',
-
     indexKey:'pdfIndex',
+    centerPanelTitle: 'Document',
 
     // private
     initComponent : function() {
@@ -129,7 +129,7 @@ listeners: {
         });
 
         this.centerPanel = new Ext.Panel({
-            title: 'Document',
+            title: this.centerPanelTitle,
             region: 'center',
             frame: true,
             margins:{
@@ -159,7 +159,7 @@ listeners: {
                     this.pdf.reset();
                 },
                 'pdfselect': function(data){
-                    this.pdf.updateUrl(Genapp.base_url + 'pdf/' + data.SmallFileName + '.pdf');
+                    this.pdf.updateUrl(Genapp.base_url + data.url);
                 },
                 scope:this
             }

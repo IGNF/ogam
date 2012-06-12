@@ -101,7 +101,7 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
             this.formPanel.insert(i, {
                 xtype: 'combo',
                 name: field.name,
-                fieldLabel: this.fieldLabels[field.label],
+                fieldLabel: this.getFieldLabel(field.label),
                 mode: 'local',
                 store: new Ext.data.ArrayStore({
                     id: 0,
@@ -144,6 +144,13 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
             },
             scope: this
          });
+    },
+
+    getFieldLabel: function(meta){
+        if(!Ext.isEmpty(this.fieldLabels[meta])){
+            return this.fieldLabels[meta];
+        }
+        return meta;
     }
 });
 Ext.reg('docsearchrequestpanel', Genapp.DocSearchRequestPanel);

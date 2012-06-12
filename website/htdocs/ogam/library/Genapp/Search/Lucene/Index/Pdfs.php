@@ -26,8 +26,17 @@ class Genapp_Search_Lucene_Index_Pdfs
             'Key'          => $key
         );
 
+        $splitedFilename = preg_split("/[\\/\\\\]+/",$pdfPath);
+
+        // URL
+        $i = count($splitedFilename) - 1;
+        $url = '';
+        while($splitedFilename[$i] !== 'public'){
+            $url = '/'.$splitedFilename[$i--].$url;
+        }
+        $indexValues['url'] = $url;
+
         // Short File name
-		$splitedFilename = preg_split("/[\\/\\\\]+/",$pdfPath);
 		$shortFileName = $splitedFilename[count($splitedFilename)- 1];
 
 		// Small file name and Extension
