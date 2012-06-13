@@ -106,7 +106,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * @cfg {String} dataEditFSDeleteButtonConfirm The data Edit FieldSet Delete
 	 *      Button Confirmation message.
 	 */
-	dataEditFSDeleteButtonConfirm : 'Do you really want to delete this data?',
+	dataEditFSDeleteButtonConfirm : 'Do you really want to delete this data ?',
 	/**
 	 * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete
 	 *      Button Tooltip (defaults to 'Delete the data (Disabled if exist

@@ -31,7 +31,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
 	 * @cfg {String} criteriaPanelTbarComboLoadingText The criteria Panel Tbar
 	 *      Combo Loading Text (defaults to <tt>'searching...'</tt>)
 	 */
-	criteriaPanelTbarComboLoadingText : 'searching...',
+	criteriaPanelTbarComboLoadingText : 'Searching...',
 	/**
 	 * @cfg {String} columnsPanelTbarLabel The columns Panel Tbar Label
 	 *      (defaults to <tt>'Columns'</tt>)
@@ -46,7 +46,7 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
 	 * @cfg {String} columnsPanelTbarComboLoadingText The columns Panel Tbar
 	 *      Combo Loading Text (defaults to <tt>'searching...'</tt>)
 	 */
-	columnsPanelTbarComboLoadingText : 'searching...',
+	columnsPanelTbarComboLoadingText : 'Searching...',
 	/**
 	 * @cfg {String} columnsPanelTbarAddAllButtonTooltip The columns Panel Tbar
 	 *      Add All Button Tooltip (defaults to <tt>'Add all the columns'</tt>)

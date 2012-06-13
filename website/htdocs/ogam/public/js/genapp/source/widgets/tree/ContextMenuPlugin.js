@@ -16,7 +16,7 @@ Genapp.tree.ContextMenuPlugin = Ext.extend(Ext.util.Observable, {
 	deleteLayerText : "Delete layer",
 
 	/** api: config[deleteLayerConfirmationText] ``String`` i18n */
-	deleteLayerConfirmationText : "Are you sure you wish to remove this layer: ",
+	deleteLayerConfirmationText : "Are you sure you wish to remove this layer ?",
 
 	/** api: config[changeOpacityText] ``String`` i18n */
 	changeOpacityText : "Change opacity",

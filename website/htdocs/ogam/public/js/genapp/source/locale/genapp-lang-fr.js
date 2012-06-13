@@ -160,7 +160,6 @@ if (Genapp.GeoPanel) {
 		legendPanelTabTip : "Les legendes des couches",
 		panZoomBarControlTitle : "Zoom",
 		navigationControlTitle : "Déplacer la carte",
-		selectFeatureControlTitle : "Sélectionner la géométrie",
 		invalidWKTMsg : "La géométrie ne peut être affichée",
 		zoomToFeaturesControlTitle : "Zoomer sur la sélection",
 		zoomToResultControlTitle : "Zoomer sur le résultat",
@@ -177,7 +176,7 @@ if (Genapp.GeoPanel) {
 		locationInfoControlTitle : "Voir les informations sur le point",
 		selectFeatureControlTitle : "Selectionner un contour de sur la couche sélectionnée",
 		featureInfoControlTitle : "Voir les informations sur la couche sélectionnée",
-		
+		legalMentionsLinkText : 'Mentions légales'
 	});
 }
 if (Genapp.tree.ContextMenuPlugin) {
@@ -195,12 +194,29 @@ if (Genapp.form.picker.NumberRangePicker) {
 	});
 }
 if (typeof (OpenLayers) !== "undefined") {
+    if (OpenLayers.Control.FeatureInfoControl.prototype) {
+        Ext.apply(OpenLayers.Control.FeatureInfoControl.prototype, {
+            popupTitle : "Information(s) sur la géométrie"
+        });
+    }
 	if (OpenLayers.Handler.FeatureInfo.prototype) {
 		Ext.apply(OpenLayers.Handler.FeatureInfo.prototype, {
 			alertErrorTitle : "Erreur :",
 			alertRequestFailedMsg : "Désolé, la demande d'informations sur la géométrie a échoué..."
 		});
 	}
+    if (OpenLayers.Handler.GetFeature.prototype) {
+        Ext.apply(OpenLayers.Handler.GetFeature.prototype, {
+            alertErrorTitle : "Erreur :",
+            alertRequestFailedMsg : "Désolé, la demande d'informations sur la géométrie a échoué..."
+        });
+    }
+    if (OpenLayers.Handler.LocationInfo.prototype) {
+        Ext.apply(OpenLayers.Handler.LocationInfo.prototype, {
+            alertErrorTitle : "Erreur :",
+            alertRequestFailedMsg : "Désolé, la demande d'informations sur la géométrie a échoué..."
+        });
+    }
 }
 if (Genapp.PredefinedRequestPanel) {
 	Ext.apply(Genapp.PredefinedRequestPanel.prototype, {
@@ -262,11 +278,6 @@ if (Genapp.form.ImageField) {
 if (Genapp.map.LayerSelector) {
 	Ext.apply(Genapp.map.LayerSelector.prototype, {
 		layerSelectorButtonLabel : 'Choisir une couche',
-	});
-}
-if (OpenLayers.Control.FeatureInfoControl) {
-	Ext.apply(OpenLayers.Control.FeatureInfoControl.prototype, {
-		popupTitle : 'Information sur la couche',
 	});
 }
 if (Genapp.DocSearchPage) {

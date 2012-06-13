@@ -510,7 +510,7 @@ Genapp.ConsultationPanel = Ext
 					/**
 					 * @cfg {String} cannotEditTip
 					 */
-					cannotEditTip : "You don't have the rights to edit this data",
+					cannotEditTip : "You don't have the rights to edit this data.",
 
 					// private
 					initComponent : function() {
