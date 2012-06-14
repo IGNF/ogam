@@ -31,18 +31,18 @@ class FileindexationController extends AbstractOGAMController {
 		$this->logger->debug('File indexation index');
 
 		// Open Index
-        $config = Zend_Registry::get('configuration');
-        $indices = array();
-        foreach($config->indices as $indexKey => $indexCfg){
-	        $index = Genapp_Search_Lucene::open($indexCfg->directory);
-	        $indices[$indexKey] = array(
-	            'indexSize' => $index->count(),
-	            'documentsCount' => $index->numDocs(),
-	            'indexDirectory' => $indexCfg->directory,
-	            'filesDirectories' => $indexCfg->filesDirectories,
-	        );
-        }
-        $this->view->indices = $indices;
+		$config = Zend_Registry::get('configuration');
+		$indices = array();
+		foreach($config->indices as $indexKey => $indexCfg){
+			$index = Genapp_Search_Lucene::open($indexCfg->directory);
+			$indices[$indexKey] = array(
+					'indexSize' => $index->count(),
+					'documentsCount' => $index->numDocs(),
+					'indexDirectory' => $indexCfg->directory,
+					'filesDirectories' => $indexCfg->filesDirectories,
+			);
+		}
+		$this->view->indices = $indices;
 	}
 
 	/**
@@ -78,38 +78,38 @@ class FileindexationController extends AbstractOGAMController {
 
 	public function indexpdfsAction() {
 
-        $indexKey = $this->_getIndexKey();
+		$indexKey = $this->_getIndexKey();
 
-	    $config = Zend_Registry::get("configuration");
-	    // The 'create' function is used to remove the old index
-	    $index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
+		$config = Zend_Registry::get("configuration");
+		// The 'create' function is used to remove the old index
+		$index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
 
-        $filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
+		$filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
 
-	    if (count($filesList) > 0) { // make sure the glob array has something in it
-	        foreach ($filesList as $filename) {
-	            $index = Genapp_Search_Lucene_Index_Pdfs::index(
-	            	$filename,
-	            	$index,
-	            	$config->indices->$indexKey->filesMetadata->toArray(),
-	            	$config->indices->$indexKey->filesCharset
-	            );
-	        }
-	    }
-	    $index->commit();
-	    $this->_redirector->gotoUrl('/fileindexation');
+		if (count($filesList) > 0) { // make sure the glob array has something in it
+			foreach ($filesList as $filename) {
+				$index = Genapp_Search_Lucene_Index_Pdfs::index(
+						$filename,
+						$index,
+						$config->indices->$indexKey->filesMetadata->toArray(),
+						$config->indices->$indexKey->filesCharset
+				);
+			}
+		}
+		$index->commit();
+		$this->_redirector->gotoUrl('/fileindexation');
 	}
 
 	private function _getIndexKey() {
 		$indexKey = $this->_getParam("INDEX_KEY");
 
-	    // Check the index key
-    	$config = Zend_Registry::get('configuration');
-    	$validIndexKeys = array_keys($config->indices->toArray());
-    	if(!in_array($indexKey, $validIndexKeys)){
-    		throw new Exception('Invalid INDEX_KEY');
-    	}
-    	return $indexKey;
+		// Check the index key
+		$config = Zend_Registry::get('configuration');
+		$validIndexKeys = array_keys($config->indices->toArray());
+		if(!in_array($indexKey, $validIndexKeys)){
+			throw new Exception('Invalid INDEX_KEY');
+		}
+		return $indexKey;
 	}
 
 	private function _getSearchFilterInput($indexKey) {
@@ -118,131 +118,131 @@ class FileindexationController extends AbstractOGAMController {
 		$validators = array();
 		foreach($metaValues as $meta => $metaValue){
 			//$filters[$meta] = array('StringTrim', 'StripTags');
-	    	$validators[$meta] = array(new Zend_Validate_InArray($metaValue), 'allowEmpty' => true);
+			$validators[$meta] = array(new Zend_Validate_InArray($metaValue), 'allowEmpty' => true);
 		}
 		// TEXT
 		$filters['TEXT'] = array('StringTrim', 'StripTags');
 		$validators['TEXT'] = array('allowEmpty' => true); // The validator declaration is mandatory
-	    $input = new Zend_Filter_Input($filters, $validators, $_POST);
-	    return $input;
+		$input = new Zend_Filter_Input($filters, $validators, $_POST);
+		return $input;
 	}
 
 	public function searchAction()
 	{
 		$indexKey = $this->_getIndexKey();
-	    $input = $this->_getSearchFilterInput($indexKey);
-	        if ($input->isValid()) {
-	            $config = Zend_Registry::get('configuration');
-	            $index = Genapp_Search_Lucene::open($config->indices->$indexKey->directory);
+		$input = $this->_getSearchFilterInput($indexKey);
+		if ($input->isValid()) {
+			$config = Zend_Registry::get('configuration');
+			$index = Genapp_Search_Lucene::open($config->indices->$indexKey->directory);
 
- 				$query = new Zend_Search_Lucene_Search_Query_Boolean();
+			$query = new Zend_Search_Lucene_Search_Query_Boolean();
 
- 				$filesMetadata = $config->indices->$indexKey->filesMetadata->toArray();
- 				$filesCharset = $config->indices->$indexKey->filesCharset;
-	        	foreach($filesMetadata as $meta){
-	        		$value = $input->getUnescaped($meta);
+			$filesMetadata = $config->indices->$indexKey->filesMetadata->toArray();
+			$filesCharset = $config->indices->$indexKey->filesCharset;
+			foreach($filesMetadata as $meta){
+				$value = $input->getUnescaped($meta);
 
-	        		if(is_string($value) && $value != ''){
-			            $pathTerm = new Zend_Search_Lucene_Index_Term($value, $meta);
-                		$pathQuery = new Zend_Search_Lucene_Search_Query_Term($pathTerm);
-			            $query->addSubquery($pathQuery, true);
-			    	}
-	        	}
+				if(is_string($value) && $value != ''){
+					$pathTerm = new Zend_Search_Lucene_Index_Term($value, $meta);
+					$pathQuery = new Zend_Search_Lucene_Search_Query_Term($pathTerm);
+					$query->addSubquery($pathQuery, true);
+				}
+			}
 
- 				$text = $input->getUnescaped('TEXT');
- 				if(is_string($text) && $text != ''){
-		            // The text must be lowered in the case of the use of Utf8Num_CaseInsensitive analyzer
-					// Don't use strtolower ('alphabetic' is determined by the current locale) 
-					// because the accentued characters will not be converted.
-					// Use mb_strtolower instead.
- 					$pathQuery = new Zend_Search_Lucene_Search_Query_Phrase(explode(' ', mb_strtolower($text, 'UTF-8')));
-		            $query->addSubquery($pathQuery, true);
- 				}
+			$text = $input->getUnescaped('TEXT');
+			if(is_string($text) && $text != ''){
+				// The text must be lowered in the case of the use of Utf8Num_CaseInsensitive analyzer
+				// Don't use strtolower ('alphabetic' is determined by the current locale)
+				// because the accentued characters will not be converted.
+				// Use mb_strtolower instead.
+				$pathQuery = new Zend_Search_Lucene_Search_Query_Phrase(explode(' ', mb_strtolower($text, 'UTF-8')));
+				$query->addSubquery($pathQuery, true);
+			}
 
-	            try {
-	                $hits = $index->find($query);
-	            } catch (Zend_Search_Lucene_Exception $ex) {
-	                $hits = array();
-	            }
+			try {
+				$hits = $index->find($query);
+			} catch (Zend_Search_Lucene_Exception $ex) {
+				$hits = array();
+			}
 
-	            $results = array();
-	            foreach ($hits as $hit) {
-	            	$result = array();
-			        $result['id'] = $hit->id;
-			        $result['score'] = $hit->score;
-			        $result['url'] = $hit->url;
+			$results = array();
+			foreach ($hits as $hit) {
+				$result = array();
+				$result['id'] = $hit->id;
+				$result['score'] = $hit->score;
+				$result['url'] = $hit->url;
 
-				    foreach($filesMetadata as $meta){
-			    		$result[$meta] = $hit->getDocument()->$meta;
-			    	}
-			    	$results[] = $result;
-	            }
+				foreach($filesMetadata as $meta){
+					$result[$meta] = $hit->getDocument()->$meta;
+				}
+				$results[] = $result;
+			}
 
-	            $response = array(
-	            	'success' => true,
-	            	'hits' => $results
-	            );
-	            echo json_encode($response);
-	        } else {
-	        	// Setup the response
-	        	$msgs = $input->getMessages();
-	        	$errors = array();
-		        foreach($msgs as $meta => $errormsgs){
-		        	$errors[$meta] = implode ( '. ' , $errormsgs );
-		        }
-	        	$response = array(
-	            	'success' => false,
-	            	'errors' => $errors
-	            );
-	            echo json_encode($response);
-	        }
+			$response = array(
+					'success' => true,
+					'hits' => $results
+			);
+			echo json_encode($response);
+		} else {
+			// Setup the response
+			$msgs = $input->getMessages();
+			$errors = array();
+			foreach($msgs as $meta => $errormsgs){
+				$errors[$meta] = implode ( '. ' , $errormsgs );
+			}
+			$response = array(
+					'success' => false,
+					'errors' => $errors
+			);
+			echo json_encode($response);
+		}
 
-	    // No View, we send directly the JSON
+		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json; charset=UTF-8');
 	}
 
-    public function getmetadatafieldsAction()
-    {
-        // Get the params
-    	$indexKey = $this->_getIndexKey();
+	public function getmetadatafieldsAction()
+	{
+		// Get the params
+		$indexKey = $this->_getIndexKey();
 
-    	$config = Zend_Registry::get('configuration');
+		$config = Zend_Registry::get('configuration');
 		$filesMetadata = $config->indices->$indexKey->filesMetadata->toArray();
 
-    	$metaValues = $this->_getPdfsMetadataValues($indexKey);
-    	$fields = array();
-    	// Loop on the conf metadata array to keep the good metadata order
-    	foreach($filesMetadata as $meta){
-    		$values = $metaValues[$meta];
-    		if(!empty($values)){
-	    		$fields[] = array(
-	    		    'name' => $meta,
-	    		    'label' => $this->view->translate($meta),
-	    		    'data' => $values
-	    		);
-    		}
-    	}
-    	
-    	echo json_encode($fields);
+		$metaValues = $this->_getPdfsMetadataValues($indexKey);
+		$fields = array();
+		// Loop on the conf metadata array to keep the good metadata order
+		foreach($filesMetadata as $meta){
+			$values = $metaValues[$meta];
+			if(!empty($values)){
+				$fields[] = array(
+						'name' => $meta,
+						'label' => $this->view->translate($meta),
+						'data' => $values
+				);
+			}
+		}
+		 
+		echo json_encode($fields);
 
-        // No View, we send directly the JSON
+		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json; charset=UTF-8');
-    }
+	}
 
-    public function _getPdfsMetadataValues($indexKey)
-    {
-        $config = Zend_Registry::get('configuration');
+	public function _getPdfsMetadataValues($indexKey)
+	{
+		$config = Zend_Registry::get('configuration');
 
-    	// Get the cache
-    	$cacheKey = 'getmetadatafields' . $indexKey;
+		// Get the cache
+		$cacheKey = 'getmetadatafields' . $indexKey;
 		$manager = $this->getFrontController()
-            ->getParam('bootstrap')
-            ->getPluginResource('cachemanager')
-            ->getCacheManager();
+		->getParam('bootstrap')
+		->getPluginResource('cachemanager')
+		->getCacheManager();
 		$fileindexCache = $manager->getCache('fileindex');
 		$useCache = $config->useCache;
 
@@ -250,73 +250,73 @@ class FileindexationController extends AbstractOGAMController {
 			$cachedResult = $fileindexCache->load($cacheKey);
 		}
 		if (empty($cachedResult)) {
-	        $filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
-		    if (count($filesList) > 0) { // make sure the glob array has something in it
-		    	$indexValues = array();
-		        foreach ($filesList as $filename) {
-			        $pdf = Zend_Pdf::load($filename);
-	
-			        $filesMetadata = $config->indices->$indexKey->filesMetadata->toArray();
-	
-			        // Go through each meta data item and add to index array.
-			        foreach ($pdf->properties as $meta => $metaValue) {
-			            if(in_array($meta, $filesMetadata)){
-			            	$value = $pdf->properties[$meta];
-			            	$filesCharset = $config->indices->$indexKey->filesCharset;
-			            	$value = iconv($filesCharset, "UTF-8//TRANSLIT", $value);
-			            	if(empty($indexValues[$meta]) || !in_array($value, $indexValues[$meta])){
-			            		$indexValues[$meta][] = $value;
-			            	}
-			            }
-			        }
+			$filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
+			if (count($filesList) > 0) { // make sure the glob array has something in it
+				$indexValues = array();
+				foreach ($filesList as $filename) {
+					$pdf = Zend_Pdf::load($filename);
 
-		            // Short File name
+					$filesMetadata = $config->indices->$indexKey->filesMetadata->toArray();
+
+					// Go through each meta data item and add to index array.
+					foreach ($pdf->properties as $meta => $metaValue) {
+						if(in_array($meta, $filesMetadata)){
+							$value = $pdf->properties[$meta];
+							$filesCharset = $config->indices->$indexKey->filesCharset;
+							$value = iconv($filesCharset, "UTF-8//TRANSLIT", $value);
+							if(empty($indexValues[$meta]) || !in_array($value, $indexValues[$meta])){
+								$indexValues[$meta][] = $value;
+							}
+						}
+					}
+
+					// Short File name
 					$splitedFilename = preg_split("/[\\/\\\\]+/",$filename);
 					$shortFileName = $splitedFilename[count($splitedFilename)- 1];
-			
+						
 					// Small file name and Extension
 					$smallFilename	= preg_split("/[\\.]+/",$shortFileName);
 					$extension = array_pop($smallFilename);
 					$smallFilename = implode(".", $smallFilename);
-			
+						
 					// Set the 'FileName', 'ShortFileName', 'Extension'
-			        if(in_array('ShortFileName', $filesMetadata) 
-			            && (empty($indexValues['ShortFileName']) || !in_array($filename, $indexValues['ShortFileName']))){
-			            $indexValues['ShortFileName'][] = $shortFileName;
-			        }
-			        if(in_array('SmallFileName', $filesMetadata) 
-			            && (empty($indexValues['SmallFileName']) || !in_array($filename, $indexValues['SmallFileName']))){
-			            $indexValues['SmallFileName'][] = $smallFilename;
-			        }
-			        if(in_array('Extension', $filesMetadata) 
-			            && (empty($indexValues['Extension']) || !in_array($filename, $indexValues['Extension']))){
-			            $indexValues['Extension'][] = $extension;
-			        }
-		        }
-		    }
-		    foreach($indexValues as $meta => $metaValues){
-		    	sort($indexValues[$meta]);
-		    }
+					if(in_array('ShortFileName', $filesMetadata)
+							&& (empty($indexValues['ShortFileName']) || !in_array($filename, $indexValues['ShortFileName']))){
+						$indexValues['ShortFileName'][] = $shortFileName;
+					}
+					if(in_array('SmallFileName', $filesMetadata)
+							&& (empty($indexValues['SmallFileName']) || !in_array($filename, $indexValues['SmallFileName']))){
+						$indexValues['SmallFileName'][] = $smallFilename;
+					}
+					if(in_array('Extension', $filesMetadata)
+							&& (empty($indexValues['Extension']) || !in_array($filename, $indexValues['Extension']))){
+						$indexValues['Extension'][] = $extension;
+					}
+				}
+			}
+			foreach($indexValues as $meta => $metaValues){
+				sort($indexValues[$meta]);
+			}
 
-	        if ($useCache) {
+			if ($useCache) {
 				$fileindexCache->save($indexValues, $cacheKey);
 			}
 			return $indexValues;
 		} else {
 			return $cachedResult;
 		}
-    }
+	}
 
-    public function optimizeAction()
-    {
-        $indexKey = $this->_getIndexKey();
+	public function optimizeAction()
+	{
+		$indexKey = $this->_getIndexKey();
 
-        // Open existing index
-        $config = Zend_Registry::get('configuration');
-        $index = Genapp_Search_Lucene::open($config->indices->$indexKey->directory);
+		// Open existing index
+		$config = Zend_Registry::get('configuration');
+		$index = Genapp_Search_Lucene::open($config->indices->$indexKey->directory);
 
-        // Optimize index.
-        $index->optimize();
-        $this->_redirector->gotoUrl('/fileindexation');
-    }
+		// Optimize index.
+		$index->optimize();
+		$this->_redirector->gotoUrl('/fileindexation');
+	}
 }
