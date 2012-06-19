@@ -560,6 +560,9 @@ img.genapp-query-details-image-field{
     border:none;
     background-color:transparent;
 }
+.x-progress-text {
+    line-height: normal !important;
+}
 /*************************************************************************************************/
 
 

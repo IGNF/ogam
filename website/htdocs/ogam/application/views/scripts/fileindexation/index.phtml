@@ -1,3 +1,108 @@
+<?php
+/**
+ * View for the file indexation index.
+ * @package views
+ */
+?>
+<script type="text/javascript" src="<?= $this->baseUrl('js/progressbar.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/adapter/ext/ext-base.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all-debug.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
+
+<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/extjs/resources/css/ext-all.css') ?>" />
+<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/genapp/resources/css/genapp.pack-min.css') ?>" />
+
+<script type="text/javascript">
+	Genapp.util.indexationPage = {
+	    progressBar:[]
+	};
+
+	Genapp.util.indexationPage.launchIndexPdf = function(indexKey){
+
+	    Genapp.util.indexationPage.setupProgressBar(indexKey);
+
+        Ext.Ajax.request({
+			url: '<?= $this->baseUrl('/fileindexation/launchindex')?>',
+			params:{
+				INDEX_KEY: indexKey
+			},
+			callback: function(options, success, response){
+			    if(success == true){
+			        var d = Ext.decode(response.responseText);
+					if(d.success == true){
+			        	Genapp.util.indexationPage.getIndexPdfStatus.defer(3000, Genapp.util.indexationPage, [indexKey]);
+			        } else {
+			    	    Genapp.util.indexationPage.displayError(indexKey, d.errorMessage);
+			    	}
+			    } else {
+			        Genapp.util.indexationPage.displayError(indexKey, 'An error occured.');
+				}
+			}
+		});
+	};
+
+	Genapp.util.indexationPage.getIndexPdfStatus = function(indexKey, callback){
+        Ext.Ajax.request({
+			url: '<?= $this->baseUrl('/fileindexation/getindexstatus')?>',
+			params:{
+				INDEX_KEY: indexKey
+			},
+			callback: callback ? callback : function(options, success, response){
+				if(success == true){
+					var d = Ext.decode(response.responseText);
+					if(d.success == true){
+						if ( 0 <= d.progress && d.progress < d.count) {
+						    Genapp.util.indexationPage.progressBar[indexKey].updateProgress(d.progress/d.count, 'Loading item ' + d.progress + ' of ' + d.count + '...');
+						    Genapp.util.indexationPage.getIndexPdfStatus.defer(3000, Genapp.util.indexationPage, [indexKey]);
+						} else if (d.progress == d.count){
+				    	    window.location = '<?= $this->baseUrl('/fileindexation'); ?>';
+						} else {
+						    Genapp.util.indexationPage.displayError(indexKey, 'An error occured.');
+						}
+					} else {
+			    	    Genapp.util.indexationPage.displayError(indexKey, d.errorMessage);
+			    	}
+				} else {
+				    Genapp.util.indexationPage.displayError(indexKey, 'An error occured.');
+				}
+			}
+		});
+	};
+
+	Genapp.util.indexationPage.setupProgressBar = function(indexKey){
+	    Ext.get('index-cell-bp_'+indexKey).setDisplayed(false);
+	    // Create the progress bar
+		// Note : The progressBar container must have the good size before to render the bar
+		Ext.get('index-cell_'+indexKey).setWidth(200);
+		if(!Genapp.util.indexationPage.progressBar[indexKey]){
+		    Genapp.util.indexationPage.progressBar[indexKey] = new Ext.ProgressBar();
+	        Genapp.util.indexationPage.progressBar[indexKey].render('index-cell-pb_'+indexKey);
+		}
+	    Ext.fly('index-cell-pbtext_'+indexKey).update('').setDisplayed(false);
+        Genapp.util.indexationPage.progressBar[indexKey].updateProgress(0, 'Initializing...');
+        Genapp.util.indexationPage.progressBar[indexKey].show();
+	}
+
+	Genapp.util.indexationPage.displayError = function(indexKey, errorMessage){
+	    Genapp.util.indexationPage.progressBar[indexKey].reset(true);
+	    Ext.fly('index-cell-pbtext_'+indexKey).update(errorMessage).setDisplayed(true);
+		Ext.get('index-cell-bp_'+indexKey).setDisplayed(true);
+	    Ext.get('index-cell_'+indexKey).setWidth("auto");
+	}
+
+	Ext.onReady(function (){
+	<?php
+	    foreach ($this->indices as $indexKey => $index) {
+			if($index['isRunning']){
+		       echo "Genapp.util.indexationPage.getIndexPdfStatus('".$indexKey."');";
+			}
+        }
+    ?>
+	},this);
+
+
+</script>
+
 <H1><?= $this->translate('Indices');?></H1>
 
 <table class="sectiontable">
@@ -29,7 +134,11 @@ foreach ($this->indices as $indexKey => $index) {
 	        }
         ?></p>
     </td>
-	<td class="index-cell"><a title="<?=$this->translate('Index the files presents into the files directories');?>" href="<?= $this->url(array('controller'=>'fileindexation','action'=>'indexpdfs', 'INDEX_KEY'=>$indexKey), 'default', true)?>"></a></td>
+	<td id="index-cell_<?=$indexKey?>" class="index-cell">
+        <div id="index-cell-pbtext_<?=$indexKey?>"></div>
+        <div id="index-cell-pb_<?=$indexKey?>"></div>
+        <a id="index-cell-bp_<?=$indexKey?>" title="<?=$this->translate('Index the files presents into the files directories');?>" href="javascript:Genapp.util.indexationPage.launchIndexPdf('<?= $indexKey ?>');"></a>
+    </td>
 	<td class="optimize-cell"><a title="<?=$this->translate('Optimize the index');?>" href="<?= $this->url(array('controller'=>'fileindexation','action'=>'optimize', 'INDEX_KEY'=>$indexKey), 'default', true)?>"></a></td>
 </tr>
 <?php
@@ -37,7 +146,7 @@ $i++;
 }
 ?>
 </table>
- 
+
 <p class="subTableLink">
     <a href="<?= $this->url(array('controller'=>'index'), null, true) ?>"><?= $this->translate('Back');?></a>
 </p>

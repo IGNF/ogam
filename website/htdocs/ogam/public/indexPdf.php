@@ -12,6 +12,14 @@ require_once 'Genapp/Search/Lucene/Index/Pdfs.php';
 
 //phpinfo();
 
+require_once 'Zend/Log.php';
+$logger = Zend_Log::factory(array(
+    'timestampFormat' => 'Y-m-d',
+    $ApplicationConf->resources->log->stream->toArray()
+));
+
+$logger->debug('Start of the index pdfs script');
+
 // Get the config
 $appIniFilePath = APPLICATION_PATH.'/configs/app.ini';
 if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/configs/app.ini')) {
@@ -20,7 +28,14 @@ if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/
 $config = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
 
 // Check the index key
-$indexKey = $argv[1];
+if(!empty($argv)){
+	$indexKey = $argv[1];
+}else{
+	$indexKey = $_POST['INDEX_KEY'];
+}
+
+$logger->debug('$indexKey : ' .$indexKey);
+
 $validIndexKeys = array_keys($config->indices->toArray());
 if(!in_array($indexKey, $validIndexKeys)){
     throw new Exception('Invalid INDEX_KEY');
@@ -52,7 +67,7 @@ function getPdfList($dirs){
 }
 
 $filesList = getPdfList($config->indices->$indexKey->filesDirectories);
-echo count($filesList) . " files found.\n\r";
+echo count($filesList) . " files found.";
 
 if (count($filesList) > 0) { // make sure the glob array has something in it
 	foreach ($filesList as $filename) {
@@ -62,7 +77,9 @@ if (count($filesList) > 0) { // make sure the glob array has something in it
 	    	$config->indices->$indexKey->filesMetadata->toArray(),
 	    	$config->indices->$indexKey->filesCharset
 	    );
-	    echo $filename."\n\r";
+	    echo $filename;
 	}
 }
 $index->commit();
+
+$logger->debug('End of the index pdfs script');
