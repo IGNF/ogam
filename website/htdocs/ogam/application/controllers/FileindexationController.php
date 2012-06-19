@@ -76,27 +76,6 @@ class FileindexationController extends AbstractOGAMController {
 		$this->view->content = $content;
 		$this->view->indexKey = $indexKey;
 	}
-
-	public function launchindexpdfsAction() {
-		Zend_Registry::get('logger')->debug('Start of the launch index pdfs action');
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'http://www.renecoforogam.fr/fileindexation/indexpdfs/INDEX_KEY/pdfIndex');//?INDEX_KEY=pdfIndex');
-		//curl_setopt($ch, CURLOPT_URL, 'http://www.renecoforogam.fr/indexPdf.php');
-		curl_setopt($ch, CURLOPT_POST, 0);
-		$dd =  $this->_getIndexKey();
-		$data = array('INDEX_KEY' => $dd);
-		//curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-		//curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 100);
-		//curl_exec($ch);
-		Zend_Registry::get('logger')->debug(curl_exec($ch));
-		//curl_close($ch);
-		Zend_Registry::get('logger')->debug('End of the launch index pdfs action');
-		//$this->_redirector->gotoUrl('/fileindexation');
-		
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
-	}
 	
 	public function launchindexAction() {
 		Zend_Registry::get('logger')->debug('Start of the launch index action');
@@ -110,20 +89,6 @@ class FileindexationController extends AbstractOGAMController {
 		Zend_Registry::get('logger')->debug('End of the launch index action');
 	}
 
-
-	public function launchindexpdfs3Action() {
-		Zend_Registry::get('logger')->debug('Start of the launch3 index pdfs action');
-
-		$this->curl_post_async('http://www.renecoforogam.fr/fileindexation/indexpdfs', array('INDEX_KEY' => 'pdfIndex'));
-		//$this->curl_post_async('http://www.renecoforogam.fr/indexpdf.php', array('INDEX_KEY' => 'pdfIndex'));
-
-		Zend_Registry::get('logger')->debug('End of the launch3 index pdfs action');
-		//$this->_redirector->gotoUrl('/fileindexation');
-		
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
-	}
-	
 	public function getindexstatusAction() {
 		Zend_Registry::get('logger')->debug('Start of the get index pdf status action');
 		
@@ -164,7 +129,7 @@ class FileindexationController extends AbstractOGAMController {
 
 		Zend_Registry::get('logger')->debug('End of the get index pdf status action');
 	}
-	
+
 	public static function isRunningIndex($indexKey){
 		$fileIndexationNS = new Zend_Session_Namespace('fileIndexation');
 		// Check if no process are running
@@ -186,94 +151,6 @@ class FileindexationController extends AbstractOGAMController {
 		}
 	}
 
-public function curl_post_async($url, $params)
-{
-    foreach ($params as $key => &$val) {
-      if (is_array($val)) $val = implode(',', $val);
-        $post_params[] = $key.'='.urlencode($val);
-    }
-    $post_string = implode('&', $post_params);
-
-    $parts=parse_url($url);
-
-    $fp = fsockopen($parts['host'],
-        isset($parts['port'])?$parts['port']:80,
-        $errno, $errstr, 30);
-
-    //pete_assert(($fp!=0), "Couldn't open a socket to ".$url." (".$errstr.")");
-
-    $out = "POST ".$parts['path']." HTTP/1.1\r\n";
-    $out.= "Host: ".$parts['host']."\r\n";
-    $out.= "Cookie: RENECOFOR_OGAM_SID=".Zend_Session::getId()."\r\n";
-    $out.= "Content-Type: application/x-www-form-urlencoded\r\n";
-    $out.= "Content-Length: ".strlen($post_string)."\r\n";
-    $out.= "Connection: Close\r\n\r\n";
-    if (isset($post_string)) $out.= $post_string;
-Zend_Registry::get('logger')->debug('$out : '.$out);
-    fwrite($fp, $out);
-    //fread($fp, 4096);
-    fclose($fp);
-}
-
-	public function indexpdfsAction() {
-
-		set_time_limit(0);
-		Zend_Registry::get('logger')->debug('Start of the index pdfs action');
-		
-		try{
-        $indexKey = $this->_getIndexKey();
-/*
-        $out = array();
-        $return_var;
-        exec('php '.PUBLIC_PATH.'/indexPdf.php '.$indexKey.' >'.LOG_PATH.'/indexPdf.log 2>&1 &');//, $out, $return_var);
-        Zend_Registry::get('logger')->debug(PUBLIC_PATH.'/indexPdf.php ');
-        Zend_Registry::get('logger')->debug(print_r($out, true));
-        Zend_Registry::get('logger')->debug($return_var);
-        */
-
-        /*
-        $adapter = new Zend_Http_Client_Adapter_Curl();
-        $adapter->setCurlOption(CURLOPT_RETURNTRANSFER, true);
-        $adapter->setCurlOption(CURLOPT_TIMEOUT, 0);
-        $client = new Zend_Http_Client('http://www.renecoforogam.fr/indexPdf.php', array(
-    		//'timeout'      => 1,
-            'adapter' => $adapter,
-        	'storeresponse' => false
-        	)
-        );
-        $client->setParameterPost('INDEX_KEY', 'pdfIndex');
-        $client->request('POST');
-        */
-
-
-
-        $config = Zend_Registry::get("configuration");
-	    // The 'create' function is used to remove the old index
-	    $index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
-
-		$filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
-
-	    if (count($filesList) > 0) { // make sure the glob array has something in it
-	        foreach ($filesList as $filename) {
-	            $index = Genapp_Search_Lucene_Index_Pdfs::index(
-	            	$filename,
-	            	$index,
-	            	$config->indices->$indexKey->filesMetadata->toArray(),
-	            	$config->indices->$indexKey->filesCharset
-	            );
-	        }
-	    }
-	    $index->commit();
-
-        Zend_Registry::get('logger')->debug('End of the index pdfs action');
-
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
-		}catch(Exception $e){
-			error_log($e);
-		}
-	}
-	
 	public function _indexpdfs() {
 
 		set_time_limit(0);
