@@ -42,6 +42,11 @@
 	};
 
 	Genapp.util.indexationPage.getIndexPdfStatus = function(indexKey, callback){
+
+	    if(!Genapp.util.indexationPage.progressBar[indexKey]){
+	    	Genapp.util.indexationPage.setupProgressBar(indexKey);
+	    }
+
         Ext.Ajax.request({
 			url: '<?= $this->baseUrl('/fileindexation/getindexstatus')?>',
 			params:{

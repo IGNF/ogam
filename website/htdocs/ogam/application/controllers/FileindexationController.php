@@ -78,7 +78,7 @@ class FileindexationController extends AbstractOGAMController {
 	}
 	
 	public function launchindexAction() {
-		Zend_Registry::get('logger')->debug('Start of the launch index action');
+		$this->logger->debug('Start of the launch index action');
 
 		$front = Zend_Controller_Front::getInstance();
 		$front->registerPlugin(new Genapp_Controller_Plugin_PostProcessPdfIndexation($this->_getIndexKey()));
@@ -86,11 +86,11 @@ class FileindexationController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 
-		Zend_Registry::get('logger')->debug('End of the launch index action');
+		$this->logger->debug('End of the launch index action');
 	}
 
 	public function getindexstatusAction() {
-		Zend_Registry::get('logger')->debug('Start of the get index pdf status action');
+		$this->logger->debug('Start of the get index pdf status action');
 		
 		$indexKey = $this->_getIndexKey();
 
@@ -113,6 +113,7 @@ class FileindexationController extends AbstractOGAMController {
 		}
 		$lastNumDocsChange = $indexNS['lastNumDocsChange'];
 		$maxFileIndexTime = $config->indices->$indexKey->maxFileIndexTime;
+		$passedTime = time() - $lastNumDocsChange;
 
 		if((time() - $lastNumDocsChange) < $maxFileIndexTime ){// An indexation process is running
 			echo "{'success': true, 'progress': ".$index->numDocs().", 'count':".count($filesList)."}";
@@ -127,7 +128,7 @@ class FileindexationController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 
-		Zend_Registry::get('logger')->debug('End of the get index pdf status action');
+		$this->logger->debug('End of the get index pdf status action (File index process running from '.$passedTime.'s)');
 	}
 
 	public static function isRunningIndex($indexKey){
@@ -154,7 +155,7 @@ class FileindexationController extends AbstractOGAMController {
 	public function _indexpdfs() {
 
 		set_time_limit(0);
-		Zend_Registry::get('logger')->debug('Start of the index pdfs action');
+		$this->logger->debug('Start of the index pdfs action');
 		
         $indexKey = $this->_getIndexKey();
 
@@ -176,7 +177,7 @@ class FileindexationController extends AbstractOGAMController {
 	    }
 	    $index->commit();
 
-        Zend_Registry::get('logger')->debug('End of the index pdfs action');
+        $this->logger->debug('End of the index pdfs action');
 
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -317,6 +318,8 @@ class FileindexationController extends AbstractOGAMController {
 
 	public function _getPdfsMetadataValues($indexKey)
 	{
+		ini_set('max_execution_time', '300');
+
 		$config = Zend_Registry::get('configuration');
 
 		// Get the cache
@@ -332,11 +335,16 @@ class FileindexationController extends AbstractOGAMController {
 			$cachedResult = $fileindexCache->load($cacheKey);
 		}
 		if (empty($cachedResult)) {
-			$filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
+			$filesList = AbstractOGAMController::getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
 			if (count($filesList) > 0) { // make sure the glob array has something in it
 				$indexValues = array();
 				foreach ($filesList as $filename) {
-					$pdf = Zend_Pdf::load($filename);
+					try {
+						$pdf = Zend_Pdf::load($filename);
+					} catch(Exception $e){
+						$this->logger->err('Unable to load the file: '.$filename);
+			            $this->logger->err($e->getMessage());
+			        }
 
 					$filesMetadata = $config->indices->$indexKey->filesMetadata->toArray();
 

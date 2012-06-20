@@ -67,19 +67,33 @@ function getPdfList($dirs){
 }
 
 $filesList = getPdfList($config->indices->$indexKey->filesDirectories);
-echo count($filesList) . " files found.";
 
+$count = count($filesList);
+echo $count . " files found.\n\r";
+$startTime = time();
+$lastNumDocs = 0;
+$lastNumDocsChange = $startTime;
 if (count($filesList) > 0) { // make sure the glob array has something in it
 	foreach ($filesList as $filename) {
-        $index = Genapp_Search_Lucene_Index_Pdfs::index(
-	    	$filename,
-	    	$index,
-	    	$config->indices->$indexKey->filesMetadata->toArray(),
-	    	$config->indices->$indexKey->filesCharset
-	    );
-	    echo $filename;
+		$logger->debug('Process running from: '.(time() - $startTime).'s');
+	    $logger->debug('Indexation of the file: '.$filename);
+	    try {
+	        $index = Genapp_Search_Lucene_Index_Pdfs::index(
+		    	$filename,
+		    	$index,
+		    	$config->indices->$indexKey->filesMetadata->toArray(),
+		    	$config->indices->$indexKey->filesCharset
+		    );
+		    $index->commit();
+		    $lastNumDocs++;
+		    $fileIndexationTime = time() - $lastNumDocsChange;
+		    $processTime = time() - $startTime;
+		    echo "$filename $lastNumDocs/$count $fileIndexationTime/$processTime"."s\n\r";
+			$lastNumDocsChange = time();
+    	} catch(Exception $e){
+            $logger->debug($e);
+        }
 	}
 }
-$index->commit();
 
 $logger->debug('End of the index pdfs script');

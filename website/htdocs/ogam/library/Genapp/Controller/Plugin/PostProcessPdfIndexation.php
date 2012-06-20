@@ -9,6 +9,18 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	 * @var _indexKey
 	 */
 	protected $_indexKey;
+	
+	/**
+	 * String $_sessionConfArray
+	 * @var $_sessionConfArray
+	 */
+	protected $_sessionConfArray;
+	
+	/**
+	 * String $_startTime
+	 * @var $_startTime
+	 */
+	protected $_startTime;
 
 	/**
 	 * Contructor
@@ -54,7 +66,7 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	    ignore_user_abort(true);
 	    // buffer all upcoming output - make sure we care about compression: 
 	    if(!ob_start("ob_gzhandler")) ob_start();
-	    echo $stringToOutput;    
+	    echo $stringToOutput;
 	    // get the size of the output 
 	    $size = ob_get_length();
 	    // send headers to tell the browser to close the connection
@@ -79,13 +91,19 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 
 	    if (count($filesList) > 0) { // make sure the glob array has something in it
 	        foreach ($filesList as $filename) {
-	            $index = Genapp_Search_Lucene_Index_Pdfs::index(
-	            	$filename,
-	            	$index,
-	            	$config->indices->$indexKey->filesMetadata->toArray(),
-	            	$config->indices->$indexKey->filesCharset
-	            );
-	            $index->commit();
+	        	Zend_Registry::get('logger')->debug('Process running from: '.(time() - $this->_startTime).'s');
+	        	Zend_Registry::get('logger')->debug('Indexation of the file: '.$filename);
+	            try {
+		        	$index = Genapp_Search_Lucene_Index_Pdfs::index(
+		            	$filename,
+		            	$index,
+		            	$config->indices->$indexKey->filesMetadata->toArray(),
+		            	$config->indices->$indexKey->filesCharset
+		            );
+		            $index->commit();
+	            } catch(Exception $e){
+	            	Zend_Registry::get('logger')->err($e);
+	            }
 	        }
 	    }
 
@@ -95,9 +113,10 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	private function _registerFirstCommit($indexKey)
 	{
 		$fileIndexationNS = new Zend_Session_Namespace('fileIndexation');
+		$this->_startTime = time();
 		$fileIndexationNS->$indexKey = array(
 			'lastNumDocs' => 0,
-			'lastNumDocsChange' => time()
+			'lastNumDocsChange' => $this->_startTime
 		);
 	}
 }
