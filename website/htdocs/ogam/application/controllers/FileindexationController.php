@@ -288,6 +288,9 @@ class FileindexationController extends AbstractOGAMController {
 
 	public function getmetadatafieldsAction()
 	{
+		// Release the session to unblock the other requests
+		Zend_Session::writeClose();
+
 		// Get the params
 		$indexKey = $this->_getIndexKey();
 
