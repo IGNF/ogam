@@ -1,4 +1,11 @@
 <?php
+/**
+ * This script index a set of pdf files defined per the index config
+ * Use example: php indexPdf.php pdfIndex true
+ * 
+ * @param indexKey the index key defined in the config file
+ * @param update if true the index is refreshed (check of the presence of the files only) else a new index is created
+ */
 include_once('setup.php');
 require_once 'Zend/Search/Lucene/Proxy.php';
 require_once 'Zend/Search/Lucene.php';
@@ -7,17 +14,19 @@ require_once 'Genapp/Search/Lucene/Document.php';
 require_once 'Genapp/Search/Helper/PdfParser.php';
 require_once 'Zend/Pdf.php';
 require_once 'Genapp/Search/Lucene/Index/Pdfs.php';
+require_once 'Zend/Controller/Plugin/Abstract.php';
+require_once 'Zend/Registry.php';
+require_once 'Zend/Controller/Action.php';
+require_once APPLICATION_PATH.'/controllers/AbstractOGAMController.php';
+require_once 'Genapp/Controller/Plugin/PostProcessPdfIndexation.php';
 
-//set_time_limit(0);
-
-//phpinfo();
-
+// Setup the logger
 require_once 'Zend/Log.php';
 $logger = Zend_Log::factory(array(
     'timestampFormat' => 'Y-m-d',
     $ApplicationConf->resources->log->stream->toArray()
 ));
-
+Zend_Registry::set('logger', $logger);
 $logger->debug('Start of the index pdfs script');
 
 // Get the config
@@ -26,74 +35,22 @@ if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/
 	$appIniFilePath = CUSTOM_APPLICATION_PATH.'/configs/app.ini';
 }
 $config = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
+Zend_Registry::set('configuration', $config);
 
-// Check the index key
-if(!empty($argv)){
-	$indexKey = $argv[1];
-}else{
-	$indexKey = $_POST['INDEX_KEY'];
-}
-
+// Get and check the index key parameter
+$indexKey = $argv[1];
 $logger->debug('$indexKey : ' .$indexKey);
-
 $validIndexKeys = array_keys($config->indices->toArray());
 if(!in_array($indexKey, $validIndexKeys)){
-    throw new Exception('Invalid INDEX_KEY');
+    throw new Exception('Invalid INDEX_KEY parameter');
 }
 
-// The 'create' function is used to remove the old index
-$index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
-
-function getPdfInDir($dir) {
-    $filesList = array();
-    $files = glob($dir.'/*');
-    foreach ($files as $file) {
-        if (is_dir($file)) {
-        	$filesList = array_merge($filesList, getPdfInDir($file));
-        } else {
-        	if(substr($file, -3 , 3) == 'pdf'){
-            	$filesList[] = $file;
-        	}
-        }
-    }
-    return $filesList;
-}
-function getPdfList($dirs){
-	$filesList = array();
-	foreach ($dirs as $filesDirectory) {
-		$filesList = array_merge($filesList, getPdfInDir($filesDirectory));
-	}
-	return $filesList;
+// Get and check the update parameter
+$update = $argv[2];
+if($update != true && $update != false){
+	throw new Exception('Invalid UPDATE parameter');
 }
 
-$filesList = getPdfList($config->indices->$indexKey->filesDirectories);
-
-$count = count($filesList);
-echo $count . " files found.\n\r";
-$startTime = time();
-$lastNumDocs = 0;
-$lastNumDocsChange = $startTime;
-if (count($filesList) > 0) { // make sure the glob array has something in it
-	foreach ($filesList as $filename) {
-		$logger->debug('Process running from: '.(time() - $startTime).'s');
-	    $logger->debug('Indexation of the file: '.$filename);
-	    try {
-	        $index = Genapp_Search_Lucene_Index_Pdfs::index(
-		    	$filename,
-		    	$index,
-		    	$config->indices->$indexKey->filesMetadata->toArray(),
-		    	$config->indices->$indexKey->filesCharset
-		    );
-		    $index->commit();
-		    $lastNumDocs++;
-		    $fileIndexationTime = time() - $lastNumDocsChange;
-		    $processTime = time() - $startTime;
-		    echo "$filename $lastNumDocs/$count $fileIndexationTime/$processTime"."s\n\r";
-			$lastNumDocsChange = time();
-    	} catch(Exception $e){
-            $logger->debug($e);
-        }
-	}
-}
+Genapp_Controller_Plugin_PostProcessPdfIndexation::indexFiles($indexKey, $update, true);
 
 $logger->debug('End of the index pdfs script');

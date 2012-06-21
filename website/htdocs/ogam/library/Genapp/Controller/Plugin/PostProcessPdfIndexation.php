@@ -14,18 +14,6 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	 * @var _update
 	 */
 	protected $_update;
-	
-	/**
-	 * String $_sessionConfArray
-	 * @var $_sessionConfArray
-	 */
-	protected $_sessionConfArray;
-	
-	/**
-	 * String $_startTime
-	 * @var $_startTime
-	 */
-	protected $_startTime;
 
 	/**
 	 * Contructor
@@ -37,14 +25,6 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	{
 	    $this->_indexKey = $indexKey;
 	    $this->_update = $update;
-	    
-	    // Create application, bootstrap, and run
-		$applicationIniFilePath = APPLICATION_PATH.'/configs/application.ini';
-		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/configs/application.ini')) {
-			$applicationIniFilePath = CUSTOM_APPLICATION_PATH.'/configs/application.ini';
-		}
-		$applicationConf = new Zend_Config_Ini($applicationIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
-		$this->_sessionConfArray = $applicationConf->resources->session->toArray();
 	}
 
 	public function dispatchLoopShutdown()
@@ -55,15 +35,15 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 		// - We can't stop and start a new session during a PostPorcess (Headers already sent)
 		if(FileindexationController::isRunningIndex($this->_indexKey)){
 			$errorMessage = Zend_Registry::get('Zend_Translate')->translate('A process is already running.');
-			$this->_outputStringAndCloseConnection("{'success':false, errorMessage: \"".$errorMessage."\"}");
+			$this->outputStringAndCloseConnection("{'success':false, errorMessage: \"".$errorMessage."\"}");
 		} else {
-			$this->_registerFirstCommit($this->_indexKey);
-			$this->_outputStringAndCloseConnection("{'success':true}");
-			$this->_indexFiles($this->_indexKey, $this->_update);
+			$this->registerFirstCommit($this->_indexKey);
+			$this->outputStringAndCloseConnection("{'success':true}");
+			$this->indexFiles($this->_indexKey, $this->_update);
 		}
 	}
 
-	private function _outputStringAndCloseConnection($stringToOutput)
+	public static function outputStringAndCloseConnection($stringToOutput)
 	{
 		// if some content, begin with ob_end_clean() or ob_clean();
 	    // close current session
@@ -86,9 +66,10 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	    ob_end_clean();
 	}
 
-	private function _indexFiles($indexKey, $update = true)
+	public static function indexFiles($indexKey, $update = true, $verbose = false)
 	{
-		Zend_Registry::get('logger')->debug('Start of the index pdfs PostProcess');
+		$logger = Zend_Registry::get('logger');
+		$logger->debug('Start of the index pdfs PostProcess');
 
         $config = Zend_Registry::get("configuration");
 		if($update == true){
@@ -101,9 +82,15 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 
         $filesList = AbstractOGAMController::getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
 
+        $count = count($filesList);
+		if($verbose){ echo $count . " files found.\n\r"; }
+		$startTime = time();
+		$lastNumDocs = 0;
+		$lastNumDocsChange = $startTime;
 	    if (count($filesList) > 0) { // make sure the glob array has something in it
 	        foreach ($filesList as $filename) {
-	        	Zend_Registry::get('logger')->debug('Process running from: '.(time() - $this->_startTime).'s');
+	        	$logger->debug('Process running from: '.(time() - $startTime).'s');
+	        	$logger->debug('Indexation of the file: '.$filename);
 	        	if($update == true){//TODO: Remove from the index the missing files
 	        		$query = new Zend_Search_Lucene_Search_Query_Boolean();
 	        		$pathTerm = new Zend_Search_Lucene_Index_Term($filename, 'Filename');
@@ -111,20 +98,25 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 					$query->addSubquery($pathQuery, true);
 					$hits = $index->find($query);
 					if(count($hits) == 0){
-						$this->_indexPdf($index, $filename, $config->indices->$indexKey);
+						self::indexPdf($index, $filename, $config->indices->$indexKey);
 					} else {
-						Zend_Registry::get('logger')->debug('Skip of the file: '.$filename);
+						$logger->debug('Skip of the file: '.$filename);
 					}
 	        	} else {
-					$this->_indexPdf($index, $filename, $config->indices->$indexKey);
+					self::indexPdf($index, $filename, $config->indices->$indexKey);
 	        	}
+	        	$lastNumDocs++;
+			    $fileIndexationTime = time() - $lastNumDocsChange;
+			    $processTime = time() - $startTime;
+			    if($verbose){ echo "$filename $lastNumDocs/$count $fileIndexationTime/$processTime"."s\n\r"; }
+				$lastNumDocsChange = time();
 	        }
 	    }
 
-        Zend_Registry::get('logger')->debug('End of the index pdfs PostProcess');
+        $logger->debug('End of the index pdfs PostProcess');
 	}
 	
-	private function _indexPdf($index, $filename, $conf)
+	public static function indexPdf($index, $filename, $conf, $verbose = false)
 	{
 		Zend_Registry::get('logger')->debug('Indexation of the file: '.$filename);
         try {
@@ -140,13 +132,12 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
         }
 	}
 
-	private function _registerFirstCommit($indexKey)
+	public static function registerFirstCommit($indexKey)
 	{
 		$fileIndexationNS = new Zend_Session_Namespace('fileIndexation');
-		$this->_startTime = time();
 		$fileIndexationNS->$indexKey = array(
 			'lastNumDocs' => 0,
-			'lastNumDocsChange' => $this->_startTime
+			'lastNumDocsChange' => time()
 		);
 	}
 }
