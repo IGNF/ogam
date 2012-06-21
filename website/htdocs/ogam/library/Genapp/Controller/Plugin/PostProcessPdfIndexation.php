@@ -9,6 +9,11 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	 * @var _indexKey
 	 */
 	protected $_indexKey;
+	/**
+	 * String _update
+	 * @var _update
+	 */
+	protected $_update;
 	
 	/**
 	 * String $_sessionConfArray
@@ -28,9 +33,10 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	 * @param Zend_View $view
 	 * @return void
 	 */
-	public function __construct($indexKey)
+	public function __construct($indexKey, $update)
 	{
 	    $this->_indexKey = $indexKey;
+	    $this->_update = $update;
 	    
 	    // Create application, bootstrap, and run
 		$applicationIniFilePath = APPLICATION_PATH.'/configs/application.ini';
@@ -52,7 +58,7 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 		} else {
 			$this->_registerFirstCommit($this->_indexKey);
 			$this->_outputStringAndCloseConnection("{'success':true}");
-			$this->_indexpdf($this->_indexKey);
+			$this->_indexFiles($this->_indexKey, $this->_update);
 		}
 	}
 
@@ -62,7 +68,7 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	    // close current session
 	    //Zend_Session::writeClose();
 	    if (session_id()) session_write_close();
-	    set_time_limit(0); 
+	    set_time_limit(0);
 	    ignore_user_abort(true);
 	    // buffer all upcoming output - make sure we care about compression: 
 	    if(!ob_start("ob_gzhandler")) ob_start();
@@ -79,35 +85,58 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	    ob_end_clean();
 	}
 
-	private function _indexpdf($indexKey)
+	private function _indexFiles($indexKey, $update = true)
 	{
 		Zend_Registry::get('logger')->debug('Start of the index pdfs PostProcess');
 
         $config = Zend_Registry::get("configuration");
-	    // The 'create' function is used to remove the old index
-	    $index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
+		if($update == true){
+	        // The 'create' function is used to remove the old index
+	        $index = Genapp_Search_Lucene::open($config->indices->$indexKey->directory);
+	    } else {
+	        // The 'create' function is used to remove the old index
+	        $index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
+	    }
 
         $filesList = AbstractOGAMController::getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
 
 	    if (count($filesList) > 0) { // make sure the glob array has something in it
 	        foreach ($filesList as $filename) {
 	        	Zend_Registry::get('logger')->debug('Process running from: '.(time() - $this->_startTime).'s');
-	        	Zend_Registry::get('logger')->debug('Indexation of the file: '.$filename);
-	            try {
-		        	$index = Genapp_Search_Lucene_Index_Pdfs::index(
-		            	$filename,
-		            	$index,
-		            	$config->indices->$indexKey->filesMetadata->toArray(),
-		            	$config->indices->$indexKey->filesCharset
-		            );
-		            $index->commit();
-	            } catch(Exception $e){
-	            	Zend_Registry::get('logger')->err($e);
-	            }
+	        	if($update == true){//TODO: Remove from the index the missing files
+	        		$query = new Zend_Search_Lucene_Search_Query_Boolean();
+	        		$pathTerm = new Zend_Search_Lucene_Index_Term($filename, 'Filename');
+					$pathQuery = new Zend_Search_Lucene_Search_Query_Term($pathTerm);
+					$query->addSubquery($pathQuery, true);
+					$hits = $index->find($query);
+					if(count($hits) == 0){
+						$this->_indexPdf($index, $filename, $config->indices->$indexKey);
+					} else {
+						Zend_Registry::get('logger')->debug('Skip of the file: '.$filename);
+					}
+	        	} else {
+					$this->_indexPdf($index, $filename, $config->indices->$indexKey);
+	        	}
 	        }
 	    }
 
         Zend_Registry::get('logger')->debug('End of the index pdfs PostProcess');
+	}
+	
+	private function _indexPdf($index, $filename, $conf)
+	{
+		Zend_Registry::get('logger')->debug('Indexation of the file: '.$filename);
+        try {
+        	$index = Genapp_Search_Lucene_Index_Pdfs::index(
+            	$filename,
+            	$index,
+            	$conf->filesMetadata->toArray(),
+            	$conf->filesCharset
+            );
+            $index->commit();
+        } catch(Exception $e){
+        	Zend_Registry::get('logger')->err($e->getMessage());
+        }
 	}
 
 	private function _registerFirstCommit($indexKey)

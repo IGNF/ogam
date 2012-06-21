@@ -80,8 +80,15 @@ class FileindexationController extends AbstractOGAMController {
 	public function launchindexAction() {
 		$this->logger->debug('Start of the launch index action');
 
+		$update = $this->_getParam("UPDATE");
+
+		// Check the update parameter
+		if($update != true && $update != false){
+			throw new Exception('Invalid UPDATE parameter');
+		}
+
 		$front = Zend_Controller_Front::getInstance();
-		$front->registerPlugin(new Genapp_Controller_Plugin_PostProcessPdfIndexation($this->_getIndexKey()));
+		$front->registerPlugin(new Genapp_Controller_Plugin_PostProcessPdfIndexation($this->_getIndexKey(), $update));
 
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();

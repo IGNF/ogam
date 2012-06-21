@@ -17,14 +17,15 @@
 	    progressBar:[]
 	};
 
-	Genapp.util.indexationPage.launchIndexPdf = function(indexKey){
+	Genapp.util.indexationPage.launchIndexPdf = function(indexKey, update){
 
 	    Genapp.util.indexationPage.setupProgressBar(indexKey);
 
         Ext.Ajax.request({
 			url: '<?= $this->baseUrl('/fileindexation/launchindex')?>',
 			params:{
-				INDEX_KEY: indexKey
+				'INDEX_KEY': indexKey,
+				'UPDATE': update
 			},
 			callback: function(options, success, response){
 			    if(success == true){
@@ -75,7 +76,8 @@
 	};
 
 	Genapp.util.indexationPage.setupProgressBar = function(indexKey){
-	    Ext.get('index-cell-bp_'+indexKey).setDisplayed(false);
+	    Ext.get('index-cell-bp-create_'+indexKey).setDisplayed(false);
+	    Ext.get('index-cell-bp-update_'+indexKey).setDisplayed(false);
 	    // Create the progress bar
 		// Note : The progressBar container must have the good size before to render the bar
 		Ext.get('index-cell_'+indexKey).setWidth(200);
@@ -91,7 +93,8 @@
 	Genapp.util.indexationPage.displayError = function(indexKey, errorMessage){
 	    Genapp.util.indexationPage.progressBar[indexKey].reset(true);
 	    Ext.fly('index-cell-pbtext_'+indexKey).update(errorMessage).setDisplayed(true);
-		Ext.get('index-cell-bp_'+indexKey).setDisplayed(true);
+		Ext.get('index-cell-bp-create_'+indexKey).setDisplayed(true);
+		Ext.get('index-cell-bp-update_'+indexKey).setDisplayed(true);
 	    Ext.get('index-cell_'+indexKey).setWidth("auto");
 	}
 
@@ -142,7 +145,8 @@ foreach ($this->indices as $indexKey => $index) {
 	<td id="index-cell_<?=$indexKey?>" class="index-cell">
         <div id="index-cell-pbtext_<?=$indexKey?>"></div>
         <div id="index-cell-pb_<?=$indexKey?>"></div>
-        <a id="index-cell-bp_<?=$indexKey?>" title="<?=$this->translate('Index the files presents into the files directories');?>" href="javascript:Genapp.util.indexationPage.launchIndexPdf('<?= $indexKey ?>');"></a>
+        <a id="index-cell-bp-create_<?=$indexKey?>" title="<?=$this->translate('Create a new index and index the files presents into the files directories');?>" href="javascript:Genapp.util.indexationPage.launchIndexPdf('<?= $indexKey ?>',false);"></a>
+        <a id="index-cell-bp-update_<?=$indexKey?>" title="<?=$this->translate('Add/Remove the new/deleted files of the files directories into the existing index');?>" href="javascript:Genapp.util.indexationPage.launchIndexPdf('<?= $indexKey ?>',true);"></a>
     </td>
 	<td class="optimize-cell"><a title="<?=$this->translate('Optimize the index');?>" href="<?= $this->url(array('controller'=>'fileindexation','action'=>'optimize', 'INDEX_KEY'=>$indexKey), 'default', true)?>"></a></td>
 </tr>
