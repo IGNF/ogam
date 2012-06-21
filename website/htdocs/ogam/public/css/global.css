@@ -348,8 +348,12 @@ img.percentImage {
     background: url(../img/delete.png) top left no-repeat;
     padding: 1px 8px;
 }
-.index-cell a{
+.index-cell .index-cell-create{
     background: url(../img/folder_link.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.index-cell .index-cell-update{
+    background: url(../img/folder_add.png) top left no-repeat;
     padding: 1px 8px;
 }
 .index-label-cell{

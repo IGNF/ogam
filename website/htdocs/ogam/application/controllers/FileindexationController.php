@@ -128,7 +128,8 @@ class FileindexationController extends AbstractOGAMController {
 			if($index->numDocs() == count($filesList)){
 				echo "{'success': true, 'progress': ".$index->numDocs().", 'count':".count($filesList)."}";
 			} else {// Error during the indexation process
-				echo "{'success': false, 'errorMessage': 'An error occured during the indexation process.'}";
+				$errorMessage = $this->view->translate('An error occured during the indexation process.');
+				echo "{'success': false, 'errorMessage': \"".$errorMessage."\"}";
 			}
 		}
 

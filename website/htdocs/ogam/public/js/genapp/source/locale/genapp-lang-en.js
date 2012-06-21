@@ -333,3 +333,10 @@ if (Genapp.PDFComponent) {
             width="88" height="31" border="0" alt="Get Adobe Reader." />'
     });
 }
+if (Genapp.util.indexationPage) {
+    Ext.apply(Genapp.util.indexationPage, {
+        defaultErrorMsg: 'An error occured.',
+        progressBarInitMsg: 'Initializing...',
+        progressBarLoadingMsg: 'Loading file {0} of {1}...'
+    });
+}

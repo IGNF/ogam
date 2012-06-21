@@ -295,7 +295,8 @@ Index size:;Index size:
 Number of documents:;Number of documents:
 Index directory:;Index directory:
 Files directories:;Files directories:
-Index the files presents into the files directories;Index the files presents into the files directories
+Add/Remove the new/deleted files of the files directories into the existing index;Add/Remove the new/deleted files of the files directories into the existing index
+Create a new index and index the files presents into the files directories;Create a new index and index the files presents into the files directories
 Optimize the index;Optimize the index
 
 ################################
@@ -303,6 +304,16 @@ Optimize the index;Optimize the index
 ################################
 File Content;File Content
 Content of the file:;Content of the file:
+
+#####################################
+#  fileindexation / getindexstatus  #
+#####################################
+An error occured during the indexation process.;An error occured during the indexation process.
+
+################################
+#   PostProcessPdfIndexation   #
+################################
+A process is already running.;A process is already running.
 
 ################################
 #  pdfmetadata / editmeta      #

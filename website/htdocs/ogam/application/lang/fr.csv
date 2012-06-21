@@ -295,7 +295,8 @@ Index size:;Taille de l'index :
 Number of documents:;Nombre de documents :
 Index directory:;Répertoire de l'index :
 Files directories:;Répertoire(s) des fichiers :
-Index the files presents into the files directories;Indexer les fichiers présents dans les répertoires
+Add/Remove the new/deleted files of the files directories into the existing index;Ajouter/Soustraire à l'index les nouveaux fichiers ou les fichiers supprimés dans les répertoires
+Create a new index and index the files presents into the files directories;Créer un nouveau index et indexer les fichiers présents dans les répertoires
 Optimize the index;Optimiser l'index
 
 ################################
@@ -303,6 +304,16 @@ Optimize the index;Optimiser l'index
 ################################
 File Content;Contenu du fichier
 Content of the file:;Contenu du fichier :
+
+#####################################
+#  fileindexation / getindexstatus  #
+#####################################
+An error occured during the indexation process.;Une erreur est apparue pendant l'indexation.
+
+################################
+#   PostProcessPdfIndexation   #
+################################
+A process is already running.;Une indexation est déjà en cours.
 
 ################################
 #  pdfmetadata / editmeta      #

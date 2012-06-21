@@ -54,7 +54,8 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 		// - We can't maintain a session during all the PostPorcess (Queue the other requests)
 		// - We can't stop and start a new session during a PostPorcess (Headers already sent)
 		if(FileindexationController::isRunningIndex($this->_indexKey)){
-			$this->_outputStringAndCloseConnection("{'success':false, errorMessage:'A process is already running.'}");
+			$errorMessage = Zend_Registry::get('Zend_Translate')->translate('A process is already running.');
+			$this->_outputStringAndCloseConnection("{'success':false, errorMessage: \"".$errorMessage."\"}");
 		} else {
 			$this->_registerFirstCommit($this->_indexKey);
 			$this->_outputStringAndCloseConnection("{'success':true}");

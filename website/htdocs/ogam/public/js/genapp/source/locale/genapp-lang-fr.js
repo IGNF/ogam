@@ -333,3 +333,10 @@ if (Genapp.PDFComponent) {
             width="88" height="31" border="0" alt="Télécharger Adobe Acrobat Reader." />'
     });
 }
+if (Genapp.util.indexationPage) {
+    Ext.apply(Genapp.util.indexationPage, {
+        defaultErrorMsg: 'Une erreur est apparue.',
+        progressBarInitMsg: 'Initialisation...',
+        progressBarLoadingMsg: 'Chargement du fichier {0} sur {1}...'
+    });
+}
