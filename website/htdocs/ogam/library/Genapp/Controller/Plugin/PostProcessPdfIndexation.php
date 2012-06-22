@@ -80,6 +80,10 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	        $index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
 	    }
 
+	    $index->setMaxBufferedDocs(20);// (10) à monter moitié de memory_get_usage() memory_get_peak_usage()
+	    $index->setMaxMergeDocs(10);// (PHP_INT_MAX) à descendre
+	    $index->setMergeFactor(20);// (10) à monter
+
         $filesList = AbstractOGAMController::getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
 
         $count = count($filesList);
@@ -88,16 +92,29 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 		$lastNumDocs = 0;
 		$lastNumDocsChange = $startTime;
 	    if (count($filesList) > 0) { // make sure the glob array has something in it
-	        foreach ($filesList as $filename) {
+            // Deletion of the removed files
+	    	if($update == true){
+		    	for($i = 0; $i < $index->count(); $i++){
+		    		if(!$index->isDeleted($i)){
+		    			$doc = $index->getDocument($i);
+		    			if(!file_exists($doc->getFieldValue('Filename'))){
+		    				$index->deleted($i);
+		    				$msg = 'Deletion of the file: '.$filename;
+		    				$logger->debug($msg);
+		    				if($verbose){ echo $msg."\n\r"; }
+		    			}
+		    		}
+		    	}
+		    	$index->commit();
+	    	}
+	    	// Addition of the new files
+	    	foreach ($filesList as $filename) {
 	        	$logger->debug('Process running from: '.(time() - $startTime).'s');
-	        	$logger->debug('Indexation of the file: '.$filename);
-	        	if($update == true){//TODO: Remove from the index the missing files
-	        		$query = new Zend_Search_Lucene_Search_Query_Boolean();
-	        		$pathTerm = new Zend_Search_Lucene_Index_Term($filename, 'Filename');
-					$pathQuery = new Zend_Search_Lucene_Search_Query_Term($pathTerm);
-					$query->addSubquery($pathQuery, true);
-					$hits = $index->find($query);
-					if(count($hits) == 0){
+	        	if($update == true){
+	        		// Note: use termDocs() instead of find() for get a doc by its id
+	        		$term = new Zend_Search_Lucene_Index_Term($filename, 'Filename');
+					$docIds  = $index->termDocs($term);
+					if(count($docIds) == 0){
 						self::indexPdf($index, $filename, $config->indices->$indexKey);
 					} else {
 						$logger->debug('Skip of the file: '.$filename);
@@ -108,14 +125,16 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	        	$lastNumDocs++;
 			    $fileIndexationTime = time() - $lastNumDocsChange;
 			    $processTime = time() - $startTime;
-			    if($verbose){ echo "$filename $lastNumDocs/$count $fileIndexationTime/$processTime"."s\n\r"; }
+			    $msg = "$filename $lastNumDocs/$count $fileIndexationTime/$processTime".'s';
+			    $logger->debug($msg);
+			    if($verbose){ echo $msg."\n\r"; }
 				$lastNumDocsChange = time();
 	        }
 	    }
 
         $logger->debug('End of the index pdfs PostProcess');
 	}
-	
+
 	public static function indexPdf($index, $filename, $conf, $verbose = false)
 	{
 		Zend_Registry::get('logger')->debug('Indexation of the file: '.$filename);
