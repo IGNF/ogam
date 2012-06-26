@@ -11,7 +11,7 @@ class Genapp_Search_Helper_PdfParser
 	 * @param string $filename The filename to extract the data from.
 	 * @return string The extracted text from the PDF
 	 */
-	public function pdf2txt($data)
+	public function pdf2txt($data, $filesCharset, $outputCharset)
 	{
 		/**
 		 * Split apart the PDF document into sections. We will address each
@@ -49,7 +49,7 @@ class Genapp_Search_Helper_PdfParser
 					$data =@ gzuncompress($chunk["data"]);
 					if (trim($data) != "") {
 						// If we got data then attempt to extract it.
-						$result_data .= ' ' . $this->ps2txt($data);
+						$result_data .= ' ' . iconv($filesCharset, $outputCharset, $this->ps2txt($data));
 					}
 				}
 			}

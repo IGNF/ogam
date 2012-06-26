@@ -35,7 +35,9 @@ class Genapp_Search_Lucene_Document extends Zend_Search_Lucene_Document
 
 		if (isset($values['Contents']) && $values['Contents'] != '') {
 			// Add the Contents field to the document as an UnStored field.
-			$this->addField(Zend_Search_Lucene_Field::UnStored('Contents', $values['Contents'], $charset));
+			// The content must be already in UTF-8 to avoid the out
+			// of memory error during the iconv process of big file
+			$this->addField(Zend_Search_Lucene_Field::UnStored('Contents', $values['Contents'], 'UTF-8'));
 		}
 	}
 }

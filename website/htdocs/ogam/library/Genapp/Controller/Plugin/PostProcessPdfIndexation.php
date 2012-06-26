@@ -80,8 +80,8 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	        $index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
 	    }
 
-	    $index->setMaxBufferedDocs(20);// (10) à monter moitié de memory_get_usage() memory_get_peak_usage()
-	    $index->setMaxMergeDocs(10);// (PHP_INT_MAX) à descendre
+	    $index->setMaxBufferedDocs(20);// (10) à monter moitié de memory_get_usage(true) memory_get_peak_usage(true)
+	    $index->setMaxMergeDocs(PHP_INT_MAX/2);// (PHP_INT_MAX) à descendre
 	    $index->setMergeFactor(20);// (10) à monter
 
         $filesList = AbstractOGAMController::getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
@@ -103,6 +103,8 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 		    				$logger->debug($msg);
 		    				if($verbose){ echo $msg."\n\r"; }
 		    			}
+		    			$doc = NULL;
+		    			unset($doc);// for memory release
 		    		}
 		    	}
 		    	$index->commit();
@@ -113,12 +115,16 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	        	if($update == true){
 	        		// Note: use termDocs() instead of find() for get a doc by its id
 	        		$term = new Zend_Search_Lucene_Index_Term($filename, 'Filename');
-					$docIds  = $index->termDocs($term);
+					$docIds = $index->termDocs($term);
 					if(count($docIds) == 0){
 						self::indexPdf($index, $filename, $config->indices->$indexKey);
 					} else {
 						$logger->debug('Skip of the file: '.$filename);
 					}
+					$term = NULL;
+					unset($term);// for memory release
+					$docIds = NULL;
+					unset($docIds);// for memory release
 	        	} else {
 					self::indexPdf($index, $filename, $config->indices->$indexKey);
 	        	}
@@ -129,6 +135,10 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 			    $logger->debug($msg);
 			    if($verbose){ echo $msg."\n\r"; }
 				$lastNumDocsChange = time();
+				$fileIndexationTime = $processTime = $msg = NULL;
+				unset($fileIndexationTime);// for memory release
+				unset($processTime);// for memory release
+				unset($msg);// for memory release
 	        }
 	    }
 
@@ -146,6 +156,10 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
             	$conf->filesCharset
             );
             $index->commit();
+            if($verbose){
+            	echo 'memory_get_usage : '.memory_get_usage(true)."\n\r";
+            	echo 'memory_get_peak_usage : '.memory_get_peak_usage(true)."\n\r";
+            }
         } catch(Exception $e){
         	Zend_Registry::get('logger')->err($e->getMessage());
         }

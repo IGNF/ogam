@@ -71,13 +71,23 @@ class Genapp_Search_Lucene_Index_Pdfs
 		 * contents item in the $indexValues array.
 		 */
 		$pdfParse                = new Genapp_Search_Helper_PdfParser();
-		$indexValues['Contents'] = $pdfParse->pdf2txt($pdf->render());
+		$indexValues['Contents'] = $pdfParse->pdf2txt($pdf->render(), $filesCharset, 'UTF-8');
+		$pdfParse = NULL;
+	    unset($pdfParse);// for memory release
+		$pdf = NULL;
+		unset($pdf);// for memory release
+
 
 		// Create the document using the values
 		$doc = new Genapp_Search_Lucene_Document($indexValues, $filesCharset);
+		$indexValues = NULL;
+		unset($indexValues);// for memory release
+
 		if ($doc !== false) {
 			// If the document creation was sucessful then add it to our index.
 			$luceneIndex->addDocument($doc);
+			$doc = NULL;
+			unset($doc);// for memory release
 		}
 
 		// Return the Lucene index object.

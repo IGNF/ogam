@@ -46,7 +46,7 @@ class PdfmetadataController extends AbstractOGAMController {
 		$indexKey = $this->_getParam("INDEX_KEY");
 		$config = Zend_Registry::get('configuration');
 
-		$filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
+		$filesList = AbstractOGAMController::getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
 
 		if(count($filesList)>0) { // make sure the glob array has something in it
 			$this->view->files = $filesList;
