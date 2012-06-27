@@ -365,7 +365,8 @@ class FileindexationController extends AbstractOGAMController {
 							$value = $pdf->properties[$meta];
 							$filesCharset = $config->indices->$indexKey->filesCharset;
 							$value = iconv($filesCharset, "UTF-8//TRANSLIT", $value);
-							if(empty($indexValues[$meta]) || !in_array($value, $indexValues[$meta])){
+							$trimmedValue = trim($value);// To remove the " " string
+							if(!empty($trimmedValue) && (empty($indexValues[$meta]) || !in_array($value, $indexValues[$meta]))){
 								$indexValues[$meta][] = $value;
 							}
 						}
