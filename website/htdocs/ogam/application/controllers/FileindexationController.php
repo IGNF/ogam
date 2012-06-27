@@ -264,7 +264,13 @@ class FileindexationController extends AbstractOGAMController {
 				$result['url'] = $hit->url;
 
 				foreach($filesMetadata as $meta){
-					$result[$meta] = $hit->getDocument()->$meta;
+					$value = '-';
+					try {
+					    $value = $hit->getDocument()->getFieldValue($meta);
+					} catch(Exception $e) {
+						//No value for this metadata
+					}
+					$result[$meta] = $value;
 				}
 				$results[] = $result;
 			}
