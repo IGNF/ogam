@@ -336,6 +336,7 @@ Genapp.GeoPanel = Ext
 							title : this.legendPanelTitle,
 							tabTip : this.legendPanelTabTip,
 							frame : true,
+							autoScroll : true,
 							layoutConfig : {
 								animate : true
 							}
