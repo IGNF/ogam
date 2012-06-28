@@ -71,21 +71,21 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 		$logger = Zend_Registry::get('logger');
 		$logger->debug('Start of the index pdfs PostProcess');
 
-        $config = Zend_Registry::get("configuration");
+        $config = Zend_Registry::get("configuration")->indices->$indexKey;
 		if($update == true){
 	        // The 'create' function is used to remove the old index
-	        $index = Genapp_Search_Lucene::open($config->indices->$indexKey->directory);
+	        $index = Genapp_Search_Lucene::open($config->directory);
 	        $index->optimize();
 	    } else {
 	        // The 'create' function is used to remove the old index
-	        $index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
+	        $index = Genapp_Search_Lucene::create($config->directory);
 	    }
 
-	    $index->setMaxBufferedDocs(50);// (10) To increase for batch indexing (half of the allowed memory (see memory_get_usage(true) and memory_get_peak_usage(true)))
-	    $index->setMaxMergeDocs(PHP_INT_MAX/2);// (PHP_INT_MAX) To decrease for batch indexing
-	    $index->setMergeFactor(50);// (10) To increase for batch indexing
+	    $index->setMaxBufferedDocs($config->batchIndexing->maxBufferedDocs);// (default to 10) To increase for batch indexing (half of the allowed memory (see memory_get_usage(true) and memory_get_peak_usage(true)))
+	    $index->setMaxMergeDocs($config->batchIndexing->maxMergeDocs);// (default to PHP_INT_MAX) To decrease for batch indexing
+	    $index->setMergeFactor($config->batchIndexing->mergeFactor);// (default to 10) To increase for batch indexing
 
-        $filesList = AbstractOGAMController::getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
+        $filesList = AbstractOGAMController::getFilesList($config->filesDirectories, 'pdf');
 
         $count = count($filesList);
 		if($verbose){ echo $count . " files found.\n\r"; }
@@ -118,7 +118,7 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 	        		$term = new Zend_Search_Lucene_Index_Term($filename, 'Filename');
 					$docIds = $index->termDocs($term);
 					if(count($docIds) == 0){
-						self::indexPdf($index, $filename, $config->indices->$indexKey, $verbose);
+						self::indexPdf($index, $filename, $config, $verbose);
 					} else {
 						$logger->debug('Skip of the file: '.$filename);
 					}
@@ -127,7 +127,7 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 					$docIds = NULL;
 					unset($docIds);// for memory release
 	        	} else {
-					self::indexPdf($index, $filename, $config->indices->$indexKey, $verbose);
+					self::indexPdf($index, $filename, $config, $verbose);
 	        	}
 	        	$lastNumDocs++;
 			    $fileIndexationTime = time() - $lastNumDocsChange;

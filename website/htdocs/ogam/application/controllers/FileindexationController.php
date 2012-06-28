@@ -160,37 +160,6 @@ class FileindexationController extends AbstractOGAMController {
 		}
 	}
 
-	public function _indexpdfs() {
-
-		set_time_limit(0);
-		$this->logger->debug('Start of the index pdfs action');
-		
-        $indexKey = $this->_getIndexKey();
-
-        $config = Zend_Registry::get("configuration");
-	    // The 'create' function is used to remove the old index
-	    $index = Genapp_Search_Lucene::create($config->indices->$indexKey->directory);
-
-        $filesList = $this->_getFilesList($config->indices->$indexKey->filesDirectories, 'pdf');
-
-	    if (count($filesList) > 0) { // make sure the glob array has something in it
-	        foreach ($filesList as $filename) {
-	            $index = Genapp_Search_Lucene_Index_Pdfs::index(
-	            	$filename,
-	            	$index,
-	            	$config->indices->$indexKey->filesMetadata->toArray(),
-	            	$config->indices->$indexKey->filesCharset
-	            );
-	        }
-	    }
-	    $index->commit();
-
-        $this->logger->debug('End of the index pdfs action');
-
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
-	}
-
 	private function _getIndexKey() {
 		$indexKey = $this->_getParam("INDEX_KEY");
 
