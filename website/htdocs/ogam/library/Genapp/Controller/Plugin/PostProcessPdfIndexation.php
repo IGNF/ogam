@@ -75,7 +75,7 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 		if($update == true){
 	        // The 'create' function is used to remove the old index
 	        $index = Genapp_Search_Lucene::open($config->directory);
-	        $index->optimize();
+	        $index->optimize();// Very necessary to avoid strange issue
 	    } else {
 	        // The 'create' function is used to remove the old index
 	        $index = Genapp_Search_Lucene::create($config->directory);
@@ -98,8 +98,9 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 		    	for($i = 0; $i < $index->count(); $i++){
 		    		if(!$index->isDeleted($i)){
 		    			$doc = $index->getDocument($i);
-		    			if(!file_exists($doc->getFieldValue('Filename'))){
-		    				$index->deleted($i);
+		    			$filename = $doc->getFieldValue('Filename');
+		    			if(!file_exists($filename)){
+		    				$index->delete($i);
 		    				$msg = 'Deletion of the file: '.$filename;
 		    				$logger->debug($msg);
 		    				if($verbose){ echo $msg."\n\r"; }
