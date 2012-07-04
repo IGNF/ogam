@@ -510,7 +510,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getDatasetsForDisplay() {
 		$db = $this->getAdapter();
-		$req = "SELECT DISTINCT dataset_id as id, label, definition, is_default ";
+		$req = "SELECT DISTINCT dataset_id as id, label, is_default ";
 		$req .= " FROM dataset ";
 		$req .= " INNER JOIN dataset_fields using (dataset_id) ";
 
@@ -535,7 +535,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$dataset = new Genapp_Object_Metadata_Dataset();
 			$dataset->id = $row['id'];
 			$dataset->label = $row['label'];
-			$dataset->definition = $row['definition'];
 			$dataset->isDefault = $row['is_default'];
 			$result[] = $dataset;
 		}
@@ -1525,14 +1524,23 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		if (empty($cachedResult)) {
 
 			$db = $this->getAdapter();
+			
+			// TODO : Performances à améliorer
 
-			$req = "	SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name ";
-			$req .= "	FROM mode_taxref ";
-			$req .= "	WHERE unit = ? ";
-			if ($query != null) {
-				$req .= " AND name ilike '%".$query."%' or complete_name ilike '%".$query."%' or vernacular_name ilike '%".$query."%'";
-			}
-			$req .= "	ORDER BY name ";
+			$req = " SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name ";
+			$req .= " FROM ( ";
+			$req .= "      SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name, " ;
+			$req .= "      _usname ilike '".$query."%' as ilike1 ";
+			$req .= "      FROM mode_taxref ";        
+			$req .= "      WHERE unit = ? "; 
+			$req .= "      AND _usname ilike '".$query."%' ";
+			$req .= "      OR name ilike '%".$query."%' ";
+			$req .= "      OR complete_name ilike '%".$query."%' ";
+			$req .= "      OR vernacular_name ilike '%".$query."%' ";
+			$req .= " ) as foo2 ";
+			$req .= " WHERE ilike1 ";
+			$req .= " ORDER BY ilike1 DESC, is_reference DESC, name ";
+		
 			if ($start != null && $limit != null) {
 				$req .= " LIMIT ".$limit." OFFSET ".$start;
 			}
