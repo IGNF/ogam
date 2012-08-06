@@ -88,7 +88,7 @@ class DataEditionController extends AbstractOGAMController {
 	 * @return the index view
 	 */
 	public function indexAction() {
-		return $this->showIndexAction();
+		$this->_redirect('index');
 	}
 
 	/**
