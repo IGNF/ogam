@@ -969,10 +969,11 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('ajaxgetcodesAction');
 
 		$unit = $this->getRequest()->getParam('unit');
+		$query = $this->getRequest()->getParam('query');
 
-		$this->logger->debug('$unit : '.$unit);
+		$this->logger->debug('$unit : '.$unit.' $query : '.$query);
 
-		$codes = $this->metadataModel->getModeLabels($unit);
+		$codes = $this->metadataModel->getModeLabels($unit, null, $query);
 
 		// Send the result as a JSON String
 		$json = '{"success":true';
