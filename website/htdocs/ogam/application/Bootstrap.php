@@ -48,7 +48,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * Autoloading
 	 */
 	protected function _initApplicationAutoloading() {
-		$this->logger->debug('_initApplicationAutoloading');
 		$resourceLoader = $this->getResourceLoader();
 		$resourceLoader->addResourceTypes(array(
 				'objects' => array(
@@ -99,8 +98,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap('ConfFiles');
 		$configuration = Zend_Registry::get('configuration');
 		$baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
-
-		// Initialisons la vue
+		
+			// Initialisons la vue
 		$view = new Zend_View();
 		$view->doctype('XHTML1_STRICT');
 		$view->headTitle()->setSeparator(' - ')->append($view->translate('Layout Head Title'));
