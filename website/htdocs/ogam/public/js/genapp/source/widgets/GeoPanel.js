@@ -801,7 +801,7 @@ Genapp.GeoPanel = Ext
 									control : drawPointControl,
 									map : this.map,
 									tooltip : this.drawPointControlTitle,
-									toggleGroup : "drawControl",
+									toggleGroup : "editing",
 									group : "drawControl",
 									checked : false,
 									iconCls : 'drawpoint'
@@ -817,7 +817,7 @@ Genapp.GeoPanel = Ext
 									control : drawLineControl,
 									map : this.map,
 									tooltip : this.drawLineControlTitle,
-									toggleGroup : "drawControl",
+									toggleGroup : "editing",
 									group : "drawControl",
 									checked : false,
 									iconCls : 'drawline'
@@ -833,7 +833,7 @@ Genapp.GeoPanel = Ext
 								map : this.map,
 								tooltip : this.drawFeatureControlTitle,
 								toggleGroup : "drawControl",
-								group : "drawControl",
+								toggleGroup : "editing",
 								checked : false,
 								iconCls : 'drawpolygon'
 							});
@@ -848,7 +848,7 @@ Genapp.GeoPanel = Ext
 								control : modifyFeatureControl,
 								map : this.map,
 								tooltip : this.modifyFeatureControlTitle,
-								toggleGroup : "drawControl",
+								toggleGroup : "editing",
 								group : "drawControl",
 								checked : false,
 								iconCls : 'modifyfeature'
@@ -869,7 +869,7 @@ Genapp.GeoPanel = Ext
 								control : deleteFeatureControl,
 								map : this.map,
 								tooltip : this.tbarDeleteFeatureButtonTooltip,
-								toggleGroup : "drawControl",
+								toggleGroup : "editing",
 								group : "drawControl",
 								checked : false,
 								iconCls : 'deletefeature'
@@ -904,7 +904,7 @@ Genapp.GeoPanel = Ext
 								control : this.snappingControl,
 								map : this.map,
 								tooltip : 'Snapping',
-								toggleGroup : "LayerTools",
+								toggleGroup : "editing",
 								group : "LayerTools",
 								checked : false,
 								iconCls : 'snapping'
@@ -921,7 +921,7 @@ Genapp.GeoPanel = Ext
 								control : this.getFeatureControl,
 								map : this.map,
 								tooltip : this.selectFeatureControlTitle,
-								toggleGroup : "drawControl",
+								toggleGroup : "editing",
 								group : "LayerTools",
 								checked : false,
 								iconCls : 'selectFeature'
@@ -939,7 +939,7 @@ Genapp.GeoPanel = Ext
 							var featureInfoButton = new GeoExt.Action({
 								control : this.featureInfoControl,
 								map : this.map,
-								toggleGroup : "drawControl",
+								toggleGroup : "editing",
 								group : "LayerTools",
 								checked : false,
 								tooltip : this.featureInfoControlTitle,
@@ -1013,7 +1013,7 @@ Genapp.GeoPanel = Ext
 						var locationInfoButton = new GeoExt.Action({
 							control : locationInfoControl,
 							map : this.map,
-							toggleGroup : "drawControl",
+							toggleGroup : "editing",
 							group : "navControl",
 							checked : false,
 							tooltip : this.locationInfoControlTitle,
@@ -1034,7 +1034,7 @@ Genapp.GeoPanel = Ext
 							control : zoomInControl,
 							map : this.map,
 							tooltip : this.zoomBoxInControlTitle,
-							toggleGroup : "navControl",
+							toggleGroup : "editing",
 							group : "navControl",
 							checked : false,
 							iconCls : 'zoomin'
@@ -1051,7 +1051,7 @@ Genapp.GeoPanel = Ext
 							control : zoomOutControl,
 							map : this.map,
 							tooltip : this.zoomBoxOutControlTitle,
-							toggleGroup : "navControl",
+							toggleGroup : "editing",
 							group : "navControl",
 							checked : false,
 							iconCls : 'zoomout'
@@ -1071,7 +1071,7 @@ Genapp.GeoPanel = Ext
 							control : navigationControl,
 							map : this.map,
 							tooltip : this.navigationControlTitle,
-							toggleGroup : "navControl",
+							toggleGroup : "editing",
 							group : "navControl",
 							checked : true,
 							iconCls : 'pan'
