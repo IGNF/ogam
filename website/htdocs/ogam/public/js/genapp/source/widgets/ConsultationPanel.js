@@ -1296,7 +1296,7 @@ Genapp.ConsultationPanel = Ext
 						// to the provider, we display the edit link
 						if (!this.checkEditionRights || Genapp.userProviderId == record.data._provider_id) {
 							stringFormat = '<div class="genapp-query-grid-edit genapp-query-grid-editUI" '
-									+ 'onclick="window.open(Genapp.base_url + \'dataedition/show-edit-data/{0}\');"' + 'ext:qtitle="'
+									+ 'onclick="window.location.href=Genapp.base_url + \'dataedition/show-edit-data/{0}\';"' + 'ext:qtitle="'
 									+ this.editDataButtonTitle + '"' + 'ext:qwidth="' + this.tipDefaultWidth + '"' + 'ext:qtip="' + this.editDataButtonTip
 									+ '"' + '></div>';
 						} else {

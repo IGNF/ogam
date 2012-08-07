@@ -107,7 +107,7 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
                         '</tpl>',
                         '<tpl if="editURL">',
                             '<div class="genapp-query-details-panel-edit-link" ',
-                                'onclick="window.open(\'' + Genapp.base_url + 'dataedition/show-edit-data/{editURL}\')"',
+                                'onclick="window.location.href=\'' + Genapp.base_url + 'dataedition/show-edit-data/{editURL}\'"',
                                 'ext:qtitle="' + this.editLinkButtonTitle + '"',
                                 'ext:qwidth="' + this.tipDefaultWidth + '" ',
                                 'ext:qtip="' + this.editLinkButtonTip + '">&nbsp;',
