@@ -367,10 +367,9 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * The key elements in the parent tables must have an existing value in the child.
 	 *
 	 * @param DataObject $data the data object we're looking at.
-	 * @param Boolean $isForDisplay indicate if we only want to display the data or if for update/insert
 	 * @return List[DataObject] The line of data in the parent tables.
 	 */
-	public function getAncestors($data, $isForDisplay = false) {
+	public function getAncestors($data) {
 		$db = $this->getAdapter();
 
 		$ancestors = array();
@@ -415,7 +414,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			$ancestors[] = $parent;
 
 			// Recurse
-			$ancestors = array_merge($ancestors, $this->getAncestors($parent, $isForDisplay));
+			$ancestors = array_merge($ancestors, $this->getAncestors($parent));
 
 		}
 		return $ancestors;

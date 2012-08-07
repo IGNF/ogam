@@ -623,7 +623,7 @@ class Genapp_Service_QueryService {
 		$result = $this->genericModel->getDatum($data);
 
 		// The data ancestors
-		$ancestors = $this->genericModel->getAncestors($data, true);
+		$ancestors = $this->genericModel->getAncestors($data);
 		$ancestors = array_reverse($ancestors);
 
 		// Look for a geometry object in order to calculate a bounding box
