@@ -459,30 +459,57 @@ class DataEditionController extends AbstractOGAMController {
 
 			echo '{"success":false,"errorMessage":'.json_encode($this->translator->translate("Invalid form")).'}';
 		}
+		else {
 
-		// Update the data descriptor with the values submitted
-		foreach ($data->getFields() as $field) {
-			$field->value = $this->_getParam($field->getName());
-		}
-
-		try {
-			if ($mode == 'ADD') {
-				$data = $this->genericModel->insertData($data);
-			} else {
-				$this->genericModel->updateData($data);
+			// Update the data descriptor with the values submitted
+			foreach ($data->getFields() as $field) {
+				$field->value = $this->_getParam($field->getName());
 			}
-			echo '{"success":true, ';
-			if ($mode == 'ADD') {
-				// Build the URL to link to the current item
-				$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$data->getId();
-				echo '"redirectLink":'.json_encode($redirectURL).',';
-			}
-			echo '"message":'.json_encode($this->translator->translate("Data saved"));
-			echo '}';
+	
+			try {
+				// Insert or update the data
+				if ($mode == 'ADD') {
+					$data = $this->genericModel->insertData($data);
+				} else {
+					$this->genericModel->updateData($data);
+				}
+				echo '{"success":true, ';
+				
+				
+				// Manage redirections
 
-		} catch (Exception $e) {
-			$this->logger->err($e->getMessage());
-			echo '{"success":false,"errorMessage":'.json_encode($e->getMessage()).'}';
+				// Check the number of children
+				$children = $this->genericModel->getChildren($data);
+				if (count($children) == 0) {
+
+					// No more children possible, we redirect to the parent
+					if ($mode == 'ADD') {
+						$ancestors = $this->genericModel->getAncestors($data);
+						if (!empty($ancestors)) {
+							$ancestor = $ancestors[0];
+							$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$ancestor->getId();
+						} else {
+							$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$data->getId();
+						}
+						echo '"redirectLink":'.json_encode($redirectURL).',';
+					}
+				} else {
+					if ($mode == 'ADD') {
+						// We redirect to the newly created item
+						$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$data->getId();
+						echo '"redirectLink":'.json_encode($redirectURL).',';
+					}
+					// Edit mode : we stay on the same page
+				}
+				
+				// Add a message				
+				echo '"message":'.json_encode($this->translator->translate("Data saved"));
+				echo '}';
+	
+			} catch (Exception $e) {
+				$this->logger->err($e->getMessage());
+				echo '{"success":false,"errorMessage":'.json_encode($e->getMessage()).'}';
+			}
 		}
 
 		// No View, we send directly the JSON
