@@ -1402,8 +1402,22 @@ Genapp.GeoPanel = Ext
 
 						if (geoPanelId == this.id) {
 							if (value.data.code !== null) {
+								
+								layerName = value.data.code;
+								
 								// Change the WFS layer typename
-								this.wfsLayer.params.TYPENAME = value.data.code;
+								this.wfsLayer.params.TYPENAME = layerName;								
+
+								// Copy the visibility range from the original layer
+								originalLayers = this.map.getLayersByName(layerName);
+								if (originalLayers != null) {
+									originalLayer = originalLayers[0];
+									this.wfsLayer.maxResolution = originalLayer.maxResolution;
+									this.wfsLayer.maxScale = originalLayer.maxScale;
+									this.wfsLayer.minResolution = originalLayer.minResolution;
+									this.wfsLayer.minScale = originalLayer.minScale;
+									this.wfsLayer.calculateInRange();
+								}
 
 								// Make it visible
 								this.wfsLayer.setVisibility(true);
@@ -1421,11 +1435,12 @@ Genapp.GeoPanel = Ext
 								}
 								// Set the layer name in other tools
 								if (this.featureInfoControl !== null) {
-									this.featureInfoControl.layerName = value.data.code;
+									this.featureInfoControl.layerName = layerName;
 								}
 								if (this.getFeatureControl !== null) {
-									this.getFeatureControl.layerName = value.data.code;
+									this.getFeatureControl.layerName = layerName;
 								}
+								
 
 							} else {
 								// Hide the layer
