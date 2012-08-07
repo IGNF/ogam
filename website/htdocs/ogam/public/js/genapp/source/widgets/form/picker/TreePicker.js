@@ -74,7 +74,7 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 	listeners : {
 		'dblclick' : {// Select the node on double click
 			fn : function(node, event) {
-				this.fireEvent('select', node.attributes);
+				this.fireEvent('select', node);
 			}
 		}
 	},

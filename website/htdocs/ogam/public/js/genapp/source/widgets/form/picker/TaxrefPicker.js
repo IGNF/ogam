@@ -23,6 +23,11 @@ Genapp.form.picker.TaxrefPicker = Ext.extend(Genapp.form.picker.TreePicker, {
 				scope : this,
 				single : true
 			},
+			'dblclick' : {// Select the node on double click
+				fn : function(node, event) {
+					this.fireEvent('select', node);
+				}
+			},
 			scope : this
 		};
 	},
