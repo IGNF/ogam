@@ -304,10 +304,10 @@ class FileindexationController extends AbstractOGAMController {
 
 	public function _getPdfsMetadataValues($indexKey)
 	{
-		ini_set('max_execution_time', '300');
-
 		$config = Zend_Registry::get('configuration');
+		ini_set('max_execution_time', $config->max_execution_time);
 
+		
 		// Get the cache
 		$cacheKey = 'getmetadatafields' . $indexKey;
 		$manager = $this->getFrontController()
