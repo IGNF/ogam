@@ -1891,7 +1891,10 @@ Genapp.ConsultationPanel = Ext
 						var activatedLayers = this.geoPanel.map.getLayersBy('visibility', true);
 						var activatedLayersNames = '';
 						for (i = 0; i < activatedLayers.length; i++) {
-							if (activatedLayers[i].printable !== false) {
+							currentLayer = activatedLayers[i];
+							if (currentLayer.printable !== false &&
+								currentLayer.visibility == true &&
+								currentLayer.inRange == true) {
 								activatedLayersNames += activatedLayers[i].name + ',';
 							}
 						}

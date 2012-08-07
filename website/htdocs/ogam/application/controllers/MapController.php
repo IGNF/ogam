@@ -536,6 +536,15 @@ class MapController extends AbstractOGAMController {
 		$reportUrl .= "&WMSURL=".urlencode($wmsURL);
 
 		$this->logger->debug('generatemap URL : '.$reportUrl);
+		
+		// Set the timeout and user agent
+		ini_set ('user_agent', $_SERVER['HTTP_USER_AGENT']);
+		ini_set("max_execution_time", $configuration->max_execution_time);
+		$maxReportGenerationTime = $configuration->max_report_generation_time;
+		$defaultTimeout = ini_get('default_socket_timeout');
+		if ($maxReportGenerationTime != null) {			
+			ini_set('default_socket_timeout', $maxReportGenerationTime);
+		}
 
 		// Set the header for a PDF output
 		header("Cache-control: private\n");
@@ -550,11 +559,17 @@ class MapController extends AbstractOGAMController {
 				echo fread($handle, 8192);
 			}
 			fclose($handle);
+			
+			// No View, we send directly the output
+			$this->_helper->layout()->disableLayout();
+			$this->_helper->viewRenderer->setNoRender();
+		} else {
+			$this->logger->debug("Error reading data");
+			echo "Error reading data";
 		}
 
-		// No View, we send directly the output
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
+		// Restore default timeout
+		ini_set('default_socket_timeout', $defaultTimeout);
 
 	}
 
