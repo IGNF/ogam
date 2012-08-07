@@ -80,8 +80,7 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 /**
  * The handler for the control
  */
-OpenLayers.Handler.LocationInfo = OpenLayers.Class.create();
-OpenLayers.Handler.LocationInfo.prototype = OpenLayers.Class.inherit(OpenLayers.Handler, {
+OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 	/**
 	 * @cfg {String} alertErrorTitle The alert Error Title (defaults to
 	 *      <tt>'Error :'</tt>)

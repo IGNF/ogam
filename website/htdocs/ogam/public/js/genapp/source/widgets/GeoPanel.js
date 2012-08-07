@@ -488,17 +488,23 @@ Genapp.GeoPanel = Ext
 								strokeOpacity : 1
 							}, OpenLayers.Feature.Vector.style["default"]));
 
-							this.wfsLayer = new OpenLayers.Layer.WFS("WFS Layer", this.urlWFS, {
-								typename : ''
-							}, {
-								printable : false,
-								displayInLayerSwitcher : false,
-								extractAttributes : false,
-								styleMap : styleMap,
-								visibility : false
-							// the layer is not visible
-							// by default
-							});
+							this.wfsLayer = new OpenLayers.Layer.Vector("WFS Layer", 
+								{
+									strategies:[new OpenLayers.Strategy.BBOX()],
+									protocol: new OpenLayers.Protocol.WFS({
+										url: this.urlWFS,
+										featureType :''
+									})
+								},
+								{
+									printable : false,
+									displayInLayerSwitcher : false,
+									extractAttributes : false,
+									styleMap : styleMap,
+									visibility : false
+									// the layer is not visible by default
+								}
+								);
 
 						}
 
@@ -531,11 +537,7 @@ Genapp.GeoPanel = Ext
 							url = layerObject.url; // default case, a real url
 						}
 
-						if (layerObject.untiled) {
-							newLayer = new OpenLayers.Layer.WMS.Untiled(layerObject.name, url, layerObject.params, layerObject.options);
-						} else {
-							newLayer = new OpenLayers.Layer.WMS(layerObject.name, url, layerObject.params, layerObject.options);
-						}
+						newLayer = new OpenLayers.Layer.WMS(layerObject.name, url, layerObject.params, layerObject.options);
 
 						newLayer.displayInLayerSwitcher = true;
 
@@ -1258,46 +1260,47 @@ Genapp.GeoPanel = Ext
 					 *            cause that the zoom range.
 					 */
 					enableLayersAndLegends : function(layerNames, check, setForceDisable) {
-					    if(!Ext.isEmpty(layerNames)){
-    						// The tabPanels must be activated before to show a
-    						// child component
-    						var isLayerPanelVisible = this.layerPanel.isVisible(), i;
-    
-    						this.layersAndLegendsPanel.activate(this.layerPanel);
-    						for (i = 0; i < layerNames.length; i++) {
-    							var node = this.layerTree.getNodeByLayerName(layerNames[i]);
-    							if (!Ext.isEmpty(node)) {
-    								var nodeId = node.id;
-    								if (setForceDisable !== false) {
-    									this.layerTree.getNodeById(nodeId).forceDisable = false;
-    								}
-    								if (this.layerTree.getNodeById(nodeId).zoomDisable !== true) {
-    									this.layerTree.getNodeById(nodeId).enable();
-    								}
-    								this.layerTree.getNodeById(nodeId).getUI().show();
-    
-    								if (check === true) {
-    									// Note: the redraw must be done before to
-    									// check the node
-    									// to avoid to redisplay the old layer
-    									// images before the new one
-    									var layers = this.map.getLayersByName(layerNames[i]);
-    									layers[0].redraw(true);
-    									this.layerTree.toggleNodeCheckbox(nodeId, true);
-    								}
-    							}
-    						}
-    
-    						this.layersAndLegendsPanel.activate(this.legendPanel);
-    						this.setLegendsVisible(layerNames, true);
-    
-    						// Keep the current activated panel activated
-    						if (isLayerPanelVisible) {
-    							this.layersAndLegendsPanel.activate(this.layerPanel);
-    						}
-    					} else {
-    					    console.warn('EnableLayersAndLegends : layerNames parameter is empty.');
-    					}
+						if (!Ext.isEmpty(layerNames)) {
+							// The tabPanels must be activated before to show a
+							// child component
+							var isLayerPanelVisible = this.layerPanel.isVisible(), i;
+
+							this.layersAndLegendsPanel.activate(this.layerPanel);
+							for (i = 0; i < layerNames.length; i++) {
+								var node = this.layerTree.getNodeByLayerName(layerNames[i]);
+								if (!Ext.isEmpty(node)) {
+									var nodeId = node.id;
+									if (setForceDisable !== false) {
+										this.layerTree.getNodeById(nodeId).forceDisable = false;
+									}
+									if (this.layerTree.getNodeById(nodeId).zoomDisable !== true) {
+										this.layerTree.getNodeById(nodeId).enable();
+									}
+									this.layerTree.getNodeById(nodeId).getUI().show();
+
+									if (check === true) {
+										// Note: the redraw must be done before
+										// to
+										// check the node
+										// to avoid to redisplay the old layer
+										// images before the new one
+										var layers = this.map.getLayersByName(layerNames[i]);
+										layers[0].redraw(true);
+										this.layerTree.toggleNodeCheckbox(nodeId, true);
+									}
+								}
+							}
+
+							this.layersAndLegendsPanel.activate(this.legendPanel);
+							this.setLegendsVisible(layerNames, true);
+
+							// Keep the current activated panel activated
+							if (isLayerPanelVisible) {
+								this.layersAndLegendsPanel.activate(this.layerPanel);
+							}
+						} else {
+							console.warn('EnableLayersAndLegends : layerNames parameter is empty.');
+						}
 					},
 
 					/**
@@ -1402,13 +1405,14 @@ Genapp.GeoPanel = Ext
 
 						if (geoPanelId == this.id) {
 							if (value.data.code !== null) {
-								
-								layerName = value.data.code;
-								
-								// Change the WFS layer typename
-								this.wfsLayer.params.TYPENAME = layerName;								
 
-								// Copy the visibility range from the original layer
+								layerName = value.data.code;
+
+								// Change the WFS layer typename
+								this.wfsLayer.protocol.featureType = layerName;
+
+								// Copy the visibility range from the original
+								// layer
 								originalLayers = this.map.getLayersByName(layerName);
 								if (originalLayers != null) {
 									originalLayer = originalLayers[0];
@@ -1428,9 +1432,8 @@ Genapp.GeoPanel = Ext
 								// Set the getfeature control
 								if (this.getFeatureControl !== null) {
 									this.getFeatureControl.protocol = new OpenLayers.Protocol.WFS({
-										version : this.wfsLayer.params.VERSION,
 										url : this.wfsLayer.url,
-										featureType : this.wfsLayer.params.TYPENAME
+										featureType : this.wfsLayer.protocol.featureType
 									});
 								}
 								// Set the layer name in other tools
@@ -1440,7 +1443,6 @@ Genapp.GeoPanel = Ext
 								if (this.getFeatureControl !== null) {
 									this.getFeatureControl.layerName = layerName;
 								}
-								
 
 							} else {
 								// Hide the layer

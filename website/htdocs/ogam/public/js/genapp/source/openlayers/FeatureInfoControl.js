@@ -141,8 +141,7 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 /**
  * The handler for the control
  */
-OpenLayers.Handler.FeatureInfo = OpenLayers.Class.create();
-OpenLayers.Handler.FeatureInfo.prototype = OpenLayers.Class.inherit(OpenLayers.Handler, {
+OpenLayers.Handler.FeatureInfo = OpenLayers.Class(OpenLayers.Handler, {
 	/**
 	 * @cfg {String} alertErrorTitle The alert Error Title (defaults to
 	 *      <tt>'Error :'</tt>)

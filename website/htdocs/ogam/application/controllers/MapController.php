@@ -212,9 +212,9 @@ class MapController extends AbstractOGAMController {
 
 			// OpenLayer object (tiled or not)
 			if ($layer->isUntiled == 1) {
-				$out .= '"untiled":true';
+				$out .= '"singleTile":true';
 			} else {
-				$out .= '"untiled":false';
+				$out .= '"singleTile":false';
 			}
 
 			// Logical layer name
