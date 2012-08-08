@@ -46,7 +46,7 @@ if (Genapp.ConsultationPanel) {
                         userManualLinkText : 'User Manual',
                         datasetComboBoxEmptyText : "Please select a dataset...",
                         datasetPanelTitle : "Dataset",
-                        formsPanelTitle : "Forms Panel'",
+                        formsPanelTitle : "Forms Panel",
                         exportButtonText : "Export",
                         csvExportMenuItemText : "Export CSV",
                         kmlExportMenuItemText : "Export KML",
