@@ -78,7 +78,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	public function getSubmissionsForHarmonization() {
 		$db = $this->getAdapter();
 
-		$req = " SELECT provider_id, dataset_id, max(submission_id) as submission_id, max(step) as step, max(status) as status, max(user_login) as user_login, max( _creationdt) as creationdt ";
+		$req = " SELECT provider_id, dataset_id, max(submission_id) as submission_id, max(step) as step, max(status) as status, max(user_login) as user_login, max( _creationdt) as _creationdt ";
 		$req .= " FROM submission ";
 		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
 		$req .= " GROUP BY provider_id, dataset_id";
