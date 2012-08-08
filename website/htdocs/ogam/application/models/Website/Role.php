@@ -19,6 +19,11 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		$translate = Zend_Registry::get('Zend_Translate');
+        $this->lang = strtoupper($translate->getAdapter()->getLocale());
+
+        $this->metadataModel = new Genapp_Model_Metadata_Metadata();
 	}
 
 	/**
@@ -28,10 +33,12 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @return a Role
 	 */
 	public function getRole($roleCode) {
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('WEBSITE', 'ROLE');
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, role_label, role_definition ";
+		$req = " SELECT role_code, COALESCE(t.label, role_label) as role_label, COALESCE(t.definition, role_definition) as role_definition ";
 		$req .= " FROM role ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = role_code";
 		$req .= " WHERE role_code = ? ";
 		$this->logger->info('getRole : '.$req);
 
@@ -57,10 +64,12 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @return Array[Role]
 	 */
 	public function getRoles() {
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('WEBSITE', 'ROLE');
 		$db = $this->getAdapter();
 
-		$req = " SELECT role_code, role_label, role_definition ";
+		$req = " SELECT role_code, COALESCE(t.label, role_label) as role_label, COALESCE(t.definition, role_definition) as role_definition ";
 		$req .= " FROM role ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = role_code";
 		$req .= " ORDER BY role_code";
 		$this->logger->info('getRoles : '.$req);
 
@@ -88,11 +97,13 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @return Array[permissionCode=>permission_label]
 	 */
 	public function getRolePermissions($roleCode) {
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('WEBSITE', 'PERMISSION');
 		$db = $this->getAdapter();
 
-		$req = " SELECT permission_code, permission_label ";
+		$req = " SELECT permission_code, COALESCE(t.label, permission_label) as permission_label ";
 		$req .= " FROM permission_per_role ";
 		$req .= " LEFT JOIN permission using (permission_code) ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = permission_code";
 		$req .= " WHERE role_code = ?";
 		$this->logger->info('getRolePermissions : '.$req);
 
@@ -197,10 +208,12 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @return Array[permissionCode=>permissionLabel]
 	 */
 	public function getAllPermissions() {
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('WEBSITE', 'PERMISSION');
 		$db = $this->getAdapter();
 
-		$req = " SELECT permission_code, permission_label ";
+		$req = " SELECT permission_code, COALESCE(t.label, permission_label) as permission_label ";
 		$req .= " FROM permission ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = permission_code";
 
 		$this->logger->info('getAllPermissions : '.$req);
 

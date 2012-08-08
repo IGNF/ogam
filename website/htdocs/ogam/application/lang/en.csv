@@ -145,6 +145,7 @@ Query Harmonized Data;Visualize Validated Data
 User Administration;User Administration
 Check Configuration;Check the configuration
 Manage Users;User Administration
+Index Files;Index Files
 
 ﻿##########################
 #   User login           #
@@ -215,7 +216,6 @@ Checking foreign keys:;Checking foreign keys:
 The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system.;The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system.
 The foreign key '%s' between the table '%s' and the table '%s' does not match the metadata definition: '%s'.;The foreign key '%s' between the table '%s' and the table '%s' does not match the metadata definition: '%s'.
 Note: The database user must have administration rights to perform these tests.;Note: The database user must have administration rights to perform these tests.
-
 
 ##########################
 # Mapping                #

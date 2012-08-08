@@ -19,6 +19,11 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		$translate = Zend_Registry::get('Zend_Translate');
+        $this->lang = strtoupper($translate->getAdapter()->getLocale());
+
+        $this->metadataModel = new Genapp_Model_Metadata_Metadata();
 	}
 
 	/**
@@ -28,11 +33,13 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 */
 	public function getVectorLayersList() {
 
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER_DEFINITION');
 		$db = $this->getAdapter();
 		$params = array();
 
-		$req = " SELECT layer_name, layer_label ";
+		$req = " SELECT layer_name, COALESCE(t.label, layer_definition.layer_label) as layer_label ";
 		$req .= " FROM layer_definition ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer_definition.layer_name";
 		$req .= " WHERE isVector = 1 ";
 
 		// Check the user profile
@@ -62,11 +69,15 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 */
 	public function getLayersList($providerId = null) {
 
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER_DEFINITION');
 		$db = $this->getAdapter();
 		$params = array();
 
-		$req = " SELECT * ";
+		$req = " SELECT parent_id, layer_name, COALESCE(t.label, layer_definition.layer_label) as layer_label, mapserv_layers, ";
+		$req .= " istransparent, isbaselayer, isuntiled, iscached, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
+		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_legend, has_sld, checked_group, isvector ";
 		$req .= " FROM layer_definition ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer_definition.layer_name";
 		$req .= " LEFT JOIN legend ON (legend.name = layer_definition.layer_name ) ";
 		$req .= " WHERE (name is not null) ";
 		$req .= " AND legend.is_layer = 1 ";
@@ -128,12 +139,16 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 */
 	public function getAllLayersList() {
 
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER_DEFINITION');
 		$db = $this->getAdapter();
 		$params = array();
 
-		$req = " SELECT * ";
+		$req = " SELECT parent_id, layer_name, COALESCE(t.label, layer_definition.layer_label) as layer_label, mapserv_layers, ";
+		$req .= " istransparent, isbaselayer, isuntiled, iscached, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
+		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_legend, has_sld, checked_group, isvector ";
 		$req .= " FROM layer_definition ";
 		$req .= " LEFT JOIN legend ON (legend.name = layer_definition.layer_name ) ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer_definition.layer_name";
 		$req .= " WHERE (name is not null) ";
 		$req .= " AND legend.is_layer = 1 ";
 		$req .= " ORDER BY (parent_id, position) DESC";
@@ -180,10 +195,12 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 */
 	public function getLayer($layerName) {
 
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER_DEFINITION');
 		$db = $this->getAdapter();
 
-		$req = " SELECT * ";
+		$req = " SELECT layer_name, COALESCE(t.label, layer_definition.layer_label) as layer_label, mapserv_layers, istransparent, isbaselayer, isuntiled, iscached, maxscale, minscale, transitioneffect, imageformat, activate_type, has_sld, isvector ";
 		$req .= " FROM layer_definition ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer_definition.layer_name";
 		$req .= " WHERE layer_name = ?";
 
 		Zend_Registry::get("logger")->info('getLayersList : '.$req);
@@ -247,13 +264,15 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 		Zend_Registry::get("logger")->info('getLegend : parentId : '.$parentId.' - providerId : '.$providerId);
 
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER_DEFINITION');
 		$db = $this->getAdapter();
 		$params = array();
 
 		// Prepare the request
-		$req = " SELECT * ";
+		$req = " SELECT item_id, parent_id, isbaselayer, is_layer, is_checked, is_expended, COALESCE(t.label, layer_definition.layer_label) as layer_label, layer_name, is_hidden, is_disabled, maxscale, minscale ";
 		$req .= " FROM legend ";
-		$req .= " LEFT OUTER JOIN layer_definition  ON (legend.name = layer_definition.layer_name) ";
+		$req .= " LEFT OUTER JOIN layer_definition ON (legend.name = layer_definition.layer_name) ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer_definition.layer_name";
 		$req .= " WHERE parent_id = '".$parentId."'";
 
 		// Check the provider id
