@@ -402,9 +402,13 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 			// Fill the PK values (we hope that the child contain the fields of the parent pk)
 			foreach ($parent->infoFields as $key) {
-				$keyField = $data->getInfoField($data->tableFormat->format.'__'.$key->data);
-				if ($keyField != null && $keyField->value != null) {
-					$key->value = $keyField->value;
+				$fieldName = $data->tableFormat->format.'__'.$key->data;
+				$fields = $data->getFields();
+				if(array_key_exists($fieldName, $fields)){
+					$keyField = $fields[$fieldName];
+					if ($keyField != null && $keyField->value != null) {
+						$key->value = $keyField->value;
+					}
 				}
 			}
 
