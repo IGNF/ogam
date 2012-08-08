@@ -40,9 +40,9 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 				foreach ($field->valueLabel as $value) {
 					$val .= $this->view->escape($value). ", ";
 				}
-				$fields[$field->data] = substr($val, 0, -2);
+				$fields[$field->label] = substr($val, 0, -2);
 			} else {
-				$fields[$field->data] = $this->view->escape($field->valueLabel);
+				$fields[$field->label] = $this->view->escape($field->valueLabel);
 			}
 
 		}
