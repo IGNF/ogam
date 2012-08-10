@@ -69,6 +69,9 @@
 
 		<!-- Concatenation of all the JS in one file -->
 		<concat destfile="${cps.js.pack.path}">
+			<fileset file="${src.dir}ogam/public/js/genapp/source/openlayers/FeatureInfoControl.js" />
+			<fileset file="${src.dir}ogam/public/js/genapp/source/openlayers/LocationInfoControl.js" />
+			<fileset file="${src.dir}ogam/public/js/genapp/source/openlayers/GetFeatureControl.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/basiccheckbox/BasicCheckBox.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/datePatch/datePatchExtjs3.1.1.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/rowExpander/RowExpander.js" />
