@@ -501,6 +501,28 @@ COMMENT ON COLUMN metadata.process."statement" IS 'The SQL statement correspondi
 COMMENT ON COLUMN metadata.process._creationdt IS 'The creation date';
 
 
+/*==============================================================*/
+/* Table : TRANSLATION                                          */
+/*==============================================================*/
+create table TRANSLATION (
+TABLE_FORMAT            VARCHAR(36)             not null,
+ROW_PK                  VARCHAR(255)            not null,
+LANG                    VARCHAR(36)             not null,
+LABEL                   VARCHAR(255)            null,
+DEFINITION              VARCHAR(255)            null,
+constraint PK_TRANSLATION primary key (TABLE_FORMAT, ROW_PK, LANG)
+);
+
+COMMENT ON COLUMN TRANSLATION.TABLE_FORMAT IS 'The table_format code';
+COMMENT ON COLUMN TRANSLATION.ROW_PK IS 'The row pk in the primary_key order defined in the table_format (separated by commas)';
+COMMENT ON COLUMN TRANSLATION.LANG IS 'The translation language';
+COMMENT ON COLUMN TRANSLATION.LABEL IS 'The translated label';
+COMMENT ON COLUMN TRANSLATION.DEFINITION IS 'The translated definition';
+
+ALTER TABLE metadata.translation 
+   ADD CONSTRAINT "FK_TABLE_FORMAT_TRANSLATION" FOREIGN KEY (table_format) 
+       REFERENCES metadata.table_format (format)
+       ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 
