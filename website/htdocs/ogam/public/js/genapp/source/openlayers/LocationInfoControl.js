@@ -96,11 +96,35 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 	 * @cfg {OpenLayers.Control.FeatureInfoControl} control The control
 	 */
 	control : null,
+	
+	/**
+	 * Handle the response from the server.
+	 * 
+	 * @param response
+	 */
+	handleResponse: function (response) {
+		 if(response.status == 500) {
+			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+		 }
+		 if(!response.responseText) {
+			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+		 }
+		 
+		 // Decode the response
+		 try {
+			var result = Ext.decode(response.responseText);
+			if (!Ext.isEmpty(result.data)) {
+				this.control.getLocationInfo(result);
+			}
+		 } catch (e) {
+		 	Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+		 }
+	},
 
 	/**
 	 * Handle the click event.
 	 */
-	click : function(evt) {
+	click: function(evt) {
 		// Calcul de la coordonnée correspondant au point cliqué par
 		// l'utilisateur
 		var px = new OpenLayers.Pixel(evt.xy.x, evt.xy.y);
@@ -115,19 +139,12 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 			url = url + "&MAXFEATURES=" + Genapp.map.featureinfo_maxfeatures;
 		}
 
-		OpenLayers.loadURL(url, '', this, function(response) {
-			try {
-				var result = Ext.decode(response.responseText);
-				if (!Ext.isEmpty(result.data)) {
-					this.control.getLocationInfo(result);
-				}
-			} catch (e) {
-				Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
-			}
-		}, function(response) {
-			Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
-		});
-
-		Event.stop(evt);
+		// Send a request
+		OpenLayers.Request.GET({
+				url : url, 
+				scope : this,
+				callback: this.handleResponse});
+		
+		
 	}
 });
