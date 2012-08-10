@@ -118,6 +118,29 @@ OpenLayers.Handler.GetFeature = OpenLayers.Class(OpenLayers.Handler, {
 	 * @property wktFormat
 	 */
 	gmlFormat : new OpenLayers.Format.GML(),
+	
+	/**
+	 * Handle the response from the server.
+	 * 
+	 * @param response
+	 */
+	handleResponse: function (response) {
+		 if(response.status == 500) {
+			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+		 }
+		 if(!response.responseText) {
+			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+		 }
+		 
+		 // Decode the response
+		 try {
+			var feature = this.gmlFormat.read(response.responseText);
+			this.control.getFeature(feature);
+
+		} catch (e) {
+			Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+		}
+	},
 
 	/**
 	 * Handle the click event.
@@ -133,19 +156,11 @@ OpenLayers.Handler.GetFeature = OpenLayers.Class(OpenLayers.Handler, {
 				+ ll.lat + "," + ll.lon + "," + ll.lat;
 		url = url + "&MAXFEATURES=1";
 
-		OpenLayers.loadURL(url, '', this, function(response) {
-			try {
-				var feature = this.gmlFormat.read(response.responseText);
-				this.control.getFeature(feature);
-
-			} catch (e) {
-				Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
-			}
-		}, function(response) {
-			Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
-		});
-
-		Event.stop(evt);
+		// Send a request
+		OpenLayers.Request.GET({
+				url : url, 
+				scope : this,
+				callback: this.handleResponse});
 	}
 
 });
