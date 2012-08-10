@@ -52,7 +52,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = m.unit || ',' || m.code";
 		$req .= " WHERE unit = ? ";
 		if (!empty($query)) {
-			$req .= " AND label ilike '".$query."%'";
+			$req .= " AND COALESCE(t.label, m.label) ilike '".$query."%'";
 		}
 		if ($code != null) {
 			if (is_array($code)) {
@@ -85,7 +85,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'TABLE_SCHEMA');
 		$db = $this->getAdapter();
 		$req = "SELECT schema_code, schema_name, COALESCE(t.label, ts.label) as label, COALESCE(t.definition, ts.description) as description";
-		$req = " FROM table_schema ts";
+		$req .= " FROM table_schema ts";
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = schema_code";
 		$req .= " WHERE schema_code NOT IN ('METADATA', 'PUBLIC', 'WEBSITE') ORDER BY ts";
 
@@ -225,7 +225,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = mt.unit || ',' || mt.code";
 		$req .= " WHERE unit = ?";
 		if ($query != null) {
-			$req .= " AND unaccent_string(label) ilike unaccent_string('%".$query."%')";
+			$req .= " AND unaccent_string(COALESCE(t.label, mt.label)) ilike unaccent_string('%".$query."%')";
 		}
 		$req .= " ORDER BY position, code";
 		if ($start != null && $limit != null) {
@@ -385,8 +385,8 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			}
 			$req .= "	) ";
 			$req .= "	SELECT parent_code, code, COALESCE(t.label, nl.label) as label, is_leaf";
-			$req .= "	LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = nl.unit || ',' || nl.code";
 			$req .= "	FROM node_list nl";
+			$req .= "	LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = nl.unit || ',' || nl.code";
 			$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
 
 			$this->logger->info('getTreeChildren : '.$unit.' '.$parentcode);
