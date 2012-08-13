@@ -33,6 +33,9 @@ class Genapp_Search_Lucene_Index_Pdfs
 		$url = '';
 		while($splitedFilename[$i] !== 'public'){
 			$url = '/'.$splitedFilename[$i--].$url;
+			if($i === -1){
+				throw new Exception('No \'public\' directory found in the pdf(s) path. The pdf(s) must be placed into the public directory.');
+			}
 		}
 		$indexValues['url'] = $url;
 
@@ -72,6 +75,9 @@ class Genapp_Search_Lucene_Index_Pdfs
 		 */
 		$pdfParse                = new Genapp_Search_Helper_PdfParser();
 		$indexValues['Contents'] = $pdfParse->pdf2txt($pdf->render(), $filesCharset, 'UTF-8');
+		if(is_null($indexValues['Contents'])){
+			throw new Exception('No content found or the content is not readable.');
+		}
 		$pdfParse = NULL;
 	    unset($pdfParse);// for memory release
 		$pdf = NULL;

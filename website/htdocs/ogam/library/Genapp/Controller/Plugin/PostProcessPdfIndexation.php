@@ -73,7 +73,6 @@ final class Genapp_Controller_Plugin_PostProcessPdfIndexation extends Zend_Contr
 
         $config = Zend_Registry::get("configuration")->indices->$indexKey;
 		if($update == true){
-	        // The 'create' function is used to remove the old index
 	        $index = Genapp_Search_Lucene::open($config->directory);
 	        $index->optimize();// Very necessary to avoid strange issue
 	    } else {

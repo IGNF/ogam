@@ -46,7 +46,11 @@ if(!in_array($indexKey, $validIndexKeys)){
 }
 
 // Get and check the update parameter
-$update = $argv[2];
+if(array_key_exists(2, $argv)){
+	$update = $argv[2];
+}else{
+	$update = false;
+}
 if($update != true && $update != false){
 	throw new Exception('Invalid UPDATE parameter');
 }

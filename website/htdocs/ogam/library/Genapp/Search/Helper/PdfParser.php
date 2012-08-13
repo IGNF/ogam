@@ -36,6 +36,8 @@ class Genapp_Search_Helper_PdfParser
 				$j++;
 			}
 		}
+        $a_obj = NULL;
+        unset($a_obj);
 
 		$result_data = NULL;
 
@@ -49,9 +51,28 @@ class Genapp_Search_Helper_PdfParser
 					$data =@ gzuncompress($chunk["data"]);
 					if (trim($data) != "") {
 						// If we got data then attempt to extract it.
-						$result_data .= ' ' . iconv($filesCharset, $outputCharset, $this->ps2txt($data));
+						$datatxt = $this->ps2txt($data);
+                        $datatxtconv = iconv($filesCharset, $outputCharset.'//IGNORE', $datatxt);
+                        $datatxtconvfiltered = trim(preg_replace('/([\':.,;!?\\\\\/])/i', ' ', $datatxtconv));
+                        $datatxtconvfiltered = trim(preg_replace('/([^a-zéèêëàâäîïùûüôö0-9 \-])/i', '', $datatxtconvfiltered));
+                        // Delete the word > 50 and < 2
+                        $datatxtconvfilteredexploded = explode(' ', $datatxtconvfiltered);
+                        $count = count($datatxtconvfilteredexploded);// Don't put the count in the for definition because the use of the unset fonction
+                        for($i = 0; $i<$count; $i++){
+                            $length = strlen($datatxtconvfilteredexploded[$i]);
+                            if( $length > 50 || $length < 2){
+                                $datatxtconvfilteredexploded[$i] = null;
+                                unset($datatxtconvfilteredexploded[$i]);
+                            }
+                        }
+                        $datatxtconvfiltered2 = implode(' ', $datatxtconvfilteredexploded);
+                        if($datatxtconvfiltered2 != null){
+                            $result_data .= ' ' . $datatxtconvfiltered2;
+                        }
 					}
 				}
+                $chunk["data"] = $chunk["filter"] = $chunk = NULL;
+                unset($chunk["data"]);unset($chunk["filter"]);unset($chunk);
 			}
 		}
 		/**
@@ -60,7 +81,7 @@ class Genapp_Search_Helper_PdfParser
 		 * redundant data.
 		 */
 		// Commented per SG because remove the accent...
-		// $result_data = trim(preg_replace('/([^a-z0-9 ])/i', ' ', $result_data));
+		//$result_data = trim(preg_replace('/([^a-z0-9 ])/i', ' ', $result_data));
 
 		// Return the data extracted from the document.
 		if ($result_data == "") {
@@ -112,6 +133,10 @@ class Genapp_Search_Helper_PdfParser
 				}
 			}
 		}
+
+        $a_text = $a_data = NULL;
+        unset($a_text);
+        unset($a_data);
 
 		// Remove any stray characters left over.
 		// Commented per SG because add spaces and strange behaviour...
