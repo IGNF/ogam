@@ -152,6 +152,7 @@ class ProxyController extends AbstractOGAMController {
 	function getwfsAction() {
 
 		$uri = $_SERVER["REQUEST_URI"];
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 
 		$configuration = Zend_Registry::get("configuration");
 		$mapserverURL = $configuration->mapserver_url;
@@ -159,20 +160,68 @@ class ProxyController extends AbstractOGAMController {
 
 		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/getwfs?");
 		$this->logger->debug('redirect getwfs : '.$uri);
-
-		// Send the request to Mapserver and forward the response data
-		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		
+		if ($method == 'GET' ) {
+			echo $this->_sendGET($uri);
+		} else {
+			echo $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
 
 		// No View, we send directly the output
-		// header("Content-Type: image/png");
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+	}
+	
+	/**
+	 * Simulate a GET
+	 *
+	 * @param String $url the url to call
+	 * @throws Exception
+	 */
+	private function _sendGET($url) {
+		
+		$result = "";
+		$handle = fopen($uri, "rb");
+		if ($handle) {
+			while (!feof($handle)) {
+				$result .= fread($handle, 8192);
+			}
+			fclose($handle);
+		}
+	
+		return $result;
+	}
+	
+	/**
+	 * Simulate a POST
+	 * 
+	 * @param String $url the url to call
+	 * @param Array $data the post data
+	 * @throws Exception
+	 */
+	private function _sendPOST($url, $data) {
+		
+		$this->logger->debug('_sendPOST : '.$url);
+		
+		$content_type = "application/xml";
+		
+		$opts = array (
+		    'http' => array (
+		        'method' => "POST",
+		        'header'=>"Content-Type: " . $content_type . "\r\n". "Content-length: " . strlen($data) . "\r\n",
+		        'content' => $data
+		    )
+		);
+		$context = stream_context_create($opts);
+		$fp = fopen($url, 'r', false, $context);
+		$result = "";
+		while ($str = fread($fp,1024)) {
+		    $result .= $str;
+		}
+		fclose($fp);
+				
+		return $result;
+		
 	}
 
 	/**

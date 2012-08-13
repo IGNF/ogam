@@ -488,24 +488,27 @@ Genapp.GeoPanel = Ext
 								strokeOpacity : 1
 							}, OpenLayers.Feature.Vector.style["default"]));
 
+							
 							this.wfsLayer = new OpenLayers.Layer.Vector("WFS Layer", 
 								{
 									strategies:[new OpenLayers.Strategy.BBOX()],
 									protocol: new OpenLayers.Protocol.WFS({
 										url: this.urlWFS,
-										featureType :''
+										featureType: null,
+										featureNS: "http://mapserver.gis.umn.edu/mapserver",
+										geometryName: 'msGeometry', // Mapserver specific
+										//propertyName: 'geometry',
+										featurePrefix: "ms",
+										version: "1.0.0"  
 									})
-								},
-								{
-									printable : false,
-									displayInLayerSwitcher : false,
-									extractAttributes : false,
-									styleMap : styleMap,
-									visibility : false
-									// the layer is not visible by default
-								}
-								);
+								});
 
+							this.wfsLayer.printable = false;
+							this.wfsLayer.displayInLayerSwitcher = false;
+							this.wfsLayer.extractAttributes = false;
+							this.wfsLayer.styleMap = styleMap;
+							this.wfsLayer.visibility = false;
+							
 						}
 
 						this.setMapLayers(this.map);
@@ -906,7 +909,7 @@ Genapp.GeoPanel = Ext
 								control : this.snappingControl,
 								map : this.map,
 								tooltip : 'Snapping',
-								toggleGroup : "editing",
+								toggleGroup : "snapping",  // his own independant group
 								group : "LayerTools",
 								checked : false,
 								iconCls : 'snapping'
@@ -1407,9 +1410,17 @@ Genapp.GeoPanel = Ext
 							if (value.data.code !== null) {
 
 								layerName = value.data.code;
-
+						
 								// Change the WFS layer typename
 								this.wfsLayer.protocol.featureType = layerName;
+								this.wfsLayer.protocol.options.featureType = layerName;
+								this.wfsLayer.protocol.format.featureType = layerName;
+								this.wfsLayer.protocol.format.options.featureType = layerName;
+								//this.wfsLayer.protocol.url = this.urlWFS+'&SERVICE=WFS&VERSION=1.1.0&REQUEST=getfeature&typename='+layerName;
+								//this.wfsLayer.protocol.options.url = this.urlWFS+'&SERVICE=WFS&VERSION=1.1.0&REQUEST=getfeature&typename='+layerName;
+								
+								// Remove all current features
+								this.wfsLayer.destroyFeatures();
 
 								// Copy the visibility range from the original
 								// layer
@@ -1420,14 +1431,14 @@ Genapp.GeoPanel = Ext
 									this.wfsLayer.maxScale = originalLayer.maxScale;
 									this.wfsLayer.minResolution = originalLayer.minResolution;
 									this.wfsLayer.minScale = originalLayer.minScale;
-									this.wfsLayer.calculateInRange();
+									//this.wfsLayer.calculateInRange();
 								}
 
 								// Make it visible
 								this.wfsLayer.setVisibility(true);
 
 								// Force a refresh (rebuild the WFS URL)
-								this.wfsLayer.moveTo(null, true, false);
+								//this.wfsLayer.moveTo(null, true, false);
 
 								// Set the getfeature control
 								if (this.getFeatureControl !== null) {
@@ -1443,6 +1454,9 @@ Genapp.GeoPanel = Ext
 								if (this.getFeatureControl !== null) {
 									this.getFeatureControl.layerName = layerName;
 								}
+								
+								this.wfsLayer.refresh();
+								//this.wfsLayer.strategies[0].update({force:true});
 
 							} else {
 								// Hide the layer
