@@ -74,7 +74,7 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 		return OpenLayers.Control.prototype.deactivate.apply(this, arguments);
 	},
 
-	CLASS_NAME : "OpenLayers.Control.FeatureInfoControl"
+	CLASS_NAME : "OpenLayers.Control.LocationInfoControl"
 });
 
 /**
