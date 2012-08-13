@@ -570,6 +570,10 @@ class MapController extends AbstractOGAMController {
 
 		// Restore default timeout
 		ini_set('default_socket_timeout', $defaultTimeout);
+		
+		// No View, we send directly the javascript
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
 
 	}
 
