@@ -161,7 +161,7 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/getwfs?");
 		$this->logger->debug('redirect getwfs : '.$uri);
 		
-		if ($method == 'GET' ) {
+		if ($method == 'GET') {
 			echo $this->_sendGET($uri);
 		} else {
 			echo $this->_sendPOST($uri, $this->_request->getRawBody());
@@ -181,7 +181,7 @@ class ProxyController extends AbstractOGAMController {
 	private function _sendGET($url) {
 		
 		$result = "";
-		$handle = fopen($uri, "rb");
+		$handle = fopen($url, "rb");
 		if ($handle) {
 			while (!feof($handle)) {
 				$result .= fread($handle, 8192);
@@ -203,21 +203,21 @@ class ProxyController extends AbstractOGAMController {
 		
 		$this->logger->debug('_sendPOST : '.$url." data : ".$data);
 		
-		$content_type = "application/xml";
+		$contentType = "application/xml";
 		
 		$opts = array (
 		    'http' => array (
 		        'method' => "POST",
-		        'header'=>"Content-Type: " . $content_type . "\r\n". "Content-length: " . strlen($data) . "\r\n",
+		        'header' => "Content-Type: ".$contentType."\r\n"."Content-length: ".strlen($data)."\r\n",
 		        'content' => $data
 		    )
 		);
-		ini_set ('user_agent', $_SERVER['HTTP_USER_AGENT']);
+		ini_set('user_agent', $_SERVER['HTTP_USER_AGENT']);
 		$context = stream_context_create($opts);
 		$fp = fopen($url, 'r', false, $context);
 		$result = "";
 		if ($fp) {
-			while ($str = fread($fp,1024)) {
+			while ($str = fread($fp, 1024)) {
 			    $result .= $str;
 			}
 			fclose($fp);
