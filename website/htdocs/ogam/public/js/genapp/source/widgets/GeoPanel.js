@@ -496,10 +496,10 @@ Genapp.GeoPanel = Ext
 										url: this.urlWFS,
 										featureType: null,
 										featureNS: "http://mapserver.gis.umn.edu/mapserver",
-										geometryName: 'msGeometry', // Mapserver specific
-										//propertyName: 'geometry',
+										geometryName: 'msGeometry', 
+										propertyName: 'msGeometry',
 										featurePrefix: "ms",
-										version: "1.0.0"  
+										version: "1.1.0"  
 									})
 								});
 
