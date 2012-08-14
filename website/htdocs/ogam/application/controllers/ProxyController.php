@@ -201,7 +201,7 @@ class ProxyController extends AbstractOGAMController {
 	 */
 	private function _sendPOST($url, $data) {
 		
-		$this->logger->debug('_sendPOST : '.$url);
+		$this->logger->debug('_sendPOST : '.$url." data : ".$data);
 		
 		$content_type = "application/xml";
 		
@@ -212,13 +212,18 @@ class ProxyController extends AbstractOGAMController {
 		        'content' => $data
 		    )
 		);
+		ini_set ('user_agent', $_SERVER['HTTP_USER_AGENT']);
 		$context = stream_context_create($opts);
 		$fp = fopen($url, 'r', false, $context);
 		$result = "";
-		while ($str = fread($fp,1024)) {
-		    $result .= $str;
+		if ($fp) {
+			while ($str = fread($fp,1024)) {
+			    $result .= $str;
+			}
+			fclose($fp);
+		} else {
+			return "Error opening url : ".$url;
 		}
-		fclose($fp);
 				
 		return $result;
 		
