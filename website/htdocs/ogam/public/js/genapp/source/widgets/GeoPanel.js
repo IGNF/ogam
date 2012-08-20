@@ -1434,14 +1434,14 @@ Genapp.GeoPanel = Ext
 									this.wfsLayer.maxScale = originalLayer.maxScale;
 									this.wfsLayer.minResolution = originalLayer.minResolution;
 									this.wfsLayer.minScale = originalLayer.minScale;
-									//this.wfsLayer.calculateInRange();
+									this.wfsLayer.calculateInRange();
 								}
 
 								// Make it visible
 								this.wfsLayer.setVisibility(true);
 
 								// Force a refresh (rebuild the WFS URL)
-								//this.wfsLayer.moveTo(null, true, false);
+								this.wfsLayer.moveTo(null, true, false);
 
 								// Set the getfeature control
 								if (this.getFeatureControl !== null) {
@@ -1459,7 +1459,7 @@ Genapp.GeoPanel = Ext
 								}
 								
 								this.wfsLayer.refresh();
-								//this.wfsLayer.strategies[0].update({force:true});
+								this.wfsLayer.strategies[0].update({force:true});
 
 							} else {
 								// Hide the layer

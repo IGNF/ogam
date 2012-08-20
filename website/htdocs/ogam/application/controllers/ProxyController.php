@@ -131,12 +131,14 @@ class ProxyController extends AbstractOGAMController {
 
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		
+		if ($method == 'GET') {
+			$result = $this->_sendGET($uri);
+		} else {
+			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
+		
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -166,9 +168,7 @@ class ProxyController extends AbstractOGAMController {
 		} else {
 			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
-		
-		$this->logger->debug('redirect result : '.$result);
-		
+				
 		echo $result;
 
 		// No View, we send directly the output
@@ -186,13 +186,9 @@ class ProxyController extends AbstractOGAMController {
 		
 		$result = "";
 		$handle = fopen($url, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				$result .= fread($handle, 8192);
-			}
-			fclose($handle);
-		}
-	
+		$result = stream_get_contents($handle);
+		fclose($handle);
+			
 		return $result;
 	}
 	
@@ -254,13 +250,14 @@ class ProxyController extends AbstractOGAMController {
 
 		// Send the request to Mapserver and forward the response data
 		header("Content-Type: image/png");
-		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		
+		if ($method == 'GET') {
+			$result = $this->_sendGET($uri);
+		} else {
+			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
+		
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -310,12 +307,14 @@ class ProxyController extends AbstractOGAMController {
 
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		
+		if ($method == 'GET') {
+			$result = $this->_sendGET($uri);
+		} else {
+			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
+		
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -353,16 +352,12 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
 		$this->logger->debug('redirect getinfo : '.$uri);
 		$gml = "";
-		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				$gml .= fread($handle, 8192);
-			}
-			fclose($handle);
+		if ($method == 'GET') {
+			$gml = $this->_sendGET($uri);
+		} else {
+			$gml = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
-
-		//$this->logger->debug('$gml '.$gml);
-
+		
 		// Get the infos to display
 		$this->logger->debug('Get the infos to display');
 		if (strpos($gml, ":display>")) {
@@ -502,16 +497,12 @@ class ProxyController extends AbstractOGAMController {
 		// On effecture une requête mapserver "GetFeature" pour chaque layer
 		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
 		$this->logger->debug('redirect getinfo : '.$uri);
-		$gml = "";
-		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				$gml .= fread($handle, 8192);
-			}
-			fclose($handle);
+		
+		if ($method == 'GET') {
+			$gml = $this->_sendGET($uri);
+		} else {
+			$gml = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
-
-		//$this->logger->debug('$gml '.$gml);
 
 		// Get the infos to display
 		$this->logger->debug('Get the infos to display');
@@ -586,13 +577,13 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-transfer-encoding: binary\n");
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
-		$handle = fopen($reportURL, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		if ($method == 'GET') {
+			$result = $this->_sendGET($reportURL);
+		} else {
+			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
 		}
+		
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -620,13 +611,14 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-transfer-encoding: binary\n");
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
-		$handle = fopen($reportURL, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		if ($method == 'GET') {
+			$result = $this->_sendGET($reportURL);
+		} else {
+			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
 		}
+		
+		echo $result;
+		
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -654,13 +646,13 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-transfer-encoding: binary\n");
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
-		$handle = fopen($reportURL, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		if ($method == 'GET') {
+			$result = $this->_sendGET($reportURL);
+		} else {
+			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
 		}
+		
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
