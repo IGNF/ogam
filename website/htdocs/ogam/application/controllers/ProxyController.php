@@ -162,10 +162,14 @@ class ProxyController extends AbstractOGAMController {
 		$this->logger->debug('redirect getwfs : '.$uri);
 		
 		if ($method == 'GET') {
-			echo $this->_sendGET($uri);
+			$result = $this->_sendGET($uri);
 		} else {
-			echo $this->_sendPOST($uri, $this->_request->getRawBody());
+			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
+		
+		$this->logger->debug('redirect result : '.$result);
+		
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();

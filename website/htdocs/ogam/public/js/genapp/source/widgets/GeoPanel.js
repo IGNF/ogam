@@ -492,15 +492,18 @@ Genapp.GeoPanel = Ext
 							this.wfsLayer = new OpenLayers.Layer.Vector("WFS Layer", 
 								{
 									strategies:[new OpenLayers.Strategy.BBOX()],
-									protocol: new OpenLayers.Protocol.WFS({
+									protocol: new OpenLayers.Protocol.HTTP({
 										url: this.urlWFS,
-										featureType: null,
-										featureNS: "http://mapserver.gis.umn.edu/mapserver",
-										geometryName: 'msGeometry', 
-										propertyName: 'msGeometry',
-										featurePrefix: "ms",
-										version: "1.1.0"  
-									})
+										params: {
+											typename: null,
+								            service: "WFS",
+								            format: "WFS",
+								            version: "1.0.0",
+								            request: "GetFeature",
+								            srs: Genapp.map.projection
+										}, 
+										format: new OpenLayers.Format.GML({extractAttributes: true})
+									})									
 								});
 
 							this.wfsLayer.printable = false;
@@ -1415,7 +1418,7 @@ Genapp.GeoPanel = Ext
 								this.wfsLayer.protocol.featureType = layerName;
 								this.wfsLayer.protocol.options.featureType = layerName;
 								this.wfsLayer.protocol.format.featureType = layerName;
-								this.wfsLayer.protocol.format.options.featureType = layerName;
+								this.wfsLayer.protocol.params.typename = layerName;
 								//this.wfsLayer.protocol.url = this.urlWFS+'&SERVICE=WFS&VERSION=1.1.0&REQUEST=getfeature&typename='+layerName;
 								//this.wfsLayer.protocol.options.url = this.urlWFS+'&SERVICE=WFS&VERSION=1.1.0&REQUEST=getfeature&typename='+layerName;
 								
