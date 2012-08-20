@@ -515,7 +515,7 @@ Genapp.GeoPanel = Ext
 						}
 
 						this.setMapLayers(this.map);
-
+												
 						// Gets the layer tree model to initialise the Layer
 						// Tree
 						Ext.Ajax.request({
@@ -1419,8 +1419,6 @@ Genapp.GeoPanel = Ext
 								this.wfsLayer.protocol.options.featureType = layerName;
 								this.wfsLayer.protocol.format.featureType = layerName;
 								this.wfsLayer.protocol.params.typename = layerName;
-								//this.wfsLayer.protocol.url = this.urlWFS+'&SERVICE=WFS&VERSION=1.1.0&REQUEST=getfeature&typename='+layerName;
-								//this.wfsLayer.protocol.options.url = this.urlWFS+'&SERVICE=WFS&VERSION=1.1.0&REQUEST=getfeature&typename='+layerName;
 								
 								// Remove all current features
 								this.wfsLayer.destroyFeatures();
@@ -1434,6 +1432,7 @@ Genapp.GeoPanel = Ext
 									this.wfsLayer.maxScale = originalLayer.maxScale;
 									this.wfsLayer.minResolution = originalLayer.minResolution;
 									this.wfsLayer.minScale = originalLayer.minScale;
+									this.wfsLayer.alwaysInRange = false;
 									this.wfsLayer.calculateInRange();
 								}
 
@@ -1468,6 +1467,7 @@ Genapp.GeoPanel = Ext
 						}
 
 					},
+					
 
 					/**
 					 * A feature has been selected using the GetFeatureControl

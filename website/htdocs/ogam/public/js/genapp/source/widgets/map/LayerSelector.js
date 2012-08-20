@@ -97,6 +97,8 @@ Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 
 			// Change the button title
 			this.setText(value.data.label);
+			
+			// Another listerner of this event is in "geopanel"
 		}
 
 	},
