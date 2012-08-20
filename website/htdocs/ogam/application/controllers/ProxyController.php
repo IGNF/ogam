@@ -132,6 +132,7 @@ class ProxyController extends AbstractOGAMController {
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
 		
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
@@ -251,6 +252,7 @@ class ProxyController extends AbstractOGAMController {
 		// Send the request to Mapserver and forward the response data
 		header("Content-Type: image/png");
 		
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
@@ -308,6 +310,7 @@ class ProxyController extends AbstractOGAMController {
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
 		
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
@@ -352,6 +355,8 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
 		$this->logger->debug('redirect getinfo : '.$uri);
 		$gml = "";
+		
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$gml = $this->_sendGET($uri);
 		} else {
@@ -498,6 +503,7 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
 		$this->logger->debug('redirect getinfo : '.$uri);
 		
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$gml = $this->_sendGET($uri);
 		} else {
@@ -577,6 +583,7 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-transfer-encoding: binary\n");
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$result = $this->_sendGET($reportURL);
 		} else {
@@ -611,6 +618,7 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-transfer-encoding: binary\n");
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$result = $this->_sendGET($reportURL);
 		} else {
@@ -646,6 +654,7 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-transfer-encoding: binary\n");
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$result = $this->_sendGET($reportURL);
 		} else {
