@@ -130,4 +130,99 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 
 		return $result;
 	}
+
+	/**
+	 * Returns the intersected location information.
+	 * 
+	 * @param String $sessionId The session id
+	 * @param Float $lon the longitude
+	 * @param Float $lat the latitude
+	 * @param String $geometrytype the geometry type
+	 * 
+	 * @return Array
+	 */
+	public function getLocationInfo($sessionId, $lon, $lat, $geometrytype = 'POINT') {
+
+		$db = $this->getAdapter();
+
+		$configuration = Zend_Registry::get("configuration");
+		$projection = $configuration->srs_visualisation;
+		$margin = $configuration->featureinfo->margin;
+
+		$translate = Zend_Registry::get('Zend_Translate');
+        $lang = strtoupper($translate->getAdapter()->getLocale());
+
+		$websiteSession = new Zend_Session_Namespace('website');
+		// Get the current used schema
+		$schema = $websiteSession->schema;
+		// Get the last query done
+		$queryObject = $websiteSession->queryObject;
+
+		$genericService = new Genapp_Service_GenericService();
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+		// Extract the location table from the last query
+		$tables = $genericService->getAllFormats($schema, $queryObject);
+		// Extract the location field from the available tables
+		$locationField = $metadataModel->getLocationTableFields($schema, array_keys($tables));
+		// Get the location table infos
+		$locationTableInfo = $metadataModel->getTableFormat($schema, $locationField->format);
+		// Get the location table columns
+		$tableFields = $metadataModel->getTableFields($schema, $locationField->format, null);
+
+		// Setup the location table columns for the select
+		$cols = '';
+		$joinForMode = '';
+		$i=0;
+		foreach ($tableFields as $tableField) {
+			if($tableField->columnName != $locationField->columnName
+				&& $tableField->columnName != 'SUBMISSION_ID'
+				&& $tableField->columnName != 'LINE_NUMBER'){
+				// Get the mode label if the field is a modality
+				if($tableField->type == 'CODE' && $tableField->subtype == 'MODE'){
+					$tableFormat = $metadataModel->getTableFormatFromTableName('METADATA', 'MODE');
+					$modeAlias = 'm'.$i;
+					$translateAlias = 't'.$i;
+					$cols .= 'COALESCE('.$translateAlias.'.label, '.$modeAlias.'.label) as '. $tableField->columnName .', ';
+					$joinForMode .= 'LEFT JOIN mode '.$modeAlias.' ON '.$modeAlias.'.CODE = '.$tableField->columnName.' AND '.$modeAlias.'.UNIT = \''.$tableField->unit .'\' ';
+					$joinForMode .= 'LEFT JOIN translation '.$translateAlias.' ON '.$translateAlias.'.lang = \''.$lang.'\' AND '.$translateAlias.'.table_format = \''.$tableFormat->format.'\' AND '.$translateAlias.'.row_pk = '.$modeAlias.'.unit || \',\' || '.$modeAlias.'.code ';
+					$i++;
+				} else {
+					$cols .= $tableField->columnName . ', ';
+				}
+			}
+		}
+		if($cols != ''){
+			$cols = substr($cols, 0, -2);
+		} else {
+			throw new Exception('No columns found for the location table.');
+		}
+
+		// Setup the location table pks for the join on the location table
+		$pkscols = '';
+		foreach ($locationTableInfo->primaryKeys as $primaryKey) {
+			$pkscols .= $primaryKey . ', ';
+		}
+		if($pkscols != ''){
+			$pkscols = substr($pkscols, 0, -2);
+		} else {
+			throw new Exception('No pks columns found for the location table.');
+		}
+
+		$req = "SELECT " . $cols . " ";
+		$req .= "FROM result_location r ";
+		$req .= "LEFT JOIN ".$locationTableInfo->tableName." l using(".$pkscols.") ";
+		$req .= $joinForMode;
+		$req .= "WHERE r.session_id = ? and geometrytype(r.the_geom)='".$geometrytype."' ";
+		$req .= "and ST_DWithin(r.the_geom, ST_SetSRID(ST_Point(?, ?),".$projection."), ".$margin.")";
+
+		$this->logger->info('getLocationInfo session_id : '.$sessionId);
+		$this->logger->info('getLocationInfo lon : '.$lon);
+		$this->logger->info('getLocationInfo lat : '.$lat);
+		$this->logger->info('getLocationInfo request : '.$req);
+
+		$select = $db->prepare($req);
+		$select->execute(array($sessionId, $lon, $lat));
+
+		return $select->fetchAll();
+	}
 }

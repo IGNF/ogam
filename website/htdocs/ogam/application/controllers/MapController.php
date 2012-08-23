@@ -20,6 +20,9 @@ class MapController extends AbstractOGAMController {
 		// Initialise the models
 		$this->layersModel = new Application_Model_Mapping_Layers();
 		$this->boundingBoxModel = new Application_Model_Mapping_BoundingBox();
+
+		$translate = Zend_Registry::get('Zend_Translate');
+        $this->lang = strtoupper($translate->getAdapter()->getLocale());
 	}
 
 	/**
@@ -193,7 +196,7 @@ class MapController extends AbstractOGAMController {
 		$sessionId = session_id();
 		$out = '"url_array_tiled":[';
 		foreach ($tileBaseURLs as $pathBaseURL) {
-			$out .= '"'.$pathBaseURL.$proxyPath."?SESSION_ID=".$sessionId.'",'; // appel direct
+			$out .= '"'.$pathBaseURL.$proxyPath."?SESSION_ID=".$sessionId.'&LANG='.$this->lang.'",'; // appel direct
 		}
 		// Remove the last comma
 		if (!empty($tileBaseURLs)) {

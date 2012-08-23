@@ -1078,4 +1078,116 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
+
+	/**
+	 * AJAX function : Return the list of a location information.
+	 *
+	 * @return JSON.
+	 */
+	public function ajaxgetlocationinfoAction(){
+		$this->logger->debug('ajaxgetlocationinfoAction');
+
+		$lon = $this->getRequest()->getParam('LON');
+		$lat = $this->getRequest()->getParam('LAT');
+		$sessionId = session_id();
+
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $websiteSession->schema; // the schema used
+		$queryObject = $websiteSession->queryObject; // the last query done
+
+		$tables = $this->genericService->getAllFormats($schema, $queryObject); // Extract the location table from the last query
+		$locationField = $this->metadataModel->getLocationTableFields($schema, array_keys($tables)); // Extract the location field from the available tables
+		$locationTableInfo = $this->metadataModel->getTableFormat($schema, $locationField->format); // Get info about the location table
+
+		$locations = $this->resultLocationModel->getLocationInfo($sessionId, $lon, $lat);
+
+		if (!empty($locations)) {
+			// we have at least one plot found
+
+			// The id is used to avoid to display two time the same result (it's a id for the result dataset)
+			$id = array();
+			// The columns config to setup the grid columnModel
+			$columns = array();
+			// The columns max length to setup the column width
+			$columnsMaxLength = array();
+			// The fields config to setup the store reader
+			$locationFields = array('id');// The id must stay the first field
+			// The data to full the store
+			$locationsData = array();
+			foreach ($locations as $locationsIndex => $location) {
+				$locationData = array();
+
+				// Get the locations identifiers
+				$key = 'SCHEMA/'.$schema.'/FORMAT/'.$locationTableInfo->format;
+				foreach ($locationTableInfo->primaryKeys as $tablePK) {
+					if (isset($location[strtolower($tablePK)])) {
+						$key .= '/'.strtoupper($tablePK).'/'.$location[strtolower($tablePK)];
+					}
+				}
+				$id[] = $key;
+				$locationData[] = $key;
+
+				$this->logger->debug('$key : '.$key);
+
+				// Get the other fields
+				// Setup the location data and the column max length
+				foreach ($location as $columnName => $value) {
+					$locationData[] = $value;
+					if (empty($columnsMaxLength[$columnName])) {
+						$columnsMaxLength[$columnName] = array();
+					}
+					$columnsMaxLength[$columnName][] = strlen($value);
+				}
+				// Setup the fields and columns config
+				if ($locationsIndex == (count($locations) - 1)) {
+					// Get the table format
+					$tableFormat = $this->metadataModel->getTableFormatFromTableName($schema, $locationTableInfo->tableName);
+					$format = $tableFormat->format;
+					// Get the table fields
+					$tableFields = $this->metadataModel->getTableFields($schema, $format, null);
+					$tFOrdered = array();
+					foreach ($tableFields as $tableField) {
+						$tFOrdered[$tableField->columnName] = $tableField;
+					}
+					foreach ($location as $columnName => $value) {
+						$tableField = $tFOrdered[strtoupper($columnName)];
+						// Set the column model and the location fields
+						$dataIndex = $tableField->format.'__'.$tableField->data;
+						// Adds the column header to prevent it from being truncated too and 2 for the header margins
+						$columnsMaxLength[$columnName][] = strlen($tableField->label) + 2;
+						$column = array(
+							'header' => $tableField->label,
+							'dataIndex' => $dataIndex,
+							'editable' => false,
+							'tooltip' => $tableField->definition,
+							'width' => max($columnsMaxLength[$columnName]) * 7
+						);
+						$columns[] = $column;
+						$locationFields[] = $dataIndex;
+					}
+				}
+			}
+			$locationsData[] = $locationData;
+		
+
+			// We must sort the array here because it can't be done
+			// into the mapfile sql request to avoid a lower performance
+			sort($id);
+
+			// Check if the location table has a child table
+			$hasChild = false;
+			$children = $this->metadataModel->getChildrenTableLabels($locationTableInfo);
+			if (!empty($children)) {
+				$hasChild = true;
+			}
+
+			echo '{success:true'.', id:'.json_encode(implode('', $id)).', title:'.json_encode($locationTableInfo->label.' ('.count($locationsData).')').', hasChild:'.json_encode($hasChild).', columns:'.json_encode($columns).', fields:'.json_encode($locationFields).', data:'.json_encode($locationsData).'}';
+		} else {
+			echo '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
+		}
+
+		// No View, we send directly the output
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+	}
 }
