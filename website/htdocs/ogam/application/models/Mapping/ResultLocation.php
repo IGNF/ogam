@@ -176,6 +176,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		foreach ($tableFields as $tableField) {
 			if($tableField->columnName != $locationField->columnName
 				&& $tableField->columnName != 'SUBMISSION_ID'
+				&& $tableField->columnName != 'PROVIDER_ID'
 				&& $tableField->columnName != 'LINE_NUMBER'){
 				// Get the mode label if the field is a modality
 				if($tableField->type == 'CODE' && $tableField->subtype == 'MODE'){
@@ -191,21 +192,23 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 				}
 			}
 		}
-		if($cols != ''){
-			$cols = substr($cols, 0, -2);
-		} else {
-			throw new Exception('No columns found for the location table.');
-		}
 
 		// Setup the location table pks for the join on the location table
+		// and for the pk column
 		$pkscols = '';
 		foreach ($locationTableInfo->primaryKeys as $primaryKey) {
 			$pkscols .= $primaryKey . ', ';
+			$cols .= "'".strtoupper($primaryKey)."/' || ".$primaryKey . " || '/' || ";
 		}
 		if($pkscols != ''){
 			$pkscols = substr($pkscols, 0, -2);
 		} else {
 			throw new Exception('No pks columns found for the location table.');
+		}
+		if($cols != ''){
+			$cols = substr($cols, 0, -11) . " as pk ";
+		} else {
+			throw new Exception('No columns found for the location table.');
 		}
 
 		$req = "SELECT " . $cols . " ";

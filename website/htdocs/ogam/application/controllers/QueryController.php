@@ -1119,15 +1119,14 @@ class QueryController extends AbstractOGAMController {
 
 				// Get the locations identifiers
 				$key = 'SCHEMA/'.$schema.'/FORMAT/'.$locationTableInfo->format;
-				foreach ($locationTableInfo->primaryKeys as $tablePK) {
-					if (isset($location[strtolower($tablePK)])) {
-						$key .= '/'.strtoupper($tablePK).'/'.$location[strtolower($tablePK)];
-					}
-				}
+				$key .= '/'.$location['pk'];
 				$id[] = $key;
 				$locationData[] = $key;
 
 				$this->logger->debug('$key : '.$key);
+
+				// Remove the pk of the available columns
+				unset($location['pk']);
 
 				// Get the other fields
 				// Setup the location data and the column max length
