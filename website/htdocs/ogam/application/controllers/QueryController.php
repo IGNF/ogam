@@ -1105,7 +1105,7 @@ class QueryController extends AbstractOGAMController {
 			// we have at least one plot found
 
 			// The id is used to avoid to display two time the same result (it's a id for the result dataset)
-			$id = array();
+			$id = array('Results'); // A small prefix is required here to avoid a conflict between the id when the result contain only one result
 			// The columns config to setup the grid columnModel
 			$columns = array();
 			// The columns max length to setup the column width
