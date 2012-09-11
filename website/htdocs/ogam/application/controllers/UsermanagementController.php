@@ -282,7 +282,7 @@ class UsermanagementController extends AbstractOGAMController {
 		// Permissions
 		// Get all the Permissions
 		$allpermissions = $this->roleModel->getAllPermissions();
-		$rolepermissions = $form->createElement('multicheckbox', 'rolepermissions', array(
+		$rolepermissions = $form->createElement('multiCheckbox', 'rolepermissions', array(
 				'multiOptions' => $allpermissions)); // set the list of available permissions
 		if ($role != null) {
 			$permissions = $this->roleModel->getRolePermissions($role->roleCode);
@@ -298,7 +298,7 @@ class UsermanagementController extends AbstractOGAMController {
 		foreach ($allschemas as $schema) {
 			$schemasList[$schema->code] = $schema->label;
 		}
-		$roleschemas = $form->createElement('multicheckbox', 'roleschemas', array(
+		$roleschemas = $form->createElement('multiCheckbox', 'roleschemas', array(
 				'multiOptions' => $schemasList)); // set the list of available schemas
 		if ($role != null) {
 			// Get the Schemas
@@ -313,7 +313,7 @@ class UsermanagementController extends AbstractOGAMController {
 		foreach ($allDatasets as $dataset) {
 			$datasetList[$dataset->id] = $dataset->label;
 		}
-		$datasetsRestriction = $form->createElement('multicheckbox', 'datasetRestrictions', array(
+		$datasetsRestriction = $form->createElement('multiCheckbox', 'datasetRestrictions', array(
 				'multiOptions' => $datasetList));
 		if ($role != null) {
 			// Get the Schemas
@@ -329,7 +329,7 @@ class UsermanagementController extends AbstractOGAMController {
 		foreach ($allLayers as $layer) {
 			$layersList[$layer->layerName] = $layer->layerLabel;
 		}
-		$layersRestriction = $form->createElement('multicheckbox', 'layerRestrictions', array(
+		$layersRestriction = $form->createElement('multiCheckbox', 'layerRestrictions', array(
 				'multiOptions' => $layersList));
 		if ($role != null) {
 			// Get the Schemas

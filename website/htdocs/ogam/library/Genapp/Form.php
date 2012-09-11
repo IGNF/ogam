@@ -42,7 +42,7 @@ class Genapp_Form extends Zend_Form
     {
         $element = parent::createElement($type, $name, $options);
         $element->clearDecorators();
-        switch($type){
+        switch(strtolower($type)) {
             CASE 'hidden':
                 $element->addDecorator('ViewHelper');
                 break;
