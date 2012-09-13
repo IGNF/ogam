@@ -389,15 +389,15 @@ img.percentImage {
 .zend_form .element, .zend_form .button{
     position: relative;
 }
-.zend_form .multicheckbox label{
+.zend_form .multiCheckbox label{
     margin-left:30px;
 }
-.zend_form .multicheckbox label.title{
+.zend_form .multiCheckbox label.title{
     display:block;
     font-weight: bold;
     margin:10px 0;
 }
-.zend_form .multicheckbox input{
+.zend_form .multiCheckbox input{
     width:auto;
     margin-top:6px;
 }
