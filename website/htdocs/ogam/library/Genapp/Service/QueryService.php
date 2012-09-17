@@ -102,6 +102,35 @@ class Genapp_Service_QueryService {
 		return $json;
 	}
 
+	/**
+	 * Convert a java/javascript-style date format to a PHP date format.
+	 *
+	 * @param String $format the format in java style
+	 * @return String the format in PHP style
+	 */
+	private function convertDateFormat($format) {
+
+		$format = str_replace("yyyy", "Y", $format);
+		$format = str_replace("yy", "y", $format);
+		$format = str_replace("MMMMM", "F", $format);
+		$format = str_replace("MMMM", "F", $format);
+		$format = str_replace("MMM", "M", $format);
+		$format = str_replace("MM", "m", $format);
+		$format = str_replace("EEEEEE", "l", $format);
+		$format = str_replace("EEEEE", "l", $format);
+		$format = str_replace("EEEE", "l", $format);
+		$format = str_replace("EEE", "D", $format);
+		$format = str_replace("dd", "d", $format);
+		$format = str_replace("HH", "H", $format);
+		$format = str_replace("hh", "h", $format);
+		$format = str_replace("mm", "i", $format);
+		$format = str_replace("ss", "s", $format);
+		$format = str_replace("A", "a", $format);
+		$format = str_replace("S", "u", $format);
+
+		return $format;
+
+	}
 
 
 	/**
@@ -115,6 +144,29 @@ class Genapp_Service_QueryService {
 
 		$json = "{";
 
+		// Set the default value
+		if ($formField->value == null) {
+			if ($formField->defaultValue == '%LOGIN%') {
+
+				// Set the currently loggued user
+				$userSession = new Zend_Session_Namespace('user');
+				$user = $userSession->user;
+				$formField->value = $user->login;
+
+			} else if ($formField->defaultValue == '%TODAY%') {
+
+				// Set the current date
+				if ($formField->mask != null) {
+					$formField->value = date($this->convertDateFormat($formField->mask));
+				} else {
+					$formField->value = date($this->convertDateFormat('yyyy-MM-dd'));
+				}
+
+			} else {
+				$formField->value = $formField->defaultValue;
+			}
+		}
+	
 		$json .= $formField->toEditJSON();
 
 
@@ -562,10 +614,10 @@ class Genapp_Service_QueryService {
 			$ymax = $ymax + $diffXY / 2;
 		}
 		return array(
-			'x_min' => $xmin,
-			'y_min' => $ymin,
-			'x_max' => $xmax,
-			'y_max' => $ymax);
+				'x_min' => $xmin,
+				'y_min' => $ymin,
+				'x_max' => $xmax,
+				'y_max' => $ymax);
 	}
 
 	/**
