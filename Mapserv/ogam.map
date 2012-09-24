@@ -36,6 +36,7 @@ WEB
 		WMS_ACCESSCONSTRAINTS 			"none"
 		WMS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/OGAM/Mapserv/ogam.map&"
 		WMS_SRS    						"EPSG:3035"
+		"ows_enable_request" 			"*"
       
       	"wcs_label"                    "OGAM MapServer"
 		"wcs_description"              "OGAM MapServer"
@@ -64,7 +65,7 @@ END
 
 OUTPUTFORMAT
   NAME PNG
-  DRIVER "GD/PNG"
+  DRIVER "AGG/PNG"
   MIMETYPE "image/png"
   IMAGEMODE RGBA
   FORMATOPTION  INTERLACE=OFF
@@ -73,7 +74,7 @@ END
 
 OUTPUTFORMAT
   NAME JPEG
-  DRIVER "GD/JPEG"
+  DRIVER "AGG/JPEG"
   MIMETYPE "image/jpeg"
   IMAGEMODE RGB
   EXTENSION "jpg"
@@ -145,6 +146,10 @@ LAYER
 		"gml_display_group" 	"provider_id,plot_code" 	 	
   	END
   	DUMP TRUE 
+  	
+  	VALIDATION
+ 		'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
+	END
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
