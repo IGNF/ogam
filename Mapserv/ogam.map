@@ -156,7 +156,7 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT the_geom, provider_id, plot_code, oid FROM result_location
+            SELECT the_geom, format, pk, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POLYGON'
               AND session_id = '%SESSION_ID%'
         ) as foo USING UNIQUE oid USING srid=3035
@@ -195,7 +195,7 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT the_geom, provider_id, plot_code, oid FROM result_location
+            SELECT the_geom, format, pk, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POINT'
               AND session_id = '%SESSION_ID%'
         ) as foo USING UNIQUE oid USING srid=3035
@@ -233,7 +233,7 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT transform(the_geom, 3035) as the_geom, plot_code as oid  
+            SELECT transform(the_geom, 3035) as the_geom, pk as oid  
             FROM location
         ) as foo USING srid=3035
     "
