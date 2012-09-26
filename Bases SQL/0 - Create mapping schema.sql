@@ -6,6 +6,8 @@ SET SEARCH_PATH = mapping, public;
 /*==============================================================*/
 /* Table : RESULT_LOCATION                                      */
 /*==============================================================*/
+
+-- A tester en postgresql 9.1 : create UNLOGGED table RESULT_LOCATION (
 create table RESULT_LOCATION (
 SESSION_ID           VARCHAR(50)          not null,
 FORMAT 			 VARCHAR(36)		  not null,
