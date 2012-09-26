@@ -37,6 +37,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Log not enabled in config.ini');
 		}
 		$this->logger = $this->getResource('Log');
+		$this->logger->debug($_SERVER['REQUEST_URI']);
 		if (empty($this->logger)) {
 			throw new Zend_Exception('Logger object is empty.');
 		}
@@ -98,8 +99,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap('ConfFiles');
 		$configuration = Zend_Registry::get('configuration');
 		$baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
-		
-			// Initialisons la vue
+
+		// Initialisons la vue
 		$view = new Zend_View();
 		$view->doctype('XHTML1_STRICT');
 		$view->headTitle()->setSeparator(' - ')->append($view->translate('Layout Head Title'));
@@ -130,10 +131,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 	// Do not call this function _initTranslate() !
 	/**
-	*
-	* Register the locale and the translation
-	* @throws Zend_Exception
-	*/
+	 *
+	 * Register the locale and the translation
+	 * @throws Zend_Exception
+	 */
 	protected function _initRegisterTranslate() {
 
 		$this->bootstrap('Locale');
