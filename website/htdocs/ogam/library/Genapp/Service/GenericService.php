@@ -351,7 +351,7 @@ class Genapp_Service_GenericService {
 		$select .= ", ".$uniqueId." as id";
 
 		// Detect the column containing the geographical information
-		$locationField = $this->metadataModel->getLocationTableFields($schema, array_keys($tables));
+		$locationField = $this->metadataModel->getGeometryField($schema, array_keys($tables));
 
 		// Add the location centroid (for zooming on the map)
 		$select .= ", astext(centroid(st_transform(".$locationField->format.".".$locationField->columnName.",".$this->visualisationSRS."))) as location_centroid ";

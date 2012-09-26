@@ -521,9 +521,30 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertEquals(count($childTables), 2);
 
 		// Les données attendues sont ordonnées
-		$this->assertEquals($childTables['SPECIES_DATA'], 'Species Data');
-		$this->assertEquals($childTables['TREE_DATA'], 'Tree data');
+		$this->assertEquals('Species Data', $childTables['SPECIES_DATA']);
+		$this->assertEquals('Tree data', $childTables['TREE_DATA']);
 	}
-
+	
+	/**
+	 * Test la fonction getGeometryField.
+	 */
+	public function testGetGeometryField() {
+	
+		// On charge le modèle
+		$metadataModel = new Genapp_Model_Metadata_Metadata();
+	
+		// The list of tables where to search
+		$tables = array('LOCATION_DATA', 'PLOT_DATA', 'TREE_DATA');
+	
+		// We search for the geometry column
+		$geometryField = $metadataModel->getGeometryField('RAW_DATA', $tables);
+	
+		$this->assertNotNull($geometryField);
+	
+		// We should find one in the location table
+		$this->assertEquals('THE_GEOM', $geometryField->columnName);
+		$this->assertEquals('TREE_DATA', $geometryField->format);
+		$this->assertEquals('GEOM', $geometryField->type);
+	}
 
 }

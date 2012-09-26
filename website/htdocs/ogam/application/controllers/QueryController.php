@@ -1096,7 +1096,7 @@ class QueryController extends AbstractOGAMController {
 		$queryObject = $websiteSession->queryObject; // the last query done
 
 		$tables = $this->genericService->getAllFormats($schema, $queryObject); // Extract the location table from the last query
-		$locationField = $this->metadataModel->getLocationTableFields($schema, array_keys($tables)); // Extract the location field from the available tables
+		$locationField = $this->metadataModel->getGeometryField($schema, array_keys($tables)); // Extract the location field from the available tables
 		$locationTableInfo = $this->metadataModel->getTableFormat($schema, $locationField->format); // Get info about the location table
 
 		$locations = $this->resultLocationModel->getLocationInfo($sessionId, $lon, $lat);

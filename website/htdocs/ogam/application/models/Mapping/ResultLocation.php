@@ -164,7 +164,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		// Extract the location table from the last query
 		$tables = $genericService->getAllFormats($schema, $queryObject);
 		// Extract the location field from the available tables
-		$locationField = $metadataModel->getLocationTableFields($schema, array_keys($tables));
+		$locationField = $metadataModel->getGeometryField($schema, array_keys($tables));
 		// Get the location table infos
 		$locationTableInfo = $metadataModel->getTableFormat($schema, $locationField->format);
 		// Get the location table columns

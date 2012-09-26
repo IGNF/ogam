@@ -761,59 +761,60 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Detect the column getting the geographical information in a list of tables.
 	 * If the dataset is specified, we filter on the fields of the dataset.
+	 * We always take the GEOM column the lowest in the hierarchy of tables.
 	 *
 	 * @param String $schema the schema identifier
-	 * @param Array[String] $tables a list of formats
-	 * @return Array[Genapp_Object_Metadata_TableField]
+	 * @param Array[String] $tables a list of table formats
+	 * @return Genapp_Object_Metadata_TableField
 	 * @throws an exceptionif the tables contain no geographical information
 	 */
-	public function getLocationTableFields($schema, $tables) {
+	public function getGeometryField($schema, $tables) {
 
 		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATA');
 		$db = $this->getAdapter();
 
-		$this->logger->debug('getLocationTableFields : '.$schema);
-
-		// Get the fields specified by the format
-		$req = "SELECT DISTINCT table_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type, unit.subtype, COALESCE(t.definition, data.definition) as definition ";
-		$req .= " FROM table_field ";
-		$req .= " LEFT JOIN table_format on (table_field.format = table_format.format) ";
-		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
-		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = data.data";
-		$req .= " WHERE table_field.format IN ( ";
-		foreach ($tables as $format) {
-			$req .= "'".$format."', ";
+		$this->logger->debug('getGeometryField : '.$schema);
+		
+		// We do the seach table by table in the inverse order
+		foreach (array_reverse($tables) as $tableName) {
+			
+			// Get the fields specified by the format
+			$req = "SELECT DISTINCT table_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type, unit.subtype, COALESCE(t.definition, data.definition) as definition ";
+			$req .= " FROM table_field ";
+			$req .= " LEFT JOIN table_format on (table_field.format = table_format.format) ";
+			$req .= " LEFT JOIN data on (table_field.data = data.data) ";
+			$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
+			$req .= " LEFT JOIN translation t ON (t.lang = '".$this->lang."' AND t.table_format = table_field.format AND t.row_pk = data.data)";
+			$req .= " WHERE table_field.format = ? ";
+			$req .= " AND table_format.schema_code = ? ";
+			$req .= " AND data.unit = 'GEOM' ";
+			
+			$this->logger->info('getTableFields : '.$req);
+			
+			$select = $db->prepare($req);
+			$select->execute(array($tableName, $schema));
+			
+			$row = $select->fetch();
+			if ($row) {
+				$tableField = new Genapp_Object_Metadata_TableField();
+				$tableField->data = $row['data'];
+				$tableField->format = $row['format'];
+				$tableField->columnName = $row['column_name'];
+				$tableField->isCalculated = $row['is_calculated'];
+				$tableField->isEditable = $row['is_editable'];
+				$tableField->isInsertable = $row['is_insertable'];
+				$tableField->position = $row['position'];
+				$tableField->label = $row['label'];
+				$tableField->unit = $row['unit'];
+				$tableField->type = $row['type'];
+				$tableField->subtype = $row['subtype'];
+				$tableField->definition = $row['definition'];
+				return $tableField;
+			}
 		}
-		$req = substr($req, 0, -2); // remove last comma
-		$req .= " ) ";
-		$req .= " AND table_format.schema_code = ? ";
-		$req .= " AND data.unit = 'GEOM' ";
 
-		$this->logger->info('getTableFields : '.$req);
-
-		$select = $db->prepare($req);
-		$select->execute(array($schema));
-
-		$row = $select->fetch();
-		if ($row) {
-			$tableField = new Genapp_Object_Metadata_TableField();
-			$tableField->data = $row['data'];
-			$tableField->format = $row['format'];
-			$tableField->columnName = $row['column_name'];
-			$tableField->isCalculated = $row['is_calculated'];
-			$tableField->isEditable = $row['is_editable'];
-			$tableField->isInsertable = $row['is_insertable'];
-			$tableField->position = $row['position'];
-			$tableField->label = $row['label'];
-			$tableField->unit = $row['unit'];
-			$tableField->type = $row['type'];
-			$tableField->subtype = $row['subtype'];
-			$tableField->definition = $row['definition'];
-			return $tableField;
-		} else {
-			throw new Exception("No geographical information detected");
-		}
+		// No GEOM column found
+		throw new Exception("No geographical information detected");
 
 	}
 
