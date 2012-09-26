@@ -236,9 +236,10 @@ COMMENT ON COLUMN TREE_DATA.COMMENT IS 'A comment about the species';
 COMMENT ON COLUMN TREE_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 
 
+-- Ajout de la colonne point PostGIS
+SELECT AddGeometryColumn('raw_data','tree_data','the_geom',4326,'POINT',2);
 
-
-
+COMMENT ON COLUMN TREE_DATA.the_geom IS 'geometry of the tree location';
 
 
 /*==============================================================*/
