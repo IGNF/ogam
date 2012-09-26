@@ -95,8 +95,8 @@ class ProxyController extends AbstractOGAMController {
 	 * Get a Tile from Mapserver
 	 */
 	function gettileAction() {
-
-		$uri = $_SERVER["REQUEST_URI"];
+	    $this->logger->debug(__METHOD__);
+		$uri = $_SERVER['REQUEST_URI'];
 
 		$configuration = Zend_Registry::get("configuration");
 		$mapserverURL = $configuration->mapserver_url;
@@ -131,14 +131,14 @@ class ProxyController extends AbstractOGAMController {
 
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
-		
+
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
 			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
-		
+
 		echo $result;
 
 		// No View, we send directly the output
@@ -163,20 +163,20 @@ class ProxyController extends AbstractOGAMController {
 
 		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/getwfs?");
 		$this->logger->debug('redirect getwfs : '.$uri);
-		
+
 		if ($method == 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
 			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
-				
+
 		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
-	
+
 	/**
 	 * Simulate a GET
 	 *
@@ -184,28 +184,28 @@ class ProxyController extends AbstractOGAMController {
 	 * @throws Exception
 	 */
 	private function _sendGET($url) {
-		
+
 		$result = "";
 		$handle = fopen($url, "rb");
 		$result = stream_get_contents($handle);
 		fclose($handle);
-			
+
 		return $result;
 	}
-	
+
 	/**
 	 * Simulate a POST
-	 * 
+	 *
 	 * @param String $url the url to call
 	 * @param Array $data the post data
 	 * @throws Exception
 	 */
 	private function _sendPOST($url, $data) {
-		
+
 		$this->logger->debug('_sendPOST : '.$url." data : ".$data);
-		
+
 		$contentType = "application/xml";
-		
+
 		$opts = array (
 		    'http' => array (
 		        'method' => "POST",
@@ -225,9 +225,9 @@ class ProxyController extends AbstractOGAMController {
 		} else {
 			return "Error opening url : ".$url;
 		}
-				
+
 		return $result;
-		
+
 	}
 
 	/**
@@ -251,14 +251,14 @@ class ProxyController extends AbstractOGAMController {
 
 		// Send the request to Mapserver and forward the response data
 		header("Content-Type: image/png");
-		
+
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
 			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
-		
+
 		echo $result;
 
 		// No View, we send directly the output
@@ -309,14 +309,14 @@ class ProxyController extends AbstractOGAMController {
 
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
-		
+
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
 			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
-		
+
 		echo $result;
 
 		// No View, we send directly the output
@@ -353,7 +353,7 @@ class ProxyController extends AbstractOGAMController {
 		// On effecture une requête mapserver "GetFeature" pour chaque layer
 		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
 		$this->logger->debug('redirect getinfo : '.$uri);
-		
+
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
 			$gml = $this->_sendGET($uri);
@@ -440,7 +440,7 @@ class ProxyController extends AbstractOGAMController {
 		} else {
 			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
 		}
-		
+
 		echo $result;
 
 		// No View, we send directly the output
@@ -475,9 +475,9 @@ class ProxyController extends AbstractOGAMController {
 		} else {
 			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
 		}
-		
+
 		echo $result;
-		
+
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -511,7 +511,7 @@ class ProxyController extends AbstractOGAMController {
 		} else {
 			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
 		}
-		
+
 		echo $result;
 
 		// No View, we send directly the output
@@ -627,7 +627,5 @@ class ProxyController extends AbstractOGAMController {
 		$this->logger->debug('_generated SLD : '.$sld);
 
 		return $sld;
-
 	}
-
 }
