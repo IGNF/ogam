@@ -166,7 +166,7 @@ class Genapp_Service_QueryService {
 				$formField->value = $formField->defaultValue;
 			}
 		}
-	
+
 		$json .= $formField->toEditJSON();
 
 
@@ -643,154 +643,161 @@ class Genapp_Service_QueryService {
 	 * Get the details associed with a result line (clic on the "detail button").
 	 *
 	 * @param String $id The identifier of the line
-	 * @param String $detailLayers The names of the layers used to display the images in the detail panel.
+	 * @param String $detailsLayers The names of the layers used to display the images in the detail panel.
+	 * @param String $datasetId The identifier of the dataset (to filter data)
+	 * @param boolean $proxy If true, use the proxy to fetch mapserver
+	 * @return array Array that represents the details of the result line.
+	 */
+	public function getDetailsData($id, $detailsLayers, $datasetId = null, $proxy = true) {
+	    $this->logger->debug('getDetailsData : '.$id);
+
+	    // Transform the identifier in an array
+	    $keyMap = $this->_decodeId($id);
+
+	    // Prepare a data object to be filled
+	    $data = $this->genericService->buildDataObject($keyMap['SCHEMA'], $keyMap['FORMAT'], null);
+
+	    // Complete the primary key info with the session values
+	    foreach ($data->infoFields as $infoField) {
+	        if (!empty($keyMap[$infoField->data])) {
+	            $infoField->value = $keyMap[$infoField->data];
+	        }
+	    }
+
+	    // Get the detailled data
+	    $result = $this->genericModel->getDatum($data);
+
+	    // The data ancestors
+	    $ancestors = $this->genericModel->getAncestors($data);
+	    $ancestors = array_reverse($ancestors);
+
+	    // Look for a geometry object in order to calculate a bounding box
+	    // Look for the plot location
+	    $bb = null;
+	    $bb2 = null;
+	    $locationTable = null;
+	    foreach ($data->getFields() as $field) {
+	        if ($field->unit == 'GEOM') {
+	            // define a bbox around the location
+	            $bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+
+	            // Prepare an overview bbox
+	            $bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+
+	            $locationTable = $data;
+	            break;
+	        }
+	    }
+	    if ($bb == null) {
+	        foreach ($ancestors as $ancestor) {
+	            foreach ($ancestor->getFields() as $field) {
+	                if ($field->unit == 'GEOM') {
+	                    // define a bbox around the location
+	                    $bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+
+	                    // Prepare an overview bbox
+	                    $bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+
+	                    $locationTable = $ancestor;
+	                    break;
+	                }
+	            }
+	        }
+	    }
+
+	    // Defines the panel title and the mapsserver parameters.
+	    $mapservParams = '';
+	    $title = '';
+	    foreach ($locationTable->getInfoFields() as $primaryKey) {
+	        $mapservParams .= '&'.$primaryKey->columnName.'='.$primaryKey->value;
+	        if ($title !== '') {
+	            $title .= '_';
+	        }
+	        $title .= $primaryKey->value;
+	    }
+
+	    // Title of the detail message
+	    $dataDetails = array();
+	    $dataDetails['title'] = $title;
+	    $dataDetails['formats'] = array();
+
+	    // List all the formats, starting with the ancestors
+	    foreach ($ancestors as $ancestor) {
+	        $ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
+	        if ($ancestorJSON !== '') {
+	            $dataDetails['formats'][] = json_decode($ancestorJSON, true);
+	        }
+	    }
+
+	    // Add the current data
+	    $dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
+	    if ($dataJSON !== '') {
+	        $dataDetails['formats'][] = json_decode($dataJSON, true);
+	    }
+
+	    // Add the localisation maps
+	    $dataDetails['maps'] = array();
+	    if (!empty($detailsLayers)) {
+	        if ($detailsLayers[0] != '') {
+	            $dataDetails['maps'][] = array(
+	                    'title' => 'image',
+	                    'url'   => $this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0],
+	                            $bb, $mapservParams, $proxy)
+                    );
+	        }
+	        if ($detailsLayers[1] != '') {
+	            $dataDetails['maps'][] = array(
+	                    'title' => 'overview',
+	                    'url'   => $this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1],
+	                            $bb2, $mapservParams, $proxy)
+	                );
+	        }
+	    }
+
+	    return $dataDetails;
+	}
+
+	/**
+	 * Get the details associed with a result line (clic on the "detail button").
+	 *
+	 * @param String $id The identifier of the line
+	 * @param String $detailsLayers The names of the layers used to display the images in the detail panel.
 	 * @param String $datasetId The identifier of the dataset (to filter data)
 	 * @return JSON representing the detail of the result line.
 	 */
-	public function getDetails($id, $detailLayers, $datasetId = null) {
+	public function getDetails($id, $detailsLayers, $datasetId = null) {
+        $this->logger->debug('getDetails : '.$id);
 
-		$this->logger->debug('getDetails : '.$id);
+		return json_encode($this->getDetailsData($id, $detailsLayers));
+	}
 
-		// Get the base URL
-		$baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
+	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
+	    $configuration = Zend_Registry::get('configuration');
 
-		// Configure the projection systems
-		$configuration = Zend_Registry::get("configuration");
-		$visualisationSRS = $configuration->srs_visualisation;
+	    if ($proxy) {
+	        $baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl().'/proxy/gettile?';
+	    } else {
+	        $baseUrl = $configuration->mapserver_url.'&';
+	    }
 
-		// Transform the identifier in an array
-		$keyMap = $this->_decodeId($id);
+        // Configure the projection systems
+	    $visualisationSRS = $configuration->srs_visualisation;
 
-		// Prepare a data object to be filled
-		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
-
-		// Complete the primary key info with the session values
-		foreach ($data->infoFields as $infoField) {
-			if (!empty($keyMap[$infoField->data])) {
-				$infoField->value = $keyMap[$infoField->data];
-			}
-		}
-
-		// Get the detailled data
-		$result = $this->genericModel->getDatum($data);
-
-		// The data ancestors
-		$ancestors = $this->genericModel->getAncestors($data);
-		$ancestors = array_reverse($ancestors);
-
-		// Look for a geometry object in order to calculate a bounding box
-		// Look for the plot location
-		$bb = null;
-		$bb2 = null;
-		$locationTable = null;
-		foreach ($data->getFields() as $field) {
-			if ($field->unit == "GEOM") {
-				// define a bbox around the location
-				$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-
-				// Prepare an overview bbox
-				$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-
-				$locationTable = $data;
-				break;
-			}
-		}
-		if ($bb == null) {
-			foreach ($ancestors as $ancestor) {
-				foreach ($ancestor->getFields() as $field) {
-					if ($field->unit == "GEOM") {
-						// define a bbox around the location
-						$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-
-						// Prepare an overview bbox
-						$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-
-						$locationTable = $ancestor;
-						break;
-					}
-				}
-			}
-		}
-
-		// Defines the panel title and the mapsserver parameters.
-		$mapservParams = '';
-		$title = '';
-		foreach ($locationTable->getInfoFields() as $primaryKey) {
-			$mapservParams .= '&'.$primaryKey->columnName.'='.$primaryKey->value;
-			if ($title !== '') {
-				$title .= '_';
-			}
-			$title .= $primaryKey->value;
-		}
-
-		// Title of the detail message
-		$json = '{"title":"'.$title.'", ';
-		$json .= '"formats":[';
-		// List all the formats, starting with the ancestors
-		foreach ($ancestors as $ancestor) {
-			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
-			if ($ancestorJSON !== '') {
-				$json .= $ancestorJSON.',';
-			}
-		}
-
-		// Add the current data
-		$dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
-		if ($dataJSON !== '') {
-			$json .= $dataJSON;
-		}
-		$json .= "], ";
-
-		// Add the localisation maps
-		$json .= "maps:[";
-		if (!empty($detailLayers)) {
-			if ($detailLayers[0] != "") {
-				$json .= "{title:'image',";
-				$json .= "url:'".$baseUrl."/proxy/gettile?";
-				$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[0]);
-				$json .= "&TRANSPARENT=true";
-				$json .= "&FORMAT=image%2FPNG";
-				$json .= "&SERVICE=WMS";
-				$json .= "&VERSION=1.1.1";
-				$json .= "&REQUEST=GetMap";
-				$json .= "&STYLES=";
-				$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
-				$json .= "&SRS=EPSG%3A".$visualisationSRS;
-				$json .= "&BBOX=".$bb['x_min'].",".$bb['y_min'].",".$bb['x_max'].",".$bb['y_max'];
-				$json .= "&WIDTH=300";
-				$json .= "&HEIGHT=300";
-				$json .= "&map.scalebar=STATUS+embed";
-				$json .= "&SESSION_ID=".session_id();
-				$json .= $mapservParams;
-				$json .= "'}"; // end of detail map
-			}
-			if ($detailLayers[1] != "") {
-				$json .= ",{title:'overview',";
-				$json .= "url:'".$baseUrl."/proxy/gettile?";
-				$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[1]);
-				$json .= "&TRANSPARENT=true";
-				$json .= "&FORMAT=image%2FPNG";
-				$json .= "&SERVICE=WMS";
-				$json .= "&VERSION=1.1.1";
-				$json .= "&REQUEST=GetMap";
-				$json .= "&STYLES=";
-				$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
-				$json .= "&SRS=EPSG%3A".$visualisationSRS;
-				$json .= "&BBOX=".$bb2['x_min'].",".$bb2['y_min'].",".$bb2['x_max'].",".$bb2['y_max'];
-				$json .= "&WIDTH=300";
-				$json .= "&HEIGHT=300";
-				$json .= "&SESSION_ID=".session_id();
-				$json .= "&map.scalebar=STATUS+embed";
-				$json .= $mapservParams;
-				$json .= "'}"; // end of overview map
-			}
-		}
-		$json .= "]"; // end of maps
-
-		$json .= "}";
-
-		return $json;
-
+	    return $baseUrl
+	        .'LAYERS='.$detailsLayers
+	        .'&TRANSPARENT=true'
+	        .'&FORMAT=image%2FPNG'
+	        .'&SERVICE=WMS'
+	        .'&VERSION=1.1.1'
+	        .'&REQUEST=GetMap'
+	        .'&STYLES='
+	        .'&EXCEPTIONS=application%2Fvnd.ogc.se_inimage'
+	        .'&SRS=EPSG%3A'.$visualisationSRS
+	        .'&BBOX='.$bb['x_min'].','.$bb['y_min'].','.$bb['x_max'].','.$bb['y_max']
+	        .'&WIDTH=300&HEIGHT=300'
+	        .'&map.scalebar=STATUS+embed'
+	        .'&SESSION_ID='.session_id()
+	        .$mapservParams;
 	}
 
 	/**
