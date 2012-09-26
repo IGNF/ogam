@@ -69,12 +69,12 @@ class Genapp_Service_GenericService {
 		if (!empty($children)) {
 			$childrenCount = count(current($children));
 		}
-		$json = '{"title":'.json_encode($data->tableFormat->label, JSON_HEX_APOS).', "children_count":'.$childrenCount.', "id":"'.$data->getId().'", "fields":[';
+		$json = '{"title":'.json_encode($data->tableFormat->label, JSON_HEX_APOS)
+		      .', "children_count":'.$childrenCount.', "id":"'.$data->getId().'", "fields":[';
 		$fields = '';
 		// Get the form field corresponding to the table field
 		$formFields = $this->getFormFieldsOrdered($data->getFields());
 		foreach ($formFields as $formField) {
-			
 			// Add the corresponding JSON
 			$fields .= $formField->toDetailJSON().",";
 		}
@@ -1062,14 +1062,14 @@ class Genapp_Service_GenericService {
 			if ($field->type == "ARRAY") {
 				$labels = array();
 				if (isset($field->value)) {
-						
+
 					foreach ($field->value as $mode) {
 						if (isset($modes[$mode])) {
 							$labels[] = $modes[$mode];
 						}
 					}
 					$field->valueLabel = $labels;
-						
+
 				}
 			} else {
 				if (isset($modes[$field->value])) {
@@ -1078,10 +1078,6 @@ class Genapp_Service_GenericService {
 			}
 		}
 
-
 		return $field;
-
-
 	}
-
 }
