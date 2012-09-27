@@ -37,7 +37,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Log not enabled in config.ini');
 		}
 		$this->logger = $this->getResource('Log');
-		$this->logger->debug($_SERVER['REQUEST_URI']);
+		
+		// Log l'URL appelée
+		if (isset($_SERVER['REQUEST_URI'])) {
+			$this->logger->debug($_SERVER['REQUEST_URI']);
+		}
+		
 		if (empty($this->logger)) {
 			throw new Zend_Exception('Logger object is empty.');
 		}
