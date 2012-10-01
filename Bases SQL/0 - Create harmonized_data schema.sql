@@ -24,7 +24,7 @@ COMMENT ON COLUMN HARMONIZATION_PROCESS._CREATIONDT IS 'The date of launch of th
 
 
 /*==============================================================*/
-/* Table : HARMONIZATION_PROCESS_SUBMISSIONS                                */
+/* Table : HARMONIZATION_PROCESS_SUBMISSIONS                    */
 /*==============================================================*/
 create table HARMONIZATION_PROCESS_SUBMISSIONS (
 HARMONIZATION_PROCESS_ID         INTEGER,

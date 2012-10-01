@@ -76,6 +76,7 @@ GRANT SELECT ON TABLE metadata.table_format TO ogam;
 GRANT SELECT ON TABLE metadata.table_schema TO ogam;
 GRANT SELECT ON TABLE metadata.table_tree TO ogam;
 GRANT SELECT ON TABLE metadata.unit TO ogam;
+GRANT SELECT ON TABLE metadata.translation TO ogam;
 
 -- mapping
 GRANT ALL ON SCHEMA "mapping" TO ogam;

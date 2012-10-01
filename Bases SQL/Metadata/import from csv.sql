@@ -16,6 +16,8 @@ alter table DATASET_FILES drop constraint FK_DATASET_FILES_FORMAT;
 
 --alter table website.predefined_request drop constraint fk_predefined_request_dataset;
 
+ALTER TABLE metadata.translation DROP CONSTRAINT "FK_TABLE_FORMAT_TRANSLATION";
+
 --
 -- Remove old data
 --
@@ -171,6 +173,10 @@ alter table DATASET_FILES
       references FILE_FORMAT (FORMAT)
       on delete restrict on update restrict;
 
+ALTER TABLE metadata.translation
+  ADD CONSTRAINT "FK_TABLE_FORMAT_TRANSLATION" FOREIGN KEY (table_format)
+      REFERENCES metadata.table_format (format) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 --
 -- Consistency checks

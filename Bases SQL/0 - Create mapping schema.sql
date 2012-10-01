@@ -13,7 +13,7 @@ SESSION_ID           VARCHAR(50)          not null,
 FORMAT 			 VARCHAR(36)		  not null,
 PK 			 VARCHAR(100)		  not null,
 _CREATIONDT          DATE                 null DEFAULT current_timestamp,
-constraint PK_RESULT_LOCATION primary key (SESSION_ID, PROVIDER_ID, PLOT_CODE)
+constraint PK_RESULT_LOCATION primary key (SESSION_ID, PK)
 ) 
 WITH OIDS; -- Important : Needed by mapserv
 
