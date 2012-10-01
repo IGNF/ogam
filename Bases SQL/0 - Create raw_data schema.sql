@@ -107,10 +107,11 @@ ALTER TABLE raw_data.location
       ON UPDATE RESTRICT ON DELETE RESTRICT;
 CREATE INDEX fki_location_submission_id ON raw_data.location(submission_id);
 
-/*========================================================================*/
-/*	Add a trigger to fill the the_geom column of the location table       */
-/*========================================================================*/
-CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
+/*==========================================================================*/
+/*	Add a trigger to fill the the_geom column of the location table         */
+/*  Use that trigger fct only if you want change the default OGAM behaviour */
+/*==========================================================================*/
+/*CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
     BEGIN
@@ -133,7 +134,7 @@ CREATE TRIGGER geom_trigger
   ON raw_data.LOCATION
   FOR EACH ROW
   EXECUTE PROCEDURE raw_data.geomfromcoordinate();
-
+*/
 
 /*==============================================================*/
 /* Table : PLOT_DATA                                            */
