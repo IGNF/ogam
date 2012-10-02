@@ -499,7 +499,7 @@ class QueryController extends AbstractOGAMController {
 	 * Returns a pdf file corresponding to the requested details
 	 * associed with a result line (clic on the "detail button").
 	 */
-	public function pdfExportAction() {
+	public function pdfexportAction() {
 	    $id = $this->getRequest()->getParam('id');
 	    $this->logger->debug('pdfExportAction : id='.$id);
 
@@ -551,14 +551,16 @@ class QueryController extends AbstractOGAMController {
 	    unlink($tmpImgPath);
 
 	    // Ajout des zones
-	    $startHeight = $height-$marge-$dimImg-50-20;
+	    $formatTitleTopMargin = 20;
+	    $formatTitleBottomMargin = 3;
+	    $startHeight = $height-$marge-$dimImg-50-20-$formatTitleTopMargin;
 	    $fontSize = 12;
 	    $lineSpace = 4;
 	    foreach ($data['formats'] as $format) {
 	        // Title
 	        $pdfPage->setFont(Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA), $fontSize+2);
 	        $pdfPage->drawText($format['title'], $marge, $startHeight, 'UTF-8');
-	        $startHeight -= $fontSize+2+$lineSpace;
+	        $startHeight -= $fontSize+2+$lineSpace+$formatTitleBottomMargin;
 
 	        // Data
 	        foreach ($format['fields'] as $field) {
@@ -573,8 +575,10 @@ class QueryController extends AbstractOGAMController {
 	            $startHeight -= $fontSize+$lineSpace;
 	        }
 
-	        $startHeight -= $lineSpace;
+	        $startHeight -= $lineSpace+$formatTitleTopMargin;
 	    }
+
+	    $pdfPage->drawText($this->view->translate('Layout Copyright'), $marge+10, $startHeight, 'UTF-8');
 
 	    $pdf->pages[] = $pdfPage;
 	    echo $pdf->render();
@@ -583,6 +587,7 @@ class QueryController extends AbstractOGAMController {
 	    $this->_helper->layout()->disableLayout();
 	    $this->_helper->viewRenderer->setNoRender();
 	    $this->getResponse()->setHeader('Content-type', 'application/pdf');
+	    $this->getResponse()->setHeader('Content-Disposition', 'attachment; filename='.$data['title']);
 	}
 
 	/**
@@ -1241,6 +1246,7 @@ class QueryController extends AbstractOGAMController {
 			$locationFields = array('id');// The id must stay the first field
 			// The data to full the store
 			$locationsData = array();
+Zend_Registry::get('logger')->debug(print_r($locations, true));
 			foreach ($locations as $locationsIndex => $location) {
 				$locationData = array();
 
@@ -1292,9 +1298,8 @@ class QueryController extends AbstractOGAMController {
 						$locationFields[] = $dataIndex;
 					}
 				}
+				$locationsData[] = $locationData;
 			}
-			$locationsData[] = $locationData;
-
 
 			// We must sort the array here because it can't be done
 			// into the mapfile sql request to avoid a lower performance
