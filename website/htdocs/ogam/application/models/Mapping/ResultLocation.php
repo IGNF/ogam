@@ -138,12 +138,12 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 * @param String $sessionId The session id
 	 * @param Float $lon the longitude
 	 * @param Float $lat the latitude
-	 * @param String $geometryType the geometry type
-	 *
+	 * 
 	 * @return Array
 	 */
-	public function getLocationInfo($sessionId, $lon, $lat, $geometryType = 'POINT') {
-	
+
+	public function getLocationInfo($sessionId, $lon, $lat) {
+
 		$db = $this->getAdapter();
 	
 		$configuration = Zend_Registry::get("configuration");
@@ -216,7 +216,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		$req .= "FROM result_location r ";
 		$req .= "LEFT JOIN ".$locationTableInfo->tableName." l on (r.format = '".$locationTableInfo->format."' AND r.pk = ".$pkscols.") ";
 		$req .= $joinForMode;
-		$req .= "WHERE r.session_id = ? and geometrytype(r.the_geom)='".$geometryType."' ";
+		$req .= "WHERE r.session_id = ? ";
 		$req .= "and ST_DWithin(r.the_geom, ST_SetSRID(ST_Point(?, ?),".$projection."), ".$margin.")";
 	
 		$this->logger->info('getLocationInfo session_id : '.$sessionId);
