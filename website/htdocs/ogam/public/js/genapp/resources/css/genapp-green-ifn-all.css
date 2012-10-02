@@ -224,31 +224,31 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .genapp-query-details-panel .x-panel-body{
     padding:5px;
 }
-.genapp-query-details-panel img{
+.genapp-query-details-panel .x-tab-panel-body img{
     width:300px;
     float:left;
     margin:6px 10px 10px 0;
 }
-.genapp-query-details-panel fieldset,
-.genapp-query-details-panel table{
+.genapp-query-details-panel .x-tab-panel-body fieldset,
+.genapp-query-details-panel .x-tab-panel-body table{
     width:287px;
     float:left;
     margin:0 10px 10px 0;
     padding:5px;
 }
-.genapp-query-details-panel table{
+.genapp-query-details-panel .x-tab-panel-body table{
     width:300px;
 }
-.genapp-query-details-panel th{
+.genapp-query-details-panel .x-tab-panel-body th{
     padding:3px;
 }
-.genapp-query-details-panel td{
+.genapp-query-details-panel .x-tab-panel-body td{
     padding:3px;
 }
-.genapp-query-details-panel caption{
+.genapp-query-details-panel .x-tab-panel-body caption{
     padding-bottom:5px;
 }
-.genapp-query-details-panel legend{
+.genapp-query-details-panel .x-tab-panel-body legend{
     padding:0 5px;
 }
 /*************************************************************************************************/

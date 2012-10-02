@@ -39,6 +39,11 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
      */
     dataUrl:null,
     /**
+     * @cfg {String} pdfUrl
+     * The url to get the pdf.
+     */
+    pdfUrl: 'pdfexport',
+    /**
      * @cfg {String} cls
      * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp-query-details-panel').
      * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
@@ -159,5 +164,12 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
             params : {id : this.rowId},
             scope :this
         });
+    },
+
+    /**
+     * Export the details panel as PDF
+     */
+    exportAsPDF : function(){
+        document.location.href = Genapp.ajax_query_url + this.pdfUrl + '?id=' + this.rowId;
     }
 });

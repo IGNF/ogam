@@ -1005,6 +1005,17 @@ Genapp.ConsultationPanel = Ext
 							scrollRepeatInterval : 100,
 							idDelimiter : '___', // Avoid a conflict with the
 							// Genapp id separator('__')
+				            tbar : [
+		                         {
+		                             text:'Export as pdf',
+		                             iconCls: 'genapp-query-details-panel-pdf-export',
+		                             handler: function(){
+		                                 var currentDP = this.detailsPanel.getActiveTab();
+		                                 currentDP.exportAsPDF();
+		                             },
+		                             scope: this
+		                         }
+		                     ],
 							listeners : {
 								'render' : function(panel) {
 									panel.items.on('remove', function(item) {

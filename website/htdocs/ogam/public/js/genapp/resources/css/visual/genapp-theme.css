@@ -164,27 +164,27 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 .fr .genapp-query-details-panel-ct-xcollapsed-vertical-label-div{
     background-image: url(../images/gray-extend/details_fr.gif);
 }
-.genapp-query-details-panel p{
+.genapp-query-details-panel .x-tab-panel-body p{
     color:#606060;
 }
-.genapp-query-details-panel table{
+.genapp-query-details-panel .x-tab-panel-body table{
     border:1px solid #909090;
     border-collapse:collapse;
     border-spacing:0;
 }
-.genapp-query-details-panel th{
+.genapp-query-details-panel .x-tab-panel-body th{
     color:#505050;
     font-weight: bold;
     border:1px solid #909090;
     text-align:center;
 }
-.genapp-query-details-panel td{
+.genapp-query-details-panel .x-tab-panel-body td{
     color:#606060;
     border:1px solid #909090;
     text-align:center;
 }
-.genapp-query-details-panel legend,
-.genapp-query-details-panel caption{
+.genapp-query-details-panel .x-tab-panel-body legend,
+.genapp-query-details-panel .x-tab-panel-body caption{
     font-weight:bold;
     color:#505050;
     font-size:12px;
@@ -201,6 +201,9 @@ button.genapp-query-panel-predefined-request-save-button-icon {
     cursor: pointer;
     background:transparent url(../images/page_white_edit.png) no-repeat;
     float: left;
+}
+.genapp-query-details-panel-pdf-export{
+    background:transparent url(../images/icon_pdf.gif) no-repeat scroll !important;
 }
 /*************************************************************************************************/
 
