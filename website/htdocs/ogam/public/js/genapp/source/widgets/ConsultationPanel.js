@@ -511,6 +511,16 @@ Genapp.ConsultationPanel = Ext
 					 * @cfg {String} cannotEditTip
 					 */
 					cannotEditTip : "You don't have the rights to edit this data.",
+					/**
+					 * @cfg {Boolean} collapseQueryPanelOnPageLoad Collapse QueryPanel 
+					 *      after the page loading (defaults to <tt>false</tt>)
+					 */
+					collapseQueryPanelOnPageLoad : false,
+                    /**
+                     * @cfg {Boolean} launchRequestOnPageLoad Launch the request 
+                     *      after the page loading (defaults to <tt>false</tt>)
+                     */
+                    launchRequestOnPageLoad : false,
 
 					// private
 					initComponent : function() {
@@ -530,7 +540,10 @@ Genapp.ConsultationPanel = Ext
 										for (i = 0; i < records.length; i++) {
 											if (records[i].data.is_default === '1') {
 												this.datasetComboBox.setValue(records[i].data.id);
-												this.updateDatasetFormsPanel(records[i].data.id);
+												this.updateDatasetFormsPanel(records[i].data.id,{
+												    collapseQueryPanel : this.collapseQueryPanelOnPageLoad,
+						                            launchRequest : this.launchRequestOnPageLoad
+												});
 												this.updateDatasetPanelToolTip(records[i].data);
 												break;
 											}
@@ -1801,10 +1814,10 @@ Genapp.ConsultationPanel = Ext
 					 * @param {String}
 					 *            datasetId The dataset ID
 					 */
-					updateDatasetFormsPanel : function(datasetId) {
+					updateDatasetFormsPanel : function(datasetId, apiParams) {
 						this.updateFormsPanel({
 							datasetId : datasetId
-						});
+						},apiParams);
 					},
 
 					/**
