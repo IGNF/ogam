@@ -1292,7 +1292,8 @@ Zend_Registry::get('logger')->debug(print_r($locations, true));
 							'dataIndex' => $dataIndex,
 							'editable' => false,
 							'tooltip' => $tableField->definition,
-							'width' => max($columnsMaxLength[$columnName]) * 7
+							'width' => max($columnsMaxLength[$columnName]) * 7,
+							'type' => $tableField->type
 						);
 						$columns[] = $column;
 						$locationFields[] = $dataIndex;

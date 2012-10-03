@@ -152,7 +152,8 @@ class Genapp_Service_GenericService {
                     'dataIndex' => $dataIndex,
                     'editable' => false,
                     'tooltip' => $field->definition,
-                    'width' => 150 //max($columnsMaxLength[$field->data]) * 7
+                    'width' => 150, //max($columnsMaxLength[$field->data]) * 7
+					'type' => $field->type
 				);
 				array_push($columns, $column);
 				array_push($locationFields, $dataIndex);
