@@ -587,7 +587,7 @@ class QueryController extends AbstractOGAMController {
 	    $this->_helper->layout()->disableLayout();
 	    $this->_helper->viewRenderer->setNoRender();
 	    $this->getResponse()->setHeader('Content-type', 'application/pdf');
-	    $this->getResponse()->setHeader('Content-Disposition', 'attachment; filename='.$data['title']);
+	    $this->getResponse()->setHeader('Content-Disposition', 'attachment; filename='.$data['title'].'.pdf');
 	}
 
 	/**
