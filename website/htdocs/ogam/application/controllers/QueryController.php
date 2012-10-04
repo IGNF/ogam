@@ -458,49 +458,14 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
-	/**
-	 * Draw a text centered on the page (width)
-	 *
-	 * @param Zend_Pdf_Page $page
-	 * @param string $text
-	 * @param integer $bottom
-	 * @return void
-	 */
-	protected function _drawCenteredText($page, $text, $bottom) {
-	    $text_width = $this->_getTextWidth($text, $page->getFont(), $page->getFontSize());
-	    $box_width = $page->getWidth();
-	    $left = ($box_width - $text_width) / 2;
-
-	    $page->drawText($text, $left, $bottom, 'UTF-8');
-	}
-
-	/**
-	 * Return the size of a text (inch)
-	 *
-	 * @param string $text
-	 * @param Zend_Pdf_Font $font
-	 * @param float $font_size
-	 * @return float
-	 */
-	protected function _getTextWidth($text, $font, $font_size) {
-	    $drawing_text = iconv('', 'UTF-8', $text);
-	    $characters = array();
-	    for ($i = 0; $i < strlen($drawing_text); $i++) {
-	        $characters[] = /*(ord($drawing_text[$i++]) << 8) |*/ ord ($drawing_text[$i]);
-	    }
-	    $glyphs = $font->glyphNumbersForCharacters($characters);
-	    $widths = $font->widthsForGlyphs($glyphs);
-	    $text_width = (array_sum($widths) / $font->getUnitsPerEm()) * $font_size;
-
-	    return $text_width;
-	}
-
-	/**
-	 * Returns a pdf file corresponding to the requested details
-	 * associed with a result line (clic on the "detail button").
-	 */
 	public function pdfexportAction() {
+	    $this->_helper->layout()->disableLayout();
+	    $this->_helper->viewRenderer->setNoRender();
+
 	    $id = $this->getRequest()->getParam('id');
+	    if (empty($id)) {
+	        throw new Exeption(__METHOD__ . ' : identifiant inconnu.');
+	    }
 	    $this->logger->debug('pdfExportAction : id='.$id);
 
 	    // Get the names of the layers to display in the details panel
@@ -514,80 +479,26 @@ class QueryController extends AbstractOGAMController {
 	    // Get all data linked to the result line
 	    $data = $this->queryService->getDetailsData($id, $detailsLayers, $datasetId, false);
 
-	    // Build the PDF
-	    $pdf = new Zend_Pdf();
-
-	    // Ajout d'une page
-	    $pdfPage = new Zend_Pdf_Page(Zend_Pdf_Page::SIZE_A4);
-	    $width  = $pdfPage->getWidth();
-	    $height = $pdfPage->getHeight();
-
-	    // Title of the document
-	    $pdfPage->setFont(Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA), 15.75);
-	    $this->_drawCenteredText($pdfPage, $data['title'], $height-40);
-
-	    // Display both maps (300 x 300px)
-	    $marge = 20;
-	    $dimImg = ($width-$marge*2)/2; // left marge + right marge
-
 	    // image 1
-	    $mapPath = $data['maps'][0]['url'];
-        $tmpImgPath = APPLICATION_PATH.'/../../tmp/images/'.md5($id.session_id().'0').'.png';
-	    file_put_contents($tmpImgPath, file_get_contents($mapPath));
-        $image = Zend_Pdf_Image::imageWithPath($tmpImgPath);
-	    $pdfPage->drawImage($image, $marge, $height-$marge-$dimImg-50, $marge+$dimImg, $height-$marge-50);
-	    $pdfPage->drawRectangle($marge, $height-$marge-$dimImg-50, $marge+$dimImg, $height-$marge-50,
-	            Zend_Pdf_Page::SHAPE_DRAW_STROKE);
-	    unlink($tmpImgPath);
+	    $tmpImgPath1 = APPLICATION_PATH.'/../../tmp/images/'.md5($id.session_id().'0').'.png';
+	    file_put_contents($tmpImgPath1, file_get_contents($data['maps'][0]['url']));
 
 	    // image 2
-	    $mapPath = $data['maps'][1]['url'];
-	    $tmpImgPath = APPLICATION_PATH.'/../../tmp/images/'.md5($id.session_id().'1').'.png';
-	    file_put_contents($tmpImgPath, file_get_contents($mapPath));
-	    $image = Zend_Pdf_Image::imageWithPath($tmpImgPath);
-	    $pdfPage->drawImage($image, $width-$marge-$dimImg, $height-$marge-$dimImg-50, $width-$marge, $height-$marge-50);
-	    $pdfPage->drawRectangle($width-$marge-$dimImg, $height-$marge-$dimImg-50, $width-$marge, $height-$marge-50,
-	            Zend_Pdf_Page::SHAPE_DRAW_STROKE);
-	    unlink($tmpImgPath);
+	    $tmpImgPath2 = APPLICATION_PATH.'/../../tmp/images/'.md5($id.session_id().'1').'.png';
+	    file_put_contents($tmpImgPath2, file_get_contents($data['maps'][1]['url']));
 
-	    // Ajout des zones
-	    $formatTitleTopMargin = 20;
-	    $formatTitleBottomMargin = 3;
-	    $startHeight = $height-$marge-$dimImg-50-20-$formatTitleTopMargin;
-	    $fontSize = 12;
-	    $lineSpace = 4;
-	    foreach ($data['formats'] as $format) {
-	        // Title
-	        $pdfPage->setFont(Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA), $fontSize+2);
-	        $pdfPage->drawText($format['title'], $marge, $startHeight, 'UTF-8');
-	        $startHeight -= $fontSize+2+$lineSpace+$formatTitleBottomMargin;
 
-	        // Data
-	        foreach ($format['fields'] as $field) {
-	            $pdfPage->setFont(Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA), $fontSize);
-	            $text = $field['label'].': ';
-	            if (is_array($field['value'])) {
-	                $text .= implode(', ', $field['value']);
-	            } else {
-	                $text .= $field['value'];
-	            }
-	            $pdfPage->drawText($text, $marge+10, $startHeight, 'UTF-8');
-	            $startHeight -= $fontSize+$lineSpace;
-	        }
+	    require_once('html2pdf/html2pdf.class.php');
+	    $pdf = new HTML2PDF();
+	    $pdf->writeHTML($this->view->partial('query/pdfexport.phtml', array(
+	            'data'     => $data,
+	            'imgPath1' => $tmpImgPath1,
+	            'imgPath2' => $tmpImgPath2
+            )));
+	    $pdf->Output($data['title'].'.pdf', 'D');
 
-	        $startHeight -= $lineSpace+$formatTitleTopMargin;
-	    }
-
-	    $pdfPage->drawText($this->view->translate('Layout Copyright'), $marge+10, $startHeight, 'UTF-8');
-
-	    $pdf->pages[] = $pdfPage;
-	    echo $pdf->render();
-
-	    // No View, we send directly the JSON
-	    $this->_helper->layout()->disableLayout();
-	    $this->_helper->viewRenderer->setNoRender();
-	    $this->getResponse()->setHeader('Content-type', 'application/pdf');
-	    $this->getResponse()->setHeader('Content-Disposition', 'attachment; filename='.$data['title'].'.pdf');
+	    unlink($tmpImgPath1);
+	    unlink($tmpImgPath2);
 	}
 
 	/**
