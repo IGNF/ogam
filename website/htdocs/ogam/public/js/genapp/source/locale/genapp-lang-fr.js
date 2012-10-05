@@ -100,7 +100,8 @@ if (Genapp.ConsultationPanel) {
 						seeOnMapButtonTip : "Affiche la carte, puis zoom et centre sur la localisation.",
 						editDataButtonTitle : "Editer les données",
 						editDataButtonTip : "Ouvre la page d'édition pour éditer les données.",
-						cannotEditTip : "Vous n'avez pas le droit d'éditer cette donnée."
+						cannotEditTip : "Vous n'avez pas le droit d'éditer cette donnée.",
+						exportAsPdfButtonText: "Exporter en pdf"
 					});
 }
 if (Genapp.form.picker.DateRangePicker) {
@@ -176,7 +177,8 @@ if (Genapp.GeoPanel) {
 		locationInfoControlTitle : "Voir les informations sur le point",
 		selectFeatureControlTitle : "Selectionner un contour de sur la couche sélectionnée",
 		featureInfoControlTitle : "Voir les informations sur la couche sélectionnée",
-		legalMentionsLinkText : 'Mentions légales'
+		legalMentionsLinkText : "Mentions légales",
+		addGeomCriteriaButtonText : "Sélectionner une zone géographique"
 	});
 }
 if (Genapp.tree.ContextMenuPlugin) {

@@ -44,7 +44,8 @@ Genapp.GeoPanel = Ext
 					locationInfoControlTitle : "Get information about the result location",
 					selectFeatureControlTitle : "Select a feature from the selected layer",
 					featureInfoControlTitle : "Get information about the selected layer",
-					legalMentionsLinkText : 'Legal Mentions',
+					legalMentionsLinkText : "Legal Mentions",
+					addGeomCriteriaButtonText : "Select an area",
 
 					/**
 					 * @cfg {Boolean} frame See {@link Ext.Panel#frame}.
@@ -887,6 +888,17 @@ Genapp.GeoPanel = Ext
 							// Separator
 							this.mapToolbar.addSeparator();
 
+						} else {
+    						// Add geom criteria tool
+    						var addGeomCriteriaButton = new Ext.Button({
+                                text : this.addGeomCriteriaButtonText,
+                                iconCls : 'addgeomcriteria',
+                                handler : function(){
+                                    this.fireEvent('addgeomcriteria');
+                                },
+                                scope:this
+                            });
+                            this.mapToolbar.add(addGeomCriteriaButton);
 						}
 
 						this.mapToolbar.addFill();

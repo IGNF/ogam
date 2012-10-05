@@ -521,6 +521,11 @@ Genapp.ConsultationPanel = Ext
                      *      after the page loading (defaults to <tt>false</tt>)
                      */
                     launchRequestOnPageLoad : false,
+                    /**
+                     * @cfg {String} exportAsPdfButtonText The export as pdf button text
+                     *      (defaults to <tt>'Export as pdf'</tt>)
+                     */
+                    exportAsPdfButtonText: "Export as pdf",
 
 					// private
 					initComponent : function() {
@@ -774,6 +779,7 @@ Genapp.ConsultationPanel = Ext
 										this.printMapButton.show();
 									}
 								},
+								'addgeomcriteria' : this.addgeomcriteria,
 								scope : this
 							}
 						});
@@ -1020,7 +1026,7 @@ Genapp.ConsultationPanel = Ext
 							// Genapp id separator('__')
 				            tbar : [
 		                         {
-		                             text:'Export as pdf',
+		                             text: this.exportAsPdfButtonText,
 		                             iconCls: 'genapp-query-details-panel-pdf-export',
 		                             handler: function(){
 		                                 var currentDP = this.detailsPanel.getActiveTab();
@@ -1226,13 +1232,24 @@ Genapp.ConsultationPanel = Ext
 						// Add each form
 						for (i = 0; i < forms.data.length; i++) {
 							if (!(Ext.isEmpty(forms.data[i].criteria) && Ext.isEmpty(forms.data[i].columns))) {
+							    var formId = forms.data[i].id;
+							    var criteria = forms.data[i].criteria;
 								this.formsPanel.add(new Genapp.FieldForm({
 									title : forms.data[i].label,
-									id : forms.data[i].id,
-									criteria : forms.data[i].criteria,
+									id : formId,
+									criteria : criteria,
 									criteriaValues : criteriaValues,
 									columns : forms.data[i].columns
 								}));
+	                            // Find the geom criteria and fill the geomCriteriaInfo param
+	                            for (j = 0; j < criteria.length; j++) {
+	                                if(criteria[j].type === 'GEOM'){
+	                                    this.geomCriteriaInfo = {
+	                                        'formId' : formId,
+	                                        'id' : criteria[j].name
+	                                    }
+	                                }
+	                            }
 							}
 						}
 						this.formsPanel.doLayout();
@@ -1375,12 +1392,14 @@ Genapp.ConsultationPanel = Ext
 						}
 					},
 
-					// TODO: patch rtm to delete
-					launchLocationRequest : function(id, value) {
-						if (!Ext.isEmpty(value)) {
-							var form = this.formsPanel.get('LOCALISATION_FORM');
-							form.addCriteria('LOCALISATION_FORM__SIT_NO_CLASS', value);
-							this.submitRequest();
+					/**
+					 * Add a geom criteria and open its map
+					 */
+					addgeomcriteria : function() {
+						if (!Ext.isEmpty(this.geomCriteriaInfo)) {
+							var form = this.formsPanel.get(this.geomCriteriaInfo.formId);
+							var criteria = form.addCriteria(this.geomCriteriaInfo.id);
+							criteria.openMap();
 						}
 					},
 

@@ -107,6 +107,9 @@ button.genapp-query-panel-predefined-request-save-button-icon {
 .deletefeature {
     background-image:url(../images/cross.png) !important;
 }
+.addgeomcriteria {
+    background-image:url(../images/map_edit.png) !important;
+}
 .zoomstations {
     background-image:url(../images/arrow_in.png) !important;
 }

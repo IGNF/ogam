@@ -325,14 +325,16 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
 	 *            criteriaId The criteria id
 	 * @param {String}
 	 *            value The criteria value
+	 * @return {Object} The criteria object
 	 */
 	addCriteria : function(criteriaId, value) {
 		// Setup the field
 		var record = this.criteriaDS.getById(criteriaId);
 		record.data.default_value = value;
 		// Add the field
-		this.criteriaPanel.add(this.getCriteriaConfig(record.data, false));
+		var criteria = this.criteriaPanel.add(this.getCriteriaConfig(record.data, false));
 		this.criteriaPanel.doLayout();
+		return criteria;
 	},
 
 	/**
