@@ -522,6 +522,16 @@ Genapp.ConsultationPanel = Ext
                      */
                     launchRequestOnPageLoad : false,
                     /**
+                     * @cfg {Boolean} collapseQueryPanelOnDatasetChange Collapse QueryPanel 
+                     *      on the dataset change (defaults to <tt>false</tt>)
+                     */
+                    collapseQueryPanelOnDatasetChange : false,
+                    /**
+                     * @cfg {Boolean} launchRequestOnDatasetChange Launch the request 
+                     *      on the dataset change (defaults to <tt>false</tt>)
+                     */
+                    launchRequestOnDatasetChange : false,
+                    /**
                      * @cfg {String} exportAsPdfButtonText The export as pdf button text
                      *      (defaults to <tt>'Export as pdf'</tt>)
                      */
@@ -585,7 +595,10 @@ Genapp.ConsultationPanel = Ext
 							listeners : {
 								'select' : {
 									fn : function(combo, record, index) {
-										this.updateDatasetFormsPanel(record.data.id);
+										this.updateDatasetFormsPanel(record.data.id,{
+                                            collapseQueryPanel : this.collapseQueryPanelOnDatasetChange,
+                                            launchRequest : this.launchRequestOnDatasetChange
+                                        });
 										this.updateDatasetPanelToolTip(record.data);
 									},
 									scope : this
