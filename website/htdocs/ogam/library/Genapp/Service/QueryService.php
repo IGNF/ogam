@@ -738,7 +738,7 @@ class Genapp_Service_QueryService {
 	        $titlePK .= $infoField->value;
 	    }
 	    $dataInfo = end($dataDetails['formats']);
-	    $dataDetails['title'] = 'Fiche '.$dataInfo['title'].' ('.$titlePK.')';
+	    $dataDetails['title'] = $dataInfo['title'].' ('.$titlePK.')';
 
 	    // Add the localisation maps
 	    $dataDetails['maps'] = array();
