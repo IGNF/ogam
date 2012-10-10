@@ -493,12 +493,30 @@ class QueryController extends AbstractOGAMController {
 	    $pdf->writeHTML($this->view->partial('query/pdfexport.phtml', array(
 	            'data'     => $data,
 	            'imgPath1' => $tmpImgPath1,
-	            'imgPath2' => $tmpImgPath2
+	            'imgPath2' => $tmpImgPath2,
+	            'imgDirPath' => CUSTOM_APPLICATION_PATH.'/../public/img/photos/'
             )));
-	    $pdf->Output($data['title'].'.pdf', 'D');
+	    $pdf->Output($this->_wd_remove_accents($data['title']).'.pdf', 'D');
 
 	    unlink($tmpImgPath1);
 	    unlink($tmpImgPath2);
+	}
+
+	/**
+	 * 
+	 * Remove the accents
+	 * @param String $str The string
+	 * @param String $charset The string charset
+	 */
+	private function _wd_remove_accents($str, $charset='utf-8')
+	{
+	    $str = htmlentities($str, ENT_NOQUOTES, $charset);
+	    
+	    $str = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+	    $str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
+	    $str = preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
+	    
+	    return $str;
 	}
 
 	/**

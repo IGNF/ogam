@@ -665,7 +665,7 @@ class Genapp_Service_QueryService {
 	    }
 
 	    // Get the detailled data
-	    $result = $this->genericModel->getDatum($data);
+	    $this->genericModel->getDatum($data);
 
 	    // The data ancestors
 	    $ancestors = $this->genericModel->getAncestors($data);
@@ -705,20 +705,14 @@ class Genapp_Service_QueryService {
 	        }
 	    }
 
-	    // Defines the panel title and the mapsserver parameters.
+	    // Defines the mapsserver parameters.
 	    $mapservParams = '';
-	    $title = '';
 	    foreach ($locationTable->getInfoFields() as $primaryKey) {
 	        $mapservParams .= '&'.$primaryKey->columnName.'='.$primaryKey->value;
-	        if ($title !== '') {
-	            $title .= '_';
-	        }
-	        $title .= $primaryKey->value;
 	    }
 
 	    // Title of the detail message
 	    $dataDetails = array();
-	    $dataDetails['title'] = $title;
 	    $dataDetails['formats'] = array();
 
 	    // List all the formats, starting with the ancestors
@@ -734,6 +728,17 @@ class Genapp_Service_QueryService {
 	    if ($dataJSON !== '') {
 	        $dataDetails['formats'][] = json_decode($dataJSON, true);
 	    }
+
+	    // Defines the panel title
+	    $titlePK = '';
+	    foreach ($data->infoFields as $infoField) {
+	        if ($titlePK !== '') {
+	            $titlePK .= '_';
+	        }
+	        $titlePK .= $infoField->value;
+	    }
+	    $dataInfo = end($dataDetails['formats']);
+	    $dataDetails['title'] = 'Fiche '.$dataInfo['title'].' ('.$titlePK.')';
 
 	    // Add the localisation maps
 	    $dataDetails['maps'] = array();
