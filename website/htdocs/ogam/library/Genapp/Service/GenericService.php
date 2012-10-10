@@ -747,12 +747,32 @@ class Genapp_Service_GenericService {
 					break;
 				case "GEOM":
 					if (is_array($value)) {
-						$value = $value[0];
-					}
-					if ($exact) {
-						$sql .= " AND ST_Equals(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+						// Case of a list of geom
+						$sql .= " AND (";
+						$oradded = false;
+						foreach ($value as $val) {
+							if ($val != null && $val != '' && is_string($val)) {
+								if ($exact) {
+									$sql .= "ST_Equals(".$column.", transform(ST_GeomFromText('".$val."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+								} else {
+									$sql .= "ST_intersects(".$column.", transform(ST_GeomFromText('".$val."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+								}
+								$sql .= " OR ";
+								$oradded = true;
+							}
+						}
+						if ($oradded) {
+							$sql = substr($sql, 0, -4); // remove the last OR
+						}
+						$sql .= ")";
 					} else {
-						$sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+						if (is_string($value)) {
+							if ($exact) {
+								$sql .= " AND ST_Equals(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+							} else {
+								$sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+							}
+						}
 					}
 					break;
 				case "STRING":
