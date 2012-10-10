@@ -1846,7 +1846,10 @@ Genapp.ConsultationPanel = Ext
                      *            datasetRecordData The data of the selected dataset record
 					 */
 					updateDatasetPanelToolTip : function(datasetRecordData){
-					    this.datasetPanelToolTip = new Ext.ToolTip({
+					    if(!Ext.isEmpty(this.datasetPanelToolTip)){
+    					    this.datasetPanelToolTip.destroy();// Remove the old Dom
+					    }
+                        this.datasetPanelToolTip = new Ext.ToolTip({
                             anchor: 'left',
                             target: this.datasetPanel.getEl(),
                             title: datasetRecordData.label,
