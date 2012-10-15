@@ -118,7 +118,7 @@ if (empty($permissions)) {
 } else {
 ?>
 <li>
-<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Change login');?></a>
+<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Change login').' ('.$user->login.')'?></a>
 </li>
 <li>
 <a href="<?= $this->baseUrl('user/logout') ?>"><?=$this->translate('Log out');?></a>
