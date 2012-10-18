@@ -85,7 +85,7 @@
 			<fileset file="${cps.src.dir}/widgets/EditionPanel.js" />
 			<fileset file="${cps.src.dir}/widgets/FieldForm.js" />
 			<fileset file="${cps.src.dir}/widgets/GeoPanel.js" />
-			<fileset file="${cps.src.dir}/widgets/GridDetailPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/GridDetailsPanel.js" />
 			<fileset file="${cps.src.dir}/widgets/PdfComponent.js" />
 			<fileset file="${cps.src.dir}/widgets/PredefinedRequestPanel.js" />
 			<fileset file="${cps.src.dir}/widgets/form/menu/DateRangeMenu.js" />
