@@ -125,7 +125,7 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
                                 '<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? "-" : values.value]}</p>',
                             '</tpl>',
                             '<tpl if="type == \'IMAGE\'">',
-                                '{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/\' + values.value + \'\">\']}',
+                                '{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/photos/\' + values.value + \'\">\']}',
                             '</tpl>',
                         '</tpl>',
                     '</div>',

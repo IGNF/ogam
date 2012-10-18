@@ -175,7 +175,7 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
             + 'ext:qwidth="' + this.tipImageDefaultWidth + '"'
             + 'ext:qtip="'
             + Genapp.util.htmlStringFormat('<img width="' + (this.tipImageDefaultWidth - 12) 
-            + '" src="' + Genapp.base_url + '/img/' + value 
+            + '" src="' + Genapp.base_url + '/img/photos/' + value 
             +'" />') 
             + '">';
         }
