@@ -490,13 +490,19 @@ class QueryController extends AbstractOGAMController {
 
 	    require_once('html2pdf/html2pdf.class.php');
 	    $pdf = new HTML2PDF();
-	    $pdf->writeHTML($this->view->partial('query/pdfexport.phtml', array(
-	            'data'     => $data,
-	            'imgPath1' => $tmpImgPath1,
-	            'imgPath2' => $tmpImgPath2,
-	            'imgDirPath' => CUSTOM_APPLICATION_PATH.'/../public/img/photos/'
-            )));
-	    $pdf->Output($this->_wd_remove_accents($data['title']).'.pdf', 'D');
+	    //$pdf->setModeDebug();
+		try{
+		    $pdf->writeHTML($this->view->partial('query/pdfexport.phtml', array(
+		            'data'     => $data,
+		            'imgPath1' => $tmpImgPath1,
+		            'imgPath2' => $tmpImgPath2,
+		            'imgDirPath' => CUSTOM_APPLICATION_PATH.'/../public/img/photos/'
+	            )));
+
+		    $pdf->Output($this->_wd_remove_accents($data['title']).'.pdf', 'D');
+		}catch(HTML2PDF_exception $e) {
+    		$this->logger->debug($e);
+		}
 
 	    unlink($tmpImgPath1);
 	    unlink($tmpImgPath2);
@@ -1175,7 +1181,7 @@ class QueryController extends AbstractOGAMController {
 			$locationFields = array('id');// The id must stay the first field
 			// The data to full the store
 			$locationsData = array();
-Zend_Registry::get('logger')->debug(print_r($locations, true));
+
 			foreach ($locations as $locationsIndex => $location) {
 				$locationData = array();
 
