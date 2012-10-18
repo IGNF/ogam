@@ -50,9 +50,25 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 	 */
 	hideDrawPointButton : false,
 	/**
-	 * @cfg {Boolean} hideDrawPointButton Hide the "Draw Line" button
+	 * @cfg {Boolean} hideDrawLineButton Hide the "Draw Line" button
 	 */
 	hideDrawLineButton : false,
+   /**
+     * @cfg {Boolean} hideLayerSelector Hide the layer selector
+     */
+    hideLayerSelector : false,
+    /**
+     * @cfg {Boolean} hideSnappingButton Hide the "Snapping" button
+     */
+    hideSnappingButton : false,
+    /**
+     * @cfg {Boolean} hideGetFeatureButton Hide the "Get Feature" button
+     */
+    hideGetFeatureButton : false,
+    /**
+     * @cfg {Boolean} hideFeatureInfoButton Hide the "Feature Info" button
+     */
+    hideFeatureInfoButton : false,
 	/**
 	 * @cfg {Boolean} maximizable True to display the 'maximize' tool button and
 	 *      allow the user to maximize the window, false to hide the button and
@@ -139,10 +155,10 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 				hideMapDetails : this.hideMapDetails,
 				hideDrawPointButton : this.hideDrawPointButton,
 				hideDrawLineButton : this.hideDrawLineButton,
-				hideLayerSelector : false,
-				hideSnappingButton : false,
-				hideGetFeatureButton : false,
-				hideFeatureInfoButton : false,
+				hideLayerSelector : this.hideLayerSelector,
+				hideSnappingButton : this.hideSnappingButton,
+				hideGetFeatureButton : this.hideGetFeatureButton,
+				hideFeatureInfoButton : this.hideFeatureInfoButton,
 				minZoomLevel : this.mapWindowMinZoomLevel,
 				zoomToFeatureOnInit : this.zoomToFeatureOnInit
 			});
