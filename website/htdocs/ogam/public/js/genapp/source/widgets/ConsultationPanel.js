@@ -1434,6 +1434,8 @@ Genapp.ConsultationPanel = Ext
 							// We must get the id and not a reference to the
 							// activeItem
 							var parentItemId = cardPanel.getLayout().activeItem.getId();
+	                        var tabMask = new Ext.LoadMask(Ext.getCmp(parentItemId).body, {msg: this.mapMaskMsg});
+	                        tabMask.show();
 							Ext.Ajax.request({
 								url : Genapp.ajax_query_url + 'ajaxgetchildren',
 								success : function(response, opts) {
@@ -1444,9 +1446,11 @@ Genapp.ConsultationPanel = Ext
 										initConf : obj
 									}));
 									cardPanel.getLayout().setActiveItem(tab);
+									tabMask.hide();
 								},
 								failure : function(response, opts) {
-									console.log('server-side failure with status code ' + response.status);
+								    tabMask.hide();
+								    console.log('server-side failure with status code ' + response.status);
 								},
 								params : {
 									id : id
