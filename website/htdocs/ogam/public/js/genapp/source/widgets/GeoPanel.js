@@ -404,12 +404,14 @@ Genapp.GeoPanel = Ext
 						});
 
 						// Auto-Zoom to the selected feature
-						this.on('afterlayout', function(mapPanel) {
-							if (this.zoomToFeatureOnInit && this.vectorLayer.features && this.vectorLayer.features.length > 0) {
-								this.zoomToFeatureControl.activate();
-								this.zoomToFeatureControl.trigger();
-							}
-						});
+					    if (this.isDrawingMap) {
+							this.on('treerendered', function() { // Don't use the 'afterlayout' event because it's called more that one time
+							    if (this.zoomToFeatureOnInit && this.vectorLayer.features && this.vectorLayer.features.length > 0) {
+									this.zoomToFeatureControl.activate();
+									this.zoomToFeatureControl.trigger();
+								}
+							});
+						}
 
 						Genapp.GeoPanel.superclass.initComponent.call(this);
 					},
@@ -767,6 +769,8 @@ Genapp.GeoPanel = Ext
 
 						this.layerPanel.add(this.layerTree);
 						this.layerPanel.doLayout();
+
+						this.fireEvent('treerendered', this);
 
 					},
 

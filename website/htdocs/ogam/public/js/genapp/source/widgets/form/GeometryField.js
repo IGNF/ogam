@@ -101,9 +101,17 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 	 */
 	mapWindowMinZoomLevel : 0,
 	/**
-	 * @cfg {Boolean} zoom to features extend on init.
+	 * @cfg {Boolean} zoomToFeatureOnInit zoom to features extend on init.
 	 */
 	zoomToFeatureOnInit : false,
+    /**
+     * @cfg {Boolean} enableResultLayers enable the result layers.
+     */
+	enableResultLayers : true,
+    /**
+     * @cfg {Boolean} setZoomAndCenter set the zoom and the center.
+     */
+	setZoomAndCenter : false,
 
 	/**
 	 * The map panel.
@@ -213,13 +221,24 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 			}, this);
 
 			// TODO : Remove dependency on consultationPanel
-			// Apparemment non déclenché (l'évènement afterinit n'existe pas).
-			this.mapPanel.on('afterinit', function(mapPanel) {
-				var consultationPanel = Ext.getCmp('consultation_panel');
-				mapPanel.map.setCenter(consultationPanel.mapPanel.map.getCenter());
-				mapPanel.map.zoomTo(consultationPanel.mapPanel.map.getZoom() - this.mapWindowMinZoomLevel);
-				mapPanel.enableLayersAndLegends(this.mapPanel.layersActivation['request'], true, true);
-			}, this);
+			// Set the zoom and the center
+			if(this.setZoomAndCenter){
+    			this.mapPanel.on('treerendered', function(mapPanel) {
+    				var consultationPanel = Ext.getCmp('consultation_panel');
+    				mapPanel.map.setCenter(consultationPanel.geoPanel.map.getCenter());
+    				mapPanel.map.zoomTo(consultationPanel.geoPanel.map.getZoom() - this.mapWindowMinZoomLevel);
+    				if(this.enableResultLayers){
+    				    mapPanel.enableLayersAndLegends(mapPanel.layersActivation['request'], true, true);
+    				}
+    			}, this);
+			}
+
+			// Enable the result layers
+			if(this.enableResultLayers && !this.setZoomAndCenter){
+			    this.mapPanel.on('treerendered', function(mapPanel) {
+			        mapPanel.enableLayersAndLegends(mapPanel.layersActivation['request'], true, true);
+			    });
+			}
 
 		}
 		this.mapWindow.show();
