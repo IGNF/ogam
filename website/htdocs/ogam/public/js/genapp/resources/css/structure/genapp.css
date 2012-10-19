@@ -254,6 +254,7 @@ img.genapp-query-details-image-field{
 }
 .genapp-query-details-panel legend{
     padding:0 5px;
+    height:16px;
 }
 .genapp-query-details-panel fieldset p {
     margin-top: 2px;
