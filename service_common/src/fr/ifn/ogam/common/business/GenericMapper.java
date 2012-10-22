@@ -394,11 +394,15 @@ public class GenericMapper {
 
 				// Get the list of descriptor of the table
 				TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(tableFormat, schema);
-				String parentTable = tableDescriptor.getParentTable().getFormat();
+				TableFormatData parentTable = tableDescriptor.getParentTable();
+				String parentTableFormat = null;
+				if(parentTable != null){
+					parentTableFormat = tableDescriptor.getParentTable().getFormat();
+				}
 
 				// If the parent table is listed, we insert the table just before
-				if (sortedTablesList.contains(parentTable)) {
-					sortedTablesList.add(sortedTablesList.indexOf(parentTable), tableFormat);
+				if (parentTableFormat != null && sortedTablesList.contains(parentTableFormat)) {
+					sortedTablesList.add(sortedTablesList.indexOf(parentTableFormat), tableFormat);
 				} else {
 					// If not found, we add the table at the end of the list
 					sortedTablesList.add(tableFormat);

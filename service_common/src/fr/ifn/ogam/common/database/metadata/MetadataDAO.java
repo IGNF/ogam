@@ -261,6 +261,7 @@ public class MetadataDAO {
 				ps = con.prepareStatement(GET_TABLE_FORMAT_STMT);
 				ps.setString(1, format);
 				logger.trace(GET_TABLE_FORMAT_STMT);
+				logger.trace("format : " + format);
 				rs = ps.executeQuery();
 
 				if (rs.next()) {
@@ -1498,6 +1499,8 @@ public class MetadataDAO {
 				ps.setString(2, schemaCode);
 
 				logger.trace(GET_TABLE_TREE_STMT);
+				logger.trace("tableFormat : " + tableFormat);
+				logger.trace("schemaCode : " + schemaCode);
 				rs = ps.executeQuery();
 
 				if (rs.next()) {
@@ -1506,7 +1509,7 @@ public class MetadataDAO {
 					String childTable = rs.getString("child_table");
 					table.setTable(getTableFormat(childTable));
 					String parentTable = rs.getString("parent_table");
-					if (parentTable != "*") {
+					if (!parentTable.equals("*")) {
 						table.setParentTable(getTableFormat(parentTable));
 					}
 					String keys = rs.getString("join_key");
