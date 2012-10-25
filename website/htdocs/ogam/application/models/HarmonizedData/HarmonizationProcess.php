@@ -43,7 +43,7 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 
 		$result = $select->fetch();
 
-		$harmonizationProcess = new Application_Object_Harmonizeddata_HarmonizationProcess();
+		$harmonizationProcess = new Application_Object_HarmonizedData_HarmonizationProcess();
 		$harmonizationProcess->providerId = $activeSubmission->providerId;
 		$harmonizationProcess->datasetId = $activeSubmission->datasetId;
 		if (!empty($result)) {
