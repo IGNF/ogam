@@ -455,7 +455,7 @@ public class GenericMapper {
 					SELECT += ", ";
 				}
 				if (ORDER.equals("")) {
-					ORDER += "ORDER BY ";
+					ORDER += " ORDER BY ";
 				} else {
 					ORDER += ", ";
 				}

@@ -384,6 +384,7 @@ public class GenericDAO {
 			return result;
 
 		} catch (Exception e) {
+			logger.trace(statement);
 			logger.error("Error while reading generic data", e);
 			throw e;
 		} finally {
@@ -437,6 +438,7 @@ public class GenericDAO {
 			}
 
 		} catch (Exception e) {
+			logger.trace(statement);
 			logger.error("Error while reading generic data", e);
 			throw e;
 		} finally {
