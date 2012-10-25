@@ -177,7 +177,6 @@ public class HarmonizationService extends AbstractService {
 				// Prepare some static criteria values
 				TreeMap<String, GenericData> criteriaFields = new TreeMap<String, GenericData>();
 				criteriaFields.put(Data.DATASET_ID, datasetIdData);
-				criteriaFields.put(Data.PROVIDER_ID, providerIdData);
 
 				boolean finished = false;
 				int count = 0;

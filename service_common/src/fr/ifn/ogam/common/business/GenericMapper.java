@@ -468,7 +468,7 @@ public class GenericMapper {
 			if (FROM.equals("")) {
 				FROM += " FROM " + tableDescriptor.getTable().getTableName();
 			} else {
-				FROM += " LEFT JOIN " + tableDescriptor.getTable().getTableName() + " ON (";
+				FROM += " INNER JOIN " + tableDescriptor.getTable().getTableName() + " ON (";
 				Iterator<String> keyIter = tableDescriptor.getKeys().iterator();
 				while (keyIter.hasNext()) {
 					String key = keyIter.next();
