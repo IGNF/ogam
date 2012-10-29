@@ -38,6 +38,7 @@ public class HarmonizationServlet extends AbstractServlet {
 	 */
 	private static final String ACTION = "action";
 	private static final String ACTION_HARMONIZE = "HarmonizeData";
+	private static final String ACTION_REMOVE_HARMONIZE_DATA = "RemoveHarmonizeData";
 	private static final String ACTION_STATUS = "status";
 
 	private static final String DATASET_ID = "DATASET_ID";
@@ -107,7 +108,7 @@ public class HarmonizationServlet extends AbstractServlet {
 			/*
 			 * Launch the harmonization of data
 			 */
-			if (action.equals(ACTION_HARMONIZE)) {
+			if (action.equals(ACTION_HARMONIZE) || action.equals(ACTION_REMOVE_HARMONIZE_DATA)) {
 
 				// Check if a thread is already running
 				HarmonizationServiceThread process = (HarmonizationServiceThread) ThreadLock.getInstance().getProcess(key);
@@ -116,7 +117,11 @@ public class HarmonizationServlet extends AbstractServlet {
 				}
 
 				// Launch the harmonization thread
-				process = new HarmonizationServiceThread(datasetId, providerId);
+				boolean removeOnly = false;
+				if(action.equals(ACTION_REMOVE_HARMONIZE_DATA)){
+					removeOnly = true;
+				}
+				process = new HarmonizationServiceThread(datasetId, providerId, removeOnly);
 				process.start();
 
 				// Register the running thread

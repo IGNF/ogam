@@ -34,11 +34,15 @@ class Application_Model_HarmonizationService_HarmonizationService extends Applic
 	 * @return true if the process was OK
 	 * @throws Exception if a problem occured on the server side
 	 */
-	public function harmonizeData($providerId, $datasetId) {
+	public function harmonizeData($providerId, $datasetId, $removeOnly) {
 		$this->logger->debug("harmonizeData : ".$providerId." ".$datasetId);
 
 		$client = new Zend_Http_Client();
-		$client->setUri($this->serviceUrl."HarmonizationServlet?action=HarmonizeData");
+		$uri = $this->serviceUrl."HarmonizationServlet?action=HarmonizeData";
+		if($removeOnly){
+			$uri = $this->serviceUrl."HarmonizationServlet?action=RemoveHarmonizeData";
+		}
+		$client->setUri($uri);
 		$client->setConfig(array(
 			'maxredirects' => 0,
 			'timeout' => 30));
@@ -46,7 +50,7 @@ class Application_Model_HarmonizationService_HarmonizationService extends Applic
 		$client->setParameterPost('PROVIDER_ID', $providerId);
 		$client->setParameterPost('DATASET_ID', $datasetId);
 
-		$this->logger->debug("HTTP REQUEST : ".$this->serviceUrl."HarmonizationServlet?action=HarmonizeData");
+		$this->logger->debug("HTTP REQUEST : ".$uri);
 
 		$response = $client->request('POST');
 

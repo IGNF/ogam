@@ -109,13 +109,29 @@ class HarmonizationController extends AbstractOGAMController {
 	public function launchHarmonizationAction() {
 		$this->logger->debug('launchHarmonizationAction');
 
+		$this->_launchHarmonization(false);
+	}
+
+	public function removeHarmonizationDataAction() {
+		$this->logger->debug('removeHarmonizationDataAction');
+
+		$this->_launchHarmonization(true);
+	}
+
+	/**
+	 * Launch the harmonization process
+	 *
+	 * @return a View
+	 */
+	private function _launchHarmonization($removeOnly = false) {
+
 		// Get the submission  Id
 		$providerId = $this->_getParam("PROVIDER_ID");
 		$datasetId = $this->_getParam("DATASET_ID");
 
 		// Send the cancel request to the integration server
 		try {
-			$this->harmonizationServiceModel->harmonizeData($providerId, $datasetId);
+			$this->harmonizationServiceModel->harmonizeData($providerId, $datasetId, $removeOnly);
 		} catch (Exception $e) {
 			$this->logger->err('Error during harmonization: '.$e);
 			$this->view->errorMessage = $e->getMessage();

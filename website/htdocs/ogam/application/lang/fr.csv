@@ -191,8 +191,10 @@ Data harmonization module;Recopie des données
 Harmonize Data;Recopier les données
 Back;Retour
 Launch Harmonization;Lancer la copie
+Remove Harmonization Data;Supprimer les données recopiées
 Harmonization Date;Date de recopie
 Confirm harmonization;Attention, les données de ce fournisseur vont être supprimées et recréées
+Confirm harmonization data deletion;Attention, les données de ce fournisseur vont être supprimées
 
 ##########################
 #  Check configuration   #
