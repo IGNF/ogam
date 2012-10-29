@@ -10,7 +10,13 @@
     </tr>
 </table>
 <?php foreach ($this->data['formats'] as $format): ?>
-<h2><?php echo $format['title']; ?></h2>
+<h2><?php echo $format['title'];?>&nbsp;
+    <?php if($format['children_count'] > 0) :?>
+    <div style="font-size: 12px; padding-top: 8px;">
+        <?php echo ' ('.$format['children_count'].' '.$this->translate('child(ren)').')'; ?>
+    </div>
+    <?php endif; ?>
+</h2>
 <ul style="list-style-type:none;">
     <?php foreach ($format['fields'] as $field): ?>
     <li>
