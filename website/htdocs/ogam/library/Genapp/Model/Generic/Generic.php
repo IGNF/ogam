@@ -138,7 +138,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// Get the values from the data table
 		$sql = "SELECT ".$this->genericService->buildSelect($data->getFields());
 		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName." AS ".$tableFormat->format;
-		$sql .= " WHERE(1 = 1) ".$this->genericService->buildWhere($data->infoFields);
+		$sql .= " WHERE(1 = 1) ".$this->genericService->buildWhere(array_merge($data->infoFields, $data->editableFields));
 
 		$this->logger->info('getData : '.$sql);
 
@@ -471,6 +471,11 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			// Fill the known primary keys (we hope the child contain the keys of the parent)
 			foreach ($data->infoFields as $dataKey) {
 				foreach ($child->infoFields as $childKey) {
+					if ($dataKey->data == $childKey->data) {
+						$childKey->value = $dataKey->value;
+					}
+				}
+				foreach ($child->editableFields as $childKey) {
 					if ($dataKey->data == $childKey->data) {
 						$childKey->value = $dataKey->value;
 					}
