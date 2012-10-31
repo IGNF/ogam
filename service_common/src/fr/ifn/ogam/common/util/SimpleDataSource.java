@@ -233,7 +233,9 @@ class SimpleDataSource extends Reference implements DataSource {
 		return true;
 	}
 
-	@Override
+	/**
+	 * 
+	 */
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		// TODO Auto-generated method stub
 		return null;
