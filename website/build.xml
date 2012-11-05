@@ -72,6 +72,7 @@
 			<fileset file="${src.dir}ogam/public/js/genapp/source/openlayers/FeatureInfoControl.js" />
 			<fileset file="${src.dir}ogam/public/js/genapp/source/openlayers/LocationInfoControl.js" />
 			<fileset file="${src.dir}ogam/public/js/genapp/source/openlayers/GetFeatureControl.js" />
+			<fileset file="${src.dir}ogam/public/js/genapp/source/openlayers/ZoomToFeatures.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/basiccheckbox/BasicCheckBox.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/datePatch/datePatchExtjs3.1.1.js" />
 			<fileset file="${src.dir}ogam/public/js/extjsux/rowExpander/RowExpander.js" />
@@ -81,7 +82,9 @@
 			<fileset file="${cps.src.dir}/widgets/CardPanel.js" />
 			<fileset file="${cps.src.dir}/widgets/ConsultationPanel.js" />
 			<fileset file="${cps.src.dir}/widgets/DetailsPanel.js" />
-			<fileset file="${cps.src.dir}/widgets/DocSearchPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/DocSearchPage.js" />
+			<fileset file="${cps.src.dir}/widgets/DocSearchRequestPanel.js" />
+			<fileset file="${cps.src.dir}/widgets/DocSearchResultPanel.js" />
 			<fileset file="${cps.src.dir}/widgets/EditionPanel.js" />
 			<fileset file="${cps.src.dir}/widgets/FieldForm.js" />
 			<fileset file="${cps.src.dir}/widgets/GeoPanel.js" />
