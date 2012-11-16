@@ -161,6 +161,7 @@ Genapp.ConsultationPanel = Ext
 					 *      export button (defaults to false).
 					 */
 					hideCsvExportButton : false,
+					hideKmlExportMenuItem : false,
 					/**
 					 * @cfg {Boolean} hideCancelButton if true hide the cancel
 					 *      button (defaults to false).
@@ -867,11 +868,13 @@ Genapp.ConsultationPanel = Ext
 									handler : this.exportCSV.createDelegate(this, [ 'csv-export' ]),
 									iconCls : 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
 								}));
-								csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
-									text : this.kmlExportMenuItemText,
-									handler : this.exportCSV.createDelegate(this, [ 'kml-export' ]),
-									iconCls : 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
-								}));
+								if (!this.hideKmlExportMenuItem) {
+									csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
+										text : this.kmlExportMenuItemText,
+										handler : this.exportCSV.createDelegate(this, [ 'kml-export' ]),
+										iconCls : 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
+									}));
+								}
 							}
 							// Hide the csv export button if there are no menu
 							// items
