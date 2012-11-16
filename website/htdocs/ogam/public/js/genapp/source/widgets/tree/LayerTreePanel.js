@@ -123,7 +123,7 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 							layerStore : this.store,
 							// New params
 							checkedGroup : layerRecord.getLayer().options.checkedGroup,
-							text : layerRecord.getLayer().options.label,
+							text : layerRecord.getLayer().options.label
 						});
 
 						var sibling = node.item(index);
