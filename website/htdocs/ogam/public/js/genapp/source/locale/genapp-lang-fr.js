@@ -279,7 +279,7 @@ if (Genapp.form.ImageField) {
 }
 if (Genapp.map.LayerSelector) {
 	Ext.apply(Genapp.map.LayerSelector.prototype, {
-		layerSelectorButtonLabel : 'Choisir une couche',
+		layerSelectorButtonLabel : 'Choisir une couche'
 	});
 }
 if (Genapp.DocSearchPage) {
