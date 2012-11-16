@@ -94,7 +94,7 @@ Genapp.PDFComponent = Ext.extend(Ext.BoxComponent, {
             type:this.mimeType,
             width:'100%',
             height:'100%',
-            html:this.defaultHtml,
+            html:this.defaultHtml
         }));
     },
 
