@@ -188,6 +188,8 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 					$joinForMode .= 'LEFT JOIN mode '.$modeAlias.' ON '.$modeAlias.'.CODE = '.$tableField->columnName.' AND '.$modeAlias.'.UNIT = \''.$tableField->unit .'\' ';
 					$joinForMode .= 'LEFT JOIN translation '.$translateAlias.' ON '.$translateAlias.'.lang = \''.$lang.'\' AND '.$translateAlias.'.table_format = \''.$tableFormat->format.'\' AND '.$translateAlias.'.row_pk = '.$modeAlias.'.unit || \',\' || '.$modeAlias.'.code ';
 					$i++;
+				} elseif ($tableField->type == "DATE") {
+					$cols .= 'to_char('.$tableField->columnName.', \'YYYY/MM/DD\') as '. $tableField->columnName .', ';
 				} else {
 					$cols .= $tableField->columnName . ', ';
 				}
