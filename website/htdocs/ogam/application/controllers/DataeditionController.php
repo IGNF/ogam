@@ -25,6 +25,11 @@ class DataEditionController extends AbstractOGAMController {
 	private $genericService;
 
 	/**
+	 * The config.
+	 */
+	private $configuration;
+
+	/**
 	 * Initialise the controler
 	 */
 	public function init() {
@@ -46,10 +51,25 @@ class DataEditionController extends AbstractOGAMController {
 		// The generic service
 		$this->genericService = new Genapp_Service_GenericService();
 
+		// The config
+		$this->configuration = Zend_Registry::get("configuration");
+
+
+		// Check if the schema is specified in the request
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $this->_request->getParam("SCHEMA");
+		if ($schema != null) {
+			$websiteSession->schema = $schema;
+		}
+
+		$this->translator = Zend_Registry::get('Zend_Translate');
+
 	}
 
 	/**
 	 * Check if the authorization is valid this controler.
+	 *
+	 * @throws an Exception if the user doesn't have the rights
 	 */
 	function preDispatch() {
 
@@ -58,7 +78,7 @@ class DataEditionController extends AbstractOGAMController {
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
 		if (empty($permissions) || !array_key_exists('DATA_EDITION', $permissions)) {
-			$this->_redirector->gotoUrl('/');
+			throw new Zend_Auth_Exception('Permission denied for right : DATA_EDITION');
 		}
 	}
 
@@ -68,7 +88,7 @@ class DataEditionController extends AbstractOGAMController {
 	 * @return the index view
 	 */
 	public function indexAction() {
-		return $this->showIndexAction();
+		$this->_redirect('index');
 	}
 
 	/**
@@ -150,23 +170,14 @@ class DataEditionController extends AbstractOGAMController {
 			$elem->addValidator(new Zend_Validate_Float(array('locale' => 'en_EN')));
 
 			// Check min and max
-			$range = $this->metadataModel->getRange($tableField->data);
+			$range = $this->metadataModel->getRange($tableField->unit);
 			$elem->addValidator(new Zend_Validate_LessThan(array('max' => $range->max)));
 			$elem->addValidator(new Zend_Validate_GreaterThan(array('min' => $range->min)));
 			$elem->setValue($tableField->value);
 
 		} else if ($tableField->type == "CODE") {
 
-			// The field is a single code
-
-			if ($tableField->subtype == "DYNAMIC") {
-				$modes = $this->metadataModel->getDynamodes($tableField->unit);
-			} else {
-				$modes = $this->metadataModel->getModes($tableField->unit);
-			}
-
 			$elem = $form->createElement('select', $tableField->data);
-			$elem->addMultiOptions($modes);
 			$elem->setValue($tableField->value);
 
 		} else if ($tableField->type == "BOOLEAN") {
@@ -177,21 +188,13 @@ class DataEditionController extends AbstractOGAMController {
 
 		} else if ($tableField->type == "ARRAY") {
 
-			// The field is a list of codes
-
-			// Get the list of available values
-			if ($tableField->subtype == "DYNAMIC") {
-				$modes = $this->metadataModel->getDynamodes($tableField->unit);
-			} else {
-				$modes = $this->metadataModel->getModes($tableField->unit);
-			}
-
 			// Build a multiple select box
 			$elem = $form->createElement('multiselect', $tableField->data);
-			$elem->addMultiOptions($modes);
 			$elem->setValue($tableField->value);
 
 		} else {
+
+			// TODO : Manage GEOM fields
 
 			// Default
 			$elem = $form->createElement('text', $tableField->data);
@@ -213,12 +216,14 @@ class DataEditionController extends AbstractOGAMController {
 	 * Build and return the data form.
 	 *
 	 * @param DataObject $data The descriptor of the expected data.
+	 * @param String $mode ('ADD' or 'EDIT')
+	 * @param Boolean $complete indicate if the function must generate all the list of codes
 	 */
 	private function _getEditDataForm($data, $mode) {
 
 		$this->logger->debug('_getEditDataForm :  mode = '.$mode);
 
-		$form = new Zend_Form();
+		$form = new Genapp_Form();
 		if ($mode == 'ADD') {
 			$form->setAction($this->baseUrl.'/dataedition/validate-add-data');
 		} else {
@@ -234,19 +239,15 @@ class DataEditionController extends AbstractOGAMController {
 		//
 		foreach ($data->infoFields as $tablefield) {
 
-			// Hardcoded value : We don't display the submission id (it's a technical element)
-			if ($tablefield->data != "SUBMISSION_ID") {
-				$formField = $this->genericService->getTableToFormMapping($tablefield);
+			$formField = $this->genericService->getTableToFormMapping($tablefield);
 
-				$elem = $this->_getFormElement($form, $tablefield, $formField, true);
-				$elem->class = 'dataedit_key';
-				$form->addElement($elem);
-			}
-
+			$elem = $this->_getFormElement($form, $tablefield, $formField, true);
+			$elem->class = 'dataedit_key';
+			$form->addElement($elem);
 		}
 
 		//
-		// The key elements as labels
+		// The editable elements as form fields
 		//
 		foreach ($data->editableFields as $tablefield) {
 
@@ -294,9 +295,6 @@ class DataEditionController extends AbstractOGAMController {
 			}
 		}
 
-		// Complete the data object with the values from the database.
-		$data = $this->genericModel->getDatum($data);
-
 		return $data;
 	}
 
@@ -324,8 +322,6 @@ class DataEditionController extends AbstractOGAMController {
 
 		}
 
-		//$this->logger->info('$data : '.print_r($data, true));
-
 		// If the object is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
@@ -334,6 +330,7 @@ class DataEditionController extends AbstractOGAMController {
 		// Get the childs of the data objet from the database (to generate links)
 		$children = $this->genericModel->getChildren($data);
 
+		// Get the labels linked to the children table (to display the links)
 		$childrenTableLabels = $this->metadataModel->getChildrenTableLabels($data->tableFormat);
 
 		// Store the data descriptor in session
@@ -343,7 +340,7 @@ class DataEditionController extends AbstractOGAMController {
 		$websiteSession->children = $children;
 
 		// Generate dynamically the corresponding form
-		$this->view->form = $this->_getEditDataForm($data, $mode);
+		$this->view->dataId = $data->getId();
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->data = $data;
 		$this->view->ancestors = $ancestors;
@@ -360,53 +357,95 @@ class DataEditionController extends AbstractOGAMController {
 	 *
 	 * @return the index view.
 	 **/
-	public function deleteDataAction() {
-		$this->logger->debug('deleteDataAction');
+	public function ajaxDeleteDataAction() {
+		$this->logger->debug('ajaxDeleteDataAction');
 
 		// Get the parameters from the URL
 		$request = $this->getRequest();
 
-		// Get the data object corresponding to the parameters
 		$data = $this->_getDataFromRequest($request);
 
-		//$this->logger->info('$data : '.print_r($data, true));
+		// Complete the data object with the existing values from the database.
+		$data = $this->genericModel->getDatum($data);
 
 		// Check if the data has children
 		$children = $this->genericModel->getChildren($data);
 
-		if (!empty($children)) {
+		// Count the number of existing children (not only the table definitions)
+		$childrenCount = 0;
+		foreach ($children as $child) {
+			$childrenCount += count($child);
+		}
+
+		// Get the ancestors
+		$ancestors = $this->genericModel->getAncestors($data);
+
+		if ($childrenCount > 0) {
 			// Redirect to the index page
-			return $this->showIndexAction('Item cannot be deleted because it has children');
+			$result = '{"success":false, "errorMessage":'.json_encode($this->translator->translate("Item cannot be deleted because it has children")).'}';
 		} else {
+
+			// Delete the images linked to the data if present
+			foreach ($data->getFields() as $field) {
+				if ($field->type == "IMAGE"  && $field->value != "") {
+					$uploadDir = $this->configuration->image_upload_dir;
+					$dir = $uploadDir."/".$data->getId()."/".$field->getName();
+					$this->_deleteDirectory($dir);
+				}
+			}
+
 			// Delete the data
+
 			try {
 				$this->genericModel->deleteData($data);
 			} catch (Exception $e) {
 				$this->logger->err($e->getMessage());
-				return $this->showIndexAction($e->getMessage());
+				$result = '{"success":false, "errorMessage":'.json_encode($this->translator->translate("Error while deleting data")).'}';
 			}
 
-			// Redirect to the index page
-			return $this->showIndexAction('Item deleted');
+
+			$result = '{"success":true';
+
+			// Redirect to the index page by default
+			$redirectURL = $this->view->baseUrl('dataedition/..');
+			// If the data has an ancestor, we redirect to this ancestor
+			if (!empty($ancestors)) {
+				$parent = $ancestors[0];
+				$redirectURL .= '/dataedition/show-edit-data/'.$parent->getId();
+			}
+
+			$result .= ', "redirectLink":'.json_encode($redirectURL);
+
+
+			$result .= ', "message":'.json_encode($this->translator->translate("Data deleted")).'}';
 		}
 
+		echo $result;
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
+
 
 	/**
 	 * Save the edited data in database.
 	 *
 	 * @return the HTML view
 	 */
-	public function validateEditDataAction() {
-		$this->logger->debug('validateEditDataAction');
+	public function ajaxValidateEditDataAction() {
+		$this->logger->debug('ajaxValidateEditDataAction');
 
 		// Get back info from the session
 		$websiteSession = new Zend_Session_Namespace('website');
 		$data = $websiteSession->data;
 
-		// Validate the form
-		$form = $this->_getEditDataForm($data, 'EDIT');
+		// Get the mode
+		$mode = $this->_getParam('MODE');
 
+		// Validate the form
+		$form = $this->_getEditDataForm($data, $mode);
 		if (!$form->isValidPartial($_POST)) {
 
 			// On réaffiche le formulaire avec les messages d'erreur
@@ -416,69 +455,67 @@ class DataEditionController extends AbstractOGAMController {
 			$this->view->data = $data;
 			$this->view->children = $websiteSession->children;
 			$this->view->message = '';
-			$this->view->mode = 'EDIT';
+			$this->view->mode = $mode;
 
-			return $this->render('edit-data');
+			echo '{"success":false,"errorMessage":'.json_encode($this->translator->translate("Invalid form")).'}';
+		}
+		else {
+
+			// Update the data descriptor with the values submitted
+			foreach ($data->getFields() as $field) {
+				$field->value = $this->_getParam($field->getName());
+			}
+	
+			try {
+				// Insert or update the data
+				if ($mode == 'ADD') {
+					$data = $this->genericModel->insertData($data);
+				} else {
+					$this->genericModel->updateData($data);
+				}
+				echo '{"success":true, ';
+				
+				
+				// Manage redirections
+
+				// Check the number of children
+				$children = $this->genericModel->getChildren($data);
+				if (count($children) == 0) {
+
+					// No more children possible, we redirect to the parent
+					if ($mode == 'ADD') {
+						$ancestors = $this->genericModel->getAncestors($data);
+						if (!empty($ancestors)) {
+							$ancestor = $ancestors[0];
+							$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$ancestor->getId();
+						} else {
+							$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$data->getId();
+						}
+						echo '"redirectLink":'.json_encode($redirectURL).',';
+					}
+				} else {
+					if ($mode == 'ADD') {
+						// We redirect to the newly created item
+						$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$data->getId();
+						echo '"redirectLink":'.json_encode($redirectURL).',';
+					}
+					// Edit mode : we stay on the same page
+				}
+				
+				// Add a message				
+				echo '"message":'.json_encode($this->translator->translate("Data saved"));
+				echo '}';
+	
+			} catch (Exception $e) {
+				$this->logger->err($e->getMessage());
+				echo '{"success":false,"errorMessage":'.json_encode($e->getMessage()).'}';
+			}
 		}
 
-		// Update the data descriptor with the values submitted
-		foreach ($data->editableFields as $field) {
-			$field->value = $this->_getParam($field->data);
-		}
-
-		try {
-			$this->genericModel->updateData($data);
-		} catch (Exception $e) {
-			$this->logger->err($e->getMessage());
-			return $this->showEditDataAction($data, $e->getMessage());
-		}
-
-		// Forward the user to the next step
-		return $this->showEditDataAction($data, 'Data successfully edited');
-	}
-
-	/**
-	 * Add the edited data in database.
-	 *
-	 * @return the HTML view
-	 */
-	public function validateAddDataAction() {
-		$this->logger->debug('validateAddDataAction');
-
-		// Get back info from the session
-		$websiteSession = new Zend_Session_Namespace('website');
-		$data = $websiteSession->data;
-
-		// Validate the form
-		$form = $this->_getEditDataForm($data, 'ADD');
-		if (!$form->isValidPartial($_POST)) {
-
-			// On réaffiche le formulaire avec les messages d'erreur
-			$this->view->form = $form;
-			$this->view->ancestors = $websiteSession->ancestors;
-			$this->view->tableFormat = $data->tableFormat;
-			$this->view->data = $data;
-			$this->view->children = array(); // No children in edition mode
-			$this->view->message = '';
-			$this->view->mode = 'ADD';
-
-			return $this->render('edit-data');
-		}
-
-		// Insert the data descriptor with the values submitted
-		foreach ($data->editableFields as $field) {
-			$field->value = $this->_getParam($field->data);
-		}
-
-		try {
-			$this->genericModel->insertData($data);
-		} catch (Exception $e) {
-			$this->logger->err($e->getMessage());
-			return $this->showAddDataAction($data, $e->getMessage());
-		}
-
-		// Forward the user to the next step
-		return $this->showEditDataAction($data, 'Data successfully inserted');
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**
@@ -498,24 +535,19 @@ class DataEditionController extends AbstractOGAMController {
 		// If data is set then we don't need to read from database
 		if ($data == null) {
 
-			// Get back the dataset identifier
-			$websiteSession = new Zend_Session_Namespace('website');
-			$datasetId = $websiteSession->datasetID;
-
 			// Get the parameters from the URL
 			$request = $this->getRequest();
 
 			$data = $this->_getDataFromRequest($request);
 		}
 
-		// $this->logger->info('$data : '.print_r($data, true));
-
 		// If the objet is not existing then we are in create mode instead of edit mode
 
 		// Get the ancestors of the data objet from the database (to generate a summary)
 		$ancestors = $this->genericModel->getAncestors($data);
 
-		// Get the childs of the data objet from the database (to generate links)
+		// Get the labels linked to the children table (to display the links)
+		$childrenTableLabels = $this->metadataModel->getChildrenTableLabels($data->tableFormat);
 
 		// Store the data descriptor in session
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -523,11 +555,12 @@ class DataEditionController extends AbstractOGAMController {
 		$websiteSession->ancestors = $ancestors;
 
 		// Generate dynamically the corresponding form
-		$this->view->form = $this->_getEditDataForm($data, $mode);
+		$this->view->dataId = $data->getId();
 		$this->view->tableFormat = $data->tableFormat;
 		$this->view->ancestors = $ancestors;
 		$this->view->data = $data;
-		$this->view->children = array(); // No children in edition mode
+		$this->view->children = array(); // No children in add mode
+		$this->view->childrenTableLabels = $childrenTableLabels;
 		$this->view->mode = $mode;
 		$this->view->message = $message;
 
@@ -535,13 +568,41 @@ class DataEditionController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the list of available datasets
+	 * AJAX function : Get the AJAX structure corresponding to the edition form
 	 *
 	 * @return JSON The list of forms
 	 */
-	public function ajaxgeteditformAction() {
+	public function ajaxGetEditFormAction() {
 
-		$this->logger->debug('ajaxgeteditformAction');
+		$this->logger->debug('ajaxGetEditFormAction');
+
+		// Get the parameters from the URL
+		$request = $this->getRequest();
+		$data = $this->_getDataFromRequest($request);
+
+		// Complete the data object with the existing values from the database.
+		$data = $this->genericModel->getDatum($data);
+
+		// The service used to manage the query module
+		$this->queryService = new Genapp_Service_QueryService($data->tableFormat->schemaCode);
+
+		echo $this->queryService->getEditForm($data);
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * AJAX function : Get the AJAX structure corresponding to the add form
+	 *
+	 * @return JSON The list of forms
+	 */
+	public function ajaxGetAddFormAction() {
+
+		$this->logger->debug('ajaxGetAddFormAction');
+
 
 		// Get the parameters from the URL
 		$request = $this->getRequest();
@@ -556,6 +617,99 @@ class DataEditionController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * Get the parameters.
+	 */
+	public function getparametersAction() {
+		$this->logger->debug('getparametersAction');
+
+		$userSession = new Zend_Session_Namespace('user');
+		$permissions = $userSession->permissions;
+		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
+
+		$this->view->userProviderId = $userSession->user->providerId;
+
+		if (!empty($permissions)) {
+			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+				$this->view->checkEditionRights = 'true';
+			}
+
+		}
+		$this->_helper->layout()->disableLayout();
+		$this->render('edit-parameters');
+		$this->getResponse()->setHeader('Content-type', 'application/javascript');
+	}
+
+	/**
+	 * Upload an image and store it on the disk.
+	 *
+	 * @return JSON
+	 */
+	public function ajaximageuploadAction() {
+
+		$this->logger->debug('ajaximageuploadAction');
+
+		$adapter = new Zend_File_Transfer_Adapter_Http();
+
+		// Get upload directory from the config
+		$uploadDir = $this->configuration->image_upload_dir;
+
+		$formData = $this->_request->getPost();
+
+		// Get the identifier of the data
+		$id = $formData['id'];
+
+		// Set the destination directory
+		$destination = $uploadDir.'/'.$id;
+
+		// Create the directory and set the rights
+		$this->_deleteDirectory($destination);
+		mkdir($destination, $this->configuration->image_dir_rights, true);
+
+		// Filter the file extensions
+		if ($this->configuration->image_extensions != null) {
+			$adapter->addValidator('Extension', false, $this->configuration->image_extensions);
+		}
+		if ($this->configuration->image_max_size != null) {
+			$adapter->addValidator('FilesSize', false, $this->configuration->image_max_size);
+		}
+
+		// Receive the file
+		$adapter->setDestination($destination);
+		if (!$adapter->receive()) {
+			$messages = $adapter->getMessages();
+			$this->logger->err(implode("\n", $messages));
+			echo '{"success":false, "errors":'.json_encode($messages).'}';
+		} else {
+			echo '{"success":true}';
+		}
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * Delete a directory and its content recursively.
+	 *
+	 * @param String $dir
+	 * @return boolean
+	 */
+	private	function _deleteDirectory($dir) {
+		$this->logger->debug('deleteDirectory '.$dir);
+
+		if (!file_exists($dir)) return true;
+		if (!is_dir($dir) || is_link($dir)) return unlink($dir);
+		foreach (scandir($dir) as $item) {
+			if ($item == '.' || $item == '..') continue;
+			if (!$this->_deleteDirectory($dir . "/" . $item)) {
+				chmod($dir . "/" . $item, $this->configuration->image_dir_rights);
+				if (!$this->_deleteDirectory($dir . "/" . $item)) return false;
+			};
+		}
+		return rmdir($dir);
 	}
 
 }

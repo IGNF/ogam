@@ -6,6 +6,8 @@ Genapp.configure = function() {
 			hideMapDetails : false,
 			hideCsvExportButton : false,
 			hidePrintMapButton : false,
+			hideCancelButton : false,
+			hideResetButton : false,
 			hidePredefinedRequestSaveButton : true
 		});
 	}
@@ -22,5 +24,7 @@ Genapp.configure = function() {
 			hideSeeChildrenButton : true
 		});
 	}
+	
+	Genapp.hidePinButton = false;
 }
 // ogam

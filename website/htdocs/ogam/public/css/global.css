@@ -62,6 +62,7 @@ body {
 
 .main-body {
 	background-color: #FFFFFF;
+	color: #606060;
 	margin: 0 auto;
 	text-align: left;
 	margin-left: 40px;
@@ -76,7 +77,7 @@ body {
 	left: 40px;
 	right: 40px;
 	z-index: -1;
-	bottom: 30px;
+	bottom: 40px;
 }
 
 .header {
@@ -88,9 +89,24 @@ body {
 }
 
 .header-login {
-	width: 200px;
 	text-align: right;
 	font-weight: bold;
+}
+
+.fr-flag {
+    background-image: url(../img/fr_flag.png) !important;
+    width: 30px;
+    height: 16px;
+    margin-top: 3px;
+    float: left;
+}
+
+.en-flag {
+    background-image: url(../img/en_flag.png) !important;
+    width: 30px;
+    height:16px;
+    margin-top: 3px;
+    float: left;
 }
 
 .banner {
@@ -102,15 +118,15 @@ body {
 }
 
 .top {
-	background-color: #EDEDED;
 	border-bottom: 1px dotted #CCCCCC;
 	border-top: 1px dotted #CCCCCC;
 	padding: 2px 5px;
+	background-color: #EEEEEE; 
+	height: 21px;
 }
 
 .content {
 	background-color: #FFFFFF;
-    padding-bottom:15px;
 }
 
 .content h1,.content h2 {
@@ -233,29 +249,6 @@ div.moduletable_menu a:link,div.moduletable_menu a:active,div.moduletable_menu a
 	text-decoration: none;
 }
 
-.login-form,.create-user-form,.data-harmonization-form,.create-data-submission-form,.create-plot-location-submission-form,.create-strata-submission-form,.show-upload-strata-form,.create-aggregation-form,.create-interpolation-form,.show-upload-data-form,.show-upload-plot-location-form,.show-change-password-form,.show-create-role-form,.show-edit-role-form,.show-edit-user-form
-	{
-	width: 250px;
-	text-align: left;
-	background-color: #EDEDED;
-	padding: 0px 40px;
-	border-bottom: 1px dotted #CCCCCC;
-	border-top: 1px dotted #CCCCCC;
-	margin: 50px auto;
-}
-
-.login-form,.show-change-password-form {
-	width: 150px;
-}
-
-.show-upload-data-form,.show-upload-plot-location-form {
-	width: 1000px;
-}
-
-.show-create-role-form label input,.show-edit-role-form label input {
-	margin-right: 10px;
-}
-
 tr.sectiontableentry0 td {
 	background-color: #EDEDED;
 	padding: 3px;
@@ -323,27 +316,211 @@ img.percentImage {
 	background-position: 1px 0;
 }
 
-/**************************************/
-/* Mise en forme des formulaires Zend */
-/**************************************/
-.editform dd {
-	position: relative;
-	padding-left: 16em;
-	top: -2em;
+.no-submission, .password-change-user-name{
+    margin: 50px 0;
+    text-align: center;
+}
+.view-cell a{
+    background: url(../img/magnifier.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.pdf-cell a {
+    background: url(../img/icon_pdf.gif) top left no-repeat;
+    padding: 1px 8px;
+}
+.view-content-cell a {
+    background: url(../img/page_white_magnify.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.view-meta-cell a {
+    background: url(../img/page_white_database.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.edit-cell a{
+    background: url(../img/page_white_edit.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.change-password-cell a{
+    background: url(../img/key.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.delete-cell a{
+    background: url(../img/delete.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.index-cell .index-cell-create{
+    background: url(../img/folder_link.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.index-cell .index-cell-update{
+    background: url(../img/folder_add.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.index-label-cell{
+    width: 200px;
+}
+.optimize-cell a{
+    background: url(../img/compress.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.files-list-cell a{
+    background: url(../img/folder_explore.png) top left no-repeat;
+    padding: 1px 8px;
+}
+.file_contents {
+    padding: 0 40px 40px 40px;
 }
 
-.message {
-	color: #60BB60;
-	text-align: center;
-	font-size: 16px;
+/**************************************/
+/**      Zend Form CSS               **/
+/**************************************/
+
+.form-super-ct {
+    background-color: #F7F7F7;
+    border-bottom: 2px dotted #CCCCCC;
+    border-top: 2px dotted #CCCCCC;
+    margin: 50px auto;
+    padding: 22px 40px;
 }
+.form-ct {
+    margin:0 auto;
+    width:350px;
+}
+.zend_form .element, .zend_form .button{
+    position: relative;
+}
+.zend_form .multiCheckbox label{
+    margin-left:30px;
+}
+.zend_form .multiCheckbox label.title{
+    display:block;
+    font-weight: bold;
+    margin:10px 0;
+}
+.zend_form .multiCheckbox input{
+    width:auto;
+    margin-top:6px;
+}
+.zend_form input{
+    width:200px;
+    position: absolute;
+    right: 0;
+}
+.zend_form select{
+   width: 204px;
+   position: absolute;
+   right: 0;
+}
+.zend_form .file input{
+    width: auto;
+}
+.zend_form .button{
+    margin-top:20px;
+    height: 25px;
+}
+.zend_form .button input{
+    width:100px;
+}
+.zend_form .hint-title{
+    font-weight: bold;
+}
+.zend_form .file .hint{
+    background-color:#F0F0F0;
+    margin: 10px 0;
+}
+
+/**************************************/
+/**      Zend Form CSS               **/
+/**           Special cases          **/
+/**************************************/
+
+/** Integration Part
+/**************************************/
+
+/** data-submission-form **/
+.data-submission-form .form-ct {
+    width:500px;
+}
+.data-submission-form .zend_form select{
+   width: 400px;
+}
+
+/** data-upload-form **/
+.data-upload-form .form-ct {
+    width:450px;
+}
+.data-upload-form .zend_form .file .hint{
+    width:1000px;
+    margin-left:-275px;
+}
+.data-upload-form .zend_form label{
+    font-weight: bold;
+}
+
+/**************************************/
+/** User Part
+/**************************************/
+
+/** change-current-user-password-form **/
+.change-current-user-password-form .form-ct {
+    width:370px;
+}
+
+/** login-form **/
+.login-form .form-ct {
+    width:300px;
+}
+
+/**************************************/
+/** User Management Part
+/**************************************/
+
+/** user-form **/
+.user-form .form-ct {
+    width:370px;
+}
+
+/** change-user-password-form **/
+.change-user-password-form .form-ct {
+    width:370px;
+}
+
+/** role-form **/
+.role-form .form-ct {
+    width:370px;
+}
+
 
 /************************************************************/
-/* Tooltips en CSS                                          */
+/*      Checkconf Page                                      */
+/************************************************************/
+.checkconf-page{
+    background-color: #F7F7F7;
+    border-bottom: 2px dotted #CCCCCC;
+    border-top: 2px dotted #CCCCCC;
+    margin: 50px auto;
+    padding: 22px 40px;
+}
+.checkconf-page h2{
+    margin: 20px 0;
+}
+.checkconf-page h4{
+    margin: 10px 0;
+}
+.checkconf-page .green{
+    color: green;
+}
+.checkconf-page .red{
+    color: red;
+}
+
+
+/************************************************************/
+/*      Tooltips CSS                                        */
 /* TODO : Replace with something more consistent with ExtJS */
 /************************************************************/
 a.tooltip {
-	display: none;
+	
 }
 
 a.tooltip em {
@@ -380,4 +557,8 @@ a.tooltip:hover em span {
 	margin: 0;
 	padding: 0;
 	border: 0;
+}
+
+dt {
+	font-weight: bold;
 }

@@ -6,9 +6,13 @@
  */
 ?>
 
-if(Genapp.ConsultationPanel){
+if (Genapp.ConsultationPanel) {
     Ext.apply(Genapp.ConsultationPanel.prototype, {
         hideGridCsvExportMenuItem : <?=$this->hideGridCsvExportMenuItem?>,
-        hideGridDataEditButton : <?=$this->hideGridDataEditButton?>
-    });
+        hideGridDataEditButton : <?=$this->hideGridDataEditButton?>,
+        checkEditionRights : <?=$this->checkEditionRights?>       
+    });    
 }
+
+// User info
+Genapp.userProviderId = '<?=$this->userProviderId?>';

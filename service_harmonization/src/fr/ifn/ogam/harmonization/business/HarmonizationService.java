@@ -96,7 +96,7 @@ public class HarmonizationService extends AbstractService {
 	 *            The country code
 	 * @return the process identifier
 	 */
-	public Integer harmonizeData(String datasetId, String providerId) {
+	public Integer harmonizeData(String datasetId, String providerId, boolean removeOnly) {
 
 		Integer processId = null;
 
@@ -161,68 +161,72 @@ public class HarmonizationService extends AbstractService {
 				harmonizedDataDAO.deleteHarmonizedData(tableFormatData.getTableName(), providerId);
 			}
 
-			// For each destination table (starting from the root in the hierarchy to the leaf tables)
-			Iterator<String> destTableIter = harmonizedTablesFormatSortedList.descendingIterator();
-			while (destTableIter.hasNext()) {
-				String destTableFormat = destTableIter.next();
+			if(removeOnly == false){
+				// For each destination table (starting from the root in the hierarchy to the leaf tables)
+				Iterator<String> destTableIter = harmonizedTablesFormatSortedList.descendingIterator();
+				while (destTableIter.hasNext()) {
+					String destTableFormat = destTableIter.next();
 
-				logger.debug("Preparing to insert data in table : " + destTableFormat);
+					logger.debug("Preparing to insert data in table : " + destTableFormat);
 
-				// Get the physical name of the destination table
-				TableFormatData destTableFormatData = metadataDAO.getTableFormat(destTableFormat);
+					// Get the physical name of the destination table
+					TableFormatData destTableFormatData = metadataDAO.getTableFormat(destTableFormat);
 
-				// Get the list of destination fields for this table and this dataset
-				Map<String, TableFieldData> destFields = metadataDAO.getDatasetHarmonizedFields(destTableFormat);
+					// Get the list of destination fields for this table and this dataset
+					Map<String, TableFieldData> destFields = metadataDAO.getDatasetHarmonizedFields(destTableFormat);
 
-				// Prepare some static criteria values
-				TreeMap<String, GenericData> criteriaFields = new TreeMap<String, GenericData>();
-				criteriaFields.put(Data.DATASET_ID, datasetIdData);
-				criteriaFields.put(Data.PROVIDER_ID, providerIdData);
+					// Prepare some static criteria values
+					TreeMap<String, GenericData> criteriaFields = new TreeMap<String, GenericData>();
+					criteriaFields.put(Data.DATASET_ID, datasetIdData);
 
-				boolean finished = false;
-				int count = 0;
-				int page = 0;
-				int total = countData(destTableFormat, criteriaFields, providerId);
-				while (!finished) {
+					boolean finished = false;
+					int count = 0;
+					int page = 0;
+					int total = countData(destTableFormat, criteriaFields, providerId);
+					while (!finished) {
 
-					//
-					// Build a giant SELECT from the raw tables
-					//
-					List<Map<String, GenericData>> sourceData = readSourceData(destTableFormat, criteriaFields, providerId, page, MAX_LINES);
+						//
+						// Build a giant SELECT from the raw tables
+						//
+						List<Map<String, GenericData>> sourceData = readSourceData(destTableFormat, criteriaFields, providerId, page, MAX_LINES);
 
-					Iterator<Map<String, GenericData>> sourceIter = sourceData.iterator();
-					while (sourceIter.hasNext()) {
+						Iterator<Map<String, GenericData>> sourceIter = sourceData.iterator();
+						while (sourceIter.hasNext()) {
 
-						// Get the source data from the source table(s)
-						Map<String, GenericData> sourceFields = sourceIter.next();
-						if (thread != null) {
-							thread.updateInfo("Inserting " + destTableFormatData.getTableName() + " data", count, total);
+							// Get the source data from the source table(s)
+							Map<String, GenericData> sourceFields = sourceIter.next();
+							if (thread != null) {
+								thread.updateInfo("Inserting " + destTableFormatData.getTableName() + " data", count, total);
+							}
+
+							// TODO : Read the complementary data corresponding to this line
+
+							// Add the static data for the destination table
+							sourceFields.put(Data.DATASET_ID, datasetIdData);
+							sourceFields.put(Data.PROVIDER_ID, providerIdData);
+
+							// Insert the record data in the destination table
+							genericDAO.insertData(Schemas.HARMONIZED_DATA, destTableFormatData.getTableName(), destFields, sourceFields);
+							count++;
 						}
 
-						// TODO : Read the complementary data corresponding to this line
+						// Check we have read everything
+						if (count == total) {
+							finished = true;
+						}
 
-						// Add the static data for the destination table
-						sourceFields.put(Data.DATASET_ID, datasetIdData);
-						sourceFields.put(Data.PROVIDER_ID, providerIdData);
+						page++;
 
-						// Insert the record data in the destination table
-						genericDAO.insertData(Schemas.HARMONIZED_DATA, destTableFormatData.getTableName(), destFields, sourceFields);
-						count++;
 					}
-
-					// Check we have read everything
-					if (count == total) {
-						finished = true;
-					}
-
-					page++;
 
 				}
-
 			}
 
 			// Launch post-processing
-			processingService.processData(ProcessingStep.HARMONIZATION, providerId, this.thread);
+			SubmissionData submission = new SubmissionData();
+			submission.setDatasetId(datasetId);
+			submission.setProviderId(providerId);
+			processingService.processData(ProcessingStep.HARMONIZATION, submission, this.thread);
 
 			// Log the process in the log table
 			harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);

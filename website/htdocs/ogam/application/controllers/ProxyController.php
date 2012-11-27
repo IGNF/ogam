@@ -12,24 +12,43 @@ require_once 'AbstractOGAMController.php';
 class ProxyController extends AbstractOGAMController {
 
 	/**
+	 * The generic service.
+	 */
+	private $genericService;
+
+	/**
+	 * The models.
+	 */
+	private $metadataModel;
+	private $classDefinitionModel;
+
+	/**
 	 * Initialise the controler
 	 */
 	public function init() {
 		parent::init();
 
+		// Initialise the models
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->classDefinitionModel = new Application_Model_Mapping_ClassDefinition();
+
+		// The service used to build generic info from the metadata
+		$this->genericService = new Genapp_Service_GenericService();
 	}
 
 	/**
 	 * No authorization check.
+	 *
+	 * @throws Exception when user not loggued.
 	 */
 	function preDispatch() {
 		parent::preDispatch();
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		if (empty($permissions)) { // user not logged
-			$this->_redirector->gotoUrl('/');
+		if (empty($permissions)) {
+			// user not logged
+			throw new Zend_Auth_Exception('User not logged');
 		}
 	}
 
@@ -76,8 +95,8 @@ class ProxyController extends AbstractOGAMController {
 	 * Get a Tile from Mapserver
 	 */
 	function gettileAction() {
-
-		$uri = $_SERVER["REQUEST_URI"];
+	    $this->logger->debug(__METHOD__);
+		$uri = $_SERVER['REQUEST_URI'];
 
 		$configuration = Zend_Registry::get("configuration");
 		$mapserverURL = $configuration->mapserver_url;
@@ -101,7 +120,7 @@ class ProxyController extends AbstractOGAMController {
 			$layerName = $this->_extractParam($uri, "LAYERS");
 
 			if (strpos($layerName, "interpolation") !== FALSE) {
-				$sld = $this->_generateRasterSLD($layerName);
+				$sld = $this->_generateRasterSLD($layerName, 'average_value');
 			} else {
 				$sld = $this->_generateSLD($layerName, 'average_value');
 			}
@@ -112,16 +131,103 @@ class ProxyController extends AbstractOGAMController {
 
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
+		if ($method == 'GET') {
+			$result = $this->_sendGET($uri);
+		} else {
+			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
+
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+	}
+
+	/**
+	 * Get a WFS from Mapserver.
+	 * Used to get a list of features in the WFSLayer layer.
+	 *
+	 * Used for snapping and for getFeature tool.
+	 */
+	function getwfsAction() {
+
+		$uri = $_SERVER["REQUEST_URI"];
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
+
+		$configuration = Zend_Registry::get("configuration");
+		$mapserverURL = $configuration->mapserver_url;
+		$mapserverURL = $mapserverURL."&";
+
+		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/getwfs?");
+		$this->logger->debug('redirect getwfs : '.$uri);
+
+		if ($method == 'GET') {
+			$result = $this->_sendGET($uri);
+		} else {
+			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
+		}
+
+		echo $result;
+
+		// No View, we send directly the output
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+	}
+
+	/**
+	 * Simulate a GET
+	 *
+	 * @param String $url the url to call
+	 * @throws Exception
+	 */
+	private function _sendGET($url) {
+
+		$result = "";
+		$handle = fopen($url, "rb");
+		$result = stream_get_contents($handle);
+		fclose($handle);
+
+		return $result;
+	}
+
+	/**
+	 * Simulate a POST
+	 *
+	 * @param String $url the url to call
+	 * @param Array $data the post data
+	 * @throws Exception
+	 */
+	private function _sendPOST($url, $data) {
+
+		$this->logger->debug('_sendPOST : '.$url." data : ".$data);
+
+		$contentType = "application/xml";
+
+		$opts = array (
+		    'http' => array (
+		        'method' => "POST",
+		        'header' => "Content-Type: ".$contentType."\r\n"."Content-length: ".strlen($data)."\r\n",
+		        'content' => $data
+		    )
+		);
+		ini_set('user_agent', $_SERVER['HTTP_USER_AGENT']);
+		$context = stream_context_create($opts);
+		$fp = fopen($url, 'r', false, $context);
+		$result = "";
+		if ($fp) {
+			while ($str = fread($fp, 1024)) {
+			    $result .= $str;
+			}
+			fclose($fp);
+		} else {
+			return "Error opening url : ".$url;
+		}
+
+		return $result;
+
 	}
 
 	/**
@@ -145,13 +251,15 @@ class ProxyController extends AbstractOGAMController {
 
 		// Send the request to Mapserver and forward the response data
 		header("Content-Type: image/png");
-		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
+		if ($method == 'GET') {
+			$result = $this->_sendGET($uri);
+		} else {
+			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
+
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -183,7 +291,6 @@ class ProxyController extends AbstractOGAMController {
 		// If the layer needs activation, we suppose it needs a SLD.
 		$activation = $this->_extractParam($uri, "HASSLD");
 		$this->logger->debug('uri : '.$uri);
-		$this->logger->debug('activation : '.$activation);
 		if (strtolower($activation) == "true") {
 
 			// Get the layer name
@@ -202,12 +309,15 @@ class ProxyController extends AbstractOGAMController {
 
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
+		if ($method == 'GET') {
+			$result = $this->_sendGET($uri);
+		} else {
+			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
+
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -216,9 +326,14 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Get the country code and the plot code for a given plot location.
+	 * Get informations about a feature.
+	 *
+	 * The function will call Mapserver with a WFS request.
+	 * The returned number of features should be maximum 1.
 	 */
-	function getinfoAction() {
+	function getfeatureinfoAction() {
+
+		$this->logger->debug('getfeatureinfoAction');
 
 		$uri = $_SERVER["REQUEST_URI"];
 
@@ -228,121 +343,52 @@ class ProxyController extends AbstractOGAMController {
 		$sessionId = session_id();
 
 		$websiteSession = new Zend_Session_Namespace('website');
-		$locationFormat = $websiteSession->locationFormat; // The format carrying the location info
-		$schema = $websiteSession->schema; // The format carrying the location info
+		$schema = $websiteSession->schema; // the schema used
+		$queryObject = $websiteSession->queryObject; // the last query done
 
-		$uri = $this->_extractAfter($uri, "proxy/getInfo?");
+		$uri = $this->_extractAfter($uri, "proxy/getfeatureinfo?");
 
 		$metadataModel = new Genapp_Model_Metadata_Metadata();
 
 		// On effecture une requête mapserver "GetFeature" pour chaque layer
 		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
 		$this->logger->debug('redirect getinfo : '.$uri);
-		$gml = "";
-		$handle = fopen($uri, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				$gml .= fread($handle, 8192);
-			}
-			fclose($handle);
+
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
+		if ($method == 'GET') {
+			$gml = $this->_sendGET($uri);
+		} else {
+			$gml = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
 
-		// On parse le résultat (à l'ancienne) et on affiche les données
-
-		// Découpe du bloc display
-		$this->logger->debug('Découpe du bloc display');
+		// Get the infos to display
+		$this->logger->debug('Get the infos to display');
 		if (strpos($gml, ":display>")) {
+			// we have at least one plot found
+
 
 			$dom = new DomDocument();
 			$dom->loadXML($gml);
 
-			// Parcours les infos à afficher
+			// List the items to display
 			$displayNodes = $dom->getElementsByTagName("display");
 
-			// The id is used to avoid to display two time the same result (it's a id for the result dataset)
-			$id = array($schema.$locationFormat);
-			// The columns config to setup the grid columnModel
-			$columns = array();
-			// The columns max length to setup the column width
-			$columnsMaxLength = array();
-			// The fields config to setup the store reader
-			$locationFields = array('id');// The id must stay the first field
-			// The data to full the store
-			$locationsData = array();
-			foreach ($displayNodes as $displayIndex => $displayNode) {
-				$locationData = array();
-				// Get the locations ids
-				$params = $this->_getParams($displayNode);
-				$nextNode = $displayNode->nextSibling;
-				// TODO : remove the hard coded keys
-				array_push($id, $params['provider_id'].$params['plot_code']);
-				array_push($locationData, 'SCHEMA/'.$schema.'/FORMAT/'.$locationFormat.'/PROVIDER_ID/'.$params['provider_id'].'/PLOT_CODE/'.$params['plot_code']);
-				// Get the other fields
-				while ($nextNode != null) {
-					if ($nextNode->nodeType == XML_ELEMENT_NODE && stripos($nextNode->nodeName, 'display_') !== false) {
-						// Get the params
-						$tableParams = $this->_getParams($nextNode);
-						// Setup the location data and the column max length
-						foreach ($tableParams as $columnName => $value) {
-							array_push($locationData, $value);
-							if (empty($columnsMaxLength[$columnName])) {
-								$columnsMaxLength[$columnName] = array();
-							}
-							array_push($columnsMaxLength[$columnName], strlen($value));
-						}
-						// Setup the fields and columns config
-						if ($displayIndex == ($displayNodes->length - 1)) {
-							// Get the table name
-							$table = substr($nextNode->nodeName, 11);
-							$this->logger->debug('Table name: '.$table);
-							// Get the table format
-							$tableFormat = $metadataModel->getTableFormatFromTableName($schema, $table);
-							$format = $tableFormat->format;
-							// Get the table fields
-							$tableFields = $metadataModel->getTableFields(null, $schema, $format);
-							$tFOrdered = array();
-							foreach ($tableFields as $tableField) {
-								$tFOrdered[$tableField->columnName] = $tableField;
-							}
-							foreach ($tableParams as $columnName => $value) {
-								$tableField = $tFOrdered[strtoupper($columnName)];
-								// Set the column model and the location fields
-								$dataIndex = $tableField->format.'__'.$tableField->data;
-								// Adds the column header to prevent it from being truncated too and 2 for the header margins
-								array_push($columnsMaxLength[$columnName], strlen($tableField->label) + 2);
-								$column = array(
-									'header' => $tableField->label,
-									'dataIndex' => $dataIndex,
-									'editable' => false,
-									'tooltip' => $tableField->definition,
-									'width' => max($columnsMaxLength[$columnName]) * 7
-								);
-								array_push($columns, $column);
-								array_push($locationFields, $dataIndex);
-							}
-						}
-					}
-					$nextNode = $nextNode->nextSibling;
+			$displayItems = array();
+
+			foreach ($displayNodes->item(0)->childNodes as $item) {
+				if ($item->nodeType == XML_ELEMENT_NODE) {
+					$name = str_replace('ms:', '', $item->nodeName);
+					$name = str_replace('myns:', '', $name);
+					$value = $item->nodeValue;
+
+					$displayItems[$name] = $value;
 				}
-				array_push($locationsData, $locationData);
-			}
-			// We must sort the array here because it can't be done
-			// into the mapfile sql request to avoid a lower performance
-			sort($id);
-
-			// Check if the location table has a child table
-			$hasChild = false;
-			$locationTableFormat = $metadataModel->getTableFormat($schema, $locationFormat);
-			$children = $metadataModel->getChildrenTableLabels($locationTableFormat);
-			if (!empty($children)) {
-				$hasChild = true;
 			}
 
-			//$this->logger->debug('$locationsData: ' . print_r($locationsData,true));
 
-			echo '{'.'success:true'.', id:'.json_encode(implode('', $id)).', title:'.json_encode($locationTableFormat->label.' ('.count($locationsData).')').', hasChild:'.json_encode($hasChild).', columns:'.json_encode($columns).', fields:'.json_encode($locationFields).', data:'.json_encode($locationsData).'}';
+			echo '{"success":true'.', "fields":'.json_encode($displayItems).'}';
 		} else {
-			echo '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
+			echo '{"success":true, "fields":[]}';
 		}
 
 		// No View, we send directly the output
@@ -357,15 +403,15 @@ class ProxyController extends AbstractOGAMController {
 	 * @return Array[String => String] The params
 	 */
 	private function _getParams($domNode) {
-		$child = array();
+		$params = array();
 		foreach ($domNode->childNodes as $childNode) {
 			if ($childNode->nodeType == XML_ELEMENT_NODE) {
 				$name = str_replace('ms:', '', $childNode->nodeName);
 				$name = str_replace('myns:', '', $name);
-				$child[$name] = $childNode->nodeValue;
+				$params[$name] = $childNode->nodeValue;
 			}
 		}
-		return $child;
+		return $params;
 	}
 
 	/**
@@ -388,13 +434,14 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-transfer-encoding: binary\n");
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
-		$handle = fopen($reportURL, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
+		if ($method == 'GET') {
+			$result = $this->_sendGET($reportURL);
+		} else {
+			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
 		}
+
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -422,13 +469,15 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-transfer-encoding: binary\n");
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
-		$handle = fopen($reportURL, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
+		if ($method == 'GET') {
+			$result = $this->_sendGET($reportURL);
+		} else {
+			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
 		}
+
+		echo $result;
+
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -456,13 +505,14 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-transfer-encoding: binary\n");
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
-		$handle = fopen($reportURL, "rb");
-		if ($handle) {
-			while (!feof($handle)) {
-				echo fread($handle, 8192);
-			}
-			fclose($handle);
+		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
+		if ($method == 'GET') {
+			$result = $this->_sendGET($reportURL);
+		} else {
+			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
 		}
+
+		echo $result;
 
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
@@ -482,8 +532,7 @@ class ProxyController extends AbstractOGAMController {
 		$this->logger->debug('_generateSLD : '.$layerName);
 
 		// Define the classes
-		// TODO : Remove the hardcoded reference to BASAL_AREA
-		$classes = $this->classDefinitionModel->getClassDefinition('BASAL_AREA');
+		$classes = $this->classDefinitionModel->getClassDefinition($variableName);
 
 		// Generate the SLD string
 		$sld = '<StyledLayerDescriptor version="1.0.0"';
@@ -540,13 +589,12 @@ class ProxyController extends AbstractOGAMController {
 	 * @param String $layerName The name of the layer
 	 * @param String $variableName The name of the variable
 	 */
-	private function _generateRasterSLD($layerName) {
+	private function _generateRasterSLD($layerName, $variableName) {
 
 		$this->logger->debug('_generateRasterSLD : '.$layerName);
 
 		// Define the classes
-		// TODO : Remove the hardcoded reference to BASAL_AREA
-		$classes = $this->classDefinitionModel->getRasterClassDefinition('BASAL_AREA');
+		$classes = $this->classDefinitionModel->getRasterClassDefinition($variableName);
 
 		// Generate the SLD string
 		$sld = '<StyledLayerDescriptor version="1.0.0"';
@@ -579,7 +627,5 @@ class ProxyController extends AbstractOGAMController {
 		$this->logger->debug('_generated SLD : '.$sld);
 
 		return $sld;
-
 	}
-
 }

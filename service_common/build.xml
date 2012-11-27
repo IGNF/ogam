@@ -5,7 +5,7 @@
     <!-- Properties are immutable: 
     whoever sets a property first freezes it for the rest of the build;
     they are most definitely not variables. -->
-    <property file="../configs/service_common/build.ppts"/>
+    <property file="../services_configs/service_common/build.ppts"/>
 
 	<!-- Définition des properties -->
 	<property name="application.name" value="Eforest" />

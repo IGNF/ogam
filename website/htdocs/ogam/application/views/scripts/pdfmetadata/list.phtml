@@ -1,0 +1,44 @@
+<H1><?= $this->translate('Indexed files list');?></H1>
+
+<table class="sectiontable">
+<tr>
+	<th></th>
+	<th></th>
+	<th></th>
+	<th><?=$this->translate('Files');?></th>
+	<th></th>
+	<th></th>
+</tr>
+
+<?php
+$i = 0;
+foreach ($this->files as $file) {
+?>
+<tr class="sectiontableentry<?=$i % 2?>">
+    <td class="pdf-cell"><a href="<?= $this->url(array('controller'=>'pdfmetadata',
+                                 'action'=>'viewpdf',
+                                 'file' =>urlencode($file) ),'default', true)?>" title="<?=$this->translate('View the file')?>"></a></td>
+    <td class="view-content-cell"><a href="<?= $this->url(array('controller'=>'fileindexation',
+                                 'action'=>'parsepdf',
+                                 'INDEX_KEY'=>$this->indexKey,
+                                 'file' =>urlencode($file) ),'default', true)?>" title="<?=$this->translate('View the file content')?>"></a></td>
+	<td class="view-meta-cell"><a href="<?= $this->url(array('controller'=>'pdfmetadata',
+                                 'action'=>'viewmeta',
+                                 'INDEX_KEY'=>$this->indexKey,
+                                 'file' =>urlencode($file) ),'default', true)?>" title="<?=$this->translate('View the file metadata')?>"></a></td>
+	<td><?=$file?></td>
+	<td class="edit-cell"><a href="<?= ""/*$this->url(array('controller'=>'pdfmetadata',
+                                 'action'=>'editmeta',
+                                 'file' =>urlencode($file) ),'default', true) */?>" title="<?=$this->translate('Edit the Metadata')?>" onClick="alert('<?=$this->translate("Not implemented");?>')"></a></td>
+    <td class="delete-cell"><a href="<?= ""/*$this->url(array('controller'=>'fileindexation',
+                                 'action'=>'removefile' ),'default', true) */?>" title="<?=$this->translate('Remove the file of the index')?>" onClick="return alert('<?=$this->translate('Not implemented');?>');"></a></td>
+</tr>
+<?php
+$i++;
+}
+?>
+</table>
+ 
+<p class="subTableLink">
+    <a href="<?= $this->url(array('controller'=>'fileindexation'), null, true) ?>"><?= $this->translate('Back');?></a>
+</p>

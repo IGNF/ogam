@@ -60,7 +60,7 @@ public class IntegrationService extends GenericMapper {
 	 * @param sourceFormat
 	 *            the source format identifier
 	 * @param requestParameters
-	 *            the static values (PROVIDER_ID, DATASET_ID, ...)
+	 *            the static values (PROVIDER_ID, DATASET_ID, SUBMISSION_ID, ...)
 	 * @param thread
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
 	 * @return the status of the update
@@ -118,7 +118,7 @@ public class IntegrationService extends GenericMapper {
 
 				// Get the list of fields for the table
 				// TODO : Filter on the dataset fields only (+ common fields like provider_id)
-				Map<String, TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat(), true);
+				Map<String, TableFieldData> destFieldDescriptors = metadataDAO.getTableFields(destFormat.getFormat());
 
 				// Store in a map
 				tableFieldsMap.put(destFormat.getFormat(), destFieldDescriptors);

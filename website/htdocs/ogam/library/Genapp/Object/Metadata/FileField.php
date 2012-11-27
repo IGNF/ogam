@@ -31,7 +31,7 @@ class Genapp_Object_Metadata_FileField extends Genapp_Object_Metadata_Field {
 	 */
 	public function toJSON() {
 
-		$json = '"name":'.json_encode($this->format.'__'.$this->data);
+		$json = '"name":'.json_encode($this->getName());
 		$json .= ',"format":'.json_encode($this->format);
 		$json .= ',"label":'.json_encode($this->label);
 		$json .= ',"isMandatory":'.json_encode($this->isMandatory);

@@ -5,10 +5,16 @@
  */
 ?>
 <script type="text/javascript" src="<?= $this->baseUrl('js/progressbar.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/adapter/ext/ext-base.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
+
 <script type="text/javascript">
 	function confirmLauch() {
 		return confirm("<?= $this->translate('Confirm harmonization');?>");
+	}
+	function confirmDeletion() {
+		return confirm("<?= $this->translate('Confirm harmonization data deletion');?>");
 	}
 </script>
 
@@ -17,7 +23,7 @@
   <?= $this->translate('Data harmonization module'); ?>
 </h1>
 
-
+<?php if(!empty($this->harmonizations)){ ?>
 <table class="sectiontable">
 <tr>
 	<th><?= $this->translate('Provider Id');?></th>
@@ -101,13 +107,19 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 		$harmonizationProcess->status ?>
                 <img src="<?= $this->baseUrl('img/Red_x.png') ?>" />
             <?php } ?></td>
-	<td><a onclick="return confirmLauch();" href="<?= $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?= $this->translate('Launch Harmonization');?></a></td>
+	<td>
+	    <a onclick="return confirmLauch();" href="<?= $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?= $this->translate('Launch Harmonization');?></a>
+	    <br/><a onclick="return confirmDeletion();" href="<?= $this->url(array('controller'=>'harmonization','action'=>'remove-harmonization-data'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?= $this->translate('Remove Harmonization Data');?></a>
+	</td>
 </tr>
 <?
 	$i++;
 }
 ?>
 </table>
+<?php } else { ?>
+<div class="no-submission"><?=$this->translate('No submission found');?></div>
+<?php } ?>
 <p class="subTableLink">
     <a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>"><?= $this->translate('Back');?></a>
 </p>

@@ -3,7 +3,6 @@
  * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  */
-//require_once 'harmonized_data/HarmonizationProcess.php';
 
 /**
  * This is a model allowing access to the harmonization process information.
@@ -23,7 +22,7 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 	}
 
 	/**
-	 * Get the status of the last harmonization process for a given country and dataset
+	 * Get the status of the last harmonization process for a given provider and dataset
 	 *
 	 * @param Submission $activeSubmission a submission
 	 * @return HarmonizationProcess The completed process info
@@ -44,7 +43,7 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 
 		$result = $select->fetch();
 
-		$harmonizationProcess = new Application_Object_Harmonizeddata_HarmonizationProcess();
+		$harmonizationProcess = new Application_Object_HarmonizedData_HarmonizationProcess();
 		$harmonizationProcess->providerId = $activeSubmission->providerId;
 		$harmonizationProcess->datasetId = $activeSubmission->datasetId;
 		if (!empty($result)) {

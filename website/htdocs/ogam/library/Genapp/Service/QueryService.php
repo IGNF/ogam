@@ -73,23 +73,9 @@ class Genapp_Service_QueryService {
 			$json .= '{'.$form->toJSON().',"criteria":[';
 			foreach ($form->criteriaList as $field) {
 				$json .= '{'.$field->toCriteriaJSON();
-				// For the SELECT field, get the list of options
-				if ($field->type == "CODE" || $field->type == "ARRAY") {
-
-					if ($field->subtype == "MODE") {
-						$options = $this->metadataModel->getModes($field->unit);
-						$json .= ',"params":{"options":[';
-						foreach ($options as $code => $label) {
-							$json .= '['.json_encode($code).','.json_encode($label).'],';
-						}
-						$json = substr($json, 0, -1);
-						$json .= ']}';
-					}
-					// For DYNAMIC and TREE modes, the list is populated using an ajax request
-				}
 				// For the RANGE field, get the min and max values
 				if ($field->type == "NUMERIC" && $field->subtype == "RANGE") {
-					$range = $this->metadataModel->getRange($field->data);
+					$range = $this->metadataModel->getRange($field->unit);
 					$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
 				}
 				$json .= '},';
@@ -112,6 +98,129 @@ class Genapp_Service_QueryService {
 			$json = substr($json, 0, -1);
 		}
 		$json = $json.']}';
+
+		return $json;
+	}
+
+	/**
+	 * Convert a java/javascript-style date format to a PHP date format.
+	 *
+	 * @param String $format the format in java style
+	 * @return String the format in PHP style
+	 */
+	private function convertDateFormat($format) {
+
+		$format = str_replace("yyyy", "Y", $format);
+		$format = str_replace("yy", "y", $format);
+		$format = str_replace("MMMMM", "F", $format);
+		$format = str_replace("MMMM", "F", $format);
+		$format = str_replace("MMM", "M", $format);
+		$format = str_replace("MM", "m", $format);
+		$format = str_replace("EEEEEE", "l", $format);
+		$format = str_replace("EEEEE", "l", $format);
+		$format = str_replace("EEEE", "l", $format);
+		$format = str_replace("EEE", "D", $format);
+		$format = str_replace("dd", "d", $format);
+		$format = str_replace("HH", "H", $format);
+		$format = str_replace("hh", "h", $format);
+		$format = str_replace("mm", "i", $format);
+		$format = str_replace("ss", "s", $format);
+		$format = str_replace("A", "a", $format);
+		$format = str_replace("S", "u", $format);
+
+		return $format;
+
+	}
+
+
+	/**
+	 * Generate the JSON structure corresponding to a field to edit.
+	 *
+	 * Fill the JSON object with complementary information from the metadata and referential databases (labels).
+	 *
+	 * @param FormField $field a form field
+	 */
+	private function _generateEditFieldJSON($formField) {
+
+		$json = "{";
+
+		// Set the default value
+		if ($formField->value == null) {
+			if ($formField->defaultValue == '%LOGIN%') {
+
+				// Set the currently loggued user
+				$userSession = new Zend_Session_Namespace('user');
+				$user = $userSession->user;
+				$formField->value = $user->login;
+
+			} else if ($formField->defaultValue == '%TODAY%') {
+
+				// Set the current date
+				if ($formField->mask != null) {
+					$formField->value = date($this->convertDateFormat($formField->mask));
+				} else {
+					$formField->value = date($this->convertDateFormat('yyyy-MM-dd'));
+				}
+
+			} else {
+				$formField->value = $formField->defaultValue;
+			}
+		}
+
+		$json .= $formField->toEditJSON();
+
+
+		// For the RANGE field, get the min and max values
+		if ($formField->type == "NUMERIC" && $formField->subtype == "RANGE") {
+			$range = $this->metadataModel->getRange($formField->unit);
+			$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
+		}
+		$json .= "},";
+
+		return $json;
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of edit fields.
+	 *
+	 * @param DataObject $data the data object to edit
+	 */
+	private function _generateEditFormJSON($data) {
+
+		$json = '{"success":true,"data":[';
+
+		foreach ($data->getInfoFields() as $tablefield) {
+			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
+			if (!empty($formField)) {
+				$formField->value = $tablefield->value;
+				$formField->valueLabel = $tablefield->valueLabel;
+				$formField->editable = $tablefield->isEditable;
+				$formField->insertable = $tablefield->isInsertable;
+				$formField->required = !$tablefield->isCalculated; // If the field is not calculated and if it is part of the key
+				$formField->data = $tablefield->data; 			// The name of the data is the table one
+				$formField->format = $tablefield->format; 			// The name of the data is the table one
+
+				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
+			}
+		}
+		foreach ($data->getEditableFields() as $tablefield) {
+			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
+			if (!empty($formField)) {
+				$formField->value = $tablefield->value;
+				$formField->valueLabel = $tablefield->valueLabel;
+				$formField->editable = $tablefield->isEditable;
+				$formField->insertable = $tablefield->isInsertable;
+				$formField->required = false; // Never mandatory
+				$formField->data = $tablefield->data; 			// The name of the data is the table one
+				$formField->format = $tablefield->format; 			// The name of the data is the table one
+
+				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
+			}
+		}
+
+		$json = substr($json, 0, -1);
+
+		$json .= ']}';
 
 		return $json;
 	}
@@ -142,16 +251,16 @@ class Genapp_Service_QueryService {
 				$criteria->isDefaultCriteria = '0';
 				$criteria->defaultValue = '';
 
-				if (array_key_exists($criteria->format.'__'.$criteria->data, $savedRequest->criteriaList)) {
+				if (array_key_exists($criteria->getName(), $savedRequest->criteriaList)) {
 					$criteria->isDefaultCriteria = '1';
-					$criteria->defaultValue = $savedRequest->criteriaList[$criteria->format.'__'.$criteria->data]->value;
+					$criteria->defaultValue = $savedRequest->criteriaList[$criteria->getName()]->value;
 				}
 			}
 
 			foreach ($form->resultsList as $result) {
 				$result->isDefaultResult = '0';
 
-				if (array_key_exists($result->format.'__'.$result->data, $savedRequest->resultsList)) {
+				if (array_key_exists($result->getName(), $savedRequest->resultsList)) {
 					$result->isDefaultResult = '1';
 				}
 			}
@@ -175,10 +284,21 @@ class Genapp_Service_QueryService {
 		$json .= '"fields":[';
 		$json .= '"id",';
 		$json .= '"label",';
+		$json .= '"definition",';
 		$json .= '"is_default"';
 		$json .= ']';
 		$json .= '},';
-		$json .= '"rows":'.json_encode($datasetIds).'}';
+		$json .= '"rows":[';
+
+		foreach ($datasetIds as $dataset) {
+			$json .= '{'.$dataset->toJSON().'},';
+		}
+		$json = substr($json, 0, -1); // remove last comma
+
+		json_encode($datasetIds);
+
+
+		$json .= ']}';
 
 		return $json;
 	}
@@ -220,36 +340,7 @@ class Genapp_Service_QueryService {
 	public function getEditForm($data) {
 		$this->logger->debug('getEditForm');
 
-		// Get the HTML form fields corresponding to the data
-		$json = '[';
-
-		//
-		// The key elements as labels
-		//
-		foreach ($data->editableFields as $tablefield) {
-			$formField = $this->genericService->getTableToFormMapping($tablefield);
-			if (!empty($formField)) {
-				$formField->value = $tablefield->value;
-				$formField->editable = false;
-				$json .= "{".$formField->toEditJSON()."},";
-			}
-		}
-		//
-		// The value elements as edit forms
-		//
-		foreach ($data->infoFields as $tablefield) {
-			$formField = $this->genericService->getTableToFormMapping($tablefield);
-			if (!empty($formField)) {
-				$formField->value = $tablefield->value;
-				$formField->editable = true;
-				$json .= "{".$formField->toEditJSON()."},";
-			}
-		}
-
-		$json = substr($json, 0, -1);
-		$json .= ']';
-
-		return $json;
+		return $this->_generateEditFormJSON($data);
 
 	}
 
@@ -273,8 +364,6 @@ class Genapp_Service_QueryService {
 		// Transform the form request object into a table data object
 		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
 
-		//$this->logger->debug('$queryObject : '.print_r($queryObject, true));
-
 		if (sizeof($formQuery->results) == 0) {
 			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
 		} else {
@@ -293,10 +382,11 @@ class Genapp_Service_QueryService {
 
 			// Identify the field carrying the location information
 			$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
-			$locationField = $this->metadataModel->getLocationTableFields($this->schema, array_keys($tables));
+			$locationField = $this->metadataModel->getGeometryField($this->schema, array_keys($tables));
+			$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
 
 			// Run the request to store a temporary result table (for the web mapping)
-			$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField->format, $visualisationSRS);
+			$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
 
 			// Calculate the number of lines of result
 			$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count ".$fromwhere);
@@ -311,8 +401,7 @@ class Genapp_Service_QueryService {
 			$websiteSession->SQLSelect = $select;
 			$websiteSession->SQLFromWhere = $fromwhere;
 			$websiteSession->queryObject = $queryObject;
-			$websiteSession->count = $countResult[0]['count'];
-			$websiteSession->locationFormat = $locationField->format;
+			$websiteSession->count = $countResult[0]['count']; // result count
 			$websiteSession->schema = $this->schema;
 
 			// Send the result as a JSON String
@@ -330,10 +419,22 @@ class Genapp_Service_QueryService {
 				$json .= '{'.$formField->toJSON().', "hidden":false},';
 			}
 			// Add the identifier of the line
-			$json .= '{"name":"id","label":"Identifier of the line","inputType":"TEXT","definition":"The plot identifier", "hidden":true},';
+			$json .= '{"name":"id","label":"Identifier of the line","inputType":"TEXT","definition":"The plot identifier", "hidden":true}';
 			// Add the plot location in WKT
-			$json .= '{"name":"location_centroid","label":"Location centroid","inputType":"TEXT","definition":"The plot location", "hidden":true}';
+			$json .= ',{"name":"location_centroid","label":"Location centroid","inputType":"TEXT","definition":"The plot location", "hidden":true}';
+
+
+			// Right management : add the provider id of the data
+			$userSession = new Zend_Session_Namespace('user');
+			$permissions = $userSession->permissions;
+			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
+			}
+
 			$json .= ']';
+
+
+
 			if ($withSQL) {
 				$json .= ', "SQL":'.json_encode($select.$fromwhere);
 			}
@@ -376,7 +477,7 @@ class Genapp_Service_QueryService {
 				$formField->format = $split[0];
 				$formField->data = $split[1];
 				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
-				$key = $tableField->format.'__'.$tableField->data;
+				$key = $tableField->getName();
 				$filter .= " ORDER BY ".$key." ".$sortDir.", id";
 			} else {
 				$filter .= " ORDER BY id"; // default sort to ensure consistency
@@ -394,16 +495,18 @@ class Genapp_Service_QueryService {
 			// Prepare the needed traductions
 			$traductions = array();
 			foreach ($resultColumns as $tableField) {
-				
-				$key = strtolower($tableField->format.'__'.$tableField->data);
-				
+
+				$key = strtolower($tableField->getName());
+
 				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 					if ($tableField->subtype == "DYNAMIC") {
-						$traductions[$key] = $this->metadataModel->getDynamodes($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
 					} else if ($tableField->subtype == "TREE") {
 						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
+					} else if ($tableField->subtype == "TAXREF") {
+						$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
 					} else {
-						$traductions[$key] = $this->metadataModel->getModes($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 					}
 				}
 			}
@@ -417,7 +520,7 @@ class Genapp_Service_QueryService {
 
 				foreach ($resultColumns as $tableField) {
 
-					$key = strtolower($tableField->format.'__'.$tableField->data);
+					$key = strtolower($tableField->getName());
 					$value = $line[$key];
 
 					// Manage code traduction
@@ -426,7 +529,7 @@ class Genapp_Service_QueryService {
 						$json .= json_encode($label == null ? '' : $label).',';
 					} else if ($tableField->type == "ARRAY" && $value != "") {
 						// Split the array items
-						$arrayValues = explode(",", ereg_replace("[{-}]", "", $value));
+						$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 						$label = '';
 						foreach ($arrayValues as $arrayValue) {
 							$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
@@ -444,10 +547,17 @@ class Genapp_Service_QueryService {
 				}
 
 				// Add the line id
-				$json .= json_encode($line['id']).',';
+				$json .= json_encode($line['id']);
 
 				// Add the plot location in WKT
-				$json .= json_encode($line['location_centroid']); // The last column is the location center
+				$json .= ','.json_encode($line['location_centroid']); // The last column is the location center
+
+				// Right management : add the provider id of the data
+				$userSession = new Zend_Session_Namespace('user');
+				$permissions = $userSession->permissions;
+				if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+					$json .= ','.json_encode($line['_provider_id']);
+				}
 
 				$json .= '],';
 			}
@@ -504,10 +614,10 @@ class Genapp_Service_QueryService {
 			$ymax = $ymax + $diffXY / 2;
 		}
 		return array(
-			'x_min' => $xmin,
-			'y_min' => $ymin,
-			'x_max' => $xmax,
-			'y_max' => $ymax);
+				'x_min' => $xmin,
+				'y_min' => $ymin,
+				'x_max' => $xmax,
+				'y_max' => $ymax);
 	}
 
 	/**
@@ -533,151 +643,166 @@ class Genapp_Service_QueryService {
 	 * Get the details associed with a result line (clic on the "detail button").
 	 *
 	 * @param String $id The identifier of the line
-	 * @param String $detailLayers The names of the layers used to display the images in the detail panel.
+	 * @param String $detailsLayers The names of the layers used to display the images in the detail panel.
+	 * @param String $datasetId The identifier of the dataset (to filter data)
+	 * @param boolean $proxy If true, use the proxy to fetch mapserver
+	 * @return array Array that represents the details of the result line.
+	 */
+	public function getDetailsData($id, $detailsLayers, $datasetId = null, $proxy = true) {
+	    $this->logger->debug('getDetailsData : '.$id);
+
+	    // Transform the identifier in an array
+	    $keyMap = $this->_decodeId($id);
+
+	    // Prepare a data object to be filled
+	    $data = $this->genericService->buildDataObject($keyMap['SCHEMA'], $keyMap['FORMAT'], null);
+
+	    // Complete the primary key info with the session values
+	    foreach ($data->infoFields as $infoField) {
+	        if (!empty($keyMap[$infoField->data])) {
+	            $infoField->value = $keyMap[$infoField->data];
+	        }
+	    }
+
+	    // Get the detailled data
+	    $this->genericModel->getDatum($data);
+
+	    // The data ancestors
+	    $ancestors = $this->genericModel->getAncestors($data);
+	    $ancestors = array_reverse($ancestors);
+
+	    // Look for a geometry object in order to calculate a bounding box
+	    // Look for the plot location
+	    $bb = null;
+	    $bb2 = null;
+	    $locationTable = null;
+	    foreach ($data->getFields() as $field) {
+	        if ($field->unit == 'GEOM') {
+	            // define a bbox around the location
+	            $bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+
+	            // Prepare an overview bbox
+	            $bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+
+	            $locationTable = $data;
+	            break;
+	        }
+	    }
+	    if ($bb == null) {
+	        foreach ($ancestors as $ancestor) {
+	            foreach ($ancestor->getFields() as $field) {
+	                if ($field->unit == 'GEOM') {
+	                    // define a bbox around the location
+	                    $bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+
+	                    // Prepare an overview bbox
+	                    $bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+
+	                    $locationTable = $ancestor;
+	                    break;
+	                }
+	            }
+	        }
+	    }
+
+	    // Defines the mapsserver parameters.
+	    $mapservParams = '';
+	    foreach ($locationTable->getInfoFields() as $primaryKey) {
+	        $mapservParams .= '&'.$primaryKey->columnName.'='.$primaryKey->value;
+	    }
+
+	    // Title of the detail message
+	    $dataDetails = array();
+	    $dataDetails['formats'] = array();
+
+	    // List all the formats, starting with the ancestors
+	    foreach ($ancestors as $ancestor) {
+	        $ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
+	        if ($ancestorJSON !== '') {
+	            $dataDetails['formats'][] = json_decode($ancestorJSON, true);
+	        }
+	    }
+
+	    // Add the current data
+	    $dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
+	    if ($dataJSON !== '') {
+	        $dataDetails['formats'][] = json_decode($dataJSON, true);
+	    }
+
+	    // Defines the panel title
+	    $titlePK = '';
+	    foreach ($data->infoFields as $infoField) {
+	        if ($titlePK !== '') {
+	            $titlePK .= '_';
+	        }
+	        $titlePK .= $infoField->value;
+	    }
+	    $dataInfo = end($dataDetails['formats']);
+	    $dataDetails['title'] = $dataInfo['title'].' ('.$titlePK.')';
+
+	    // Add the localisation maps
+	    $dataDetails['maps'] = array();
+	    if (!empty($detailsLayers)) {
+	        if ($detailsLayers[0] != '') {
+	            $dataDetails['maps'][] = array(
+	                    'title' => 'image',
+	                    'url'   => $this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0],
+	                            $bb, $mapservParams, $proxy)
+                    );
+	        }
+	        if ($detailsLayers[1] != '') {
+	            $dataDetails['maps'][] = array(
+	                    'title' => 'overview',
+	                    'url'   => $this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1],
+	                            $bb2, $mapservParams, $proxy)
+	                );
+	        }
+	    }
+
+	    return $dataDetails;
+	}
+
+	/**
+	 * Get the details associed with a result line (clic on the "detail button").
+	 *
+	 * @param String $id The identifier of the line
+	 * @param String $detailsLayers The names of the layers used to display the images in the detail panel.
 	 * @param String $datasetId The identifier of the dataset (to filter data)
 	 * @return JSON representing the detail of the result line.
 	 */
-	public function getDetails($id, $detailLayers, $datasetId = null) {
+	public function getDetails($id, $detailsLayers, $datasetId = null) {
+        $this->logger->debug('getDetails : '.$id);
 
-		$this->logger->debug('getDetails : '.$id);
+		return json_encode($this->getDetailsData($id, $detailsLayers));
+	}
 
-		// Get the base URL
-		$baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
+	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
+	    $configuration = Zend_Registry::get('configuration');
 
-		// Configure the projection systems
-		$configuration = Zend_Registry::get("configuration");
-		$visualisationSRS = $configuration->srs_visualisation;
+	    if ($proxy) {
+	        $baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl().'/proxy/gettile?';
+	    } else {
+	        $baseUrl = $configuration->mapserver_url.'&';
+	    }
 
-		// Transform the identifier in an array
-		$keyMap = $this->_decodeId($id);
+        // Configure the projection systems
+	    $visualisationSRS = $configuration->srs_visualisation;
 
-		// Prepare a data object to be filled
-		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
-
-		// Complete the primary key info with the session values
-		foreach ($data->infoFields as $infoField) {
-			if (!empty($keyMap[$infoField->data])) {
-				$infoField->value = $keyMap[$infoField->data];
-			}
-		}
-
-		// Get the detailled data
-		$result = $this->genericModel->getDatum($data);
-
-		// The data ancestors
-		$ancestors = $this->genericModel->getAncestors($data, true);
-		$ancestors = array_reverse($ancestors);
-
-		// Look for a geometry object in order to calculate a bounding box
-		// Look for the plot location
-		$bb = null;
-		$bb2 = null;
-		$locationTable = null;
-		foreach ($data->getFields() as $field) {
-			if ($field->unit == "GEOM") {
-				// define a bbox around the location
-				$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-
-				// Prepare an overview bbox
-				$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-
-				$locationTable = $data;
-				break;
-			}
-		}
-		if ($bb == null) {
-			foreach ($ancestors as $ancestor) {
-				foreach ($ancestor->getFields() as $field) {
-					if ($field->unit == "GEOM") {
-						// define a bbox around the location
-						$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-
-						// Prepare an overview bbox
-						$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-
-						$locationTable = $ancestor;
-						break;
-					}
-				}
-			}
-		}
-
-		// Defines the panel title and the mapsserver parameters.
-		$mapservParams = '';
-		$title = '';
-		foreach ($locationTable->getInfoFields() as $primaryKey) {
-			$mapservParams .= '&'.$primaryKey->columnName.'='.$primaryKey->value;
-			if ($title !== '') {
-				$title .= '_';
-			}
-			$title .= $primaryKey->value;
-		}
-
-		// Title of the detail message
-		$json = "{title:'".$title."', ";
-		$json .= "formats:[";
-		// List all the formats, starting with the ancestors
-		foreach ($ancestors as $ancestor) {
-			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
-			if ($ancestorJSON !== '') {
-				$json .= $ancestorJSON.',';
-			}
-		}
-		// Add the current data
-		$dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
-		if ($dataJSON !== '') {
-			$json .= $dataJSON;
-		}
-
-		$json .= "], ";
-		$json .= "maps:[";
-		if (!empty($detailLayers)) {
-			if ($detailLayers[0] != "") {
-				$json .= "{title:'image',";
-				$json .= "url:'".$baseUrl."/proxy/gettile?";
-				$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[0]);
-				$json .= "&TRANSPARENT=true";
-				$json .= "&FORMAT=image%2FPNG";
-				$json .= "&SERVICE=WMS";
-				$json .= "&VERSION=1.1.1";
-				$json .= "&REQUEST=GetMap";
-				$json .= "&STYLES=";
-				$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
-				$json .= "&SRS=EPSG%3A".$visualisationSRS;
-				$json .= "&BBOX=".$bb['x_min'].",".$bb['y_min'].",".$bb['x_max'].",".$bb['y_max'];
-				$json .= "&WIDTH=300";
-				$json .= "&HEIGHT=300";
-				$json .= "&map.scalebar=STATUS+embed";
-				$json .= "&SESSION_ID=".session_id();
-				$json .= $mapservParams;
-				$json .= "'}"; // end of detail map
-			}
-			if ($detailLayers[1] != "") {
-				$json .= ",{title:'overview',";
-				$json .= "url:'".$baseUrl."/proxy/gettile?";
-				$json .= "&LAYERS=".(empty($detailLayers) ? '' : $detailLayers[1]);
-				$json .= "&TRANSPARENT=true";
-				$json .= "&FORMAT=image%2FPNG";
-				$json .= "&SERVICE=WMS";
-				$json .= "&VERSION=1.1.1";
-				$json .= "&REQUEST=GetMap";
-				$json .= "&STYLES=";
-				$json .= "&EXCEPTIONS=application%2Fvnd.ogc.se_inimage";
-				$json .= "&SRS=EPSG%3A".$visualisationSRS;
-				$json .= "&BBOX=".$bb2['x_min'].",".$bb2['y_min'].",".$bb2['x_max'].",".$bb2['y_max'];
-				$json .= "&WIDTH=300";
-				$json .= "&HEIGHT=300";
-				$json .= "&SESSION_ID=".session_id();
-				$json .= "&map.scalebar=STATUS+embed";
-				$json .= $mapservParams;
-				$json .= "'}"; // end of overview map
-			}
-		}
-		$json .= "]"; // end of maps
-		$json .= "}";
-
-		return $json;
-
+	    return $baseUrl
+	        .'LAYERS='.$detailsLayers
+	        .'&TRANSPARENT=true'
+	        .'&FORMAT=image%2FPNG'
+	        .'&SERVICE=WMS'
+	        .'&VERSION=1.1.1'
+	        .'&REQUEST=GetMap'
+	        .'&STYLES='
+	        .'&EXCEPTIONS=application%2Fvnd.ogc.se_inimage'
+	        .'&SRS=EPSG%3A'.$visualisationSRS
+	        .'&BBOX='.$bb['x_min'].','.$bb['y_min'].','.$bb['x_max'].','.$bb['y_max']
+	        .'&WIDTH=300&HEIGHT=300'
+	        .'&map.scalebar=STATUS+embed'
+	        .'&SESSION_ID='.session_id()
+	        .$mapservParams;
 	}
 
 	/**
@@ -689,11 +814,8 @@ class Genapp_Service_QueryService {
 	public function ajaxgetchildren($id) {
 		$keyMap = $this->_decodeId($id);
 
-		// Patch RTM TODO: trouver une autre solution
-		// $keyMap["FORMAT"] = 'LOCATION_COMPL_DATA';
-
 		// Prepare a data object to be filled
-		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null, true);
+		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
 
 		// Complete the primary key
 		foreach ($data->infoFields as $infoField) {
@@ -709,7 +831,7 @@ class Genapp_Service_QueryService {
 		// Add the children
 		$json = "";
 		if (!empty($children)) {
-			foreach ($children as $format => $listChild) {
+			foreach ($children as $listChild) {
 				$json .= $this->genericService->dataToGridDetailJSON($id, $listChild);
 			}
 		} else {
@@ -765,32 +887,17 @@ class Genapp_Service_QueryService {
 
 		foreach ($predefinedRequestCriterias as $criteria) {
 
-			$json .= '[';
-			$json .= $criteria->toJSON();
+			$json .= '{';
+			$json .= $criteria->toCriteriaJSON();
 
 			// add some specific options
-			if ($criteria->type == "CODE") {
-
-				if ($criteria->subtype == "MODE") {
-
-					$options = $this->metadataModel->getModes($criteria->unit);
-					$json .= ',{"options":[';
-					foreach ($options as $code => $label) {
-						$json .= '['.json_encode($code).','.json_encode($label).'],';
-					}
-					$json = substr($json, 0, -1);
-					$json .= ']}';
-				}
-				// For DYNAMIC and TREE subtypes, the list is populated using an ajax request
-			} else if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
+			if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
 				// For the RANGE field, get the min and max values
-				$range = $this->metadataModel->getRange($criteria->data);
-				$json .= ',{"min":'.$range->min.',"max":'.$range->max.'}';
-			} else {
-				$json .= ',{}'; // no options
+				$range = $this->metadataModel->getRange($criteria->unit);
+				$json .= ',"params":{"min":'.$range->min.',"max":'.$range->max.'}';
 			}
 
-			$json .= '],';
+			$json .= '},';
 		}
 
 		if ($total != 0) {

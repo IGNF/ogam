@@ -36,6 +36,7 @@ WEB
 		WMS_ACCESSCONSTRAINTS 			"none"
 		WMS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/OGAM/Mapserv/ogam.map&"
 		WMS_SRS    						"EPSG:3035"
+		"ows_enable_request" 			"*"
       
       	"wcs_label"                    "OGAM MapServer"
 		"wcs_description"              "OGAM MapServer"
@@ -64,7 +65,7 @@ END
 
 OUTPUTFORMAT
   NAME PNG
-  DRIVER "GD/PNG"
+  DRIVER "AGG/PNG"
   MIMETYPE "image/png"
   IMAGEMODE RGBA
   FORMATOPTION  INTERLACE=OFF
@@ -73,7 +74,7 @@ END
 
 OUTPUTFORMAT
   NAME JPEG
-  DRIVER "GD/JPEG"
+  DRIVER "AGG/JPEG"
   MIMETYPE "image/jpeg"
   IMAGEMODE RGB
   EXTENSION "jpg"
@@ -130,10 +131,50 @@ END
 
 
 #
-# Vector layer for plot locations
+# Result Vector layer 
 #
 LAYER
-    NAME "result_locations"
+    NAME "result_locations_polygon"
+    GROUP result_locations  
+    TRANSPARENCY 80
+    TYPE POLYGON
+    STATUS ON
+    METADATA
+    	WFS_TITLE		   "Results"
+    	GML_FEATUREID      "oid" 
+    	GML_INCLUDE_ITEMS  "all"    
+    	"gml_groups"        	"display"
+		"gml_display_group" 	"provider_id,plot_code" 	 	
+  	END
+  	DUMP TRUE 
+  	
+  	VALIDATION
+ 		'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
+	END
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
+    DATA "the_geom FROM (
+            SELECT the_geom, format, pk, oid FROM result_location
+            WHERE GeometryType(the_geom) = 'POLYGON'
+              AND session_id = '%SESSION_ID%'
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+    
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Result location'
+      STYLE
+      	MINSIZE 3
+        COLOR 238 153 0
+        OUTLINECOLOR 238 153 0
+      END
+    END
+END 
+LAYER
+    NAME "result_locations_point"
+    GROUP result_locations  
     TRANSPARENCY 80
     TYPE POINT
     STATUS ON
@@ -145,12 +186,16 @@ LAYER
 		"gml_display_group" 	"provider_id,plot_code" 	 	
   	END
   	DUMP TRUE 
+  	
+  	VALIDATION
+ 		'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
+	END
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT the_geom, provider_id, plot_code, oid FROM result_location
+            SELECT the_geom, format, pk, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POINT'
               AND session_id = '%SESSION_ID%'
         ) as foo USING UNIQUE oid USING srid=3035
@@ -188,7 +233,7 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
     DATA "the_geom FROM (
-            SELECT transform(the_geom, 3035) as the_geom, plot_code as oid  
+            SELECT transform(the_geom, 3035) as the_geom, pk as oid  
             FROM location
         ) as foo USING srid=3035
     "

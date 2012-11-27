@@ -76,13 +76,6 @@ class Application_Object_Mapping_Layer {
 	var $imageFormat;
 
 	/**
-	 * Indicate the level of opacity of the layer by defaut.
-	 * No opacity if null
-	 * A value between 0 and 100 otherwise
-	 */
-	var $opacity;
-
-	/**
 	 * Defines if the item is checked by default (value = 1)
 	 */
 	var $isChecked;
@@ -112,5 +105,18 @@ class Application_Object_Mapping_Layer {
 	 * Possible values are : NONE, REQUEST, AGGREGATION, HARMONIZATION 
 	 */
 	var $activateType;
+		
+	/**
+	 * Allow to regroup layers. 
+	 * If two layers are in the same group, they will appear with a radio button in the layer tree.
+	 */
+	var $checkedGroup;
+	
+	/**
+	 * Identify a vector layer that can be used for WFS requests, snapping, ....
+	 * 1 vector layer
+	 * 0 raster or non editable layer
+	 */
+	var $isVector;
 
 }

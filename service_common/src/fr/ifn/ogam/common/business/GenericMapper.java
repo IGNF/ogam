@@ -81,6 +81,24 @@ public class GenericMapper {
 	}
 
 	/**
+	 * Check that a code value correspond to an existing Taxon in a referential.
+	 * 
+	 * @param unit
+	 *            the unit of the field to check
+	 * @param fieldValue
+	 *            the code to check
+	 */
+	protected void checkTaxrefCode(String unit, String fieldValue) throws Exception {
+
+		List<String> modes = metadataDAO.getTaxrefCode(unit);
+
+		if (!modes.contains(fieldValue)) {
+			CheckException ce = new CheckException(INVALID_CODE_FIELD);
+			throw ce;
+		}
+	}
+
+	/**
 	 * Check that a code value correspond to an existing code in a tree of codes.
 	 * 
 	 * @param unit
@@ -180,15 +198,13 @@ public class GenericMapper {
 
 			Object result = null;
 
-			// Just in case, replace the comma with a dot
-
 			String type = fieldDescriptor.getType();
 
 			if (fieldValue.equalsIgnoreCase("") && fieldDescriptor.getIsMandatory()) {
 				throw new CheckException(MANDATORY_FIELD_MISSING);
 			}
 
-			if (type.equalsIgnoreCase(STRING) || type.equalsIgnoreCase(GEOM)) {
+			if (type.equalsIgnoreCase(STRING) || type.equalsIgnoreCase(GEOM) || type.equalsIgnoreCase(IMAGE) || type.equalsIgnoreCase(GEOM)) {
 				result = fieldValue;
 			}
 
@@ -198,6 +214,8 @@ public class GenericMapper {
 						checkTreeCode(fieldDescriptor.getUnit(), fieldValue);
 					} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.DYNAMIC)) {
 						checkDynaCode(fieldDescriptor.getUnit(), fieldValue);
+					} else if (fieldDescriptor.getSubtype().equalsIgnoreCase(UnitSubTypes.TAXREF)) {
+						checkTaxrefCode(fieldDescriptor.getUnit(), fieldValue);
 					} else {
 						checkCode(fieldDescriptor.getUnit(), fieldValue);
 					}
@@ -209,6 +227,7 @@ public class GenericMapper {
 
 			if (type.equalsIgnoreCase(NUMERIC)) {
 				try {
+					// Just in case, replace the comma with a dot
 					String normalizedFieldValue = fieldValue.replace(",", ".");
 
 					if (fieldDescriptor.getSubtype() != null) {
@@ -375,10 +394,15 @@ public class GenericMapper {
 
 				// Get the list of descriptor of the table
 				TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(tableFormat, schema);
+				TableFormatData parentTable = tableDescriptor.getParentTable();
+				String parentTableFormat = null;
+				if(parentTable != null){
+					parentTableFormat = tableDescriptor.getParentTable().getFormat();
+				}
 
 				// If the parent table is listed, we insert the table just before
-				if (sortedTablesList.contains(tableDescriptor.getParentTable())) {
-					sortedTablesList.add(sortedTablesList.indexOf(tableDescriptor.getParentTable()), tableFormat);
+				if (parentTableFormat != null && sortedTablesList.contains(parentTableFormat)) {
+					sortedTablesList.add(sortedTablesList.indexOf(parentTableFormat), tableFormat);
 				} else {
 					// If not found, we add the table at the end of the list
 					sortedTablesList.add(tableFormat);
@@ -418,7 +442,7 @@ public class GenericMapper {
 			String sourceTableFormat = sourceTablesIter.next();
 
 			// Get the descriptor of the table
-			Map<String, TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat, false);
+			Map<String, TableFieldData> sourceFields = metadataDAO.getTableFields(sourceTableFormat);
 			TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(sourceTableFormat, schema);
 
 			// Build the SELECT clause
@@ -431,7 +455,7 @@ public class GenericMapper {
 					SELECT += ", ";
 				}
 				if (ORDER.equals("")) {
-					ORDER += "ORDER BY ";
+					ORDER += " ORDER BY ";
 				} else {
 					ORDER += ", ";
 				}
@@ -444,7 +468,7 @@ public class GenericMapper {
 			if (FROM.equals("")) {
 				FROM += " FROM " + tableDescriptor.getTable().getTableName();
 			} else {
-				FROM += " LEFT JOIN " + tableDescriptor.getTable().getTableName() + " ON (";
+				FROM += " INNER JOIN " + tableDescriptor.getTable().getTableName() + " ON (";
 				Iterator<String> keyIter = tableDescriptor.getKeys().iterator();
 				while (keyIter.hasNext()) {
 					String key = keyIter.next();

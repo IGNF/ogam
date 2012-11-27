@@ -1,0 +1,38 @@
+<h1 style="text-align: center"><?php echo $this->data['title']; ?></h1>
+<table style="width: 100%;">
+    <tr>
+        <td style="width: 50%;">
+            <img style="width: 100%" src="<?php echo $this->imgPath1; ?>" />
+        </td>
+        <td style="width: 50%;">
+            <img style="width: 100%" src="<?php echo $this->imgPath2; ?>" />
+        </td>
+    </tr>
+</table>
+<?php foreach ($this->data['formats'] as $format): ?>
+<h2><?php echo $format['title'];?>&nbsp;
+    <?php if($format['children_count'] > 0) :?>
+    <div style="font-size: 12px; padding-top: 8px;">
+        <?php echo ' ('.$format['children_count'].' '.$this->translate('child(ren)').')'; ?>
+    </div>
+    <?php endif; ?>
+</h2>
+<ul style="list-style-type:none;">
+    <?php foreach ($format['fields'] as $field): ?>
+    <li>
+        <?php if ($field['type'] === 'IMAGE' && !empty($field['value'])): ?>
+            <br/><img style="width: 50%" src="<?php echo $this->imgDirPath . $field['value']; ?>" />
+        <?php else: ?>
+            <b><?php echo $field['label']; ?> :</b>
+            <?php if (empty($field['value'])): ?>
+                -
+            <?php elseif (is_array($field['value'])): ?>
+                <?php echo implode(', ', $field['value']); ?>
+            <?php else: ?>
+                <?php echo $field['value']; ?>
+            <?php endif; ?>
+        <?php endif; ?>
+    </li>
+    <?php endforeach; ?>
+</ul>
+<?php endforeach; ?>

@@ -73,6 +73,18 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
      */
     tipDefaultWidth: 300,
     sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
+    /**
+     * @cfg {String} dateFormat The date format for the date
+     *      fields (defaults to <tt>'Y/m/d'</tt>)
+     */
+    // TODO: Merge this param with the dateFormat param of the consultation panel
+    dateFormat : 'Y/m/d',
+    /**
+     * @cfg {Number} tipImageDefaultWidth The tip Image Default Width.
+     *      (Default to 200)
+     */
+    // TODO: Merge this param with the tipImageDefaultWidth param of the consultation panel
+    tipImageDefaultWidth : 200,
 
     /**
      * Renders for the left tools column cell
@@ -105,7 +117,7 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
         var stringFormat = '';
         if (!this.hideDetails) {
             stringFormat = '<div class="genapp-query-grid-details-panel-slip" '
-                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'getdetails\');"'
+                +'onclick="Genapp.cardPanel.consultationPage.openDetails(\'{0}\', \'ajaxgetdetails\');"'
                 +'ext:qtitle="' + this.openDetailsButtonTitle + '"'
                 +'ext:qwidth="' + this.tipDefaultWidth + '"'
                 +'ext:qtip="' + this.openDetailsButtonTip + '"'
@@ -120,6 +132,53 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
             +'></div>';
         }
         return String.format(stringFormat, record.data.id, this.ownerCt.getId(),record.data.LOCATION_COMPL_DATA__SIT_NO_CLASS);
+    },
+
+    /**
+     * Return the pattern used to format a number.
+     * 
+     * @param {String}
+     *            decimalSeparator the decimal separator
+     *            (default to',')
+     * @param {Integer}
+     *            decimalPrecision the decimal precision
+     * @param {String}
+     *            groupingSymbol the grouping separator (absent
+     *            by default)
+     */
+    // TODO: Merge this function with the numberPattern fct of the consultation panel
+    numberPattern : function(decimalSeparator, decimalPrecision, groupingSymbol) {
+        // Building the number format pattern for use by ExtJS
+        // Ext.util.Format.number
+        var pattern = [], i;
+        pattern.push('0');
+        if (groupingSymbol) {
+            pattern.push(groupingSymbol + '000');
+        }
+        if (decimalPrecision) {
+            pattern.push(decimalSeparator);
+            for (i = 0; i < decimalPrecision; i++) {
+                pattern.push('0');
+            }
+        }
+        return pattern.join('');
+    },
+
+    /**
+     * Render an Icon for the data grid.
+     */
+     // TODO: Merge this function with the renderIcon fct of the consultation panel
+    renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
+        if (!Ext.isEmpty(value)) {
+            return '<img src="' + Genapp.base_url + '/js/genapp/resources/images/picture.png"'
+            + 'ext:qtitle="' + columnLabel + ' :"'
+            + 'ext:qwidth="' + this.tipImageDefaultWidth + '"'
+            + 'ext:qtip="'
+            + Genapp.util.htmlStringFormat('<img width="' + (this.tipImageDefaultWidth - 12) 
+            + '" src="' + Genapp.base_url + '/img/photos/' + value 
+            +'" />') 
+            + '">';
+        }
     },
 
     // private
@@ -146,6 +205,34 @@ Genapp.GridDetailsPanel = Ext.extend(Ext.grid.GridPanel, {
             for(i = 0; i<columns.length; i++){
                 columns[i].header =  Genapp.util.htmlStringFormat(columns[i].header);
                 columns[i].tooltip =  Genapp.util.htmlStringFormat(columns[i].tooltip);
+                // TODO: Merge this part with the same part of the consultation panel
+                switch (columns[i].type) {
+                // TODO : BOOLEAN, CODE, COORDINATE, ARRAY,
+                // TREE
+                case 'STRING':
+                case 'INTEGER':
+                    columns[i].xtype = 'gridcolumn';
+                    break;
+                case 'NUMERIC':
+                    columns[i].xtype = 'numbercolumn';
+                    if (!Ext.isEmpty(columns[i].decimals)) {
+                        columns[i].format = this.numberPattern('.', columns[i].decimals);
+                    }
+                    break;
+                case 'DATE':
+                    columns[i].xtype = 'datecolumn';
+                    columns[i].format = this.dateFormat;
+                    break;
+                case 'IMAGE':
+                    columns[i].header = '';
+                    columns[i].width = 30;
+                    columns[i].sortable = false;
+                    columns[i].renderer = this.renderIcon.createDelegate(this, [Genapp.util.htmlStringFormat(columns[i].tooltip)], true);
+                    break;
+                default:
+                    columns[i].xtype = 'gridcolumn';
+                    break;
+                }
             }
             var leftToolsHeader = '';
             if (!Ext.isEmpty(this.parentItemId)) {

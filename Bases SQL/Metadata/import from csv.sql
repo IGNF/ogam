@@ -14,12 +14,14 @@ alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_DATASET;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_FIELD;
 alter table DATASET_FILES drop constraint FK_DATASET_FILES_FORMAT;
 
-
 --alter table website.predefined_request drop constraint fk_predefined_request_dataset;
+
+ALTER TABLE metadata.translation DROP CONSTRAINT "FK_TABLE_FORMAT_TRANSLATION";
 
 --
 -- Remove old data
 --
+delete from translation;
 delete from table_tree;
 delete from table_schema;
 
@@ -108,6 +110,20 @@ COPY dataset_files from 'C:/workspace/OGAM/Bases SQL/Metadata/dataset_files.csv'
 COPY table_schema from 'C:/workspace/OGAM/Bases SQL/Metadata/table_schema.csv' with delimiter ';' null '';
 COPY table_tree from 'C:/workspace/OGAM/Bases SQL/Metadata/table_tree.csv' with delimiter ';' null '';
 
+COPY translation from 'C:/workspace/OGAM/Bases SQL/Metadata/translation.csv' with delimiter ';' null '';
+
+
+-- Fill the empty label and definition for the need of the tests
+UPDATE metadata.translation t
+   SET label= 'EN...' || t2.label
+   FROM metadata.translation t2
+ WHERE t.table_format = t2.table_format and t.row_pk = t2.row_pk and t.lang = 'EN' and t2.lang = 'FR' and t.label is null;
+
+ UPDATE metadata.translation t
+   SET definition= 'EN...' || t2.definition
+   FROM metadata.translation t2
+ WHERE t.table_format = t2.table_format and t.row_pk = t2.row_pk and t.lang = 'EN' and t2.lang = 'FR' and t.definition is null;
+
 --
 -- Restore Integrity contraints
 --
@@ -116,7 +132,6 @@ alter table FILE_FIELD
    add constraint FK_FILE_FIE_HERITAGE__FIELD foreign key (DATA, FORMAT)
       references metadata.FIELD (DATA, FORMAT)
       on delete restrict on update restrict;
-      
 
 alter table FILE_FORMAT
    add constraint FK_FILE_FOR_HERITAGE__FORMAT foreign key (FORMAT)
@@ -127,8 +142,7 @@ alter table FORM_FIELD
    add constraint FK_FORM_FIE_HERITAGE__FIELD foreign key (DATA, FORMAT)
       references metadata.FIELD (DATA, FORMAT)
       on delete restrict on update restrict;
-  
-      
+
 alter table FORM_FORMAT
    add constraint FK_FORM_FOR_HERITAGE__FORMAT foreign key (FORMAT)
       references metadata.FORMAT (FORMAT)
@@ -138,7 +152,6 @@ alter table TABLE_FIELD
    add constraint FK_TABLE_FI_HERITAGE__FIELD foreign key (DATA, FORMAT)
       references FIELD (DATA, FORMAT)
       on delete restrict on update restrict;
-      
 
 alter table TABLE_FORMAT
    add constraint FK_TABLE_FO_HERITAGE__FORMAT foreign key (FORMAT)
@@ -160,6 +173,10 @@ alter table DATASET_FILES
       references FILE_FORMAT (FORMAT)
       on delete restrict on update restrict;
 
+ALTER TABLE metadata.translation
+  ADD CONSTRAINT "FK_TABLE_FORMAT_TRANSLATION" FOREIGN KEY (table_format)
+      REFERENCES metadata.table_format (format) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 --
 -- Consistency checks
@@ -168,7 +185,8 @@ alter table DATASET_FILES
 -- Units of type CODE should have an entry in the CODE table
 SELECT UNIT, 'This unit of type CODE is not described in the MODE table'
 FROM unit
-WHERE TYPE = 'CODE' AND SUBTYPE = 'MODE'
+WHERE (type = 'CODE' OR type = 'ARRAY') 
+AND subtype = 'MODE'
 AND unit not in (SELECT UNIT FROM MODE WHERE MODE.UNIT=UNIT)
 UNION
 -- Units of type RANGE should have an entry in the RANGE table
@@ -230,12 +248,12 @@ UNION
 -- the INPUT_TYPE is not in the list
 SELECT format||'_'||data, 'The INPUT_TYPE type is not in the list'
 FROM form_field 
-WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE')
+WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE', 'TAXREF', 'IMAGE')
 UNION
 -- the UNIT type is not in the list
 SELECT unit||'_'||type, 'The UNIT type is not in the list'
 FROM unit 
-WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'DATE', 'INTEGER', 'NUMERIC', 'STRING', 'GEOM')
+WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'DATE', 'INTEGER', 'NUMERIC', 'STRING', 'GEOM', 'IMAGE')
 UNION
 -- the subtype is not consistent with the type
 SELECT unit||'_'||type, 'The UNIT subtype is not consistent with the type'
@@ -251,9 +269,23 @@ LEFT JOIN data using (data)
 LEFT JOIN unit using (unit)
 WHERE (input_type = 'NUMERIC' AND type NOT IN ('NUMERIC', 'INTEGER'))
 OR (input_type = 'DATE' AND type <> 'DATE')
-OR (input_type = 'SELECT' AND NOT (type = 'ARRAY' or TYPE = 'CODE'))
+OR (input_type = 'SELECT' AND NOT (type = 'ARRAY' or TYPE = 'CODE') AND (subtype = 'CODE' OR subtype = 'DYNAMIC'))
 OR (input_type = 'TEXT' AND type <> 'STRING')
 OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')
 OR (input_type = 'GEOM' AND type <> 'GEOM')
+OR (input_type = 'IMAGE' AND type <> 'IMAGE')
 OR (input_type = 'TREE' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TREE'))
-
+UNION
+-- TREE_MODEs should be defined
+SELECT unit, 'The unit should have at least one MODE_TREE defined'
+FROM unit 
+WHERE (type = 'CODE' OR type = 'ARRAY') 
+AND subtype = 'TREE' 
+AND (SELECT count(*) FROM mode_tree WHERE mode_tree.unit = unit.unit) = 0
+UNION
+-- DYNAMODEs should be defined
+SELECT unit, 'The unit should have at least one DYNAMODE defined'
+FROM unit 
+WHERE (type = 'CODE' OR type = 'ARRAY') 
+AND subtype = 'DYNAMIC' 
+AND (SELECT count(*) FROM dynamode WHERE dynamode.unit = unit.unit) = 0

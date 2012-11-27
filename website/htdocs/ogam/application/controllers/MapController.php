@@ -20,10 +20,15 @@ class MapController extends AbstractOGAMController {
 		// Initialise the models
 		$this->layersModel = new Application_Model_Mapping_Layers();
 		$this->boundingBoxModel = new Application_Model_Mapping_BoundingBox();
+
+		$translate = Zend_Registry::get('Zend_Translate');
+        $this->lang = strtoupper($translate->getAdapter()->getLocale());
 	}
 
 	/**
 	 * Check if the authorization is valid this controler.
+	 *
+	 * @throws an Exception if the user doesn't have the rights
 	 */
 	function preDispatch() {
 
@@ -32,24 +37,15 @@ class MapController extends AbstractOGAMController {
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
 		if (empty($permissions) || !(array_key_exists('DATA_QUERY', $permissions) || array_key_exists('DATA_QUERY_HARMONIZED', $permissions))) {
-			$this->_redirector->gotoUrl('/');
+			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
-	}
-
-	/**
-	 * The "index" action is the default action for all controllers.
-	 */
-	public function indexAction() {
-		$this->logger->debug('User index');
-
-		$this->showMapAction();
 	}
 
 	/**
 	 * Get the parameters used to initialise a map.
 	 */
-	public function getmapparametersAction() {
-		$this->logger->debug('getmapparametersAction');
+	public function getMapParametersAction() {
+		$this->logger->debug('getMapParametersAction');
 
 		// Get back the provider id for the current user
 		$userSession = new Zend_Session_Namespace('user');
@@ -71,11 +67,20 @@ class MapController extends AbstractOGAMController {
 		$this->view->resolutions = $resolString;
 		$this->view->numZoomLevels = count($resolutions);
 
-		// Center the map on the country
-		$center = $this->boundingBoxModel->getCenter($providerId);
-		$this->view->defaultzoom = $center->defaultzoom;
-		$this->view->x_center = $center->x_center;
-		$this->view->y_center = $center->y_center;
+		$this->logger->debug('$configuration->usePerProviderCenter : '.$configuration->usePerProviderCenter);
+
+		if ($configuration->usePerProviderCenter == 1) {
+			// Center the map on the provider location
+			$center = $this->boundingBoxModel->getCenter($providerId);
+			$this->view->defaultzoom = $center->defaultzoom;
+			$this->view->x_center = $center->x_center;
+			$this->view->y_center = $center->y_center;
+		} else {
+			// Use default settings
+			$this->view->defaultzoom = $configuration->zoom_level;
+			$this->view->x_center = ($configuration->bbox->x_min + $configuration->bbox->x_max) / 2;
+			$this->view->y_center = ($configuration->bbox->y_min + $configuration->bbox->y_max) / 2;
+		}
 
 		// Feature parameters
 		if (empty($configuration->featureinfo->margin)) {
@@ -97,7 +102,7 @@ class MapController extends AbstractOGAMController {
 
 	/**
 	 * Calculate the resolution array corresponding to the available scales.
-	 * 
+	 *
 	 * @param Array[Integer] $scales The list of scales
 	 */
 	private function _getResolutions($scales) {
@@ -105,28 +110,60 @@ class MapController extends AbstractOGAMController {
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
 		$tilesize = $configuration->tilesize; // Tile size in pixels
+		$dpi = $configuration->mapserver_dpi; // Default number of dots per inch in mapserv
+		$factor = $configuration->mapserver_inch_per_kilometer; // Inch to meter conversion factor
 
 		// WARNING : Bounding box must match the tilecache configuration and tile size
 
 		$resolutions = array();
 		foreach ($scales as $scale) {
-			$res = $scale * (2 * $tilesize) / (DPI * FACTOR);
+			$res = $scale * (2 * $tilesize) / ($dpi * $factor);
 			$resolutions[$scale] = $res;
 		}
 		return $resolutions;
 	}
 
 	/**
+	 * Return the list of vector layers as a JSON.
+	 */
+	public function ajaxgetvectorlayersAction() {
+
+		$this->logger->debug('getvectorlayersAction');
+		$translator = Zend_Registry::get('Zend_Translate');
+
+		// Get the available layers
+		$layerNames = $this->layersModel->getVectorLayersList();
+
+		$json = '{"success":true';
+		$json .= ', layerNames : [';
+		$json .= '{"code":null,"label":"'.$translator->translate('empty_layer').'"},';
+		foreach ($layerNames as $layerName => $layerLabel) {
+			$json .= '{"code":'.json_encode($layerName).',';
+			$json .= '"label":'. json_encode($layerLabel).'},';
+		}
+		if(!empty($layerNames)){
+			$json = substr($json, 0, -1);
+		}
+		$json .= ']';
+		$json .= '}';
+
+		echo $json;
+
+		// No View, we send directly the javascript
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
 	 * Return the list of available layers as a JSON.
 	 */
-	public function getlayersAction() {
+	public function ajaxgetlayersAction() {
 
-		$this->logger->debug('getlayersAction');
+		$this->logger->debug('ajaxgetlayersAction');
 
-		// Get back the country code
+		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
-
-		// TODO : Remove hardcoded value
 		$providerId = $userSession->user->providerId;
 
 		// Get some configutation parameters
@@ -159,13 +196,16 @@ class MapController extends AbstractOGAMController {
 		$sessionId = session_id();
 		$out = '"url_array_tiled":[';
 		foreach ($tileBaseURLs as $pathBaseURL) {
-			$out .= '"'.$pathBaseURL.$proxyPath."?SESSION_ID=".$sessionId.'",'; // appel direct
+			$out .= '"'.$pathBaseURL.$proxyPath."?SESSION_ID=".$sessionId.'&LANG='.$this->lang.'",'; // appel direct
 		}
 		// Remove the last comma
 		if (!empty($tileBaseURLs)) {
 			$out = substr($out, 0, -1);
 		}
 		echo $out.'],';
+
+		// Build the base URL for mapserver tiles
+		echo '"url_wfs":"'.$tileBaseURLs[0].'/proxy/getwfs?SESSION_ID='.$sessionId.'",';
 
 		// For each available layer, build the corresponding URL and definition
 		$out = '"layers":[';
@@ -175,9 +215,9 @@ class MapController extends AbstractOGAMController {
 
 			// OpenLayer object (tiled or not)
 			if ($layer->isUntiled == 1) {
-				$out .= '"untiled":true';
+				$out .= '"singleTile":true';
 			} else {
-				$out .= '"untiled":false';
+				$out .= '"singleTile":false';
 			}
 
 			// Logical layer name
@@ -254,6 +294,16 @@ class MapController extends AbstractOGAMController {
 			// Options
 			$out .= ', "options":{"buffer": 0';
 
+			// Node Group
+			if (!empty($layer->parentId)) {
+				$out .= ', "nodeGroup": "'.$layer->parentId.'"';
+			}
+
+			// Checked Group
+			if (!empty($layer->checkedGroup)) {
+				$out .= ', "checkedGroup": "'.$layer->checkedGroup.'"';
+			}
+
 			// Transition effect
 			if (!empty($layer->transitionEffect)) {
 				$out .= ', "transitionEffect": "'.$layer->transitionEffect.'"';
@@ -275,11 +325,6 @@ class MapController extends AbstractOGAMController {
 
 			// Label
 			$out .= ',"label":"'.addslashes($layer->layerLabel).'"';
-
-			// Opacity
-			if ($layer->opacity != "") {
-				$out .= ', "opacity":'.($layer->opacity / 100);
-			}
 
 			// Scale min/max management
 			if ($layer->maxscale != "" || $layer->minscale != "") {
@@ -311,15 +356,16 @@ class MapController extends AbstractOGAMController {
 		// No View, we send directly the javascript
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 
 	}
 
 	/**
 	 * Return the model corresponding to the legend.
 	 */
-	public function getTreeLayersAction() {
+	public function ajaxgettreelayersAction() {
 
-		$this->logger->debug('getTreeLayersAction');
+		$this->logger->debug('ajaxgettreelayersAction');
 
 		// Get back the country code
 		$userSession = new Zend_Session_Namespace('user');
@@ -333,6 +379,7 @@ class MapController extends AbstractOGAMController {
 		// No View, we send directly the javascript
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 
 	}
 
@@ -353,6 +400,9 @@ class MapController extends AbstractOGAMController {
 		// Get the list of active layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
 		$activatedLayers = $mappingSession->activatedLayers;
+		if ($activatedLayers == null) {
+			$activatedLayers = array();
+		}
 
 		$json = "";
 
@@ -361,8 +411,6 @@ class MapController extends AbstractOGAMController {
 
 			$json .= '{';
 			$json .= '"text": "'.$legendItem->label.'", ';
-			$json .= '"maxscale": "'.$legendItem->maxScale.'", ';
-			$json .= '"minscale": "'.$legendItem->minScale.'", ';
 
 			$json .= '"expanded": ';
 			if ($legendItem->isExpended == 1) {
@@ -395,13 +443,14 @@ class MapController extends AbstractOGAMController {
 			// The item is a leaf
 			if ($legendItem->isLayer == 1) {
 				$json .= '"leaf": true, ';
-				$json .= '"layerName": "'.$legendItem->layerName.'" ';
+				$json .= '"nodeType" : "gx_layer", '; // TODO : Do this on the js side
+				$json .= '"layer": "'.$legendItem->layerName.'" ';
 			} else {
 				// The item is a node
 				$json .= '"leaf": false, ';
+				$json .= '"nodeType" : "gx_layercontainer", '; // TODO : Do this on the js side
+				$json .= '"nodeGroup": "'.$legendItem->itemId.'" ';
 
-				// Recursive call
-				$json .= '"children": ['.$this->_getLegendItems($legendItem->itemId, $providerId).']';
 			}
 			$json .= '}, ';
 		}
@@ -444,9 +493,9 @@ class MapController extends AbstractOGAMController {
 	/**
 	 * Show a PDF containing the map selected by the user.
 	 */
-	function ajaxgeneratemapAction() {
+	function generatemapAction() {
 
-		$this->logger->debug('ajaxgeneratemapAction');
+		$this->logger->debug('generatemapAction');
 
 		// Get the map parameters
 		$center = $this->_getParam('center');
@@ -489,7 +538,16 @@ class MapController extends AbstractOGAMController {
 		$reportUrl = $reportServiceURL."/run?__format=pdf&__report=report/".$mapReport;
 		$reportUrl .= "&WMSURL=".urlencode($wmsURL);
 
-		$this->logger->debug('ajaxgeneratemap URL : '.$reportUrl);
+		$this->logger->debug('generatemap URL : '.$reportUrl);
+		
+		// Set the timeout and user agent
+		ini_set ('user_agent', $_SERVER['HTTP_USER_AGENT']);
+		ini_set("max_execution_time", $configuration->max_execution_time);
+		$maxReportGenerationTime = $configuration->max_report_generation_time;
+		$defaultTimeout = ini_get('default_socket_timeout');
+		if ($maxReportGenerationTime != null) {			
+			ini_set('default_socket_timeout', $maxReportGenerationTime);
+		}
 
 		// Set the header for a PDF output
 		header("Cache-control: private\n");
@@ -504,9 +562,19 @@ class MapController extends AbstractOGAMController {
 				echo fread($handle, 8192);
 			}
 			fclose($handle);
+			
+			// No View, we send directly the output
+			$this->_helper->layout()->disableLayout();
+			$this->_helper->viewRenderer->setNoRender();
+		} else {
+			$this->logger->debug("Error reading data");
+			echo "Error reading data";
 		}
 
-		// No View, we send directly the output
+		// Restore default timeout
+		ini_set('default_socket_timeout', $defaultTimeout);
+		
+		// No View, we send directly the javascript
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 

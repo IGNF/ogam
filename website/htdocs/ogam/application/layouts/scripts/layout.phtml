@@ -15,7 +15,7 @@
   <?php echo $this->headScript() ?>
   <script type="text/javascript">
       // Firebugx.js
-      if (!window.console || !console.firebug)
+      if (!window.console /*|| !console.firebug*/)
       {
           var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
           "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
@@ -44,10 +44,10 @@
     <div class="header" id="header">
    
         <div id="banner" class="banner">
-            <img border="0" alt="Banner" src="<?= $this->baseUrl('img/banner.jpg');?>" width="1160" height="80" />
+            <img border="0" alt="Banner" src="<?= $this->baseUrl('img/banner.jpg');?>"/>
         </div>
 
-        <div id="top" class="top" style="background-color: #EEEEEE; height: 21px;">
+        <div id="top" class="top">
 
         <div id="header-beadcrumb" class="header-beadcrumb" style="float:left">
             <span class="pathway">
@@ -64,21 +64,30 @@
             ?>
             </span>
         </div>
-   
 
         <div id="header-login" class="header-login" style="float: right">
 <?php
         $configuration = Zend_Registry::get("configuration");
-        if($configuration->autoLogin != 1){
-        $userSession = new Zend_Session_Namespace('user');
-        $user = $userSession->user;
-        if (!empty($user)) {
-             ?><a href="<?= $this->url(array('controller'=>'user', 'action'=>'logout'), 'default', true) ?>" ><?=$this->translate('Log out');?></a>
-<?php
-         } else {
-            ?><a href="<?= $this->url(array('controller'=>'user', 'action'=>'index'), 'default', true) ?>" ><?=$this->translate('Log in');?></a>
-<?php
-         }
+        if (!empty($configuration->language_flags)) {
+            foreach($configuration->language_flags as $flag){
+                if(!empty($flag)){
+                    echo '<a href="?lang='.$flag.'" ><div class="'.$flag.'-flag" title="'.$this->translate('Translate this site '.$flag).'">&nbsp;</div></a>';
+                }
+            }
+        }
+        if ($configuration->autoLogin != 1) {
+	        $userSession = new Zend_Session_Namespace('user');
+	        $user = $userSession->user;
+	        if (!empty($user)) {
+	             ?>
+	             <a href="<?= $this->url(array('controller'=>'user', 'action'=>'show-change-password'), 'default', true) ?>" ><?=$this->translate('Change Password');?></a>
+	             &nbsp;
+	             <a href="<?= $this->url(array('controller'=>'user', 'action'=>'logout'), 'default', true) ?>" ><?=$this->translate('Log out');?></a>
+	<?php
+	         } else {
+	            ?><a href="<?= $this->url(array('controller'=>'user', 'action'=>'index'), 'default', true) ?>" ><?=$this->translate('Log in');?></a>
+	<?php
+	         }
         }
 ?>
         </div>

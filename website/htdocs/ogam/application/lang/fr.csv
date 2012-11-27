@@ -1,4 +1,9 @@
 ﻿﻿##########################
+#   Consultation         #
+##########################
+child(ren);enfant(s) rattaché(s)
+
+##########################
 #   Validation           #
 ##########################
 '%hostname%' does not appear to have a valid MX record for the email address '%value%';'%hostname%' ne semble pas avoir d'enregistrement MX valide pour l'adresse email '%value%'
@@ -123,31 +128,36 @@ Change login;Changer d'utilisateur
 Contact Us;Nous contacter
 Layout Head Title;Application OGAM
 Layout Head Meta Keywords;eforest, efdac, jrc, forêt
-Layout Head Meta Description;European Forest Data Center
+Layout Head Meta Description;Centre de donnée sur les forêts européennes
 Layout Copyright;Copyright © IFN 2010. Reproduction autorisée à condition que la source soit mentionnée.
 Layout Pathway Home;Accueil
+Translate this site fr;Traduire ce site en français
+Translate this site en;Traduire ce site en anglais
 
 ﻿##########################
 #   Index                #
 ##########################
 Select a menu;Selectionnez un menu
 Welcome;Bienvenue sur le site web OGAM !
-Data Integration;Integration de données
+Data Integration;Intégration de données
 Data Edition;Edition des données
 Visualize Raw Data;Visualisation des données brutes
-Query Data;Visualisation des données brutes
-Data Harmonization;Harmonisation des données
-Visualize Harmonized Data;Visualisation des données harmonisées
-Query Harmonized Data;Visualisation des données harmonisées
+Query Data (RAW_DATA);Visualisation des données brutes
+Query Data (HARMONIZED_DATA);Visualisation des données validées
+Data Harmonization;Recopie des données
+Visualize Harmonized Data;Visualisation des données validées
+Query Harmonized Data;Visualisation des données validées
 User Administration;Administration des utilisateurs
 Check Configuration;Vérifier la configuration
 Manage Users;Administration des utilisateurs
+Index Files;Indexer les fichiers
+File Indexation;Indexer les fichiers
 
 ﻿##########################
 #   User login           #
 ##########################
 User Module;Module utilisateur
-Please login:;Veuillez vous connecter :
+Authentication;Authentification
 Login;Identifiant
 Password;Mot de passe
 
@@ -159,7 +169,7 @@ Submit Data;Soumettre des données
 Submission ID;Id de soumission
 Date;Date
 Provider Id;Id fournisseur 
-Dataset;Dataset
+Dataset;Lot de donnée
 Step;Etape
 Status;Statut
 File;Fichier
@@ -177,17 +187,19 @@ Submit;Valider
 Error;Erreur
 The expected fields are:;Les champs attendus sont : 
 Are you sure?;Etes-vous sur ?
+No submission found;Aucune soumission trouvée.
 
 ﻿##########################
-#  Data harmonization    #
+#  Data Copy             #
 ##########################
-Data harmonization module;Module d'harmonisation
-Harmonize Data;Harmoniser les données
+Data harmonization module;Recopie des données
+Harmonize Data;Recopier les données
 Back;Retour
-Launch Harmonization;Lancer l'harmonization
-Harmonization Date;Date d'harmonization
+Launch Harmonization;Lancer la copie
+Remove Harmonization Data;Supprimer les données recopiées
+Harmonization Date;Date de recopie
 Confirm harmonization;Attention, les données de ce fournisseur vont être supprimées et recréées
-
+Confirm harmonization data deletion;Attention, les données de ce fournisseur vont être supprimées
 
 ##########################
 #  Check configuration   #
@@ -195,7 +207,28 @@ Confirm harmonization;Attention, les données de ce fournisseur vont être suppr
 Check result;Résultat de la vérification
 PHP Parameters;Paramètres PHP
 Error: %value% minimum;Erreur: %value% minimum
+Expected value;Valeur attendue
+Database;Base de données
+Checking for missing schemas:;Vérification de la présence des schemas :
+The schema '%s' described in the metadata doesn't exist in the system.;Le schéma '%s' décrit dans les métadonnées n'existe pas en base.
+Checking for missing tables:;Vérification de la présence des tables :
+The expected table '%s' of the schema '%s' is not found.;La table obligatoire '%s' du schéma '%s' est introuvable.
+The PK (%s) of the table '%s' is not compatible with the metadata PK (%s).;La clé primaire (%s) de la table '%s' n'est pas compatible avec la clé primaire des métadonnées (%s).
+Checking for primary keys:;Vérification des clés primaires :
+Checking for missing fields:;Vérification de la présence des champs :
+Checking field types:;Vérification des types des champs :
+The Expected data '%s' of the table '%s' of the schema '%s' is not found.;La donnée obligatoire '%s' de la table '%s' du schéma '%s' est manquante.
+The field '%s' of the table '%s' of the schema '%s' is of type '%s' which is incompatible with the metadata definition: '%s'.;Le champ '%s' de la table '%s' du schema '%s' est de type '%s' lequel est incompatible avec la définition des métadonnées : '%s'.
+Unknow field type for the data '%s' of the table '%s' of the schema '%s'.;Le type de la donnée '%s' de la table '%s' du schéma '%s' est inconnu.
+Checking foreign keys:;Vérification des clés étrangères :
+The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system.;La clé étrangère entre la table '%s' et la table '%s' décrit dans les métadonnées n'existe pas en base.
+The foreign key '%s' between the table '%s' and the table '%s' does not match the metadata definition: '%s'.;la clé étrangère '%s' entre la table '%s' et la table '%s' ne correspond pas à la définition des métadonnées : '%s'.
+Note: The database user must have administration rights to perform these tests.;Note: L'utilisateur utilisé pour ce connecter à la base doit être administreur pour pouvoir dérouler ces tests.
 
+##########################
+# Mapping                #
+##########################
+empty_layer;Aucune couche
 
 ##########################
 #  User Management       #
@@ -204,10 +237,13 @@ User Management Module;Administration des utilisateurs
 Show the users;Afficher les utilisateurs
 Show the roles;Afficher les rôles
 Change Password;Changer de mot de passe
+Password Change;Modification d'un mot de passe
+Password Change for user:;Modification du mot de passe pour l'utilisateur :
+Changing your password;Modification de votre mot de passe
 Create Role;Créer un rôle
 Create User;Créer un utilisateur
-Edit Role;Editer un rôle
-Edit User;Editer un utilisateur
+Edit Role;Edition d'un rôle
+Edit User;Edition d'un utilisateur
 Roles;Rôles
 Users;Utilisateurs
 User Login;Login
@@ -220,3 +256,99 @@ Edit;Editer
 Code;Code
 Label;Libellé
 Definition;Définition
+Old Password;Ancien mot de passe
+New Password;Nouveau mot de passe
+Confirm Password;Confirmer le mot de passe
+Password does not match confirmation;Le mot de passe ne correspond pas
+Old password is not correct;L'ancien mot de passe n'est pas correct
+Role Code;Code du rôle
+Role Label;Libellé du rôle
+Role Definition;Définition du rôle 
+Permissions;Permissions
+Schemas Permissions;Permissions sur les schémas de base de données
+Dataset Restrictions;Restrictions sur les datasets 
+Layer Restrictions;Restrictions sur les couches carto
+
+# User Rights
+Manage users;Administrer les utilisateurs
+Provide data;Intégrer des données
+Visualise data;Visualiser les données de son fournisseur
+Visualise data from other provider;Visualiser les données d'un autre fournisseur
+Launch the harmonization process;Valider les données de son fournisseur
+Export the raw data as a CSV file;Exporter les données brutes en CSV
+Add / Update / Delete data;Editer les données de son fournisseur
+Add / Update / Delete data from another provider;Editer les données d'un autre fournisseur
+Check the configuration;Vérifier la configuration du système
+Cancel validated submission;Annuler une soumission validée par son fournisseur
+Cancel other provider submission;Annuler la soumission d'un autre fournisseur
+
+# Schemas
+Harmonized Data;Données validées
+Raw Data;Données brutes
+
+##########################
+#  Data Edition          #
+##########################
+No %value% found.;Aucune %value% trouvée.
+Invalid form;Invalid form
+Data saved;Données sauvegardées
+Item cannot be deleted because it has children;La donnée ne peut pas être effacée car d'autres données sont liées
+Error while deleting data;Erreur lors de la suppression
+Data deleted;Donnée supprimée
+
+################################
+#  fileindexation / index      #
+################################
+Indices;Index
+Index;Index
+Details;Détails
+View the files list;Voir la liste des fichiers
+pdfIndexLabel;Index pour les pdfs
+pdfIndexDefinition;Index de l'ensemble des pdfs contenus dans les répertoires sélectionnés
+Index size:;Taille de l'index :
+Number of documents:;Nombre de documents :
+Index directory:;Répertoire de l'index :
+Files directories:;Répertoire(s) des fichiers :
+Add/Remove the new/deleted files of the files directories into the existing index;Ajouter/Soustraire à l'index les nouveaux fichiers ou les fichiers supprimés dans les répertoires
+Create a new index and index the files presents into the files directories;Créer un nouveau index et indexer les fichiers présents dans les répertoires
+Optimize the index;Optimiser l'index
+
+################################
+#  fileindexation / parsepdf   #
+################################
+File Content;Contenu du fichier
+Content of the file:;Contenu du fichier :
+
+#####################################
+#  fileindexation / getindexstatus  #
+#####################################
+An error occured during the indexation process.;Une erreur est apparue pendant l'indexation.
+
+################################
+#   PostProcessPdfIndexation   #
+################################
+A process is already running.;Une indexation est déjà en cours.
+
+################################
+#  pdfmetadata / editmeta      #
+################################
+
+################################
+#  pdfmetadata / list          #
+################################
+Indexed files list;Liste des fichiers indéxés
+Files;Fichiers
+View the file;Voir le fichier
+View the file content;Voir le contenu du fichier
+View the file metadata;Voir les métadonnées du fichier
+Edit the Metadata;Editer les métadonnées
+Remove the file of the index;Supprimer le fichier de l'index
+Not implemented;Non implémenté
+
+################################
+#  pdfmetadata / viewmeta      #
+################################
+File metadata;Métadonnées du fichier
+Meta data of the file:;Métadonnées du fichier :
+Meta Name;Nom de la métadonnée
+Meta Value;Valeur de la métadonnée

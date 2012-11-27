@@ -1,10 +1,8 @@
 <?php
 require_once TEST_PATH.'ControllerTestCase.php';
-require_once APPLICATION_PATH.'/objects/Website/User.php';
-require_once APPLICATION_PATH.'/models/Website/User.php';
 
 /**
- * Classe de test du modèle d'accès à LDAP.
+ * Classe de test du modèle User.
  *
  * @package controllers
  */
@@ -17,10 +15,16 @@ class UserTest extends ControllerTestCase {
 
 		// On charge le modèle LDAP
 		$userModel = new Application_Model_Website_User();
+		
+		// On vérifie que le user "admin" existe
+		$user = $userModel->getUser('admin');
 
 		
-		// On vérifie que l'on est bien connecté
-		$this->assertTrue($userModel);
+		// On vérifie que l'on a ramené le bon user
+		$this->assertEquals($user->login, 'admin');
+		$this->assertEquals($user->active, 1);
+		$this->assertEquals($user->providerId, '1');
+		$this->assertEquals($user->username, 'admin user');
 	}
 
 	

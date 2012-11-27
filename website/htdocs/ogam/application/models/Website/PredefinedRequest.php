@@ -19,6 +19,11 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		$translate = Zend_Registry::get('Zend_Translate');
+        $this->lang = strtoupper($translate->getAdapter()->getLocale());
+
+        $this->metadataModel = new Genapp_Model_Metadata_Metadata();
 	}
 
 	/**
@@ -37,10 +42,10 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		$query = $db->prepare($req);
 		$query->execute(array(
-			$predefinedRequest->requestName,
-			$predefinedRequest->schemaCode,
-			$predefinedRequest->datasetID,
-			$predefinedRequest->definition));
+		$predefinedRequest->requestName,
+		$predefinedRequest->schemaCode,
+		$predefinedRequest->datasetID,
+		$predefinedRequest->definition));
 
 		// Save the request results columns
 		$resultColumns = $predefinedRequest->resultsList;
@@ -52,9 +57,9 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 			$query = $db->prepare($req);
 			$query->execute(array(
-				$predefinedRequest->requestName,
-				$resultColumn->format,
-				$resultColumn->data));
+			$predefinedRequest->requestName,
+			$resultColumn->format,
+			$resultColumn->data));
 		}
 
 		// Save the request results criterias
@@ -67,10 +72,10 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 			$query = $db->prepare($req);
 			$query->execute(array(
-				$predefinedRequest->requestName,
-				$resultCriteria->format,
-				$resultCriteria->data,
-				$resultCriteria->value));
+			$predefinedRequest->requestName,
+			$resultCriteria->format,
+			$resultCriteria->data,
+			$resultCriteria->value));
 		}
 
 	}
@@ -83,12 +88,13 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @throws an exception if the request is not found
 	 */
 	public function getPredefinedRequest($requestName) {
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('WEBSITE', 'PREDEFINED_REQUEST');
 		$db = $this->getAdapter();
 
 		// Get the request
 		$req = " SELECT pr.request_name, ";
-		$req .= "       pr.label as label, ";
-		$req .= "       pr.definition as definition, ";
+		$req .= "       COALESCE(t.label, pr.label) as label, ";
+		$req .= "       COALESCE(t.definition, pr.definition) as definition, ";
 		$req .= "       pr.date, ";
 		$req .= "       pr.schema_code, ";
 		$req .= "       pr.dataset_id, ";
@@ -101,6 +107,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$req .= " JOIN predefined_request_group_asso prga using (request_name)";
 		$req .= " JOIN predefined_request_group prg using (group_name)";
 		$req .= " LEFT JOIN dataset on (pr.dataset_id = dataset.dataset_id)";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = pr.request_name";
 		$req .= " WHERE pr.request_name = ?";
 
 		$this->logger->info('getPredefinedRequest : '.$req);
@@ -139,7 +146,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 			$field->format = $result['format'];
 			$field->data = $result['data'];
 
-			$request->resultsList[$field->format.'__'.$field->data] = $field;
+			$request->resultsList[$field->getName()] = $field;
 		}
 
 		// Get the request result columns
@@ -158,6 +165,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @return Array[PredefinedRequest] the list of requests
 	 */
 	public function getPredefinedRequestList($schema, $dir, $sort) {
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('WEBSITE', 'PREDEFINED_REQUEST');
 		$db = $this->getAdapter();
 
 		// Prevent the sql injections
@@ -172,8 +180,8 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		// Get the request
 		$req = " SELECT pr.request_name, ";
-		$req .= "       pr.label as label, ";
-		$req .= "       pr.definition as definition, ";
+		$req .= "       COALESCE(t.label, pr.label) as label, ";
+		$req .= "       COALESCE(t.definition, pr.definition) as definition, ";
 		$req .= "       pr.date, ";
 		$req .= "       pr.schema_code, ";
 		$req .= "       pr.dataset_id, ";
@@ -186,6 +194,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$req .= " JOIN predefined_request_group_asso prga using (request_name)";
 		$req .= " JOIN predefined_request_group prg using (group_name)";
 		$req .= " LEFT JOIN dataset on (pr.dataset_id = dataset.dataset_id)";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = pr.request_name";
 		$req .= " WHERE pr.schema_code = '".$schema."'";
 		$req .= " ORDER BY ".$sort." ".$dir;
 
@@ -223,14 +232,16 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @return Array[PredefinedField] The list of request criterias
 	 */
 	public function getPredefinedRequestCriteria($requestName) {
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('METADATA', 'DATA');
 		$db = $this->getAdapter();
 
 		// Get the request
-		$req = " SELECT format, data, value, fixed, input_type, type, subtype, data.unit, data.label, data.definition";
+		$req = " SELECT format, data, value, fixed, type, subtype, data.unit, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, form_field.*";
 		$req .= " FROM predefined_request_criteria";
 		$req .= " JOIN form_field using (data, format)";
 		$req .= " JOIN data using (data)";
 		$req .= " JOIN unit using (unit)";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = data.data";
 		$req .= " WHERE request_name = ?";
 
 		$this->logger->info('getPredefinedRequestCriteria : '.$req);
@@ -245,15 +256,22 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 			$field->format = $result['format'];
 			$field->data = $result['data'];
 			$field->unit = $result['unit'];
-			$field->value = $result['value'];
 			$field->fixed = $result['fixed'];
 			$field->inputType = $result['input_type'];
 			$field->type = $result['type'];
 			$field->subtype = $result['subtype'];
 			$field->label = $result['label'];
 			$field->definition = $result['definition'];
+			$field->isCriteria = 1; // a predefined field is always a criteria
+			$field->isResult = $result['is_result'];
+			$field->isDefaultResult = $result['is_default_result'];
+			$field->isDefaultCriteria = 1; // a predefined field is always a default criteria
+			$field->value = $result['value'];
+			$field->defaultValue = $result['value'];
+			$field->decimals = $result['decimals'];
+			$field->mask = $result['mask'];
 
-			$criteriaList[$field->format.'__'.$field->data] = $field;
+			$criteriaList[$field->getName()] = $field;
 		}
 
 		return $criteriaList;

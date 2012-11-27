@@ -1,8 +1,8 @@
 <?php
 /**
- * © French National Forest Inventory 
+ * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- */ 
+ */
 
 /**
  * AbstractOGAMController is the common controler for the OGAM application.
@@ -24,7 +24,7 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 		$this->logger = $bootstrap->getResource('log');
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
-		// Get the base URL 
+		// Get the base URL
 		$this->baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
 	}
 
@@ -41,9 +41,45 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 		if (!empty($user)) {
 			$this->logger->debug("preDispatch user logged : ".$user->username);
 		} else {
-		    $this->logger->debug("preDispatch user not logged (redirect to the user controller)");
+		    $this->logger->debug('preDispatch user not logged (redirect to the user controller), session_id='.session_id());
 			$this->_redirect('user');
 		}
 	}
 
+	/**
+	 * Return a list of the files contained in the provided directory and its subdirectories
+	 *
+	 * @param string $dir The directory
+	 * @param string $fileType The file extension
+	 */
+	public static function getFilesInDir($dir, $fileType = null) {
+	    $filesList = array();
+	    $files = glob($dir.'/*');
+	    foreach ($files as $file) {
+	        if (is_dir($file)) {
+	        	$filesList = array_merge($filesList, AbstractOGAMController::getFilesInDir($file, $fileType));
+	        } else {
+	        	if($fileType == null){
+	        		$filesList[] = $file;
+	        	} elseif(substr($file, -3 , 3) == $fileType){
+	            	$filesList[] = $file;
+	        	}
+	        }
+	    }
+	    return $filesList;
+	}
+
+	/**
+	 * Return a list of the files contained in the provided directories
+	 *
+	 * @param array $dirs The directories
+	 * @param string $fileType The file extension
+	 */
+	public static function getFilesList($dirs, $fileType = null){
+		$filesList = array();
+		foreach ($dirs as $filesDirectory) {
+			$filesList = array_merge($filesList, AbstractOGAMController::getFilesInDir($filesDirectory, $fileType));
+		}
+		return $filesList;
+	}
 }

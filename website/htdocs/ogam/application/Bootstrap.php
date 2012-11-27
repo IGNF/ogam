@@ -12,6 +12,21 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 
 	/**
+	 * Addition of plugins to the Front Controller.
+	 */
+	protected function _initPlugins()
+	{
+		require_once('Genapp/Controller/Plugin/Bootstrap.php');
+
+		$this->bootstrap('View');
+		$view = $this->getResource('View');
+
+		$front = Zend_Controller_Front::getInstance();
+		// Pour la gestion de la langue de l'application
+		$front->registerPlugin(new Genapp_Controller_Plugin_Bootstrap($view));
+	}
+
+	/**
 	 * Register the logger into Zend_Registry
 	 * WARNING : Do not call this function _initLog() !
 	 * @throws Zend_Exception
@@ -22,6 +37,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Log not enabled in config.ini');
 		}
 		$this->logger = $this->getResource('Log');
+		
+		// Log l'URL appelée
+		if (isset($_SERVER['REQUEST_URI'])) {
+			$this->logger->debug($_SERVER['REQUEST_URI']);
+		}
+		
 		if (empty($this->logger)) {
 			throw new Zend_Exception('Logger object is empty.');
 		}
@@ -33,12 +54,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * Autoloading
 	 */
 	protected function _initApplicationAutoloading() {
-		$this->logger->debug('_initApplicationAutoloading');
 		$resourceLoader = $this->getResourceLoader();
 		$resourceLoader->addResourceTypes(array(
-		            'objects' => array(
-		                'namespace' => 'Object',
-		                'path'      => 'objects')));
+				'objects' => array(
+						'namespace' => 'Object',
+						'path'      => 'objects')));
 	}
 
 
@@ -50,8 +70,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Vérifie que le contrôleur frontal est bien présent, et le récupère
 		$this->bootstrap('FrontController');
-		$front = $this->getResource('FrontController');
+		$this->bootstrap('Router');
 
+		$front = $this->getResource('FrontController');
 		$router = $front->getRouter();
 
 		// Si un controleur existe dans custom alors on le prend en priorité à la place de default
@@ -64,8 +85,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					$controllerName = substr($file, 0, stripos($file, 'Controller.php'));
 					$controllerName = strtolower($controllerName);
 					$this->logger->debug("Adding custom controller : ".$controllerName);
-					$customRoute = new Zend_Controller_Router_Route($controllerName.'/:action', array('module' => 'custom', 'controller' => $controllerName));
-					$router->addRoute('customQuery'.$controllerName, $customRoute);
+					$customRoute = new Zend_Controller_Router_Route("/".$controllerName.'/:action', array('module' => 'custom', 'controller' => $controllerName));
+					$router->addRoute('customRoute_'.$controllerName, $customRoute);
 				}
 			}
 		}
@@ -89,7 +110,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$view->doctype('XHTML1_STRICT');
 		$view->headTitle()->setSeparator(' - ')->append($view->translate('Layout Head Title'));
 		$view->headMeta()->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8'); //->appendHttpEquiv('Content-Language', 'fr-FR')
-		$view->headMeta()->appendName('robots', 'index, follow')->appendName('keywords', $view->translate('Layout Head Meta Keywords'))->appendName('description', $view->translate('Layout Head Meta Description'));
+		$view->headMeta()->appendName('robots', 'index, follow');
+		$view->headMeta()->appendName('keywords', $view->translate('Layout Head Meta Keywords'));
+		$view->headMeta()->appendName('description', $view->translate('Layout Head Meta Description'));
 		$view->headLink()->appendStylesheet($baseUrl.'css/global.css');
 		$view->contactEmailPrefix = $configuration->contactEmailPrefix;
 		$view->contactEmailSufix = $configuration->contactEmailSufix;
@@ -113,20 +136,27 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 	// Do not call this function _initTranslate() !
 	/**
-	*
-	* Register the locale and the translation
-	* @throws Zend_Exception
-	*/
+	 *
+	 * Register the locale and the translation
+	 * @throws Zend_Exception
+	 */
 	protected function _initRegisterTranslate() {
 
 		$this->bootstrap('Locale');
 		$this->bootstrap('Translate');
+		$this->bootstrap('ConfFiles');
+
 		if (!$this->hasPluginResource('Translate')) {
 			throw new Zend_Exception('Translate not enabled in application.ini');
 		}
 		$translate = $this->getResource('Translate');
 		if (empty($translate)) {
 			throw new Zend_Exception('Translate object is empty.');
+		}
+		$configuration = Zend_Registry::get('configuration');
+		if($configuration->useCache == false){
+			$translate->clearCache();// Remove the default cache done during the translate bootstrap
+			$translate->removeCache();
 		}
 		if (!$this->hasPluginResource('Locale')) {
 			throw new Zend_Exception('Locale not enabled in application.ini');
@@ -139,28 +169,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Setup the translation
 		// !!! Note: the translate local correspond to the file name only.
-		$translations = $this->_addTranslation(array(
-		APPLICATION_PATH.'/lang'
-		), $translate);
+		$translations = $this->_addTranslation(array(APPLICATION_PATH.'/lang'), $translate);
 
 		// Setup the translation with files specific to the app
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/lang/')) {
 			$translations = $this->_addTranslation(array(CUSTOM_APPLICATION_PATH.'/lang'), $translate);
 		}
 
-		// Set the locale
-		switch ($locale->getLanguage()) {
-			case 'fr' : $locale = 'fr';break;
-			case 'fr_FR' : $locale = 'fr';break;
-			case 'en' : $locale = 'en';break;
-			case 'en_GB' : $locale = 'en';break;
-			case 'en_US' : $locale = 'en';break;
-			default : $locale = current(array_keys($locale->getDefault()));
-		}
-		$locale = new Zend_Locale($locale);
-		Zend_Registry::set('Zend_Locale', $locale);
-
-		$translate->setLocale($locale);
 		Zend_Registry::set('Zend_Translate', $translate); // store in the registry for the view helper
 		Zend_Validate_Abstract::setDefaultTranslator($translate); // use the translator for validation
 
@@ -190,15 +205,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 *
-	 * Define few constants
-	 */
-	protected function _initConstants() {
-		define('DPI', '72'); // Default number of dots per inch in mapserv
-		define('FACTOR', '39370.1'); // Inch to meter conversion factor
-	}
-
-	/**
 	 * Register the *.ini files.
 	 *
 	 * Take by default the files in ogam/application/config and if present overrides with custom/application/config.
@@ -214,7 +220,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 	/**
 	 *
-	 * Set the metadata cache
+	 * Check the caches
 	 * @throws Zend_Exception
 	 */
 	protected function _initSetCache() {
@@ -227,8 +233,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Cachemanager object is empty.');
 		}
 		$dbCache = $cachemanager->getCache('database');
-
-		Zend_Db_Table_Abstract::setDefaultMetadataCache($dbCache);
+		if (empty($dbCache)) {
+			throw new Zend_Exception('DB cache object is empty.');
+		}
+		$languageCache = $cachemanager->getCache('language');
+		if (empty($languageCache)) {
+			throw new Zend_Exception('Language cache object is empty.');
+		}
 	}
 
 	/**
@@ -252,6 +263,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				// Get the user informations
 				$user = $userModel->getUser($configuration->defaultUser);
 
+				$this->logger->debug('Autologin default user : '.$user->login);
+
 				if (!is_null($user)) {
 					// Store the user in session
 					$userSession->connected = true;
@@ -266,6 +279,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					// Get the User Permissions
 					$permissions = $roleModel->getRolePermissions($role->roleCode);
 					$userSession->permissions = $permissions;
+
+					// Get the accessible schemas
+					$schemas = $roleModel->getRoleSchemas($role->roleCode);
+					$userSession->schemas = $schemas;
 				}
 			}
 		}

@@ -43,7 +43,7 @@ class Genapp_Object_Metadata_TreeNode {
 	}
 
 	/**
-	 * Return true if a node is prensent in the tree structure.
+	 * Return a node in the tree structure.
 	 *
 	 * @param String $code a node code
 	 * @return TreeNode the TreeNode found, null if not found

@@ -53,7 +53,7 @@ parse_str($_SERVER["QUERY_STRING"],$query);//recupere la requete envoyée partie
 $queryParamsAllow = array(//paramNom => requis
     'BBOX' => true,
     'LAYERS' =>true,
-    'EXCEPTIONS' =>true,
+    'EXCEPTIONS' =>false,
     'SRS' =>true,
     'FORMAT' => true,
     'WIDTH' => false,
@@ -68,7 +68,7 @@ $queriesArg = array();
 
 foreach($queryParamsAllow as $param => $isReq){
     if($isReq && !isset($query[$param])){
-        error_log('Request param not found.');
+        error_log('Request param \''.$param.'\'not found.');
         error_log('Request: '.$_SERVER["QUERY_STRING"]);
         onfailure('/');
     }

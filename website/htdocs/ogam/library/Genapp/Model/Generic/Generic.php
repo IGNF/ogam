@@ -90,20 +90,27 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		// Fill the values with data from the table
 		foreach ($data->editableFields as $field) {
-			$field->value = $row[strtolower($field->format.'__'.$field->data)];
+			$key = strtolower($field->getName());
+			$field->value = $row[$key];
 
 			// Store additional info for geometry type
 			if ($field->unit == "GEOM") {
-				$field->xmin = $row[strtolower($field->format.'__'.$field->data).'_x_min'];
-				$field->xmax = $row[strtolower($field->format.'__'.$field->data).'_x_max'];
-				$field->ymin = $row[strtolower($field->format.'__'.$field->data).'_y_min'];
-				$field->ymax = $row[strtolower($field->format.'__'.$field->data).'_y_max'];
+				$field->xmin = $row[strtolower($key).'_x_min'];
+				$field->xmax = $row[strtolower($key).'_x_max'];
+				$field->ymin = $row[strtolower($key).'_y_min'];
+				$field->ymax = $row[strtolower($key).'_y_max'];
 			} else if ($field->type == "ARRAY") {
-
 				// For array field we transform the value in a array object
 				$field->value = $this->genericService->stringToArray($field->value);
 
 			}
+		}
+
+		// Fill the values with data from the table
+		foreach ($data->getFields() as $field) {
+
+			// Fill the value labels for the field
+			$field = $this->genericService->fillValueLabel($field);
 
 		}
 
@@ -131,9 +138,9 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// Get the values from the data table
 		$sql = "SELECT ".$this->genericService->buildSelect($data->getFields());
 		$sql .= " FROM ".$tableFormat->schemaCode.".".$tableFormat->tableName." AS ".$tableFormat->format;
-		$sql .= " WHERE(1 = 1) ".$this->genericService->buildWhere($data->infoFields);
+		$sql .= " WHERE(1 = 1) ".$this->genericService->buildWhere(array_merge($data->infoFields, $data->editableFields));
 
-		$this->logger->info('getDatum : '.$sql);
+		$this->logger->info('getData : '.$sql);
 
 		$select = $db->prepare($sql);
 		$select->execute();
@@ -145,13 +152,16 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			// Fill the values with data from the table
 			foreach ($child->getFields() as $field) {
 
-				$field->value = $row[strtolower($field->format.'__'.$field->data)];
+				$field->value = $row[strtolower($field->getName())];
 
 				if ($field->type == "ARRAY") {
 					// For array field we transform the value in a array object
 					$field->value = $this->genericService->stringToArray($field->value);
 
 				}
+
+				// Fill the value labels for the field
+				$field = $this->genericService->fillValueLabel($field);
 			}
 
 			$result[] = $child;
@@ -177,56 +187,28 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$this->logger->info('updateData');
 
 		// Get the values from the data table
-		$sql = "UPDATE ".$tableFormat->schemaCode.".".$tableFormat->tableName;
+		$sql = "UPDATE ".$tableFormat->schemaCode.".".$tableFormat->tableName." ".$tableFormat->format;
 		$sql .= " SET ";
 
 		// updates of the data.
 		foreach ($data->editableFields as $field) {
 			/* @var $field TableField */
 
-			if ($field->data != "LINE_NUMBER") { // Hardcoded value
-				if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
-					// Numeric values
-					$sql .= $field->columnName." = ".$field->value;
-				} else if ($field->type == "ARRAY") {
-					// Arrays
-					// $field->value should be an array
-					$array = $field->value;
-					$sql .= $field->columnName." = '{";
-					foreach ($array as $value) {
-						$sql .= $value.",";
-					}
-					$sql = substr($sql, 0, -1); // remove last comma
-					$sql .= "}'";
-				} else {
-					// Text values
-					$sql .= $field->columnName." = '".$field->value."'";
-				}
-				$sql .= ",";
+			if ($field->data != "LINE_NUMBER" && $field->isEditable) {
+				// Hardcoded value
+				$sql .= $this->genericService->buildUpdateItem($field);
+				$sql .= ", ";
 			}
 		}
 		// remove last comma
-		$sql = substr($sql, 0, -1);
+		$sql = substr($sql, 0, -2);
 
 		$sql .= " WHERE(1 = 1)";
 
 		// Build the WHERE clause with the info from the PK.
 		foreach ($data->infoFields as $primaryKey) {
-			/* @var $primaryKey TableField */
-
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-			if (!($tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
-
-				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER" || $field->type == "RANGE") {
-					$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
-				} else if ($primaryKey->type == "ARRAY") {
-					// Arrays
-					// $primaryKey->value should contain a unique value (String)
-					$sql .= " AND ANY(".$primaryKey->columnName.") = '".$primaryKey->value."'";
-				} else {
-					$sql .= " AND ".$primaryKey->columnName." = '".$primaryKey->value."'";
-				}
-			}
+			$sql .= $this->genericService->buildWhereItem($primaryKey, true);
 		}
 
 		$this->logger->info('updateData : '.$sql);
@@ -268,7 +250,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
 			if (!($tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
 
-				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER" || $field->type == "RANGE") {
+				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER" || $primaryKey->type == "RANGE") {
 					$sql .= " AND ".$primaryKey->columnName." = ".$primaryKey->value;
 				} else if ($primaryKey->type == "ARRAY") {
 					// Arrays not handlmed as primary keys
@@ -296,6 +278,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * Insert a line of data from a table.
 	 *
 	 * @param DataObject $data the shell of the data object to insert.
+	 * @return DataObject $data the eventually edited data object.
 	 * @throws an exception if an error occur during insert
 	 */
 	public function insertData($data) {
@@ -311,48 +294,39 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$sql = "INSERT INTO ".$tableFormat->schemaCode.".".$tableFormat->tableName;
 		$columns = "";
 		$values = "";
+		$return = "";
 
 		// updates of the data.
 		foreach ($data->infoFields as $field) {
-			if ($field->value != null) { // Primary keys that are not set should be serials ...
+			if ($field->value != null) {
+
+				// Primary keys that are not set should be serials ...
 				$columns .= $field->columnName.", ";
-				if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
-					$values .= $field->value.", ";
-				} else if ($field->type == "ARRAY") {
-					// Arrays
-					// $field->value should be an array
-					$array = $field->value;
-					$sql .= "'{";
-					foreach ($array as $value) {
-						$sql .= $value.",";
+				$values .= $this->genericService->buildInsertValueItem($field);
+				$values .= ", ";
+
+			} else {
+				$this->logger->info('field '.$field->columnName." ".$field->isCalculated);
+
+				// Case of a calculated PK (for example a serial)
+				if ($field->isCalculated) {
+					if ($return == "") {
+						$return .= " RETURNING ";
+					} else {
+						$return .= ", ";
 					}
-					$sql = substr($sql, 0, -1); // remove last comma
-					$sql .= "}', ";
-				} else {
-					$values .= "'".$field->value."', ";
+					$return .= $field->columnName;
 				}
 			}
 		}
 		foreach ($data->editableFields as $field) {
-			if ($field->value != null) { // Primary keys that are not set should be serials ...
+			if ($field->value != null && $field->isEditable) {
+
+				// Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
 					$columns .= $field->columnName.", ";
-					if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
-						$values .= $field->value.", ";
-					} else if ($field->type == "ARRAY") {
-						// Arrays
-						// $field->value should be an array
-						$array = $field->value;
-						$sql .= "'{";
-						foreach ($array as $value) {
-							$sql .= $value.",";
-						}
-						$sql = substr($sql, 0, -1); // remove last comma
-						$sql .= "}', ";
-					} else {
-						// Text values
-						$values .= "'".$field->value."', ";
-					}
+					$values .= $this->genericService->buildInsertValueItem($field);
+					$values .= ", ";
 				}
 			}
 		}
@@ -360,7 +334,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$columns = substr($columns, 0, -2);
 		$values = substr($values, 0, -2);
 
-		$sql .= "(".$columns.") VALUES (".$values.")";
+		$sql .= "(".$columns.") VALUES (".$values.")".$return;
 
 		$this->logger->info('insertData : '.$sql);
 
@@ -373,6 +347,19 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			throw new Exception("Error while inserting data  : ".$e->getMessage());
 		}
 
+		if ($return !== "") {
+
+			foreach ($request->fetchAll() as $row) {
+				foreach ($data->infoFields as $field) {
+					if ($field->isCalculated) {
+						$field->value = $row[strtolower($field->columnName)];
+					}
+				}
+			}
+		}
+
+		return $data;
+
 	}
 
 	/**
@@ -380,10 +367,9 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * The key elements in the parent tables must have an existing value in the child.
 	 *
 	 * @param DataObject $data the data object we're looking at.
-	 * @param Boolean $isForDisplay indicate if we only want to display the data or if for update/insert
 	 * @return List[DataObject] The line of data in the parent tables.
 	 */
-	public function getAncestors($data, $isForDisplay = false) {
+	public function getAncestors($data) {
 		$db = $this->getAdapter();
 
 		$ancestors = array();
@@ -412,13 +398,17 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		if ($parentTable != "*") {
 
 			// Build an empty parent object
-			$parent = $this->genericService->buildDataObject($tableFormat->schemaCode, $parentTable, null, $isForDisplay);
+			$parent = $this->genericService->buildDataObject($tableFormat->schemaCode, $parentTable, null);
 
 			// Fill the PK values (we hope that the child contain the fields of the parent pk)
 			foreach ($parent->infoFields as $key) {
-				$keyField = $data->getInfoField($data->tableFormat->format.'__'.$key->data);
-				if ($keyField != null && $keyField->value != null) {
-					$key->value = $keyField->value;
+				$fieldName = $data->tableFormat->format.'__'.$key->data;
+				$fields = $data->getFields();
+				if(array_key_exists($fieldName, $fields)){
+					$keyField = $fields[$fieldName];
+					if ($keyField != null && $keyField->value != null) {
+						$key->value = $keyField->value;
+					}
 				}
 			}
 
@@ -428,7 +418,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			$ancestors[] = $parent;
 
 			// Recurse
-			$ancestors = array_merge($ancestors, $this->getAncestors($parent, $isForDisplay));
+			$ancestors = array_merge($ancestors, $this->getAncestors($parent));
 
 		}
 		return $ancestors;
@@ -471,7 +461,7 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$select = $db->prepare($sql);
 		$select->execute();
 
-		// For each potential child table listed, we search for the actual lines of data available		
+		// For each potential child table listed, we search for the actual lines of data available
 		foreach ($select->fetchAll() as $row) {
 			$childTable = $row['child_table'];
 
@@ -481,6 +471,11 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			// Fill the known primary keys (we hope the child contain the keys of the parent)
 			foreach ($data->infoFields as $dataKey) {
 				foreach ($child->infoFields as $childKey) {
+					if ($dataKey->data == $childKey->data) {
+						$childKey->value = $dataKey->value;
+					}
+				}
+				foreach ($child->editableFields as $childKey) {
 					if ($dataKey->data == $childKey->data) {
 						$childKey->value = $dataKey->value;
 					}
@@ -497,5 +492,4 @@ class Genapp_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		return $children;
 	}
-
 }

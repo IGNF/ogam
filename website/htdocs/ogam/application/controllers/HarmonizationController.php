@@ -6,7 +6,7 @@
 require_once 'AbstractOGAMController.php';
 
 /**
- * HarmonizationController is the controller that manages the data harmonization process.
+ * HarmonizationController is the controller that manages the data harmonization process (copy data from one schema to another).
  * @package controllers
  */
 class HarmonizationController extends AbstractOGAMController {
@@ -36,6 +36,8 @@ class HarmonizationController extends AbstractOGAMController {
 
 	/**
 	 * Check if the authorization is valid this controler.
+	 * 
+	 * @throws an Exception if the user doesn't have the rights
 	 */
 	function preDispatch() {
 
@@ -44,7 +46,7 @@ class HarmonizationController extends AbstractOGAMController {
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
 		if (empty($permissions) || !array_key_exists('DATA_HARMONIZATION', $permissions)) {
-			$this->_redirector->gotoUrl('/');
+			throw new Zend_Auth_Exception('Permission denied for right : DATA_HARMONIZATION');
 		}
 	}
 
@@ -66,7 +68,7 @@ class HarmonizationController extends AbstractOGAMController {
 		$this->logger->debug('showHarmonizationPageAction');
 
 		// Get the list of available harmonization (active submissions)
-		$activeSubmissions = $this->submissionModel->getActiveSubmissions();
+		$activeSubmissions = $this->submissionModel->getSubmissionsForHarmonization();
 
 		$harmonisationProcesses = array();
 
@@ -107,13 +109,29 @@ class HarmonizationController extends AbstractOGAMController {
 	public function launchHarmonizationAction() {
 		$this->logger->debug('launchHarmonizationAction');
 
+		$this->_launchHarmonization(false);
+	}
+
+	public function removeHarmonizationDataAction() {
+		$this->logger->debug('removeHarmonizationDataAction');
+
+		$this->_launchHarmonization(true);
+	}
+
+	/**
+	 * Launch the harmonization process
+	 *
+	 * @return a View
+	 */
+	private function _launchHarmonization($removeOnly = false) {
+
 		// Get the submission  Id
 		$providerId = $this->_getParam("PROVIDER_ID");
 		$datasetId = $this->_getParam("DATASET_ID");
 
 		// Send the cancel request to the integration server
 		try {
-			$this->harmonizationServiceModel->harmonizeData($providerId, $datasetId);
+			$this->harmonizationServiceModel->harmonizeData($providerId, $datasetId, $removeOnly);
 		} catch (Exception $e) {
 			$this->logger->err('Error during harmonization: '.$e);
 			$this->view->errorMessage = $e->getMessage();

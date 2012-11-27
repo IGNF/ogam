@@ -24,7 +24,7 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 		// Add the schema
 		$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
 
-		// Add the format		
+		// Add the format
 		$urlArray['FORMAT'] = $tableFormat;
 
 		// Add the PK elements
@@ -32,14 +32,26 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 			$urlArray[$infoField->data] = $infoField->value;
 		}
 
-		// Add the other elements as a tooltip
-		$tooltip = "";
+		// Add the fields to generate the tooltip
+		$fields = array();
 		foreach ($data->getFields() as $field) {
-			$tooltip .= $field->data.": ".$field->value."<br/>";
+			if (is_array($field->valueLabel)) {
+				$val = "";
+				foreach ($field->valueLabel as $value) {
+					$val .= $this->view->escape($value). ", ";
+				}
+				$fields[$field->label] = substr($val, 0, -2);
+			} else {
+				$fields[$field->label] = $this->view->escape($field->valueLabel);
+			}
+
 		}
 
 		// output the result
-		return '<a href="'.$this->view->url($urlArray, null, true).'" class="tooltip">Edit '.$data->tableFormat->label.'<em><span></span>'.$tooltip.'</em></a>';
+		return array(
+		    'url' => $this->view->url($urlArray, null, true),
+		    'text' => $this->view->escape($data->tableFormat->label),
+		    'fields' => $fields
+		);
 	}
-
 }

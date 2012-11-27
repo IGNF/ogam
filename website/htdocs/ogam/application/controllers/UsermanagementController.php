@@ -40,6 +40,8 @@ class UsermanagementController extends AbstractOGAMController {
 
 	/**
 	 * Check if the authorization is valid this controler.
+	 *
+	 * @throws an Exception if the user doesn't have the rights
 	 */
 	function preDispatch() {
 
@@ -49,7 +51,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$permissions = $userSession->permissions;
 		$role = $userSession->role;
 		if (empty($permissions) || !array_key_exists('MANAGE_USERS', $permissions)) {
-			$this->_redirector->gotoUrl('/');
+			throw new Zend_Auth_Exception('Permission denied for right : MANAGE_USERS');
 		}
 	}
 
@@ -63,9 +65,13 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	private function _getUserForm($mode = null, $user = null, $role = null) {
 
-		$form = new Zend_Form();
-		$form->setAction($this->baseUrl.'/usermanagement/validate-user');
-		$form->setMethod('post');
+	    $form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'user-form',
+		        'action'=>$this->baseUrl.'/usermanagement/validate-user'
+		        )
+		    )
+		);
 
 		//
 		// Add the login element:
@@ -113,7 +119,7 @@ class UsermanagementController extends AbstractOGAMController {
 		}
 
 		//
-		// Add the country element
+		// Add the provider element
 		//
 		$providerIdElem = $form->createElement('select', 'providerId');
 		$providerIdElem->setLabel('Provider');
@@ -121,7 +127,7 @@ class UsermanagementController extends AbstractOGAMController {
 		if ($user != null) {
 			$providerIdElem->setValue($user->providerId);
 		}
-		$providers = $this->metadataModel->getModes('PROVIDER_ID');
+		$providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
 
 		$providerIdElem->addMultiOptions($providers);
 
@@ -185,20 +191,19 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	private function _getChangePasswordForm($login = null) {
 
-		$form = new Zend_Form();
-		$form->setAction($this->baseUrl.'/usermanagement/validate-user-password');
-		$form->setMethod('post');
+		$form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'change-user-password-form',
+		        'action'=>$this->baseUrl.'/usermanagement/validate-user-password'
+		        )
+		    )
+		);
 
 		$this->logger->debug('_getChangePasswordForm login : '.$login);
 
 		// Add the user login as an input type text
 		$loginElem = $form->createElement('hidden', 'login');
 		$loginElem->setValue($login);
-
-		// Create and configure old password element:
-		$oldpassword = $form->createElement('password', 'oldpassword');
-		$oldpassword->setLabel('Old Password');
-		$oldpassword->setRequired(true);
 
 		// Create and configure password element:
 		$newpassword = $form->createElement('password', 'password');
@@ -207,14 +212,13 @@ class UsermanagementController extends AbstractOGAMController {
 
 		// Create and configure confirm-password element:
 		$confirmPassword = $form->createElement('password', 'confirmpassword');
-		$confirmPassword->setLabel('Confirm New Password');
+		$confirmPassword->setLabel('Confirm Password');
 		$confirmPassword->setRequired(true);
 
 		$submit = $form->createElement('submit', 'submit');
 		$submit->setLabel('Submit');
 
 		$form->addElement($loginElem);
-		$form->addElement($oldpassword);
 		$form->addElement($newpassword);
 		$form->addElement($confirmPassword);
 		$form->addElement($submit);
@@ -228,13 +232,18 @@ class UsermanagementController extends AbstractOGAMController {
 	 * @param String the mode of the form ('create' or 'edit')
 	 * @param Role the role
 	 * @param Array[String] the permissions
+	 * @param Array[String] the schemas
 	 * @return a Zend Form
 	 */
-	private function _getRoleForm($mode = null, $role = null, $permissions = null) {
+	private function _getRoleForm($mode = null, $role = null) {
 
-		$form = new Zend_Form();
-		$form->setAction($this->baseUrl.'/usermanagement/validate-role');
-		$form->setMethod('post');
+	    $form = new Genapp_Form(array(
+		    'attribs'=>array(
+		        'name'=>'role-form',
+		        'action'=>$this->baseUrl.'/usermanagement/validate-role'
+		        )
+		    )
+		);
 
 		//
 		// Add the role code
@@ -269,15 +278,65 @@ class UsermanagementController extends AbstractOGAMController {
 			$roleDefinition->setValue($role->roleDefinition);
 		}
 
+
 		// Permissions
 		// Get all the Permissions
 		$allpermissions = $this->roleModel->getAllPermissions();
-		$rolepermissions = new Zend_Form_Element_MultiCheckbox('rolepermissions', array(
-			'multiOptions' => $allpermissions)); // set the list of available permissions
-		if (!empty($permissions)) {
+		$rolepermissions = $form->createElement('multiCheckbox', 'rolepermissions', array(
+				'multiOptions' => $allpermissions)); // set the list of available permissions
+		if ($role != null) {
+			$permissions = $this->roleModel->getRolePermissions($role->roleCode);
 			$rolepermissions->setValue(array_keys($permissions)); // set the selected permissions
 		}
 		$rolepermissions->setLabel('Permissions');
+
+
+		// Schemas
+		// get all available schemas
+		$allschemas = $this->metadataModel->getSchemas();
+		$schemasList = array();
+		foreach ($allschemas as $schema) {
+			$schemasList[$schema->code] = $schema->label;
+		}
+		$roleschemas = $form->createElement('multiCheckbox', 'roleschemas', array(
+				'multiOptions' => $schemasList)); // set the list of available schemas
+		if ($role != null) {
+			// Get the Schemas
+			$schemas = $this->roleModel->getRoleSchemas($role->roleCode);
+			$roleschemas->setValue($schemas); // set the selected schemas
+		}
+		$roleschemas->setLabel('Schemas Permissions');
+
+		// Dataset restrictions
+		$allDatasets = $this->metadataModel->getDatasets();
+		$datasetList = array();
+		foreach ($allDatasets as $dataset) {
+			$datasetList[$dataset->id] = $dataset->label;
+		}
+		$datasetsRestriction = $form->createElement('multiCheckbox', 'datasetRestrictions', array(
+				'multiOptions' => $datasetList));
+		if ($role != null) {
+			// Get the Schemas
+			$datasetRestricted = $this->roleModel->getDatasetRoleRestrictions($role->roleCode);
+			$datasetsRestriction->setValue($datasetRestricted);
+		}
+		$datasetsRestriction->setLabel('Dataset Restrictions');
+
+		// Layer restrictions
+		$layerModel = new Application_Model_Mapping_Layers();
+		$allLayers = $layerModel->getAllLayersList();
+		$layersList = array();
+		foreach ($allLayers as $layer) {
+			$layersList[$layer->layerName] = $layer->layerLabel;
+		}
+		$layersRestriction = $form->createElement('multiCheckbox', 'layerRestrictions', array(
+				'multiOptions' => $layersList));
+		if ($role != null) {
+			// Get the Schemas
+			$layersRestricted = $this->roleModel->getLayerRoleRestrictions($role->roleCode);
+			$layersRestriction->setValue($layersRestricted);
+		}
+		$layersRestriction->setLabel('Layer Restrictions');
 
 		//
 		// Create the submit button
@@ -297,6 +356,9 @@ class UsermanagementController extends AbstractOGAMController {
 		$form->addElement($roleDefinition);
 		$form->addElement($modeElement);
 		$form->addElement($rolepermissions);
+		$form->addElement($roleschemas);
+		$form->addElement($datasetsRestriction);
+		$form->addElement($layersRestriction);
 		$form->addElement($submitElement);
 
 		return $form;
@@ -389,7 +451,7 @@ class UsermanagementController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Check update the user password.
+	 * Set a new user password.
 	 *
 	 * @return a view.
 	 */
@@ -416,21 +478,12 @@ class UsermanagementController extends AbstractOGAMController {
 
 			$f = new Zend_Filter_StripTags();
 			$login = $f->filter($values['login']);
-			$oldpassword = $f->filter($values['oldpassword']);
 			$password = $f->filter($values['password']);
 			$confirmpassword = $f->filter($values['confirmpassword']);
 
 			// Check that the new password if confirmed
 			if ($password != $confirmpassword) {
 				return $this->showChangePasswordAction("Password does not match confirmation", $login);
-			}
-
-			// Check that the old password is correct
-			$storedPassword = $this->userModel->getPassword($login);
-			$cryptedOldPassword = sha1($oldpassword);
-
-			if ($storedPassword != $cryptedOldPassword) {
-				return $this->showChangePasswordAction("Old password is not correct", $login);
 			}
 
 			// Encrypt the password
@@ -479,13 +532,16 @@ class UsermanagementController extends AbstractOGAMController {
 			$roleLabel = $f->filter($values['roleLabel']);
 			$roleDefinition = $f->filter($values['roleDefinition']);
 			$rolepermissions = $values['rolepermissions'];
+			$schemas = $values['roleschemas'];
+			$datasetRestrictions = $values['datasetRestrictions'];
+			$layerRestrictions = $values['layerRestrictions'];
 
 			// Build the user
 			$role = new Application_Object_Website_Role();
 			$role->roleCode = $roleCode;
 			$role->roleLabel = $roleLabel;
 			$role->roleDefinition = $roleDefinition;
-		
+
 			if ($mode == 'edit') {
 				//
 				// EDIT the role
@@ -493,9 +549,6 @@ class UsermanagementController extends AbstractOGAMController {
 
 				// Update the user in database
 				$this->roleModel->updateRole($role);
-
-				// Update the permissions
-				$this->roleModel->updateRolePermissions($role, $rolepermissions);
 
 			} else {
 				//
@@ -505,10 +558,19 @@ class UsermanagementController extends AbstractOGAMController {
 				// Create the user in database
 				$this->roleModel->createRole($role);
 
-				// Update the permissions
-				$this->roleModel->updateRolePermissions($role, $rolepermissions);
-
 			}
+
+			// Update the permissions
+			$this->roleModel->updateRolePermissions($role, $rolepermissions);
+
+			// Update the schemas
+			$this->roleModel->updateRoleSchemas($role, $schemas);
+
+			// Update the layer Restrictions
+			$this->roleModel->updateLayerRestrictions($role, $layerRestrictions);
+
+			// Update the dataset Restrictions
+			$this->roleModel->updateDatasetRestrictions($role, $datasetRestrictions);
 
 			// Return to the user list page
 			$this->showRolesAction();
@@ -540,7 +602,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$users = $this->userModel->getUsers();
 
 		// Get the list of providers
-		$providers = $this->metadataModel->getModes('PROVIDER_ID');
+		$providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
 
 		$this->logger->debug('users : '.$users);
 
@@ -625,11 +687,8 @@ class UsermanagementController extends AbstractOGAMController {
 		// Get the role
 		$role = $this->roleModel->getRole($roleCode);
 
-		// Get the Permissions
-		$permissions = $this->roleModel->getRolePermissions($role->roleCode);
-
 		// Generate the form
-		$form = $this->_getRoleForm('edit', $role, $permissions);
+		$form = $this->_getRoleForm('edit', $role);
 		$this->view->form = $form;
 
 		$this->render('show-edit-role');
@@ -645,7 +704,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->logger->debug('showCreateRoleAction');
 
 		// Generate the form
-		$form = $this->_getRoleForm('create', null, null);
+		$form = $this->_getRoleForm('create', null);
 		$this->view->form = $form;
 
 		// Eventually add an error message

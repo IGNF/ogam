@@ -208,6 +208,9 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     float:left;
     margin: 0 2px;
 }
+.genapp-query-grid-details-panel-edit-link a {
+    margin-left: 20px;
+}
 /*************************************************************************************************/
 
 /** Details Panel ********************************************************************************/
@@ -221,25 +224,29 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .genapp-query-details-panel .x-panel-body{
     padding:5px;
 }
-.genapp-query-details-panel img{
+.genapp-query-details-panel .x-tab-panel-body img{
     width:300px;
     float:left;
     margin:6px 10px 10px 0;
 }
-.genapp-query-details-panel fieldset,
-.genapp-query-details-panel table{
+img.genapp-query-details-image-field{
+    width:285px;
+    margin:15px 0 5px 0;
+}
+.genapp-query-details-panel .x-tab-panel-body fieldset,
+.genapp-query-details-panel .x-tab-panel-body table{
     width:287px;
     float:left;
     margin:0 10px 10px 0;
     padding:5px;
 }
-.genapp-query-details-panel table{
+.genapp-query-details-panel .x-tab-panel-body table{
     width:300px;
 }
-.genapp-query-details-panel th{
+.genapp-query-details-panel .x-tab-panel-body th{
     padding:3px;
 }
-.genapp-query-details-panel td{
+.genapp-query-details-panel .x-tab-panel-body td{
     padding:3px;
 }
 .genapp-query-details-panel caption{
@@ -247,9 +254,26 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 .genapp-query-details-panel legend{
     padding:0 5px;
+    height:16px;
+}
+.genapp-query-details-panel fieldset p {
+    margin-top: 2px;
+}
+.genapp-query-details-panel-fieldset-title{
+    margin-right: 10px;
+}
+.genapp-query-details-panel-fieldset-body{
+    margin: 5px 0;
 }
 .genapp-query-details-panel-see-children{
-    margin-top:10px;
+    width:16px;
+    height:16px;
+}
+.genapp-query-details-panel-edit-link{
+    width:16px;
+    height:16px;
+}
+.genapp-query-details-panel-pdf-export{
 }
 /*************************************************************************************************/
 
@@ -479,6 +503,16 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 }
 /*************************************************************************************************/
 
+/***** Tree Picker *********************************************************************/
+
+.genapp-taxref-picker-reference-node{
+    font-style: italic;
+}
+.genapp-taxref-picker-synonym-node{
+    font-weight: bold;
+}
+/*************************************************************************************************/
+
 /***** Geometry Field *********************************************************************/
 
 .x-form-field-wrap .x-form-map-trigger{
@@ -509,6 +543,8 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
     width:20px !important;
     background-position:center center;
 }
+.addgeomcriteria {
+}
 .zoomstations {
     height:20px !important;
     width:20px !important;
@@ -528,6 +564,9 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .x-tab-panel-body {
     border:none;
     background-color:transparent;
+}
+.x-progress-text {
+    line-height: normal !important;
 }
 /*************************************************************************************************/
 

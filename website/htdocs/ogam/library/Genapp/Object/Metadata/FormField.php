@@ -49,31 +49,25 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	var $mask;
 
 	/**
-	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).
-	 * Can be an array in case of a select multiple (will generate a OR clause).
-	 * @var mixed
-	 *
-	 * Examples of valid values :
-	 * toto
-	 * 12.6
-	 * 0.2 - 0.6
-	 * 2010/05/12
-	 * 2010/05/12 - 2010/06/30
-	 * POINT(3.51, 4.65)
-	 */
-	var $value;
-
-	/**
-	 * The label corresponding to value of the field (this is not defined in the metadata databae, it's the raw value of the data).
-	 */
-	var $valueLabel;
-
-	/**
-	 * Indicate if the field is editable.
+	 * Indicate if the field is editable (for the edition module).
 	 *
 	 * @var Boolean
 	 */
 	var $editable;
+
+	/**
+	 * Indicate if the field is insertable (for the edition module).
+	 *
+	 * @var Boolean
+	 */
+	var $insertable;
+
+	/**
+	 * Indicate if the field is required (for the edition module).
+	 *
+	 * @var Boolean
+	 */
+	var $required;
 
 	/**
 	 * The field position in the form
@@ -86,7 +80,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 * @return JSON the form field descriptor
 	 */
 	public function toJSON() {
-		$return = '"name":'.json_encode($this->format.'__'.$this->data);
+		$return = '"name":'.json_encode($this->getName());
 		$return .= ',"data":'.json_encode($this->data);
 		$return .= ',"format":'.json_encode($this->format);
 		$return .= ',"label":'.json_encode($this->label);
@@ -105,7 +99,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 * @return JSON the form field descriptor
 	 */
 	public function toEditJSON() {
-		$return = '"name":'.json_encode($this->format.'__'.$this->data);
+		$return = '"name":'.json_encode($this->getName());
 		$return .= ',"data":'.json_encode($this->data);
 		$return .= ',"format":'.json_encode($this->format);
 		$return .= ',"label":'.json_encode($this->label);
@@ -116,7 +110,10 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 		$return .= ',"definition":'.json_encode($this->definition);
 		$return .= ',"decimals":'.json_encode($this->decimals);
 		$return .= ',"value":'.json_encode($this->value);
+		$return .= ',"valueLabel":'.json_encode($this->getValueLabel());
 		$return .= ',"editable":'.json_encode($this->editable);
+		$return .= ',"insertable":'.json_encode($this->insertable);
+		$return .= ',"required":'.json_encode($this->required);
 		return $return;
 	}
 
@@ -131,8 +128,9 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 		if ($this->inputType == 'NUMERIC' && $this->decimals != null && $this->decimals != "") {
 			$this->valueLabel = number_format($this->valueLabel, $this->decimals);
 		}
-		
-		$return .= ',"value":'.json_encode($this->valueLabel).'}';
+
+		$return .= ',"value":'.json_encode($this->getValueLabel());
+		$return .= ',"type":'.json_encode($this->inputType).'}';
 
 		return $return;
 	}
@@ -143,7 +141,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 * @return JSON the criteria field descriptor
 	 */
 	public function toCriteriaJSON() {
-		$return = '"name":'.json_encode($this->format."__".$this->data);
+		$return = '"name":'.json_encode($this->getName());
 		$return .= ',"label":'.json_encode($this->label);
 		$return .= ',"inputType":'.json_encode($this->inputType);
 		$return .= ',"unit":'.json_encode($this->unit);
@@ -162,7 +160,7 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 	 * @return JSON the result field descriptor
 	 */
 	public function toResultJSON() {
-		$return = '"name":'.json_encode($this->format.'__'.$this->data);
+		$return = '"name":'.json_encode($this->getName());
 		$return .= ',"label":'.json_encode($this->label);
 		$return .= ',"definition":'.json_encode($this->definition);
 		$return .= ',"is_default":'.$this->isDefaultResult;
@@ -178,6 +176,20 @@ class Genapp_Object_Metadata_FormField extends Genapp_Object_Metadata_Field {
 			if (gettype($value) == 'object') {
 				$this->$name = clone ($this->$name);
 			}
+		}
+	}
+
+	/**
+	 * Return the label corresponding to the value.
+	 * For a code, will return the description.
+	 * 
+	 * @return String the label
+	 */
+	function getValueLabel() {
+		if ($this->valueLabel != null) {
+			return $this->valueLabel;
+		} else {
+			return $this->value;
 		}
 	}
 

@@ -38,12 +38,6 @@ class Genapp_Object_Metadata_TableTreeData {
 	var $tableName;
 
 	/**
-	 * The name of the field that first triggered the inclusion of this table.
-	 * It is only used for column-oriented tables.
-	 */
-	var $fieldName;
-
-	/**
 	 * Return a logical name for the table.
 	 * By default it is the table format.
 	 * If the table is column oriented it must be joined more than once, the differenciate the name

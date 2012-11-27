@@ -4,6 +4,9 @@ import javax.sql.DataSource;
 import javax.naming.Reference;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 import java.io.PrintWriter;
 
 /**
@@ -11,7 +14,8 @@ import java.io.PrintWriter;
  * Title: SimpleDataSource
  * </p>
  * <p>
- * Description: A very simple datasource. Creates a new Connection to the database everytime it's ask for one so....
+ * Description: A very simple datasource. Creates a new Connection to the
+ * database everytime it's ask for one so....
  * </p>
  * <p>
  * Copyright: Copyright (c) 2002
@@ -65,8 +69,10 @@ class SimpleDataSource extends Reference implements DataSource {
 			return DriverManager.getConnection(dbServer, dbLogin, dbPassword);
 		} else {
 			// Authentification sans user par Windows NT
-			// Pour pouvoir utiliser l'authentification NT il faut copier le fichier ntlmauth.dll
-			// qui se trouve dans l'archive jtds.zip dans votre répertoire windows/system32
+			// Pour pouvoir utiliser l'authentification NT il faut copier le
+			// fichier ntlmauth.dll
+			// qui se trouve dans l'archive jtds.zip dans votre répertoire
+			// windows/system32
 			return DriverManager.getConnection(dbServer);
 		}
 	}
@@ -83,7 +89,8 @@ class SimpleDataSource extends Reference implements DataSource {
 	 * @throws java.sql.SQLException
 	 * 
 	 */
-	public Connection getConnection(String parm1, String parm2) throws java.sql.SQLException {
+	public Connection getConnection(String parm1, String parm2)
+			throws java.sql.SQLException {
 		return getConnection();
 	}
 
@@ -99,18 +106,21 @@ class SimpleDataSource extends Reference implements DataSource {
 	public PrintWriter getLogWriter() throws java.sql.SQLException {
 
 		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException("Method getLogWriter() not yet implemented.");
+		throw new java.lang.UnsupportedOperationException(
+				"Method getLogWriter() not yet implemented.");
 	}
 
 	public boolean isWrapperFor(Class iface) {
 		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException("Method isWrapperFor() not yet implemented.");
+		throw new java.lang.UnsupportedOperationException(
+				"Method isWrapperFor() not yet implemented.");
 
 	}
 
 	public Object unwrap(Class iface) {
 		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException("Method unwrap() not yet implemented.");
+		throw new java.lang.UnsupportedOperationException(
+				"Method unwrap() not yet implemented.");
 
 	}
 
@@ -126,7 +136,8 @@ class SimpleDataSource extends Reference implements DataSource {
 	public int getLoginTimeout() throws java.sql.SQLException {
 
 		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException("Method getLoginTimeout() not yet implemented.");
+		throw new java.lang.UnsupportedOperationException(
+				"Method getLoginTimeout() not yet implemented.");
 	}
 
 	/**
@@ -141,7 +152,8 @@ class SimpleDataSource extends Reference implements DataSource {
 	public void setLogWriter(PrintWriter parm1) throws java.sql.SQLException {
 
 		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException("Method setLogWriter() not yet implemented.");
+		throw new java.lang.UnsupportedOperationException(
+				"Method setLogWriter() not yet implemented.");
 	}
 
 	/**
@@ -156,7 +168,8 @@ class SimpleDataSource extends Reference implements DataSource {
 	public void setLoginTimeout(int parm1) throws java.sql.SQLException {
 
 		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException("Method setLoginTimeout() not yet implemented.");
+		throw new java.lang.UnsupportedOperationException(
+				"Method setLoginTimeout() not yet implemented.");
 	}
 
 	/**
@@ -165,10 +178,13 @@ class SimpleDataSource extends Reference implements DataSource {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((dbDriver == null) ? 0 : dbDriver.hashCode());
+		result = prime * result
+				+ ((dbDriver == null) ? 0 : dbDriver.hashCode());
 		result = prime * result + ((dbLogin == null) ? 0 : dbLogin.hashCode());
-		result = prime * result + ((dbPassword == null) ? 0 : dbPassword.hashCode());
-		result = prime * result + ((dbServer == null) ? 0 : dbServer.hashCode());
+		result = prime * result
+				+ ((dbPassword == null) ? 0 : dbPassword.hashCode());
+		result = prime * result
+				+ ((dbServer == null) ? 0 : dbServer.hashCode());
 		return result;
 	}
 
@@ -215,6 +231,14 @@ class SimpleDataSource extends Reference implements DataSource {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * 
+	 */
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

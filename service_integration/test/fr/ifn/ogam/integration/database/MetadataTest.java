@@ -203,7 +203,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		String tableFormat = "PLOT_DATA";
 
-		Map<String, TableFieldData> fields = metadataDAO.getTableFields(tableFormat, true);
+		Map<String, TableFieldData> fields = metadataDAO.getTableFields(tableFormat);
 
 		logger.debug(fields);
 

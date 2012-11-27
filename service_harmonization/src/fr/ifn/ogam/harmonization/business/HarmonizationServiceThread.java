@@ -17,6 +17,7 @@ public class HarmonizationServiceThread extends AbstractThread {
 	//
 	private String datasetId;
 	private String providerId;
+	private boolean removeOnly;
 
 	/**
 	 * The logger used to log the errors or several information.
@@ -34,10 +35,11 @@ public class HarmonizationServiceThread extends AbstractThread {
 	 *            the country code
 	 * @throws Exception
 	 */
-	public HarmonizationServiceThread(String datasetId, String providerId) throws Exception {
+	public HarmonizationServiceThread(String datasetId, String providerId, boolean removeOnly) throws Exception {
 
 		this.datasetId = datasetId;
 		this.providerId = providerId;
+		this.removeOnly = removeOnly;
 
 	}
 
@@ -53,7 +55,7 @@ public class HarmonizationServiceThread extends AbstractThread {
 
 			// Harmonize data
 			HarmonizationService harmonizationService = new HarmonizationService(this);
-			harmonizationService.harmonizeData(datasetId, providerId);
+			harmonizationService.harmonizeData(datasetId, providerId, removeOnly);
 
 			// Log the end the the request
 			Date endDate = new Date();

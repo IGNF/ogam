@@ -14,6 +14,7 @@
 </h1>
 
 <!-- Show the currently active location submissions -->
+<?php if(!empty($this->submissions)){ ?>
 <table class="sectiontable">
 <tr>
     <th style="text-align:center"><?=$this->translate('Submission ID');?></th>
@@ -162,6 +163,9 @@ foreach ($this->submissions as $submission) {
 }
 ?>
 </table>
+<?php } else { ?>
+<div class="no-submission"><?=$this->translate('No submission found');?></div>
+<?php } ?>
 <p class="subTableLink">
     <a href="<?= $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?=$this->translate('Create data submission');?></a>
 </p>

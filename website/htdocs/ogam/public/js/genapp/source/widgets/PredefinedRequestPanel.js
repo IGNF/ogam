@@ -461,26 +461,28 @@ listeners: {
     onGridRowSelect : function(sm, row, rec) {
         this.requestCriteriaCardPanel.setTitle('');
         this.requestCriteriaCardPanelFooterTBar.hide();
-        this.requestCriteriaCardPanel.getLayout().setActiveItem(0);
+        this.requestCriteriaCardPanel.getLayout().setActiveItem(0); // display "loading ..."
         if(Ext.isEmpty(this.requestCriteriaCardPanel.getComponent(rec.data.request_name))){
             Ext.Ajax.request({
                 url: Genapp.ajax_query_url + 'ajaxgetpredefinedrequestcriteria',
                 success: function(response, opts) {
                     var i;
-                    var myReader = new Ext.data.ArrayReader({
+                    var myReader = new Ext.data.JsonReader({
                         root:'criteria',
+                        idProperty:'name',
                         fields:[
-                            'name',
-                            'format',
-                            'data',
-                            'default_value', // value
-                            'fixed',
-                            'inputType',
-                            'type',
-                            'label',
-                            'definition',
-                            'params'
-                        ]
+                                {name:'name',mapping:'name'},
+                                {name:'label',mapping:'label'},
+                                {name:'inputType',mapping:'inputType'},  
+                                {name:'unit',mapping:'unit'},
+                                {name:'type',mapping:'type'},
+                                {name:'subtype',mapping:'subtype'},
+                                {name:'definition',mapping:'definition'},
+                                {name:'is_default',mapping:'is_default'},
+                                {name:'default_value',mapping:'default_value'},
+                                {name:'decimals',mapping:'decimals'},
+                                {name:'params',mapping:'params'}
+                            ]
                     });
                     var result = myReader.readRecords(Ext.decode(response.responseText));
                     var requestCriteriaPanel = new Ext.form.FormPanel({
@@ -501,7 +503,7 @@ listeners: {
                             }
                         }
                     });
-                    for(i = 0; i < result.records.length; i++){
+                    for (i = 0; i < result.records.length; i++) {
                         // Add the field
                         requestCriteriaPanel.add(Genapp.FieldForm.prototype.getCriteriaConfig(result.records[i].data, true));
                     }
@@ -512,7 +514,7 @@ listeners: {
                 failure: function(response, opts) {
                     console.log('Request failure: ' + response.statusText);
                     console.log('Response:', response, 'Options:', opts);
-                    this.requestCriteriaCardPanel.getLayout().setActiveItem(1);
+                    this.requestCriteriaCardPanel.getLayout().setActiveItem(1); 
                 },
                 params: { request_name: rec.data.request_name },
                 scope:this

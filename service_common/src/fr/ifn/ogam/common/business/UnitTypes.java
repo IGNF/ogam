@@ -44,5 +44,10 @@ public interface UnitTypes {
 	 * A geometry (as a WKT string, mapped to the GEOMETRY type of PostGIS).
 	 */
 	String GEOM = "GEOM";
+	
+	/**
+	 * An image (the image name in the CSV file).
+	 */
+	String IMAGE = "IMAGE";
 
 }

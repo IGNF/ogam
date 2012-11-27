@@ -24,7 +24,7 @@ COMMENT ON COLUMN HARMONIZATION_PROCESS._CREATIONDT IS 'The date of launch of th
 
 
 /*==============================================================*/
-/* Table : HARMONIZATION_PROCESS_SUBMISSIONS                                */
+/* Table : HARMONIZATION_PROCESS_SUBMISSIONS                    */
 /*==============================================================*/
 create table HARMONIZATION_PROCESS_SUBMISSIONS (
 HARMONIZATION_PROCESS_ID         INTEGER,
@@ -148,6 +148,7 @@ TREE_ID              INTEGER              not null,
 SPECIES_CODE		 VARCHAR(36)          null,
 DBH					 FLOAT8	              null,
 HEIGHT	 			 FLOAT8	              null,
+PHOTO	 			 VARCHAR(255)         null,
 COMMENT              VARCHAR(255)         null,
 constraint PK_HARMONIZED_TREE_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID),
 constraint FK_HARMONIZED_TREE_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references HARMONIZED_PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
@@ -161,18 +162,6 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.TREE_ID IS 'The identifier of the tree';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.SPECIES_CODE IS 'The code of the specie of the tree';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.DBH IS 'The diameter at breast height (in m)';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.HEIGHT IS 'The tree height (in m)';
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.PHOTO IS 'A picture of the tree';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
 
-
-
-
-      
-GRANT ALL ON SCHEMA harmonized_data TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonization_process_harmonization_process_id_seq TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonization_process TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonization_process_submissions TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonized_location TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonized_plot_data TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonized_species_data TO ogam;
-GRANT ALL ON TABLE harmonized_data.harmonized_tree_data TO ogam;
-GRANT EXECUTE ON FUNCTION harmonized_data.geomfromcoordinate() TO ogam;      

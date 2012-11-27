@@ -30,6 +30,7 @@
 $userSession = new Zend_Session_Namespace('user');
 $permissions = $userSession->permissions;
 $role = $userSession->role;
+$user = $userSession->user;
 ?>
 <div class="left-column">
 <?
@@ -49,19 +50,10 @@ if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {
 </li>
 <?php
 }
-// if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)) {	
-?>
-<!-- 
-<li>
-<a href="<?= $this->url(array('controller'=>'dataedition'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Edition');?></a>
-</li>
- -->
-<?php
-// }
-if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)) {	
+if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_array("RAW_DATA", $userSession->schemas)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
+<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/RAW_DATA" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
 </li>
 <?php
 } 
@@ -73,10 +65,10 @@ if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions))
 <?php
 }
 
-if (!empty($permissions) && array_key_exists('DATA_QUERY_HARMONIZED',$permissions)) {	
+if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_array("HARMONIZED_DATA", $userSession->schemas)) {
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'harmonizationquery'), null, true) ?>" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
+<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/HARMONIZED_DATA" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
 </li>
 <?php
 }
@@ -93,6 +85,14 @@ if (!empty($permissions) && array_key_exists('CHECK_CONF',$permissions)) {
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'checkconf'), null, true) ?>" class="pagelink" ><?=$this->translate('Check Configuration');?></a>
+</li>
+<?php
+}
+
+if (!empty($permissions) && array_key_exists('INDEX_FILE',$permissions)) {
+?>
+<li>
+<a href="<?= $this->url(array('controller'=>'fileindexation'), null, true) ?>" class="pagelink" ><?=$this->translate('Index Files');?></a>
 </li>
 <?php
 }
@@ -118,7 +118,7 @@ if (empty($permissions)) {
 } else {
 ?>
 <li>
-<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Change login');?></a>
+<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Change login').' ('.$user->login.')'?></a>
 </li>
 <li>
 <a href="<?= $this->baseUrl('user/logout') ?>"><?=$this->translate('Log out');?></a>

@@ -24,7 +24,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	/**
 	 * Get some information about the active submissions.
 	 *
-	 * @return Array[DataSubmission]
+	 * @return Array[Submission]
 	 */
 	public function getActiveSubmissions() {
 		$db = $this->getAdapter();
@@ -66,6 +66,42 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 
 			// Add the submission to the list
 			$result[$submissionId] = $submission;
+		}
+		return $result;
+	}
+
+	/**
+	 * Get submissions for Harmonization.
+	 *
+	 * @return Array[Submission]
+	 */
+	public function getSubmissionsForHarmonization() {
+		$db = $this->getAdapter();
+
+		$req = " SELECT provider_id, dataset_id, max(submission_id) as submission_id, max(step) as step, max(status) as status, max(user_login) as user_login, max( _creationdt) as _creationdt ";
+		$req .= " FROM submission ";
+		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
+		$req .= " GROUP BY provider_id, dataset_id";
+		$req .= " ORDER BY submission_id ";
+
+		$select = $db->prepare($req);
+		$select->execute(array());
+
+		Zend_Registry::get("logger")->info('getSubmissionsForHarmonization : '.$req);
+
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+
+			$submission = new Application_Object_RawData_Submission();
+			$submission->submissionId = $row['submission_id'];
+			$submission->step = $row['step'];
+			$submission->status = $row['status'];
+			$submission->providerId = $row['provider_id'];
+			$submission->datasetId = $row['dataset_id'];
+			$submission->userLogin = $row['user_login'];
+			$submission->date = $row['_creationdt'];
+			$result[] = $submission;
+				
 		}
 		return $result;
 	}

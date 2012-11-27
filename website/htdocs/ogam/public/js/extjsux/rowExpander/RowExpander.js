@@ -4,7 +4,7 @@
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
-Ext.ns('Ext.ux.grid');
+Ext.namespace('Ext.ux.grid');
 
 /**
  * @class Ext.ux.grid.RowExpander

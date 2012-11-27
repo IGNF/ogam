@@ -1,11 +1,11 @@
 /**
- * A ConsultationPanel correspond to the complete page for querying request results.
+ * A DocSearchPage.
  * 
- * @class Genapp.ConsultationPanel
+ * @class Genapp.DocSearchPage
  * @extends Ext.Panel
- * @constructor Create a new Consultation Panel
+ * @constructor Create a new DocSearchPage 
  * @param {Object} config The config object
- * @xtype consultationpanel
+ * @xtype docsearchpage
  */
 Genapp.DocSearchPage = Ext.extend(Ext.Panel, {
     /**
@@ -90,202 +90,46 @@ listeners: {
      * <p>Also see the <code>{@link #added}</code> and <code>{@link #removed}</code> events.</p>
      */
     ref:'docSearchPage',
+    /**
+     * @cfg {String} alertRequestFailedMsg The alert Request
+     *      Failed Msg (defaults to
+     *      <tt>'Sorry, the request failed...'</tt>)
+     */
+    alertRequestFailedMsg : 'Sorry, the request failed...',
+    indexKey:'pdfIndex',
+    centerPanelTitle: 'Document',
 
     // private
     initComponent : function() {
 
-        this.westSearchPanel = new Ext.Panel({
-            title:'Filtre(s)',
-            frame:true,
-            items:{
-                xtype: 'form',
-                ref:'formPanel',
-                labelWidth: 130, // label settings here cascade unless overridden
-                bodyStyle:'padding:5px 10px 0',
-                defaults: {width: 230},
-                defaultType: 'textfield',
-                items:[{
-                    xtype: 'combo',
-                    fieldLabel: 'Titre',
-                    mode: 'local',
-                    store: new Ext.data.ArrayStore({
-                        id: 0,
-                        fields: [
-                            'myId',
-                            'displayText'
-                        ],
-                        data: [[1, 'Titre 1'], [2, 'Titre 2'], [3, '...']]
-                    }),
-                    valueField: 'myId',
-                    displayField: 'displayText'
-                },{
-                    xtype: 'combo',
-                    fieldLabel: 'Auteur'
-                },{
-                    xtype: 'combo',
-                    fieldLabel: 'Sujet'
-                },{
-                    xtype: 'combo',
-                    fieldLabel: 'Année de Parution'
-                },{
-                    xtype: 'combo',
-                    fieldLabel: 'Publication'
-                },{
-                    xtype: 'combo',
-                    fieldLabel: 'Référence'
-                },{
-                    xtype: 'textfield',
-                    fieldLabel: 'Texte'
-                }],
-                buttons:[{
-                    xtype: 'button',
-                    text: 'Effacer filtres',
-                    handler:function(){
-                        this.westSearchPanel.formPanel.form.reset();
-                    },
-                    scope:this
-                },{
-                    xtype: 'button',
-                    text: 'Filtrer',
-                    handler:function(){
-                        this.westBottomPanel.expand();
-                    },
-                    scope:this
-                }]
-            }
-        });
-
-        var myData = [
-            ['RENECOFOR - Manuel de référence n°5 pour la collecte de la litière et le traitement des échantillons','litière, fruit, aiguille, gland, faîne, méthodologie, manuel','',2008,'Publications lors de congrès, colloques et séminaires','09-38'],
-            ['RENECOFOR - Manuel de référence n°5 pour la collecte de la litière et le traitement des échantillons','litière, fruit, aiguille, gland, faîne, méthodologie, manuel','Ulrich E, Lanier M, Roulet P',1994,'Manuels de référence','17-06'],
-            ['RENECOFOR - Manuel de référence n°6 pour l\'échantillonnage foliaire, la préparation des échantillons et l\'analyse, placette de niveau 1','échantillonnage foliaire, analyse foliaire, aiguille, manuel, méthodologie','Bonneau M, Ulrich E, Adrian M, Lanier M',1993,'Manuels de référence','17-07'],
-            ['RENECOFOR - Manuel de référence n°6 pour l\'échantillonnage foliaire, la préparation des échantillons et l\'analyse, placette de niveau 1','échantillonnage foliaire, analyse foliaire, aiguille, manuel, méthodologie','Croisé L, Bonneau M, Ulrich E, Adrian M, Lanier M',2005,'Manuels de référence','17-08']
-        ];
-
-        this.westgridPanel = new Ext.grid.GridPanel({
-            region:'center',
-            store : new Ext.data.ArrayStore({
-                // store configs
-                autoDestroy: true,
-                data:myData,
-                autoLoad:true,
-                // reader configs
-                idIndex: 5,
-                fields: [
-                   {name: 'title'},
-                   {name: 'subject'},
-                   {name: 'authors'},
-                   {name: 'publication_date', type: 'int'},
-                   {name: 'publication'},
-                   {name: 'reference'}
-                ]
-            }),
-            colModel: new Ext.grid.ColumnModel({
-                defaults: {
-                    width: 120,
-                    sortable: true
-                },
-                columns: [
-                    {header: 'Titre', width: 200, dataIndex: 'title'},
-                    {header: 'Sujet', width: 200, dataIndex: 'subject'},
-                    {header: 'Auteurs', dataIndex: 'authors'},
-                    {header: 'Parution', width: 50, dataIndex: 'publication_date'},
-                    {header: 'Publication', dataIndex: 'publication'},
-                    {id: 'reference', header: 'Référence', width: 50, dataIndex: 'reference'}
-                ]
-            }),
-            sm: new Ext.grid.RowSelectionModel({
-                singleSelect:true,
-                listeners:{
-                    'rowselect':function(sm, rowIdx, r){
-                        this.pdf.reset();
-                        this.westDocSlipPanel.update(r.data);
-                    },
-                    scope:this
-                }
-            }),
+        // West Panel
+        this.requestPanel = new Genapp.DocSearchRequestPanel({
+            indexKey:this.indexKey,
             listeners:{
-                'keydown':function(event){
-                    if(event.keyCode === event.ENTER){
-                        this.onEnter();
-                    }
+                'requestResponse':function(hits){
+                    this.addResultPanel(hits);
                 },
-                'rowdblclick':function(grid, rowIndex, event){
-                    this.onEnter();
-                },
-                scope:this
+                scope: this
             }
         });
-        
-        this.westDocSlipPanel = new Ext.form.FieldSet({
-            region:'south',
-            data:{
-                title:'-',
-                subject:'-',
-                authors:'-',
-                publication_date:'-',
-                publication:'-',
-                reference:'-'
-            },
-            margins:{
-                top: 5,
-                right: 0,
-                bottom: 0,
-                left: 0
-            },
-            tpl:new Ext.Template(
-                '<div class="doc-search-page-doc-slip-panel-div">',
-                    '<p><b>Titre :</b> {title}</p>',
-                    '<p><b>Auteurs :</b> {authors}</p>',
-                    '<p><b>Sujet :</b> {subject}</p>',
-                    '<p><b>Année de publication :</b> {publication_date}</p>',
-                    '<p><b>Publication :</b> {publication}</p>',
-                    '<p><b>Référence :</b> {reference}</p>',
-                '</div>',
-                // a configuration object:
-                {
-                    compiled: true,      // compile immediately
-                    disableFormats: true // See Notes below.
-                }
-            )
-        });
-        this.westBottomPanel = new Ext.Panel({
-            title:'Resultat(s)',
-            frame:true,
-            layout:'border',
-            items:[
-                this.westgridPanel,
-                this.westDocSlipPanel
-            ]
-        });
-
-        // Only for the demo, remove this listeners after
-        this.westBottomPanel.on(
-            'expand',
-            function(){
-                this.westgridPanel.getSelectionModel().selectFirstRow.defer(300, this.westgridPanel.getSelectionModel());
-            },
-            this,
-            {single:true}
-        );
 
         this.westPanel = new Ext.Panel({
             region:'west',
             layout:'accordion',
             width:'400px',
             items:[
-                this.westSearchPanel,
-                this.westBottomPanel
+                this.requestPanel
             ]
         });
 
+        // Center Panel
         this.pdf = new Genapp.PDFComponent({
             xtype: 'pdf',
             url: 'pdf'
         });
 
         this.centerPanel = new Ext.Panel({
-            title: 'Document',
+            title: this.centerPanelTitle,
             region: 'center',
             frame: true,
             margins:{
@@ -303,15 +147,26 @@ listeners: {
 
         Genapp.ConsultationPanel.superclass.initComponent.call(this);
     },
-    
-    onEnter: function() {
-        var g = this.westgridPanel;
-        var sm = g.getSelectionModel();
-        var sels = sm.getSelections();
-        //for (var i = 0, len = sels.length; i < len; i++) {
-            //var rowIdx = g.getStore().indexOf(sels[0]);
-            this.pdf.updateUrl('pdf/' + sels[0].data.reference + '.pdf');
-        //}
+
+    addResultPanel: function(hits) {
+        if(!Ext.isEmpty(this.resultPanel)){
+            this.resultPanel.destroy();
+        }
+        this.resultPanel = new Genapp.DocSearchResultPanel({
+            'hits': hits,
+            'listeners':{
+                'rowselect': function(data){
+                    this.pdf.reset();
+                },
+                'pdfselect': function(data){
+                    this.pdf.updateUrl(Genapp.base_url + data.url);
+                },
+                scope:this
+            }
+        });
+        this.westPanel.add(this.resultPanel);
+        this.westPanel.doLayout();
+        this.resultPanel.expand();
     }
 });
 Ext.reg('docsearchpage', Genapp.DocSearchPage);

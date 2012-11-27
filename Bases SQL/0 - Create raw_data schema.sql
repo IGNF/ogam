@@ -97,18 +97,33 @@ COMMENT ON COLUMN LOCATION.LINE_NUMBER IS 'The position of the line of data in t
 COMMENT ON COLUMN LOCATION.THE_GEOM IS 'The geometry of the location';
 
 
-		
 -- Spatial Index on the_geom 
 CREATE INDEX IX_LOCATION_SPATIAL_INDEX ON raw_data.location USING GIST
             ( the_geom GIST_GEOMETRY_OPS );
-            
-/*========================================================================*/
-/*	Add a trigger to fill the the_geom column of the location table       */
-/*========================================================================*/
-CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
+
+ALTER TABLE raw_data.location 
+  ADD CONSTRAINT fk_location_submission_id FOREIGN KEY (submission_id) 
+      REFERENCES raw_data.submission (submission_id)
+      ON UPDATE RESTRICT ON DELETE RESTRICT;
+CREATE INDEX fki_location_submission_id ON raw_data.location(submission_id);
+
+/*==========================================================================*/
+/*	Add a trigger to fill the the_geom column of the location table         */
+/*  Use that trigger fct only if you want change the default OGAM behaviour */
+/*==========================================================================*/
+/*CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
+    BEGIN
     NEW.the_geom = public.GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);
+    EXCEPTION
+    WHEN internal_error THEN
+        IF SQLERRM = 'parse error - invalid geometry' THEN
+            RAISE EXCEPTION USING ERRCODE = '09001', MESSAGE = SQLERRM;
+        ELSIF SQLERRM = 'geometry requires more points' THEN
+            RAISE EXCEPTION USING ERRCODE = '09002', MESSAGE = SQLERRM;
+        END IF;
+    END;
     RETURN NEW;
 END;
 $BODY$
@@ -119,8 +134,7 @@ CREATE TRIGGER geom_trigger
   ON raw_data.LOCATION
   FOR EACH ROW
   EXECUTE PROCEDURE raw_data.geomfromcoordinate();
-            
-            
+*/
 
 /*==============================================================*/
 /* Table : PLOT_DATA                                            */
@@ -202,6 +216,7 @@ TREE_ID              INT4                 not null default nextval('tree_id_seq'
 SPECIES_CODE		 VARCHAR(36)          null,
 DBH					 FLOAT8	              null,
 HEIGHT	 			 FLOAT8	              null,
+PHOTO	 			 VARCHAR(255)         null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
 constraint PK_TREE_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID),
@@ -217,13 +232,15 @@ COMMENT ON COLUMN TREE_DATA.TREE_ID IS 'The identifier of the tree';
 COMMENT ON COLUMN TREE_DATA.SPECIES_CODE IS 'The code of the specie of the tree';
 COMMENT ON COLUMN TREE_DATA.DBH IS 'The diameter at breast height (in m)';
 COMMENT ON COLUMN TREE_DATA.HEIGHT IS 'The tree height (in m)';
+COMMENT ON COLUMN TREE_DATA.PHOTO IS 'A picture of the tree';
 COMMENT ON COLUMN TREE_DATA.COMMENT IS 'A comment about the species';
 COMMENT ON COLUMN TREE_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 
 
+-- Ajout de la colonne point PostGIS
+SELECT AddGeometryColumn('raw_data','tree_data','the_geom',4326,'POINT',2);
 
-
-
+COMMENT ON COLUMN TREE_DATA.the_geom IS 'geometry of the tree location';
 
 
 /*==============================================================*/
@@ -258,21 +275,23 @@ COMMENT ON COLUMN CHECK_ERROR.EXPECTED_VALUE IS 'The expected value (if availabl
 COMMENT ON COLUMN CHECK_ERROR.ERROR_MESSAGE IS 'The error message';
 COMMENT ON COLUMN CHECK_ERROR._CREATIONDT IS 'The creation date';
 
-       
-   
 
 
 
+/**
+ * This function is used to do accent-insensitive search.
+ */
+CREATE OR REPLACE FUNCTION unaccent_string(text) RETURNS text AS $$
+DECLARE
+    input_string text := $1;
+BEGIN
 
-GRANT ALL ON SCHEMA raw_data TO ogam;
-GRANT ALL ON TABLE raw_data.check_error_check_error_id_seq TO ogam;
-GRANT ALL ON TABLE raw_data.submission_id_seq TO ogam;
-GRANT ALL ON TABLE raw_data.tree_id_seq TO ogam;
-GRANT ALL ON TABLE raw_data.check_error TO ogam;
-GRANT ALL ON TABLE raw_data."location" TO ogam;
-GRANT ALL ON TABLE raw_data.plot_data TO ogam;
-GRANT ALL ON TABLE raw_data.species_data TO ogam;
-GRANT ALL ON TABLE raw_data.tree_data TO ogam;
-GRANT ALL ON TABLE raw_data.submission TO ogam;
-GRANT ALL ON TABLE raw_data.submission_file TO ogam;
-GRANT EXECUTE ON FUNCTION raw_data.geomfromcoordinate() TO ogam;
+input_string := translate(input_string, 'âãäåāăąÁÂÃÄÅĀĂĄ', 'aaaaaaaaaaaaaaa');
+input_string := translate(input_string, 'èééêëēĕėęěĒĔĖĘĚ', 'eeeeeeeeeeeeeee');
+input_string := translate(input_string, 'ìíîïìĩīĭÌÍÎÏÌĨĪĬ', 'iiiiiiiiiiiiiiii');
+input_string := translate(input_string, 'óôõöōŏőÒÓÔÕÖŌŎŐ', 'ooooooooooooooo');
+input_string := translate(input_string, 'ùúûüũūŭůÙÚÛÜŨŪŬŮ', 'uuuuuuuuuuuuuuuu');
+
+return input_string;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;

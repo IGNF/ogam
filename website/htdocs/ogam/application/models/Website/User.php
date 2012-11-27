@@ -19,6 +19,11 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		$translate = Zend_Registry::get('Zend_Translate');
+        $this->lang = strtoupper($translate->getAdapter()->getLocale());
+
+        $this->metadataModel = new Genapp_Model_Metadata_Metadata();
 	}
 
 	/**
@@ -27,6 +32,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 * @return Array fo Users
 	 */
 	public function getUsers() {
+		$tableFormat = $this->metadataModel->getTableFormatFromTableName('WEBSITE', 'ROLE');
 		$db = $this->getAdapter();
 
 		$req = " SELECT user_login as login, ";
@@ -34,10 +40,11 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$req .= " provider_id, ";
 		$req .= " email, ";
 		$req .= " active, ";
-		$req .= " role_label ";
+		$req .= " COALESCE(t.label, role_label) as role_label ";
 		$req .= " FROM users ";
 		$req .= " LEFT JOIN role_to_user USING (user_login) ";
 		$req .= " LEFT JOIN role USING (role_code) ";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = role_code";
 		$req .= " WHERE active = '1' ";
 		$req .= " ORDER BY role_label, user_login";
 		$this->logger->info('getUser : '.$req);

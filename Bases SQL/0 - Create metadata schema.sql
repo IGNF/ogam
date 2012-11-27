@@ -102,6 +102,44 @@ COMMENT ON COLUMN MODE_TREE.POSITION IS 'The position of the mode';
 COMMENT ON COLUMN MODE_TREE.IS_LEAF IS 'Indicate if the node is a leaf (1 for true)';
 
 
+/*==============================================================*/
+/* Table : MODE_TAXREF                                          */
+/*==============================================================*/
+create table MODE_TAXREF (
+UNIT                 VARCHAR(36)          not null,
+CODE                 VARCHAR(36)          not null,
+PARENT_CODE          VARCHAR(36)          null,
+NAME                 VARCHAR(500)         null,
+COMPLETE_NAME        VARCHAR(500)         null,
+VERNACULAR_NAME      VARCHAR(500)         null,
+IS_LEAF			     CHAR(1)              null,
+IS_REFERENCE	     CHAR(1)              null,
+constraint PK_MODE_TAXREF primary key (UNIT, CODE)
+);
+
+
+COMMENT ON COLUMN MODE_TAXREF.UNIT IS 'The unit';
+COMMENT ON COLUMN MODE_TAXREF.CODE IS 'The code of the mode';
+COMMENT ON COLUMN MODE_TAXREF.PARENT_CODE IS 'The parent code';
+COMMENT ON COLUMN MODE_TAXREF.NAME IS 'The short name of the taxon';
+COMMENT ON COLUMN MODE_TAXREF.COMPLETE_NAME IS 'The complete name of the taxon (name and author)';
+COMMENT ON COLUMN MODE_TAXREF.VERNACULAR_NAME IS 'The vernacular name';
+COMMENT ON COLUMN MODE_TAXREF.IS_LEAF IS 'Indicate if the node is a taxon (1 for true)';
+COMMENT ON COLUMN MODE_TAXREF.IS_REFERENCE IS 'Indicate if the taxon is a reference (1) or a synonym (0)';
+
+
+CREATE INDEX mode_taxref_parent_code_idx
+  ON metadata.mode_taxref USING btree (parent_code);
+  
+CREATE INDEX mode_taxref_NAME_idx
+  ON metadata.mode_taxref USING btree (raw_data.unaccent_string(NAME));
+  
+CREATE INDEX mode_taxref_COMPLETE_NAME_idx
+  ON metadata.mode_taxref USING btree (raw_data.unaccent_string(COMPLETE_NAME));
+  
+CREATE INDEX mode_taxref_VERNACULAR_NAME_idx
+  ON metadata.mode_taxref USING btree (raw_data.unaccent_string(VERNACULAR_NAME));
+
 
 
 
@@ -273,6 +311,8 @@ DATA                 VARCHAR(36)          not null,
 FORMAT               VARCHAR(36)          not null,
 COLUMN_NAME          VARCHAR(36)          null,
 IS_CALCULATED        CHAR(1)		      null,
+IS_EDITABLE          CHAR(1)		      null,
+IS_INSERTABLE        CHAR(1)		      null,
 POSITION             INT4                 null,
 COMMENT		         VARCHAR(255)         null,
 constraint PK_TABLE_FIELD primary key (DATA, FORMAT)
@@ -282,6 +322,8 @@ COMMENT ON COLUMN TABLE_FIELD.DATA IS 'The logical name of the field';
 COMMENT ON COLUMN TABLE_FIELD.FORMAT IS 'The name of the table format containing this field';
 COMMENT ON COLUMN TABLE_FIELD.COLUMN_NAME IS 'The real name of the column';
 COMMENT ON COLUMN TABLE_FIELD.IS_CALCULATED IS 'Indicate if the field should be provided for insertion (value = 0) or if it is calculated by a trigger function (value = 1)';
+COMMENT ON COLUMN TABLE_FIELD.IS_EDITABLE IS 'Indicate if the field is editable (value = 1)';
+COMMENT ON COLUMN TABLE_FIELD.IS_INSERTABLE IS 'Indicate if the field can be inserted/added in the edition module (value = 1)';
 COMMENT ON COLUMN TABLE_FIELD.POSITION IS 'The position of this field in the table (for the detail panel and the edition module)';
 COMMENT ON COLUMN TABLE_FIELD.COMMENT IS 'Any comment';
 
@@ -311,12 +353,14 @@ create table DATASET (
 DATASET_ID           VARCHAR(36)          not null,
 LABEL                VARCHAR(255)         null,
 IS_DEFAULT           CHAR(1)              null,
+DEFINITION           VARCHAR(512)         null,
 constraint PK_DATASET primary key (DATASET_ID)
 );
 
 COMMENT ON COLUMN DATASET.DATASET_ID IS 'The logical name of the dataset';
 COMMENT ON COLUMN DATASET.LABEL IS 'The label of the dataset';
 COMMENT ON COLUMN DATASET.IS_DEFAULT IS 'Indicate if the dataset is selected by default (only 1 possible)';
+COMMENT ON COLUMN DATASET.DEFINITION IS 'The definition of the dataset (used in tooltips)';
 
 /*==============================================================*/
 /* Table : DATASET_FILES                                        */
@@ -348,18 +392,19 @@ COMMENT ON COLUMN DATASET_FIELDS.SCHEMA_CODE IS 'The code of the schema';
 COMMENT ON COLUMN DATASET_FIELDS.FORMAT IS 'The table format associed with the dataset';
 COMMENT ON COLUMN DATASET_FIELDS.DATA IS 'The table field associed with the dataset (used when querying data)';
 
-
 /*==============================================================*/
 /* Table : TABLE_SCHEMA                                         */
 /*==============================================================*/
 create table TABLE_SCHEMA (
 SCHEMA_CODE          VARCHAR(36)             not null,
+SCHEMA_NAME          VARCHAR(36)             not null,
 LABEL                VARCHAR(36)             null,
 DESCRIPTION          VARCHAR(255)            null,
 constraint PK_TABLE_SCHEMA primary key (SCHEMA_CODE)
 );
 
 COMMENT ON COLUMN TABLE_SCHEMA.SCHEMA_CODE IS 'The code of the schema';
+COMMENT ON COLUMN TABLE_SCHEMA.SCHEMA_CODE IS 'The name of the schema (name in the database)';
 COMMENT ON COLUMN TABLE_SCHEMA.LABEL IS 'The label of the schema';
 COMMENT ON COLUMN TABLE_SCHEMA.DESCRIPTION IS 'The description of the schema';
 
@@ -381,7 +426,6 @@ COMMENT ON COLUMN TABLE_TREE.CHILD_TABLE IS 'The name of the child table (should
 COMMENT ON COLUMN TABLE_TREE.PARENT_TABLE IS 'The name of the parent table (should correspond to a table format, * when this is a root table)';
 COMMENT ON COLUMN TABLE_TREE.JOIN_KEY IS 'The list of table fields used to make the join between the table (separated by commas)';
 COMMENT ON COLUMN TABLE_TREE.COMMENT IS 'Any comment';
-
 
 
 
@@ -456,6 +500,28 @@ COMMENT ON COLUMN metadata.process."statement" IS 'The SQL statement correspondi
 COMMENT ON COLUMN metadata.process._creationdt IS 'The creation date';
 
 
+/*==============================================================*/
+/* Table : TRANSLATION                                          */
+/*==============================================================*/
+create table TRANSLATION (
+TABLE_FORMAT            VARCHAR(36)             not null,
+ROW_PK                  VARCHAR(255)            not null,
+LANG                    VARCHAR(36)             not null,
+LABEL                   VARCHAR(255)            null,
+DEFINITION              VARCHAR(255)            null,
+constraint PK_TRANSLATION primary key (TABLE_FORMAT, ROW_PK, LANG)
+);
+
+COMMENT ON COLUMN TRANSLATION.TABLE_FORMAT IS 'The table_format code';
+COMMENT ON COLUMN TRANSLATION.ROW_PK IS 'The row pk in the primary_key order defined in the table_format (separated by commas)';
+COMMENT ON COLUMN TRANSLATION.LANG IS 'The translation language';
+COMMENT ON COLUMN TRANSLATION.LABEL IS 'The translated label';
+COMMENT ON COLUMN TRANSLATION.DEFINITION IS 'The translated definition';
+
+ALTER TABLE metadata.translation 
+   ADD CONSTRAINT "FK_TABLE_FORMAT_TRANSLATION" FOREIGN KEY (table_format) 
+       REFERENCES metadata.table_format (format)
+       ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 
 
