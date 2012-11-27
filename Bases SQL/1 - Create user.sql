@@ -38,14 +38,14 @@ GRANT EXECUTE ON FUNCTION raw_data.geomfromcoordinate() TO ogam;
 
 -- harmonized-data
 GRANT ALL ON SCHEMA harmonized_data TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonization_process TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonization_process_submissions TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_evenement TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_location TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_location_compl TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_point_noir TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_ouvrage TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_travaux TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE harmonized_data.harmonization_process TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE harmonized_data.harmonization_process_submissions TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE harmonized_data.harmonized_evenement TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE harmonized_data.harmonized_location TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE harmonized_data.harmonized_location_compl TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE harmonized_data.harmonized_point_noir TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE harmonized_data.harmonized_ouvrage TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE harmonized_data.harmonized_travaux TO ogam;
 GRANT EXECUTE ON FUNCTION harmonized_data.geomfromcoordinate() TO ogam;
 GRANT SELECT, USAGE ON TABLE harmonized_data.harmonization_process_harmonization_process_id_seq TO ogam;
 
