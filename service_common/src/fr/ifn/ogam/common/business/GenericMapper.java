@@ -260,18 +260,24 @@ public class GenericMapper {
 			}
 
 			if (type.equalsIgnoreCase(DATE)) {
-				try {
-					SynchronizedDateFormat formatter = new SynchronizedDateFormat(fieldDescriptor.getMask());
-					formatter.setLenient(false);
-					String normalizedFieldValue = fieldValue.replace(",", ".");
-					result = formatter.parse(normalizedFieldValue);
-				} catch (Exception e) {
-					if (fieldDescriptor.getIsMandatory()) {
+				if(fieldValue == null || fieldValue.equalsIgnoreCase("")){
+					result = null;
+				} else {
+					String mask = "yyyy-MM-dd";
+					try {
+						String fieldMask = fieldDescriptor.getMask();
+						if(fieldMask != null && !fieldMask.equalsIgnoreCase("")){
+							mask = fieldMask;
+						}
+						SynchronizedDateFormat formatter = new SynchronizedDateFormat(mask);
+						formatter.setLenient(false);
+						String normalizedFieldValue = fieldValue.replace(",", ".");
+						result = formatter.parse(normalizedFieldValue);
+					} catch (Exception e) {
 						CheckException ce = new CheckException(INVALID_DATE_FIELD);
-						ce.setExpectedValue(fieldDescriptor.getMask());
+						ce.setExpectedValue(mask);
 						throw ce;
 					}
-
 				}
 			}
 
