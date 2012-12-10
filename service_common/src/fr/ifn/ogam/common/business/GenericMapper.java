@@ -99,7 +99,8 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Check that a code value correspond to an existing code in a tree of codes.
+	 * Check that a code value correspond to an existing code in a tree of
+	 * codes.
 	 * 
 	 * @param unit
 	 *            the unit of the field to check
@@ -184,7 +185,8 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Check that a value is consistent with the expected type. And convert the strig value to the expected type
+	 * Check that a value is consistent with the expected type. And convert the
+	 * strig value to the expected type
 	 * 
 	 * @param fieldDescriptor
 	 *            the descriptor of the field
@@ -260,13 +262,13 @@ public class GenericMapper {
 			}
 
 			if (type.equalsIgnoreCase(DATE)) {
-				if(fieldValue == null || fieldValue.equalsIgnoreCase("")){
+				if (fieldValue == null || fieldValue.equalsIgnoreCase("")) {
 					result = null;
 				} else {
 					String mask = "yyyy-MM-dd";
 					try {
 						String fieldMask = fieldDescriptor.getMask();
-						if(fieldMask != null && !fieldMask.equalsIgnoreCase("")){
+						if (fieldMask != null && !fieldMask.equalsIgnoreCase("")) {
 							mask = fieldMask;
 						}
 						SynchronizedDateFormat formatter = new SynchronizedDateFormat(mask);
@@ -314,7 +316,8 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Check that a value is consistent with the expected mask (regular expression).
+	 * Check that a value is consistent with the expected mask (regular
+	 * expression).
 	 * 
 	 * @param mask
 	 *            the expected mask
@@ -328,13 +331,15 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Get a list of tables used with their ancestors, sorted from the leaf to the root.
+	 * Get a list of tables used with their ancestors, sorted from the leaf to
+	 * the root.
 	 * 
 	 * @param schema
 	 *            the schema in which we are working
 	 * @param destinationTables
 	 *            the list of tables we want to sort
-	 * @return The list of tables used with their ancestors, sorted from the leaf to the root
+	 * @return The list of tables used with their ancestors, sorted from the
+	 *         leaf to the root
 	 */
 	public LinkedList<String> getSortedAncestors(String schema, List<TableFormatData> destinationTables) throws Exception {
 
@@ -347,7 +352,8 @@ public class GenericMapper {
 			// Get the list of ancestors of the table
 			List<TableTreeData> ancestors = metadataDAO.getTablesTree(tableFormat, schema);
 
-			// Check if one of the ancestors of the current table is already in the resulting list
+			// Check if one of the ancestors of the current table is already in
+			// the resulting list
 			boolean found = false;
 			Iterator<TableTreeData> ancestorsIter = ancestors.iterator();
 			while (ancestorsIter.hasNext() && !found) {
@@ -402,11 +408,12 @@ public class GenericMapper {
 				TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(tableFormat, schema);
 				TableFormatData parentTable = tableDescriptor.getParentTable();
 				String parentTableFormat = null;
-				if(parentTable != null){
+				if (parentTable != null) {
 					parentTableFormat = tableDescriptor.getParentTable().getFormat();
 				}
 
-				// If the parent table is listed, we insert the table just before
+				// If the parent table is listed, we insert the table just
+				// before
 				if (parentTableFormat != null && sortedTablesList.contains(parentTableFormat)) {
 					sortedTablesList.add(sortedTablesList.indexOf(parentTableFormat), tableFormat);
 				} else {
@@ -422,7 +429,8 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Build the SQL select corresponding to the data to harmonize. Populate the list of colums to read
+	 * Build the SQL select corresponding to the data to harmonize. Populate the
+	 * list of colums to read
 	 * 
 	 * @param schema
 	 *            the schema in which we are working
@@ -489,7 +497,8 @@ public class GenericMapper {
 
 			// Build the WHERE clause
 
-			// When we find a source field that match one of our criteria, we add the clause
+			// When we find a source field that match one of our criteria, we
+			// add the clause
 			sourceFieldsIter = sourceFields.values().iterator();
 			while (sourceFieldsIter.hasNext()) {
 				TableFieldData sourceField = sourceFieldsIter.next();
