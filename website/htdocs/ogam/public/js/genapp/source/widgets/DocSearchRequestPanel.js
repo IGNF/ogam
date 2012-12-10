@@ -82,7 +82,7 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
 
     launchFilteredRequest: function(){
         this.formPanel.getForm().submit({
-            url : Genapp.base_url + 'fileindexation/search',
+            url : Genapp.base_url + 'indexedfilequery/search',
             timeout : 480000,
             success : function(form, action) {
                 this.fireEvent('requestResponse',action.result.hits);
@@ -141,7 +141,7 @@ Genapp.DocSearchRequestPanel = Ext.extend(Ext.Panel, {
     // Request of the metadata information
     getMetadataFields: function(){
         Ext.Ajax.request({
-            url: Genapp.base_url + 'fileindexation/getmetadatafields',
+            url: Genapp.base_url + 'indexedfilequery/getmetadatafields',
             // The method and the disableCaching are set to have a browser catching
             method: 'GET',
             disableCaching: false,
