@@ -1,6 +1,8 @@
-/* Copyright (c) 2006-2009 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
- * full text of the license. */
+/**
+ * Copyright (c) 2006-2009 MetaCarta, Inc., published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. 
+ */
 
 /**
  * @requires OpenLayers/Control.js

@@ -19,7 +19,7 @@
 	<property name="deploy.name" value="${application.name}RG" />
 	
 	<!-- *** A modifier en fonction du répertoire d'installation de Tomcat *** -->
-	<property name="deploy.dir" value="C:/Program Files/Apache Software Foundation/Tomcat 7.0.6/webapps/" />
+	<property name="deploy.dir" value="C:/Program Files/Apache Software Foundation/Tomcat 7.0/webapps/" />
 	
 	
 	<!-- Création des répertoires de travail -->
