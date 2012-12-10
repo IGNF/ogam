@@ -4,6 +4,8 @@ package fr.ifn.ogam.common.util;
  * Utility class used to launch an external process from java.
  * 
  * This class read the outputstream and the errorstream of the launched process to ensure that the process will never be stuck by a system buffer full. Cf
+ * 
+ * @author Michael C. Daconta
  * http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html?page=4
  */
 public class ExecLauncher {
