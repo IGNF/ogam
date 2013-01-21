@@ -147,7 +147,7 @@ $i = 0;
 foreach ($this->indices as $indexKey => $index) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
-	<td class="files-list-cell"><a title="<?=$this->translate('View the files list');?>" href="<?= $this->url(array('controller'=>'indexedpdffile','action'=>'list', 'INDEX_KEY'=>$indexKey), 'default', true)?>"></a></td>
+	<td class="files-list-cell"><a title="<?=$this->translate('View the files list');?>" href="<?= $this->url(array('controller'=>'indexedpdffile','action'=>'list', 'INDEX_KEY'=>$indexKey), 'default', true)?>">&nbsp;</a></td>
 	<td class="index-label-cell">
 	    <p><b><?=$this->translate($indexKey.'Label')?></b></p>
 	    <p><?=$this->translate($indexKey.'Definition')?></p>
@@ -166,10 +166,10 @@ foreach ($this->indices as $indexKey => $index) {
 	<td id="index-cell_<?=$indexKey?>" class="index-cell">
         <div id="index-cell-pbtext_<?=$indexKey?>"></div>
         <div id="index-cell-pb_<?=$indexKey?>"></div>
-        <a class="index-cell-update" id="index-cell-bp-update_<?=$indexKey?>" title="<?=$this->translate('Add/Remove the new/deleted files of the files directories into the existing index');?>" href="javascript:Genapp.util.indexationPage.launchIndexPdf('<?= $indexKey ?>',true);"></a>
-        <a class="index-cell-create" id="index-cell-bp-create_<?=$indexKey?>" title="<?=$this->translate('Create a new index and index the files presents into the files directories');?>" href="javascript:Genapp.util.indexationPage.launchIndexPdf('<?= $indexKey ?>',false);"></a>
+        <a class="index-cell-update" id="index-cell-bp-update_<?=$indexKey?>" title="<?=$this->translate('Add/Remove the new/deleted files of the files directories into the existing index');?>" href="javascript:Genapp.util.indexationPage.launchIndexPdf('<?= $indexKey ?>',true);">&nbsp;</a>
+        <a class="index-cell-create" id="index-cell-bp-create_<?=$indexKey?>" title="<?=$this->translate('Create a new index and index the files presents into the files directories');?>" href="javascript:Genapp.util.indexationPage.launchIndexPdf('<?= $indexKey ?>',false);">&nbsp;</a>
     </td>
-	<td class="optimize-cell"><a title="<?=$this->translate('Optimize the index');?>" href="<?= $this->url(array('controller'=>'indexation','action'=>'optimize', 'INDEX_KEY'=>$indexKey), 'default', true)?>"></a></td>
+	<td class="optimize-cell"><a title="<?=$this->translate('Optimize the index');?>" href="<?= $this->url(array('controller'=>'indexation','action'=>'optimize', 'INDEX_KEY'=>$indexKey), 'default', true)?>">&nbsp;</a></td>
 </tr>
 <?php
 $i++;
