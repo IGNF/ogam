@@ -22,7 +22,7 @@ class IndexedpdffileController extends AbstractOGAMController {
 		// Set the current module name
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->module = "indexedpdffile";
-		$websiteSession->moduleLabel = "Indexed PDF File";
+		$websiteSession->moduleLabel = "Indexed PDF Files";
 		$websiteSession->moduleURL = "indexedpdffile";
 	}
 
