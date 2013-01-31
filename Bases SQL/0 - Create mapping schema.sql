@@ -141,7 +141,14 @@ COMMENT ON COLUMN bounding_box.bb_xmax IS 'Max longitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_ymax IS 'Max latitude coordinate';
 COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the data provider';
 
-SET SEARCH_PATH = mapping, public;
+
+GRANT ALL ON SCHEMA "mapping" TO bronze;
+GRANT ALL ON TABLE "mapping".bounding_box TO bronze;
+GRANT ALL ON TABLE "mapping".layer_definition TO bronze;
+GRANT ALL ON TABLE "mapping".legend TO bronze;
+GRANT ALL ON TABLE "mapping".result_location TO bronze;
+GRANT ALL ON TABLE "mapping".scales TO bronze;
+
 
 
         
