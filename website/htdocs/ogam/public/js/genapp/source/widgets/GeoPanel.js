@@ -149,6 +149,7 @@ Genapp.GeoPanel = Ext
 					hideSnappingButton : true,
 					hideGetFeatureButton : true,
 					hideFeatureInfoButton : true,
+					hideGeomCriteriaToolbarButton : true,
 
 					/**
 					 * @cfg {Boolean} zoom to features extend on init.
@@ -905,16 +906,18 @@ Genapp.GeoPanel = Ext
 							this.mapToolbar.addSeparator();
 
 						} else {
-    						// Add geom criteria tool
-    						var addGeomCriteriaButton = new Ext.Button({
-                                text : this.addGeomCriteriaButtonText,
-                                iconCls : 'addgeomcriteria',
-                                handler : function(){
-                                    this.fireEvent('addgeomcriteria');
-                                },
-                                scope:this
-                            });
-                            this.mapToolbar.add(addGeomCriteriaButton);
+							if (!this.hideGeomCriteriaToolbarButton) {
+	    						// Add geom criteria tool
+	    						var addGeomCriteriaButton = new Ext.Button({
+	                                text : this.addGeomCriteriaButtonText,
+	                                iconCls : 'addgeomcriteria',
+	                                handler : function(){
+	                                    this.fireEvent('addgeomcriteria');
+	                                },
+	                                scope:this
+	                            });
+	                            this.mapToolbar.add(addGeomCriteriaButton);
+							}
 						}
 
 						this.mapToolbar.addFill();
