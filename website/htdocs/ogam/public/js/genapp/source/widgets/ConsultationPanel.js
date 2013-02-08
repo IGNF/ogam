@@ -549,6 +549,11 @@ Genapp.ConsultationPanel = Ext
                      *      (defaults to <tt>'Export as pdf'</tt>)
                      */
                     exportAsPdfButtonText: "Export as pdf",
+                    /**
+                     * @cfg {Boolean} hideExportAsPdfButton If true hide the export as pdf button
+                     *      (defaults to <tt>false</tt>)
+                     */
+                    hideExportAsPdfButton: false,
 
 					// private
 					initComponent : function() {
@@ -1037,42 +1042,45 @@ Genapp.ConsultationPanel = Ext
 							this.addVerticalLabel(this.queryPanel, 'genapp-query-request-panel-ct-xcollapsed-vertical-label-div');
 						}
 
+						var detailsPanelConfig = {
+                            frame : true,
+                            plain : true,
+                            enableTabScroll : true,
+                            cls : 'genapp-query-details-panel',
+                            scrollIncrement : 91,
+                            scrollRepeatInterval : 100,
+                            idDelimiter : '___', // Avoid a conflict with the
+                            // Genapp id separator('__')
+                            listeners : {
+                                'render' : function(panel) {
+                                    panel.items.on('remove', function(item) {
+                                        if (this.items.getCount() === 0) {
+                                            this.ownerCt.collapse();
+                                        }
+                                    }, panel);
+                                }
+                            }
+                        };
+
+						if(!this.hideExportAsPdfButton){
+						    detailsPanelConfig.tbar = [{
+                                text: this.exportAsPdfButtonText,
+                                iconCls: 'genapp-query-details-panel-pdf-export',
+                                handler: function(){
+                                    var currentDP = this.detailsPanel.getActiveTab();
+                                    currentDP.exportAsPDF();
+                                },
+                                scope: this
+                            }];
+						}
+
 						/**
 						 * The details panel.
 						 * 
 						 * @property detailsPanel
 						 * @type Ext.TabPanel
 						 */
-						this.detailsPanel = new Ext.TabPanel({
-							frame : true,
-							plain : true,
-							enableTabScroll : true,
-							cls : 'genapp-query-details-panel',
-							scrollIncrement : 91,
-							scrollRepeatInterval : 100,
-							idDelimiter : '___', // Avoid a conflict with the
-							// Genapp id separator('__')
-				            tbar : [
-		                         {
-		                             text: this.exportAsPdfButtonText,
-		                             iconCls: 'genapp-query-details-panel-pdf-export',
-		                             handler: function(){
-		                                 var currentDP = this.detailsPanel.getActiveTab();
-		                                 currentDP.exportAsPDF();
-		                             },
-		                             scope: this
-		                         }
-		                     ],
-							listeners : {
-								'render' : function(panel) {
-									panel.items.on('remove', function(item) {
-										if (this.items.getCount() === 0) {
-											this.ownerCt.collapse();
-										}
-									}, panel);
-								}
-							}
-						});
+						this.detailsPanel = new Ext.TabPanel(detailsPanelConfig);
 
 						this.detailsPanelPinned = true;
 
