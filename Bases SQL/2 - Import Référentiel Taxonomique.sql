@@ -169,14 +169,14 @@ from (
 select distinct rang 
 from taxref -- 16 rangs
 ) as foo
-left join taxref_rang using (rang)
+left join taxref_rang using (rang);
 
 select *   -- 4 taxons de règne : Animalia, Chromista, Fungi, Monera, Il manque Plantae
 from taxref
-where rang = 'KD'
+where rang = 'KD';
 
 select distinct regne   -- 5 règnes
-from taxref
+from taxref;
 
 
 select *
@@ -189,7 +189,7 @@ from (
 select distinct id_taxon  -- 160 taxons différents
 from observation_taxon
 ) as foo
-left join taxref on id_taxon::varchar = cd_nom
+left join taxref on id_taxon::varchar = cd_nom;
 --where cd_nom <> cd_ref
 
 
@@ -218,7 +218,7 @@ where code not in (select distinct parent_code from mode_tree);
 
 select * -- 32000 nodes
 from mode_tree
-where is_leaf = '0'
+where is_leaf = '0';
 
 
 
@@ -230,5 +230,5 @@ where is_leaf = '0'
 update mode_tree
 set parent_code = '*'
 where unit = 'ID_TAXON' 
-and parent_code = '0'
+and parent_code = '0';
 

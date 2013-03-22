@@ -99,7 +99,7 @@ COMMENT ON COLUMN LOCATION.THE_GEOM IS 'The geometry of the location';
 
 -- Spatial Index on the_geom 
 CREATE INDEX IX_LOCATION_SPATIAL_INDEX ON raw_data.location USING GIST
-            ( the_geom GIST_GEOMETRY_OPS );
+            ( the_geom  );
 
 ALTER TABLE raw_data.location 
   ADD CONSTRAINT fk_location_submission_id FOREIGN KEY (submission_id) 

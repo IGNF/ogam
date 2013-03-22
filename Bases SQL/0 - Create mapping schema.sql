@@ -22,7 +22,7 @@ SELECT AddGeometryColumn('mapping','result_location','the_geom',2154,'GEOMETRY',
 
 -- Spatial Index on the_geom 
 CREATE INDEX IX_RESULT_LOCATION_SPATIAL_INDEX ON mapping.RESULT_LOCATION USING GIST
-            ( the_geom GIST_GEOMETRY_OPS );
+            ( the_geom  );
             
 CREATE INDEX RESULT_LOCATION_SESSION_IDX ON mapping.RESULT_LOCATION USING btree (SESSION_ID);
 
@@ -141,14 +141,7 @@ COMMENT ON COLUMN bounding_box.bb_xmax IS 'Max longitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_ymax IS 'Max latitude coordinate';
 COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the data provider';
 
-
-GRANT ALL ON SCHEMA "mapping" TO bronze;
-GRANT ALL ON TABLE "mapping".bounding_box TO bronze;
-GRANT ALL ON TABLE "mapping".layer_definition TO bronze;
-GRANT ALL ON TABLE "mapping".legend TO bronze;
-GRANT ALL ON TABLE "mapping".result_location TO bronze;
-GRANT ALL ON TABLE "mapping".scales TO bronze;
-
+SET SEARCH_PATH = mapping, public;
 
 
         
