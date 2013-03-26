@@ -207,7 +207,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		// and for the pk column
 		$pkscols = '';
 		foreach ($locationTableInfo->primaryKeys as $primaryKey) {
-			$pkscols .= "l.".$primaryKey . " || '__' || ";
+			$pkscols .= "l.".$primaryKey . "::varchar || '__' || ";
 			$cols .= "'".strtoupper($primaryKey)."/' || ".$primaryKey . " || '/' || ";
 		}
 		if($pkscols != ''){
