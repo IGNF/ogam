@@ -99,7 +99,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
 
-		$req = "SELECT astext(transform(the_geom,".$projection.")) as position FROM result_location WHERE session_id = ?";
+		$req = "SELECT astext(st_transform(the_geom,".$projection.")) as position FROM result_location WHERE session_id = ?";
 
 		$this->logger->info('getPlotLocations session_id : '.$sessionId);
 		$this->logger->info('getPlotLocations request : '.$req);
@@ -126,7 +126,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
 
-		$req = "SELECT astext(st_extent(transform(the_geom,".$projection."))) as wkt FROM result_location WHERE session_id = ?";
+		$req = "SELECT astext(st_extent(st_transform(the_geom,".$projection."))) as wkt FROM result_location WHERE session_id = ?";
 
 		$this->logger->info('getResultsBBox session_id : '.$sessionId);
 		$this->logger->info('getResultsBBox request : '.$req);
