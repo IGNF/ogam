@@ -79,7 +79,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	public function cleanPreviousResults($sessionId) {
 		$db = $this->getAdapter();
 
-		$req = "DELETE FROM result_location WHERE session_id = ? OR ((NOW()-_creationdt)> '2 day')";
+		$req = "DELETE FROM result_location WHERE session_id = ? OR (_creationdt < CURRENT_TIMESTAMP - INTERVAL '2 days')";
 
 		$this->logger->info('cleanPreviousResults request : '.$req);
 
