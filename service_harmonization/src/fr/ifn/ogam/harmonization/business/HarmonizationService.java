@@ -172,7 +172,7 @@ public class HarmonizationService extends AbstractService {
 				harmonizedDataDAO.deleteHarmonizedData(tableFormatData.getTableName(), providerId);
 			}
 
-			if(removeOnly == false){
+			if (removeOnly == false) {
 				// For each destination table (starting from the root in the hierarchy to the leaf tables)
 				Iterator<String> destTableIter = harmonizedTablesFormatSortedList.descendingIterator();
 				while (destTableIter.hasNext()) {
