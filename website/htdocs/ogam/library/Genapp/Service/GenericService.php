@@ -364,7 +364,7 @@ class Genapp_Service_GenericService {
 		$locationField = $this->metadataModel->getGeometryField($schema, array_keys($tables));
 
 		// Add the location centroid (for zooming on the map)
-		$select .= ", astext(centroid(st_transform(".$locationField->format.".".$locationField->columnName.",".$this->visualisationSRS."))) as location_centroid ";
+		$select .= ", st_astext(st_centroid(st_transform(".$locationField->format.".".$locationField->columnName.",".$this->visualisationSRS."))) as location_centroid ";
 
 		// Right management
 		// Get back the provider id of the data
@@ -933,8 +933,8 @@ class Genapp_Service_GenericService {
 			$sql .= "to_char(".$field->format.".".$field->columnName.", 'YYYY/MM/DD') as ".$field->getName();
 		} else if ($field->unit == "GEOM") {
 			// Special case for THE_GEOM
-			$sql .= "asText(st_transform(".$field->format.".".$field->columnName.",".$this->visualisationSRS.")) as location, ";
-			$sql .= "asText(st_transform(".$field->format.".".$field->columnName.",".$this->visualisationSRS.")) as ".$field->getName().", ";
+			$sql .= "st_asText(st_transform(".$field->format.".".$field->columnName.",".$this->visualisationSRS.")) as location, ";
+			$sql .= "st_asText(st_transform(".$field->format.".".$field->columnName.",".$this->visualisationSRS.")) as ".$field->getName().", ";
 			$sql .= 'ymin(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_y_min, ';
 			$sql .= 'ymax(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_y_max, ';
 			$sql .= 'xmin(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_x_min, ';
