@@ -115,32 +115,4 @@ class Genapp_Object_Metadata_TaxrefNode extends Genapp_Object_Metadata_TreeNode 
 		return $return;
 	}
 
-	/**
-	 * Return a array to full a select list.
-	 *
-	 * @return array the array formated
-	 */
-	public function formatForList() {
-
-		$return = array();
-		if (!empty($this->code)) {
-			// We return the root itself plus the children
-			$return['code'] = $this->code;
-			$return['label'] = $this->name;
-			if ($this->isReference) {
-				$return['description'] = '<b>'.$this->completeName.'</b>';
-			} else {
-				$return['description'] = $this->completeName;
-			}
-			if (!empty($this->vernacularName)) {
-				$return['description'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->vernacularName.'</i>';
-			}
-			if (!empty($this->name)) {
-				$return['description'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->name.'</i>';
-			}
-		}
-
-		return $return;
-	}
-
 }

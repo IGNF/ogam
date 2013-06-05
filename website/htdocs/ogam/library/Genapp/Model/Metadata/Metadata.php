@@ -1569,7 +1569,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $query the searched text (optional)
 	 * @param String $start the number of the first row to return (optional)
 	 * @param String $limit the max number of row to return (optional)
-	 * @return Array[Array[cd_nom => ..., lb_nom => ...]]
+	 * @return Array[Genapp_Object_Metadata_TaxrefNode]
 	 */
 	public function getTaxrefModes($unit, $query = null, $start = null, $limit = null) {
 
@@ -1586,20 +1586,14 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$db = $this->getAdapter();
 			
 			// TODO : Performances à améliorer
-
-			$req = " SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name ";
-			$req .= " FROM ( ";
-			$req .= "      SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name, " ;
-			$req .= "      _usname ilike '".$query."%' as ilike1 ";
-			$req .= "      FROM mode_taxref ";        
-			$req .= "      WHERE unit = ? "; 
-			$req .= "      AND _usname ilike '".$query."%' ";
-			$req .= "      OR name ilike '%".$query."%' ";
+			// TODO : Tri par pertinence
+			$req  = " SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name " ;
+			$req .= " FROM mode_taxref ";        
+			$req .= " WHERE unit = ? "; 
+			$req .= " AND (name ilike '%".$query."%' ";
 			$req .= "      OR complete_name ilike '%".$query."%' ";
-			$req .= "      OR vernacular_name ilike '%".$query."%' ";
-			$req .= " ) as foo2 ";
-			$req .= " WHERE ilike1 ";
-			$req .= " ORDER BY ilike1 DESC, is_reference DESC, name ";
+			$req .= "      OR vernacular_name ilike '%".$query."%')";
+			$req .= " ORDER BY name ";
 		
 			if ($start != null && $limit != null) {
 				$req .= " LIMIT ".$limit." OFFSET ".$start;
@@ -1622,7 +1616,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$node->isLeaf = $row['is_leaf'];
 				$node->isReference = $row['is_reference'];
 
-				$result[] = $node->formatForList();
+				$result[] = $node;
 			}
 
 			if ($this->useCache) {
