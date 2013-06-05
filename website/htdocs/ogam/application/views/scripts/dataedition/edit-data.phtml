@@ -105,6 +105,10 @@
 
 <script type="text/javascript">
     Ext.onReady(function(){
+
+    	Genapp.configure();
+        
+        // Override defaut config
         if (Genapp.CardPanel) {
             Ext.apply(Genapp.CardPanel.prototype, {
                 shownPages : [ 'editionpage' ],
@@ -180,6 +184,7 @@
                 ?>
             );
         }
+
         Genapp.buildApplication();
     });
 </script>
