@@ -1151,9 +1151,11 @@ class QueryController extends AbstractOGAMController {
 			// On met en gras les références
 			if ($taxref->isReference) {
 				$label = "<b>".$label."</b>";
+			} else {
+				$label = "<i>".$label."</i>";
 			}
 			if (!empty($taxref->vernacularName)) {
-				$label .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$taxref->vernacularName.'</i>';
+				$label .= '<br/>&nbsp;&nbsp;&nbsp;'.$taxref->vernacularName;
 			}
 			
 			$json .= '{"code":'.json_encode($taxref->code).', "label":'.json_encode($label).'},';
