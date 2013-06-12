@@ -73,8 +73,7 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 */
 	displayPopup : function(longlat, featureInfo) {
 
-		// If not empty (size of the prototype is 1)
-		if (featureInfo.fields && Object.keys(featureInfo.fields).length > 1) {
+		if (featureInfo.fields) {
 			// Create a popup
 			popup = new GeoExt.Popup({
 				title : this.popupTitle,
@@ -182,6 +181,7 @@ OpenLayers.Handler.FeatureInfo = OpenLayers.Class(OpenLayers.Handler, {
 	 * @param response
 	 */
 	handleResponse: function (response) {
+		
 		 if(response.status == 500) {
 			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		 }
