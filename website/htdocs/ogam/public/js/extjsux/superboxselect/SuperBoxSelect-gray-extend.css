@@ -14,6 +14,8 @@
 .x-superboxselect ul {
 	overflow: hidden;
 	cursor: text;
+	width: 100% !important; /* Leave space for the text */
+	float: left;
 }
 
 .x-superboxselect-display-btns {
@@ -21,15 +23,14 @@
 }
 
 .x-superboxselect-btns {
-	position: absolute;
 	right: 0px;
 	top: 0;
-	overflow: hidden;
+	/* overflow: hidden; */
 	padding: 0px;
 }
 
 .x-superboxselect-btns div {
-	float: left;
+	float: left; 
 	width: 16px;
 	height: 25px;
 	margin-top: 0px;
@@ -37,10 +38,17 @@
 
 .x-superboxselect-btn-clear {
 	background: url(clear2.png) no-repeat scroll left 0px;
+	cursor: pointer;	
 }
 
-.x-superboxselect-btn-expand {
+div.x-superboxselect-btn-expand {
 	background: url(expand2.png) no-repeat scroll left 0px;
+	cursor: pointer;
+    right: 0;
+    top: 0;
+    width: 17px;
+    float: right;
+    margin-right : -17px; 
 }
 
 .x-superboxselect-btn-over {
