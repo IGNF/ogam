@@ -83,8 +83,13 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 			}
 		}));
 
-		// Toggle the children on the parent node 'checkchange' event
+		// Register "checkchange" event
+		//Toggle the children on the parent node 'checkchange' event
 		this.on('checkchange', this.toggleChildrenOnParentToggle, this);
+		
+		//
+		this.on('beforemove', this.beforeLayerMoved, this);
+		this.on('move', this.layerMoved, this);
 
 		Genapp.tree.LayerTreePanel.superclass.initComponent.call(this);
 	},
@@ -137,6 +142,37 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 							checkedGroup : layerRecord.getLayer().options.checkedGroup,
 							text : layerRecord.getLayer().options.label
 						});
+						
+						// TODO : Sortir ces 2 fonctions (dans le bon scope ...)
+						
+						
+						// Sauvegarde de l'ancien index du noeud
+						child.addListener('beforemove', function (tree, thisNode, oldParent, newParent, index) {
+							   thisNode.oldIndex = oldParent.indexOf(thisNode);
+						});
+						
+						// Déplacement du layer
+						// @thanks to Francois Valiquette : http://www.mail-archive.com/users@geoext.org/msg02579.html
+						child.addListener('move', function (tree, thisNode, oldParent, newParent, index, refNode) {
+							
+							// On ne fait le déplacement que si le parent est le même
+							if (oldParent == newParent) {
+							   // On calcule le déplacement du node
+							   indexVariation = thisNode.oldIndex - oldParent.indexOf(thisNode);
+							   // Et on applique le même aux layers de la carte
+							   tree.map.raiseLayer(thisNode.layer, indexVariation);
+							} else if (recursiveCall = false) {
+								// Sinon on remet le node à sa place
+								recursiveCall = true; // flag permettant d'éviter une boucle infinie				
+								Ext.MessageBox.alert('Error', 'Déplacement non autorisé', function reverseChange(btn, texte, opt) {
+									oldParent.insertBefore(thisNode, oldParent.item(thisNode.oldIndex));
+									recursiveCall = false;									
+								});
+							}
+							
+							// TODO : Interdire le déplacement en dehors du parent
+							
+						});
 
 						var sibling = node.item(index);
 						if (sibling) {
@@ -149,7 +185,7 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 				// Set the layersNodeIds object when the node order has changed
 				listeners : {
 					"load" : this.setLayerNodeIds,
-					scope : this
+					scope : this					
 				},
 				scope : this
 			});
@@ -256,7 +292,8 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	toggleNodeCheckbox : function(nodeId, toggleCheck) {
 		var node = this.getNodeById(nodeId);
 		node.ui.toggleCheck(toggleCheck);
-
 	}
+	
+	
 });
 Ext.reg('layertreepanel', Genapp.tree.LayerTreePanel);
