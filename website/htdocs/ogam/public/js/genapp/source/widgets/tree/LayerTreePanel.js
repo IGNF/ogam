@@ -31,6 +31,11 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	enableDD : true,
 	title : '',
 	border : false,
+	
+	/**
+	 * Internationalization.
+	 */
+	alertInvalidLayerMove : "Déplacement non autorisé",
 
 	/**
 	 * Read-only. An object containing the node id for each layer name.
@@ -87,10 +92,6 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 		//Toggle the children on the parent node 'checkchange' event
 		this.on('checkchange', this.toggleChildrenOnParentToggle, this);
 		
-		//
-		this.on('beforemove', this.beforeLayerMoved, this);
-		this.on('move', this.layerMoved, this);
-
 		Genapp.tree.LayerTreePanel.superclass.initComponent.call(this);
 	},
 
@@ -154,6 +155,7 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 						// Déplacement du layer
 						// @thanks to Francois Valiquette : http://www.mail-archive.com/users@geoext.org/msg02579.html
 						child.addListener('move', function (tree, thisNode, oldParent, newParent, index, refNode) {
+													
 							
 							// On ne fait le déplacement que si le parent est le même
 							if (oldParent == newParent) {
@@ -161,18 +163,22 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 							   indexVariation = thisNode.oldIndex - oldParent.indexOf(thisNode);
 							   // Et on applique le même aux layers de la carte
 							   tree.map.raiseLayer(thisNode.layer, indexVariation);
-							} else if (recursiveCall = false) {
+							} else if (typeof thisNode.recursiveCall === "undefined" || thisNode.recursiveCall == false) {
+								//to avoid an infinite loop
+								thisNode.recursiveCall = true; 		
+								
 								// Sinon on remet le node à sa place
-								recursiveCall = true; // flag permettant d'éviter une boucle infinie				
-								Ext.MessageBox.alert('Error', 'Déplacement non autorisé', function reverseChange(btn, texte, opt) {
+								Ext.MessageBox.alert('Error', Genapp.tree.LayerTreePanel.prototype.alertInvalidLayerMove, function reverseChange(btn, texte, opt) {
 									oldParent.insertBefore(thisNode, oldParent.item(thisNode.oldIndex));
-									recursiveCall = false;									
+									thisNode.recursiveCall = false;									
 								});
+								
 							}
 							
-							// TODO : Interdire le déplacement en dehors du parent
-							
 						});
+												
+						// On interdit le drag des noeuds parents 
+						node.draggable = false;
 
 						var sibling = node.item(index);
 						if (sibling) {
