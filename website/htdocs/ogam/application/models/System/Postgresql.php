@@ -94,7 +94,7 @@ class Application_Model_System_Postgresql extends Zend_Db_Table_Abstract {
 		$req .= "           UPPER(table_name) AS table, ";
 		$req .= "           UPPER(data_type) AS type ";
 		$req .= " FROM information_schema.columns ";
-		$req .= " INNER JOIN information_schema.tables using (table_catalog, table_schema, table_name) ";
+		$req .= " INNER JOIN information_schema.tables USING (table_catalog, table_schema, table_name) ";
 		$req .= " WHERE table_type = 'BASE TABLE' ";
 		$req .= " AND table_schema NOT IN ('pg_catalog', 'information_schema', 'metadata') ";
 
