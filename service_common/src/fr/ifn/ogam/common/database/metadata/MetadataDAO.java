@@ -1716,7 +1716,7 @@ public class MetadataDAO {
 				rs = ps.executeQuery();
 
 				while (rs.next()) {
-					result.add(rs.getString("cd_nom"));
+					result.add(rs.getString("code"));
 				}
 
 				// fill the cache
