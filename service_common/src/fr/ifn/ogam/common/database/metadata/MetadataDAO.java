@@ -170,7 +170,7 @@ public class MetadataDAO {
 	/**
 	 * Get the list of modes of a given unit from a taxonomic referential.
 	 */
-	private static final String GET_TAXREF_MODES_STMT = "SELECT cd_nom, lb_nom FROM taxref ORDER BY lb_nom";
+	private static final String GET_TAXREF_MODES_STMT = "SELECT code, name FROM mode_taxref ORDER BY code";
 
 	/**
 	 * Get the one mode of a given unit.
