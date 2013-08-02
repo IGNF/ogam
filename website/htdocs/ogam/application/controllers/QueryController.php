@@ -1053,7 +1053,7 @@ class QueryController extends AbstractOGAMController {
 		$json = '{"success":true';
 		$json .= ', "codes":[';
 		foreach ($codes as $code => $label) {
-			$json .= '{"code":'.json_encode($code).', "label":'.json_encode($label).'},';
+			$json .= '{"code":'.json_encode((string) $code).', "label":'.json_encode($label).'},';
 		}
 		if (!empty($codes)) {
 			$json = substr($json, 0, -1);
