@@ -1,3 +1,14 @@
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ * 
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
 package fr.ifn.ogam.common.business;
 
 import java.math.BigDecimal;
@@ -99,7 +110,8 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Check that a code value correspond to an existing code in a tree of codes.
+	 * Check that a code value correspond to an existing code in a tree of
+	 * codes.
 	 * 
 	 * @param unit
 	 *            the unit of the field to check
@@ -184,7 +196,8 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Check that a value is consistent with the expected type. And convert the strig value to the expected type
+	 * Check that a value is consistent with the expected type. And convert the
+	 * strig value to the expected type
 	 * 
 	 * @param fieldDescriptor
 	 *            the descriptor of the field
@@ -260,18 +273,24 @@ public class GenericMapper {
 			}
 
 			if (type.equalsIgnoreCase(DATE)) {
-				try {
-					SynchronizedDateFormat formatter = new SynchronizedDateFormat(fieldDescriptor.getMask());
-					formatter.setLenient(false);
-					String normalizedFieldValue = fieldValue.replace(",", ".");
-					result = formatter.parse(normalizedFieldValue);
-				} catch (Exception e) {
-					if (fieldDescriptor.getIsMandatory()) {
+				if (fieldValue == null || fieldValue.equalsIgnoreCase("")) {
+					result = null;
+				} else {
+					String mask = "yyyy-MM-dd";
+					try {
+						String fieldMask = fieldDescriptor.getMask();
+						if (fieldMask != null && !fieldMask.equalsIgnoreCase("")) {
+							mask = fieldMask;
+						}
+						SynchronizedDateFormat formatter = new SynchronizedDateFormat(mask);
+						formatter.setLenient(false);
+						String normalizedFieldValue = fieldValue.replace(",", ".");
+						result = formatter.parse(normalizedFieldValue);
+					} catch (Exception e) {
 						CheckException ce = new CheckException(INVALID_DATE_FIELD);
-						ce.setExpectedValue(fieldDescriptor.getMask());
+						ce.setExpectedValue(mask);
 						throw ce;
 					}
-
 				}
 			}
 
@@ -308,7 +327,8 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Check that a value is consistent with the expected mask (regular expression).
+	 * Check that a value is consistent with the expected mask (regular
+	 * expression).
 	 * 
 	 * @param mask
 	 *            the expected mask
@@ -322,13 +342,15 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Get a list of tables used with their ancestors, sorted from the leaf to the root.
+	 * Get a list of tables used with their ancestors, sorted from the leaf to
+	 * the root.
 	 * 
 	 * @param schema
 	 *            the schema in which we are working
 	 * @param destinationTables
 	 *            the list of tables we want to sort
-	 * @return The list of tables used with their ancestors, sorted from the leaf to the root
+	 * @return The list of tables used with their ancestors, sorted from the
+	 *         leaf to the root
 	 */
 	public LinkedList<String> getSortedAncestors(String schema, List<TableFormatData> destinationTables) throws Exception {
 
@@ -341,7 +363,8 @@ public class GenericMapper {
 			// Get the list of ancestors of the table
 			List<TableTreeData> ancestors = metadataDAO.getTablesTree(tableFormat, schema);
 
-			// Check if one of the ancestors of the current table is already in the resulting list
+			// Check if one of the ancestors of the current table is already in
+			// the resulting list
 			boolean found = false;
 			Iterator<TableTreeData> ancestorsIter = ancestors.iterator();
 			while (ancestorsIter.hasNext() && !found) {
@@ -396,11 +419,12 @@ public class GenericMapper {
 				TableTreeData tableDescriptor = metadataDAO.getTableDescriptor(tableFormat, schema);
 				TableFormatData parentTable = tableDescriptor.getParentTable();
 				String parentTableFormat = null;
-				if(parentTable != null){
+				if (parentTable != null) {
 					parentTableFormat = tableDescriptor.getParentTable().getFormat();
 				}
 
-				// If the parent table is listed, we insert the table just before
+				// If the parent table is listed, we insert the table just
+				// before
 				if (parentTableFormat != null && sortedTablesList.contains(parentTableFormat)) {
 					sortedTablesList.add(sortedTablesList.indexOf(parentTableFormat), tableFormat);
 				} else {
@@ -416,7 +440,8 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Build the SQL select corresponding to the data to harmonize. Populate the list of colums to read
+	 * Build the SQL select corresponding to the data to harmonize. Populate the
+	 * list of colums to read
 	 * 
 	 * @param schema
 	 *            the schema in which we are working
@@ -483,7 +508,8 @@ public class GenericMapper {
 
 			// Build the WHERE clause
 
-			// When we find a source field that match one of our criteria, we add the clause
+			// When we find a source field that match one of our criteria, we
+			// add the clause
 			sourceFieldsIter = sourceFields.values().iterator();
 			while (sourceFieldsIter.hasNext()) {
 				TableFieldData sourceField = sourceFieldsIter.next();

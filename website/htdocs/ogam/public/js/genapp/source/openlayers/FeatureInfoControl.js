@@ -1,4 +1,17 @@
 /**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
+
+/**
  * @requires OpenLayers/Control.js
  */
 
@@ -60,8 +73,7 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 */
 	displayPopup : function(longlat, featureInfo) {
 
-		// If not empty (size of the prototype is 1)
-		if (featureInfo.fields && Object.keys(featureInfo.fields).length > 1) {
+		if (featureInfo.fields) {
 			// Create a popup
 			popup = new GeoExt.Popup({
 				title : this.popupTitle,
@@ -169,6 +181,7 @@ OpenLayers.Handler.FeatureInfo = OpenLayers.Class(OpenLayers.Handler, {
 	 * @param response
 	 */
 	handleResponse: function (response) {
+		
 		 if(response.status == 500) {
 			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		 }

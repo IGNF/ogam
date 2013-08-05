@@ -1,7 +1,14 @@
 <?php
 /**
- * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
 /**
@@ -103,34 +110,6 @@ class Genapp_Object_Metadata_TaxrefNode extends Genapp_Object_Metadata_TreeNode 
 				$return .= ']';
 			}
 			$return .= '}';
-		}
-
-		return $return;
-	}
-
-	/**
-	 * Return a array to full a select list.
-	 *
-	 * @return array the array formated
-	 */
-	public function formatForList() {
-
-		$return = array();
-		if (!empty($this->code)) {
-			// We return the root itself plus the children
-			$return['code'] = $this->code;
-			$return['label'] = $this->name;
-			if ($this->isReference) {
-				$return['description'] = '<b>'.$this->completeName.'</b>';
-			} else {
-				$return['description'] = $this->completeName;
-			}
-			if (!empty($this->vernacularName)) {
-				$return['description'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->vernacularName.'</i>';
-			}
-			if (!empty($this->name)) {
-				$return['description'] .= '<br/>&nbsp;&nbsp;&nbsp;<i>'.$this->name.'</i>';
-			}
 		}
 
 		return $return;

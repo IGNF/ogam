@@ -63,7 +63,7 @@ COMMENT ON COLUMN HARMONIZED_LOCATION.COMMENT IS 'A comment about the plot locat
 COMMENT ON COLUMN HARMONIZED_LOCATION.THE_GEOM IS 'The geometry of the location';
 		
 -- Spatial Index on the_geom 
-CREATE INDEX IX_HARMONIZED_LOCATION_SPATIAL_INDEX ON harmonized_data.harmonized_location USING GIST ( the_geom GIST_GEOMETRY_OPS );
+CREATE INDEX IX_HARMONIZED_LOCATION_SPATIAL_INDEX ON harmonized_data.harmonized_location USING GIST ( the_geom  );
 
 /*========================================================================*/
 /*	Add a trigger to fill the the_geom column of the location table       */

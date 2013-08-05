@@ -1,3 +1,14 @@
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ * 
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
 package fr.ifn.ogam.common.database.metadata;
 
 import java.sql.Connection;
@@ -159,7 +170,7 @@ public class MetadataDAO {
 	/**
 	 * Get the list of modes of a given unit from a taxonomic referential.
 	 */
-	private static final String GET_TAXREF_MODES_STMT = "SELECT cd_nom, lb_nom FROM taxref ORDER BY lb_nom";
+	private static final String GET_TAXREF_MODES_STMT = "SELECT code, name FROM mode_taxref ORDER BY code";
 
 	/**
 	 * Get the one mode of a given unit.
@@ -1705,7 +1716,7 @@ public class MetadataDAO {
 				rs = ps.executeQuery();
 
 				while (rs.next()) {
-					result.add(rs.getString("cd_nom"));
+					result.add(rs.getString("code"));
 				}
 
 				// fill the cache

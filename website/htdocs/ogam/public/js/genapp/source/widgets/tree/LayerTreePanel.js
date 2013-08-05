@@ -1,4 +1,16 @@
 /**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
+/**
  * 
  * LayerTreePanel Class
  * 
@@ -19,6 +31,11 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	enableDD : true,
 	title : '',
 	border : false,
+	
+	/**
+	 * Internationalization.
+	 */
+	alertInvalidLayerMove : "Déplacement non autorisé",
 
 	/**
 	 * Read-only. An object containing the node id for each layer name.
@@ -71,9 +88,10 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 			}
 		}));
 
-		// Toggle the children on the parent node 'checkchange' event
+		// Register "checkchange" event
+		//Toggle the children on the parent node 'checkchange' event
 		this.on('checkchange', this.toggleChildrenOnParentToggle, this);
-
+		
 		Genapp.tree.LayerTreePanel.superclass.initComponent.call(this);
 	},
 
@@ -125,6 +143,42 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 							checkedGroup : layerRecord.getLayer().options.checkedGroup,
 							text : layerRecord.getLayer().options.label
 						});
+						
+						// TODO : Sortir ces 2 fonctions (dans le bon scope ...)
+						
+						
+						// Sauvegarde de l'ancien index du noeud
+						child.addListener('beforemove', function (tree, thisNode, oldParent, newParent, index) {
+							   thisNode.oldIndex = oldParent.indexOf(thisNode);
+						});
+						
+						// Déplacement du layer
+						// @thanks to Francois Valiquette : http://www.mail-archive.com/users@geoext.org/msg02579.html
+						child.addListener('move', function (tree, thisNode, oldParent, newParent, index, refNode) {
+													
+							
+							// On ne fait le déplacement que si le parent est le même
+							if (oldParent == newParent) {
+							   // On calcule le déplacement du node
+							   indexVariation = thisNode.oldIndex - oldParent.indexOf(thisNode);
+							   // Et on applique le même aux layers de la carte
+							   tree.map.raiseLayer(thisNode.layer, indexVariation);
+							} else if (typeof thisNode.recursiveCall === "undefined" || thisNode.recursiveCall == false) {
+								//to avoid an infinite loop
+								thisNode.recursiveCall = true; 		
+								
+								// Sinon on remet le node à sa place
+								Ext.MessageBox.alert('Error', Genapp.tree.LayerTreePanel.prototype.alertInvalidLayerMove, function reverseChange(btn, texte, opt) {
+									oldParent.insertBefore(thisNode, oldParent.item(thisNode.oldIndex));
+									thisNode.recursiveCall = false;									
+								});
+								
+							}
+							
+						});
+												
+						// On interdit le drag des noeuds parents 
+						node.draggable = false;
 
 						var sibling = node.item(index);
 						if (sibling) {
@@ -137,7 +191,7 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 				// Set the layersNodeIds object when the node order has changed
 				listeners : {
 					"load" : this.setLayerNodeIds,
-					scope : this
+					scope : this					
 				},
 				scope : this
 			});
@@ -244,7 +298,8 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	toggleNodeCheckbox : function(nodeId, toggleCheck) {
 		var node = this.getNodeById(nodeId);
 		node.ui.toggleCheck(toggleCheck);
-
 	}
+	
+	
 });
 Ext.reg('layertreepanel', Genapp.tree.LayerTreePanel);

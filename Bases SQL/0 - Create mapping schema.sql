@@ -22,7 +22,7 @@ SELECT AddGeometryColumn('mapping','result_location','the_geom',2154,'GEOMETRY',
 
 -- Spatial Index on the_geom 
 CREATE INDEX IX_RESULT_LOCATION_SPATIAL_INDEX ON mapping.RESULT_LOCATION USING GIST
-            ( the_geom GIST_GEOMETRY_OPS );
+            ( the_geom  );
             
 CREATE INDEX RESULT_LOCATION_SESSION_IDX ON mapping.RESULT_LOCATION USING btree (SESSION_ID);
 

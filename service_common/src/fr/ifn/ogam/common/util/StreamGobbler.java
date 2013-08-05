@@ -3,7 +3,10 @@ package fr.ifn.ogam.common.util;
 import java.io.*;
 
 /**
- * Classe permettant de lire en continu la sortie d'un processus.
+ * Read continuously the output of a procress.
+ * 
+ * @author Michael C. Daconta
+ * see http://www.javaworld.com/jw-12-2000/jw-1229-traps.html?page=4
  */
 public class StreamGobbler extends Thread {
 

@@ -1,11 +1,18 @@
 <?php
 /**
- * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ * 
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 require_once 'AbstractOGAMController.php';
 
-class PdfmetadataController extends AbstractOGAMController {
+class IndexedpdffileController extends AbstractOGAMController {
 	/**
 	 * Initialise the controler
 	 */
@@ -14,9 +21,9 @@ class PdfmetadataController extends AbstractOGAMController {
 
 		// Set the current module name
 		$websiteSession = new Zend_Session_Namespace('website');
-		$websiteSession->module = "user";
-		$websiteSession->moduleLabel = "File Indexation";
-		$websiteSession->moduleURL = "fileindexation";
+		$websiteSession->module = "indexedpdffile";
+		$websiteSession->moduleLabel = "Indexed PDF Files";
+		$websiteSession->moduleURL = "indexedpdffile";
 	}
 
 	/**
@@ -30,7 +37,6 @@ class PdfmetadataController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		$role = $userSession->role;
 		if (empty($permissions) || !array_key_exists('INDEX_FILE', $permissions)) {
 			throw new Zend_Auth_Exception('Permission denied for right : INDEX_FILE');
 		}
@@ -38,7 +44,7 @@ class PdfmetadataController extends AbstractOGAMController {
 
 	public function indexAction() {
 		// action body
-		$this->logger->debug('Pdfmetadata index');
+		$this->logger->debug('Indexedpdffile index');
 	}
 
 	public function listAction() {
@@ -130,7 +136,7 @@ class PdfmetadataController extends AbstractOGAMController {
 				$index = Genapp_Search_Lucene_Index_Pdfs::index($pdfPath, $appLucene);
 
 				// Redirect the user to the list action of this controller.
-				return $this->_helper->redirector('list', 'pdfmetadata', '', array())->setCode(301);
+				return $this->_helper->redirector('list', 'indexedpdffile', '', array())->setCode(301);
 			} else {
 				// Form values are not valid send the current values to the form.
 				$form->populate($formData);

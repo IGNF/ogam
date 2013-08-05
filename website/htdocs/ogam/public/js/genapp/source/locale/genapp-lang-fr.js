@@ -1,4 +1,9 @@
 Genapp.config.localCls = 'fr';
+if (Genapp.tree.LayerTreePanel) {
+	Ext.apply(Genapp.tree.LayerTreePanel.prototype, {
+		alertInvalidLayerMove : "Déplacement non autorisé"
+	});
+}
 if (Genapp.form.TreeField) {
 	Ext.apply(Genapp.form.TreeField.prototype, {
 		emptyText : "Sélectionner..."

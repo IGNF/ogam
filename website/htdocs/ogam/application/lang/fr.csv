@@ -297,7 +297,7 @@ Error while deleting data;Erreur lors de la suppression
 Data deleted;Donnée supprimée
 
 ################################
-#  fileindexation / index      #
+#  indexation / index          #
 ################################
 Indices;Index
 Index;Index
@@ -314,13 +314,13 @@ Create a new index and index the files presents into the files directories;Crée
 Optimize the index;Optimiser l'index
 
 ################################
-#  fileindexation / parsepdf   #
+#  indexation / parsepdf       #
 ################################
 File Content;Contenu du fichier
 Content of the file:;Contenu du fichier :
 
 #####################################
-#  fileindexation / getindexstatus  #
+#  indexation / getindexstatus      #
 #####################################
 An error occured during the indexation process.;Une erreur est apparue pendant l'indexation.
 
@@ -330,13 +330,14 @@ An error occured during the indexation process.;Une erreur est apparue pendant l
 A process is already running.;Une indexation est déjà en cours.
 
 ################################
-#  pdfmetadata / editmeta      #
+#  indexedpdffile / editmeta   #
 ################################
 
 ################################
-#  pdfmetadata / list          #
+#  indexedpdffile / list       #
 ################################
-Indexed files list;Liste des fichiers indéxés
+Indexed PDF Files;Fichier PDF Indexés
+Indexed files list;Liste des fichiers indexés
 Files;Fichiers
 View the file;Voir le fichier
 View the file content;Voir le contenu du fichier
@@ -346,7 +347,7 @@ Remove the file of the index;Supprimer le fichier de l'index
 Not implemented;Non implémenté
 
 ################################
-#  pdfmetadata / viewmeta      #
+#  indexedpdffile / viewmeta   #
 ################################
 File metadata;Métadonnées du fichier
 Meta data of the file:;Métadonnées du fichier :

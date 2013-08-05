@@ -1,8 +1,16 @@
 <?php
 /**
- * © French National Forest Inventory
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ * 
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
+
 
 /**
  * Model used to access the system tables of PostgreSQL.
@@ -86,7 +94,7 @@ class Application_Model_System_Postgresql extends Zend_Db_Table_Abstract {
 		$req .= "           UPPER(table_name) AS table, ";
 		$req .= "           UPPER(data_type) AS type ";
 		$req .= " FROM information_schema.columns ";
-		$req .= " INNER JOIN information_schema.tables using (table_catalog, table_schema, table_name) ";
+		$req .= " INNER JOIN information_schema.tables USING (table_catalog, table_schema, table_name) ";
 		$req .= " WHERE table_type = 'BASE TABLE' ";
 		$req .= " AND table_schema NOT IN ('pg_catalog', 'information_schema', 'metadata') ";
 
