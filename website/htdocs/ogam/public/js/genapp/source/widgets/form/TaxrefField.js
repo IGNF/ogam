@@ -20,13 +20,24 @@
  * @constructor Create a new TaxrefField
  * @param {Object}
  *            config
- * @xtype treefield
+ * @xtype taxreffield
  */
 
 Ext.namespace('Genapp.form');
 
 Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
 	
+	// Custom rendering template
+	/*
+	tpl :  '<tpl for="."><div>' + 
+			'<tpl if="!Ext.isEmpty(isReference) && isReference == 0">'+ '<i>{label}</i>' + '</tpl>'+
+			'<tpl if="!Ext.isEmpty(isReference) && isReference == 1">'+ '<b>{label}</b>' + '</tpl>'+
+			'<tpl if="!Ext.isEmpty(vernacularName) && vernacularName != null">'+ '<br/>({vernacularName})' + '</tpl>'+
+        '</div></tpl>',
+    */
+	
+	
+    // Data store
     store: {
         xtype: 'jsonstore',
         autoDestroy : true,
@@ -40,11 +51,30 @@ Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
         }, {
             name : 'label',
             mapping : 'label'
-        } ],
+        }
+        /*, {
+            name : 'vernacularName',
+            mapping : 'vernacularName'
+        }, {
+            name : 'isReference',
+            mapping : 'isReference'
+        } */
+        ],
         url : Genapp.base_url  + 'query/ajaxgettaxrefcodes'
     },
 
     baseNodeUrl : Genapp.base_url + 'query/ajaxgettaxrefnodes/',
+    
+    
+    /**
+	 * Initialise the component.
+	 */
+	initComponent : function() {
+		
+		Genapp.form.TaxrefField.superclass.initComponent.call(this);
+		
+	},
+
 
     /**
      * The function that handle the trigger's click event. Implements the
