@@ -18,16 +18,16 @@
 ?>
 
 <h1 style="text-align: center"><?php echo $this->data['title']; ?></h1>
-<table style="width: 100%;">
-    <tr>
-        <td style="width: 50%;">
-            <img style="width: 100%" src="<?php echo $this->imgPath1; ?>" />
-        </td>
-        <td style="width: 50%;">
-            <img style="width: 100%" src="<?php echo $this->imgPath2; ?>" />
-        </td>
-    </tr>
-</table>
+<?php 
+foreach ($this->imgPath1 as $imgPath) { ?>
+    <img style="width:350px;display:block; position:absolute; left:10px; top:70px" src="<?php echo $imgPath; ?>" />
+    <?php
+}
+foreach ($this->imgPath2 as $imgPath) { ?>
+    <img style="width:350px;display:block; position:absolute; right:10px; top:70px" src="<?php echo $imgPath; ?>" />
+    <?php
+}?>
+
 <?php foreach ($this->data['formats'] as $format): ?>
 <h2><?php echo $format['title'];?>&nbsp;
     <?php if($format['children_count'] > 0) :?>

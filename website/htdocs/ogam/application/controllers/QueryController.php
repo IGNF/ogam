@@ -1,3 +1,4 @@
+
 <?php
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
@@ -458,7 +459,7 @@ class QueryController extends AbstractOGAMController {
 		}
 
 		echo $this->queryService->getDetails($id, $detailsLayers, $datasetId);
-
+		
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -485,34 +486,64 @@ class QueryController extends AbstractOGAMController {
 
 	    // Get all data linked to the result line
 	    $data = $this->queryService->getDetailsData($id, $detailsLayers, $datasetId, false);
-
+	    
 	    // image 1
-	    $tmpImgPath1 = APPLICATION_PATH.'/../../tmp/images/'.md5($id.session_id().'0').'.png';
-	    file_put_contents($tmpImgPath1, file_get_contents($data['maps'][0]['url']));
-
+	    $tmpImgPath1 = Array();
+	    for ($i=0;$i<count($data['maps1']['urls']);$i++) {
+	        $tmpImgPath1[$i] = APPLICATION_PATH.'/../../tmp/images/'.md5($id.session_id().'0-'.$i).'.png';
+	        file_put_contents($tmpImgPath1[$i], file_get_contents($data['maps1']['urls'][$i]['url']));
+	    }
+	     
 	    // image 2
-	    $tmpImgPath2 = APPLICATION_PATH.'/../../tmp/images/'.md5($id.session_id().'1').'.png';
-	    file_put_contents($tmpImgPath2, file_get_contents($data['maps'][1]['url']));
+	    $tmpImgPath2 = Array();
+	    for ($i=0;$i<count($data['maps2']['urls']);$i++) {
+	        $tmpImgPath2[$i] = APPLICATION_PATH.'/../../tmp/images/'.md5($id.session_id().'1-'.$i).'.png';
+	        file_put_contents($tmpImgPath2[$i], file_get_contents($data['maps2']['urls'][$i]['url']));
+	    }
+	    
+	    
 
 
 	    require_once('html2pdf/html2pdf.class.php');
 	    $pdf = new HTML2PDF();
 	    //$pdf->setModeDebug();
-		try{
-		    $pdf->writeHTML($this->view->partial('query/pdfexport.phtml', array(
-		            'data'     => $data,
-		            'imgPath1' => $tmpImgPath1,
-		            'imgPath2' => $tmpImgPath2,
-		            'imgDirPath' => CUSTOM_APPLICATION_PATH.'/../public/img/photos/'
-	            )));
-
-		    $pdf->Output($this->_wd_remove_accents($data['title']).'.pdf', 'D');
-		}catch(HTML2PDF_exception $e) {
+		
+		//building of the array of images paths
+		$i=1;
+		
+		$pdfExportArray = array(
+		    'data' => $data,
+		    'imgDirPath' => CUSTOM_APPLICATION_PATH.'/../public/img/photos/'
+		);
+		
+		foreach ($tmpImgPath1 as $img) {
+		    
+		    $pdfExportArray['imgPath1'][$i] = strval($img);
+		    $i++;
+		}
+		
+		foreach ($tmpImgPath2 as $img) {
+		    $pdfExportArray['imgPath2'][$i] = strval($img);
+		    $i++;
+		}
+		
+	    try{
+	        $pdf->writeHTML($this->view->partial('query/pdfexport.phtml', $pdfExportArray));
+	    
+	        $pdf->Output($this->_wd_remove_accents($data['title']).'.pdf', 'D');
+	    }
+		
+		catch(HTML2PDF_exception $e) {
     		$this->logger->debug($e);
 		}
-
-	    unlink($tmpImgPath1);
-	    unlink($tmpImgPath2);
+		
+		foreach ($tmpImgPath1 as $img) {
+		    unlink($img);
+		}
+		
+		foreach ($tmpImgPath2 as $img) {
+		    unlink($img);
+		}
 	}
 
 	/**
@@ -1133,39 +1164,17 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('$start : '.$start);
 		$this->logger->debug('$limit : '.$limit);
 
-		$taxrefs = $this->metadataModel->getTaxrefModes($unit, $query, $start, $limit);
+		$codes = $this->metadataModel->getTaxrefModes($unit, $query, $start, $limit);
 
-		if (count($taxrefs) < $limit) {
+		if (count($codes) < $limit) {
 			// optimisation
-			$count = count($taxrefs);
+			$count = count($codes);
 		} else {
 			$count = $this->metadataModel->getTaxrefModesCount($unit, $query);
 		}
 
 		// Send the result as a JSON String
-		$json = '{"success":true';
-		$json .= ', "rows":[';
-		foreach ($taxrefs as $taxref) {
-			$label = $taxref->name;
-			
-			// On met en gras les références
-			if ($taxref->isReference) {
-				$label = "<b>".$label."</b>";
-			} else {
-				$label = "<i>".$label."</i>";
-			}
-			if (!empty($taxref->vernacularName)) {
-				$label .= '<br/>&nbsp;&nbsp;&nbsp;'.$taxref->vernacularName;
-			}
-			
-			$json .= '{"code":'.json_encode($taxref->code).', "label":'.json_encode($label).'},';
-		}
-		if (!empty($codes)) {
-			$json = substr($json, 0, -1);
-		}
-		$json .= ']';
-		$json .= ', "results":'.$count;
-		$json .= '}';
+		$json = '{"rows":'.json_encode($codes).', "results":'.$count.'}';
 
 		echo $json;
 
@@ -1186,7 +1195,7 @@ class QueryController extends AbstractOGAMController {
 		$lon = $this->getRequest()->getParam('LON');
 		$lat = $this->getRequest()->getParam('LAT');
 		$sessionId = session_id();
-
+		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema; // the schema used
 		$queryObject = $websiteSession->queryObject; // the last query done
@@ -1287,3 +1296,4 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 	}
 }
+

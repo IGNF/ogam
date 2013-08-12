@@ -106,13 +106,19 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
          * @cfg {Ext.XTemplate} tpl
          * A {@link Ext.XTemplate} used to setup the details panel body.
          */
+        
+
+       
         this.tpl = new Ext.XTemplate(
-            '<tpl for="maps">',
-                '<img title="{title}" src="{url}">',
+            '<tpl for="maps1.urls">',
+            	'<img style="display:block; position:absolute; left:1px; top:1px" title="title" src="{url}">',
+            '</tpl>',
+            '<tpl for="maps2.urls">',
+            	'<img style="display:block; position:absolute; left:1px; top:311px" title="title" src="{url}">',
             '</tpl>',
             '<tpl for="formats">',
-                '<fieldset>',
-                    '<legend align="top">',
+                '<fieldset style="display:block; position:absolute; left:1px; top:621px">',
+                    '<legend>',
                         '<div class="genapp-query-details-panel-fieldset-title">{title}</div>',
                         '<tpl if="!'+ this.hideSeeChildrenButton +' && children_count != 0">',
                             '<div class="genapp-query-details-panel-see-children" ',
@@ -136,7 +142,7 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
                             '<tpl if="type != \'IMAGE\'">',
                                 '<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? "-" : values.value]}</p>',
                             '</tpl>',
-                            '<tpl if="type == \'IMAGE\'">',
+                            '<tpl if="type == \'IMAGE\'">', 
                                 '{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/photos/\' + values.value + \'\">\']}',
                             '</tpl>',
                         '</tpl>',
@@ -157,12 +163,15 @@ Genapp.DetailsPanel = Ext.extend(Ext.Panel, {
      * 
      * @param {Ext.Panel} panel The details panel
      */
+    
     updateDetails : function(panel) {
         this.getUpdater().showLoading();
         Ext.Ajax.request({
             url : Genapp.ajax_query_url + this.dataUrl,
             success :function(response, options){
                 var details = Ext.decode(response.responseText);
+                
+                
                 var title = details.title;
                 if(details.title.length > this.titleCharsMaxLength){
                     title = details.title.substring(0,this.titleCharsMaxLength) + '...';

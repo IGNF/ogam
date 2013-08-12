@@ -762,9 +762,9 @@ class Genapp_Service_GenericService {
 						foreach ($value as $val) {
 							if ($val != null && $val != '' && is_string($val)) {
 								if ($exact) {
-									$sql .= "ST_Equals(".$column.", transform(ST_GeomFromText('".$val."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+									$sql .= "ST_Equals(".$column.", st_transform(ST_GeomFromText('".$val."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
 								} else {
-									$sql .= "ST_intersects(".$column.", transform(ST_GeomFromText('".$val."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+									$sql .= "ST_intersects(".$column.", st_transform(ST_GeomFromText('".$val."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
 								}
 								$sql .= " OR ";
 								$oradded = true;
@@ -777,9 +777,9 @@ class Genapp_Service_GenericService {
 					} else {
 						if (is_string($value)) {
 							if ($exact) {
-								$sql .= " AND ST_Equals(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+								$sql .= " AND ST_Equals(".$column.", ST_transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
 							} else {
-								$sql .= " AND ST_intersects(".$column.", transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
+								$sql .= " AND ST_intersects(".$column.", ST_transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS."))";
 							}
 						}
 					}
@@ -864,7 +864,7 @@ class Genapp_Service_GenericService {
 				$sql = $column." = '".$value."'";
 				break;
 			case "GEOM":
-				$sql = $column." = transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS.")";
+				$sql = $column." = ST_transform(ST_GeomFromText('".$value."', ".$this->visualisationSRS."), ".$this->databaseSRS.")";
 				break;
 			case "STRING":
 			default:
@@ -935,10 +935,10 @@ class Genapp_Service_GenericService {
 			// Special case for THE_GEOM
 			$sql .= "st_asText(st_transform(".$field->format.".".$field->columnName.",".$this->visualisationSRS.")) as location, ";
 			$sql .= "st_asText(st_transform(".$field->format.".".$field->columnName.",".$this->visualisationSRS.")) as ".$field->getName().", ";
-			$sql .= 'ymin(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_y_min, ';
-			$sql .= 'ymax(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_y_max, ';
-			$sql .= 'xmin(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_x_min, ';
-			$sql .= 'xmax(box2d(transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_x_max ';
+			$sql .= 'st_ymin(box2d(st_transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_y_min, ';
+			$sql .= 'st_ymax(box2d(st_transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_y_max, ';
+			$sql .= 'st_xmin(box2d(st_transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_x_min, ';
+			$sql .= 'st_xmax(box2d(st_transform('.$field->format.".".$field->columnName.','.$this->visualisationSRS.'))) as '.$field->getName().'_x_max ';
 
 		} else {
 			$sql .= $field->format.".".$field->columnName." as ".$field->getName();

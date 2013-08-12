@@ -81,7 +81,7 @@ $queriesArg['request']  = 'GetMap';
 $queriesArg['service']  = 'WMS';
 
 $uri = $AppConf->mapserver_url . http_build_query($queriesArg);
-//error_log($uri);
+error_log($uri);
 header('Content-Type: image/png');
 $content = file_get_contents($uri);
 if ($content !== FALSE) {

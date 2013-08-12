@@ -53,7 +53,6 @@ class MapController extends AbstractOGAMController {
 	 */
 	public function getMapParametersAction() {
 		$this->logger->debug('getMapParametersAction');
-
 		// Get back the provider id for the current user
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
@@ -67,7 +66,7 @@ class MapController extends AbstractOGAMController {
 
 		// Get the available scales
 		$scales = $this->layersModel->getScales();
-
+		
 		// Transform the available scales into resolutions
 		$resolutions = $this->_getResolutions($scales);
 		$resolString = implode(",", $resolutions);
@@ -175,44 +174,39 @@ class MapController extends AbstractOGAMController {
 
 		// Get some configutation parameters
 		$configuration = Zend_Registry::get("configuration");
-		$tilecacheURLs = $configuration->tilecache_url->toArray();
-		$tileBaseURLs = $configuration->tiles_base_url->toArray();
 		$proxyPath = $configuration->useMapProxy ? '/mapProxy.php' : '/proxy/gettile';
+		
+		// Get the available services base urls and parameters
+		$services = $this->layersModel->getServices();
 
 		// Get the available layers
 		$layers = $this->layersModel->getLayersList($providerId);
-
+		
 		// Get the available scales
 		$scales = $this->layersModel->getScales();
-
 		// Transform the available scales into resolutions
 		$resolutions = $this->_getResolutions($scales);
 
-		// Build the base URL for cached tiles
-		$out = '{"url_array_cached":[';
-		foreach ($tilecacheURLs as $tilecacheURL) {
-			$out .= '"'.$tilecacheURL.'&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap",';
-		}
-		// Remove the last comma
-		if (!empty($tilecacheURLs)) {
-			$out = substr($out, 0, -1);
-		}
-		echo $out.'],';
-
-		// Build the base URL for mapserver tiles
+				
+		// Build the base URL for tiles
 		$sessionId = session_id();
-		$out = '"url_array_tiled":[';
-		foreach ($tileBaseURLs as $pathBaseURL) {
-			$out .= '"'.$pathBaseURL.$proxyPath."?SESSION_ID=".$sessionId.'&LANG='.$this->lang.'",'; // appel direct
+		$out = '{';
+		foreach ($services as $service) {
+			 $out .='"'.$service->serviceName.'":'.$service->serviceConfig.',';
+			 if ($service->serviceName == "mapserver") {
+			     $tileBaseUrl = json_decode($service->serviceConfig)->{'urls'}[0];
+			 }
 		}
-		// Remove the last comma
-		if (!empty($tileBaseURLs)) {
-			$out = substr($out, 0, -1);
-		}
-		echo $out.'],';
 
-		// Build the base URL for mapserver tiles
-		echo '"url_wfs":"'.$tileBaseURLs[0].'/proxy/getwfs?SESSION_ID='.$sessionId.'",';
+		// Remove the last comma
+		if (!empty($layers)) {
+		    $out = substr($out, 0, -1);
+		}
+		
+		echo $out;
+		
+		// Build the wfs base URL for mapserver tiles
+		echo ',"url_wfs":"'.$tileBaseUrl.'/proxy/getwfs?SESSION_ID='.$sessionId.'",';
 
 		// For each available layer, build the corresponding URL and definition
 		$out = '"layers":[';
@@ -230,13 +224,9 @@ class MapController extends AbstractOGAMController {
 			// Logical layer name
 			$out .= ', "name":"'.$layer->layerName.'"';
 
-			// URL for the layer
-			if ($layer->isCached == 1) {
-				$out .= ', "url":"url_array_cached"';
-			} else {
-				$out .= ', "url":"url_array_tiled"';
-			}
-
+			// Service name
+			$out .= ', "servicename":"'.$layer->serviceName.'"';
+			
 			// Has a legend ?
 			if ($layer->hasLegend == 1) {
 				$out .= ', "hasLegend": true';
@@ -246,8 +236,8 @@ class MapController extends AbstractOGAMController {
 
 			$out .= ', "params":{';
 
-			// Mapserver Layer name (or list of names)
-			$layerNames = $layer->mapservLayers;
+			// Server Layer name (or list of names)
+			$layerNames = $layer->serviceLayerName;
 			$out .= '"layers" : ["'.$layerNames.'"]';
 
 			// Transparency
@@ -510,42 +500,86 @@ class MapController extends AbstractOGAMController {
 		$layers = $this->_getParam('layers');
 		$centerX = substr($center, stripos($center, "lon=") + 4, stripos($center, ",") - (stripos($center, "lon=") + 4));
 		$centerY = substr($center, stripos($center, "lat=") + 4);
-
-		// Get the mapserver name for the layers
+		
+		//Get the base urls for the services
+		$services = $this->layersModel->getServices();
+		
+		// Get the server name for the layers
 		$layerNames = explode(",", $layers);
-		$mapservLayers = "";
+		$serviceLayerNames = "";
+		$baseUrls="";
 		foreach ($layerNames as $layerName) {
 			$layer = $this->layersModel->getLayer($layerName);
-			$mapservLayers .= $layer->mapservLayers.",";
+			$serviceLayerNames .= $layer->serviceLayerName.",";
+			
+			//Get the base Url for service print
+			$serviceName = $layer->serviceName;
+			foreach ($services as $service) {
+			    if ($service->serviceName == $serviceName){
+			        $baseUrls .=$service->servicePrintUrl.",";
+			    }
+			}
 		}
-		$mapservLayers = substr($mapservLayers, 0, -1); // remove last comma
-
+		$baseUrls = substr($baseUrls, 0, -1); // remove last comma		
+		$serviceLayerNames = substr($serviceLayerNames, 0, -1); // remove last comma
+		
+		
 		// Get the configuration values
 		$configuration = Zend_Registry::get("configuration");
-		$reportServiceURL = $configuration->reportGenerationService_url;
-		$mapReport = $configuration->mapReport;
-
-		// Get the corresponding BBOX (for an image of 700 pixels, the size in the PDF report)
-		$bbox = $this->_getBbox($centerX, $centerY, $zoom, 700);
-		$this->logger->debug('bbox : '.$bbox);
-
-		// Calculate the Mapserver URL
-		$wmsURL = $configuration->mapserver_url;
-		$wmsURL .= "&SERVICE=WMS";
-		$wmsURL .= "&VERSION=1.1.1";
-		$wmsURL .= "&FORMAT=PNG";
-		$wmsURL .= "&REQUEST=GetMap";
-		$wmsURL .= "&SESSION_ID=".session_id();
-		$wmsURL .= "&SRS=EPSG:".$configuration->srs_visualisation;
-		$wmsURL .= "&BBOX=".$bbox;
-		$wmsURL .= "&LAYERS=".$mapservLayers;
-		// The WIDTH and HEIGHT parameters are defined inside the report
-
+		$mapReportServiceURL = $configuration->mapReportGenerationService_url;
+	    
+		    
+		// Get the scales
+		$scales = $this->layersModel->getScales();
+		    
+		// Get the current scale
+		$scalesArray = array_values($scales);
+		$currentScale = $scales[$zoom];
+		    
+		//Construction of the json specification, parameter of mapfish-print servlet
+		$spec="{
+    
+		    layout: 'A4 portrait',
+		    title: 'A simple example',
+		    srs: 'EPSG:2154',
+		    units: 'm',
+		    layers: [";
+		    $layersArray = explode(",",$layers);
+		    $baseUrlsArray = explode(",",$baseUrls);
+		    $serviceLayerNamesArray = explode(",",$serviceLayerNames);
+		    $i=0;
+		    foreach ($layersArray as $layer) {
+		        $spec .="{
+		        type: 'WMS',
+		        format: 'image/png',
+		        layers: ['$serviceLayerNamesArray[$i]'],
+		        baseURL: '$baseUrlsArray[$i]',
+		        customParams: {TRANSPARENT:true}
+		        },";
+		        $i++;
+		    }
+		    $spec.=" ],
+		    pages: [
+		        {
+		            center: [$centerX,$centerY],
+		            scale: $currentScale,
+		            dpi: 190,
+		            mapTitle: '$layers',
+		            comment: 'L93, center: $centerX,$centerY, scale: 1 : $currentScale',
+		            data: [
+		                {id:1, name: 'blah', icon: 'icon_pan'},
+		                {id:2, name: 'blip', icon: 'icon_zoomin'}
+		            ]
+                }
+            ]
+	    }";
+   
+       $this->logger->debug('json : '.$spec);
+		    
+		    
 		// Calculate the report URL
-		$reportUrl = $reportServiceURL."/run?__format=pdf&__report=report/".$mapReport;
-		$reportUrl .= "&WMSURL=".urlencode($wmsURL);
-
-		$this->logger->debug('generatemap URL : '.$reportUrl);
+		$mapReportUrl = $mapReportServiceURL."/print.pdf?spec=".urlencode($spec);
+		$this->logger->debug('generatemap URL : '.$mapReportUrl);
 		
 		// Set the timeout and user agent
 		ini_set ('user_agent', $_SERVER['HTTP_USER_AGENT']);
@@ -563,7 +597,7 @@ class MapController extends AbstractOGAMController {
 		header("Content-disposition: attachment; filename=Map.pdf");
 
 		// Launch the PDF generation
-		$handle = fopen($reportUrl, "rb");
+		$handle = fopen($mapReportUrl, "rb");
 		if ($handle) {
 			while (!feof($handle)) {
 				echo fread($handle, 8192);
