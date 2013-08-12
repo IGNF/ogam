@@ -1,5 +1,4 @@
-CREATE SCHEMA mapping;
-
+SET client_encoding='UTF8';CREATE SCHEMA mapping;
 SET SEARCH_PATH = mapping, public;
 
 
@@ -47,19 +46,19 @@ CREATE TABLE scales
 
 COMMENT ON COLUMN scales.scale IS 'The denominator of the scale, used to calculate the resolutions';
 
-
+/*==============================================================*//* Table: layer_service                                      *//*==============================================================*/CREATE TABLE layer_service( service_name VARCHAR(50)    NOT NULL, config json, print_pdf_base_url VARCHAR(100) PRIMARY KEY  (service_name))WITHOUT OIDS;
 /*==============================================================*/
-/* Table: layer_definition                                      */
+/* Table: layer                                      */
 /*==============================================================*/
-CREATE TABLE layer_definition
+CREATE TABLE layer
 (
   layer_name 			VARCHAR(50)    NOT NULL,   -- Logical name of the layer
   layer_label 			VARCHAR(100),  -- Label of the layer
-  mapserv_layers 		VARCHAR(500),  -- Name of the corresponding layer(s)
+  service_layer_name 	VARCHAR(500),  -- Name of the corresponding layer(s)
   isTransparent 		INT,           -- Indicate if the layer is transparent
   isBaseLayer	 		INT,		   -- Indicate if the layer is a base layer (or an overlay)
   isUntiled			 	INT,           -- Force OpenLayer to request one image each time
-  isCached			 	INT,           -- Use Tilecache
+  service_name			VARCHAR(50),   -- Indicates the service
   maxscale				INT,           -- Max scale of apparation
   minscale				INT,           -- Min scale of apparition
   has_legend    		INT, 	   	   -- If value = 1 is the layer has a legend that should be displayed
@@ -72,27 +71,27 @@ CREATE TABLE layer_definition
   PRIMARY KEY  (layer_name)
 ) WITHOUT OIDS;
 
-COMMENT ON COLUMN layer_definition.layer_name IS 'Logical name of the layer';
-COMMENT ON COLUMN layer_definition.layer_label IS 'Label of the layer';
-COMMENT ON COLUMN layer_definition.mapserv_layers IS 'Name of the corresponding layer(s) in mapserver';
-COMMENT ON COLUMN layer_definition.isTransparent IS 'Indicate if the layer is transparent';
-COMMENT ON COLUMN layer_definition.isBaseLayer IS 'Indicate if the layer is a base layer (or an overlay)';
-COMMENT ON COLUMN layer_definition.isUntiled IS 'Force OpenLayer to request one image each time';
-COMMENT ON COLUMN layer_definition.isCached IS 'Use Tilecache';
-COMMENT ON COLUMN layer_definition.maxscale IS 'Max scale of apparation';
-COMMENT ON COLUMN layer_definition.minscale IS 'Min scale of apparition';
-COMMENT ON COLUMN layer_definition.has_legend IS 'If value = 1 is the layer has a legend that should be displayed';
-COMMENT ON COLUMN layer_definition.transitionEffect IS 'Transition effect (resize or null)';
-COMMENT ON COLUMN layer_definition.imageFormat IS 'Image format (PNG or JPEG)';
-COMMENT ON COLUMN layer_definition.provider_id IS 'If empty, the layer can be seen by any provider if not it is limited to one provider';
-COMMENT ON COLUMN layer_definition.has_sld IS 'If value = 1 we add a SLD information';
-COMMENT ON COLUMN layer_definition.activate_type IS 'Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or INTERPOLATION)';
-COMMENT ON COLUMN layer_definition.isVector IS 'Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster) ';
+COMMENT ON COLUMN layer.layer_name IS 'Logical name of the layer';
+COMMENT ON COLUMN layer.layer_label IS 'Label of the layer';
+COMMENT ON COLUMN layer.service_layer_name IS 'Name of the corresponding layer(s) in the service';
+COMMENT ON COLUMN layer.isTransparent IS 'Indicate if the layer is transparent';
+COMMENT ON COLUMN layer.isBaseLayer IS 'Indicate if the layer is a base layer (or an overlay)';
+COMMENT ON COLUMN layer.isUntiled IS 'Force OpenLayer to request one image each time';
+COMMENT ON COLUMN layer.service_name IS 'Indicates the service';
+COMMENT ON COLUMN layer.maxscale IS 'Max scale of apparation';
+COMMENT ON COLUMN layer.minscale IS 'Min scale of apparition';
+COMMENT ON COLUMN layer.has_legend IS 'If value = 1 is the layer has a legend that should be displayed';
+COMMENT ON COLUMN layer.transitionEffect IS 'Transition effect (resize or null)';
+COMMENT ON COLUMN layer.imageFormat IS 'Image format (PNG or JPEG)';
+COMMENT ON COLUMN layer.provider_id IS 'If empty, the layer can be seen by any provider if not it is limited to one provider';
+COMMENT ON COLUMN layer.has_sld IS 'If value = 1 we add a SLD information';
+COMMENT ON COLUMN layer.activate_type IS 'Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or INTERPOLATION)';
+COMMENT ON COLUMN layer.isVector IS 'Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster) ';
 
 /*==============================================================*/
-/*  Table: Legend                                               */
+/*  Table: Layer_tree                                               */
 /*==============================================================*/
-CREATE TABLE legend
+CREATE TABLE layer_tree
 (
 	item_id INT,						-- identify the item
 	parent_id  VARCHAR(50)    NOT NULL, -- identify the parent of the item (-1 = root)
@@ -107,16 +106,16 @@ CREATE TABLE legend
   	PRIMARY KEY  (item_id)
 ) WITHOUT OIDS;
 
-COMMENT ON COLUMN legend.item_id IS 'Identify the legend item';
-COMMENT ON COLUMN legend.parent_id IS 'Identify the parent of the item (-1 = root)';
-COMMENT ON COLUMN legend.is_layer IS 'If value = 1 then this is a layer, else it is only a node';
-COMMENT ON COLUMN legend.is_checked IS 'If value = 1 then the item is checked by default';
-COMMENT ON COLUMN legend.is_hidden IS 'If value = 1 then the item is hidden by default';
-COMMENT ON COLUMN legend.is_disabled IS 'If value = 1 then the item is displayed but grayed';
-COMMENT ON COLUMN legend.is_expended IS 'If value = 1 then the node is expended by default';
-COMMENT ON COLUMN legend.name IS 'Logical name of the layer or label of the node';
-COMMENT ON COLUMN legend.position IS 'Position of the layer in its group';
-COMMENT ON COLUMN legend.checked_group IS 'Group of layers';
+COMMENT ON COLUMN layer_tree.item_id IS 'Identify the layer_tree item';
+COMMENT ON COLUMN layer_tree.parent_id IS 'Identify the parent of the item (-1 = root)';
+COMMENT ON COLUMN layer_tree.is_layer IS 'If value = 1 then this is a layer, else it is only a node';
+COMMENT ON COLUMN layer_tree.is_checked IS 'If value = 1 then the item is checked by default';
+COMMENT ON COLUMN layer_tree.is_hidden IS 'If value = 1 then the item is hidden by default';
+COMMENT ON COLUMN layer_tree.is_disabled IS 'If value = 1 then the item is displayed but grayed';
+COMMENT ON COLUMN layer_tree.is_expended IS 'If value = 1 then the node is expended by default';
+COMMENT ON COLUMN layer_tree.name IS 'Logical name of the layer or label of the node';
+COMMENT ON COLUMN layer_tree.position IS 'Position of the layer in its group';
+COMMENT ON COLUMN layer_tree.checked_group IS 'Group of layers';
 
 
 
@@ -142,6 +141,5 @@ COMMENT ON COLUMN bounding_box.bb_ymax IS 'Max latitude coordinate';
 COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the data provider';
 
 SET SEARCH_PATH = mapping, public;
-
 
         
