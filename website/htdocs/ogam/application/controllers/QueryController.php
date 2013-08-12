@@ -1,4 +1,3 @@
-
 <?php
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
@@ -529,8 +528,8 @@ class QueryController extends AbstractOGAMController {
 		
 	    try{
 	        $pdf->writeHTML($this->view->partial('query/pdfexport.phtml', $pdfExportArray));
-	    
 	        $pdf->Output($this->_wd_remove_accents($data['title']).'.pdf', 'D');
+	       // $this->logger->debug('wroten pdf :'.$pdf);
 	    }
 		
 		catch(HTML2PDF_exception $e) {
