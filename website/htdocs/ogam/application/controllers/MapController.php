@@ -483,7 +483,7 @@ class MapController extends AbstractOGAMController {
 	/**
 	 * Show a PDF containing the map selected by the user.
 	 */
-	function generatemapAction() {
+	function printmapAction() {
 
 		$this->logger->debug('generatemapAction');
 
@@ -534,7 +534,7 @@ class MapController extends AbstractOGAMController {
     
 		    layout: 'A4 portrait',
 		    title: 'A simple example',
-		    srs: 'EPSG:2154',
+		    srs: '".$configuration->srs_visualisation."',
 		    units: 'm',
 		    layers: [";
 		    $layersArray = explode(",",$layers);
