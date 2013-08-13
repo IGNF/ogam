@@ -147,9 +147,7 @@ class MapController extends AbstractOGAMController {
 			$json .= '{"code":'.json_encode($layerName).',';
 			$json .= '"label":'. json_encode($layerLabel).'},';
 		}
-		if(!empty($layerNames)){
-			$json = substr($json, 0, -1);
-		}
+		$json = substr($json, 0, -1); // remove last comma
 		$json .= ']';
 		$json .= '}';
 
@@ -197,16 +195,11 @@ class MapController extends AbstractOGAMController {
 			     $tileBaseUrl = json_decode($service->serviceConfig)->{'urls'}[0];
 			 }
 		}
-
-		// Remove the last comma
-		if (!empty($layers)) {
-		    $out = substr($out, 0, -1);
-		}
 		
 		echo $out;
 		
 		// Build the wfs base URL for mapserver tiles
-		echo ',"url_wfs":"'.$tileBaseUrl.'/proxy/getwfs?SESSION_ID='.$sessionId.'",';
+		echo '"url_wfs":"'.$tileBaseUrl.'/proxy/getwfs?SESSION_ID='.$sessionId.'",';
 
 		// For each available layer, build the corresponding URL and definition
 		$out = '"layers":[';
