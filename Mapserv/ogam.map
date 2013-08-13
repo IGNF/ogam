@@ -105,7 +105,7 @@ LAYER
 	STATUS ON 
 	CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM nuts_0 USING UNIQUE gid USING srid=3035"
 	CLASSITEM "cell_id"
 	LABELITEM "cell_id"
@@ -154,7 +154,7 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
             SELECT the_geom, format, pk, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POLYGON'
@@ -193,7 +193,7 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
             SELECT the_geom, format, pk, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POINT'
@@ -231,7 +231,7 @@ LAYER
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5433"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
             SELECT transform(the_geom, 3035) as the_geom, pk as oid  
             FROM location
