@@ -297,4 +297,4 @@ ALTER TABLE ONLY predefined_request_group_asso
     
 
 
-      
+GRANT ALL ON ALL TABLES IN SCHEMA website TO ogam;

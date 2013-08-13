@@ -635,33 +635,5 @@ alter table FILE_FIELD
       references FILE_FORMAT (FORMAT)
       on delete restrict on update restrict;
       
-      
-/*      
-GRANT ALL ON SCHEMA metadata TO bronze;
-GRANT ALL ON TABLE metadata.checks TO bronze;
-GRANT ALL ON TABLE metadata.checks_per_provider TO bronze;
-GRANT ALL ON TABLE metadata.data TO bronze;
-GRANT ALL ON TABLE metadata.dataset TO bronze;
-GRANT ALL ON TABLE metadata.dataset_fields TO bronze;
-GRANT ALL ON TABLE metadata.dataset_files TO bronze;
-GRANT ALL ON TABLE metadata.dynamode TO bronze;
-GRANT ALL ON TABLE metadata.field TO bronze;
-GRANT ALL ON TABLE metadata.field_mapping TO bronze;
-GRANT ALL ON TABLE metadata.file_field TO bronze;
-GRANT ALL ON TABLE metadata.file_format TO bronze;
-GRANT ALL ON TABLE metadata.form_field TO bronze;
-GRANT ALL ON TABLE metadata.form_format TO bronze;
-GRANT ALL ON TABLE metadata.format TO bronze;
-GRANT ALL ON TABLE metadata.group_mode TO bronze;
-GRANT ALL ON TABLE metadata."mode" TO bronze;
-GRANT ALL ON TABLE metadata.mode_tree TO bronze;
-GRANT ALL ON TABLE metadata.process TO bronze;
-GRANT ALL ON TABLE metadata.range TO bronze;
-GRANT ALL ON TABLE metadata.table_field TO bronze;
-GRANT ALL ON TABLE metadata.table_format TO bronze;
-GRANT ALL ON TABLE metadata.table_schema TO bronze;
-GRANT ALL ON TABLE metadata.table_tree TO bronze;
-GRANT ALL ON TABLE metadata.unit TO bronze;
-GRANT ALL ON TABLE metadata.translation TO bronze;   
 
-*/      
+GRANT ALL ON ALL TABLES IN SCHEMA metadata TO ogam;
