@@ -46,7 +46,7 @@ CREATE TABLE scales
 
 COMMENT ON COLUMN scales.scale IS 'The denominator of the scale, used to calculate the resolutions';
 
-/*==============================================================*//* Table: layer_service                                      *//*==============================================================*/CREATE TABLE layer_service( service_name VARCHAR(50)    NOT NULL, config json, print_pdf_base_url VARCHAR(100) PRIMARY KEY  (service_name))WITHOUT OIDS;
+/*==============================================================*//* Table: layer_service                                      *//*==============================================================*/CREATE TABLE layer_service( service_name 			VARCHAR(50)    NOT NULL, config 				json,     -- Si version postgresql < 9.2, utiliser un varchar(1000) print_pdf_base_url 	VARCHAR(100), PRIMARY KEY  (service_name))WITHOUT OIDS;COMMENT ON TABLE layer_service IS 'Liste des fournisseurs de services (Mapservers, Géoportail, ...)';COMMENT ON COLUMN layer_service.service_name IS 'Logical name of the service';COMMENT ON COLUMN layer_service.config IS 'Configuration au format de OpenLayers';COMMENT ON COLUMN layer_service.print_pdf_base_url IS 'URL pour l''impression';
 /*==============================================================*/
 /* Table: layer                                      */
 /*==============================================================*/
@@ -70,7 +70,7 @@ CREATE TABLE layer
   isVector              INT,           -- Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster) 
   PRIMARY KEY  (layer_name)
 ) WITHOUT OIDS;
-
+COMMENT ON TABLE layer IS 'Liste des layers';
 COMMENT ON COLUMN layer.layer_name IS 'Logical name of the layer';
 COMMENT ON COLUMN layer.layer_label IS 'Label of the layer';
 COMMENT ON COLUMN layer.service_layer_name IS 'Name of the corresponding layer(s) in the service';
