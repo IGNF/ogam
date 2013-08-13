@@ -1986,7 +1986,7 @@ Genapp.ConsultationPanel = Ext
 						}
 						activatedLayersNames = activatedLayersNames.substr(0, activatedLayersNames.length - 1);
 
-						Genapp.util.post(Genapp.base_url + 'map/generatemap', {
+						Genapp.util.post(Genapp.base_url + 'map/printmap', {
 							center : center,
 							zoom : zoom,
 							layers : activatedLayersNames
