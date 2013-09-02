@@ -69,7 +69,7 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	/**
 	 * Manage multiple values,
 	 */
-	muliple : false,
+	multiple : false,
 
 	/**
 	 * The field menu (displayed on a trigger click).
