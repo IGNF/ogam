@@ -23,7 +23,24 @@
 
 Ext.namespace('Genapp.form.menu');
 
-Genapp.form.menu.TaxrefMenu = Ext.extend(Genapp.form.menu.TreeMenu, {
+Genapp.form.menu.TaxrefMenu = Ext.extend(Ext.menu.Menu, {
+	
+	/**
+	 * @cfg {String/Object} layout Specify the layout manager class for this
+	 *      container either as an Object or as a String. See
+	 *      {@link Ext.Container#layout layout manager} also. Default to 'auto'.
+	 *      Note: The layout 'menu' doesn't work on FF3.5, the rangePicker items
+	 *      are not rendered because the rangePicker is hidden... But it's
+	 *      working on IE ???
+	 */
+	layout : 'auto',
+	/**
+	 * @cfg {String} cls An optional extra CSS class that will be added to this
+	 *      component's Element (defaults to 'x-number-range-menu'). This can be
+	 *      useful for adding customized styles to the component or any of its
+	 *      children using standard CSS rules.
+	 */
+	cls : 'x-tree-menu',
 
 	/**
 	 * The {@link Genapp.form.picker.TaxrefPicker} instance for this TaxrefMenu.
@@ -40,7 +57,6 @@ Genapp.form.menu.TaxrefMenu = Ext.extend(Genapp.form.menu.TreeMenu, {
 
 		// Initialise the picker linked to this menu
 		this.taxrefPicker = new Genapp.form.picker.TaxrefPicker(this.initialConfig);
-		this.taxrefPicker.multiple = this.multiple;
 
 		Ext.apply(this, {
 			plain : true,
