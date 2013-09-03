@@ -38,7 +38,7 @@ Genapp.form.picker.TaxrefPicker = Ext.extend(Ext.tree.TreePanel, {
 	 * @cfg {Number} width The width of this component in pixels (defaults to
 	 *      300).
 	 */
-	width : 300,
+	width : 500,
 	/**
 	 * @cfg {String} buttonAlign The alignment of any {@link #buttons} added to
 	 *      this panel. Valid values are 'right', 'left' and 'center' (defaults
@@ -75,6 +75,7 @@ Genapp.form.picker.TaxrefPicker = Ext.extend(Ext.tree.TreePanel, {
 	autoScroll : true,
 	containerScroll : true,
 	frame : false,
+	
 	baseAttr : {
 		singleClickExpand : true
 	},
@@ -105,16 +106,15 @@ Genapp.form.picker.TaxrefPicker = Ext.extend(Ext.tree.TreePanel, {
 			width : 'auto',
 			handler : this.onOkButtonPress.createDelegate(this)
 		};
+		
+		// Custom treeloader
+		this.loader = new Genapp.form.picker.TaxrefNodeLoader({url: this.dataUrl});
+		//this.loader = new Ext.tree.TreeLoader({url: this.dataUrl});
 
 		// Add the validation button
 		if (!this.hideValidationButton) {
 			this.buttons = [ this.validationButton ];
 			this.height = this.height + 28;
-		}
-
-		// Allow multiple selection in the picker
-		if (this.multiple) {
-			this.selModel = new Ext.tree.MultiSelectionModel();
 		}
 
 		Genapp.form.picker.TaxrefPicker.superclass.initComponent.call(this);
