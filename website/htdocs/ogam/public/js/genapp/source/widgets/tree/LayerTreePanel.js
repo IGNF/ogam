@@ -114,25 +114,19 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 	},
 	
 	/**
-	 * Reorganize the layers indexes and Z layers indexes when moving a layer
-	 *
+	 * Reorganize the layers indexes and Z layers indexes when moving a layer.
 	 */
 	setLayerIdx : function(layer, idxDepart,idxArrivee) {
         if (idxArrivee < 0) {
-        	console.log('a');
             idxArrivee = 0;
         } else if (idxArrivee > this.map.layers.length) {
-        	console.log('b')
             idxArrivee = this.map.layers.length;
         }
         if (idxDepart != idxArrivee) {
         	
         	this.map.layers.splice(idxDepart,1);
-        	console.log(this.map.getLayerIndex(layer));
         	this.map.layers.splice(idxArrivee, 0, layer);
-        	console.log(this.map.getLayerIndex(layer));
             for (var i=0, len=this.map.layers.length; i<len; i++) {
-            	console.log(this.map.layers[i].label+' : '+this.map.getLayerIndex(this.map.layers[i]));
             	this.map.layers[i].setZIndex(i);
             }
         }
