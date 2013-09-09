@@ -103,7 +103,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
 		$params[] = $role->roleCode;
 
-		$req .= " ORDER BY (parent_id, position) DESC";
+		$req .= " ORDER BY position DESC";
 
 		Zend_Registry::get("logger")->info('getLayersList : '.$req);
 
