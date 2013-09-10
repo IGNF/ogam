@@ -1163,17 +1163,31 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('$start : '.$start);
 		$this->logger->debug('$limit : '.$limit);
 
-		$codes = $this->metadataModel->getTaxrefModes($unit, $query, $start, $limit);
+		$taxrefs = $this->metadataModel->getTaxrefModes($unit, $query, $start, $limit);
 
-		if (count($codes) < $limit) {
+		if (count($taxrefs) < $limit) {
 			// optimisation
-			$count = count($codes);
+			$count = count($taxrefs);
 		} else {
 			$count = $this->metadataModel->getTaxrefModesCount($unit, $query);
 		}
 
 		// Send the result as a JSON String
-		$json = '{"rows":'.json_encode($codes).', "results":'.$count.'}';
+		$json = '{"success":true';
+		$json .= ', "rows":[';
+		foreach ($taxrefs as $taxref) {
+
+			$json .= '{"code":'.json_encode($taxref->code);
+			$json .= ', "label":'.json_encode($taxref->name).'';
+			$json .= ', "isReference":'.json_encode($taxref->isReference).'';
+			$json .= ', "vernacularName":'.json_encode($taxref->vernacularName).'},';
+		}
+		if (!empty($taxrefs)) {
+			$json = substr($json, 0, -1);
+		}
+		$json .= ']';
+		$json .= ', "results":'.$count;
+		$json .= '}';
 
 		echo $json;
 
