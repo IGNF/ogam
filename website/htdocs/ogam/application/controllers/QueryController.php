@@ -596,7 +596,7 @@ class QueryController extends AbstractOGAMController {
 		
 		// Define the header of the response
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
-		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport.csv', true);
+		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_'.date('dmy_Hi').'.csv', true);
 		
 		if (array_key_exists('EXPORT_RAW_DATA', $permissions)) {
 			
