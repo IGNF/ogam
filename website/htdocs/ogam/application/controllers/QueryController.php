@@ -774,7 +774,7 @@ class QueryController extends AbstractOGAMController {
 		
 		// Define the header of the response
 		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
-		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport.kml', true);
+		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_'.date('dmy_Hi').'.kml', true);
 		
 		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
 			
