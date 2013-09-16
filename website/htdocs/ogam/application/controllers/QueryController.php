@@ -355,6 +355,10 @@ class QueryController extends AbstractOGAMController {
 					$formQuery->addResult($split[0], $split[1]);
 				}
 			}
+
+			// Store the request parameters in session
+			$websiteSession = new Zend_Session_Namespace('website');
+			$websiteSession->formQuery = $formQuery;
 			
 			// Call the service to get the definition of the columns
 			echo $this->queryService->getResultColumns($datasetId, $formQuery, $withSQL);
@@ -575,6 +579,68 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
+	
+	/**
+	 * Export the request criterias in the CSV file.
+	 *
+	 * @return String the criterias
+	 */
+	private function _csvExportCriterias() {
+	
+		$criterias = "";
+	
+		$criterias .= '// Request Criterias'."\n";
+		$websiteSession = new Zend_Session_Namespace('website');
+		$formQuery = $websiteSession->formQuery;
+	
+		// List all the criterias
+		foreach ($formQuery->getCriterias() as $criteria) {
+				
+			// Get the description (to get the labels)
+			$formField = $this->metadataModel->getFormField($criteria->format, $criteria->data);
+			$criterias .= '// '.$formField->label.';';
+				
+			// Get the labels corresponding to the values
+			$traductions = array();
+			$tableField = $this->metadataModel->getFormToTableMapping($websiteSession->schema, $formField);
+				
+			if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
+				if ($tableField->subtype == "DYNAMIC") {
+					$traductions = $this->metadataModel->getDynamodeLabels($tableField->unit);
+				} else if ($tableField->subtype == "TREE") {
+					$traductions = $this->metadataModel->getTreeLabels($tableField->unit);
+				} else if ($tableField->subtype == "TAXREF") {
+					$traductions = $this->metadataModel->getTaxrefLabels($tableField->unit);
+				} else {
+					$traductions = $this->metadataModel->getModeLabels($tableField->unit);
+				}
+			}
+				
+			// The value
+			if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
+				if (is_array($criteria->value)) {
+					foreach ($criteria->value as $item) {
+						$criterias .= $traductions[$item].", ";
+					}
+					$criterias = substr($criterias, 0, -2);
+				} else {
+					$criterias .= $traductions[$criteria->value];
+				}
+			} else {
+				if (is_array($criteria->value)) {
+					foreach ($criteria->value as $item) {
+						$criterias .= $item.", ";
+					}
+					$criterias = substr($criterias, 0, -2);
+				} else {
+					$criterias .= $criteria->value;
+				}
+			}
+			$criterias .= "\n";
+		}
+	
+		return $criterias;
+	}
 
 	/**
 	 * Returns a csv file corresponding to the requested data.
@@ -651,6 +717,10 @@ class QueryController extends AbstractOGAMController {
 				$this->_print('// *************************************************' . "\n");
 				$this->_print('// Data Export' . "\n");
 				$this->_print('// *************************************************' . "\n\n");
+				
+				// Request criterias
+				$this->_print($this->_csvExportCriterias());
+				$this->_print("\n");
 				
 				// Export the column names
 				$this->_print('// ');
@@ -729,7 +799,7 @@ class QueryController extends AbstractOGAMController {
 									}
 									$this->_print($value . ';');
 								} else {
-									// Dafault case : String value
+									// Default case : String value
 									$this->_print('"' . $value . '";');
 								}
 							}
