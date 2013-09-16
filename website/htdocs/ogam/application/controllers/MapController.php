@@ -587,7 +587,7 @@ class MapController extends AbstractOGAMController {
 		header("Cache-control: private\n");
 		header("Content-Type: application/pdf\n");
 		header("Content-transfer-encoding: binary\n");
-		header("Content-disposition: attachment; filename=Map.pdf");
+		header("Content-disposition: attachment; filename=Map_".date('dmy_Hi').".pdf");
 
 		// Launch the PDF generation
 		$handle = fopen($mapReportUrl, "rb");
