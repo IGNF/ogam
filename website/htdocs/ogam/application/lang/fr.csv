@@ -296,6 +296,12 @@ Item cannot be deleted because it has children;La donnée ne peut pas être effa
 Error while deleting data;Erreur lors de la suppression
 Data deleted;Donnée supprimée
 
+##########################
+#  Data Query            #
+##########################
+Data Export;Export des données
+Request Criterias;Critères de requête
+
 ################################
 #  indexation / index          #
 ################################

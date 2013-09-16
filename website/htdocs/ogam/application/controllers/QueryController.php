@@ -589,7 +589,7 @@ class QueryController extends AbstractOGAMController {
 	
 		$criterias = "";
 	
-		$criterias .= '// Request Criterias'."\n";
+		$criterias .= '// '.$this->translator->translate('Request Criterias')."\n";
 		$websiteSession = new Zend_Session_Namespace('website');
 		$formQuery = $websiteSession->formQuery;
 	
@@ -715,7 +715,7 @@ class QueryController extends AbstractOGAMController {
 				
 				// Display the default message
 				$this->_print('// *************************************************' . "\n");
-				$this->_print('// Data Export' . "\n");
+				$this->_print('// '.$this->translator->translate('Data Export')."\n");				
 				$this->_print('// *************************************************' . "\n\n");
 				
 				// Request criterias

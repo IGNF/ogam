@@ -28,8 +28,7 @@ class MapController extends AbstractOGAMController {
 		$this->layersModel = new Application_Model_Mapping_Layers();
 		$this->boundingBoxModel = new Application_Model_Mapping_BoundingBox();
 
-		$translate = Zend_Registry::get('Zend_Translate');
-        $this->lang = strtoupper($translate->getAdapter()->getLocale());
+        $this->lang = strtoupper($this->translator->getAdapter()->getLocale());
 	}
 
 	/**
@@ -135,14 +134,13 @@ class MapController extends AbstractOGAMController {
 	public function ajaxgetvectorlayersAction() {
 
 		$this->logger->debug('getvectorlayersAction');
-		$translator = Zend_Registry::get('Zend_Translate');
 
 		// Get the available layers
 		$layerNames = $this->layersModel->getVectorLayersList();
 
 		$json = '{"success":true';
 		$json .= ', layerNames : [';
-		$json .= '{"code":null,"label":"'.$translator->translate('empty_layer').'"},';
+		$json .= '{"code":null,"label":"'.$this->translator->translate('empty_layer').'"},';
 		foreach ($layerNames as $layerName => $layerLabel) {
 			$json .= '{"code":'.json_encode($layerName).',';
 			$json .= '"label":'. json_encode($layerLabel).'},';

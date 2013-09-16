@@ -69,8 +69,6 @@ class DataEditionController extends AbstractOGAMController {
 			$websiteSession->schema = $schema;
 		}
 
-		$this->translator = Zend_Registry::get('Zend_Translate');
-
 	}
 
 	/**
