@@ -371,6 +371,11 @@ Genapp.ConsultationPanel = Ext
 					 */
 					queryPanelSearchButtonTooltip : "Launch the request",
 					/**
+					 * @cfg {Integer} datasetComboBoxWidth The dataset Width
+					 *      (defaults to <tt>345</tt>)
+					 */
+					datasetComboBoxWidth : 345,
+					/**
 					 * @cfg {String} detailsPanelCtTitle The details PanelCt
 					 *      Title (defaults to <tt>'Details'</tt>)
 					 */
@@ -604,7 +609,7 @@ Genapp.ConsultationPanel = Ext
 							forceSelection : true,
 							mode : 'local',
 							typeAhead : true,
-							width : 345,
+							width : this.datasetComboBoxWidth,
 							maxHeight : 100,
 							triggerAction : 'all',
 							emptyText : this.datasetComboBoxEmptyText,
