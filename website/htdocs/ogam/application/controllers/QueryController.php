@@ -828,50 +828,51 @@ class QueryController extends AbstractOGAMController {
 	 * Returns a kml file corresponding to the requested data.
 	 */
 	public function kmlExportAction() {
+
 		$this->logger->debug('gridCsvExportAction');
-		
+
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		
+
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
-		
+
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
 		ini_set("memory_limit", $configuration->memory_limit);
 		ini_set("max_execution_time", $configuration->max_execution_time);
 		$maxLines = 5000;
-		
+
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset='.$configuration->csvExportCharset.';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_'.date('dmy_Hi').'.kml', true);
-		
+
 		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
-			
+
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
 			$fromwhere = $websiteSession->SQLFromWhere;
-			$sql = $select . ', ST_AsKML(the_geom) AS KML ' . $fromwhere;
-			
+			$sql = $select.', ST_AsKML(the_geom) AS KML '.$fromwhere;
+
 			// Count the number of lines
 			$total = $websiteSession->count;
-			$this->logger->debug('Expected lines : ' . $total);
-			
+			$this->logger->debug('Expected lines : '.$total);
+
 			if ($sql == null) {
 				$this->_print('// No Data');
 			} else if ($total > 65535) {
 				$this->_print('// Too many result lines');
 			} else {
-				
+
 				// Retrive the session-stored info
 				$resultColumns = $websiteSession->resultColumns; // array of TableField
-				                                                 
+
 				// Prepare the needed traductions and the form info
 				$traductions = array();
 				foreach ($resultColumns as $tableField) {
-					
+
 					$key = strtolower($tableField->getName());
-					
+
 					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 						if ($tableField->subtype == "DYNAMIC") {
 							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
@@ -883,22 +884,22 @@ class QueryController extends AbstractOGAMController {
 							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 						}
 					}
-					
+
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
 				}
-				
+
 				// Display the default message
-				$this->_print('<?xml version="1.0" encoding="UTF-8"?>' . "\n");
-				$this->_print('<kml xmlns="http://www.opengis.net/kml/2.2">' . "\n");
-				$this->_print('<Document>' . "\n");
-				
+				$this->_print('<?xml version="1.0" encoding="UTF-8"?>'."\n");
+				$this->_print('<kml xmlns="http://www.opengis.net/kml/2.2">'."\n");
+				$this->_print('<Document>'."\n");
+
 				// Get the order parameters
 				$sort = $this->getRequest()->getPost('sort');
 				$sortDir = $this->getRequest()->getPost('dir');
-				
+
 				$filter = "";
-				
+
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
@@ -907,38 +908,43 @@ class QueryController extends AbstractOGAMController {
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
 					$key = $tableField->getName();
-					$filter .= " ORDER BY " . $key . " " . $sortDir . ", id";
+					$filter .= " ORDER BY ".$key." ".$sortDir.", id";
 				} else {
 					$filter .= " ORDER BY id";
 				}
-				
+
 				// Define the max number of lines returned
-				$limit = " LIMIT " . $maxLines . " ";
-				
+				$limit = " LIMIT ".$maxLines." ";
+
 				$count = 0;
 				$page = 0;
 				$finished = false;
-				while (! $finished) {
-					
+				while (!$finished) {
+
 					// Define the position of the cursor in the dataset
-					$offset = " OFFSET " . ($page * $maxLines) . " ";
-					
+					$offset = " OFFSET ".($page * $maxLines)." ";
+
 					// Execute the request
-					$this->logger->debug('reading data ... page ' . $page);
-					$result = $this->genericModel->executeRequest($sql . $filter . $limit . $offset);
-					
+					$this->logger->debug('reading data ... page '.$page);
+					$result = $this->genericModel->executeRequest($sql.$filter.$limit.$offset);
+
 					// Export the lines of data
 					foreach ($result as $line) {
 						
+						$this->_print("<Placemark>");
+						
+						$this->_print($line['kml']);
+
 						$this->_print("<ExtendedData>");
 						foreach ($resultColumns as $tableField) {
-							
+
+
 							$key = strtolower($tableField->getName());
 							$value = $line[$key];
 							$formField = $formFields[$key];
-							
+
 							$label = $formField->label;
-							
+
 							if ($value == null) {
 								$value = "";
 							} else {
@@ -954,9 +960,10 @@ class QueryController extends AbstractOGAMController {
 										$value .= ',';
 									}
 									if ($label != '') {
-										$value = substr($value, 0, - 1);
+										$value = substr($value, 0, -1);
 									}
-									$value = '[' . $value . ']';
+									$value = '['.$value.']';
+
 								} else if ($formField->inputType == "NUMERIC") {
 									// Numeric value
 									if ($formField->decimals != null && $formField->decimals != "") {
@@ -964,34 +971,37 @@ class QueryController extends AbstractOGAMController {
 									}
 								}
 							}
-							
-							$this->_print('<Data name="' . $label . '">');
-							$this->_print('<value>' . $value . '</value>');
+
+
+							$this->_print('<Data name="'.$label.'">');
+							$this->_print('<value>'.$value.'</value>');
 							$this->_print('</Data>');
+
 						}
 						$this->_print("</ExtendedData>");
-						
-						$this->_print("<Placemark>" . $line['kml'] . "</Placemark>");
-						
+
+						$this->_print("</Placemark>");
+
 						$this->_print("\n");
-						$count ++;
+						$count++;
 					}
-					
+
 					// Check we have read everything
 					if ($count == $total) {
 						$finished = true;
 					}
-					
-					$page ++;
+
+					$page++;
+
 				}
-				
-				$this->_print('</Document>' . "\n");
-				$this->_print('</kml>' . "\n");
+
+				$this->_print('</Document>'."\n");
+				$this->_print('</kml>'."\n");
 			}
 		} else {
 			$this->_print('// No Permissions');
 		}
-		
+
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
