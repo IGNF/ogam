@@ -174,6 +174,7 @@ Genapp.ConsultationPanel = Ext
 					 */
 					hideCsvExportButton : false,
 					hideGridKmlExportMenuItem : false,
+					hideGridGeoJSONExportMenuItem : false,
 					/**
 					 * @cfg {Boolean} hideCancelButton if true hide the cancel
 					 *      button (defaults to false).
@@ -272,6 +273,7 @@ Genapp.ConsultationPanel = Ext
 					 */
 					csvExportMenuItemText : 'Export CSV',
 					kmlExportMenuItemText : 'Export KML',
+					geojsonExportMenuItemText : 'Export GeoJSON',
 					/**
 					 * @cfg {String} printMapButtonText The print Map Button
 					 *      Text (defaults to <tt>'Print map'</tt>)
@@ -894,6 +896,13 @@ Genapp.ConsultationPanel = Ext
 									csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
 										text : this.kmlExportMenuItemText,
 										handler : this.exportCSV.createDelegate(this, [ 'kml-export' ]),
+										iconCls : 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
+									}));
+								}
+								if (!this.hideGridGeoJSONExportMenuItem) {
+									csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
+										text : this.geojsonExportMenuItemText,
+										handler : this.exportCSV.createDelegate(this, [ 'geojson-export' ]),
 										iconCls : 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
 									}));
 								}
