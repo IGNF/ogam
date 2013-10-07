@@ -1005,6 +1005,183 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
+	
+	/**
+	 * Returns a geoJSON file corresponding to the requested data.
+	 */
+	public function geojsonExportAction() {
+	
+		$this->logger->debug('geojsonExportAction');
+	
+		$userSession = new Zend_Session_Namespace('user');
+		$permissions = $userSession->permissions;
+	
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $websiteSession->schema;
+	
+		// Configure memory and time limit because the program ask a lot of resources
+		$configuration = Zend_Registry::get("configuration");
+		ini_set("memory_limit", $configuration->memory_limit);
+		ini_set("max_execution_time", $configuration->max_execution_time);
+		$maxLines = 5000;
+	
+		// Define the header of the response
+		$this->getResponse()->setHeader('Content-Type', 'pplication/json;charset='.$configuration->csvExportCharset.';application/force-download;', true);
+		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_'.date('dmy_Hi').'.geojson', true);
+	
+		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
+	
+			$websiteSession = new Zend_Session_Namespace('website');
+			$select = $websiteSession->SQLSelect;
+			$fromwhere = $websiteSession->SQLFromWhere;
+			$sql = $select.', ST_AsGeoJSON(the_geom) AS geojson '.$fromwhere;
+	
+			// Count the number of lines
+			$total = $websiteSession->count;
+			$this->logger->debug('Expected lines : '.$total);
+	
+			if ($sql == null) {
+				$this->_print('// No Data');
+			} else if ($total > 65535) {
+				$this->_print('// Too many result lines');
+			} else {
+	
+				// Retrive the session-stored info
+				$resultColumns = $websiteSession->resultColumns; // array of TableField
+	
+				// Prepare the needed traductions and the form info
+				$traductions = array();
+				foreach ($resultColumns as $tableField) {
+	
+					$key = strtolower($tableField->getName());
+	
+					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
+						if ($tableField->subtype == "DYNAMIC") {
+							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
+						} else if ($tableField->subtype == "TREE") {
+							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
+						} else if ($tableField->subtype == "TAXREF") {
+							$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
+						} else {
+							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
+						}
+					}
+	
+					// Get the full description of the form field
+					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
+				}
+	
+				// Display the default message
+				$this->_print('{ "type": "FeatureCollection",'."\n");
+				$this->_print(' "features": ['."\n");
+	
+				// Get the order parameters
+				$sort = $this->getRequest()->getPost('sort');
+				$sortDir = $this->getRequest()->getPost('dir');
+	
+				$filter = "";
+	
+				if ($sort != "") {
+					// $sort contains the form format and field
+					$split = explode("__", $sort);
+					$formField = new Genapp_Object_Metadata_FormField();
+					$formField->format = $split[0];
+					$formField->data = $split[1];
+					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
+					$key = $tableField->getName();
+					$filter .= " ORDER BY ".$key." ".$sortDir.", id";
+				} else {
+					$filter .= " ORDER BY id";
+				}
+	
+				// Define the max number of lines returned
+				$limit = " LIMIT ".$maxLines." ";
+	
+				$count = 0;
+				$page = 0;
+				$finished = false;
+				while (!$finished) {
+	
+					// Define the position of the cursor in the dataset
+					$offset = " OFFSET ".($page * $maxLines)." ";
+	
+					// Execute the request
+					$this->logger->debug('reading data ... page '.$page);
+					$result = $this->genericModel->executeRequest($sql.$filter.$limit.$offset);
+	
+					// Export the lines of data
+					foreach ($result as $line) {
+	
+						$this->_print('{"type": "Feature", ');
+						$this->_print('"geometry": '.$line['geojson'].', ');
+						$this->_print('"properties": {');
+						foreach ($resultColumns as $tableField) {
+	
+	
+							$key = strtolower($tableField->getName());
+							$value = $line[$key];
+							$formField = $formFields[$key];
+	
+							$label = $formField->label;
+	
+							if ($value == null) {
+								$value = "";
+							} else {
+								if ($tableField->type == "CODE") {
+									// Manage code traduction
+									$value = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+								} else if ($tableField->type == "ARRAY") {
+									// Split the array items
+									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
+									$value = '';
+									foreach ($arrayValues as $arrayValue) {
+										$value .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
+										$value .= ',';
+									}
+									if ($label != '') {
+										$value = substr($value, 0, -1);
+									}
+									$value = '['.$value.']';
+	
+								} else if ($formField->inputType == "NUMERIC") {
+									// Numeric value
+									if ($formField->decimals != null && $formField->decimals != "") {
+										$value = number_format($value, $formField->decimals);
+									}
+								}
+							}
+	
+	
+							$this->_print('"'.$label.'": "'.$value.'", ');
+	
+						}
+						$this->_print("}");
+	
+						$this->_print("},");
+	
+						$this->_print("\n");
+						$count++;
+					}
+	
+					// Check we have read everything
+					if ($count == $total) {
+						$finished = true;
+					}
+	
+					$page++;
+	
+				}
+	
+				$this->_print(']'."\n");
+				$this->_print('}'."\n");
+			}
+		} else {
+			$this->_print('// No Permissions');
+		}
+	
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+	}
 
 	/**
 	 * Convert and display the UTF-8 encoded string to the configured charset
