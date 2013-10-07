@@ -33,7 +33,12 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 	mapWindowValidateButtonText : 'Validate',
 	mapWindowValidateAndSearchButtonText : 'Validate and search',
 	mapWindowCancelButtonText : 'Cancel',
-
+	
+	/**
+	 * @cfg {Boolean} hideWKT if true hide the WKT value.
+	 */
+	hideWKT : false,
+	
 	/**
 	 * @cfg {String} triggerClass An additional CSS class used to style the
 	 *      trigger button. The trigger will always get the class
@@ -158,7 +163,7 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 					this.mapWindow.show();
 				}
 			};
-		}
+		}		
 	},
 
 	/**
@@ -269,7 +274,11 @@ Genapp.form.GeometryField = Ext.extend(Ext.form.TriggerField, {
 			this.submitRequest = true;
 		}
 		this.mapWindow.destroy();
-		this.el.highlight();
+		if (this.hideWKT) {
+			this.el.setStyle('visibility', 'hidden');
+		} else {
+			this.el.highlight();
+		}
 	}
 });
 Ext.reg('geometryfield', Genapp.form.GeometryField);
