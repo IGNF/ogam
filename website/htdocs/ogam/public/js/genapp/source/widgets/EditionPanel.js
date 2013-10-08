@@ -97,6 +97,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	ref : 'editionPage',
 	padding : 20,
 	autoScroll : true,
+	
+	fieldSetWidth : 700,
+	fieldWidth : 450,
 
 	/**
 	 * @cfg {String} parentsFSTitle The parents FieldSet Title (defaults to
@@ -429,10 +432,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			border : false
 		}, {
 			items : centerPanelItems,
-			width : 500,
+			width : this.fieldSetWidth,
 			border : false,
 			defaults : {
-				width : 500
+				width : this.fieldSetWidth
 			}
 		}, {
 			xtype : 'box',
@@ -719,6 +722,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		// Set the label
 		field.fieldLabel = record.label;
+		
+		// Set the width
+		field.width = this.fieldWidth;
 
 		return field;
 	},
