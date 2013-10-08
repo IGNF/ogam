@@ -38,7 +38,7 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 	 * @cfg {Number} width The width of this component in pixels (defaults to
 	 *      300).
 	 */
-	width : 300,
+	width : 500,
 	/**
 	 * @cfg {String} buttonAlign The alignment of any {@link #buttons} added to
 	 *      this panel. Valid values are 'right', 'left' and 'center' (defaults
