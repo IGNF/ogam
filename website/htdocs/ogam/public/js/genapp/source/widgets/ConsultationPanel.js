@@ -314,6 +314,10 @@ Genapp.ConsultationPanel = Ext
 					 *      (defaults to <tt>370</tt>)
 					 */
 					queryPanelWidth : 370,
+					
+					searchButtonWidth : 70,
+					searchButtonHeight : 16,
+					
 					/**
 					 * @cfg {String} queryPanelPinToolQtip The query Panel Pin
 					 *      Tool Qtip (defaults to <tt>'Pin the panel'</tt>)
@@ -994,9 +998,22 @@ Genapp.ConsultationPanel = Ext
 							};
 						} else {
 							resetButton = {
-								xtype : 'tbspacer'
+								xtype : 'tbfill'
 							};
 						}
+						
+						// Request button
+						var searchButton = {
+							xtype : 'tbbutton',
+							width : this.searchButtonWidth,
+							height : this.searchButtonHeight,
+							text : this.queryPanelSearchButtonText,
+							tooltipType : 'title',
+							tooltip : this.queryPanelSearchButtonTooltip,
+							cls : 'genapp_query_formspanel_search_button',
+							scope : this,
+							handler : this.submitRequest
+						};
 
 						var queryPanelConfig = {
 							region : 'west',
@@ -1010,19 +1027,10 @@ Genapp.ConsultationPanel = Ext
 							cls : 'genapp_query_panel',
 							items : [ this.datasetPanel, this.formsPanel ],
 							tools : tools,
-							bbar : [ cancelButton, {
-								xtype : 'tbseparator'
-							}, resetButton, {
-								xtype : 'tbfill'
-							}, {
-								xtype : 'tbbutton',
-								text : this.queryPanelSearchButtonText,
-								tooltipType : 'title',
-								tooltip : this.queryPanelSearchButtonTooltip,
-								cls : 'genapp_query_formspanel_search_button',
-								scope : this,
-								handler : this.submitRequest
-							} ]
+							bbar : [ cancelButton, 
+							         resetButton, 
+							         searchButton 
+							]
 						};
 
 						if (!this.hidePredefinedRequestSaveButton) {
