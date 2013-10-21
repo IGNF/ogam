@@ -748,6 +748,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$tableField->isCalculated = $row['is_calculated'];
 				$tableField->isEditable = $row['is_editable'];
 				$tableField->isInsertable = $row['is_insertable'];
+				$tableField->isMandatory = $row['is_mandatory'];
 				$tableField->position = $row['position'];
 				$tableField->label = $row['label'];
 				$tableField->unit = $row['unit'];
@@ -812,6 +813,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$tableField->isCalculated = $row['is_calculated'];
 				$tableField->isEditable = $row['is_editable'];
 				$tableField->isInsertable = $row['is_insertable'];
+				$tableField->isMandatory = $row['is_mandatory'];
 				$tableField->position = $row['position'];
 				$tableField->label = $row['label'];
 				$tableField->unit = $row['unit'];
@@ -1229,6 +1231,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableField->isCalculated = $row['is_calculated'];
 			$tableField->isEditable = $row['is_editable'];
 			$tableField->isInsertable = $row['is_insertable'];
+			$tableField->isMandatory = $row['is_mandatory'];
 			$tableField->position = $row['position'];
 			$tableField->label = $row['label'];
 			$tableField->unit = $row['unit'];
