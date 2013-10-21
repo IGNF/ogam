@@ -291,7 +291,7 @@ Raw Data;Données brutes
 ##########################
 No %value% found.;Aucun(e) %value% trouvé(e).
 Invalid form;Invalid form
-Data saved;Données sauvegardées
+Data saved;Données sauvegardées - Rechargement
 Item cannot be deleted because it has children;La donnée ne peut pas être effacée car d'autres données sont liées
 Error while deleting data;Erreur lors de la suppression
 Data deleted;Donnée supprimée

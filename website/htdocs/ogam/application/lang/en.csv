@@ -291,11 +291,10 @@ Raw Data;Raw Data
 ##########################
 No %value% found.;No %value% found.
 Invalid form;Invalid form
-Data saved;Data saved
+Data saved;Data saved - Reloading
 Item cannot be deleted because it has children;Item cannot be deleted because it has children
 Error while deleting data;Error while deleting data
 Data deleted;Data deleted
-
 
 ##########################
 #  Data Query            #
