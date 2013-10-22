@@ -1,6 +1,6 @@
 CREATE SCHEMA metadata;
 
-SET SEARCH_PATH = metadata, public;
+SET SEARCH_PATH = metadata, raw_data, public;
 
 
 /*==============================================================*/
