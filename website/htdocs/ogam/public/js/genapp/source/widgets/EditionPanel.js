@@ -27,6 +27,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * Internationalization.
 	 */
 	geoMapWindowTitle : 'Draw the localisation',
+	unsavedChangesMessage : 'You have unsaved changes',
 
 	/**
 	 * @cfg {String} title The title text to be used as innerHTML (html tags are
@@ -365,6 +366,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		this.dataEditForm = new Ext.FormPanel({
 			monitorValid : true,
 			border : false,
+			trackResetOnLoad : true,
 			url : Genapp.base_url + 'dataedition/ajax-validate-edit-data',
 			labelWidth : 200,
 			defaults : {
@@ -443,6 +445,13 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			columnWidth : 0.5,
 			border : false
 		} ];
+		
+		
+		// Detect the closing of the form and check is dirty
+	    Ext.EventManager.addListener(window, 'beforeunload', this.onBeforeUnload, this, {
+            normalized:false //we need this for firefox
+        });    
+    
 
 		Genapp.EditionPanel.superclass.initComponent.call(this);
 	},
@@ -874,7 +883,34 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			}
 		}
 		return html;
+	},
+	
+	
+	
+    /**
+	 * Check if the form is dirty before to close the page and launch an alert.
+	 */
+	onBeforeUnload: function(e){ 
+
+        var showMessage = false;
+        var MESSAGE = this.unsavedChangesMessage;
+
+        if (this.dataEditForm.getForm().isDirty()) {
+        	showMessage = true;
+        };
+
+        if (showMessage === true) {
+            if (e) {
+            	e.returnValue = MESSAGE;
+            }
+            if (window.event) {
+            	window.event.returnValue = MESSAGE;
+            }
+            return MESSAGE;
+        }
 	}
+	
+	
 });
 
 Ext.reg('editionpage', Genapp.EditionPanel);
