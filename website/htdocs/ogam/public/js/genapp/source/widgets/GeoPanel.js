@@ -587,7 +587,7 @@ Genapp.GeoPanel = Ext
 					 */
 					buildLegend : function(layerObject) {
 						
-						var mapURL = (Genapp.map.useMapProxy == '1') ? Genapp.base_url + 'mapProxy/' : Genapp.base_url + 'proxy/'; 
+						var mapURL = (Genapp.map.useMapProxy == '1') ? Genapp.base_url + 'mapProxy.php/' : Genapp.base_url + 'proxy/'; 
 
 						var legend = this.legendPanel
 								.add(new Ext.BoxComponent(
