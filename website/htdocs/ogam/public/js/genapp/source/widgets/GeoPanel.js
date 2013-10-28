@@ -586,6 +586,8 @@ Genapp.GeoPanel = Ext
 					 * @return OpenLayers.Layer
 					 */
 					buildLegend : function(layerObject) {
+						
+						var mapURL = (Genapp.map.useMapProxy == '1') ? Genapp.base_url + 'mapProxy/' : Genapp.base_url + 'proxy/'; 
 
 						var legend = this.legendPanel
 								.add(new Ext.BoxComponent(
@@ -601,8 +603,7 @@ Genapp.GeoPanel = Ext
 														},
 														{
 															tag : 'img',
-															src : Genapp.base_url
-																	+ 'proxy/getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
+															src : mapURL + 'getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
 																	+ layerObject.params.layers + '&HASSLD=' + (layerObject.params.hasSLD ? 'true' : 'false')
 														} ]
 											}
@@ -613,8 +614,7 @@ Genapp.GeoPanel = Ext
 							});
 							legend.on('show', (function(cmp, params) {
 								if (cmp.rendered) {
-									cmp.getEl().child('img').dom.src = Genapp.base_url
-											+ 'proxy/getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
+									cmp.getEl().child('img').dom.src = mapURL + 'getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
 											+ params.layers + '&HASSLD=' + (params.hasSLD ? 'true' : 'false') + '&dc=' + (new Date()).getTime();
 								}
 							}).createCallback(legend, layerObject.params));
