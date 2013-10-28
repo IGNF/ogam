@@ -27,12 +27,14 @@ $AppConf = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array('allowMod
 Zend_Session::setOptions($ApplicationConf->resources->session->toArray());
 
 $userSession = new Zend_Session_Namespace('user');
+
 /*
 echo 'connected :<br/>'; echo $userSession->connected;
 echo '<br/>role :<br/>'; print_r($userSession->role);
 echo '<br/>permissions :<br/>'; print_r($userSession->permissions);
 exit();
 */
+
 
 if(!$userSession->connected){
     error_log('User not connected on '.$_SERVER["HTTP_HOST"]);
@@ -48,40 +50,49 @@ if (empty($permissions) || !array_key_exists('DATA_QUERY',$permissions)) {
 //Zend_Session::stop(); // Doesn't work well
 session_write_close();//libere le cookie/session
 
-parse_str($_SERVER["QUERY_STRING"],$query);//recupere la requete envoyée partie (GET params)...
+parse_str(strtoupper($_SERVER["QUERY_STRING"]), $query);//recupere la requete envoyée partie (GET params)...
 
 $queryParamsAllow = array(//paramNom => requis
-    'BBOX' => true,
-    'LAYERS' =>true,
-    'EXCEPTIONS' =>false,
-    'SRS' =>true,
-    'FORMAT' => true,
-    'WIDTH' => false,
-    'HEIGHT' => false,
-    'SESSION_ID' => true,
-    'TRANSPARENT' => true,
-    'VERSION' => true,
-    'STYLES' => true
+    'BBOX',
+    'LAYERS',
+    'EXCEPTIONS',
+    'SRS',
+    'FORMAT',
+    'WIDTH',
+    'HEIGHT',
+    'SESSION_ID',
+    'TRANSPARENT',
+    'VERSION',
+    'STYLES',
+	'HASSLD',
+	'SERVICE',
+	'REQUEST',
+	'FORMAT',
+	'LAYER'
 );
 
+// Vérifie que les paramètres sont dans la liste des ceux autorisés
 $queriesArg = array();
-
-foreach($queryParamsAllow as $param => $isReq){
-    if($isReq && !isset($query[$param])){
-        error_log('Request param \''.$param.'\'not found.');
-        error_log('Request: '.$_SERVER["QUERY_STRING"]);
-        onfailure('/');
-    }
+foreach($queryParamsAllow as $param){
     if(isset($query[$param])){
         $queriesArg[$param] = $query[$param];
     }
 }
-//force la valeur de certains parametres
-$queriesArg['request']  = 'GetMap';
-$queriesArg['service']  = 'WMS';
+// force la valeur de certains parametres
+if ($queriesArg['REQUEST'] == 'GETLEGENDGRAPHIC') {
+	$queriesArg['REQUEST']  = 'GetLegendGraphic';
+} else {
+	$queriesArg['REQUEST']  = 'GetMap';	
+}
 
-$uri = $AppConf->mapserver_url . http_build_query($queriesArg);
-error_log($uri);
+$queriesArg['SERVICE']  = 'WMS';
+
+$uri = $AppConf->mapserver_url.'&'.http_build_query($queriesArg);
+
+//error_log($uri);
+//echo '<br/>URI :<br/>'.$uri;
+//exit();
+
 header('Content-Type: image/png');
 $content = file_get_contents($uri);
 if ($content !== FALSE) {
