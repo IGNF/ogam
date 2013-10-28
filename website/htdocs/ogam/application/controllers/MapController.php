@@ -62,6 +62,8 @@ class MapController extends AbstractOGAMController {
 		$this->view->bbox = $configuration->bbox; // Bounding box
 		$this->view->tilesize = $configuration->tilesize; // Tile size
 		$this->view->projection = "EPSG:".$configuration->srs_visualisation; // Projection
+		
+		$this->view->useMapProxy = $configuration->useMapProxy;
 
 		// Get the available scales
 		$scales = $this->layersModel->getScales();
