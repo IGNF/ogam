@@ -10,6 +10,23 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
+
+
+// Override the BasicForm to add a "setNotDirty" property
+Ext.override(Ext.form.BasicForm, {
+	
+	// erase the original value with the new value to clean the state.
+	setNotDirty: function() {		
+		this.items.each(function(f) {
+		   if(!this.disabled && this.rendered) {
+			   f.originalValue = f.getValue();
+		   }
+	    });
+    }
+});
+
+
+
 /**
  * An EditionPanel correspond to the complete page for editing/inserting a table
  * row.
@@ -790,11 +807,16 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		var obj = Ext.util.JSON.decode(action.response.responseText);
 
+		// Set to NOT DIRTY to avoid a warning when leaving the page
+		this.dataEditForm.getForm().setNotDirty();  		
+		
+		// We display the update message
 		if (!Ext.isEmpty(obj.message)) {
 			this.messagePanel.update(obj.message);
 		}
 
-		if (!Ext.isEmpty(obj.redirectLink)) {
+		// We redirect
+		if (!Ext.isEmpty(obj.redirectLink)) {		
 			window.location = obj.redirectLink;
 		}
 
@@ -832,6 +854,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		if (!Ext.isEmpty(obj.message)) {
 			this.messagePanel.update(obj.message);
 		}
+		
+		// Set to NOT DIRTY to avoid a warning when leaving the page
+		this.dataEditForm.getForm().setNotDirty();  		
 
 		// Return to the index page
 		if (!Ext.isEmpty(obj.redirectLink)) {
