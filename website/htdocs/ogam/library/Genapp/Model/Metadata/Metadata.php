@@ -295,7 +295,12 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getDynamodeLabels($unit, $code = null, $query = null) {
 
-		$key = $this->formatCacheKey('getDynamodeLabels_'.$unit.'_'.$code.'_'.$query);
+		if (is_array($code)) {
+			$keycode = implode("_", $code);
+		} else {
+			$keycode = implode("_", $keycode);
+		}
+		$key = $this->formatCacheKey('getDynamodeLabels_'.$unit.'_'.$keycode.'_'.$query);
 
 		$this->logger->debug($key);
 
