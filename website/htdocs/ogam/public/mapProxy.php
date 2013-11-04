@@ -75,7 +75,6 @@ $queryParamsAllow = array(//paramNom => requis
 // Vérifie que les paramètres sont dans la liste des ceux autorisés
 $queriesArg = array();
 foreach($queryParamsAllow as $param) {
-	$param = strtoupper();
     if (isset($query[$param])){
         $queriesArg[$param] = $query[$param];
     }
