@@ -73,6 +73,7 @@ class UserController extends Zend_Controller_Action {
 		$login->addValidator(new Genapp_Validate_UserExist());
 		$login->setRequired(true);
 		$login->addFilter('StringToLower');
+		
 
 		// Create and configure password element:
 		$password = $form->createElement('password', 'password');
@@ -223,8 +224,6 @@ class UserController extends Zend_Controller_Action {
 			$f = new Zend_Filter_StripTags();
 			$login = $f->filter($values['login']);
 			$cramFromClient = $f->filter($values['password']);
-
-			$this->logger->debug('encoded login : '.sha1($values['login']));
 
 			// Retrieve the password from database
 			$storedpassword = $this->userModel->getPassword($login);

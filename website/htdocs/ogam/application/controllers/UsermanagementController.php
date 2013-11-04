@@ -289,14 +289,15 @@ class UsermanagementController extends AbstractOGAMController {
 		// Permissions
 		// Get all the Permissions
 		$allpermissions = $this->roleModel->getAllPermissions();
-		$rolepermissions = $form->createElement('multiCheckbox', 'rolepermissions', array(
-				'multiOptions' => $allpermissions)); // set the list of available permissions
+		$rolepermissions = $form->createElement('multiCheckbox', 'rolepermissions');
+		$rolepermissions->setLabel('Permissions');
+		$rolepermissions->setDisableTranslator(true); // Pas de trad par Zend, c'est géré dans les métadonnées
+		$rolepermissions->addMultiOptions($allpermissions);
 		if ($role != null) {
 			$permissions = $this->roleModel->getRolePermissions($role->roleCode);
 			$rolepermissions->setValue(array_keys($permissions)); // set the selected permissions
 		}
-		$rolepermissions->setLabel('Permissions');
-
+		
 
 		// Schemas
 		// get all available schemas
@@ -305,30 +306,35 @@ class UsermanagementController extends AbstractOGAMController {
 		foreach ($allschemas as $schema) {
 			$schemasList[$schema->code] = $schema->label;
 		}
-		$roleschemas = $form->createElement('multiCheckbox', 'roleschemas', array(
-				'multiOptions' => $schemasList)); // set the list of available schemas
+		$roleschemas = $form->createElement('multiCheckbox', 'roleschemas'); 
+		$roleschemas->setLabel('Schemas Permissions');
+		$roleschemas->setDisableTranslator(true); // Pas de trad par Zend, c'est géré dans les métadonnées
+		$roleschemas->addMultiOptions($schemasList);
 		if ($role != null) {
 			// Get the Schemas
 			$schemas = $this->roleModel->getRoleSchemas($role->roleCode);
 			$roleschemas->setValue($schemas); // set the selected schemas
 		}
-		$roleschemas->setLabel('Schemas Permissions');
-
+		
+		
 		// Dataset restrictions
 		$allDatasets = $this->metadataModel->getDatasets();
 		$datasetList = array();
 		foreach ($allDatasets as $dataset) {
 			$datasetList[$dataset->id] = $dataset->label;
 		}
-		$datasetsRestriction = $form->createElement('multiCheckbox', 'datasetRestrictions', array(
-				'multiOptions' => $datasetList));
+		$datasetsRestriction = $form->createElement('multiCheckbox', 'datasetRestrictions');
+		$datasetsRestriction->setLabel('Dataset Restrictions');
+		$datasetsRestriction->setDisableTranslator(true); // Pas de trad par Zend, c'est géré dans les métadonnées
+		$datasetsRestriction->addMultiOptions($datasetList);
 		if ($role != null) {
 			// Get the Schemas
 			$datasetRestricted = $this->roleModel->getDatasetRoleRestrictions($role->roleCode);
 			$datasetsRestriction->setValue($datasetRestricted);
 		}
-		$datasetsRestriction->setLabel('Dataset Restrictions');
-
+		
+		
+		
 		// Layer restrictions
 		$layerModel = new Application_Model_Mapping_Layers();
 		$allLayers = $layerModel->getAllLayersList();
@@ -336,14 +342,17 @@ class UsermanagementController extends AbstractOGAMController {
 		foreach ($allLayers as $layer) {
 			$layersList[$layer->layerName] = $layer->layerLabel;
 		}
-		$layersRestriction = $form->createElement('multiCheckbox', 'layerRestrictions', array(
-				'multiOptions' => $layersList));
+		$layersRestriction = $form->createElement('multiCheckbox', 'layerRestrictions');
+		$layersRestriction->setLabel('Layer Restrictions');
+		$layersRestriction->setDisableTranslator(true); // Pas de trad par Zend, c'est géré dans les métadonnées
+		$layersRestriction->addMultiOptions($layersList);
 		if ($role != null) {
 			// Get the Schemas
 			$layersRestricted = $this->roleModel->getLayerRoleRestrictions($role->roleCode);
 			$layersRestriction->setValue($layersRestricted);
 		}
-		$layersRestriction->setLabel('Layer Restrictions');
+		
+		
 
 		//
 		// Create the submit button
