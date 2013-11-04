@@ -50,7 +50,8 @@ if (empty($permissions) || !array_key_exists('DATA_QUERY',$permissions)) {
 //Zend_Session::stop(); // Doesn't work well
 session_write_close();//libere le cookie/session
 
-parse_str(strtoupper($_SERVER["QUERY_STRING"]), $query);//recupere la requete envoyée partie (GET params)...
+parse_str($_SERVER["QUERY_STRING"], $query); //recupere la requete envoyée partie (GET params)...
+array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
 
 $queryParamsAllow = array(//paramNom => requis
     'BBOX',
@@ -73,8 +74,9 @@ $queryParamsAllow = array(//paramNom => requis
 
 // Vérifie que les paramètres sont dans la liste des ceux autorisés
 $queriesArg = array();
-foreach($queryParamsAllow as $param){
-    if(isset($query[$param])){
+foreach($queryParamsAllow as $param) {
+	$param = strtoupper();
+    if (isset($query[$param])){
         $queriesArg[$param] = $query[$param];
     }
 }
