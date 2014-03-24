@@ -93,8 +93,8 @@ class IntegrationController extends AbstractOGAMController {
 		$datasetIds = array();
 		foreach ($datasets as $dataset) {
 			$datasetIds[$dataset->id] = $dataset->label;
-			if ($request['is_default'] == '1') {
-				$requestElement->setValue($request['id']);
+			if ($dataset->isDefault == '1') {
+				$requestElement->setValue($dataset->id);
 			}
 		}
 		$requestElement->addMultiOptions($datasetIds);
