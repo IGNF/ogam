@@ -456,16 +456,13 @@ Genapp.GeoPanel = Ext
 					 * layers tree.
 					 */
 					addLayersAndLayersTree : function(response) {
-
+						
 						// Reset the arrays
 						this.layersList = [];
 						this.layersActivation = {};
-
 						var layersObject = Ext.decode(response.responseText), i;
 
 						// Store the base URLs
-						this.urlArrayTiled = layersObject.url_array_tiled;
-						this.urlArrayCached = layersObject.url_array_cached;
 						this.urlWFS = layersObject.url_wfs;
 
 						// Rebuild the list of available layers
@@ -473,12 +470,17 @@ Genapp.GeoPanel = Ext
 
 							// Get the JSON description of the layer
 							var layerObject = layersObject.layers[i];
-
+							
+							// Get the JSON service name
+							var servicename=layerObject.servicename;
+							var servicenameStr = 'layersObject.'+servicename.toString();
+							var serviceObject=eval('('+servicenameStr+')');
+							
+							
 							// Build the new OpenLayers layer object and add it
 							// to the list
-							var newLayer = this.buildLayer(layerObject);
+							var newLayer = this.buildLayer(layerObject,serviceObject);
 							this.layersList.push(newLayer);
-
 							// Fill the list of active layers
 							var activateType = layerObject.params.activateType.toLowerCase();
 							if (Ext.isEmpty(this.layersActivation[activateType])) {
@@ -492,7 +494,7 @@ Genapp.GeoPanel = Ext
 								this.buildLegend(layerObject);
 							}
 						}
-
+						
 						// Define the WFS layer, used as a grid for snapping
 						if (!this.hideLayerSelector) {
 
@@ -546,20 +548,32 @@ Genapp.GeoPanel = Ext
 					 * 
 					 * @return OpenLayers.Layer
 					 */
-					buildLayer : function(layerObject) {
-
-						var url = '';
-						if (layerObject.url == 'url_array_tiled') {
-							url = this.urlArrayTiled; // an array of URLs for
-							// mapserver
-						} else if (layerObject.url == 'url_array_cached') {
-							url = this.urlArrayCached; // an array of URLs for
-							// Tilecache
-						} else {
-							url = layerObject.url; // default case, a real url
-						}
-
-						newLayer = new OpenLayers.Layer.WMS(layerObject.name, url, layerObject.params, layerObject.options);
+					buildLayer : function(layerObject,serviceObject) {
+						
+						var url = serviceObject.urls;
+						    
+							//Merges the service parameters and the layer parameters
+							var paramsObj = {};
+						    for (var attrname in layerObject.params) { paramsObj[attrname] = layerObject.params[attrname]; }
+						    for (var attrname in serviceObject.params) { paramsObj[attrname] = serviceObject.params[attrname]; }
+						
+						    if (serviceObject.params.SERVICE=="WMTS") {
+							
+						    	//creation and merging of wmts parameters
+						    	var layer=paramsObj.layers[0];
+						    	var obj={name:layerObject.name,url:url.toString(),layer:layer};
+						    	var objMergeParams= {};
+						    	for (var attrname in obj) { objMergeParams[attrname] = obj[attrname]; }
+						    	for (var attrname in paramsObj) { objMergeParams[attrname] = paramsObj[attrname]; }
+							
+						    	newLayer = new OpenLayers.Layer.WMTS(objMergeParams);	
+						    	
+						    } else if (serviceObject.params.SERVICE=="WMS"){
+						    	OpenLayers.Projection.defaults['EPSG:2154'] = new OpenLayers.Projection('EPSG:2154');
+						    	newLayer = new OpenLayers.Layer.WMS(layerObject.name , url , paramsObj , layerObject.options);
+						    } else {
+						    	Ext.Msg.alert("Please provide the \"" + layerObject.servicename + "\" service type.");
+						    }
 
 						newLayer.displayInLayerSwitcher = true;
 
@@ -572,6 +586,8 @@ Genapp.GeoPanel = Ext
 					 * @return OpenLayers.Layer
 					 */
 					buildLegend : function(layerObject) {
+						
+						var mapURL = (Genapp.map.useMapProxy == '1') ? Genapp.base_url + 'mapProxy.php/' : Genapp.base_url + 'proxy/'; 
 
 						var legend = this.legendPanel
 								.add(new Ext.BoxComponent(
@@ -587,8 +603,7 @@ Genapp.GeoPanel = Ext
 														},
 														{
 															tag : 'img',
-															src : Genapp.base_url
-																	+ 'proxy/getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
+															src : mapURL + 'getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
 																	+ layerObject.params.layers + '&HASSLD=' + (layerObject.params.hasSLD ? 'true' : 'false')
 														} ]
 											}
@@ -599,8 +614,7 @@ Genapp.GeoPanel = Ext
 							});
 							legend.on('show', (function(cmp, params) {
 								if (cmp.rendered) {
-									cmp.getEl().child('img').dom.src = Genapp.base_url
-											+ 'proxy/getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
+									cmp.getEl().child('img').dom.src = mapURL + 'getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
 											+ params.layers + '&HASSLD=' + (params.hasSLD ? 'true' : 'false') + '&dc=' + (new Date()).getTime();
 								}
 							}).createCallback(legend, layerObject.params));

@@ -295,7 +295,12 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getDynamodeLabels($unit, $code = null, $query = null) {
 
-		$key = $this->formatCacheKey('getDynamodeLabels_'.$unit.'_'.$code.'_'.$query);
+		if (is_array($code)) {
+			$keycode = implode("_", $code);
+		} else {
+			$keycode = $code;
+		}
+		$key = $this->formatCacheKey('getDynamodeLabels_'.$unit.'_'.$keycode.'_'.$query);
 
 		$this->logger->debug($key);
 
@@ -514,10 +519,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = dataset_id";
 		$req .= " ORDER BY dataset_id";
 	
-		$this->logger->info('getDatasetsForDisplay : '.$req);
+		$this->logger->info('getDatasets : '.$req);
 	
 		$select = $db->prepare($req);
-		$select->execute($params);
+		$select->execute();
 	
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
@@ -528,6 +533,39 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$result[] = $dataset;
 		}
 		return $result;
+	}
+	
+	/**
+	 * Get a dataset.
+	 *
+	 * @param String $datasetId The dataset identifier
+	 * @return Genapp_Object_Metadata_Dataset
+	 */
+	public function getDataset($datasetId) {
+		
+		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATASET');
+		$db = $this->getAdapter();
+		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, is_default ";
+		$req .= " FROM dataset d";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = dataset_id";
+		$req .= " WHERE dataset_id = ?";
+	
+		$this->logger->info('getDataset : '.$req);
+	
+		$select = $db->prepare($req);
+		$select->execute(array($datasetId));
+	
+		$row = $select->fetch();
+		if ($row) {
+			$dataset = new Genapp_Object_Metadata_Dataset();
+			$dataset->id = $row['id'];
+			$dataset->label = $row['label'];
+			$dataset->isDefault = $row['is_default'];
+			
+			return $dataset;
+		} else {
+			$result = null;
+		}
 	}
 
 
@@ -748,6 +786,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$tableField->isCalculated = $row['is_calculated'];
 				$tableField->isEditable = $row['is_editable'];
 				$tableField->isInsertable = $row['is_insertable'];
+				$tableField->isMandatory = $row['is_mandatory'];
 				$tableField->position = $row['position'];
 				$tableField->label = $row['label'];
 				$tableField->unit = $row['unit'];
@@ -812,6 +851,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$tableField->isCalculated = $row['is_calculated'];
 				$tableField->isEditable = $row['is_editable'];
 				$tableField->isInsertable = $row['is_insertable'];
+				$tableField->isMandatory = $row['is_mandatory'];
 				$tableField->position = $row['position'];
 				$tableField->label = $row['label'];
 				$tableField->unit = $row['unit'];
@@ -1229,6 +1269,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableField->isCalculated = $row['is_calculated'];
 			$tableField->isEditable = $row['is_editable'];
 			$tableField->isInsertable = $row['is_insertable'];
+			$tableField->isMandatory = $row['is_mandatory'];
 			$tableField->position = $row['position'];
 			$tableField->label = $row['label'];
 			$tableField->unit = $row['unit'];

@@ -112,6 +112,26 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 		}
 		return false;
 	},
+	
+	/**
+	 * Reorganize the layers indexes and Z layers indexes when moving a layer.
+	 */
+	setLayerIdx : function(layer, idxDepart,idxArrivee) {
+        if (idxArrivee < 0) {
+            idxArrivee = 0;
+        } else if (idxArrivee > this.map.layers.length) {
+            idxArrivee = this.map.layers.length;
+        }
+        if (idxDepart != idxArrivee) {
+        	
+        	this.map.layers.splice(idxDepart,1);
+        	this.map.layers.splice(idxArrivee, 0, layer);
+            for (var i=0, len=this.map.layers.length; i<len; i++) {
+            	this.map.layers[i].setZIndex(i);
+            }
+        }
+        
+},
 
 	/**
 	 * Add a loader to the node config if needed
@@ -146,23 +166,34 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 						
 						// TODO : Sortir ces 2 fonctions (dans le bon scope ...)
 						
-						
+						var indexVariation;
 						// Sauvegarde de l'ancien index du noeud
 						child.addListener('beforemove', function (tree, thisNode, oldParent, newParent, index) {
 							   thisNode.oldIndex = oldParent.indexOf(thisNode);
 						});
+				
 						
 						// Déplacement du layer
 						// @thanks to Francois Valiquette : http://www.mail-archive.com/users@geoext.org/msg02579.html
 						child.addListener('move', function (tree, thisNode, oldParent, newParent, index, refNode) {
-													
-							
 							// On ne fait le déplacement que si le parent est le même
+							
 							if (oldParent == newParent) {
 							   // On calcule le déplacement du node
 							   indexVariation = thisNode.oldIndex - oldParent.indexOf(thisNode);
-							   // Et on applique le même aux layers de la carte
-							   tree.map.raiseLayer(thisNode.layer, indexVariation);
+							   idxDepart = tree.map.getLayerIndex(thisNode.layer);
+							   if (refNode) { //if not out of the list of layers
+								   idxArrivee = tree.map.getLayerIndex(refNode.layer);
+							   }
+							   else { //if moving after the last layer of the list
+								   idxArrivee = 0;
+							   }
+							   
+							   /* call the function to place the layer at the good Z in the map
+							    and to assign the good index for the tree panel
+							    */
+							   tree.setLayerIdx(thisNode.layer,idxDepart,idxArrivee);
+							   
 							} else if (typeof thisNode.recursiveCall === "undefined" || thisNode.recursiveCall == false) {
 								//to avoid an infinite loop
 								thisNode.recursiveCall = true; 		
@@ -175,8 +206,7 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 								
 							}
 							
-						});
-												
+						});					
 						// On interdit le drag des noeuds parents 
 						node.draggable = false;
 
@@ -186,12 +216,13 @@ Genapp.tree.LayerTreePanel = Ext.extend(Ext.tree.TreePanel, {
 						} else {
 							node.appendChild(child);
 						}
+						
 					}
 				},
 				// Set the layersNodeIds object when the node order has changed
 				listeners : {
 					"load" : this.setLayerNodeIds,
-					scope : this					
+					scope : this				
 				},
 				scope : this
 			});

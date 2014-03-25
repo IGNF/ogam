@@ -258,6 +258,7 @@ if (Genapp.form.picker.TreePicker) {
 if (Genapp.EditionPanel) {
     Ext.apply(Genapp.EditionPanel.prototype, {
         title : 'Edition',
+        unsavedChangesMessage : 'You have unsaved changes',
         parentsFSTitle : 'Parents Summary',
         dataEditFSDeleteButtonText : 'Delete',
         dataEditFSDeleteButtonTooltip : 'Delete the data',

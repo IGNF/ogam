@@ -93,6 +93,9 @@ class IntegrationController extends AbstractOGAMController {
 		$datasetIds = array();
 		foreach ($datasets as $dataset) {
 			$datasetIds[$dataset->id] = $dataset->label;
+			if ($dataset->isDefault == '1') {
+				$requestElement->setValue($dataset->id);
+			}
 		}
 		$requestElement->addMultiOptions($datasetIds);
 		
@@ -133,7 +136,7 @@ class IntegrationController extends AbstractOGAMController {
 		// Get the submission object from the database
 		$submission = $this->submissionModel->getSubmission($submissionId);
 		$requestedFiles = $this->metadataModel->getRequestedFiles($submission->datasetId);
-		$translator = Zend_Registry::get('Zend_Translate');
+
 		//
 		// For each requested file, add a file upload element
 		//
@@ -141,12 +144,12 @@ class IntegrationController extends AbstractOGAMController {
 
 			$fileelement = $form->createElement('file', $requestedFile->format);
 
-			$fileelement->setLabel($translator->translate($requestedFile->label.': '));
+			$fileelement->setLabel($this->translator->translate($requestedFile->label.': '));
 			$fieldsDesc = '<span class="hint-title">';
 			if ($showDetail) {
 				// Get some more informations in the metadata base
 				$fields = $this->metadataModel->getFileFields($requestedFile->format);
-				$fieldsDesc .= $translator->translate('The expected fields are:');
+				$fieldsDesc .= $this->translator->translate('The expected fields are:');
 				foreach ($fields as $field) {
 					$fieldsDesc .= '</span><span title="';
 					$fieldsDesc .= $field->definition; // the tooltip

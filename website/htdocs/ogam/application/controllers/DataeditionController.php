@@ -69,8 +69,6 @@ class DataEditionController extends AbstractOGAMController {
 			$websiteSession->schema = $schema;
 		}
 
-		$this->translator = Zend_Registry::get('Zend_Translate');
-
 	}
 
 	/**
@@ -487,26 +485,22 @@ class DataEditionController extends AbstractOGAMController {
 
 				// Check the number of children
 				$children = $this->genericModel->getChildren($data);
-				if (count($children) == 0) {
 
-					// No more children possible, we redirect to the parent
-					if ($mode == 'ADD') {
-						$ancestors = $this->genericModel->getAncestors($data);
-						if (!empty($ancestors)) {
-							$ancestor = $ancestors[0];
-							$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$ancestor->getId();
-						} else {
-							$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$data->getId();
-						}
-						echo '"redirectLink":'.json_encode($redirectURL).',';
-					}
-				} else {
-					if ($mode == 'ADD') {
-						// We redirect to the newly created item
+				// After a creation if no more children possible 
+				if (count($children) == 0 && $mode == 'ADD') {
+					// We redirect to the parent
+					$ancestors = $this->genericModel->getAncestors($data);
+					if (!empty($ancestors)) {
+						$ancestor = $ancestors[0];
+						$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$ancestor->getId();
+					} else {
 						$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$data->getId();
-						echo '"redirectLink":'.json_encode($redirectURL).',';
 					}
-					// Edit mode : we stay on the same page
+					echo '"redirectLink":'.json_encode($redirectURL).',';
+				} else {
+					// We redirect to the newly created or edited item
+					$redirectURL = $this->getRequest()->getBasePath().'/dataedition/show-edit-data/'.$data->getId();
+					echo '"redirectLink":'.json_encode($redirectURL).',';					
 				}
 				
 				// Add a message				

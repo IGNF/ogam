@@ -10,6 +10,23 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
+
+
+// Override the BasicForm to add a "setNotDirty" property
+Ext.override(Ext.form.BasicForm, {
+	
+	// erase the original value with the new value to clean the state.
+	setNotDirty: function() {		
+		this.items.each(function(f) {
+		   if(!this.disabled && this.rendered) {
+			   f.originalValue = f.getValue();
+		   }
+	    });
+    }
+});
+
+
+
 /**
  * An EditionPanel correspond to the complete page for editing/inserting a table
  * row.
@@ -27,6 +44,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	 * Internationalization.
 	 */
 	geoMapWindowTitle : 'Draw the localisation',
+	unsavedChangesMessage : 'You have unsaved changes',
 
 	/**
 	 * @cfg {String} title The title text to be used as innerHTML (html tags are
@@ -97,6 +115,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 	ref : 'editionPage',
 	padding : 20,
 	autoScroll : true,
+	
+	fieldSetWidth : 700,
+	fieldWidth : 450,
 
 	/**
 	 * @cfg {String} parentsFSTitle The parents FieldSet Title (defaults to
@@ -362,6 +383,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		this.dataEditForm = new Ext.FormPanel({
 			monitorValid : true,
 			border : false,
+			trackResetOnLoad : true,
 			url : Genapp.base_url + 'dataedition/ajax-validate-edit-data',
 			labelWidth : 200,
 			defaults : {
@@ -429,10 +451,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			border : false
 		}, {
 			items : centerPanelItems,
-			width : 500,
+			width : this.fieldSetWidth,
 			border : false,
 			defaults : {
-				width : 500
+				width : this.fieldSetWidth
 			}
 		}, {
 			xtype : 'box',
@@ -440,6 +462,13 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			columnWidth : 0.5,
 			border : false
 		} ];
+		
+		
+		// Detect the closing of the form and check is dirty
+	    Ext.EventManager.addListener(window, 'beforeunload', this.onBeforeUnload, this, {
+            normalized:false //we need this for firefox
+        });    
+    
 
 		Genapp.EditionPanel.superclass.initComponent.call(this);
 	},
@@ -694,7 +723,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		}
 
 		// Check if the field is mandatory
-		if (record.required) {
+		if (record.required && record.required === "1") {
 			field.allowBlank = false;
 		}
 
@@ -719,6 +748,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		// Set the label
 		field.fieldLabel = record.label;
+		
+		// Set the width
+		field.width = this.fieldWidth;
 
 		return field;
 	},
@@ -775,11 +807,16 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		var obj = Ext.util.JSON.decode(action.response.responseText);
 
+		// Set to NOT DIRTY to avoid a warning when leaving the page
+		this.dataEditForm.getForm().setNotDirty();  		
+		
+		// We display the update message
 		if (!Ext.isEmpty(obj.message)) {
 			this.messagePanel.update(obj.message);
 		}
 
-		if (!Ext.isEmpty(obj.redirectLink)) {
+		// We redirect
+		if (!Ext.isEmpty(obj.redirectLink)) {		
 			window.location = obj.redirectLink;
 		}
 
@@ -817,6 +854,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		if (!Ext.isEmpty(obj.message)) {
 			this.messagePanel.update(obj.message);
 		}
+		
+		// Set to NOT DIRTY to avoid a warning when leaving the page
+		this.dataEditForm.getForm().setNotDirty();  		
 
 		// Return to the index page
 		if (!Ext.isEmpty(obj.redirectLink)) {
@@ -868,7 +908,34 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			}
 		}
 		return html;
+	},
+	
+	
+	
+    /**
+	 * Check if the form is dirty before to close the page and launch an alert.
+	 */
+	onBeforeUnload: function(e){ 
+
+        var showMessage = false;
+        var MESSAGE = this.unsavedChangesMessage;
+
+        if (this.dataEditForm.getForm().isDirty()) {
+        	showMessage = true;
+        };
+
+        if (showMessage === true) {
+            if (e) {
+            	e.returnValue = MESSAGE;
+            }
+            if (window.event) {
+            	window.event.returnValue = MESSAGE;
+            }
+            return MESSAGE;
+        }
 	}
+	
+	
 });
 
 Ext.reg('editionpage', Genapp.EditionPanel);

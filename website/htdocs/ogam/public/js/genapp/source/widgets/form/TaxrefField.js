@@ -16,7 +16,7 @@
  * A taxref is a specialiced kind of tree used for taxonony.
  * 
  * @class Genapp.form.TaxrefField
- * @extends Ext.form.TreeField
+ * @extends Ext.form.ComboBox
  * @constructor Create a new TaxrefField
  * @param {Object}
  *            config
@@ -25,16 +25,43 @@
 
 Ext.namespace('Genapp.form');
 
-Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
+Genapp.form.TaxrefField = Ext.extend(Ext.form.ComboBox, {
 	
 	// Custom rendering template
-	/*
-	tpl :  '<tpl for="."><div>' + 
-			'<tpl if="!Ext.isEmpty(isReference) && isReference == 0">'+ '<i>{label}</i>' + '</tpl>'+
-			'<tpl if="!Ext.isEmpty(isReference) && isReference == 1">'+ '<b>{label}</b>' + '</tpl>'+
-			'<tpl if="!Ext.isEmpty(vernacularName) && vernacularName != null">'+ '<br/>({vernacularName})' + '</tpl>'+
-        '</div></tpl>',
-    */
+	tpl :  '<tpl for="."><div class="x-combo-list-item">' + 
+			'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 0">'+ '<i>{label}</i>' + '</tpl>'+
+			'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 1">'+ '<b>{label}</b>' + '</tpl>'+
+			'<br/>' +
+			'<tpl if="!Ext.isEmpty(values.vernacularName) && values.vernacularName != null">'+ '({vernacularName})' + '</tpl>'+
+        '</div></tpl>', 
+	
+	/**
+	 * Value field in the store
+	 */
+	valueField : 'code',
+
+	/**
+	 * Display field in the store,
+	 */
+	displayField : 'label',
+
+	/**
+	 * @cfg {String} emptyText The default text to place into an empty field
+	 *      (defaults to 'Select...').
+	 */
+	emptyText : 'Select...',
+
+	/**
+	 * The field menu (displayed on a trigger click).
+	 * 
+	 * @property menu
+	 * @type Genapp.form.menu.TreeMenu
+	 */
+	menu : null,
+
+	pageSize : 10,
+	listWidth : 300,
+	selectOnFocus : true,
 	
 	
     // Data store
@@ -51,14 +78,13 @@ Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
         }, {
             name : 'label',
             mapping : 'label'
-        }
-        /*, {
+        }, {
             name : 'vernacularName',
             mapping : 'vernacularName'
         }, {
             name : 'isReference',
             mapping : 'isReference'
-        } */
+        }
         ],
         url : Genapp.base_url  + 'query/ajaxgettaxrefcodes'
     },
@@ -71,8 +97,30 @@ Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
 	 */
 	initComponent : function() {
 		
+		// Set the submit name of the field
+		this.hiddenName = this.name;
+		
 		Genapp.form.TaxrefField.superclass.initComponent.call(this);
 		
+		// TODO change depth depending on level
+		this.nodeUrl = this.baseNodeUrl;
+		if (!Ext.isEmpty(this.unit)) {
+			this.nodeUrl += 'unit/' + this.unit + '/';
+		}
+		this.nodeUrl += 'depth/1';
+
+		this.store.setBaseParam('unit', this.unit);
+
+		// Add the default value to the store
+		var rc = {};
+		rc[this.valueField] = this.value;
+		rc[this.displayField] = this.valueLabel;
+		this.getStore().add(new Ext.data.Record(rc));
+
+		// Set the current value to the default value
+		this.setValue(this.value);
+		
+		this.on('select', this.onSelect, this);
 	},
 
 
@@ -104,7 +152,58 @@ Genapp.form.TaxrefField = Ext.extend(Genapp.form.TreeField, {
         this.onFocus();
 
         this.menu.show(this.el, "tl-bl?");
-        this.menuEvents('on');
-    }
+        this.menuEvents('on');        
+    },
+	
+	
+	// private
+	menuEvents : function(method) {
+		this.menu[method]('select', this.onSelect, this);
+		this.menu[method]('hide', this.onMenuHide, this);
+		this.menu[method]('show', this.onFocus, this);
+	},
+
+	// private
+	onSelect : function(record, index) {
+		if (this.fireEvent('beforeselect', this, record, index) !== false) {
+			
+			if (!Ext.isEmpty(record)) {
+				// Case where the selection is done in the tree
+				if (record instanceof Ext.tree.AsyncTreeNode || record instanceof Ext.tree.TreeNode) {
+					if (Ext.isEmpty(this.getStore().getById(record.attributes.id))) {
+						var rc = {};
+						rc[this.valueField] = record.attributes.id;
+						rc[this.displayField] = record.attributes.text;
+						this.getStore().add([ new Ext.data.Record(rc) ]);
+					}
+					this.setValue(record.attributes.id);			
+				}
+				// Case where the selection is done in the list
+				else if (record instanceof Ext.data.Record) {
+					this.setValue(record.data[this.valueField]);
+				} else {
+					alert("Type inconnu");
+				}
+			}
+			
+			this.collapse();
+			if (this.menu) {
+				this.menu.hide();
+			}			
+		}
+	},
+
+	
+	// private
+	onMenuHide : function() {
+		this.focus(false, 60);
+		this.menuEvents('un');
+	},
+
+	onDestroy : function() {
+		Ext.destroy(this.menu, this.wrap);
+		Genapp.form.TaxrefField.superclass.onDestroy.call(this);
+	}
+	
 });
 Ext.reg('taxreffield', Genapp.form.TaxrefField);

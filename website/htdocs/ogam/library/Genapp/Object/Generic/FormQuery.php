@@ -75,5 +75,23 @@ class Genapp_Object_Generic_FormQuery {
 	public function getFields() {
 		return array_merge($this->criterias, $this->results);
 	}
+	
+	/**
+	 * Get the criterias.
+	 *
+	 * @return Array[FormField] the form fields
+	 */
+	public function getCriterias() {
+		return $this->criterias;
+	}
+	
+	/**
+	 * Get the result columns.
+	 *
+	 * @return Array[FormField] the form fields
+	 */
+	public function getResults() {
+		return $this->results;
+	}
 
 }

@@ -69,7 +69,7 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 	/**
 	 * Manage multiple values,
 	 */
-	muliple : false,
+	multiple : false,
 
 	/**
 	 * The field menu (displayed on a trigger click).
@@ -161,10 +161,7 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 					this.onArraySelect(record, index);
 				}
 				// Case where the selection is done in the tree
-				if (record instanceof Ext.tree.AsyncTreeNode || record instanceof Ext.tree.TreeNode) {
-					if (this.menu) {
-						this.menu.hide();
-					}
+				else if (record instanceof Ext.tree.AsyncTreeNode || record instanceof Ext.tree.TreeNode) {
 					if (Ext.isEmpty(this.getStore().getById(record.attributes.id))) {
 						var rc = {};
 						rc[this.valueField] = record.attributes.id;
@@ -172,16 +169,20 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 						this.getStore().add([ new Ext.data.Record(rc) ]);
 					}
 					this.setValue(record.attributes.id);
-					this.collapse();
-					this.fireEvent('select', this, record, index);
 				}
 				// Case where the selection is done in the list
-				if (record instanceof Ext.data.Record) {
+				else if (record instanceof Ext.data.Record) {
 					this.setValue(record.data[this.valueField || this.displayField]);
-					this.collapse();
-					this.fireEvent('select', this, record, index);
+				} else {
+					alert("Type inconnu");
 				}
+				
 			}
+			
+			if (this.menu) {
+				this.menu.hide();
+			}			
+			this.collapse();			
 		}
 	},
 
@@ -201,12 +202,11 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 			}
 			this.addArrayToStore(valueFields, displayFields);
 			this.setValue(valueFields.toString());
-			this.collapse();
 			this.fireEvent('select', this, record, index);
 		}
 		// Case where the selection is done in the list
 		// Not possible for now. Wait for EXTJS4
-		if (record[0] instanceof Ext.data.Record) {
+		else if (record[0] instanceof Ext.data.Record) {
 			var valueFields = [];
 			var displayFields = [];
 			for ( var i = 0; i < record.length; i++) {
@@ -217,9 +217,11 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 			this.addArrayToStore(valueFields, displayFields);
 			this.setValue(valueFields.toString());
 			this.setValue(values);
-			this.collapse();
 			this.fireEvent('select', this, record, index);
 		}
+		
+		this.collapse();
+		
 	},
 
 	// private

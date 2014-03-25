@@ -23,6 +23,13 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 	protected $baseUrl;
 
 	/**
+	 * Translator.
+	 *
+	 * @var Zend_Translate
+	 */
+	protected $translator;
+
+	/**
 	 * Initialise the controler
 	 */
 	public function init() {
@@ -30,6 +37,9 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$this->logger = $bootstrap->getResource('log');
 		$this->_redirector = $this->_helper->getHelper('Redirector');
+		
+		// Get the translator
+		$this->translator = Zend_Registry::get('Zend_Translate');
 
 		// Get the base URL
 		$this->baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();

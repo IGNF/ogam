@@ -219,7 +219,7 @@ class Genapp_Service_QueryService {
 				$formField->valueLabel = $tablefield->valueLabel;
 				$formField->editable = $tablefield->isEditable;
 				$formField->insertable = $tablefield->isInsertable;
-				$formField->required = false; // Never mandatory
+				$formField->required = $tablefield->isMandatory; 
 				$formField->data = $tablefield->data; 			// The name of the data is the table one
 				$formField->format = $tablefield->format; 			// The name of the data is the table one
 

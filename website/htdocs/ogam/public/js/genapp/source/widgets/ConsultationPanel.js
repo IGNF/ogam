@@ -174,6 +174,7 @@ Genapp.ConsultationPanel = Ext
 					 */
 					hideCsvExportButton : false,
 					hideGridKmlExportMenuItem : false,
+					hideGridGeoJSONExportMenuItem : false,
 					/**
 					 * @cfg {Boolean} hideCancelButton if true hide the cancel
 					 *      button (defaults to false).
@@ -272,6 +273,7 @@ Genapp.ConsultationPanel = Ext
 					 */
 					csvExportMenuItemText : 'Export CSV',
 					kmlExportMenuItemText : 'Export KML',
+					geojsonExportMenuItemText : 'Export GeoJSON',
 					/**
 					 * @cfg {String} printMapButtonText The print Map Button
 					 *      Text (defaults to <tt>'Print map'</tt>)
@@ -312,6 +314,10 @@ Genapp.ConsultationPanel = Ext
 					 *      (defaults to <tt>370</tt>)
 					 */
 					queryPanelWidth : 370,
+					
+					searchButtonWidth : 70,
+					searchButtonHeight : 16,
+					
 					/**
 					 * @cfg {String} queryPanelPinToolQtip The query Panel Pin
 					 *      Tool Qtip (defaults to <tt>'Pin the panel'</tt>)
@@ -370,6 +376,11 @@ Genapp.ConsultationPanel = Ext
 					 *      <tt>'Launch the request'</tt>)
 					 */
 					queryPanelSearchButtonTooltip : "Launch the request",
+					/**
+					 * @cfg {Integer} datasetComboBoxWidth The dataset Width
+					 *      (defaults to <tt>345</tt>)
+					 */
+					datasetComboBoxWidth : 345,
 					/**
 					 * @cfg {String} detailsPanelCtTitle The details PanelCt
 					 *      Title (defaults to <tt>'Details'</tt>)
@@ -604,7 +615,7 @@ Genapp.ConsultationPanel = Ext
 							forceSelection : true,
 							mode : 'local',
 							typeAhead : true,
-							width : 345,
+							width : this.datasetComboBoxWidth,
 							maxHeight : 100,
 							triggerAction : 'all',
 							emptyText : this.datasetComboBoxEmptyText,
@@ -892,6 +903,13 @@ Genapp.ConsultationPanel = Ext
 										iconCls : 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
 									}));
 								}
+								if (!this.hideGridGeoJSONExportMenuItem) {
+									csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
+										text : this.geojsonExportMenuItemText,
+										handler : this.exportCSV.createDelegate(this, [ 'geojson-export' ]),
+										iconCls : 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
+									}));
+								}
 							}
 							// Hide the csv export button if there are no menu
 							// items
@@ -980,9 +998,22 @@ Genapp.ConsultationPanel = Ext
 							};
 						} else {
 							resetButton = {
-								xtype : 'tbspacer'
+								xtype : 'tbfill'
 							};
 						}
+						
+						// Request button
+						var searchButton = {
+							xtype : 'tbbutton',
+							width : this.searchButtonWidth,
+							height : this.searchButtonHeight,
+							text : this.queryPanelSearchButtonText,
+							tooltipType : 'title',
+							tooltip : this.queryPanelSearchButtonTooltip,
+							cls : 'genapp_query_formspanel_search_button',
+							scope : this,
+							handler : this.submitRequest
+						};
 
 						var queryPanelConfig = {
 							region : 'west',
@@ -996,19 +1027,10 @@ Genapp.ConsultationPanel = Ext
 							cls : 'genapp_query_panel',
 							items : [ this.datasetPanel, this.formsPanel ],
 							tools : tools,
-							bbar : [ cancelButton, {
-								xtype : 'tbseparator'
-							}, resetButton, {
-								xtype : 'tbfill'
-							}, {
-								xtype : 'tbbutton',
-								text : this.queryPanelSearchButtonText,
-								tooltipType : 'title',
-								tooltip : this.queryPanelSearchButtonTooltip,
-								cls : 'genapp_query_formspanel_search_button',
-								scope : this,
-								handler : this.submitRequest
-							} ]
+							bbar : [ cancelButton, 
+							         resetButton, 
+							         searchButton 
+							]
 						};
 
 						if (!this.hidePredefinedRequestSaveButton) {
@@ -1986,7 +2008,7 @@ Genapp.ConsultationPanel = Ext
 						}
 						activatedLayersNames = activatedLayersNames.substr(0, activatedLayersNames.length - 1);
 
-						Genapp.util.post(Genapp.base_url + 'map/generatemap', {
+						Genapp.util.post(Genapp.base_url + 'map/printmap', {
 							center : center,
 							zoom : zoom,
 							layers : activatedLayersNames

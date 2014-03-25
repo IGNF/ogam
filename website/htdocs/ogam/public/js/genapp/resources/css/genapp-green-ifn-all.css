@@ -353,6 +353,13 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .genapp-query-layer-tree-panel .x-tree-node-icon {
     display:none;
 }
+
+.x-tree-node-icon-feuille {
+	 background-image: url("../images/feuille.png") !important; 
+}
+.x-tree-node-icon-branche {
+	 background-image: url("../images/branche.png") !important; 
+}
 /*************************************************************************************************/
 
 /***** Bug Ext (The form items don't move with the scroll bar into IE7) *************************************/

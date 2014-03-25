@@ -33,16 +33,25 @@ class Genapp_Object_Metadata_TableField extends Genapp_Object_Metadata_Field {
 
 
 	/**
-	 * Indicate if the field is editable.
+	 * Indicate if the field is editable in the edition module.
+	 * Some fields present in the database and calculated by triggers or serials may not be displayed on the screen. 
 	 * @var bool
 	 */
 	var $isEditable;
 
 	/**
-	 * Indicate if the field is insertable.
+	 * Indicate if the field is insertable in the edition module.
+	 * Some fields may be editable in "update" mode but may not be displayed when creating a new data (for example a "departement" calculated by trigger on insert).
 	 * @var bool
 	 */
 	var $isInsertable;
+	
+	/**
+	 * Indicate if the field is mandatory in the edition module.
+	 * The PK fields are always mandatory, but some other fields may be declared as mandatory by the administrator. 
+	 * @var bool
+	 */
+	var $isMandatory;
 
 	/**
 	 * These fields are only filled when the table field is of unit GEOM.

@@ -73,6 +73,7 @@
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/menu/DateRangeMenu.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/menu/TreeMenu.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/menu/TaxrefMenu.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/picker/TaxrefNodeLoader.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/picker/NumberRangePicker.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/picker/DateRangePicker.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/widgets/form/picker/TreePicker.js') ?>"></script>
@@ -133,7 +134,7 @@
                     }
 
                     // parentsLinks
-                    if(!empty($this->ancestors)){
+                    if (!empty($this->ancestors)){
 	                    $ancestors = array_reverse($this->ancestors);
 	                    $parentsLinks = array();
 	                    foreach ($ancestors as $ancestor) {
@@ -188,6 +189,16 @@
         Genapp.buildApplication();
     });
 </script>
+
+<!-- Link to add a new location -->
+<?php
+	// Get the user 
+	$userSession = new Zend_Session_Namespace('user');
+	$user = $userSession->user; 
+?>
+<div class='actionLinks'>
+	<a href="<?= $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/<?php echo $this->data->tableFormat->schemaCode; ?>/FORMAT/LOCALISATION_DATA/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?=$this->translate('Add a new localisation');?></a>
+</div>
 
 <div id='page'></div>
 

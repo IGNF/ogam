@@ -99,6 +99,7 @@
 			<fileset file="${cps.src.dir}/widgets/form/picker/NumberRangePicker.js" />
 			<fileset file="${cps.src.dir}/widgets/form/picker/TreePicker.js" />
 			<fileset file="${cps.src.dir}/widgets/form/picker/TaxrefPicker.js" />
+			<fileset file="${cps.src.dir}/widgets/form/picker/TaxrefNodeLoader.js" />			
 			<fileset file="${cps.src.dir}/widgets/form/DateRangeField.js" />
 			<fileset file="${cps.src.dir}/widgets/form/GeometryField.js" />
 			<fileset file="${cps.src.dir}/widgets/form/NumberRangeField.js" />

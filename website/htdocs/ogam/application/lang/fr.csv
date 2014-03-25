@@ -289,12 +289,18 @@ Raw Data;Données brutes
 ##########################
 #  Data Edition          #
 ##########################
-No %value% found.;Aucune %value% trouvée.
+No %value% found.;Aucun(e) %value% trouvé(e).
 Invalid form;Invalid form
-Data saved;Données sauvegardées
+Data saved;Données sauvegardées - Rechargement
 Item cannot be deleted because it has children;La donnée ne peut pas être effacée car d'autres données sont liées
 Error while deleting data;Erreur lors de la suppression
 Data deleted;Donnée supprimée
+
+##########################
+#  Data Query            #
+##########################
+Data Export;Export des données
+Request Criterias;Critères de requête
 
 ################################
 #  indexation / index          #

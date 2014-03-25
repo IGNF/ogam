@@ -1,6 +1,6 @@
 CREATE SCHEMA metadata;
 
-SET SEARCH_PATH = metadata, public;
+SET SEARCH_PATH = metadata, raw_data, public;
 
 
 /*==============================================================*/
@@ -102,6 +102,14 @@ COMMENT ON COLUMN MODE_TREE.POSITION IS 'The position of the mode';
 COMMENT ON COLUMN MODE_TREE.IS_LEAF IS 'Indicate if the node is a leaf (1 for true)';
 
 
+CREATE INDEX mode_tree_parent_code_idx
+  ON metadata.mode_tree
+  USING btree
+  (parent_code);
+  
+CREATE INDEX mode_tree_parent_label_idx
+  ON metadata.mode_tree USING btree (unaccent_string(label));
+  
 /*==============================================================*/
 /* Table : MODE_TAXREF                                          */
 /*==============================================================*/
@@ -132,15 +140,13 @@ CREATE INDEX mode_taxref_parent_code_idx
   ON metadata.mode_taxref USING btree (parent_code);
   
 CREATE INDEX mode_taxref_NAME_idx
-  ON metadata.mode_taxref USING btree (raw_data.unaccent_string(NAME));
+  ON metadata.mode_taxref USING btree (unaccent_string(NAME));
   
 CREATE INDEX mode_taxref_COMPLETE_NAME_idx
-  ON metadata.mode_taxref USING btree (raw_data.unaccent_string(COMPLETE_NAME));
+  ON metadata.mode_taxref USING btree (unaccent_string(COMPLETE_NAME));
   
 CREATE INDEX mode_taxref_VERNACULAR_NAME_idx
-  ON metadata.mode_taxref USING btree (raw_data.unaccent_string(VERNACULAR_NAME));
-
-
+  ON metadata.mode_taxref USING btree (unaccent_string(VERNACULAR_NAME));
 
 
 /*==============================================================*/
@@ -313,6 +319,7 @@ COLUMN_NAME          VARCHAR(36)          null,
 IS_CALCULATED        CHAR(1)		      null,
 IS_EDITABLE          CHAR(1)		      null,
 IS_INSERTABLE        CHAR(1)		      null,
+IS_MANDATORY         CHAR(1)		      null,
 POSITION             INT4                 null,
 COMMENT		         VARCHAR(255)         null,
 constraint PK_TABLE_FIELD primary key (DATA, FORMAT)
@@ -322,8 +329,9 @@ COMMENT ON COLUMN TABLE_FIELD.DATA IS 'The logical name of the field';
 COMMENT ON COLUMN TABLE_FIELD.FORMAT IS 'The name of the table format containing this field';
 COMMENT ON COLUMN TABLE_FIELD.COLUMN_NAME IS 'The real name of the column';
 COMMENT ON COLUMN TABLE_FIELD.IS_CALCULATED IS 'Indicate if the field should be provided for insertion (value = 0) or if it is calculated by a trigger function (value = 1)';
-COMMENT ON COLUMN TABLE_FIELD.IS_EDITABLE IS 'Indicate if the field is editable (value = 1)';
+COMMENT ON COLUMN TABLE_FIELD.IS_EDITABLE IS 'Indicate if the field can be edited in the edition module (value = 1)';
 COMMENT ON COLUMN TABLE_FIELD.IS_INSERTABLE IS 'Indicate if the field can be inserted/added in the edition module (value = 1)';
+COMMENT ON COLUMN TABLE_FIELD.IS_MANDATORY IS 'Indicate if the field is mandatory in the edition module. PKs are always mandatory.';
 COMMENT ON COLUMN TABLE_FIELD.POSITION IS 'The position of this field in the table (for the detail panel and the edition module)';
 COMMENT ON COLUMN TABLE_FIELD.COMMENT IS 'Any comment';
 
@@ -392,6 +400,7 @@ COMMENT ON COLUMN DATASET_FIELDS.SCHEMA_CODE IS 'The code of the schema';
 COMMENT ON COLUMN DATASET_FIELDS.FORMAT IS 'The table format associed with the dataset';
 COMMENT ON COLUMN DATASET_FIELDS.DATA IS 'The table field associed with the dataset (used when querying data)';
 
+
 /*==============================================================*/
 /* Table : TABLE_SCHEMA                                         */
 /*==============================================================*/
@@ -426,6 +435,7 @@ COMMENT ON COLUMN TABLE_TREE.CHILD_TABLE IS 'The name of the child table (should
 COMMENT ON COLUMN TABLE_TREE.PARENT_TABLE IS 'The name of the parent table (should correspond to a table format, * when this is a root table)';
 COMMENT ON COLUMN TABLE_TREE.JOIN_KEY IS 'The list of table fields used to make the join between the table (separated by commas)';
 COMMENT ON COLUMN TABLE_TREE.COMMENT IS 'Any comment';
+
 
 
 
@@ -500,6 +510,8 @@ COMMENT ON COLUMN metadata.process."statement" IS 'The SQL statement correspondi
 COMMENT ON COLUMN metadata.process._creationdt IS 'The creation date';
 
 
+SET SEARCH_PATH = metadata, public;
+
 /*==============================================================*/
 /* Table : TRANSLATION                                          */
 /*==============================================================*/
@@ -522,6 +534,9 @@ ALTER TABLE metadata.translation
    ADD CONSTRAINT "FK_TABLE_FORMAT_TRANSLATION" FOREIGN KEY (table_format) 
        REFERENCES metadata.table_format (format)
        ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+
 
 
 
@@ -636,32 +651,6 @@ alter table FILE_FIELD
       on delete restrict on update restrict;
       
       
-/*      
-GRANT ALL ON SCHEMA metadata TO bronze;
-GRANT ALL ON TABLE metadata.checks TO bronze;
-GRANT ALL ON TABLE metadata.checks_per_provider TO bronze;
-GRANT ALL ON TABLE metadata.data TO bronze;
-GRANT ALL ON TABLE metadata.dataset TO bronze;
-GRANT ALL ON TABLE metadata.dataset_fields TO bronze;
-GRANT ALL ON TABLE metadata.dataset_files TO bronze;
-GRANT ALL ON TABLE metadata.dynamode TO bronze;
-GRANT ALL ON TABLE metadata.field TO bronze;
-GRANT ALL ON TABLE metadata.field_mapping TO bronze;
-GRANT ALL ON TABLE metadata.file_field TO bronze;
-GRANT ALL ON TABLE metadata.file_format TO bronze;
-GRANT ALL ON TABLE metadata.form_field TO bronze;
-GRANT ALL ON TABLE metadata.form_format TO bronze;
-GRANT ALL ON TABLE metadata.format TO bronze;
-GRANT ALL ON TABLE metadata.group_mode TO bronze;
-GRANT ALL ON TABLE metadata."mode" TO bronze;
-GRANT ALL ON TABLE metadata.mode_tree TO bronze;
-GRANT ALL ON TABLE metadata.process TO bronze;
-GRANT ALL ON TABLE metadata.range TO bronze;
-GRANT ALL ON TABLE metadata.table_field TO bronze;
-GRANT ALL ON TABLE metadata.table_format TO bronze;
-GRANT ALL ON TABLE metadata.table_schema TO bronze;
-GRANT ALL ON TABLE metadata.table_tree TO bronze;
-GRANT ALL ON TABLE metadata.unit TO bronze;
-GRANT ALL ON TABLE metadata.translation TO bronze;   
-
-*/      
+GRANT ALL ON SCHEMA metadata TO ogam;
+GRANT ALL ON ALL TABLES IN SCHEMA metadata TO ogam;
+      
