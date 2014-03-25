@@ -609,7 +609,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$result[] = $dataset;
 		}
 		
-		$this->logger->info('results : '.print_r($result, true));
 		
 		return $result;
 	}
@@ -941,8 +940,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
-			
-			$this->logger->debug('cachedResult : '.print_r($cachedResult, true));
 		}
 
 		if (empty($cachedResult)) {
