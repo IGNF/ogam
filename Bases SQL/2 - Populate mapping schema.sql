@@ -10,6 +10,8 @@ SET SEARCH_PATH = mapping, public;
 
 
 -- Add the available map scales
+
+DELETE FROM scales;
 INSERT INTO scales(scale) VALUES (25000000); -- 25 M
 INSERT INTO scales(scale) VALUES (10000000); -- 10 M
 INSERT INTO scales(scale) VALUES (5000000);  --  5 M
@@ -18,7 +20,23 @@ INSERT INTO scales(scale) VALUES (1000000);  --  1 M
 INSERT INTO scales(scale) VALUES (500000);   --  500 K
 INSERT INTO scales(scale) VALUES (250000);   --  250 K
 INSERT INTO scales(scale) VALUES (100000);   --  100 K
-
+/*
+INSERT INTO scales VALUES (866688.03242073394);
+INSERT INTO scales VALUES (433344.01762768999);
+INSERT INTO scales VALUES (216672.00739652201);
+INSERT INTO scales VALUES (108336.003698261);
+INSERT INTO scales VALUES (54168.0018491304);
+INSERT INTO scales VALUES (6770.9998768103997);
+INSERT INTO scales VALUES (3385.5013557287998);
+INSERT INTO scales VALUES (1692.7492605407999);
+INSERT INTO scales VALUES (846.37463027039996);
+INSERT INTO scales VALUES (1550000);
+INSERT INTO scales VALUES (3000000);
+INSERT INTO scales VALUES (6000000);
+INSERT INTO scales VALUES (423);
+INSERT INTO scales VALUES (27084);
+INSERT INTO scales VALUES (13542);
+*/
 
 DELETE FROM layer_tree;
 DELETE FROM layer;
@@ -26,96 +44,34 @@ DELETE FROM layer_service;
 
 
 -- Define the services
-INSERT INTO layer_service(service_name, config, print_pdf_base_url, detail_base_url) VALUES ('local_mapserver', '{"urls":["http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/OGAM/Mapserv/ogam.map"],"params":{"SERVICE":"WMS"}}', 'http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/OGAM/Mapserv/ogam.map', 'http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/OGAM/Mapserv/ogam.map');
-INSERT INTO layer_service(service_name, config, print_pdf_base_url, detail_base_url) VALUES ('local_tilecache', '{"urls":["http://test-efdac.ifn.fr/cgi-bin/tilecache/tilecache.cgi?"],"params":{"SERVICE":"WMS"}}', '', '');
+INSERT INTO layer_service(service_name, config) VALUES ('local_mapserver', '{"urls":["http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/OGAM/Mapserv/ogam.map&"],"params":{"SERVICE":"WMS"}}');
+INSERT INTO layer_service(service_name, config) VALUES ('local_tilecache', '{"urls":["http://test-efdac.ifn.fr/cgi-bin/tilecache/tilecache.cgi?"],"params":{"SERVICE":"WMS"}}');
 
---INSERT INTO layer_service VALUES ('geoportal_wms', '{"urls":["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/r/wms?"],"params":{"SERVICE":"WMS","VERSION":"1.3.0","REQUEST":"GetMap","CRS":"EPSG:2154"}}', 'http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/r/wms?');
---INSERT INTO layer_service VALUES ('geoportal_wmts', '{"urls": ["http://wxs-i.ign.fr/zclt8ghffbmi87pn5m67zftf/geoportail/wmts?"], "params": {"SERVICE":"WMTS","VERSION":"1.0.0","style":"normal","request":"GetTile","matrixSet":"PM","tileMatrix":5}}', 'http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/wmts?');
---INSERT INTO layer_service VALUES ('mapserver', '{"urls":["http://www.carhab.fr//mapProxy.php?","http://www-1.carhab.fr//mapProxy.php?","http://www-2.carhab.fr//mapProxy.php?","http://www-3.carhab.fr//mapProxy.php?","http://www-4.carhab.fr//mapProxy.php?","http://www-5.carhab.fr//mapProxy.php?","http://www-6.carhab.fr//mapProxy.php?","http://www-7.carhab.fr//mapProxy.php?","http://www-8.carhab.fr//mapProxy.php?","http://www-9.carhab.fr//mapProxy.php?"],"params":{"SERVICE":"WMS"}}', 'http://www.carhab.fr/cgi-bin/mapserv.peg-carhab?');
+INSERT INTO layer_service(service_name, config) VALUES ('mapProxy', '{"urls":["http://test-efdac.ifn.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service(service_name, config) VALUES ('proxy_wfs', '{"urls":["http://test-efdac.ifn.fr/proxy/getwfs?"],"params":{"SERVICE":"WFS","VERSION":"1.0.0","REQUEST":"GetFeature"}}');
+
+INSERT INTO layer_service(service_name, config) VALUES ('geoportal_wfs', '{"urls": ["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/wfs?"], "params": {"SERVICE":"WFS","VERSION":"1.0.0","REQUEST":"getFeature"}}');
+INSERT INTO layer_service(service_name, config) VALUES ('geoportal_wms', '{"urls":["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/r/wms?"],"params":{"SERVICE":"WMS","VERSION":"1.3.0","REQUEST":"GetMap"}}');
+INSERT INTO layer_service(service_name, config) VALUES ('geoportal_wmts', '{"urls": ["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/wmts?"],"params":{"SERVICE":"WMTS","VERSION":"1.0.0","REQUEST":"getTile","style":"normal","matrixSet":"PM"}}');
 
 
 
 -- Define the layers
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('nuts_0', 'Country Boundaries', 'nuts_0', 1, 0, 0, 'local_tilecache', 60000000, 50000, 'resize', 'PNG',  1, null, 0, 'NONE', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('result_locations', 'Results', 'result_locations', 1, 0, 1, 'local_mapserver', null, null, null, 'PNG',  0, null, 0, 'REQUEST', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('all_locations', 'Plot Locations', 'all_locations', 1, 0, 1, 'local_mapserver', null, null, null, 'PNG', 1, null, 0, 'NONE', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('all_harmonized_locations', 'Plot Locations', 'all_harmonized_locations', 1, 0, 1, 'local_mapserver', null, null, null, 'PNG', 1, null, 0, 'NONE', 0);
---INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('all_locations_country', 'Plot Locations', 'all_locations_country', 1, 0, 1, 0, null, null, null, 'PNG', 1, null, 0, 'NONE', 0);
---INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('all_harmonized_locations_country', 'Plot Locations', 'all_harmonized_locations_country', 1, 0, 1, 0, null, null, null, 'PNG', 1, null,  0, 'NONE', 0);
-/*
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('limites', 'Limites administratives', NULL, 1, 0, 0, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, 'NONE', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('fonds', 'Localisation', NULL, 1, 0, 0, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, 'NONE', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('environnement', 'Zonages environnementaux', NULL, 1, 0, 0, NULL, NULL, NULL, 0, NULL, NULL, NULL, 0, 'NONE', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('regions', 'Régions', 'regions', 1, 0, 0, 'mapserver', 10000000, 1000000, 1, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('apb', 'Arrêté de protection de biotope', 'apb', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('communes', 'Communes', 'communes', 1, 0, 0, 'mapserver', 250000, 5000, 1, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('contexte_piscicole', 'Contexte piscicole', 'contexte_piscicole', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('departements', 'Départements', 'departements', 1, 0, 0, 'mapserver', 2000000, 5000, 1, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('sic', 'Site d''importance communautaire', 'sic', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('znieff2', 'ZNIEFF 2', 'znieff2', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('zone_hydrographique', 'Zone hydrographique', 'zone_hydrographique', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('phytoeco_niv4', 'Région phytoécologique de niveau 4', 'phytoeco_niv4', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', '1', 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('phytoeco_niv2', 'Région phytoécologique de niveau 2', 'phytoeco_niv2', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', '1', 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('hydrographie', 'Hydrographie', 'hydrographie', 1, 0, 0, 'geoportal_wms', 25000, NULL, 1, 'resize', 'png', NULL, 0, 'NONE', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('phytoeco_niv3', 'Région phytoécologique de niveau 3', 'phytoeco_niv3', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', '1', 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('ser_ar_l93', 'Sylvo-écorégion alluvions', 'ser_ar_l93', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', '1', 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('ser_l93', 'Sylvo-écorégions', 'ser_l93', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', '1', 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('her1', 'Hydro-écorégion zonage 1', 'her1', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', '1', 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('her2', 'Hydro-écorégion zonage 2', 'her2', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', '1', 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('phytoeco_niv1', 'Région phytoécologique de niveau 1', 'phytoeco_niv1', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', '1', 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('znieff1', 'ZNIEFF 1', 'znieff1', 1, 0, 0, 'mapserver', NULL, NULL, 0, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('all_locations', 'Emplacements existants', 'all_locations', 1, 0, 1, 'mapserver', NULL, NULL, 1, NULL, 'png', '1', 0, 'NONE', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('result_locations', 'Resultats', 'result_locations', 1, 0, 1, 'mapserver', NULL, NULL, 1, NULL, 'png', NULL, 0, 'REQUEST', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('zps', 'Zone de protection spéciale', 'zps', 1, 0, 0, 'mapserver', NULL, NULL, 1, NULL, 'png', NULL, 0, 'NONE', 1);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('ortho', 'BD Ortho', 'ORTHOIMAGERY.ORTHOPHOTOS', 1, 0, 0, 'geoportal_wms', 9000, NULL, 0, 'resize', 'png', NULL, 0, 'NONE', 0);
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, service_name, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, isVector) VALUES ('scans', 'Référentiel IGN', 'GEOGRAPHICALGRIDSYSTEMS.MAPS', 1, 0, 0, 'geoportal_wms', 9000000, 17000, 0, 'resize', 'png', NULL, 0, 'NONE', 0);
-
-*/
+INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('result_locations', 'Results', 'result_locations', 1, 0, 1, null, null, null, 'PNG',  0, null, 0, 'REQUEST', 'local_tilecache', 'local_mapserver','local_mapserver','local_mapserver', 'local_mapserver');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('all_locations', 'Plot Locations', 'all_locations', 1, 0, 1, null, null, null, 'PNG', 1, null, 0, 'NONE', 'local_tilecache', 'local_mapserver','local_mapserver','local_mapserver', 'local_mapserver');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('all_harmonized_locations', 'Plot Locations', 'all_harmonized_locations', 1, 0, 1, null, null, null, 'PNG', 1, null, 0, 'NONE', 'local_tilecache', 'local_mapserver','local_mapserver','local_mapserver', 'local_mapserver');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('nuts_0', 'Country Boundaries', 'nuts_0', 1, 0, 0, 60000000, 50000, 'resize', 'PNG',  1, null, 0, 'NONE', 'local_tilecache', 'local_mapserver','local_mapserver','local_mapserver', 'local_mapserver');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, has_sld, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('BDCARTO_BDD_FXX_RGF93G:laisse', 'BD Ortho', 'BDCARTO_BDD_FXX_RGF93G:laisse', 1, 1, 0, NULL, NULL, 'resize', 'png', 1, NULL, 0, 'NONE', 'geoportal_wmts', 'geoportal_wms', 'geoportal_wms', 'geoportal_wms', 'geoportal_wfs');
 
 --
 -- Define the layers legend
 --
 INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (1, -1, 1, 1, 0, 1, 0, 'result_locations', null, 1);
 INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (2, -1, 1, 0, 1, 0, 0, 'all_locations', null, 2);
---INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (3, -1, 1, 0, 1, 0, 0, 'all_locations_country', null, 3);
 INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (4, -1, 1, 0, 1, 0, 0, 'all_harmonized_locations', null, 4);
---INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (5, -1, 1, 0, 1, 0, 0, 'all_harmonized_locations_country', null, 5);
-
 
 INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (20, -1, 1, 1, 0, 0, 0, 'nuts_0', null, 20);
-
-
-/*
-
-INSERT INTO layer_tree VALUES (1, '-1', 1, 0, 0, 1, 0, 'result_locations', 1, NULL);
-INSERT INTO layer_tree VALUES (4, '3', 1, 0, 0, 0, 0, 'apb', 1, NULL);
-INSERT INTO layer_tree VALUES (5, '3', 1, 0, 0, 0, 0, 'contexte_piscicole', 2, NULL);
-INSERT INTO layer_tree VALUES (6, '3', 1, 0, 0, 0, 0, 'sic', 3, NULL);
-INSERT INTO layer_tree VALUES (7, '3', 1, 0, 0, 0, 0, 'znieff1', 4, NULL);
-INSERT INTO layer_tree VALUES (8, '3', 1, 0, 0, 0, 0, 'znieff2', 5, NULL);
-INSERT INTO layer_tree VALUES (9, '3', 1, 0, 0, 0, 0, 'zone_hydrographique', 6, NULL);
-INSERT INTO layer_tree VALUES (10, '3', 1, 0, 0, 0, 0, 'zps', 7, NULL);
-INSERT INTO layer_tree VALUES (12, '11', 1, 0, 0, 0, 0, 'regions', 1, NULL);
-INSERT INTO layer_tree VALUES (13, '11', 1, 0, 0, 0, 0, 'departements', 2, NULL);
-INSERT INTO layer_tree VALUES (14, '11', 1, 0, 0, 0, 0, 'communes', 3, NULL);
-INSERT INTO layer_tree VALUES (16, '15', 1, 0, 0, 0, 0, 'hydrographie', 1, NULL);
-INSERT INTO layer_tree VALUES (18, '15', 1, 0, 0, 0, 0, 'ortho', 3, NULL);
-INSERT INTO layer_tree VALUES (19, '3', 1, 0, 0, 0, 0, 'her1', 8, NULL);
-INSERT INTO layer_tree VALUES (20, '3', 1, 0, 0, 0, 0, 'her2', 9, NULL);
-INSERT INTO layer_tree VALUES (21, '3', 1, 0, 0, 0, 0, 'ser_l93', 10, NULL);
-INSERT INTO layer_tree VALUES (22, '3', 1, 0, 0, 0, 0, 'ser_ar_l93', 11, NULL);
-INSERT INTO layer_tree VALUES (23, '3', 1, 0, 0, 0, 0, 'phytoeco_niv1', 12, NULL);
-INSERT INTO layer_tree VALUES (24, '3', 1, 0, 0, 0, 0, 'phytoeco_niv2', 13, NULL);
-INSERT INTO layer_tree VALUES (25, '3', 1, 0, 0, 0, 0, 'phytoeco_niv3', 14, NULL);
-INSERT INTO layer_tree VALUES (26, '3', 1, 0, 0, 0, 0, 'phytoeco_niv4', 15, NULL);
-INSERT INTO layer_tree VALUES (2, '-1', 1, 0, 0, 0, 0, 'all_locations', 2, NULL);
-INSERT INTO layer_tree VALUES (3, '-1', 0, 0, 0, 0, 1, 'environnement', 3, NULL);
-INSERT INTO layer_tree VALUES (11, '-1', 0, 0, 0, 0, 1, 'limites', 3, NULL);
-INSERT INTO layer_tree VALUES (15, '-1', 0, 0, 0, 0, 1, 'fonds', 4, NULL);
-INSERT INTO layer_tree VALUES (17, '15', 1, 0, 0, 0, 0, 'scans', 2, NULL);
-
-
- */
+INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (30, -1, 1, 1, 0, 0, 0, 'BDCARTO_BDD_FXX_RGF93G:laisse', null, 30);
 
 
 --

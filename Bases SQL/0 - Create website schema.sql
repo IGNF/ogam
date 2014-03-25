@@ -147,7 +147,7 @@ COMMENT ON COLUMN layer_role_restriction.role_code IS 'Role for whom this layer 
 
 ALTER TABLE layer_role_restriction 
 ADD CONSTRAINT fk_layer_role_restriction_layer_name 
-FOREIGN KEY (layer_name) REFERENCES mapping.layer_definition(layer_name)
+FOREIGN KEY (layer_name) REFERENCES mapping.layer(layer_name)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE layer_role_restriction 
