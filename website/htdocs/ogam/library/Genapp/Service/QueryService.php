@@ -60,7 +60,9 @@ class Genapp_Service_QueryService {
 		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
-
+		$this->layersModel = new Application_Model_Mapping_Layers();
+		$this->servicesModel = new Application_Model_Mapping_Services();
+		
 		// The service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();
 
@@ -691,8 +693,8 @@ class Genapp_Service_QueryService {
 	            $bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 
 	            // Prepare an overview bbox
-	            $bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-
+	            $bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 50000);
+	            
 	            $locationTable = $data;
 	            break;
 	        }
@@ -749,22 +751,39 @@ class Genapp_Service_QueryService {
 	    $dataInfo = end($dataDetails['formats']);
 	    $dataDetails['title'] = $dataInfo['title'].' ('.$titlePK.')';
 
-	    // Add the localisation maps
-	    $dataDetails['maps'] = array();
+	// Add the localisation maps
 	    if (!empty($detailsLayers)) {
 	        if ($detailsLayers[0] != '') {
-	            $dataDetails['maps'][] = array(
-	                    'title' => 'image',
-	                    'url'   => $this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0],
-	                            $bb, $mapservParams, $proxy)
+	            $url = array();
+	            $url = explode(";",($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0],
+	                            $bb, $mapservParams, $proxy)));
+	            
+	            $dataDetails['maps1'] = array(
+	                    'title' => 'image'
                     );
+	            
+	            //complete the array with the urls of maps1
+	            $dataDetails['maps1']['urls'][] = array();
+	            for ($i=0;$i<count($url);$i++) {
+	                $str_url = 'url'.strval($i);
+	                $dataDetails['maps1']['urls'][$i]['url'] = $url[$i];
+	            }
 	        }
+	         
 	        if ($detailsLayers[1] != '') {
-	            $dataDetails['maps'][] = array(
-	                    'title' => 'overview',
-	                    'url'   => $this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1],
-	                            $bb2, $mapservParams, $proxy)
-	                );
+	            $url = array();
+	            $url = explode(";",($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1],
+	                            $bb2, $mapservParams, $proxy)));
+	            $dataDetails['maps2'] = array(
+	                    'title' => 'overview'
+	            );
+	            
+	            //complete the array with the urls of maps2 
+	            $dataDetails['maps2']['urls'][] = array(); 
+	            for ($i=0;$i<count($url);$i++) {
+	                $dataDetails['maps2']['urls'][$i]['url'] = $url[$i];
+	                 
+	            }
 	        }
 	    }
 
@@ -787,31 +806,70 @@ class Genapp_Service_QueryService {
 
 	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
 	    $configuration = Zend_Registry::get('configuration');
-
-	    if ($proxy) {
-	        $baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl().'/proxy/gettile?';
-	    } else {
-	        $baseUrl = $configuration->mapserver_url.'&';
-	    }
-
-        // Configure the projection systems
+	    
+	    // Configure the projection systems
 	    $visualisationSRS = $configuration->srs_visualisation;
-
-	    return $baseUrl
-	        .'LAYERS='.$detailsLayers
-	        .'&TRANSPARENT=true'
-	        .'&FORMAT=image%2FPNG'
-	        .'&SERVICE=WMS'
-	        .'&VERSION=1.1.1'
-	        .'&REQUEST=GetMap'
-	        .'&STYLES='
-	        .'&EXCEPTIONS=application%2Fvnd.ogc.se_inimage'
-	        .'&SRS=EPSG%3A'.$visualisationSRS
-	        .'&BBOX='.$bb['x_min'].','.$bb['y_min'].','.$bb['x_max'].','.$bb['y_max']
-	        .'&WIDTH=300&HEIGHT=300'
-	        .'&map.scalebar=STATUS+embed'
-	        .'&SESSION_ID='.session_id()
-	        .$mapservParams;
+	    
+	    //Get the base urls for the services
+	    if (!$proxy) {
+	        $detailServices = $this->servicesModel->getPrintServices();
+	    } else {
+	        $detailServices = $this->servicesModel->getDetailServices();
+	    }
+	    
+		// Get the server name for the layers
+		$layerNames = explode(",", $detailsLayers);
+		//$serviceLayerNames = "";
+		$baseUrls="";
+		
+		foreach ($layerNames as $layerName) {
+		    
+			$layer = $this->layersModel->getLayer($layerName);
+			$serviceLayerName = $layer->serviceLayerName;
+			
+			//Get the base Url for detail service
+			if (!$proxy) {
+			    $detailServiceName = $layer->printServiceName;
+			} else {
+			    if ($layer->detailServiceName!=''){
+			        $detailServiceName = $layer->detailServiceName;
+			    }
+			}
+			
+			foreach ($detailServices as $detailService) {
+			    
+			    if ($detailService->serviceName == $detailServiceName){
+			        $json = json_decode($detailService->serviceConfig,true);
+			        $this->logger->debug('urls de base : '.count($json));
+			         
+			        foreach ($json as $key => $val) {
+			            if ($key == 'params'){
+			                $service = $val['SERVICE'];
+			            }
+			        }
+			        $baseUrl = json_decode($detailService->serviceConfig)->{'urls'}[0];
+			        $baseUrls .= $baseUrl
+			            .'LAYERS='.$serviceLayerName
+			            .'&TRANSPARENT=true'
+			            .'&FORMAT=image%2Fpng'
+			            .'&SERVICE=WMS'
+			            .'&VERSION=1.3.0'
+			            .'&REQUEST=GetMap'
+			            .'&STYLES='
+			            //.'&EXCEPTIONS=application%2Fvnd.ogc.se_inimage'
+			            .'&CRS=EPSG%3A'.$visualisationSRS
+			            .'&BBOX='.$bb['x_min'].','.$bb['y_min'].','.$bb['x_max'].','.$bb['y_max']
+			            .'&WIDTH=300&HEIGHT=300'
+			            .'&map.scalebar=STATUS+embed'
+			            .'&SESSION_ID='.session_id()
+			            .$mapservParams
+			            .";";
+			    }
+			}
+		}
+		$baseUrls = substr($baseUrls, 0, -1); // remove last semicolon
+		
+	    return $baseUrls;
 	}
 
 	/**

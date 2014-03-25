@@ -31,9 +31,9 @@ class Application_Object_Mapping_Layer {
 	var $layerLabel;
 
 	/**
-	 * The names of the mapserver layers composing this logical layer.
+	 * The name of the service layer composing this logical layer.
 	 */
-	var $mapservLayers;
+	var $serviceLayerName;
 
 	/**
 	 * Indicate if the layer is transparent.
@@ -41,7 +41,12 @@ class Application_Object_Mapping_Layer {
 	 * 0 for no
 	 */
 	var $isTransparent;
-
+	
+	/**
+	 * Default value of layer opacity : 0 to 100, default value = 100
+	 */
+	var $defaultOpacity;
+	
 	/**
 	 * Indicate if the layer is a base layer.
 	 * 1 base layer
@@ -50,18 +55,9 @@ class Application_Object_Mapping_Layer {
 	var $isBaseLayer;
 
 	/**
-	 * Force OpenLayers not to tile this layer (to avoid problems with labels for exemple).
-	 * 1 force untiled
-	 * 0 tiled by default
+	 * Indicates the service for displaying the layers in the map panel
 	 */
-	var $isUntiled;
-
-	/**
-	 * Indicate if the layer is stored in cache (tilecache).
-	 * 1 in cache
-	 * 0 not in cache
-	 */
-	var $isCached;
+	var $viewServiceName;
 
 	/**
 	 * The max scale of apparition of the layer.
@@ -99,11 +95,6 @@ class Application_Object_Mapping_Layer {
 	var $isDisabled;
 
 	/**
-	 * Tells if the layer has a legend that should be displayed (value = 1 for true).
-	 */
-	var $hasLegend;
-	
-	/**
 	 * Tells if the layer launch the generation of a SLD information.
 	 */
 	var $hasSLD;
@@ -119,12 +110,27 @@ class Application_Object_Mapping_Layer {
 	 * If two layers are in the same group, they will appear with a radio button in the layer tree.
 	 */
 	var $checkedGroup;
+		
+	/**
+	 * Indicates the service to call for printing map in pdf
+	 */
+	var $printServiceName;
 	
 	/**
-	 * Identify a vector layer that can be used for WFS requests, snapping, ....
-	 * 1 vector layer
-	 * 0 raster or non editable layer
+	 * Indicates the service to call for detail panel
 	 */
-	var $isVector;
-
+	var $detailServiceName;
+	
+	/**
+	 * Indicates the service to call for wfs menu
+	 */
+	var $featureServiceName;
+	
+	/**
+	 * Indicates the service to call for displaying legend
+	 */
+	var $legendServiceName;
+	
+	
+	
 }

@@ -38,7 +38,9 @@ class ProxyController extends AbstractOGAMController {
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->classDefinitionModel = new Application_Model_Mapping_ClassDefinition();
-
+		$this->servicesModel = new Application_Model_Mapping_Services();
+		$this->layersModel = new Application_Model_Mapping_Layers();
+		
 		// The service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();
 	}
@@ -106,11 +108,11 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $_SERVER['REQUEST_URI'];
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapserverURL = $configuration->mapserver_url;
-		$mapserverURL = $mapserverURL."&";
+		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $mapServiceURL."&";
 
-		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/gettile?");
-
+		$uri = $mapServiceURL.$this->_extractAfter($uri, "proxy/gettile?");
+		
 		// Check the image type
 		$imagetype = $this->_extractParam($uri, "FORMAT");
 		if ($this->_endsWith($imagetype, "JPG") || $this->_endsWith($imagetype, "JPEG")) {
@@ -135,6 +137,7 @@ class ProxyController extends AbstractOGAMController {
 		}
 
 		$this->logger->debug('redirect gettile : '.$uri);
+		$this->logger->debug('redirect gettile : '.$mapServiceURL);
 
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
@@ -165,10 +168,10 @@ class ProxyController extends AbstractOGAMController {
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapserverURL = $configuration->mapserver_url;
-		$mapserverURL = $mapserverURL."&";
+		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $mapServiceURL."&";
 
-		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/getwfs?");
+		$uri = $mapServiceURL.$this->_extractAfter($uri, "proxy/getwfs?");
 		$this->logger->debug('redirect getwfs : '.$uri);
 
 		if ($method == 'GET') {
@@ -282,11 +285,11 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $_SERVER["REQUEST_URI"];
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapserverURL = $configuration->mapserver_url;
-		$mapserverURL = $mapserverURL."&";
+		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $mapServiceURL."&";
 
-		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/getlegendimage?");
-
+		$uri = $mapServiceURL.$this->_extractAfter($uri, "proxy/getlegendimage?");
+		
 		// Check the image type
 		$imagetype = $this->_extractParam($uri, "FORMAT");
 		if ($this->_endsWith($imagetype, "JPG") || $this->_endsWith($imagetype, "JPEG")) {
@@ -340,13 +343,17 @@ class ProxyController extends AbstractOGAMController {
 	 */
 	function getfeatureinfoAction() {
 
-		$this->logger->debug('getfeatureinfoAction');
+	 		$this->logger->debug('getfeatureinfoAction');
 
 		$uri = $_SERVER["REQUEST_URI"];
-
+		
+		$featureInfoServices = $this->servicesModel->getFeatureInfoServices();
+		$layerName = $this->_extractParam($uri,'typename');
+		$this->logger->debug('nom du typename du WFS : '.$layerName);
+		
 		$configuration = Zend_Registry::get("configuration");
-		$mapserverURL = $configuration->mapserver_url;
-		$mapserverURL = $mapserverURL."&";
+		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $mapServiceURL."&";
 		$sessionId = session_id();
 
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -358,7 +365,7 @@ class ProxyController extends AbstractOGAMController {
 		$metadataModel = new Genapp_Model_Metadata_Metadata();
 
 		// On effecture une requête mapserver "GetFeature" pour chaque layer
-		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
+		$uri = $mapServiceURL.$uri."&SESSION_ID=".$sessionId;
 		$this->logger->debug('redirect getinfo : '.$uri);
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
@@ -367,7 +374,7 @@ class ProxyController extends AbstractOGAMController {
 		} else {
 			$gml = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
-
+	
 		// Get the infos to display
 		$this->logger->debug('Get the infos to display');
 		if (strpos($gml, ":display>")) {

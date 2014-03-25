@@ -447,8 +447,10 @@ class QueryController extends AbstractOGAMController {
 		
 		// Get the names of the layers to display in the details panel
 		$configuration = Zend_Registry::get('configuration');
-		$detailsLayers = $configuration->query_details_layers->toArray();
 		
+		$detailsLayers[] = $configuration->query_details_layers1;
+		$detailsLayers[] = $configuration->query_details_layers2;
+				
 		// Get the current dataset to filter the results
 		$websiteSession = new Zend_Session_Namespace('website');
 		$datasetId = $websiteSession->datasetId;
@@ -478,8 +480,10 @@ class QueryController extends AbstractOGAMController {
 		
 		// Get the names of the layers to display in the details panel
 		$configuration = Zend_Registry::get('configuration');
-		$detailsLayers = $configuration->query_details_layers->toArray();
-		
+	    
+	    $detailsLayers[] =$configuration->query_details_layers1; 
+	    $detailsLayers[] =$configuration->query_details_layers2;
+				
 		// Get the current dataset to filter the results
 		$websiteSession = new Zend_Session_Namespace('website');
 		$datasetId = $websiteSession->datasetId;
@@ -527,7 +531,6 @@ class QueryController extends AbstractOGAMController {
 		try {
 			$pdf->writeHTML($this->view->partial('query/pdfexport.phtml', $pdfExportArray));
 			$pdf->Output($this->_wd_remove_accents($data['title']) . '.pdf', 'D');
-			// $this->logger->debug('wroten pdf :'.$pdf);
 		} 
 
 		catch (HTML2PDF_exception $e) {

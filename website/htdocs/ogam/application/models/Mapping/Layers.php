@@ -38,22 +38,21 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 *
 	 * @return Array[String] The layer names
 	 */
-	public function getVectorLayersList() {
+public function getVectorLayersList() {
 
 		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER');
 		$db = $this->getAdapter();
 		$params = array();
 
-		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label ";
-		$req .= " FROM layer ";
+		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, config as feature_service_config ";
+		$req .= " FROM layer_service , layer ";
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
-		$req .= " WHERE isVector = 1 ";
+		$req .= " WHERE layer.feature_service_name <> '' AND layer.feature_service_name = layer_service.service_name";
 
 		// Check the user profile
 		$userSession = new Zend_Session_Namespace('user');
 		$role = $userSession->role;
 		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-
 		$req .= " ORDER BY layer_name";
 
 		Zend_Registry::get("logger")->info('getVectorLayersList : '.$req);
@@ -63,7 +62,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$result[$row['layer_name']] = $row['layer_label'];
+			$result[$row['layer_name']] = array($row['layer_label'],$row['feature_service_config']);
 		}
 		return $result;
 	}
@@ -81,8 +80,8 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$params = array();
 
 		$req = " SELECT parent_id, layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, ";
-		$req .= " istransparent, isbaselayer, isuntiled, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
-		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_legend, has_sld, checked_group, isvector,service_name ";
+		$req .= " istransparent, default_opacity, isbaselayer, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
+		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_sld, checked_group, feature_service_name, print_service_name, detail_service_name,view_service_name, legend_service_name ";
 		$req .= " FROM layer ";
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
 		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
@@ -103,7 +102,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
 		$params[] = $role->roleCode;
 
-		$req .= " ORDER BY position DESC";
+		$req .= " ORDER BY (parent_id, position) DESC";
 
 		Zend_Registry::get("logger")->info('getLayersList : '.$req);
 
@@ -118,9 +117,8 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$layer->layerLabel = $row['layer_label'];
 			$layer->serviceLayerName = $row['service_layer_name'];
 			$layer->isTransparent = $row['istransparent'];
+			$layer->defaultOpacity = $row['default_opacity'];
 			$layer->isBaseLayer = $row['isbaselayer'];
-			$layer->isUntiled = $row['isuntiled'];
-			$layer->serviceName = $row['service_name'];
 			$layer->maxscale = $row['maxscale'];
 			$layer->minscale = $row['minscale'];
 			$layer->transitionEffect = $row['transitioneffect'];
@@ -130,10 +128,13 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$layer->isDisabled = $row['is_disabled'];
 			$layer->isChecked = $row['is_checked'];
 			$layer->activateType = $row['activate_type'];
-			$layer->hasLegend = $row['has_legend'];
 			$layer->hasSLD = $row['has_sld'];
 			$layer->checkedGroup = $row['checked_group'];
-			$layer->isVector = $row['isvector'];
+			$layer->viewServiceName = $row['view_service_name'];
+			$layer->legendServiceName = $row['legend_service_name'];
+			$layer->printServiceName = $row['print_service_name'];
+			$layer->detailServiceName = $row['detail_service_name'];
+			$layer->featureServiceName = $row['feature_service_name'];
 			$result[] = $layer;
 		}
 		return $result;
@@ -151,8 +152,8 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$params = array();
 
 		$req = " SELECT parent_id, layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, ";
-		$req .= " istransparent, isbaselayer, isuntiled, service_name, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
-		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_legend, has_sld, checked_group, isvector ";
+		$req .= " istransparent, default_opacity, isbaselayer, view_service_name, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
+		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_sld, checked_group, print_service_name, detail_service_name, feature_service_name, legend_service_name ";
 		$req .= " FROM layer ";
 		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
@@ -173,9 +174,10 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$layer->layerLabel = $row['layer_label'];
 			$layer->serviceLayerName = $row['service_layer_name'];
 			$layer->isTransparent = $row['istransparent'];
+			$layer->defaultOpacity = $row['default_opacity'];
 			$layer->isBaseLayer = $row['isbaselayer'];
-			$layer->isUntiled = $row['isuntiled'];
-			$layer->serviceName = $row['service_name'];
+			$layer->viewServiceName = $row['view_service_name'];
+			$layer->featureServiceName = $row['feature_service_name'];
 			$layer->maxscale = $row['maxscale'];
 			$layer->minscale = $row['minscale'];
 			$layer->transitionEffect = $row['transitioneffect'];
@@ -185,10 +187,12 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$layer->isDisabled = $row['is_disabled'];
 			$layer->isChecked = $row['is_checked'];
 			$layer->activateType = $row['activate_type'];
-			$layer->hasLegend = $row['has_legend'];
 			$layer->hasSLD = $row['has_sld'];
 			$layer->checkedGroup = $row['checked_group'];
-			$layer->isVector = $row['isvector'];
+			$layer->printServiceName = $row['print_service_name'];
+			$layer->detailServiceName = $row['detail_service_name'];
+			$layer->featureInfoServiceName = $row['feature_info_service_name'];
+			$layer->legendServiceName = $row['legend_service_name'];
 			$result[] = $layer;
 		}
 		return $result;
@@ -205,7 +209,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER');
 		$db = $this->getAdapter();
 
-		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, istransparent, isbaselayer, isuntiled, service_name, maxscale, minscale, transitioneffect, imageformat, activate_type, has_sld, isvector ";
+		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, view_service_name, feature_service_name, maxscale, minscale, transitioneffect, imageformat, activate_type, has_sld, print_service_name, detail_service_name, legend_service_name ";
 		$req .= " FROM layer ";
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
 		$req .= " WHERE layer_name = ?";
@@ -222,46 +226,22 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$layer->layerLabel = $row['layer_label'];
 		$layer->serviceLayerName = $row['service_layer_name'];
 		$layer->isTransparent = $row['istransparent'];
+		$layer->defaultOpacity = $row['default_opacity'];
 		$layer->isBaseLayer = $row['isbaselayer'];
-		$layer->isUntiled = $row['isuntiled'];
-		$layer->serviceName = $row['service_name'];
 		$layer->maxscale = $row['maxscale'];
 		$layer->minscale = $row['minscale'];
 		$layer->transitionEffect = $row['transitioneffect'];
 		$layer->imageFormat = $row['imageformat'];
 		$layer->activateType = $row['activate_type'];
 		$layer->hasSLD = $row['has_sld'];
-		$layer->isVector = $row['isvector'];
+		$layer->viewServiceName = $row['view_service_name'];
+		$layer->legendServiceName = $row['legend_service_name'];
+		$layer->printServiceName = $row['print_service_name'];
+		$layer->detailServiceName = $row['detail_service_name'];
+		$layer->featureServiceName = $row['feature_service_name'];
 		return $layer;
 	}
-	/**
-	 * Get the services.
-	 *
-	 * @param String $serviceName the service logical name
-	 * @return Service
-	 */
-	public function getServices() {
 	
-	    $db = $this->getAdapter();
-	
-	    $req = " SELECT service_name,config,print_pdf_base_url,detail_base_url FROM layer_service";
-	    
-	    Zend_Registry::get("logger")->info('getServices : '.$req);
-	
-	    $select = $db->prepare($req);
-	    $select->execute();
-	
-	$result = array();
-	foreach ($select->fetchAll() as $row) {
-	    $service = new Application_Object_Mapping_Service();
-		$service->serviceName = $row['service_name'];
-		$service->serviceConfig = $row['config'];
-		$service->servicePrintUrl = $row['print_pdf_base_url'];
-		$service->serviceDetailUrl = $row['detail_base_url'];
-		$result[]=$service;
-	}
-	    return $result;
-	}
 	/**
 	 * Get the list of available scales.
 	 *

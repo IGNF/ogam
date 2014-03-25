@@ -36,7 +36,7 @@ Genapp.form.picker.TreePicker = Ext.extend(Ext.tree.TreePanel, {
 	height : 300,
 	/**
 	 * @cfg {Number} width The width of this component in pixels (defaults to
-	 *      300).
+	 *      500).
 	 */
 	width : 500,
 	/**

@@ -81,8 +81,11 @@
         <div id="header-login" class="header-login" style="float: right">
 <?php
         $configuration = Zend_Registry::get("configuration");
-        if (!empty($configuration->language_flags)) {
-            foreach($configuration->language_flags as $flag){
+        $language_flags[] = $configuration->language_flags1;
+        $language_flags[] = $configuration->language_flags2;
+        
+        if (!empty($language_flags)) {
+            foreach($language_flags as $flag){
                 if(!empty($flag)){
                     echo '<a href="?lang='.$flag.'" ><div class="'.$flag.'-flag" title="'.$this->translate('Translate this site '.$flag).'">&nbsp;</div></a>';
                 }

@@ -63,11 +63,17 @@ Genapp.map.LayerSelector = Ext.extend(Ext.Button, {
 				root : 'layerNames',
 				fields : [ {
 					name : 'code',
-					mapping : 'code'
+					mapping : 'code',
 				}, {
 					name : 'label',
 					mapping : 'label'
-				} ],
+				}, {
+					name : 'url',
+					mapping : 'url'
+				}, {
+					name : 'url_wms',
+					mapping : 'url_wms'
+				}],
 				url : Genapp.base_url + '/map/ajaxgetvectorlayers'
 			}),
 			listeners : {

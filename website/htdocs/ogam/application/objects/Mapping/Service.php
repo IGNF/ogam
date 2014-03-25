@@ -30,14 +30,5 @@ class Application_Object_Mapping_Service {
 	 */
 	var $serviceConfig;
 
-	/**
-	 * The configuration with base url for print
-	 */
-	var $servicePrintUrl;
-	
-	/**
-	 * The configuration with base url for detail panel
-	 */
-	var $serviceDetailUrl;
 	
 }
