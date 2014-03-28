@@ -494,36 +494,7 @@ class MapController extends AbstractOGAMController {
 		return $json;
 	}
 
-	/**
-	 * Calculate bounding box corresponding to a position and zoom level.
-	 *
-	 * @param Integer $centerX the X position of the center of the map
-	 * @param Integer $centerY the Y position of the center of the map
-	 * @param Integer $zoomLevel the zoom level
-	 * @param Integer $size the size of the image (in pixels)
-	 * @return Array[Integer] the bounding box
-	 */
-	private function _getBbox($centerX, $centerY, $zoomLevel, $size) {
-
-		// Get the scales
-		$scales = $this->layersModel->getScales();
-
-		// Get the resolutions (in meters per pixel)
-		$resolutions = $this->_getResolutions($scales);
-
-		// Get the resolution at the current zoom level
-		$resolutions = array_values($resolutions);
-		$currentRes = $resolutions[$zoomLevel];
-
-		// Calculate the BBOX around the center for an image of a given size
-		$xMin = $centerX - ($currentRes * $size / 2);
-		$xMax = $centerX + ($currentRes * $size / 2);
-		$yMin = $centerY - ($currentRes * $size / 2);
-		$yMax = $centerY + ($currentRes * $size / 2);
-
-		return $xMin.",".$yMin.",".$xMax.",".$yMax;
-	}
-
+	
 	/**
 	 * Show a PDF containing the map selected by the user.
 	 */
