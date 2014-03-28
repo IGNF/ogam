@@ -347,7 +347,6 @@ class ProxyController extends AbstractOGAMController {
 
 		$uri = $_SERVER["REQUEST_URI"];
 		
-		$featureInfoServices = $this->servicesModel->getFeatureInfoServices();
 		$layerName = $this->_extractParam($uri,'typename');
 		$this->logger->debug('nom du typename du WFS : '.$layerName);
 		

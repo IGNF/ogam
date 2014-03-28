@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="eForest" default="deployWebSite" basedir=".">
+<project name="ogam" default="deployWebSite" basedir=".">
 
 	<!-- Properties are immutable: 
     whoever sets a property first freezes it for the rest of the build;

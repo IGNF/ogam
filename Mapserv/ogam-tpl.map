@@ -190,7 +190,7 @@ LAYER
     DATA "the_geom FROM (
             SELECT transform(the_geom, 3035) as the_geom, plot_code as oid  
             FROM location
-        ) as foo USING srid=3035
+        ) as foo USING UNIQUE srid=3035
     "
     
     SYMBOLSCALEDENOM 3000000

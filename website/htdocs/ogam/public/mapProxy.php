@@ -46,30 +46,29 @@ if (empty($permissions) || !array_key_exists('DATA_QUERY',$permissions)) {
 session_write_close();//libere le cookie/session
 
 parse_str($_SERVER["QUERY_STRING"], $query); //recupere la requete envoyée partie (GET params)...
-array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
-
+$query = array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
 $queryParamsAllow = array(//paramNom => requis
-    'BBOX',
-    'LAYERS',
-    'EXCEPTIONS',
-    'SRS',
-    'FORMAT',
-    'WIDTH',
-    'HEIGHT',
-    'SESSION_ID',
-    'TRANSPARENT',
-    'VERSION',
-    'STYLES',
-	'REQUEST',
-	'QUERY_LAYERS',
-	'X',
-	'Y',
-	'INFO_FORMAT',
-	'HASSLD',
-	'SERVICE',
-	'REQUEST',
-	'FORMAT',
-	'LAYER'
+    'BBOX' ,
+    'LAYERS' ,
+    'EXCEPTIONS' ,
+    'SRS' ,
+    'FORMAT' ,
+    'WIDTH' ,
+    'HEIGHT' ,
+    'SESSION_ID' ,
+    'TRANSPARENT' ,
+    'VERSION' ,
+    'STYLES' ,
+	'REQUEST' ,
+	'QUERY_LAYERS' ,
+	'X' ,
+	'Y' ,
+	'INFO_FORMAT' ,
+	'HASSLD' ,
+	'SERVICE' ,
+	'REQUEST' ,
+	'FORMAT' ,
+	'LAYER' 
 );
 
 // Vérifie que les paramètres sont dans la liste des ceux autorisés
@@ -80,16 +79,17 @@ foreach($queryParamsAllow as $param) {
     }
 }
 // force la valeur de certains parametres
-if ($queriesArg['REQUEST'] == 'GETLEGENDGRAPHIC') {
+if (strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
 	$queriesArg['REQUEST']  = 'GetLegendGraphic';
-} else {
+} else if (strcasecmp($queriesArg['REQUEST'] , "getmap") == 0) {
 	$queriesArg['REQUEST']  = 'GetMap';	
+} else {
+    $queriesArg['REQUEST']  = 'GetFeature';
 }
 
 $queriesArg['SERVICE']  = 'WMS';
 
 $uri = $mapServiceURL.'&'.http_build_query($queriesArg);
-
 header('Content-Type: image/png');
 $content = file_get_contents($uri);
 if ($content !== FALSE) {
