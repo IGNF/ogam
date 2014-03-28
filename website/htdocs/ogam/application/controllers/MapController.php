@@ -200,7 +200,7 @@ class MapController extends AbstractOGAMController {
 		$sessionId = session_id();
 		$out = '{"view_services":{';
 		foreach ($viewServices as $viewService) {
-			 $out .='"'.$viewService->serviceName.'":'.$viewService->serviceConfig.',';
+			 $out .= '"'.$viewService->serviceName.'":'.$viewService->serviceConfig.',';
 		}
 		// Remove the last comma
 		if (!empty($viewServices)) {
@@ -212,7 +212,7 @@ class MapController extends AbstractOGAMController {
 		// Build the wfs base URL for wfs tiles	
 		$out = '"feature_services":{';
 		foreach ($featureServices as $featureService) {
-			 $out .='"'.$featureService->serviceName.'":'.$featureService->serviceConfig.',';
+			 $out .= '"'.$featureService->serviceName.'":'.$featureService->serviceConfig.',';
 		}
 		// Remove the last comma
 		if (!empty($featureServices)) {
@@ -224,7 +224,7 @@ class MapController extends AbstractOGAMController {
 		// Build the legend base URL
 		$out = '"legend_services":{';
 		foreach ($legendServices as $legendService) {
-		    $out .='"'.$legendService->serviceName.'":'.$legendService->serviceConfig.',';
+		    $out .= '"'.$legendService->serviceName.'":'.$legendService->serviceConfig.',';
 		}
 		// Remove the last comma
 		if (!empty($legendServices)) {
@@ -241,7 +241,7 @@ class MapController extends AbstractOGAMController {
 			$out .= "{";
 
 			// OpenLayer object (tiled or not)
-			if ($layer->isUntiled == 1) {
+			if ($layer->isUntiled) {
 				$out .= '"singleTile":true';
 			} else {
 				$out .= '"singleTile":false';
@@ -270,7 +270,7 @@ class MapController extends AbstractOGAMController {
 			$out .= '"layers" : ["'.$layerNames.'"]';
 
 			// Transparency
-			if ($layer->isTransparent == 1) {
+			if ($layer->isTransparent) {
 				$out .= ', "transparent": true';
 			} else {
 				$out .= ', "transparent": false';
@@ -280,21 +280,21 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "format": "image/'.$layer->imageFormat.'"';
 
 			// Hidden ?
-			if ($layer->isHidden == 1) {
+			if ($layer->isHidden) {
 				$out .= ', "isHidden": true';
 			} else {
 				$out .= ', "isHidden": false';
 			}
 
 			// Disabled ?
-			if ($layer->isDisabled == 1) {
+			if ($layer->isDisabled) {
 				$out .= ', "isDisabled": true';
 			} else {
 				$out .= ', "isDisabled": false';
 			}
 
 			// Checked ?
-			if ($layer->isChecked == 1) {
+			if ($layer->isChecked) {
 				$out .= ', "isChecked": true';
 			} else {
 				$out .= ', "isChecked": false';
@@ -303,7 +303,7 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "activateType": "'.$layer->activateType.'"';
 
 			// We will test this flag to know if we need to generate a SLD
-			if ($layer->hasSLD == 1) {
+			if ($layer->hasSLD) {
 				$out .= ', "hasSLD": true';
 			} else {
 				$out .= ', "hasSLD": false';
@@ -336,14 +336,14 @@ class MapController extends AbstractOGAMController {
 			}
 
 			// Layer visibility by default
-			if ($layer->isDefault == 1) {
+			if ($layer->isDefault) {
 				$out .= ', "visibility": true';
 			} else {
 				$out .= ', "visibility": false';
 			}
 
 			// Is a Base Layer ?
-			if ($layer->isBaseLayer == 1) {
+			if ($layer->isBaseLayer) {
 				$out .= ', "isBaseLayer": true';
 			} else {
 				$out .= ', "isBaseLayer": false';
@@ -351,7 +351,7 @@ class MapController extends AbstractOGAMController {
 			
 			// Default Opacity
 			if ($layer->defaultOpacity >= 0 && $layer->defaultOpacity <= 100 && $layer->defaultOpacity <> NULL) {
-			    $defaultOpacity = $layer->defaultOpacity/100;
+			    $defaultOpacity = $layer->defaultOpacity / 100;
 			    $out .= ', "opacity": "'.$defaultOpacity.'"';
 			} else {
 			    $out .= ', "opacity": 1';
@@ -447,35 +447,35 @@ class MapController extends AbstractOGAMController {
 			$json .= '"text": "'.$legendItem->label.'", ';
 
 			$json .= '"expanded": ';
-			if ($legendItem->isExpended == 1) {
+			if ($legendItem->isExpended) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
 			$json .= '"checked": ';
-			if ($legendItem->isChecked == 1) {
+			if ($legendItem->isChecked) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
 			$json .= '"hidden": ';
-			if ($legendItem->isHidden == 1 && !in_array($legendItem->layerName, $activatedLayers)) {
+			if ($legendItem->isHidden && !in_array($legendItem->layerName, $activatedLayers)) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
 			$json .= '"disabled": ';
-			if ($legendItem->isDisabled == 1) {
+			if ($legendItem->isDisabled) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
 			// The item is a leaf
-			if ($legendItem->isLayer == 1) {
+			if ($legendItem->isLayer) {
 				$json .= '"leaf": true, ';
 				$json .= '"nodeType" : "gx_layer", '; // TODO : Do this on the js side
 				$json .= '"layer": "'.$legendItem->layerName.'" ';
@@ -518,8 +518,8 @@ class MapController extends AbstractOGAMController {
 		
 		$serviceLayerNames = "";
 		$imageFormats = "";
-		$baseUrls="";
-		$service="";
+		$baseUrls = "";
+		$service = "";
 		
 		foreach ($layerNames as $layerName) {
 		    
