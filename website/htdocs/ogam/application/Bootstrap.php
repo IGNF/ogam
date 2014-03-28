@@ -235,9 +235,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	    $this->bootstrap('RegisterLogger');
 	    
 	    // We need for the deserialization of the session objects classes
-	    include APPLICATION_PATH . '/objects/Website/User.php';
-	    include APPLICATION_PATH . '/objects/Website/Role.php';
-	    include APPLICATION_PATH . '/objects/RawData/Submission.php';
+	    require_once APPLICATION_PATH . '/objects/Website/User.php';
+	    require_once APPLICATION_PATH . '/objects/Website/Role.php';
+	    require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
 	     
 	    $configuration = Zend_Registry::get('configuration');
 	    $configurationSession = new Zend_Session_Namespace('user');
