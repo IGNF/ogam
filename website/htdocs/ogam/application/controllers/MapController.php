@@ -549,8 +549,9 @@ class MapController extends AbstractOGAMController {
 		
 		// Get the configuration values
 		$configuration = Zend_Registry::get("configuration");
-		$mapReportServiceURL = $configuration->mapReportGenerationService_url;
-	    
+		$mapReportServiceURL = $configuration->mapReportGenerationService_url;		
+		$dpi = $configuration->mapserver_dpi; // Default number of dots per inch in mapserv
+
 		    
 		// Get the scales
 		$scales = $this->layersModel->getScales();
@@ -628,11 +629,12 @@ class MapController extends AbstractOGAMController {
 		    $spec.=" ],
 		    pages: [
 		        {
+		        
 		            center: [$centerX,$centerY],
 		            scale: $currentScale,
-		            dpi: 72,
-		            mapTitle: '$layers',
-		            comment: 'L93, center: $centerX,$centerY, scale: 1 : $currentScale',
+		            dpi: $dpi,
+		            mapTitle: '',
+		            comment:'',
 		            data: [
 		                {id:1, name: 'carte1'}
 		            ]

@@ -840,7 +840,6 @@ class Genapp_Service_QueryService {
 			    
 			    if ($detailService->serviceName == $detailServiceName){
 			        $json = json_decode($detailService->serviceConfig,true);
-			        $this->logger->debug('urls de base : '.count($json));
 			         
 			        foreach ($json as $key => $val) {
 			            if ($key == 'params'){
