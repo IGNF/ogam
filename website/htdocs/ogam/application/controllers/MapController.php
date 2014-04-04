@@ -157,7 +157,7 @@ class MapController extends AbstractOGAMController {
 			$json .= '"url":'. json_encode(json_decode($tab[1])->{'urls'}[0]).',';
 			$json .= '"url_wms":'. json_encode($url_wms).'},';
 		}
-		if(!empty($layerNames)){
+		if (!empty($layerNames)) {
 			$json = substr($json, 0, -1);
 		}
 		$json .= ']';
@@ -531,11 +531,11 @@ class MapController extends AbstractOGAMController {
 			//Get the base Url for service print
 			$printServiceName = $layer->printServiceName;
 			foreach ($printservices as $printservice) {
-			    if ($printservice->serviceName == $printServiceName){
-			        $baseUrls .=json_decode($printservice->serviceConfig)->{'urls'}[0].",";
+			    if ($printservice->serviceName === $printServiceName) {
+			        $baseUrls .= json_decode($printservice->serviceConfig)->{'urls'}[0].",";
 			        $json = json_decode($printservice->serviceConfig,true);
 			        foreach ($json as $key => $val) {
-			             if ($key == 'params'){
+			             if ($key === 'params'){
 			                    $service .= $val['SERVICE'].",";
 			             }
 			        }    
@@ -561,7 +561,7 @@ class MapController extends AbstractOGAMController {
 		$currentScale = $scales[$zoom];
 		    
 		//Construction of the json specification, parameter of mapfish-print servlet
-		$spec="{
+		$spec = "{
     
 		    layout: 'A4 portrait',
 		    title: 'A simple example',
@@ -570,16 +570,18 @@ class MapController extends AbstractOGAMController {
 		    layers: [";
 		
 		    // Conversion of string lists of layers parameters into array
-		    $layersArray = explode(",",$layers);
-		    $baseUrlsArray = explode(",",$baseUrls);
-		    $serviceLayerNamesArray = explode(",",$serviceLayerNames);
-		    $imageFormatsArray = explode(",",$imageFormats);
-		    $serviceArray = explode(",",$service);
+		    $layersArray = explode(",", $layers);
+		    $baseUrlsArray = explode(",", $baseUrls);
+		    $serviceLayerNamesArray = explode(",", $serviceLayerNames);
+		    $imageFormatsArray = explode(",", $imageFormats);
+		    $serviceArray = explode(",", $service);
 		    
 		    $i=0;
+		    
+		    // TODO : A vérifier, résolutions en dur pour le WMTS à supprimer ?
 		    foreach ($layersArray as $layer) {
 		        if (strcasecmp($serviceArray[$i] , 'wms') == 0) {
-		        $spec .="{
+		        $spec .= "{
 		        type: 'WMS',
 		        format: 'image/$imageFormatsArray[$i]',
 		        version: '1.3.0',
@@ -626,7 +628,7 @@ class MapController extends AbstractOGAMController {
 		    }
 		        $i++;
 		    }
-		    $spec.=" ],
+		    $spec.= " ],
 		    pages: [
 		        {
 		        
@@ -650,7 +652,7 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('generatemap URL : '.$mapReportUrl);
 		
 		// Set the timeout and user agent
-		ini_set ('user_agent', $_SERVER['HTTP_USER_AGENT']);
+		ini_set('user_agent', $_SERVER['HTTP_USER_AGENT']);
 		ini_set("max_execution_time", $configuration->max_execution_time);
 		$maxReportGenerationTime = $configuration->max_report_generation_time;
 		$defaultTimeout = ini_get('default_socket_timeout');

@@ -57,9 +57,9 @@ class UserController extends Zend_Controller_Action {
 	private function _getLoginForm($salt) {
 
 		$form = new Genapp_Form(array(
-		    'attribs'=>array(
-		        'name'=>'login-form',
-		        'action'=>$this->baseUrl.'/user/validate-login'
+		    'attribs' => array(
+		        'name' => 'login-form',
+		        'action' => $this->baseUrl.'/user/validate-login'
 		        )
 		    )
 		);
@@ -134,9 +134,9 @@ class UserController extends Zend_Controller_Action {
 	private function _getChangePasswordForm() {
 	
 		$form = new Genapp_Form(array(
-		    'attribs'=>array(
-		        'name'=>'change-current-user-password-form',
-		        'action'=>$this->baseUrl.'/user/validate-change-password'
+		    'attribs' => array(
+		        'name' => 'change-current-user-password-form',
+		        'action' => $this->baseUrl.'/user/validate-change-password'
 		        )
 		    )
 		);
@@ -232,7 +232,7 @@ class UserController extends Zend_Controller_Action {
 			$cramFromServer = sha1($salt.$storedpassword);
 
 			// Compare the client-side and server-side responses and log the user if OK
-			if ($cramFromServer == $cramFromClient) {
+			if ($cramFromServer === $cramFromClient) {
 
 				// Get the user informations
 				$user = $this->userModel->getUser($login);
@@ -306,7 +306,7 @@ class UserController extends Zend_Controller_Action {
 			$confirmpassword = $f->filter($values['confirmpassword']);
 			
 			// Check that the new password if confirmed
-			if ($password != $confirmpassword) {
+			if ($password !== $confirmpassword) {
 				return $this->showChangePasswordAction("Password does not match confirmation");
 			}
 			
@@ -320,7 +320,7 @@ class UserController extends Zend_Controller_Action {
 			$storedPassword = $this->userModel->getPassword($login);
 			$cryptedOldPassword = sha1($oldpassword);
 	
-			if ($storedPassword != $cryptedOldPassword) {
+			if ($storedPassword !== $cryptedOldPassword) {
 				return $this->showChangePasswordAction("Old password is not correct");
 			}
 	

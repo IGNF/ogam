@@ -51,7 +51,7 @@ class QueryController extends AbstractOGAMController {
 		// Check if the user can query data
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		if (empty($permissions) || ! array_key_exists('DATA_QUERY', $permissions)) {
+		if (empty($permissions) || !array_key_exists('DATA_QUERY', $permissions)) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
 		
@@ -60,7 +60,7 @@ class QueryController extends AbstractOGAMController {
 		
 		// Check if the user has access to the schema
 		$schemas = $userSession->schemas;
-		if (! in_array($schema, $schemas)) {
+		if (!in_array($schema, $schemas)) {
 			throw new Zend_Auth_Exception('Permission denied for schema : "' . $schema . '"');
 		}
 	}
@@ -78,7 +78,7 @@ class QueryController extends AbstractOGAMController {
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $this->_request->getParam("SCHEMA");
 		
-		if ($schema != null) {
+		if ($schema !== null) {
 			$websiteSession->schema = $schema;
 		} else {
 			// Default value
@@ -132,7 +132,7 @@ class QueryController extends AbstractOGAMController {
 		$this->resultLocationModel->cleanPreviousResults($sessionId);
 		
 		// Check if the parameter of the default page is set
-		if ($this->_request->getParam("default") == "predefined") {
+		if ($this->_request->getParam("default") === "predefined") {
 			$this->logger->debug('defaultTab predefined');
 			$this->view->defaultTab = 'predefined';
 		}
@@ -330,7 +330,7 @@ class QueryController extends AbstractOGAMController {
 		ini_set("max_execution_time", $configuration->max_execution_time);
 		
 		// Check the validity of the POST
-		if (! $this->getRequest()->isPost()) {
+		if (!$this->getRequest()->isPost()) {
 			$this->logger->debug('form is not a POST');
 			return $this->_forward('index');
 		}
@@ -343,7 +343,7 @@ class QueryController extends AbstractOGAMController {
 			$formQuery = new Genapp_Object_Generic_FormQuery();
 			$formQuery->datasetId = $datasetId;
 			foreach ($_POST as $inputName => $inputValue) {
-				if (strpos($inputName, "criteria__") === 0 && ! $this->_isEmptyCriteria($inputValue)) {
+				if (strpos($inputName, "criteria__") === 0 && !$this->_isEmptyCriteria($inputValue)) {
 					$this->logger->debug('POST var added');
 					$criteriaName = substr($inputName, strlen("criteria__"));
 					$split = explode("__", $criteriaName);
@@ -416,7 +416,7 @@ class QueryController extends AbstractOGAMController {
 		
 		$this->view->userProviderId = $userSession->user->providerId;
 		
-		if (! empty($permissions)) {
+		if (!empty($permissions)) {
 			if ($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) {
 				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
@@ -426,7 +426,7 @@ class QueryController extends AbstractOGAMController {
 			if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && array_key_exists('DATA_EDITION', $permissions)) {
 				$this->view->hideGridDataEditButton = 'false';
 			}
-			if (! array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
 				$this->view->checkEditionRights = 'true';
 			}
 		}
@@ -481,8 +481,8 @@ class QueryController extends AbstractOGAMController {
 		// Get the names of the layers to display in the details panel
 		$configuration = Zend_Registry::get('configuration');
 	    
-	    $detailsLayers[] =$configuration->query_details_layers1; 
-	    $detailsLayers[] =$configuration->query_details_layers2;
+	    $detailsLayers[] = $configuration->query_details_layers1; 
+	    $detailsLayers[] = $configuration->query_details_layers2;
 				
 		// Get the current dataset to filter the results
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -530,7 +530,7 @@ class QueryController extends AbstractOGAMController {
 		
 		try {
 			$pdf->writeHTML($this->view->partial('query/pdfexport.phtml', $pdfExportArray));
-			$pdf->Output($this->_wd_remove_accents($data['title']) . '.pdf', 'D');
+			$pdf->Output($this->_removeAccents($data['title']) . '.pdf', 'D');
 		} 
 
 		catch (HTML2PDF_exception $e) {
@@ -547,16 +547,14 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 *
-	 *
-	 * Remove the accents
+	 * Remove the accents.
 	 * 
 	 * @param String $str
 	 *        	The string
 	 * @param String $charset
 	 *        	The string charset
 	 */
-	private function _wd_remove_accents($str, $charset = 'utf-8') {
+	private function _removeAccents($str, $charset = 'utf-8') {
 		$str = htmlentities($str, ENT_NOQUOTES, $charset);
 		
 		$str = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
@@ -1301,7 +1299,7 @@ class QueryController extends AbstractOGAMController {
 		foreach ($codes as $code => $label) {
 			$json .= '{"code":' . json_encode($code) . ', "label":' . json_encode($label) . '},';
 		}
-		if (! empty($codes)) {
+		if (!empty($codes)) {
 			$json = substr($json, 0, - 1);
 		}
 		$json .= ']}';
@@ -1335,7 +1333,7 @@ class QueryController extends AbstractOGAMController {
 		foreach ($codes as $code => $label) {
 			$json .= '{"code":' . json_encode((string) $code) . ', "label":' . json_encode($label) . '},';
 		}
-		if (! empty($codes)) {
+		if (!empty($codes)) {
 			$json = substr($json, 0, - 1);
 		}
 		$json .= ']}';
@@ -1432,7 +1430,7 @@ class QueryController extends AbstractOGAMController {
 			$json .= ', "isReference":' . json_encode($taxref->isReference) . '';
 			$json .= ', "vernacularName":' . json_encode($taxref->vernacularName) . '},';
 		}
-		if (! empty($taxrefs)) {
+		if (!empty($taxrefs)) {
 			$json = substr($json, 0, - 1);
 		}
 		$json .= ']';
@@ -1469,7 +1467,7 @@ class QueryController extends AbstractOGAMController {
 		
 		$locations = $this->resultLocationModel->getLocationInfo($sessionId, $lon, $lat);
 		
-		if (! empty($locations)) {
+		if (!empty($locations)) {
 			// we have at least one plot found
 			
 			// The id is used to avoid to display two time the same result (it's a id for the result dataset)
@@ -1511,7 +1509,7 @@ class QueryController extends AbstractOGAMController {
 					$columnsMaxLength[$columnName][] = strlen($value);
 				}
 				// Setup the fields and columns config
-				if ($locationsIndex == (count($locations) - 1)) {
+				if ($locationsIndex === (count($locations) - 1)) {
 					// Get the table format
 					$tableFormat = $this->metadataModel->getTableFormatFromTableName($schema, $locationTableInfo->tableName);
 					$format = $tableFormat->format;
@@ -1549,7 +1547,7 @@ class QueryController extends AbstractOGAMController {
 			// Check if the location table has a child table
 			$hasChild = false;
 			$children = $this->metadataModel->getChildrenTableLabels($locationTableInfo);
-			if (! empty($children)) {
+			if (!empty($children)) {
 				$hasChild = true;
 			}
 			

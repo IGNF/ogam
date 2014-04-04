@@ -14,8 +14,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	/**
 	 * Addition of plugins to the Front Controller.
 	 */
-	protected function _initPlugins()
-	{
+	protected function _initPlugins() {
 		require_once('Genapp/Controller/Plugin/Bootstrap.php');
 
 		$this->bootstrap('View');
@@ -156,7 +155,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Translate object is empty.');
 		}
 		$configuration = Zend_Registry::get('configuration');
-		if($configuration->useCache == false){
+		if ($configuration->useCache == false) {
 			$translate->clearCache();// Remove the default cache done during the translate bootstrap
 			$translate->removeCache();
 		}
@@ -194,7 +193,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		foreach ($dirs as $dir) {
 			if ($handle = @opendir($dir)) {
 				while (false !== ($file = readdir($handle))) {
-					if ($file != "." && $file != ".." && $file != ".svn") {
+					if ($file !== "." && $file !== ".." && $file !== ".svn") {
 						$explodedFile = explode('.', $file);
 						$translate->addTranslation($dir.'/'.$file, $explodedFile[0]);
 						$translations[] = $explodedFile[0];
@@ -229,6 +228,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 	}
 
+	/**
+	 * Initialise the application configuration and set it in session.
+	 */
 	protected function _initAppConfSession() {
 	    $this->bootstrap('Session');
 	    $this->bootstrap('AppConfRegistry');

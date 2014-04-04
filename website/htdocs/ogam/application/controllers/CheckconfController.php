@@ -154,7 +154,7 @@ class CheckconfController extends AbstractOGAMController {
 		foreach ($expectedSchemas as $expectedSchema) {
 
 			if (!in_array(strtoupper($expectedSchema->name), $existingSchemas)) {
-				$missingSchemasMsg[] = sprintf($this->view->translate("The schema '%s' described in the metadata doesn't exist in the system."),$expectedSchema->label);
+				$missingSchemasMsg[] = sprintf($this->view->translate("The schema '%s' described in the metadata doesn't exist in the system."), $expectedSchema->label);
 			}
 		}
 		$this->view->missingSchemasMsg = $missingSchemasMsg;
@@ -177,7 +177,7 @@ class CheckconfController extends AbstractOGAMController {
 			$id = $foreignKey->table.'__'.$foreignKey->sourceTable;
 
 			if (!array_key_exists($id, $existingFKs)) {
-				$missingFKsMsg[] = sprintf($this->view->translate("The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system."),$foreignKey->table, $foreignKey->sourceTable);
+				$missingFKsMsg[] = sprintf($this->view->translate("The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system."), $foreignKey->table, $foreignKey->sourceTable);
 			} else {
 				$foundFK = $existingFKs[$id];
 
@@ -186,7 +186,7 @@ class CheckconfController extends AbstractOGAMController {
 				//
 				$diff = array_diff($foundFK->foreignKeys, $foreignKey->foreignKeys);
 				if (!empty($diff)) {
-					$missingFKsMsg[] = sprintf($this->view->translate("The foreign key '%s' between the table '%s' and the table '%s' does not match the metadata definition: '%s'."),$foundFK->foreignKeys, $foreignKey->table, $foreignKey->sourceTable, $foreignKey->foreignKeys);
+					$missingFKsMsg[] = sprintf($this->view->translate("The foreign key '%s' between the table '%s' and the table '%s' does not match the metadata definition: '%s'."), $foundFK->foreignKeys, $foreignKey->table, $foreignKey->sourceTable, $foreignKey->foreignKeys);
 				}
 
 			}
@@ -214,7 +214,7 @@ class CheckconfController extends AbstractOGAMController {
 				// Check field type
 				//
 				$foundField = $existingFields[$key];
-				$msg = sprintf($this->view->translate("The field '%s' of the table '%s' of the schema '%s' is of type '%s' which is incompatible with the metadata definition: '%s'."),$field->columnName, $field->tableName, $field->schemaName, $foundField->type, $field->type);
+				$msg = sprintf($this->view->translate("The field '%s' of the table '%s' of the schema '%s' is of type '%s' which is incompatible with the metadata definition: '%s'."), $field->columnName, $field->tableName, $field->schemaName, $foundField->type, $field->type);
 
 				switch ($field->type) {
 					case "ARRAY":

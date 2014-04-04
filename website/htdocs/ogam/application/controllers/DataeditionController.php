@@ -463,8 +463,8 @@ class DataEditionController extends AbstractOGAMController {
 			$this->view->mode = $mode;
 
 			echo '{"success":false,"errorMessage":'.json_encode($this->translator->translate("Invalid form")).'}';
-		}
-		else {
+		
+		} else {
 
 			// Update the data descriptor with the values submitted
 			foreach ($data->getFields() as $field) {
@@ -697,6 +697,7 @@ class DataEditionController extends AbstractOGAMController {
 	 *
 	 * @param String $dir
 	 * @return boolean
+	 * @suppressWarning checkProhibitedFunctions unlink
 	 */
 	private	function _deleteDirectory($dir) {
 		$this->logger->debug('deleteDirectory '.$dir);
@@ -704,10 +705,14 @@ class DataEditionController extends AbstractOGAMController {
 		if (!file_exists($dir)) return true;
 		if (!is_dir($dir) || is_link($dir)) return unlink($dir);
 		foreach (scandir($dir) as $item) {
-			if ($item == '.' || $item == '..') continue;
+			if ($item == '.' || $item == '..') {
+				continue;
+			}
 			if (!$this->_deleteDirectory($dir . "/" . $item)) {
 				chmod($dir . "/" . $item, $this->configuration->image_dir_rights);
-				if (!$this->_deleteDirectory($dir . "/" . $item)) return false;
+				if (!$this->_deleteDirectory($dir . "/" . $item)) {
+					return false;
+				}
 			};
 		}
 		return rmdir($dir);

@@ -73,9 +73,9 @@ class UsermanagementController extends AbstractOGAMController {
 	private function _getUserForm($mode = null, $user = null, $role = null) {
 
 	    $form = new Genapp_Form(array(
-		    'attribs'=>array(
-		        'name'=>'user-form',
-		        'action'=>$this->baseUrl.'/usermanagement/validate-user'
+		    'attribs' => array(
+		        'name' => 'user-form',
+		        'action' => $this->baseUrl.'/usermanagement/validate-user'
 		        )
 		    )
 		);
@@ -199,9 +199,9 @@ class UsermanagementController extends AbstractOGAMController {
 	private function _getChangePasswordForm($login = null) {
 
 		$form = new Genapp_Form(array(
-		    'attribs'=>array(
-		        'name'=>'change-user-password-form',
-		        'action'=>$this->baseUrl.'/usermanagement/validate-user-password'
+		    'attribs' => array(
+		        'name' => 'change-user-password-form',
+		        'action' => $this->baseUrl.'/usermanagement/validate-user-password'
 		        )
 		    )
 		);

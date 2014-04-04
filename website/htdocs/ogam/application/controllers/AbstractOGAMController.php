@@ -64,10 +64,11 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 	}
 
 	/**
-	 * Return a list of the files contained in the provided directory and its subdirectories
+	 * Return a list of the files contained in the provided directory and its subdirectories.
 	 *
 	 * @param string $dir The directory
 	 * @param string $fileType The file extension
+	 * @return Array[String] the list of files
 	 */
 	public static function getFilesInDir($dir, $fileType = null) {
 	    $filesList = array();
@@ -76,9 +77,9 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 	        if (is_dir($file)) {
 	        	$filesList = array_merge($filesList, AbstractOGAMController::getFilesInDir($file, $fileType));
 	        } else {
-	        	if($fileType == null){
+	        	if ($fileType == null) {
 	        		$filesList[] = $file;
-	        	} elseif(substr($file, -3 , 3) == $fileType){
+	        	} else if (substr($file, -3 , 3) == $fileType) {
 	            	$filesList[] = $file;
 	        	}
 	        }
@@ -87,10 +88,11 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 	}
 
 	/**
-	 * Return a list of the files contained in the provided directories
+	 * Return a list of the files contained in the provided directories.
 	 *
 	 * @param array $dirs The directories
 	 * @param string $fileType The file extension
+	 * @return Array[String] the list of files
 	 */
 	public static function getFilesList($dirs, $fileType = null){
 		$filesList = array();

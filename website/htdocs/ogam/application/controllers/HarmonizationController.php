@@ -91,7 +91,7 @@ class HarmonizationController extends AbstractOGAMController {
 			$submissionStatus = "VALIDATED";
 			foreach ($process->submissionIDs as $submissionID) {
 				$submission = $this->submissionModel->getSubmission($submissionID);
-				if ($submission->step != "VALIDATED") {
+				if ($submission->step !== "VALIDATED") {
 					$submissionStatus = "NOT_VALID";
 				}
 			}
@@ -109,7 +109,7 @@ class HarmonizationController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Launch the harmonization process
+	 * Launch the harmonization process.
 	 *
 	 * @return a View
 	 */
@@ -119,6 +119,11 @@ class HarmonizationController extends AbstractOGAMController {
 		$this->_launchHarmonization(false);
 	}
 
+	/**
+	 * Remove the generated data.
+	 *
+	 * @return a View
+	 */
 	public function removeHarmonizationDataAction() {
 		$this->logger->debug('removeHarmonizationDataAction');
 
@@ -126,7 +131,7 @@ class HarmonizationController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Launch the harmonization process
+	 * Launch the harmonization process.
 	 *
 	 * @return a View
 	 */
