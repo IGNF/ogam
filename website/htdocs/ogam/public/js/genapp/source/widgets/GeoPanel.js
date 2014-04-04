@@ -1538,9 +1538,11 @@ Genapp.GeoPanel = Ext
 										}
 
 										var html = '<ul>';
+
+
+										if (typeof(xmlDoc.children[0].children[0].children[0]) != 'undefined') {
 										countXmlDoc = xmlDoc.children[0].children[0].children[0].children.length;
 										for (var i = 1 ; i < countXmlDoc ; i++){
-											if (xmlDoc.children[0].children[0].children[0].children[i].childNodes[0]) {
 												html += '<li>';
 												html += xmlDoc.children[0].children[0].children[0].children[i].localName + ': '+ xmlDoc.children[0].children[0].children[0].children[i].childNodes[0].nodeValue;
 												html += '</li>';
