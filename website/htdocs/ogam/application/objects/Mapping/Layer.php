@@ -22,109 +22,132 @@ class Application_Object_Mapping_Layer {
 
 	/**
 	 * The logical name of the layer.
+	 * @var String
 	 */
 	var $layerName;
 
 	/**
 	 * The label of the layer.
+	 * @var String
 	 */
 	var $layerLabel;
 
 	/**
-	 * The names of the mapserver layers composing this logical layer.
+	 * The name of the service layer composing this logical layer.
+	 * @var String
 	 */
-	var $mapservLayers;
+	var $serviceLayerName;
 
 	/**
 	 * Indicate if the layer is transparent.
-	 * 1 for yes
-	 * 0 for no
+	 * @var Boolean
 	 */
 	var $isTransparent;
-
+	
+	/**
+	 * Default value of layer opacity : 0 to 100, default value = 100.
+	 * @var Integer
+	 */
+	var $defaultOpacity;
+	
 	/**
 	 * Indicate if the layer is a base layer.
-	 * 1 base layer
-	 * 0 overlay layer
+	 * @var Boolean
 	 */
 	var $isBaseLayer;
 
 	/**
-	 * Force OpenLayers not to tile this layer (to avoid problems with labels for exemple).
-	 * 1 force untiled
-	 * 0 tiled by default
+	 * Indicates the service for displaying the layers in the map panel.
+	 * @var String
 	 */
-	var $isUntiled;
-
-	/**
-	 * Indicate if the layer is stored in cache (tilecache).
-	 * 1 in cache
-	 * 0 not in cache
-	 */
-	var $isCached;
+	var $viewServiceName;
 
 	/**
 	 * The max scale of apparition of the layer.
+	 * @var Integer
 	 */
 	var $maxscale;
 
 	/**
 	 * The min scale of apparition of the layer.
+	 * @var Integer
 	 */
 	var $minscale;
 
 	/**
 	 * The transizion effect to use ('resize' or null).
+	 * @var String
 	 */
 	var $transitionEffect;
 
 	/**
-	 * The image format (PNG, JPEG, ...)
+	 * The image format (PNG, JPEG, ...).
+	 * @var String
 	 */
 	var $imageFormat;
 
 	/**
-	 * Defines if the item is checked by default (value = 1)
+	 * Defines if the item is checked by default.
+	 * @var Boolean.
 	 */
 	var $isChecked;
 		
 	/**
-	 * Defines if the item is hidden by default (value = 1)
+	 * Defines if the item is hidden by default.
+	 * @var Boolean
 	 */
 	var $isHidden;
 		
 	/**
-	 * Defines if the item is disabled (grayed) by default (value = 1)
+	 * Defines if the item is disabled (grayed) by default.
+	 * @var Boolean
 	 */
 	var $isDisabled;
 
 	/**
-	 * Tells if the layer has a legend that should be displayed (value = 1 for true).
-	 */
-	var $hasLegend;
-	
-	/**
 	 * Tells if the layer launch the generation of a SLD information.
+	 * @var Boolean.
 	 */
 	var $hasSLD;
 	
 	/**
 	 * If the layer is activated by an event, defines the category of event that will activate this layer.
-	 * Possible values are : NONE, REQUEST, AGGREGATION, HARMONIZATION 
+	 * Possible values are : NONE, REQUEST, AGGREGATION, HARMONIZATION.
+	 * @var String 
 	 */
 	var $activateType;
 		
 	/**
 	 * Allow to regroup layers. 
 	 * If two layers are in the same group, they will appear with a radio button in the layer tree.
+	 * @var String
 	 */
 	var $checkedGroup;
+		
+	/**
+	 * Indicates the service to call for printing map in pdf.
+	 * @var String
+	 */
+	var $printServiceName;
 	
 	/**
-	 * Identify a vector layer that can be used for WFS requests, snapping, ....
-	 * 1 vector layer
-	 * 0 raster or non editable layer
+	 * Indicates the service to call for detail panel.
+	 * @var String
 	 */
-	var $isVector;
-
+	var $detailServiceName;
+	
+	/**
+	 * Indicates the service to call for wfs menu.
+	 * @var String
+	 */
+	var $featureServiceName;
+	
+	/**
+	 * Indicates the service to call for displaying legend.
+	 * @var String
+	 */
+	var $legendServiceName;
+	
+	
+	
 }

@@ -159,6 +159,7 @@ if (Genapp.FieldForm) {
 if (Genapp.GeoPanel) {
     Ext.apply(Genapp.GeoPanel.prototype, {
         title : "Map",
+        popupTitle : 'Feature information',
         tabTip : "The map with the request\'s results\'s location",
         layerPanelTitle : "Layers",
         layerPanelTabTip : "The layers's tree",

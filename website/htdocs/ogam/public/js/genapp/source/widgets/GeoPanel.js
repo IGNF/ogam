@@ -33,6 +33,7 @@ Genapp.GeoPanel = Ext
 					 * Internationalization.
 					 */
 					title : 'Map',
+					popupTitle : 'Feature information',
 					tabTip : 'The map with the request\'s results\'s location',
 					layerPanelTitle : "Layers",
 					layerPanelTabTip : "The layers's tree",
@@ -191,7 +192,7 @@ Genapp.GeoPanel = Ext
 					 * @property vectorLayer
 					 */
 					vectorLayer : null,
-
+					info : new OpenLayers.Control.WMSGetFeatureInfo(),
 					/**
 					 * The WFS layer.
 					 * 
@@ -308,7 +309,6 @@ Genapp.GeoPanel = Ext
 					 * Initialisation of the component.
 					 */
 					initComponent : function() {
-
 						/**
 						 * Used in the openMap function of the GeometryField
 						 * object.
@@ -319,6 +319,7 @@ Genapp.GeoPanel = Ext
 						 * @param {Genapp.MapPanel}
 						 *            this
 						 */
+
 						this.addEvents('afterinit');
 
 						// Create a zoom slider
@@ -397,7 +398,7 @@ Genapp.GeoPanel = Ext
 							items : [ zSlider ],
 							map : this.map
 						});
-
+						
 						// Add the panel to the items
 						this.items = [ this.mapPanel, this.layersAndLegendsPanel ];
 
@@ -462,25 +463,21 @@ Genapp.GeoPanel = Ext
 						this.layersActivation = {};
 						var layersObject = Ext.decode(response.responseText), i;
 
-						// Store the base URLs
-						this.urlWFS = layersObject.url_wfs;
-
 						// Rebuild the list of available layers
-						for (i = 0; i < layersObject.layers.length; i++) {
-
+						for (j = 0; j < layersObject.layers.length; j++) {
 							// Get the JSON description of the layer
-							var layerObject = layersObject.layers[i];
-							
-							// Get the JSON service name
-							var servicename=layerObject.servicename;
-							var servicenameStr = 'layersObject.'+servicename.toString();
-							var serviceObject=eval('('+servicenameStr+')');
-							
+							var layerObject = layersObject.layers[j];
+
+							// Get the JSON view service name
+							var viewServiceName=layerObject.viewServiceName;
+							var viewServiceNameStr = 'layersObject.view_services.'+viewServiceName.toString();
+							var viewServiceObject=eval('('+viewServiceNameStr+')');
 							
 							// Build the new OpenLayers layer object and add it
 							// to the list
-							var newLayer = this.buildLayer(layerObject,serviceObject);
+							var newLayer = this.buildLayer(layerObject,viewServiceObject);
 							this.layersList.push(newLayer);
+							
 							// Fill the list of active layers
 							var activateType = layerObject.params.activateType.toLowerCase();
 							if (Ext.isEmpty(this.layersActivation[activateType])) {
@@ -490,14 +487,24 @@ Genapp.GeoPanel = Ext
 							}
 
 							// Create the legends
-							if (layerObject.hasLegend) {
-								this.buildLegend(layerObject);
+							if (layerObject.legendServiceName != '') {
+
+								// Get the JSON legend service name
+								var legendServiceName=layerObject.legendServiceName;
+								var legendServiceNameStr = 'layersObject.legend_services.'+legendServiceName.toString();
+								var legendServiceObject=eval('('+legendServiceNameStr+')');
+								
+								this.buildLegend(layerObject,legendServiceObject);
 							}
 						}
 						
 						// Define the WFS layer, used as a grid for snapping
 						if (!this.hideLayerSelector) {
-
+							
+							// Openlayers have to pass through a proxy to request external 
+							// server
+							OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
+							
 							// Set the style
 							var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
 								fillOpacity : 0,
@@ -505,25 +512,23 @@ Genapp.GeoPanel = Ext
 								strokeWidth : 3,
 								strokeOpacity : 1
 							}, OpenLayers.Feature.Vector.style["default"]));
-
-							
 							this.wfsLayer = new OpenLayers.Layer.Vector("WFS Layer", 
 								{
 									strategies:[new OpenLayers.Strategy.BBOX()],
 									protocol: new OpenLayers.Protocol.HTTP({
-										url: this.urlWFS,
-										params: {
+										url: null,
+										params:
+										{
 											typename: null,
-								            service: "WFS",
-								            format: "WFS",
-								            version: "1.0.0",
-								            request: "GetFeature",
-								            srs: Genapp.map.projection
+											service: "WFS",
+											format: "WFS",
+											version: "1.0.0",
+											request: "GetFeature",
+											srs: Genapp.map.projection
 										}, 
 										format: new OpenLayers.Format.GML({extractAttributes: true})
 									})									
 								});
-
 							this.wfsLayer.printable = false;
 							this.wfsLayer.displayInLayerSwitcher = false;
 							this.wfsLayer.extractAttributes = false;
@@ -531,7 +536,6 @@ Genapp.GeoPanel = Ext
 							this.wfsLayer.visibility = false;
 							
 						}
-
 						this.setMapLayers(this.map);
 												
 						// Gets the layer tree model to initialise the Layer
@@ -542,7 +546,7 @@ Genapp.GeoPanel = Ext
 							scope : this
 						});
 					},
-
+					
 					/**
 					 * Build one OpenLayer Layer from a JSON object.
 					 * 
@@ -551,31 +555,29 @@ Genapp.GeoPanel = Ext
 					buildLayer : function(layerObject,serviceObject) {
 						
 						var url = serviceObject.urls;
-						    
 							//Merges the service parameters and the layer parameters
 							var paramsObj = {};
 						    for (var attrname in layerObject.params) { paramsObj[attrname] = layerObject.params[attrname]; }
 						    for (var attrname in serviceObject.params) { paramsObj[attrname] = serviceObject.params[attrname]; }
-						
 						    if (serviceObject.params.SERVICE=="WMTS") {
-							
 						    	//creation and merging of wmts parameters
 						    	var layer=paramsObj.layers[0];
-						    	var obj={name:layerObject.name,url:url.toString(),layer:layer};
+						    	var tileOrigin = new OpenLayers.LonLat(-20037508,20037508); //coordinates of top left corner of the matrixSet : usual value of geoportal, google maps 
+						    	var serverResolutions = [156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646]; 
+						    	// the usual 22 values of resolutions accepted by wmts servers geoportal
+						    	
+						    	var obj={options:layerObject.options,name:layerObject.name,url:url.toString(),layer:layer,tileOrigin:tileOrigin,serverResolutions:serverResolutions,opacity:layerObject.options.opacity,visibility:layerObject.options.visibility,isBaseLayer:layerObject.options.isBaseLayer};
 						    	var objMergeParams= {};
 						    	for (var attrname in obj) { objMergeParams[attrname] = obj[attrname]; }
 						    	for (var attrname in paramsObj) { objMergeParams[attrname] = paramsObj[attrname]; }
-							
-						    	newLayer = new OpenLayers.Layer.WMTS(objMergeParams);	
-						    	
+						    	newLayer = new OpenLayers.Layer.WMTS(objMergeParams);
+
 						    } else if (serviceObject.params.SERVICE=="WMS"){
-						    	OpenLayers.Projection.defaults['EPSG:2154'] = new OpenLayers.Projection('EPSG:2154');
 						    	newLayer = new OpenLayers.Layer.WMS(layerObject.name , url , paramsObj , layerObject.options);
 						    } else {
 						    	Ext.Msg.alert("Please provide the \"" + layerObject.servicename + "\" service type.");
 						    }
-
-						newLayer.displayInLayerSwitcher = true;
+						newLayer.displayInLayerSwitcher = false;
 
 						return newLayer;
 					},
@@ -585,10 +587,7 @@ Genapp.GeoPanel = Ext
 					 * 
 					 * @return OpenLayers.Layer
 					 */
-					buildLegend : function(layerObject) {
-						
-						var mapURL = (Genapp.map.useMapProxy == '1') ? Genapp.base_url + 'mapProxy.php/' : Genapp.base_url + 'proxy/'; 
-
+					buildLegend : function(layerObject,serviceObject) {
 						var legend = this.legendPanel
 								.add(new Ext.BoxComponent(
 										{
@@ -603,8 +602,10 @@ Genapp.GeoPanel = Ext
 														},
 														{
 															tag : 'img',
-															src : mapURL + 'getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
-																	+ layerObject.params.layers + '&HASSLD=' + (layerObject.params.hasSLD ? 'true' : 'false')
+															src : serviceObject.urls.toString()
+																	+ 'LAYER='+ layerObject.params.layers
+																	+ '&SERVICE=' + serviceObject.params.SERVICE+ '&VERSION=' + serviceObject.params.VERSION + '&REQUEST=' + serviceObject.params.REQUEST
+																	+ '&Format=image/png&WIDTH=160&HASSLD=' + (layerObject.params.hasSLD ? 'true' : 'false')
 														} ]
 											}
 										}));
@@ -614,8 +615,10 @@ Genapp.GeoPanel = Ext
 							});
 							legend.on('show', (function(cmp, params) {
 								if (cmp.rendered) {
-									cmp.getEl().child('img').dom.src = mapURL + 'getlegendimage?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetLegendGraphic&Format=image/png&WIDTH=160&LAYER='
-											+ params.layers + '&HASSLD=' + (params.hasSLD ? 'true' : 'false') + '&dc=' + (new Date()).getTime();
+									cmp.getEl().child('img').dom.src = serviceObject.urls.toString()
+									+ 'LAYER='+ layerObject.params.layers
+									+ '&SERVICE=' + serviceObject.params.SERVICE+ '&VERSION=' + serviceObject.params.VERSION + '&REQUEST=' + serviceObject.params.REQUEST
+									+ '&Format=image/png&WIDTH=160&HASSLD=' + (layerObject.params.hasSLD ? 'true' : 'false')
 								}
 							}).createCallback(legend, layerObject.params));
 						}
@@ -660,6 +663,7 @@ Genapp.GeoPanel = Ext
 						for ( var i = this.minZoomLevel; i < Genapp.map.resolutions.length; i++) {
 							resolutions.push(Genapp.map.resolutions[i]);
 						}
+						
 
 						// Create the map object
 						var map = new OpenLayers.Map({
@@ -679,7 +683,7 @@ Genapp.GeoPanel = Ext
 								scope : this
 							}
 						});
-
+						
 						// Define the vector layer, used to draw polygons
 						this.vectorLayer = new OpenLayers.Layer.Vector("Vector Layer", {
 							printable : false, // This layers is never printed
@@ -701,7 +705,6 @@ Genapp.GeoPanel = Ext
 						//
 						// Add the controls
 						//
-
 						map.addControl(new OpenLayers.Control.Navigation());
 
 						// Mouse position
@@ -720,6 +723,7 @@ Genapp.GeoPanel = Ext
 							bottomOutUnits : '',
 							bottomInUnits : ''
 						}));
+						
 
 						// Zoom the map to the user country level
 						map.setCenter(new OpenLayers.LonLat(Genapp.map.x_center, Genapp.map.y_center), Genapp.map.defaultzoom);
@@ -782,6 +786,7 @@ Genapp.GeoPanel = Ext
 						});
 						// Toggle layers and legends for zoom
 						this.layerTree.on('afterrender', function(treePanel) {
+
 							this.layerTree.eachLayerChild(function(child) {
 								if (child.attributes.disabled === true) {
 									child.forceDisable = true;
@@ -790,7 +795,7 @@ Genapp.GeoPanel = Ext
 								}
 							});
 							for ( var i = 0; i < this.map.layers.length; i++) {
-								this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
+;								this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
 							}
 						}, this);
 
@@ -815,7 +820,6 @@ Genapp.GeoPanel = Ext
 						// Drawing tools
 						//
 						if (this.isDrawingMap) {
-
 							// Zoom to features button
 							this.zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
 								map : this.map,
@@ -962,10 +966,9 @@ Genapp.GeoPanel = Ext
 								checked : false,
 								iconCls : 'snapping'
 							});
-
+							
 							// Listen for the layer selector events
 							Genapp.eventManager.on('selectLayer', this.layerSelected, this);
-
 							// Get Feature tool
 							this.getFeatureControl = new OpenLayers.Control.GetFeatureControl({
 								map : this.map
@@ -982,7 +985,6 @@ Genapp.GeoPanel = Ext
 
 							// Listen the get feature tool events
 							Genapp.eventManager.on('getFeature', this.getFeature, this);
-
 							// Feature Info Tool
 							this.featureInfoControl = new OpenLayers.Control.FeatureInfoControl({
 								layerName : this.vectorLayer.name,
@@ -998,7 +1000,6 @@ Genapp.GeoPanel = Ext
 								tooltip : this.featureInfoControlTitle,
 								iconCls : 'feature-info'
 							});
-
 							if (!this.hideSnappingButton) {
 								this.mapToolbar.add(snappingButton);
 							}
@@ -1408,6 +1409,7 @@ Genapp.GeoPanel = Ext
 					toggleLayersAndLegendsForZoom : function(layer) {
 						if (!Ext.isEmpty(this.layerTree)) {
 							var node = this.layerTree.getNodeByLayerName(layer.name);
+							
 							if (!Ext.isEmpty(node) && !node.hidden) {
 								if (!layer.calculateInRange()) {
 									node.zoomDisable = true;
@@ -1453,18 +1455,22 @@ Genapp.GeoPanel = Ext
 					 * A layer has been selected in the layer selector
 					 */
 					layerSelected : function(value, geoPanelId) {
-
+						if (this.info) {
+							this.info.destroy();
+						}
 						if (geoPanelId == this.id) {
 							if (value.data.code !== null) {
-
-								layerName = value.data.code;
-						
+								var layerName = value.data.code;
+								var url = value.data.url;
+								var popupTitle = this.popupTitle;
+								
 								// Change the WFS layer typename
 								this.wfsLayer.protocol.featureType = layerName;
 								this.wfsLayer.protocol.options.featureType = layerName;
 								this.wfsLayer.protocol.format.featureType = layerName;
 								this.wfsLayer.protocol.params.typename = layerName;
-								
+								this.wfsLayer.protocol.options.url = url;
+
 								// Remove all current features
 								this.wfsLayer.destroyFeatures();
 
@@ -1486,13 +1492,14 @@ Genapp.GeoPanel = Ext
 
 								// Force a refresh (rebuild the WFS URL)
 								this.wfsLayer.moveTo(null, true, false);
-
+								
 								// Set the getfeature control
 								if (this.getFeatureControl !== null) {
 									this.getFeatureControl.protocol = new OpenLayers.Protocol.WFS({
-										url : this.wfsLayer.url,
+										url : this.wfsLayer.protocol.url,
 										featureType : this.wfsLayer.protocol.featureType
 									});
+
 								}
 								// Set the layer name in other tools
 								if (this.featureInfoControl !== null) {
@@ -1509,8 +1516,60 @@ Genapp.GeoPanel = Ext
 								// Hide the layer
 								this.wfsLayer.setVisibility(false);
 							}
-						}
+							
+							for (var i = 0 ; i < this.layersList.length ; i++) {
+							if (this.layersList[i].name == layerName) {
+							this.info = new OpenLayers.Control.WMSGetFeatureInfo({
+								//title: 'Identify features by clicking',
+								queryVisible: true,
+								infoFormat : 'application/vnd.ogc.gml', // format utilisé pour la récupération des infos de la feature interrogée sur la couche WMS
+								maxFeatures:1,
+								multiple: false,
+								layers: [this.layersList[i]],
+								eventListeners: {
+									getfeatureinfo: function(event) {
+										if (window.DOMParser) {
+											parser = new DOMParser();
+											xmlDoc = parser.parseFromString(event.text,"text/xml");
+										} else {// Internet Explorer
+											xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+											xmlDoc.async=false;
+											xmlDoc.loadXML(event.text);
+										}
 
+										var html = '<ul>';
+
+
+										if (typeof(xmlDoc.children[0].children[0].children[0]) != 'undefined') {
+										countXmlDoc = xmlDoc.children[0].children[0].children[0].children.length;
+										for (var i = 1 ; i < countXmlDoc ; i++){
+												html += '<li>';
+												html += xmlDoc.children[0].children[0].children[0].children[i].localName + ': '+ xmlDoc.children[0].children[0].children[0].children[i].childNodes[0].nodeValue;
+												html += '</li>';
+											}
+										}
+										html += '</ul>';
+										popup = new GeoExt.Popup({
+											title : popupTitle,
+											location : this.map.getLonLatFromPixel(event.xy),
+											width : 200,
+											map : this.map,
+											html : html,
+											maximizable : false,
+											collapsible : false,
+											unpinnable : false
+										});
+										popup.show();
+									}
+								}
+							});
+							this.map.addControl(this.info);
+							this.info.activate();
+							break;
+							}
+						}
+						}
+						
 					},
 					
 
@@ -1519,7 +1578,6 @@ Genapp.GeoPanel = Ext
 					 * tool.
 					 */
 					getFeature : function(feature, mapId) {
-
 						if (mapId == this.map.id) {
 							// Add the feature to the vector layer
 							if (this.vectorLayer !== null) {

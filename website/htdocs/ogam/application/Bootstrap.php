@@ -14,8 +14,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	/**
 	 * Addition of plugins to the Front Controller.
 	 */
-	protected function _initPlugins()
-	{
+	protected function _initPlugins() {
 		require_once('Genapp/Controller/Plugin/Bootstrap.php');
 
 		$this->bootstrap('View');
@@ -37,12 +36,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Log not enabled in config.ini');
 		}
 		$this->logger = $this->getResource('Log');
-		
+
 		// Log l'URL appelée
 		if (isset($_SERVER['REQUEST_URI'])) {
 			$this->logger->debug($_SERVER['REQUEST_URI']);
 		}
-		
+
 		if (empty($this->logger)) {
 			throw new Zend_Exception('Logger object is empty.');
 		}
@@ -101,7 +100,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		$this->bootstrap('frontController');
 		$this->bootstrap('RegisterTranslate');
-		$this->bootstrap('ConfFiles');
+		$this->bootstrap('AppConfRegistry');
+	    $this->bootstrap('AppConfSession');
 		$configuration = Zend_Registry::get('configuration');
 		$baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
 
@@ -136,15 +136,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 	// Do not call this function _initTranslate() !
 	/**
-	 *
-	 * Register the locale and the translation
-	 * @throws Zend_Exception
-	 */
+	*
+	* Register the locale and the translation
+	* @throws Zend_Exception
+	*/
 	protected function _initRegisterTranslate() {
 
 		$this->bootstrap('Locale');
 		$this->bootstrap('Translate');
-		$this->bootstrap('ConfFiles');
+		$this->bootstrap('AppConfRegistry');
+	    $this->bootstrap('AppConfSession');
 
 		if (!$this->hasPluginResource('Translate')) {
 			throw new Zend_Exception('Translate not enabled in application.ini');
@@ -154,7 +155,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Translate object is empty.');
 		}
 		$configuration = Zend_Registry::get('configuration');
-		if($configuration->useCache == false){
+		if ($configuration->useCache == false) {
 			$translate->clearCache();// Remove the default cache done during the translate bootstrap
 			$translate->removeCache();
 		}
@@ -192,7 +193,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		foreach ($dirs as $dir) {
 			if ($handle = @opendir($dir)) {
 				while (false !== ($file = readdir($handle))) {
-					if ($file != "." && $file != ".." && $file != ".svn") {
+					if ($file !== "." && $file !== ".." && $file !== ".svn") {
 						$explodedFile = explode('.', $file);
 						$translate->addTranslation($dir.'/'.$file, $explodedFile[0]);
 						$translations[] = $explodedFile[0];
@@ -205,17 +206,48 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 * Register the *.ini files.
+	 * Register the config.
 	 *
 	 * Take by default the files in ogam/application/config and if present overrides with custom/application/config.
 	 */
-	protected function _initConfFiles() {
-		$appIniFilePath = APPLICATION_PATH.'/configs/app.ini';
-		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/configs/app.ini')) {
-			$appIniFilePath = CUSTOM_APPLICATION_PATH.'/configs/app.ini';
-		}
-		$configuration = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
-		Zend_Registry::set('configuration', $configuration);
+	protected function _initAppConfRegistry() {
+	   // get db param
+	    $this->bootstrap('Db');
+	    $this->bootstrap('Session');
+	    $this->bootstrap('RegisterLogger');
+	    
+	    // Get the parameters
+	    $parameterModel = new Application_Model_Website_ApplicationParameter();
+		$parameters = $parameterModel->getParameters();
+		
+		// Adding of the intern map service url into the parameters
+		$service_config_array = $parameterModel->getMapServiceUrl();
+		$parameters->map_service_url = json_decode($service_config_array['config'])->{'urls'}[0];
+		
+		Zend_Registry::set('configuration', $parameters);
+		
+	}
+
+	/**
+	 * Initialise the application configuration and set it in session.
+	 */
+	protected function _initAppConfSession() {
+	    $this->bootstrap('Session');
+	    $this->bootstrap('AppConfRegistry');
+	    $this->bootstrap('RegisterLogger');
+	    
+	    // We need for the deserialization of the session objects classes
+	    require_once APPLICATION_PATH . '/objects/Website/User.php';
+	    require_once APPLICATION_PATH . '/objects/Website/Role.php';
+	    require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
+	     
+	    $configuration = Zend_Registry::get('configuration');
+	    $configurationSession = new Zend_Session_Namespace('user');
+	    $configurationSession = new Zend_Session_Namespace('configuration');
+	    
+	    $configurationSession->configuration = array(
+	        "map_service_url" => $configuration->map_service_url // Needed into mapProxy.php file to improve performances (avoiding a db connection).
+	    );
 	}
 
 	/**
@@ -249,7 +281,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initAutoLogin() {
 
 		$this->bootstrap('Db');
-		$this->bootstrap('ConfFiles');
+		$this->bootstrap('AppConfRegistry');
+	    $this->bootstrap('AppConfSession');
 		$this->bootstrap('Session');
 		$configuration = Zend_Registry::get('configuration');
 		// USER - autologin for public access

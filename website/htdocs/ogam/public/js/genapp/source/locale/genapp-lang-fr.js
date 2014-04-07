@@ -159,6 +159,7 @@ if (Genapp.FieldForm) {
 if (Genapp.GeoPanel) {
 	Ext.apply(Genapp.GeoPanel.prototype, {
 		title : "Carte",
+		popupTitle : 'Information(s) sur la géométrie',
 		tabTip : "La carte avec les localisations des résultats de la requête",
 		layerPanelTitle : "Couches",
 		layerPanelTabTip : "L'arbre de sélection des couches",

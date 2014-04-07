@@ -6,35 +6,35 @@ MAP
 NAME OGAM_MAPSERVER
 STATUS ON
 SIZE 600 400
-SYMBOLSET "C:/workspace/OGAM/Mapserv/data/fonts/symbols.sym" 
+SYMBOLSET "C:/ms4w/apps/OGAM/Mapserv/data/fonts/symbols.sym" 
 
 EXTENT 2460853 1070607 5537352 5031904
 
 UNITS meters
-SHAPEPATH "C:/workspace/OGAM/Mapserv/data/"
+SHAPEPATH "C:/ms4w/apps/OGAM/Mapserv/data/"
 IMAGECOLOR 255 255 255
-FONTSET "C:/workspace/OGAM/Mapserv/data/fonts/fonts.txt"
+FONTSET "C:/ms4w/apps/OGAM/Mapserv/data/fonts/fonts.txt"
 
-CONFIG  "MS_ERRORFILE" "C:/workspace/OGAM/website/htdocs/logs/mapserver_ogam.log"
+CONFIG  "MS_ERRORFILE" "C:/ms4w/apps/OGAM/website/htdocs/logs/mapserver_ogam.log"
 DEBUG 5
 
 #
 # Start of web interface definition
 #
 WEB
-   LOG "C:/workspace/OGAM/website/htdocs/logs/mapserver_ogam.log"
+   LOG "C:/ms4w/apps/OGAM/website/htdocs/logs/mapserver_ogam.log"
    METADATA
    
 		WFS_TITLE   					"OGAM MapServer"  
 		WFS_SRS     					"EPSG:3035"
 		WFS_ABSTRACT   					"OGAM Data"  
 		WFS_MAXFEATURES    				"10"
-		WFS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/OGAM/Mapserv/ogam.map&"
+		WFS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/apps/OGAM/Mapserv/ogam.map"
 
 		WMS_TITLE 						"OGAM MapServer" 
 		WMS_ABSTRACT 					"OGAM Mapserver"
 		WMS_ACCESSCONSTRAINTS 			"none"
-		WMS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.exe?map=C:/workspace/OGAM/Mapserv/ogam.map&"
+		WMS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/apps/OGAM/Mapserv/ogam.map"
 		WMS_SRS    						"EPSG:3035"
 		"ows_enable_request" 			"*"
       
@@ -235,7 +235,7 @@ LAYER
     DATA "the_geom FROM (
             SELECT transform(the_geom, 3035) as the_geom, pk as oid  
             FROM location
-        ) as foo USING srid=3035
+        ) as foo USING UNIQUE srid=3035
     "
     
     SYMBOLSCALEDENOM 3000000

@@ -38,7 +38,9 @@ class ProxyController extends AbstractOGAMController {
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 		$this->classDefinitionModel = new Application_Model_Mapping_ClassDefinition();
-
+		$this->servicesModel = new Application_Model_Mapping_Services();
+		$this->layersModel = new Application_Model_Mapping_Layers();
+		
 		// The service used to build generic info from the metadata
 		$this->genericService = new Genapp_Service_GenericService();
 	}
@@ -95,7 +97,7 @@ class ProxyController extends AbstractOGAMController {
 	 * @return a boolean
 	 */
 	private function _endsWith($str, $sub) {
-		return (substr($str, strlen($str) - strlen($sub)) == $sub);
+		return (substr($str, strlen($str) - strlen($sub)) === $sub);
 	}
 
 	/**
@@ -106,11 +108,11 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $_SERVER['REQUEST_URI'];
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapserverURL = $configuration->mapserver_url;
-		$mapserverURL = $mapserverURL."&";
+		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $mapServiceURL."&";
 
-		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/gettile?");
-
+		$uri = $mapServiceURL.$this->_extractAfter($uri, "proxy/gettile?");
+		
 		// Check the image type
 		$imagetype = $this->_extractParam($uri, "FORMAT");
 		if ($this->_endsWith($imagetype, "JPG") || $this->_endsWith($imagetype, "JPEG")) {
@@ -121,7 +123,7 @@ class ProxyController extends AbstractOGAMController {
 
 		// If the layer needs activation, we suppose it needs a SLD.
 		$hassld = $this->_extractParam($uri, "HASSLD");
-		if (strtolower($hassld) == "true") {
+		if (strtolower($hassld) === "true") {
 
 			// Get the layer name
 			$layerName = $this->_extractParam($uri, "LAYERS");
@@ -135,12 +137,13 @@ class ProxyController extends AbstractOGAMController {
 		}
 
 		$this->logger->debug('redirect gettile : '.$uri);
+		$this->logger->debug('redirect gettile : '.$mapServiceURL);
 
 		// Send the request to Mapserver and forward the response data
 		$handle = fopen($uri, "rb");
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
-		if ($method == 'GET') {
+		if ($method === 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
 			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
@@ -165,13 +168,13 @@ class ProxyController extends AbstractOGAMController {
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapserverURL = $configuration->mapserver_url;
-		$mapserverURL = $mapserverURL."&";
+		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $mapServiceURL."&";
 
-		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/getwfs?");
+		$uri = $mapServiceURL.$this->_extractAfter($uri, "proxy/getwfs?");
 		$this->logger->debug('redirect getwfs : '.$uri);
 
-		if ($method == 'GET') {
+		if ($method === 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
 			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
@@ -260,7 +263,7 @@ class ProxyController extends AbstractOGAMController {
 		header("Content-Type: image/png");
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
-		if ($method == 'GET') {
+		if ($method === 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
 			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
@@ -282,11 +285,11 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $_SERVER["REQUEST_URI"];
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapserverURL = $configuration->mapserver_url;
-		$mapserverURL = $mapserverURL."&";
+		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $mapServiceURL."&";
 
-		$uri = $mapserverURL.$this->_extractAfter($uri, "proxy/getlegendimage?");
-
+		$uri = $mapServiceURL.$this->_extractAfter($uri, "proxy/getlegendimage?");
+		
 		// Check the image type
 		$imagetype = $this->_extractParam($uri, "FORMAT");
 		if ($this->_endsWith($imagetype, "JPG") || $this->_endsWith($imagetype, "JPEG")) {
@@ -298,7 +301,7 @@ class ProxyController extends AbstractOGAMController {
 		// If the layer needs activation, we suppose it needs a SLD.
 		$activation = $this->_extractParam($uri, "HASSLD");
 		$this->logger->debug('uri : '.$uri);
-		if (strtolower($activation) == "true") {
+		if (strtolower($activation) === "true") {
 
 			// Get the layer name
 			$layerName = $this->_extractParam($uri, "LAYER");
@@ -318,7 +321,7 @@ class ProxyController extends AbstractOGAMController {
 		$handle = fopen($uri, "rb");
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
-		if ($method == 'GET') {
+		if ($method === 'GET') {
 			$result = $this->_sendGET($uri);
 		} else {
 			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
@@ -340,13 +343,16 @@ class ProxyController extends AbstractOGAMController {
 	 */
 	function getfeatureinfoAction() {
 
-		$this->logger->debug('getfeatureinfoAction');
+	 		$this->logger->debug('getfeatureinfoAction');
 
 		$uri = $_SERVER["REQUEST_URI"];
-
+		
+		$layerName = $this->_extractParam($uri, 'typename');
+		$this->logger->debug('nom du typename du WFS : '.$layerName);
+		
 		$configuration = Zend_Registry::get("configuration");
-		$mapserverURL = $configuration->mapserver_url;
-		$mapserverURL = $mapserverURL."&";
+		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $mapServiceURL."&";
 		$sessionId = session_id();
 
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -358,16 +364,16 @@ class ProxyController extends AbstractOGAMController {
 		$metadataModel = new Genapp_Model_Metadata_Metadata();
 
 		// On effecture une requête mapserver "GetFeature" pour chaque layer
-		$uri = $mapserverURL.$uri."&SESSION_ID=".$sessionId;
+		$uri = $mapServiceURL.$uri."&SESSION_ID=".$sessionId;
 		$this->logger->debug('redirect getinfo : '.$uri);
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
-		if ($method == 'GET') {
+		if ($method === 'GET') {
 			$gml = $this->_sendGET($uri);
 		} else {
 			$gml = $this->_sendPOST($uri, $this->_request->getRawBody());
 		}
-
+	
 		// Get the infos to display
 		$this->logger->debug('Get the infos to display');
 		if (strpos($gml, ":display>")) {
@@ -383,7 +389,7 @@ class ProxyController extends AbstractOGAMController {
 			$displayItems = array();
 
 			foreach ($displayNodes->item(0)->childNodes as $item) {
-				if ($item->nodeType == XML_ELEMENT_NODE) {
+				if ($item->nodeType === XML_ELEMENT_NODE) {
 					$name = str_replace('ms:', '', $item->nodeName);
 					$name = str_replace('myns:', '', $name);
 					$value = $item->nodeValue;
@@ -401,24 +407,6 @@ class ProxyController extends AbstractOGAMController {
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
-	}
-
-	/**
-	 * Extract some parameters from a WFS XLM response.
-	 *
-	 * @param String $domNode the XML node
-	 * @return Array[String => String] The params
-	 */
-	private function _getParams($domNode) {
-		$params = array();
-		foreach ($domNode->childNodes as $childNode) {
-			if ($childNode->nodeType == XML_ELEMENT_NODE) {
-				$name = str_replace('ms:', '', $childNode->nodeName);
-				$name = str_replace('myns:', '', $name);
-				$params[$name] = $childNode->nodeValue;
-			}
-		}
-		return $params;
 	}
 
 	/**
@@ -477,7 +465,7 @@ class ProxyController extends AbstractOGAMController {
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
-		if ($method == 'GET') {
+		if ($method === 'GET') {
 			$result = $this->_sendGET($reportURL);
 		} else {
 			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
@@ -513,7 +501,7 @@ class ProxyController extends AbstractOGAMController {
 		header('Content-disposition: attachment; filename=Error_Report_'.$submissionId.".pdf");
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
-		if ($method == 'GET') {
+		if ($method === 'GET') {
 			$result = $this->_sendGET($reportURL);
 		} else {
 			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());

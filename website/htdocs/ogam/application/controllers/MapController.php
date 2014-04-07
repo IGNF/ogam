@@ -25,6 +25,7 @@ class MapController extends AbstractOGAMController {
 		parent::init();
 
 		// Initialise the models
+		$this->servicesModel = new Application_Model_Mapping_Services();
 		$this->layersModel = new Application_Model_Mapping_Layers();
 		$this->boundingBoxModel = new Application_Model_Mapping_BoundingBox();
 
@@ -59,12 +60,13 @@ class MapController extends AbstractOGAMController {
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
 
-		$this->view->bbox = $configuration->bbox; // Bounding box
+		$this->view->bbox_x_min = $configuration->bbox_x_min; // x min of Bounding box
+		$this->view->bbox_y_min = $configuration->bbox_y_min; // y min of Bounding box
+		$this->view->bbox_x_max = $configuration->bbox_x_max; // x max of Bounding box
+		$this->view->bbox_y_max = $configuration->bbox_y_max; // y max of Bounding box
 		$this->view->tilesize = $configuration->tilesize; // Tile size
 		$this->view->projection = "EPSG:".$configuration->srs_visualisation; // Projection
 		
-		$this->view->useMapProxy = $configuration->useMapProxy;
-
 		// Get the available scales
 		$scales = $this->layersModel->getScales();
 		
@@ -85,24 +87,24 @@ class MapController extends AbstractOGAMController {
 		} else {
 			// Use default settings
 			$this->view->defaultzoom = $configuration->zoom_level;
-			$this->view->x_center = ($configuration->bbox->x_min + $configuration->bbox->x_max) / 2;
-			$this->view->y_center = ($configuration->bbox->y_min + $configuration->bbox->y_max) / 2;
+			$this->view->x_center = ($configuration->bbox_x_min + $configuration->bbox_x_max) / 2;
+			$this->view->y_center = ($configuration->bbox_y_min + $configuration->bbox_y_max) / 2;
 		}
 
 		// Feature parameters
-		if (empty($configuration->featureinfo->margin)) {
-			$configuration->featureinfo->margin = "5000";
+		if (empty($configuration->featureinfo_margin)) {
+			$configuration->featureinfo_margin = "5000";
 		}
-		$this->view->featureinfo_margin = $configuration->featureinfo->margin;
-		if (empty($configuration->featureinfo->typename)) {
-			$configuration->featureinfo->typename = "result_locations";
+		$this->view->featureinfo_margin = $configuration->featureinfo_margin;
+		if (empty($configuration->featureinfo_typename)) {
+			$configuration->featureinfo_typename = "result_locations";
 		}
-		$this->view->featureinfo_typename = $configuration->featureinfo->typename;
-		if (empty($configuration->featureinfo->maxfeatures)) {
-			$configuration->featureinfo->maxfeatures = 0;
+		$this->view->featureinfo_typename = $configuration->featureinfo_typename;
+		if (empty($configuration->featureinfo_maxfeatures)) {
+			$configuration->featureinfo_maxfeatures = 0;
 		}
-		$this->view->featureinfo_maxfeatures = $configuration->featureinfo->maxfeatures;
-
+		$this->view->featureinfo_maxfeatures = $configuration->featureinfo_maxfeatures;
+		
 		$this->_helper->layout()->disableLayout();
 		$this->render('map-parameters');
 	}
@@ -125,7 +127,7 @@ class MapController extends AbstractOGAMController {
 		$resolutions = array();
 		foreach ($scales as $scale) {
 			$res = $scale * (2 * $tilesize) / ($dpi * $factor);
-			$resolutions[$scale] = $res;
+			$resolutions[$scale] = $res / (2 * $tilesize) * 1000;
 		}
 		return $resolutions;
 	}
@@ -142,12 +144,22 @@ class MapController extends AbstractOGAMController {
 
 		$json = '{"success":true';
 		$json .= ', layerNames : [';
-		$json .= '{"code":null,"label":"'.$this->translator->translate('empty_layer').'"},';
-		foreach ($layerNames as $layerName => $layerLabel) {
+		$json .= '{"code":null,"label":"'.$this->translator->translate('empty_layer').'","url":null},';
+		foreach ($layerNames as $layerName => $tab) {
+		    $layer = $this->layersModel->getLayer($layerName);
+		    $viewServiceName = $layer->viewServiceName;
+		    $viewService = $this->servicesModel->getService($viewServiceName);
+		    $serviceConfig = $viewService->serviceConfig;
+		    $url_wms = json_decode($serviceConfig)->{'urls'}[0];
+		    
 			$json .= '{"code":'.json_encode($layerName).',';
-			$json .= '"label":'. json_encode($layerLabel).'},';
+			$json .= '"label":'. json_encode($tab[0]).',';
+			$json .= '"url":'. json_encode(json_decode($tab[1])->{'urls'}[0]).',';
+			$json .= '"url_wms":'. json_encode($url_wms).'},';
 		}
-		$json = substr($json, 0, -1); // remove last comma
+		if (!empty($layerNames)) {
+			$json = substr($json, 0, -1);
+		}
 		$json .= ']';
 		$json .= '}';
 
@@ -170,13 +182,11 @@ class MapController extends AbstractOGAMController {
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
 
-		// Get some configutation parameters
-		$configuration = Zend_Registry::get("configuration");
-		$proxyPath = $configuration->useMapProxy ? '/mapProxy.php' : '/proxy/gettile';
-		
 		// Get the available services base urls and parameters
-		$services = $this->layersModel->getServices();
-
+		$viewServices = $this->servicesModel->getViewServices();
+		$featureServices = $this->servicesModel->getFeatureServices();
+		$legendServices = $this->servicesModel->getLegendServices();
+		
 		// Get the available layers
 		$layers = $this->layersModel->getLayersList($providerId);
 		
@@ -188,27 +198,50 @@ class MapController extends AbstractOGAMController {
 				
 		// Build the base URL for tiles
 		$sessionId = session_id();
-		$out = '{';
-		foreach ($services as $service) {
-			 $out .='"'.$service->serviceName.'":'.$service->serviceConfig.',';
-			 if ($service->serviceName == "mapserver") {
-			     $tileBaseUrl = json_decode($service->serviceConfig)->{'urls'}[0];
-			 }
+		$out = '{"view_services":{';
+		foreach ($viewServices as $viewService) {
+			 $out .= '"'.$viewService->serviceName.'":'.$viewService->serviceConfig.',';
 		}
+		// Remove the last comma
+		if (!empty($viewServices)) {
+		    $out = substr($out, 0, -1);
+		}
+		echo $out.'},';
 		
-		echo $out;
 		
-		// Build the wfs base URL for mapserver tiles
-		echo '"url_wfs":"'.$tileBaseUrl.'/proxy/getwfs?SESSION_ID='.$sessionId.'",';
-
+		// Build the wfs base URL for wfs tiles	
+		$out = '"feature_services":{';
+		foreach ($featureServices as $featureService) {
+			 $out .= '"'.$featureService->serviceName.'":'.$featureService->serviceConfig.',';
+		}
+		// Remove the last comma
+		if (!empty($featureServices)) {
+		    $out = substr($out, 0, -1);
+		}
+		echo $out.'},';
+		
+		
+		// Build the legend base URL
+		$out = '"legend_services":{';
+		foreach ($legendServices as $legendService) {
+		    $out .= '"'.$legendService->serviceName.'":'.$legendService->serviceConfig.',';
+		}
+		// Remove the last comma
+		if (!empty($legendServices)) {
+		    $out = substr($out, 0, -1);
+		}
+		echo $out.'},';
+	
 		// For each available layer, build the corresponding URL and definition
 		$out = '"layers":[';
+		$this->logger->debug('number of layers : '.count($layers));
 		foreach ($layers as $layer) {
-
+		    
+		    
 			$out .= "{";
 
 			// OpenLayer object (tiled or not)
-			if ($layer->isUntiled == 1) {
+			if ($layer->isUntiled) {
 				$out .= '"singleTile":true';
 			} else {
 				$out .= '"singleTile":false';
@@ -217,48 +250,51 @@ class MapController extends AbstractOGAMController {
 			// Logical layer name
 			$out .= ', "name":"'.$layer->layerName.'"';
 
-			// Service name
-			$out .= ', "servicename":"'.$layer->serviceName.'"';
+			// View Service name
+			$out .= ', "viewServiceName":"'.$layer->viewServiceName.'"';
 			
-			// Has a legend ?
-			if ($layer->hasLegend == 1) {
-				$out .= ', "hasLegend": true';
-			} else {
-				$out .= ', "hasLegend": false';
-			}
-
+			// Feature Service name
+			$out .= ', "featureServiceName":"'.$layer->featureServiceName.'"';
+			
+			// Legend Service Name
+			$out .= ', "legendServiceName":"'.$layer->legendServiceName.'"';
+			
+			// Feature Info Service Name
+			$out .= ', "featureInfoServiceName":"'.$layer->featureInfoServiceName.'"';
+			
 			$out .= ', "params":{';
-
+			
+				
 			// Server Layer name (or list of names)
 			$layerNames = $layer->serviceLayerName;
 			$out .= '"layers" : ["'.$layerNames.'"]';
 
 			// Transparency
-			if ($layer->isTransparent == 1) {
+			if ($layer->isTransparent) {
 				$out .= ', "transparent": true';
 			} else {
 				$out .= ', "transparent": false';
 			}
-
+				
 			//  Image Format
 			$out .= ', "format": "image/'.$layer->imageFormat.'"';
 
 			// Hidden ?
-			if ($layer->isHidden == 1) {
+			if ($layer->isHidden) {
 				$out .= ', "isHidden": true';
 			} else {
 				$out .= ', "isHidden": false';
 			}
 
 			// Disabled ?
-			if ($layer->isDisabled == 1) {
+			if ($layer->isDisabled) {
 				$out .= ', "isDisabled": true';
 			} else {
 				$out .= ', "isDisabled": false';
 			}
 
 			// Checked ?
-			if ($layer->isChecked == 1) {
+			if ($layer->isChecked) {
 				$out .= ', "isChecked": true';
 			} else {
 				$out .= ', "isChecked": false';
@@ -267,7 +303,7 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "activateType": "'.$layer->activateType.'"';
 
 			// We will test this flag to know if we need to generate a SLD
-			if ($layer->hasSLD == 1) {
+			if ($layer->hasSLD) {
 				$out .= ', "hasSLD": true';
 			} else {
 				$out .= ', "hasSLD": false';
@@ -300,17 +336,25 @@ class MapController extends AbstractOGAMController {
 			}
 
 			// Layer visibility by default
-			if ($layer->isDefault == 1) {
+			if ($layer->isDefault) {
 				$out .= ', "visibility": true';
 			} else {
 				$out .= ', "visibility": false';
 			}
 
 			// Is a Base Layer ?
-			if ($layer->isBaseLayer == 1) {
+			if ($layer->isBaseLayer) {
 				$out .= ', "isBaseLayer": true';
 			} else {
 				$out .= ', "isBaseLayer": false';
+			}
+			
+			// Default Opacity
+			if ($layer->defaultOpacity >= 0 && $layer->defaultOpacity <= 100 && $layer->defaultOpacity <> NULL) {
+			    $defaultOpacity = $layer->defaultOpacity / 100;
+			    $out .= ', "opacity": "'.$defaultOpacity.'"';
+			} else {
+			    $out .= ', "opacity": 1';
 			}
 
 			// Label
@@ -347,7 +391,7 @@ class MapController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
-
+		
 	}
 
 	/**
@@ -403,35 +447,35 @@ class MapController extends AbstractOGAMController {
 			$json .= '"text": "'.$legendItem->label.'", ';
 
 			$json .= '"expanded": ';
-			if ($legendItem->isExpended == 1) {
+			if ($legendItem->isExpended) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
 			$json .= '"checked": ';
-			if ($legendItem->isChecked == 1) {
+			if ($legendItem->isChecked) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
 			$json .= '"hidden": ';
-			if ($legendItem->isHidden == 1 && !in_array($legendItem->layerName, $activatedLayers)) {
+			if ($legendItem->isHidden && !in_array($legendItem->layerName, $activatedLayers)) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
 			$json .= '"disabled": ';
-			if ($legendItem->isDisabled == 1) {
+			if ($legendItem->isDisabled) {
 				$json .= 'true, ';
 			} else {
 				$json .= 'false, ';
 			}
 
 			// The item is a leaf
-			if ($legendItem->isLayer == 1) {
+			if ($legendItem->isLayer) {
 				$json .= '"leaf": true, ';
 				$json .= '"nodeType" : "gx_layer", '; // TODO : Do this on the js side
 				$json .= '"layer": "'.$legendItem->layerName.'" ';
@@ -450,36 +494,7 @@ class MapController extends AbstractOGAMController {
 		return $json;
 	}
 
-	/**
-	 * Calculate bounding box corresponding to a position and zoom level.
-	 *
-	 * @param Integer $centerX the X position of the center of the map
-	 * @param Integer $centerY the Y position of the center of the map
-	 * @param Integer $zoomLevel the zoom level
-	 * @param Integer $size the size of the image (in pixels)
-	 * @return Array[Integer] the bounding box
-	 */
-	private function _getBbox($centerX, $centerY, $zoomLevel, $size) {
-
-		// Get the scales
-		$scales = $this->layersModel->getScales();
-
-		// Get the resolutions (in meters per pixel)
-		$resolutions = $this->_getResolutions($scales);
-
-		// Get the resolution at the current zoom level
-		$resolutions = array_values($resolutions);
-		$currentRes = $resolutions[$zoomLevel];
-
-		// Calculate the BBOX around the center for an image of a given size
-		$xMin = $centerX - ($currentRes * $size / 2);
-		$xMax = $centerX + ($currentRes * $size / 2);
-		$yMin = $centerY - ($currentRes * $size / 2);
-		$yMax = $centerY + ($currentRes * $size / 2);
-
-		return $xMin.",".$yMin.",".$xMax.",".$yMax;
-	}
-
+	
 	/**
 	 * Show a PDF containing the map selected by the user.
 	 */
@@ -495,32 +510,48 @@ class MapController extends AbstractOGAMController {
 		$centerY = substr($center, stripos($center, "lat=") + 4);
 		
 		//Get the base urls for the services
-		$services = $this->layersModel->getServices();
+		$printservices = $this->servicesModel->getPrintServices();
 		
 		// Get the server name for the layers
 		$layerNames = explode(",", $layers);
+		
+		
 		$serviceLayerNames = "";
-		$baseUrls="";
+		$imageFormats = "";
+		$baseUrls = "";
+		$service = "";
+		
 		foreach ($layerNames as $layerName) {
+		    
+		    //Get parameters of the layers
 			$layer = $this->layersModel->getLayer($layerName);
 			$serviceLayerNames .= $layer->serviceLayerName.",";
+			$imageFormats .= $layer->imageFormat.",";
 			
 			//Get the base Url for service print
-			$serviceName = $layer->serviceName;
-			foreach ($services as $service) {
-			    if ($service->serviceName == $serviceName){
-			        $baseUrls .=$service->servicePrintUrl.",";
+			$printServiceName = $layer->printServiceName;
+			foreach ($printservices as $printservice) {
+			    if ($printservice->serviceName === $printServiceName) {
+			        $baseUrls .= json_decode($printservice->serviceConfig)->{'urls'}[0].",";
+			        $json = json_decode($printservice->serviceConfig,true);
+			        foreach ($json as $key => $val) {
+			             if ($key === 'params'){
+			                    $service .= $val['SERVICE'].",";
+			             }
+			        }    
 			    }
 			}
 		}
+		
 		$baseUrls = substr($baseUrls, 0, -1); // remove last comma		
 		$serviceLayerNames = substr($serviceLayerNames, 0, -1); // remove last comma
-		
+		$service = substr($service, 0, -1); // remove last comma
 		
 		// Get the configuration values
 		$configuration = Zend_Registry::get("configuration");
-		$mapReportServiceURL = $configuration->mapReportGenerationService_url;
-	    
+		$mapReportServiceURL = $configuration->mapReportGenerationService_url;		
+		$dpi = $configuration->mapserver_dpi; // Default number of dots per inch in mapserv
+
 		    
 		// Get the scales
 		$scales = $this->layersModel->getScales();
@@ -530,38 +561,84 @@ class MapController extends AbstractOGAMController {
 		$currentScale = $scales[$zoom];
 		    
 		//Construction of the json specification, parameter of mapfish-print servlet
-		$spec="{
+		$spec = "{
     
 		    layout: 'A4 portrait',
 		    title: 'A simple example',
-		    srs: '".$configuration->srs_visualisation."',
+		    srs: 'EPSG:".$configuration->srs_visualisation."',
 		    units: 'm',
 		    layers: [";
-		    $layersArray = explode(",",$layers);
-		    $baseUrlsArray = explode(",",$baseUrls);
-		    $serviceLayerNamesArray = explode(",",$serviceLayerNames);
+		
+		    // Conversion of string lists of layers parameters into array
+		    $layersArray = explode(",", $layers);
+		    $baseUrlsArray = explode(",", $baseUrls);
+		    $serviceLayerNamesArray = explode(",", $serviceLayerNames);
+		    $imageFormatsArray = explode(",", $imageFormats);
+		    $serviceArray = explode(",", $service);
+		    
 		    $i=0;
+		    
+		    // TODO : A vérifier, résolutions en dur pour le WMTS à supprimer ?
 		    foreach ($layersArray as $layer) {
-		        $spec .="{
+		        if (strcasecmp($serviceArray[$i] , 'wms') == 0) {
+		        $spec .= "{
 		        type: 'WMS',
-		        format: 'image/png',
+		        format: 'image/$imageFormatsArray[$i]',
+		        version: '1.3.0',
 		        layers: ['$serviceLayerNamesArray[$i]'],
 		        baseURL: '$baseUrlsArray[$i]',
-		        customParams: {TRANSPARENT:true}
+		        customParams: {TRANSPARENT:true,SESSION_ID:".session_id()."}
 		        },";
+		        } elseif (strcasecmp($serviceArray[$i] , 'wmts') == 0) {
+		        $spec .="{
+		        type: 'WMTS',
+		        version:1.0.0,
+		        requestEncoding:'KVP',
+		        matrixSet:'PM',
+		        style:'normal',
+		        format: 'image/$imageFormatsArray[$i]',
+		        layer: '$serviceLayerNamesArray[$i]',
+		        baseURL: '$baseUrlsArray[$i]',
+		        matrixIds:[
+		            {'identifier':'0','topLeftCorner':[-20037508,20037508],  'resolution':156543.033928,'matrixSize':[1,1],'tileSize':[256,256]},
+		            {'identifier':'1','topLeftCorner':[-20037508,20037508],  'resolution':78271.516964,'matrixSize':[2,2],'tileSize':[256,256]},
+		            {'identifier':'2','topLeftCorner':[-20037508,20037508],  'resolution':39135.758482,'matrixSize':[4,4],'tileSize':[256,256]},
+		            {'identifier':'3','topLeftCorner':[-20037508,20037508],  'resolution':19567.879241,'matrixSize':[8,8],'tileSize':[256,256]},
+		            {'identifier':'4','topLeftCorner':[-20037508,20037508],  'resolution':9783.9396212,'matrixSize':[16,16],'tileSize':[256,256]},
+		            {'identifier':'5','topLeftCorner':[-20037508,20037508],  'resolution':4891.9698101,'matrixSize':[32,32],'tileSize':[256,256]},
+		            {'identifier':'6','topLeftCorner':[-20037508,20037508],  'resolution':2445.984905,'matrixSize':[64,64],'tileSize':[256,256]},
+		            {'identifier':'7','topLeftCorner':[-20037508,20037508],  'resolution':1222.992453,'matrixSize':[128,128],'tileSize':[256,256]},
+		            {'identifier':'8','topLeftCorner':[-20037508,20037508],  'resolution':611.496226,'matrixSize':[256,256],'tileSize':[256,256]},
+		            {'identifier':'9','topLeftCorner':[-20037508,20037508],  'resolution':305.748113,'matrixSize':[512,512],'tileSize':[256,256]},
+		            {'identifier':'10','topLeftCorner':[-20037508,20037508], 'resolution':152.874057,'matrixSize':[1024,1024],'tileSize':[256,256]},
+		            {'identifier':'11','topLeftCorner':[-20037508,20037508], 'resolution':76.4370289,'matrixSize':[2048,2048],'tileSize':[256,256]},
+		            {'identifier':'12','topLeftCorner':[-20037508,20037508], 'resolution':38.2185145,'matrixSize':[4096,4096],'tileSize':[256,256]},
+		            {'identifier':'13','topLeftCorner':[-20037508,20037508], 'resolution':19.109257,'matrixSize':[8192,8192],'tileSize':[256,256]},
+		            {'identifier':'14','topLeftCorner':[-20037508,20037508], 'resolution':9.554629 ,'matrixSize':[16384,16384],'tileSize':[256,256]},
+		            {'identifier':'15','topLeftCorner':[-20037508,20037508], 'resolution':4.777302 ,'matrixSize':[32768,32768],'tileSize':[256,256]},
+		            {'identifier':'16','topLeftCorner':[-20037508,20037508], 'resolution':2.388657,'matrixSize':[65536,65536],'tileSize':[256,256]},
+		            {'identifier':'17','topLeftCorner':[-20037508,20037508], 'resolution':1.194329 ,'matrixSize':[131072,131072],'tileSize':[256,256]},
+		            {'identifier':'18','topLeftCorner':[-20037508,20037508], 'resolution':0.597164 ,'matrixSize':[262144,262144],'tileSize':[256,256]},
+		            {'identifier':'19','topLeftCorner':[-20037508,20037508], 'resolution':0.298582 ,'matrixSize':[524288,524288],'tileSize':[256,256]},
+		            {'identifier':'20','topLeftCorner':[-20037508,20037508], 'resolution':0.149291 ,'matrixSize':[1048576,1048576],'tileSize':[256,256]},
+		            {'identifier':'21','topLeftCorner':[-20037508,20037508], 'resolution':0.074646  ,'matrixSize':[2097152,2097152],'tileSize':[256,256]}
+		        ],
+		        customParams: {TRANSPARENT:true,SESSION_ID:".session_id()."}
+		    },";
+		    }
 		        $i++;
 		    }
-		    $spec.=" ],
+		    $spec.= " ],
 		    pages: [
 		        {
+		        
 		            center: [$centerX,$centerY],
 		            scale: $currentScale,
-		            dpi: 190,
-		            mapTitle: '$layers',
-		            comment: 'L93, center: $centerX,$centerY, scale: 1 : $currentScale',
+		            dpi: $dpi,
+		            mapTitle: '',
+		            comment:'',
 		            data: [
-		                {id:1, name: 'blah', icon: 'icon_pan'},
-		                {id:2, name: 'blip', icon: 'icon_zoomin'}
+		                {id:1, name: 'carte1'}
 		            ]
                 }
             ]
@@ -575,7 +652,7 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('generatemap URL : '.$mapReportUrl);
 		
 		// Set the timeout and user agent
-		ini_set ('user_agent', $_SERVER['HTTP_USER_AGENT']);
+		ini_set('user_agent', $_SERVER['HTTP_USER_AGENT']);
 		ini_set("max_execution_time", $configuration->max_execution_time);
 		$maxReportGenerationTime = $configuration->max_report_generation_time;
 		$defaultTimeout = ini_get('default_socket_timeout');

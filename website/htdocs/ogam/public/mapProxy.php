@@ -15,18 +15,13 @@ require_once APPLICATION_PATH . '/../library/Zend/Session/Abstract.php';
 require_once APPLICATION_PATH . '/../library/Zend/Session/Namespace.php';
 require_once APPLICATION_PATH . '/../library/Zend/Session/SaveHandler/Interface.php';*/
 require_once APPLICATION_PATH . '/../library/Zend/Session.php';
-
-
-// Gets the app configuration ini file.
-$appIniFilePath = APPLICATION_PATH.'/configs/app.ini';
-if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/configs/app.ini')) {
-    $appIniFilePath = CUSTOM_APPLICATION_PATH.'/configs/app.ini';
-}
-$AppConf = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
+require_once APPLICATION_PATH . '/../library/Zend/Registry.php';
 
 Zend_Session::setOptions($ApplicationConf->resources->session->toArray());
 
 $userSession = new Zend_Session_Namespace('user');
+$configurationSession = new Zend_Session_Namespace('configuration');
+$mapServiceURL = $configurationSession->configuration['map_service_url'];
 
 /*
 echo 'connected :<br/>'; echo $userSession->connected;
@@ -51,25 +46,29 @@ if (empty($permissions) || !array_key_exists('DATA_QUERY',$permissions)) {
 session_write_close();//libere le cookie/session
 
 parse_str($_SERVER["QUERY_STRING"], $query); //recupere la requete envoyée partie (GET params)...
-array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
-
+$query = array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
 $queryParamsAllow = array(//paramNom => requis
-    'BBOX',
-    'LAYERS',
-    'EXCEPTIONS',
-    'SRS',
-    'FORMAT',
-    'WIDTH',
-    'HEIGHT',
-    'SESSION_ID',
-    'TRANSPARENT',
-    'VERSION',
-    'STYLES',
-	'HASSLD',
-	'SERVICE',
-	'REQUEST',
-	'FORMAT',
-	'LAYER'
+    'BBOX' ,
+    'LAYERS' ,
+    'EXCEPTIONS' ,
+    'SRS' ,
+    'FORMAT' ,
+    'WIDTH' ,
+    'HEIGHT' ,
+    'SESSION_ID' ,
+    'TRANSPARENT' ,
+    'VERSION' ,
+    'STYLES' ,
+	'REQUEST' ,
+	'QUERY_LAYERS' ,
+	'X' ,
+	'Y' ,
+	'INFO_FORMAT' ,
+	'HASSLD' ,
+	'SERVICE' ,
+	'REQUEST' ,
+	'FORMAT' ,
+	'LAYER' 
 );
 
 // Vérifie que les paramètres sont dans la liste des ceux autorisés
@@ -80,20 +79,17 @@ foreach($queryParamsAllow as $param) {
     }
 }
 // force la valeur de certains parametres
-if ($queriesArg['REQUEST'] == 'GETLEGENDGRAPHIC') {
+if (strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
 	$queriesArg['REQUEST']  = 'GetLegendGraphic';
-} else {
+} else if (strcasecmp($queriesArg['REQUEST'] , "getmap") == 0) {
 	$queriesArg['REQUEST']  = 'GetMap';	
+} else {
+    $queriesArg['REQUEST']  = 'GetFeature';
 }
 
 $queriesArg['SERVICE']  = 'WMS';
 
-$uri = $AppConf->mapserver_url.'&'.http_build_query($queriesArg);
-
-//error_log($uri);
-//echo '<br/>URI :<br/>'.$uri;
-//exit();
-
+$uri = $mapServiceURL.'&'.http_build_query($queriesArg);
 header('Content-Type: image/png');
 $content = file_get_contents($uri);
 if ($content !== FALSE) {

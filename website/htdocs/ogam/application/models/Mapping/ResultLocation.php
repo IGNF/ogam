@@ -155,8 +155,9 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
-		$margin = $configuration->featureinfo->margin;
-	
+		
+		$margin = $configuration->featureinfo_margin;
+				
 		$translate = Zend_Registry::get('Zend_Translate');
 		$lang = strtoupper($translate->getAdapter()->getLocale());
 	

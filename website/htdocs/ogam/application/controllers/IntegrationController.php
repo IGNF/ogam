@@ -76,9 +76,9 @@ class IntegrationController extends AbstractOGAMController {
 	private function _getDataSubmissionForm() {
 
         $form = new Genapp_Form(array(
-		    'attribs'=>array(
-		        'name'=>'data-submission-form',
-		        'action'=>$this->baseUrl.'/integration/validate-create-data-submission'
+		    'attribs' => array(
+		        'name' =>' data-submission-form',
+		        'action' => $this->baseUrl.'/integration/validate-create-data-submission'
 		        )
 		    )
 		);
@@ -93,7 +93,7 @@ class IntegrationController extends AbstractOGAMController {
 		$datasetIds = array();
 		foreach ($datasets as $dataset) {
 			$datasetIds[$dataset->id] = $dataset->label;
-			if ($dataset->isDefault == '1') {
+			if ($dataset->isDefault === '1') {
 				$requestElement->setValue($dataset->id);
 			}
 		}
@@ -119,10 +119,10 @@ class IntegrationController extends AbstractOGAMController {
 	private function _getDataUploadForm($showDetail = false) {
 
         $form = new Genapp_Form(array(
-		    'attribs'=>array(
-		        'name'=>'data-upload-form',
-		        'action'=>$this->baseUrl.'/integration/validate-upload-data',
-                'enctype'=>'multipart/form-data'
+		    'attribs' => array(
+		        'name' => 'data-upload-form',
+		        'action' => $this->baseUrl.'/integration/validate-upload-data',
+                'enctype' => 'multipart/form-data'
 		        )
 		    )
 		);
