@@ -46,12 +46,12 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 
 		$req = " SELECT role_code, COALESCE(t.label, role_label) as role_label, COALESCE(t.definition, role_definition) as role_definition ";
 		$req .= " FROM role ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = role_code";
+		$req .= " LEFT JOIN translation t ON lang = ? AND table_format = ? AND row_pk = role_code";
 		$req .= " WHERE role_code = ? ";
 		$this->logger->info('getRole : '.$req);
 
 		$query = $db->prepare($req);
-		$query->execute(array($roleCode));
+		$query->execute(array($this->lang, $tableFormat->format, $roleCode));
 
 		$result = $query->fetch();
 
