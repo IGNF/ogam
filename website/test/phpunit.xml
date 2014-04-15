@@ -7,11 +7,11 @@
     
     <filter>
         <whitelist>
-            <directory suffix=".php">./test/application/</directory>
-            <directory suffix=".php">./test/library/Genapp/</directory>
+            <directory suffix=".php">./htdocs/ogam/application/</directory>
+            <directory suffix=".php">./htdocs/ogam/library/Genapp/</directory>
             <exclude>
-                <file>./test/application/Bootstrap.php</file>
-                <directory suffix=".phtml">./test/application/</directory>
+                <file>./htdocs/ogam/application/Bootstrap.php</file>
+                <directory suffix=".phtml">./htdocs/ogam/application/</directory>
             </exclude>
         </whitelist>
     </filter>

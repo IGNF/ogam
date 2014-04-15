@@ -27,6 +27,20 @@ class UserTest extends ControllerTestCase {
 		$this->assertEquals($user->username, 'admin user');
 	}
 
+
+	/**
+	 * Test du modèle "User".
+	 */
+	public function testGetUsers() {
 	
+		// On charge le modèle
+		$userModel = new Application_Model_Website_User();
+	
+		$users = $userModel->getUsers();
+	
+		$this->assertNotNull($users);
+		$this->assertTrue(is_array($users));
+		$this->assertTrue(count($users) > 0);
+	}
 
 }
