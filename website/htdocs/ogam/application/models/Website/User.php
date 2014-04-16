@@ -53,7 +53,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN role_to_user USING (user_login) ";
 		$req .= " LEFT JOIN role USING (role_code) ";
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = role_code";
-		$req .= " WHERE active = '1' ";
+		$req .= " WHERE active = 1 ";
 		$req .= " ORDER BY role_label, user_login";
 		$this->logger->info('getUser : '.$req);
 
@@ -68,7 +68,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 			$user->login = $result['login'];
 			$user->username = $result['username'];
 			$user->providerId = $result['provider_id'];
-			$user->active = $result['active'];
+			$user->active = ($result['active'] === 1);
 			$user->email = $result['email'];
 			$user->roleLabel = $result['role_label'];
 			$users[] = $user;
@@ -108,7 +108,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 			$user->login = $result['login'];
 			$user->username = $result['username'];
 			$user->providerId = $result['provider_id'];
-			$user->active = $result['active'];
+			$user->active = ($result['active'] === 1);
 			$user->email = $result['email'];
 			$user->roleCode = $result['role_code'];
 			return $user;
@@ -195,7 +195,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 
 		$req = " INSERT INTO users (user_login, user_password, user_name, provider_id, email, active )";
-		$req .= " VALUES (?, ?, ?, ?, ?, '1')";
+		$req .= " VALUES (?, ?, ?, ?, ?, ?)";
 
 		$this->logger->info('createUser : '.$req);
 
@@ -205,7 +205,8 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 			$user->password,
 			$user->username,
 			$user->providerId,
-			$user->email));
+			$user->email,
+			$user->active ? 1 : 0));
 	}
 
 	/**
