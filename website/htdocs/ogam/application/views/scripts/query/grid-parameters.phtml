@@ -19,8 +19,8 @@
  */
 ?>
 
-if (Genapp.ConsultationPanel) {
-    Ext.apply(Genapp.ConsultationPanel.prototype, {
+if (Ogam.ConsultationPanel) {
+    Ext.apply(Ogam.ConsultationPanel.prototype, {
         hideGridCsvExportMenuItem : <?=$this->hideGridCsvExportMenuItem?>,
         hideGridDataEditButton : <?=$this->hideGridDataEditButton?>,
         checkEditionRights : <?=$this->checkEditionRights?>       
@@ -28,4 +28,4 @@ if (Genapp.ConsultationPanel) {
 }
 
 // User info
-Genapp.userProviderId = '<?=$this->userProviderId?>';
+Ogam.userProviderId = '<?=$this->userProviderId?>';
