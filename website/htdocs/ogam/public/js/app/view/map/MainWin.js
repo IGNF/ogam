@@ -1,3 +1,6 @@
 Ext.define('Ogam.view.map.MainWin', {
-	extend: 'Ogam.view.abstract.MainWin'
+	extend: 'Ogam.view.abstract.Win',
+	items: [{
+		
+	}]
 });

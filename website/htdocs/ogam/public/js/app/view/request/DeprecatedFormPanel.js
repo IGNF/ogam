@@ -3,7 +3,6 @@ Ext.define('Ogam.view.request.DeprecatedFormPanel', {
 	xtype: 'deprecated-form-panel',
 	autoScroll : true,
 	frame : true,
-	height: '95%',
 	layout : 'auto',
 	title : 'Forms Panel',
 	items: [{
