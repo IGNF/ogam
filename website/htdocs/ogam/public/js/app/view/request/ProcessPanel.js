@@ -10,6 +10,6 @@ Ext.define('Ogam.view.request.ProcessPanel', {
 		xtype: 'combo',
 		maxHeight : 100,
 		width: 345,
-		editable : false,
+		editable : false
 	}]
 });

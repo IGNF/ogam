@@ -13,7 +13,6 @@ Ext.application({
 	],
 	
 	launch : function() {
-		Ext.create('Ogam.view.request.DeprecatedAdvancedRequestWin').show();
-		Ext.create('Ogam.view.map.MainWin').show();
+		Ext.create('Ogam.view.Main').show();
 	}
 });

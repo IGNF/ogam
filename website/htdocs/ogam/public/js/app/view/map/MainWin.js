@@ -1,6 +1,6 @@
 Ext.define('Ogam.view.map.MainWin', {
-	extend: 'Ogam.view.abstract.Win',
-	items: [{
-		
-	}]
+	extend: 'Ext.tab.Tab',
+	xtype: 'map-mainwin',
+	layout: 'auto',
+	title: 'Map'
 });
