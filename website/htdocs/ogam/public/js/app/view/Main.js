@@ -23,14 +23,14 @@ Ext.define('Ogam.view.Main', {
 				items: [{
 					xtype: 'map-mainwin'
 				},{
-					xtype: 'tab',
-					title: 'Results'
+					xtype: 'result-mainwin',
 				}]
 			},{
 				xtype: 'panel',
 				region: 'east',
 				width: 370,
 				collapsible: true,
+				collapsed: true,
 				collapseDirection: 'right',
 				title: 'Details'
 			}]
@@ -39,6 +39,7 @@ Ext.define('Ogam.view.Main', {
 			region: 'south',
 			height: 200,
 			collapsible: true,
+			collapsed: true,
 			collapseDirection: 'bottom',
 			title: 'Features Information'
 		}]

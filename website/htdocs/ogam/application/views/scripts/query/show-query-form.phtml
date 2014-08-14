@@ -22,10 +22,22 @@
 <link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/extjs/build/packages/ext-theme-gray/build/resources/ext-theme-gray-all-debug.css') ?>" />
 
 <script type="text/javascript" src="http://cdn.sencha.com/ext/gpl/5.0.1/build/ext-all.js"></script>
+<script type="text/javascript">
+    Ext.Loader.setConfig({
+      enabled: true,
+      paths: {
+          'GeoExt': '<?= $this->baseUrl('js/GeoExt/src/GeoExt') ?>'
+      }
+    });
+</script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/lib/OpenLayers.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/abstract/Win.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapAddonsPanel.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MainWin.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/MainWin.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/view/result/MainWin.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/view/navigation/MainWin.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/DeprecatedFormPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/ProcessPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/DeprecatedPredefinedRequestWin.js') ?>"></script>

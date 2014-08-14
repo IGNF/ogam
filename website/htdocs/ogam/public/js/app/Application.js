@@ -1,15 +1,13 @@
 Ext.application({
 	name: 'Ogam',
 	views: [
-		//'request.DeprecatedAdvancedRequestWin'
+		'request.DeprecatedAdvancedRequestWin'
 	],
 
 	controllers: [
-		//'request.DeprecatedForm'
 	],
 
 	stores: [
-		
 	],
 	
 	launch : function() {

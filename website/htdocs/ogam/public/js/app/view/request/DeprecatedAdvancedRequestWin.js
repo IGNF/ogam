@@ -13,6 +13,9 @@ Ext.define('Ogam.view.request.DeprecatedAdvancedRequestWin', {
 	},'-',{
 		type: 'button', text: 'Reset'
 	},{
+		xtype: 'tbspacer',
+		flex: 1
+	},{
 		type: 'button', text: 'Search'
 	}]
 });
