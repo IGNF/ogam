@@ -1,47 +1,53 @@
 Ext.define('Ogam.view.Main', {
-	extend: 'Ogam.view.abstract.Win',
-	layout: 'border',
+	extend: 'Ext.tab.Panel',
+	renderTo: Ext.get('content'),
 	width: Ext.getBody().getViewSize().width - 80,
 	height: Ext.getBody().getViewSize().height - 160,
+    activeTab: 1,
 	items: [{
-		xtype: 'deprecated-advanced-request-win',
-		region: 'west'
+		xtype: 'deprecated-predefined-request-win'
 	},{
-		xtype: 'container',
-		region: 'center',
+		xtype: 'panel',
 		layout: 'border',
+		title: 'Consultation',
 		items: [{
+			xtype: 'deprecated-advanced-request-win',
+			region: 'west'
+		},{
 			xtype: 'container',
 			region: 'center',
 			layout: 'border',
 			items: [{
-				xtype: 'tabpanel',
+				xtype: 'container',
 				region: 'center',
-				defaults: {
-					closable: false
-				},
+				layout: 'border',
 				items: [{
-					xtype: 'map-mainwin'
+					xtype: 'tabpanel',
+					region: 'center',
+					defaults: {
+						closable: false
+					},
+					items: [{
+						xtype: 'map-mainwin'
+					},{
+						xtype: 'result-mainwin'
+					}]
 				},{
-					xtype: 'result-mainwin',
+					xtype: 'navigation-mainwin',
+					region: 'east',
+					width: 370,
+					collapsible: true,
+					collapsed: true,
+					collapseDirection: 'right'
 				}]
 			},{
-				xtype: 'panel',
-				region: 'east',
-				width: 370,
+				xtype: 'deprecated-detail-grid',
+				region: 'south',
+				height: 200,
 				collapsible: true,
 				collapsed: true,
-				collapseDirection: 'right',
-				title: 'Details'
+				collapseDirection: 'bottom'
 			}]
-		},{
-			xtype: 'panel',
-			region: 'south',
-			height: 200,
-			collapsible: true,
-			collapsed: true,
-			collapseDirection: 'bottom',
-			title: 'Features Information'
 		}]
 	}],
 	initComponent : function() {

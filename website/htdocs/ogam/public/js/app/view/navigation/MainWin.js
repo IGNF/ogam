@@ -1,3 +1,5 @@
 Ext.define('Ogam.view.navigation.MainWin', {
-	extend: 'Ogam.view.abstract.Win'
+	extend: 'Ext.panel.Panel',
+	xtype: 'navigation-mainwin',
+	title: 'Details'
 });

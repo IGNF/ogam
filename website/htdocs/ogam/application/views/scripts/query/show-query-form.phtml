@@ -23,6 +23,11 @@
 
 <script type="text/javascript" src="http://cdn.sencha.com/ext/gpl/5.0.1/build/ext-all.js"></script>
 <script type="text/javascript">
+    Ext.namespace('Ogam');
+    Ogam.base_url = "<?= $this->baseUrl('query/..'); ?>/";
+    Ogam.ajax_query_url = "<?= $this->baseUrl('query') ?>/";
+</script>
+<script type="text/javascript">
     Ext.Loader.setConfig({
       enabled: true,
       paths: {
@@ -31,6 +36,7 @@
     });
 </script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/lib/OpenLayers.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/store/request/PredefinedGroup.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/abstract/Win.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapAddonsPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapPanel.js') ?>"></script>
@@ -42,6 +48,7 @@
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/ProcessPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/DeprecatedPredefinedRequestWin.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/controller/request/DeprecatedForm.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/view/navigation/DeprecatedDetailGrid.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/DeprecatedAdvancedRequestWin.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/Main.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/Application.js') ?>"></script>
