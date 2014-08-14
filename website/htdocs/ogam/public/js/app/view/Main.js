@@ -1,3 +1,6 @@
+/**
+ * The Main includes the module panels of Ogam.
+ */
 Ext.define('Ogam.view.Main', {
 	extend: 'Ext.tab.Panel',
 	renderTo: Ext.get('content'),

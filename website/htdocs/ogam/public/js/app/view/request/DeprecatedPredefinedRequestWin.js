@@ -40,7 +40,7 @@ Ext.define('Ogam.view.request.DeprecatedPredefinedRequestWin', {
 				title: 'Request Criteria',
 				hideMode: 'display',
 				flex: 1,
-				margin: '10 10 10 10',
+				margin: '5 10 10 10',
 				items: [{
 					xtype: 'button',
 					margin: '5 5 5 5',
