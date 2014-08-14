@@ -137,6 +137,3 @@ COMMENT ON COLUMN bounding_box.bb_xmax IS 'Max longitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_ymax IS 'Max latitude coordinate';
 COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the data provider';
 
-GRANT ALL ON ALL TABLES IN SCHEMA mapping TO ogam;
-
-        

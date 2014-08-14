@@ -296,9 +296,3 @@ return input_string;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
-
-
-
-
-
-GRANT ALL ON ALL TABLES IN SCHEMA raw_data TO ogam;
