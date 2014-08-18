@@ -15,24 +15,82 @@ Ext.require([
 	]);
 
 var map = new OpenLayers.Map({
-	'numZoomLevels' : 22,
-	'projection' : 'EPSG:3857',
-	'allOverlays':false,
-	'units' : 'm',
-	'tileSize' : new OpenLayers.Size(256,256),
-	'maxExtent' : new OpenLayers.Bounds(-1732980.3050402,4880351.3812726,2337138.5765223,7025480.1427692)});
-
-var wms = new OpenLayers.Layer.WMS(
-	"Scans",
-	"http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/r/wms",
-	{
-		layers: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
-		version: '1.3.0'
-	},{
-		displayInLayerSwitcher : true
-	});
-
-map.addLayers([wms]);
+	'allOverlays':false
+});
+var layers= [
+         new OpenLayers.Layer.WMS("Global Imagery",
+             "http://maps.opengeo.org/geowebcache/service/wms", {
+                 layers: "bluemarble",
+                 format: "image/png8"
+             }, {
+                 buffer: 0,
+                 visibility: false
+             }
+         ),
+         new OpenLayers.Layer.WMS("OpenStreetMap WMS",
+             "http://ows.terrestris.de/osm/service?",
+             {layers: 'OSM-WMS'},
+             {
+                 attribution: '&copy; terrestris GmbH & Co. KG <br>' +
+                     'Data &copy; OpenStreetMap ' +
+                     '<a href="http://www.openstreetmap.org/copyright/en"' +
+                     'target="_blank">contributors<a>'
+             }
+         ),
+         new OpenLayers.Layer.WMS("Country Borders",
+             "http://ows.terrestris.de/geoserver/osm/wms", {
+                 layers: "osm:osm-country-borders",
+                 transparent: true,
+                 format: "image/png"
+             }, {
+                 isBaseLayer: false,
+                 buffer: 0
+             }
+         ),
+         new OpenLayers.Layer.WMS("Gas Stations",
+             "http://ows.terrestris.de/geoserver/osm/wms", {
+                 layers: "osm:osm-fuel",
+                 transparent: true,
+                 format: "image/png"
+             }, {
+                 isBaseLayer: false,
+                 buffer: 0
+             }
+         ),
+         new OpenLayers.Layer.WMS("Bus Stops",
+             "http://ows.terrestris.de/osm-haltestellen?",
+             {
+                 layers: 'OSM-Bushaltestellen',
+                 format: 'image/png',
+                 transparent: true
+             },
+             {
+                 singleTile: true,
+                 visibility: false
+             }
+         ),
+         // create a group layer (with several layers in the "layers" param)
+         // to show how the LayerParamLoader works
+         new OpenLayers.Layer.WMS("Tasmania (Group Layer)",
+             "http://demo.opengeo.org/geoserver/wms", {
+                 layers: [
+                     "topp:tasmania_state_boundaries",
+                     "topp:tasmania_water_bodies",
+                     "topp:tasmania_cities",
+                     "topp:tasmania_roads"
+                 ],
+                 transparent: true,
+                 format: "image/gif"
+             }, {
+                 isBaseLayer: false,
+                 buffer: 0,
+                 // exclude this layer from layer container nodes
+                 displayInLayerSwitcher: false,
+                 visibility: false
+             }
+         )
+];
+map.addLayers(layers);
 
 Ext.define('Ogam.view.map.MapPanel', {
 	extend: 'GeoExt.panel.Map',

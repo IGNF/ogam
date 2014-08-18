@@ -20,24 +20,25 @@
 ?>
   	
 <link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/extjs/build/packages/ext-theme-gray/build/resources/ext-theme-gray-all-debug.css') ?>" />
-<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/build/ext-all.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/build/ext-all-debug.js') ?>"></script>
 <script type="text/javascript">
-    Ext.namespace('Ogam');
-    Ogam.base_url = "<?= $this->baseUrl('query/..'); ?>/";
-    Ogam.ajax_query_url = "<?= $this->baseUrl('query') ?>/";
+	Ext.namespace('Ogam');
+	Ogam.base_url = "<?= $this->baseUrl('query/..'); ?>/";
+	Ogam.ajax_query_url = "<?= $this->baseUrl('query') ?>/";
 </script>
 <script type="text/javascript">
-    Ext.Loader.setConfig({
-      enabled: true,
-      paths: {
-          'GeoExt': '<?= $this->baseUrl('js/GeoExt/src/GeoExt') ?>'
-      }
-    });
+	Ext.Loader.setConfig({
+		enabled: true,
+		paths: {
+			'GeoExt': '<?= $this->baseUrl('js/GeoExt/src/GeoExt') ?>'
+		}
+	});
 </script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/lib/OpenLayers.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/store/request/PredefinedGroup.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/abstract/Win.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapAddonsPanel.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/LayersPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MainWin.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/MainWin.js') ?>"></script>
@@ -56,7 +57,7 @@
 
 <!-- Fields required for history management -->
 <form id="history-form" class="x-hidden">
-    <input type="hidden" id="x-history-field" />
-    <iframe id="x-history-frame"></iframe>
+	<input type="hidden" id="x-history-field" />
+	<iframe id="x-history-frame"></iframe>
 </form>
 

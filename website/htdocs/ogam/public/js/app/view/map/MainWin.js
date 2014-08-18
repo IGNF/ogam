@@ -2,6 +2,7 @@ Ext.define('Ogam.view.map.MainWin', {
 	extend: 'Ogam.view.abstract.Win',
 	xtype: 'map-mainwin',
 	layout: 'border',
+	height: Ext.getBody().getViewSize().height - 160,
 	title: 'Map',
 	items: [{
 		xtype: 'map-panel',
@@ -19,8 +20,7 @@ Ext.define('Ogam.view.map.MainWin', {
 			closable: false
 		},
 		items: [{
-			xtype: 'tab',
-			title: 'Layers'
+			xtype: 'layers-panel'
 		},{
 			xtype: 'tab',
 			title: 'Legends'
