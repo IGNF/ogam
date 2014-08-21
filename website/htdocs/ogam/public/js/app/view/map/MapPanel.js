@@ -94,6 +94,7 @@ map.addLayers(layers);
 
 Ext.define('Ogam.view.map.MapPanel', {
 	extend: 'GeoExt.panel.Map',
+	mixins: ['Ogam.view.interface.MapPanel'],
 	xtype: 'map-panel',
 	map: map,
     zoom: 3,
