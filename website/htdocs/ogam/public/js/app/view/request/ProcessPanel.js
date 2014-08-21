@@ -3,13 +3,13 @@ Ext.define('Ogam.view.request.ProcessPanel', {
 	xtype: 'process-panel',
 	frame : true,
 	margins : '10 0 5 0',
-	height: '5%',
+	height: 60,
 	title: 'Dataset',
 	layout: 'fit',
 	items: [{
 		xtype: 'combo',
 		maxHeight : 100,
 		width: 345,
-		editable : false,
+		editable : false
 	}]
 });
