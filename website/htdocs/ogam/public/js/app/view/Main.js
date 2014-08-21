@@ -6,7 +6,7 @@ Ext.define('Ogam.view.Main', {
 	renderTo: Ext.get('content'),
 	width: Ext.getBody().getViewSize().width - 80,
 	height: Ext.getBody().getViewSize().height - 160,
-    activeTab: 1,
+	activeTab: 1,
 	items: [{
 		xtype: 'deprecated-predefined-request-win'
 	},{

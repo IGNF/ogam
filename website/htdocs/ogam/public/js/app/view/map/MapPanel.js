@@ -100,5 +100,29 @@ Ext.define('Ogam.view.map.MapPanel', {
     width:'100%',
     height:'100%',
     stateful: true,
-    stateId: 'mappanel'	
+    stateId: 'mappanel'	,
+	tbar: [{
+		xtype: 'tbspacer',
+		flex: 1
+	},{
+		type: 'button', text: 'i'
+	},{
+		type: 'button', text: 'sl'
+	},'-',{
+		type: 'button', text: 'p'
+	},{
+		type: 'button', text: 'n'
+	},{
+		type: 'button', text: 'i'
+	},{
+		type: 'button', text: 'zi'
+	},{
+		type: 'button', text: 'zo'
+	},{
+		type: 'button', text: 'dm'
+	},'-',{
+		type: 'button', text: 'zr'
+	},{
+		type: 'button', text: 'me'
+	}]
 });

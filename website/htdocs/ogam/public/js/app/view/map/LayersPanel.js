@@ -3,8 +3,8 @@ Ext.define('Ogam.view.map.LayersPanel', {
 	xtype: 'layers-panel',
 	title: 'Layers',
 	border: true,
-    autoScroll: true,
-    //store: store,
-    rootVisible: false,
-    lines: false
+	autoScroll: true,
+	//store: store,
+	rootVisible: false,
+	lines: false
 });

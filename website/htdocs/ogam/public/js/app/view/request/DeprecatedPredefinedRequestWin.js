@@ -1,5 +1,6 @@
 Ext.define('Ogam.view.request.DeprecatedPredefinedRequestWin', {
 	extend: 'Ext.panel.Panel',
+	//extend: 'Ogam.view.request.MainWin',
 	xtype: 'deprecated-predefined-request-win',
 	layout: 'hbox',
 	title: 'Predefined Request',

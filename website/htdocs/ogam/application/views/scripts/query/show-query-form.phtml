@@ -21,6 +21,8 @@
   	
 <link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/extjs/build/packages/ext-theme-gray/build/resources/ext-theme-gray-all-debug.css') ?>" />
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/build/ext-all-debug.js') ?>"></script>
+<!-- <script type="text/javascript" src="http://cdn.sencha.com/ext/gpl/5.0.1/build/ext-all-debug.js"</script> -->
+
 <script type="text/javascript">
 	Ext.namespace('Ogam');
 	Ogam.base_url = "<?= $this->baseUrl('query/..'); ?>/";
@@ -34,10 +36,11 @@
 		}
 	});
 </script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/lib/OpenLayers.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.debug.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/store/request/PredefinedGroup.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/abstract/Win.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapAddonsPanel.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/LegendsPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/LayersPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MainWin.js') ?>"></script>

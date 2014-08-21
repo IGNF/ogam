@@ -6,24 +6,9 @@ Ext.define('Ogam.view.map.MainWin', {
 	title: 'Map',
 	items: [{
 		xtype: 'map-panel',
-		region: 'center',
-		tbar: {xtype: 'map-addons-panel'}
+		region: 'center'
 	},{
-		xtype: 'tabpanel',
-		region: 'east',
-		title: 'Layers & Legends',
-		collapsible: true,
-		collapsed: true,
-		collapseDirection: 'right',
-		width: 200,
-		defaults: {
-			closable: false
-		},
-		items: [{
-			xtype: 'layers-panel'
-		},{
-			xtype: 'tab',
-			title: 'Legends'
-		}]
+		xtype: 'map-addons-panel',
+		region: 'east'
 	}]
 });
