@@ -650,7 +650,3 @@ alter table FILE_FIELD
       references FILE_FORMAT (FORMAT)
       on delete restrict on update restrict;
       
-      
-GRANT ALL ON SCHEMA metadata TO ogam;
-GRANT ALL ON ALL TABLES IN SCHEMA metadata TO ogam;
-      
