@@ -1,11 +1,11 @@
-set search_path = metadata;
+﻿set search_path = metadata;
 
 
 --
 --  Clean all the checks except default ones (id > 1200) 
 -- 
 -- select * from biosoil.checks
-delete from checks_per_country;
+delete from checks_per_provider;
 delete from checks where check_id > 1200;
 
 
@@ -58,4 +58,4 @@ AND NOT ST_Intersects(l.the_geom, (
 --
 -- Plot location tests
 --
-INSERT INTO checks_per_country(check_id, DATASET_ID, country_code) VALUES (2001, 'LOCATION', '*'); -- * for the country code means all
+INSERT INTO checks_per_provider(check_id, DATASET_ID, provider_id) VALUES (2001, 'LOCATION', '*'); -- * for the provider code means all

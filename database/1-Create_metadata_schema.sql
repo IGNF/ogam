@@ -2,6 +2,23 @@ CREATE SCHEMA metadata;
 
 SET SEARCH_PATH = metadata, raw_data, public;
 
+/**
+ * This function is used to do accent-insensitive search.
+ */
+CREATE OR REPLACE FUNCTION unaccent_string(text) RETURNS text AS $$
+DECLARE
+    input_string text := $1;
+BEGIN
+
+input_string := translate(input_string, 'âãäåaaaÁÂÃÄÅAAA', 'aaaaaaaaaaaaaaa');
+input_string := translate(input_string, 'èééêëeeeeeEEEEE', 'eeeeeeeeeeeeeee');
+input_string := translate(input_string, 'ìíîïìiiiÌÍÎÏÌIII', 'iiiiiiiiiiiiiiii');
+input_string := translate(input_string, 'óôõöoooÒÓÔÕÖOOO', 'ooooooooooooooo');
+input_string := translate(input_string, 'ùúûüuuuuÙÚÛÜUUUU', 'uuuuuuuuuuuuuuuu');
+
+return input_string;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
 
 /*==============================================================*/
 /* Table : DATA                                                 */
