@@ -295,6 +295,3 @@ ALTER TABLE ONLY predefined_request_group_asso
     FOREIGN KEY (request_name) 
     REFERENCES predefined_request(request_name) ON UPDATE RESTRICT ON DELETE RESTRICT;
     
-
-
-GRANT ALL ON ALL TABLES IN SCHEMA website TO ogam;

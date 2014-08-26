@@ -168,4 +168,3 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
 
 
 
-GRANT ALL ON ALL TABLES IN SCHEMA harmonized_data TO ogam;
