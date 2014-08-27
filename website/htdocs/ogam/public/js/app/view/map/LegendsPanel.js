@@ -1,3 +1,5 @@
 Ext.define('Ogam.view.map.LegendsPanel', {
-	extend: 'Ext.panel.Panel'
+	extend: 'Ext.tab.Tab',
+	xtype: 'legends-panel',
+	title: 'Legends'
 });
