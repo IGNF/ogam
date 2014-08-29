@@ -82,12 +82,14 @@ Ext.define('GeoExt.data.LayerTreeModel',{
      */
     constructor: function(data, id, raw, convertedData) {
         var me = this;
-
+        if (!me.isFirstInstance){
+        }
         me.callParent(arguments);
-
+        me.set('id',me.getId().replace(/\./g,'-'));
+        
         window.setTimeout(function() {
+        	var layerStore = Ext.create('GeoExt.data.LayerStore');
             var plugins = me.get('plugins');
-
             if (plugins) {
                 var plugin, instance;
                 for (var i=0, ii=plugins.length; i<ii; ++i) {
@@ -95,6 +97,7 @@ Ext.define('GeoExt.data.LayerTreeModel',{
                     instance = Ext.PluginMgr.create(Ext.isString(plugin) ? {
                         ptype: plugin
                     } : plugin);
+                    me.join(layerStore);
                     instance.init(me);
                 }
             }

@@ -2,10 +2,25 @@ Ext.define('Ogam.view.map.LayersPanel', {
 	extend: 'GeoExt.tree.Panel',
 	mixins: ['Ogam.view.interface.LayersPanel'],
 	xtype: 'layers-panel',
-	title: 'Layers',
-	border: true,
+	border: false,
 	autoScroll: true,
-	//store: store,
 	rootVisible: false,
-	lines: false
+	lines: false,
+	initComponent: function(){
+		layersStore = Ext.getCmp('mappanel').map.layers;
+		this.store = Ext.create('Ext.data.TreeStore',{
+			model: 'GeoExt.data.LayerTreeModel',
+			root: {
+				expanded: true,
+				children: [{
+					plugins: [{
+						ptype: 'gx_layercontainer',
+						store: layersStore
+					}],
+					expanded: true
+				}]
+			}
+		});
+		this.callParent(arguments);
+	}
 });

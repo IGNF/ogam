@@ -40,11 +40,34 @@ Ext.define('GeoExt.tree.Panel', {
             me.columns = [{
                 xtype    : 'gx_treecolumn',
                 text     : 'Name',
-                width    : Ext.isIE6 ? null : 10000,
+                autoWidth    : true,
                 dataIndex: me.displayField         
             }];
         }
+		
+        me.on({"checkchange": function(node, checked){
+    		me.onCheckChange(node, checked);
+    	},
+			scope: me
+		});
 
         me.callParent();
+    },
+    onCheckChange: function(node,checked) {
+        if(checked != node.get('layer').getVisibility()) {
+            node._visibilityChanging = true;
+            var layer = node.get('layer');
+            if(checked && layer.isBaseLayer && layer.map) {
+                layer.map.setBaseLayer(layer);
+            } else if(!checked && layer.isBaseLayer && layer.map &&
+                      layer.map.baseLayer && layer.id == layer.map.baseLayer.id) {
+                // Must prevent the unchecking of radio buttons
+                node.set('checked', layer.getVisibility());
+            } else {
+                layer.setVisibility(checked);
+            }
+            delete node._visibilityChanging;
+        }
+		
     }
 });

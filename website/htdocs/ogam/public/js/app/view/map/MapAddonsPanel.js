@@ -10,7 +10,11 @@ Ext.define('Ogam.view.map.MapAddonsPanel', {
 		closable: false
 	},
 	items: [{
-		xtype: 'layers-panel'
+		xtype: 'container',
+		title: 'Layers',
+		items: [{
+			xtype: 'layers-panel'
+		}]
 	},{
 		xtype: 'legends-panel'
 	}]
