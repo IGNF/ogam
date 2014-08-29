@@ -6,6 +6,12 @@ Ext.define('Ogam.view.map.LayersPanel', {
 	autoScroll: true,
 	rootVisible: false,
 	lines: false,
+	viewConfig: {
+		plugins: [{
+			ptype: 'treeviewdragdrop',
+			appendOnly: false
+		}]
+	},
 	initComponent: function(){
 		layersStore = Ext.getCmp('mappanel').map.layers;
 		this.store = Ext.create('Ext.data.TreeStore',{
