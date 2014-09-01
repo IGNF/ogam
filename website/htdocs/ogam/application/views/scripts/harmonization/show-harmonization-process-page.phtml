@@ -31,7 +31,7 @@
 	<th>Country Code</th>	
 </tr>
 
-<?
+<?php
 $i = 0;
 foreach($this->validatedsubmissions as $validatedSubmission) {
 ?>
@@ -39,7 +39,7 @@ foreach($this->validatedsubmissions as $validatedSubmission) {
 	<td><?= $validatedSubmission->datasetId ?></td>	
 	<td><?= $validatedSubmission->providerId ?></td>
 </tr>
-<?
+<?php
 $i++;
 }
 ?>

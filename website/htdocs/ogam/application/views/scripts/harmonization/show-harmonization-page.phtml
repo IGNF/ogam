@@ -46,7 +46,7 @@
 	<th><?= $this->translate('Action');?></th>
 </tr>
 
-<?
+<?php
 
 $i = 0;
 foreach ($this->harmonizations as $harmonizationProcess) {
@@ -59,7 +59,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
             <?php if ($harmonizationProcess->submissionStatus == "NOT_VALID") { ?>
             	<?= $harmonizationProcess->status ?>
                 <img src="<?= $this->baseUrl('img/warning_orange.png') ?>" title="The raw_data submission is not valid anymore" />
-            <? } else if ($harmonizationProcess->status === "OK") { ?>
+            <?php } else if ($harmonizationProcess->status === "OK") { ?>
             	<?= $harmonizationProcess->status ?>
                 <img src="<?= $this->baseUrl('img/Green_tick.png') ?>" />
             <?php } else if ($harmonizationProcess->status === "RUNNING") { ?>
@@ -125,7 +125,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 	    <br/><a onclick="return confirmDeletion();" href="<?= $this->url(array('controller'=>'harmonization','action'=>'remove-harmonization-data'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?= $this->translate('Remove Harmonization Data');?></a>
 	</td>
 </tr>
-<?
+<?php
 	$i++;
 }
 ?>

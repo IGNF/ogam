@@ -80,7 +80,7 @@ public function getVectorLayersList() {
 		$params = array();
 
 		$req = " SELECT parent_id, layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, ";
-		$req .= " istransparent, default_opacity, isbaselayer, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
+		$req .= " istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
 		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_sld, checked_group, feature_service_name, print_service_name, detail_service_name,view_service_name, legend_service_name ";
 		$req .= " FROM layer ";
 		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
@@ -119,6 +119,7 @@ public function getVectorLayersList() {
 			$layer->isTransparent = ($row['istransparent'] === 1);
 			$layer->defaultOpacity = $row['default_opacity'];
 			$layer->isBaseLayer = ($row['isbaselayer'] === 1);
+			$layer->isUntiled   = ($row['isuntiled'] === 1);  
 			$layer->maxscale = $row['maxscale'];
 			$layer->minscale = $row['minscale'];
 			$layer->transitionEffect = $row['transitioneffect'];
@@ -169,29 +170,29 @@ public function getVectorLayersList() {
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$layer = new Application_Object_Mapping_Layer();
-			$layer->parentId = $row['parent_id'];
-			$layer->layerName = $row['layer_name'];
-			$layer->layerLabel = $row['layer_label'];
-			$layer->serviceLayerName = $row['service_layer_name'];
-			$layer->isTransparent = $row['istransparent'];
-			$layer->defaultOpacity = $row['default_opacity'];
-			$layer->isBaseLayer = $row['isbaselayer'];
-			$layer->viewServiceName = $row['view_service_name'];
+			$layer->parentId          = $row['parent_id'];
+			$layer->layerName         = $row['layer_name'];
+			$layer->layerLabel        = $row['layer_label'];
+			$layer->serviceLayerName  = $row['service_layer_name'];
+			$layer->isTransparent     = $row['istransparent'];
+			$layer->defaultOpacity    = $row['default_opacity'];
+			$layer->isBaseLayer       = $row['isbaselayer'];
+			$layer->viewServiceName   = $row['view_service_name'];
 			$layer->featureServiceName = $row['feature_service_name'];
-			$layer->maxscale = $row['maxscale'];
-			$layer->minscale = $row['minscale'];
-			$layer->transitionEffect = $row['transitioneffect'];
-			$layer->imageFormat = $row['imageformat'];
-			$layer->isDefault = $row['is_checked'];
-			$layer->isHidden = $row['is_hidden'];
-			$layer->isDisabled = $row['is_disabled'];
-			$layer->isChecked = $row['is_checked'];
-			$layer->activateType = $row['activate_type'];
-			$layer->hasSLD = $row['has_sld'];
-			$layer->checkedGroup = $row['checked_group'];
-			$layer->printServiceName = $row['print_service_name'];
+			$layer->maxscale          = $row['maxscale'];
+			$layer->minscale          = $row['minscale'];
+			$layer->transitionEffect  = $row['transitioneffect'];
+			$layer->imageFormat       = $row['imageformat'];
+			$layer->isDefault         = $row['is_checked'];
+			$layer->isHidden          = $row['is_hidden'];
+			$layer->isDisabled        = $row['is_disabled'];
+			$layer->isChecked         = $row['is_checked'];
+			$layer->activateType      = $row['activate_type'];
+			$layer->hasSLD            = $row['has_sld'];
+			$layer->checkedGroup      = $row['checked_group'];
+			$layer->printServiceName  = $row['print_service_name'];
 			$layer->detailServiceName = $row['detail_service_name'];
-			$layer->featureInfoServiceName = $row['feature_info_service_name'];
+			$layer->featureInfoServiceName = $row['feature_service_name'];
 			$layer->legendServiceName = $row['legend_service_name'];
 			$result[] = $layer;
 		}
