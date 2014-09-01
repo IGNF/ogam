@@ -41,7 +41,7 @@
     <th style="text-align:center"><?=$this->translate('Actions');?></th>
     <th></th>
 </tr>
-<?
+<?php
 
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
@@ -58,7 +58,7 @@ foreach ($this->submissions as $submission) {
     <td><?= $this->escape($submission->datasetId); ?></td>
     <td><?= $this->escape($submission->step); ?></td>
     <td>
-            <? if ($submission->status === "OK" || $submission->status === "CHECKED") : ?>
+            <?php if ($submission->status === "OK" || $submission->status === "CHECKED") : ?>
             	<?= $this->escape($submission->status); ?>
                 <img src="<?= $this->baseUrl('img/Green_tick.png') ?>" />
             <?php elseif ($submission->status === "WARNING") : ?>

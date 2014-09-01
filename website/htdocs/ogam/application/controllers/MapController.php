@@ -118,7 +118,6 @@ class MapController extends AbstractOGAMController {
 
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
-		$tilesize = $configuration->tilesize; // Tile size in pixels
 		$dpi = $configuration->mapserver_dpi; // Default number of dots per inch in mapserv
 		$factor = $configuration->mapserver_inch_per_kilometer; // Inch to meter conversion factor
 
@@ -126,8 +125,9 @@ class MapController extends AbstractOGAMController {
 
 		$resolutions = array();
 		foreach ($scales as $scale) {
-			$res = $scale * (2 * $tilesize) / ($dpi * $factor);
-			$resolutions[$scale] = $res / (2 * $tilesize) * 1000;
+			// resolution = scaleDenominator * (1/dpi)inch * (1/inch_per_kilometer)km/inch * 1000 m/km
+			$resolutions[$scale] = $scale / ($dpi * $factor) * 1000;
+			// REMARQUE: L'OGC préconise une taille de pixel standard de 0.28mm. Ici elle dépend de la config.
 		}
 		return $resolutions;
 	}
@@ -142,9 +142,9 @@ class MapController extends AbstractOGAMController {
 		// Get the available layers
 		$layerNames = $this->layersModel->getVectorLayersList();
 
-		$json = '{"success":true';
+		$json  = '{"success":true';
 		$json .= ', layerNames : [';
-		$json .= '{"code":null,"label":"'.$this->translator->translate('empty_layer').'","url":null},';
+		$json .= '{"code":null, "label":"' . $this->translator->translate('empty_layer') .'","url":null},';
 		foreach ($layerNames as $layerName => $tab) {
 		    $layer = $this->layersModel->getLayer($layerName);
 		    $viewServiceName = $layer->viewServiceName;
@@ -183,9 +183,9 @@ class MapController extends AbstractOGAMController {
 		$providerId = $userSession->user->providerId;
 
 		// Get the available services base urls and parameters
-		$viewServices = $this->servicesModel->getViewServices();
+		$viewServices    = $this->servicesModel->getViewServices();
 		$featureServices = $this->servicesModel->getFeatureServices();
-		$legendServices = $this->servicesModel->getLegendServices();
+		$legendServices  = $this->servicesModel->getLegendServices();
 		
 		// Get the available layers
 		$layers = $this->layersModel->getLayersList($providerId);

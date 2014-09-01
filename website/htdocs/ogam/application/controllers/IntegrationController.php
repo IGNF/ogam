@@ -169,7 +169,7 @@ class IntegrationController extends AbstractOGAMController {
 			}
 
 			$fileelement->setDescription($fieldsDesc);
-			$fileelement->setValue('toto');
+			$fileelement->setValue('toto'); //FIXME
 			//$fileelement->setDisableTranslator(true); // disable translation to avoid the file name translation
 			$fileelement->addDecorator('Description', array('escape' => false));
 			$fileelement->addValidator('Count', false, 1); // ensure only 1 file
@@ -301,7 +301,7 @@ class IntegrationController extends AbstractOGAMController {
 			return $this->_forward('index');
 		}
 
-		// Check the validity of the From
+		// Check the validity of the Form
 		$form = $this->_getDataUploadForm();
 		if (!$form->isValid($_POST)) {
 			$this->logger->debug('form is not valid');
@@ -364,14 +364,14 @@ class IntegrationController extends AbstractOGAMController {
 			return $this->render('show-upload-data');
 		} else {
 
-			// Send the files to the integration server
-			try {
-				$this->integrationServiceModel->uploadData($submission->submissionId, $providerId, $requestedFiles);
-			} catch (Exception $e) {
-				$this->logger->err('Error during upload: '.$e);
-				$this->view->errorMessage = $e->getMessage();
-				return $this->render('show-data-error');
-			}
+		// Send the files to the integration server
+		try {
+			$this->integrationServiceModel->uploadData($submission->submissionId, $providerId, $requestedFiles);
+		} catch (Exception $e) {
+			$this->logger->err('Error during upload: '.$e);
+			$this->view->errorMessage = $e->getMessage();
+			return $this->render('show-data-error');
+		}
 
 			// Redirect the user to the show plot location page
 			// This ensure that the user will not resubmit the data by doing a refresh on the page
