@@ -8,4 +8,4 @@ OGAM est sous licence GPL.
 
 # Documentation
 La documentation notamment pour l'installation et la configuration se trouve 
-dans le répertoire documenation
+dans le répertoire documentation
