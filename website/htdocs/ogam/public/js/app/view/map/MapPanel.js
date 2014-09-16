@@ -3,16 +3,11 @@ Ext.define('Ogam.view.map.MapPanel', {
 	requires: ['GeoExt.tree.LayerContainer'],
 	id: 'mappanel',
 	//mixins: ['Ogam.view.interface.MapPanel'],
-    //center: [14, 37.5],
-    //zoom: 7,
+    layersList: [],
+	minZoomLevel : 0,
 	xtype: 'map-panel',
     width:'100%',
     height:'100%',
-
-	/**
-	 * @cfg Array[OpenLayer.Layer] The list of available layers.
-	 */
-	layersList : [],
 	tbar: [{
 		xtype: 'tbspacer',
 		flex: 1
@@ -48,8 +43,8 @@ Ext.define('Ogam.view.map.MapPanel', {
 			scope : this,
 			success :this.addLayersAndLayersTree
 		});
-		console.log(this.map);
 		this.callParent(arguments);
+		
 	},
 	
 	addLayersAndLayersTree : function(response) {
@@ -73,6 +68,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 			// to the list
 			var newLayer = this.buildLayer(layerObject,viewServiceObject);
 			this.layersList.push(newLayer);
+			
 			// Fill the list of active layers
 			var activateType = layerObject.params.activateType.toLowerCase();
 			if (Ext.isEmpty(this.layersActivation[activateType])) {
@@ -119,7 +115,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 							format: "WFS",
 							version: "1.0.0",
 							request: "GetFeature",
-							srs: Genapp.map.projection
+							srs: Ogam.map.projection
 						}, 
 						format: new OpenLayers.Format.GML({extractAttributes: true})
 					})									
@@ -140,8 +136,6 @@ Ext.define('Ogam.view.map.MapPanel', {
 			success : this.initLayerTree,
 			scope : this
 		});
-		//this.map = map;
-
 	},
 	
 	/**
@@ -176,14 +170,12 @@ Ext.define('Ogam.view.map.MapPanel', {
 		    }
 		newLayer.displayInLayerSwitcher = true;
 
-
 		return newLayer;
 	},
 	/**
 	 * Set the layers of the map
 	 */
 	setMapLayers : function(map) {
-		
 		// Add the base layer (always first)
 		map.addLayer(this.baseLayer);
 
@@ -198,7 +190,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 		}*/
 
 		// Add the vector layer
-		map.addLayer(this.vectorLayer);
+		//map.addLayer(this.vectorLayer);
 
 	},
 	
@@ -212,23 +204,21 @@ Ext.define('Ogam.view.map.MapPanel', {
 	 * @hide
 	 */
 	initMap : function() {
-
 		// Create the map config resolution array
-		var resolutions = [156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646];
-		/*for ( var i = this.minZoomLevel; i < Genapp.map.resolutions.length; i++) {
-			resolutions.push(Genapp.map.resolutions[i]);
-		}*/
+		var resolutions = [];
+		for ( var i = this.minZoomLevel; i < Ogam.map.resolutions.length; i++) {
+			resolutions.push(Ogam.map.resolutions[i]);
+		}
 		
-
 		// Create the map object
 		var map = new OpenLayers.Map({
 			'controls' : [],
-			//'resolutions' : resolutions,
-			//'numZoomLevels' : 22,
-			//'projection' : '4326',
-			//'units' : 'dd',
-			'tileSize' : new OpenLayers.Size(500,500),
-			//'maxExtent' : new OpenLayers.Bounds(-6, 42, 10, 52),
+			'resolutions' : resolutions,
+			'numZoomLevels' : Ogam.map.numZoomLevels,
+			'projection' : Ogam.map.projection,
+			'units' : 'm',
+			'tileSize' : new OpenLayers.Size(Ogam.map.tilesize, Ogam.map.tilesize),
+			'maxExtent' : new OpenLayers.Bounds(Ogam.map.x_min, Ogam.map.y_min, Ogam.map.x_max, Ogam.map.y_max),
 			/*'eventListeners' : {// Hide the legend if needed
 				"changelayer" : function(o) {
 					if (o.property === 'visibility') {
@@ -238,7 +228,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 				scope : this
 			}*/
 		});
-		
+
 		// Define the vector layer, used to draw polygons
 		this.vectorLayer = new OpenLayers.Layer.Vector("Vector Layer", {
 			printable : false, // This layers is never printed
@@ -256,11 +246,12 @@ Ext.define('Ogam.view.map.MapPanel', {
 		// Set the minimum mandatory layer for the map
 		// 
 		this.setMapLayers(map);
+
 		//
 		// Add the controls
 		//
 		map.addControl(new OpenLayers.Control.Navigation());
-
+/*
 		// Mouse position
 		map.addControl(new OpenLayers.Control.MousePosition({
 			prefix : 'X: ',
@@ -269,7 +260,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 			numDigits : 0,
 			title : 'MousePosition'
 		}));
-
+*/
 		// Scale
 		map.addControl(new OpenLayers.Control.Scale());
 		map.addControl(new OpenLayers.Control.ScaleLine({
@@ -280,8 +271,8 @@ Ext.define('Ogam.view.map.MapPanel', {
 		
 
 		// Zoom the map to the user country level
-		//map.setCenter(new OpenLayers.LonLat(2.5,47), 4);
-
+		map.setCenter(new OpenLayers.LonLat(Ogam.map.x_center, Ogam.map.y_center), Ogam.map.defaultzoom);
+/*
 		// For the GEOM criteria
 		// TODO : Split this in another file
 		if (this.isDrawingMap) {
@@ -321,7 +312,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 			map.addControl(selectControl);
 			selectControl.activate();
 		}
-
+*/
 		return map;
 	}
 });

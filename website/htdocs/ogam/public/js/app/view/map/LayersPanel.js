@@ -13,8 +13,7 @@ Ext.define('Ogam.view.map.LayersPanel', {
 		}]
 	},
 	initComponent: function(){
-		layersStore = Ext.getCmp('mappanel').layers;
-		console.log(Ext.getCmp('mappanel'));
+		//layersStore = Ext.getCmp('mappanel').layers;
 		this.store = Ext.create('Ext.data.TreeStore',{
 			model: 'GeoExt.data.LayerTreeModel',
 			root: {
@@ -22,7 +21,7 @@ Ext.define('Ogam.view.map.LayersPanel', {
 				children: [{
 					plugins: [{
 						ptype: 'gx_layercontainer',
-						store: layersStore
+						//store: layersStore
 					}],
 					expanded: true
 				}]
