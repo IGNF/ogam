@@ -1,0 +1,31 @@
+/**
+ * This class is the ViewModel for the advanced request view.
+ * 
+ * TODO: Refactor this code for the next version
+ * @deprecated
+ */
+Ext.define('OgamDesktop.view.request.AdvancedRequestModel', {
+    extend: 'Ext.app.ViewModel',
+
+    // This enables "viewModel: { type: 'advancedrequest' }" in the view:
+    alias: 'viewmodel.advancedrequest',
+
+    data: {
+    	/**
+         * @property {OgamDesktop.model.Process} currentProcess The current selected process
+         */
+    	currentProcess:null
+    },
+
+    stores: {
+    	/**
+         * @property {Ext.data.JsonStore} processStore The process store
+         */
+        processStore: {
+        	storeId:'processStore', // Required by the ViewController for listening
+    		extend: 'Ext.data.JsonStore',
+    		autoLoad : true,
+    		model: 'OgamDesktop.model.Process'
+    	}
+    }
+});
