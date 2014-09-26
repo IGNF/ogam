@@ -71,7 +71,6 @@ Ext.define('GeoExt.tree.View', {
      */
     onNodeRendered: function(node) {
         var me = this;
-
         var el = Ext.get('tree-record-'+node.id);
         if(!el) {
             return;

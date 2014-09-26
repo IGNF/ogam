@@ -8,6 +8,7 @@ Ext.application({
 	],
 
 	stores: [
+		'map.LayerTreeNodes'
 	],
 	
 	launch : function() {

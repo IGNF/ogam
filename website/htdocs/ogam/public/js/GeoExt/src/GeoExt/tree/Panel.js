@@ -31,7 +31,6 @@ Ext.define('GeoExt.tree.Panel', {
     
     initComponent: function() {
         var me = this;
-
         if (!me.columns) {
             if (me.initialConfig.hideHeaders === undefined) {
                 me.hideHeaders = true;
@@ -52,6 +51,7 @@ Ext.define('GeoExt.tree.Panel', {
 		});
 
         me.callParent();
+        me.id = me.getId().replace(/\./g,'-');
     },
     onCheckChange: function(node,checked) {
         if(checked != node.get('layer').getVisibility()) {

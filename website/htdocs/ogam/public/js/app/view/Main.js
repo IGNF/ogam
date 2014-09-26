@@ -1,9 +1,19 @@
 /**
- * The Main includes the module panels of Ogam.
+ * This class is the main view for the application. It is specified in app.js as the
+ * "autoCreateViewport" property. That setting automatically applies the "viewport"
+ * plugin to promote that instance of this class to the body element.
+ *
+ * TODO - Replace this content of this view to suite the needs of your application.
  */
 Ext.define('Ogam.view.Main', {
-	extend: 'Ext.tab.Panel',
+	//extend: 'Ext.container.Container',
+
+    xtype: 'app-main',
+
+    extend: 'Ext.tab.Panel',
 	renderTo: Ext.get('content'),
+//	width:800,
+//	height:600,
 	width: Ext.getBody().getViewSize().width - 80,
 	height: Ext.getBody().getViewSize().height - 160,
 	activeTab: 1,

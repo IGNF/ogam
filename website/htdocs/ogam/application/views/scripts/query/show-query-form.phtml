@@ -22,6 +22,7 @@
 <link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/extjs/build/packages/ext-theme-gray/build/resources/ext-theme-gray-all-debug.css') ?>" />
 <script type="text/javascript" src="<?= $this->baseUrl('js/extjs/build/ext-all-debug.js') ?>"></script>
 <link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/GeoExt/resources/css/tree-gray.css') ?>" />
+<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('js/app/resources/css/genapp.pack-min.css') ?>" />
 
 <script type="text/javascript">
 	Ext.namespace('Ogam');
@@ -30,6 +31,7 @@
 </script>
 <script type="text/javascript">
 	Ext.Loader.setConfig({
+		disableCaching: true,
 		enabled: true,
 		paths: {
 			'GeoExt': '<?= $this->baseUrl('js/GeoExt/src/GeoExt') ?>'
@@ -38,14 +40,18 @@
 </script>
 <script type="text/javascript" src="<?= $this->baseUrl('map/get-map-parameters') ?>" ></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.debug.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/model/map/LayerTreeNode.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/model/map/Layer.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/store/request/PredefinedGroup.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/store/map/LayerTreeNodes.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/store/map/Layer.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/abstract/Win.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/interface/MapPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/interface/LayersPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapAddonsPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/LegendsPanel.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/LayersPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MapPanel.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/LayersPanel.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/map/MainWin.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/MainWin.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/result/MainWin.js') ?>"></script>
@@ -56,7 +62,6 @@
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/controller/request/DeprecatedForm.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/navigation/DeprecatedDetailGrid.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/request/DeprecatedAdvancedRequestWin.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/app/store/map/LayerNode.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/view/Main.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/Application.js') ?>"></script>
 

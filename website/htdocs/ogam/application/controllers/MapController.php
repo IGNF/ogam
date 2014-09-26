@@ -393,7 +393,249 @@ class MapController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 		
 	}
-
+	
+	/**
+	 * Return the calculated model corresponding to the complete layers tree.
+	 */
+	public function ajaxgettreelayerslistAction() {
+	
+		$this->logger->debug('ajaxgettreelayerslistAction');
+	
+		// Get back the country code
+		$userSession = new Zend_Session_Namespace('user');
+		$providerId = $userSession->user->providerId;
+		$this->logger->debug('providerId : '.$providerId);
+	
+		$layers = $this->layersModel->getLayersList($providerId);
+		$nodes = $this->layersModel->getLegend(-1, $providerId);
+		
+		$json = "";
+		
+		foreach ($nodes as $node) {
+			$json .= '{';
+			$json .= '"text": "'.$node->label.'", ';
+			
+			$json .= '"expanded": ';
+			if ($node->isExpended) {
+				$json .= 'true, ';
+			} else {
+				$json .= 'false, ';
+			}
+			$json .= '"checked": ';
+			if ($node->isChecked) {
+				$json .= 'true, ';
+			} else {
+				$json .= 'false, ';
+			}
+			$json .= '"hidden": ';
+			if ($node->isHidden && !in_array($node->layerName, $activatedLayers)) {
+				$json .= 'true, ';
+			} else {
+				$json .= 'false, ';
+			}
+			
+			$json .= '"disabled": ';
+			if ($node->isDisabled) {
+				$json .= 'true, ';
+			} else {
+				$json .= 'false, ';
+			}
+			
+			// The item is a leaf
+			if ($node->isLayer) {
+				$json .= '"leaf": true, ';
+				$json .= '"nodeType" : "gx_layer", '; // TODO : Do this on the js side
+				$json .= '"layer": "'.$node->layerName.'", ';
+			} else {
+				// The item is a node
+				$json .= '"leaf": false, ';
+				$json .= '"nodeType" : "gx_layercontainer", '; // TODO : Do this on the js side
+				$json .= '"nodeGroup": "'.$node->itemId.'", ';
+			}
+			$children = array();
+			foreach ($layers as $layer) {
+				if ($layer->parentId == $node->itemId) {
+					$children[] = $layer;
+				}
+			}
+			if ($children) {
+				$json .= $this->addChildrenToNode($children);
+			} else {
+				$json = substr($json, 0, -2);
+			}
+			$json .= "}, ";
+		}
+		
+		$json = substr($json, 0, -2);
+		echo "[".$json."]";
+	
+		// No View, we send directly the javascript
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	
+	}
+	
+	public function addChildrenToNode($children) {
+		$json = '"children": [';
+		foreach ($children as $child) {
+			$json .= '{"text": "'.$child->layerLabel.'", ';
+			$json .= '"checked": ';
+			if ($child->isChecked) {
+				$json .= 'true, ';
+			} else {
+				$json .= 'false, ';
+			}
+			$json .= '"leaf": true, ';
+			
+			
+			
+			
+			// OpenLayer object (tiled or not)
+			if ($child->isUntiled) {
+				$json .= '"singleTile":true';
+			} else {
+				$json .= '"singleTile":false';
+			}
+			
+			// Logical layer name
+			$json .= ', "name":"'.$child->layerName.'"';
+			
+			// View Service name
+			$json .= ', "viewServiceName":"'.$child->viewServiceName.'"';
+				
+			// Feature Service name
+			$json .= ', "featureServiceName":"'.$child->featureServiceName.'"';
+				
+			// Legend Service Name
+			$json .= ', "legendServiceName":"'.$child->legendServiceName.'"';
+				
+			// Feature Info Service Name
+			$json .= ', "featureInfoServiceName":"'.$child->featureInfoServiceName.'"';
+				
+			$json .= ', "params":{';
+				
+			
+			// Server Layer name (or list of names)
+			$childNames = $child->serviceLayerName;
+			$json .= '"layers" : ["'.$childNames.'"]';
+			
+			// Transparency
+			if ($child->isTransparent) {
+				$json .= ', "transparent": true';
+			} else {
+				$json .= ', "transparent": false';
+			}
+			
+			//  Image Format
+			$json .= ', "format": "image/'.$child->imageFormat.'"';
+			
+			// Hidden ?
+			if ($child->isHidden) {
+				$json .= ', "isHidden": true';
+			} else {
+				$json .= ', "isHidden": false';
+			}
+			
+			// Disabled ?
+			if ($child->isDisabled) {
+				$json .= ', "isDisabled": true';
+			} else {
+				$json .= ', "isDisabled": false';
+			}
+			
+			// Checked ?
+			if ($child->isChecked) {
+				$json .= ', "isChecked": true';
+			} else {
+				$json .= ', "isChecked": false';
+			}
+			
+			$json .= ', "activateType": "'.$child->activateType.'"';
+			
+			// We will test this flag to know if we need to generate a SLD
+			if ($child->hasSLD) {
+				$json .= ', "hasSLD": true';
+			} else {
+				$json .= ', "hasSLD": false';
+			}
+			
+			// Add the sessionid
+			$json .= ', "session_id": "'.$sessionId.'"';
+			
+			// Add the country code
+			$json .= ', "provider_id": "'.$providerId.'"';
+			
+			$json .= '}';
+			
+			// Options
+			$json .= ', "options":{"buffer": 0';
+			
+			// Node Group
+			if (!empty($child->parentId)) {
+				$json .= ', "nodeGroup": "'.$child->parentId.'"';
+			}
+			
+			// Checked Group
+			if (!empty($child->checkedGroup)) {
+				$json .= ', "checkedGroup": "'.$child->checkedGroup.'"';
+			}
+			
+			// Transition effect
+			if (!empty($child->transitionEffect)) {
+				$json .= ', "transitionEffect": "'.$child->transitionEffect.'"';
+			}
+			
+			// Layer visibility by default
+			if ($child->isDefault) {
+				$json .= ', "visibility": true';
+			} else {
+				$json .= ', "visibility": false';
+			}
+			
+			// Is a Base Layer ?
+			if ($child->isBaseLayer) {
+				$json .= ', "isBaseLayer": true';
+			} else {
+				$json .= ', "isBaseLayer": false';
+			}
+				
+			// Default Opacity
+			if ($child->defaultOpacity >= 0 && $child->defaultOpacity <= 100 && $child->defaultOpacity <> NULL) {
+				$defaultOpacity = $child->defaultOpacity / 100;
+				$json .= ', "opacity": "'.$defaultOpacity.'"';
+			} else {
+				$json .= ', "opacity": 1';
+			}
+			
+			// Label
+			$json .= ',"label":"'.addslashes($child->layerLabel).'"';
+			
+			// Scale min/max management
+			if ($child->maxscale != "" || $child->minscale != "") {
+				$json .= ', "resolutions": [';
+			
+				$restable = "";
+				foreach ($scales as $scale) {
+					if (($child->minscale == "" || $scale >= $child->minscale) && ($child->maxscale == "" || $scale <= $child->maxscale)) {
+						$restable .= $resolutions[$scale].", ";
+					}
+				}
+				$restable = substr($restable, 0, -2);
+				$json .= $restable;
+			
+				$json .= "]";
+			}
+			
+			$json .= "}}, ";
+			
+		}
+		
+		$json = substr($json, 0, -2);
+		$json .= "]";
+		return $json;
+	}
+	
 	/**
 	 * Return the model corresponding to the legend.
 	 */
@@ -407,7 +649,7 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('providerId : '.$providerId);
 
 		$item = $this->_getLegendItems(-1, $providerId);
-
+		
 		echo "[".$item."]";
 
 		// No View, we send directly the javascript

@@ -3,9 +3,9 @@ Ext.define('Ogam.view.map.MapAddonsPanel', {
 	xtype: 'map-addons-panel',
 	title: 'Layers & Legends',
 	collapsible: true,
-	collapsed: true,
+	collapsed: false,
 	collapseDirection: 'right',
-	width: 200,
+	width: 170,
 	defaults: {
 		closable: false
 	},
@@ -16,6 +16,10 @@ Ext.define('Ogam.view.map.MapAddonsPanel', {
 			xtype: 'layers-panel'
 		}]
 	},{
-		xtype: 'legends-panel'
+		xtype: 'container',
+		title: 'Legends',
+		items: [{
+			xtype: 'legends-panel'
+		}]
 	}]
 });

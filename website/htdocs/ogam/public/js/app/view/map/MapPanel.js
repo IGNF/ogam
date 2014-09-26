@@ -1,48 +1,71 @@
 Ext.define('Ogam.view.map.MapPanel', {
 	extend: 'GeoExt.panel.Map',
-	requires: ['GeoExt.tree.LayerContainer'],
+	requires: ['GeoExt.tree.LayerContainer','GeoExt.Action'],
 	id: 'mappanel',
 	//mixins: ['Ogam.view.interface.MapPanel'],
-    layersList: [],
+	
+	
+	/**
+	 * Internationalization.
+	 */
+	title : 'Map',
+	popupTitle : 'Feature information',
+	tabTip : 'The map with the request\'s results\'s location',
+	layerPanelTitle : "Layers",
+	layerPanelTabTip : "The layers's tree",
+	legendPanelTitle : "Legends",
+	legendPanelTabTip : "The layers's legends",
+	panZoomBarControlTitle : "Zoom",
+	navigationControlTitle : "Drag the map",
+	invalidWKTMsg : "The feature cannot be displayed",
+	zoomToFeaturesControlTitle : "Zoom to the features",
+	zoomToResultControlTitle : "Zoom to the results",
+	drawPointControlTitle : "Draw a point",
+	drawLineControlTitle : "Draw a line",
+	drawFeatureControlTitle : "Draw a polygon",
+	modifyFeatureControlTitle : "Update the feature",
+	tbarDeleteFeatureButtonTooltip : "Delete the feature",
+	tbarPreviousButtonTooltip : "Previous Position",
+	tbarNextButtonTooltip : "Next Position",
+	zoomBoxInControlTitle : "Zoom in",
+	zoomBoxOutControlTitle : "Zoom out",
+	zoomToMaxExtentControlTitle : "Zoom to max extend",
+	locationInfoControlTitle : "Get information about the result location",
+	selectFeatureControlTitle : "Select a feature from the selected layer",
+	featureInfoControlTitle : "Get information about the selected layer",
+	legalMentionsLinkText : "Legal Mentions",
+	addGeomCriteriaButtonText : "Select an area",
+	
+	
+	layersList: [],
 	minZoomLevel : 0,
 	xtype: 'map-panel',
-    width:'100%',
-    height:'100%',
-	tbar: [{
-		xtype: 'tbspacer',
-		flex: 1
-	},{
-		type: 'button', text: 'i'
-	},{
-		type: 'button', text: 'sl'
-	},'-',{
-		type: 'button', text: 'p'
-	},{
-		type: 'button', text: 'n'
-	},{
-		type: 'button', text: 'i'
-	},{
-		type: 'button', text: 'zi'
-	},{
-		type: 'button', text: 'zo'
-	},{
-		type: 'button', text: 'dm'
-	},'-',{
-		type: 'button', text: 'zr'
-	},{
-		type: 'button', text: 'me'
-	}],
+	width:'100%',
+	height:'100%',
+	
 	initComponent: function(){
 	    //this.map = new OpenLayers.Map("map",{allOverlays: false});
 
 		// Creates the map Object (OpenLayers)
 		this.map = this.initMap();
-		
+
+		this.tbar = Ext.create('Ext.toolbar.Toolbar'),
+		// Gets the layer tree model to initialise the Layer
+		// Tree
+		Ext.Ajax.request({
+			url : Ogam.base_url + 'map/ajaxgettreelayerslist',
+			success : this.initLayerTree,
+			scope : this
+		});
 		Ext.Ajax.request({
 			url : Ogam.base_url + 'map/ajaxgetlayers',
 			scope : this,
 			success :this.addLayersAndLayersTree
 		});
+		
+
+		// Init the toolbar
+		this.initToolbar();
 		this.callParent(arguments);
 		
 	},
@@ -89,53 +112,8 @@ Ext.define('Ogam.view.map.MapPanel', {
 			}
 		}
 		
-		// Define the WFS layer, used as a grid for snapping
-		/*if (!this.hideLayerSelector) {
-			
-			// Openlayers have to pass through a proxy to request external 
-			// server
-			OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
-			
-			// Set the style
-			var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
-				fillOpacity : 0,
-				strokeColor : "green",
-				strokeWidth : 3,
-				strokeOpacity : 1
-			}, OpenLayers.Feature.Vector.style["default"]));
-			this.wfsLayer = new OpenLayers.Layer.Vector("WFS Layer", 
-				{
-					strategies:[new OpenLayers.Strategy.BBOX()],
-					protocol: new OpenLayers.Protocol.HTTP({
-						url: null,
-						params:
-						{
-							typename: null,
-							service: "WFS",
-							format: "WFS",
-							version: "1.0.0",
-							request: "GetFeature",
-							srs: Ogam.map.projection
-						}, 
-						format: new OpenLayers.Format.GML({extractAttributes: true})
-					})									
-				});
-			this.wfsLayer.printable = false;
-			this.wfsLayer.displayInLayerSwitcher = false;
-			this.wfsLayer.extractAttributes = false;
-			this.wfsLayer.styleMap = styleMap;
-			this.wfsLayer.visibility = false;
-			
-		}*/
 		this.setMapLayers(this.map);
-		
-		// Gets the layer tree model to initialise the Layer
-		// Tree
-		Ext.Ajax.request({
-			url : Ogam.base_url + 'map/ajaxgettreelayers',
-			success : this.initLayerTree,
-			scope : this
-		});
+
 	},
 	
 	/**
@@ -183,14 +161,6 @@ Ext.define('Ogam.view.map.MapPanel', {
 		for ( var i = 0; i < this.layersList.length; i++) {
 			map.addLayer(this.layersList[i]);
 		}
-		// Add the WFS layer
-		/*if (!this.hideLayerSelector && this.wfsLayer !== null) {
-			map.addLayers(this.wfsLayer);
-			this.snappingControl.addTargetLayer(this.wfsLayer);
-		}*/
-
-		// Add the vector layer
-		//map.addLayer(this.vectorLayer);
 
 	},
 	
@@ -251,7 +221,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 		// Add the controls
 		//
 		map.addControl(new OpenLayers.Control.Navigation());
-/*
+
 		// Mouse position
 		map.addControl(new OpenLayers.Control.MousePosition({
 			prefix : 'X: ',
@@ -260,7 +230,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 			numDigits : 0,
 			title : 'MousePosition'
 		}));
-*/
+
 		// Scale
 		map.addControl(new OpenLayers.Control.Scale());
 		map.addControl(new OpenLayers.Control.ScaleLine({
@@ -268,51 +238,386 @@ Ext.define('Ogam.view.map.MapPanel', {
 			bottomOutUnits : '',
 			bottomInUnits : ''
 		}));
-		
 
 		// Zoom the map to the user country level
 		map.setCenter(new OpenLayers.LonLat(Ogam.map.x_center, Ogam.map.y_center), Ogam.map.defaultzoom);
-/*
-		// For the GEOM criteria
-		// TODO : Split this in another file
-		if (this.isDrawingMap) {
-			if (!Ext.isEmpty(this.maxFeatures)) {
-				this.vectorLayer.preFeatureInsert = function(feature) {
-					if (this.features.length > this.maxFeatures) {
-						// remove first drawn feature:
-						this.removeFeatures([ this.features[0] ]);
-					}
-				};
-			}
 
-			var sfDraw = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
-				multiple : false,
-				clickout : true,
-				toggle : true,
-				title : this.selectFeatureControlTitle
-			});
-			map.addControl(sfDraw);
-			sfDraw.activate();
-
-			if (this.featureWKT) {
-				// display it with WKT format reader.
-				var feature = this.wktFormat.read(this.featureWKT);
-				if (feature) {
-					this.vectorLayer.addFeatures([ feature ]);
-				} else {
-					alert(this.invalidWKTMsg);
-				}
-			}
-		} else {
-			// Add a control that display a tooltip on the
-			// features
-			var selectControl = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
-				hover : true
-			});
-			map.addControl(selectControl);
-			selectControl.activate();
-		}
-*/
 		return map;
-	}
+	},
+	
+	/**
+	 * Initialize the layer tree.
+	 */
+	initLayerTree : function(response) {
+
+		// Decode the JSON
+		var responseJSON = Ext.decode(response.responseText);
+		// Add a Tree Panel
+		this.layerTree = Ext.create('Ogam.view.map.LayersPanel',{
+			rootChildren : responseJSON,
+			map : this.map
+		});
+	},
+	
+	/**
+	 * Initialize the map toolbar
+	 * 
+	 * @hide
+	 */
+	initToolbar : function() {
+
+		// Link the toolbar to the map
+		this.tbar.map = this.map;
+		
+		//
+		// Drawing tools
+		//
+		if (this.isDrawingMap) {
+			// Zoom to features button
+//			this.zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
+//				map : this.map,
+//				maxZoomLevel : 9,
+//				ratio : 1.05,
+//				autoActivate : false
+			// otherwise will
+			// desactivate after
+			// first init
+//			});
+			var zoomToFeatureButton = new GeoExt.Action({
+				control : this.zoomToFeatureControl,
+				iconCls : 'zoomstations',
+				tooltip : this.zoomToFeaturesControlTitle
+			});
+			this.tbar.add(new Ext.button.Button(zoomToFeatureButton));
+
+			// Draw point button
+			if (!this.hideDrawPointButton) {
+				var drawPointControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point);
+
+				var drawPointButton = new GeoExt.Action({
+					control : drawPointControl,
+					map : this.map,
+					tooltip : this.drawPointControlTitle,
+					toggleGroup : "editing",
+					group : "drawControl",
+					checked : false,
+					iconCls : 'drawpoint'
+				});
+				this.tbar.add(new Ext.button.Button(drawPointButton));
+			}
+
+			// Draw line button
+			if (!this.hideDrawLineButton) {
+				var drawLineControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path);
+
+				var drawLineButton = new GeoExt.Action({
+					control : drawLineControl,
+					map : this.map,
+					tooltip : this.drawLineControlTitle,
+					toggleGroup : "editing",
+					group : "drawControl",
+					checked : false,
+					iconCls : 'drawline'
+				});
+				this.tbar.add(new Ext.button.Button(drawLineButton));
+			}
+
+			// Draw polygon button
+			var drawPolygonControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Polygon);
+
+			var drawPolygonButton = new GeoExt.Action({
+				control : drawPolygonControl,
+				map : this.map,
+				tooltip : this.drawFeatureControlTitle,
+				toggleGroup : "drawControl",
+				toggleGroup : "editing",
+				checked : false,
+				iconCls : 'drawpolygon'
+			});
+			this.tbar.add(new Ext.button.Button(drawPolygonButton));
+
+			// Modify feature
+			var modifyFeatureControl = new OpenLayers.Control.ModifyFeature(this.vectorLayer, {
+				mode : OpenLayers.Control.ModifyFeature.RESHAPE
+			});
+
+			var modifyFeatureButton = new GeoExt.Action({
+				control : modifyFeatureControl,
+				map : this.map,
+				tooltip : this.modifyFeatureControlTitle,
+				toggleGroup : "editing",
+				group : "drawControl",
+				checked : false,
+				iconCls : 'modifyfeature'
+			});
+			this.tbar.add(new Ext.button.Button(modifyFeatureButton));
+
+			// Delete feature
+			var deleteFeatureControl = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
+				displayClass : 'olControlModifyFeature',
+				onSelect : function(feature) {
+					this.vectorLayer.destroyFeatures([ feature ]);
+				},
+				scope : this,
+				type : OpenLayers.Control.TYPE_TOOL
+			});
+
+			var deleteFeatureButton = new GeoExt.Action({
+				control : deleteFeatureControl,
+				map : this.map,
+				tooltip : this.tbarDeleteFeatureButtonTooltip,
+				toggleGroup : "editing",
+				group : "drawControl",
+				checked : false,
+				iconCls : 'deletefeature'
+			});
+			this.tbar.add(new Ext.button.Button(deleteFeatureButton));
+
+			// Separator
+			this.tbar.add('-');
+
+		} else {
+			if (!this.hideGeomCriteriaToolbarButton) {
+				// Add geom criteria tool
+				var addGeomCriteriaButton = new Ext.button.Button({
+                    text : this.addGeomCriteriaButtonText,
+                    iconCls : 'addgeomcriteria',
+                    handler : function(){
+                        this.fireEvent('addgeomcriteria');
+                    },
+                    scope:this
+                });
+                this.tbar.add(addGeomCriteriaButton);
+			}
+		}
+		
+		this.tbar.add(new Ext.toolbar.Spacer({flex: 1}))
+		
+		//
+		// Layer Based Tools
+		//
+		
+
+		// Layer selector
+		this.layerSelector = {
+			xtype : 'layerselector',
+			geoPanelId : this.id
+		};
+
+		// Snapping tool
+		this.snappingControl = new OpenLayers.Control.Snapping({
+			layer : this.vectorLayer,
+			targets : [ this.vectorLayer ],
+			greedy : false
+		});
+		var snappingButton = new GeoExt.Action({
+			control : this.snappingControl,
+			map : this.map,
+			tooltip : 'Snapping',
+			toggleGroup : "snapping",  // his own independant group
+			group : "LayerTools",
+			checked : false,
+			iconCls : 'snapping'
+		});
+		// Listen for the layer selector events
+		//Ogam.eventManager.on('selectLayer', this.layerSelected, this);
+		// Get Feature tool
+//		this.getFeatureControl = new OpenLayers.Control.GetFeatureControl({
+//			map : this.map
+//		});
+		var getFeatureButton = new GeoExt.Action({
+			control : this.getFeatureControl,
+			map : this.map,
+			tooltip : this.selectFeatureControlTitle,
+			toggleGroup : "editing",
+			group : "LayerTools",
+			checked : false,
+			iconCls : 'selectFeature'
+		});
+
+		// Listen the get feature tool events
+		//Ogam.eventManager.on('getFeature', this.getFeature, this);
+		// Feature Info Tool
+//		this.featureInfoControl = new OpenLayers.Control.FeatureInfoControl({
+//			layerName : this.vectorLayer.name,
+//			map : this.map
+//		});
+
+		var featureInfoButton = new GeoExt.Action({
+			control : this.featureInfoControl,
+			map : this.map,
+			toggleGroup : "editing",
+			group : "LayerTools",
+			checked : false,
+			tooltip : this.featureInfoControlTitle,
+			iconCls : 'feature-info'
+		});
+		if (!this.hideSnappingButton) {
+			this.tbar.add(new Ext.button.Button(snappingButton));
+		}
+		
+		if (!this.hideGetFeatureButton) {
+			this.tbar.add(new Ext.button.Button(getFeatureButton));
+		}
+		
+		if (!this.hideFeatureInfoButton) {
+			this.tbar.add(new Ext.button.Button(featureInfoButton));
+		}
+		this.tbar.add(new Ext.form.field.ComboBox({emptyText:'Choisir une couche'}));
+
+		
+		this.tbar.add('-');
+		
+		//
+		// Navigation history : back and next
+		//
+		var historyControl = new OpenLayers.Control.NavigationHistory({});
+		this.map.addControl(historyControl);
+		historyControl.activate();
+
+		var buttonPrevious = new Ext.button.Button({
+			iconCls : 'back',
+			tooltip : this.tbarPreviousButtonTooltip,
+			disabled : true,
+			handler : historyControl.previous.trigger
+		});
+
+		var buttonNext = new Ext.button.Button({
+			iconCls : 'next',
+			tooltip : this.tbarNextButtonTooltip,
+			disabled : true,
+			handler : historyControl.next.trigger
+		});
+		this.tbar.add(buttonPrevious);
+		this.tbar.add(buttonNext);
+
+		historyControl.previous.events.register("activate", buttonPrevious, function() {
+			this.setDisabled(false);
+		});
+
+		historyControl.previous.events.register("deactivate", buttonPrevious, function() {
+			this.setDisabled(true);
+		});
+
+		historyControl.next.events.register("activate", buttonNext, function() {
+			this.setDisabled(false);
+		});
+
+		historyControl.next.events.register("deactivate", buttonNext, function() {
+			this.setDisabled(true);
+		});
+		
+
+		//
+		// Get info on the feature
+		//
+
+//		var locationInfoControl = new OpenLayers.Control.LocationInfoControl({
+//			layerName : Genapp.map.featureinfo_typename,
+//			geoPanelId : this.id
+//		});
+
+		var locationInfoButton = new GeoExt.Action({
+			//control : locationInfoControl,
+			map : this.map,
+			toggleGroup : "editing",
+			group : "navControl",
+			checked : false,
+			tooltip : this.locationInfoControlTitle,
+			iconCls : 'feature-info'
+		});
+		this.tbar.add(new Ext.button.Button(locationInfoButton));
+
+		
+		//
+		// Navigation controls
+		//
+
+		// Zoom In
+		var zoomInControl = new OpenLayers.Control.ZoomBox({
+			title : this.zoomBoxInControlTitle
+		});
+		
+		
+
+		var zoomInButton = new GeoExt.Action({
+			control : zoomInControl,
+			map : this.map,
+			tooltip : this.zoomBoxInControlTitle,
+			toggleGroup : "editing",
+			group : "navControl",
+			checked : false,
+			iconCls : 'zoomin'
+		});
+		this.tbar.add(new Ext.button.Button(zoomInButton));
+
+		// Zoom Out
+		var zoomOutControl = new OpenLayers.Control.ZoomBox({
+			out : true,
+			title : this.zoomBoxOutControlTitle
+		});
+
+		var zoomOutButton = new GeoExt.Action({
+			control : zoomOutControl,
+			map : this.map,
+			tooltip : this.zoomBoxOutControlTitle,
+			toggleGroup : "editing",
+			group : "navControl",
+			checked : false,
+			iconCls : 'zoomout'
+		});
+
+		this.tbar.add(new Ext.button.Button(zoomOutButton));
+
+		// Navigation
+		var navigationControl = new OpenLayers.Control.Navigation({
+			isDefault : true,
+			mouseWheelOptions : {
+				interval : 100
+			}
+		});
+
+		var navigationButton =new GeoExt.Action({
+			control : navigationControl,
+			map : this.map,
+			tooltip : this.navigationControlTitle,
+			toggleGroup : "editing",
+			group : "navControl",
+			checked : true,
+			iconCls : 'pan'
+		});
+
+		this.tbar.add(new Ext.button.Button(navigationButton));
+
+//		// Séparateur
+		this.tbar.add('-');
+//
+		// Zoom to the Results
+		var zoomToResultButton = new GeoExt.Action({
+			handler : this.zoomOnResultsBBox,
+			scope : this,
+			map : this.map,
+			tooltip : this.zoomToResultControlTitle,
+			checked : false,
+			iconCls : 'zoomstations'
+		});
+
+		this.tbar.add(new Ext.button.Button(zoomToResultButton));
+
+		// Zoom to max extend
+		var zoomToMaxControl = new OpenLayers.Control.ZoomToMaxExtent({
+			map : this.map,
+			active : false
+		});
+
+		var zoomToMaxButton = new GeoExt.Action({
+			control : zoomToMaxControl,
+			map : this.map,
+			tooltip : this.zoomToMaxExtentControlTitle,
+			checked : false,
+			iconCls : 'zoomfull'
+		});
+
+		this.tbar.add(new Ext.button.Button(zoomToMaxButton));
+	},
 });
