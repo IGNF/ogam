@@ -29,6 +29,8 @@
 	Ogam.base_url = "<?= $this->baseUrl('query/..'); ?>/";
 	Ogam.ajax_query_url = "<?= $this->baseUrl('query') ?>/";
 </script>
+
+<script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.debug.js') ?>"></script>
 <script type="text/javascript">
 	Ext.Loader.setConfig({
 		disableCaching: true,
@@ -38,8 +40,13 @@
 		}
 	});
 </script>
+
 <script type="text/javascript" src="<?= $this->baseUrl('map/get-map-parameters') ?>" ></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/OpenLayers/OpenLayers.debug.js') ?>"></script>
+
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/openlayers/FeatureInfoControl.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/openlayers/LocationInfoControl.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/openlayers/GetFeatureControl.js') ?>"></script>
+<script type="text/javascript" src="<?= $this->baseUrl('js/app/openlayers/ZoomToFeatures.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/model/map/LayerTreeNode.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/model/map/Layer.js') ?>"></script>
 <script type="text/javascript" src="<?= $this->baseUrl('js/app/store/request/PredefinedGroup.js') ?>"></script>
