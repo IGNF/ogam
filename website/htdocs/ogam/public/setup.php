@@ -34,4 +34,3 @@ if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/
 	$applicationIniFilePath = CUSTOM_APPLICATION_PATH.'/configs/application.ini';
 }
 $ApplicationConf = new Zend_Config_Ini($applicationIniFilePath, APPLICATION_ENV, array('allowModifications' => true));
-
