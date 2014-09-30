@@ -87,7 +87,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 					);
 				}
 			})
-		});
+		});		
 		
 		this.tbar = Ext.create('Ext.toolbar.Toolbar'),
 		// Gets the layer tree model to initialise the Layer
@@ -341,6 +341,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 		// Add a Tree Panel
 		this.layerTree = Ext.create('Ogam.view.map.LayersPanel',{
 			rootChildren : responseJSON,
+			cls : 'genapp-query-layer-tree-panel',
 			map : this.map
 		});
 	},
@@ -812,7 +813,8 @@ Ext.define('Ogam.view.map.MapPanel', {
 				// Hide the layer
 				this.wfsLayer.setVisibility(false);
 			}
-			
+
+			if (this.getFeatureControl !== null) {
 			for (var i = 0 ; i < this.layersList.length ; i++) {
 			if (this.layersList[i].name == layerName) {
 			this.info = new OpenLayers.Control.WMSGetFeatureInfo({
@@ -863,6 +865,7 @@ Ext.define('Ogam.view.map.MapPanel', {
 			this.info.activate();
 			break;
 			}
+		}
 		}
 //		}
 		
