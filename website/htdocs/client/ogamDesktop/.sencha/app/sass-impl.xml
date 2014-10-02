@@ -51,8 +51,7 @@
                     +append
                     -output=${app.out.scss.tmp}
                 and
-                restore
-                    page
+                ${sass.name.filter}
                 and
                 #only include rules from used classes
                 sass

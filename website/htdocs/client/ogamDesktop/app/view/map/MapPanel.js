@@ -273,7 +273,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			'units' : 'm',
 			'zoomMethos': null,
 			'tileSize' : new OpenLayers.Size(OgamDesktop.map.tilesize, OgamDesktop.map.tilesize),
-			'maxExtent' : new OpenLayers.Bounds(OgamDesktop.map.x_min, OgamDesktop.map.y_min, OgamDesktop.map.x_max, OgamDesktop.map.y_max),
+			'maxExtent' : new OpenLayers.Bounds(OgamDesktop.map.x_min, OgamDesktop.map.y_min, OgamDesktop.map.x_max, OgamDesktop.map.y_max)
 			/*'eventListeners' : {// Hide the legend if needed
 				"changelayer" : function(o) {
 					if (o.property === 'visibility') {
@@ -358,7 +358,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		//
 		// Drawing tools
 		//
-		if (this.isDrawingMap) {
+		if (!this.isDrawingMap) {
 			// Zoom to features button
 //			this.zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
 //				map : this.map,
@@ -462,7 +462,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			// Separator
 			this.tbar.add('-');
 
-		} else {
+		} //else {
 			if (!this.hideGeomCriteriaToolbarButton) {
 				// Add geom criteria tool
 				var addGeomCriteriaButton = new Ext.button.Button({
@@ -475,58 +475,13 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				});
 				this.tbar.add(addGeomCriteriaButton);
 			}
-		}
+		//}
 		
 		this.tbar.add(new Ext.toolbar.Spacer({flex: 1}))
 		
 		//
 		// Layer Based Tools
 		//
-		
-		// Layer selector
-		this.layerSelector = Ext.create('Ext.form.field.ComboBox',{
-			xtype : 'layerselector',
-			editable: false,
-			emptyText: this.LayerSelectorEmptyTextValue,
-			mode : 'remote',
-			triggerAction : 'all',
-			geoPanelId: this.id,
-			store : new Ext.data.Store({
-				autoLoad : true,
-				proxy: {
-					type: 'ajax',
-					url: Ext.manifest.OgamDesktop.requestServiceUrl + '../map/ajaxgetvectorlayers',
-					reader: {
-						type: 'json',
-						rootProperty: 'layerNames'
-					}
-				},
-				fields : [ {
-					name : 'code',
-					mapping : 'code',
-				}, {
-					name : 'label',
-					mapping : 'label'
-				}, {
-					name : 'url',
-					mapping : 'url'
-				}, {
-					name : 'url_wms',
-					mapping : 'url_wms'
-				}]
-			}),
-//			listeners : {
-//				select: this.layerSelected,
-//				select : function(combo, value) {
-//					// Forward the event to the button
-//					this.fireEvent('selectLayer', value, this.geoPanelId);
-//				},
-//				scope : this
-//			},
-
-			valueField : 'code',
-			displayField : 'label'
-		});
 		
 		// Snapping tool
 		this.snappingControl = new OpenLayers.Control.Snapping({
@@ -543,8 +498,10 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			checked : false,
 			iconCls : 'snapping'
 		});
-		// Listen for the layer selector events
-		this.layerSelector.on('select', this.layerSelected, this);
+		if (!this.hideSnappingButton) {
+			this.tbar.add(new Ext.button.Button(snappingButton));
+		}
+		
 		// Get Feature tool
 		this.getFeatureControl = new OpenLayers.Control.GetFeatureControl({
 			map : this.map
@@ -560,8 +517,10 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		});
 		var getFeatureButtonButton = new Ext.button.Button(getFeatureButton);
 		getFeatureButtonButton.on('getFeature', this.getFeature, this);
-		// Listen the get feature tool events
-		//getFeatureButton.on('getFeature', this.getFeature, this);
+		if (!this.hideGetFeatureButton) {
+			this.tbar.add(getFeatureButtonButton);
+		}
+		
 		// Feature Info Tool
 		this.featureInfoControl = new OpenLayers.Control.FeatureInfoControl({
 			layerName : this.vectorLayer.name,
@@ -577,20 +536,50 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			tooltip : this.featureInfoControlTitle,
 			iconCls : 'feature-info'
 		});
-		if (!this.hideSnappingButton) {
-			this.tbar.add(new Ext.button.Button(snappingButton));
-		}
-		
-		if (!this.hideGetFeatureButton) {
-			this.tbar.add(getFeatureButtonButton);
-		}
-		
 		if (!this.hideFeatureInfoButton) {
 			this.tbar.add(new Ext.button.Button(featureInfoButton));
 		}
-		this.tbar.add(this.layerSelector);
-
 		
+		// Layer selector
+		this.layerSelector = Ext.create('Ext.form.field.ComboBox',{
+			xtype : 'layerselector',
+			editable: false,
+			emptyText: this.LayerSelectorEmptyTextValue,
+			//mode : 'remote',
+			triggerAction : 'all',
+			//geoPanelId: this.id,
+			store : new Ext.data.Store({
+				autoLoad : true,
+				proxy: {
+					type: 'ajax',
+					url: Ext.manifest.OgamDesktop.requestServiceUrl + '../map/ajaxgetvectorlayers',
+					reader: {
+						type: 'json',
+						rootProperty: 'layerNames'
+					}
+				},
+				fields : [ {
+					name : 'code',
+					mapping : 'code'
+				}, {
+					name : 'label',
+					mapping : 'label'
+				}, {
+					name : 'url',
+					mapping : 'url'
+				}, {
+					name : 'url_wms',
+					mapping : 'url_wms'
+				}]
+			}),
+			valueField : 'code',
+			displayField : 'label'
+		});
+		// Listen for the layer selector events
+		this.layerSelector.on('select', this.layerSelected, this);
+		this.tbar.add(this.layerSelector);
+		
+		// Add separator
 		this.tbar.add('-');
 		
 		//
@@ -885,5 +874,5 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			}
 		}
 
-	},
+	}
 });

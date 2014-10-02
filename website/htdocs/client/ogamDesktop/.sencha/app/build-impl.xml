@@ -237,8 +237,11 @@ this file in most cases.
     ===============================================================
     -->
     <import file="${basedir}/.sencha/app/watch-impl.xml"/>
+    <target name="-watch-init">
+        <property name="app.watch.enabled" value="true"/>
+    </target>
     <target name="watch"
-            depends="development,init"
+            depends="-watch-init,development,init"
             description="Starts Watch to keep your app ready for dev mode">
         <x-ant-call>
             <target name="-before-watch"/>

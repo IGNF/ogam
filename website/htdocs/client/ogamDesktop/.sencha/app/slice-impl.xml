@@ -105,10 +105,36 @@ Ext.Boot.loadSync([
     </target>
     
     <!-- Produces a bootstrap.js / bootstrap.json pair for ext 5 slicer pages -->
-    <target name="-generate-slicer-manifest" if="framework.isV5">
+    <target name="-generate-slicer-manifest" if="framework.isV5" depends="-detect-app-build-properties">
+        <local name="manifest.root.excludes"/>
+        <condition property="manifest.root.excludes" value="${app.bootstrap.manifest.exclude}">
+            <isset property="app.bootstrap.manifest.exclude"/>
+        </condition>
+        <property name="manifest.root.excludes" value=""/>
+
+        <if>
+            <x-is-true value="${app.has.js.sdk}"/>
+            <then>
+                <property name="manifest.bootstrap.js.exclude">
+                    exclude
+                    -tag=framework,package-sencha-core
+                </property>
+                <x-compile refid="${compiler.ref.id}">
+                    <![CDATA[
+                        restore
+                            page
+                        and
+                        ${manifest.bootstrap.js.exclude}
+                    ]]>
+                </x-compile>
+            </then>
+        </if>
+
         <x-compile refid="${compiler.ref.id}">
             <![CDATA[
                 slicer-manifest
+                    -exclude=${manifest.root.excludes}
+                    +ignoreDisabled
                     -basePath=${bootstrap.base.path}
                     -cssFile=${app.example.css.file}
                     -out=${bootstrap.example.json}
@@ -244,7 +270,7 @@ Ext.Boot.loadSync([
                                  to="${framework.dir}"
                                  property="framework.rel.path"/>
             
-            <copy toDir="${build.dir}/${framework.rel.path}">
+            <copy toDir="${build.out.base.path}/${framework.rel.path}">
                 <fileset dir="${framework.dir}" 
                          includes="src/ux/**/css/**/*"/>
             </copy>
