@@ -7,9 +7,10 @@ Ext.define('OgamDesktop.Application', {
     extend: 'Ext.app.Application',
     
     name: 'OgamDesktop',
-
+    
     stores: [
-        'map.LayerNode'
+        'map.LayerNode',
+        'map.Layer'
     ],
     
     launch: function () {

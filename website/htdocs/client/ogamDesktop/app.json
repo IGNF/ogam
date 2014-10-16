@@ -112,7 +112,7 @@
         {
             "path": "../../map/get-map-parameters"
         },{
-            "path": "${app.dir}/lib/OpenLayers/OpenLayers.js"
+            "path": "${app.dir}/lib/OpenLayers/OpenLayers.debug.js"
         },{
             "path": "app/ux/map/FeatureInfoControl.js"
         },{

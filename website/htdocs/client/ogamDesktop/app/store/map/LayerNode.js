@@ -1,14 +1,14 @@
 Ext.define('OgamDesktop.store.map.LayerNode',{
-	extend: 'Ext.data.TreeStore',
-	requires: 'GeoExt.tree.GroupLayerContainer',
-	model: 'OgamDesktop.model.map.LayerNode',
-	root: {
-		expanded: true,
-		children: [{
-			plugins: [{
-				ptype: 'gx_layercontainer'
-			}],
-			expanded: true
-		}]
-	}
+	extend: 'Ext.data.Store',
+//	id: 'layernode',
+//	model: 'OgamDesktop.model.map.LayerNode',
+//	proxy: {
+//		type: 'ajax',
+//		url : Ext.manifest.OgamDesktop.requestServiceUrl +'../map/ajaxgettreelayers',
+//		reader: {
+//			type: 'json',
+//			rootProperty: ''
+//		}
+//	},
+//	autoLoad: true
 });
