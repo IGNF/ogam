@@ -56,6 +56,7 @@ Ext.define('GeoExt.data.LayerTreeModel',{
     ],
     alias: 'model.gx_layertree',
     fields: [
+        {name: 'disabled', type:'bool', defaultValue:false},
         {name: 'text', type: 'string'},
         {name: 'plugins'},
         {name: 'layer'},
@@ -85,10 +86,12 @@ Ext.define('GeoExt.data.LayerTreeModel',{
         if (!me.isFirstInstance){
         }
         me.callParent(arguments);
-        me.set('id',me.getId().replace(/\./g,'-'));
+        if (me.getId()){
+            me.set('id',me.getId().replace(/\./g,'-'));
+        }
         
         window.setTimeout(function() {
-        	var layerStore = Ext.create('GeoExt.data.LayerStore');
+        	var ls = Ext.create('GeoExt.data.LayerStore');
             var plugins = me.get('plugins');
             if (plugins) {
                 var plugin, instance;
@@ -97,7 +100,7 @@ Ext.define('GeoExt.data.LayerTreeModel',{
                     instance = Ext.PluginMgr.create(Ext.isString(plugin) ? {
                         ptype: plugin
                     } : plugin);
-                    me.join(layerStore);
+                    me.join(ls);
                     instance.init(me);
                 }
             }

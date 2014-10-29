@@ -1,6 +1,7 @@
 Ext.define('OgamDesktop.view.map.MapAddonsPanel', {
 	extend: 'Ext.tab.Panel',
 	xtype: 'map-addons-panel',
+	id: 'mapaddonspanel',
 	title: 'Layers & Legends',
 	collapsible: true,
 	collapsed: false,

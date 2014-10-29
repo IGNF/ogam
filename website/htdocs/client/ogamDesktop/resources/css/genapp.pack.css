@@ -1,4 +1,9 @@
 /***** Form Panel Toolbars **********************************************************************************/
+.dvp-tree-node-disabled .x-tree-checkbox, .dvp-tree-node-disabled .x-tree-icon-leaf, .dvp-tree-node-disabled .x-tree-node-text {
+    -moz-opacity: 0.5;
+   opacity:.5;
+   filter: alpha(opacity=50);
+}
 
 /* genapp small toolbar Buttons */
 .genapp-tb-btn .x-btn-mc .x-btn-text{
@@ -350,7 +355,7 @@ ul.x-tab-strip li.genapp-query-center-panel-tab-strip-top-button{
 .x-tree .x-panel-body {
     background-color: transparent;
 }
-.genapp-query-layer-tree-panel .x-tree-node-icon {
+.genapp-query-layer-tree-panel .x-tree-icon {
     display:none;
 }
 /*************************************************************************************************/

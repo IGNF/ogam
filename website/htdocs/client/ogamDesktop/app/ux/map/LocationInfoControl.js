@@ -144,8 +144,7 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 		var ll = this.map.getLonLatFromPixel(px);
 
 		// Construction d'une URL pour faire une requête WFS sur le point
-		var url = Ext.manifest.OgamDesktop.requestServiceUrl + "../query/ajaxgetlocationinfo?LON="+ll.lon+"&LAT="+ll.lat;
-
+		var url = Ext.manifest.OgamDesktop.requestServiceUrl + "ajaxgetlocationinfo?LON="+ll.lon+"&LAT="+ll.lat;
 		if (OgamDesktop.map.featureinfo_maxfeatures !== 0) {
 			url = url + "&MAXFEATURES=" + OgamDesktop.map.featureinfo_maxfeatures;
 		}

@@ -2,7 +2,11 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	extend: 'GeoExt.panel.Map',
 	requires: [
 		'GeoExt.tree.LayerContainer',
-		'GeoExt.Action'
+		'GeoExt.Action',
+		'GeoExt.slider.Zoom',
+		'GeoExt.slider.Tip',
+		'OgamDesktop.view.map.LayersPanel',
+		'OgamDesktop.view.map.LegendsPanel'
 	],
 	id: 'mappanel',
 	//mixins: ['OgamDesktop.view.interface.MapPanel'],
@@ -128,17 +132,15 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		Ext.Ajax.request({
 			url : Ext.manifest.OgamDesktop.requestServiceUrl +'../map/ajaxgetlayers',
 			scope : this,
-//			async: false,
 			success :this.addLayersAndLayersTree
 		});
-
 		// Init the toolbar
 		this.initToolbar();
 		this.callParent(arguments);
 
-		//this.legend = Ext.getCmp('legendspanel');
 		// Add the zoom slider to the items
 		this.add(zoomSlider);
+		
 	},
 	
 	addLayersAndLayersTree : function(response) {
@@ -171,21 +173,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				this.layersActivation[activateType].push(layerObject.name);
 			}
 
-//			this.layerTree = Ext.getCmp('layerspanel');
-			// Toggle layers and legends for zoom
-//			this.layerTree.on('afterrender', function(treePanel) {
-//
-//				this.layerTree.eachLayerChild(function(child) {
-//					if (child.attributes.disabled === true) {
-//						child.forceDisable = true;
-//					} else {
-//						child.forceDisable = false;
-//					}
-//				});
-//				for ( var i = 0; i < this.map.layers.length; i++) {
-//					this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
-//				}
-//			}, this);
 			// Create the legends
 			if (layerObject.legendServiceName != '') {
 
@@ -235,6 +222,13 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		this.wfsLayer.visibility = false;
 		this.setMapLayers(this.map);
 
+		// Gets the layer tree model to initialise the Layer
+		// Tree
+		Ext.Ajax.request({
+			url : Ext.manifest.OgamDesktop.requestServiceUrl +'../map/ajaxgettreelayers',
+			success : this.initLayerTree,
+			scope : this
+		});
 	},
 	
 	/**
@@ -253,10 +247,73 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			map.addLayer(this.wfsLayer);
 			this.snappingControl.addTargetLayer(this.wfsLayer);
 		}
+	},
+	
+	initLayerTree: function(response) {
+		rootChildren = Ext.decode(response.responseText);
+		// initialize the Tree store based on the map layers
+		layerStore = Ext.create('Ext.data.TreeStore', {
+			model: 'GeoExt.data.LayerTreeModel',
+			root: {},
+			
+		});
+		// for each node, we create a store which is a selection of the map layers store
+		for (i in rootChildren) {
+			storeSelection = Ext.create('GeoExt.data.LayerStore');
+			var rootChild = {};
+			this.layers.each(function(layer) {
+				if (layer.data.options.nodeGroup && layer.data.options.nodeGroup == rootChildren[i].nodeGroup) {
+					storeSelection.add(layer);
+				} else if (layer.data.title == rootChildren[i].layer) {
 
-		// Add the vector layer
-		map.addLayer(this.vectorLayer);
-
+					// creation of the layer node
+					rootChild = {
+						text: rootChildren[i].text,
+						layer: layer.data,
+						plugins: [
+							Ext.create('GeoExt.tree.LayerNode')
+						]
+					};
+					// add of the container
+					layerStore.root.appendChild(rootChild);
+					rootChild = null;
+				}
+			});
+			
+			if (rootChild) {
+				// creation of the layer group container
+				rootChild = {
+					text: rootChildren[i].text,
+					plugins: [
+						Ext.create('OgamDesktop.ux.map.GroupLayerContainer', {
+							store: storeSelection,
+							nodeGroup: rootChildren[i].nodeGroup,
+							containerCheckedStatus: rootChildren[i].checked,
+							containerExpandedStatus: rootChildren[i].expanded
+						})
+					]
+				};
+				// add of the container
+				layerStore.root.appendChild(rootChild);
+			}
+		}
+		
+		
+		this.layerTree = Ext.getCmp('layerspanel');
+		this.layerTree.setConfig('store', layerStore);
+		// Toggle layers and legends for zoom
+		this.layerTree.on('load', function(treePanel) {
+			this.layerTree.eachLayerChild(function(child) {
+				if (child.attributes.disabled === true) {
+					child.forceDisable = true;
+				} else {
+					child.forceDisable = false;
+				}
+			});
+			for ( var i = 0; i < this.map.layers.length; i++) {
+				this.toggleLayersAndLegendsForZoom(this.map.layers[i]);
+			}
+		}, this);
 	},
 	
 	/**
@@ -301,40 +358,27 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 */
 	buildLegend : function(layerObject,serviceObject) {
 		legend = Ext.getCmp('legendspanel')
-				.add(new Ext.Component(
-						{
-							id : this.id + layerObject.name,
-							autoEl : {
-								tag : 'div',
-								children : [
-										{
-											tag : 'span',
-											html : layerObject.options.label,
-											cls : 'x-form-item x-form-item-label'
-										},
-										{
-											tag : 'img',
-											src : serviceObject.urls.toString()
-													+ 'LAYER='+ layerObject.params.layers
-													+ '&SERVICE=' + serviceObject.params.SERVICE+ '&VERSION=' + serviceObject.params.VERSION + '&REQUEST=' + serviceObject.params.REQUEST
-													+ '&Format=image/png&WIDTH=160&HASSLD=' + (layerObject.params.hasSLD ? 'true' : 'false')
-										} ]
-							}
-						}));
+			.add(new Ext.Component({
+				id : this.id + layerObject.name,
+					autoEl : {
+						tag : 'div',
+						children : [{
+							tag : 'span',
+							html : layerObject.options.label,
+							cls : 'x-form-item x-form-item-label'
+						},{
+							tag : 'img',
+							src : serviceObject.urls.toString()
+							+ 'LAYER='+ layerObject.params.layers
+							+ '&SERVICE=' + serviceObject.params.SERVICE+ '&VERSION=' + serviceObject.params.VERSION + '&REQUEST=' + serviceObject.params.REQUEST
+							+ '&Format=image/png&WIDTH=160&HASSLD=' + (layerObject.params.hasSLD ? 'true' : 'false')
+						}]
+					}
+			}));
 		if (layerObject.params.isDisabled || layerObject.params.isHidden || !layerObject.params.isChecked) {
 			legend.on('render', function(cmp) {
 				cmp.hide();
 			});
-			legend.on('show', Ext.Function.pass(function(cmp, params) {
-				console.log(cmp);
-				if (cmp.rendered) {
-					console.log(cmp);
-					cmp.getEl().child('img').dom.src = serviceObject.urls.toString()
-					+ 'LAYER='+ layerObject.params.layers
-					+ '&SERVICE=' + serviceObject.params.SERVICE+ '&VERSION=' + serviceObject.params.VERSION + '&REQUEST=' + serviceObject.params.REQUEST
-					+ '&Format=image/png&WIDTH=160&HASSLD=' + (layerObject.params.hasSLD ? 'true' : 'false')
-				}
-			},[legend, layerObject.params]));
 		}
 	},	
 	
@@ -364,11 +408,11 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			'tileSize' : new OpenLayers.Size(OgamDesktop.map.tilesize, OgamDesktop.map.tilesize),
 			'maxExtent' : new OpenLayers.Bounds(OgamDesktop.map.x_min, OgamDesktop.map.y_min, OgamDesktop.map.x_max, OgamDesktop.map.y_max),
 			'eventListeners' : {// Hide the legend if needed
-//				"changelayer" : function(o) {
-//					if (o.property === 'visibility') {
-//						this.toggleLayersAndLegendsForZoom(o.layer);
-//					}
-//				},
+				"changelayer" : function(o) {
+					if (o.property === 'visibility') {
+						this.toggleLayersAndLegendsForZoom(o.layer);
+					}
+				},
 				scope : this
 			}
 		});
@@ -742,7 +786,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			title : this.zoomBoxInControlTitle
 		});
 		
-		
 
 		var zoomInButton = new GeoExt.Action({
 			control : zoomInControl,
@@ -985,7 +1028,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 * {String} wkt The wkt of the bounding box
 	 */
 	zoomOnBBox : function(wkt) {
-		console.log('zoom on bbox');
 		if (!Ext.isEmpty(wkt)) {
 
 			// The ratio by which features' bounding box should
@@ -1018,8 +1060,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 * Zoom on the results bounding box
 	 */
 	zoomOnResultsBBox : function() {
-		console.log(this.resultsBBox);
-		//this.resultsBBox = 'POLYGON((3238896.99125923 2030902.4323881,3238896.99125923 3127534.58932965,4281140.26847362 3127534.58932965,4281140.26847362 2030902.4323881,3238896.99125923 2030902.4323881))';
+		this.resultsBBox = 'POLYGON((3238896.99125923 2030902.4323881,3238896.99125923 3127534.58932965,4281140.26847362 3127534.58932965,4281140.26847362 2030902.4323881,3238896.99125923 2030902.4323881))';
 		this.zoomOnBBox(this.resultsBBox);
 	},
 
@@ -1032,18 +1073,16 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 *            visible True to show, false to hide
 	 */
 	setLegendsVisible : function(layerNames, visible) {
-		console.log('init set legend visible');
 		var i;
+		this.legendPanel = Ext.getCmp('legendspanel');
 		for (i = 0; i < layerNames.length; i++) {
-			var legendCmp = this.legendPanel.findById(this.id + layerNames[i]);
+			var legendCmp = this.legendPanel.getComponent(this.id + layerNames[i]);
 			if (!Ext.isEmpty(legendCmp)) {
 				if (visible === true) {
 					var layers = this.map.getLayersByName(layerNames[i]);
 					if (layers[0].calculateInRange() && layers[0].getVisibility()) {
-						console.log('show'+legendCmp.id);
 						legendCmp.show();
 					} else {
-						console.log('hide'+legendCmp.id);
 						legendCmp.hide();
 					}
 				} else {
@@ -1054,90 +1093,36 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	},
 
 	/**
-	 * Enable and show the layer(s) node and show the legend(s)
-	 * 
-	 * @param {Array}
-	 *            layerNames The layer names
-	 * @param {Boolean}
-	 *            check True to check the layerTree node
-	 *            checkbox (default to false)
-	 * @param {Boolean}
-	 *            setForceDisable Set the layerTree node
-	 *            forceDisable parameter (default to true) The
-	 *            forceDisable is used by the
-	 *            'toggleLayersAndLegendsForZoom' function to
-	 *            avoid to enable, a node disabled for another
-	 *            cause that the zoom range.
-	 */
-//	enableLayersAndLegends : function(layerNames, check, setForceDisable) {
-//		if (!Ext.isEmpty(layerNames)) {
-//			// The tabPanels must be activated before to show a
-//			// child component
-//			var isLayerPanelVisible = this.layerPanel.isVisible(), i;
-//
-//			this.layersAndLegendsPanel.activate(this.layerPanel);
-//			for (i = 0; i < layerNames.length; i++) {
-//				var node = this.layerTree.getNodeByLayerName(layerNames[i]);
-//				if (!Ext.isEmpty(node)) {
-//					var nodeId = node.id;
-//					if (setForceDisable !== false) {
-//						this.layerTree.getNodeById(nodeId).forceDisable = false;
-//					}
-//					if (this.layerTree.getNodeById(nodeId).zoomDisable !== true) {
-//						this.layerTree.getNodeById(nodeId).enable();
-//					}
-//					this.layerTree.getNodeById(nodeId).getUI().show();
-//
-//					if (check === true) {
-//						// Note: the redraw must be done before
-//						// to
-//						// check the node
-//						// to avoid to redisplay the old layer
-//						// images before the new one
-//						var layers = this.map.getLayersByName(layerNames[i]);
-//						layers[0].redraw(true);
-//						this.layerTree.toggleNodeCheckbox(nodeId, true);
-//					}
-//				}
-//			}
-//
-//			this.layersAndLegendsPanel.activate(this.legendPanel);
-//			this.setLegendsVisible(layerNames, true);
-//
-//			// Keep the current activated panel activated
-//			if (isLayerPanelVisible) {
-//				this.layersAndLegendsPanel.activate(this.layerPanel);
-//			}
-//		} else {
-//			console.warn('EnableLayersAndLegends : layerNames parameter is empty.');
-//		}
-//	},
-
-	/**
 	 * Toggle the layer node and legend in function of the zoom
 	 * range
 	 * 
 	 * @param {OpenLayers.Layer}
 	 *            layer The layer to check
 	 */
-//	toggleLayersAndLegendsForZoom : function(layer) {
-//		if (!Ext.isEmpty(this.layerTree)) {
-//			console.log(this.layerTree);
-//			var node = this.layerTree.getNodeByLayerName(layer.name);
-//			console.log(node);
-//			if (!Ext.isEmpty(node) && !node.hidden) {
-//				if (!layer.calculateInRange()) {
-//					node.zoomDisable = true;
-//					this.disableLayersAndLegends([ layer.name ], false, false, false);
-//				} else {
-//					node.zoomDisable = false;
-//					if (node.forceDisable !== true) {
-//						this.enableLayersAndLegends([ layer.name ], false, false);
-//					}
-//				}
-//			}
-//		}
-//	},
+	toggleLayersAndLegendsForZoom : function(layer) {
+		if (!Ext.isEmpty(this.layerTree)) {
+			var node;
+			layerStore = this.layerTree.store;
+			layerStore.each(function(layerNode){
+				if (layerNode.data.name == layer.name){
+					node = layerNode;
+				}
+			})
+			if (!Ext.isEmpty(node) && !node.hidden) {
+				if (!layer.calculateInRange()) {
+					node.zoomDisable = true;
+					this.disableLayersAndLegends([ layer.name ], false, false, false);
+				} else {
+					node.zoomDisable = false;
+					if (node.forceDisable !== true) {
+						this.enableLayersAndLegends([ layer.name ], false, false);
+					}
+				}
+			}
+		}
+	},
+	
+	
 	
 	/**
 	 * Enable and show the layer(s) node and show the legend(s)
@@ -1155,49 +1140,57 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 *            avoid to enable, a node disabled for another
 	 *            cause that the zoom range.
 	 */
-//	enableLayersAndLegends : function(layerNames, check, setForceDisable) {
-//		if (!Ext.isEmpty(layerNames)) {
-//			// The tabPanels must be activated before to show a
-//			// child component
-//			var isLayerPanelVisible = this.layerPanel.isVisible(), i;
-//
-//			this.layersAndLegendsPanel.activate(this.layerPanel);
-//			for (i = 0; i < layerNames.length; i++) {
-//				var node = this.layerTree.getNodeByLayerName(layerNames[i]);
-//				if (!Ext.isEmpty(node)) {
-//					var nodeId = node.id;
-//					if (setForceDisable !== false) {
-//						this.layerTree.getNodeById(nodeId).forceDisable = false;
-//					}
-//					if (this.layerTree.getNodeById(nodeId).zoomDisable !== true) {
+	enableLayersAndLegends : function(layerNames, check, setForceDisable) {
+		if (!Ext.isEmpty(layerNames)) {
+			// The tabPanels must be activated before to show a
+			// child component
+			var isLayerPanelVisible = this.layerTree.isVisible(), i;
+
+			Ext.getCmp('mapaddonspanel').setActiveItem(this.layerTree);
+			for (i = 0; i < layerNames.length; i++) {
+				var node;
+				layerStore = this.layerTree.store;
+				layerStore.each(function(layerNode){
+					if (layerNode.data.name == layerNames[i]){
+						node = layerNode;
+					}
+				})
+				if (!Ext.isEmpty(node)) {
+					var nodeId = node.id;
+					if (setForceDisable !== false) {
+						this.layerTree.store.getNodeById(nodeId).forceDisable = false;
+					}
+					if (this.layerTree.store.getNodeById(nodeId).zoomDisable !== true) {
 //						this.layerTree.getNodeById(nodeId).enable();
-//					}
-//					this.layerTree.getNodeById(nodeId).getUI().show();
-//
-//					if (check === true) {
-//						// Note: the redraw must be done before
-//						// to
-//						// check the node
-//						// to avoid to redisplay the old layer
-//						// images before the new one
-//						var layers = this.map.getLayersByName(layerNames[i]);
-//						layers[0].redraw(true);
-//						this.layerTree.toggleNodeCheckbox(nodeId, true);
-//					}
-//				}
-//			}
-//
-//			this.layersAndLegendsPanel.activate(this.legendPanel);
-//			this.setLegendsVisible(layerNames, true);
-//
-//			// Keep the current activated panel activated
-//			if (isLayerPanelVisible) {
-//				this.layersAndLegendsPanel.activate(this.layerPanel);
-//			}
-//		} else {
-//			console.warn('EnableLayersAndLegends : layerNames parameter is empty.');
-//		}
-//	},
+						node.data.disabled = false;
+						this.layerTree.fireEvent('nodeEnabled', node);
+					}
+//					this.layerTree.store.getNodeById(nodeId).getUI().show();
+
+					if (check === true) {
+						// Note: the redraw must be done before
+						// to
+						// check the node
+						// to avoid to redisplay the old layer
+						// images before the new one
+						var layers = this.map.getLayersByName(layerNames[i]);
+						layers[0].redraw(true);
+						this.layerTree.toggleNodeCheckbox(nodeId, true);
+					}
+				}
+			}
+
+			Ext.getCmp('mapaddonspanel').setActiveItem(Ext.getCmp('legendspanel'));
+			this.setLegendsVisible(layerNames, true);
+
+			// Keep the current activated panel activated
+			if (isLayerPanelVisible) {
+				Ext.getCmp('mapaddonspanel').setActiveItem(this.layerTree);
+			}
+		} else {
+			console.warn('EnableLayersAndLegends : layerNames parameter is empty.');
+		}
+	},
 
 	/**
 	 * Disable (and hide if asked) the layer(s) And hide the
@@ -1219,28 +1212,84 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 *            avoid to enable, a node disable for another
 	 *            cause that the zoom range.
 	 */
-//	disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) {
-//		var i;
-//		if (!Ext.isEmpty(layerNames) && (this.layerTree !== null)) {
-//			for (i = 0; i < layerNames.length; i++) {
-//				var node = this.layerTree.getNodeByLayerName(layerNames[i]);
-//				if (!Ext.isEmpty(node)) {
-//					var nodeId = node.id;
-//					if (uncheck === true) {
-//						this.layerTree.toggleNodeCheckbox(nodeId, false);
-//					}
-//					var node = this.layerTree.getNodeById(nodeId);
-//					if (hide === true) {
-//						node.getUI().hide();
-//					}
-//					node.disable();
-//					if (setForceDisable !== false) {
-//						node.forceDisable = true;
-//					}
-//				}
-//				this.setLegendsVisible([ layerNames[i] ], false);
-//			}
-//		}
-//	},
+	disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) { // hide ne sert à rien
+		var i;
+		if (!Ext.isEmpty(layerNames) && (this.layerTree !== null)) {
+			for (i = 0; i < layerNames.length; i++) {
+				var node;
+				layerStore = this.layerTree.store;
+				layerStore.each(function(layerNode){
+					if (layerNode.data.name == layerNames[i]){
+						node = layerNode;
+					}
+				})
+				if (!Ext.isEmpty(node)) {
+					var nodeId = node.id;
+					if (uncheck === true) {
+						this.layerTree.toggleNodeCheckbox(nodeId, false);
+					}
+					node.data.disabled = true;
+					this.layerTree.fireEvent('nodeDisabled', node);
+				}
+				this.setLegendsVisible([ layerNames[i] ], false);
+			}
+		}
+	},
+
+	/**
+	 * Create and submit a form
+	 * 
+	 * @param {String}
+	 *            url The form url
+	 * @param {object}
+	 *            params The form params
+	 */
+	post: function(url, params) {
+		var temp = document.createElement("form"), x;
+		temp.action = url;
+		temp.method = "POST";
+		temp.style.display = "none";
+		for (x in params) {
+			var opt = document.createElement("textarea");
+			opt.name = x;
+			opt.value = params[x];
+			temp.appendChild(opt);
+		}
+		document.body.appendChild(temp);
+		temp.submit();
+		return temp;
+	}, 
+
+
+	/**
+	 * Print the map
+	 * 
+	 * @param {Ext.Button}
+	 *            button The print map button
+	 * @param {EventObject}
+	 *            event The click event
+	 */
+	printMap : function(button, event) {
+		// Get the BBOX
+		var center = this.map.center, zoom = this.map.zoom, i;
+
+		// Get the layers
+		var activatedLayers = this.map.getLayersBy('visibility', true);
+		var activatedLayersNames = '';
+		for (i = 0; i < activatedLayers.length; i++) {
+			currentLayer = activatedLayers[i];
+			if (currentLayer.printable !== false &&
+				currentLayer.visibility == true &&
+				currentLayer.inRange == true) {
+				activatedLayersNames += activatedLayers[i].name + ',';
+			}
+		}
+		activatedLayersNames = activatedLayersNames.substr(0, activatedLayersNames.length - 1);
+		this.post(Ext.manifest.OgamDesktop.requestServiceUrl +'../map/printmap', {
+			center : center,
+			zoom : zoom,
+			layers : activatedLayersNames
+		});
+	}
 
 });
