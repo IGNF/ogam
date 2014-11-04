@@ -71,13 +71,12 @@ OpenLayers.Control.FeatureInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	/**
 	 * Display a popup with the information from the selected feature.
 	 */
-	displayPopup : function(longlat, featureInfo) {
-
+	displayPopup : function(coordPx, featureInfo) {
 		if (featureInfo.fields) {
 			// Create a popup
-			popup = new GeoExt.Popup({
+			popup = Ext.create('GeoExt.window.Popup',{
 				title : this.popupTitle,
-				location : longlat,
+				location : coordPx,
 				width : 200,
 				map : this.map,
 				html : this.json2html(featureInfo.fields),
@@ -164,6 +163,12 @@ OpenLayers.Handler.FeatureInfo = OpenLayers.Class(OpenLayers.Handler, {
 	 *      (defaults to <tt>'Sorry, the request failed...'</tt>)
 	 */
 	alertRequestFailedMsg : 'Sorry, the feature info request failed...',
+	
+	/**
+	 * @cfg {String} alertRequestFailedMsg The alert Request Failed Msg
+	 *      (defaults to <tt>'Sorry, the request failed...'</tt>)
+	 */
+	alertNoLayerMsg : 'Please select a vector layer...',
 
 	/**
 	 * @cfg {OpenLayers.Control.FeatureInfoControl} control The control
@@ -181,21 +186,19 @@ OpenLayers.Handler.FeatureInfo = OpenLayers.Class(OpenLayers.Handler, {
 	 * @param response
 	 */
 	handleResponse: function (response) {
-		
 		 if(response.status == 500) {
-			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			Ext.create('Ext.window.MessageBox').alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		 }
 		 if(!response.responseText) {
-			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			Ext.create('Ext.window.MessageBox').alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		 }
 		 
 		 // Decode the response
 		 try {
 			var result = Ext.decode(response.responseText);
-			this.control.displayPopup(this.ll, result);
-
+			this.control.displayPopup(this.px, result);
 		} catch (e) {
-			Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			Ext.create('Ext.window.MessageBox').alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		}
 	},
 
@@ -203,22 +206,37 @@ OpenLayers.Handler.FeatureInfo = OpenLayers.Class(OpenLayers.Handler, {
 	 * Handle the click event.
 	 */
 	click : function(evt) {
-		// Calcul de la coordonnée correspondant au point cliqué par
-		// l'utilisateur
-		var px = new OpenLayers.Pixel(evt.xy.x, evt.xy.y);
-		this.ll = this.map.getLonLatFromPixel(px);
+		this.px = new OpenLayers.Pixel(evt.xy.x, evt.xy.y);
+		if (!this.control.layerName){
+//			Ext.create('Ext.window.MessageBox').alert(this.alertErrorTitle, this.alertNoLayerMsg);
+			popup = Ext.create('GeoExt.window.Popup',{
+				title : this.alertErrorTitle,
+				location : this.px,
+				width : 200,
+				map : this.map,
+				html : '<p>'+this.alertNoLayerMsg+'</p>',
+				maximizable : false,
+				collapsible : false,
+				unpinnable : false
+			});
+			popup.show();
+		} else {
+			// Calcul de la coordonnée correspondant au point cliqué par
+			// l'utilisateur
+			this.ll = this.map.getLonLatFromPixel(this.px);
 
-		// Construction d'une URL pour faire une requête WFS sur le point
-		var url = Ext.manifest.OgamDesktop.requestServiceUrl + "../proxy/getfeatureinfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=" + this.control.layerName + "&BBOX=" + this.ll.lon
-				+ "," + this.ll.lat + "," + this.ll.lon + "," + this.ll.lat;
-		url = url + "&MAXFEATURES=1";
-		
-		// Send a request
-		OpenLayers.Request.GET({
-				url : url, 
-				scope : this,
-				callback: this.handleResponse});
+			// Construction d'une URL pour faire une requête WFS sur le point
+			var url = Ext.manifest.OgamDesktop.requestServiceUrl + "../proxy/getfeatureinfo?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&typename=" + this.control.layerName + "&BBOX=" + this.ll.lon
+					+ "," + this.ll.lat + "," + this.ll.lon + "," + this.ll.lat;
+			url = url + "&MAXFEATURES=1";
+			
+			// Send a request
+			OpenLayers.Request.GET({
+					url : url, 
+					scope : this,
+					callback: this.handleResponse});
 
+		}
 	}
 
 });

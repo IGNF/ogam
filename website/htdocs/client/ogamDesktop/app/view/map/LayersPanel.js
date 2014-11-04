@@ -10,7 +10,6 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
 		'GeoExt.plugins.ContextMenuPlugin',
 		'GeoExt.slider.Tip',
 		'GeoExt.slider.LayerOpacity'
-//		'OgamDesktop.view.map.MapPanel'
 	],
 	xtype: 'layers-panel',
 	id: 'layerspanel',
@@ -58,33 +57,6 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
 		this.callParent(arguments);
 	},
 
-	/**
-	 * Call the callback function for each layer child
-	 * 
-	 * @param {Function}
-	 *            fn The callback
-	 * @param {Object}
-	 *            scope The scope for the callback
-	 * @param {Array}
-	 *            args The arguments for the callback
-	 * @param {Ext.tree.TreeNode}
-	 *            node The child parent node
-	 */
-	eachLayerChild : function(fn, scope, args, node) {
-		node = Ext.isEmpty(node) ? this.root : node;
-		if (!Ext.isEmpty(node) && !Ext.isEmpty(node.childNodes)) {
-			for ( var i = 0; i < node.childNodes.length; i++) {
-				var child = node.childNodes[i];
-				if (!Ext.isEmpty(child.layer)) {
-					if (fn.apply(scope || child, args || [ child ]) === false) {
-						break;
-					}
-				} else if (!child.isLeaf()) {
-					this.eachLayerChild(fn, scope, args, child);
-				}
-			}
-		}
-	},
 	/**
 	 * Toggle the children checkbox on the parent checkbox change
 	 * 

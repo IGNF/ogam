@@ -18,6 +18,7 @@
  * Class: OpenLayers.Control.GetFeatureControl. Implements a very simple control
  * that generates a WKT request to get a feature geometry and add it to the map.
  */
+
 OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 
 	/**
@@ -138,19 +139,18 @@ OpenLayers.Handler.GetFeature = OpenLayers.Class(OpenLayers.Handler, {
 	 */
 	handleResponse: function (response) {
 		 if(response.status == 500) {
-			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			 Ext.create('Ext.window.MessageBox').alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		 }
 		 if(!response.responseText) {
-			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			 Ext.create('Ext.window.MessageBox').alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		 }
 		 
 		 // Decode the response
 		 try {
 			var feature = this.gmlFormat.read(response.responseText);
 			this.control.getFeature(feature);
-
 		} catch (e) {
-			Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			Ext.create('Ext.window.MessageBox').alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		}
 	},
 
