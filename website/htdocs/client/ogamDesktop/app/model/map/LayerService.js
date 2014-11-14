@@ -1,3 +1,7 @@
 Ext.define('OgamDesktop.model.map.LayerService',{
-	extend: 'Ext.data.Model'
+	extend: 'Ext.data.Model',
+	fields: [
+		{name: 'name', type: 'string'},
+		{name: 'config', type: 'auto'}
+	]
 });

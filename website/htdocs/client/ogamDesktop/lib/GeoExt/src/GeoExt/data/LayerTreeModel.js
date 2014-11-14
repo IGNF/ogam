@@ -56,7 +56,6 @@ Ext.define('GeoExt.data.LayerTreeModel',{
     ],
     alias: 'model.gx_layertree',
     fields: [
-        {name: 'disabled', type:'bool', defaultValue:false},
         {name: 'text', type: 'string'},
         {name: 'plugins'},
         {name: 'layer'},

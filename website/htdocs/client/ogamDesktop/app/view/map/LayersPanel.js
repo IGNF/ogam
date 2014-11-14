@@ -12,7 +12,7 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
 		'GeoExt.slider.LayerOpacity'
 	],
 	xtype: 'layers-panel',
-	id: 'layerspanel',
+//	id: 'layerspanel',
 	cls: 'genapp-query-layer-tree-panel',
 	border: false,
 	rootVisible: false,
@@ -68,42 +68,27 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
 	 */
 	onCheckChange : function(node, checked) {
 		if (node.firstChild == null) {
-	        if(checked != node.get('layer').getVisibility()) {
-	            node._visibilityChanging = true;
-	            var layer = node.get('layer');
-	            if(checked && layer.isBaseLayer && layer.map) {
-	                layer.map.setBaseLayer(layer);
-	            } else if(!checked && layer.isBaseLayer && layer.map &&
-	                      layer.map.baseLayer && layer.id == layer.map.baseLayer.id) {
-	                // Must prevent the unchecking of radio buttons
-	                node.set('checked', layer.getVisibility());
-	            } else {
-	                layer.setVisibility(checked);
-	            }
-	            delete node._visibilityChanging;
-	        }
-		}
-
-		// Check that the event have been launched on this instance
-		// if (this.map.id == node.firstChild.layerStore.map.id) {
-			if (checked === true) {
-				for ( var i = 0; i < node.childNodes.length; i++) {
-					var child = node.childNodes[i];
-					if (!child.data.checked && !child.get('disabled')) {
-						child.set('checked',true);
-						this.onCheckChange(child, true);
-					}
+			if(checked != node.get('layer').getVisibility()) {
+				node._visibilityChanging = true;
+				var layer = node.get('layer');
+				if(checked && layer.isBaseLayer && layer.map) {
+					layer.map.setBaseLayer(layer);
+				} else if(!checked && layer.isBaseLayer && layer.map &&
+					layer.map.baseLayer && layer.id == layer.map.baseLayer.id) {
+					// Must prevent the unchecking of radio buttons
+					node.set('checked', layer.getVisibility());
+				} else {
+					layer.setVisibility(checked);
 				}
-			} else {
-				for ( var i = 0; i < node.childNodes.length; i++) {
-					var child = node.childNodes[i];
-					if (child.data.checked && !child.get('disabled')) {
-						child.set('checked',false);
-						this.onCheckChange(child, false);
-					}
-				}
+				delete node._visibilityChanging;
 			}
-//		}
+		}
+		for ( var i = 0 ; i < node.childNodes.length ; i++) {
+			var child = node.childNodes[i];
+			if (!child.get('disabled')) {
+				child.set('checked', checked);
+				this.onCheckChange(child, checked);
+			}
+		}
 	}
-
 });

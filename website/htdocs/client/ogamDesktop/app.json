@@ -108,21 +108,22 @@
      *          "bootstrap": false   // OPTIONAL
      *      }
      */
-    "js": [
-        {
+    "js": [{
             "path": "../../map/get-map-parameters"
         },{
             "path": "${app.dir}/lib/OpenLayers/OpenLayers.debug.js"
         },{
-            "path": "app/ux/map/FeatureInfoControl.js"
+            "path": "${app.dir}/app/ux/map/FeatureInfoControl.js",
+            "includeInBundle": true
         },{
-            "path": "app/ux/map/GetFeatureControl.js"
+            "path": "${app.dir}/app/ux/map/GetFeatureControl.js",
+            "includeInBundle": true
         },{
-            "path": "app/ux/map/LocationInfoControl.js"
+            "path": "${app.dir}/app/ux/map/LocationInfoControl.js"
         },{
-            "path": "app/ux/map/ZoomToFeatures.js"
+            "path": "${app.dir}/app/ux/map/ZoomToFeatures.js"
         },{
-            "path": "app/ux/map/ContextMenuPlugin.js"
+            "path": "${app.dir}/app/ux/map/ContextMenuPlugin.js"
         },{
             "path": "app.js",
             "bundle": true
@@ -160,6 +161,9 @@
             "bootstrap": true
         },{
             "path": "resources/css/genapp.pack.css",
+            "bootstrap": true
+        },{
+            "path": "resources/css/tree-gray.css",
             "bootstrap": true
         }
     ],

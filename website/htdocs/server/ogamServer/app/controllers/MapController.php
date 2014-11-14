@@ -183,10 +183,7 @@ class MapController extends AbstractOGAMController {
 		$providerId = $userSession->user->providerId;
 
 		// Get the available services base urls and parameters
-		$viewServices    = $this->servicesModel->getViewServices();
-		$featureServices = $this->servicesModel->getFeatureServices();
-		$legendServices  = $this->servicesModel->getLegendServices();
-		
+		$services = $this->servicesModel->getServices();
 		// Get the available layers
 		$layers = $this->layersModel->getLayersList($providerId);
 		
@@ -198,46 +195,24 @@ class MapController extends AbstractOGAMController {
 				
 		// Build the base URL for tiles
 		$sessionId = session_id();
-		$out = '{"view_services":{';
-		foreach ($viewServices as $viewService) {
-			 $out .= '"'.$viewService->serviceName.'":'.$viewService->serviceConfig.',';
+		
+		$out = '{"services":[';
+		foreach ($services as $service) {
+			$out .= '{"name":"'.$service->serviceName.'"';
+			$out .= ', "config":'.$service->serviceConfig.'},';
 		}
+
 		// Remove the last comma
-		if (!empty($viewServices)) {
-		    $out = substr($out, 0, -1);
+		if (!empty($services)) {
+			$out = substr($out, 0, -1);
 		}
-		echo $out.'},';
-		
-		
-		// Build the wfs base URL for wfs tiles	
-		$out = '"feature_services":{';
-		foreach ($featureServices as $featureService) {
-			 $out .= '"'.$featureService->serviceName.'":'.$featureService->serviceConfig.',';
-		}
-		// Remove the last comma
-		if (!empty($featureServices)) {
-		    $out = substr($out, 0, -1);
-		}
-		echo $out.'},';
-		
-		
-		// Build the legend base URL
-		$out = '"legend_services":{';
-		foreach ($legendServices as $legendService) {
-		    $out .= '"'.$legendService->serviceName.'":'.$legendService->serviceConfig.',';
-		}
-		// Remove the last comma
-		if (!empty($legendServices)) {
-		    $out = substr($out, 0, -1);
-		}
-		echo $out.'},';
+		echo $out.'],';
 	
 		// For each available layer, build the corresponding URL and definition
 		$out = '"layers":[';
 		$this->logger->debug('number of layers : '.count($layers));
 		foreach ($layers as $layer) {
-		    
-		    
+		
 			$out .= "{";
 
 			// OpenLayer object (tiled or not)
@@ -250,6 +225,9 @@ class MapController extends AbstractOGAMController {
 			// Logical layer name
 			$out .= ', "name":"'.$layer->layerName.'"';
 
+			// Service name
+			$out .= ', "serviceName":"'.$layer->serviceName.'"';
+			
 			// View Service name
 			$out .= ', "viewServiceName":"'.$layer->viewServiceName.'"';
 			
@@ -263,7 +241,6 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "featureInfoServiceName":"'.$layer->featureInfoServiceName.'"';
 			
 			$out .= ', "params":{';
-			
 				
 			// Server Layer name (or list of names)
 			$layerNames = $layer->serviceLayerName;
@@ -511,6 +488,8 @@ class MapController extends AbstractOGAMController {
 		
 		//Get the base urls for the services
 		$printservices = $this->servicesModel->getPrintServices();
+
+			$this->logger->debug($printservices);
 		
 		// Get the server name for the layers
 		$layerNames = explode(",", $layers);
@@ -544,8 +523,8 @@ class MapController extends AbstractOGAMController {
 		}
 		
 		$baseUrls = substr($baseUrls, 0, -1); // remove last comma		
-		$serviceLayerNames = substr($serviceLayerNames, 0, -1); // remove last comma
-		$service = substr($service, 0, -1); // remove last comma
+		$serviceLayerNames = substr($serviceLayerNames, 0, -1);
+		$service = substr($service, 0, -1);
 		
 		// Get the configuration values
 		$configuration = Zend_Registry::get("configuration");
@@ -559,7 +538,7 @@ class MapController extends AbstractOGAMController {
 		// Get the current scale
 		$scalesArray = array_values($scales);
 		$currentScale = $scales[$zoom];
-		    
+		$this->logger->debug('generatemapAction2');
 		//Construction of the json specification, parameter of mapfish-print servlet
 		$spec = "{
     

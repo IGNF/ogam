@@ -10,8 +10,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		'OgamDesktop.fields.GeometryField',
 		'GeoExt.window.Popup'
 	],
-	id: 'mappanel',
-	//mixins: ['OgamDesktop.view.interface.MapPanel'],
+//	id: 'mappanel',
+	// Mixins: ['OgamDesktop.view.interface.MapPanel'],
 	
 	
 	/**
@@ -53,11 +53,15 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 *      following tools.
 	 */
 	hideLayerSelector : false,
-	hideSnappingButton : false,
-	hideGetFeatureButton : false,
+	hideSnappingButton : true,
+	hideGetFeatureButton : true,
 	hideFeatureInfoButton : false,
 	hideGeomCriteriaToolbarButton : false,
 	hidePrintMapButton : false,
+	isDrawingMap: false,
+	/**
+	 * 
+	 */
 	layersList: [],
 	
 	/**
@@ -65,6 +69,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 *      map (defaults to <tt>0</tt>)
 	 */
 	minZoomLevel : 0,
+	
 	/**
 	 * @cfg {String} resultsBBox The results bounding box
 	 *      (defaults to <tt>null</tt>)
@@ -94,281 +99,39 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 * @property vectorLayer
 	 */
 	vectorLayer : null,
-	minZoomLevel : 0,
 	xtype: 'map-panel',
 	width:'100%',
 	height:'100%',
-	items: [],
+	items: [{
+		xtype: 'gx_zoomslider',
+		itemId: 'zoomslider',
+		vertical: true,
+		height: 150,
+		x: 18,
+		y: 85,
+		activeError: 'error',
+		plugins: Ext.create('GeoExt.slider.Tip', {
+			position: 'top',
+			getText: function(thumb) {
+				return Ext.String.format(
+						'<div><b>{0}</b></div>',
+						thumb.slider.getZoom()
+				);
+			}
+		})
+	}],
+
+	map: null,
+
 	initComponent: function(){
 		
 		// Creates the map Object (OpenLayers)
 		this.map = this.initMap();
-
-		// Create a zoom slider
-		var zoomSlider = Ext.create('GeoExt.slider.Zoom', {
-			vertical: true,
-			height: 150,
-			x: 18,
-			y: 85,
-			map: this.map,
-			activeError: 'error',
-			plugins: Ext.create('GeoExt.slider.Tip', {
-				position: 'top',
-				getText: function(thumb) {
-					return Ext.String.format(
-						'<div><b>{0}</b></div>',
-						thumb.slider.getZoom()
-					);
-				}
-			})
-		});		
+		this.tbar = this.initToolbar();
 		
-		this.tbar = Ext.create('Ext.toolbar.Toolbar');
-		
-		Ext.Ajax.request({
-			url : Ext.manifest.OgamDesktop.requestServiceUrl +'../map/ajaxgetlayers',
-			scope : this,
-			success :this.addLayersAndLayersTree
-		});
-		
-		// Init the toolbar
-		this.initToolbar();
 		this.callParent(arguments);
-
-		// Add the zoom slider to the items
-		this.add(zoomSlider);
-		
-	},
-	
-	addLayersAndLayersTree : function(response) {
-		
-		// Reset the arrays
-		this.layersList = [];
-		this.layersActivation = {};
-		var layersObject = Ext.decode(response.responseText), i;
-
-		// Rebuild the list of available layers
-		for (j = 0; j < layersObject.layers.length; j++) {
-			// Get the JSON description of the layer
-			var layerObject = layersObject.layers[j];
-
-			// Get the JSON view service name
-			var viewServiceName=layerObject.viewServiceName;
-			var viewServiceNameStr = 'layersObject.view_services.'+viewServiceName.toString();
-			var viewServiceObject=eval('('+viewServiceNameStr+')');
-			
-			// Build the new OpenLayers layer object and add it
-			// to the list
-			var newLayer = this.buildLayer(layerObject,viewServiceObject);
-			this.layersList.push(newLayer);
-			
-			// Fill the list of active layers
-			var activateType = layerObject.params.activateType.toLowerCase();
-			if (Ext.isEmpty(this.layersActivation[activateType])) {
-				this.layersActivation[activateType] = [ layerObject.name ];
-			} else {
-				this.layersActivation[activateType].push(layerObject.name);
-			}
-
-			// Create the legends
-			if (layerObject.legendServiceName != '') {
-
-				// Get the JSON legend service name
-				var legendServiceName=layerObject.legendServiceName;
-				var legendServiceNameStr = 'layersObject.legend_services.'+legendServiceName.toString();
-				var legendServiceObject=eval('('+legendServiceNameStr+')');
-				
-				this.buildLegend(layerObject,legendServiceObject);
-			}
-		}
-		
-		// Openlayers have to pass through a proxy to request external 
-		// server
-		OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
-		
-		// Set the style
-		var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
-			fillOpacity : 0,
-			strokeColor : "green",
-			strokeWidth : 3,
-			strokeOpacity : 1
-		}, OpenLayers.Feature.Vector.style["default"]));
-		
-		this.wfsLayer = new OpenLayers.Layer.Vector("WFS Layer", 
-			{
-				strategies:[new OpenLayers.Strategy.BBOX()],
-				protocol: new OpenLayers.Protocol.HTTP({
-					url: null,
-					params:
-					{
-						typename: null,
-						service: "WFS",
-						format: "WFS",
-						version: "1.0.0",
-						request: "GetFeature",
-						srs: OgamDesktop.map.projection
-					}, 
-					format: new OpenLayers.Format.GML({extractAttributes: true})
-				})									
-			});
-
-		this.wfsLayer.printable = false;
-		this.wfsLayer.displayInLayerSwitcher = false;
-		this.wfsLayer.extractAttributes = false;
-		this.wfsLayer.styleMap = styleMap;
-		this.wfsLayer.visibility = false;
-		this.setMapLayers(this.map);
-
-		// Gets the layer tree model to initialise the Layer
-		// Tree
-		Ext.Ajax.request({
-			url : Ext.manifest.OgamDesktop.requestServiceUrl +'../map/ajaxgettreelayers',
-			success : this.initLayerTree,
-			scope : this
-		});
-	},
-	
-	/**
-	 * Set the layers of the map
-	 */
-	setMapLayers : function(map) {
-		// Add the base layer (always first)
-		map.addLayer(this.baseLayer);
-
-		// Add the available layers
-		for ( var i = 0; i < this.layersList.length; i++) {
-			map.addLayer(this.layersList[i]);
-		}
-		// Add the WFS layer
-		if (!this.hideLayerSelector && this.wfsLayer !== null) {
-			map.addLayer(this.wfsLayer);
-			this.snappingControl.addTargetLayer(this.wfsLayer);
-		}
-		// Add the vector layer
-		map.addLayer(this.vectorLayer);
-	},
-	
-	initLayerTree: function(response) {
-		rootChildren = Ext.decode(response.responseText);
-		
-		// initialize the Tree store based on the map layers
-		layerStore = Ext.create('Ext.data.TreeStore', {
-			model: 'GeoExt.data.LayerTreeModel',
-			root: {},
-			
-		});
-		// for each node, we create a store which is a selection of the map layers store
-		for (i in rootChildren) {
-			storeSelection = Ext.create('GeoExt.data.LayerStore');
-			var rootChild = {};
-			this.layers.each(function(layer) {
-				if (layer.data.options.nodeGroup && layer.data.options.nodeGroup == rootChildren[i].nodeGroup) {
-					storeSelection.add(layer);
-				} else if (layer.data.title == rootChildren[i].layer) {
-
-					// creation of the layer node
-					rootChild = {
-						text: rootChildren[i].text,
-						layer: layer.data,
-						plugins: [
-							Ext.create('GeoExt.tree.LayerNode')
-						]
-					};
-					// add of the container
-					layerStore.root.appendChild(rootChild);
-					rootChild = null;
-				}
-			});
-			
-			if (rootChild) {
-				// creation of the layer group container
-				rootChild = {
-					text: rootChildren[i].text,
-					plugins: [
-						Ext.create('OgamDesktop.ux.map.GroupLayerContainer', {
-							store: storeSelection,
-							nodeGroup: rootChildren[i].nodeGroup,
-							containerCheckedStatus: rootChildren[i].checked,
-							containerExpandedStatus: rootChildren[i].expanded
-						})
-					]
-				};
-				// add of the container
-				layerStore.root.appendChild(rootChild);
-			}
-		}
-		
-		this.layerTree = Ext.getCmp('layerspanel');
-		this.layerTree.setConfig('store', layerStore);
-	},
-	
-	/**
-	 * Build one OpenLayer Layer from a JSON object.
-	 * 
-	 * @return OpenLayers.Layer
-	 */
-	buildLayer : function(layerObject,serviceObject) {
-		
-		var url = serviceObject.urls;
-			//Merges the service parameters and the layer parameters
-			var paramsObj = {};
-			for (var attrname in layerObject.params) { paramsObj[attrname] = layerObject.params[attrname]; }
-			for (var attrname in serviceObject.params) { paramsObj[attrname] = serviceObject.params[attrname]; }
-			if (serviceObject.params.SERVICE=="WMTS") {
-				//creation and merging of wmts parameters
-				var layer=paramsObj.layers[0];
-				var tileOrigin = new OpenLayers.LonLat(-20037508,20037508); //coordinates of top left corner of the matrixSet : usual value of geoportal, google maps 
-				var serverResolutions = [156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646]; 
-				// the usual 22 values of resolutions accepted by wmts servers geoportal
-				
-				var obj={options:layerObject.options,name:layerObject.name,url:url.toString(),layer:layer,tileOrigin:tileOrigin,serverResolutions:serverResolutions,opacity:layerObject.options.opacity,visibility:layerObject.options.visibility,isBaseLayer:layerObject.options.isBaseLayer};
-				var objMergeParams= {};
-				for (var attrname in obj) { objMergeParams[attrname] = obj[attrname]; }
-				for (var attrname in paramsObj) { objMergeParams[attrname] = paramsObj[attrname]; }
-				newLayer = new OpenLayers.Layer.WMTS(objMergeParams);
-
-			} else if (serviceObject.params.SERVICE=="WMS"){
-				newLayer = new OpenLayers.Layer.WMS(layerObject.name , url , paramsObj , layerObject.options);
-			} else {
-				Ext.Msg.alert("Please provide the \"" + layerObject.servicename + "\" service type.");
-			}
-		newLayer.displayInLayerSwitcher = true;
-
-		return newLayer;
 	},
 
-	/**
-	 * Build a Legend Object from a JSON object.
-	 * 
-	 * @return OpenLayers.Layer
-	 */
-	buildLegend : function(layerObject,serviceObject) {
-		legend = Ext.getCmp('legendspanel')
-			.add(new Ext.Component({
-				// Extjs 5 doesn't accept '.' into ids
-				id : this.id + layerObject.name.replace(/\./g,'-'),
-					autoEl : {
-						tag : 'div',
-						children : [{
-							tag : 'span',
-							html : layerObject.options.label,
-							cls : 'x-form-item x-form-item-label'
-						},{
-							tag : 'img',
-							src : serviceObject.urls.toString()
-							+ 'LAYER='+ layerObject.params.layers
-							+ '&SERVICE=' + serviceObject.params.SERVICE+ '&VERSION=' + serviceObject.params.VERSION + '&REQUEST=' + serviceObject.params.REQUEST
-							+ '&Format=image/png&WIDTH=160&HASSLD=' + (layerObject.params.hasSLD ? 'true' : 'false')
-						}]
-					}
-			}));
-		if (layerObject.params.isDisabled || layerObject.params.isHidden || !layerObject.params.isChecked) {
-			legend.on('render', function(cmp) {
-				cmp.hide();
-			});
-		}
-	},	
-	
 	/**
 	 * Initialize the map
 	 * 
@@ -383,7 +146,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		for ( var i = this.minZoomLevel; i < OgamDesktop.map.resolutions.length; i++) {
 			resolutions.push(OgamDesktop.map.resolutions[i]);
 		}
-		
+
 		// Create the map object
 		var map = new OpenLayers.Map({
 			'controls' : [],
@@ -391,19 +154,18 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			'numZoomLevels' : OgamDesktop.map.numZoomLevels,
 			'projection' : OgamDesktop.map.projection,
 			'units' : 'm',
-			'zoomMethod': null,
 			'tileSize' : new OpenLayers.Size(OgamDesktop.map.tilesize, OgamDesktop.map.tilesize),
 			'maxExtent' : new OpenLayers.Bounds(OgamDesktop.map.x_min, OgamDesktop.map.y_min, OgamDesktop.map.x_max, OgamDesktop.map.y_max),
 			'eventListeners' : {// Hide the legend if needed
-				"changelayer" : function(o) {
+				'changelayer' : function(o) {
 					if (o.property === 'visibility') {
-						this.toggleLayersAndLegendsForZoom(o.layer);
+						this.fireEvent('onLayerVisibilityChange',o.layer);
 					}
-				}, 
+				},
 				scope : this
 			}
 		});
-
+		
 		// Define the vector layer, used to draw polygons
 		this.vectorLayer = new OpenLayers.Layer.Vector("Vector Layer", {
 			printable : false, // This layers is never printed
@@ -449,7 +211,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 
 		// For the GEOM criteria
 		// TODO : Split this in another file
-		if (!this.isDrawingMap) {
+		if (this.isDrawingMap) {
 			if (!Ext.isEmpty(this.maxFeatures)) {
 				this.vectorLayer.preFeatureInsert = function(feature) {
 					if (this.features.length > this.maxFeatures) {
@@ -488,21 +250,21 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		}
 		return map;
 	},
-	
+
 	/**
 	 * Initialize the map toolbar
 	 * 
 	 * @hide
 	 */
 	initToolbar : function() {
-
+		tbar = Ext.create('Ext.toolbar.Toolbar');
 		// Link the toolbar to the map
-		this.tbar.map = this.map;
+		tbar.map = this.map;
 		
 		//
 		// Drawing tools
 		//
-		if (!this.isDrawingMap) {
+		if (this.isDrawingMap) {
 			// Zoom to features button
 			this.zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
 				map : this.map,
@@ -513,18 +275,18 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			// desactivate after
 			// first init
 			});
-			var zoomToFeatureAction = new GeoExt.Action({
+			var zoomToFeatureAction = Ext.create('GeoExt.Action',{
 				control : this.zoomToFeatureControl,
 				iconCls : 'zoomstations',
 				tooltip : this.zoomToFeaturesControlTitle
 			});
-			this.tbar.add(new Ext.button.Button(zoomToFeatureAction));
+			tbar.add(new Ext.button.Button(zoomToFeatureAction));
 
 			// Draw point button
 			if (!this.hideDrawPointButton) {
 				var drawPointControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point);
 
-				var drawPointAction = new GeoExt.Action({
+				var drawPointAction = Ext.create('GeoExt.Action',{
 					control : drawPointControl,
 					map : this.map,
 					tooltip : this.drawPointControlTitle,
@@ -533,14 +295,14 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 					checked : false,
 					iconCls : 'drawpoint'
 				});
-				this.tbar.add(new Ext.button.Button(drawPointAction));
+				tbar.add(new Ext.button.Button(drawPointAction));
 			}
 
 			// Draw line button
 			if (!this.hideDrawLineButton) {
 				var drawLineControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path);
 
-				var drawLineAction = new GeoExt.Action({
+				var drawLineAction = Ext.create('GeoExt.Action',{
 					control : drawLineControl,
 					map : this.map,
 					tooltip : this.drawLineControlTitle,
@@ -549,13 +311,13 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 					checked : false,
 					iconCls : 'drawline'
 				});
-				this.tbar.add(new Ext.button.Button(drawLineAction));
+				tbar.add(new Ext.button.Button(drawLineAction));
 			}
 
 			// Draw polygon button
 			var drawPolygonControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Polygon);
 
-			var drawPolygonAction = new GeoExt.Action({
+			var drawPolygonAction = Ext.create('GeoExt.Action',{
 				control : drawPolygonControl,
 				map : this.map,
 				tooltip : this.drawFeatureControlTitle,
@@ -564,14 +326,14 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				checked : false,
 				iconCls : 'drawpolygon'
 			});
-			this.tbar.add(new Ext.button.Button(drawPolygonAction));
+			tbar.add(new Ext.button.Button(drawPolygonAction));
 
 			// Modify feature
 			var modifyFeatureControl = new OpenLayers.Control.ModifyFeature(this.vectorLayer, {
 				mode : OpenLayers.Control.ModifyFeature.RESHAPE
 			});
 
-			var modifyFeatureAction = new GeoExt.Action({
+			var modifyFeatureAction = Ext.create('GeoExt.Action',{
 				control : modifyFeatureControl,
 				map : this.map,
 				tooltip : this.modifyFeatureControlTitle,
@@ -580,7 +342,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				checked : false,
 				iconCls : 'modifyfeature'
 			});
-			this.tbar.add(new Ext.button.Button(modifyFeatureAction));
+			tbar.add(new Ext.button.Button(modifyFeatureAction));
 			
 			// Delete feature
 			var deleteFeatureControl = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
@@ -592,7 +354,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				type : OpenLayers.Control.TYPE_TOOL
 			});
 
-			var deleteFeatureAction = new GeoExt.Action({
+			var deleteFeatureAction = Ext.create('GeoExt.Action',{
 				control : deleteFeatureControl,
 				map : this.map,
 				tooltip : this.tbarDeleteFeatureButtonTooltip,
@@ -601,10 +363,10 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				checked : false,
 				iconCls : 'deletefeature'
 			});
-			this.tbar.add(new Ext.button.Button(deleteFeatureAction));
+			tbar.add(new Ext.button.Button(deleteFeatureAction));
 
 			// Separator
-			this.tbar.add('-');
+			tbar.add('-');
 
 		} else {
 			if (!this.hideGeomCriteriaToolbarButton) {
@@ -615,11 +377,11 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 					handler : this.addgeomcriteria,
 					scope:this
 				});
-				this.tbar.add(addGeomCriteriaButton);
+				tbar.add(addGeomCriteriaButton);
 			}
 		}
 		
-		this.tbar.add(new Ext.toolbar.Spacer({flex: 1}))
+		tbar.add(new Ext.toolbar.Spacer({flex: 1}))
 		
 		//
 		// Layer Based Tools
@@ -632,7 +394,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				targets : [ this.vectorLayer ],
 				greedy : false
 			});
-			var snappingAction = new GeoExt.Action({
+			var snappingAction = Ext.create('GeoExt.Action',{
 				control : this.snappingControl,
 				map : this.map,
 				tooltip : 'Snapping',
@@ -642,14 +404,14 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				iconCls : 'snapping'
 			});
 			if (!this.hideSnappingButton) {
-				this.tbar.add(new Ext.button.Button(snappingAction));
+				tbar.add(new Ext.button.Button(snappingAction));
 			}
 			
 			// Get Feature tool
 			this.getFeatureControl = new OpenLayers.Control.GetFeatureControl({
 				map : this.map
 			});
-			var getFeatureAction = new GeoExt.Action({
+			var getFeatureAction = Ext.create('GeoExt.Action',{
 				control : this.getFeatureControl,
 				map : this.map,
 				tooltip : this.selectFeatureControlTitle,
@@ -662,7 +424,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			
 			getFeatureButton.on('getFeature', this.getFeature, this);
 			if (!this.hideGetFeatureButton) {
-				this.tbar.add(getFeatureButton);
+				tbar.add(getFeatureButton);
 			}
 			
 			// Feature Info Tool
@@ -671,7 +433,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				map : this.map
 			});
 			
-			var featureInfoAction = new GeoExt.Action({
+			var featureInfoAction = Ext.create('GeoExt.Action',{
 				control : this.featureInfoControl,
 				map : this.map,
 				toggleGroup : "editing",
@@ -681,19 +443,17 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				iconCls : 'feature-info'
 			});
 			if (!this.hideFeatureInfoButton) {
-				this.tbar.add(new Ext.button.Button(featureInfoAction));
+				tbar.add(new Ext.button.Button(featureInfoAction));
 			}
 			
 			// Layer selector
 			this.layerSelector = Ext.create('Ext.form.field.ComboBox',{
-				xtype : 'layerselector',
+				xtype: 'layerselector',
 				editable: false,
 				emptyText: this.LayerSelectorEmptyTextValue,
-				//mode : 'remote',
 				triggerAction : 'all',
-				//geoPanelId: this.id,
-				store : new Ext.data.Store({
-					autoLoad : true,
+				store : Ext.create('Ext.data.Store',{
+					autoLoad: true,
 					proxy: {
 						type: 'ajax',
 						url: Ext.manifest.OgamDesktop.requestServiceUrl + '../map/ajaxgetvectorlayers',
@@ -719,12 +479,10 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				valueField : 'code',
 				displayField : 'label'
 			});
-			// Listen for the layer selector events
-			this.layerSelector.on('select', this.layerSelected, this);
-			this.tbar.add(this.layerSelector);
+			tbar.add(this.layerSelector);
 			
 			// Add separator
-			this.tbar.add('-');
+			tbar.add('-');
 		}		
 		
 		//
@@ -747,8 +505,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			disabled : true,
 			handler : historyControl.next.trigger
 		});
-		this.tbar.add(buttonPrevious);
-		this.tbar.add(buttonNext);
+		tbar.add(buttonPrevious);
+		tbar.add(buttonNext);
 
 		historyControl.previous.events.register("activate", buttonPrevious, function() {
 			this.setDisabled(false);
@@ -765,7 +523,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		historyControl.next.events.register("deactivate", buttonNext, function() {
 			this.setDisabled(true);
 		});
-		
 
 		//
 		// Get info on the feature
@@ -776,7 +533,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			geoPanelId : this.id
 		});
 
-		var locationInfoAction = new GeoExt.Action({
+		var locationInfoAction = Ext.create('GeoExt.Action',{
 			control : locationInfoControl,
 			map : this.map,
 			toggleGroup : "editing",
@@ -785,7 +542,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			tooltip : this.locationInfoControlTitle,
 			iconCls : 'feature-info'
 		});
-		this.tbar.add(new Ext.button.Button(locationInfoAction));
+		tbar.add(new Ext.button.Button(locationInfoAction));
 
 		
 		//
@@ -798,7 +555,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		});
 		
 
-		var zoomInAction = new GeoExt.Action({
+		var zoomInAction = Ext.create('GeoExt.Action',{
 			control : zoomInControl,
 			map : this.map,
 			tooltip : this.zoomBoxInControlTitle,
@@ -807,7 +564,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			checked : false,
 			iconCls : 'zoomin'
 		});
-		this.tbar.add(new Ext.button.Button(zoomInAction));
+		tbar.add(new Ext.button.Button(zoomInAction));
 
 		// Zoom Out
 		var zoomOutControl = new OpenLayers.Control.ZoomBox({
@@ -815,7 +572,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			title : this.zoomBoxOutControlTitle
 		});
 
-		var zoomOutAction = new GeoExt.Action({
+		var zoomOutAction = Ext.create('GeoExt.Action',{
 			control : zoomOutControl,
 			map : this.map,
 			tooltip : this.zoomBoxOutControlTitle,
@@ -825,7 +582,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			iconCls : 'zoomout'
 		});
 
-		this.tbar.add(new Ext.button.Button(zoomOutAction));
+		tbar.add(new Ext.button.Button(zoomOutAction));
 
 		// Navigation
 		var navigationControl = new OpenLayers.Control.Navigation({
@@ -835,7 +592,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			}
 		});
 
-		var navigationAction =new GeoExt.Action({
+		var navigationAction =Ext.create('GeoExt.Action',{
 			control : navigationControl,
 			map : this.map,
 			tooltip : this.navigationControlTitle,
@@ -845,13 +602,13 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			iconCls : 'pan'
 		});
 
-		this.tbar.add(new Ext.button.Button(navigationAction));
+		tbar.add(new Ext.button.Button(navigationAction));
 
 		// Séparateur
-		this.tbar.add('-');
+		tbar.add('-');
 
 		// Zoom to the Results
-		var zoomToResultAction = new GeoExt.Action({
+		var zoomToResultAction = Ext.create('GeoExt.Action',{
 			handler : this.zoomOnResultsBBox,
 			scope : this,
 			map : this.map,
@@ -860,7 +617,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			iconCls : 'zoomstations'
 		});
 
-		this.tbar.add(new Ext.button.Button(zoomToResultAction));
+		tbar.add(new Ext.button.Button(zoomToResultAction));
 
 		// Zoom to max extend
 		var zoomToMaxControl = new OpenLayers.Control.ZoomToMaxExtent({
@@ -868,7 +625,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			active : false
 		});
 
-		var zoomToMaxAction = new GeoExt.Action({
+		var zoomToMaxAction = Ext.create('GeoExt.Action',{
 			control : zoomToMaxControl,
 			map : this.map,
 			tooltip : this.zoomToMaxExtentControlTitle,
@@ -876,7 +633,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			iconCls : 'zoomfull'
 		});
 
-		this.tbar.add(new Ext.button.Button(zoomToMaxAction));
+		tbar.add(new Ext.button.Button(zoomToMaxAction));
 		
 		if (!this.hidePrintMapButton) {
 			var printMapButton = new Ext.button.Button({
@@ -888,77 +645,84 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			});
 			
 			// Séparateur
-			this.tbar.add('-');
+			tbar.add('-');
 			
-			this.tbar.add(printMapButton);
-		}
-	},
-	
-	
-	addgeomcriteria: function(){
-		Ext.getCmp('geometryfield').openMap();
-	},
-	
-	/**
-	 * A layer has been selected in the layer selector
-	 */
-	layerSelected : function(combo, value) {
-		console.log(value);
-		if (value[0].data.code !== null) {
-			console.log('data code non nul');
-			var layerName = value[0].data.code;
-			var url = value[0].data.url;
-			var popupTitle = this.popupTitle;
-			
-			// Change the WFS layer typename
-			this.wfsLayer.protocol.featureType = layerName;
-			this.wfsLayer.protocol.options.featureType = layerName;
-			this.wfsLayer.protocol.format.featureType = layerName;
-			this.wfsLayer.protocol.params.typename = layerName;
-			this.wfsLayer.protocol.options.url = url;
-
-			// Remove all current features
-			this.wfsLayer.destroyFeatures();
-			
-			// Copy the visibility range from the original
-			// layer
-			originalLayers = this.map.getLayersByName(layerName);
-			if (originalLayers != null) {
-				originalLayer = originalLayers[0];
-				this.wfsLayer.maxResolution = originalLayer.maxResolution;
-				this.wfsLayer.maxScale = originalLayer.maxScale;
-				this.wfsLayer.minResolution = originalLayer.minResolution;
-				this.wfsLayer.minScale = originalLayer.minScale;
-				this.wfsLayer.alwaysInRange = false;
-				this.wfsLayer.calculateInRange();
-			}
-			
-			// Make it visible
-			this.wfsLayer.setVisibility(true);
-
-			// Force a refresh (rebuild the WFS URL)
-			this.wfsLayer.moveTo(null, true, false);
-
-			// Set the layer name in other tools
-			if (this.getFeatureControl !== null) {
-				this.getFeatureControl.layerName = layerName;
-			}
-			
-			this.wfsLayer.refresh();
-			this.wfsLayer.strategies[0].update({force:true});
-
-			
-		} else {
-			// Hide the layer
-			this.wfsLayer.setVisibility(false);
+			tbar.add(printMapButton);
 		}
 		
-		// Set the layer name in feature info tool
-		if (this.featureInfoControl !== null) {
-			this.featureInfoControl.layerName = layerName;
+		return tbar;
+	},
+
+	/**
+	 * Build one OpenLayer Layer from a JSON object.
+	 * 
+	 * @return OpenLayers.Layer
+	 */
+	buildLayer : function(layerObject,serviceObject) {
+		var url = serviceObject.data.config.urls;
+			//Merges the service parameters and the layer parameters
+			var paramsObj = {};
+			for (var attrname in layerObject.data.params) { paramsObj[attrname] = layerObject.data.params[attrname]; }
+			for (var attrname in serviceObject.data.config.params) { paramsObj[attrname] = serviceObject.data.config.params[attrname]; }
+			if (serviceObject.data.config.params.SERVICE=="WMTS") {
+				//creation and merging of wmts parameters
+				var layer=paramsObj.layers[0];
+				var tileOrigin = new OpenLayers.LonLat(-20037508,20037508); //coordinates of top left corner of the matrixSet : usual value of geoportal, google maps 
+				var serverResolutions = [156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646]; 
+				// the usual 22 values of resolutions accepted by wmts servers geoportal
+				
+				var obj={options:layerObject.data.options,name:layerObject.data.name,url:url.toString(),layer:layer,tileOrigin:tileOrigin,serverResolutions:serverResolutions,opacity:layerObject.data.options.opacity,visibility:layerObject.data.options.visibility,isBaseLayer:layerObject.data.options.isBaseLayer};
+				var objMergeParams= {};
+				for (var attrname in obj) { objMergeParams[attrname] = obj[attrname]; }
+				for (var attrname in paramsObj) { objMergeParams[attrname] = paramsObj[attrname]; }
+				newLayer = new OpenLayers.Layer.WMTS(objMergeParams);
+
+			} else if (serviceObject.data.config.params.SERVICE=="WMS"){
+				newLayer = new OpenLayers.Layer.WMS(layerObject.name , url , paramsObj , layerObject.options);
+			} else {
+				Ext.Msg.alert("Please provide the \"" + layerObject.servicename + "\" service type.");
+			}
+		newLayer.displayInLayerSwitcher = true;
+
+		return newLayer;
+	},
+
+	/**
+	 * Build a Legend Object from a JSON object.
+	 * 
+	 * @return OpenLayers.Layer
+	 */
+	buildLegend : function(layerObject,serviceObject) {
+		legend = Ext.getCmp('legendspanel')
+			.add(new Ext.Component({
+				// Extjs 5 doesn't accept '.' into ids
+				id : this.id + layerObject.data.name.replace(/\./g,'-'),
+					autoEl : {
+						tag : 'div',
+						children : [{
+							tag : 'span',
+							html : layerObject.data.options.label,
+							cls : 'x-form-item x-form-item-label'
+						},{
+							tag : 'img',
+							src : serviceObject.data.config.urls.toString()
+							+ 'LAYER='+ layerObject.data.params.layers
+							+ '&SERVICE=' + serviceObject.data.config.params.SERVICE+ '&VERSION=' + serviceObject.data.config.params.VERSION + '&REQUEST=' + serviceObject.data.config.params.REQUEST
+							+ '&Format=image/png&WIDTH=160&HASSLD=' + (layerObject.data.params.hasSLD ? 'true' : 'false')
+						}]
+					}
+			}));
+		if (layerObject.data.params.isDisabled || layerObject.data.params.isHidden || !layerObject.data.params.isChecked) {
+			legend.on('render', function(cmp) {
+				cmp.hide();
+			});
 		}
 	},
-	
+
+	addgeomcriteria: function(){
+		console.log(Ext.getCmp('geometryfield'));
+		Ext.getCmp('geometryfield').openMap();
+	},
 
 	/**
 	 * A feature has been selected using the GetFeatureControl
@@ -1015,248 +779,37 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	},
 
 	/**
-	 * Convenience function to hide or show a legend by boolean.
-	 * 
-	 * @param {Array}
-	 *            layerNames The layers name
-	 * @param {Boolean}
-	 *            visible True to show, false to hide
+	 * Set the layers of the map
 	 */
-	setLegendsVisible : function(layerNames, visible) {
-		var i;
-		this.legendPanel = Ext.getCmp('legendspanel');
-		for (i = 0; i < layerNames.length; i++) {
-			var legendCmp = this.legendPanel.getComponent(this.id + layerNames[i]);
-			if (!Ext.isEmpty(legendCmp)) {
-				if (visible === true) {
-					var layers = this.map.getLayersByName(layerNames[i]);
-					if (layers[0].calculateInRange() && layers[0].getVisibility()) {
-						legendCmp.show();
-					} else {
-						legendCmp.hide();
-					}
-				} else {
-					legendCmp.hide();
-				}
-			}
+	setMapLayers : function(map) {
+		// Add the base layer (always first)
+		map.addLayer(this.baseLayer);
+
+		// Add the available layers
+		for ( var i = 0; i < this.layersList.length; i++) {
+			map.addLayer(this.layersList[i]);
 		}
-	},
-
-	/**
-	 * Toggle the layer node and legend in function of the zoom
-	 * range
-	 * 
-	 * @param {OpenLayers.Layer}
-	 *            layer The layer to check
-	 */
-	toggleLayersAndLegendsForZoom : function(layer) {
-		if (!Ext.isEmpty(this.layerTree)) {
-			var node;
-			layerStore = this.layerTree.store;
-			layerStore.each(function(layerNode){
-				if (layerNode.data.name == layer.name){
-					node = layerNode;
-				}
-			})
-			if (!Ext.isEmpty(node) && !node.hidden) {
-				if (!layer.calculateInRange()) {
-					node.zoomDisable = true;
-					this.disableLayersAndLegends([ layer.name ], false, false, false);
-				} else {
-					node.zoomDisable = false;
-					if (node.forceDisable !== true) {
-						this.enableLayersAndLegends([ layer.name ], false, false);
-					}
-				}
-			}
+		// Add the WFS layer
+		if (!this.hideLayerSelector && this.wfsLayer !== null) {
+			map.addLayer(this.wfsLayer);
+			this.snappingControl.addTargetLayer(this.wfsLayer);
 		}
-	},
-	
-	/**
-	 * Enable and show the layer(s) node and show the legend(s)
-	 * 
-	 * @param {Array}
-	 *            layerNames The layer names
-	 * @param {Boolean}
-	 *            check True to check the layerTree node
-	 *            checkbox (default to false)
-	 * @param {Boolean}
-	 *            setForceDisable Set the layerTree node
-	 *            forceDisable parameter (default to true) The
-	 *            forceDisable is used by the
-	 *            'toggleLayersAndLegendsForZoom' function to
-	 *            avoid to enable, a node disabled for another
-	 *            cause that the zoom range.
-	 */
-	enableLayersAndLegends : function(layerNames, check, setForceDisable) {
-		if (!Ext.isEmpty(layerNames)) {
-			// The tabPanels must be activated before to show a
-			// child component
-			var isLayerPanelVisible = this.layerTree.isVisible(), i;
-
-			Ext.getCmp('mapaddonspanel').setActiveItem(this.layerTree);
-			for (i = 0; i < layerNames.length; i++) {
-				var node;
-				layerStore = this.layerTree.store;
-				layerStore.each(function(layerNode){
-					if (layerNode.data.name == layerNames[i]){
-						node = layerNode;
-					}
-				})
-				if (!Ext.isEmpty(node)) {
-					var nodeId = node.id;
-					if (setForceDisable !== false) {
-						this.layerTree.store.getNodeById(nodeId).forceDisable = false;
-					}
-					if (this.layerTree.store.getNodeById(nodeId).zoomDisable !== true) {
-//						this.layerTree.getNodeById(nodeId).enable();
-						node.data.disabled = false;
-						this.layerTree.fireEvent('nodeEnabled', node);
-					}
-//					this.layerTree.store.getNodeById(nodeId).getUI().show();
-
-					if (check === true) {
-						// Note: the redraw must be done before
-						// to
-						// check the node
-						// to avoid to redisplay the old layer
-						// images before the new one
-						var layers = this.map.getLayersByName(layerNames[i]);
-						layers[0].redraw(true);
-						this.layerTree.toggleNodeCheckbox(nodeId, true);
-					}
-				}
-			}
-
-			Ext.getCmp('mapaddonspanel').setActiveItem(Ext.getCmp('legendspanel'));
-			this.setLegendsVisible(layerNames, true);
-
-			// Keep the current activated panel activated
-			if (isLayerPanelVisible) {
-				Ext.getCmp('mapaddonspanel').setActiveItem(this.layerTree);
-			}
-		} else {
-			console.warn('EnableLayersAndLegends : layerNames parameter is empty.');
-		}
-	},
-
-	/**
-	 * Disable (and hide if asked) the layer(s) And hide the
-	 * legend(s)
-	 * 
-	 * @param {Array}
-	 *            layerNames The layer names
-	 * @param {Boolean}
-	 *            uncheck True to uncheck the layerTree node
-	 *            checkbox (default to false)
-	 * @param {Boolean}
-	 *            hide True to hide the layer(s) and legend(s)
-	 *            (default to false)
-	 * @param {Boolean}
-	 *            setForceDisable Set the layerTree node
-	 *            forceDisable parameter (default to true) The
-	 *            forceDisable is used by the
-	 *            'toggleLayersAndLegendsForZoom' function to
-	 *            avoid to enable, a node disable for another
-	 *            cause that the zoom range.
-	 */
-	disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) { // hide ne sert à rien
-		var i;
-		if (!Ext.isEmpty(layerNames) && (this.layerTree !== null)) {
-			for (i = 0; i < layerNames.length; i++) {
-				var node;
-				layerStore = this.layerTree.store;
-				layerStore.each(function(layerNode){
-					if (layerNode.data.name == layerNames[i]){
-						node = layerNode;
-					}
-				})
-				if (!Ext.isEmpty(node)) {
-					var nodeId = node.id;
-					if (uncheck === true) {
-						this.layerTree.toggleNodeCheckbox(nodeId, false);
-					}
-					node.data.disabled = true;
-					this.layerTree.fireEvent('nodeDisabled', node);
-				}
-				this.setLegendsVisible([ layerNames[i] ], false);
-			}
-		}
-	},
-
-	/**
-	 * Create and submit a form
-	 * 
-	 * @param {String}
-	 *            url The form url
-	 * @param {object}
-	 *            params The form params
-	 */
-	post: function(url, params) {
-		var temp = document.createElement("form"), x;
-		temp.action = url;
-		temp.method = "POST";
-		temp.style.display = "none";
-		for (x in params) {
-			var opt = document.createElement("textarea");
-			opt.name = x;
-			opt.value = params[x];
-			temp.appendChild(opt);
-		}
-		document.body.appendChild(temp);
-		temp.submit();
-		return temp;
-	}, 
-
-
-	/**
-	 * Print the map
-	 * 
-	 * @param {Ext.Button}
-	 *            button The print map button
-	 * @param {EventObject}
-	 *            event The click event
-	 */
-	printMap : function(button, event) {
-		// Get the BBOX
-		var center = this.map.center, zoom = this.map.zoom, i;
-
-		// Get the layers
-		var activatedLayers = this.map.getLayersBy('visibility', true);
-		var activatedLayersNames = '';
-		for (i = 0; i < activatedLayers.length; i++) {
-			currentLayer = activatedLayers[i];
-			if (currentLayer.printable !== false &&
-				currentLayer.visibility == true &&
-				currentLayer.inRange == true) {
-				activatedLayersNames += activatedLayers[i].name + ',';
-			}
-		}
-		activatedLayersNames = activatedLayersNames.substr(0, activatedLayersNames.length - 1);
-		this.post(Ext.manifest.OgamDesktop.requestServiceUrl +'../map/printmap', {
-			center : center,
-			zoom : zoom,
-			layers : activatedLayersNames
-		});
+		// Add the vector layer
+		map.addLayer(this.vectorLayer);
 	},
 	
 	/**
 	 * Destroy this component.
 	 */
-	destroy : function() {
+	onDestroy : function() {
 		this.baseLayer = null;
 		this.wktFormat = null;
-		this.layersActivation = null;
 		this.layersList = null;
 		this.featureInfoControl = null;
 
 		if (this.map) {
 			this.map.destroy();
 			this.map = null;
-		}
-		if (this.selectorButton) {
-			this.selectorButton.destroy();
-			this.selectorButton = null;
 		}
 		if (this.vectorLayer) {
 			this.vectorLayer.destroy();
@@ -1265,30 +818,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		if (this.wfsLayer) {
 			this.wfsLayer.destroy();
 			this.wfsLayer = null;
-		}
-		if (this.mapPanel) {
-			this.mapPanel.destroy();
-			this.mapPanel = null;
-		}
-		if (this.mapToolbar) {
-			this.mapToolbar.destroy();
-			this.mapToolbar = null;
-		}
-		if (this.layersAndLegendsPanel) {
-			this.layersAndLegendsPanel.destroy();
-			this.layersAndLegendsPanel = null;
-		}
-		if (this.layerPanel) {
-			this.layerPanel.destroy();
-			this.layerPanel = null;
-		}
-		if (this.layerTree) {
-			this.layerTree.destroy();
-			this.layerTree = null;
-		}
-		if (this.legendPanel) {
-			this.legendPanel.destroy();
-			this.legendPanel = null;
 		}
 		this.callParent(arguments);
 
