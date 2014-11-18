@@ -43,7 +43,6 @@ Ext.define('GeoExt.tree.LayerNode', {
 
         this.target = target;
         var layer = target.get('layer');
-
         target.set('checked', layer.getVisibility());
         if (!target.get('checkedGroup') && layer.isBaseLayer) {
             target.set('checkedGroup', 'gx_baselayer');

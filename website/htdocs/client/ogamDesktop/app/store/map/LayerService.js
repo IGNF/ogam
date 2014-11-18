@@ -9,6 +9,5 @@ Ext.define('OgamDesktop.store.map.LayerService',{
 			type: 'json',
 			rootProperty: 'services'
 		}
-	},
-	autoLoad: true
+	}
 });

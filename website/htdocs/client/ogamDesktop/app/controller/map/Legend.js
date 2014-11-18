@@ -6,7 +6,8 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 		'OgamDesktop.view.map.LegendsPanel',
 		'OgamDesktop.view.map.MapPanel'
 	],
-
+	layerTree: null,
+	legendsPanel: null,
 	config: {
 		refs: {
 			layerspanel: 'layers-panel',
@@ -97,11 +98,7 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 	 */
 	enableLayersAndLegends : function(layerNames, check, setForceDisable) {
 		if (!Ext.isEmpty(layerNames)) {
-			// The tabPanels must be activated before to show a
-			// child component
-			var isLayerPanelVisible = this.layerTree.isVisible(), i;
-
-//			Ext.getCmp('mapaddonspanel').setActiveItem(this.layerTree);
+			var i;
 			for (i = 0; i < layerNames.length; i++) {
 				var node;
 				layerStore = this.layerTree.store;
@@ -117,7 +114,7 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 					}
 					if (this.layerTree.store.getNodeById(nodeId).zoomDisable !== true) {
 						node.data.disabled = false;
-						this.layerTree.fireEvent('nodeEnabled', node);
+						this.layerTree.fireEvent('nodeEnable', node, true);
 					}
 
 					if (check === true) {
@@ -126,20 +123,15 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 						// check the node
 						// to avoid to redisplay the old layer
 						// images before the new one
-						var layers = this.map.getLayersByName(layerNames[i]);
+						var layers = this.getMappanel().map.getLayersByName(layerNames[i]);
 						layers[0].redraw(true);
-						this.layerTree.toggleNodeCheckbox(nodeId, true);
+						this.toggleNodeCheckbox(nodeId, true);
 					}
 				}
 			}
 
-			Ext.getCmp('mapaddonspanel').setActiveItem(Ext.getCmp('legendspanel'));
 			this.setLegendsVisible(layerNames, true);
 
-			// Keep the current activated panel activated
-			if (isLayerPanelVisible) {
-				Ext.getCmp('mapaddonspanel').setActiveItem(this.layerTree);
-			}
 		} else {
 			console.warn('EnableLayersAndLegends : layerNames parameter is empty.');
 		}
@@ -179,13 +171,27 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 				if (!Ext.isEmpty(node)) {
 					var nodeId = node.id;
 					if (uncheck === true) {
-						this.layerTree.toggleNodeCheckbox(nodeId, false);
+						this.toggleNodeCheckbox(nodeId, false);
 					}
 					node.data.disabled = true;
-					this.layerTree.fireEvent('nodeDisabled', node);
+					this.layerTree.fireEvent('nodeEnable', node, false);
 				}
 				this.setLegendsVisible([ layerNames[i] ], false);
 			}
 		}
+	},
+
+	/**
+	 * Toggle the node checkbox
+	 * 
+	 * @param {Integer}
+	 *            nodeId The node id
+	 * @param {Boolean}
+	 *            toggleCheck True to check, false to uncheck the box. If no
+	 *            value was passed, toggles the checkbox
+	 */
+	toggleNodeCheckbox : function(nodeId, toggleCheck) {
+		var node = this.layerTree.store.getNodeById(nodeId);
+		node.set('checked', toggleCheck);
 	}
 });

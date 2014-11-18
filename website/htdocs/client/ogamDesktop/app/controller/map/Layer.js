@@ -12,25 +12,55 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	layers: [],
 	services: [],
 	mapPanel: null,
-	layersPanel: null,
-	wfsLayer: null,
-	vectorLayer: null,
-	
+
 	config: {
 		refs: {
 			layerspanel: 'layers-panel',
-			legendspanel: 'legends-panel'
+			legendspanel: 'legends-panel',
+			mapaddonspanel: 'map-addons-panel'
 		},		
 		control: {
 			'map-panel toolbar combobox': {
 				select: 'layerSelected'
 			},
+			'map-panel toolbar button[action="zoomtoresults"]': {
+				click: 'zoomOnResultsBBox'
+			},
 			'map-panel': {
-				afterrender: 'afterMapPanelRender'
+				afterrender: 'afterMapPanelRender',
+				afterinitmap: 'setMapLayers',
+				getFeature: 'getFeature'
+			},
+			'layers-panel': {
+				checkchange: 'onCheckChange',
+				nodeEnable: 'nodeEnable'
 			}
 		}
 	},
 	
+	nodeEnable: function(node, toEnable) {
+		// The tabPanels must be activated before to show a
+		// child component
+		var isLayerPanelVisible = this.getLayerspanel().isVisible();
+		this.getMapaddonspanel().setActiveItem(this.getLayerspanel());
+		
+		var parent = node.parentNode;
+		if (toEnable === false) {
+			node.data.cls = 'dvp-tree-node-disabled';
+		} else {
+			node.data.cls = '';
+		}
+		if (!parent.collapsed) {
+			parent.collapse();
+			parent.expand();
+		}
+		
+		// Keep the current activated panel activated
+		if (!isLayerPanelVisible) {
+			this.getMapaddonspanel().setActiveItem(this.getLegendspanel());
+		}
+	},
+
 	afterMapPanelRender: function(mappanel) {
 		this.mapPanel = mappanel;
 		var serviceStore = this.getStore('map.LayerService');
@@ -39,7 +69,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			scope: this
 		});
 	},
-
 
 	onServiceStoreLoad: function(services) {
 		this.services = services;
@@ -128,8 +157,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		this.mapPanel.wfsLayer.extractAttributes = false;
 		this.mapPanel.wfsLayer.styleMap = styleMap;
 		this.mapPanel.wfsLayer.visibility = false;
-		this.setMapLayers(this.mapPanel.map);
 		
+		this.setMapLayers(this.mapPanel.map, this.mapPanel.baseLayer, this.mapPanel.vectorLayer, this.mapPanel.wfsLayer);
+
 		// Gets the layer tree model to initialise the Layer
 		// Tree
 		var layerNodeStore = this.getStore('map.LayerNode');
@@ -175,14 +205,12 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 
 	/**
 	 * Build a Legend Object from a JSON object.
-	 * 
-	 * @return OpenLayers.Layer
 	 */
 	buildLegend : function(layerObject,serviceObject) {
 		legend = this.getLegendspanel()
 			.add(new Ext.Component({
 				// Extjs 5 doesn't accept '.' into ids
-				id : this.id + layerObject.data.name.replace(/\./g,'-'),
+				id : this.mapPanel.id + layerObject.data.name.replace(/\./g,'-'),
 					autoEl : {
 						tag : 'div',
 						children : [{
@@ -208,25 +236,26 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	/**
 	 * Set the layers of the map
 	 */
-	setMapLayers : function(map) {
+	setMapLayers : function(map, vectorLayer, baseLayer, wfsLayer) {
 		// Add the base layer (always first)
-//		map.addLayer(this.baseLayer);
+		map.addLayer(baseLayer);
 
 		// Add the available layers
 		for ( var i = 0; i < this.layersList.length; i++) {
 			map.addLayer(this.layersList[i]);
 		}
 		// Add the WFS layer
-		if (!this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
+		if (this.mapPanel && !this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
 			map.addLayer(this.mapPanel.wfsLayer);
 			this.mapPanel.snappingControl.addTargetLayer(this.mapPanel.wfsLayer);
 		}
 		// Add the vector layer
-//		map.addLayer(this.vectorLayer);
+		map.addLayer(vectorLayer);
 	},
-
-
 	
+	/**
+	 * 
+	 */
 	initLayerTree: function(nodes) {
 		
 		// initialize the Tree store based on the map layers
@@ -334,60 +363,103 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			this.mapPanel.featureInfoControl.layerName = layerName;
 		}
 	},
-
+	
 	/**
-	 * Create and submit a form
-	 * 
-	 * @param {String}
-	 *            url The form url
-	 * @param {object}
-	 *            params The form params
+	 * A feature has been selected using the GetFeatureControl
+	 * tool.
 	 */
-	post: function(url, params) {
-		var temp = document.createElement("form"), x;
-		temp.action = url;
-		temp.method = "POST";
-		temp.style.display = "none";
-		for (x in params) {
-			var opt = document.createElement("textarea");
-			opt.name = x;
-			opt.value = params[x];
-			temp.appendChild(opt);
-		}
-		document.body.appendChild(temp);
-		temp.submit();
-		return temp;
-	}, 
-
-	/**
-	 * Print the map
-	 * 
-	 * @param {Ext.Button}
-	 *            button The print map button
-	 * @param {EventObject}
-	 *            event The click event
-	 */
-	printMap : function(button, event) {
-		// Get the BBOX
-		var center = this.mapPanel.map.center, zoom = this.mapPanel.map.zoom, i;
-
-		// Get the layers
-		var activatedLayers = this.mapPanel.map.getLayersBy('visibility', true);
-		var activatedLayersNames = '';
-		for (i = 0; i < activatedLayers.length; i++) {
-			currentLayer = activatedLayers[i];
-			if (currentLayer.printable !== false &&
-				currentLayer.visibility == true &&
-				currentLayer.inRange == true) {
-				activatedLayersNames += activatedLayers[i].name + ',';
+	getFeature : function(feature, mapId) {
+		console.log(feature);
+		console.log(mapId);
+		if (mapId == this.mapPanel.map.id) {
+			// Add the feature to the vector layer
+			if (this.mapPanel.vectorLayer !== null) {
+				this.mapPanel.vectorLayer.addFeatures(feature);
 			}
 		}
-		activatedLayersNames = activatedLayersNames.substr(0, activatedLayersNames.length - 1);
-		console.log(center+zoom+activatedLayersNames);
-		this.post(Ext.manifest.OgamDesktop.requestServiceUrl +'../map/printmap', {
-			center : center,
-			zoom : zoom,
-			layers : activatedLayersNames
-		});
-	}	
+	},
+
+	/**
+	 * Toggle the children checkbox on the parent checkbox change
+	 * 
+	 * @param {Ext.tree.TreeNode}
+	 *            node The parent node
+	 * @param {Boolean}
+	 *            checked The checked status
+	 * @hide
+	 */
+	onCheckChange : function(node, checked) {
+		if (node.firstChild == null) {
+			if(checked != node.get('layer').getVisibility()) {
+				node._visibilityChanging = true;
+				var layer = node.get('layer');
+				if(checked && layer.isBaseLayer && layer.map) {
+					layer.map.setBaseLayer(layer);
+				} else if(!checked && layer.isBaseLayer && layer.map &&
+					layer.map.baseLayer && layer.id == layer.map.baseLayer.id) {
+					// Must prevent the unchecking of radio buttons
+					node.set('checked', layer.getVisibility());
+				} else {
+					layer.setVisibility(checked);
+				}
+				delete node._visibilityChanging;
+			}
+		}
+		for ( var i = 0 ; i < node.childNodes.length ; i++) {
+			var child = node.childNodes[i];
+			if (!child.get('disabled')) {
+				child.set('checked', checked);
+				this.onCheckChange(child, checked);
+			}
+		}
+	},
+
+	addgeomcriteria: function(){
+		console.log(Ext.getCmp('geometryfield'));
+		Ext.getCmp('geometryfield').openMap();
+	},
+
+	/**
+	 * Zoom on the provided bounding box
+	 * 
+	 * {String} wkt The wkt of the bounding box
+	 */
+	zoomOnBBox : function(wkt) {
+		if (!Ext.isEmpty(wkt)) {
+
+			// The ratio by which features' bounding box should
+			// be scaled
+			var ratio = 1;
+
+			// The maximum zoom level to zoom to
+			var maxZoomLevel = this.mapPanel.map.numZoomLevels - 1;
+
+			// Parse the feature location and create a Feature
+			// Object
+			var feature = this.mapPanel.wktFormat.read(wkt);
+
+			var bounds = feature.geometry.getBounds();
+
+			bounds = bounds.scale(ratio);
+
+			var zoom = 0;
+			if ((bounds.getWidth() === 0) && (bounds.getHeight() === 0)) {
+				zoom = maxZoomLevel;
+			} else {
+				var desiredZoom = this.mapPanel.map.getZoomForExtent(bounds);
+				zoom = (desiredZoom > maxZoomLevel) ? maxZoomLevel : desiredZoom;
+			}
+			this.mapPanel.map.setCenter(bounds.getCenterLonLat(), zoom);
+		}
+	},
+
+	/**
+	 * Zoom on the results bounding box
+	 */
+	zoomOnResultsBBox : function() {
+		// To test :
+		//this.mapPanel.resultsBBox = 'POLYGON((939200 2283600,939200 2463600,1026200 2463600,1026200 2283600,939200 2283600))';
+			
+		this.zoomOnBBox(this.mapPanel.resultsBBox);
+	}
 });

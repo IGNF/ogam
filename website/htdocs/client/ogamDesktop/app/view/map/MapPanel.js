@@ -53,8 +53,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 *      following tools.
 	 */
 	hideLayerSelector : false,
-	hideSnappingButton : true,
-	hideGetFeatureButton : true,
+	hideSnappingButton : false,
+	hideGetFeatureButton : false,
 	hideFeatureInfoButton : false,
 	hideGeomCriteriaToolbarButton : false,
 	hidePrintMapButton : false,
@@ -124,7 +124,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	map: null,
 
 	initComponent: function(){
-		
 		// Creates the map Object (OpenLayers)
 		this.map = this.initMap();
 		this.tbar = this.initToolbar();
@@ -182,7 +181,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		//
 		// Set the minimum mandatory layer for the map
 		// 
-		this.setMapLayers(map);
+		this.fireEvent('afterinitmap', map, this.vectorLayer, this.baseLayer);
 
 		//
 		// Add the controls
@@ -374,7 +373,9 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				var addGeomCriteriaButton = new Ext.button.Button({
 					text : this.addGeomCriteriaButtonText,
 					iconCls : 'addgeomcriteria',
-					handler : this.addgeomcriteria,
+					handler : function(){
+						this.fireEvent('addgeomcriteria');
+					},
 					scope:this
 				});
 				tbar.add(addGeomCriteriaButton);
@@ -422,7 +423,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			});
 			var getFeatureButton = new Ext.button.Button(getFeatureAction);
 			
-			getFeatureButton.on('getFeature', this.getFeature, this);
 			if (!this.hideGetFeatureButton) {
 				tbar.add(getFeatureButton);
 			}
@@ -609,8 +609,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 
 		// Zoom to the Results
 		var zoomToResultAction = Ext.create('GeoExt.Action',{
-			handler : this.zoomOnResultsBBox,
 			scope : this,
+			action: 'zoomtoresults',
 			map : this.map,
 			tooltip : this.zoomToResultControlTitle,
 			checked : false,
@@ -638,9 +638,9 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		if (!this.hidePrintMapButton) {
 			var printMapButton = new Ext.button.Button({
 				xtype : 'button',
+				action: 'print',
 				iconCls : 'genapp-query-center-panel-print-map-button-icon',
 				text : this.printMapButtonText,
-				handler : this.printMap,
 				scope : this
 			});
 			
@@ -653,151 +653,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		return tbar;
 	},
 
-	/**
-	 * Build one OpenLayer Layer from a JSON object.
-	 * 
-	 * @return OpenLayers.Layer
-	 */
-	buildLayer : function(layerObject,serviceObject) {
-		var url = serviceObject.data.config.urls;
-			//Merges the service parameters and the layer parameters
-			var paramsObj = {};
-			for (var attrname in layerObject.data.params) { paramsObj[attrname] = layerObject.data.params[attrname]; }
-			for (var attrname in serviceObject.data.config.params) { paramsObj[attrname] = serviceObject.data.config.params[attrname]; }
-			if (serviceObject.data.config.params.SERVICE=="WMTS") {
-				//creation and merging of wmts parameters
-				var layer=paramsObj.layers[0];
-				var tileOrigin = new OpenLayers.LonLat(-20037508,20037508); //coordinates of top left corner of the matrixSet : usual value of geoportal, google maps 
-				var serverResolutions = [156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646]; 
-				// the usual 22 values of resolutions accepted by wmts servers geoportal
-				
-				var obj={options:layerObject.data.options,name:layerObject.data.name,url:url.toString(),layer:layer,tileOrigin:tileOrigin,serverResolutions:serverResolutions,opacity:layerObject.data.options.opacity,visibility:layerObject.data.options.visibility,isBaseLayer:layerObject.data.options.isBaseLayer};
-				var objMergeParams= {};
-				for (var attrname in obj) { objMergeParams[attrname] = obj[attrname]; }
-				for (var attrname in paramsObj) { objMergeParams[attrname] = paramsObj[attrname]; }
-				newLayer = new OpenLayers.Layer.WMTS(objMergeParams);
-
-			} else if (serviceObject.data.config.params.SERVICE=="WMS"){
-				newLayer = new OpenLayers.Layer.WMS(layerObject.name , url , paramsObj , layerObject.options);
-			} else {
-				Ext.Msg.alert("Please provide the \"" + layerObject.servicename + "\" service type.");
-			}
-		newLayer.displayInLayerSwitcher = true;
-
-		return newLayer;
-	},
-
-	/**
-	 * Build a Legend Object from a JSON object.
-	 * 
-	 * @return OpenLayers.Layer
-	 */
-	buildLegend : function(layerObject,serviceObject) {
-		legend = Ext.getCmp('legendspanel')
-			.add(new Ext.Component({
-				// Extjs 5 doesn't accept '.' into ids
-				id : this.id + layerObject.data.name.replace(/\./g,'-'),
-					autoEl : {
-						tag : 'div',
-						children : [{
-							tag : 'span',
-							html : layerObject.data.options.label,
-							cls : 'x-form-item x-form-item-label'
-						},{
-							tag : 'img',
-							src : serviceObject.data.config.urls.toString()
-							+ 'LAYER='+ layerObject.data.params.layers
-							+ '&SERVICE=' + serviceObject.data.config.params.SERVICE+ '&VERSION=' + serviceObject.data.config.params.VERSION + '&REQUEST=' + serviceObject.data.config.params.REQUEST
-							+ '&Format=image/png&WIDTH=160&HASSLD=' + (layerObject.data.params.hasSLD ? 'true' : 'false')
-						}]
-					}
-			}));
-		if (layerObject.data.params.isDisabled || layerObject.data.params.isHidden || !layerObject.data.params.isChecked) {
-			legend.on('render', function(cmp) {
-				cmp.hide();
-			});
-		}
-	},
-
-	addgeomcriteria: function(){
-		console.log(Ext.getCmp('geometryfield'));
-		Ext.getCmp('geometryfield').openMap();
-	},
-
-	/**
-	 * A feature has been selected using the GetFeatureControl
-	 * tool.
-	 */
-	getFeature : function(feature, mapId) {
-		if (mapId == this.map.id) {
-			// Add the feature to the vector layer
-			if (this.vectorLayer !== null) {
-				this.vectorLayer.addFeatures(feature);
-			}
-		}
-	},
-
-	/**
-	 * Zoom on the provided bounding box
-	 * 
-	 * {String} wkt The wkt of the bounding box
-	 */
-	zoomOnBBox : function(wkt) {
-		if (!Ext.isEmpty(wkt)) {
-
-			// The ratio by which features' bounding box should
-			// be scaled
-			var ratio = 1;
-
-			// The maximum zoom level to zoom to
-			var maxZoomLevel = this.map.numZoomLevels - 1;
-
-			// Parse the feature location and create a Feature
-			// Object
-			var feature = this.wktFormat.read(wkt);
-
-			var bounds = feature.geometry.getBounds();
-
-			bounds = bounds.scale(ratio);
-
-			var zoom = 0;
-			if ((bounds.getWidth() === 0) && (bounds.getHeight() === 0)) {
-				zoom = maxZoomLevel;
-			} else {
-				var desiredZoom = this.map.getZoomForExtent(bounds);
-				zoom = (desiredZoom > maxZoomLevel) ? maxZoomLevel : desiredZoom;
-			}
-			this.map.setCenter(bounds.getCenterLonLat(), zoom);
-		}
-	},
-
-	/**
-	 * Zoom on the results bounding box
-	 */
-	zoomOnResultsBBox : function() {
-		this.zoomOnBBox(this.resultsBBox);
-	},
-
-	/**
-	 * Set the layers of the map
-	 */
-	setMapLayers : function(map) {
-		// Add the base layer (always first)
-		map.addLayer(this.baseLayer);
-
-		// Add the available layers
-		for ( var i = 0; i < this.layersList.length; i++) {
-			map.addLayer(this.layersList[i]);
-		}
-		// Add the WFS layer
-		if (!this.hideLayerSelector && this.wfsLayer !== null) {
-			map.addLayer(this.wfsLayer);
-			this.snappingControl.addTargetLayer(this.wfsLayer);
-		}
-		// Add the vector layer
-		map.addLayer(this.vectorLayer);
-	},
-	
 	/**
 	 * Destroy this component.
 	 */
@@ -820,6 +675,5 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			this.wfsLayer = null;
 		}
 		this.callParent(arguments);
-
 	}
 });

@@ -8,6 +8,5 @@ Ext.define('OgamDesktop.store.map.LayerNode',{
 			type: 'json',
 			rootProperty: ''
 		}
-	},
-	autoLoad: true
+	}
 });

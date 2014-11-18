@@ -4,8 +4,5 @@ Ext.define('OgamDesktop.view.map.LegendsPanel', {
 //	id: 'legendspanel',
 	cls : 'genapp-query-legend-panel',
 	frame : true,
-	autoScroll : true,
-//	initComponent: function() {
-//		this.callParent(arguments);
-//	}
+	autoScroll : true
 });

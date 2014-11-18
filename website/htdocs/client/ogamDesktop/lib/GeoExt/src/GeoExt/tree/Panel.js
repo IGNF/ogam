@@ -31,6 +31,7 @@ Ext.define('GeoExt.tree.Panel', {
     
     initComponent: function() {
         var me = this;
+
         if (!me.columns) {
             if (me.initialConfig.hideHeaders === undefined) {
                 me.hideHeaders = true;
@@ -43,31 +44,8 @@ Ext.define('GeoExt.tree.Panel', {
                 dataIndex: me.displayField         
             }];
         }
-		
-        me.on({"checkchange": function(node, checked){
-    		me.onCheckChange(node, checked);
-    	},
-			scope: me
-		});
 
         me.callParent();
         me.id = me.getId().replace(/\./g,'-');
-    },
-    onCheckChange: function(node,checked) {
-        if(checked != node.get('layer').getVisibility()) {
-            node._visibilityChanging = true;
-            var layer = node.get('layer');
-            if(checked && layer.isBaseLayer && layer.map) {
-                layer.map.setBaseLayer(layer);
-            } else if(!checked && layer.isBaseLayer && layer.map &&
-                      layer.map.baseLayer && layer.id == layer.map.baseLayer.id) {
-                // Must prevent the unchecking of radio buttons
-                node.set('checked', layer.getVisibility());
-            } else {
-                layer.setVisibility(checked);
-            }
-            delete node._visibilityChanging;
-        }
-		
     }
 });

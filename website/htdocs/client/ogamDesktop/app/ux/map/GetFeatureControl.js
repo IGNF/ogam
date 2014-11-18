@@ -51,9 +51,6 @@ OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 	 */
 	initialize : function(map, options) {
 		OpenLayers.Control.prototype.initialize.apply(this, [ options ]);
-		
-		// Register events
-		//Ogam.eventManager.addEvents('getFeature');
 
 		this.handler = new OpenLayers.Handler.GetFeature(this, {
 			'click' : this.click,
@@ -62,11 +59,11 @@ OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 	},
 
 	/**
-	 * This function is called when a feature is received. Fire a event with the
+	 * This function is called when a feature is received. Fire an event with the
 	 * received feature.
 	 */
 	getFeature : function(feature) {
-		this.fireEvent('getFeature', feature, this.map.id);
+		Ext.ComponentQuery.query("gx_mappanel")[0].fireEvent('getFeature', feature, this.map.id);
 	},
 
 	/**

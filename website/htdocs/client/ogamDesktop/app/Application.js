@@ -19,10 +19,11 @@ Ext.define('OgamDesktop.Application', {
 	],
 	controllers: [
 		'map.Layer',
-		'map.Legend'
+		'map.Legend',
+		'map.Main'
 	],
 	views: [
-		'map.MapPanel'
+		'map.MapPanel',
 	],
 
 	launch: function () {
