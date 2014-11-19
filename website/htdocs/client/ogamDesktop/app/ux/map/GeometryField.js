@@ -21,7 +21,7 @@
  * @xtype geometryfield
  */
 
-Ext.define('OgamDesktop.ux.map.GeometryField',{
+Ext.define('Ext.ux.form.field.GeometryField',{
 	extend: 'Ext.form.field.Text',
 	/**
 	 * Internationalization.

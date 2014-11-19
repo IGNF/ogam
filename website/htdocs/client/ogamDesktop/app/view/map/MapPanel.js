@@ -16,7 +16,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		'GeoExt.slider.Tip',
 		'OgamDesktop.view.map.LayersPanel',
 		'OgamDesktop.view.map.LegendsPanel',
-		'OgamDesktop.fields.GeometryField',
+		'Ext.ux.form.field.GeometryField',
 		'GeoExt.window.Popup'
 	],
 //	id: 'mappanel',
@@ -473,7 +473,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			if (!this.hideFeatureInfoButton) {
 				tbar.add(new Ext.button.Button(featureInfoAction));
 			}
-			
+
 			// Layer selector
 			this.layerSelector = Ext.create('Ext.form.field.ComboBox',{
 				xtype: 'layerselector',
@@ -571,7 +571,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		});
 		tbar.add(new Ext.button.Button(locationInfoAction));
 
-		
 		//
 		// Navigation controls
 		//
@@ -580,7 +579,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		var zoomInControl = new OpenLayers.Control.ZoomBox({
 			title : this.zoomBoxInControlTitle
 		});
-		
 
 		var zoomInAction = Ext.create('GeoExt.Action',{
 			control : zoomInControl,
@@ -677,7 +675,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			
 			tbar.add(printMapButton);
 		}
-		
+
 		return tbar;
 	},
 

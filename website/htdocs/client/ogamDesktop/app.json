@@ -125,6 +125,8 @@
         },{
             "path": "${app.dir}/app/ux/map/ContextMenuPlugin.js"
         },{
+            "path": "${app.dir}/app/ux/map/GeometryField.js"
+        },{
             "path": "app.js",
             "bundle": true
         }
