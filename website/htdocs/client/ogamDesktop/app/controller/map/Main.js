@@ -1,3 +1,7 @@
+/**
+ * This class defines the controller with actions related to 
+ * map main view.
+ */
 Ext.define('OgamDesktop.controller.map.Main',{
 	extend: 'OgamDesktop.controller.AbstractWin',
 	requires: [
@@ -5,6 +9,11 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		'OgamDesktop.ux.map.GeometryField'
 	],
 
+	/**
+	 * The refs to get the views concerned
+	 * and the control to define the handlers of the
+	 * MapPanel.
+	 */
 	config: {
 		refs: {
 			mappanel: 'map-panel'
@@ -78,6 +87,9 @@ Ext.define('OgamDesktop.controller.map.Main',{
 	 * Add a geom criteria and open its map
 	 */
 	addgeomcriteria : function() {
+		/**
+		 *  @TODO 
+		 */
 		var criteria = Ext.create('OgamDesktop.ux.map.GeometryField');
 		criteria.openMap();
 	}

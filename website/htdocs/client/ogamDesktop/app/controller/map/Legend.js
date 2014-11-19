@@ -1,3 +1,7 @@
+/**
+ * This class defines the controller with actions related to 
+ * legends.
+ */
 Ext.define('OgamDesktop.controller.map.Legend',{
 	extend: 'Ext.app.Controller',
 //	mixins: ['OgamDesktop.view.interface.LegendsPanel'],
@@ -6,8 +10,12 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 		'OgamDesktop.view.map.LegendsPanel',
 		'OgamDesktop.view.map.MapPanel'
 	],
-	layerTree: null,
-	legendsPanel: null,
+
+	/**
+	 * The refs to get the views concerned
+	 * and the control to define the handlers of the
+	 * MapPanel.
+	 */
 	config: {
 		refs: {
 			layerspanel: 'layers-panel',
@@ -32,7 +40,7 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 	setLegendsVisible : function(layerNames, visible) {
 		var i;
 		for (i = 0; i < layerNames.length; i++) {
-			var legendCmp = this.legendsPanel.getComponent(this.id + layerNames[i]);
+			var legendCmp = this.getLegendspanel().getComponent(this.getMappanel().id + layerNames[i]);
 			if (!Ext.isEmpty(legendCmp)) {
 				if (visible === true) {
 					var layers = this.getMappanel().map.getLayersByName(layerNames[i]);
@@ -56,11 +64,11 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 	 *            layer The layer to check
 	 */
 	toggleLayersAndLegendsForZoom : function(layer) {
-		this.layerTree = this.getLayerspanel();
-		this.legendsPanel = this.getLegendspanel();
-		if (!Ext.isEmpty(this.layerTree)) {
+		if (!Ext.isEmpty(this.getLayerspanel())) {
 			var node;
-			layerStore = this.layerTree.store;
+			// Get the tree store of the layers tree panel
+			// and scan it.
+			var layerStore = this.getLayerspanel().store;
 			layerStore.each(function(layerNode){
 				if (layerNode.data.name == layer.name){
 					node = layerNode;
@@ -101,7 +109,9 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 			var i;
 			for (i = 0; i < layerNames.length; i++) {
 				var node;
-				layerStore = this.layerTree.store;
+				// Get the tree store of the layers tree panel
+				// and scan it.
+				var layerStore = this.getLayerspanel().store;
 				layerStore.each(function(layerNode){
 					if (layerNode.data.name == layerNames[i]){
 						node = layerNode;
@@ -110,11 +120,11 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 				if (!Ext.isEmpty(node)) {
 					var nodeId = node.id;
 					if (setForceDisable !== false) {
-						this.layerTree.store.getNodeById(nodeId).forceDisable = false;
+						this.getLayerspanel().store.getNodeById(nodeId).forceDisable = false;
 					}
-					if (this.layerTree.store.getNodeById(nodeId).zoomDisable !== true) {
+					if (this.getLayerspanel().store.getNodeById(nodeId).zoomDisable !== true) {
 						node.data.disabled = false;
-						this.layerTree.fireEvent('nodeEnable', node, true);
+						this.getLayerspanel().fireEvent('nodeEnable', node, true);
 					}
 
 					if (check === true) {
@@ -159,10 +169,12 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 	 */
 	disableLayersAndLegends : function(layerNames, uncheck, hide, setForceDisable) { // hide ne sert à rien
 		var i;
-		if (!Ext.isEmpty(layerNames) && (this.layerTree !== null)) {
+		if (!Ext.isEmpty(layerNames) && (this.getLayerspanel() !== null)) {
 			for (i = 0; i < layerNames.length; i++) {
 				var node;
-				layerStore = this.layerTree.store;
+				// Get the tree store of the layers tree panel
+				// and scan it.
+				var layerStore = this.getLayerspanel().store;
 				layerStore.each(function(layerNode){
 					if (layerNode.data.name == layerNames[i]){
 						node = layerNode;
@@ -174,7 +186,7 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 						this.toggleNodeCheckbox(nodeId, false);
 					}
 					node.data.disabled = true;
-					this.layerTree.fireEvent('nodeEnable', node, false);
+					this.getLayerspanel().fireEvent('nodeEnable', node, false);
 				}
 				this.setLegendsVisible([ layerNames[i] ], false);
 			}
@@ -191,7 +203,7 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 	 *            value was passed, toggles the checkbox
 	 */
 	toggleNodeCheckbox : function(nodeId, toggleCheck) {
-		var node = this.layerTree.store.getNodeById(nodeId);
+		var node = this.getLayerspanel().store.getNodeById(nodeId);
 		node.set('checked', toggleCheck);
 	}
 });

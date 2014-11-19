@@ -1,5 +1,11 @@
+/**
+ * This class defines the layers tree view.
+ * 
+ * TODO: An interface for GeoExt
+ */
 Ext.define('OgamDesktop.view.map.LayersPanel', {
 	extend: 'GeoExt.tree.Panel',
+	xtype: 'layers-panel',
 //	mixins: ['OgamDesktop.view.interface.LayersPanel'],
 	requires: [
 		'OgamDesktop.ux.map.GroupLayerContainer',
@@ -11,17 +17,16 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
 		'GeoExt.slider.Tip',
 		'GeoExt.slider.LayerOpacity'
 	],
-	xtype: 'layers-panel',
 //	id: 'layerspanel',
 	cls: 'genapp-query-layer-tree-panel',
 	border: false,
 	rootVisible: false,
 	autoScroll: true,
 	viewConfig: {
-		plugins: [{
+		plugins: [{ // To let drag and drop of tree nodes
 			ptype: 'treeviewdragdrop',
 			appendOnly: false
-		},{
+		},{ // To disable nodes
 			ptype: 'dvp_nodedisabled'
 		}]
 	},

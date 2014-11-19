@@ -1,3 +1,6 @@
+/**
+ * This class defines the model for the tree layers.
+ */
 Ext.define('OgamDesktop.model.map.LayerNode',{
 	extend: 'Ext.data.Model',
 	fields: [

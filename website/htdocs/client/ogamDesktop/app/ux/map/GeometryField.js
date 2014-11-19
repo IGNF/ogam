@@ -84,6 +84,10 @@ Ext.define('OgamDesktop.ux.map.GeometryField',{
      * @cfg {Boolean} hideFeatureInfoButton Hide the "Feature Info" button
      */
     hideFeatureInfoButton : false,
+    /**
+     * @cfg {Boolean} hidePrintMapButton Hide the "Print Map" button
+     */
+    hidePrintMapButton : true,
 	/**
 	 * @cfg {Boolean} maximizable True to display the 'maximize' tool button and
 	 *      allow the user to maximize the window, false to hide the button and
@@ -183,6 +187,7 @@ Ext.define('OgamDesktop.ux.map.GeometryField',{
 				hideGetFeatureButton : this.hideGetFeatureButton,
 				hideFeatureInfoButton : this.hideFeatureInfoButton,
 				minZoomLevel : this.mapWindowMinZoomLevel,
+				hidePrintMapButton: this.hidePrintMapButton,
 				zoomToFeatureOnInit : this.zoomToFeatureOnInit
 			});
 

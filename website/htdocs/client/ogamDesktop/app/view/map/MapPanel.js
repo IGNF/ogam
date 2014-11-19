@@ -1,5 +1,14 @@
+/**
+ * This class defines the map view (definition + initializations of
+ * the map and the toolbar).
+ * 
+ * TODO: An interface for GeoExt
+ */
 Ext.define('OgamDesktop.view.map.MapPanel', {
 	extend: 'GeoExt.panel.Map',
+	xtype: 'map-panel',
+	width:'100%',
+	height:'100%',
 	requires: [
 		'GeoExt.tree.LayerContainer',
 		'GeoExt.Action',
@@ -57,12 +66,18 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	hideGetFeatureButton : false,
 	hideFeatureInfoButton : false,
 	hideGeomCriteriaToolbarButton : false,
-	hidePrintMapButton : false,
-	isDrawingMap: false,
+	
 	/**
-	 * 
+	 * @cfg {Boolean} hidePrintMapButton if true hide the Print
+	 *      Map Button (defaults to false).
 	 */
-	layersList: [],
+	hidePrintMapButton : false,
+	
+	/**
+	 * @cfg {Boolean} isDrawingMap true to display the drawing
+	 *      tools on the toolbar. (Default to false)
+	 */
+	isDrawingMap: false,
 	
 	/**
 	 * @cfg {Integer} minZoomLevel The min zoom level for the
@@ -99,9 +114,18 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 * @property vectorLayer
 	 */
 	vectorLayer : null,
-	xtype: 'map-panel',
-	width:'100%',
-	height:'100%',
+
+	/**
+	 * The map object (linked to the map panel).
+	 * 
+	 * @type {OpenLayers.Map}
+	 * @property map
+	 */
+	map : null,
+	
+	/**
+	 * The zoom slider for the map.
+	 */
 	items: [{
 		xtype: 'gx_zoomslider',
 		itemId: 'zoomslider',
@@ -110,6 +134,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		x: 18,
 		y: 85,
 		activeError: 'error',
+		// The tip with the zoom level at hover
 		plugins: Ext.create('GeoExt.slider.Tip', {
 			position: 'top',
 			getText: function(thumb) {
@@ -121,11 +146,11 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		})
 	}],
 
-	map: null,
-
 	initComponent: function(){
-		// Creates the map Object (OpenLayers)
+		// Init the map
 		this.map = this.initMap();
+		
+		// Init the Toolbar
 		this.tbar = this.initToolbar();
 		
 		this.callParent(arguments);
@@ -179,7 +204,9 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		});
 
 		//
-		// Set the minimum mandatory layer for the map
+		// Set the minimum mandatory layer for the map :
+		// 'afterinitmap' event is catched by the layer controller
+		// that applies the 'setMapLayers' handlers
 		// 
 		this.fireEvent('afterinitmap', map, this.vectorLayer, this.baseLayer);
 
@@ -256,6 +283,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 * @hide
 	 */
 	initToolbar : function() {
+		// Creation of the toolbar
 		tbar = Ext.create('Ext.toolbar.Toolbar');
 		// Link the toolbar to the map
 		tbar.map = this.map;
@@ -527,7 +555,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		//
 		// Get info on the feature
 		//
-
 		var locationInfoControl = new OpenLayers.Control.LocationInfoControl({
 			layerName : OgamDesktop.map.featureinfo_typename,
 			geoPanelId : this.id
@@ -604,7 +631,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 
 		tbar.add(new Ext.button.Button(navigationAction));
 
-		// Séparateur
+		// Separator
 		tbar.add('-');
 
 		// Zoom to the Results
@@ -635,6 +662,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 
 		tbar.add(new Ext.button.Button(zoomToMaxAction));
 		
+		// Print the displayed map
 		if (!this.hidePrintMapButton) {
 			var printMapButton = new Ext.button.Button({
 				xtype : 'button',
@@ -644,7 +672,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				scope : this
 			});
 			
-			// Séparateur
+			// Separator
 			tbar.add('-');
 			
 			tbar.add(printMapButton);
@@ -654,12 +682,11 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	},
 
 	/**
-	 * Destroy this component.
+	 * Destroy additional objects on the (auto) destroy of component.
 	 */
 	onDestroy : function() {
 		this.baseLayer = null;
 		this.wktFormat = null;
-		this.layersList = null;
 		this.featureInfoControl = null;
 
 		if (this.map) {

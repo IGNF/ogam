@@ -1,3 +1,7 @@
+/**
+ * This class defines the controller with actions related to 
+ * tree layers, map layers, map controls.
+ */
 Ext.define('OgamDesktop.controller.map.Layer',{
 	extend: 'Ext.app.Controller',
 	requires: [
@@ -8,11 +12,36 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		'OgamDesktop.store.map.LayerNode',
 		'Ext.MessageBox'
 	],
+	
+	/**
+	 * The list of OL layers.
+	 * 
+	 * @property layersList
+	 * @type array of OpenLayers.Layer
+	 */
 	layersList: [],
-	layers: [],
+	
+	/**
+	 * The 'LayerService' store records.
+	 * @private
+	 * @property services
+	 * @type array
+	 */
 	services: [],
+	
+	/**
+	 * The map panel view.
+	 * @private
+	 * @property
+	 * @type OgamDesktop.view.map.MapPanel
+	 */
 	mapPanel: null,
 
+	/**
+	 * The refs to get the views concerned
+	 * and the control to define the handlers of the
+	 * MapPanel, toolbar and LayersPanel events
+	 */
 	config: {
 		refs: {
 			layerspanel: 'layers-panel',
@@ -37,7 +66,16 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			}
 		}
 	},
-	
+
+	/**
+	 * Handler of 'nodeEnable' event fires (into Legend controller)
+	 * enable or disable tree node.
+	 * 
+	 * @param {object}
+	 *            node The node to enable / disable
+	 * @param {boolean}
+	 *            toEnable True if the node is to enable, false else
+	 */
 	nodeEnable: function(node, toEnable) {
 		// The tabPanels must be activated before to show a
 		// child component
@@ -46,10 +84,14 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		
 		var parent = node.parentNode;
 		if (toEnable === false) {
+			// Apply css class for disabled node
 			node.data.cls = 'dvp-tree-node-disabled';
 		} else {
+			// Apply default css class
 			node.data.cls = '';
 		}
+		
+		// Necessary to correctly update the tree panel
 		if (!parent.collapsed) {
 			parent.collapse();
 			parent.expand();
@@ -61,8 +103,16 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		}
 	},
 
+	/**
+	 * Handler of 'afterrender' event for the MapPanel.
+	 * 
+	 * @param {object}
+	 *            mappanel the MapPanel
+	 */
 	afterMapPanelRender: function(mappanel) {
 		this.mapPanel = mappanel;
+		
+		// Load the LayerService store
 		var serviceStore = this.getStore('map.LayerService');
 		serviceStore.load({
 			callback: this.onServiceStoreLoad,
@@ -70,8 +120,13 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		});
 	},
 
+	/**
+	 * Get services and load Layer store.
+	 */
 	onServiceStoreLoad: function(services) {
 		this.services = services;
+		
+		// Load the Layer store
 		var layerStore = this.getStore('map.Layer');
 		layerStore.load({
 			callback: this.addLayers,
@@ -79,14 +134,38 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		});
 	},
 
+	/**
+	 * Set the layers of the map
+	 */
+	setMapLayers : function(map, vectorLayer, baseLayer, wfsLayer) {
+		// Add the base layer (always first)
+		map.addLayer(baseLayer);
+
+		// Add the available layers
+		for ( var i = 0; i < this.layersList.length; i++) {
+			map.addLayer(this.layersList[i]);
+		}
+		// Add the WFS layer
+		if (this.mapPanel && !this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
+			map.addLayer(this.mapPanel.wfsLayer);
+			this.mapPanel.snappingControl.addTargetLayer(this.mapPanel.wfsLayer);
+		}
+		// Add the vector layer
+		map.addLayer(vectorLayer);
+	},
+
+	/**
+	 * Build the layers from the Layer store records and add them to the
+	 * map. Get the layers tree from the LayerNode store and build the
+	 * layers tree.
+	 */
 	addLayers : function(layers) {
-		this.layers = layers;
 		// Reset the arrays
 		this.layersList = [];
 		this.layersActivation = {};
 		// Rebuild the list of available layers
-		for (i in this.layers) {
-			var layerObject = this.layers[i];
+		for (i in layers) {
+			var layerObject = layers[i];
 			// Get the view service name
 			var viewServiceName = layerObject.data.viewServiceName;
 			for (i in this.services) {
@@ -99,7 +178,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			
 			// Build the new OpenLayers layer object and add it
 			// to the list
-			var newLayer = this.buildLayer(layerObject,viewServiceObject);
+			var newLayer = this.buildLayer(layerObject, viewServiceObject);
 			this.layersList.push(newLayer);
 
 			// Fill the list of active layers
@@ -121,10 +200,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				}
 			};
 		};
-
-		// Openlayers have to pass through a proxy to request external 
-		// server
-		OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
 
 		// Set the style
 		var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
@@ -170,11 +245,15 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	},
 
 	/**
-	 * Build one OpenLayer Layer from a JSON object.
-	 * 
+	 * Build one OpenLayer Layer from the 'Layer' store record.
+	 * @param {Object}
+	 *            layerObject The 'Layer' store record
+	 * @param {Object}
+	 *            serviceObject The 'LayerService' store record for the legend
+	 *            corresponding to the layer
 	 * @return OpenLayers.Layer
 	 */
-	buildLayer : function(layerObject,serviceObject) {
+	buildLayer : function(layerObject, serviceObject) {
 		var url = serviceObject.data.config.urls;
 			//Merges the service parameters and the layer parameters
 			var paramsObj = {};
@@ -204,7 +283,13 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	},
 
 	/**
-	 * Build a Legend Object from a JSON object.
+	 * Build a Legend Object from a 'Layer' store record.
+	 * @param {Object}
+	 *            layerObject The 'Layer' store record
+	 * @param {Object}
+	 *            serviceObject The 'LayerService' store record for the legend
+	 *            corresponding to the layer
+	 * @return OpenLayers.Layer
 	 */
 	buildLegend : function(layerObject,serviceObject) {
 		legend = this.getLegendspanel()
@@ -232,29 +317,11 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			});
 		}
 	},
-
-	/**
-	 * Set the layers of the map
-	 */
-	setMapLayers : function(map, vectorLayer, baseLayer, wfsLayer) {
-		// Add the base layer (always first)
-		map.addLayer(baseLayer);
-
-		// Add the available layers
-		for ( var i = 0; i < this.layersList.length; i++) {
-			map.addLayer(this.layersList[i]);
-		}
-		// Add the WFS layer
-		if (this.mapPanel && !this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
-			map.addLayer(this.mapPanel.wfsLayer);
-			this.mapPanel.snappingControl.addTargetLayer(this.mapPanel.wfsLayer);
-		}
-		// Add the vector layer
-		map.addLayer(vectorLayer);
-	},
 	
 	/**
-	 * 
+	 * Build a Legend Object from a 'Layer' store record.
+	 * @param {Array}
+	 *            nodes The 'LayerNode' store records to fill the layers tree
 	 */
 	initLayerTree: function(nodes) {
 		
@@ -369,8 +436,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * tool.
 	 */
 	getFeature : function(feature, mapId) {
-		console.log(feature);
-		console.log(mapId);
 		if (mapId == this.mapPanel.map.id) {
 			// Add the feature to the vector layer
 			if (this.mapPanel.vectorLayer !== null) {
@@ -412,11 +477,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				this.onCheckChange(child, checked);
 			}
 		}
-	},
-
-	addgeomcriteria: function(){
-		console.log(Ext.getCmp('geometryfield'));
-		Ext.getCmp('geometryfield').openMap();
 	},
 
 	/**

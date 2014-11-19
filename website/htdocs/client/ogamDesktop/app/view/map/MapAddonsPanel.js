@@ -1,3 +1,7 @@
+/**
+ * This class defines the view that contains 
+ * the layers panel and the legends panel.
+ */
 Ext.define('OgamDesktop.view.map.MapAddonsPanel', {
 	extend: 'Ext.tab.Panel',
 	xtype: 'map-addons-panel',
