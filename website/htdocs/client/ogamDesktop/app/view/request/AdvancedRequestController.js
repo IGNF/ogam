@@ -15,6 +15,11 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 	            '#processStore': {
 	                load: 'onProcessStoreLoad'
 	            }
+    		},
+    		component:{
+    			'#SubmitButton': {
+					click:'onSubmit'
+				}
     		}
         }
     },
@@ -42,5 +47,11 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
     	this.getViewModel().set('currentProcess', defaultRecord);
     	
     	//console.log(defaultRecord.fieldsets());
+    },
+    
+    onSubmit:function(button){
+        // The getForm() method returns the Ext.form.Basic instance:
+        console.log('request ',button.up('form').getValues());
+    	// TODO set a store or set filters params for a store
     }
 });

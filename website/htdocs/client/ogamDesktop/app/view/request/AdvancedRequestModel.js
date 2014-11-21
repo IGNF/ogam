@@ -6,6 +6,8 @@
  */
 Ext.define('OgamDesktop.view.request.AdvancedRequestModel', {
     extend: 'Ext.app.ViewModel',
+    requires: ['OgamDesktop.model.Process',
+               'OgamDesktop.model.request.FieldSet'],//needed to fieldsets association !
 
     // This enables "viewModel: { type: 'advancedrequest' }" in the view:
     alias: 'viewmodel.advancedrequest',

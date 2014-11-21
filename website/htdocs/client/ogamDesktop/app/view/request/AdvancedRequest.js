@@ -19,9 +19,8 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
     viewModel: {
         type: 'advancedrequest'
     },
-    session: {},       
+    session: {},
 	layout: 'border',
-	height: Ext.getBody().getViewSize().height - 160,
 
 	items: [{ // The advanced request selector
 		xtype:'advanced-request-selector',
@@ -50,10 +49,10 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 				tooltip:{
 					anchor: 'left',
 					title: '{currentProcess.label}',
-			        text: '{currentProcess.definition}'
+					text: '{currentProcess.definition}'
 				}
-		    }
-		}],		
+			}
+		}],
 		items: [{ // The process combobox
 			xtype: 'combobox',
 			itemId: 'processComboBox',
@@ -87,6 +86,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		xtype: 'tbspacer',
 		flex: 1
 	},{
-		type: 'button', text: 'Search'
+		itemId:'SubmitButton', type: 'button', text: 'Search'
 	}]
 });
