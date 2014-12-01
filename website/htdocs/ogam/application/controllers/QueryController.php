@@ -796,7 +796,7 @@ class QueryController extends AbstractOGAMController {
 								} else if ($formField->inputType == "NUMERIC") {
 									// Numeric value
 									if ($formField->decimals != null && $formField->decimals != "") {
-										$value = number_format($value, $formField->decimals);
+										$value = number_format($value, $formField->decimals, ',', '');
 									}
 									$this->_print($value . ';');
 								} else {
