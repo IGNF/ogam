@@ -28,7 +28,7 @@
      * The name of the theme for this application.
      */
     
-    "theme": "ext-theme-gray",
+    "theme": "ogamDesktop-theme",
     
     /**
      * The list of required packages (with optional versions; default is "latest").
@@ -108,8 +108,25 @@
      *          "bootstrap": false   // OPTIONAL
      *      }
      */
-    "js": [
-        {
+    "js": [{
+            "path": "../../map/get-map-parameters"
+        },{
+            "path": "${app.dir}/lib/OpenLayers/OpenLayers.debug.js"
+        },{
+            "path": "${app.dir}/app/ux/map/FeatureInfoControl.js",
+            "includeInBundle": true
+        },{
+            "path": "${app.dir}/app/ux/map/GetFeatureControl.js",
+            "includeInBundle": true
+        },{
+            "path": "${app.dir}/app/ux/map/LocationInfoControl.js"
+        },{
+            "path": "${app.dir}/app/ux/map/ZoomToFeatures.js"
+        },{
+            "path": "${app.dir}/app/ux/map/ContextMenuPlugin.js"
+        },{
+            "path": "${app.dir}/app/ux/map/GeometryField.js"
+        },{
             "path": "app.js",
             "bundle": true
         }
@@ -143,6 +160,12 @@
     "css": [
         {
             "path": "bootstrap.css",
+            "bootstrap": true
+        },{
+            "path": "resources/css/genapp.pack.css",
+            "bootstrap": true
+        },{
+            "path": "resources/css/tree-gray.css",
             "bootstrap": true
         }
     ],

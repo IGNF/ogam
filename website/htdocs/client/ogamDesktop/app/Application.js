@@ -4,15 +4,31 @@
  * details.
  */
 Ext.define('OgamDesktop.Application', {
-    extend: 'Ext.app.Application',
-    
-    name: 'OgamDesktop',
+	extend: 'Ext.app.Application',
+	
+	name: 'OgamDesktop',
+	models: [
+		'map.LayerNode',
+		'map.Layer',
+		'map.LayerService'
+	],
+	stores: [
+		'map.LayerNode',
+		'map.Layer',
+		'map.LayerService'
+	],
+	controllers: [
+		'map.Layer',
+		'map.Legend',
+		'map.Main'
+	],
+	views: [
+		'map.MapPanel',
+		'map.LayersPanel',
+		'map.LegendsPanel'
+	],
 
-    stores: [
-        // TODO: add global / shared stores here
-    ],
-    
-    launch: function () {
-        // TODO - Launch the application
-    }
+	launch: function () {
+		// TODO - Launch the application
+	}
 });
