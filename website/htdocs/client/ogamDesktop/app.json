@@ -15,7 +15,7 @@
      * to "Ext.require". The "app.dir" variable below is expanded to the path where the
      * application resides (the same folder in which this file is located).
      */
-    "classpath": "${app.dir}/app,${app.dir}/lib/GeoExt/src/GeoExt",
+    "classpath": "${app.dir}/app,${app.dir}/lib/GeoExt/src/GeoExt,${app.dir}/lib/addon/GeoExt",
 
     "overrides": "${app.dir}/overrides",
 
@@ -109,23 +109,34 @@
      *      }
      */
     "js": [{
-            "path": "../../map/get-map-parameters"
+            "path": "get-map-parameters.js"
         },{
-            "path": "${app.dir}/lib/OpenLayers/OpenLayers.debug.js"
-        },{
-            "path": "${app.dir}/app/ux/map/FeatureInfoControl.js",
+            "path": "${app.dir}/lib/OpenLayers/OpenLayers.debug.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/GetFeatureControl.js",
+            "path": "${app.dir}/lib/addon/OpenLayers/Control/FeatureInfoControl.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/LocationInfoControl.js"
+            "path": "${app.dir}/lib/addon/OpenLayers/Handler/FeatureInfo.js",
+            "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/ZoomToFeatures.js"
+            "path": "${app.dir}/lib/addon/OpenLayers/Control/GetFeatureControl.js",
+            "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/ContextMenuPlugin.js"
+            "path": "${app.dir}/lib/addon/OpenLayers/Handler/GetFeature.js",
+            "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/GeometryField.js"
+            "path": "${app.dir}/lib/addon/OpenLayers/Control/LocationInfoControl.js",
+            "includeInBundle": true
+        },{
+            "path": "${app.dir}/lib/addon/OpenLayers/Handler/LocationInfo.js",
+            "includeInBundle": true
+        },{
+            "path": "${app.dir}/lib/addon/OpenLayers/Control/ZoomToFeatures.js",
+            "includeInBundle": true
+        },{
+            "path": "${app.dir}/app/ux/form/field/GeometryField.js",
+            "includeInBundle": true
         },{
             "path": "app.js",
             "bundle": true
