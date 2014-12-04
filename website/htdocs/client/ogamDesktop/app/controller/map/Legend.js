@@ -20,11 +20,13 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 		refs: {
 			layerspanel: 'layers-panel',
 			legendspanel: 'legends-panel',
-			mappanel: 'map-panel'
+			mappanel: 'map-panel',
+			mapaddonspanel: 'map-addons-panel'
 		},
 		control: {
 			'map-panel': {
-				onLayerVisibilityChange: 'toggleLayersAndLegendsForZoom'
+				onLayerVisibilityChange: 'toggleLayersAndLegendsForZoom',
+				onGetResultsBBox: 'enableLayersAndLegends'
 			}
 		}
 	},
@@ -38,6 +40,11 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 	 *            visible True to show, false to hide
 	 */
 	setLegendsVisible : function(layerNames, visible) {
+		// The tabPanels must be activated before to show a
+		// child component
+		var isLayerPanelVisible = this.getLayerspanel().isVisible();
+		this.getMapaddonspanel().setActiveItem(this.getLegendspanel());
+		
 		var i;
 		for (i = 0; i < layerNames.length; i++) {
 			var legendCmp = this.getLegendspanel().getComponent(this.getMappanel().id + layerNames[i]);
@@ -53,6 +60,11 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 					legendCmp.hide();
 				}
 			}
+		}
+
+		// Keep the current activated panel activated
+		if (isLayerPanelVisible) {
+			this.getMapaddonspanel().setActiveItem(this.getLayerspanel());
 		}
 	},
 
@@ -70,7 +82,7 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 			// and scan it.
 			var layerStore = this.getLayerspanel().store;
 			layerStore.each(function(layerNode){
-				if (layerNode.data.name == layer.name){
+				if (layerNode.data.layer && layerNode.data.layer.name == layer.name){
 					node = layerNode;
 				}
 			})
@@ -113,7 +125,7 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 				// and scan it.
 				var layerStore = this.getLayerspanel().store;
 				layerStore.each(function(layerNode){
-					if (layerNode.data.name == layerNames[i]){
+					if (layerNode.data.layer && layerNode.data.layer.name == layerNames[i]){
 						node = layerNode;
 					}
 				})
@@ -128,6 +140,9 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 					}
 
 					if (check === true) {
+						// Change check status
+						this.getLayerspanel().fireEvent('checkchange', node, true);
+						
 						// Note: the redraw must be done before
 						// to
 						// check the node

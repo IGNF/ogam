@@ -9,6 +9,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	xtype: 'map-panel',
 	width:'100%',
 	height:'100%',
+	layout: 'container',
 	requires: [
 		'GeoExt.tree.LayerContainer',
 		'GeoExt.Action',
@@ -26,7 +27,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	/**
 	 * Internationalization.
 	 */
-	title : 'Map',
 	popupTitle : 'Feature information',
 	tabTip : 'The map with the request\'s results\'s location',
 	layerPanelTitle : "Layers",

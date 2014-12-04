@@ -341,15 +341,16 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 					storeSelection.add(layer);
 				} else if (layer.data.title == node.data.layer) {
 
-					// creation of the layer node
+					// Creation of the layer node
 					rootChild = {
 						text: node.data.text,
 						layer: layer.data,
+						disabled: node.raw.disabled,
 						plugins: [
 							Ext.create('GeoExt.tree.LayerNode')
 						]
 					};
-					// add of the container
+					// Add of the container
 					treeLayerStore.root.appendChild(rootChild);
 					rootChild = null;
 				}
@@ -477,6 +478,39 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				this.onCheckChange(child, checked);
 			}
 		}
+	},
+
+	/**
+	 * Zoom to the passed feature on the map
+	 * 
+	 * @param {String}
+	 *            id The plot id
+	 * @param {String}
+	 *            wkt The wkt feature
+	 */
+	zoomToFeature : function(id, wkt) {
+
+		// Parse the feature location and create a Feature
+		// Object
+		var feature = this.mapPanel.wktFormat.read(wkt);
+
+		// Add the plot id as an attribute of the object
+		feature.attributes.id = id.substring(id.lastIndexOf('__') + 2);
+
+		// Remove previous features
+		this.mapPanel.vectorLayer.destroyFeatures(this.mapPanel.vectorLayer.features);
+
+		// Move the vector layer above all others
+		this.mapPanel.map.setLayerIndex(this.mapPanel.vectorLayer, 100);
+		if (feature) {
+			// Add the feature
+			this.mapPanel.vectorLayer.addFeatures([ feature ]);
+		} else {
+			alert(this.mapPanel.invalidWKTMsg);
+		}
+
+		// Center on the feature
+		this.mapPanel.map.setCenter(new OpenLayers.LonLat(feature.geometry.x, feature.geometry.y), 7);
 	},
 
 	/**
