@@ -50,8 +50,28 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
     },
     
     onSubmit:function(button){
-        // The getForm() method returns the Ext.form.Basic instance:
-        console.log('request ',button.up('form').getValues());
-    	// TODO set a store or set filters params for a store
-    }
+		button.up('form').getForm().submit({
+			clientValidation: true,
+			waitMsg: 'loading...',
+			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',
+			params: {
+				newStatus: 'delivered'
+			},
+			success: function(form, action) {
+				button.fireEvent('onGetGridColumns', action.result.columns);
+			},
+			failure: function(form, action) {
+				switch (action.failureType) {
+					case Ext.form.action.Action.CLIENT_INVALID:
+						Ext.Msg.alert('Failure', 'Form fields may not be submitted with invalid values');
+						break;
+					case Ext.form.action.Action.CONNECT_FAILURE:
+						Ext.Msg.alert('Failure', 'Ajax communication failed');
+						break;
+					case Ext.form.action.Action.SERVER_INVALID:
+						Ext.Msg.alert('Failure', action.result.msg);
+				}
+			}
+		});
+	}
 });
