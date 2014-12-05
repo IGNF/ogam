@@ -1,5 +1,5 @@
 Ext.define('OgamDesktop.view.request.MainWin', {
-	extend: 'OgamDesktop.view.AbstractWin',
+	extend: 'Ext.form.Panel',
 	title : 'Query Panel',
 	collapsible : true,
 	margins : '0 5 0 0',
