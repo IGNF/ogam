@@ -40,11 +40,13 @@ Ext.define('GeoExt.tree.Panel', {
             me.columns = [{
                 xtype    : 'gx_treecolumn',
                 text     : 'Name',
-                width    : Ext.isIE6 ? null : 10000,
+                autoWidth    : true,
                 dataIndex: me.displayField         
             }];
         }
 
         me.callParent();
+        me.id = me.getId().replace(/\./g,'-');
     }
 });
+

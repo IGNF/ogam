@@ -16,7 +16,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		'GeoExt.slider.Tip',
 		'OgamDesktop.view.map.LayersPanel',
 		'OgamDesktop.view.map.LegendsPanel',
-		'Ext.ux.form.field.GeometryField',
+		'OgamDesktop.ux.form.field.GeometryField',
 		'GeoExt.window.Popup'
 	],
 //	id: 'mappanel',

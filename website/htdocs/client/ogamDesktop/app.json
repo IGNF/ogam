@@ -111,33 +111,32 @@
     "js": [{
             "path": "get-map-parameters.js"
         },{
-            "path": "${app.dir}/lib/OpenLayers/OpenLayers.debug.js",
+            "path": "lib/OpenLayers/OpenLayers.debug.js"
+        },{
+            "path": "lib/addon/OpenLayers/Control/FeatureInfoControl.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/lib/addon/OpenLayers/Control/FeatureInfoControl.js",
+            "path": "lib/addon/OpenLayers/Handler/FeatureInfo.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/lib/addon/OpenLayers/Handler/FeatureInfo.js",
+            "path": "lib/addon/OpenLayers/Control/GetFeatureControl.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/lib/addon/OpenLayers/Control/GetFeatureControl.js",
+            "path": "lib/addon/OpenLayers/Handler/GetFeature.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/lib/addon/OpenLayers/Handler/GetFeature.js",
+            "path": "lib/addon/OpenLayers/Control/LocationInfoControl.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/lib/addon/OpenLayers/Control/LocationInfoControl.js",
+            "path": "lib/addon/OpenLayers/Handler/LocationInfo.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/lib/addon/OpenLayers/Handler/LocationInfo.js",
+            "path": "lib/addon/OpenLayers/Control/ZoomToFeatures.js",
             "includeInBundle": true
-        },{
-            "path": "${app.dir}/lib/addon/OpenLayers/Control/ZoomToFeatures.js",
-            "includeInBundle": true
-        },{
+        },/*{
             "path": "${app.dir}/app/ux/form/field/GeometryField.js",
             "includeInBundle": true
-        },{
+        },*/{
             "path": "app.js",
             "bundle": true
         }
@@ -178,7 +177,9 @@
         },{
             "path": "resources/css/tree-gray.css",
             "bootstrap": true
-        }
+        },{
+            "path": "lib/OpenLayers/theme/default/style.css"
+        }  
     ],
 
     /**

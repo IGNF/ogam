@@ -32,7 +32,7 @@
  * @constructor
  * @param {Object} config 
  */
-Ext.define('Ext.ux.tree.plugin.NodeDisabled', {
+Ext.define('OgamDesktop.ux.tree.plugin.NodeDisabled', {
     alias: 'plugin.dvp_nodedisabled',
     extend: 'Ext.AbstractPlugin',
     
