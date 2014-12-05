@@ -8,6 +8,7 @@ Ext.define('OgamDesktop.store.map.LayerNode',{
 	proxy: {
 		type: 'ajax',
 		url: Ext.manifest.OgamDesktop.requestServiceUrl +'../map/ajaxgettreelayers',
+		actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
 		reader: {
 			type: 'json',
 			rootProperty: ''

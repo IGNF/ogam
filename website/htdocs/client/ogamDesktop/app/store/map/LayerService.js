@@ -11,6 +11,7 @@ Ext.define('OgamDesktop.store.map.LayerService',{
 	proxy: {
 		type: 'ajax',
 		url: Ext.manifest.OgamDesktop.requestServiceUrl +'../map/ajaxgetlayers',
+		actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
 		reader: {
 			type: 'json',
 			// To get only services into the response
