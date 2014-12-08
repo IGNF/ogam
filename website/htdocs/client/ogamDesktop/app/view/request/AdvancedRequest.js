@@ -5,23 +5,22 @@
  * @deprecated
  */
 Ext.define('OgamDesktop.view.request.AdvancedRequest', {
-    extend: 'OgamDesktop.view.request.MainWin',
+	extend: 'OgamDesktop.view.request.MainWin',
 	alias: 'widget.advanced-request',
 	xtype: 'advanced-request',
 
 	requires: [
-	    'OgamDesktop.view.request.AdvancedRequestController',
-	    'OgamDesktop.view.request.AdvancedRequestModel',
-	    'Ext.form.field.ComboBox'
-    ],
+		'OgamDesktop.view.request.AdvancedRequestController',
+		'OgamDesktop.view.request.AdvancedRequestModel',
+		'Ext.form.field.ComboBox'
+	],
 
-    controller: 'advancedrequest',
-    viewModel: {
-        type: 'advancedrequest'
-    },
-    session: {},       
+	controller: 'advancedrequest',
+	viewModel: {
+		type: 'advancedrequest'
+	},
+	session: {},
 	layout: 'border',
-	height: Ext.getBody().getViewSize().height - 160,
 
 	items: [{ // The advanced request selector
 		xtype:'advanced-request-selector',
@@ -50,10 +49,10 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 				tooltip:{
 					anchor: 'left',
 					title: '{currentProcess.label}',
-			        text: '{currentProcess.definition}'
+					text: '{currentProcess.definition}'
 				}
-		    }
-		}],		
+			}
+		}],
 		items: [{ // The process combobox
 			xtype: 'combobox',
 			itemId: 'processComboBox',
@@ -73,10 +72,10 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 			emptyText : "Please select a dataset...",
 			selectOnFocus : true,
 			disableKeyFilter : true,
-	        bind: {
-	            store: '{processStore}',
-	            selection:'{currentProcess}'
-	        }
+			bind: {
+				store: '{processStore}',
+				selection:'{currentProcess}'
+			}
 		}]
 	}],
 	bbar: [{ // The bottom tools bar
@@ -87,6 +86,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		xtype: 'tbspacer',
 		flex: 1
 	},{
-		type: 'button', text: 'Search'
+		itemId:'SubmitButton', type: 'button', action: 'submit', text: 'Search'
 	}]
 });
