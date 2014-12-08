@@ -49,3 +49,4 @@ Ext.define('GeoExt.tree.Panel', {
         me.id = me.getId().replace(/\./g,'-');
     }
 });
+

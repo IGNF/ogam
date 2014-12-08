@@ -14,8 +14,8 @@ require_once APPLICATION_PATH . '/../library/Zend/Session/Exception.php';
 require_once APPLICATION_PATH . '/../library/Zend/Session/Abstract.php';
 require_once APPLICATION_PATH . '/../library/Zend/Session/Namespace.php';
 require_once APPLICATION_PATH . '/../library/Zend/Session/SaveHandler/Interface.php';*/
-require_once APPLICATION_PATH . '/../lib/Zend/Session.php';
-require_once APPLICATION_PATH . '/../lib/Zend/Registry.php';
+require_once APPLICATION_PATH . '/../library/Zend/Session.php';
+require_once APPLICATION_PATH . '/../library/Zend/Registry.php';
 
 Zend_Session::setOptions($ApplicationConf->resources->session->toArray());
 

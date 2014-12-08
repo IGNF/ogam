@@ -145,7 +145,7 @@ Ext.define('OgamDesktop.ux.map.GroupLayerContainer', {
                     delete parentLoader._reordering;
                 }
                 delete me._reordering;
-            },
+            }//,
 
 //            createNode: function(attr) {
 //                    // add a WMS legend to each node created

@@ -339,8 +339,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				if (layer.data.options.nodeGroup && layer.data.options.nodeGroup == node.data.nodeGroup) {
 					storeSelection.add(layer);
 				} else if (layer.data.title == node.data.layer) {
-					// Creation of the layer node
-					rootChild = {
+					// Creation of the layer node					rootChild = {
 						text: node.data.text,
 						layer: layer.data,
 						disabled: node.raw.disabled,

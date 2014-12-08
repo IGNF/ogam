@@ -9,10 +9,13 @@ Ext.define('OgamDesktop.view.main.Main', {
 	//extend: 'Ext.container.Container',
 
 	xtype: 'app-main',
+	plain: true,
+	frame: true,
+	layout: 'card',
 
 	controller: 'main',
 	viewModel: {
-	type: 'main'
+		type: 'main'
 	},
 	extend: 'Ext.tab.Panel',
 	renderTo: Ext.get('content'),
@@ -39,6 +42,7 @@ Ext.define('OgamDesktop.view.main.Main', {
 				items: [{
 					xtype: 'tabpanel',
 					region: 'center',
+					layout: 'card',
 					defaults: {
 						closable: false
 					},
@@ -70,6 +74,6 @@ Ext.define('OgamDesktop.view.main.Main', {
 			this.setWidth(Ext.getBody().getViewSize().width - 80);
 			this.setHeight(Ext.getBody().getViewSize().height - 160);
 		},this);*/
-	this.callParent(arguments);
+		this.callParent(arguments);
 	}
 });

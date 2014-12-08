@@ -26,6 +26,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	extend: 'Ext.panel.Panel',
 	alias:'widget.advancedrequestfieldset',
 	xtype: 'advanced-request-fieldset',
+	uses:['Ext.data.JsonStore','OgamDesktop.model.request.object.field.Code'],
 	/**
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
@@ -37,6 +38,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 *      any of its children using standard CSS rules.
 	 */
 	cls : 'genapp-query-field-form-panel',
+	
+//<locale>
 	/**
 	 * @cfg {String} criteriaPanelTbarLabel The criteria Panel Tbar Label
 	 *      (defaults to <tt>'Criteria'</tt>)
@@ -73,6 +76,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 *      <tt>'Remove all the columns'</tt>)
 	 */
 	columnsPanelTbarRemoveAllButtonTooltip : 'Remove all the columns',
+//</locale>	
 	/**
 	 * @cfg {Integer} criteriaLabelWidth The criteria Label Width (defaults to
 	 *      <tt>120</tt>)
@@ -174,6 +178,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				labelStyle : 'padding: 0; margin-top:3px',
 				width : 180
 			},
+			/* FIXME deprecated ?
 			listeners : {
 				'add' : function(container, cmp, index) {
 					var subName = cmp.name, i = 0, foundComponents, tmpName = '', criteriaPanel = cmp.ownerCt, className = 'first-child';
@@ -202,13 +207,17 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				},
 				scope : this
 			},
+			*/
 			items : Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig(),
 			tbar : [ {
 				// Filler
 				xtype : 'tbfill'
 			},
 			// The label
-			/*new Ext.Toolbar.TextItem(this.criteriaPanelTbarLabel), */{
+			{
+				xtype : 'tbtext',
+				text  : this.criteriaPanelTbarLabel
+			},{
 				// A spacer
 				xtype : 'tbspacer'
 			}, {
@@ -219,7 +228,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				editable : false,
 				displayField : 'label',
 				valueField : 'name',
-				mode : 'local',
+				queryMode : 'local',
 				width : 220,
 				maxHeight : 100,
 				triggerAction : 'all',
@@ -249,10 +258,10 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			hidden : Ext.isEmpty(this.columnsDS) ? true : false,
 			hideMode : 'offsets',
 			//cls : 'genapp-query-columns-panel', //FIXME
-			items : this.getDefaultColumnsConfig()/*,
+			items : this.getDefaultColumnsConfig(),
 			tbar : [ {
 				// The add all button
-				xtype : 'tbbutton',
+				xtype : 'button',
 				tooltip : this.columnsPanelTbarAddAllButtonTooltip,
 				ctCls : 'genapp-tb-btn',
 				iconCls : 'genapp-tb-btn-add',
@@ -260,7 +269,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				scope : this
 			}, {
 				// The remove all button
-				xtype : 'tbbutton',
+				xtype : 'button',
 				tooltip : this.columnsPanelTbarRemoveAllButtonTooltip,
 				ctCls : 'genapp-tb-btn',
 				iconCls : 'genapp-tb-btn-remove',
@@ -271,10 +280,13 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				xtype : 'tbfill'
 			},
 			// The label
-			new Ext.Toolbar.TextItem(this.columnsPanelTbarLabel), {
+			/*{
+				xtype : 'tbtext',
+				text  : this.columnsPanelTbarLabel
+			}, {
 				// A space
 				xtype : 'tbspacer'
-			}, {
+			}, */{
 				// The combobox with the list of available columns
 				xtype : 'combo',
 				fieldLabel : 'Columns',
@@ -283,7 +295,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				editable : false,
 				displayField : 'label',
 				valueField : 'name',
-				mode : 'local',
+				queryMode : 'local',
 				width : 220,
 				maxHeight : 100,
 				triggerAction : 'all',
@@ -298,7 +310,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				}
 			}, {
 				xtype : 'tbspacer'
-			} ]*/
+			} ]
 		});
 
 		if (!this.items) {
@@ -306,31 +318,35 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		}
 		this.collapsible = true;
 		this.titleCollapse = true;
-		OgamDesktop.ux.request.AdvancedRequestFieldSet.superclass.initComponent.call(this);
-
-		this.doLayout();
+		//OgamDesktop.ux.request.AdvancedRequestFieldSet.superclass.initComponent.call(this);
+		this.callSuper(arguments);
+		this.updateLayout();
 
 	},
 
 	/**
 	 * Add the selected criteria to the list of criteria.
 	 * 
-	 * @param {Ext.form.ComboBox}
+	 * @param {Ext.form.field.ComboBox}
 	 *            combo The criteria combobox
-	 * @param {Ext.data.Record}
+	 * @param {Ext.data.Model[]}
 	 *            record The criteria combobox record to add
-	 * @param {Number}
-	 *            index The criteria combobox record index
+	 * @param {Object}
+	 *            The options object passed to Ext.util.Observable.addListener.
 	 * @hide
 	 */
-	addSelectedCriteria : function(combo, record, index) {
+	addSelectedCriteria : function(combo, records, eOpts) {
+		
 		if (combo !== null) {
 			combo.clearValue();
 			combo.collapse();
 		}
 		// Add the field
-		this.criteriaPanel.add(this.self.getCriteriaConfig(record.data, false));
-		this.criteriaPanel.doLayout();
+		
+		for(var i=0, l=records.length;i<l; i++) {
+			this.criteriaPanel.add(this.self.getCriteriaConfig(records[i].data, false));
+		}
+		//this.criteriaPanel.updateLayout();
 	},
 
 	/**
@@ -348,7 +364,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		record.data.default_value = value;
 		// Add the field
 		var criteria = this.criteriaPanel.add(this.self.getCriteriaConfig(record.data, false));
-		this.criteriaPanel.doLayout();
+		//this.criteriaPanel.updateLayout();
 		return criteria;
 	},
 
@@ -425,21 +441,26 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 * 
 	 * @param {Ext.form.ComboBox}
 	 *            combo The column combobox
-	 * @param {Ext.data.Record}
-	 *            record The column combobox record to add
-	 * @param {Number}
-	 *            index The column combobox record index
+	 * @param {Ext.data.Record[]}
+	 *            records The column combobox records to add
+	 * @param {Object}
+	 *            The options object passed to Ext.util.Observable.addListener.
 	 * @hide
 	 */
-	addColumn : function(combo, record, index) {
+	addColumn : function(combo, records, eOpts) {
+		
 		if (combo !== null) {
 			combo.clearValue();
 			combo.collapse();
 		}
-		if (this.columnsPanel.find('name', 'column__' + record.data.name).length === 0) {
-			// Add the field
-			this.columnsPanel.add(this.getColumnConfig(record.data));
-			this.columnsPanel.doLayout();
+		
+		
+		for(var i=0, l=records.length;i<l; i++) {
+			if (this.columnsPanel.down('[name=column__' + records[i].data.name+']')=== null) {
+				// Add the field
+				this.columnsPanel.add(this.getColumnConfig(records[i].data));
+				//this.columnsPanel.updateLayout();
+			}
 		}
 	},
 
@@ -514,9 +535,11 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 * Adds all the columns of a column panel
 	 */
 	addAllColumns : function() {
-		this.columnsDS.each(function(record) {
-			this.addColumn(null, record);
-		}, this);
+
+		if (this.columnsDS) {
+			this.addColumn(null, this.columnsDS.getData().items);
+		}
+		
 	},
 
 	/**
@@ -550,13 +573,14 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		 * @hide
 		 */
 		getCriteriaConfig : function(record, hideBin) {console.log('record', record);console.log('hideBin', hideBin);
+			var cls = this.self || OgamDesktop.ux.request.AdvancedRequestFieldSet;
 			// If the field have multiple default values, duplicate the criteria
 			if (!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1) {
 				var fields = [];
 				var defaultValues = record.default_value.split(';'), i;
 				for (i = 0; i < defaultValues.length; i++) {
 					record.default_value = defaultValues[i];
-					fields.push(OgamDesktop.ux.request.AdvancedRequestFieldSet.self.getCriteriaConfig(record, hideBin));
+					fields.push(cls.getCriteriaConfig(record, hideBin));
 				}
 				return fields;
 			}
@@ -568,50 +592,47 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			case 'SELECT': // The input type SELECT correspond generally to a data
 				// type CODE
 				field.xtype = 'combo';
-				field.itemCls = 'trigger-field'; // For IE7 layout
+				field.formItemCls = 'trigger-field'; // For IE7 layout //TODO needed ?
 				field.hiddenName = field.name;
 				field.triggerAction = 'all';
 				field.typeAhead = true;
 				field.displayField = 'label';
 				field.valueField = 'code';
-				field.emptyText = OgamDesktop.ux.request.AdvancedRequestFieldSet.self.criteriaPanelTbarComboEmptyText;
+				field.emptyText = cls.criteriaPanelTbarComboEmptyText;
 				if (record.subtype === 'DYNAMIC') {
-					field.mode = 'remote';
+					field.queryMode = 'remote';
 					field.store = new Ext.data.JsonStore({
 						autoDestroy : true,
 						autoLoad : true,
-						root : 'codes',
-						idProperty : 'code',
-						fields : [ {
-							name : 'code',
-							mapping : 'code'
-						}, {
-							name : 'label',
-							mapping : 'label'
-						} ],
-						url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetdynamiccodes',
-						baseParams : {
-							'unit' : record.unit
+						model:'OgamDesktop.model.request.object.field.Code',
+						proxy:{
+							type: 'ajax',
+							url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetdynamiccodes',
+							extraParams : {
+								'unit' : record.unit
+							},
+							reader: {
+								rootProperty:'codes'
+							}
 						}
+						
 					});
 				} else {
 					// Subtype == CODE (other possibilities are not available)
-					field.mode = 'remote';
+					field.queryMode = 'remote';
 					field.store = new Ext.data.JsonStore({
 						autoDestroy : true,
 						autoLoad : true,
-						root : 'codes',
-						idProperty : 'code',
-						fields : [ {
-							name : 'code',
-							mapping : 'code'
-						}, {
-							name : 'label',
-							mapping : 'label'
-						} ],
-						url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetcodes',
-						baseParams : {
-							'unit' : record.unit
+						model:'OgamDesktop.model.request.object.field.Code',
+						proxy:{
+							type: 'ajax',
+							url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetcodes',
+							extraParams : {
+								'unit' : record.unit
+							},
+							reader: {
+								rootProperty:'codes'
+							}
 						}
 					});
 				}
@@ -619,13 +640,13 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			case 'DATE': // The input type DATE correspond generally to a data
 				// type DATE
 				field.xtype = 'daterangefield';
-				field.itemCls = 'trigger-field'; // For IE7 layout
-				field.format = OgamDesktop.ux.request.AdvancedRequestFieldSet.self.dateFormat;
+				field.formItemCls = 'trigger-field'; // For IE7 layout
+				field.format = cls.dateFormat;
 				break;
 			case 'NUMERIC': // The input type NUMERIC correspond generally to a data
 				// type NUMERIC or RANGE
 				field.xtype = 'numberrangefield';
-				field.itemCls = 'trigger-field'; // For IE7 layout
+				field.formItemCls = 'trigger-field'; // For IE7 layout
 				// If RANGE we set the min and max values
 				if (record.subtype === 'RANGE') {
 					field.minValue = record.params.min;
@@ -673,7 +694,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				break;
 			case 'GEOM':
 				field.xtype = 'geometryfield';
-				field.itemCls = 'trigger-field'; // For IE7 layout
+				field.formItemCls = 'trigger-field'; // For IE7 layout
 				field.hideDrawPointButton = true;
 				field.hideDrawLineButton = true;
 				break;

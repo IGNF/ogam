@@ -105,7 +105,7 @@ Ext.define('GeoExt.selection.FeatureModel', {
     /**
      * If true the map will recenter on feature selection so that the selected
      * features are visible.
-     *
+     * 
      * @cfg {Boolean}
      */
     autoPanMapOnSelection: false,
@@ -135,7 +135,7 @@ Ext.define('GeoExt.selection.FeatureModel', {
 
     /**
      * Called after this.grid is defined.
-     *
+     * 
      * @private
      */
     bindComponent: function() {
@@ -248,9 +248,8 @@ Ext.define('GeoExt.selection.FeatureModel', {
     featureSelected: function(evt) {
         if (!this._selecting) {
             var store = this.view.store;
-            var featureKey = GeoExt.isExt4 ? 'raw' : 'data';
             var row = store.findBy(function(record, id) {
-                return record[featureKey] == evt.feature;
+                return record.raw == evt.feature;
             });
             if (row != -1 && !this.isSelected(row)) {
                 this._selecting = true;
@@ -272,9 +271,8 @@ Ext.define('GeoExt.selection.FeatureModel', {
     featureUnselected: function(evt) {
         if (!this._selecting) {
             var store = this.view.store;
-            var featureKey = GeoExt.isExt4 ? 'raw' : 'data';
             var row = store.findBy(function(record, id) {
-                return record[featureKey] == evt.feature;
+                return record.raw == evt.feature;
             });
             if (row != -1 && this.isSelected(row)) {
                 this._selecting = true;
@@ -295,8 +293,7 @@ Ext.define('GeoExt.selection.FeatureModel', {
     onSelectChange: function(record, isSelected) {
         this.callParent(arguments);
 
-        var featureKey = GeoExt.isExt4 ? 'raw' : 'data';
-        var feature = record[featureKey];
+        var feature = record.raw;
         if (this.selectControl && !this._selecting && feature) {
             var layers = this.getLayers();
             if (isSelected) {

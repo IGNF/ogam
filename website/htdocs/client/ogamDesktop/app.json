@@ -15,7 +15,7 @@
      * to "Ext.require". The "app.dir" variable below is expanded to the path where the
      * application resides (the same folder in which this file is located).
      */
-    "classpath": "${app.dir}/app,${app.dir}/lib/GeoExt/src/GeoExt",
+    "classpath": "${app.dir}/app,${app.dir}/lib/GeoExt/src/GeoExt,${app.dir}/lib/addon/GeoExt",
 
     "overrides": "${app.dir}/overrides",
 
@@ -66,7 +66,7 @@
      * resolution by setting "skip.resolve=0" (in .sencha/app/sencha.cfg) or if you
      * invoke "sencha app resolve".
      */
-    "url": "http://ogam.ign.fr/client/ogamDesktop/index.html",
+    "url": "http://www.ogam.fr/client/ogamDesktop/index.html",
 
     /**
      * List of all JavaScript assets in the right execution order.
@@ -109,24 +109,34 @@
      *      }
      */
     "js": [{
-            "path": "../../map/get-map-parameters"
+            "path": "get-map-parameters.js"
         },{
-            "path": "${app.dir}/lib/OpenLayers/OpenLayers.debug.js"
+            "path": "lib/OpenLayers/OpenLayers.debug.js"
         },{
-            "path": "${app.dir}/app/ux/map/FeatureInfoControl.js",
+            "path": "lib/addon/OpenLayers/Control/FeatureInfoControl.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/GetFeatureControl.js",
+            "path": "lib/addon/OpenLayers/Handler/FeatureInfo.js",
             "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/LocationInfoControl.js"
+            "path": "lib/addon/OpenLayers/Control/GetFeatureControl.js",
+            "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/ZoomToFeatures.js"
+            "path": "lib/addon/OpenLayers/Handler/GetFeature.js",
+            "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/ContextMenuPlugin.js"
+            "path": "lib/addon/OpenLayers/Control/LocationInfoControl.js",
+            "includeInBundle": true
         },{
-            "path": "${app.dir}/app/ux/map/GeometryField.js"
+            "path": "lib/addon/OpenLayers/Handler/LocationInfo.js",
+            "includeInBundle": true
         },{
+            "path": "lib/addon/OpenLayers/Control/ZoomToFeatures.js",
+            "includeInBundle": true
+        },/*{
+            "path": "${app.dir}/app/ux/form/field/GeometryField.js",
+            "includeInBundle": true
+        },*/{
             "path": "app.js",
             "bundle": true
         }
@@ -167,7 +177,9 @@
         },{
             "path": "resources/css/tree-gray.css",
             "bootstrap": true
-        }
+        },{
+            "path": "lib/OpenLayers/theme/default/style.css"
+        }  
     ],
 
     /**
@@ -243,7 +255,7 @@
     
     "development": {
         "OgamDesktop": {
-	    	"requestServiceUrl": "http://ogam.ign.fr/query/"
+	    	"requestServiceUrl": "http://www.ogam.fr/query/"
 	    }
     },
 

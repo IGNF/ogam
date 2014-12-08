@@ -156,11 +156,10 @@ Ext.define('GeoExt.data.FeatureStore', {
         }
 
         var features = layer.features.slice(0);
-        var featureKey = GeoExt.isExt4 ? 'raw' : 'data';
 
         if (initDir & GeoExt.data.FeatureStore.STORE_TO_LAYER) {
             this.each(function(record) {
-                layer.addFeatures([record[featureKey]]);
+                layer.addFeatures([record.raw]);
             }, this);
         }
 
@@ -234,12 +233,9 @@ Ext.define('GeoExt.data.FeatureStore', {
             // Create an array copy
             features = features.slice(0);
         }
-        var recs = [];
         Ext.Array.each(features, function(feature) {
-            var rec = this.getByFeature(feature);
-            recs.push(rec);
+            this.remove(this.getByFeature(feature));
         }, this);
-        this.remove(recs);
     },
 
     /**
@@ -249,13 +245,9 @@ Ext.define('GeoExt.data.FeatureStore', {
      * @return {String} The model instance corresponding to a feature.
      */
     getByFeature: function(feature) {
-        var featureKey = GeoExt.isExt4 ? 'raw' : 'data',
-            comparisonFunc = function(record, id) {
-                return record[featureKey] == feature;
-            },
-            idx = this.findBy(comparisonFunc),
-            rec = this.getAt(idx);
-        return rec;
+        return this.getAt(this.findBy(function(record, id) {
+            return record.raw == feature;
+        }));
     },
 
     /**
@@ -265,9 +257,8 @@ Ext.define('GeoExt.data.FeatureStore', {
      * @return {String} The model instance corresponding to the given id.
      */
     getById: function(id) {
-        var featureKey = GeoExt.isExt4 ? 'raw' : 'data';
         return (this.snapshot || this.data).findBy(function(record) {
-            return record[featureKey].id === id;
+            return record.raw.id === id;
         });
     },
 
@@ -278,10 +269,9 @@ Ext.define('GeoExt.data.FeatureStore', {
      * @private
      */
     addFeaturesToLayer: function(records) {
-        var features = [],
-            featureKey = GeoExt.isExt4 ? 'raw' : 'data';
+        var features = [];
         for (var i = 0, len = records.length; i < len; i++) {
-            features.push(records[i][featureKey]);
+            features.push(records[i].raw);
         }
         this._adding = true;
         this.layer.addFeatures(features);
@@ -344,29 +334,9 @@ Ext.define('GeoExt.data.FeatureStore', {
         var record_old = this.getByFeature(evt.feature);
         if (record_old) {
             var record_new = this.proxy.reader.read(evt.feature).records[0];
-            var keysAndValues = {};
-
-            if (GeoExt.isExt4) {
-                keysAndValues = record_new.getData();
-            } else {
-                var keys = Ext.Object.getKeys(record_new.getFieldsMap());
-                Ext.each(keys, function(key) {
-                    keysAndValues[key] = record_new.get(key);
-                });
-            }
-            Ext.Object.each(keysAndValues, function(key, value) {
-                record_old.set(key, value, {commit: true});
+            Ext.Object.each(record_new.getData(), function(key, value) {
+                record_old.set(key, value);
             }, this);
-            // Setting record dirty now:
-            //
-            // This was previously handled by set-call above, but since Ext5
-            // the model instance keeps a reference to the original feature
-            // inside of 'data' and the setter then thinks no changhes have
-            // occured, as the new value of the record is already the same as
-            // the one of the referenced feature.
-            //
-            // TODO check if the above assumption is always right
-            record_old.dirty = true;
         }
     },
 
@@ -417,35 +387,20 @@ Ext.define('GeoExt.data.FeatureStore', {
     },
 
     /**
-     * Handler for a store's remove event. Depending on the ExtJS version this
-     * method will either receive a single record or an array of records.
+     * Handler for a store's remove event.
      *
-     * @param {Ext.data.Store} store The FeatureStore.
-     * @param {Ext.data.Model/Ext.data.Model[]} records A single record in
-     *     ExtJS 4 and an array of records in ExtJS 5.
-     * @param {Number} index The index at which the record(s) were removed.
+     * @param {Ext.data.Store} store
+     * @param {Ext.data.Model} record
+     * @param {Number} index
      * @private
      */
-    onRemove: function(store, records, index) {
-        var me = this,
-            featureKey = GeoExt.isExt4 ? 'raw' : 'data',
-            layer = me.layer,
-            removeFeatures = [];
-
-        if (!Ext.isArray(records)) {
-            records = [records];
-        }
-        if (!me._removing) {
-            Ext.each(records, function(record){
-                var feature = record[featureKey];
-                if (layer.getFeatureById(feature.id) != null) {
-                    removeFeatures.push(feature);
-                }
-            });
-            if (removeFeatures.length > 0) {
-                me._removing = true;
-                layer.removeFeatures(removeFeatures);
-                delete me._removing;
+    onRemove: function(store, record, index) {
+        if (!this._removing) {
+            var feature = record.raw;
+            if (this.layer.getFeatureById(feature.id) != null) {
+                this._removing = true;
+                this.layer.removeFeatures([feature]);
+                delete this._removing;
             }
         }
     },
@@ -462,8 +417,7 @@ Ext.define('GeoExt.data.FeatureStore', {
      */
     onStoreUpdate: function(store, record, operation, modifiedFieldNames) {
         if (!this._updating) {
-            var featureKey = GeoExt.isExt4 ? 'raw' : 'data',
-                feature = record[featureKey];
+            var feature = record.raw;
             if (feature.state !== OpenLayers.State.INSERT) {
                 feature.state = OpenLayers.State.UPDATE;
             }
@@ -523,40 +477,16 @@ Ext.define('GeoExt.data.FeatureStore', {
      * com/extjs/4.1.3/source/Store.html#Ext-data-Store-method-loadRawData) and
      * of [version 4.2.1](http://docs-origin.sencha.com/extjs/4.2.1/source/
      * Store.html#Ext-data-Store-method-loadRawData).
-     *
-     * Since version 5.0.0 the method has changed at even more places so that
-     * we check GeoExt.isExt4 to decide which method we should patch. TODO: We
-     * should remove the dependency on the load event as this patching really
-     * gets nasty.
      */
     loadRawData : function(data, append) {
-        // The contents of the respective branches match their base library
-        // counterpart. The only difference is `me.fireEvent` in case of success
-        if (GeoExt.isExt4) {
-            var me      = this,
-                result  = me.proxy.reader.read(data),
-                records = result.records;
+        var me      = this,
+            result  = me.proxy.reader.read(data),
+            records = result.records;
 
-            if (result.success) {
-                me.totalCount = result.total;
-                me.loadRecords(records, append ? me.addRecordsOptions : undefined);
-                me.fireEvent('load', me, records, true);
-            }
-        } else {
-            var me      = this,
-                session = me.getSession(),
-                result  = me.getProxy().getReader().read(data, session ? {
-                    recordCreator: session.recordCreator
-                } : undefined),
-                records = result.getRecords(),
-                success = result.getSuccess();
-
-            if (success) {
-                me.totalCount = result.getTotal();
-                me.loadRecords(records, append ? me.addRecordsOptions : undefined);
-                me.fireEvent('load', me, records, true);
-            }
-            return success;
+        if (result.success) {
+            me.totalCount = result.total;
+            me.loadRecords(records, append ? me.addRecordsOptions : undefined);
+            me.fireEvent('load', me, records, true);
         }
     }
 });

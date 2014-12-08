@@ -40,18 +40,20 @@ Ext.define('GeoExt.Lang', {
     dict: null,
 
     /**
-     * Fires when localized strings are set.  Listeners will receive a
-     * single `locale` event with the language tag.
-     *
-     * @event localize
-     */
-
-    /**
      * Construct the Lang singleton.
      *
      * @private
      */
     constructor: function() {
+        this.addEvents(
+            /**
+             * Fires when localized strings are set.  Listeners will receive a
+             * single `locale` event with the language tag.
+             *
+             * @event
+             */
+            "localize"
+        );
         this.dict = {};
         this.callParent();
     },

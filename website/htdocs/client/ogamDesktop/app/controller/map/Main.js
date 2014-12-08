@@ -89,7 +89,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		/**
 		 *  @TODO 
 		 */
-		var criteria = Ext.create('Ext.ux.form.field.GeometryField');
+		var criteria = Ext.create('OgamDesktop.ux.form.field.GeometryField');
 		criteria.openMap();
 	}
 });

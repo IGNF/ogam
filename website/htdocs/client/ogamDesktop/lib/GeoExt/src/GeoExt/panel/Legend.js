@@ -151,21 +151,13 @@ Ext.define('GeoExt.panel.Legend', {
      *
      * @param {Ext.data.Store} store The store from which the record(s) was
      *     removed.
-     * @param {Ext.data.Record/Ext.data.Record[]} records The record object
-     *     corresponding to the removed layer. When using ExtJS 5 this will be
-     *     an array of removed records.
-     * @param {Integer} index The index of the removed record(s).
+     * @param {Ext.data.Record} record The record object(s) corresponding
+     *     to the removed layers.
+     * @param {Integer} index The index of the removed record.
      * @private
      */
-    onStoreRemove: function(store, records, index) {
-        var me = this,
-            recArray = records;
-        if (!Ext.isArray(records)) {
-            recArray = [records];
-        }
-        Ext.each(recArray, function(record) {
-            me.removeLegend(record);
-        });
+    onStoreRemove: function(store, record, index) {
+        this.removeLegend(record);
     },
 
     /**

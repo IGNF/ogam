@@ -10,22 +10,39 @@ Ext.define('OgamDesktop.Application', {
 	models: [
 		'map.LayerNode',
 		'map.Layer',
-		'map.LayerService'
+		'map.LayerService',
+		'request.fieldset.Criterion',
+		'request.fieldset.Column',
+		'request.object.field.Code',
+		'request.object.Field',
+		'result.Grid'
 	],
 	stores: [
 		'map.LayerNode',
 		'map.Layer',
-		'map.LayerService'
+		'map.LayerService',
+		'result.Grid'
 	],
 	controllers: [
 		'map.Layer',
 		'map.Legend',
-		'map.Main'
+		'map.Main',
+		'result.Grid',
+		'result.Main',
+		'result.Layer'
 	],
 	views: [
+		'main.Main',
 		'map.MapPanel',
 		'map.LayersPanel',
-		'map.LegendsPanel'
+		'map.LegendsPanel',
+		'map.MainWin',
+		'request.AdvancedRequest',
+		'request.AdvancedRequestController',
+		'request.AdvancedRequestModel',
+		'request.MainWin',
+		'result.MainWin',
+		'result.GridTab'
 	],
 
 	launch: function () {

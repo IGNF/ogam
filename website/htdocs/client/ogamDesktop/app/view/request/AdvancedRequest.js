@@ -15,11 +15,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		'Ext.form.field.ComboBox'
 	],
 
-	controller: 'advancedrequest',
-	viewModel: {
-		type: 'advancedrequest'
-	},
-	session: {},
 	layout: 'border',
 
 	items: [{ // The advanced request selector
@@ -86,6 +81,5 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		xtype: 'tbspacer',
 		flex: 1
 	},{
-		itemId:'SubmitButton', type: 'button', action: 'submit', text: 'Search'
-	}]
+		itemId:'SubmitButton', type: 'button', action: 'submit', text: 'Search'	}]
 });

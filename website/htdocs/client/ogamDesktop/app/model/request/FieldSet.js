@@ -3,6 +3,8 @@
  */
 Ext.define('OgamDesktop.model.request.FieldSet', {
 	extend: 'Ext.data.Model',
+	requires:['OgamDesktop.model.request.fieldset.Criterion',
+	          'OgamDesktop.model.request.fieldset.Column'],
 	idProperty: 'id',
     fields: [
         { name: 'id', type: 'auto' },

@@ -8,9 +8,7 @@
         <x-load-app-builder-properties
             refid="${compiler.ref.id}"
             splitModePropName="enable.split.mode"
-            pageModePropName="app.page.mode"
-            hasJsSdkPropName="app.has.js.sdk"
-            hasCssSdkPropName="app.has.css.sdk"/>
+            pageModePropName="app.page.mode"/>
     </target>
 
     <!--    
