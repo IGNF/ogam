@@ -28,66 +28,36 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		$this->logger = Zend_Registry::get("logger");
 
 		$translate = Zend_Registry::get('Zend_Translate');
-        $this->lang = strtoupper($translate->getAdapter()->getLocale());
+		$this->lang = strtoupper($translate->getAdapter()->getLocale());
 
-        $this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
 	}
 
 	/**
-	 * Get the view services.
+	 * Get the services.
 	 *
 	 * @return Service
 	 */
-	public function getViewServices() {
+	public function getServices() {
 	
-	    $db = $this->getAdapter();
+		$db = $this->getAdapter();
 	
-	    $req = " SELECT service_name, config FROM layer_service, layer";
-	    $req .= " WHERE layer.view_service_name = layer_service.service_name ";
-	    $req .= " GROUP BY service_name, config";
-	    
-	    Zend_Registry::get("logger")->info('getViewServices : '.$req);
+		$req = " SELECT service_name, config FROM layer_service, layer";
+		$req .= " GROUP BY service_name, config";
+		 
+		Zend_Registry::get("logger")->info('getServices : '.$req);
 	
-	    $select = $db->prepare($req);
-	    $select->execute();
+		$select = $db->prepare($req);
+		$select->execute();
 	
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-		    $service = new Application_Object_Mapping_Service();
+			$service = new Application_Object_Mapping_Service();
 			$service->serviceName = $row['service_name'];
 			$service->serviceConfig = $row['config'];
 			$result[]=$service;
 		}
-	    return $result;
-	}
-	
-	/**
-	 * Get the feature services.
-	 *
-	 * @return Service
-	 */
-	public function getFeatureServices() {
-	
-	    $db = $this->getAdapter();
-	
-	    $req = " SELECT service_name, config ";
-	    $req .= " FROM layer_service, layer";
-	    $req .= " WHERE layer.feature_service_name = layer_service.service_name ";
-	    $req .= " GROUP BY service_name, config";
-	     
-	    Zend_Registry::get("logger")->info('getFeatureServices : '.$req);
-	
-	    $select = $db->prepare($req);
-	    $select->execute();
-	
-	    $result = array();
-	    foreach ($select->fetchAll() as $row) {
-	        $service = new Application_Object_Mapping_Service();
-	        $service->serviceName = $row['service_name'];
-	        $service->serviceConfig = $row['config'];
-	        $result[]=$service;
-	    }
-	    return $result;
+		return $result;
 	}
 	
 	/**
@@ -117,96 +87,7 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 	    }
 	    return $result;
 	}
-	
-	
-	/**
-	 * Get the detail services (proxy).
-	 *
-	 * @return Service
-	 */
-	public function getDetailServices() {
-	
-	    $db = $this->getAdapter();
-	
-	    $req = " SELECT service_name,config FROM layer_service, layer";
-	    $req .= " WHERE layer.detail_service_name = layer_service.service_name ";
-	    $req .= " GROUP BY service_name, config";
-	
-	    Zend_Registry::get("logger")->info('getDetailServices : '.$req);
-	
-	    $select = $db->prepare($req);
-	    $select->execute();
-	
-	    $result = array();
-	    foreach ($select->fetchAll() as $row) {
-	        $service = new Application_Object_Mapping_Service();
-	        $service->serviceName = $row['service_name'];
-	        $service->serviceConfig = $row['config'];
-	        $result[]=$service;
-	    }
-	    return $result;
-	}
-	
-	
-	/**
-	 * Get the legend services.
-	 *
-	 * @return Service
-	 */
-	public function getLegendServices() {
-	
-	    $db = $this->getAdapter();
-	
-	    $req = " SELECT service_name,config FROM layer_service, layer";
-	    $req .= " WHERE layer.legend_service_name = layer_service.service_name ";
-	    $req .= " GROUP BY service_name, config";
-	
-	    Zend_Registry::get("logger")->info('getLegendServices : '.$req);
-	
-	    $select = $db->prepare($req);
-	    $select->execute();
-	
-	    $result = array();
-	    foreach ($select->fetchAll() as $row) {
-	        $service = new Application_Object_Mapping_Service();
-	        $service->serviceName = $row['service_name'];
-	        $service->serviceConfig = $row['config'];
-	        $result[]=$service;
-	    }
-	    return $result;
-	}
-	
-	
-	
-	/**
-	 * Get the feature info services for displaying the labels of the layers.
-	 *
-	 * @return Service
-	 */
-	public function getFeatureInfoServices() {
-	
-	    $db = $this->getAdapter();
-	
-	    $req = " SELECT service_name,config FROM layer_service, layer";
-	    $req .= " WHERE layer.feature_info_service_name = layer_service.service_name ";
-	    $req .= " GROUP BY service_name, config";
-	
-	    Zend_Registry::get("logger")->info('getFeatureInfoServices : '.$req);
-	
-	    $select = $db->prepare($req);
-	    $select->execute();
-	
-	    $result = array();
-	    foreach ($select->fetchAll() as $row) {
-	        $service = new Application_Object_Mapping_Service();
-	        $service->serviceName = $row['service_name'];
-	        $service->serviceConfig = $row['config'];
-	        $result[]=$service;
-	    }
-	    return $result;
-	}
-	
-	
+
 	/**
 	 * Get the service definition.
 	 *

@@ -1,14 +1,17 @@
+/**
+ * This class defines the global view that contains the map panel
+ * and the map addons panel (= layers panel + legends panel).
+ */
 Ext.define('OgamDesktop.view.map.MainWin', {
 	extend: 'OgamDesktop.view.AbstractWin',
 	xtype: 'map-mainwin',
 	layout: 'border',
-	height: Ext.getBody().getViewSize().height - 160,
 	title: 'Map',
-	items: [/*{
+	items: [{
 		xtype: 'map-panel',
 		region: 'center'
 	},{
 		xtype: 'map-addons-panel',
 		region: 'east'
-	}*/]
+	}]
 });
