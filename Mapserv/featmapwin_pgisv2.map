@@ -29,12 +29,12 @@ WEB
         WFS_SRS                         "EPSG:3035"
         WFS_ABSTRACT                    "OGAM Data"  
         WFS_MAXFEATURES                 "10"
-        WFS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/apps/OGAM/Mapserv/ogam_pgisv2.map"
+        WFS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.featmapwin_pgisv2?"
 
         WMS_TITLE                       "OGAM MapServer" 
         WMS_ABSTRACT                    "OGAM Mapserver"
         WMS_ACCESSCONSTRAINTS           "none"
-        WMS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.ogam_pgisv2?"
+        WMS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/apps/ogam/mapserver/featmapwin_pgisv2.map&"
         WMS_SRS                         "EPSG:3035"
         "ows_enable_request"            "*"
         "wms_include_items"      "*"
@@ -106,7 +106,7 @@ LAYER
     NAME nuts_0
     TYPE POLYGON
     STATUS ON 
-    
+    DEBUG 5
     METADATA
         WFS_TITLE        "Country Boundaries"
         GML_FEATUREID      "gid" 

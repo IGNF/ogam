@@ -109,7 +109,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 			$submission->userLogin = $row['user_login'];
 			$submission->date = $row['_creationdt'];
 			$result[] = $submission;
-				
+
 		}
 		return $result;
 	}

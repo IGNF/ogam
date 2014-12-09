@@ -15,6 +15,12 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		'Ext.form.field.ComboBox'
 	],
 
+	controller: 'advancedrequest',
+	viewModel: {
+		type: 'advancedrequest'
+	},
+	session: {},
+
 	layout: 'border',
 
 	items: [{ // The advanced request selector
