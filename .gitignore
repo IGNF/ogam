@@ -1,3 +1,7 @@
 /.externalToolBuilders
 /.settings
 Meld
+htdocs\public\ogamDesktop
+htdocs\client\build
+htdocs\server\ogamServer\sessions
+htdocs\server\ogamServer\tmp
