@@ -262,7 +262,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			items : this.getDefaultColumnsConfig(),
 			tbar : [ {
 				// The add all button
-				xtype : 'button',
+				type : 'plus',
+				xtype :'tool',
 				tooltip : this.columnsPanelTbarAddAllButtonTooltip,
 				ctCls : 'genapp-tb-btn',
 				iconCls : 'genapp-tb-btn-add',
@@ -270,7 +271,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				scope : this
 			}, {
 				// The remove all button
-				xtype : 'button',
+				xtype :'tool',
+				type : 'minus',
 				tooltip : this.columnsPanelTbarRemoveAllButtonTooltip,
 				ctCls : 'genapp-tb-btn',
 				iconCls : 'genapp-tb-btn-remove',
