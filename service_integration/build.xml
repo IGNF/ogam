@@ -2,10 +2,22 @@
 
 <project name="OGAMIntegrationService" default="deploy" basedir=".">
 
-    <!-- Properties are immutable: 
-    whoever sets a property first freezes it for the rest of the build;
-    they are most definitely not variables. -->
-    <property file="../services_configs/service_integration/build.ppts"/>
+	<!-- Properties are immutable: 
+	whoever sets a property first freezes it for the rest of the build;
+	they are most definitely not variables. -->
+
+	<!-- initialisation de l'environnement. 
+	Si env n'est pas précisé lors de l'appel à ant (ant -Denv=prod) le build 
+	utilisera la config locale (build.ptts) sinon il utilisera la config de 
+	l'environnement visé (build${env}.ptts). -->
+	<condition property="env" value="">
+		<not>
+			<isset property="env" />
+		</not>
+	</condition>
+
+
+	<property file="../services_configs/service_integration/build${env}.ppts" />
 
 	<!-- Définition des properties -->
 	<property name="application.name" value="OGAM" />
@@ -20,8 +32,8 @@
 	<property name="src.dir" value="./src" />
 	<property name="classes.dir" value="./classes" />
 	<property name="lib.dir" value="${common.dir}/lib" />
-	<property name="dist.dir" value="${java.io.tmpdir}dist/${application.name}IntegrationService" />
-	<property name="dist.webapps.dir" value="${java.io.tmpdir}webapp/${application.name}IntegrationService/" />
+	<property name="dist.dir" value="${java.io.tmpdir}/dist/${application.name}IntegrationService" />
+	<property name="dist.webapps.dir" value="${java.io.tmpdir}/webapp/${application.name}IntegrationService/" />
 	<property name="deploy.name" value="${application.name}IntegrationService" />
 
 	<!-- *** A modifier en fonction du répertoire d'installation de Tomcat *** -->
@@ -58,22 +70,22 @@
 	<target name="cleanest" depends="clean" description="Removes all the generated files or directories">
 		<delete dir="${deploy.dir}/${deploy.name}/" />
 		<delete file="${deploy.dir}/${deploy.name}.war" />
-	    <delete>
-             <fileset dir="${classes.dir}">
-                <include name="**/*.*" />
-                <exclude name=".svn" />
-             </fileset>
-        </delete>
+		<delete>
+			<fileset dir="${classes.dir}">
+				<include name="**/*.*" />
+				<exclude name=".svn" />
+			</fileset>
+		</delete>
 	</target>
 
 	<!-- Compile les sources -->
 	<target name="compile" description="Compile the sources" depends="cleanest, init">
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" target="1.5" encoding="UTF-8" classpath="${classpath};${common.dir}/classes">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" target="1.7" encoding="UTF-8" classpath="${classpath};${common.dir}/classes">
 			<compilerarg value="-Xlint" />
 		</javac>
 
 		<!-- Compile aussi les classes de test au passage -->
-		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" target="1.5" classpath="${classpath};${common.dir}/classes">
+		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" target="1.7" classpath="${classpath};${common.dir}/classes">
 			<compilerarg value="-Xlint" />
 		</javac>
 	</target>
@@ -94,7 +106,7 @@
 		</copy>
 
 		<!-- Copie des librairies communes à l'IFN -->
-		<copy file="${java.io.tmpdir}dist/libs_java/fr.ifn.commons.jar" todir="${dist.dir}/WEB-INF/lib" />
+		<copy file="${java.io.tmpdir}/dist/libs_java/fr.ifn.commons.jar" todir="${dist.dir}/WEB-INF/lib" />
 
 		<!-- Copie des librairies externes -->
 		<copy file="${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar" todir="${dist.dir}/WEB-INF/lib" />
@@ -149,7 +161,7 @@
 
 		<mkdir dir="${test_result.dir}" />
 		<delete file="${test_result.dir}/metadata.emma" />
-		
+
 
 		<!-- ======================================================================= -->
 		<!-- EMMA INSTRUMENTATION -->
