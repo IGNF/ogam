@@ -33,7 +33,7 @@
 	<th><?=$this->translate('Role');?></th>
 	<th></th>
 </tr>
-<?
+<?php
 $i = 0;
 foreach($this->users as $user) {
 ?>
@@ -47,7 +47,7 @@ foreach($this->users as $user) {
 	<td><?= $this->escape($user->roleLabel); ?></td>
 	<td class="delete-cell"><a title="<?=$this->translate('Delete');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('<?=$this->translate('Are you sure?')?>');">&nbsp;</a></td>
 </tr>
-<?
+<?php
 $i++;
 }
 ?>

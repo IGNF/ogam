@@ -30,7 +30,7 @@
 	<th><?=$this->translate('Definition');?></th>
 	<th></th>
 </tr>
-<?
+<?php
 $i = 0;
 foreach ($this->roles as $role) {
 ?>
@@ -41,7 +41,7 @@ foreach ($this->roles as $role) {
 	<td><?= $this->escape($role->roleDefinition); ?></td>
 	<td class="delete-cell"><a title="<?=$this->translate('Delete');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-role'), null, true)?>?roleCode=<?=$role->roleCode;?>" onClick="return confirm('<?=$this->translate('Are you sure?')?>');">&nbsp;</a></td>
 </tr>
-<?
+<?php
 	$i++;
 }
 ?>
