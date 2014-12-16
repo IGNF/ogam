@@ -171,7 +171,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		 */
 		this.criteriaPanel = new Ext.panel.Panel({
 			layout : 'form',
-			//hidden : Ext.isEmpty(this.criteria) ? true : false, //FIXME
+			//hidden : Ext.isEmpty(this.criteriaDS) ? true : false, //FIXME
 			hideMode : 'offsets',
 			labelWidth : this.criteriaLabelWidth,
 			cls : 'genapp-query-criteria-panel',
@@ -259,10 +259,10 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			layout : 'form',
 			hidden : Ext.isEmpty(this.columnsDS) ? true : false,
 			hideMode : 'offsets',
-			//cls : 'genapp-query-columns-panel', //FIXME
+			cls : 'genapp-query-columns-panel',
 			items : this.getDefaultColumnsConfig(),
 			tbar : [ {
-				// The add all button
+				// The add-all button
 				type : 'plus',
 				xtype :'tool',
 				tooltip : this.columnsPanelTbarAddAllButtonTooltip,
@@ -271,7 +271,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				handler : this.addAllColumns,
 				scope : this
 			}, {
-				// The remove all button
+				// The remove-all button
 				xtype :'tool',
 				type : 'minus',
 				tooltip : this.columnsPanelTbarRemoveAllButtonTooltip,
@@ -284,16 +284,16 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				xtype : 'tbfill'
 			},
 			// The label
-			/*{
+			{
 				xtype : 'tbtext',
 				text  : this.columnsPanelTbarLabel
 			}, {
 				// A space
 				xtype : 'tbspacer'
-			}, */{
+			}, {
 				// The combobox with the list of available columns
 				xtype : 'combo',
-				fieldLabel : 'Columns',
+				//fieldLabel : 'Columns',
 				hiddenName : 'Columns',
 				store : this.columnsDS,
 				editable : false,
@@ -323,8 +323,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		}
 		this.collapsible = true;
 		this.titleCollapse = true;
-		//OgamDesktop.ux.request.AdvancedRequestFieldSet.superclass.initComponent.call(this);
-		this.callSuper(arguments);
+	
+		this.callParent(arguments);
 		this.updateLayout();
 
 	},
@@ -386,15 +386,17 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// criteria
 				var defaultValue = record.data.default_value;
 				if (!Ext.isEmpty(defaultValue)) {
-					var defaultValues = defaultValue.split(';'), i;console.log('defaultValues', defaultValues);
+					var defaultValues = defaultValue.split(';'), i;
 					for (i = 0; i < defaultValues.length; i++) {
 						// clone the object
 						var newRecord = record.copy();
-						newRecord.data.default_value = defaultValues[i];console.log('defaultValues',newRecord.data.default_value);
+						newRecord.data.default_value = defaultValues[i];
+						// <debug>
+						console.log('defaultValues',newRecord.data.default_value);
 						console.log(this.items);
 						console.log(this.form);
+						//</debug>
 						this.items.push(this.form.self.getCriteriaConfig(newRecord.data, false));
-						console.log('3');
 					}
 				} else {
 					this.items.push(this.form.self.getCriteriaConfig(record.data));
@@ -555,12 +557,13 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	},
 
 	statics: {
+//<locale>		
 		/**
 		 * @cfg {String} criteriaPanelTbarComboEmptyText The criteria Panel Tbar
 		 *      Combo Empty Text (defaults to <tt>'Select...'</tt>)
 		 */
 		criteriaPanelTbarComboEmptyText : 'Select...',
-
+//</locale>
 		/**
 		 * @cfg {String} dateFormat The date format for the date fields (defaults to
 		 *      <tt>'Y/m/d'</tt>)
@@ -577,7 +580,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		 *            hideBin True to hide the bin
 		 * @hide
 		 */
-		getCriteriaConfig : function(record, hideBin) {console.log('record', record);console.log('hideBin', hideBin);
+		getCriteriaConfig : function(record, hideBin) {
 			var cls = this.self || OgamDesktop.ux.request.AdvancedRequestFieldSet;
 			// If the field have multiple default values, duplicate the criteria
 			if (!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1) {
@@ -772,8 +775,9 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				}
 
 			};
+			//<debug>
 			console.log('field', field);
-
+			//</debug>
 			return field;
 		}
 	}
