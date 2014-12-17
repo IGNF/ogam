@@ -15,21 +15,15 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
     ],
 	     
     onBindStore: function(store, initial, propertyName, oldStore){
-    	console.log('setStore');
-    	console.log(this.store);
 		var forms = store.getData(), i;
-		console.log('forms',forms);
 		this.removeAll();
 		this.updateLayout();
 		// Removes the loading message
 		//this.formsPanel.body.update();
 
 		store.getData().each(function(item, idex, length){
-			console.log('item',item);
 			var criteria = item.criteria();
 			var columns =  item.columns();
-			console.log('criteria',criteria);
-			console.log('columns',columns);
 			if (!(Ext.isEmpty(criteria) && Ext.isEmpty(columns))) {
 				var formId = item.get('id');
 				this.add({

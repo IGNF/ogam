@@ -12,7 +12,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		'OgamDesktop.store.map.LayerNode',
 		'Ext.MessageBox'
 	],
-	
 	/**
 	 * The list of OL layers.
 	 * 
@@ -47,7 +46,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			layerspanel: 'layers-panel',
 			legendspanel: 'legends-panel',
 			mapaddonspanel: 'map-addons-panel'
-		},		
+		},
 		control: {
 			'map-panel toolbar combobox': {
 				select: 'layerSelected'
@@ -58,7 +57,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			'map-panel': {
 				afterrender: 'afterMapPanelRender',
 				afterinitmap: 'setMapLayers',
-				getFeature: 'getFeature'
+				getFeature: 'getFeature',
+				resultswithautozoom: 'zoomOnResultsBBox'
 			},
 			'layers-panel': {
 				checkchange: 'onCheckChange',
@@ -183,12 +183,11 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 
 			// Fill the list of active layers
 			var activateType = layerObject.data.params.activateType.toLowerCase();
-			if (Ext.isEmpty(this.layersActivation[activateType])) {
-				this.layersActivation[activateType] = [ layerObject.name ];
+			if (Ext.isEmpty(this.mapPanel.layersActivation[activateType])) {
+				this.mapPanel.layersActivation[activateType] = [ layerObject.data.name ];
 			} else {
-				this.layersActivation[activateType].push(layerObject.name);
+				this.mapPanel.layersActivation[activateType].push(layerObject.data.name);
 			}
-
 			// Create the legends
 			var legendServiceName = layerObject.data.legendServiceName;
 			for (i in this.services) {
@@ -317,7 +316,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			});
 		}
 	},
-	
+
 	/**
 	 * Build a Legend Object from a 'Layer' store record.
 	 * @param {Array}
@@ -340,9 +339,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				if (layer.data.options.nodeGroup && layer.data.options.nodeGroup == node.data.nodeGroup) {
 					storeSelection.add(layer);
 				} else if (layer.data.title == node.data.layer) {
-
 					// Creation of the layer node
-					rootChild = {
+						rootChild = {
 						text: node.data.text,
 						layer: layer.data,
 						disabled: node.raw.disabled,
@@ -551,9 +549,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * Zoom on the results bounding box
 	 */
 	zoomOnResultsBBox : function() {
-		// To test :
-		//this.mapPanel.resultsBBox = 'POLYGON((939200 2283600,939200 2463600,1026200 2463600,1026200 2283600,939200 2283600))';
-			
 		this.zoomOnBBox(this.mapPanel.resultsBBox);
 	}
 });

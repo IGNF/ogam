@@ -376,20 +376,17 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	getDefaultCriteriaConfig : function() {
 		var items = [];
 		this.criteriaDS.each(function(record) {
-			if (record.data.is_default) {console.log('1');
+			if (record.data.is_default) {
 				// if the field have multiple default values, duplicate the
 				// criteria
 				var defaultValue = record.data.default_value;
 				if (!Ext.isEmpty(defaultValue)) {
-					var defaultValues = defaultValue.split(';'), i;console.log('defaultValues', defaultValues);
+					var defaultValues = defaultValue.split(';'), i;
 					for (i = 0; i < defaultValues.length; i++) {
 						// clone the object
 						var newRecord = record.copy();
-						newRecord.data.default_value = defaultValues[i];console.log('defaultValues',newRecord.data.default_value);
-						console.log(this.items);
-						console.log(this.form);
+						newRecord.data.default_value = defaultValues[i];
 						this.items.push(this.form.self.getCriteriaConfig(newRecord.data, false));
-						console.log('3');
 					}
 				} else {
 					this.items.push(this.form.self.getCriteriaConfig(record.data));
@@ -572,7 +569,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		 *            hideBin True to hide the bin
 		 * @hide
 		 */
-		getCriteriaConfig : function(record, hideBin) {console.log('record', record);console.log('hideBin', hideBin);
+		getCriteriaConfig : function(record, hideBin) {
 			var cls = this.self || OgamDesktop.ux.request.AdvancedRequestFieldSet;
 			// If the field have multiple default values, duplicate the criteria
 			if (!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1) {
@@ -730,7 +727,6 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 
 					// Add the tooltip
 					var binCt = cmp.getEl().parent();
-					console.log('binCt', binCt);
 					var labelDiv = cmp.getEl().child('.x-form-item-label');
 					Ext.QuickTips.register({
 						target : labelDiv,
@@ -741,7 +737,6 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 
 					// Add the bin
 					if (!hideBin) {
-						console.log('labelDiv',labelDiv);
 						labelDiv.addCls('columnLabelColor'); //FIXME
 						labelDiv.addCls('labelNextBin'); //FIXME
 						var binDiv = binCt.createChild({
@@ -767,7 +762,6 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				}
 
 			};
-			console.log('field', field);
 
 			return field;
 		}

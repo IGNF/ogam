@@ -68,6 +68,12 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	hideGeomCriteriaToolbarButton : false,
 	
 	/**
+	 * @cfg {Boolean} autoZoomOnResultsFeatures True to zoom
+	 *      automatically on the results features
+	 */
+	autoZoomOnResultsFeatures : true,
+	
+	/**
 	 * @cfg {Boolean} hidePrintMapButton if true hide the Print
 	 *      Map Button (defaults to false).
 	 */
@@ -90,6 +96,14 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 *      (defaults to <tt>null</tt>)
 	 */
 	resultsBBox : null,
+	
+	/**
+	 * @cfg {Object} layersActivation A object containing few
+	 *      arrays of layers ordered by activation type
+	 *      (defaults to <tt>{}</tt>) {
+	 *      'request':[resultLayer, resultLayer0, resultLayer1]
+	 */
+	layersActivation : {},
 	
 	/**
 	 * The wkt format.
@@ -128,7 +142,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 */
 	items: [{
 		xtype: 'gx_zoomslider',
-		itemId: 'zoomslider',
 		vertical: true,
 		height: 150,
 		x: 18,
@@ -177,6 +190,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			'resolutions' : resolutions,
 			'numZoomLevels' : OgamDesktop.map.numZoomLevels,
 			'projection' : OgamDesktop.map.projection,
+			'zoomMethod': null,
 			'units' : 'm',
 			'tileSize' : new OpenLayers.Size(OgamDesktop.map.tilesize, OgamDesktop.map.tilesize),
 			'maxExtent' : new OpenLayers.Bounds(OgamDesktop.map.x_min, OgamDesktop.map.y_min, OgamDesktop.map.x_max, OgamDesktop.map.y_max),
@@ -410,7 +424,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			}
 		}
 		
-		tbar.add(new Ext.toolbar.Spacer({flex: 1}))
+		tbar.add(Ext.create('Ext.toolbar.Spacer',{flex: 1}));
 		
 		//
 		// Layer Based Tools
@@ -485,6 +499,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 					proxy: {
 						type: 'ajax',
 						url: Ext.manifest.OgamDesktop.requestServiceUrl + '../map/ajaxgetvectorlayers',
+						actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
 						reader: {
 							type: 'json',
 							rootProperty: 'layerNames'

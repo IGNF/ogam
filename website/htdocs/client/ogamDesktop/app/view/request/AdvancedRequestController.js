@@ -46,7 +46,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 
     	this.getViewModel().set('currentProcess', defaultRecord);
     	
-    	//console.log(defaultRecord.fieldsets());
     },
     
     onSubmit:function(button){

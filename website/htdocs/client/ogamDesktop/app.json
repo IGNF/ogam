@@ -66,7 +66,7 @@
      * resolution by setting "skip.resolve=0" (in .sencha/app/sencha.cfg) or if you
      * invoke "sencha app resolve".
      */
-    "url": "http://www.ogam.fr/client/ogamDesktop/index.html",
+    "url": "http://ogam.ign.fr/client/ogamDesktop/index.html",
 
     /**
      * List of all JavaScript assets in the right execution order.
@@ -134,7 +134,7 @@
             "path": "lib/addon/OpenLayers/Control/ZoomToFeatures.js",
             "includeInBundle": true
         },/*{
-            "path": "${app.dir}/app/ux/form/field/GeometryField.js",
+            "path": "app/ux/form/field/GeometryField.js",
             "includeInBundle": true
         },*/{
             "path": "app.js",
@@ -255,7 +255,7 @@
     
     "development": {
         "OgamDesktop": {
-	    	"requestServiceUrl": "http://www.ogam.fr/query/"
+	    	"requestServiceUrl": "http://ogam.ign.fr/query/"
 	    }
     },
 
