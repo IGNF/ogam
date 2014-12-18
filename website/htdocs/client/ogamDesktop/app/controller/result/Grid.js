@@ -46,7 +46,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 				tooltip: "<b>"+gridTab.openNavigationButtonTitle+"</b><br/>"+gridTab.openNavigationButtonTip,
 				handler: function(grid, rowIndex, colIndex, item, e, record, row) {
 					// Action managed into result main controller
-					this.fireEvent('onOpenNavigationButtonClick', record);
+					gridTab.fireEvent('onOpenNavigationButtonClick', record);
 				}
 			});
 		}
@@ -55,7 +55,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			tooltip: "<b>"+gridTab.seeOnMapButtonTitle+"</b><br/>"+gridTab.seeOnMapButtonTip,
 			handler: function(grid, rowIndex, colIndex, item, e, record, row) {
 				// Action managed into result main controller
-				this.fireEvent('onSeeOnMapButtonClick', record.data);
+				gridTab.fireEvent('onSeeOnMapButtonClick', record.data);
 			}
 		});
 		gridColumnCfg.push({
@@ -135,7 +135,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 					tooltip: "<b>"+gridTab.editDataButtonTitle+"</b><br/>"+gridTab.editDataButtonTip,
 					handler: function(grid, rowIndex, colIndex, item, e, record, row) {
 						// Action managed into result main controller
-						this.fireEvent('onEditDataButtonClick', record);
+						gridTab.fireEvent('onEditDataButtonClick', record);
 					}
 				}]
 			});

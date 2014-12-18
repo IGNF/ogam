@@ -12,7 +12,7 @@ Ext.define('OgamDesktop.view.main.Main', {
 	plain: true,
 	frame: true,
 	layout: 'card',
-
+	itemId: 'main',
 	controller: 'main',
 	viewModel: {
 		type: 'main'
@@ -46,9 +46,11 @@ Ext.define('OgamDesktop.view.main.Main', {
 					defaults: {
 						closable: false
 					},
-					items: [{
-						xtype: 'map-mainwin'
-					},{
+					items: [
+//					        {
+//						xtype: 'map-mainwin'
+//					},
+					        {
 						xtype: 'result-mainwin'
 					}]
 				},{
@@ -75,5 +77,15 @@ Ext.define('OgamDesktop.view.main.Main', {
 			this.setHeight(Ext.getBody().getViewSize().height - 160);
 		},this);*/
 		this.callParent(arguments);
+		var resultsgrid = Ext.ComponentQuery.query('results-grid')[0];
+		var nav = Ext.ComponentQuery.query('navigation-mainwin')[0];
+		console.log('resultsgrid :', resultsgrid);
+		console.log('nav :', nav);
+		if(resultsgrid){
+			this.relayEvents(resultsgrid, ['onEditDataButtonClick']);
+		}
+		if(nav){
+			this.on('onEditDataButtonClick', nav.openDetails, nav);
+		}
 	}
 });

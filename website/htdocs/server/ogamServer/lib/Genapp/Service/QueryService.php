@@ -785,6 +785,10 @@ class Genapp_Service_QueryService {
 	            }
 	        }
 	    }
+	    $child = json_decode($this->ajaxgetchildren($id), true);
+	    $this->logger->debug('$child : '.$child);
+	    
+	    $dataDetails['children'] = $child;
 
 	    return $dataDetails;
 	}

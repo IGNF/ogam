@@ -8,6 +8,7 @@ Ext.define('OgamDesktop.view.result.GridTab', {
 		'Ext.tip.QuickTipManager'
 	],
 	xtype: 'results-grid',
+	itemId: 'results-grid',
 	frame : true,
 	closable: false,
 	header : false,

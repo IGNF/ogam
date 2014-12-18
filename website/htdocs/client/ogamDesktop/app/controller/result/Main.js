@@ -18,16 +18,14 @@ Ext.define('OgamDesktop.controller.result.Main',{
 			resultmainwin: 'result-mainwin'
 		},
 		control: {
-			'results-grid actioncolumn': {
+			'results-grid': {
 				onOpenNavigationButtonClick: 'openNavigation',
 				onSeeOnMapButtonClick: 'seeOnMap',
-				onEditDataButtonClick: 'openEditForm'
+				onEditDataButtonClick: 'openEditForm',
+				resultsload: 'disableExportButton'
 			},
 			'result-mainwin': {
 				exportresults: 'exportResults'
-			},
-			'results-grid': {
-				resultsload: 'disableExportButton'
 			}
 		}
 	},

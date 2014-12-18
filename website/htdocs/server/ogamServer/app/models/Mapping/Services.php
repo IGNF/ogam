@@ -59,7 +59,15 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		}
 		return $result;
 	}
-	
+
+	/**
+	 * Get the services.
+	 *
+	 * @return Service
+	 */
+	public function getDetailServices() {
+		return;
+	}
 	/**
 	 * Get the print services (local).
 	 *
