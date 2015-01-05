@@ -107,6 +107,61 @@ class Genapp_Service_GenericService {
 
 		return $json;
 	}
+	
+	
+
+	/**
+	 * Return a formated array
+	 *
+	 * @param DataObject $data the data object we're looking at.
+	 * @param String $dataset the dataset identifier (optional), limit the children to the current dataset.
+	 * @return ARRAY
+	 */
+	public function datumToDetailArray($data, $datasetId = null) {
+		
+		$this->logger->info('datumToDetailJSON', $data);
+	
+		// Get the user rights
+		$userSession = new Zend_Session_Namespace('user');
+		$permissions = $userSession->permissions;
+	
+		// Get children for the current dataset
+		$this->genericModel = new Genapp_Model_Generic_Generic();
+		$children = $this->genericModel->getChildren($data, $datasetId);
+	
+		$childrenCount = 0;
+		if (!empty($children)) {
+			$childrenCount = count(current($children));
+		}
+		$out = Array();
+		$out['title'] = json_encode($data->tableFormat->label, JSON_HEX_APOS);
+		$out['children_count'] = $childrenCount;
+		$out['id'] = $data->getId();
+
+		$fields = '';
+		// Get the form field corresponding to the table field
+		$formFields = $this->getFormFieldsOrdered($data->getFields());
+		foreach ($formFields as $formField) {
+			// Add the corresponding JSON
+			$fields .= $formField->toDetailJSON().",";
+		}
+		// remove last comma
+		if ($fields != '') {
+			$fields = substr($fields, 0, -1);
+		} else {
+			return '';
+		}
+		$out['fields'] = $fields;
+	
+		// Add the edit link
+		if (!empty($permissions) && array_key_exists('DATA_EDITION', $permissions)) {
+			$out['editURL'] = json_encode($data->getId());
+		} else {
+			$out['editURL'] = null;
+		}
+
+		return $out;
+	}
 
 	/**
 	 * Serialize a list of data objects as a JSON array for a display into a Ext.GridPanel.
@@ -118,8 +173,6 @@ class Genapp_Service_GenericService {
 	public function dataToGridDetailJSON($id, $data) {
 
 		$this->logger->info('dataToDetailJSON');
-
-		$json = "";
 
 		if (!empty($data)) {
 
@@ -180,6 +233,102 @@ class Genapp_Service_GenericService {
 		}
 	}
 
+	
+
+	/**
+	 * Serialize a list of data objects as an array for a display into a Ext.GridPanel.
+	 *
+	 * @param String $id the id for the returned dataset
+	 * @param List[DataObject] $data the data object we're looking at.
+	 * @return ARRAY
+	 */
+	public function dataToGridDetailArray($id, $data) {
+	
+		$this->logger->info('dataToDetailArray');
+	
+		if (!empty($data)) {
+	
+			// The columns config to setup the grid columnModel
+			$columns = array(array(
+					
+					'header' => 'Informations',
+					'dataIndex' => 'informations',
+					'editable' => false,
+					'tooltip' => 'Informations',
+					'width' => 150,
+					'type' => 'STRING'
+			));
+			// The columns max length to setup the column width
+			$columnsMaxLength = array();
+			// The fields config to setup the store reader
+			$locationFields = array('id', 'informations');
+			// The data to full the store
+			$locationsData = array();
+			$firstData = $data[0];
+	
+			// Dump each row values
+			foreach ($data as $datum) {
+				$locationData = array();
+				// Addition of the row id
+				$locationData[0] = $datum->getId();
+				$locationData[1] = "";
+				foreach ($datum->getInfoFields() as $field) {
+					$locationData[1] .= $field->valueLabel. ', ';
+				}
+				
+				if($locationData[1] != ""){
+					$locationData[1] = substr($locationData[1], 0, -2);
+				}
+				$formFields = $this->getFormFieldsOrdered($datum->getFields());
+				foreach ($formFields as $formField) {
+					// We keep only the result fields (The columns availables)
+					array_push($locationData, $formField->getValueLabel());
+					if (empty($columnsMaxLength[$formField->data])) {
+						$columnsMaxLength[$formField->data] = array();
+					}
+					array_push($columnsMaxLength[$formField->data], strlen($formField->getValueLabel()));
+				}
+				array_push($locationsData, $locationData);
+			}
+	
+			// Add the colums description
+			foreach ($formFields as $field) {
+				// Set the column model and the location fields
+				$dataIndex = $firstData->tableFormat->format.'__'.$field->data;
+				// Adds the column header to prevent it from being truncated too
+				array_push($columnsMaxLength[$field->data], strlen($field->label));
+				$column = array(
+						'header' => $field->label,
+						'dataIndex' => $dataIndex,
+						'editable' => false,
+						'tooltip' => $field->definition,
+						'width' => 150, //max($columnsMaxLength[$field->data]) * 7
+						'type' => $field->type
+				);
+				array_push($columns, $column);
+				array_push($locationFields, $dataIndex);
+			}
+	
+			// Check if the table has a child table
+			$hasChild = false;
+			$children = $this->metadataModel->getChildrenTableLabels($firstData->tableFormat);
+			if (!empty($children)) {
+				$hasChild = true;
+			}
+			$out = Array();
+			$out['id'] = $id;
+			$out['title'] = $firstData->tableFormat->label.' ('.count($locationsData).')';
+			$out['hasChild'] = $hasChild;
+			$out['columns'] = array_values($columns);
+			$out['fields'] = array_values($locationFields);
+			$out['data'] = array_values($locationsData); 
+			return $out;
+		} else {
+			return null;
+		}
+	}
+	
+	
 	/**
 	 * Return the form fields mapped to the table fields and ordered by position
 	 *

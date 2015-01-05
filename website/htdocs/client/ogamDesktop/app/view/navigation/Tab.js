@@ -98,55 +98,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
      * The loading message (defaults to <tt>'Loading...'</tt>)
      */
     loadingMsg: 'Loading...',
-    dockedItems: [{
-        xtype: 'toolbar',
-        dock: 'right',
-                items: [{
-                    xtype: 'menu',
-            		closable: true,
-            		header: true,
-//            	    layout: 'border',
-                	title: 'Parents',
-                	titleCollapse: true,
-                	collapsible: true,
-                    floating: false,
-                	items: [{
-                    		xtype: 'menuitem',
-                    		text: 'orga 1',
-                    		iconCls: 'icon-delete'
-		    		    },{
-		    		    	xtype: 'menuitem',
-		    		    	text: 'Ajouter un organisme',
-		    		    	iconCls: 'icon-add'
-		    		    }]
-                },{
-                    xtype: 'menu',
-                	title: 'Children',
-                    floating: false,
-                    listeners: {
-                    	render: function() {
-                    		Ext.Ajax.request({
-                    		    url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetchildren',
-                    			actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
-                    			reader: {
-                    				type: 'json',
-                    				rootProperty: ''
-                    			},
-                    		    params: {
-                    		        id: 'SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1/PLOT_CODE/01575-14060-4-0T'
-                    		    },
-                    		    success: function(response){
-                    		        var text = response.responseText;
-                    		        
-                    		        console.log(text);
-                    		        // process server response here
-                    		    }
-                    		});
-                    	}
-                    }
-                }]
-        }],
-    // private
+    
     initComponent : function() {
     	
         this.title = '<div style="width:'+ this.headerWidth + 'px;">'+this.loadingMsg+'</div>';
@@ -178,6 +130,23 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 							'</tpl>',
 						'</div>',
 					'</fieldset>',
+				'</tpl>',
+				'<tpl if="children.length != 0">',
+				'<tpl for="children">',
+					'<fieldset>',
+					'<legend>',
+						'<div>Children : {title}</div>',
+					'</legend>',
+					'<div>',
+						'<tpl for="data">',
+							'<div>{1}</div>',
+//							'<tpl if="type == \'IMAGE\'">', 
+//								'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/photos/\' + values.value + \'\">\']}',
+//							'</tpl>',
+						'</tpl>',
+					'</div>',
+				'</fieldset>',
+				'</tpl>',
 				'</tpl>',
             '</legends>',
 //          '<tpl style="display:block" for="maps1.urls">',

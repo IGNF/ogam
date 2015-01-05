@@ -785,27 +785,169 @@ class Genapp_Service_QueryService {
 	            }
 	        }
 	    }
-	    $child = json_decode($this->ajaxgetchildren($id), true);
-	    $this->logger->debug('$child : '.$child);
-	    
-	    $dataDetails['children'] = $child;
-
 	    return $dataDetails;
 	}
 
+	
 	/**
-	 * Get the details associed with a result line (clic on the "detail button").
+	 * Get the full details (with children) associed with a result line (clic on the "detail button").
 	 *
 	 * @param String $id The identifier of the line
 	 * @param String $detailsLayers The names of the layers used to display the images in the detail panel.
 	 * @param String $datasetId The identifier of the dataset (to filter data)
-	 * @return JSON representing the detail of the result line.
+	 * @param boolean $proxy If true, use the proxy to fetch mapserver
+	 * @return array Array that represents the details of the result line.
 	 */
-	public function getDetails($id, $detailsLayers, $datasetId = null) {
-        $this->logger->debug('getDetails : '.$id);
+	public function getFullDetailsData($id, $detailsLayers, $datasetId = null, $proxy = true) {
+		$this->logger->debug('getFullDetailsData : '.$id);
+	
+		// Transform the identifier in an array
+		$keyMap = $this->_decodeId($id);
+	
+		// Prepare a data object to be filled
+		$data = $this->genericService->buildDataObject($keyMap['SCHEMA'], $keyMap['FORMAT'], null);
+	
+		// Complete the primary key info with the session values
+		foreach ($data->infoFields as $infoField) {
+			if (!empty($keyMap[$infoField->data])) {
+				$infoField->value = $keyMap[$infoField->data];
+			}
+		}
+	
+		// Get the detailled data
+		$this->genericModel->getDatum($data);
+	
+		// The data ancestors
+		$ancestors = $this->genericModel->getAncestors($data);
+		$ancestors = array_reverse($ancestors);
+	
+		// Look for a geometry object in order to calculate a bounding box
+		// Look for the plot location
+		$bb = null;
+		$bb2 = null;
+		$locationTable = null;
+		foreach ($data->getFields() as $field) {
+			if ($field->unit == 'GEOM') {
+				// define a bbox around the location
+				$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+	
+				// Prepare an overview bbox
+				$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 50000);
+				 
+				$locationTable = $data;
+				break;
+			}
+		}
+		if ($bb == null) {
+			foreach ($ancestors as $ancestor) {
+				foreach ($ancestor->getFields() as $field) {
+					if ($field->unit == 'GEOM') {
+						// define a bbox around the location
+						$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+	
+						// Prepare an overview bbox
+						$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+	
+						$locationTable = $ancestor;
+						break;
+					}
+				}
+			}
+		}
+	
+		// Defines the mapsserver parameters.
+		$mapservParams = '';
+		foreach ($locationTable->getInfoFields() as $primaryKey) {
+			$mapservParams .= '&'.$primaryKey->columnName.'='.$primaryKey->value;
+		}
+	
+		// Title of the detail message
+		$dataDetails = array();
+		$dataDetails['formats'] = array();
+	
+		// List all the formats, starting with the ancestors
+		foreach ($ancestors as $ancestor) {
+			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
+			if ($ancestorJSON !== '') {
+				$dataDetails['formats'][] = json_decode($ancestorJSON, true);
+			}
+		}
+	
+		// Add the current data
+		$dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
+		if ($dataJSON !== '') {
+			$dataDetails['formats'][] = json_decode($dataJSON, true);
+		}
+	
+		// Defines the panel title
+		$titlePK = '';
+		foreach ($data->infoFields as $infoField) {
+			if ($titlePK !== '') {
+				$titlePK .= '_';
+			}
+			$titlePK .= $infoField->value;
+		}
+		$dataInfo = end($dataDetails['formats']);
+		$dataDetails['title'] = $dataInfo['title'].' ('.$titlePK.')';
+	
+		// Add the localisation maps
+		if (!empty($detailsLayers)) {
+			if ($detailsLayers[0] != '') {
+				$url = array();
+				$url = explode(";",($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0],
+						$bb, $mapservParams, $proxy)));
+				 
+				$dataDetails['maps1'] = array(
+						'title' => 'image'
+				);
+				 
+				//complete the array with the urls of maps1
+				$dataDetails['maps1']['urls'][] = array();
+				for ($i=0;$i<count($url);$i++) {
+					$str_url = 'url'.strval($i);
+					$dataDetails['maps1']['urls'][$i]['url'] = $url[$i];
+				}
+			}
+	
+			if ($detailsLayers[1] != '') {
+				$url = array();
+				$url = explode(";",($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1],
+						$bb2, $mapservParams, $proxy)));
+				$dataDetails['maps2'] = array(
+						'title' => 'overview'
+				);
+				 
+				//complete the array with the urls of maps2
+				$dataDetails['maps2']['urls'][] = array();
+				for ($i=0;$i<count($url);$i++) {
+					$dataDetails['maps2']['urls'][$i]['url'] = $url[$i];
+	
+				}
+			}
+		}
+		// Prepare a data object to be filled
+		$data2 = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
+		
+		// Complete the primary key
+		foreach ($data2->infoFields as $infoField) {
+			if (!empty($keyMap[$infoField->data])) {
+				$infoField->value = $keyMap[$infoField->data];
+			}
+		}
+		// Get children too
+		$websiteSession = new Zend_Session_Namespace('website');
+		$children = $this->genericModel->getChildren($data2, $websiteSession->datasetId);
+		// Add the children
 
-		return json_encode($this->getDetailsData($id, $detailsLayers));
+		foreach ($children as $listChild) {
+			$dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
+			$dataArray != null ? $dataDetails['children'][] = $dataArray : null;
+		}
+
+
+		return $dataDetails;
 	}
+	
 
 	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
 	    $configuration = Zend_Registry::get('configuration');
@@ -869,7 +1011,9 @@ class Genapp_Service_QueryService {
 			    }
 			}
 		}
-		$baseUrls = substr($baseUrls, 0, -1); // remove last semicolon
+		if ($baseUrls != "") {
+			$baseUrls = substr($baseUrls, 0, -1); // remove last semicolon
+		}
 		
 	    return $baseUrls;
 	}

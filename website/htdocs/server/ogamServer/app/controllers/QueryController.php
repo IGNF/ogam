@@ -459,8 +459,9 @@ class QueryController extends AbstractOGAMController {
 		if ($id == null) {
 			$id = $this->getRequest()->getPost('id');
 		}
+
 		
-		echo $this->queryService->getDetails($id, $detailsLayers, $datasetId);
+		echo json_encode($this->queryService->getFullDetailsData($id, $detailsLayers));
 		
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -468,6 +469,9 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
+	
+	
+	
 	public function pdfexportAction() {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();

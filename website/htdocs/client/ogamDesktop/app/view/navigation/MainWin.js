@@ -1,5 +1,6 @@
 Ext.define('OgamDesktop.view.navigation.MainWin', {
 	extend: 'Ext.tab.Panel',
+	requires: ['Ext.ux.DataView.LabelEditor'],
 	xtype: 'navigation-mainwin',
 	itemId:'nav',
 	title: 'Details',
@@ -11,6 +12,17 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 	},{
 		xtype: 'button', text: 'Delete'
 	}],
+//	items: [{
+//		xtype: 'panel',
+//		layout: 'form',
+//		items: Ext.create('Ext.Editor', {
+//			updateEl: true,
+//			items: {
+//		        xtype: 'textfield',
+//		        labelValue: 'test'
+//		    }
+//		})
+//	}],
 	initComponent: function() {
 //		var resultsGridArray = Ext.ComponentQuery.query('results-grid');
 //		var resultsGrid;
