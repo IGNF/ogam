@@ -96,6 +96,13 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 	maxField : null,
 
 	/**
+	 * @cfg {Object} keyNavConfig
+     * Specifies optional custom key event handlers for the {@link Ext.util.KeyNav} attached to this picker. Must
+     * conform to the config format recognized by the {@link Ext.util.KeyNav} constructor. Handlers specified in this
+     * object will replace default handlers of the same name.
+	 */
+	
+	/**
 	 * Initialise the component.
 	 */
 	initComponent : function() {
@@ -135,7 +142,7 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 		 * @type Ext.util.KeyNav
 		 * @private
 		 */
-		this.popupkeyNav = new Ext.util.KeyNav({
+		this.popupkeyNav = new Ext.util.KeyNav(Ext.apply({
 			target:this.el,
 			enter : Ext.Function.bind(this.onOkButtonPress,this, [ null, true ]),
 			tab :{
@@ -143,7 +150,7 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 				scope : this
 			},
 			scope : this
-		});
+		}, this.keyNavConfig));
 	},
 	
 	// private
