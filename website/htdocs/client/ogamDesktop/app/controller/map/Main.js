@@ -20,9 +20,6 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		control: {
 			'map-panel toolbar button[action="print"]': {
 				click: 'printMap'
-			},
-			'map-panel': {
-				addgeomcriteria: 'addgeomcriteria'
 			}
 		}
 	},
@@ -80,16 +77,5 @@ Ext.define('OgamDesktop.controller.map.Main',{
 			zoom : zoom,
 			layers : activatedLayersNames
 		});
-	},
-
-	/**
-	 * Add a geom criteria and open its map
-	 */
-	addgeomcriteria : function() {
-		/**
-		 *  @TODO 
-		 */
-		var criteria = Ext.create('OgamDesktop.ux.form.field.GeometryField');
-		criteria.openMap();
 	}
 });

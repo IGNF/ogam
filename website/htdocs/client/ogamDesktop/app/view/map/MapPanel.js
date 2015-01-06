@@ -18,12 +18,11 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		'OgamDesktop.view.map.LayersPanel',
 		'OgamDesktop.view.map.LegendsPanel',
 		'OgamDesktop.ux.form.field.GeometryField',
-		'GeoExt.window.Popup'
+		'GeoExt.window.Popup',
+		'Ext.container.ButtonGroup'
 	],
-//	id: 'mappanel',
 	// Mixins: ['OgamDesktop.view.interface.MapPanel'],
-	
-	
+
 	/**
 	 * Internationalization.
 	 */
@@ -65,7 +64,9 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	hideSnappingButton : false,
 	hideGetFeatureButton : false,
 	hideFeatureInfoButton : false,
-	hideGeomCriteriaToolbarButton : false,
+	hideDrawPointButton: true,
+	hideDrawLineButton: true,
+//	hideGeomCriteriaToolbarButton : true,
 	
 	/**
 	 * @cfg {Boolean} autoZoomOnResultsFeatures True to zoom
@@ -83,7 +84,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 * @cfg {Boolean} isDrawingMap true to display the drawing
 	 *      tools on the toolbar. (Default to false)
 	 */
-	isDrawingMap: false,
+	isDrawingMap: true,
 	
 	/**
 	 * @cfg {Integer} minZoomLevel The min zoom level for the
@@ -104,6 +105,22 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 *      'request':[resultLayer, resultLayer0, resultLayer1]
 	 */
 	layersActivation : {},
+
+	/**
+	 * The list of OL layers.
+	 * 
+	 * @property layersList
+	 * @type array of OpenLayers.Layer
+	 */
+	layersList: [],
+	
+	/**
+	 * The 'LayerService' store records.
+	 * @private
+	 * @property services
+	 * @type array
+	 */
+	services: [],
 	
 	/**
 	 * The wkt format.
@@ -165,8 +182,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		
 		// Init the Toolbar
 		this.tbar = this.initToolbar();
-		
 		this.callParent(arguments);
+		
 	},
 
 	/**
@@ -302,130 +319,140 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		// Link the toolbar to the map
 		tbar.map = this.map;
 		
-		//
-		// Drawing tools
-		//
-		if (this.isDrawingMap) {
-			// Zoom to features button
-			this.zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
-				map : this.map,
-				maxZoomLevel : 9,
-				ratio : 1.05,
-				autoActivate : false
-			// otherwise will
-			// desactivate after
-			// first init
-			});
-			var zoomToFeatureAction = Ext.create('GeoExt.Action',{
-				control : this.zoomToFeatureControl,
-				iconCls : 'zoomstations',
-				tooltip : this.zoomToFeaturesControlTitle
-			});
-			tbar.add(new Ext.button.Button(zoomToFeatureAction));
-
-			// Draw point button
-			if (!this.hideDrawPointButton) {
-				var drawPointControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point);
-
-				var drawPointAction = Ext.create('GeoExt.Action',{
-					control : drawPointControl,
-					map : this.map,
-					tooltip : this.drawPointControlTitle,
-					toggleGroup : "editing",
-					group : "drawControl",
-					checked : false,
-					iconCls : 'drawpoint'
-				});
-				tbar.add(new Ext.button.Button(drawPointAction));
+		drawingBtnGroup = Ext.create('Ext.container.ButtonGroup', {
+			hidden: true,
+			defaults: {
+				iconAlign:'top'
 			}
+		});
+		// Zoom to features button
+		this.zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
+			map : this.map,
+			maxZoomLevel : 9,
+			ratio : 1.05,
+			autoActivate : true
+		// otherwise will
+		// deactivate after
+		// first init
+		});
+		var zoomToFeatureAction = Ext.create('GeoExt.Action',{
+			control : this.zoomToFeatureControl,
+			iconCls : 'zoomstations',
+			tooltip : this.zoomToFeaturesControlTitle,
+//			checked: false
+		});
+		var zoomToFeatureButton = new Ext.button.Button(zoomToFeatureAction);
+		drawingBtnGroup.add(zoomToFeatureButton);
 
-			// Draw line button
-			if (!this.hideDrawLineButton) {
-				var drawLineControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path);
+		// Draw point button
+		var drawPointButton = null;
+		if (!this.hideDrawPointButton) {
+			var drawPointControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point);
 
-				var drawLineAction = Ext.create('GeoExt.Action',{
-					control : drawLineControl,
-					map : this.map,
-					tooltip : this.drawLineControlTitle,
-					toggleGroup : "editing",
-					group : "drawControl",
-					checked : false,
-					iconCls : 'drawline'
-				});
-				tbar.add(new Ext.button.Button(drawLineAction));
-			}
-
-			// Draw polygon button
-			var drawPolygonControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Polygon);
-
-			var drawPolygonAction = Ext.create('GeoExt.Action',{
-				control : drawPolygonControl,
+			var drawPointAction = Ext.create('GeoExt.Action',{
+				control : drawPointControl,
 				map : this.map,
-				tooltip : this.drawFeatureControlTitle,
-				toggleGroup : "drawControl",
-				toggleGroup : "editing",
-				checked : false,
-				iconCls : 'drawpolygon'
-			});
-			tbar.add(new Ext.button.Button(drawPolygonAction));
-
-			// Modify feature
-			var modifyFeatureControl = new OpenLayers.Control.ModifyFeature(this.vectorLayer, {
-				mode : OpenLayers.Control.ModifyFeature.RESHAPE
-			});
-
-			var modifyFeatureAction = Ext.create('GeoExt.Action',{
-				control : modifyFeatureControl,
-				map : this.map,
-				tooltip : this.modifyFeatureControlTitle,
+				tooltip : this.drawPointControlTitle,
 				toggleGroup : "editing",
 				group : "drawControl",
 				checked : false,
-				iconCls : 'modifyfeature'
+				iconCls : 'drawpoint'
 			});
-			tbar.add(new Ext.button.Button(modifyFeatureAction));
-			
-			// Delete feature
-			var deleteFeatureControl = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
-				displayClass : 'olControlModifyFeature',
-				onSelect : function(feature) {
-					this.vectorLayer.destroyFeatures([ feature ]);
-				},
-				scope : this,
-				type : OpenLayers.Control.TYPE_TOOL
-			});
-
-			var deleteFeatureAction = Ext.create('GeoExt.Action',{
-				control : deleteFeatureControl,
-				map : this.map,
-				tooltip : this.tbarDeleteFeatureButtonTooltip,
-				toggleGroup : "editing",
-				group : "drawControl",
-				checked : false,
-				iconCls : 'deletefeature'
-			});
-			tbar.add(new Ext.button.Button(deleteFeatureAction));
-
-			// Separator
-			tbar.add('-');
-
-		} else {
-			if (!this.hideGeomCriteriaToolbarButton) {
-				// Add geom criteria tool
-				var addGeomCriteriaButton = new Ext.button.Button({
-					text : this.addGeomCriteriaButtonText,
-					iconCls : 'addgeomcriteria',
-					handler : function(){
-						this.fireEvent('addgeomcriteria');
-					},
-					scope:this
-				});
-				tbar.add(addGeomCriteriaButton);
-			}
+			var drawPointButton = new Ext.button.Button(drawPointAction)
+			drawingBtnGroup.add(drawPointButton);
 		}
-		
-		tbar.add(Ext.create('Ext.toolbar.Spacer',{flex: 1}));
-		
+
+		// Draw line button
+		var drawLineButton = null;
+		if (!this.hideDrawLineButton) {
+			var drawLineControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path);
+			var drawLineAction = Ext.create('GeoExt.Action',{
+				control : drawLineControl,
+				map : this.map,
+				tooltip : this.drawLineControlTitle,
+				toggleGroup : "editing",
+				group : "drawControl",
+				checked : false,
+				iconCls : 'drawline'
+			});
+			var drawLineButton = new Ext.button.Button(drawLineAction);
+			drawingBtnGroup.add(drawLineButton);
+		}
+
+		// Draw polygon button.
+		var drawPolygonControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Polygon, {
+			ref: this
+		});
+
+		var drawPolygonAction = Ext.create('GeoExt.Action',{
+			control : drawPolygonControl,
+			map : this.map,
+			tooltip : this.drawFeatureControlTitle,
+			toggleGroup : "drawControl",
+			toggleGroup : "editing",
+			checked : false,
+			iconCls : 'drawpolygon'
+		});
+		var drawPolygonButton = new Ext.button.Button(drawPolygonAction);
+		drawingBtnGroup.add(drawPolygonButton);
+
+		// Modify feature.
+		var modifyFeatureControl = new OpenLayers.Control.ModifyFeature(this.vectorLayer, {
+			mode : OpenLayers.Control.ModifyFeature.RESHAPE
+		});
+
+		var modifyFeatureAction = Ext.create('GeoExt.Action',{
+			control : modifyFeatureControl,
+			map : this.map,
+			tooltip : this.modifyFeatureControlTitle,
+			toggleGroup : "editing",
+			group : "drawControl",
+			checked : false,
+			iconCls : 'modifyfeature'
+		});
+		var modifyFeatureButton = new Ext.button.Button(modifyFeatureAction);
+		drawingBtnGroup.add(modifyFeatureButton);
+
+		// Delete feature.
+		var deleteFeatureControl = new OpenLayers.Control.SelectFeature(this.vectorLayer, {
+			displayClass : 'olControlModifyFeature',
+			onSelect : function(feature) {
+				this.vectorLayer.destroyFeatures([ feature ]);
+			},
+			scope : this,
+			type : OpenLayers.Control.TYPE_TOOL
+		});
+
+		var deleteFeatureAction = Ext.create('GeoExt.Action',{
+			control : deleteFeatureControl,
+			map : this.map,
+			tooltip : this.tbarDeleteFeatureButtonTooltip,
+			toggleGroup : "editing",
+			group : "drawControl",
+			checked : false,
+			iconCls : 'deletefeature'
+		});
+		var deleteFeatureButton = new Ext.button.Button(deleteFeatureAction);
+		drawingBtnGroup.add(deleteFeatureButton);
+
+		// As a feature is modified, fire an event on the vector layer.
+//		this.vectorLayer.events.on({
+//			'afterfeaturemodified': this.onVectorLayerChange,
+//			'featureadded': this.onVectorLayerChange,
+//			'featureremoved': this.onVectorLayerChange,
+//			scope: this
+//		});
+
+		tbar.add(drawingBtnGroup);
+
+		tbar.add(Ext.create('Ext.toolbar.Spacer', {flex: 1}));
+
+		wfsBtnGroup = Ext.create('Ext.container.ButtonGroup', {
+			defaults: {
+				iconAlign:'top'
+			}
+		});
+
 		//
 		// Layer Based Tools
 		//
@@ -447,7 +474,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				iconCls : 'snapping'
 			});
 			if (!this.hideSnappingButton) {
-				tbar.add(new Ext.button.Button(snappingAction));
+				wfsBtnGroup.add(new Ext.button.Button(snappingAction));
 			}
 			
 			// Get Feature tool
@@ -466,9 +493,9 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			var getFeatureButton = new Ext.button.Button(getFeatureAction);
 			
 			if (!this.hideGetFeatureButton) {
-				tbar.add(getFeatureButton);
+				wfsBtnGroup.add(getFeatureButton);
 			}
-			
+
 			// Feature Info Tool
 			this.featureInfoControl = new OpenLayers.Control.FeatureInfoControl({
 				layerName : this.vectorLayer.name,
@@ -485,7 +512,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				iconCls : 'feature-info'
 			});
 			if (!this.hideFeatureInfoButton) {
-				tbar.add(new Ext.button.Button(featureInfoAction));
+				wfsBtnGroup.add(new Ext.button.Button(featureInfoAction));
 			}
 
 			// Layer selector
@@ -522,12 +549,19 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				valueField : 'code',
 				displayField : 'label'
 			});
-			tbar.add(this.layerSelector);
+			wfsBtnGroup.add(this.layerSelector);
+			
+			tbar.add(wfsBtnGroup);
 			
 			// Add separator
 			tbar.add('-');
 		}		
-		
+
+		navBtnGroup = Ext.create('Ext.container.ButtonGroup', {
+			defaults: {
+				iconAlign:'top'
+			}
+		});
 		//
 		// Navigation history : back and next
 		//
@@ -548,8 +582,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			disabled : true,
 			handler : historyControl.next.trigger
 		});
-		tbar.add(buttonPrevious);
-		tbar.add(buttonNext);
+		navBtnGroup.add(buttonPrevious);
+		navBtnGroup.add(buttonNext);
 
 		historyControl.previous.events.register("activate", buttonPrevious, function() {
 			this.setDisabled(false);
@@ -584,7 +618,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			tooltip : this.locationInfoControlTitle,
 			iconCls : 'feature-info'
 		});
-		tbar.add(new Ext.button.Button(locationInfoAction));
+		navBtnGroup.add(new Ext.button.Button(locationInfoAction));
 
 		//
 		// Navigation controls
@@ -604,7 +638,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			checked : false,
 			iconCls : 'zoomin'
 		});
-		tbar.add(new Ext.button.Button(zoomInAction));
+		navBtnGroup.add(new Ext.button.Button(zoomInAction));
 
 		// Zoom Out
 		var zoomOutControl = new OpenLayers.Control.ZoomBox({
@@ -622,7 +656,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			iconCls : 'zoomout'
 		});
 
-		tbar.add(new Ext.button.Button(zoomOutAction));
+		navBtnGroup.add(new Ext.button.Button(zoomOutAction));
 
 		// Navigation
 		var navigationControl = new OpenLayers.Control.Navigation({
@@ -642,11 +676,18 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			iconCls : 'pan'
 		});
 
-		tbar.add(new Ext.button.Button(navigationAction));
+		navBtnGroup.add(new Ext.button.Button(navigationAction));
 
+		tbar.add(navBtnGroup);
+		
 		// Separator
 		tbar.add('-');
 
+		extentBtnGroup = Ext.create('Ext.container.ButtonGroup', {
+			defaults: {
+				iconAlign:'top'
+			}
+		});
 		// Zoom to the Results
 		var zoomToResultAction = Ext.create('GeoExt.Action',{
 			scope : this,
@@ -657,7 +698,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			iconCls : 'zoomstations'
 		});
 
-		tbar.add(new Ext.button.Button(zoomToResultAction));
+		extentBtnGroup.add(new Ext.button.Button(zoomToResultAction));
 
 		// Zoom to max extend
 		var zoomToMaxControl = new OpenLayers.Control.ZoomToMaxExtent({
@@ -673,7 +714,12 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			iconCls : 'zoomfull'
 		});
 
-		tbar.add(new Ext.button.Button(zoomToMaxAction));
+		extentBtnGroup.add(new Ext.button.Button(zoomToMaxAction));
+		
+		tbar.add(extentBtnGroup);
+
+		// Separator
+		tbar.add('-');
 		
 		// Print the displayed map
 		if (!this.hidePrintMapButton) {
@@ -685,15 +731,16 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				scope : this
 			});
 			
-			// Separator
-			tbar.add('-');
-			
-			tbar.add(printMapButton);
 		}
-
+		tbar.add(printMapButton);
 		return tbar;
 	},
-
+	
+	onVectorLayerChange: function(){
+		console.log('event modified');
+		this.fireEvent('featureModified');
+	},
+	
 	/**
 	 * Destroy additional objects on the (auto) destroy of component.
 	 */
@@ -701,7 +748,13 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		this.baseLayer = null;
 		this.wktFormat = null;
 		this.featureInfoControl = null;
+		this.layersList = null;
+		this.layersActivation = null;
+		this.services = null;
 
+//		this.vectorLayer.events.unregister('afterfeaturemodified', this, this.onVectorLayerChange);
+//		this.vectorLayer.events.unregister('featureadded', this, this.onVectorLayerChange);
+//		this.vectorLayer.events.unregister('featureremoved', this, this.onVectorLayerChange);
 		if (this.map) {
 			this.map.destroy();
 			this.map = null;

@@ -75,6 +75,5 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 				scope : this,
 				callback: this.handleResponse});
 		
-		
 	}
 });

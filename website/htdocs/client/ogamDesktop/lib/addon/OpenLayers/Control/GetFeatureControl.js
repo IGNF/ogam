@@ -62,7 +62,7 @@ OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 	 * received feature.
 	 */
 	getFeature : function(feature) {
-		Ext.ComponentQuery.query("gx_mappanel")[0].fireEvent('getFeature', feature, this.map.id);
+		Ext.ComponentQuery.query("map-panel")[0].fireEvent('getFeature', feature, this.map.id);
 	},
 
 	/**

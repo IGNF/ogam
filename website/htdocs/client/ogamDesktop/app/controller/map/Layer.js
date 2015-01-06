@@ -12,22 +12,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		'OgamDesktop.store.map.LayerNode',
 		'Ext.MessageBox'
 	],
-	/**
-	 * The list of OL layers.
-	 * 
-	 * @property layersList
-	 * @type array of OpenLayers.Layer
-	 */
-	layersList: [],
-	
-	/**
-	 * The 'LayerService' store records.
-	 * @private
-	 * @property services
-	 * @type array
-	 */
-	services: [],
-	
+
 	/**
 	 * The map panel view.
 	 * @private
@@ -45,25 +30,96 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		refs: {
 			layerspanel: 'layers-panel',
 			legendspanel: 'legends-panel',
-			mapaddonspanel: 'map-addons-panel'
+			mapaddonspanel: 'map-addons-panel',
+			mappanel: 'map-panel',
+			geometryfield: 'geometryfield'
 		},
 		control: {
+			'geometryfield': {
+				geomCriteriaClick: 'showQueryTbar'
+			},
 			'map-panel toolbar combobox': {
 				select: 'layerSelected'
 			},
 			'map-panel toolbar button[action="zoomtoresults"]': {
 				click: 'zoomOnResultsBBox'
 			},
+			'map-mainwin': {
+				afterrender: 'afterMapMainWinRender'
+			},
 			'map-panel': {
-				afterrender: 'afterMapPanelRender',
 				afterinitmap: 'setMapLayers',
 				getFeature: 'getFeature',
-				resultswithautozoom: 'zoomOnResultsBBox'
+				resultswithautozoom: 'zoomOnResultsBBox',
+				featureModified: 'updateVectorLayer'
 			},
 			'layers-panel': {
 				checkchange: 'onCheckChange',
 				nodeEnable: 'nodeEnable'
+			},
+			'advanced-request button[action = submit]': {
+				onRequestFormSubmit: 'hideQueryTbar'
 			}
+		}
+	},
+
+	updateVectorLayer: function() {
+		var wktValue = null;
+		if (this.getMappanel().vectorLayer.features.length){
+			wktValue = 'MULTIPOLYGON('; 
+			for (var i = 0 ; i < this.getMappanel().vectorLayer.features.length ; i++) {
+				var val = (this.getMappanel().wktFormat.write(this.getMappanel().vectorLayer.features[i]));
+				if (val.indexOf('MULTIPOLYGON', 0) == -1) {
+					val = val.split('POLYGON')[1];
+				} else {
+					val = val.split('MULTIPOLYGON(')[1];
+					val = val.substring(0, val.lastIndexOf(')'));
+				}
+				wktValue = wktValue + val + ',';
+			}
+			wktValue = wktValue.substring(0, wktValue.lastIndexOf(',')) + ')';
+		}
+		var geometryFields = Ext.ComponentQuery.query('geometryfield');
+		if (geometryFields.length){
+			geometryFields[0].setValue(wktValue);
+		}
+	},
+
+	showQueryTbar: function() {
+		this.setQueryMode(true);
+	},
+
+	hideQueryTbar: function() {
+		this.setQueryMode(false);
+	},
+
+	setQueryMode: function(enable) {
+		var drawingTbar = Ext.ComponentQuery.query('map-panel toolbar buttongroup');
+		if (drawingTbar.length) {
+			drawingTbar[0].setVisible(enable);
+		}
+		var drawPolygonButton = Ext.ComponentQuery.query('map-panel toolbar button[iconCls = drawpolygon]');
+		if (drawPolygonButton.length) {
+			drawPolygonButton[0].toggle(enable);
+		}
+		if (!enable) {
+			var modifyButton = Ext.ComponentQuery.query('map-panel toolbar button[iconCls = modifyfeature]');
+			if (modifyButton.length) {
+				modifyButton[0].toggle(false);
+			}
+			var deleteFeatureButton = Ext.ComponentQuery.query('map-panel toolbar button[iconCls = deletefeature]');
+			if (deleteFeatureButton) {
+				deleteFeatureButton[0].toggle(false);
+			}
+			for( var i = 0; i < this.getMappanel().vectorLayer.features.length; i++ ) {
+				this.getMappanel().vectorLayer.features[i].style = { display: 'none' };
+			}
+			this.getMappanel().vectorLayer.redraw();
+		} else {
+			for( var i = 0; i < this.getMappanel().vectorLayer.features.length; i++ ) {
+				this.getMappanel().vectorLayer.features[i].style = null;
+			}
+			this.getMappanel().vectorLayer.redraw();
 		}
 	},
 
@@ -80,7 +136,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		// The tabPanels must be activated before to show a
 		// child component
 		var isLayerPanelVisible = this.getLayerspanel().isVisible();
-		this.getMapaddonspanel().setActiveItem(this.getLayerspanel());
+		this.mapMainWin.getComponent(1).setActiveItem(this.mapMainWin.getComponent(1).getComponent(0));
 		
 		var parent = node.parentNode;
 		if (toEnable === false) {
@@ -99,7 +155,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		
 		// Keep the current activated panel activated
 		if (!isLayerPanelVisible) {
-			this.getMapaddonspanel().setActiveItem(this.getLegendspanel());
+			this.mapMainWin.getComponent(1).setActiveItem(this.mapMainWin.getComponent(1).getComponent(1));
 		}
 	},
 
@@ -109,9 +165,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * @param {object}
 	 *            mappanel the MapPanel
 	 */
-	afterMapPanelRender: function(mappanel) {
-		this.mapPanel = mappanel;
-		
+	afterMapMainWinRender: function(mapmainwin) {
+		this.mapMainWin = mapmainwin;
+		this.mapPanel = this.mapMainWin.getComponent(0);
 		// Load the LayerService store
 		var serviceStore = this.getStore('map.LayerService');
 		serviceStore.load({
@@ -124,7 +180,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * Get services and load Layer store.
 	 */
 	onServiceStoreLoad: function(services) {
-		this.services = services;
+		this.mapPanel.services = services;
 		
 		// Load the Layer store
 		var layerStore = this.getStore('map.Layer');
@@ -140,16 +196,19 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	setMapLayers : function(map, vectorLayer, baseLayer, wfsLayer) {
 		// Add the base layer (always first)
 		map.addLayer(baseLayer);
-
-		// Add the available layers
-		for ( var i = 0; i < this.layersList.length; i++) {
-			map.addLayer(this.layersList[i]);
+		
+		if (this.mapPanel) {
+			// Add the available layers
+			for ( var i = 0; i < this.mapPanel.layersList.length; i++) {
+				map.addLayer(this.mapPanel.layersList[i]);
+			}
+			// Add the WFS layer
+			if (!this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
+				map.addLayer(this.mapPanel.wfsLayer);
+				this.mapPanel.snappingControl.addTargetLayer(this.mapPanel.wfsLayer);
+			}
 		}
-		// Add the WFS layer
-		if (this.mapPanel && !this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
-			map.addLayer(this.mapPanel.wfsLayer);
-			this.mapPanel.snappingControl.addTargetLayer(this.mapPanel.wfsLayer);
-		}
+		
 		// Add the vector layer
 		map.addLayer(vectorLayer);
 	},
@@ -161,15 +220,15 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 */
 	addLayers : function(layers) {
 		// Reset the arrays
-		this.layersList = [];
-		this.layersActivation = {};
+		this.mapPanel.layersList = [];
+		this.mapPanel.layersActivation = {};
 		// Rebuild the list of available layers
 		for (i in layers) {
 			var layerObject = layers[i];
 			// Get the view service name
 			var viewServiceName = layerObject.data.viewServiceName;
-			for (i in this.services) {
-				var service = this.services[i];
+			for (i in this.mapPanel.services) {
+				var service = this.mapPanel.services[i];
 				if (service.data.name == viewServiceName) {
 					viewServiceObject = service;
 					break;
@@ -179,7 +238,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			// Build the new OpenLayers layer object and add it
 			// to the list
 			var newLayer = this.buildLayer(layerObject, viewServiceObject);
-			this.layersList.push(newLayer);
+			this.mapPanel.layersList.push(newLayer);
 
 			// Fill the list of active layers
 			var activateType = layerObject.data.params.activateType.toLowerCase();
@@ -190,8 +249,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			}
 			// Create the legends
 			var legendServiceName = layerObject.data.legendServiceName;
-			for (i in this.services) {
-				var service = this.services[i];
+			for (i in this.mapPanel.services) {
+				var service = this.mapPanel.services[i];
 				if (service.data.name == legendServiceName) {
 					legendServiceObject = service;
 					this.buildLegend(layerObject, legendServiceObject);
@@ -231,7 +290,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		this.mapPanel.wfsLayer.extractAttributes = false;
 		this.mapPanel.wfsLayer.styleMap = styleMap;
 		this.mapPanel.wfsLayer.visibility = false;
-		
+
 		this.setMapLayers(this.mapPanel.map, this.mapPanel.baseLayer, this.mapPanel.vectorLayer, this.mapPanel.wfsLayer);
 
 		// Gets the layer tree model to initialise the Layer
@@ -291,7 +350,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * @return OpenLayers.Layer
 	 */
 	buildLegend : function(layerObject,serviceObject) {
-		legend = this.getLegendspanel()
+//		legend = this.getLegendspanel()
+		legend = this.mapMainWin.getComponent(1).getComponent(1)
 			.add(new Ext.Component({
 				// Extjs 5 doesn't accept '.' into ids
 				id : this.mapPanel.id + layerObject.data.name.replace(/\./g,'-'),
@@ -371,7 +431,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				treeLayerStore.root.appendChild(rootChild);
 			}
 		}
-		this.getLayerspanel().setConfig('store', treeLayerStore);
+		this.mapMainWin.getComponent(1).getComponent(0).setConfig('store', treeLayerStore);
+//		this.getLayerspanel().setConfig('store', treeLayerStore);
 	},
 
 	/**
