@@ -72,7 +72,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
     /**
      * @cfg {String} baseChars The base set of characters to evaluate as valid (defaults to '0123456789<>= ').
      */
-    baseChars : "0123456789<>= ",
+    baseChars : "0123456789",
     /**
      * @cfg {Boolean} hideValidationButton if true hide the menu validation button (defaults to true).
      */
@@ -88,12 +88,14 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
     initEvents : function(){
         var allowed = '';
         allowed += this.baseChars; // ! this.baseChars can be null
+        allowed += this.maxNumberPrefix + this.minNumberPrefix;
         if (this.allowDecimals) {
             allowed += this.decimalSeparator;
         }
         if (this.allowNegative) {
             allowed += '-';
         }
+        allowed = Ext.Array.unique(allowed.split('')).join(); //simplify the regex
         this.maskRe = new RegExp('[' + Ext.String.escapeRegex(allowed) + ']');
         this.callParent(arguments);
     },
@@ -123,7 +125,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
      * 
      * @param {Number} value The value to check
      */
-    validateValue : function(value){
+    validateValue : function(value){//TODO : override getErrors, recommended since 3.2
     	var format =Ext.String.format;
     	
         if (!this.callParent(arguments)){ //super! not parent, in override case
