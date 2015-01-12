@@ -137,7 +137,12 @@ class QueryController extends AbstractOGAMController {
 			$this->view->defaultTab = 'predefined';
 		}
 		
-		$this->render('show-query-form');
+		//$this->render('show-query-form');
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
+		$redirector->gotoUrl($this->view->baseUrl('/odp/index.html'));
 	}
 
 	/**
