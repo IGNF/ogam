@@ -43,7 +43,7 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 	 */
 	openDetails : function(record) {
 		console.log('this into navigation', this);
-		var id = record.id;
+		var id = (typeof record == 'string') ? record : record.id;
 		if (!Ext.isEmpty(id)) {
 			this.expand();
 //			var tab = this.queryById(id);

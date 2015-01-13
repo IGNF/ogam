@@ -47,9 +47,9 @@ Ext.define('OgamDesktop.view.main.Main', {
 						closable: false
 					},
 					items: [
-//					        {
-//						xtype: 'map-mainwin'
-//					},
+					        {
+						xtype: 'map-mainwin'
+					},
 					        {
 						xtype: 'result-mainwin'
 					}]

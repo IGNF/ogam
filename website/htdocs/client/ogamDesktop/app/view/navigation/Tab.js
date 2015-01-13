@@ -139,7 +139,8 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 					'</legend>',
 					'<div>',
 						'<tpl for="data">',
-							'<div>{1}</div>',
+							'<div><div class="genapp-query-grid-slip" '
+								+ 'onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{0}\');"></div>{1}</div><br>',
 //							'<tpl if="type == \'IMAGE\'">', 
 //								'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/photos/\' + values.value + \'\">\']}',
 //							'</tpl>',
@@ -178,7 +179,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 			actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
             success :function(response, options){
                 var details = Ext.decode(response.responseText);
-                
+                console.log('details : ', details);
                 var title = details.title;
                 if(details.title.length > this.titleCharsMaxLength){
                     title = details.title.substring(0,this.titleCharsMaxLength) + '...';
