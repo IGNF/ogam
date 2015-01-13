@@ -47,9 +47,10 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 		 try {
 			var result = Ext.decode(response.responseText);
 			if (!Ext.isEmpty(result.data)) {
-				this.control.getLocationInfo(result);
+				this.control.getLocationInfo(result, this.ll);
 			}
 		 } catch (e) {
+			console.log(e);
 		 	Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		 }
 	},
@@ -60,20 +61,20 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 	click: function(evt) {
 		// Calcul de la coordonnée correspondant au point cliqué par
 		// l'utilisateur
-		var px = new OpenLayers.Pixel(evt.xy.x, evt.xy.y);
-		var ll = this.map.getLonLatFromPixel(px);
+		this.px = new OpenLayers.Pixel(evt.xy.x, evt.xy.y);
+		this.ll = this.map.getLonLatFromPixel(this.px);
 
 		// Construction d'une URL pour faire une requête WFS sur le point
-		var url = Ext.manifest.OgamDesktop.requestServiceUrl + "ajaxgetlocationinfo?LON="+ll.lon+"&LAT="+ll.lat;
+		var url = Ext.manifest.OgamDesktop.requestServiceUrl + "ajaxgetlocationinfo?LON="+this.ll.lon+"&LAT="+this.ll.lat;
 		if (OgamDesktop.map.featureinfo_maxfeatures !== 0) {
 			url = url + "&MAXFEATURES=" + OgamDesktop.map.featureinfo_maxfeatures;
 		}
 
 		// Send a request
 		OpenLayers.Request.GET({
-				url : url, 
-				scope : this,
-				callback: this.handleResponse});
-		
+			url : url,
+			scope : this,
+			callback: this.handleResponse
+		});
 	}
 });

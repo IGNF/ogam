@@ -42,7 +42,9 @@ Ext.define('OgamDesktop.Application', {
 		'request.AdvancedRequestModel',
 		'request.MainWin',
 		'result.MainWin',
-		'result.GridTab'
+		'result.GridTab',
+		'navigation.DeprecatedDetailGrid',
+		'navigation.GridDetailsPanel'
 	],
 
 	launch: function () {

@@ -48,9 +48,6 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	initialize : function(map, options) {
 		OpenLayers.Control.prototype.initialize.apply(this, [ options ]);
 
-		// Register events
-		//Ogam.eventManager.addEvents('getLocationInfo');
-
 		this.handler = new OpenLayers.Handler.LocationInfo(this, {
 			'click' : this.click,
 			'control' : this
@@ -61,8 +58,8 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 * This function is called when a location info is received. Fire a event
 	 * with the received info.
 	 */
-	getLocationInfo : function(result) {
-		//Ogam.eventManager.fireEvent('getLocationInfo', result, this.map.id);
+	getLocationInfo : function(result, llLocation) {
+		Ext.ComponentQuery.query("map-panel")[0].fireEvent('getLocationInfo', result, llLocation, this.map.id);
 	},
 
 	/**
@@ -74,6 +71,8 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 		if (!this.active) {
 			this.handler.activate();
 		}
+		console.log('activate feature info');
+		Ext.ComponentQuery.query("map-panel")[0].fireEvent('getLocationInfoActivated', true);
 		return OpenLayers.Control.prototype.activate.apply(this, arguments);
 	},
 
@@ -83,6 +82,8 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 * Returns: {Boolean} The control was effectively deactivated.
 	 */
 	deactivate : function() {
+		console.log('deactivate feature info');
+		Ext.ComponentQuery.query("map-panel")[0].fireEvent('getLocationInfoActivated', false);
 		return OpenLayers.Control.prototype.deactivate.apply(this, arguments);
 	},
 

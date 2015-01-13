@@ -75,12 +75,14 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 		this.callParent(arguments);		
 	},
 
-	
+	/**
+	 * On destroy of the geometry field, deactivate query tbar buttons
+	 */
 	onDestroy: function() {
 		var geometryFields = Ext.ComponentQuery.query('geometryfield');
-		var drawingTbar = Ext.ComponentQuery.query('map-panel toolbar buttongroup')[0];
+		var drawingTbar = Ext.ComponentQuery.query('map-panel toolbar buttongroup');
 		if (drawingTbar.length) {
-			drawingTbar.setVisible(false);
+			drawingTbar[0].setVisible(false);
 		}
 		var drawPolygonButton = Ext.ComponentQuery.query('map-panel toolbar button[iconCls = drawpolygon]');
 		if (drawPolygonButton.length) {

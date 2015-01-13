@@ -145,7 +145,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 * @property vectorLayer
 	 */
 	vectorLayer : null,
-
+	vector: null,
 	/**
 	 * The map object (linked to the map panel).
 	 * 
@@ -227,6 +227,12 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			displayInLayerSwitcher : false
 		});
 
+		// Define the vector layer, used to display result details
+		this.vector = new OpenLayers.Layer.Vector("Result details", {
+			printable : false, // This layers is never printed
+			displayInLayerSwitcher : false
+		});
+		
 		// Define the base layer of the map
 		this.baseLayer = new OpenLayers.Layer("Empty baselayer", {
 			isBaseLayer : true,
@@ -239,7 +245,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		// 'afterinitmap' event is catched by the layer controller
 		// that applies the 'setMapLayers' handlers
 		// 
-		this.fireEvent('afterinitmap', map, this.vectorLayer, this.baseLayer);
+		this.fireEvent('afterinitmap', map, this.vectorLayer, this.vector, this.baseLayer);
 
 		//
 		// Add the controls
@@ -737,7 +743,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	},
 	
 	onVectorLayerChange: function(){
-		console.log('event modified');
 		this.fireEvent('featureModified');
 	},
 	

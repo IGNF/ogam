@@ -193,7 +193,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	/**
 	 * Set the layers of the map
 	 */
-	setMapLayers : function(map, vectorLayer, baseLayer, wfsLayer) {
+	setMapLayers : function(map, vectorLayer, vector, baseLayer, wfsLayer) {
 		// Add the base layer (always first)
 		map.addLayer(baseLayer);
 		
@@ -211,6 +211,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		
 		// Add the vector layer
 		map.addLayer(vectorLayer);
+		map.addLayer(vector);
 	},
 
 	/**
@@ -291,7 +292,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		this.mapPanel.wfsLayer.styleMap = styleMap;
 		this.mapPanel.wfsLayer.visibility = false;
 
-		this.setMapLayers(this.mapPanel.map, this.mapPanel.baseLayer, this.mapPanel.vectorLayer, this.mapPanel.wfsLayer);
+		this.setMapLayers(this.mapPanel.map, this.mapPanel.baseLayer, this.mapPanel.vectorLayer, this.mapPanel.vector, this.mapPanel.wfsLayer);
 
 		// Gets the layer tree model to initialise the Layer
 		// Tree
