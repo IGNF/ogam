@@ -746,6 +746,14 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		this.fireEvent('featureModified');
 	},
 	
+	highlightObject: function(record) {
+		console.log('highlight', record);
+	},
+	
+	showObjectInDefaultStyle: function(record) {
+		console.log('default style', record);
+	},
+	
 	/**
 	 * Destroy additional objects on the (auto) destroy of component.
 	 */

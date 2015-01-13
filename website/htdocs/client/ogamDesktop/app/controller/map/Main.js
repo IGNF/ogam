@@ -26,10 +26,23 @@ Ext.define('OgamDesktop.controller.map.Main',{
 			'map-panel': {
 				getLocationInfo: 'showResultDetail',
 				getLocationInfoActivated: 'locationInfoStateChange'
+			},
+			'deprecated-detail-grid': {
+				beforedetailsgridrowenter: 'setResultStateToSelected',
+				beforedetailsgridrowleave: 'setResultStateToDefault'
 			}
 		}
 	},
 
+	setResultStateToSelected: function(record) {
+		this.getMappanel().highlightObject(record);
+	},
+	
+	setResultStateToDefault: function(record) {
+		this.getMappanel().showObjectInDefaultStyle(record);
+	},
+	
+	
 	locationInfoStateChange: function(activated) {
 		console.log('activated', activated);
 	},

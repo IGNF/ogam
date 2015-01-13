@@ -156,6 +156,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
 		
+		$selectMode = $configuration->featureinfo_selectmode;
 		$margin = $configuration->featureinfo_margin;
 				
 		$translate = Zend_Registry::get('Zend_Translate');
@@ -223,11 +224,19 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		}
 	
 		$req = "SELECT " . $cols . " ";
+		if ($selectMode === 'distance') {
+			$req .= ", ST_Distance(r.the_geom, ST_SetSRID(ST_Point(?, ?),".$projection.")) as dist ";
+		}
 		$req .= "FROM result_location r ";
 		$req .= "LEFT JOIN ".$locationTableInfo->tableName." l on (r.format = '".$locationTableInfo->format."' AND r.pk = ".$pkscols.") ";
 		$req .= $joinForMode;
 		$req .= "WHERE r.session_id = ? ";
-		$req .= "and ST_DWithin(r.the_geom, ST_SetSRID(ST_Point(?, ?),".$projection."), ".$margin.")";
+		if ($selectMode === 'buffer') {
+			$req .= "and ST_DWithin(r.the_geom, ST_SetSRID(ST_Point(?, ?),".$projection."), ".$margin.")";
+		} elseif ($selectMode === 'distance') {
+			$req .= "and ST_Distance(r.the_geom, ST_SetSRID(ST_Point(?, ?),".$projection.")) < ".$margin;
+			$req .= "ORDER BY dist";
+		}
 	
 		$this->logger->info('getLocationInfo session_id : '.$sessionId);
 		$this->logger->info('getLocationInfo lon : '.$lon);
@@ -235,7 +244,12 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		$this->logger->info('getLocationInfo request : '.$req);
 	
 		$select = $db->prepare($req);
-		$select->execute(array($sessionId, $lon, $lat));
+		if ($selectMode === 'buffer') {
+			$select->execute(array($sessionId, $lon, $lat));
+		} elseif ($selectMode === 'distance') {
+			$select->execute(array($lon, $lat, $sessionId, $lon, $lat));
+		}
+		
 	
 		return $select->fetchAll();
 	}
