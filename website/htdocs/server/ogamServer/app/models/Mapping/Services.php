@@ -60,13 +60,33 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		return $result;
 	}
 
+	
 	/**
-	 * Get the services.
+	 * Get the detail services (proxy).
 	 *
 	 * @return Service
 	 */
 	public function getDetailServices() {
-		return;
+	
+	    $db = $this->getAdapter();
+	
+	    $req = " SELECT service_name,config FROM layer_service, layer";
+	    $req .= " WHERE layer.detail_service_name = layer_service.service_name ";
+	    $req .= " GROUP BY service_name, config";
+	
+	    Zend_Registry::get("logger")->info('getDetailServices : '.$req);
+	
+	    $select = $db->prepare($req);
+	    $select->execute();
+	
+	    $result = array();
+	    foreach ($select->fetchAll() as $row) {
+	        $service = new Application_Object_Mapping_Service();
+	        $service->serviceName = $row['service_name'];
+	        $service->serviceConfig = $row['config'];
+	        $result[]=$service;
+	    }
+	    return $result;
 	}
 	/**
 	 * Get the print services (local).

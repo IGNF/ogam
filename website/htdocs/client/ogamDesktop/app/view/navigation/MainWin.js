@@ -5,13 +5,36 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 	itemId:'nav',
 	title: 'Details',
 	titleCollapse : true,
-	tbar :[{
+    /**
+     * @cfg {String} pdfUrl
+     * The url to get the pdf.
+     */
+    pdfUrl: 'pdfexport',
+	tbar :[/*{
 		xtype: 'button', text: 'New localisation'
 	},{
 		xtype: 'button', text: 'Edit'
 	},{
 		xtype: 'button', text: 'Delete'
+	},*/{
+		xtype: 'button',
+		text: 'Export as PDF',
+		iconCls: 'genapp-query-details-panel-pdf-export',
+		listeners: {
+			'click' : function(button){
+				button.ownerCt.ownerCt.exportAsPDF();
+			}
+		}
 	}],
+	listeners : {
+		'render' : function(panel) {
+			panel.items.on('remove', function(item) {
+				if (this.items.getCount() === 0) {
+					this.collapse();
+				}
+			}, panel);
+		}
+	},
 //	items: [{
 //		xtype: 'panel',
 //		layout: 'form',
@@ -24,6 +47,7 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 //		})
 //	}],
 	initComponent: function() {
+		
 //		var resultsGridArray = Ext.ComponentQuery.query('results-grid');
 //		var resultsGrid;
 //		for (var i = 0 ; i < resultsGridArray.length ; i++) {
@@ -55,5 +79,12 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 			}
 			this.setActiveTab(tab);
 		}
-	}
+	},
+	
+    /**
+     * Export the details panel as PDF
+     */
+    exportAsPDF : function(){
+        document.location.href =  Ext.manifest.OgamDesktop.requestServiceUrl + this.pdfUrl + '?id=' + this.getActiveTab().rowId;
+    }
 });

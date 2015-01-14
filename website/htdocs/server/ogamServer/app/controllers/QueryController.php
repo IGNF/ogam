@@ -459,9 +459,8 @@ class QueryController extends AbstractOGAMController {
 		if ($id == null) {
 			$id = $this->getRequest()->getPost('id');
 		}
-
 		
-		echo json_encode($this->queryService->getFullDetailsData($id, $detailsLayers));
+		echo $this->queryService->getDetails($id, $detailsLayers, $datasetId);
 		
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -469,9 +468,6 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
-	
-	
-	
 	public function pdfexportAction() {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -498,14 +494,14 @@ class QueryController extends AbstractOGAMController {
 		// image 1
 		$tmpImgPath1 = Array();
 		for ($i = 0; $i < count($data['maps1']['urls']); $i ++) {
-			$tmpImgPath1[$i] = APPLICATION_PATH . '/../../tmp/images/' . md5($id . session_id() . '0-' . $i) . '.png';
+			$tmpImgPath1[$i] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '0-' . $i) . '.png';
 			file_put_contents($tmpImgPath1[$i], file_get_contents($data['maps1']['urls'][$i]['url']));
 		}
 		
 		// image 2
 		$tmpImgPath2 = Array();
 		for ($i = 0; $i < count($data['maps2']['urls']); $i ++) {
-			$tmpImgPath2[$i] = APPLICATION_PATH . '/../../tmp/images/' . md5($id . session_id() . '1-' . $i) . '.png';
+			$tmpImgPath2[$i] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '1-' . $i) . '.png';
 			file_put_contents($tmpImgPath2[$i], file_get_contents($data['maps2']['urls'][$i]['url']));
 		}
 		

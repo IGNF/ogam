@@ -648,7 +648,20 @@ class Genapp_Service_QueryService {
 		}
 		return $keyMap;
 	}
-
+	
+	/**
+	* Get the details associed with a result line (clic on the "detail button").
+	*
+	* @param String $id The identifier of the line
+	* @param String $detailsLayers The names of the layers used to display the images in the detail panel.
+	* @param String $datasetId The identifier of the dataset (to filter data)
+	* @return JSON representing the detail of the result line.
+	*/
+	public function getDetails($id, $detailsLayers, $datasetId = null) {
+		$this->logger->debug('getDetails : '.$id);
+		return json_encode($this->getFullDetailsData($id, $detailsLayers));
+	}
+	
 	/**
 	 * Get the details associed with a result line (clic on the "detail button").
 	 *
@@ -896,7 +909,7 @@ class Genapp_Service_QueryService {
 				$url = array();
 				$url = explode(";",($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0],
 						$bb, $mapservParams, $proxy)));
-				 
+
 				$dataDetails['maps1'] = array(
 						'title' => 'image'
 				);
@@ -921,9 +934,9 @@ class Genapp_Service_QueryService {
 				$dataDetails['maps2']['urls'][] = array();
 				for ($i=0;$i<count($url);$i++) {
 					$dataDetails['maps2']['urls'][$i]['url'] = $url[$i];
-	
 				}
 			}
+
 		}
 		// Prepare a data object to be filled
 		$data2 = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
@@ -937,8 +950,8 @@ class Genapp_Service_QueryService {
 		// Get children too
 		$websiteSession = new Zend_Session_Namespace('website');
 		$children = $this->genericModel->getChildren($data2, $websiteSession->datasetId);
+		
 		// Add the children
-
 		foreach ($children as $listChild) {
 			$dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
 			$dataArray != null ? $dataDetails['children'][] = $dataArray : null;
@@ -951,7 +964,10 @@ class Genapp_Service_QueryService {
 
 	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
 	    $configuration = Zend_Registry::get('configuration');
-	    
+	    $this->logger->debug('details layers : '.$detailsLayers);
+	    $this->logger->debug('details bb : '.$bb);
+	    $this->logger->debug('details ms : '.$mapservParams);
+
 	    // Configure the projection systems
 	    $visualisationSRS = $configuration->srs_visualisation;
 	    
@@ -961,14 +977,15 @@ class Genapp_Service_QueryService {
 	    } else {
 	        $detailServices = $this->servicesModel->getDetailServices();
 	    }
-	    
+
+	    $this->logger->debug('details services : '.$detailServices);
 		// Get the server name for the layers
 		$layerNames = explode(",", $detailsLayers);
 		//$serviceLayerNames = "";
 		$baseUrls="";
-		
+
 		foreach ($layerNames as $layerName) {
-		    
+		
 			$layer = $this->layersModel->getLayer($layerName);
 			$serviceLayerName = $layer->serviceLayerName;
 			
@@ -982,7 +999,7 @@ class Genapp_Service_QueryService {
 			}
 			
 			foreach ($detailServices as $detailService) {
-			    
+			
 			    if ($detailService->serviceName == $detailServiceName){
 			        $json = json_decode($detailService->serviceConfig,true);
 			         

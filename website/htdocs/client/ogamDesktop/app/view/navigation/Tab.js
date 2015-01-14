@@ -53,11 +53,6 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
      */
     dataUrl:null,
     /**
-     * @cfg {String} pdfUrl
-     * The url to get the pdf.
-     */
-    pdfUrl: 'pdfexport',
-    /**
      * @cfg {String} cls
      * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp-query-details-panel').
      * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
@@ -112,8 +107,8 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 
        
         this.tpl = new Ext.XTemplate(
-//			'<legends style="display:block; position:absolute; left:1px; top:621px">',
-			'<legends style="display:block; position:absolute; left:1px; top:1px">',
+			'<legends style="display:block; position:absolute; left:1px; top:621px">',
+//			'<legends style="display:block; position:absolute; left:1px; top:1px">',
 				'<tpl for="formats">',
 					'<fieldset>',
 						'<legend>',
@@ -150,12 +145,12 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 				'</tpl>',
 				'</tpl>',
             '</legends>',
-//          '<tpl style="display:block" for="maps1.urls">',
-//        	'<img style="display:block; position:absolute; left:1px; top:1px" title="title" src="{url}">',
-//        '</tpl>',
-//        '<tpl for="maps2.urls">',
-//        	'<img style="display:block; position:absolute; left:1px; top:311px" title="title" src="{url}">',
-//        '</tpl>',
+          '<tpl style="display:block" for="maps1.urls">',
+        	'<img style="display:block; position:absolute; left:1px; top:1px" title="title" src="{url}">',
+        '</tpl>',
+        '<tpl for="maps2.urls">',
+        	'<img style="display:block; position:absolute; left:1px; top:311px" title="title" src="{url}">',
+        '</tpl>',
             {
                 compiled: true,      // compile immediately
                 disableFormats: true // reduce apply time since no formatting
@@ -195,10 +190,4 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
         });
     },
 
-    /**
-     * Export the details panel as PDF
-     */
-//    exportAsPDF : function(){
-//        document.location.href = Genapp.ajax_query_url + this.pdfUrl + '?id=' + this.rowId;
-//    }
 });
