@@ -170,14 +170,19 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		 * @type Ext.Panel
 		 */
 		this.criteriaPanel = new Ext.panel.Panel({
-			layout : 'form',
+			layout : {
+				type : 'form'
+				//labelWidth: 100 // Don't use this parameter because it change the bin width (Bug Ext! Check with ext 5.0.1 post version)
+			},
 			//hidden : Ext.isEmpty(this.criteriaDS) ? true : false, //FIXME
 			hideMode : 'offsets',
+			cls : 'o-ux-adrfs-filter-item',
 			labelWidth : this.criteriaLabelWidth,
-			cls : 'genapp-query-criteria-panel',
 			defaults : {
 				labelStyle : 'padding: 0; margin-top:3px',
-				width : 180
+				beforeLabelTpl : '<div class="filterBin">&nbsp;&nbsp;&nbsp;</div>',
+				labelClsExtra : 'columnLabelColor labelNextBin'
+				//width : 180 not used in a form layout (Table-row display)
 			},
 			/* FIXME deprecated ?
 			listeners : {
@@ -256,10 +261,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		 * @type Ext.Panel
 		 */
 		this.columnsPanel = new Ext.panel.Panel({
-			layout : 'form',
 			hidden : Ext.isEmpty(this.columnsDS) ? true : false,
 			hideMode : 'offsets',
-			cls : 'genapp-query-columns-panel',
 			items : this.getDefaultColumnsConfig(),
 			tbar : [ {
 				// The add-all button
@@ -349,7 +352,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		// Add the field
 		
 		for(var i=0, l=records.length;i<l; i++) {
-			this.criteriaPanel.add(this.self.getCriteriaConfig(records[i].data, false));
+			this.criteriaPanel.add(this.self.getCriteriaConfig(records[i].data));
 		}
 		//this.criteriaPanel.updateLayout();
 	},
@@ -368,7 +371,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		var record = this.criteriaDS.getById(criteriaId);
 		record.data.default_value = value;
 		// Add the field
-		var criteria = this.criteriaPanel.add(this.self.getCriteriaConfig(record.data, false));
+		var criteria = this.criteriaPanel.add(this.self.getCriteriaConfig(record.data));
 		//this.criteriaPanel.updateLayout();
 		return criteria;
 	},
@@ -396,7 +399,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 						console.log(this.items);
 						console.log(this.form);
 						//</debug>
-						this.items.push(this.form.self.getCriteriaConfig(newRecord.data, false));
+						this.items.push(this.form.self.getCriteriaConfig(newRecord.data));
 					}
 				} else {
 					this.items.push(this.form.self.getCriteriaConfig(record.data));
@@ -432,7 +435,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 					for (i = 0; i < fieldValues.length; i++) {
 						newRecord = record.copy();
 						newRecord.data.default_value = fieldValues[i];
-						this.items.push(this.form.self.getCriteriaConfig(newRecord.data, false));
+						this.items.push(this.form.self.getCriteriaConfig(newRecord.data));
 					}
 				}
 			}
@@ -482,8 +485,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		var field = {
 			xtype : 'container',
 			autoEl : 'div',
-			cls : 'genapp-query-column-item',
 			width : '100%',
+			cls : 'o-ux-adrfs-column-item',
 			items : [ {
 				xtype : 'box',
 				autoEl : {
@@ -506,10 +509,18 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				autoEl : {
 					tag : 'span',
 					cls : 'columnLabel columnLabelColor',
-					//'ext:qtitle' : Genapp.util.htmlStringFormat(record.label),
-					'ext:qwidth' : 200,
-					//'ext:qtip' : Genapp.util.htmlStringFormat(record.definition),
 					html : record.label
+				},
+				listeners : {
+					'render' : function(cmp) {
+						Ext.QuickTips.register({
+							target : cmp.getEl(),
+							title : record.label, //Genapp.util.htmlStringFormat(record.label),
+							text : record.definition, //Genapp.util.htmlStringFormat(record.definition),
+							width : 200
+						});
+					},
+					scope : this
 				}
 			}, {
 				xtype : 'hidden',
@@ -576,11 +587,9 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		 * @param {Ext.data.Record}
 		 *            record The criteria combobox record to add. A serialized
 		 *            FormField object.
-		 * @param {Boolean}
-		 *            hideBin True to hide the bin
 		 * @hide
 		 */
-		getCriteriaConfig : function(record, hideBin) {
+		getCriteriaConfig : function(record) {
 			var cls = this.self || OgamDesktop.ux.request.AdvancedRequestFieldSet;
 			// If the field have multiple default values, duplicate the criteria
 			if (!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1) {
@@ -588,7 +597,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				var defaultValues = record.default_value.split(';'), i;
 				for (i = 0; i < defaultValues.length; i++) {
 					record.default_value = defaultValues[i];
-					fields.push(cls.getCriteriaConfig(record, hideBin));
+					fields.push(cls.getCriteriaConfig(record));
 				}
 				return fields;
 			}
@@ -738,7 +747,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 
 					// Add the tooltip
 					var binCt = cmp.getEl().parent();
-					console.log('binCt', binCt);
+
 					var labelDiv = cmp.getEl().child('.x-form-item-label');
 					Ext.QuickTips.register({
 						target : labelDiv,
@@ -747,22 +756,11 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 						width : 200
 					});
 
-					// Add the bin
-					if (!hideBin) {
-						console.log('labelDiv',labelDiv);
-						labelDiv.addCls('columnLabelColor'); //FIXME
-						labelDiv.addCls('labelNextBin'); //FIXME
-						var binDiv = binCt.createChild({
-							tag : "div",
-							cls : "filterBin"
-						}, labelDiv);
-						binDiv.insertHtml('afterBegin', '&nbsp;&nbsp;&nbsp;');
-						binDiv.on('click', function(event, el, options) {
-							cmp.ownerCt.remove(cmp);
-						}, this, {
-							single : true
-						});
-					}
+					labelDiv.parent().first().on('click', function(event, el, options) {
+						cmp.ownerCt.remove(cmp);
+					}, this, {
+						single : true
+					});
 
 					// Refresh the field value after the store load
 					// Check if the field is a 'combo' and with a mode set to

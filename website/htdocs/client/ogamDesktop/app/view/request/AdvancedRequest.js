@@ -24,16 +24,19 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 
 	items: [{ // The advanced request selector
 		xtype:'advanced-request-selector',
-		//layout : 'auto',
+		layout : 'auto',
 		autoScroll : true,
-		//cls : 'genapp_query_formspanel', //FIXME
-		//frame : true,
 		margin : '5 0 5 0',
 		title : '<b>Forms Panel :</b>',
 		bind: {
 			store: '{currentProcess.fieldsets}'
 		},
 		region : 'center'
+		/*keys : { //FIXME
+			key : Ext.EventObject.ENTER,
+			fn : this.submitRequest,
+			scope : this
+		}*/
 	},{ // The process panel
 		xtype: 'panel',
 		region : 'north',
