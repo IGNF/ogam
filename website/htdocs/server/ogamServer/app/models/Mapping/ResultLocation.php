@@ -249,8 +249,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		} elseif ($selectMode === 'distance') {
 			$select->execute(array($lon, $lat, $sessionId, $lon, $lat));
 		}
-		
-	
+
 		return $select->fetchAll();
 	}
 }

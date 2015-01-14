@@ -60,7 +60,7 @@ Ext.define('OgamDesktop.view.main.Main', {
 					collapseDirection: 'right'
 				}]
 			},{
-				xtype: 'deprecated-detail-grid',
+				xtype: 'grid-detail-panel',
 				region: 'south',
 				height: 200,
 				collapsible: true,
