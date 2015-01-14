@@ -177,5 +177,55 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 	beforeDestroy:function(){
 		me.callParent();
 		Ext.destroy(this.popupkeyNav);
-	 }
+	 },
+
+    // @private
+    // @inheritdoc
+    onEnable: function(){
+        this.callParent();
+        this.syncDisabled(false);
+    },
+
+    // @private
+    // @inheritdoc
+    onShow: function(){
+        this.callParent();
+        this.syncDisabled(false);
+
+    },
+    
+    // @private
+    // @inheritdoc
+    onHide: function(){
+        this.callParent();
+        this.syncDisabled(true);
+    },
+
+    // @private
+    // @inheritdoc
+    onDisable: function(){
+        this.callParent();
+        this.syncDisabled(true);
+    },
+    privates:{
+
+        /**
+         * Set the disabled state of various internal components
+         * @param {Boolean} disabled
+         * @private
+         */
+        syncDisabled: function (disabled) {
+            var me = this,
+                keyNav = me.popupkeyNav,okButton;
+
+            // If we have one, we have all
+            if (keyNav) {
+                keyNav.setDisabled(disabled);
+
+                if (okButton = me.down('#okButton')) {
+                	okButton.setDisabled(disabled);
+                }
+            }
+        }
+    }
 });

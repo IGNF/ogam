@@ -81,6 +81,11 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
      * @cfg {Boolean} setEmptyText if true set emptyText of the fields with the min and the max values (defaults to false).
      */
     setEmptyText : false,
+    
+    /**
+     * @inheritdoc
+     */
+    valuePublishEvent: ['select', 'blur'],
 
     /**
      * Initialise the events management.
@@ -323,42 +328,14 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
         }
     },
 
-    //private
-    menuEvents: function(method){
-        this.picker[method]('select', this.onSelect, this);
-        this.picker[method]('hide', this.onMenuHide, this);
-        this.picker[method]('show', this.onFocus, this);
-    },
 
     //private
     onSelect: function(m, d){
-        this.picker.hide();
         this.setValue(d);
-        
+        this.fireEvent('select', this, d);
+        this.collapse();
     },
 
-    //private
-    onMenuHide: function(){
-        this.focus(false, 60);
-        this.menuEvents('un');
-        this.setValue({
-            minValue: this.picker.minField.getValue(),
-            maxValue: this.picker.maxField.getValue()
-        });
-    },
-
-    // private
-    // Provides logic to override the default TriggerField.validateBlur which just returns true
-    validateBlur : function(){
-        return !this.menu || !this.menu.isVisible();
-    },
-
-    // private
-    onDestroy : function(){
-        Ext.destroy(this.menu, this.wrap);
-        this.callParent(arguments);
-    },
-    
     
     //-+-+ picker section -+-+-+
     createPicker: function() {
@@ -373,27 +350,26 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
             floating:true,
             focusable: false, // Key events are listened from the input field which is never blurred
             hidden: true,
-            hideOnClick: false,
-            hideValidationButton: this.hideValidationButton,
+            hideValidationButton: me.hideValidationButton,
             minField:{
-                emptyText: this.setEmptyText ? this.minValue : null,
-                allowDecimals : this.allowDecimals,
-                decimalSeparator : this.decimalSeparator,
-                decimalPrecision : this.decimalPrecision,
-                allowNegative : this.allowNegative,
-                minValue : this.minValue,
-                maxValue : this.maxValue,
-                baseChars : this.baseChars
+                emptyText: me.setEmptyText ? me.minValue : null,
+                allowDecimals : me.allowDecimals,
+                decimalSeparator : me.decimalSeparator,
+                decimalPrecision : me.decimalPrecision,
+                allowNegative : me.allowNegative,
+                minValue : me.minValue,
+                maxValue : me.maxValue,
+                baseChars : me.baseChars
             },
             maxField: {
-                emptyText : this.setEmptyText ? this.maxValue : null,
-                        allowDecimals : this.allowDecimals,
-                        decimalSeparator : this.decimalSeparator,
-                        decimalPrecision : this.decimalPrecision,
-                        allowNegative : this.allowNegative,
-                        minValue : this.minValue,
-                        maxValue : this.maxValue,
-                        baseChars : this.baseChars
+                emptyText : me.setEmptyText ? me.maxValue : null,
+                        allowDecimals : me.allowDecimals,
+                        decimalSeparator : me.decimalSeparator,
+                        decimalPrecision : me.decimalPrecision,
+                        allowNegative : me.allowNegative,
+                        minValue : me.minValue,
+                        maxValue : me.maxValue,
+                        baseChars : me.baseChars
                     },
             listeners: {
                 scope: me,
@@ -406,7 +382,9 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
             }
         });
     },
-    
+    /**
+     * @private
+     */
     onExpand: function() {
         var values = this.getValues();
         if (values !== null){
@@ -417,8 +395,17 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
                 return;
             }
         }
-        this.picker.show();
-        this.menuEvents('on');
+
         this.picker.minField.focus(true, 60);
+    },
+    /**
+     * @private
+     */ 
+    onCollapse: function() {
+        this.focus(false, 60);
+        this.setValue({
+            minValue: this.picker.minField.getValue(),
+            maxValue: this.picker.maxField.getValue()
+        });
     }
 });
