@@ -171,8 +171,12 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			resolutions.push(OgamDesktop.map.resolutions[i]);
 		}
 
+		// Tell OpenLayers where the control images are (remember the trailing slash)
+		OpenLayers.ImgPath = Ext.manifest.OgamDesktop.OpenLayers.imgPath;
+
 		// Create the map object
 		var map = new OpenLayers.Map({
+			'theme' : Ext.manifest.OgamDesktop.OpenLayers.theme, // Tell OpenLayers where the css default theme is
 			'controls' : [],
 			'resolutions' : resolutions,
 			'numZoomLevels' : OgamDesktop.map.numZoomLevels,
@@ -484,7 +488,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 					autoLoad: true,
 					proxy: {
 						type: 'ajax',
-						url: Ext.manifest.OgamDesktop.requestServiceUrl + '../map/ajaxgetvectorlayers',
+						url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
 						reader: {
 							type: 'json',
 							rootProperty: 'layerNames'
