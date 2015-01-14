@@ -75,7 +75,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
 			}
 		}
 		activatedLayersNames = activatedLayersNames.substr(0, activatedLayersNames.length - 1);
-		this.post(Ext.manifest.OgamDesktop.requestServiceUrl +'../map/printmap', {
+		this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
 			center : center,
 			zoom : zoom,
 			layers : activatedLayersNames
