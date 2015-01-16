@@ -506,11 +506,11 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * A feature has been selected using the GetFeatureControl
 	 * tool.
 	 */
-	getFeature : function(feature, mapId) {
-		if (mapId == this.mapPanel.map.id) {
+	getFeature : function(evt) {
+		if (evt.mapId == this.mapPanel.map.id) {
 			// Add the feature to the vector layer
 			if (this.mapPanel.vectorLayer !== null) {
-				this.mapPanel.vectorLayer.addFeatures(feature);
+				this.mapPanel.vectorLayer.addFeatures(evt.feature);
 			}
 		}
 	},

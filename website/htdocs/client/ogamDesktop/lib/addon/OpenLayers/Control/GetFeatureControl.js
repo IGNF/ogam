@@ -58,14 +58,10 @@ OpenLayers.Control.GetFeatureControl = OpenLayers.Class(OpenLayers.Control, {
 	},
 
 	/**
-	 * This function is called when a feature is received. Fire an event with the
-	 * received feature.
+	 * Fire an event with the received feature.
 	 */
-	getFeature : function(feature) {
-//		console.log(this.map);
-//		this.map.events.triggerEvent('getFeature', feature, this.map.id);
-//		console.log(this);
-		Ext.ComponentQuery.query("map-panel")[0].fireEvent('getFeature', feature, this.map.id);
+	fireGetFeatureEvent : function(feature) {
+		this.map.events.triggerEvent('getFeature', {'feature': feature,'mapId': this.map.id});
 	},
 
 	/**

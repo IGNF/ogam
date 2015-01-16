@@ -29,6 +29,21 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 	 * @cfg {OpenLayers.Control.FeatureInfoControl} control The control
 	 */
 	control : null,
+
+	/**
+	 * @cfg {OpenLayers.map} map The map
+	 */
+	map : null,
+
+	/**
+	 * @cfg {String} request server adress
+	 */
+	requestServiceUrl : null, 
+	
+	/**
+	 * @cfg {integer} max features to ask
+	 */
+	maxfeatures: null,
 	
 	/**
 	 * Handle the response from the server.
@@ -37,7 +52,12 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 	 */
 	handleResponse: function (response) {
 		 if(response.status == 500) {
-			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			if (Ext) {
+				Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			} else {
+				alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			}
+			 
 		 }
 		 if(!response.responseText) {
 			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
@@ -46,8 +66,8 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 		 // Decode the response
 		 try {
 			var result = Ext.decode(response.responseText);
-			if (!Ext.isEmpty(result.data)) {
-				this.control.getLocationInfo(result, this.ll);
+			if (result.data && result.data.length) {
+				this.control.fireGetLocationInfoEvent(result, this.ll);
 			}
 		 } catch (e) {
 			console.log(e);
@@ -65,11 +85,10 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 		this.ll = this.map.getLonLatFromPixel(this.px);
 
 		// Construction d'une URL pour faire une requête WFS sur le point
-		var url = Ext.manifest.OgamDesktop.requestServiceUrl + "ajaxgetlocationinfo?LON="+this.ll.lon+"&LAT="+this.ll.lat;
-		if (OgamDesktop.map.featureinfo_maxfeatures !== 0) {
-			url = url + "&MAXFEATURES=" + OgamDesktop.map.featureinfo_maxfeatures;
+		var url = this.control.options.requestServiceUrl + "ajaxgetlocationinfo?LON="+this.ll.lon+"&LAT="+this.ll.lat;
+		if (this.control.options.maxfeatures !== 0) {
+			url = url + "&MAXFEATURES=" + this.control.options.maxfeatures;
 		}
-
 		// Send a request
 		OpenLayers.Request.GET({
 			url : url,

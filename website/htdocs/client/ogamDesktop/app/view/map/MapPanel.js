@@ -216,6 +216,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 					if (o.property === 'visibility') {
 						this.fireEvent('onLayerVisibilityChange',o.layer);
 					}
+				},'getFeature' : function(evt) {
+					this.fireEvent('getFeature',evt);
 				},
 				scope : this
 			}
@@ -619,11 +621,26 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		//
 		// Get info on the feature
 		//
+		this.url = Ext.manifest.OgamDesktop.requestServiceUrl;
+		console.log(this.url);
 		var locationInfoControl = new OpenLayers.Control.LocationInfoControl({
 			layerName : OgamDesktop.map.featureinfo_typename,
-			geoPanelId : this.id
+			geoPanelId : this.id,
+			requestServiceUrl: this.url,
+			maxfeatures: OgamDesktop.map.featureinfo_maxfeatures
+		});
+		locationInfoControl.events.register('activate', this, function(){
+			this.fireEvent('getLocationInfoActivated', true);
 		});
 
+		locationInfoControl.events.register('deactivate', this, function(){
+			this.fireEvent('getLocationInfoActivated', false);
+		});
+
+		locationInfoControl.events.register('getLocationInfo', this, function(evt){
+			this.fireEvent('getLocationInfo', evt);
+		});
+		
 		var locationInfoAction = Ext.create('GeoExt.Action',{
 			control : locationInfoControl,
 			map : this.map,
@@ -634,7 +651,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			iconCls : 'feature-info'
 		});
 		navBtnGroup.add(new Ext.button.Button(locationInfoAction));
-
+		
 		//
 		// Navigation controls
 		//

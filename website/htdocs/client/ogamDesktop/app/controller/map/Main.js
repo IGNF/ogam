@@ -42,12 +42,12 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		this.getMappanel().showObjectInDefaultStyle(record);
 	},
 	
-	
+	// TODO : a buffer aroune the mouse cursor
 	locationInfoStateChange: function(activated) {
 		console.log('activated', activated);
 	},
 	
-	showResultDetail: function(results, llLocation) {
+	showResultDetail: function(evt) {
 //		this.getMappanel().vector.removeAllFeatures();
 //		console.log('results', results);
 //		var style = new OpenLayers.Style({
@@ -103,12 +103,8 @@ Ext.define('OgamDesktop.controller.map.Main',{
 //		var detailGrid = Ext.create('OgamDesktop.view.navigation.GridDetailsPanel', {
 //			initConf: results
 //		});
-		this.getDetailTab().configureDetailGrid(results);
+		this.getDetailTab().configureDetailGrid(evt.result);
 		this.getDetailTab().expand();
-		console.log(this.getDetailTab());
-//		this.getDetailTab().add(detailGrid);
-//		this.getDetailTab().setActiveItem(detailGrid);
-
 	},
 
 	/**
