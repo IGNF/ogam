@@ -334,24 +334,16 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			}
 		});
 		// Zoom to features button
-		var zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures(this.vectorLayer, {
+		var zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures({
+			map : this.map,
+			layer: this.vectorLayer,
 			maxZoomLevel : 9,
-			ratio : 1.05,
-			autoActivate : false,
-			handler: null
-		// otherwise will
-		// deactivate after
-		// first init
 		});
 		var zoomToFeatureAction = Ext.create('GeoExt.Action',{
-			map : this.map,
 			control : zoomToFeatureControl,
 			iconCls : 'zoomstations',
 			action: 'zoomstations',
 			tooltip : this.zoomToFeaturesControlTitle,
-			enableToggle: false,
-			pressed: false
-//			checked : false
 		});
 		var zoomToFeatureButton = new Ext.button.Button(zoomToFeatureAction);
 		drawingBtnGroup.add(zoomToFeatureButton);
@@ -621,12 +613,10 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		//
 		// Get info on the feature
 		//
-		this.url = Ext.manifest.OgamDesktop.requestServiceUrl;
-		console.log(this.url);
 		var locationInfoControl = new OpenLayers.Control.LocationInfoControl({
 			layerName : OgamDesktop.map.featureinfo_typename,
 			geoPanelId : this.id,
-			requestServiceUrl: this.url,
+			requestServiceUrl: Ext.manifest.OgamDesktop.requestServiceUrl,
 			maxfeatures: OgamDesktop.map.featureinfo_maxfeatures
 		});
 		locationInfoControl.events.register('activate', this, function(){

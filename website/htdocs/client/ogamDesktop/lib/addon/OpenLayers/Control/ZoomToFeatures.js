@@ -16,17 +16,7 @@
  * Inherits from:
  *  - <OpenLayers.Control>
  */
-OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
-	id: 'zoomtofeatures',
-    /**
-     * Property: type
-     * {String} The type of <OpenLayers.Control> -- When added to a 
-     *     <Control.Panel>, 'type' is used by the panel to determine how to 
-     *     handle our events.
-     */
-    type: OpenLayers.Control.TYPE_BUTTON,
-	handler: null,
-    
+OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control.Button, {
     /**
      * Property: layer
      * {<OpenLayers.Layer.Vector>} The vector layer containing the features we want to zoom to
@@ -46,110 +36,20 @@ OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
     ratio: 1,
     
     /**
-     * APIProperty: autoActivate
-     * {boolean} Whether to activate/deactivate itself automagically when required (defaults to false)
-     *           This is useful for enabling/disabling the attached panel button for instance
-     */
-    autoActivate: false,
-    
-    /**
-     * Constructor: OpenLayers.Control.ZoomToFeatures
-     * 
-     * Parameters:
-     * layer - {<OpenLayers.Layer.Vector>}
-     * options - {Object}
-     */
-    initialize: function (layer, options) {
-        console.log('layer features into initialization of zoom to feature control');
-        OpenLayers.Control.prototype.initialize.apply(this, [options]);
-        this.layer = layer;
-        this.activate();
-        console.log(this);
-
-
-//            layer.events.on({
-//    			'afterfeaturemodified': this.activate,
-//    			'featureadded': this.activate,
-//    			'featureremoved': this.activate,
-//    			'featuresremoved': this.onFeaturesRemoved,
- //   			scope: this
- //   		});
-        
-
-//        this.layer.events.register('afterfeaturemodified', this, this.activate);
-//        this.layer.events.register('featureadded', this, this.activate);
-//        this.layer.events.register('featureremoved', this, this.activate);
-//        this.layer.events.register('featuresremoved', this, this.onFeaturesRemoved);
-//            this.map.events.on({
-//            	'moveend' : this.onMapMoved,
-//            	scope : this
-//            });
-//        }
-        console.log('layer features into initialization of zoom to feature control', this.layer);
-    },
-    
-    activate: function() {
-//		Ext.ComponentQuery.query('map-panel')[0].onVectorLayerChange();
-
-//		this.layer.events.triggerEvent('afterfeaturemodified');
-		return OpenLayers.Control.prototype.activate.apply(this, arguments);
-	},
-	
-    /**
-     * Method: setMap
-     * Set the map property for the control.
-     *
-     * Parameters: 
-     * map - {<OpenLayers.Map>} The control's map.
-     */
-    setMap: function(map) {
-        OpenLayers.Control.prototype.setMap.apply(this, arguments);
-        if (!this.maxZoomLevel) {
-            this.maxZoomLevel = map.numZoomLevels-1;
-        }
- /*       if (this.autoActivate) {
-            map.events.register('moveend', this, this.onMapMoved);
-        }
-        */
-    },
-    
-    /*
-     * Method: onFeaturesRemoved
-     * Deactivate ourselves when no more features in vector layer
-     */
-    onFeaturesRemoved: function() {
-//    	Ext.ComponentQuery.query('map-panel')[0].onVectorLayerChange();
-        if (!this.layer.features.length) {
-            this.deactivate();
-        }
-    },
-    
-    /*
-     * Method: onMapMoved
-     * Activate ourselves when map has moved, if needed
-     */
-    onMapMoved: function() {
-//    	Ext.ComponentQuery.query('map-panel')[0].onVectorLayerChange();
-/*        if (this.active) { 
-            return;
-        }
-        var layer = this.layer;
-        if (layer.features && layer.features.length) {
-            this.activate();
-        }
-        */
-    },
-    
-    /*
      * Method: trigger
      * Do the zoom to the features extent.
      */
     trigger: function() {
-        if (!this.active || !this.map || !this.layer || !this.layer.features || !this.layer.features.length) {
-            return;
+    	
+        if (!this.map || !this.layer) {
+    		console.warn('ZoomToFeature created without map or layer', this);
+        	return;
+    	}
+        
+        if ( !this.layer.features || !this.layer.features.length) {
+        	return;
         }
-        var map = this.map;
-        console.log('layer features into zoom to feature control', this.layer.features);
+
         var features = this.layer.features;
         var i = 0;
         while (!features[i].geometry) {
@@ -168,31 +68,12 @@ OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
         if ((bounds.getWidth() === 0) && (bounds.getHeight() === 0)){
             var zoom = this.maxZoomLevel;
         } else {
-            var desiredZoom = map.getZoomForExtent(bounds);
+            var desiredZoom = this.map.getZoomForExtent(bounds);
             var zoom = (desiredZoom > this.maxZoomLevel) ? this.maxZoomLevel : desiredZoom;
         }
-        map.setCenter(bounds.getCenterLonLat(), zoom);
-        
-//        if (this.autoActivate) {
-//            this.deactivate();
-//        }
+        this.map.setCenter(bounds.getCenterLonLat(), zoom);
     },
     
-    destroy: function() {
-//        if (this.autoActivate) {
-//            this.layer.events.unregister('afterfeaturemodified', this, this.activate);
-//            this.layer.events.unregister('featureadded', this, this.activate);
-//            this.layer.events.unregister('featureremoved', this, this.activate);
-//            this.layer.events.unregister('featuresremoved', this, this.onFeaturesRemoved);
-//        }
-        this.layer = null;
-        
-//        if (this.map && this.autoActivate) {
-//            this.map.events.unregister('moveend', this, this.onMapMoved);
-//        }
-        
-        OpenLayers.Control.prototype.destroy.apply(this, []);
-    },
     
     CLASS_NAME: "OpenLayers.Control.ZoomToFeatures"
 });

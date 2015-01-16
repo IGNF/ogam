@@ -58,21 +58,29 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 				alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 			}
 			 
-		 }
-		 if(!response.responseText) {
-			 Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
-		 }
-		 
-		 // Decode the response
-		 try {
+		}
+		if(!response.responseText) {
+			if (Ext) {
+				Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			} else {
+				alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			}
+		}
+		
+		// Decode the response
+		try {
 			var result = Ext.decode(response.responseText);
 			if (result.data && result.data.length) {
 				this.control.fireGetLocationInfoEvent(result, this.ll);
 			}
-		 } catch (e) {
+		} catch (e) {
 			console.log(e);
-		 	Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
-		 }
+			if (Ext) {
+				Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			} else {
+				alert(this.alertErrorTitle, this.alertRequestFailedMsg);
+			}
+		}
 	},
 
 	/**

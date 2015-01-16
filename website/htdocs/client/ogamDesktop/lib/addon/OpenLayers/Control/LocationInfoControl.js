@@ -50,8 +50,7 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	},
 
 	/**
-	 * This function is called when a location info is received. Fire a event
-	 * with the received info.
+	 * Fire a event with the received info.
 	 */
 	fireGetLocationInfoEvent : function(result, llLocation) {
 		this.events.triggerEvent('getLocationInfo', {'result': result, 'coord': llLocation, 'mapId': this.map.id});
