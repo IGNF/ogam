@@ -17,7 +17,7 @@
  *  - <OpenLayers.Control>
  */
 OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
-
+	id: 'zoomtofeatures',
     /**
      * Property: type
      * {String} The type of <OpenLayers.Control> -- When added to a 
@@ -25,6 +25,7 @@ OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
      *     handle our events.
      */
     type: OpenLayers.Control.TYPE_BUTTON,
+	handler: null,
     
     /**
      * Property: layer
@@ -61,34 +62,38 @@ OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
     initialize: function (layer, options) {
         console.log('layer features into initialization of zoom to feature control');
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
-        
-        if (this.autoActivate) {
-            if (!layer.features.length) {
-                this.deactivate();
-            } else {
-            	console.log(this);
-            	this.activate();
-            }
-            layer.events.on({
-    			'afterfeaturemodified': this.activate,
-    			'featureadded': this.activate,
-    			'featureremoved': this.activate,
-    			'featuresremoved': this.onFeaturesRemoved,
-    			scope: this
-    		});
-            this.map.events.on({
-            	'moveend' : this.onMapMoved,
-            	scope : this
-            });
-        }
         this.layer = layer;
+        this.activate();
+        console.log(this);
+
+
+//            layer.events.on({
+//    			'afterfeaturemodified': this.activate,
+//    			'featureadded': this.activate,
+//    			'featureremoved': this.activate,
+//    			'featuresremoved': this.onFeaturesRemoved,
+ //   			scope: this
+ //   		});
+        
+
+//        this.layer.events.register('afterfeaturemodified', this, this.activate);
+//        this.layer.events.register('featureadded', this, this.activate);
+//        this.layer.events.register('featureremoved', this, this.activate);
+//        this.layer.events.register('featuresremoved', this, this.onFeaturesRemoved);
+//            this.map.events.on({
+//            	'moveend' : this.onMapMoved,
+//            	scope : this
+//            });
+//        }
         console.log('layer features into initialization of zoom to feature control', this.layer);
     },
     
     activate: function() {
-    	Ext.ComponentQuery.query('map-panel')[0].onVectorLayerChange();
-    	return OpenLayers.Control.prototype.activate.apply(this, arguments);
-    },
+//		Ext.ComponentQuery.query('map-panel')[0].onVectorLayerChange();
+
+//		this.layer.events.triggerEvent('afterfeaturemodified');
+		return OpenLayers.Control.prototype.activate.apply(this, arguments);
+	},
 	
     /**
      * Method: setMap
@@ -102,9 +107,10 @@ OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
         if (!this.maxZoomLevel) {
             this.maxZoomLevel = map.numZoomLevels-1;
         }
-        if (this.autoActivate) {
+ /*       if (this.autoActivate) {
             map.events.register('moveend', this, this.onMapMoved);
         }
+        */
     },
     
     /*
@@ -112,7 +118,7 @@ OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
      * Deactivate ourselves when no more features in vector layer
      */
     onFeaturesRemoved: function() {
-    	Ext.ComponentQuery.query('map-panel')[0].onVectorLayerChange();
+//    	Ext.ComponentQuery.query('map-panel')[0].onVectorLayerChange();
         if (!this.layer.features.length) {
             this.deactivate();
         }
@@ -123,14 +129,15 @@ OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
      * Activate ourselves when map has moved, if needed
      */
     onMapMoved: function() {
-    	Ext.ComponentQuery.query('map-panel')[0].onVectorLayerChange();
-        if (this.active) { 
+//    	Ext.ComponentQuery.query('map-panel')[0].onVectorLayerChange();
+/*        if (this.active) { 
             return;
         }
         var layer = this.layer;
         if (layer.features && layer.features.length) {
             this.activate();
         }
+        */
     },
     
     /*
@@ -138,7 +145,7 @@ OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
      * Do the zoom to the features extent.
      */
     trigger: function() {
-        if (!this.active || !this.map) {
+        if (!this.active || !this.map || !this.layer || !this.layer.features || !this.layer.features.length) {
             return;
         }
         var map = this.map;
@@ -166,23 +173,23 @@ OpenLayers.Control.ZoomToFeatures = OpenLayers.Class(OpenLayers.Control, {
         }
         map.setCenter(bounds.getCenterLonLat(), zoom);
         
-        if (this.autoActivate) {
-            this.deactivate();
-        }
+//        if (this.autoActivate) {
+//            this.deactivate();
+//        }
     },
     
     destroy: function() {
-        if (this.autoActivate) {
-            this.layer.events.unregister('afterfeaturemodified', this, this.activate);
-            this.layer.events.unregister('featureadded', this, this.activate);
-            this.layer.events.unregister('featureremoved', this, this.activate);
-            this.layer.events.unregister('featuresremoved', this, this.onFeaturesRemoved);
-        }
+//        if (this.autoActivate) {
+//            this.layer.events.unregister('afterfeaturemodified', this, this.activate);
+//            this.layer.events.unregister('featureadded', this, this.activate);
+//            this.layer.events.unregister('featureremoved', this, this.activate);
+//            this.layer.events.unregister('featuresremoved', this, this.onFeaturesRemoved);
+//        }
         this.layer = null;
         
-        if (this.map && this.autoActivate) {
-            this.map.events.unregister('moveend', this, this.onMapMoved);
-        }
+//        if (this.map && this.autoActivate) {
+//            this.map.events.unregister('moveend', this, this.onMapMoved);
+//        }
         
         OpenLayers.Control.prototype.destroy.apply(this, []);
     },

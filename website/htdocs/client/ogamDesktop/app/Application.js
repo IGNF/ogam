@@ -29,7 +29,8 @@ Ext.define('OgamDesktop.Application', {
 		'map.Main',
 		'result.Grid',
 		'result.Main',
-		'result.Layer'
+		'result.Layer',
+		'navigation.DeprecatedDetailGrid'
 	],
 	views: [
 		'main.Main',
@@ -43,7 +44,6 @@ Ext.define('OgamDesktop.Application', {
 		'request.MainWin',
 		'result.MainWin',
 		'result.GridTab',
-		'navigation.DeprecatedDetailGrid',
 		'navigation.GridDetailsPanel'
 	],
 

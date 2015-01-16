@@ -103,7 +103,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
 //		var detailGrid = Ext.create('OgamDesktop.view.navigation.GridDetailsPanel', {
 //			initConf: results
 //		});
-		this.getDetailTab().rend(results);
+		this.getDetailTab().configureDetailGrid(results);
 		this.getDetailTab().expand();
 		console.log(this.getDetailTab());
 //		this.getDetailTab().add(detailGrid);
