@@ -329,6 +329,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		
 		drawingBtnGroup = Ext.create('Ext.container.ButtonGroup', {
 			hidden: true,
+			action: 'drawing',
 			defaults: {
 				iconAlign:'top'
 			}

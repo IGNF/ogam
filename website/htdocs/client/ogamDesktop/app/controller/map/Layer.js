@@ -53,9 +53,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				resultswithautozoom: 'zoomOnResultsBBox',
 				featureModified: 'updateVectorLayer'
 			},
-//			'map-panel map': {
-//				getFeature: 'getFeature'
-//			},
 			'layers-panel': {
 				checkchange: 'onCheckChange',
 				nodeEnable: 'nodeEnable'
@@ -65,10 +62,12 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			}
 		}
 	},
-
+	
+	/**
+	 * Update the WKT value of the drawn vector layer into the geometry field of request panel
+	 * 
+	 */
 	updateVectorLayer: function() {
-		console.log(this.getMappanel().map);
-		console.log(this.getMappanel().map.getControlsBy('id', 'zoomtofeatures'));
 		var wktValue = null;
 		if (this.getMappanel().vectorLayer.features.length){
 			wktValue = 'MULTIPOLYGON('; 
@@ -84,9 +83,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			}
 			wktValue = wktValue.substring(0, wktValue.lastIndexOf(',')) + ')';
 		}
-		var geometryFields = Ext.ComponentQuery.query('geometryfield');
-		if (geometryFields.length){
-			geometryFields[0].setValue(wktValue);
+		var geometryField = Ext.ComponentQuery.query('geometryfield');
+		if (geometryField.length){
+			geometryField[0].setValue(wktValue);
 		}
 	},
 
@@ -97,35 +96,41 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	hideQueryTbar: function() {
 		this.setQueryMode(false);
 	},
-
+	
+	/**
+	 * Activates / Deactivates drawing tbar
+	 * @param {boolean}
+	 *            enable Tbar to Enable or not
+	 */
 	setQueryMode: function(enable) {
-		var drawingTbar = Ext.ComponentQuery.query('map-panel toolbar buttongroup');
+		// Activate drawing buttons group
+		var drawingTbar = this.getMappanel().getDockedItems('toolbar buttongroup[action = drawing]');
 		if (drawingTbar.length) {
 			drawingTbar[0].setVisible(enable);
 		}
-//		var drawPolygonButton = Ext.ComponentQuery.query('map-panel toolbar button[action = zoomstations]');
-//		if (drawPolygonButton.length) {
-//			drawPolygonButton[0].toggle(false);
-//		}
 		
-		var drawPolygonButton = Ext.ComponentQuery.query('map-panel toolbar button[action = drawpolygon]');
+		var drawPolygonButton = this.getMappanel().getDockedItems('toolbar button[action = drawpolygon]');
 		if (drawPolygonButton.length) {
 			drawPolygonButton[0].toggle(enable);
 		}
 		if (!enable) {
-			var modifyButton = Ext.ComponentQuery.query('map-panel toolbar button[action = modifyfeature]');
+			// Deactivate drawing tbar buttons as tbar disapears
+			var modifyButton = this.getMappanel().getDockedItems('toolbar button[action = modifyfeature]');
 			if (modifyButton.length) {
 				modifyButton[0].toggle(false);
 			}
-			var deleteFeatureButton = Ext.ComponentQuery.query('map-panel toolbar button[action = deletefeature]');
-			if (deleteFeatureButton) {
+			var deleteFeatureButton = this.getMappanel().getDockedItems('toolbar button[action = deletefeature]');
+			if (deleteFeatureButton.length) {
 				deleteFeatureButton[0].toggle(false);
 			}
+			
+			// Hide vector layer features
 			for( var i = 0; i < this.getMappanel().vectorLayer.features.length; i++ ) {
 				this.getMappanel().vectorLayer.features[i].style = { display: 'none' };
 			}
 			this.getMappanel().vectorLayer.redraw();
 		} else {
+			// Show vector layer features
 			for( var i = 0; i < this.getMappanel().vectorLayer.features.length; i++ ) {
 				this.getMappanel().vectorLayer.features[i].style = null;
 			}

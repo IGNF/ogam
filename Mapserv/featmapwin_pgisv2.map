@@ -24,7 +24,11 @@ DEBUG 5
 WEB
    LOG "C:/ms4w/apps/OGAM/website/htdocs/logs/mapserver_ogam.log"
    METADATA
-   
+   		# These param should resolve issue, when displaying point cut on the border of a tile, but don't work.
+   		#mode "tile"
+   		#tile_map_edge_buffer "2000"
+   		#tile_metatile_level "0"
+   		
         WFS_TITLE                       "OGAM MapServer"  
         WFS_SRS                         "EPSG:3035"
         WFS_ABSTRACT                    "OGAM Data"  

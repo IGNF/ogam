@@ -42,7 +42,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		this.getMappanel().showObjectInDefaultStyle(record);
 	},
 	
-	// TODO : a buffer aroune the mouse cursor
+	// TODO : a buffer around the mouse cursor
 	locationInfoStateChange: function(activated) {
 		console.log('activated', activated);
 	},
