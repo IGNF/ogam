@@ -982,7 +982,7 @@ class Genapp_Service_QueryService {
 		// Get the server name for the layers
 		$layerNames = explode(",", $detailsLayers);
 		//$serviceLayerNames = "";
-		$baseUrls="";
+		$versionWMS="";
 
 		foreach ($layerNames as $layerName) {
 		
@@ -1013,18 +1013,26 @@ class Genapp_Service_QueryService {
 			            .'LAYERS='.$serviceLayerName
 			            .'&TRANSPARENT=true'
 			            .'&FORMAT=image%2Fpng'
-			            .'&SERVICE=WMS'
-			            .'&VERSION=1.3.0'
-			            .'&REQUEST=GetMap'
+			            .'&SERVICE='.json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'}
+			            .'&VERSION='.json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'}
+			            .'&REQUEST='.json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'}
 			            .'&STYLES='
 			            //.'&EXCEPTIONS=application%2Fvnd.ogc.se_inimage'
-			            .'&CRS=EPSG%3A'.$visualisationSRS
+ 			            //.'&CRS=EPSG%3A'.$visualisationSRS
 			            .'&BBOX='.$bb['x_min'].','.$bb['y_min'].','.$bb['x_max'].','.$bb['y_max']
 			            .'&WIDTH=300&HEIGHT=300'
 			            .'&map.scalebar=STATUS+embed'
 			            .'&SESSION_ID='.session_id()
-			            .$mapservParams
-			            .";";
+			            .$mapservParams;
+			        $versionWMS = json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
+			        if (substr_compare($versionWMS, '1.3', 0, 3) === 0) {
+			        	$baseUrls .='&CRS=EPSG%3A'.$visualisationSRS;
+			        } elseif (substr_compare($versionWMS, '1.0', 0, 3) === 0 || substr_compare($versionWMS, '1.1', 0, 3) === 0) {
+			        	$baseUrls .= '&SRS=EPSG%3A'.$visualisationSRS;
+			        } else {
+			        	$this->logger->debug('WMS Version non supported');
+			        }
+			        $baseUrls .=';';
 			    }
 			}
 		}

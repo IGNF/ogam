@@ -276,7 +276,12 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			} else {
 				Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");
 			}
-		newLayer.displayInLayerSwitcher = true;
+			
+			if (layerObject.data.params.isHidden) {
+				newLayer.displayInLayerSwitcher = false;
+			} else {
+				newLayer.displayInLayerSwitcher = true;
+			}
 
 		return newLayer;
 	},
@@ -349,7 +354,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 						]
 					};
 					// Add of the container
-					treeLayerStore.root.appendChild(rootChild);
+					if (!node.data.hidden) {
+						treeLayerStore.root.appendChild(rootChild);
+					}
 					rootChild = null;
 				}
 			});
@@ -368,7 +375,11 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 					]
 				};
 				// add of the container
-				treeLayerStore.root.appendChild(rootChild);
+				if (!node.data.hidden) {
+					console.log(rootChild);
+					treeLayerStore.root.appendChild(rootChild);
+				}
+				
 			}
 		}
 		this.getLayerspanel().setConfig('store', treeLayerStore);
