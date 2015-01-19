@@ -56,7 +56,7 @@ Ext.define('OgamDesktop.view.main.Main', {
 				},{
 					xtype: 'navigation-mainwin',
 					region: 'east',
-					width: 370,
+					width: 320,
 					collapsible: true,
 					collapsed: true,
 					collapseDirection: 'right'
@@ -82,10 +82,10 @@ Ext.define('OgamDesktop.view.main.Main', {
 		console.log('resultsgrid :', resultsgrid);
 		console.log('nav :', nav);
 		if(resultsgrid){
-			this.relayEvents(resultsgrid, ['onEditDataButtonClick']);
+			this.relayEvents(resultsgrid, ['onOpenNavigationButtonClick']);
 		}
 		if(nav){
-			this.on('onEditDataButtonClick', nav.openDetails, nav);
+			this.on('onOpenNavigationButtonClick', nav.openDetails, nav);
 		}
 	}
 });
