@@ -13,7 +13,7 @@
 /**
  * Simple number range picker class.
  * 
- * @class Genapp.form.picker.NumberRangePicker
+ * @class OgamDesktop.ux.picker.NumberRangePicker
  * @extends Ext.Panel
  * @constructor Create a new NumberRangePicker
  * @param {Object}
@@ -175,7 +175,7 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 	},
 	
 	beforeDestroy:function(){
-		me.callParent();
+		this.callParent();
 		Ext.destroy(this.popupkeyNav);
 	 },
 
