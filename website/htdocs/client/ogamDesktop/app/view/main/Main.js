@@ -22,9 +22,9 @@ Ext.define('OgamDesktop.view.main.Main', {
 	//width: Ext.getBody().getViewSize().width - 80,
 	//height: Ext.getBody().getViewSize().height - 160,
 	activeTab: 1,
-	items: [{
+	items: [/*{
 		xtype: 'predefined-request'
-	},{
+	},*/{
 		xtype: 'panel',
 		layout: 'border',
 		title: 'Consultation',

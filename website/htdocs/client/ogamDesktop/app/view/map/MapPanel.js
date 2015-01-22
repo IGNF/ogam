@@ -142,6 +142,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 */
 	items: [{
 		xtype: 'gx_zoomslider',
+		itemId: 'zoomslider',
 		vertical: true,
 		height: 150,
 		x: 18,
@@ -184,8 +185,12 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			resolutions.push(OgamDesktop.map.resolutions[i]);
 		}
 
+		// Tell OpenLayers where the control images are (remember the trailing slash)
+		OpenLayers.ImgPath = Ext.manifest.OgamDesktop.OpenLayers.imgPath;
+
 		// Create the map object
 		var map = new OpenLayers.Map({
+			'theme' : Ext.manifest.OgamDesktop.OpenLayers.theme, // Tell OpenLayers where the css default theme is
 			'controls' : [],
 			'resolutions' : resolutions,
 			'numZoomLevels' : OgamDesktop.map.numZoomLevels,
@@ -498,7 +503,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 					autoLoad: true,
 					proxy: {
 						type: 'ajax',
-						url: Ext.manifest.OgamDesktop.requestServiceUrl + '../map/ajaxgetvectorlayers',
+						url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
 						actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
 						reader: {
 							type: 'json',
@@ -680,7 +685,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			var printMapButton = new Ext.button.Button({
 				xtype : 'button',
 				action: 'print',
-				iconCls : 'genapp-query-center-panel-print-map-button-icon',
+				iconCls : 'printMap',
 				text : this.printMapButtonText,
 				scope : this
 			});

@@ -2,4 +2,5 @@
 <buildpath>
 	<buildpathentry including="website/htdocs/ogam/public/js/app/" kind="src" path=""/>
 	<buildpathentry combineaccessrules="false" kind="prj" path="/ExtJSTL-4.2"/>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
 </buildpath>
