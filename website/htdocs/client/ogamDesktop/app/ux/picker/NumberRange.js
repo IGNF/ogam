@@ -13,7 +13,7 @@
 /**
  * Simple number range picker class.
  * 
- * @class Genapp.form.picker.NumberRangePicker
+ * @class OgamDesktop.ux.picker.NumberRangePicker
  * @extends Ext.Panel
  * @constructor Create a new NumberRangePicker
  * @param {Object}
@@ -96,6 +96,13 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 	maxField : null,
 
 	/**
+	 * @cfg {Object} keyNavConfig
+     * Specifies optional custom key event handlers for the {@link Ext.util.KeyNav} attached to this picker. Must
+     * conform to the config format recognized by the {@link Ext.util.KeyNav} constructor. Handlers specified in this
+     * object will replace default handlers of the same name.
+	 */
+	
+	/**
 	 * Initialise the component.
 	 */
 	initComponent : function() {
@@ -135,7 +142,7 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 		 * @type Ext.util.KeyNav
 		 * @private
 		 */
-		this.popupkeyNav = new Ext.util.KeyNav({
+		this.popupkeyNav = new Ext.util.KeyNav(Ext.apply({
 			target:this.el,
 			enter : Ext.Function.bind(this.onOkButtonPress,this, [ null, true ]),
 			tab :{
@@ -143,7 +150,7 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 				scope : this
 			},
 			scope : this
-		});
+		}, this.keyNavConfig));
 	},
 	
 	// private
@@ -168,7 +175,57 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 	},
 	
 	beforeDestroy:function(){
-		me.callParent();
+		this.callParent();
 		Ext.destroy(this.popupkeyNav);
-	 }
+	 },
+
+    // @private
+    // @inheritdoc
+    onEnable: function(){
+        this.callParent();
+        this.syncDisabled(false);
+    },
+
+    // @private
+    // @inheritdoc
+    onShow: function(){
+        this.callParent();
+        this.syncDisabled(false);
+
+    },
+    
+    // @private
+    // @inheritdoc
+    onHide: function(){
+        this.callParent();
+        this.syncDisabled(true);
+    },
+
+    // @private
+    // @inheritdoc
+    onDisable: function(){
+        this.callParent();
+        this.syncDisabled(true);
+    },
+    privates:{
+
+        /**
+         * Set the disabled state of various internal components
+         * @param {Boolean} disabled
+         * @private
+         */
+        syncDisabled: function (disabled) {
+            var me = this,
+                keyNav = me.popupkeyNav,okButton;
+
+            // If we have one, we have all
+            if (keyNav) {
+                keyNav.setDisabled(disabled);
+
+                if (okButton = me.down('#okButton')) {
+                	okButton.setDisabled(disabled);
+                }
+            }
+        }
+    }
 });

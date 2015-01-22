@@ -30,8 +30,9 @@ Ext.define('OgamDesktop.ux.form.field.TwinNumberField', {
 	/**
 	 * Internationalization.
 	 */
-	decimalSeparator : ".",
+
 //<locale>	
+	decimalSeparator : ".",
 	minText : "The minimum value for this field is {0}",
 	maxText : "The maximum value for this field is {0}",
 	nanText : "{0} is not a valid number",
