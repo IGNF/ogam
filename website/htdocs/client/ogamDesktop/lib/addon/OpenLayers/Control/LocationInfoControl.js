@@ -29,11 +29,6 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	handler : null,
 
 	/**
-	 * @cfg {OpenLayers.map} map The map
-	 */
-	map : null,
-
-	/**
 	 * Property: type {String} The type of <OpenLayers.Control> -- When added to
 	 * a <Control.Panel>, 'type' is used by the panel to determine how to handle
 	 * our events.
@@ -45,12 +40,9 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	 * 
 	 * Parameters: options - {Object}
 	 */
-	initialize : function(map, options) {
+	initialize : function(options) {
 		OpenLayers.Control.prototype.initialize.apply(this, [ options ]);
-
-		// Register events
-		//Ogam.eventManager.addEvents('getLocationInfo');
-
+		this.options = options;
 		this.handler = new OpenLayers.Handler.LocationInfo(this, {
 			'click' : this.click,
 			'control' : this
@@ -58,32 +50,10 @@ OpenLayers.Control.LocationInfoControl = OpenLayers.Class(OpenLayers.Control, {
 	},
 
 	/**
-	 * This function is called when a location info is received. Fire a event
-	 * with the received info.
+	 * Fire a event with the received info.
 	 */
-	getLocationInfo : function(result) {
-		//Ogam.eventManager.fireEvent('getLocationInfo', result, this.map.id);
-	},
-
-	/**
-	 * Method: activate Activates the control.
-	 * 
-	 * Returns: {Boolean} The control was effectively activated.
-	 */
-	activate : function() {
-		if (!this.active) {
-			this.handler.activate();
-		}
-		return OpenLayers.Control.prototype.activate.apply(this, arguments);
-	},
-
-	/**
-	 * Method: deactivate Deactivates the control.
-	 * 
-	 * Returns: {Boolean} The control was effectively deactivated.
-	 */
-	deactivate : function() {
-		return OpenLayers.Control.prototype.deactivate.apply(this, arguments);
+	fireGetLocationInfoEvent : function(result, llLocation) {
+		this.events.triggerEvent('getLocationInfo', {'result': result, 'coord': llLocation, 'mapId': this.map.id});
 	},
 
 	CLASS_NAME : "OpenLayers.Control.LocationInfoControl"

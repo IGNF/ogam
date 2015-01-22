@@ -54,7 +54,7 @@ OpenLayers.Handler.GetFeature = OpenLayers.Class(OpenLayers.Handler, {
 		 // Decode the response
 		 try {
 			var feature = this.gmlFormat.read(response.responseText);
-			this.control.getFeature(feature);
+			this.control.fireGetFeatureEvent(feature);
 		} catch (e) {
 			Ext.create('Ext.window.MessageBox').alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		}

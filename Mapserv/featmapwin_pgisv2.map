@@ -24,17 +24,21 @@ DEBUG 5
 WEB
    LOG "C:/ms4w/apps/OGAM/website/htdocs/logs/mapserver_ogam.log"
    METADATA
-   
+   		# These param should resolve issue, when displaying point cut on the border of a tile, but don't work.
+   		#mode "tile"
+   		#tile_map_edge_buffer "2000"
+   		#tile_metatile_level "0"
+   		
         WFS_TITLE                       "OGAM MapServer"  
         WFS_SRS                         "EPSG:3035"
         WFS_ABSTRACT                    "OGAM Data"  
         WFS_MAXFEATURES                 "40"
-        WFS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/apps/ogam/Mapserv/featmapwin_pgisv2.map&"
+        WFS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/apps/ogam2/Mapserv/featmapwin_pgisv2.map&"
 
         WMS_TITLE                       "OGAM MapServer" 
         WMS_ABSTRACT                    "OGAM Mapserver"
         WMS_ACCESSCONSTRAINTS           "none"
-        WMS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/apps/ogam/Mapserv/featmapwin_pgisv2.map&"
+        WMS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.exe?map=C:/ms4w/apps/ogam2/Mapserv/featmapwin_pgisv2.map&"
         WMS_SRS                         "EPSG:3035"
         "ows_enable_request"            "*"
         "wms_include_items"      "*"
@@ -108,9 +112,11 @@ LAYER
     STATUS ON 
     DEBUG 5
     METADATA
-        WFS_TITLE        "Country Boundaries"
-        GML_FEATUREID      "gid" 
-        GML_INCLUDE_ITEMS  "all"   
+        WFS_TITLE          "Country Boundaries"
+        GML_FEATUREID      "gid"
+        GML_INCLUDE_ITEMS  "all"
+        GML_GROUPS         "display"
+        GML_DISPLAY_GROUP  "cell_id"
     END
     DUMP TRUE 
     TEMPLATE "template.html"

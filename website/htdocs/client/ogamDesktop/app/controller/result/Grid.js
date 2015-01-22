@@ -19,7 +19,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		},
 		control: {
 			'advanced-request button[action = submit]': {
-				onGetGridColumns: 'setGridStore'
+				onRequestFormSubmit: 'setResultsGrid'
 			}
 		}
 	},
@@ -31,7 +31,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	 *            fields The columns of the grid that the server
 	 *            send as query form is submitted
 	 */
-	setGridStore: function(fields) {
+	setResultsGrid: function(fields) {
 		var gridModel = this.getModel('result.Grid');
 		var gridTab = this.getResultsgrid();
 		var gridModelCfg = [];

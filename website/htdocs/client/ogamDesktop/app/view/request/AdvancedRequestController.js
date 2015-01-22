@@ -33,7 +33,8 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
      * @param {Object} eOpts The options object passed to Ext.util.Observable.addListener.
      * @private
      */
-    onProcessStoreLoad:function(store, records, successful, options) {   	
+    onProcessStoreLoad:function(store, records, successful, options) {
+    	console.log('process store records', records);
     	var defaultRecord;
     	
 		if(successful){
@@ -57,7 +58,8 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 				newStatus: 'delivered'
 			},
 			success: function(form, action) {
-				button.fireEvent('onGetGridColumns', action.result.columns);
+				console.log('form content', button.up('form').getForm());
+				button.fireEvent('onRequestFormSubmit', action.result.columns);
 			},
 			failure: function(form, action) {
 				switch (action.failureType) {
