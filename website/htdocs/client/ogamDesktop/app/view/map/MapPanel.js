@@ -342,13 +342,13 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		var zoomToFeatureControl = new OpenLayers.Control.ZoomToFeatures({
 			map : this.map,
 			layer: this.vectorLayer,
-			maxZoomLevel : 9,
+			maxZoomLevel : 9
 		});
 		var zoomToFeatureAction = Ext.create('GeoExt.Action',{
 			control : zoomToFeatureControl,
 			iconCls : 'zoomstations',
 			action: 'zoomstations',
-			tooltip : this.zoomToFeaturesControlTitle,
+			tooltip : this.zoomToFeaturesControlTitle
 		});
 		var zoomToFeatureButton = new Ext.button.Button(zoomToFeatureAction);
 		drawingBtnGroup.add(zoomToFeatureButton);

@@ -42,7 +42,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		var leftActionColumnItems = [];
 		if (!gridTab.hideNavigationButton) {
 			leftActionColumnItems.push({
-				iconCls: 'genapp-query-grid-slip',
+				iconCls: 'result-tools-nav-showdetails',
 				tooltip: "<b>"+gridTab.openNavigationButtonTitle+"</b><br/>"+gridTab.openNavigationButtonTip,
 				handler: function(grid, rowIndex, colIndex, item, e, record, row) {
 					// Action managed into result main controller
@@ -51,7 +51,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			});
 		}
 		leftActionColumnItems.push({
-			iconCls: 'genapp-query-grid-map',
+			iconCls: 'result-tools-nav-showmap',
 			tooltip: "<b>"+gridTab.seeOnMapButtonTitle+"</b><br/>"+gridTab.seeOnMapButtonTip,
 			handler: function(grid, rowIndex, colIndex, item, e, record, row) {
 				// Action managed into result main controller
@@ -131,7 +131,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 				align : 'center',
 				width : 30,
 				items:[{
-					iconCls: 'genapp-query-grid-editUI',
+					iconCls: 'result-tools-edit-editdetails',
 					tooltip: "<b>"+gridTab.editDataButtonTitle+"</b><br/>"+gridTab.editDataButtonTip,
 					handler: function(grid, rowIndex, colIndex, item, e, record, row) {
 						// Action managed into result main controller

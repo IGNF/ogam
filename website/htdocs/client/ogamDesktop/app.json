@@ -28,7 +28,8 @@
      * The name of the theme for this application.
      */
     
-    "theme": "ogamDesktop-theme",
+    //"theme": "ogamDesktop-theme",
+    "theme": "ext-theme-gray",
     
     /**
      * The list of required packages (with optional versions; default is "latest").
@@ -66,7 +67,7 @@
      * resolution by setting "skip.resolve=0" (in .sencha/app/sencha.cfg) or if you
      * invoke "sencha app resolve".
      */
-    "url": "http://ogam.ign.fr/client/ogamDesktop/index.html",
+    "url": "http://www.ogam.fr/client/ogamDesktop/index.html",
 
     /**
      * List of all JavaScript assets in the right execution order.
@@ -111,7 +112,8 @@
     "js": [{
             "path": "get-map-parameters.js"
         },{
-            "path": "lib/OpenLayers/OpenLayers.debug.js"
+            /*"path": "lib/OpenLayers/OpenLayers.debug.js",*/
+            "path": "lib/OpenLayers/OpenLayers.js"
         },{
             "path": "lib/addon/OpenLayers/Control/FeatureInfoControl.js",
             "includeInBundle": true
@@ -134,7 +136,7 @@
             "path": "lib/addon/OpenLayers/Control/ZoomToFeatures.js",
             "includeInBundle": true
         },/*{
-            "path": "app/ux/form/field/GeometryField.js",
+            "path": "${app.dir}/app/ux/form/field/GeometryField.js",
             "includeInBundle": true
         },*/{
             "path": "app.js",
@@ -171,15 +173,7 @@
         {
             "path": "bootstrap.css",
             "bootstrap": true
-        },{
-            "path": "resources/css/genapp.pack.css",
-            "bootstrap": true
-        },{
-            "path": "resources/css/tree-gray.css",
-            "bootstrap": true
-        },{
-            "path": "lib/OpenLayers/theme/default/style.css"
-        }  
+        }
     ],
 
     /**
@@ -237,7 +231,12 @@
     },
     
     "OgamDesktop": {
-    	"requestServiceUrl": "../query/"
+    	"requestServiceUrl": "../query/",
+    	"mapServiceUrl": "../map/",
+    	"OpenLayers": {
+    		"theme":  "lib/OpenLayers/theme/default/style.css", // Tell OpenLayers where the css default theme is
+    		"imgPath":  "lib/OpenLayers/img/" // Tell OpenLayers where the control images are (remember the trailing slash)
+    	}
     },
     
     /**
@@ -255,7 +254,8 @@
     
     "development": {
         "OgamDesktop": {
-	    	"requestServiceUrl": "http://ogam.ign.fr/query/"
+	    	"requestServiceUrl": "http://www.ogam.fr/query/",
+    		"mapServiceUrl": "http://www.ogam.fr/map/"
 	    }
     },
 
