@@ -15,10 +15,10 @@
 			<isset property="env" />
 		</not>
 	</condition>
-
+	<echo message="ENVIRONNEMENT : [${env}]"/>
 
 	<property file="../services_configs/service_integration/build${env}.ppts" />
-
+	<echo message="DEPLOY.DIR : [${deploy.dir}]"/>
 	<!-- Définition des properties -->
 	<property name="application.name" value="OGAM" />
 	<property name="workspace.dir" value="${basedir}/../.." />
@@ -80,12 +80,12 @@
 
 	<!-- Compile les sources -->
 	<target name="compile" description="Compile the sources" depends="cleanest, init">
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" target="1.7" encoding="UTF-8" classpath="${classpath};${common.dir}/classes">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" target="1.6" encoding="UTF-8" classpath="${classpath};${common.dir}/classes">
 			<compilerarg value="-Xlint" />
 		</javac>
 
 		<!-- Compile aussi les classes de test au passage -->
-		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" target="1.7" classpath="${classpath};${common.dir}/classes">
+		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" target="1.6" classpath="${classpath};${common.dir}/classes">
 			<compilerarg value="-Xlint" />
 		</javac>
 	</target>
