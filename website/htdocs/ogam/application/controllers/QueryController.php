@@ -78,8 +78,6 @@ class QueryController extends AbstractOGAMController {
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $this->_request->getParam("SCHEMA");
 		
-		$this->logger->debug('init schema : ' . $websiteSession->schema);
-		
 		// Si une valeur est demandée en URL on change le schéma
 		if ($schema !== null) {
 			$websiteSession->schema = $schema;
@@ -89,7 +87,7 @@ class QueryController extends AbstractOGAMController {
 			$websiteSession->schema = 'RAW_DATA';
 		}
 		
-		$this->logger->debug('init schema 2 : ' . $websiteSession->schema);
+		$this->logger->debug('init schema : ' . $websiteSession->schema);
 		
 		// Set the current module name
 		$websiteSession->module = "query";
