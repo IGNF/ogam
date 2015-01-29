@@ -16,7 +16,7 @@ IMAGECOLOR 255 255 255
 FONTSET "C:/ms4w/apps/OGAM/Mapserv/data/fonts/fonts.txt"
 
 CONFIG  "MS_ERRORFILE" "C:/ms4w/apps/OGAM/website/htdocs/logs/mapserver_ogam.log"
-DEBUG 5
+# DEBUG 5
 
 #
 # Start of web interface definition
@@ -53,6 +53,12 @@ WEB
         "wcs_keywordlist"              "wcs,test"
         "wcs_metadatalink_type"        "TC211"
         "wcs_metadatalink_format"      "text/plain"
+    END
+        VALIDATION
+      # %SESSION_ID% must be 40 letters or digits
+        'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
+     #  %PLOT_CODE% must be 16 letters or digits or dot or dash
+      PLOT_CODE          '^[a-zA-Z0-9\.\-]{0,16}$'
     END
 END
 
@@ -110,7 +116,6 @@ LAYER
     NAME nuts_0
     TYPE POLYGON
     STATUS ON 
-    DEBUG 5
     METADATA
         WFS_TITLE          "Country Boundaries"
         GML_FEATUREID      "gid"
@@ -119,7 +124,6 @@ LAYER
         GML_DISPLAY_GROUP  "cell_id"
     END
     DUMP TRUE 
-    TEMPLATE "template.html"
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
@@ -129,7 +133,8 @@ LAYER
     LABELITEM "cell_id"
     CLASS
           NAME 'Country'    
-          OUTLINECOLOR 0 0 0      
+          OUTLINECOLOR 0 0 0
+          COLOR 250 250 120
           LABEL
                 COLOR  255 0 0
                 FONT arial_win
@@ -229,6 +234,34 @@ LAYER
     END
 END 
 
+LAYER
+    NAME "plot_location_detail"
+    TRANSPARENCY 100
+    DEBUG 5
+    STATUS ON
+    TYPE POINT 
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT st_transform(the_geom, 3035) as the_geom, provider_id || '_' || plot_code as oid,plot_code
+            FROM location
+        ) as foo USING UNIQUE oid USING srid=3035"
+
+
+    FILTER "plot_code = '%PLOT_CODE%'"
+  
+    CLASS
+      STYLE
+        SIZE 30
+        WIDTH 2
+        MAXSIZE 30
+        MINSIZE 30
+        OUTLINECOLOR 255 0 0
+        SYMBOL "square"
+      END
+    END
+END 
 #
 # Vector layer for all locations for all countries
 #
@@ -265,6 +298,5 @@ LAYER
       END
     END
 END 
-
 
 END # Map File

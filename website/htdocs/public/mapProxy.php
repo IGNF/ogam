@@ -52,6 +52,7 @@ $queryParamsAllow = array(//paramNom => requis
     'LAYERS' ,
     'EXCEPTIONS' ,
     'SRS' ,
+    'CRS' ,
     'FORMAT' ,
     'WIDTH' ,
     'HEIGHT' ,
@@ -68,7 +69,8 @@ $queryParamsAllow = array(//paramNom => requis
 	'SERVICE' ,
 	'REQUEST' ,
 	'FORMAT' ,
-	'LAYER' 
+	'LAYER' ,
+	'MAP.SCALEBAR'
 );
 
 // Vérifie que les paramètres sont dans la liste des ceux autorisés
@@ -90,6 +92,7 @@ if (strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
 $queriesArg['SERVICE']  = 'WMS';
 
 $uri = $mapServiceURL.'&'.http_build_query($queriesArg);
+//error_log($uri);
 header('Content-Type: image/png');
 $content = file_get_contents($uri);
 if ($content !== FALSE) {
