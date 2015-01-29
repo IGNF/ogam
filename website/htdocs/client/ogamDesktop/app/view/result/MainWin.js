@@ -101,7 +101,7 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 					this.fireEvent('exportresults', 'csv-export');
 				},
 				scope: this,
-				iconCls: 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
+				iconCls: 'o-result-tools-doc-csvexport'
 			}));
 			if (!this.hideGridKmlExportMenuItem) {
 				csvExportMenuItems.push(this.gridCsvExportMenuItem = new Ext.menu.Item({
@@ -110,7 +110,7 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 						this.fireEvent('exportresults', 'kml-export');
 					},
 					scope: this,
-					iconCls: 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
+					iconCls: 'o-result-tools-doc-kmlexport'
 				}));
 			}
 			if (!this.hideGridGeoJSONExportMenuItem) {
@@ -120,7 +120,7 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 						this.fireEvent('exportresults', 'geojson-export');
 					},
 					scope: this,
-					iconCls: 'genapp-query-center-panel-grid-csv-export-menu-item-icon'
+					iconCls: 'o-result-tools-doc-geojsonexport'
 				}));
 			}
 		}

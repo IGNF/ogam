@@ -365,7 +365,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				toggleGroup : "editing",
 				group : "drawControl",
 				checked : false,
-				iconCls : 'drawpoint',
+				iconCls : 'o-map-tools-map-drawpoint',
 				action : 'drawpoint'
 			});
 			var drawPointButton = new Ext.button.Button(drawPointAction)
@@ -383,7 +383,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				toggleGroup : "editing",
 				group : "drawControl",
 				checked : false,
-				iconCls : 'drawline',
+				iconCls : 'o-map-tools-map-drawline',
 				action : 'drawline'
 			});
 			var drawLineButton = new Ext.button.Button(drawLineAction);
@@ -402,7 +402,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			toggleGroup : "drawControl",
 			toggleGroup : "editing",
 			checked : false,
-			iconCls : 'drawpolygon',
+			iconCls : 'o-map-tools-map-drawpolygon',
 			action : 'drawpolygon'
 		});
 		var drawPolygonButton = new Ext.button.Button(drawPolygonAction);
@@ -420,7 +420,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			toggleGroup : "editing",
 			group : "drawControl",
 			checked : false,
-			iconCls : 'modifyfeature',
+			iconCls : 'o-map-tools-map-modifyfeature',
 			action : 'modifyfeature'
 		});
 		var modifyFeatureButton = new Ext.button.Button(modifyFeatureAction);
@@ -443,7 +443,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			toggleGroup : "editing",
 			group : "drawControl",
 			checked : false,
-			iconCls : 'deletefeature',
+			iconCls : 'o-map-tools-map-deletefeature',
 			action : 'deletefeature'
 		});
 		var deleteFeatureButton = new Ext.button.Button(deleteFeatureAction);
@@ -485,7 +485,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				toggleGroup : "snapping",  // his own independant group
 				group : "LayerTools",
 				checked : false,
-				iconCls : 'snapping'
+				iconCls : 'o-map-tools-map-snapping'
 			});
 			if (!this.hideSnappingButton) {
 				wfsBtnGroup.add(new Ext.button.Button(snappingAction));
@@ -502,7 +502,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				toggleGroup : "editing",
 				group : "LayerTools",
 				checked : false,
-				iconCls : 'selectFeature'
+				iconCls : 'o-map-tools-map-selectFeature'
 			});
 			var getFeatureButton = new Ext.button.Button(getFeatureAction);
 			
@@ -523,7 +523,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 				group : "LayerTools",
 				checked : false,
 				tooltip : this.featureInfoControlTitle,
-				iconCls : 'feature-info'
+				iconCls : 'o-map-tools-map-featureinfo'
 			});
 			if (!this.hideFeatureInfoButton) {
 				wfsBtnGroup.add(new Ext.button.Button(featureInfoAction));
@@ -584,14 +584,14 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		historyControl.activate();
 
 		var buttonPrevious = new Ext.button.Button({
-			iconCls : 'back',
+			iconCls : 'o-map-tools-map-back',
 			tooltip : this.tbarPreviousButtonTooltip,
 			disabled : true,
 			handler : historyControl.previous.trigger
 		});
 
 		var buttonNext = new Ext.button.Button({
-			iconCls : 'next',
+			iconCls : 'o-map-tools-map-next',
 			tooltip : this.tbarNextButtonTooltip,
 			disabled : true,
 			handler : historyControl.next.trigger
@@ -643,7 +643,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			group : "navControl",
 			checked : false,
 			tooltip : this.locationInfoControlTitle,
-			iconCls : 'feature-info'
+			iconCls : 'o-map-tools-map-featureinfo'
 		});
 		navBtnGroup.add(new Ext.button.Button(locationInfoAction));
 		
@@ -663,7 +663,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			toggleGroup : "editing",
 			group : "navControl",
 			checked : false,
-			iconCls : 'zoomin'
+			iconCls : 'o-map-tools-map-zoomin'
 		});
 		navBtnGroup.add(new Ext.button.Button(zoomInAction));
 
@@ -680,7 +680,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			toggleGroup : "editing",
 			group : "navControl",
 			checked : false,
-			iconCls : 'zoomout'
+			iconCls : 'o-map-tools-map-zoomout'
 		});
 
 		navBtnGroup.add(new Ext.button.Button(zoomOutAction));
@@ -700,7 +700,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			toggleGroup : "editing",
 			group : "navControl",
 			checked : true,
-			iconCls : 'pan'
+			iconCls : 'o-map-tools-map-pan'
 		});
 
 		navBtnGroup.add(new Ext.button.Button(navigationAction));
@@ -722,7 +722,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			map : this.map,
 			tooltip : this.zoomToResultControlTitle,
 			checked : false,
-			iconCls : 'zoomstations'
+			iconCls : 'o-map-tools-map-zoomstations'
 		});
 
 		extentBtnGroup.add(new Ext.button.Button(zoomToResultAction));
@@ -738,7 +738,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			map : this.map,
 			tooltip : this.zoomToMaxExtentControlTitle,
 			checked : false,
-			iconCls : 'zoomfull'
+			iconCls : 'o-map-tools-map-zoomfull'
 		});
 
 		extentBtnGroup.add(new Ext.button.Button(zoomToMaxAction));
@@ -753,7 +753,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			var printMapButton = new Ext.button.Button({
 				xtype : 'button',
 				action: 'print',
-				iconCls : 'printMap',
+				iconCls : 'o-map-tools-map-printMap',
 				text : this.printMapButtonText,
 				scope : this
 			});

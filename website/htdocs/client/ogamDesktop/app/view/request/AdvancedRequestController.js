@@ -34,7 +34,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
      * @private
      */
     onProcessStoreLoad:function(store, records, successful, options) {
-    	console.log('process store records', records);
     	var defaultRecord;
     	
 		if(successful){

@@ -57,7 +57,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	triggers:  {
 		foo: {
-			cls: 'addgeomcriteria',
+			cls: 'o-ux-form-field-tools-map-addgeomcriteria',
 			handler: function() {
 				this.fireEvent('geomCriteriaClick');
 			}

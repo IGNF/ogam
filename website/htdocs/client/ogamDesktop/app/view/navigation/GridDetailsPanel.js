@@ -175,7 +175,7 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
                 }
             }
             detailColumn = Ext.create('Ext.grid.column.Action', {
-				iconCls: 'navigation-tools-nav-showdetails',
+				iconCls: 'o-navigation-tools-nav-showdetails',
 				sortable : false,
 				fixed : true,
 				menuDisabled : true,

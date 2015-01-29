@@ -188,6 +188,5 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
             params : {id : this.rowId},
             scope :this
         });
-    },
-
+    }
 });

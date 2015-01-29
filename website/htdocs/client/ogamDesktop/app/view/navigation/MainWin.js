@@ -19,7 +19,7 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 	},*/{
 		xtype: 'button',
 		text: 'Export as PDF',
-		iconCls: 'genapp-query-details-panel-pdf-export',
+		iconCls: 'o-navigation-tools-doc-pdfexport',
 		listeners: {
 			'click' : function(button){
 				button.ownerCt.ownerCt.exportAsPDF();

@@ -393,11 +393,6 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 						// clone the object
 						var newRecord = record.copy();
 						newRecord.data.default_value = defaultValues[i];
-						// <debug>
-						console.log('defaultValues',newRecord.data.default_value);
-						console.log(this.items);
-						console.log(this.form);
-						//</debug>
 						this.items.push(this.form.self.getCriteriaConfig(newRecord.data));
 					}
 				} else {
@@ -770,11 +765,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 						}, cmp)
 					}
 				}
-
 			};
-			//<debug>
-			console.log('field', field);
-			//</debug>
 			return field;
 		}
 	}
