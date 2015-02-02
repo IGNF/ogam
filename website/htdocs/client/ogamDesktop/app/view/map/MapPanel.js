@@ -767,12 +767,10 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		this.fireEvent('featureModified');
 	},
 	
-	highlightObject: function(record) {
-		console.log('highlight', record);
+	highlightObject: function(record) { // TODO
 	},
 	
-	showObjectInDefaultStyle: function(record) {
-		console.log('default style', record);
+	showObjectInDefaultStyle: function(record) { // TODO
 	},
 	
 	/**
