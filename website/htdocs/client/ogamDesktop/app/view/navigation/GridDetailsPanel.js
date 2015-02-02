@@ -52,7 +52,7 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
      * The tip Default Width. (Default to 300)
      */
     tipDefaultWidth: 300,
-//    sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
+    // sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
     /**
      * @cfg {String} dateFormat The date format for the date
      *      fields (defaults to <tt>'Y/m/d'</tt>)
@@ -65,6 +65,18 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
      */
     // TODO: Merge this param with the tipImageDefaultWidth param of the consultation panel
     tipImageDefaultWidth : 200,
+	/**
+	 * @cfg {String} openNavigationButtonTitle The open Grid
+	 *      Details Button Title (defaults to
+	 *      <tt>'See the details'</tt>)
+	 */
+	openNavigationButtonTitle : "See the details", // TODO: Merge with the GridTab properties
+	/**
+	 * @cfg {String} openNavigationButtonTip The open Grid
+	 *      Details Button Tip (defaults to
+	 *      <tt>'Display the row details into the details panel.'</tt>)
+	 */
+	openNavigationButtonTip : "Display the row details into the details panel.", // TODO: Merge with the GridTab properties
 
     /**
      * Return the pattern used to format a number.
@@ -113,18 +125,11 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
         }
     },
     listeners : {
-		'beforecellclick' : function(gridPanel, td, cellIndex, record) {
-			console.log('record');
-			this.fireEvent('clickIntoDetailGrid', record);
-		},
 		'beforeitemmouseenter' : function(view, record, item, index, e, eOpts ) {
 			this.ownerCt.fireEvent('beforedetailsgridrowenter', record);
-			console.log('mouse enter', record);
-			
 		},
 		'beforeitemmouseleave' : function(view, record, item, index, e, eOpts ) {
 			this.ownerCt.fireEvent('beforedetailsgridrowleave', record);
-			console.log('mouse leave', record);
 		}
     },
     // private
@@ -140,8 +145,8 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
                 fields: initConf.fields,
                 data: initConf.data
             });
-//
-//            // setup the columns
+
+            // setup the columns
             var i;
             var columns = initConf.columns;
             for(i = 0; i<columns.length; i++){
@@ -167,24 +172,31 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
                     columns[i].header = '';
                     columns[i].width = 30;
                     columns[i].sortable = false;
-//                    columns[i].renderer = this.renderIcon.createDelegate(this, [Genapp.util.htmlStringFormat(columns[i].tooltip)], true);
+                    //columns[i].renderer = this.renderIcon.createDelegate(this, [Genapp.util.htmlStringFormat(columns[i].tooltip)], true);
                     break;
                 default:
                     columns[i].xtype = 'gridcolumn';
                     break;
                 }
             }
-            detailColumn = Ext.create('Ext.grid.column.Action', {
-				iconCls: 'o-navigation-gd-tools-nav-showdetails',
+
+    		detailColumn = {
+    			xtype: 'actioncolumn',
 				sortable : false,
 				fixed : true,
 				menuDisabled : true,
 				align : 'center',
-				width : 40
-            });
+				width : 40,
+				items : [{
+    				iconCls: 'o-navigation-gd-tools-nav-showdetails',
+    				tooltip: "<b>"+this.openNavigationButtonTitle+"</b><br/>"+this.openNavigationButtonTip,
+    				handler: function(grid, rowIndex, colIndex, item, e, record, row) {
+    					this.fireEvent('clickIntoDetailGrid', record);
+    				},
+    				scope: this
+    			}]
+            };
             columns.unshift(detailColumn);
             this.reconfigure(store, columns);
-//    }	
-
 	}
 });
