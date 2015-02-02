@@ -346,7 +346,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		});
 		var zoomToFeatureAction = Ext.create('GeoExt.Action',{
 			control : zoomToFeatureControl,
-			iconCls : 'zoomstations',
+			iconCls : 'o-map-tools-map-zoomstations',
 			action: 'zoomstations',
 			tooltip : this.zoomToFeaturesControlTitle
 		});

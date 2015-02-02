@@ -1,0 +1,24 @@
+.o-navigation-fieldset {
+	margin-bottom: 10px;
+}
+.o-navigation-childfieldset-table {
+	display: table;
+	padding: 10px 0px;
+	width: 100%;
+}
+.o-navigation-childfieldset-tablerow {
+	display: table-row;
+	line-height: 16px;
+}
+.o-navigation-childfieldset-leftcolumn {
+	display: table-cell;
+	width: 20px;
+	height: 16px;
+    background-image: url(images/OgamDesktop/tools/nav/page_white_magnify.png) !important;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+.o-navigation-childfieldset-rightcolumn {
+	display: table-cell;
+	vertical-align: middle;
+}
