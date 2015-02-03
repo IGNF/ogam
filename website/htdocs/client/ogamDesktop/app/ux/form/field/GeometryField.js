@@ -24,15 +24,17 @@
 Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	extend: 'Ext.form.field.Text',
 	xtype: 'geometryfield',
+
 	/**
 	 * Internationalization.
 	 */
 	fieldLabel : 'Location',
+
 	/**
 	 * @cfg {Boolean} hideWKT if true hide the WKT value.
 	 */
 	hideWKT : false,
-	
+
 	/**
 	 * @cfg {String} triggerClass An additional CSS class used to style the
 	 *      trigger button. The trigger will always get the class
@@ -54,16 +56,49 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 * @type Genapp.GeoPanel
 	 */
 	mapPanel : null,
+	/**
+	 * The current state of the trigger.
+	 * 
+	 * @property isPressed
+	 * @type {Boolean}
+	 */
+	isPressed : false,
 
 	triggers:  {
-		foo: {
+		editMapTrigger: {
 			cls: Ext.baseCSSPrefix + 'form-search-trigger',//'o-ux-form-field-tools-map-addgeomcriteria',
-			handler: function() {
-				this.fireEvent('geomCriteriaClick');
+			handler: function(field, trigger, event) {
+				if(field.isPressed){
+					field.onUnPress();
+				} else {
+					field.onPress();
+				}
 			}
+		} 
+	},
+
+	/**
+	 * Function handling the press event
+	 */
+	onPress : function () {
+		if(!this.isPressed){
+			this.getTrigger('editMapTrigger').getEl().addCls('x-form-trigger-click');
+			this.isPressed = true;
+			this.fireEvent('geomCriteriaPress');
 		}
 	},
-	
+
+	/**
+	 * Function handling the unPress event
+	 */
+	onUnPress : function () {
+		if(this.isPressed){
+			this.getTrigger('editMapTrigger').getEl().removeCls('x-form-trigger-click');
+			this.isPressed = false;
+			this.fireEvent('geomCriteriaUnpress');
+		}
+	},
+
 	/**
 	 * Initialise the component.
 	 */
@@ -72,34 +107,24 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 		if (geometryFields.length) {
 			geometryFields[0].destroy();
 		}
-		this.callParent(arguments);		
+
+		// Listen the submit button to unPress the trigger if need
+		// TODO: find a better solution to do that register
+		var submitButton = Ext.ComponentQuery.query('advanced-request button[action = submit]')[0];
+		submitButton.on('onRequestFormSubmit', this.onUnPress, this);
+
+		this.callParent(arguments);
 	},
 
 	/**
 	 * On destroy of the geometry field, deactivate query tbar buttons
 	 */
 	onDestroy: function() {
-		var geometryFields = Ext.ComponentQuery.query('geometryfield');
-		var drawingTbar = Ext.ComponentQuery.query('map-panel toolbar buttongroup');
-		if (drawingTbar.length) {
-			drawingTbar[0].setVisible(false);
-		}
-		var drawPolygonButton = Ext.ComponentQuery.query('map-panel toolbar button[iconCls = drawpolygon]');
-		if (drawPolygonButton.length) {
-			drawPolygonButton[0].toggle(false);
-		}
-		var modifyButton = Ext.ComponentQuery.query('map-panel toolbar button[iconCls = modifyfeature]');
-		if (modifyButton.length) {
-			modifyButton[0].toggle(false);
-		}
-		var deleteFeatureButton = Ext.ComponentQuery.query('map-panel toolbar button[iconCls = deletefeature]');
-		if (deleteFeatureButton.length) {
-			deleteFeatureButton[0].toggle(false);
-		}
-		var mapPanel = Ext.ComponentQuery.query('map-panel')[0];
-		if (mapPanel.vectorLayer) {
-			mapPanel.vectorLayer.removeAllFeatures();
-		}
+		// Remove the listener on the submit button
+		// TODO: find a better solution to do that register
+		var submitButton = Ext.ComponentQuery.query('advanced-request button[action = submit]')[0];
+		submitButton.un('onRequestFormSubmit', this.onUnPress, this);
+		this.fireEvent('geomCriteriaDestroy');
 		this.callParent(arguments);
 	}
 });

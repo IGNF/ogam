@@ -36,7 +36,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		},
 		control: {
 			'geometryfield': {
-				geomCriteriaClick: 'showQueryTbar'
+				geomCriteriaPress: 'showQueryTbar',
+				geomCriteriaUnpress: 'hideQueryTbar',
+				geomCriteriaDestroy: 'hideQueryTbarAndRemoveFeatures',
 			},
 			'map-panel toolbar combobox': {
 				select: 'layerSelected'
@@ -97,12 +99,16 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		this.setQueryMode(false);
 	},
 	
+	hideQueryTbarAndRemoveFeatures: function() {
+		this.setQueryMode(false, true);
+	},
+	
 	/**
 	 * Activates / Deactivates drawing tbar
 	 * @param {boolean}
 	 *            enable Tbar to Enable or not
 	 */
-	setQueryMode: function(enable) {
+	setQueryMode: function(enable, removeFeatures) {
 		// Activate drawing buttons group
 		var drawingTbar = this.getMappanel().getDockedItems('toolbar buttongroup[action = drawing]');
 		if (drawingTbar.length) {
@@ -123,10 +129,13 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			if (deleteFeatureButton.length) {
 				deleteFeatureButton[0].toggle(false);
 			}
-			
-			// Hide vector layer features
-			for( var i = 0; i < this.getMappanel().vectorLayer.features.length; i++ ) {
-				this.getMappanel().vectorLayer.features[i].style = { display: 'none' };
+			if(removeFeatures){
+				this.getMappanel().vectorLayer.removeAllFeatures();
+			} else {
+				// Hide vector layer features
+				for( var i = 0; i < this.getMappanel().vectorLayer.features.length; i++ ) {
+					this.getMappanel().vectorLayer.features[i].style = { display: 'none' };
+				}
 			}
 			this.getMappanel().vectorLayer.redraw();
 		} else {

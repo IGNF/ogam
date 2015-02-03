@@ -13,7 +13,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 	requires: [
 		'OgamDesktop.ux.request.AdvancedRequestFieldSet'
     ],
-	     
+	
     onBindStore: function(store, initial, propertyName, oldStore){
 
 		var forms = store.getData(), i;
