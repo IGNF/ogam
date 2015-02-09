@@ -84,9 +84,10 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 			}
 		}]
 	}],
-	bbar: [{ // The bottom tools bar
+	// The bottom tools bar
+	bbar: [/*{ TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
 		itemId:'CancelButton', type: 'button', text: 'Cancel'
-	},'-',{
+	},'-',*/{
 		itemId:'ResetButton', type: 'button', text: 'Reset'
 	},{
 		xtype: 'tbspacer',

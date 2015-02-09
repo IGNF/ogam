@@ -53,17 +53,25 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
     	this.getViewModel().set('currentProcess', defaultRecord);
     	
     },
-    
+
+	/**
+	 * Submit the current request form
+	 */
     onSubmit:function(button){
+    	Ext.Ajax.on('beforerequest', function(conn, options) {
+    		this.requestConn = conn;
+    	}, this, {
+    		single : true
+    	});
 		button.up('form').getForm().submit({
 			clientValidation: true,
-			waitMsg: 'loading...',
+			waitMsg: Ext.view.AbstractView.prototype.loadingText,
 			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',
 			params: {
 				newStatus: 'delivered'
 			},
 			success: function(form, action) {
-				console.log('form content', button.up('form').getForm());
+				this.requestConn = null;
 				button.fireEvent('onRequestFormSubmit', action.result.columns);
 			},
 			failure: function(form, action) {
@@ -80,20 +88,18 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 			}
 		});
 	},
-    
+
 	/**
-	 * Cancel the current ajax request (submit or load)
+	 * Cancel the current ajax request
 	 */
 	onCancel: function(button) {
 		if (this.requestConn && this.requestConn !== null) {
 			this.requestConn.abort();
-			this.gridPanel.loadMask.hide();
-			this.mapMask.hide();
 		}
 	},
-	
+
 	/**
-	 * Reset the current ajax request (submit or load)
+	 * Reset the current request form
 	 */
 	onReset : function(button) {
 		this.lookupReference('advancedRequestSelector').reloadForm();
