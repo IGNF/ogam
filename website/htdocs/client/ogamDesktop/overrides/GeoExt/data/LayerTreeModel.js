@@ -29,6 +29,5 @@ Ext.define('GeoExtOverride.data.LayerTreeModel', {
                 }
             }
         });
-    },
-
+    }
 });
