@@ -41,6 +41,7 @@
      *      ]
      */
     "requires": [
+    	"ext-locale"
     ],
 
     /**
@@ -320,6 +321,8 @@
     "output": {
         "base": "${workspace.build.dir}/${build.environment}/${app.name}"
     },
+    
+    "locale": "fr",
 
     /**
      * Uniquely generated id for this application, used as prefix for localStorage keys.

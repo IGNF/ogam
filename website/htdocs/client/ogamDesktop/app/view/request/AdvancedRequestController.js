@@ -19,6 +19,12 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
     		component:{
     			'#SubmitButton': {
 					click:'onSubmit'
+				},
+    			'#CancelButton': {
+					click:'onCancel'
+				},
+    			'#ResetButton': {
+					click:'onReset'
 				}
     		}
         }
@@ -73,5 +79,23 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 				}
 			}
 		});
+	},
+    
+	/**
+	 * Cancel the current ajax request (submit or load)
+	 */
+	onCancel: function(button) {
+		if (this.requestConn && this.requestConn !== null) {
+			this.requestConn.abort();
+			this.gridPanel.loadMask.hide();
+			this.mapMask.hide();
+		}
+	},
+	
+	/**
+	 * Reset the current ajax request (submit or load)
+	 */
+	onReset : function(button) {
+		this.lookupReference('advancedRequestSelector').reloadForm();
 	}
 });

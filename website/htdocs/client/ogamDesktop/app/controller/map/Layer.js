@@ -38,7 +38,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			'geometryfield': {
 				geomCriteriaPress: 'showQueryTbar',
 				geomCriteriaUnpress: 'hideQueryTbar',
-				geomCriteriaDestroy: 'hideQueryTbarAndRemoveFeatures',
+				geomCriteriaDestroy: 'hideQueryTbarAndRemoveFeatures'
 			},
 			'map-panel toolbar combobox': {
 				select: 'layerSelected'

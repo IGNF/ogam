@@ -13,17 +13,19 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 	requires: [
 		'OgamDesktop.ux.request.AdvancedRequestFieldSet'
     ],
-	
+    
     onBindStore: function(store, initial, propertyName, oldStore){
-
-		var forms = store.getData(), i;
+    	this.reloadForm();
+    },
+	
+    reloadForm: function(){
 
 		this.removeAll();
-		this.updateLayout();
+
 		// Removes the loading message
 		//this.formsPanel.body.update();
 
-		store.getData().each(function(item, idex, length){
+		this.store.getData().each(function(item, idex, length){
 
 			var criteria = item.criteria();
 			var columns =  item.columns();
@@ -50,7 +52,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 			}
 		},this);
 		
-		//this.updateLayout();
+		this.updateLayout();
 		
 		/*if (!Ext.isEmpty(apiParams)) {
 			if (apiParams.collapseQueryPanel === true) {

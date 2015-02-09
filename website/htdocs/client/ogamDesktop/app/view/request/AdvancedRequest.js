@@ -25,6 +25,8 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 
 	items: [{ // The advanced request selector
 		xtype:'advanced-request-selector',
+		itemId: 'advancedRequestSelector',
+		reference:'advancedRequestSelector',
 		layout : 'auto',
 		autoScroll : true,
 		margin : '5 0 5 0',
@@ -83,9 +85,9 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		}]
 	}],
 	bbar: [{ // The bottom tools bar
-		type: 'button', text: 'Cancel'
+		itemId:'CancelButton', type: 'button', text: 'Cancel'
 	},'-',{
-		type: 'button', text: 'Reset'
+		itemId:'ResetButton', type: 'button', text: 'Reset'
 	},{
 		xtype: 'tbspacer',
 		flex: 1
