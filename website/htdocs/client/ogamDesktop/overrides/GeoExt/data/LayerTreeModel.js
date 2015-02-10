@@ -1,8 +1,3 @@
-
-/**
- * bug fix EXTJS-14607
- * @see http://www.sencha.com/forum/showthread.php?289825-Datefield-Picker-lost-on-month-year-click
- */
 Ext.define('GeoExtOverride.data.LayerTreeModel', {
     override: 'GeoExt.data.LayerTreeModel',
     constructor: function(data, id, raw, convertedData) {

@@ -106,6 +106,7 @@ class MapController extends AbstractOGAMController {
 		$this->view->featureinfo_maxfeatures = $configuration->featureinfo_maxfeatures;
 		
 		$this->_helper->layout()->disableLayout();
+		$this->getResponse()->setHeader('Content-type', 'application/javascript');
 		$this->render('map-parameters');
 	}
 

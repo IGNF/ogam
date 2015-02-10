@@ -3,7 +3,7 @@
  * bug fix EXTJS-14607
  * @see http://www.sencha.com/forum/showthread.php?289825-Datefield-Picker-lost-on-month-year-click
  */
-Ext.define('EXTJS-14607.overrides.picker.Date', {
+Ext.define('EXTJS14607.overrides.picker.Date', {
     override: 'Ext.picker.Date',
     compatibility:'5.0.1',//not needed in 5.0.0 and not 5.1.0 beta so ...
     runAnimation: function(isHide) {

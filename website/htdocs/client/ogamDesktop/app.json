@@ -27,7 +27,6 @@
     /**
      * The name of the theme for this application.
      */
-    
     //"theme": "ogamDesktop-theme",
     "theme": "ext-theme-gray",
     
@@ -41,8 +40,10 @@
      *      ]
      */
     "requires": [
-    	"ext-locale"
+		"ext-locale"
     ],
+
+	"locale": "fr",
 
     /**
      * Sass configuration properties.
@@ -58,17 +59,6 @@
          */
         "namespace": "OgamDesktop"
     },
-
-    /**
-     * The absolute URL to this application in development environment, i.e: the URL to run
-     * this application on your web browser, e.g: "http://localhost/OgamDesktop/index.html".
-     *
-     * This value is needed when build to resolve your application's dependencies if it
-     * requires server-side resources. This setting is only used if you enable dynamic
-     * resolution by setting "skip.resolve=0" (in .sencha/app/sencha.cfg) or if you
-     * invoke "sencha app resolve".
-     */
-    "url": "http://www.ogam.fr/client/ogamDesktop/index.html",
 
     /**
      * List of all JavaScript assets in the right execution order.
@@ -109,9 +99,12 @@
      *          //
      *          "bootstrap": false   // OPTIONAL
      *      }
+     *
      */
-    "js": [{
-            "path": "get-map-parameters.js"
+    "js": [
+        {
+            "path": "http://www.ogam.fr/map/get-map-parameters",
+            "remote": true
         },{
             /*"path": "lib/OpenLayers/OpenLayers.debug.js",*/
             "path": "lib/OpenLayers/OpenLayers.js"
@@ -136,10 +129,7 @@
         },{
             "path": "lib/addon/OpenLayers/Control/ZoomToFeatures.js",
             "includeInBundle": true
-        },/*{
-            "path": "${app.dir}/app/ux/form/field/GeometryField.js",
-            "includeInBundle": true
-        },*/{
+        },{
             "path": "app.js",
             "bundle": true
         }
@@ -172,10 +162,134 @@
      */
     "css": [
         {
+            "path": "lib/OpenLayers/theme/default/style.css"
+        },{
             "path": "bootstrap.css",
             "bootstrap": true
         }
     ],
+
+    /**
+     * This option is used to configure the dynamic loader. At present these options
+     * are supported.
+     *
+     *      "loader": {
+     *          // This property controls how the loader manages caching for requests:
+     *          //
+     *          //   - true: allows requests to receive cached responses
+     *          //   - false: disable cached responses by adding a random "cache buster"
+     *          //   - other: a string (such as the build.timestamp shown here) to allow
+     *          //     requests to be cached for this build.
+     *          //
+     *          "cache": "${build.timestamp}",
+     *
+     *          // When "cache" is not true, this value is the request parameter used
+     *          // to control caching.
+     *          //
+     *          "cacheParam": "_dc"
+     *      },
+     *
+     */
+
+    "OgamDesktop": {
+    	"requestServiceUrl": "../query/",
+    	"mapServiceUrl": "../map/",
+    	"OpenLayers": {
+    		"theme":  "lib/OpenLayers/theme/default/style.css", // Tell OpenLayers where the css default theme is
+    		"imgPath":  "lib/OpenLayers/img/" // Tell OpenLayers where the control images are (remember the trailing slash)
+    	}
+    },
+
+    /**
+     * override objects for setting build environment specific 
+     * settings.
+     */
+    "production": {
+		"output": {
+        	"base": "${workspace.dir}/../public/${app.name}"
+    	}
+    },
+    
+    "testing": {
+    },
+    
+    "development": {
+        "OgamDesktop": {
+	    	"requestServiceUrl": "http://www.ogam.fr/query/",
+    		"mapServiceUrl": "http://www.ogam.fr/map/"
+	    }
+    },
+
+    /**
+     *  Controls the output structure of bootstrap artifacts.  May be specified by a string:
+     *
+     *      "bootstrap": "${app.dir}"
+     *
+     *  to adjust the base path for all bootstrap objects, or expanded into object form:
+     *
+     *      "bootstrap": {
+     *          "base": "${app.dir},
+     *          "manifest": "bootstrap.json",
+     *          "microloader": "bootstrap.js",
+     *          "css": "bootstrap.css"
+     *      }
+     *
+     *  You can optionally exclude entries from the manifest. If you use ext-*.js,
+     *  be sure to exclude "loadOrder" like so:
+     *
+     *      "bootstrap": {
+     *          "manifest": {
+     *              "path": "bootstrap.json",
+     *              "exclude": "loadOrder"
+     *          }
+     *      }
+     *
+     */
+    "bootstrap": {
+        "base": "${app.dir}",
+        "manifest": "bootstrap.json",
+        "microloader": "bootstrap.js",
+        "css": "bootstrap.css"
+    },
+
+    /**
+     *  Controls the output directory for build resources.  May be set with
+     *  either a string:
+     *
+     *      "${workspace.build.dir}/${build.environment}/${app.name}"
+     *
+     *  or an object containing values for various types of
+     *  build artifacts:
+     *
+     *      {
+     *          "base": "${workspace.build.dir}/${build.environment}/${app.name}",
+     *          "page": {
+     *              "path": "../index.html",
+     *              "enable": false
+     *          },
+     *          "css": "${app.output.resources}/${app.name}-all.css",
+     *          "js": "app.js",
+     *          "microloader": {
+     *              "path": "microloader.js",
+     *              "embed": true,
+     *              "enable": true
+     *          },
+     *          "manifest": {
+     *              "path": "app.json",
+     *              "embed": false,
+     *              "enable": "${app.output.microloader.enable}"
+     *          },
+     *          "resources": "resources",
+     *          "slicer": {
+     *              "path": "${app.output.resources}/images",
+     *              "enable": false
+     *          }
+     *      }
+     *
+     */
+    "output": {
+        "base": "${workspace.build.dir}/${build.environment}/${app.name}"
+    },
 
     /**
      * Used to automatically generate cache.manifest (HTML 5 application cache manifest) file when you build
@@ -230,99 +344,6 @@
             }
         ]
     },
-    
-    "OgamDesktop": {
-    	"requestServiceUrl": "../query/",
-    	"mapServiceUrl": "../map/",
-    	"OpenLayers": {
-    		"theme":  "lib/OpenLayers/theme/default/style.css", // Tell OpenLayers where the css default theme is
-    		"imgPath":  "lib/OpenLayers/img/" // Tell OpenLayers where the control images are (remember the trailing slash)
-    	}
-    },
-    
-    /**
-     * override objects for setting build environment specific 
-     * settings.
-     */
-    "production": {
-		"output": {
-        	"base": "${workspace.dir}/../public/${app.name}"
-    	}
-    },
-    
-    "testing": {
-    },
-    
-    "development": {
-        "OgamDesktop": {
-	    	"requestServiceUrl": "http://www.ogam.fr/query/",
-    		"mapServiceUrl": "http://www.ogam.fr/map/"
-	    }
-    },
-
-    /**
-     *  Controls the output structure of bootstrap artifacts.  May be specified by a string:
-     *
-     *  "bootstrap": "${app.dir}"
-     *
-     *  to adjust the base path for all bootstrap objects, or expanded into object form:
-     *
-     *  "bootstrap": {
-     *      "base": "${app.dir},
-     *      "manifest": "bootstrap.json",
-     *      "microloader": "bootstrap.js",
-     *      "css": "bootstrap.css"
-     *  }
-     *
-     *
-     */
-    "bootstrap": {
-        "base": "${app.dir}",
-        "manifest": "bootstrap.json",
-        "microloader": "bootstrap.js",
-        "css": "bootstrap.css"
-    },
-
-    /**
-     *  Controls the output directory for build resources.  May be set with
-     *  either a string:
-     *
-     *      "${workspace.build.dir}/${build.environment}/${app.name}"
-     *
-     *  or an object containing values for various types of
-     *  build artifacts:
-     *
-     *      {
-     *          "base": "${workspace.build.dir}/${build.environment}/${app.name}",
-     *          "page": {
-     *              "path": "../index.html",
-     *              "enable": false
-     *          },
-     *          "css": "${app.output.resources}/${app.name}-all.css",
-     *          "js": "app.js",
-     *          "microloader": {
-     *              "path": "microloader.js",
-     *              "embed": true,
-     *              "enable": true
-     *          },
-     *          "manifest": {
-     *              "path": "app.json",
-     *              "embed": false,
-     *              "enable": "${app.output.microloader.enable}"
-     *          },
-     *          "resources": "resources",
-     *          "slicer": {
-     *              "path": "${app.output.resources}/images",
-     *              "enable": false
-     *          }
-     *      }
-     *
-     */
-    "output": {
-        "base": "${workspace.build.dir}/${build.environment}/${app.name}"
-    },
-    
-    "locale": "fr",
 
     /**
      * Uniquely generated id for this application, used as prefix for localStorage keys.
