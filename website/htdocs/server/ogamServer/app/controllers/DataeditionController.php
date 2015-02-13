@@ -354,6 +354,7 @@ class DataEditionController extends AbstractOGAMController {
 		$this->view->message = $message;
 		$this->view->childrenTableLabels = $childrenTableLabels;
 
+		$this->_helper->layout()->disableLayout();
 		$this->render('edit-data');
 	}
 
@@ -565,6 +566,7 @@ class DataEditionController extends AbstractOGAMController {
 		$this->view->mode = $mode;
 		$this->view->message = $message;
 
+		$this->_helper->layout()->disableLayout();
 		$this->render('edit-data');
 	}
 

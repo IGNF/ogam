@@ -1,0 +1,1 @@
+Directory necessary for the old edition. To remove on upgrade.

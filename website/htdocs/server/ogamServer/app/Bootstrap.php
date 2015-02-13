@@ -124,7 +124,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$view->addBasePath(APPLICATION_PATH.'/views/');
 
 		// Path to the genapp helpers
-		$view->addHelperPath(APPLICATION_PATH."/../library/Genapp/View/Helper", 'Genapp_View_Helper');
+		$view->addHelperPath(APPLICATION_PATH."/../lib/Genapp/View/Helper", 'Genapp_View_Helper');
 
 		// Ajoutons là au ViewRenderer
 		$viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('ViewRenderer');

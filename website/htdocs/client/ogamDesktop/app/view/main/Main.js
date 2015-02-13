@@ -21,13 +21,14 @@ Ext.define('OgamDesktop.view.main.Main', {
 	renderTo: Ext.get('content'),
 	//width: Ext.getBody().getViewSize().width - 80,
 	//height: Ext.getBody().getViewSize().height - 160,
-	activeTab: 1,
+	activeTab: 0,
 	items: [/*{
 		xtype: 'predefined-request'
 	},*/{
 		xtype: 'panel',
 		layout: 'border',
 		title: 'Consultation',
+		id:'consultationTab',
 		items: [{
 			xtype: 'advanced-request',
 			region: 'west'

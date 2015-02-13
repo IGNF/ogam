@@ -194,6 +194,7 @@
     "OgamDesktop": {
     	"requestServiceUrl": "../query/",
     	"mapServiceUrl": "../map/",
+    	"editionServiceUrl": "../dataedition/",
     	"OpenLayers": {
     		"theme":  "lib/OpenLayers/theme/default/style.css", // Tell OpenLayers where the css default theme is
     		"imgPath":  "lib/OpenLayers/img/" // Tell OpenLayers where the control images are (remember the trailing slash)
@@ -216,7 +217,8 @@
     "development": {
         "OgamDesktop": {
 	    	"requestServiceUrl": "http://www.ogam.fr/query/",
-    		"mapServiceUrl": "http://www.ogam.fr/map/"
+    		"mapServiceUrl": "http://www.ogam.fr/map/",
+    		"editionServiceUrl": "http://www.ogam.fr/dataedition/"
 	    }
     },
 

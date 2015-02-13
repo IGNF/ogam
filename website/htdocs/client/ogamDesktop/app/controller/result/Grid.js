@@ -136,6 +136,31 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 					handler: function(grid, rowIndex, colIndex, item, e, record, row) {
 						// Action managed into result main controller
 						gridTab.fireEvent('onEditDataButtonClick', record);
+
+						var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-edit-data/' + record.data.id;
+						var myFrame = Ext.ComponentQuery.query('uxiframe')[0];
+						if (myFrame) {
+							myFrame.load(href);
+							myFrame.ownerCt.show();
+						} else {
+							Ext.create('Ext.window.Window', {
+								title:'Edition',
+							    width:750,
+							    height:'90%',
+								layout: 'fit',
+								modal: true,
+								closeAction:'hide',
+						        items: {
+						            xtype: 'uxiframe',
+						            src: href
+						        },
+						        listeners:{
+						        	'close':function(){
+						        		grid.getStore().reload();
+						        	}
+						        }
+							}).show();
+						}
 					}
 				}]
 			});
@@ -165,7 +190,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		// Update the grid adding the columns and the data rows.
 		gridTab.reconfigure(resultStore, gridColumnCfg);
 	},
-
+	
 	/**
 	 * Return the pattern used to format a number.
 	 * 
