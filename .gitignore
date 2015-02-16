@@ -3,3 +3,7 @@
 Meld
 htdocs/public/ogamDesktop/*
 htdocs/client/build/*
+OgamDesktop
+/website/htdocs/client/build
+/website/htdocs/client/ogamDesktop/sass/example
+/website/htdocs/client/ogamDesktop/bootstrap.json
