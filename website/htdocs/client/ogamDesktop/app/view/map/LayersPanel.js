@@ -22,6 +22,7 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
 	border: false,
 	rootVisible: false,
 	autoScroll: true,
+	title:'Layers',
 	viewConfig: {
 		plugins: [{ // To let drag and drop of tree nodes
 			ptype: 'treeviewdragdrop',

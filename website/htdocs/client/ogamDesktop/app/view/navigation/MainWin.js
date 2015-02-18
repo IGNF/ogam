@@ -10,22 +10,12 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
      * The url to get the pdf.
      */
     pdfUrl: 'pdfexport',
-	tbar :[/*{
-		xtype: 'button', text: 'New localisation'
-	},{
-		xtype: 'button', text: 'Edit'
-	},{
-		xtype: 'button', text: 'Delete'
-	},*/{
-		xtype: 'button',
-		text: 'Export as PDF',
-		iconCls: 'o-navigation-tools-doc-pdfexport',
-		listeners: {
-			'click' : function(button){
-				button.ownerCt.ownerCt.exportAsPDF();
-			}
-		}
-	}],
+    //<locale>
+    /**
+     * @cfg string [exportAsPdfButtonText] button text of the toolbar, export pdf action
+     */
+    exportAsPdfButtonText: "Exporter en pdf",
+    //</locale>
 	listeners : {
 		'render' : function(panel) {
 			panel.items.on('remove', function(item) {
@@ -54,7 +44,29 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 //			resultsGrid = resultsGridArray[i];
 //			Ext.getCmp('main').on('onEditDataButtonClick', this.openDetails, this);
 //		}
+		this.tbar= this.createToolbar();
 		this.callParent(arguments);
+	},
+	/**
+	 * build the (top) tool bar 
+	 */
+	createToolbar :function(){
+		return [/*{
+			xtype: 'button', text: 'New localisation'
+	   	},{
+	   		xtype: 'button', text: 'Edit'
+	   	},{
+	   		xtype: 'button', text: 'Delete'
+	   	},*/{
+	   		xtype: 'button',
+	   		text: this.exportAsPdfButtonText,
+	   		iconCls: 'o-navigation-tools-doc-pdfexport',
+	   		listeners: {
+	   			'click' : function(button){
+	   				button.ownerCt.ownerCt.exportAsPDF();
+	   			}
+	   		}
+	}];
 	},
 	
 	/**
