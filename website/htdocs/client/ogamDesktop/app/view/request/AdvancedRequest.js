@@ -22,15 +22,49 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 	session: {},
 
 	layout: 'border',
-
-	items: [{ // The advanced request selector
+	/**
+	 * @cfg String/object [requestSelectTitle] title for the advance request selector
+	 * @see Ext.panael.panel.title
+	 * @default '<b>Forms Panel</b>'
+	 */
+	requestSelectTitle:'<b>Forms Panel</b>',
+	/**
+	 * @cfg String/object [processPanelTitle] title for the process panel
+	 * @see Ext.panael.panel.title
+	 * @default 'Dataset'
+	 */
+	processPanelTitle:'Dataset',
+	/**
+	 * @cfg object buttonsText list of button used
+	 * @default {
+		submit:'search',
+		cancel:'cancel',
+		reset :'reset'
+	}
+	 */
+	buttonsText:{
+		submit:'search',
+		cancel:'cancel',
+		reset :'reset'
+	},
+	/**
+	 * @cfg string [processCBEmptyText] the processcomboBox empty text
+	 */
+	processCBEmptyText:'Please select a dataset...',
+	
+	initComponent:function(){
+		this.initBbar();
+		this.callParent(arguments);
+	},
+	initItems:function(){
+		this.items=[{ // The advanced request selector	
 		xtype:'advanced-request-selector',
 		itemId: 'advancedRequestSelector',
 		reference:'advancedRequestSelector',
 		layout : 'auto',
 		autoScroll : true,
 		margin : '5 0 5 0',
-		title : '<b>Forms Panel :</b>',
+		title : this.requestSelectTitle,
 		bind: {
 			store: '{currentProcess.fieldsets}'
 		},
@@ -46,7 +80,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		frame : true,
 		margins : '10 0 5 0',
 		height: 60,
-		title: 'Dataset',
+		title: this.processPanelTitle,
 		layout: 'fit',
 		tools:[{
 			type:'help',
@@ -65,7 +99,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 			name : 'datasetId',
 			hiddenName : 'datasetId',
 			reference:'processComboBox',
-
 			hideLabel : true,
 			displayField : 'label',
 			valueField : 'id',
@@ -75,7 +108,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 			width : 345,
 			maxHeight : 100,
 			triggerAction : 'all',
-			emptyText : "Please select a dataset...",
+			emptyText : this.processCBEmptyText,
 			selectOnFocus : true,
 			disableKeyFilter : true,
 			bind: {
@@ -83,16 +116,20 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 				selection:'{currentProcess}'
 			}
 		}]
-	}],
+	}];
+		this.callParent(arguments);
+	},
 	// The bottom tools bar
-	bbar: [/*{ TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
-		itemId:'CancelButton', type: 'button', text: 'Cancel'
-	},'-',*/{
-		itemId:'ResetButton', type: 'button', text: 'Reset'
-	},{
-		xtype: 'tbspacer',
-		flex: 1
-	},{
-		itemId:'SubmitButton', type: 'button', action: 'submit', text: 'Search'
-	}]
+	initBbar:function(){
+		this.bbar=[/*{ TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
+				itemId:'CancelButton', type: 'button', text: this.buttonsText.cancel
+		  	},'-',*/{
+		  		itemId:'ResetButton', type: 'button', text: this.buttonsText.reset
+		  	},{
+		  		xtype: 'tbspacer',
+		  		flex: 1
+		  	},{
+		  		itemId:'SubmitButton', type: 'button', action: 'submit', text: this.buttonsText.submit
+		  	}];
+	}
 });

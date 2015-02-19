@@ -28,10 +28,10 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	 */
 	popupTitle : 'Feature information',
 	tabTip : 'The map with the request\'s results\'s location',
-	layerPanelTitle : "Layers",
-	layerPanelTabTip : "The layers's tree",
-	legendPanelTitle : "Legends",
-	legendPanelTabTip : "The layers's legends",
+//	layerPanelTitle : "Layers",
+//	layerPanelTabTip : "The layers's tree",
+//	legendPanelTitle : "Legends",
+//	legendPanelTabTip : "The layers's legends",
 	panZoomBarControlTitle : "Zoom",
 	navigationControlTitle : "Drag the map",
 	invalidWKTMsg : "The feature cannot be displayed",
@@ -47,6 +47,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	zoomBoxInControlTitle : "Zoom in",
 	zoomBoxOutControlTitle : "Zoom out",
 	zoomToMaxExtentControlTitle : "Zoom to max extend",
+	snappingControlTitle:'Snapping',
 	locationInfoControlTitle : "Get information about the result location",
 	LayerSelectorEmptyTextValue: "Select Layer",
 	selectFeatureControlTitle : "Select a feature from the selected layer",
@@ -481,7 +482,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 			var snappingAction = Ext.create('GeoExt.Action',{
 				control : this.snappingControl,
 				map : this.map,
-				tooltip : 'Snapping',
+				tooltip : this.snappingControlTitle,
 				toggleGroup : "snapping",  // his own independant group
 				group : "LayerTools",
 				checked : false,
@@ -512,6 +513,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 
 			// Feature Info Tool
 			this.featureInfoControl = new OpenLayers.Control.FeatureInfoControl({
+				popupTitle:this.popupTitle,
 				layerName : this.vectorLayer.name,
 				map : this.map
 			});
