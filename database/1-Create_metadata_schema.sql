@@ -1,5 +1,5 @@
+SET client_encoding TO 'UTF8';
 CREATE SCHEMA metadata;
-
 SET SEARCH_PATH = metadata, raw_data, public;
 
 /**
@@ -10,11 +10,11 @@ DECLARE
     input_string text := $1;
 BEGIN
 
-input_string := translate(input_string, 'âãäåaaaÁÂÃÄÅAAA', 'aaaaaaaaaaaaaaa');
-input_string := translate(input_string, 'èééêëeeeeeEEEEE', 'eeeeeeeeeeeeeee');
-input_string := translate(input_string, 'ìíîïìiiiÌÍÎÏÌIII', 'iiiiiiiiiiiiiiii');
-input_string := translate(input_string, 'óôõöoooÒÓÔÕÖOOO', 'ooooooooooooooo');
-input_string := translate(input_string, 'ùúûüuuuuÙÚÛÜUUUU', 'uuuuuuuuuuuuuuuu');
+input_string := translate(input_string, 'âãäåāăąÁÂÃÄÅĀĂĄ', 'aaaaaaaaaaaaaaa');
+input_string := translate(input_string, 'èééêëēĕėęěĒĔĖĘĚ', 'eeeeeeeeeeeeeee');
+input_string := translate(input_string, 'ìíîïìĩīĭÌÍÎÏÌĨĪĬ', 'iiiiiiiiiiiiiiii');
+input_string := translate(input_string, 'óôõöōŏőÒÓÔÕÖŌŎŐ', 'ooooooooooooooo');
+input_string := translate(input_string, 'ùúûüũūŭůÙÚÛÜŨŪŬŮ', 'uuuuuuuuuuuuuuuu');
 
 return input_string;
 END;
@@ -136,7 +136,7 @@ CODE                 VARCHAR(36)          not null,
 PARENT_CODE          VARCHAR(36)          null,
 NAME                 VARCHAR(500)         null,
 COMPLETE_NAME        VARCHAR(500)         null,
-VERNACULAR_NAME      VARCHAR(500)         null,
+VERNACULAR_NAME      VARCHAR(1000)         null,
 IS_LEAF			     CHAR(1)              null,
 IS_REFERENCE	     CHAR(1)              null,
 constraint PK_MODE_TAXREF primary key (UNIT, CODE)

@@ -1,4 +1,5 @@
-﻿set search_path = metadata;
+SET client_encoding TO 'UTF8';
+set search_path = metadata;
 
 
 --

@@ -1,5 +1,5 @@
+SET client_encoding TO 'UTF8';
 CREATE SCHEMA raw_data;
-
 SET SEARCH_PATH = raw_data, public;
 
 --
@@ -68,7 +68,7 @@ COMMENT ON COLUMN SUBMISSION_FILE.NB_LINE IS 'The number of lines of data in the
 /* Table : LOCATION                                             */
 /*==============================================================*/
 create table LOCATION (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 LAT                  FLOAT8               null,
@@ -111,11 +111,11 @@ CREATE INDEX fki_location_submission_id ON raw_data.location(submission_id);
 /*	Add a trigger to fill the the_geom column of the location table         */
 /*  Use that trigger fct only if you want change the default OGAM behaviour */
 /*==========================================================================*/
-/*CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
+CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
     BEGIN
-    NEW.the_geom = public.GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);
+    NEW.the_geom = public.st_geometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);
     EXCEPTION
     WHEN internal_error THEN
         IF SQLERRM = 'parse error - invalid geometry' THEN
@@ -134,13 +134,12 @@ CREATE TRIGGER geom_trigger
   ON raw_data.LOCATION
   FOR EACH ROW
   EXECUTE PROCEDURE raw_data.geomfromcoordinate();
-*/
 
 /*==============================================================*/
 /* Table : PLOT_DATA                                            */
 /*==============================================================*/
 create table PLOT_DATA (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
@@ -167,7 +166,7 @@ COMMENT ON COLUMN PLOT_DATA.LINE_NUMBER IS 'The position of the line of data in 
 /* Table : SPECIES_DATA                                         */
 /*==============================================================*/
 create table SPECIES_DATA (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
@@ -208,7 +207,7 @@ CREATE SEQUENCE tree_id_seq
 /* Table : TREE_DATA                                         */
 /*==============================================================*/
 create table TREE_DATA (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,

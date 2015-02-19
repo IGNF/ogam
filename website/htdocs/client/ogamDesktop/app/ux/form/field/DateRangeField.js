@@ -11,7 +11,7 @@
  */
 
 /**
- * Provides a date range input field with a {@link Genapp.form.picker.DateRangePicker} dropdown and automatic date validation.
+ * Provides a date range input field with a {@link OgamDesktop.ux.picker.DateRange} dropdown and automatic date validation.
  *  
  * @class Genapp.form.DateRangeField
  * @extends Ext.form.DateField

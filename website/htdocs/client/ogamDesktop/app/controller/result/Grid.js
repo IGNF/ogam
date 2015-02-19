@@ -112,7 +112,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 				gridColumn.width = 30;
 				gridColumn.sortable = false;
 				// TODO : createDelegate deprecated : using of Ext.Function.pass instead, not tested...
-				gridColumn.renderer = Ext.Function.pass(this.renderIcon, [Genapp.util.htmlStringFormat(field.label)], this);
+				//gridColumn.renderer = Ext.Function.pass(this.renderIcon, [Ext.String.htmlEncode(field.label)], this);
 				break;
 			default:
 				gridColumn.xtype = 'gridcolumn';
@@ -218,22 +218,22 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			}
 		}
 		return pattern.join('');
-	},
+	}//,
 
 	/**
 	 * Render an Icon for the data grid.
 	 * @TODO
 	 */
-	renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
+	/*renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
 		if (!Ext.isEmpty(value)) {
 			return '<img src="' + Ext.manifest.OgamDesktop.requestServiceUrl + '../client/ogamDesktop/resources/images/picture.png"'
 			+ 'ext:qtitle="' + columnLabel + ' :"'
 			+ 'ext:qwidth="' + this.getResultsgrid().tipImageDefaultWidth + '"'
 			+ 'ext:qtip="'
-			+ Genapp.util.htmlStringFormat('<img width="' + (this.getResultsgrid().tipImageDefaultWidth - 12) 
+			+ Ext.String.htmlEncode('<img width="' + (this.getResultsgrid().tipImageDefaultWidth - 12) 
 			+ '" src="' + Ext.manifest.OgamDesktop.requestServiceUrl + '../client/ogamDesktop/img/photos/' + value 
 			+'" />') 
 			+ '">';
 		}
-	}
+	}*/
 });

@@ -13,7 +13,7 @@
 /**
  * The class of the Grid Details Panel.
  * 
- * @class Genapp.GridDetailsPanel
+ * @class OgamDesktop.view.navigation.GridDetailsPanel
  * @extends Ext.GridPanel
  * @constructor Create a new GridDetailsPanel
  * @param {Object} config The config object
@@ -112,18 +112,18 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
      * Render an Icon for the data grid.
      */
      // TODO: Merge this function with the renderIcon fct of the result panel
-    renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
+    /*renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
         if (!Ext.isEmpty(value)) {
-            return '<img src="' + Genapp.base_url + '/js/genapp/resources/images/picture.png"'
+            return '<img src="' + Ext.manifest.OgamDesktop.baseUrl + 'images/OgamDesktop/tools/nav/picture.png"'
             + 'ext:qtitle="' + columnLabel + ' :"'
             + 'ext:qwidth="' + this.tipImageDefaultWidth + '"'
             + 'ext:qtip="'
-            + Genapp.util.htmlStringFormat('<img width="' + (this.tipImageDefaultWidth - 12) 
-            + '" src="' + Genapp.base_url + '/img/photos/' + value 
+            + Ext.String.htmlEncode('<img width="' + (this.tipImageDefaultWidth - 12) 
+            + '" src="' + Ext.manifest.OgamDesktop.baseUrl + '/img/photos/' + value 
             +'" />') 
             + '">';
         }
-    },
+    },*/
     listeners : {
 		'beforeitemmouseenter' : function(view, record, item, index, e, eOpts ) {
 			this.ownerCt.fireEvent('beforedetailsgridrowenter', record);
@@ -172,7 +172,7 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
                     columns[i].header = '';
                     columns[i].width = 30;
                     columns[i].sortable = false;
-                    //columns[i].renderer = this.renderIcon.createDelegate(this, [Genapp.util.htmlStringFormat(columns[i].tooltip)], true);
+                    //columns[i].renderer = this.renderIcon.createDelegate(this, [Ext.String.htmlEncode(columns[i].tooltip)], true);
                     break;
                 default:
                     columns[i].xtype = 'gridcolumn';

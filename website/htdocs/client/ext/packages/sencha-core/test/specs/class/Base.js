@@ -21,7 +21,7 @@ describe("Ext.Base", function() {
 
                 deprecated: {
                     name: 'foo',
-                    5: {
+                    '5': {
                         methods: {
                             bar: 'foo',
                             foo: function () {
@@ -30,7 +30,7 @@ describe("Ext.Base", function() {
                         }
                     },
 
-                    5.1: {
+                    '5.1': {
                         methods: {
                             foo: {
                                 fn: function () {

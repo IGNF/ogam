@@ -10,8 +10,7 @@
 -- ------------------------------------------------------------------------------------------
 
 -- Création d'un schéma pour les référentiels
-CREATE SCHEMA referentiels;
-
+SET client_encoding TO 'UTF8';
 set search_path = referentiels, metadata;
 
 -- Création d'une table pour le référentiel taxonomique
@@ -97,7 +96,7 @@ SET client_encoding = 'ISO-8859-1';
 
 
 -- remplacer C:\workspace\demo-sinp\database/Referentiels/TAXREFv8.0/TAXREFv80.txt par le chemin complet vers le fichier TAXREFv8.0.txt
-COPY taxref FROM 'C:\ms4w\apps\ogam\database/Referentiels/TAXREFv8.0/TAXREFv80.txt' with null '';
+COPY taxref FROM 'D:\DONNEES\Workspace\OGAM\database\Referentiels\TAXREFv80.txt' with null '';
 
 SET client_encoding = 'UTF-8';
 

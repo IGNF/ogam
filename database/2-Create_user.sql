@@ -1,13 +1,25 @@
-﻿
--- Crée un user de connexion ogam / ogam
-CREATE ROLE ogam LOGIN
-  ENCRYPTED PASSWORD 'md518c5a22167aa536fd924eafa7aca34dc'
-  NOSUPERUSER NOINHERIT NOCREATEDB NOCREATEROLE;
+SET client_encoding TO 'UTF8';
+
+DO
+$body$
+BEGIN
+   IF NOT EXISTS (
+      SELECT *
+      FROM   pg_catalog.pg_user
+      WHERE  usename = 'ogam') THEN
+
+		-- Crée un user de connexion ogam / ogam
+		CREATE ROLE ogam LOGIN
+		  ENCRYPTED PASSWORD 'md518c5a22167aa536fd924eafa7aca34dc'
+		  NOSUPERUSER NOINHERIT NOCREATEDB NOCREATEROLE;
+   END IF;
+END
+$body$;
   
 ALTER ROLE ogam SET search_path=public, website, metadata, mapping, raw_data; --, harmonized_data;
 
 -- website
-GRANT ALL ON SCHEMA website TO ogam WITH GRANT OPTION;
+GRANT ALL ON SCHEMA website TO ogam;
 GRANT SELECT ON TABLE website.permission TO ogam;
 GRANT SELECT ON TABLE website.application_parameters TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.users TO ogam;
@@ -27,6 +39,7 @@ GRANT SELECT ON TABLE website.layer_role_restriction TO ogam;
 GRANT ALL ON SCHEMA raw_data TO ogam;
 GRANT ALL ON TABLE raw_data.check_error_check_error_id_seq TO ogam;
 GRANT ALL ON TABLE raw_data.submission_id_seq TO ogam;
+GRANT ALL ON TABLE raw_data.tree_id_seq TO ogam;
 GRANT SELECT, INSERT ON TABLE raw_data.check_error TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE raw_data.location TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE raw_data.plot_data TO ogam;
@@ -34,22 +47,19 @@ GRANT SELECT, INSERT, DELETE ON TABLE raw_data.species_data TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE raw_data.tree_data TO ogam;
 GRANT ALL ON TABLE raw_data.submission TO ogam;
 GRANT ALL ON TABLE raw_data.submission_file TO ogam;
---GRANT EXECUTE ON FUNCTION raw_data.geomfromcoordinate() TO ogam;
+GRANT EXECUTE ON FUNCTION raw_data.geomfromcoordinate() TO ogam;
 
 -- harmonized-data
-/*
+
 GRANT ALL ON SCHEMA harmonized_data TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonization_process TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonization_process_submissions TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_evenement TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_location TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_location_compl TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_point_noir TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_ouvrage TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_travaux TO ogam;
+GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_plot_data TO ogam;
+GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_species_data TO ogam;
+GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_tree_data TO ogam;
 GRANT EXECUTE ON FUNCTION harmonized_data.geomfromcoordinate() TO ogam;
 GRANT SELECT, USAGE ON TABLE harmonized_data.harmonization_process_harmonization_process_id_seq TO ogam;
-*/
 
 -- metadata
 GRANT ALL ON SCHEMA metadata TO ogam;
@@ -69,6 +79,7 @@ GRANT SELECT ON TABLE metadata.form_format TO ogam;
 GRANT SELECT ON TABLE metadata.format TO ogam;
 GRANT SELECT ON TABLE metadata.group_mode TO ogam;
 GRANT SELECT ON TABLE metadata."mode" TO ogam;
+GRANT SELECT ON TABLE metadata.mode_taxref TO ogam;
 GRANT SELECT ON TABLE metadata.mode_tree TO ogam;
 GRANT SELECT ON TABLE metadata.process TO ogam;
 GRANT SELECT ON TABLE metadata.range TO ogam;
@@ -87,6 +98,12 @@ GRANT SELECT ON TABLE "mapping".layer_service TO ogam;
 GRANT SELECT ON TABLE "mapping".layer_tree TO ogam;
 GRANT ALL ON TABLE "mapping".result_location TO ogam;
 GRANT SELECT ON TABLE "mapping".scales TO ogam;
+
+-- referentiels
+GRANT ALL ON SCHEMA referentiels TO ogam;
+GRANT ALL ON TABLE referentiels.taxref TO ogam;
+GRANT ALL ON TABLE referentiels.taxref_rang TO ogam;
+GRANT ALL ON TABLE referentiels.taxref_statut TO ogam;
 
 -- public
 GRANT SELECT ON TABLE public.geometry_columns TO public;

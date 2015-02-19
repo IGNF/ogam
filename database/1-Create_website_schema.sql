@@ -1,5 +1,5 @@
+SET client_encoding TO 'UTF8';
 CREATE SCHEMA website;
-
 SET SEARCH_PATH = website, public;
 
 /*==============================================================*/
