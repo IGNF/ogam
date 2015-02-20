@@ -34,7 +34,7 @@ INSERT INTO application_parameters (name, value, description) values ('query_det
 INSERT INTO application_parameters (name, value, description) values ('query_details_layers2' , 'nuts_0,plot_location_detail' , 'WEB MAPPING ');
 INSERT INTO application_parameters (name, value, description) values ('proxy_service_name' , 'local_mapserver' , 'WEB MAPPING ');
 INSERT INTO application_parameters (name, value, description) values ('srs_visualisation' , 3035 , 'WEB MAPPING ');
-INSERT INTO application_parameters (name, value, description) values ('srs_raw_data' , 3035 , 'WEB MAPPING '); -- 4326
+INSERT INTO application_parameters (name, value, description) values ('srs_raw_data' , 4326 , 'WEB MAPPING ');
 INSERT INTO application_parameters (name, value, description) values ('srs_harmonized_data' , 3035 , 'WEB MAPPING ');
 INSERT INTO application_parameters (name, value, description) values ('usePerProviderCenter' , false , 'if true the system will look in the "bounding_box" table for centering info for each provider');
 INSERT INTO application_parameters (name, value, description) values ('bbox_x_min' , '1690000' , 'WEB MAPPING ');

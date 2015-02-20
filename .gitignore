@@ -8,3 +8,6 @@ OgamDesktop
 /website/htdocs/client/ogamDesktop/sass/example
 /website/htdocs/client/ogamDesktop/bootstrap.json
 /database/GENERATE_DB.log
+/website/htdocs/client/ogamDesktop/bootstrap.css
+/website/htdocs/client/ogamDesktop/bootstrap.js
+/website/htdocs/client/packages/ogamDesktop-locale-fr/build

@@ -17,7 +17,7 @@
      */
     "classpath": "${app.dir}/app,${app.dir}/lib/GeoExt/src/GeoExt,${app.dir}/lib/addon/GeoExt",
 
-    "overrides": "${app.dir}/overrides",
+    "overrides": "${app.dir}/overrides,${app.dir}/locale/${app.locale}",
 
     /**
      * The Sencha Framework for this application: "ext" or "touch".
