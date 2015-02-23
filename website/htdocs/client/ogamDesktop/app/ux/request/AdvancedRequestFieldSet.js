@@ -26,9 +26,9 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	extend: 'Ext.panel.Panel',
 	alias:'widget.advancedrequestfieldset',
 	xtype: 'advanced-request-fieldset',
-	uses:['Ext.data.JsonStore'],/*,'OgamDesktop.store.Tree',
+	requires:['Ext.data.JsonStore','OgamDesktop.store.Tree',
 	      'OgamDesktop.model.request.object.field.Code',
-	      'OgamDesktop.ux.form.field.*'],*/
+	      'OgamDesktop.ux.form.field.*'],
 	/**
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
