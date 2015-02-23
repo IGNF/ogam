@@ -575,11 +575,11 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[Genapp_Object_Metadata_Dataset]
 	 */
 	public function getDatasetsForDisplay() {
-		
+		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATASET');
 		$db = $this->getAdapter();
 		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
 		$req .= " FROM dataset d";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = 'METADATA' AND row_pk = dataset_id";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = dataset_id";
 		$req .= " INNER JOIN dataset_fields using (dataset_id) ";
 
 		// Check the role restrictions

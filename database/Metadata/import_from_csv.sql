@@ -14,6 +14,7 @@ alter table TABLE_FIELD drop constraint FK_TABLE_FI_HERITAGE__FIELD;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_DATASET;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_FIELD;
 alter table DATASET_FILES drop constraint FK_DATASET_FILES_FORMAT;
+alter table WEBSITE.PREDEFINED_REQUEST drop constraint FK_PREDEFINED_REQUEST_DATASET;
 
 --alter table website.predefined_request drop constraint fk_predefined_request_dataset;
 
@@ -173,6 +174,11 @@ alter table DATASET_FILES
    add constraint FK_DATASET_FILES_FORMAT foreign key (FORMAT)
       references FILE_FORMAT (FORMAT)
       on delete restrict on update restrict;
+
+ALTER TABLE website.predefined_request
+  ADD CONSTRAINT fk_predefined_request_dataset FOREIGN KEY (dataset_id)
+      REFERENCES metadata.dataset (dataset_id) MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 ALTER TABLE metadata.translation
   ADD CONSTRAINT "FK_TABLE_FORMAT_TRANSLATION" FOREIGN KEY (table_format)
