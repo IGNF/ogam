@@ -26,9 +26,9 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	extend: 'Ext.panel.Panel',
 	alias:'widget.advancedrequestfieldset',
 	xtype: 'advanced-request-fieldset',
-	uses:['Ext.data.JsonStore','OgamDesktop.store.TreeUnit',
+	uses:['Ext.data.JsonStore'],/*,'OgamDesktop.store.Tree',
 	      'OgamDesktop.model.request.object.field.Code',
-	      'OgamDesktop.ux.form.field.*'],
+	      'OgamDesktop.ux.form.field.*'],*/
 	/**
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
@@ -729,7 +729,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 							rootProperty : 'rows'
 						}
 					}};
-				field.treePickerStore = Ext.create('OgamDesktop.store.TreeUnit',{
+				field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
 					root :{
 						allowDrag : false,
 						id : '*'
@@ -787,8 +787,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 							rootProperty : 'rows'
 						}
 					}};
-				field.treePickerStore = Ext.create('OgamDesktop.store.TreeUnit',{
-					model:'OgamDesktop.model.TreeRef',
+				field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
+					model:'OgamDesktop.model.NodeRef',
 					root :{
 						allowDrag : false,
 						id : '0'

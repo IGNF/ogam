@@ -10,8 +10,8 @@ Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
 	columnsPanelTbarRemoveAllButtonTooltip : "Supprimer toutes les colonnes"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.picker.TreePicker", {
-	override: "OgamDesktop.ux.picker.TreePicker",
+Ext.define("OgamDesktop.locale.fr.ux.picker.Tree", {
+	override: "OgamDesktop.ux.picker.Tree",
 	okButtonText : "ok"
 });
 
@@ -49,8 +49,8 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.TwinNumberField", {
 	nanText : "'{0}' n'est pas un nombre valide"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.form.field.TreeField", {
-	override: "OgamDesktop.ux.form.field.TreeField",
+Ext.define("OgamDesktop.locale.fr.ux.form.field.Tree", {
+	override: "OgamDesktop.ux.form.field.Tree",
 	emptyText : "Sélectionner..."
 });
 
