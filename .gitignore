@@ -5,9 +5,11 @@ htdocs/public/ogamDesktop/*
 htdocs/client/build/*
 OgamDesktop
 /website/htdocs/client/build
-/website/htdocs/client/ogamDesktop/sass/example
 /website/htdocs/client/ogamDesktop/bootstrap.json
 /database/GENERATE_DB.log
 /website/htdocs/client/ogamDesktop/bootstrap.css
 /website/htdocs/client/ogamDesktop/bootstrap.js
 /website/htdocs/client/packages/ogamDesktop-locale-fr/build
+/website/htdocs/client/ogamDesktop/sass/example/example.css
+/website/htdocs/client/ogamDesktop/sass/example/bootstrap.js
+/website/htdocs/client/ogamDesktop/sass/example/bootstrap.json
