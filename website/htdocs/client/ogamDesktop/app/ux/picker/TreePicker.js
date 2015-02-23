@@ -13,7 +13,7 @@
 /**
  * Simple tree picker class.
  * 
- * @class Genapp.form.picker.TreePicker
+ * @class OgamDesktop.ux.picker.TreePicker
  * @extends Ext.TreePanel
  * @constructor Create a new TreePicker
  * @param {Object}
@@ -26,11 +26,9 @@ Ext.define('OgamDesktop.ux.picker.TreePicker', {
    // alias: 'widget.treepicker',// TODO fix or overwrite this xtype (same Ext.ux.TreePicker)
 	requires:['Ext.selection.TreeModel'],
 
-	/**
-	 * Internationalization.
-	 */
+//<locale>
 	okButtonText : "ok",
-
+//</locale>
 	/**
 	 * @cfg {Number} height The height of this component in pixels (defaults to
 	 *      300).
@@ -76,13 +74,13 @@ Ext.define('OgamDesktop.ux.picker.TreePicker', {
 	padding : 5,
 	enableDD : false,
 	animate : true,
-	border : false,
+	border : true,
 	shadow:false,
 	rootVisible : false,
 	useArrows : true,
 	autoScroll : true,
 	containerScroll : true,
-	frame : false,
+	frame : true,
 	listeners : {
 		'itemdblclick' : {// Select the node on double click
 			fn : function(panel, node, item, index, event) {
@@ -99,9 +97,6 @@ Ext.define('OgamDesktop.ux.picker.TreePicker', {
 		 * The root must be instancied here and not in the static part of the
 		 * class to avoid a conflict between the instance of the class
 		 */
-		if (!this.store) {
-			this.store =  'OgamDesktop.store.TreeUnit';
-		}
 		
 		this.validationButton = {
 			xtype : 'button',

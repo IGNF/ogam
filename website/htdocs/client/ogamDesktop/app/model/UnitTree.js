@@ -1,6 +1,6 @@
 Ext.define('OgamDesktop.model.UnitTree', {
 	extend : 'Ext.data.TreeModel',
-	// childType:'request.object.field.Code',
+	childType:'request.object.field.Code',
 
 	proxy : {
 		actionMethods : {

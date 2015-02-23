@@ -1,4 +1,3 @@
-
 /**
  * bug fix EXTJS-14607
  * @see http://www.sencha.com/forum/showthread.php?289825-Datefield-Picker-lost-on-month-year-click
@@ -18,7 +17,6 @@ Ext.define('OgamDesktop.overrides.picker.Date', {
                 }
             };
 
-
         if (isHide) {
             picker.el.slideOut('t', options);
         } else {
@@ -26,11 +24,9 @@ Ext.define('OgamDesktop.overrides.picker.Date', {
         }
     },
 
-
     hideMonthPicker: function(animate) {
         var me = this,
             picker = me.monthPicker;
-
 
         if (picker && picker.isVisible()) {
             if (me.shouldAnimate(animate)) {
@@ -44,12 +40,10 @@ Ext.define('OgamDesktop.overrides.picker.Date', {
         return me;
     },
 
-
     showMonthPicker: function(animate) {
         var me = this,
             el = me.el,
             picker;
-
 
         if (me.rendered && !me.disabled) {
             picker = me.createMonthPicker();

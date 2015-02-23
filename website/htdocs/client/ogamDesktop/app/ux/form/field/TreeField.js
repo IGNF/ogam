@@ -13,8 +13,8 @@
 /**
  * Provides a tree field
  * 
- * @class Genapp.form.TreeField
- * @extends Ext.form.TriggerField
+ * @class OgamDesktop.ux.form.field.TreeField
+ * @extends Ext.form.field.ComboBox
  * @constructor Create a new TreeField
  * @param {Object}
  *            config
@@ -33,38 +33,12 @@ Ext.define('OgamDesktop.ux.form.field.TreeField', {
 	 */
 	hideValidationButton : false,
 
-	/**
-	 * The datastore
-	 */
-	store : {
-		xtype : 'jsonstore',
-		autoDestroy : true,
-//		remoteSort : true,
-
-
-		fields : [ {
-			name : 'code', // Must be equal to this.valueField
-			mapping : 'code'
-		}, {
-			name : 'label', // Must be equal to this.displayField
-			mapping : 'label'
-		} ],
-		proxy:{
-			type:'ajax',
-			url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettreecodes',
-			reader:{
-				idProperty : 'code',
-				totalProperty : 'results',
-				rootProperty : 'rows'
-			}
+	triggers:{
+		'tree':{
+			handler:'onTreeTriggerClick',
+			scope:'this'
 		}
 	},
-triggers:{
-	'tree':{
-		handler:'onTreeTriggerClick',
-		scope:'this'
-	}
-},
 	/**
 	 * Value field in the store
 	 */
@@ -85,7 +59,18 @@ triggers:{
 	 * Manage multiple values,
 	 */
 	multiple : false,
-
+	
+	/**
+	 * @cfg {Ext.grid.column.Column[]/Object} treePickerColumns 
+	 * array of column definition objects which define all columns that appear in this
+     * tree
+	 * @see Ext.tree.Panel.columns
+	 */
+	/**
+	 * @cfg {Ext.data.store/Object} treePickerStore
+	 * the store the tree should useas it data source 
+	 */
+	
 	/**
 	 * The field tree (displayed on a trigger click).
 	 * 
@@ -97,13 +82,6 @@ triggers:{
 	triggerAction:'query',
 	queryMode:'remote',
 	pageSize: 25,
-
-	/**
-	 * @cfg {String} baseNodeUrl The URL from which to request a Json string which
-	 *      specifies an array of node definition objects representing the child
-	 *      nodes to be loaded. 
-	 */
-	baseNodeUrl : Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgettreenodes/',
 
 	/**
 	 * @cfg {bool} hidePickerTrigger Hide the picker trigger on the first render
@@ -122,14 +100,6 @@ triggers:{
 		this.callParent();
 		this.getTrigger('picker').setHidden(this.hidePickerTrigger);
 		
-		// TODO change depth depending on level
-		this.nodeUrl = this.baseNodeUrl;
-		if (!Ext.isEmpty(this.unit)) {
-			this.nodeUrl += 'unit/' + this.unit + '/';
-		}
-		this.nodeUrl += 'depth/1';
-
-		this.store.getProxy().setExtraParam('unit', this.unit);
 	},
 
 	/**
@@ -173,11 +143,10 @@ triggers:{
 	},
 
 	createTreePicker:function(){
-		var storepiker = Ext.create('OgamDesktop.store.TreeUnit');
-		storepiker.proxy.setExtraParam('unit',this.unit);
-		storepiker.proxy.setUrl(this.nodeUrl);
+		var storepiker = this.treePickerStore;
 		
 		this.tree = new OgamDesktop.ux.picker.TreePicker({
+			columns:this.treePickerColumns,
 			hideOnClick : false,
 			hideValidationButton : this.hideValidationButton,
 			store:storepiker,
@@ -214,5 +183,4 @@ triggers:{
 		this.callParent();
 	}
 	
-
 });

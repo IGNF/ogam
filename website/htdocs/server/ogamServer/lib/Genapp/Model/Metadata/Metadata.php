@@ -423,7 +423,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 				// Check if a parent can be found in the structure
 				$parentNode = $resultTree->getNode($parentCode);
-				if ($parentNode == null) {
+				if ($parentNode === null) {
 					// Add the new node to the result root
 					$resultTree->addChild($tree);
 

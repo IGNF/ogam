@@ -57,12 +57,13 @@ class Genapp_Object_Metadata_TreeNode {
 	 */
 	public function getNode($aCode) {
 
-		if ($this->code == $aCode) {
+		if ($this->code === $aCode) {
 			return $this;
 		} else {
 			foreach ($this->children as $child) {
-				if ($child->getNode($aCode)) {
-					return $child;
+				$theChild = $child->getNode($aCode);
+				if (null !== $theChild) {
+					return $theChild;
 				}
 			}
 		}
