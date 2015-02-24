@@ -11,7 +11,7 @@
 
 -- Création d'un schéma pour les référentiels
 SET client_encoding TO 'UTF8';
-set search_path = referentiels, metadata;
+set search_path = referentiels;
 
 -- Création d'une table pour le référentiel taxonomique
 -- drop table taxref;

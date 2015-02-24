@@ -1,6 +1,6 @@
 SET client_encoding TO 'UTF8';
 CREATE SCHEMA metadata;
-SET SEARCH_PATH = metadata, raw_data, public;
+SET SEARCH_PATH = metadata, public;
 
 /**
  * This function is used to do accent-insensitive search.
@@ -120,12 +120,12 @@ COMMENT ON COLUMN MODE_TREE.IS_LEAF IS 'Indicate if the node is a leaf (1 for tr
 
 
 CREATE INDEX mode_tree_parent_code_idx
-  ON metadata.mode_tree
+  ON MODE_TREE
   USING btree
   (parent_code);
   
 CREATE INDEX mode_tree_parent_label_idx
-  ON metadata.mode_tree USING btree (unaccent_string(label));
+  ON MODE_TREE USING btree (unaccent_string(label));
   
 /*==============================================================*/
 /* Table : MODE_TAXREF                                          */
@@ -154,16 +154,16 @@ COMMENT ON COLUMN MODE_TAXREF.IS_REFERENCE IS 'Indicate if the taxon is a refere
 
 
 CREATE INDEX mode_taxref_parent_code_idx
-  ON metadata.mode_taxref USING btree (parent_code);
+  ON MODE_TAXREF USING btree (parent_code);
   
 CREATE INDEX mode_taxref_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent_string(NAME));
+  ON MODE_TAXREF USING btree (unaccent_string(NAME));
   
 CREATE INDEX mode_taxref_COMPLETE_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent_string(COMPLETE_NAME));
+  ON MODE_TAXREF USING btree (unaccent_string(COMPLETE_NAME));
   
 CREATE INDEX mode_taxref_VERNACULAR_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent_string(VERNACULAR_NAME));
+  ON MODE_TAXREF USING btree (unaccent_string(VERNACULAR_NAME));
 
 
 /*==============================================================*/
@@ -549,7 +549,7 @@ COMMENT ON COLUMN TRANSLATION.DEFINITION IS 'The translated definition';
 
 ALTER TABLE metadata.translation 
    ADD CONSTRAINT "FK_TABLE_FORMAT_TRANSLATION" FOREIGN KEY (table_format) 
-       REFERENCES metadata.table_format (format)
+       REFERENCES TABLE_FORMAT (format)
        ON UPDATE RESTRICT ON DELETE RESTRICT;
 
 

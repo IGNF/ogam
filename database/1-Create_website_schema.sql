@@ -122,7 +122,7 @@ COMMENT ON COLUMN DATASET_ROLE_RESTRICTION.ROLE_CODE IS 'Code of the role';
 
 ALTER TABLE dataset_role_restriction 
 ADD CONSTRAINT fk_dataset_role_restriction_dataset_id 
-FOREIGN KEY (dataset_id) REFERENCES metadata.dataset (dataset_id)
+FOREIGN KEY (dataset_id) REFERENCES metadata.DATASET (dataset_id)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE dataset_role_restriction 
@@ -197,7 +197,7 @@ constraint PK_PREDEFINED_REQUEST primary key (REQUEST_NAME)
 
 alter table PREDEFINED_REQUEST
 add constraint FK_PREDEFINED_REQUEST_DATASET foreign key (DATASET_ID)
-      references METADATA.DATASET (DATASET_ID)
+      references metadata.DATASET (DATASET_ID)
       on delete restrict on update restrict;
       
 COMMENT ON COLUMN PREDEFINED_REQUEST.REQUEST_NAME IS 'The request name';
