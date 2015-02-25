@@ -225,9 +225,6 @@ class MapController extends AbstractOGAMController {
 
 			// Logical layer name
 			$out .= ', "name":"'.$layer->layerName.'"';
-
-			// Service name
-			$out .= ', "serviceName":"'.$layer->serviceName.'"';
 			
 			// View Service name
 			$out .= ', "viewServiceName":"'.$layer->viewServiceName.'"';
@@ -237,9 +234,6 @@ class MapController extends AbstractOGAMController {
 			
 			// Legend Service Name
 			$out .= ', "legendServiceName":"'.$layer->legendServiceName.'"';
-			
-			// Feature Info Service Name
-			$out .= ', "featureInfoServiceName":"'.$layer->featureInfoServiceName.'"';
 			
 			$out .= ', "params":{';
 				
