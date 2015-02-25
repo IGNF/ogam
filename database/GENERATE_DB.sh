@@ -64,6 +64,8 @@ createdb -h $server -U $username -p $port -O $username -E UTF8 $database
 
 echo "****** Addition of postgis ******"
 psql -c "CREATE EXTENSION postgis" -h $server -U $username -d $database -p $port >> GENERATE_DB.log
+psql -f Legacy/legacy_gist_v2.1.sql -h $server -U $username -d $database -p $port >> GENERATE_DB.log
+psql -f Legacy/legacy_minimal_v2.1.sql -h $server -U $username -d $database -p $port >> GENERATE_DB.log
 echo "Appuyer la touche <Entrée> pour continuer..."
 read touche
 
@@ -113,7 +115,6 @@ echo "Appuyer la touche <Entrée> pour continuer..."
 read touche
 
 echo "****** Populate mapping schema (departements) ******"
-psql -f Referentiels/legacy_gist.sql -h $server -U $username -d $database -p $port >> GENERATE_DB.log
 psql -f Referentiels/departements.sql -h $server -U $username -d $database -p $port >> GENERATE_DB.log
 echo "Appuyer la touche <Entrée> pour continuer..."
 read touche

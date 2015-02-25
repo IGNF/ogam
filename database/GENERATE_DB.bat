@@ -36,6 +36,8 @@ createdb -h %server% -U %username% -p %port% -O %username% -E UTF8 %database%
 
 @echo ****** Addition of postgis ******
 psql -c "CREATE EXTENSION postgis" -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
+psql -f Legacy\legacy_gist_v2.1.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
+psql -f Legacy\legacy_minimal_v2.1.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
 pause
 @echo ****** Create harmonized data schema ******
 psql -f 1-Create_harmonized_data_schema.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
@@ -65,7 +67,6 @@ pause
 psql -f Referentiels\communes.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
 pause
 @echo ****** Populate mapping schema (departements) ******
-psql -f Referentiels\legacy_gist.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
 psql -f Referentiels\departements.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
 pause
 @echo ****** Populate mapping schema (pays) ******

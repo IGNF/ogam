@@ -1,5 +1,0 @@
-CREATE DATABASE "OGAM"
-  WITH ENCODING='UTF8'
-       OWNER=postgres
-       TEMPLATE=postgis_21_sample
-       CONNECTION LIMIT=-1;
