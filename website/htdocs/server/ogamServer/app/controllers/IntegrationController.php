@@ -97,6 +97,7 @@ class IntegrationController extends AbstractOGAMController {
 				$requestElement->setValue($dataset->id);
 			}
 		}
+		$requestElement->setDisableTranslator(true);
 		$requestElement->addMultiOptions($datasetIds);
 		
 		
@@ -144,7 +145,7 @@ class IntegrationController extends AbstractOGAMController {
 
 			$fileelement = $form->createElement('file', $requestedFile->format);
 
-			$fileelement->setLabel($this->translator->translate($requestedFile->label.': '));
+			$fileelement->setLabel($requestedFile->label.': ');
 			$fieldsDesc = '<span class="hint-title">';
 			if ($showDetail) {
 				// Get some more informations in the metadata base
@@ -170,7 +171,7 @@ class IntegrationController extends AbstractOGAMController {
 
 			$fileelement->setDescription($fieldsDesc);
 			$fileelement->setValue('toto'); //FIXME
-			//$fileelement->setDisableTranslator(true); // disable translation to avoid the file name translation
+			$fileelement->setDisableTranslator(true); // disable translation to avoid the file name translation
 			$fileelement->addDecorator('Description', array('escape' => false));
 			$fileelement->addValidator('Count', false, 1); // ensure only 1 file
 			$fileelement->addValidator('Size', false, $this->fileMaxSize * 1024 * 1000); // limit to 40 Mo

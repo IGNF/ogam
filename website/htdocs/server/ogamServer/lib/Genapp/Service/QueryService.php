@@ -962,12 +962,13 @@ class Genapp_Service_QueryService {
 
 	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
 	    $configuration = Zend_Registry::get('configuration');
-	    $this->logger->debug('details layers : '.$detailsLayers);
-	    $this->logger->debug('details bb : '.$bb);
-	    $this->logger->debug('details ms : '.$mapservParams);
+	    $this->logger->debug('details layers : ',$detailsLayers);
+	    $this->logger->debug('details bb : ',$bb);
+	    $this->logger->debug('details ms : ',$mapservParams);
 
 	    // Configure the projection systems
 	    $visualisationSRS = $configuration->srs_visualisation;
+	    $baseUrls = '';
 	    
 	    //Get the base urls for the services
 	    if (!$proxy) {
@@ -976,7 +977,7 @@ class Genapp_Service_QueryService {
 	        $detailServices = $this->servicesModel->getDetailServices();
 	    }
 
-	    $this->logger->debug('details services : '.$detailServices);
+	    $this->logger->debug('details services : ',$detailServices);
 		// Get the server name for the layers
 		$layerNames = explode(",", $detailsLayers);
 		//$serviceLayerNames = "";
