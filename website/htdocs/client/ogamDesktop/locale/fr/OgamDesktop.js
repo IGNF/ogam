@@ -1,10 +1,10 @@
 Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",
-	criteriaPanelTbarLabel : "Critères",
-	criteriaPanelTbarComboEmptyText : "Sélectionner...",
+	criteriaPanelTbarLabel : "CritÃ¨res",
+	criteriaPanelTbarComboEmptyText : "SÃ©lectionner...",
 	criteriaPanelTbarComboLoadingText : "Recherche en cours...",
 	columnsPanelTbarLabel : "Colonnes",
-	columnsPanelTbarComboEmptyText : "Sélectionner...",
+	columnsPanelTbarComboEmptyText : "SÃ©lectionner...",
 	columnsPanelTbarComboLoadingText : "Recherche en cours...",
 	columnsPanelTbarAddAllButtonTooltip : "Ajouter toutes les colonnes",
 	columnsPanelTbarRemoveAllButtonTooltip : "Supprimer toutes les colonnes"
@@ -24,7 +24,7 @@ Ext.define("OgamDesktop.locale.fr.ux.picker.NumberRange", {
 
 Ext.define("OgamDesktop.locale.fr.ux.picker.DateRange", {
 	override: "OgamDesktop.ux.picker.DateRange",
-	tbarStartDateButtonText : "Date de début ...",
+	tbarStartDateButtonText : "Date de dÃ©but ...",
 	tbarRangeDateButtonText : "Intervalle",
 	tbarEndDateButtonText : "... Date de fin",
 	fbarOkButtonText : "ok"
@@ -32,10 +32,10 @@ Ext.define("OgamDesktop.locale.fr.ux.picker.DateRange", {
 
 Ext.define("OgamDesktop.locale.fr.ux.form.field.DateRangeField", {
 	override: "OgamDesktop.ux.form.field.DateRangeField",
-	minText : "Les dates contenues dans ce champ doivent être égales ou postérieures au {0}",
-	maxText : "Les dates contenues dans ce champ doivent être égales ou antérieures au {0}",
-	reverseText : "La date de fin doit être postérieure à la date de début",
-	notEqualText : "Les dates de début et de fin ne peuvent être égales",
+	minText : "Les dates contenues dans ce champ doivent Ãªtre Ã©gales ou postÃ©rieures au {0}",
+	maxText : "Les dates contenues dans ce champ doivent Ãªtre Ã©gales ou antÃ©rieures au {0}",
+	reverseText : "La date de fin doit Ãªtre postÃ©rieure Ã  la date de dÃ©but",
+	notEqualText : "Les dates de dÃ©but et de fin ne peuvent Ãªtre Ã©gales",
     dateSeparator: ' - ',
     endDatePrefix: '<= ',
     startDatePrefix: '>= '
@@ -51,7 +51,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.TwinNumberField", {
 
 Ext.define("OgamDesktop.locale.fr.ux.form.field.Tree", {
 	override: "OgamDesktop.ux.form.field.Tree",
-	emptyText : "Sélectionner..."
+	emptyText : "SÃ©lectionner..."
 });
 
 Ext.define("OgamDesktop.locale.fr.ux.form.field.NumberRangeField", {
@@ -62,7 +62,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.NumberRangeField", {
 	minNumberPrefix: '>= ',
 	minText : "La valeur minimum pour ce champ est {0}",
 	maxText : "La valeur maximum pour ce champ est {0}",
-	reverseText : "Le maximum doit être supérieur au minimum",
+	reverseText : "Le maximum doit Ãªtre supÃ©rieur au minimum",
 	formatText : "Les formats corrects sont",
 	nanText : "'{0}' n'est pas un nombre valide"
 });
@@ -70,7 +70,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.NumberRangeField", {
 Ext.define("OgamDesktop.locale.fr.ux.form.field.GeometryField", {
 	override: "OgamDesktop.ux.form.field.GeometryField",
 	fieldLabel : "Localisation",
-	mapWindowTitle : "Dessinez la zone recherchée sur la carte :",
+	mapWindowTitle : "Dessinez la zone recherchÃ©e sur la carte :",
 	mapWindowValidateButtonText : "Valider",
 	mapWindowValidateAndSearchButtonText : "Valider et rechercher",
 	mapWindowCancelButtonText : "Annuler"
@@ -86,7 +86,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.GeometryField", {
 Ext.define("OgamDesktop.locale.fr.view.result.MainWin", {
 	override: 'OgamDesktop.view.result.MainWin',
     config: {
-    	title : 'Résultats'
+    	title : 'RÃ©sultats'
     },
 	exportButtonText : "Export",
 	csvExportMenuItemText: 'Export CSV',
@@ -94,38 +94,38 @@ Ext.define("OgamDesktop.locale.fr.view.result.MainWin", {
 	geojsonExportMenuItemText: 'Export GeoJSON',
 	csvExportAlertTitle : "Exportation d'un fichier CSV avec Internet Explorer",
 	csvExportAlertMsg : "<div><H2>Pour votre confort sur Internet Explorer vous pouvez: </H2> \
-    <H3>Désactiver la confirmation pour les téléchargements de fichiers.</H3> \
+    <H3>DÃ©sactiver la confirmation pour les tÃ©lÃ©chargements de fichiers.</H3> \
     <ul> \
-    <li>Dans IE, dérouler le menu 'Outils'</li> \
+    <li>Dans IE, dÃ©rouler le menu 'Outils'</li> \
     <li>Cliquer sur 'Options Internet'</li> \
-    <li>Cliquer sur l'onglet 'Sécurité'</li> \
+    <li>Cliquer sur l'onglet 'SÃ©curitÃ©'</li> \
     <li>Cliquer sur le bouton 'Personnaliser le niveau'</li> \
-    <li>Descendre jusqu'à la partie 'Téléchargements'</li> \
-    <li>Activé la demande de confirmation pour les téléchargements de fichiers</li> \
+    <li>Descendre jusqu'Ã  la partie 'TÃ©lÃ©chargements'</li> \
+    <li>ActivÃ© la demande de confirmation pour les tÃ©lÃ©chargements de fichiers</li> \
     </ul> \
-    <H3>Désactiver l'ouverture du fichier dans la fenêtre courante.</H3> \
+    <H3>DÃ©sactiver l'ouverture du fichier dans la fenÃªtre courante.</H3> \
     <ul> \
     <li>Ouvrir le poste de travail</li> \
-    <li>Dérouler le menu 'Outils'</li> \
+    <li>DÃ©rouler le menu 'Outils'</li> \
     <li>Cliquer sur 'Options des dossiers...'</li> \
     <li>Cliquer sur l'onglet 'Types de fichiers'</li> \
-    <li>Sélectionner l'extension XLS</li> \
-    <li>Cliquer sur le bouton 'Avancé'</li> \
-    <li>Décocher 'Parcourir dans une même fenêtre'</li> \
+    <li>SÃ©lectionner l'extension XLS</li> \
+    <li>Cliquer sur le bouton 'AvancÃ©'</li> \
+    <li>DÃ©cocher 'Parcourir dans une mÃªme fenÃªtre'</li> \
     </ul></div>",
 	maskMsg : "Chargement..."
 });
 
 Ext.define("OgamDesktop.locale.fr.view.result.GridTab", {
 	override: 'OgamDesktop.view.result.GridTab',
-	emptyText : "Pas de résultat...",
-	openNavigationButtonTitle : "Voir les détails",
-	openNavigationButtonTip : "Affiche les informations détaillées dans l'onglet des détails.",
+	emptyText : "Pas de rÃ©sultat...",
+	openNavigationButtonTitle : "Voir les dÃ©tails",
+	openNavigationButtonTip : "Affiche les informations dÃ©taillÃ©es dans l'onglet des dÃ©tails.",
 	seeOnMapButtonTitle : "Voir sur la carte",
 	seeOnMapButtonTip :  "Affiche la carte, puis zoom et centre sur la localisation.",
-	editDataButtonTitle : "Editer les données",
+	editDataButtonTitle : "Editer les donnÃ©es",
 	//	dateFormat : 'Y/m/d',
-	editDataButtonTip : "Ouvre la page d'édition pour éditer les données."
+	editDataButtonTip : "Ouvre la page d'Ã©dition pour Ã©diter les donnÃ©es."
 });
 
 /*
@@ -134,19 +134,19 @@ Ext.define("OgamDesktop.locale.fr.view.result.GridTab", {
 Ext.define("OgamDesktop.locale.fr.view.request.MainWin", {
 	override: 'OgamDesktop.view.request.MainWin',
 	config: {
-		title : 'Requêteur'
+		title : 'RequÃªteur'
 	}
 });
 
 Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 	override:'OgamDesktop.view.request.AdvancedRequest',
 	requestSelectTitle:'<b>Formulaires</b>',
-	processPanelTitle:'Type de données',
-	processCBEmptyText:'Selectionner un type de données...',
+	processPanelTitle:'Type de donnÃ©es',
+	processCBEmptyText:'Selectionner un type de donnÃ©es...',
 	buttonsText:{
 		submit:'Rechercher',
 		cancel:'Annuler',
-		reset :'Réinitialiser'
+		reset :'RÃ©initialiser'
 	}
 });
 
@@ -162,34 +162,34 @@ Ext.define('OgamDesktop.locale.fr.view.map.MainWin', {//TODO fix override warnin
 
 Ext.define('OgamDesktop.locale.fr.view.map.MapPanel', {
 	override: 'OgamDesktop.view.map.MapPanel',
-	popupTitle : 'Information(s) sur la géométrie',
-	tabTip : "La carte avec les localisations des résultats de la requête",
+	popupTitle : 'Information(s) sur la gÃ©omÃ©trie',
+	tabTip : "La carte avec les localisations des rÃ©sultats de la requÃªte",
 //	layerPanelTitle : "Couches",
-//	layerPanelTabTip : "L'arbre de sélection des couches",
-//	legendPanelTitle : "Légendes",
+//	layerPanelTabTip : "L'arbre de sÃ©lection des couches",
+//	legendPanelTitle : "LÃ©gendes",
 //	legendPanelTabTip : "Les legendes des couches",
 	panZoomBarControlTitle : "Zoom",
-	navigationControlTitle : "Déplacer la carte",
-	invalidWKTMsg : "La géométrie ne peut être affichée",
-	zoomToFeaturesControlTitle : "Zoomer sur la sélection",
-	zoomToResultControlTitle : "Zoomer sur le résultat",
+	navigationControlTitle : "DÃ©placer la carte",
+	invalidWKTMsg : "La gÃ©omÃ©trie ne peut Ãªtre affichÃ©e",
+	zoomToFeaturesControlTitle : "Zoomer sur la sÃ©lection",
+	zoomToResultControlTitle : "Zoomer sur le rÃ©sultat",
 	drawPointControlTitle : "Dessiner un point",
 	drawLineControlTitle : "Dessiner une ligne",
 	drawFeatureControlTitle : "Dessiner un polygone",
-	modifyFeatureControlTitle : "Modifier la géométrie",
-	tbarDeleteFeatureButtonTooltip : "Effacer la géométrie",
-	tbarPreviousButtonTooltip : "Position précédente",
+	modifyFeatureControlTitle : "Modifier la gÃ©omÃ©trie",
+	tbarDeleteFeatureButtonTooltip : "Effacer la gÃ©omÃ©trie",
+	tbarPreviousButtonTooltip : "Position prÃ©cÃ©dente",
 	tbarNextButtonTooltip : "Position suivante",
 	zoomBoxInControlTitle : "Zoom en avant",
-	zoomBoxOutControlTitle : "Zoom en arrière",
-	zoomToMaxExtentControlTitle : "Zoom arrière maximum",
+	zoomBoxOutControlTitle : "Zoom en arriÃ¨re",
+	zoomToMaxExtentControlTitle : "Zoom arriÃ¨re maximum",
 	snappingControlTitle:'Snapping',
 	locationInfoControlTitle : "Voir les informations sur le point",
 	LayerSelectorEmptyTextValue: "Selectionner une couche",
-	selectFeatureControlTitle : "Selectionner un contour de sur la couche sélectionnée",
-	featureInfoControlTitle : "Voir les informations sur la couche sélectionnée",
-	legalMentionsLinkText : "Mentions légales",
-	addGeomCriteriaButtonText : "Sélectionner une zone géographique",
+	selectFeatureControlTitle : "Selectionner un contour de sur la couche sÃ©lectionnÃ©e",
+	featureInfoControlTitle : "Voir les informations sur la couche sÃ©lectionnÃ©e",
+	legalMentionsLinkText : "Mentions lÃ©gales",
+	addGeomCriteriaButtonText : "SÃ©lectionner une zone gÃ©ographique",
 	printMapButtonText : 'Imprimer la carte'
 });
 
@@ -219,7 +219,7 @@ Ext.define('OgamDesktop.locale.fr.view.map.LayersPanel', {
 Ext.define('OgamDesktop.locale.fr.view.navigation.MainWin', {
 	override: 'OgamDesktop.view.navigation.MainWin',
 	config: {
-		title: 'Détails',
+		title: 'DÃ©tails',
 		exportAsPdfButtonText: "Exporter en pdf"
 	}
 });
@@ -227,13 +227,13 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.MainWin', {
 Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
 	override: 'OgamDesktop.view.navigation.Tab',
 	config: {
-		title: 'Détails'
+		title: 'DÃ©tails'
 	},
     seeChildrenButtonTitleSingular : 'Voir l\'unique enfant',
     seeChildrenButtonTitlePlural : 'Voir les enfants',
-	seeChildrenButtonTip : 'Afficher les enfants dans le tableau des détails.',
-    editLinkButtonTitle : 'Editer les données',
-    editLinkButtonTip : 'Ouvre la page d\'édition pour éditer les données.',
+	seeChildrenButtonTip : 'Afficher les enfants dans le tableau des dÃ©tails.',
+    editLinkButtonTitle : 'Editer les donnÃ©es',
+    editLinkButtonTip : 'Ouvre la page d\'Ã©dition pour Ã©diter les donnÃ©es.',
     //TODO  tpl
     loadingMsg : "Cgmt..."
 });
@@ -241,10 +241,10 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
 Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
 	override: 'OgamDesktop.view.navigation.GridDetailsPanel',
 	config:{
-		title: "Tableau(x) détaillé(s)"
+		title: "Tableau(x) dÃ©taillÃ©(s)"
 	},
     loadingMsg: "Cgmt...",
     //dateFormat : 'Y/m/d',
-    openNavigationButtonTitle : 'Afficher les détails',
-    openNavigationButtonTip : 'Affiche la fiche détaillée dans l\'onglet des fiches détaillées.'
+    openNavigationButtonTitle : 'Afficher les dÃ©tails',
+    openNavigationButtonTip : 'Affiche la fiche dÃ©taillÃ©e dans l\'onglet des fiches dÃ©taillÃ©es.'
 }); 
