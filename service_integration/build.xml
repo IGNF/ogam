@@ -105,9 +105,6 @@
 			</fileset>
 		</copy>
 
-		<!-- Copie des librairies communes à l'IFN -->
-		<copy file="${java.io.tmpdir}/dist/libs_java/fr.ifn.commons.jar" todir="${dist.dir}/WEB-INF/lib" />
-
 		<!-- Copie des librairies externes -->
 		<copy file="${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar" todir="${dist.dir}/WEB-INF/lib" />
 		<copy file="${lib.dir}/commons-fileupload-1.2.1.jar" todir="${dist.dir}/WEB-INF/lib" />
