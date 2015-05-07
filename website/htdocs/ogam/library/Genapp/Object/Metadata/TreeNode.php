@@ -61,8 +61,9 @@ class Genapp_Object_Metadata_TreeNode {
 			return $this;
 		} else {
 			foreach ($this->children as $child) {
-				if ($child->getNode($aCode)) {
-					return $child;
+				$node = $child->getNode($aCode);
+				if ($node !== null) {
+					return $node;
 				}
 			}
 		}
