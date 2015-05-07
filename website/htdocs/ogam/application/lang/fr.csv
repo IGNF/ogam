@@ -223,7 +223,7 @@ Unknow field type for the data '%s' of the table '%s' of the schema '%s'.;Le typ
 Checking foreign keys:;Vérification des clés étrangères :
 The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system.;La clé étrangère entre la table '%s' et la table '%s' décrit dans les métadonnées n'existe pas en base.
 The foreign key '%s' between the table '%s' and the table '%s' does not match the metadata definition: '%s'.;la clé étrangère '%s' entre la table '%s' et la table '%s' ne correspond pas à la définition des métadonnées : '%s'.
-Note: The database user must have administration rights to perform these tests.;Note: L'utilisateur utilisé pour ce connecter à la base doit être administreur pour pouvoir dérouler ces tests.
+Note: The database user must have administration rights to perform these tests.;Note: L'utilisateur utilisé pour se connecter à la base doit être administreur pour pouvoir dérouler ces tests.
 
 ##########################
 # Mapping                #

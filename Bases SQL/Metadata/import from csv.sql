@@ -258,8 +258,8 @@ UNION
 -- the subtype is not consistent with the type
 SELECT unit||'_'||type, 'The UNIT subtype is not consistent with the type'
 FROM unit 
-WHERE (type = 'CODE' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC'))
-OR    (type = 'ARRAY' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC'))
+WHERE (type = 'CODE' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC', 'TAXREF'))
+OR    (type = 'ARRAY' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC', 'TAXREF'))
 OR    (type = 'NUMERIC' AND subtype NOT IN ('RANGE', 'COORDINATE'))
 UNION
 -- the unit type is not consistent with the form field input type
@@ -275,6 +275,7 @@ OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')
 OR (input_type = 'GEOM' AND type <> 'GEOM')
 OR (input_type = 'IMAGE' AND type <> 'IMAGE')
 OR (input_type = 'TREE' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TREE'))
+OR (input_type = 'TAXREF' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TAXREF'))
 UNION
 -- TREE_MODEs should be defined
 SELECT unit, 'The unit should have at least one MODE_TREE defined'

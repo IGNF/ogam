@@ -38,7 +38,7 @@
 <h1>
     <?=$this->translate('Welcome');?>
 </h1>
-<?
+<?php
 
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
@@ -47,7 +47,7 @@ $role = $userSession->role;
 $user = $userSession->user;
 ?>
 <div class="left-column">
-<?
+<?php
 if (!empty($permissions)) {
 ?>
 <div class="moduletable_menu">
@@ -122,13 +122,13 @@ if($configuration->autoLogin == 1){
 ?>
 <div class="moduletable_menu">
 <ul id="appmenu2" class="menu">
-<?
+<?php
 if (empty($permissions)) {
 ?>
 <li>
 <a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Log in');?></a>
 </li>
-<?
+<?php
 } else {
 ?>
 <li>

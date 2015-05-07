@@ -78,7 +78,7 @@ public class MetadataServlet extends HttpServlet {
 
 		String action = null;
 
-		response.setContentType("text/xml");
+		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		ServletOutputStream out = response.getOutputStream();
 

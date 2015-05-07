@@ -33,17 +33,18 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 	}
 	
 	/**
-	 * Converts an array to an object
+	 * Converts an array to an object.
+	 * The configuration stored in session should be an object with attributes.
 	 * 
+	 * @param Array $array
 	 * @return object
 	 */
-	private function arrayToObject($array){
-	    if(is_array($array)){
+	private function _arrayToObject($array) {
+	    if (is_array($array)) {
 	        foreach($array as &$item){
-	            $item = $this->arrayToObject($item);
-	        }
-	         
-	        return (object)$array;
+	            $item = $this->_arrayToObject($item);
+	        }	         
+	        return (object) $array;
 	    }
 	     
 	    return $array;
@@ -61,6 +62,7 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 		$req .= " value, ";
 		$req .= " description";
 		$req .= " FROM website.application_parameters ";
+		
 		$this->logger->info('getAppParameters : '.$req);
 
 		$query = $db->prepare($req);
@@ -72,10 +74,13 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 		foreach ($results as $result) {
 			$parameters[$result['name']] = $result['value'];
 		}
-		$parameters = $this->arrayToObject($parameters);
+		
+		$parameters = $this->_arrayToObject($parameters);
+		
 		
 		return $parameters;
 	}
+	
     /**
      * Return the intern map service url
      * 

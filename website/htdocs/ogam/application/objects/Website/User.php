@@ -41,7 +41,8 @@ class Application_Object_Website_User {
 	var $providerId;
 
 	/**
-	 * Indicate if the user is active (1 for true, 0 for false)
+	 * Indicate if the user is active.
+	 * @var Boolean
 	 */
 	var $active;
 

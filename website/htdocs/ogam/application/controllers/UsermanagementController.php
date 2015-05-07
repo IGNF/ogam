@@ -434,6 +434,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$user->username = $userName;
 			$user->providerId = $providerId;
 			$user->email = $email;
+			$user->active = true;
 
 			if ($mode == 'edit') {
 				//

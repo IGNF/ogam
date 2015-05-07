@@ -14,7 +14,7 @@ require_once 'AbstractOGAMController.php';
 
 /**
  * QueryController is the controller that manages the query module.
- * 
+ *
  * @package controllers
  */
 class QueryController extends AbstractOGAMController {
@@ -78,17 +78,18 @@ class QueryController extends AbstractOGAMController {
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $this->_request->getParam("SCHEMA");
 		
+		// Si une valeur est demandée en URL on change le schéma
 		if ($schema !== null) {
 			$websiteSession->schema = $schema;
-		} else {
-			// Default value
+		} else if (empty($websiteSession->schema)) {
+			// Si on a un schéma en mémoire on le conserve
+			// Sinon on prend une valeur par défaut
 			$websiteSession->schema = 'RAW_DATA';
 		}
 		
 		$this->logger->debug('init schema : ' . $websiteSession->schema);
 		
 		// Set the current module name
-		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->module = "query";
 		$websiteSession->moduleLabel = "Query Data (" . $websiteSession->schema . ")";
 		$websiteSession->moduleURL = "query";
@@ -186,7 +187,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('ajaxsavepredefinedrequest');
 		
 		// Check the validity of the POST
-		if (! $this->getRequest()->isPost()) {
+		if (!$this->getRequest()->isPost()) {
 			$this->logger->debug('form is not a POST');
 			return $this->_forward('index');
 		}
@@ -355,7 +356,7 @@ class QueryController extends AbstractOGAMController {
 					$formQuery->addResult($split[0], $split[1]);
 				}
 			}
-
+			
 			// Store the request parameters in session
 			$websiteSession = new Zend_Session_Namespace('website');
 			$websiteSession->formQuery = $formQuery;
@@ -450,7 +451,7 @@ class QueryController extends AbstractOGAMController {
 		
 		$detailsLayers[] = $configuration->query_details_layers1;
 		$detailsLayers[] = $configuration->query_details_layers2;
-				
+		
 		// Get the current dataset to filter the results
 		$websiteSession = new Zend_Session_Namespace('website');
 		$datasetId = $websiteSession->datasetId;
@@ -480,10 +481,10 @@ class QueryController extends AbstractOGAMController {
 		
 		// Get the names of the layers to display in the details panel
 		$configuration = Zend_Registry::get('configuration');
-	    
-	    $detailsLayers[] = $configuration->query_details_layers1; 
-	    $detailsLayers[] = $configuration->query_details_layers2;
-				
+		
+		$detailsLayers[] = $configuration->query_details_layers1;
+		$detailsLayers[] = $configuration->query_details_layers2;
+		
 		// Get the current dataset to filter the results
 		$websiteSession = new Zend_Session_Namespace('website');
 		$datasetId = $websiteSession->datasetId;
@@ -548,7 +549,7 @@ class QueryController extends AbstractOGAMController {
 
 	/**
 	 * Remove the accents.
-	 * 
+	 *
 	 * @param String $str
 	 *        	The string
 	 * @param String $charset
@@ -580,31 +581,30 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
-	
+
 	/**
 	 * Export the request criterias in the CSV file.
 	 *
 	 * @return String the criterias
 	 */
 	private function _csvExportCriterias() {
-	
 		$criterias = "";
-	
-		$criterias .= '// '.$this->translator->translate('Request Criterias')."\n";
+		
+		$criterias .= '// ' . $this->translator->translate('Request Criterias') . "\n";
 		$websiteSession = new Zend_Session_Namespace('website');
 		$formQuery = $websiteSession->formQuery;
-	
+		
 		// List all the criterias
 		foreach ($formQuery->getCriterias() as $criteria) {
-				
+			
 			// Get the description (to get the labels)
 			$formField = $this->metadataModel->getFormField($criteria->format, $criteria->data);
-			$criterias .= '// '.$formField->label.';';
-				
+			$criterias .= '// ' . $formField->label . ';';
+			
 			// Get the labels corresponding to the values
 			$traductions = array();
 			$tableField = $this->metadataModel->getFormToTableMapping($websiteSession->schema, $formField);
-				
+			
 			if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 				if ($tableField->subtype == "DYNAMIC") {
 					$traductions = $this->metadataModel->getDynamodeLabels($tableField->unit);
@@ -616,12 +616,12 @@ class QueryController extends AbstractOGAMController {
 					$traductions = $this->metadataModel->getModeLabels($tableField->unit);
 				}
 			}
-				
+			
 			// The value
 			if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 				if (is_array($criteria->value)) {
 					foreach ($criteria->value as $item) {
-						$criterias .= $traductions[$item].", ";
+						$criterias .= $traductions[$item] . ", ";
 					}
 					$criterias = substr($criterias, 0, -2);
 				} else {
@@ -630,7 +630,7 @@ class QueryController extends AbstractOGAMController {
 			} else {
 				if (is_array($criteria->value)) {
 					foreach ($criteria->value as $item) {
-						$criterias .= $item.", ";
+						$criterias .= $item . ", ";
 					}
 					$criterias = substr($criterias, 0, -2);
 				} else {
@@ -639,7 +639,7 @@ class QueryController extends AbstractOGAMController {
 			}
 			$criterias .= "\n";
 		}
-	
+		
 		return $criterias;
 	}
 
@@ -663,7 +663,7 @@ class QueryController extends AbstractOGAMController {
 		
 		// Define the header of the response
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
-		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_'.date('dmy_Hi').'.csv', true);
+		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.csv', true);
 		
 		if (array_key_exists('EXPORT_RAW_DATA', $permissions)) {
 			
@@ -716,7 +716,7 @@ class QueryController extends AbstractOGAMController {
 				
 				// Display the default message
 				$this->_print('// *************************************************' . "\n");
-				$this->_print('// '.$this->translator->translate('Data Export')."\n");				
+				$this->_print('// ' . $this->translator->translate('Data Export') . "\n");
 				$this->_print('// *************************************************' . "\n\n");
 				
 				// Request criterias
@@ -755,7 +755,7 @@ class QueryController extends AbstractOGAMController {
 				$count = 0;
 				$page = 0;
 				$finished = false;
-				while (! $finished) {
+				while (!$finished) {
 					
 					// Define the position of the cursor in the dataset
 					$offset = " OFFSET " . ($page * $maxLines) . " ";
@@ -789,14 +789,14 @@ class QueryController extends AbstractOGAMController {
 										$label .= ',';
 									}
 									if ($label != '') {
-										$label = substr($label, 0, - 1);
+										$label = substr($label, 0, -1);
 									}
 									$label = '[' . $label . ']';
 									$this->_print('"' . $label . '";');
 								} else if ($formField->inputType == "NUMERIC") {
 									// Numeric value
 									if ($formField->decimals != null && $formField->decimals != "") {
-										$value = number_format($value, $formField->decimals);
+										$value = number_format($value, $formField->decimals, ',', '');
 									}
 									$this->_print($value . ';');
 								} else {
@@ -829,51 +829,50 @@ class QueryController extends AbstractOGAMController {
 	 * Returns a kml file corresponding to the requested data.
 	 */
 	public function kmlExportAction() {
-
 		$this->logger->debug('gridCsvExportAction');
-
+		
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-
+		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
-
+		
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
 		ini_set("memory_limit", $configuration->memory_limit);
 		ini_set("max_execution_time", $configuration->max_execution_time);
 		$maxLines = 5000;
-
+		
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset='.$configuration->csvExportCharset.';application/force-download;', true);
-		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_'.date('dmy_Hi').'.kml', true);
-
+		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.kml', true);
+		
 		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
-
+			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
 			$fromwhere = $websiteSession->SQLFromWhere;
-			$sql = $select.', ST_AsKML(the_geom) AS KML '.$fromwhere;
-
+			$sql = $select . ', ST_AsKML(the_geom) AS KML ' . $fromwhere;
+			
 			// Count the number of lines
 			$total = $websiteSession->count;
-			$this->logger->debug('Expected lines : '.$total);
-
+			$this->logger->debug('Expected lines : ' . $total);
+			
 			if ($sql == null) {
 				$this->_print('// No Data');
 			} else if ($total > 65535) {
 				$this->_print('// Too many result lines');
 			} else {
-
+				
 				// Retrive the session-stored info
 				$resultColumns = $websiteSession->resultColumns; // array of TableField
-
+				                                                 
 				// Prepare the needed traductions and the form info
 				$traductions = array();
 				foreach ($resultColumns as $tableField) {
-
+					
 					$key = strtolower($tableField->getName());
-
+					
 					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 						if ($tableField->subtype == "DYNAMIC") {
 							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
@@ -885,22 +884,22 @@ class QueryController extends AbstractOGAMController {
 							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 						}
 					}
-
+					
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
 				}
-
+				
 				// Display the default message
-				$this->_print('<?xml version="1.0" encoding="UTF-8"?>'."\n");
-				$this->_print('<kml xmlns="http://www.opengis.net/kml/2.2">'."\n");
-				$this->_print('<Document>'."\n");
-
+				$this->_print('<?xml version="1.0" encoding="UTF-8"?>' . "\n");
+				$this->_print('<kml xmlns="http://www.opengis.net/kml/2.2">' . "\n");
+				$this->_print('<Document>' . "\n");
+				
 				// Get the order parameters
 				$sort = $this->getRequest()->getPost('sort');
 				$sortDir = $this->getRequest()->getPost('dir');
-
+				
 				$filter = "";
-
+				
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
@@ -909,43 +908,42 @@ class QueryController extends AbstractOGAMController {
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
 					$key = $tableField->getName();
-					$filter .= " ORDER BY ".$key." ".$sortDir.", id";
+					$filter .= " ORDER BY " . $key . " " . $sortDir . ", id";
 				} else {
 					$filter .= " ORDER BY id";
 				}
-
+				
 				// Define the max number of lines returned
-				$limit = " LIMIT ".$maxLines." ";
-
+				$limit = " LIMIT " . $maxLines . " ";
+				
 				$count = 0;
 				$page = 0;
 				$finished = false;
 				while (!$finished) {
-
+					
 					// Define the position of the cursor in the dataset
-					$offset = " OFFSET ".($page * $maxLines)." ";
-
+					$offset = " OFFSET " . ($page * $maxLines) . " ";
+					
 					// Execute the request
-					$this->logger->debug('reading data ... page '.$page);
-					$result = $this->genericModel->executeRequest($sql.$filter.$limit.$offset);
-
+					$this->logger->debug('reading data ... page ' . $page);
+					$result = $this->genericModel->executeRequest($sql . $filter . $limit . $offset);
+					
 					// Export the lines of data
 					foreach ($result as $line) {
 						
 						$this->_print("<Placemark>");
 						
 						$this->_print($line['kml']);
-
+						
 						$this->_print("<ExtendedData>");
 						foreach ($resultColumns as $tableField) {
-
-
+							
 							$key = strtolower($tableField->getName());
 							$value = $line[$key];
 							$formField = $formFields[$key];
-
+							
 							$label = $formField->label;
-
+							
 							if ($value == null) {
 								$value = "";
 							} else {
@@ -963,8 +961,7 @@ class QueryController extends AbstractOGAMController {
 									if ($label != '') {
 										$value = substr($value, 0, -1);
 									}
-									$value = '['.$value.']';
-
+									$value = '[' . $value . ']';
 								} else if ($formField->inputType == "NUMERIC") {
 									// Numeric value
 									if ($formField->decimals != null && $formField->decimals != "") {
@@ -972,90 +969,86 @@ class QueryController extends AbstractOGAMController {
 									}
 								}
 							}
-
-
-							$this->_print('<Data name="'.$label.'">');
-							$this->_print('<value>'.$value.'</value>');
+							
+							$this->_print('<Data name="' . $label . '">');
+							$this->_print('<value>' . $value . '</value>');
 							$this->_print('</Data>');
-
 						}
 						$this->_print("</ExtendedData>");
-
+						
 						$this->_print("</Placemark>");
-
+						
 						$this->_print("\n");
-						$count++;
+						$count ++;
 					}
-
+					
 					// Check we have read everything
 					if ($count == $total) {
 						$finished = true;
 					}
-
-					$page++;
-
+					
+					$page ++;
 				}
-
-				$this->_print('</Document>'."\n");
-				$this->_print('</kml>'."\n");
+				
+				$this->_print('</Document>' . "\n");
+				$this->_print('</kml>' . "\n");
 			}
 		} else {
 			$this->_print('// No Permissions');
 		}
-
+		
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
-	
+
 	/**
 	 * Returns a geoJSON file corresponding to the requested data.
 	 */
 	public function geojsonExportAction() {
-	
 		$this->logger->debug('geojsonExportAction');
-	
+		
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-	
+		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
-	
+		
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
 		ini_set("memory_limit", $configuration->memory_limit);
 		ini_set("max_execution_time", $configuration->max_execution_time);
 		$maxLines = 5000;
-	
+		
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'pplication/json;charset='.$configuration->csvExportCharset.';application/force-download;', true);
-		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_'.date('dmy_Hi').'.geojson', true);
-	
+		$this->getResponse()->setHeader('Content-Type', 'pplication/json;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.geojson', true);
+		
 		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
-	
+			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
 			$fromwhere = $websiteSession->SQLFromWhere;
-			$sql = $select.', ST_AsGeoJSON(the_geom) AS geojson '.$fromwhere;
-	
+			$sql = $select . ', ST_AsGeoJSON(the_geom) AS geojson ' . $fromwhere;
+			
 			// Count the number of lines
 			$total = $websiteSession->count;
-			$this->logger->debug('Expected lines : '.$total);
-	
+			$this->logger->debug('Expected lines : ' . $total);
+			
 			if ($sql == null) {
 				$this->_print('// No Data');
 			} else if ($total > 65535) {
 				$this->_print('// Too many result lines');
 			} else {
-	
+				
 				// Retrive the session-stored info
 				$resultColumns = $websiteSession->resultColumns; // array of TableField
-	
+				                                                 
 				// Prepare the needed traductions and the form info
 				$traductions = array();
 				foreach ($resultColumns as $tableField) {
-	
+					
 					$key = strtolower($tableField->getName());
-	
+					
 					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
 						if ($tableField->subtype == "DYNAMIC") {
 							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
@@ -1067,21 +1060,21 @@ class QueryController extends AbstractOGAMController {
 							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
 						}
 					}
-	
+					
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
 				}
-	
+				
 				// Display the default message
-				$this->_print('{ "type": "FeatureCollection",'."\n");
-				$this->_print(' "features": ['."\n");
-	
+				$this->_print('{ "type": "FeatureCollection",' . "\n");
+				$this->_print(' "features": [' . "\n");
+				
 				// Get the order parameters
 				$sort = $this->getRequest()->getPost('sort');
 				$sortDir = $this->getRequest()->getPost('dir');
-	
+				
 				$filter = "";
-	
+				
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
@@ -1090,41 +1083,40 @@ class QueryController extends AbstractOGAMController {
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
 					$key = $tableField->getName();
-					$filter .= " ORDER BY ".$key." ".$sortDir.", id";
+					$filter .= " ORDER BY " . $key . " " . $sortDir . ", id";
 				} else {
 					$filter .= " ORDER BY id";
 				}
-	
+				
 				// Define the max number of lines returned
-				$limit = " LIMIT ".$maxLines." ";
-	
+				$limit = " LIMIT " . $maxLines . " ";
+				
 				$count = 0;
 				$page = 0;
 				$finished = false;
 				while (!$finished) {
-	
+					
 					// Define the position of the cursor in the dataset
-					$offset = " OFFSET ".($page * $maxLines)." ";
-	
+					$offset = " OFFSET " . ($page * $maxLines) . " ";
+					
 					// Execute the request
-					$this->logger->debug('reading data ... page '.$page);
-					$result = $this->genericModel->executeRequest($sql.$filter.$limit.$offset);
-	
+					$this->logger->debug('reading data ... page ' . $page);
+					$result = $this->genericModel->executeRequest($sql . $filter . $limit . $offset);
+					
 					// Export the lines of data
 					foreach ($result as $line) {
-	
+						
 						$this->_print('{"type": "Feature", ');
-						$this->_print('"geometry": '.$line['geojson'].', ');
+						$this->_print('"geometry": ' . $line['geojson'] . ', ');
 						$this->_print('"properties": {');
 						foreach ($resultColumns as $tableField) {
-	
-	
+							
 							$key = strtolower($tableField->getName());
 							$value = $line[$key];
 							$formField = $formFields[$key];
-	
+							
 							$label = $formField->label;
-	
+							
 							if ($value == null) {
 								$value = "";
 							} else {
@@ -1142,8 +1134,7 @@ class QueryController extends AbstractOGAMController {
 									if ($label != '') {
 										$value = substr($value, 0, -1);
 									}
-									$value = '['.$value.']';
-	
+									$value = '[' . $value . ']';
 								} else if ($formField->inputType == "NUMERIC") {
 									// Numeric value
 									if ($formField->decimals != null && $formField->decimals != "") {
@@ -1151,42 +1142,39 @@ class QueryController extends AbstractOGAMController {
 									}
 								}
 							}
-	
-	
-							$this->_print('"'.$label.'": "'.$value.'", ');
-	
+							
+							$this->_print('"' . $label . '": "' . $value . '", ');
 						}
 						$this->_print("}");
-	
+						
 						$this->_print("},");
-	
+						
 						$this->_print("\n");
-						$count++;
+						$count ++;
 					}
-	
+					
 					// Check we have read everything
 					if ($count == $total) {
 						$finished = true;
 					}
-	
-					$page++;
-	
+					
+					$page ++;
 				}
-	
-				$this->_print(']'."\n");
-				$this->_print('}'."\n");
+				
+				$this->_print(']' . "\n");
+				$this->_print('}' . "\n");
 			}
 		} else {
 			$this->_print('// No Permissions');
 		}
-	
+		
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
 
 	/**
 	 * Convert and display the UTF-8 encoded string to the configured charset
-	 * 
+	 *
 	 * @param $output The
 	 *        	string to encode and to display
 	 */
@@ -1300,7 +1288,7 @@ class QueryController extends AbstractOGAMController {
 			$json .= '{"code":' . json_encode($code) . ', "label":' . json_encode($label) . '},';
 		}
 		if (!empty($codes)) {
-			$json = substr($json, 0, - 1);
+			$json = substr($json, 0, -1);
 		}
 		$json .= ']}';
 		
@@ -1334,7 +1322,7 @@ class QueryController extends AbstractOGAMController {
 			$json .= '{"code":' . json_encode((string) $code) . ', "label":' . json_encode($label) . '},';
 		}
 		if (!empty($codes)) {
-			$json = substr($json, 0, - 1);
+			$json = substr($json, 0, -1);
 		}
 		$json .= ']}';
 		
@@ -1379,8 +1367,8 @@ class QueryController extends AbstractOGAMController {
 		foreach ($codes as $code => $label) {
 			$json .= '{"code":' . json_encode($code) . ', "label":' . json_encode($label) . '},';
 		}
-		if (! empty($codes)) {
-			$json = substr($json, 0, - 1);
+		if (!empty($codes)) {
+			$json = substr($json, 0, -1);
 		}
 		$json .= ']';
 		$json .= ', "results":' . $count;
@@ -1431,7 +1419,7 @@ class QueryController extends AbstractOGAMController {
 			$json .= ', "vernacularName":' . json_encode($taxref->vernacularName) . '},';
 		}
 		if (!empty($taxrefs)) {
-			$json = substr($json, 0, - 1);
+			$json = substr($json, 0, -1);
 		}
 		$json .= ']';
 		$json .= ', "results":' . $count;
@@ -1474,7 +1462,7 @@ class QueryController extends AbstractOGAMController {
 			$id = array(
 				'Results'
 			); // A small prefix is required here to avoid a conflict between the id when the result contain only one result
-			                        // The columns config to setup the grid columnModel
+			   // The columns config to setup the grid columnModel
 			$columns = array();
 			// The columns max length to setup the column width
 			$columnsMaxLength = array();
@@ -1482,7 +1470,7 @@ class QueryController extends AbstractOGAMController {
 			$locationFields = array(
 				'id'
 			); // The id must stay the first field
-			                               // The data to full the store
+			   // The data to full the store
 			$locationsData = array();
 			
 			foreach ($locations as $locationsIndex => $location) {
