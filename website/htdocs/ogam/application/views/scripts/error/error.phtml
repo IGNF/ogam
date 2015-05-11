@@ -13,22 +13,10 @@
 
 /**
  * Default view for errors.
+ *
  * @package views
  */
 ?>
 
-<h1>An error occurred</h1> 
-<h2><?= $this->message ?></h2> 
-
-<?php if ('development' == $this->env): ?> 
-    <h3>Exception information:</h3> 
-    <p> 
-        <b>Message:</b> <?= $this->exception->getMessage() ?> 
-    </p> 
-
-    <h3>Stack trace:</h3> 
-    <pre><?= $this->exception->getTraceAsString() ?></pre> 
-
-    <h3>Request Parameters:</h3> 
-    <pre><? var_dump($this->request->getParams()) ?></pre> 
-<?php endif ?>
+<h1>An error occurred</h1>
+<h2><?php echo $this->message ?></h2>
