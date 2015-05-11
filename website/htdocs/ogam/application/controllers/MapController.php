@@ -143,7 +143,7 @@ class MapController extends AbstractOGAMController {
 		$layerNames = $this->layersModel->getVectorLayersList();
 
 		$json = '{"success":true';
-		$json .= ', layerNames : [';
+		$json .= ', "layerNames" : [';
 		$json .= '{"code":null,"label":"'.$this->translator->translate('empty_layer').'","url":null},';
 		foreach ($layerNames as $layerName => $tab) {
 		    $layer = $this->layersModel->getLayer($layerName);
