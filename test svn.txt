@@ -1,0 +1,4 @@
+fichier de test 
+pour vérifier que les retours chariots 
+sont au bon 
+format.
