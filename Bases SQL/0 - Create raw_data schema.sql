@@ -155,6 +155,26 @@ CREATE TRIGGER departements_geom_trigger
   BEFORE INSERT ON raw_data.LOCATION
   FOR EACH ROW
   EXECUTE PROCEDURE raw_data.departementsfromgeom();
+  
+  
+  
+/*========================================================================*/
+/*	Add a trigger to fill the communes column of the location table    */
+/*========================================================================*/
+CREATE OR REPLACE FUNCTION raw_data.communesfromgeom() RETURNS "trigger" AS
+$BODY$
+BEGIN
+
+    NEW.communes = (SELECT array_agg(code) FROM (SELECT code FROM "mapping".communes z WHERE st_intersects(z.the_geom, st_transform(NEW.the_geom, 2154)) LIMIT 20) as foo);    
+    RETURN NEW;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE TRIGGER communes_geom_trigger
+  BEFORE INSERT ON raw_data.LOCATION
+  FOR EACH ROW
+  EXECUTE PROCEDURE raw_data.communesfromgeom();
             
 
 /*==============================================================*/
