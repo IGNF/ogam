@@ -96,7 +96,6 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @throws an exception if the request is not found
 	 */
 	public function getPredefinedRequest($requestName) {
-		$tableFormat = $this->metadataModel->getTableFormatFromTableName('WEBSITE', 'PREDEFINED_REQUEST');
 		$db = $this->getAdapter();
 
 		// Get the request
@@ -115,7 +114,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$req .= " JOIN predefined_request_group_asso prga using (request_name)";
 		$req .= " JOIN predefined_request_group prg using (group_name)";
 		$req .= " LEFT JOIN dataset on (pr.dataset_id = dataset.dataset_id)";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = pr.request_name";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'PREDEFINED_REQUEST' AND row_pk = pr.request_name) ";
 		$req .= " WHERE pr.request_name = ?";
 
 		$this->logger->info('getPredefinedRequest : '.$req);
@@ -173,7 +172,6 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @return Array[PredefinedRequest] the list of requests
 	 */
 	public function getPredefinedRequestList($schema, $dir, $sort) {
-		$tableFormat = $this->metadataModel->getTableFormatFromTableName('WEBSITE', 'PREDEFINED_REQUEST');
 		$db = $this->getAdapter();
 
 		// Prevent the sql injections
@@ -202,7 +200,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$req .= " JOIN predefined_request_group_asso prga using (request_name)";
 		$req .= " JOIN predefined_request_group prg using (group_name)";
 		$req .= " LEFT JOIN dataset on (pr.dataset_id = dataset.dataset_id)";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = pr.request_name";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'PREDEFINED_REQUEST' AND row_pk = pr.request_name) ";
 		$req .= " WHERE pr.schema_code = '".$schema."'";
 		$req .= " ORDER BY ".$sort." ".$dir;
 
@@ -240,7 +238,6 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @return Array[PredefinedField] The list of request criterias
 	 */
 	public function getPredefinedRequestCriteria($requestName) {
-		$tableFormat = $this->metadataModel->getTableFormatFromTableName('METADATA', 'DATA');
 		$db = $this->getAdapter();
 
 		// Get the request
@@ -249,7 +246,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$req .= " JOIN form_field using (data, format)";
 		$req .= " JOIN data using (data)";
 		$req .= " JOIN unit using (unit)";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = data.data";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATA' AND row_pk = data.data) ";
 		$req .= " WHERE request_name = ?";
 
 		$this->logger->info('getPredefinedRequestCriteria : '.$req);

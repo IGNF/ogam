@@ -215,12 +215,11 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 	 */
 	public function getService($serviceName) {
 	
-	    $tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER_SERVICE');
 	    $db = $this->getAdapter();
 	
 	    $req = " SELECT service_name, config";
 	    $req .= " FROM layer_service ";
-	    $req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer_service.service_name";
+	    $req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'LAYER_SERVICE' AND row_pk = layer_service.service_name) ";
 	    $req .= " WHERE service_name = ?";
 	
 	    Zend_Registry::get("logger")->info('getServiceList : '.$req);

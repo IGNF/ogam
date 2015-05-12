@@ -91,11 +91,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[schemaCode]
 	 */
 	public function getSchemas() {
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'TABLE_SCHEMA');
 		$db = $this->getAdapter();
 		$req = "SELECT schema_code, schema_name, COALESCE(t.label, ts.label) as label, COALESCE(t.definition, ts.description) as description";
 		$req .= " FROM table_schema ts";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = schema_code";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'TABLE_SCHEMA' AND row_pk = schema_code) ";
 		$req .= " WHERE schema_code NOT IN ('METADATA', 'PUBLIC', 'WEBSITE') ORDER BY ts";
 
 		$this->logger->info('getSchemas : '.$req);
@@ -137,11 +136,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		if (empty($cachedResult)) {
 
-			$tableFormat = $this->getTableFormatFromTableName('METADATA', 'MODE');
 			$db = $this->getAdapter();
 			$req = "SELECT code, COALESCE(t.label, m.label) as label";
 			$req .= " FROM mode m";
-			$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = m.unit || ',' || m.code";
+			$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'MODE' AND row_pk = m.unit || ',' || m.code) ";
 			$req .= " WHERE unit = ? AND code = ? ORDER BY position, code";
 
 			$this->logger->info('getMode : '.$req);
@@ -184,11 +182,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		// No cache to avoid to increase the number of cache files for all combination
 
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'MODE_TREE');
 		$db = $this->getAdapter();
 		$req = "SELECT code, COALESCE(t.label, mt.label) as label ";
 		$req .= " FROM mode_tree mt";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = mt.unit || ',' || mt.code";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
 		$req .= " WHERE unit = ?";
 		if ($value != null) {
 			if (is_array($value)) {
@@ -227,11 +224,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$this->logger->debug($key);
 
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'MODE_TREE');
 		$db = $this->getAdapter();
 		$req = "SELECT code, COALESCE(t.label, mt.label) as label ";
 		$req .= " FROM mode_tree mt";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = mt.unit || ',' || mt.code";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = MODE_TREE' AND row_pk = mt.unit || ',' || mt.code)";
 		$req .= " WHERE unit = ?";
 		if ($query != null) {
 			$req .= " AND unaccent_string(COALESCE(t.label, mt.label)) ilike unaccent_string('%".$query."%')";
@@ -382,7 +378,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		if (empty($cachedResult)) {
 
-			$tableFormat = $this->getTableFormatFromTableName('METADATA', 'MODE_TREE');
 			$db = $this->getAdapter();
 			$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
 			$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
@@ -400,7 +395,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	) ";
 			$req .= "	SELECT parent_code, code, COALESCE(t.label, nl.label) as label, is_leaf";
 			$req .= "	FROM node_list nl";
-			$req .= "	LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = nl.unit || ',' || nl.code";
+			$req .= "	LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'MODE_TREE' AND row_pk = nl.unit || ',' || nl.code) ";
 			$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
 
 			$this->logger->info('getTreeChildren : '.$unit.' '.$parentcode);
@@ -512,11 +507,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[Genapp_Object_Metadata_Dataset]
 	 */
 	public function getDatasets() {
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATASET');
 		$db = $this->getAdapter();
 		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, is_default ";
 		$req .= " FROM dataset d";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = dataset_id";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATASET' AND row_pk = dataset_id)";
 		$req .= " ORDER BY dataset_id";
 	
 		$this->logger->info('getDatasets : '.$req);
@@ -543,11 +537,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getDataset($datasetId) {
 		
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATASET');
 		$db = $this->getAdapter();
 		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, is_default ";
 		$req .= " FROM dataset d";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = dataset_id";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATASET' AND row_pk = dataset_id) ";
 		$req .= " WHERE dataset_id = ?";
 	
 		$this->logger->info('getDataset : '.$req);
@@ -619,11 +612,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[Genapp_Object_Metadata_Dataset]
 	 */
 	public function getDatasetsForUpload() {
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATASET');
 		$db = $this->getAdapter();
 		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, is_default ";
 		$req .= " FROM dataset d";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = dataset_id";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATASET' AND row_pk = dataset_id) ";
 		$req .= " INNER JOIN dataset_files using (dataset_id) ";
 
 	// Check the role restrictions
@@ -660,11 +652,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[Genapp_Object_Metadata_DatasetFile]
 	 */
 	public function getRequestedFiles($datasetId) {
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'FILE_FORMAT');
 		$db = $this->getAdapter();
 		$req = " SELECT format, file_type, COALESCE(t.label, file_format.label) as label ";
 		$req .= " FROM dataset_files";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = format";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'FILE_FORMAT' AND row_pk = format)";
 		$req .= " LEFT JOIN file_format using (format) ";
 		$req .= " WHERE dataset_id = ? ";
 		$req .= " ORDER BY position";
@@ -693,7 +684,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getFileFields($fileFormat) {
 
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATA');
 		$db = $this->getAdapter();
 
 		$this->logger->debug('getFileFields : '.$fileFormat);
@@ -703,7 +693,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " FROM file_field ";
 		$req .= " LEFT JOIN data on (file_field.data = data.data) ";
 		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = data.data";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATA' AND row_pk = data.data) ";
 		$req .= " WHERE format = ? ";
 		$req .= " ORDER BY position ASC";
 
@@ -750,7 +740,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		if (empty($cachedResult)) {
 
-			$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATA');
 			$db = $this->getAdapter();
 
 			// Get the fields specified by the format
@@ -762,7 +751,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " LEFT JOIN table_format on (table_format.format = table_field.format) ";
 			$req .= " LEFT JOIN data on (table_field.data = data.data) ";
 			$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
-			$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = data.data";
+			$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATA' AND row_pk = data.data) ";
 			$req .= " WHERE (1=1)";
 			if ($datasetID != null) {
 				$req .= " AND dataset_fields.dataset_id = ? ";
@@ -821,7 +810,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getGeometryField($schema, $tables) {
 
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATA');
 		$db = $this->getAdapter();
 
 		$this->logger->debug('getGeometryField : '.$schema);
@@ -879,7 +867,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTableFormat($schema, $format) {
 
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'TABLE_FORMAT');
 		$db = $this->getAdapter();
 
 		$this->logger->debug('getTableFormat : '.$schema.' '.$format.'_'.$this->lang);
@@ -894,7 +881,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			// Get the fields specified by the format
 			$req = "SELECT table_name, COALESCE(t.label, tf.label) as label, primary_key ";
 			$req .= " FROM table_format tf";
-			$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = format";
+			$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = 'TABLE_FORMAT' AND row_pk = format";
 			$req .= " WHERE schema_code = ? ";
 			$req .= " AND format = ? ";
 
@@ -995,7 +982,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		if (empty($cachedResult)) {
 
-			$tableFormat = $this->getTableFormatFromTableName('METADATA', 'FORM_FORMAT');
 			$db = $this->getAdapter();
 			$req = " SELECT distinct form_format.format, COALESCE(t.label, form_format.label) as label, COALESCE(t.definition, form_format.definition) as definition, position ";
 			$req .= " FROM ( ";
@@ -1013,7 +999,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			}
 			$req .= "      ) as foo ";
 			$req .= "      LEFT JOIN form_format on (form_format.format = foo.format) ";
-			$req .= "      LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = form_format.format";
+			$req .= "      LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'FORM_FORMAT' AND row_pk = form_format.format) ";
 			$req .= "      ORDER BY position";
 
 			$this->logger->info('getForms : '.$req);
@@ -1061,7 +1047,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		}
 		if (empty($cachedResult)) {
 
-			$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATA');
 			$db = $this->getAdapter();
 
 			$param = array();
@@ -1071,7 +1056,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
-			$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = data.data";
+			$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATA' AND row_pk = data.data) ";
 
 			// Check the field format
 			$req .= " WHERE format = ?";
@@ -1154,13 +1139,12 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$this->logger->info('getFormField : '.$format.", ".$data);
 
-			$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATA');
 			$db = $this->getAdapter();
 			$req = " SELECT form_field.*, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, unit.type, unit.subtype, unit.unit ";
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
-			$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = data.data";
+			$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATA' AND row_pk = data.data) ";
 			$req .= " WHERE format = ? ";
 			$req .= " AND   data = ?";
 
@@ -1244,7 +1228,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		}
 		if (empty($cachedResult)) {
 
-			$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATA');
 			$db = $this->getAdapter();
 			$req = " SELECT table_field.*, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, unit.unit, unit.type, unit.subtype ";
 			$req .= " FROM field_mapping ";
@@ -1252,7 +1235,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " LEFT JOIN dataset_fields on (dataset_fields.format = table_field.format AND dataset_fields.data = table_field.data) ";
 			$req .= " LEFT JOIN data on (table_field.data = data.data)";
 			$req .= " LEFT JOIN unit on (data.unit = unit.unit)";
-			$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = data.data";
+			$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATA' AND row_pk = data.data) ";
 			$req .= " WHERE src_format = ? ";
 			$req .= " AND src_data = ? ";
 			$req .= " AND schema_code = ? ";
@@ -1308,7 +1291,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		}
 		if (empty($result)) {
 
-			$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATA');
 			$db = $this->getAdapter();
 			$req = " SELECT form_field.*, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, unit.unit, unit.type, unit.subtype ";
 			$req .= " FROM form_field ";
@@ -1316,7 +1298,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " LEFT JOIN data on (form_field.data = data.data)";
 			$req .= " LEFT JOIN unit on (data.unit = unit.unit)";
 			$req .= " LEFT JOIN form_format on (form_format.format = form_field.format)";
-			$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = data.data";
+			$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'DATA' AND row_pk = data.data) ";
 			$req .= " WHERE field_mapping.dst_format = ? ";
 			$req .= " AND field_mapping.dst_data = ? ";
 			$req .= " ORDER BY form_format.position, form_field.position ";
@@ -1429,7 +1411,6 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getChildrenTableLabels($tableFormat) {
 
-		$tableFormat2 = $this->getTableFormatFromTableName('METADATA', 'TABLE_FORMAT');
 		$db = $this->getAdapter();
 
 		$childrenLabels = array();
@@ -1440,7 +1421,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$sql = "SELECT TABLE_TREE.child_table as format, COALESCE(t.label, TABLE_FORMAT.label) as label ";
 		$sql .= " FROM TABLE_TREE ";
 		$sql .= " LEFT JOIN TABLE_FORMAT on (TABLE_TREE.child_table = TABLE_FORMAT.format) ";
-		$sql .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat2->format."' AND row_pk = TABLE_FORMAT.format";
+		$sql .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'TABLE_FORMAT' AND row_pk = TABLE_FORMAT.format) ";
 		$sql .= " WHERE TABLE_TREE.SCHEMA_CODE = '".$tableFormat->schemaCode."'";
 		$sql .= " AND parent_table = '".$tableFormat->format."'";
 
