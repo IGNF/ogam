@@ -136,6 +136,27 @@ CREATE TRIGGER geom_trigger
   EXECUTE PROCEDURE raw_data.geomfromcoordinate();
 */
 
+
+  
+/*========================================================================*/
+/*	Add a trigger to fill the departements column of the location table   */
+/*========================================================================*/
+CREATE OR REPLACE FUNCTION raw_data.departementsfromgeom() RETURNS "trigger" AS
+$BODY$
+BEGIN
+
+    NEW.departement = max(dp) FROM "mapping".departements z WHERE st_intersects(z.the_geom, NEW.the_geom);    
+    RETURN NEW;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE TRIGGER departements_geom_trigger
+  BEFORE INSERT ON raw_data.LOCATION
+  FOR EACH ROW
+  EXECUTE PROCEDURE raw_data.departementsfromgeom();
+            
+
 /*==============================================================*/
 /* Table : PLOT_DATA                                            */
 /*==============================================================*/
@@ -300,7 +321,7 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 
 
 
-
+GRANT ALL ON SCHEMA metadata TO ogam;
 GRANT ALL ON ALL TABLES IN SCHEMA raw_data TO ogam;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA raw_data TO ogam;
 ALTER TABLE raw_data.SUBMISSION OWNER TO ogam;

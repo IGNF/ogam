@@ -1,6 +1,6 @@
 CREATE SCHEMA metadata;
 
-SET SEARCH_PATH = metadata, raw_data, public;
+SET SEARCH_PATH = metadata, public;
 
 
 /*==============================================================*/
@@ -651,6 +651,34 @@ alter table FILE_FIELD
       on delete restrict on update restrict;
       
       
+-- Droits
 GRANT ALL ON SCHEMA metadata TO ogam;
 GRANT ALL ON ALL TABLES IN SCHEMA metadata TO ogam;
-      
+GRANT ALL ON ALL SEQUENCES IN SCHEMA metadata TO ogam;
+
+ALTER TABLE metadata.DATA OWNER TO ogam;
+ALTER TABLE metadata.UNIT OWNER TO ogam;
+ALTER TABLE metadata.MODE OWNER TO ogam;
+ALTER TABLE metadata.GROUP_MODE OWNER TO ogam;
+ALTER TABLE metadata.MODE_TREE OWNER TO ogam;
+ALTER TABLE metadata.MODE_TAXREF OWNER TO ogam;
+ALTER TABLE metadata.DYNAMODE OWNER TO ogam;
+ALTER TABLE metadata.RANGE OWNER TO ogam;
+ALTER TABLE metadata.FORMAT OWNER TO ogam;
+ALTER TABLE metadata.FILE_FORMAT OWNER TO ogam;
+ALTER TABLE metadata.FORM_FORMAT OWNER TO ogam;
+ALTER TABLE metadata.TABLE_FORMAT OWNER TO ogam;
+ALTER TABLE metadata.FIELD OWNER TO ogam;
+ALTER TABLE metadata.TABLE_FIELD OWNER TO ogam;
+ALTER TABLE metadata.FILE_FIELD OWNER TO ogam;
+ALTER TABLE metadata.FORM_FIELD OWNER TO ogam;
+ALTER TABLE metadata.FIELD_MAPPING OWNER TO ogam;
+ALTER TABLE metadata.DATASET OWNER TO ogam;
+ALTER TABLE metadata.DATASET_FILES OWNER TO ogam;
+ALTER TABLE metadata.DATASET_FIELDS OWNER TO ogam;
+ALTER TABLE metadata.TABLE_SCHEMA OWNER TO ogam;
+ALTER TABLE metadata.TABLE_TREE OWNER TO ogam;
+ALTER TABLE metadata.CHECKS OWNER TO ogam;
+ALTER TABLE metadata.CHECKS_PER_PROVIDER OWNER TO ogam;
+ALTER TABLE metadata.process OWNER TO ogam;
+ALTER TABLE metadata.translation OWNER TO ogam;
