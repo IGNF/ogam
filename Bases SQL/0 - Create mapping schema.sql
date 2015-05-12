@@ -46,7 +46,7 @@ CREATE TABLE scales
 
 COMMENT ON COLUMN scales.scale IS 'The denominator of the scale, used to calculate the resolutions';
 
-/*==============================================================*//* Table: layer_service                                      *//*==============================================================*/CREATE TABLE layer_service( service_name 			VARCHAR(50)    NOT NULL, config 				VARCHAR(1000),     -- Si version postgresql >= 9.2, utiliser un type json PRIMARY KEY  (service_name))WITHOUT OIDS;COMMENT ON TABLE layer_service IS 'Liste des fournisseurs de services (Mapservers, Géoportail, ...)';COMMENT ON COLUMN layer_service.service_name IS 'Logical name of the service';
+/*==============================================================*//* Table: layer_service                                      *//*==============================================================*/CREATE TABLE layer_service( service_name 			VARCHAR(50)    NOT NULL, config 				VARCHAR(1000),     -- Si version postgresql >= 9.2, utiliser un type json PRIMARY KEY  (service_name))WITHOUT OIDS;COMMENT ON TABLE layer_service IS 'Liste des fournisseurs de services (Mapservers, Géoportail, ...)';COMMENT ON COLUMN layer_service.service_name IS 'Logical name of the service';COMMENT ON COLUMN layer_service.config IS 'OpenLayers config for the service';
 /*==============================================================*/
 /* Table: layer                                      */
 /*==============================================================*/
@@ -65,7 +65,7 @@ CREATE TABLE layer
   imageFormat			VARCHAR(10),   -- Image format (PNG or JPEG)
   provider_id 		    VARCHAR(36),   -- If empty, the layer can be seen by any country, if not it is limited to one country
   has_sld               INT,           -- If value = 1 we add a SLD information
-  activate_type         VARCHAR(36),   -- Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or HARMONIZATION)  view_service_name	    VARCHAR(50),   -- Indicates the service for the map visualisation  legend_service_name	VARCHAR(50),   -- Indicates the service for the legend
+  activate_type         VARCHAR(36),   -- Group of event that will activate this layer (NONE, REQUEST)  view_service_name	    VARCHAR(50),   -- Indicates the service for the map visualisation  legend_service_name	VARCHAR(50),   -- Indicates the service for the legend
   print_service_name	VARCHAR(50),   -- Indicates the service for the print function  detail_service_name	VARCHAR(50),   -- Indicates the service for the detail panel display   feature_service_name		VARCHAR(50),   -- Indicates the service for the wfs  PRIMARY KEY  (layer_name)
 ) WITHOUT OIDS;
 COMMENT ON TABLE layer IS 'Liste des layers';
