@@ -144,7 +144,7 @@ class MapController extends AbstractOGAMController {
 
 		$json = '{"success":true';
 		$json .= ', "layerNames" : [';
-		$json .= '{"code":null,"label":"'.$this->translator->translate('empty_layer').'","url":null},';
+		$json .= '{"code":null,"label":"'.$this->translator->translate('empty_layer').'","url":null}';
 		foreach ($layerNames as $layerName => $tab) {
 		    $layer = $this->layersModel->getLayer($layerName);
 		    $viewServiceName = $layer->viewServiceName;
@@ -152,13 +152,10 @@ class MapController extends AbstractOGAMController {
 		    $serviceConfig = $viewService->serviceConfig;
 		    $url_wms = json_decode($serviceConfig)->{'urls'}[0];
 		    
-			$json .= '{"code":'.json_encode($layerName).',';
+			$json .= ',{"code":'.json_encode($layerName).',';
 			$json .= '"label":'. json_encode($tab[0]).',';
 			$json .= '"url":'. json_encode(json_decode($tab[1])->{'urls'}[0]).',';
-			$json .= '"url_wms":'. json_encode($url_wms).'},';
-		}
-		if (!empty($layerNames)) {
-			$json = substr($json, 0, -1);
+			$json .= '"url_wms":'. json_encode($url_wms).'}';
 		}
 		$json .= ']';
 		$json .= '}';
