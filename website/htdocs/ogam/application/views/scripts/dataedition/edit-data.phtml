@@ -197,7 +197,7 @@
 	$user = $userSession->user; 
 ?>
 <div class='actionLinks'>
-	<a href="<?= $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/<?php echo $this->data->tableFormat->schemaCode; ?>/FORMAT/LOCALISATION_DATA/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?=$this->translate('Add a new localisation');?></a>
+	<a href="<?= $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/<?php echo $this->data->tableFormat->schemaCode; ?>/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?=$this->translate('Add a new localisation');?></a>
 </div>
 
 <div id='page'></div>
