@@ -68,7 +68,7 @@ COMMENT ON COLUMN SUBMISSION_FILE.NB_LINE IS 'The number of lines of data in the
 /* Table : LOCATION                                             */
 /*==============================================================*/
 create table LOCATION (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 LAT                  FLOAT8               null,
@@ -140,7 +140,7 @@ CREATE TRIGGER geom_trigger
 /* Table : PLOT_DATA                                            */
 /*==============================================================*/
 create table PLOT_DATA (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
@@ -167,7 +167,7 @@ COMMENT ON COLUMN PLOT_DATA.LINE_NUMBER IS 'The position of the line of data in 
 /* Table : SPECIES_DATA                                         */
 /*==============================================================*/
 create table SPECIES_DATA (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
@@ -208,7 +208,7 @@ CREATE SEQUENCE tree_id_seq
 /* Table : TREE_DATA                                         */
 /*==============================================================*/
 create table TREE_DATA (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
