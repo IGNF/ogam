@@ -12,7 +12,7 @@ insert into application_parameters (name, value, description) values ( 'autoLogi
 insert into application_parameters (name, value, description) values ( 'defaultUser' , 'visitor' , 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
 insert into application_parameters (name, value, description) values ( 'fileMaxSize' , 100 , 'UPLOAD');
 insert into application_parameters (name, value, description) values ( 'integrationService_url' , 'http://localhost:8080/OGAMIntegrationService/' , 'INTEGRATION SERVICE');
-insert into application_parameters (name, value, description) values ( 'uploadDir' , 'C:/workspace/Eforest/website/htdocs/upload' , 'INTEGRATION SERVICE');
+insert into application_parameters (name, value, description) values ( 'uploadDir' , 'D:/workspace/Eforest/website/htdocs/upload' , 'INTEGRATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'harmonizationService_url' , 'http://localhost:8080/OGAMHarmonizationService/' , 'HARMONIZATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'reportGenerationService_url' , 'http://localhost:8080/OGAMRG/' , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'errorReport' , 'ErrorReport.rptdesign' , 'REPORT GENERATION SERVICE');

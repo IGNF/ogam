@@ -29,9 +29,9 @@ CREATE TABLE nuts_0 (
     gid integer NOT NULL,
     cell_id character varying(20),
     the_geom public.geometry,
-    CONSTRAINT enforce_dims_the_geom CHECK ((public.ndims(the_geom) = 2)),
+    CONSTRAINT enforce_dims_the_geom CHECK ((public.st_ndims(the_geom) = 2)),
     CONSTRAINT enforce_geotype_the_geom CHECK (((public.geometrytype(the_geom) = 'MULTIPOLYGON'::text) OR (the_geom IS NULL))),
-    CONSTRAINT enforce_srid_the_geom CHECK ((public.srid(the_geom) = 3035))
+    CONSTRAINT enforce_srid_the_geom CHECK ((public.st_srid(the_geom) = 3035))
 );
 
 
