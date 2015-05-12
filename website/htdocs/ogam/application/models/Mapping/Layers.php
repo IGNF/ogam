@@ -46,7 +46,7 @@ public function getVectorLayersList() {
 
 		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, config as feature_service_config ";
 		$req .= " FROM layer_service , layer ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE layer.feature_service_name <> '' AND layer.feature_service_name = layer_service.service_name";
 
 		// Check the user profile
@@ -83,7 +83,7 @@ public function getVectorLayersList() {
 		$req .= " istransparent, default_opacity, isbaselayer, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
 		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_sld, checked_group, feature_service_name, print_service_name, detail_service_name,view_service_name, legend_service_name ";
 		$req .= " FROM layer ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name) ";
 		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
 		$req .= " WHERE (name is not null) ";
 		$req .= " AND layer_tree.is_layer = 1 ";
@@ -156,7 +156,7 @@ public function getVectorLayersList() {
 		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_sld, checked_group, print_service_name, detail_service_name, feature_service_name, legend_service_name ";
 		$req .= " FROM layer ";
 		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE (name is not null) ";
 		$req .= " AND layer_tree.is_layer = 1 ";
 		$req .= " ORDER BY (parent_id, position) DESC";
@@ -211,10 +211,10 @@ public function getVectorLayersList() {
 
 		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, view_service_name, feature_service_name, maxscale, minscale, transitioneffect, imageformat, activate_type, has_sld, print_service_name, detail_service_name, legend_service_name ";
 		$req .= " FROM layer ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE layer_name = ?";
 
-		Zend_Registry::get("logger")->info('getLayersList : '.$req);
+		Zend_Registry::get("logger")->info('getLayer : '.$req);
 
 		$select = $db->prepare($req);
 		$select->execute(array($layerName));
@@ -285,7 +285,7 @@ public function getVectorLayersList() {
 		$req = " SELECT item_id, parent_id, isbaselayer, is_layer, is_checked, is_expended, COALESCE(t.label, layer.layer_label) as layer_label, layer_name, is_hidden, is_disabled, maxscale, minscale ";
 		$req .= " FROM layer_tree ";
 		$req .= " LEFT OUTER JOIN layer ON (layer_tree.name = layer.layer_name) ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE parent_id = '".$parentId."'";
 
 		// Check the provider id
