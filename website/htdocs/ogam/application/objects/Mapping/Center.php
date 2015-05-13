@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,28 +12,32 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent the center of a map.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Mapping_Center {
 
 	/**
-	 * The x position of the center of the map
+	 * The x position of the center of the map.
+	 * 
+	 * @var Numeric
 	 */
 	var $x_center;
 
 	/**
-	 * The x position of the center of the map
+	 * The x position of the center of the map.
+	 *
+	 * @var Numeric
 	 */
 	var $y_center;
 
 	/**
-	 * The default zoom level
+	 * The default zoom level.
+	 *
+	 * @var Integer
 	 */
 	var $defaultzoom;
-
 }
