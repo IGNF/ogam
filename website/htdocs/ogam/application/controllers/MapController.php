@@ -82,13 +82,13 @@ class MapController extends AbstractOGAMController {
 			// Center the map on the provider location
 			$center = $this->boundingBoxModel->getCenter($providerId);
 			$this->view->defaultzoom = $center->defaultzoom;
-			$this->view->x_center = $center->x_center;
-			$this->view->y_center = $center->y_center;
+			$this->view->centerX = $center->x;
+			$this->view->centerY = $center->y;
 		} else {
 			// Use default settings
 			$this->view->defaultzoom = $configuration->zoom_level;
-			$this->view->x_center = ($configuration->bbox_x_min + $configuration->bbox_x_max) / 2;
-			$this->view->y_center = ($configuration->bbox_y_min + $configuration->bbox_y_max) / 2;
+			$this->view->centerX = ($configuration->bbox_x_min + $configuration->bbox_x_max) / 2;
+			$this->view->centerY = ($configuration->bbox_y_min + $configuration->bbox_y_max) / 2;
 		}
 
 		// Feature parameters

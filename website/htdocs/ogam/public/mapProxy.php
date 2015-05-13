@@ -5,8 +5,8 @@ function onfailure($url){
     header('Location: '.$url);
 }
 
-//require_once APPLICATION_PATH . '/classes/website/Role.php';
-//require_once APPLICATION_PATH . '/classes/website/User.php';
+require_once APPLICATION_PATH . '/objects/website/Role.php';
+require_once APPLICATION_PATH . '/objects/website/User.php';
 
 /*
 require_once APPLICATION_PATH . '/../library/Zend/Exception.php';
@@ -24,11 +24,13 @@ $configurationSession = new Zend_Session_Namespace('configuration');
 $mapServiceURL = $configurationSession->configuration['map_service_url'];
 
 /*
-echo 'connected :<br/>'; echo $userSession->connected;
-echo '<br/>role :<br/>'; print_r($userSession->role);
-echo '<br/>permissions :<br/>'; print_r($userSession->permissions);
+echo '<br/>mapServiceURL : '; echo $mapServiceURL;
+echo '<br/>connected : '; echo $userSession->connected;
+echo '<br/>role : '; print_r($userSession->role);
+echo '<br/>permissions : '; print_r($userSession->permissions);
 exit();
 */
+
 
 
 if(!$userSession->connected){

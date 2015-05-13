@@ -25,14 +25,14 @@ class Application_Object_Mapping_Center {
 	 * 
 	 * @var Numeric
 	 */
-	var $x_center;
+	var $x;
 
 	/**
 	 * The x position of the center of the map.
 	 *
 	 * @var Numeric
 	 */
-	var $y_center;
+	var $y;
 
 	/**
 	 * The default zoom level.
