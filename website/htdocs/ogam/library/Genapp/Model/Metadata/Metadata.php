@@ -227,7 +227,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 		$req = "SELECT code, COALESCE(t.label, mt.label) as label ";
 		$req .= " FROM mode_tree mt";
-		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = MODE_TREE' AND row_pk = mt.unit || ',' || mt.code)";
+		$req .= " LEFT JOIN translation t ON (lang = '".$this->lang."' AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code)";
 		$req .= " WHERE unit = ?";
 		if ($query != null) {
 			$req .= " AND unaccent_string(COALESCE(t.label, mt.label)) ilike unaccent_string('%".$query."%')";
@@ -1280,7 +1280,7 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTableToFormMapping($tableField) {
 
-		$this->logger->info('getTableToFormMapping : '.$tableField->format." ".$tableField->data.'_'.$this->lang);
+		$this->logger->info('getTableToFormMapping : '.$tableField->format." ".$tableField->data.' '.$this->lang);
 
 		$key = $this->formatCacheKey('getTableToFormMapping'.$tableField->format.'_'.$tableField->data.'_'.$this->lang);
 
