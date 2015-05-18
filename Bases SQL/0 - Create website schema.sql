@@ -189,7 +189,7 @@ SCHEMA_CODE          	 VARCHAR(36)          not null,
 DATASET_ID               VARCHAR(36)          not null,
 DEFINITION				 VARCHAR(500)         null,
 LABEL 					 VARCHAR(50)	      null,
-DATE 					 date,
+DATE 					 date      			  DEFAULT now(),
 constraint PK_PREDEFINED_REQUEST primary key (REQUEST_NAME)
 );
 
