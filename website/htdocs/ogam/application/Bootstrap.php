@@ -1,5 +1,12 @@
 <?php
 
+// We need for the deserialization of the session objects classes
+require_once APPLICATION_PATH . '/objects/Website/User.php';
+require_once APPLICATION_PATH . '/objects/Website/Role.php';
+require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
+
+
+
 /**
  *
  * The bootstrap class
@@ -248,11 +255,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('RegisterLogger');
 		
-		// We need for the deserialization of the session objects classes
-		require_once APPLICATION_PATH . '/objects/Website/User.php';
-		require_once APPLICATION_PATH . '/objects/Website/Role.php';
-		require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
-		
 		$configuration = Zend_Registry::get('configuration');
 		$configurationSession = new Zend_Session_Namespace('user');
 		$configurationSession = new Zend_Session_Namespace('configuration');
@@ -304,6 +306,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			
 			if (empty($user)) {
 				$userModel = new Application_Model_Website_User();
+				$roleModel = new Application_Model_Website_Role();
 				
 				// Get the user informations
 				$user = $userModel->getUser($configuration->defaultUser);
@@ -316,11 +319,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					$userSession->user = $user;
 					
 					// Get the User Permissions
-					$permissions = $roleModel->getRolePermissions($user->role->code);
+					$role = $user->role;
+					$permissions = $roleModel->getRolePermissions($role->code);
 					$userSession->permissions = $permissions;
 					
 					// Get the accessible schemas
-					$schemas = $roleModel->getRoleSchemas($user->role->code);
+					$schemas = $roleModel->getRoleSchemas($role->code);
 					$userSession->schemas = $schemas;
 				}
 			}
