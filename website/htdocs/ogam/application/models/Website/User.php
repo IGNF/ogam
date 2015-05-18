@@ -33,6 +33,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
 		
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->roleModel = new Application_Model_Website_Role();
 	}
 
 	/**
@@ -48,7 +49,9 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$req .= " provider_id, ";
 		$req .= " email, ";
 		$req .= " active, ";
-		$req .= " COALESCE(t.label, role_label) as role_label ";
+		$req .= " COALESCE(t.label, role_label) as role_label, ";
+		$req .= " role_code, ";
+		$req .= " role_definition ";
 		$req .= " FROM users ";
 		$req .= " LEFT JOIN role_to_user USING (user_login) ";
 		$req .= " LEFT JOIN role USING (role_code) ";
@@ -70,7 +73,10 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 			$user->providerId = $result['provider_id'];
 			$user->active = ($result['active'] === 1);
 			$user->email = $result['email'];
-			$user->roleLabel = $result['role_label'];
+			$user->role = new Application_Object_Website_Role();
+			$user->role->code = $result['role_code'];
+			$user->role->label = $result['role_label'];
+			$user->role->definition = $result['role_definition'];
 			$users[] = $user;
 		}
 		
@@ -113,7 +119,8 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 			$user->providerId = $result['provider_id'];
 			$user->active = ($result['active'] === 1);
 			$user->email = $result['email'];
-			$user->roleCode = $result['role_code'];
+			$user->role = $this->roleModel->getRole($result['role_code']);
+			
 			return $user;
 		} else {
 			$this->logger->err('User not found');

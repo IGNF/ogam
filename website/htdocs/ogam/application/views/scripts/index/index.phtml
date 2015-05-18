@@ -42,9 +42,8 @@
 
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
-$permissions = $userSession->permissions;
-$role = $userSession->role;
 $user = $userSession->user;
+$permissions = $userSession->permissions;
 ?>
 <div class="left-column">
 <?php

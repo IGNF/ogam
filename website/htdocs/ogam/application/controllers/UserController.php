@@ -241,19 +241,13 @@ class UserController extends Zend_Controller_Action {
 				$userSession = new Zend_Session_Namespace('user');
 				$userSession->connected = true;
 				$userSession->user = $user;
-
-				// Get the user role
-				$role = $this->roleModel->getRole($user->roleCode);
-
-				// Store the role in session
-				$userSession->role = $role;
-
+			
 				// Get the User Permissions
-				$permissions = $this->roleModel->getRolePermissions($role->roleCode);
+				$permissions = $this->roleModel->getRolePermissions($user->role->code);
 				$userSession->permissions = $permissions;
 
 				// Get the accessible schemas
-				$schemas = $this->roleModel->getRoleSchemas($role->roleCode);
+				$schemas = $this->roleModel->getRoleSchemas($user->role->code);
 				$userSession->schemas = $schemas;
 
 				// Redirect to the main page

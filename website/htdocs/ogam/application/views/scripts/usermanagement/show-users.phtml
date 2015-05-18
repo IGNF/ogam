@@ -44,7 +44,7 @@ foreach($this->users as $user) {
 	<td><?= $this->escape($user->username); ?></td>
 	<td><?= $this->providers[$user->providerId]; ?></td>
 	<td><?= $this->escape($user->email); ?></td>
-	<td><?= $this->escape($user->roleLabel); ?></td>
+	<td><?= $this->escape($user->role->label); ?></td>
 	<td class="delete-cell"><a title="<?=$this->translate('Delete');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('<?=$this->translate('Are you sure?')?>');">&nbsp;</a></td>
 </tr>
 <?php

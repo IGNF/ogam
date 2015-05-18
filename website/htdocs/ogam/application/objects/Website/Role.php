@@ -23,16 +23,16 @@ class Application_Object_Website_Role {
 	/**
 	 * The user role.
 	 */
-	var $roleCode;
+	var $code;
 
 	/**
 	 * The role label.
 	 */
-	var $roleLabel;
+	var $label;
 
 	/**
 	 * The role definition.
 	 */
-	var $roleDefinition;
+	var $definition;
 
 }

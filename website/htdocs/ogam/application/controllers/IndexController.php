@@ -42,6 +42,8 @@ class IndexController extends Zend_Controller_Action {
 	public function indexAction() {
 		$this->logger->debug('index');
 		
+		$userSession = new Zend_Session_Namespace('user');
+		
 		$this->render('index');
 	}
 }

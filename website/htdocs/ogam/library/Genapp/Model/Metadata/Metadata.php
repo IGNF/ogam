@@ -578,10 +578,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		// Check the role restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		$params = array();
-		if ($userSession != null && $userSession->role != null) {
-			$role = $userSession->role;
+		if ($userSession != null && $userSession->user != null) {
+			$role = $userSession->user->role;
 			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
-			$params[] = $role->roleCode;
+			$params[] = $role->code;
 		}
 
 		$req .= " ORDER BY dataset_id";
@@ -621,10 +621,10 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	// Check the role restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		$params = array();
-		if ($userSession != null && $userSession->role != null) {
-			$role = $userSession->role;
+		if ($userSession != null && $userSession->user != null) {
+			$role = $userSession->user->role;
 			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
-			$params[] = $role->roleCode;
+			$params[] = $role->code;
 		}
 
 		$req .= " ORDER BY dataset_id";

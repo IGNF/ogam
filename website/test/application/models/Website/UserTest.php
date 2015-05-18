@@ -112,17 +112,13 @@ class UserTest extends ControllerTestCase {
 		
 		$this->assertEquals("password", $password);
 		
-		
-		// Lien user -> role   (on suppose que le role ADMIN existe)
-		$userModel->createUserRole($login, "ADMIN");		
+		// Lien user -> role (on suppose que le role ADMIN existe)
+		$userModel->createUserRole($login, "ADMIN");
 		$userModel->updateUserRole($login, "ADMIN");
 		
 		// Vérif
 		$user4 = $userModel->getUser($login);
-		$this->assertEquals("ADMIN", $user4->roleCode);
-		
-		// Suppression du lien
-		
+		$this->assertEquals("ADMIN", $user4->role->code);
 		
 		//
 		// On fait du ménage

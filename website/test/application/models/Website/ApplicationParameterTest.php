@@ -1,5 +1,5 @@
 <?php
-require_once TEST_PATH.'ControllerTestCase.php';
+require_once TEST_PATH . 'ControllerTestCase.php';
 
 /**
  * Classe de test du modèle ApplicationParameter.
@@ -9,10 +9,10 @@ require_once TEST_PATH.'ControllerTestCase.php';
 class ApplicationParameterTest extends ControllerTestCase {
 
 	/**
-	 * Test du modèle "User".
+	 * Test de la fonction getParameters().
 	 */
-	public function testGetUser() {
-
+	public function testGetParameters() {
+		
 		// On charge le modèle
 		$parametersModel = new Application_Model_Website_ApplicationParameter();
 		
@@ -23,5 +23,4 @@ class ApplicationParameterTest extends ControllerTestCase {
 		$this->assertNotNull($params);
 		$this->assertEquals('OK', $params->Test);
 	}
-
 }

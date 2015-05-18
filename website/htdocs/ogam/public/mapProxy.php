@@ -26,7 +26,7 @@ $mapServiceURL = $configurationSession->configuration['map_service_url'];
 /*
 echo '<br/>mapServiceURL : '; echo $mapServiceURL;
 echo '<br/>connected : '; echo $userSession->connected;
-echo '<br/>role : '; print_r($userSession->role);
+echo '<br/>role : '; print_r($userSession->user->role);
 echo '<br/>permissions : '; print_r($userSession->permissions);
 exit();
 */
@@ -39,7 +39,7 @@ if(!$userSession->connected){
     onfailure('/');
 }
 $permissions = $userSession->permissions;
-$role = $userSession->role;
+$role = $userSession->user->role;
 if (empty($permissions) || !array_key_exists('DATA_QUERY',$permissions)) {
     onfailure('/');
 }

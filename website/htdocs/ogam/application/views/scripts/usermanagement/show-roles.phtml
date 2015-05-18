@@ -35,11 +35,11 @@ $i = 0;
 foreach ($this->roles as $role) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
-	<td class="edit-cell"><a title="<?=$this->translate('Edit');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-edit-role'), null, true)?>?roleCode=<?=$role->roleCode;?>">&nbsp;</a></td>
-	<td><?= $this->escape($role->roleCode); ?></td>
-	<td><?= $this->escape($role->roleLabel); ?></td>
-	<td><?= $this->escape($role->roleDefinition); ?></td>
-	<td class="delete-cell"><a title="<?=$this->translate('Delete');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-role'), null, true)?>?roleCode=<?=$role->roleCode;?>" onClick="return confirm('<?=$this->translate('Are you sure?')?>');">&nbsp;</a></td>
+	<td class="edit-cell"><a title="<?=$this->translate('Edit');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-edit-role'), null, true)?>?roleCode=<?=$role->code;?>">&nbsp;</a></td>
+	<td><?= $this->escape($role->code); ?></td>
+	<td><?= $this->escape($role->label); ?></td>
+	<td><?= $this->escape($role->definition); ?></td>
+	<td class="delete-cell"><a title="<?=$this->translate('Delete');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-role'), null, true)?>?roleCode=<?=$role->code;?>" onClick="return confirm('<?=$this->translate('Are you sure?')?>');">&nbsp;</a></td>
 </tr>
 <?php
 	$i++;

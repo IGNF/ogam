@@ -56,7 +56,7 @@ class UsermanagementController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-		$role = $userSession->role;
+		$role = $userSession->user->role;
 		if (empty($permissions) || !array_key_exists('MANAGE_USERS', $permissions)) {
 			throw new Zend_Auth_Exception('Permission denied for right : MANAGE_USERS');
 		}
@@ -155,13 +155,13 @@ class UsermanagementController extends AbstractOGAMController {
 		$roleCodeElem->setLabel('Role');
 		$roleCodeElem->setRequired(true);
 		if ($role != null) {
-			$roleCodeElem->setValue($role->roleCode);
+			$roleCodeElem->setValue($role->code);
 		}
 		// Add the list of available roles
 		$rolesList = $this->roleModel->getRoles();
 		$multi = array();
 		foreach ($rolesList as $roleItem) {
-			$multi[$roleItem->roleCode] = $roleItem->roleLabel;
+			$multi[$roleItem->code] = $roleItem->label;
 		}
 		$roleCodeElem->addMultiOptions($multi);
 
@@ -259,7 +259,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$roleCode->setLabel('Role Code');
 		$roleCode->setRequired(true);
 		if ($role != null) {
-			$roleCode->setValue($role->roleCode);
+			$roleCode->setValue($role->code);
 		}
 		if ($mode == 'edit') {
 			$roleCode->setAttrib('readonly', 'true');
@@ -272,7 +272,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$roleLabel->setLabel('Role Label');
 		$roleLabel->setRequired(true);
 		if ($role != null) {
-			$roleLabel->setValue($role->roleLabel);
+			$roleLabel->setValue($role->label);
 		}
 
 		//
@@ -282,7 +282,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$roleDefinition->setLabel('Role Definition');
 		$roleDefinition->setRequired(true);
 		if ($role != null) {
-			$roleDefinition->setValue($role->roleDefinition);
+			$roleDefinition->setValue($role->definition);
 		}
 
 
@@ -294,7 +294,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$rolepermissions->setDisableTranslator(true); // Pas de trad par Zend, c'est géré dans les métadonnées
 		$rolepermissions->addMultiOptions($allpermissions);
 		if ($role != null) {
-			$permissions = $this->roleModel->getRolePermissions($role->roleCode);
+			$permissions = $this->roleModel->getRolePermissions($role->code);
 			$rolepermissions->setValue(array_keys($permissions)); // set the selected permissions
 		}
 		
@@ -312,7 +312,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$roleschemas->addMultiOptions($schemasList);
 		if ($role != null) {
 			// Get the Schemas
-			$schemas = $this->roleModel->getRoleSchemas($role->roleCode);
+			$schemas = $this->roleModel->getRoleSchemas($role->code);
 			$roleschemas->setValue($schemas); // set the selected schemas
 		}
 		
@@ -329,7 +329,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$datasetsRestriction->addMultiOptions($datasetList);
 		if ($role != null) {
 			// Get the Schemas
-			$datasetRestricted = $this->roleModel->getDatasetRoleRestrictions($role->roleCode);
+			$datasetRestricted = $this->roleModel->getDatasetRoleRestrictions($role->code);
 			$datasetsRestriction->setValue($datasetRestricted);
 		}
 		
@@ -348,7 +348,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$layersRestriction->addMultiOptions($layersList);
 		if ($role != null) {
 			// Get the Schemas
-			$layersRestricted = $this->roleModel->getLayerRoleRestrictions($role->roleCode);
+			$layersRestricted = $this->roleModel->getLayerRoleRestrictions($role->code);
 			$layersRestriction->setValue($layersRestricted);
 		}
 		
@@ -555,9 +555,9 @@ class UsermanagementController extends AbstractOGAMController {
 
 			// Build the user
 			$role = new Application_Object_Website_Role();
-			$role->roleCode = $roleCode;
-			$role->roleLabel = $roleLabel;
-			$role->roleDefinition = $roleDefinition;
+			$role->code = $roleCode;
+			$role->label = $roleLabel;
+			$role->definition = $roleDefinition;
 
 			if ($mode == 'edit') {
 				//
@@ -682,7 +682,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$user = $this->userModel->getUser($userLogin);
 
 		// Get the role of the user
-		$role = $this->roleModel->getRole($user->roleCode);
+		$role = $this->roleModel->getRole($user->code);
 
 		// Generate the form
 		$form = $this->_getUserForm('edit', $user, $role);
