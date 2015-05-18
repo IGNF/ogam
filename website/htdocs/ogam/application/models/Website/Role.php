@@ -73,16 +73,16 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the list of different roles.
 	 *
-	 * @return Array[Role]
+	 * @return Array[String => Role]
 	 */
-	public function getRoles() {
+	public function getRolesList() {
 		$db = $this->getAdapter();
 		
 		$req = " SELECT role_code, COALESCE(t.label, role_label) as role_label, COALESCE(t.definition, role_definition) as role_definition ";
 		$req .= " FROM role ";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'ROLE' AND row_pk = role_code) ";
 		$req .= " ORDER BY role_code";
-		$this->logger->info('getRoles : ' . $req);
+		$this->logger->info('getRolesList : ' . $req);
 		
 		$query = $db->prepare($req);
 		$query->execute(array());
@@ -95,7 +95,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 			$role->code = $result['role_code'];
 			$role->label = $result['role_label'];
 			$role->definition = $result['role_definition'];
-			$roles[] = $role;
+			$roles[$role->code] = $role;
 		}
 		
 		return $roles;

@@ -41,7 +41,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 *
 	 * @return Array fo Users
 	 */
-	public function getUsers() {
+	public function getUsersList() {
 		$db = $this->getAdapter();
 		
 		$req = " SELECT user_login as login, ";
@@ -58,7 +58,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'ROLE' AND row_pk = role_code) ";
 		$req .= " WHERE active = 1 ";
 		$req .= " ORDER BY role_label, user_login";
-		$this->logger->info('getUser : ' . $req);
+		$this->logger->info('getUsersList : ' . $req);
 		
 		$query = $db->prepare($req);
 		$query->execute();

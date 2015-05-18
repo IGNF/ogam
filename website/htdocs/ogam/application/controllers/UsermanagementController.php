@@ -158,7 +158,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$roleCodeElem->setValue($role->code);
 		}
 		// Add the list of available roles
-		$rolesList = $this->roleModel->getRoles();
+		$rolesList = $this->roleModel->getRolesList();
 		$multi = array();
 		foreach ($rolesList as $roleItem) {
 			$multi[$roleItem->code] = $roleItem->label;
@@ -616,7 +616,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->logger->debug('showUsersAction');
 
 		// Get the list of users
-		$users = $this->userModel->getUsers();
+		$users = $this->userModel->getUsersList();
 
 		// Get the list of providers
 		$providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
@@ -640,7 +640,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->logger->debug('showRolesAction');
 
 		// Get the list of roles
-		$roles = $this->roleModel->getRoles();
+		$roles = $this->roleModel->getRolesList();
 
 		$this->view->roles = $roles;
 

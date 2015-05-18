@@ -43,14 +43,14 @@ class UserTest extends ControllerTestCase {
 	}
 
 	/**
-	 * Test "getUsers".
+	 * Test "getUsersList".
 	 */
-	public function testGetUsers() {
+	public function testGetUsersList() {
 		
 		// On charge le modèle
 		$userModel = new Application_Model_Website_User();
 		
-		$users = $userModel->getUsers();
+		$users = $userModel->getUsersList();
 		
 		$this->assertNotNull($users);
 		$this->assertTrue(is_array($users));

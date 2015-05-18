@@ -87,4 +87,25 @@ class RoleTest extends ControllerTestCase {
 		//
 		$roleModel->deleteRole($code);
 	}
+
+	/**
+	 * Test de la fonction getRolesList().
+	 */
+	public function testGetRolesList() {
+		
+		// On charge le modèle
+		$roleModel = new Application_Model_Website_Role();
+		
+		// On récupère les rôles
+		$rolesList = $roleModel->getRolesList();
+		
+		// Il doit y avoir au moins un role dans la liste (ADMIN)
+		$this->assertNotNull($rolesList);
+		$this->assertTrue(count($rolesList) > 0);
+		
+		$role = $rolesList['ADMIN'];
+		
+		$this->assertNotNull($role);
+		$this->assertEquals($role->label, 'Administrator');
+	}
 }
