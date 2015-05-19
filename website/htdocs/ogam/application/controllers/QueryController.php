@@ -54,6 +54,8 @@ class QueryController extends AbstractOGAMController {
 		if (empty($user) || !in_array('DATA_QUERY', $user->role->permissionsList)) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
+		$websiteSession = new Zend_Session_Namespace('website');
+		$schema = $websiteSession->schema;
 		
 		// Check if the user has access to the schema
 		$schemas = $user->role->schemasList;
