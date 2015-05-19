@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,28 +12,50 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent a user's role.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Website_Role {
 
 	/**
 	 * The user role.
+	 *
+	 * @var String
 	 */
 	var $code;
 
 	/**
 	 * The role label.
+	 *
+	 * @var String
 	 */
 	var $label;
 
 	/**
 	 * The role definition.
+	 *
+	 * @var String
 	 */
 	var $definition;
 
+	/**
+	 * The role permissions.
+	 *
+	 * A list of codes corresponding to authorised actions.
+	 *
+	 * @var Array[String]
+	 */
+	var $permissionsList = array();
+
+	/**
+	 * The database schemas the role can access.
+	 *
+	 * A list of schemas names.
+	 *
+	 * @var Array[String]
+	 */
+	var $schemasList = array();
 }

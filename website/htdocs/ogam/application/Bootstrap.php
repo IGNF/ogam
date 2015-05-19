@@ -5,13 +5,12 @@ require_once APPLICATION_PATH . '/objects/Website/User.php';
 require_once APPLICATION_PATH . '/objects/Website/Role.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
 
-
-
 /**
  *
  * The bootstrap class
+ * 
  * @author IFN
- * @SuppressWarnings protectedFunctionNaming
+ *         @SuppressWarnings protectedFunctionNaming
  */
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	
@@ -35,7 +34,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	/**
 	 * Register the logger into Zend_Registry
 	 * WARNING : Do not call this function _initLog() !
-	 * 
+	 *
 	 * @throws Zend_Exception
 	 */
 	protected function _initRegisterLogger() {
@@ -71,7 +70,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 	/**
 	 * Init the routing system
-	 * 
+	 *
 	 * @throws Zend_Exception
 	 */
 	protected function _initCustomRouter() {
@@ -106,7 +105,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	/**
 	 *
 	 * Initialise the layout
-	 * 
+	 *
 	 * @return Zend_View The layout view
 	 */
 	protected function _initView() {
@@ -152,7 +151,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	/**
 	 *
 	 * Register the locale and the translation
-	 * 
+	 *
 	 * @throws Zend_Exception
 	 */
 	protected function _initRegisterTranslate() {
@@ -202,7 +201,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	/**
 	 *
 	 * Add the translation files to the provided Zend_Translate object
-	 * 
+	 *
 	 * @param array $dirs
 	 *        	An array of lang dirs
 	 * @param Zend_Translate $translate
@@ -261,14 +260,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$configurationSession->configuration = array(
 			"map_service_url" => $configuration->map_service_url
-		) // Needed into mapProxy.php file to improve performances (avoiding a db connection).
-;
+		); // Needed into mapProxy.php file to improve performances (avoiding a db connection).
+
 	}
 
 	/**
 	 *
 	 * Check the caches
-	 * 
+	 *
 	 * @throws Zend_Exception
 	 */
 	protected function _initSetCache() {
@@ -306,7 +305,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			
 			if (empty($user)) {
 				$userModel = new Application_Model_Website_User();
-				$roleModel = new Application_Model_Website_Role();
 				
 				// Get the user informations
 				$user = $userModel->getUser($configuration->defaultUser);
@@ -317,15 +315,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					// Store the user in session
 					$userSession->connected = true;
 					$userSession->user = $user;
-					
-					// Get the User Permissions
-					$role = $user->role;
-					$permissions = $roleModel->getRolePermissions($role->code);
-					$userSession->permissions = $permissions;
-					
-					// Get the accessible schemas
-					$schemas = $roleModel->getRoleSchemas($role->code);
-					$userSession->schemas = $schemas;
 				}
 			}
 		}

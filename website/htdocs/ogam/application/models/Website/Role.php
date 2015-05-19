@@ -14,7 +14,7 @@
 
 /**
  * This is the Role model.
- * 
+ *
  * @package models
  */
 class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
@@ -38,8 +38,8 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	/**
 	 * Get a user Role.
 	 *
-	 * @param
-	 *        	string roleCode The role code
+	 * @param String $roleCode
+	 *        	The role code
 	 * @return a Role
 	 */
 	public function getRole($roleCode) {
@@ -60,10 +60,19 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		$result = $query->fetch();
 		
 		if (!empty($result)) {
+			
+			// Create the role object
 			$role = new Application_Object_Website_Role();
 			$role->code = $result['role_code'];
 			$role->label = $result['role_label'];
 			$role->definition = $result['role_definition'];
+			
+			// Get its permissions
+			$role->permissionsList = $this->_getRolePermissions($role->code);
+			
+			// Get the list of schemas it can access
+			$role->schemasList = $this->_getRoleSchemas($role->code);
+			
 			return $role;
 		} else {
 			return null;
@@ -104,11 +113,11 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the permissions of the role.
 	 *
-	 * @param
-	 *        	String the role code
-	 * @return Array[permissionCode=>permission_label]
+	 * @param String $roleCode
+	 *        	the role code
+	 * @return Array[permissionCode => permission_label]
 	 */
-	public function getRolePermissions($roleCode) {
+	private function _getRolePermissions($roleCode) {
 		$db = $this->getAdapter();
 		
 		$req = " SELECT permission_code, COALESCE(t.label, permission_label) as permission_label ";
@@ -126,7 +135,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		$results = $query->fetchAll();
 		$permissions = array();
 		foreach ($results as $result) {
-			$permissions[$result['permission_code']] = $result['permission_label'];
+			$permissions[] = $result['permission_code'];
 		}
 		
 		return $permissions;
@@ -135,11 +144,11 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the schemas accessible by the role.
 	 *
-	 * @param
-	 *        	String the role code
-	 * @return Array[schemaCode]
+	 * @param String $roleCode
+	 *        	the role code
+	 * @return Array[String] The schemas list
 	 */
-	public function getRoleSchemas($roleCode) {
+	private function _getRoleSchemas($roleCode) {
 		$db = $this->getAdapter();
 		
 		$req = " SELECT schema_code ";
@@ -162,67 +171,9 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the schemas accessible by the role.
-	 *
-	 * @param
-	 *        	String the role code
-	 * @return Array[String] list of forbidden datasets
-	 */
-	public function getDatasetRoleRestrictions($roleCode) {
-		$db = $this->getAdapter();
-		
-		$req = " SELECT dataset_id ";
-		$req .= " FROM dataset_role_restriction ";
-		$req .= " WHERE role_code = ? ";
-		$this->logger->info('getDatasetRoleRestrictions : ' . $req);
-		
-		$query = $db->prepare($req);
-		$query->execute(array(
-			$roleCode
-		));
-		
-		$rows = $query->fetchAll();
-		$result = array();
-		foreach ($rows as $row) {
-			$result[] = $row['dataset_id'];
-		}
-		
-		return $result;
-	}
-
-	/**
-	 * Get the schemas accessible by the role.
-	 *
-	 * @param
-	 *        	String the role code
-	 * @return Array[String] list of forbidden datasets
-	 */
-	public function getLayerRoleRestrictions($roleCode) {
-		$db = $this->getAdapter();
-		
-		$req = " SELECT layer_name ";
-		$req .= " FROM layer_role_restriction ";
-		$req .= " WHERE role_code = ? ";
-		$this->logger->info('getLayerRoleRestrictions : ' . $req);
-		
-		$query = $db->prepare($req);
-		$query->execute(array(
-			$roleCode
-		));
-		
-		$rows = $query->fetchAll();
-		$result = array();
-		foreach ($rows as $row) {
-			$result[] = $row['layer_name'];
-		}
-		
-		return $result;
-	}
-
-	/**
 	 * Get the all the available permissions.
 	 *
-	 * @return Array[permissionCode=>permissionLabel]
+	 * @return Array[permissionCode => permissionLabel]
 	 */
 	public function getAllPermissions() {
 		$db = $this->getAdapter();
@@ -248,8 +199,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	/**
 	 * Update role information.
 	 *
-	 * @param
-	 *        	Role role
+	 * @param Role $role        	
 	 */
 	public function updateRole($role) {
 		$db = $this->getAdapter();
@@ -264,17 +214,20 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 			$role->definition,
 			$role->code
 		));
+		
+		// Update the permissions
+		$this->_updateRolePermissions($role);
+		
+		// Update the schemas
+		$this->_updateRoleSchemas($role);
 	}
 
 	/**
 	 * Update the role permissions.
 	 *
-	 * @param
-	 *        	Role role
-	 * @param
-	 *        	Array[] permissions
+	 * @param Role $role        	
 	 */
-	public function updateRolePermissions($role, $rolepermissions) {
+	private function _updateRolePermissions($role) {
 		$db = $this->getAdapter();
 		
 		// Clean the previous permissions
@@ -289,8 +242,8 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		));
 		
 		// Insert the new ones
-		if (!empty($rolepermissions)) {
-			foreach ($rolepermissions as $permission) {
+		if (!empty($role->permissionsList)) {
+			foreach ($role->permissionsList as $permission) {
 				
 				$req = "INSERT INTO permission_per_role(role_code, permission_code) VALUES (?, ?)";
 				
@@ -308,15 +261,12 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	/**
 	 * Update the role schemas.
 	 *
-	 * @param
-	 *        	Role role
-	 * @param
-	 *        	Array[String] schemas
+	 * @param Role $role        	
 	 */
-	public function updateRoleSchemas($role, $schemas) {
+	private function _updateRoleSchemas($role) {
 		$db = $this->getAdapter();
 		
-		// Clean the previous permissions
+		// Clean the previous schemas
 		$req = "DELETE FROM role_to_schema";
 		$req .= " WHERE role_code = ?";
 		
@@ -327,9 +277,9 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 			$role->code
 		));
 		
-		// Insert the new ones
-		if (!empty($schemas)) {
-			foreach ($schemas as $schema) {
+		// Insert the new schemas
+		if (!empty($role->schemasList)) {
+			foreach ($role->schemasList as $schema) {
 				$req = "INSERT INTO role_to_schema(role_code, schema_code) VALUES (?, ?)";
 				
 				$this->logger->info('updateRoleSchemas : ' . $req);
@@ -344,86 +294,9 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Update the role layer restrictions.
-	 *
-	 * @param
-	 *        	Role role
-	 * @param
-	 *        	Array[String] layerRestrictions
-	 */
-	public function updateLayerRestrictions($role, $layerRestrictions) {
-		$db = $this->getAdapter();
-		
-		// Clean the previous permissions
-		$req = "DELETE FROM layer_role_restriction";
-		$req .= " WHERE role_code = ?";
-		
-		$this->logger->info('updateLayerRestrictions : ' . $req);
-		
-		$query = $db->prepare($req);
-		$query->execute(array(
-			$role->code
-		));
-		
-		// Insert the new ones
-		if (!empty($layerRestrictions)) {
-			foreach ($layerRestrictions as $layerRestriction) {
-				$req = "INSERT INTO layer_role_restriction (role_code, layer_name) VALUES (?, ?)";
-				
-				$this->logger->info('updateLayerRestrictions : ' . $req);
-				
-				$query = $db->prepare($req);
-				$query->execute(array(
-					$role->code,
-					$layerRestriction
-				));
-			}
-		}
-	}
-
-	/**
-	 * Update the role dataset restrictions.
-	 *
-	 * @param
-	 *        	Role role
-	 * @param
-	 *        	Array[String] datasetRestrictions
-	 */
-	public function updateDatasetRestrictions($role, $datasetRestrictions) {
-		$db = $this->getAdapter();
-		
-		// Clean the previous permissions
-		$req = "DELETE FROM dataset_role_restriction";
-		$req .= " WHERE role_code = ?";
-		
-		$this->logger->info('updateDatasetRestrictions : ' . $req);
-		
-		$query = $db->prepare($req);
-		$query->execute(array(
-			$role->code
-		));
-		
-		// Insert the new ones
-		if (!empty($datasetRestrictions)) {
-			foreach ($datasetRestrictions as $datasetRestriction) {
-				$req = "INSERT INTO dataset_role_restriction (role_code, dataset_id) VALUES (?, ?)";
-				
-				$this->logger->info('updateDatasetRestrictions : ' . $req);
-				
-				$query = $db->prepare($req);
-				$query->execute(array(
-					$role->code,
-					$datasetRestriction
-				));
-			}
-		}
-	}
-
-	/**
 	 * Create a new role.
 	 *
-	 * @param
-	 *        	Role role
+	 * @param Role $role        	
 	 */
 	public function createRole($role) {
 		$db = $this->getAdapter();
@@ -439,32 +312,22 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 			$role->label,
 			$role->definition
 		));
+		
+		// Update the permissions
+		$this->_updateRolePermissions($role);
+		
+		// Update the schemas
+		$this->_updateRoleSchemas($role);
 	}
 
 	/**
 	 * Delete the role.
 	 *
-	 * @param
-	 *        	String the role code
+	 * @param String $roleCode
+	 *        	the role code
 	 */
 	public function deleteRole($roleCode) {
 		$db = $this->getAdapter();
-		
-		// Delete the schemas linked to the role
-		$req = " DELETE FROM layer_role_restriction WHERE role_code = ?";
-		$this->logger->info('deleteLayerRoleRestriction : ' . $req);
-		$query = $db->prepare($req);
-		$query->execute(array(
-			$roleCode
-		));
-		
-		// Delete the schemas linked to the role
-		$req = " DELETE FROM dataset_role_restriction WHERE role_code = ?";
-		$this->logger->info('deleteDatasetRoleRestriction : ' . $req);
-		$query = $db->prepare($req);
-		$query->execute(array(
-			$roleCode
-		));
 		
 		// Delete the schemas linked to the role
 		$req = " DELETE FROM role_to_schema WHERE role_code = ?";

@@ -9,6 +9,25 @@ require_once TEST_PATH . 'ControllerTestCase.php';
 class RoleTest extends ControllerTestCase {
 
 	/**
+	 * Test de la fonction getAllPermissions().
+	 */
+	public function testGetAllPermissions() {
+		
+		// On charge le modèle
+		$roleModel = new Application_Model_Website_Role();
+		
+		// On récupère les permissions
+		$permissionsList = $roleModel->getAllPermissions();
+		
+		// La liste ne doit pas être vide
+		$this->assertNotNull($permissionsList);
+		$this->assertTrue(count($permissionsList) > 0);
+		
+		// La permission DATA_QUERY doit existe
+		$this->assertTrue(array_key_exists('DATA_QUERY', $permissionsList));
+	}
+
+	/**
 	 * Test de la fonction GetRole().
 	 * Cas nominal (suppose que le rôle ADMIN existe déjà en base).
 	 */
@@ -24,6 +43,10 @@ class RoleTest extends ControllerTestCase {
 		$this->assertEquals($role->code, 'ADMIN');
 		$this->assertEquals($role->definition, 'Manages the web site');
 		$this->assertEquals($role->label, 'Administrator');
+		
+		// Le rôle ADMIN doit avoir le droit de voir les données
+		$permissionsList = $role->permissionsList;
+		$this->assertTrue(in_array('DATA_QUERY', $permissionsList));
 	}
 
 	/**
@@ -50,11 +73,22 @@ class RoleTest extends ControllerTestCase {
 		
 		$code = "TEST_ROLE";
 		
-		// On crée un utilisateur de test
+		// On crée un role de test
 		$role = new Application_Object_Website_Role();
 		$role->code = $code;
 		$role->definition = "Rôle de test";
 		$role->label = "Rôle de test";
+		
+		// On lui donne des permission
+		$role->permissionsList = array(
+			'DATA_QUERY',
+			'DATA_EDITION'
+		);
+		
+		// On lui affecte un schéma
+		$role->schemasList = array(
+			'RAW_DATA'
+		);
 		
 		// On fait du ménage au cas où
 		$roleModel->deleteRole($code);

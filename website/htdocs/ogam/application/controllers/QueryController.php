@@ -50,16 +50,13 @@ class QueryController extends AbstractOGAMController {
 		
 		// Check if the user can query data
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
-		if (empty($permissions) || !array_key_exists('DATA_QUERY', $permissions)) {
+		$user = $userSession->user;
+		if (empty($user) || !in_array('DATA_QUERY', $user->role->permissionsList)) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
 		
-		$websiteSession = new Zend_Session_Namespace('website');
-		$schema = $websiteSession->schema;
-		
 		// Check if the user has access to the schema
-		$schemas = $userSession->schemas;
+		$schemas = $user->role->schemasList;
 		if (!in_array($schema, $schemas)) {
 			throw new Zend_Auth_Exception('Permission denied for schema : "' . $schema . '"');
 		}
@@ -406,7 +403,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('getgridparametersAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -418,16 +415,16 @@ class QueryController extends AbstractOGAMController {
 		$this->view->userProviderId = $userSession->user->providerId;
 		
 		if (!empty($permissions)) {
-			if ($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) {
+			if ($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) {
 				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
-			if ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions)) {
+			if ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions)) {
 				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
-			if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && array_key_exists('DATA_EDITION', $permissions)) {
+			if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && in_array('DATA_EDITION', $permissions)) {
 				$this->view->hideGridDataEditButton = 'false';
 			}
-			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+			if (!in_array('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
 				$this->view->checkEditionRights = 'true';
 			}
 		}
@@ -650,7 +647,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('gridCsvExportAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -665,7 +662,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.csv', true);
 		
-		if (array_key_exists('EXPORT_RAW_DATA', $permissions)) {
+		if (in_array('EXPORT_RAW_DATA', $permissions)) {
 			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -832,7 +829,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('gridCsvExportAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -847,7 +844,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.kml', true);
 		
-		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
+		if (($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions))) {
 			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -1008,7 +1005,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('geojsonExportAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -1023,7 +1020,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'pplication/json;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.geojson', true);
 		
-		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
+		if (($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions))) {
 			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;

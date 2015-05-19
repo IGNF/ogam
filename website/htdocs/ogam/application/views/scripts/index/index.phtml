@@ -43,7 +43,7 @@
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
 $user = $userSession->user;
-$permissions = $userSession->permissions;
+$permissions = $user->role->permissionsList;
 ?>
 <div class="left-column">
 <?php
@@ -56,28 +56,28 @@ if (!empty($permissions)) {
 <ul id="appmenu" class="menu">
 
 <?php 
-if (!empty($permissions) && array_key_exists('DATA_INTEGRATION',$permissions)) {	
+if (!empty($permissions) && in_array('DATA_INTEGRATION',$permissions)) {	
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'integration'), 'default', true) ?>" class="pagelink" ><?=$this->translate('Data Integration');?></a>
 </li>
 <?php
 }
-if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_array("RAW_DATA", $userSession->schemas)) {	
+if (!empty($permissions) && in_array('DATA_QUERY',$permissions)  && in_array("RAW_DATA", $user->role->schemasList)) {	
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/RAW_DATA" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
 </li>
 <?php
 }
-if (!empty($permissions) && array_key_exists('DATA_EDITION',$permissions)  && in_array("RAW_DATA", $userSession->schemas)) {	
+if (!empty($permissions) && in_array('DATA_EDITION',$permissions)  && in_array("RAW_DATA", $user->role->schemasList)) {	
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?=$this->translate('Add a new localisation');?></a>
 </li>
 <?php
 } 
-if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions)) {	
+if (!empty($permissions) && in_array('DATA_HARMONIZATION',$permissions)) {	
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Harmonization');?></a>
@@ -85,7 +85,7 @@ if (!empty($permissions) && array_key_exists('DATA_HARMONIZATION',$permissions))
 <?php
 }
 
-if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_array("HARMONIZED_DATA", $userSession->schemas)) {
+if (!empty($permissions) && in_array('DATA_QUERY',$permissions)  && in_array("HARMONIZED_DATA", $user->role->schemasList)) {
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/HARMONIZED_DATA" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
@@ -93,7 +93,7 @@ if (!empty($permissions) && array_key_exists('DATA_QUERY',$permissions)  && in_a
 <?php
 }
  
-if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {	
+if (!empty($permissions) && in_array('MANAGE_USERS',$permissions)) {	
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" ><?=$this->translate('User Administration');?></a>
@@ -101,7 +101,7 @@ if (!empty($permissions) && array_key_exists('MANAGE_USERS',$permissions)) {
 <?php
 }
 
-if (!empty($permissions) && array_key_exists('CHECK_CONF',$permissions)) {
+if (!empty($permissions) && in_array('CHECK_CONF',$permissions)) {
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'checkconf'), null, true) ?>" class="pagelink" ><?=$this->translate('Check Configuration');?></a>
@@ -109,7 +109,7 @@ if (!empty($permissions) && array_key_exists('CHECK_CONF',$permissions)) {
 <?php
 }
 
-if (!empty($permissions) && array_key_exists('INDEX_FILE',$permissions)) {
+if (!empty($permissions) && in_array('INDEX_FILE',$permissions)) {
 ?>
 <li>
 <a href="<?= $this->url(array('controller'=>'indexation'), null, true) ?>" class="pagelink" ><?=$this->translate('Index Files');?></a>

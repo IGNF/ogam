@@ -68,7 +68,7 @@ class Genapp_Service_GenericService {
 
 		// Get the user rights
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 
 		// Get children for the current dataset
 		$this->genericModel = new Genapp_Model_Generic_Generic();
@@ -306,7 +306,7 @@ class Genapp_Service_GenericService {
 		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER', $permissions)) {
 			$where .= " AND ".$rootTable->getLogicalName().".provider_id = '".$providerId."'";
 		}
@@ -370,7 +370,7 @@ class Genapp_Service_GenericService {
 		// Get back the provider id of the data
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
 			$select .= ", ".$leftTable->getLogicalName().".provider_id as _provider_id";
 		}
