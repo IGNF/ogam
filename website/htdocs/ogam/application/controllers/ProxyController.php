@@ -29,8 +29,6 @@ class ProxyController extends AbstractOGAMController {
 	 */
 	private $metadataModel;
 
-	private $classDefinitionModel;
-
 	/**
 	 * Initialise the controler
 	 */
@@ -39,7 +37,6 @@ class ProxyController extends AbstractOGAMController {
 		
 		// Initialise the models
 		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->classDefinitionModel = new Application_Model_Mapping_ClassDefinition();
 		$this->servicesModel = new Application_Model_Mapping_Services();
 		$this->layersModel = new Application_Model_Mapping_Layers();
 		
@@ -125,21 +122,6 @@ class ProxyController extends AbstractOGAMController {
 			header("Content-Type: image/jpg");
 		} else {
 			header("Content-Type: image/png");
-		}
-		
-		// If the layer needs activation, we suppose it needs a SLD.
-		$hassld = $this->_extractParam($uri, "HASSLD");
-		if (strtolower($hassld) === "true") {
-			
-			// Get the layer name
-			$layerName = $this->_extractParam($uri, "LAYERS");
-			
-			if (strpos($layerName, "interpolation") !== FALSE) {
-				$sld = $this->_generateRasterSLD($layerName, 'average_value');
-			} else {
-				$sld = $this->_generateSLD($layerName, 'average_value');
-			}
-			$uri .= "&SLD_BODY=" . urlencode($sld);
 		}
 		
 		$this->logger->debug('redirect gettile : ' . $uri);
@@ -298,23 +280,6 @@ class ProxyController extends AbstractOGAMController {
 			header("Content-Type: image/jpg");
 		} else {
 			header("Content-Type: image/png");
-		}
-		
-		// If the layer needs activation, we suppose it needs a SLD.
-		$activation = $this->_extractParam($uri, "HASSLD");
-		$this->logger->debug('uri : ' . $uri);
-		if (strtolower($activation) === "true") {
-			
-			// Get the layer name
-			$layerName = $this->_extractParam($uri, "LAYER");
-			
-			// generate a SLD_BODY
-			if (strpos($layerName, "interpolation") !== FALSE) {
-				$sld = $this->_generateRasterSLD($layerName);
-			} else {
-				$sld = $this->_generateSLD($layerName, 'average_value');
-			}
-			$uri .= "&SLD_BODY=" . urlencode($sld);
 		}
 		
 		$this->logger->debug('redirect getlegendimage : ' . $uri);
@@ -504,115 +469,5 @@ class ProxyController extends AbstractOGAMController {
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
-	}
-
-	/**
-	 * Generate a SLD.
-	 * TODO : Move this method to the "Map" controler and make a call between controlers.
-	 *
-	 * @param String $layerName
-	 *        	The name of the layer
-	 * @param String $variableName
-	 *        	The name of the variable
-	 */
-	private function _generateSLD($layerName, $variableName) {
-		$this->logger->debug('_generateSLD : ' . $layerName);
-		
-		// Define the classes
-		$classes = $this->classDefinitionModel->getClassDefinition($variableName);
-		
-		// Generate the SLD string
-		$sld = '<StyledLayerDescriptor version="1.0.0"';
-		$sld .= ' xmlns="http://www.opengis.net/sld"';
-		$sld .= '  xmlns="http://www.opengis.net/ogc"';
-		$sld .= '  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">';
-		$sld .= '<NamedLayer>';
-		$sld .= '<Name>' . $layerName . '</Name>';
-		$sld .= '<UserStyle>';
-		$sld .= '<Name>' . $layerName . '</Name>';
-		$sld .= '<Title>' . $layerName . '</Title>';
-		$sld .= '<FeatureTypeStyle>';
-		
-		// Generate the SLD code corresponding to one class
-		foreach ($classes as $classe) {
-			
-			$sld .= '<Rule>';
-			$sld .= '<Name>' . $classe->label . '</Name>';
-			$sld .= '<Filter>';
-			$sld .= '<And>';
-			$sld .= '<PropertyIsGreaterThan>';
-			$sld .= '<PropertyName>' . $variableName . '</PropertyName>';
-			$sld .= '<Literal>' . $classe->minValue . '</Literal>';
-			$sld .= '</PropertyIsGreaterThan>';
-			$sld .= '<PropertyIsLessThan>';
-			$sld .= '<PropertyName>' . $variableName . '</PropertyName>';
-			$sld .= '<Literal>' . $classe->maxValue . '</Literal>';
-			$sld .= '</PropertyIsLessThan>';
-			$sld .= '</And>';
-			$sld .= '</Filter>';
-			$sld .= '<PolygonSymbolizer>';
-			$sld .= '<Fill>';
-			$sld .= '<CssParameter name="fill">#' . $classe->color . '</CssParameter>';
-			$sld .= '</Fill>';
-			$sld .= '</PolygonSymbolizer>';
-			$sld .= '</Rule>';
-		}
-		
-		$sld .= '</FeatureTypeStyle>';
-		$sld .= '</UserStyle>';
-		$sld .= '</NamedLayer>';
-		$sld .= '</StyledLayerDescriptor>';
-		
-		$this->logger->debug('_generated SLD : ' . $sld);
-		
-		return $sld;
-	}
-
-	/**
-	 * Generate a SLD for a Raster layer.
-	 * TODO : Move this method to the "Map" controler and make a call between controlers.
-	 *
-	 * @param String $layerName
-	 *        	The name of the layer
-	 * @param String $variableName
-	 *        	The name of the variable
-	 */
-	private function _generateRasterSLD($layerName, $variableName) {
-		$this->logger->debug('_generateRasterSLD : ' . $layerName);
-		
-		// Define the classes
-		$classes = $this->classDefinitionModel->getRasterClassDefinition($variableName);
-		
-		// Generate the SLD string
-		$sld = '<StyledLayerDescriptor version="1.0.0"';
-		$sld .= ' xmlns="http://www.opengis.net/sld"';
-		$sld .= '  xmlns="http://www.opengis.net/ogc"';
-		$sld .= '  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">';
-		$sld .= '<NamedLayer>';
-		$sld .= '<Name>' . $layerName . '</Name>';
-		$sld .= '<UserStyle>';
-		$sld .= '<Name>' . $layerName . '</Name>';
-		$sld .= '<Title>' . $layerName . '</Title>';
-		$sld .= '<FeatureTypeStyle>';
-		$sld .= '<Rule>';
-		$sld .= '<RasterSymbolizer>';
-		$sld .= '<ColorMap>';
-		
-		// Generate the SLD code corresponding to one class
-		foreach ($classes as $classe) {
-			$sld .= '<ColorMapEntry color="#' . $classe->color . '" quantity="' . $classe->maxValue . '" label="' . $classe->label . '" />';
-		}
-		
-		$sld .= '</ColorMap>';
-		$sld .= '</RasterSymbolizer>';
-		$sld .= '</Rule>';
-		$sld .= '</FeatureTypeStyle>';
-		$sld .= '</UserStyle>';
-		$sld .= '</NamedLayer>';
-		$sld .= '</StyledLayerDescriptor>';
-		
-		$this->logger->debug('_generated SLD : ' . $sld);
-		
-		return $sld;
 	}
 }
