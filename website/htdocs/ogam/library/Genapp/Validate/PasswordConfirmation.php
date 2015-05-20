@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -14,9 +15,10 @@
 /**
  * Validator for the password field
  *
- * @package    Genapp_Validate
+ * @package Genapp_Validate
  */
 class Genapp_Validate_PasswordConfirmation extends Zend_Validate_Abstract {
+
 	/**
 	 * Validation failure message key for when the confirmation password doesn't match the password
 	 */
@@ -36,14 +38,16 @@ class Genapp_Validate_PasswordConfirmation extends Zend_Validate_Abstract {
 	 *
 	 * Returns true if the confirmation password match the password
 	 *
-	 * @param  String $value the value to test
-	 * @param  Array $context some contextual information
+	 * @param String $value
+	 *        	the value to test
+	 * @param Array $context
+	 *        	some contextual information
 	 * @return boolean
 	 */
 	public function isValid($value, $context = null) {
 		$value = (string) $value;
 		$this->_setValue($value);
-
+		
 		if (is_array($context)) {
 			if (isset($context['confirmPassword']) && ($value == $context['confirmPassword'])) {
 				return true;
@@ -51,7 +55,7 @@ class Genapp_Validate_PasswordConfirmation extends Zend_Validate_Abstract {
 		} elseif (is_string($context) && ($value == $context)) {
 			return true;
 		}
-
+		
 		$this->_error(self::NOT_MATCH);
 		return false;
 	}

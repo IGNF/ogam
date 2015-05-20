@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,12 +12,11 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent a Foreign Key in the system.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_System_ForeignKey {
 
@@ -29,17 +29,17 @@ class Application_Object_System_ForeignKey {
 	 * The name of referenced table.
 	 */
 	var $sourceTable;
-	
+
 	/**
-	* The pks.
-	*/
+	 * The pks.
+	 */
 	var $foreignKeys = array();
-	
+
 	/**
-	* Set the primary keys
-	*
-	* @param String $keys
-	*/
+	 * Set the primary keys
+	 *
+	 * @param String $keys        	
+	 */
 	public function setForeignKeys($keys) {
 		$this->foreignKeys = array();
 		$pks = explode(",", $keys);
@@ -47,5 +47,4 @@ class Application_Object_System_ForeignKey {
 			$this->foreignKeys[] = trim($pk); // we need to trim all the values
 		}
 	}
-
 }

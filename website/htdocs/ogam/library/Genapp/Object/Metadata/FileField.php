@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -11,13 +12,11 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
-
 /**
  * Represent a Field of a File.
- * 
+ *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_FileField extends Genapp_Object_Metadata_Field {
 
@@ -39,14 +38,13 @@ class Genapp_Object_Metadata_FileField extends Genapp_Object_Metadata_Field {
 	 * @return a JSON string
 	 */
 	public function toJSON() {
-
-		$json = '"name":'.json_encode($this->getName());
-		$json .= ',"format":'.json_encode($this->format);
-		$json .= ',"label":'.json_encode($this->label);
-		$json .= ',"isMandatory":'.json_encode($this->isMandatory);
-		$json .= ',"definition":'.json_encode($this->definition);
-		$json .= ',"mask":'.json_encode($this->mask);
-
+		$json = '"name":' . json_encode($this->getName());
+		$json .= ',"format":' . json_encode($this->format);
+		$json .= ',"label":' . json_encode($this->label);
+		$json .= ',"isMandatory":' . json_encode($this->isMandatory);
+		$json .= ',"definition":' . json_encode($this->definition);
+		$json .= ',"mask":' . json_encode($this->mask);
+		
 		return $json;
 	}
 }

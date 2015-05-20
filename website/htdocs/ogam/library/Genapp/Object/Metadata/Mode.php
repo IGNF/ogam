@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -13,9 +14,9 @@
 
 /**
  * Represent a mode of a unit.
- * 
+ *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_Mode {
 
@@ -28,6 +29,4 @@ class Genapp_Object_Metadata_Mode {
 	 * The label.
 	 */
 	var $label;
-
-
 }

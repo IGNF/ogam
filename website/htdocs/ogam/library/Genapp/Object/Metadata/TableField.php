@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -15,26 +16,28 @@
  * Represent a Field of a Database.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_TableField extends Genapp_Object_Metadata_Field {
 
 	/**
 	 * The physical name of the column.
+	 * 
 	 * @var String
 	 */
 	var $columnName;
 
 	/**
 	 * Indicate if the field is calculated during an INSERT or UPDATE.
+	 * 
 	 * @var bool
 	 */
 	var $isCalculated;
 
-
 	/**
 	 * Indicate if the field is editable in the edition module.
-	 * Some fields present in the database and calculated by triggers or serials may not be displayed on the screen. 
+	 * Some fields present in the database and calculated by triggers or serials may not be displayed on the screen.
+	 * 
 	 * @var bool
 	 */
 	var $isEditable;
@@ -42,13 +45,15 @@ class Genapp_Object_Metadata_TableField extends Genapp_Object_Metadata_Field {
 	/**
 	 * Indicate if the field is insertable in the edition module.
 	 * Some fields may be editable in "update" mode but may not be displayed when creating a new data (for example a "departement" calculated by trigger on insert).
+	 * 
 	 * @var bool
 	 */
 	var $isInsertable;
-	
+
 	/**
 	 * Indicate if the field is mandatory in the edition module.
-	 * The PK fields are always mandatory, but some other fields may be declared as mandatory by the administrator. 
+	 * The PK fields are always mandatory, but some other fields may be declared as mandatory by the administrator.
+	 * 
 	 * @var bool
 	 */
 	var $isMandatory;
@@ -57,13 +62,18 @@ class Genapp_Object_Metadata_TableField extends Genapp_Object_Metadata_Field {
 	 * These fields are only filled when the table field is of unit GEOM.
 	 */
 	var $xmin;
+
 	var $xmax;
+
 	var $ymin;
+
 	var $ymax;
+
 	var $center;
 
 	/**
-	 * The position of the table field to be displayed. This is used in the detail panel and in the data edition module.
+	 * The position of the table field to be displayed.
+	 * This is used in the detail panel and in the data edition module.
 	 */
 	var $position;
 
@@ -77,5 +87,4 @@ class Genapp_Object_Metadata_TableField extends Genapp_Object_Metadata_Field {
 			}
 		}
 	}
-
 }

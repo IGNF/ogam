@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -13,9 +14,9 @@
 
 /**
  * Represent a Table Format (a table in a database).
- * 
+ *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_TableFormat extends Genapp_Object_Metadata_Format {
 
@@ -28,7 +29,7 @@ class Genapp_Object_Metadata_TableFormat extends Genapp_Object_Metadata_Format {
 	 * The schema identifier.
 	 */
 	var $schemaCode;
-	
+
 	/**
 	 * The primary key.
 	 */
@@ -38,11 +39,11 @@ class Genapp_Object_Metadata_TableFormat extends Genapp_Object_Metadata_Format {
 	 * The label.
 	 */
 	var $label;
-	
+
 	/**
 	 * Set the primary keys
-	 * 
-	 * @param String $keys
+	 *
+	 * @param String $keys        	
 	 */
 	public function setPrimaryKeys($keys) {
 		$this->primaryKeys = array();

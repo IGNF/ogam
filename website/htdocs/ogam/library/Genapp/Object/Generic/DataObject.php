@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -11,13 +12,11 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
-
 /**
  * A data object is used to store a values of a line of data (from any table of a database).
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Generic_DataObject {
 
@@ -47,7 +46,8 @@ class Genapp_Object_Generic_DataObject {
 	/**
 	 * Add a key element.
 	 *
-	 * @param TableField $field a field
+	 * @param TableField $field
+	 *        	a field
 	 */
 	public function addInfoField($field) {
 		$this->infoFields[$field->getName()] = $field;
@@ -56,7 +56,8 @@ class Genapp_Object_Generic_DataObject {
 	/**
 	 * Get a table field from the primary key.
 	 *
-	 * @param String $key a data
+	 * @param String $key
+	 *        	a data
 	 * @return TableField the table field
 	 */
 	public function getInfoField($key) {
@@ -65,6 +66,7 @@ class Genapp_Object_Generic_DataObject {
 
 	/**
 	 * Return the infoFields array .
+	 *
 	 *
 	 * @return TableField the infoFields array
 	 */
@@ -75,6 +77,7 @@ class Genapp_Object_Generic_DataObject {
 	/**
 	 * Return the editableFields array .
 	 *
+	 *
 	 * @return TableField the editableFields array
 	 */
 	public function getEditableFields() {
@@ -84,7 +87,8 @@ class Genapp_Object_Generic_DataObject {
 	/**
 	 * Add a field element.
 	 *
-	 * @param TableField $field a field
+	 * @param TableField $field
+	 *        	a field
 	 */
 	public function addEditableField($field) {
 		$this->editableFields[$field->getName()] = $field;
@@ -105,15 +109,14 @@ class Genapp_Object_Generic_DataObject {
 	 * @return Array[String] the table formats
 	 */
 	public function getFormats() {
-
 		$formats = array();
-
+		
 		foreach ($this->getFields() as $field) {
 			if (!in_array($field->format, $formats)) {
 				$formats[] = $field->format;
 			}
 		}
-
+		
 		return $formats;
 	}
 
@@ -123,16 +126,15 @@ class Genapp_Object_Generic_DataObject {
 	 * @return Boolean true is one geomtry field is present
 	 */
 	public function hasGeometry() {
-
 		$hasGeom = false;
-
+		
 		foreach ($this->getFields() as $field) {
 			if ($field->type == 'GEOM') {
 				$hasGeom = true;
 				break;
 			}
 		}
-
+		
 		return $hasGeom;
 	}
 
@@ -142,11 +144,10 @@ class Genapp_Object_Generic_DataObject {
 	 * @return String the datum identifier
 	 */
 	public function getId() {
-		$datumId = 'SCHEMA/'.$this->tableFormat->schemaCode.'/FORMAT/'.$this->tableFormat->format;
+		$datumId = 'SCHEMA/' . $this->tableFormat->schemaCode . '/FORMAT/' . $this->tableFormat->format;
 		foreach ($this->getInfoFields() as $field) {
-			$datumId .= '/'.$field->data.'/'.$field->value;
+			$datumId .= '/' . $field->data . '/' . $field->value;
 		}
 		return $datumId;
 	}
-
 }

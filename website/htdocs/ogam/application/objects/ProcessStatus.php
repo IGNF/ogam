@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,12 +12,11 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent the status of a process (integration or harmonization service).
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_ProcessStatus {
 
@@ -39,5 +39,4 @@ class Application_Object_ProcessStatus {
 	 * The total count of items in the current task.
 	 */
 	var $totalCount;
-
 }

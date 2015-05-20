@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -11,13 +12,11 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
-
 /**
  * Represent a Form Format (a logical bloc of the HTML Query page).
- * 
+ *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_FormFormat extends Genapp_Object_Metadata_Format {
 
@@ -47,7 +46,6 @@ class Genapp_Object_Metadata_FormFormat extends Genapp_Object_Metadata_Format {
 	 * @return a JSON string
 	 */
 	public function toJSON() {
-		return '"id":'.json_encode($this->format).',"label":'.json_encode($this->label);
+		return '"id":' . json_encode($this->format) . ',"label":' . json_encode($this->label);
 	}
-
 }

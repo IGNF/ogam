@@ -562,7 +562,7 @@ class Genapp_Service_QueryService {
 				
 				// Add the plot location in WKT
 				$json .= ',' . json_encode($line['location_centroid']); // The last column is the location center
-				                                                      
+				                                                        
 				// Right management : add the provider id of the data
 				$userSession = new Zend_Session_Namespace('user');
 				$permissions = $userSession->user->role->permissionsList;

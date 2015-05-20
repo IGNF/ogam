@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -13,9 +14,9 @@
 
 /**
  * Represent a database schema.
- * 
+ *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_Schema {
 
@@ -28,16 +29,14 @@ class Genapp_Object_Metadata_Schema {
 	 * The name (in database).
 	 */
 	var $name;
-	
+
 	/**
-	* The label.
-	*/
+	 * The label.
+	 */
 	var $label;
-	
+
 	/**
-	* The description.
-	*/
+	 * The description.
+	 */
 	var $description;
-
-
 }

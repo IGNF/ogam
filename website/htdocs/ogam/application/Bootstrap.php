@@ -6,11 +6,9 @@ require_once APPLICATION_PATH . '/objects/Website/Role.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
 
 /**
- *
  * The bootstrap class
- * 
- * @author IFN
- *         @SuppressWarnings protectedFunctionNaming
+ *
+ * @SuppressWarnings protectedFunctionNaming
  */
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	
@@ -261,7 +259,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$configurationSession->configuration = array(
 			"map_service_url" => $configuration->map_service_url
 		); // Needed into mapProxy.php file to improve performances (avoiding a db connection).
-
 	}
 
 	/**

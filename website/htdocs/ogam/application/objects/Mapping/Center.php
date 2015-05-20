@@ -22,7 +22,7 @@ class Application_Object_Mapping_Center {
 
 	/**
 	 * The x position of the center of the map.
-	 * 
+	 *
 	 * @var Numeric
 	 */
 	var $x;

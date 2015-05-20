@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -11,13 +12,11 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
-
 /**
  * A Form Query is the list of criterias and result columns composing a request from the use.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Generic_FormQuery {
 
@@ -42,9 +41,12 @@ class Genapp_Object_Generic_FormQuery {
 	/**
 	 * Add a new criteria.
 	 *
-	 * @param String $format the criteria form format
-	 * @param String $data the criteria form data
-	 * @param String $value the criteria value
+	 * @param String $format
+	 *        	the criteria form format
+	 * @param String $data
+	 *        	the criteria form data
+	 * @param String $value
+	 *        	the criteria value
 	 */
 	public function addCriteria($format, $data, $value) {
 		$field = new Genapp_Object_Metadata_FormField();
@@ -57,8 +59,10 @@ class Genapp_Object_Generic_FormQuery {
 	/**
 	 * Add a new result.
 	 *
-	 * @param String $format the result form format
-	 *  @param String $data the result form data
+	 * @param String $format
+	 *        	the result form format
+	 * @param String $data
+	 *        	the result form data
 	 */
 	public function addResult($format, $data) {
 		$field = new Genapp_Object_Metadata_FormField();
@@ -75,7 +79,7 @@ class Genapp_Object_Generic_FormQuery {
 	public function getFields() {
 		return array_merge($this->criterias, $this->results);
 	}
-	
+
 	/**
 	 * Get the criterias.
 	 *
@@ -84,7 +88,7 @@ class Genapp_Object_Generic_FormQuery {
 	public function getCriterias() {
 		return $this->criterias;
 	}
-	
+
 	/**
 	 * Get the result columns.
 	 *
@@ -93,5 +97,4 @@ class Genapp_Object_Generic_FormQuery {
 	public function getResults() {
 		return $this->results;
 	}
-
 }

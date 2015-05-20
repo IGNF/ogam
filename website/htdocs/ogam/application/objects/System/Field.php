@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,18 +12,17 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent a Field in the system.
- * 
+ *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_System_Field {
 
 	/**
-	* The real name of the column.
-	*/
+	 * The real name of the column.
+	 */
 	var $columnName;
 
 	/**
@@ -34,10 +34,9 @@ class Application_Object_System_Field {
 	 * The real name of the schema.
 	 */
 	var $schemaName;
-	
-	/**
-	* The type of the field in the database.
-	*/
-	var $type;
 
+	/**
+	 * The type of the field in the database.
+	 */
+	var $type;
 }

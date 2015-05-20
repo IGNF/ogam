@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,12 +12,11 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent a Table in the system.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_System_Table {
 
@@ -29,17 +29,17 @@ class Application_Object_System_Table {
 	 * The real name of the schema.
 	 */
 	var $schemaName;
-	
+
 	/**
-	* The pks.
-	*/
+	 * The pks.
+	 */
 	var $primaryKeys = array();
-	
+
 	/**
-	* Set the primary keys
-	*
-	* @param String $keys
-	*/
+	 * Set the primary keys
+	 *
+	 * @param String $keys        	
+	 */
 	public function setPrimaryKeys($keys) {
 		$this->primaryKeys = array();
 		$pks = explode(",", $keys);
@@ -47,5 +47,4 @@ class Application_Object_System_Table {
 			$this->primaryKeys[] = trim($pk); // we need to trim all the values
 		}
 	}
-
 }

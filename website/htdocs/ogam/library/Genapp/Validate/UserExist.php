@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -14,9 +15,10 @@
 /**
  * Validator for the login field
  *
- * @package    Genapp_Validate
+ * @package Genapp_Validate
  */
 class Genapp_Validate_UserExist extends Zend_Validate_Abstract {
+
 	/**
 	 * Validation failure message key for when the login doesn't exist
 	 */
@@ -36,21 +38,23 @@ class Genapp_Validate_UserExist extends Zend_Validate_Abstract {
 	 *
 	 * Returns true if the login exist
 	 *
-	 * @param  String $value the value to test
-	 * @param  Array $context some contextual information
+	 * @param String $value
+	 *        	the value to test
+	 * @param Array $context
+	 *        	some contextual information
 	 * @return boolean
 	 */
 	public function isValid($value, $context = null) {
 		$value = (string) $value;
 		$this->_setValue($value);
-
+		
 		// Check that the user exist
 		$userModel = new Application_Model_Website_User();
 		$duplicate = $userModel->getUser($value);
 		if (!empty($duplicate)) {
 			return true;
 		}
-
+		
 		$this->_error(self::USER_NOT_EXIST);
 		return false;
 	}

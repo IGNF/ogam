@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -15,7 +16,7 @@
  * Represent an information about a table in the table hierarchical tree.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Genapp_Object_Metadata_TableTreeData {
 
@@ -54,5 +55,4 @@ class Genapp_Object_Metadata_TableTreeData {
 	function getLogicalName() {
 		return $this->tableFormat;
 	}
-
 }
