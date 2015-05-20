@@ -561,8 +561,6 @@ class UsermanagementController extends AbstractOGAMController {
 		// Get the list of providers
 		$providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
 		
-		$this->logger->debug('users : ' . $users);
-		
 		$this->view->users = $users;
 		$this->view->providers = $providers;
 		

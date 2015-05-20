@@ -17,8 +17,8 @@
  * @package views
  */
 ?>
-<script  type="text/javascript" language='Javascript' src="<?= $this->baseUrl('js/auth_cram.js') ?>"></script>
+<script  type="text/javascript" language='Javascript' src="<?php echo $this->baseUrl('js/auth_cram.js') ?>"></script>
 <noscript class="noscript">Javascript must be actived in order to login</noscript>
 
-<h1><?=$this->translate('Authentication');?></h1>
-<?= $this->form ?>
+<h1><?php echo $this->translate('Authentication');?></h1>
+<?php echo $this->form ?>

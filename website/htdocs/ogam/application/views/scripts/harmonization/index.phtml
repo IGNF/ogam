@@ -19,7 +19,7 @@
 ?>
 
 <h1>
-   <?=$this->translate('Data harmonization module');?>
+   <?php echo $this->translate('Data harmonization module');?>
 </h1>
 
 <div class="left-column">
@@ -29,7 +29,7 @@
 
  
 <li>
-<a href="<?= $this->url(array('controller'=>'harmonization','action'=>'show-harmonization-page'), null, true) ?>"><?=$this->translate('Harmonize Data');?></a>
+<a href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'show-harmonization-page'), null, true) ?>"><?php echo $this->translate('Harmonize Data');?></a>
 </li>
 
 

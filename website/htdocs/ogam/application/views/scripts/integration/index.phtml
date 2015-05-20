@@ -19,7 +19,7 @@
 ?>
 
 <h1>
-   <?=$this->translate('Data integration module');?>
+   <?php echo $this->translate('Data integration module');?>
 </h1>
 
 <div class="left-column">
@@ -34,7 +34,7 @@ $role = $user_session->role;
 
 
 <li>
-<a href="<?= $this->url(array('controller'=>'integration','action'=>'show-data-submission-page'), null, true) ?>"><?=$this->translate('Submit Data');?></a>
+<a href="<?php echo $this->url(array('controller'=>'integration','action'=>'show-data-submission-page'), null, true) ?>"><?php echo $this->translate('Submit Data');?></a>
 </li>
 
 </ul>

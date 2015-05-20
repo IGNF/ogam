@@ -20,7 +20,7 @@
 
 
 <h1>
-   <?=$this->translate('Data harmonization module');?>
+   <?php echo $this->translate('Data harmonization module');?>
 </h1>
 
 <h2>Validated submissions</h2>
@@ -35,9 +35,9 @@
 $i = 0;
 foreach($this->validatedsubmissions as $validatedSubmission) {
 ?>
-<tr class="sectiontableentry<?=$i % 2?>">
-	<td><?= $validatedSubmission->datasetId ?></td>	
-	<td><?= $validatedSubmission->providerId ?></td>
+<tr class="sectiontableentry<?php echo $i % 2?>">
+	<td><?php echo $validatedSubmission->datasetId ?></td>	
+	<td><?php echo $validatedSubmission->providerId ?></td>
 </tr>
 <?php
 $i++;
@@ -47,6 +47,6 @@ $i++;
 
 <h2>Select a data set</h2>
 <div class="data-harmonization-form">
-<?= $this->form ?>
+<?php echo $this->form ?>
 </div>
-<?= $this->errorMessage ?>
+<?php echo $this->errorMessage ?>

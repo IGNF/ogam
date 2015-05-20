@@ -36,7 +36,7 @@
     </br></br>
 <![endif]-->
 <h1>
-    <?=$this->translate('Welcome');?>
+    <?php echo $this->translate('Welcome');?>
 </h1>
 <?php
 
@@ -56,7 +56,7 @@ if (!empty($permissions)) {
 ?>
 <div class="moduletable_menu">
 <h3>
-<?=$this->translate('Select a menu');?>
+<?php echo $this->translate('Select a menu');?>
 </h3>
 <ul id="appmenu" class="menu">
 
@@ -64,28 +64,28 @@ if (!empty($permissions)) {
 if (!empty($permissions) && in_array('DATA_INTEGRATION',$permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'integration'), 'default', true) ?>" class="pagelink" ><?=$this->translate('Data Integration');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'integration'), 'default', true) ?>" class="pagelink" ><?php echo $this->translate('Data Integration');?></a>
 </li>
 <?php
 }
 if (!empty($permissions) && in_array('DATA_QUERY',$permissions)  && in_array("RAW_DATA", $schemasList)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/RAW_DATA" class="pagelink" ><?=$this->translate('Visualize Raw Data');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/RAW_DATA" class="pagelink" ><?php echo $this->translate('Visualize Raw Data');?></a>
 </li>
 <?php
 }
 if (!empty($permissions) && in_array('DATA_EDITION' ,$permissions)  && in_array("RAW_DATA", $schemasList)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?=$this->translate('Add a new localisation');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?php echo $this->translate('Add a new localisation');?></a>
 </li>
 <?php
 } 
 if (!empty($permissions) && in_array('DATA_HARMONIZATION', $permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" ><?=$this->translate('Data Harmonization');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" ><?php echo $this->translate('Data Harmonization');?></a>
 </li>
 <?php
 }
@@ -93,7 +93,7 @@ if (!empty($permissions) && in_array('DATA_HARMONIZATION', $permissions)) {
 if (!empty($permissions) && in_array('DATA_QUERY',$permissions)  && in_array("HARMONIZED_DATA", $schemasList)) {
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/HARMONIZED_DATA" class="pagelink" ><?=$this->translate('Visualize Harmonized Data');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/HARMONIZED_DATA" class="pagelink" ><?php echo $this->translate('Visualize Harmonized Data');?></a>
 </li>
 <?php
 }
@@ -101,7 +101,7 @@ if (!empty($permissions) && in_array('DATA_QUERY',$permissions)  && in_array("HA
 if (!empty($permissions) && in_array('MANAGE_USERS', $permissions)) {	
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" ><?=$this->translate('User Administration');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" ><?php echo $this->translate('User Administration');?></a>
 </li>
 <?php
 }
@@ -109,7 +109,7 @@ if (!empty($permissions) && in_array('MANAGE_USERS', $permissions)) {
 if (!empty($permissions) && in_array('CHECK_CONF', $permissions)) {
 ?>
 <li>
-<a href="<?= $this->url(array('controller'=>'checkconf'), null, true) ?>" class="pagelink" ><?=$this->translate('Check Configuration');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'checkconf'), null, true) ?>" class="pagelink" ><?php echo $this->translate('Check Configuration');?></a>
 </li>
 <?php
 }
@@ -130,16 +130,16 @@ if($configuration->autoLogin == 1){
 if (empty($permissions)) {
 ?>
 <li>
-<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Log in');?></a>
+<a href="<?php echo  $this->baseUrl('user/index') ?>"><?php echo $this->translate('Log in');?></a>
 </li>
 <?php
 } else {
 ?>
 <li>
-<a href="<?= $this->baseUrl('user/index') ?>"><?=$this->translate('Change login').' ('.$user->login.')'?></a>
+<a href="<?php echo  $this->baseUrl('user/index') ?>"><?php echo $this->translate('Change login').' ('.$user->login.')'?></a>
 </li>
 <li>
-<a href="<?= $this->baseUrl('user/logout') ?>"><?=$this->translate('Log out');?></a>
+<a href="<?php echo  $this->baseUrl('user/logout') ?>"><?php echo $this->translate('Log out');?></a>
 </li>
 <?php
 }

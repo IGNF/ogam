@@ -17,9 +17,9 @@
  */
 ?>
 
-<H1><?= $this->translate('Check result');?></H1>
+<H1><?php echo $this->translate('Check result');?></H1>
 <DIV CLASS="checkconf-page">
-<H2><?= $this->translate('PHP Parameters');?></H2>
+<H2><?php echo $this->translate('PHP Parameters');?></H2>
 <UL>
 <?php
 foreach ($this->phpParameters as $param) {
@@ -34,13 +34,13 @@ foreach ($this->phpParameters as $param) {
 </UL>
 
 
-<H2><?= $this->translate('Database');?></H2>
+<H2><?php echo $this->translate('Database');?></H2>
 <span class="note">
-    <?= $this->translate('Note: The database user must have administration rights to perform these tests.');?>
+    <?php echo $this->translate('Note: The database user must have administration rights to perform these tests.');?>
 </span>
 
 
-<H4><?= $this->translate('Checking for missing schemas:');?></H4>
+<H4><?php echo $this->translate('Checking for missing schemas:');?></H4>
 <?php 
 if (count($this->missingSchemasMsg)==0) {
 	echo '<UL><LI><SPAN class="green">ok</SPAN></LI></UL>';
@@ -54,7 +54,7 @@ if (count($this->missingSchemasMsg)==0) {
 ?>
 
 
-<H4><?= $this->translate('Checking for missing tables:');?></H4>
+<H4><?php echo $this->translate('Checking for missing tables:');?></H4>
 <?php 
 if (count($this->missingTablesMsg)==0) {
 	echo '<UL><LI><SPAN class="green">ok</SPAN></LI></UL>';
@@ -67,7 +67,7 @@ if (count($this->missingTablesMsg)==0) {
 }
 ?>
 
-<H4><?= $this->translate('Checking for primary keys:');?></H4>
+<H4><?php echo $this->translate('Checking for primary keys:');?></H4>
 <?php 
 if (count($this->primaryKeysMsg)==0) {
 	echo '<UL><LI><SPAN class="green">ok</SPAN></LI></UL>';
@@ -81,7 +81,7 @@ if (count($this->primaryKeysMsg)==0) {
 ?>
 
 
-<H4><?= $this->translate('Checking for missing fields:');?></H4>
+<H4><?php echo $this->translate('Checking for missing fields:');?></H4>
 <?php 
 if (count($this->missingFieldsMsg)==0) {
 	echo '<UL><LI><SPAN class="green">ok</SPAN></LI></UL>';
@@ -95,7 +95,7 @@ if (count($this->missingFieldsMsg)==0) {
 ?>
 
 
-<H4><?= $this->translate('Checking field types:');?></H4>
+<H4><?php echo $this->translate('Checking field types:');?></H4>
 <?php 
 if (count($this->fieldTypeMsg)==0) {
 	echo '<UL><LI><SPAN class="green">ok</SPAN></LI></UL>';
@@ -108,7 +108,7 @@ if (count($this->fieldTypeMsg)==0) {
 }
 ?>
 
-<H4><?= $this->translate('Checking foreign keys:');?></H4>
+<H4><?php echo $this->translate('Checking foreign keys:');?></H4>
 <?php 
 if (count($this->missingFKsMsg)==0) {
 	echo '<UL><LI><SPAN class="green">ok</SPAN></LI></UL>';
