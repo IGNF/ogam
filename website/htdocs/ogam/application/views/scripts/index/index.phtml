@@ -109,13 +109,6 @@ if (!empty($permissions) && in_array('CHECK_CONF',$permissions)) {
 <?php
 }
 
-if (!empty($permissions) && in_array('INDEX_FILE',$permissions)) {
-?>
-<li>
-<a href="<?= $this->url(array('controller'=>'indexation'), null, true) ?>" class="pagelink" ><?=$this->translate('Index Files');?></a>
-</li>
-<?php
-}
 ?>
 </ul>
 </div>
