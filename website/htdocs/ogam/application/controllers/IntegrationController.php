@@ -14,7 +14,7 @@ require_once 'AbstractOGAMController.php';
 
 /**
  * IntegrationController is the controller that manages the data integration.
- * 
+ *
  * @package controllers
  */
 class IntegrationController extends AbstractOGAMController {
