@@ -158,7 +158,7 @@ foreach ($this->submissions as $submission) {
     <?php }
 	if ($submission->step !== "INIT" && $submission->status !== "DATARUNNING") {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'proxy','action'=>'showreport'), default, true)?>?submissionId=<?=$submission->submissionId;?>" ><?=$this->translate('Show report');?></a></p>
+    <p><a href="<?= $this->url(array('controller'=>'proxy','action'=>'showreport'), 'default', true)?>?submissionId=<?=$submission->submissionId;?>" ><?=$this->translate('Show report');?></a></p>
     <?php }
     if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
 ?>

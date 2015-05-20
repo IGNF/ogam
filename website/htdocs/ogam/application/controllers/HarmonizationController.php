@@ -35,7 +35,7 @@ class HarmonizationController extends AbstractOGAMController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 		
 		// Initialise the model
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
 		$this->harmonizationModel = new Application_Model_HarmonizedData_HarmonizationProcess();
 		$this->harmonizationServiceModel = new Application_Model_HarmonizationService_HarmonizationService();
 		$this->submissionModel = new Application_Model_RawData_Submission();

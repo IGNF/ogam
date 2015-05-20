@@ -168,7 +168,7 @@ class Application_Object_Mapping_Layer {
 	 * 
 	 * @var String
 	 */
-	var $featureServiceName;
+	var $featureInfoServiceName;
 
 	/**
 	 * Indicates the service to call for displaying legend.

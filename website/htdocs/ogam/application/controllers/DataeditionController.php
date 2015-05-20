@@ -54,11 +54,11 @@ class DataEditionController extends AbstractOGAMController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 		
 		// Initialise the model
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->genericModel = new Genapp_Model_Generic_Generic();
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
+		$this->genericModel = new Application_Model_Generic_Generic();
 		
 		// The generic service
-		$this->genericService = new Genapp_Service_GenericService();
+		$this->genericService = new Application_Service_GenericService();
 		
 		// The config
 		$this->configuration = Zend_Registry::get("configuration");
@@ -238,7 +238,7 @@ class DataEditionController extends AbstractOGAMController {
 	private function _getEditDataForm($data, $mode) {
 		$this->logger->debug('_getEditDataForm :  mode = ' . $mode);
 		
-		$form = new Genapp_Form();
+		$form = new Application_Form_OGAMForm();
 		if ($mode == 'ADD') {
 			$form->setAction($this->baseUrl . '/dataedition/validate-add-data');
 		} else {
@@ -593,7 +593,7 @@ class DataEditionController extends AbstractOGAMController {
 		$data = $this->genericModel->getDatum($data);
 		
 		// The service used to manage the query module
-		$this->queryService = new Genapp_Service_QueryService($data->tableFormat->schemaCode);
+		$this->queryService = new Application_Service_QueryService($data->tableFormat->schemaCode);
 		
 		echo $this->queryService->getEditForm($data);
 		
@@ -616,7 +616,7 @@ class DataEditionController extends AbstractOGAMController {
 		$data = $this->_getDataFromRequest($request);
 		
 		// The service used to manage the query module
-		$this->queryService = new Genapp_Service_QueryService($data->tableFormat->schemaCode);
+		$this->queryService = new Application_Service_QueryService($data->tableFormat->schemaCode);
 		
 		echo $this->queryService->getEditForm($data);
 		

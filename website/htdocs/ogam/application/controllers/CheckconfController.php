@@ -42,7 +42,7 @@ class CheckconfController extends AbstractOGAMController {
 		
 		$this->postgreSQLModel = new Application_Model_System_Postgresql();
 		$this->metadataSystemModel = new Application_Model_System_Metadata();
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
 	}
 
 	/**

@@ -182,8 +182,8 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		// Get the last query done
 		$queryObject = $websiteSession->queryObject;
 		
-		$genericService = new Genapp_Service_GenericService();
-		$metadataModel = new Genapp_Model_Metadata_Metadata();
+		$genericService = new Application_Service_GenericService();
+		$metadataModel = new Application_Model_Metadata_Metadata();
 		// Extract the location table from the last query
 		$tables = $genericService->getAllFormats($schema, $queryObject);
 		// Extract the location field from the available tables

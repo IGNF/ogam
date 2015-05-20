@@ -94,16 +94,16 @@ class QueryController extends AbstractOGAMController {
 		$websiteSession->moduleURL = "query";
 		
 		// Initialise the models
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->genericModel = new Genapp_Model_Generic_Generic();
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
+		$this->genericModel = new Application_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
 		
 		// Declare the service used to build generic info from the metadata
-		$this->genericService = new Genapp_Service_GenericService();
+		$this->genericService = new Application_Service_GenericService();
 		
 		// Declare the service used to manage the query module
-		$this->queryService = new Genapp_Service_QueryService($websiteSession->schema);
+		$this->queryService = new Application_Service_QueryService($websiteSession->schema);
 		
 		// Reinit the actie layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
@@ -340,7 +340,7 @@ class QueryController extends AbstractOGAMController {
 		try {
 			
 			// Parse the input parameters and create a request object
-			$formQuery = new Genapp_Object_Generic_FormQuery();
+			$formQuery = new Application_Object_Generic_FormQuery();
 			$formQuery->datasetId = $datasetId;
 			foreach ($_POST as $inputName => $inputValue) {
 				if (strpos($inputName, "criteria__") === 0 && !$this->_isEmptyCriteria($inputValue)) {
@@ -738,7 +738,7 @@ class QueryController extends AbstractOGAMController {
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
-					$formField = new Genapp_Object_Metadata_FormField();
+					$formField = new Application_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
@@ -902,7 +902,7 @@ class QueryController extends AbstractOGAMController {
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
-					$formField = new Genapp_Object_Metadata_FormField();
+					$formField = new Application_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
@@ -1077,7 +1077,7 @@ class QueryController extends AbstractOGAMController {
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
-					$formField = new Genapp_Object_Metadata_FormField();
+					$formField = new Application_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);

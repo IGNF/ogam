@@ -32,7 +32,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$websiteSession->moduleURL = "usermanagement";
 		
 		// Initialise the models
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
 		$this->userModel = new Application_Model_Website_User();
 		$this->roleModel = new Application_Model_Website_Role();
 	}
@@ -73,7 +73,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 * @return a Zend Form
 	 */
 	private function _getUserForm($mode = null, $user = null, $role = null) {
-		$form = new Genapp_Form(array(
+		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'user-form',
 				'action' => $this->baseUrl . '/usermanagement/validate-user'
@@ -102,7 +102,7 @@ class UsermanagementController extends AbstractOGAMController {
 		if ($mode == 'edit') {
 			$login->setAttrib('readonly', 'true');
 		} else {
-			$login->addValidator(new Genapp_Validate_UserNotExist());
+			$login->addValidator(new Application_Validator_UserNotExist());
 		}
 		
 		//
@@ -111,7 +111,7 @@ class UsermanagementController extends AbstractOGAMController {
 		if ($mode == 'create') {
 			// Create and configure password element
 			$password = $form->createElement('password', 'password');
-			$password->addValidator(new Genapp_Validate_PasswordConfirmation());
+			$password->addValidator(new Application_Validator_PasswordConfirmation());
 			$password->setLabel('Password');
 			$password->setRequired(true);
 			
@@ -202,7 +202,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 * Build and return the change password form.
 	 */
 	private function _getChangePasswordForm($login = null) {
-		$form = new Genapp_Form(array(
+		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'change-user-password-form',
 				'action' => $this->baseUrl . '/usermanagement/validate-user-password'
@@ -246,7 +246,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 * @return a Zend Form
 	 */
 	private function _getRoleForm($mode = null, $role = null) {
-		$form = new Genapp_Form(array(
+		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'role-form',
 				'action' => $this->baseUrl . '/usermanagement/validate-role'

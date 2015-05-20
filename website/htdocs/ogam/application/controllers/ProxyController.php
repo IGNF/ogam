@@ -20,28 +20,10 @@ require_once 'AbstractOGAMController.php';
 class ProxyController extends AbstractOGAMController {
 
 	/**
-	 * The generic service.
-	 */
-	private $genericService;
-
-	/**
-	 * The models.
-	 */
-	private $metadataModel;
-
-	/**
 	 * Initialise the controler
 	 */
 	public function init() {
 		parent::init();
-		
-		// Initialise the models
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->servicesModel = new Application_Model_Mapping_Services();
-		$this->layersModel = new Application_Model_Mapping_Layers();
-		
-		// The service used to build generic info from the metadata
-		$this->genericService = new Genapp_Service_GenericService();
 	}
 
 	/**
@@ -325,8 +307,6 @@ class ProxyController extends AbstractOGAMController {
 		$queryObject = $websiteSession->queryObject; // the last query done
 		
 		$uri = $this->_extractAfter($uri, "proxy/getfeatureinfo?");
-		
-		$metadataModel = new Genapp_Model_Metadata_Metadata();
 		
 		// On effecture une requête mapserver "GetFeature" pour chaque layer
 		$uri = $mapServiceURL . $uri . "&SESSION_ID=" . $sessionId;

@@ -35,7 +35,7 @@ class UserController extends Zend_Controller_Action {
 		$this->logger = $bootstrap->getResource('log');
 		
 		// Initialise the models
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
 		$this->userModel = new Application_Model_Website_User();
 		$this->roleModel = new Application_Model_Website_Role();
 		
@@ -57,7 +57,7 @@ class UserController extends Zend_Controller_Action {
 	 * Build and return the login form.
 	 */
 	private function _getLoginForm($salt) {
-		$form = new Genapp_Form(array(
+		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'login-form',
 				'action' => $this->baseUrl . '/user/validate-login'
@@ -75,7 +75,7 @@ class UserController extends Zend_Controller_Action {
 			2,
 			20
 		));
-		$login->addValidator(new Genapp_Validate_UserExist());
+		$login->addValidator(new Application_Validator_UserExist());
 		$login->setRequired(true);
 		$login->addFilter('StringToLower');
 		
@@ -138,7 +138,7 @@ class UserController extends Zend_Controller_Action {
 	 * Build and return the change password form.
 	 */
 	private function _getChangePasswordForm() {
-		$form = new Genapp_Form(array(
+		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'change-current-user-password-form',
 				'action' => $this->baseUrl . '/user/validate-change-password'

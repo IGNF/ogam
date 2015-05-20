@@ -27,5 +27,3 @@ $application = new Zend_Application(APPLICATION_ENV, $ApplicationConf);
 // Start a session
 Zend_Session::start();
 
-
-

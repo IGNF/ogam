@@ -4,6 +4,10 @@
 require_once APPLICATION_PATH . '/objects/Website/User.php';
 require_once APPLICATION_PATH . '/objects/Website/Role.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
+require_once APPLICATION_PATH . '/objects/Metadata/Field.php';
+require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
+require_once APPLICATION_PATH . '/controllers/Plugin/Bootstrap.php';
+
 
 /**
  * The bootstrap class
@@ -19,14 +23,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * Addition of plugins to the Front Controller.
 	 */
 	protected function _initPlugins() {
-		require_once ('Genapp/Controller/Plugin/Bootstrap.php');
-		
 		$this->bootstrap('View');
 		$view = $this->getResource('View');
 		
 		$front = Zend_Controller_Front::getInstance();
 		// Pour la gestion de la langue de l'application
-		$front->registerPlugin(new Genapp_Controller_Plugin_Bootstrap($view));
+		$front->registerPlugin(new Application_Controllers_Plugin_Bootstrap($view));
 	}
 
 	/**
@@ -62,6 +64,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			'objects' => array(
 				'namespace' => 'Object',
 				'path' => 'objects'
+			)
+		));
+		$resourceLoader->addResourceTypes(array(
+			'validators' => array(
+				'namespace' => 'Validator',
+				'path' => 'validators'
 			)
 		));
 	}
@@ -134,8 +142,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		}
 		$view->addBasePath(APPLICATION_PATH . '/views/');
 		
-		// Path to the genapp helpers
-		$view->addHelperPath(APPLICATION_PATH . "/../library/Genapp/View/Helper", 'Genapp_View_Helper');
+		// Path to the helpers
+		$view->addHelperPath(APPLICATION_PATH . "/views/helpers", 'Application_Views_Helpers');
 		
 		// Ajoutons là au ViewRenderer
 		$viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('ViewRenderer');

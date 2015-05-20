@@ -37,7 +37,7 @@ class IntegrationController extends AbstractOGAMController {
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 		
 		// Initialise the model
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
 		$this->integrationServiceModel = new Application_Model_IntegrationService_IntegrationService();
 		$this->submissionModel = new Application_Model_RawData_Submission();
 		
@@ -73,7 +73,7 @@ class IntegrationController extends AbstractOGAMController {
 	 * Build and return the data submission form.
 	 */
 	private function _getDataSubmissionForm() {
-		$form = new Genapp_Form(array(
+		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => ' data-submission-form',
 				'action' => $this->baseUrl . '/integration/validate-create-data-submission'
@@ -113,7 +113,7 @@ class IntegrationController extends AbstractOGAMController {
 	 * Build and return the pdata upload form.
 	 */
 	private function _getDataUploadForm($showDetail = false) {
-		$form = new Genapp_Form(array(
+		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'data-upload-form',
 				'action' => $this->baseUrl . '/integration/validate-upload-data',

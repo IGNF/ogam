@@ -14,7 +14,7 @@ class UserTest extends ControllerTestCase {
 	 */
 	public function testGetUser() {
 		
-		// On charge le modèle LDAP
+		// On charge le modèle 
 		$userModel = new Application_Model_Website_User();
 		
 		// On vérifie que le user "admin" existe
@@ -34,7 +34,7 @@ class UserTest extends ControllerTestCase {
 	 */
 	public function testGetUserNull() {
 		
-		// On charge le modèle LDAP
+		// On charge le modèle 
 		$userModel = new Application_Model_Website_User();
 		
 		// On vérifie que le user "TOTO" n'existe pas

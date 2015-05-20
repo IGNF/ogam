@@ -102,9 +102,7 @@ class PredefinedRequestTest extends ControllerTestCase {
 		
 		// On la recharge pour vérifier
 		$requete2 = $requestModel->getPredefinedRequest($nomRequete);
-		
-		$this->logger->info('requete2 : ' . print_r($requete2, true));
-		
+				
 		$this->assertNotNull($requete2);
 		$this->assertEquals($requete->requestName, $requete2->requestName);
 		$this->assertEquals($requete->schemaCode, $requete2->schemaCode);

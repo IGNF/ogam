@@ -32,7 +32,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$translate = Zend_Registry::get('Zend_Translate');
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
 		
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
 	}
 
 	/**
