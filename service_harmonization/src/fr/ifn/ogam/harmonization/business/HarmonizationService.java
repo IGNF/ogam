@@ -231,19 +231,23 @@ public class HarmonizationService extends AbstractService {
 					}
 
 				}
+
+				// Launch post-processing
+				SubmissionData submission = new SubmissionData();
+				submission.setDatasetId(datasetId);
+				submission.setProviderId(providerId);
+				processingService.processData(ProcessingStep.HARMONIZATION, submission, this.thread);
+
+				// Log the process in the log table
+				harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);
+				harmonisationProcessDAO.updateHarmonizationProcessSubmissions(processId, listSubmissions);
+
+				logger.debug("harmonization done");
+
+			}else{
+				harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.INIT);
+				harmonisationProcessDAO.updateHarmonizationProcessSubmissions(processId, listSubmissions);
 			}
-
-			// Launch post-processing
-			SubmissionData submission = new SubmissionData();
-			submission.setDatasetId(datasetId);
-			submission.setProviderId(providerId);
-			processingService.processData(ProcessingStep.HARMONIZATION, submission, this.thread);
-
-			// Log the process in the log table
-			harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);
-			harmonisationProcessDAO.updateHarmonizationProcessSubmissions(processId, listSubmissions);
-
-			logger.debug("harmonization done");
 
 		} catch (Exception e) {
 			logger.error("Error during harmonization process", e);

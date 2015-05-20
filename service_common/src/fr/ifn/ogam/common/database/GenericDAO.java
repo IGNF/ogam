@@ -111,7 +111,11 @@ public class GenericDAO {
 							// We suppose that the SRID is the one expected in the table
 							TableFieldData tableData = tableColumns.get(sourceData);
 							Integer srid = geometryDAO.getSRID(tableData.getTableName(), tableData.getColumnName());
-							colValues.append("ST_GeomFromText('" + colData.getValue() + "', " + srid + ")");
+							if(colData.getValue().getClass().getName().equals("org.postgresql.util.PGobject")){
+								colValues.append("'"+colData.getValue().toString()+"'");
+							} else {
+								colValues.append("ST_GeomFromText('" + colData.getValue() + "', " + srid + ")");
+							}
 						}
 					} else {
 						colValues.append("?");
