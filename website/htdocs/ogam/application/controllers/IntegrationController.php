@@ -143,7 +143,7 @@ class IntegrationController extends AbstractOGAMController {
 			if ($showDetail) {
 				// Get some more informations in the metadata base
 				$fields = $this->metadataModel->getFileFields($requestedFile->format);
-				$fieldsDesc .= $this->translator->translate('The expected fields are:');
+				$fieldsDesc .= $this->translator->translate('The expected fields are:<br/>');
 				foreach ($fields as $field) {
 					$fieldsDesc .= '</span><span title="';
 					$fieldsDesc .= $field->definition; // the tooltip
@@ -157,14 +157,15 @@ class IntegrationController extends AbstractOGAMController {
 					}
 					
 					$fieldsDesc .= '</span>';
-					$fieldsDesc .= ';&nbsp;';
+					$fieldsDesc .= ';&nbsp;<br/>';
 				}
 				$fieldsDesc = substr($fieldsDesc, 0, -7); // remove last comma
 			}
 			
 			$fileelement->setDescription($fieldsDesc);
-			$fileelement->setValue('toto');
-			// $fileelement->setDisableTranslator(true); // disable translation to avoid the file name translation
+			//FIXME:Ligne en dessous à supprimer ? Test ?
+			//$fileelement->setValue('toto');
+			$fileelement->setDisableTranslator(true); // disable translation to avoid the file name translation
 			$fileelement->addDecorator('Description', array(
 				'escape' => false
 			));
@@ -332,7 +333,10 @@ class IntegrationController extends AbstractOGAMController {
 			// Get the uploaded filename
 			$filename = $upload->getFileName($requestedFile->format, false);
 			$filepath = $upload->getFileName($requestedFile->format);
-			$this->logger->debug('uploaded filename ' . $filename);
+			// Print it only if it is not an array (ie: nothing has been selected by the user)
+			if(!is_array($filename)){
+				$this->logger->debug('uploaded filename ' . $filename);
+			}
 			
 			// Check that the file is present
 			if (empty($filename)) {
@@ -354,7 +358,7 @@ class IntegrationController extends AbstractOGAMController {
 		
 		// Check that all the files have been uploaded
 		if (!$allFilesUploaded) {
-			$this->view->errorMessage = 'You must select all files to upload';
+			$this->view->errorMessage = $this->translator->translate('You must select all files to upload');
 			$this->view->form = $form;
 			return $this->render('show-upload-data');
 		} else {

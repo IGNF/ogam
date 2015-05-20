@@ -87,7 +87,7 @@ class HarmonizationController extends AbstractOGAMController {
 			$process = $this->harmonizationModel->getHarmonizationProcessSources($process);
 			
 			// Get the current status of the source data
-			$submissionStatus = "VALIDATED";
+			$submissionStatus = $this->translator->translate('VALIDATED');
 			foreach ($process->submissionIDs as $submissionID) {
 				$submission = $this->submissionModel->getSubmission($submissionID);
 				if ($submission->step !== "VALIDATED") {

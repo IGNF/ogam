@@ -49,6 +49,12 @@ class Application_Object_Mapping_Layer {
 	var $isTransparent;
 
 	/**
+	 * Force OpenLayer to request one image each time.
+	 * @var Boolean
+	 */
+	var $isUntiled;
+	
+	/**
 	 * Default value of layer opacity : 0 to 100, default value = 100.
 	 * 
 	 * @var Integer

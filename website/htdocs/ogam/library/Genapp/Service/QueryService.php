@@ -510,14 +510,21 @@ class Genapp_Service_QueryService {
 				$key = strtolower($tableField->getName());
 				
 				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
+					$listCode = array();
+
+					// Get the code list
+					foreach ($result as $line){
+						array_push($listCode, $line[$key]);
+					}
+
 					if ($tableField->subtype == "DYNAMIC") {
-						$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit, $listCode);
 					} else if ($tableField->subtype == "TREE") {
-						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit, $listCode);
 					} else if ($tableField->subtype == "TAXREF") {
-						$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit, $listCode);
 					} else {
-						$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
+						$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit, $listCode);
 					}
 				}
 			}

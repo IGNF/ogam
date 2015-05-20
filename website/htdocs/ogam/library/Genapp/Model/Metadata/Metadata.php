@@ -332,6 +332,17 @@ class Genapp_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req2 .= " AND label ilike '" . $query . "%'";
 		}
 		if ($code != null) {
+		/* // FIXME: Cette modification pour SINP peut entrainer une regression, voir type Array  en sortie de postgres
+			// supprime les { et } de la chaine puis intercalle des ',' entre les valeurs
+			$req2 .= " AND code IN ('".str_replace(",", "','", implode ( ",", 
+			                                                             str_replace ( array ("}", "{"), 
+			                                                                           array ("",""), 
+			                                                                           $code ) 
+			                                                           ) 
+			                                      )."'
+			                       )";
+		*/			
+
 			if (is_array($code)) {
 				$req2 .= " AND code IN ('" . implode("','", $code) . "')";
 			} else {

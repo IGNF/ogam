@@ -833,6 +833,7 @@ class Genapp_Service_GenericService {
 	 * @return String the update part of the SQL query (ex : BASAL_AREA = 6.05)
 	 */
 	public function buildUpdateItem($tableField) {
+		//TODO: pg_escape_string function is used in different parts, but It should be refactorized in a method (eg: that checks If data is array etc.)
 		$sql = "";
 		
 		$value = $tableField->value;
@@ -853,22 +854,22 @@ class Genapp_Service_GenericService {
 					$sql = $column . " = null";
 				} else {
 					$value = str_replace(",", ".", $value);
-					$sql = $column . " = " . $value;
+					$sql = $column." = ".pg_escape_string($value);
 				}
 				break;
 			case "ARRAY":
 				$sql = $column . " = " . $this->arrayToSQLString($value);
 				break;
 			case "CODE":
-				$sql = $column . " = '" . $value . "'";
+				$sql = $column." = '".pg_escape_string($value)."'";
 				break;
 			case "GEOM":
-				$sql = $column . " = ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")";
+				$sql = $column." = ST_transform(ST_GeomFromText('".pg_escape_string($value)."', ".$this->visualisationSRS."), ".$this->databaseSRS.")";
 				break;
 			case "STRING":
 			default:
 				// Single value
-				$sql = $column . " = '" . $value . "'";
+				$sql = $column." = '".pg_escape_string($value)."'";
 				break;
 		}
 		
@@ -886,9 +887,9 @@ class Genapp_Service_GenericService {
 		$sql = "";
 		
 		if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
-			$sql .= str_replace(",", ".", $field->value);
+			$sql .= str_replace(",", ".", pg_escape_string($field->value));
 		} else if ($field->type == "GEOM") {
-			$sql .= "ST_transform(ST_GeomFromText('" . $field->value . "'," . $this->visualisationSRS . ")," . $this->databaseSRS . ")";
+			$sql .= "ST_transform(ST_GeomFromText('" . pg_escape_string($field->value) . "'," . $this->visualisationSRS . ")," . $this->databaseSRS . ")";
 		} else if ($field->type == "ARRAY") {
 			// Arrays
 			
@@ -898,19 +899,19 @@ class Genapp_Service_GenericService {
 			if (is_array($field->value)) {
 				
 				foreach ($field->value as $value) {
-					$arrayStr .= $value . ",";
+					$arrayStr .= pg_escape_string($value) . ",";
 				}
 				if (count($field->value) !== 0) {
 					$arrayStr = substr($arrayStr, 0, -1); // remove last comma
 				}
 			} else {
-				$arrayStr .= $field->value;
+				$arrayStr .= pg_escape_string($field->value);
 			}
 			$arrayStr .= "}'";
 			
 			$sql .= $arrayStr;
 		} else {
-			$sql .= "'" . $field->value . "'";
+			$sql .= "'" . pg_escape_string($field->value) . "'";
 		}
 		
 		return $sql;

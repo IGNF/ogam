@@ -290,7 +290,7 @@ class UsermanagementController extends AbstractOGAMController {
 		// Get all the Permissions
 		$allpermissions = $this->roleModel->getAllPermissions();
 		$rolepermissions = $form->createElement('multiCheckbox', 'rolepermissions');
-		$rolepermissions->setLabel('Permissions');
+		$rolepermissions->setLabel($this->translator->translate('Permissions'));
 		$rolepermissions->setDisableTranslator(true); // Pas de trad par Zend, c'est géré dans les métadonnées
 		$rolepermissions->addMultiOptions($allpermissions);
 		if ($role != null) {
@@ -305,7 +305,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$schemasList[$schema->code] = $schema->label;
 		}
 		$roleschemas = $form->createElement('multiCheckbox', 'roleschemas');
-		$roleschemas->setLabel('Schemas Permissions');
+		$roleschemas->setLabel($this->translator->translate('Schemas Permissions'));
 		$roleschemas->setDisableTranslator(true); // Pas de trad par Zend, c'est géré dans les métadonnées
 		$roleschemas->addMultiOptions($schemasList);
 		if ($role != null) {
