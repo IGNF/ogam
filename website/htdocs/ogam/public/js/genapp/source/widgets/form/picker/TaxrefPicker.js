@@ -109,7 +109,6 @@ Genapp.form.picker.TaxrefPicker = Ext.extend(Ext.tree.TreePanel, {
 		
 		// Custom treeloader
 		this.loader = new Genapp.form.picker.TaxrefNodeLoader({url: this.dataUrl});
-		//this.loader = new Ext.tree.TreeLoader({url: this.dataUrl});
 
 		// Add the validation button
 		if (!this.hideValidationButton) {

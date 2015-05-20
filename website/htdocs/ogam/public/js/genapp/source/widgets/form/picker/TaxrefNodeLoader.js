@@ -56,6 +56,7 @@ Ext.extend(Genapp.form.picker.TaxrefNodeLoader, Ext.tree.TreeLoader, {
             	 if (attr.vernacularName != null) {
              	 	node.text = node.text + " ("+attr.vernacularName+")";
               	 }
+            	 node.text = node.text + " ("+attr.id+")";
             	 
             	 return node;
              } else {
@@ -66,6 +67,7 @@ Ext.extend(Genapp.form.picker.TaxrefNodeLoader, Ext.tree.TreeLoader, {
             	 if (attr.vernacularName != null) {
             	 	node.text = node.text + " ("+attr.vernacularName+")";
              	 }
+            	 node.text = node.text + " ("+attr.id+")";
             	 
             	 return node;
              }           
