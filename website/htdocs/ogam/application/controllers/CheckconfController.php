@@ -101,7 +101,7 @@ class CheckconfController extends AbstractOGAMController {
 			'value' => $postMaxSize
 		);
 		
-		if ($postMaxSizeMinInt != null && $postMaxSizeInt < $postMaxSizeMinInt) {
+		if ($postMaxSizeMinInt !== null && $postMaxSizeInt < $postMaxSizeMinInt) {
 			$postMaxSizeMsg['error'] = str_replace('%value%', $postMaxSizeMin, $errorMsg);
 		}
 		array_push($phpParameters, $postMaxSizeMsg);
@@ -115,7 +115,7 @@ class CheckconfController extends AbstractOGAMController {
 			'name' => 'upload_max_filesize',
 			'value' => $uploadMaxFilesize
 		);
-		if ($uploadMaxFilesizeMin != null && $uploadMaxFilesizeInt < $uploadMaxFilesizeMinInt) {
+		if ($uploadMaxFilesizeMin !== null && $uploadMaxFilesizeInt < $uploadMaxFilesizeMinInt) {
 			$uploadMaxFilesizeMsg['error'] = str_replace('%value%', $uploadMaxFilesizeMin, $errorMsg);
 		}
 		array_push($phpParameters, $uploadMaxFilesizeMsg);
@@ -216,47 +216,47 @@ class CheckconfController extends AbstractOGAMController {
 				
 				switch ($field->type) {
 					case "ARRAY":
-						if ($foundField->type != 'ARRAY') {
+						if ($foundField->type !== 'ARRAY') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "STRING":
-						if ($foundField->type != 'CHARACTER VARYING' && $foundField->type != 'CHARACTER' && $foundField->type != 'TEXT') {
+						if ($foundField->type !== 'CHARACTER VARYING' && $foundField->type !== 'CHARACTER' && $foundField->type !== 'TEXT') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "NUMERIC":
-						if ($foundField->type != 'DOUBLE PRECISION') {
+						if ($foundField->type !== 'DOUBLE PRECISION') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "DATE":
-						if ($foundField->type != 'DATE' && $foundField->type != 'TIMESTAMP' && $foundField->type != 'TIMESTAMP WITHOUT TIME ZONE') {
+						if ($foundField->type !== 'DATE' && $foundField->type !== 'TIMESTAMP' && $foundField->type !== 'TIMESTAMP WITHOUT TIME ZONE') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "CODE":
-						if ($foundField->type != 'CHARACTER VARYING' && $foundField->type != 'CHARACTER' && $foundField->type != 'TEXT') {
+						if ($foundField->type !== 'CHARACTER VARYING' && $foundField->type !== 'CHARACTER' && $foundField->type !== 'TEXT') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "GEOM":
-						if ($foundField->type != 'USER-DEFINED') {
+						if ($foundField->type !== 'USER-DEFINED') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "INTEGER":
-						if ($foundField->type != 'INTEGER' && $foundField->type != 'SMALLINT') {
+						if ($foundField->type !== 'INTEGER' && $foundField->type !== 'SMALLINT') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "BOOLEAN":
-						if ($foundField->type != 'CHARACTER') {
+						if ($foundField->type !== 'CHARACTER') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
 					case "IMAGE":
-						if ($foundField->type != 'CHARACTER VARYING' && $foundField->type != 'CHARACTER' && $foundField->type != 'TEXT') {
+						if ($foundField->type !== 'CHARACTER VARYING' && $foundField->type !== 'CHARACTER' && $foundField->type !== 'TEXT') {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
