@@ -122,7 +122,7 @@ class Application_Service_QueryService {
 	 *        	the format in java style
 	 * @return String the format in PHP style
 	 */
-	private function convertDateFormat($format) {
+	private function _convertDateFormat($format) {
 		$format = str_replace("yyyy", "Y", $format);
 		$format = str_replace("yy", "y", $format);
 		$format = str_replace("MMMMM", "F", $format);
@@ -167,9 +167,9 @@ class Application_Service_QueryService {
 				
 				// Set the current date
 				if ($formField->mask != null) {
-					$formField->value = date($this->convertDateFormat($formField->mask));
+					$formField->value = date($this->_convertDateFormat($formField->mask));
 				} else {
-					$formField->value = date($this->convertDateFormat('yyyy-MM-dd'));
+					$formField->value = date($this->_convertDateFormat('yyyy-MM-dd'));
 				}
 			} else {
 				$formField->value = $formField->defaultValue;
