@@ -8,7 +8,6 @@ require_once APPLICATION_PATH . '/objects/Metadata/Field.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
 require_once APPLICATION_PATH . '/controllers/Plugin/Bootstrap.php';
 
-
 /**
  * The bootstrap class
  *
@@ -246,8 +245,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$parameters = $parameterModel->getParameters();
 		
 		// Adding of the intern map service url into the parameters
-		$service_config_array = $parameterModel->getMapServiceUrl();
-		$parameters->map_service_url = json_decode($service_config_array['config'])->{'urls'}[0];
+		$serviceConfig = $parameterModel->getMapServiceUrl();
+		$parameters->map_service_url = json_decode($serviceConfig['config'])->{'urls'}[0];
 		
 		Zend_Registry::set('configuration', $parameters);
 	}
