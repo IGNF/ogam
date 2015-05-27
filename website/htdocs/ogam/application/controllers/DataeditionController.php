@@ -66,7 +66,7 @@ class DataEditionController extends AbstractOGAMController {
 		// Check if the schema is specified in the request
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $this->_request->getParam("SCHEMA");
-		if ($schema != null) {
+		if ($schema !== null) {
 			$websiteSession->schema = $schema;
 		}
 	}
@@ -132,7 +132,7 @@ class DataEditionController extends AbstractOGAMController {
 			$elem = $form->createElement('text', $tableField->data);
 			
 			// Add a regexp validator if a mask is present
-			if ($formField != null && $formField->mask != null) {
+			if ($formField !== null && $formField->mask !== null) {
 				$validator = new Zend_Validate_Regex(array(
 					'pattern' => $formField->mask
 				));
@@ -158,7 +158,7 @@ class DataEditionController extends AbstractOGAMController {
 			// The field is a date
 			$elem = $form->createElement('text', $tableField->data);
 			// validate the date format
-			if ($formField != null && $formField->mask != null) {
+			if ($formField !== null && $formField->mask !== null) {
 				$validator = new Zend_Validate_Date(array(
 					'format' => $formField->mask,
 					'locale' => 'en_EN'
@@ -269,7 +269,7 @@ class DataEditionController extends AbstractOGAMController {
 		foreach ($data->editableFields as $tablefield) {
 			
 			// Hardcoded value : We don't edit the line number (it's a technical element)
-			if ($tablefield->data != "LINE_NUMBER") {
+			if ($tablefield->data !== "LINE_NUMBER") {
 				$formField = $this->genericService->getTableToFormMapping($tablefield);
 				$elem = $this->_getFormElement($form, $tablefield, $formField, false);
 				$elem->class = 'dataedit_field';
@@ -405,7 +405,7 @@ class DataEditionController extends AbstractOGAMController {
 			
 			// Delete the images linked to the data if present
 			foreach ($data->getFields() as $field) {
-				if ($field->type == "IMAGE" && $field->value != "") {
+				if ($field->type == "IMAGE" && $field->value !== "") {
 					$uploadDir = $this->configuration->image_upload_dir;
 					$dir = $uploadDir . "/" . $data->getId() . "/" . $field->getName();
 					$this->_deleteDirectory($dir);
@@ -674,10 +674,10 @@ class DataEditionController extends AbstractOGAMController {
 		mkdir($destination, $this->configuration->image_dir_rights, true);
 		
 		// Filter the file extensions
-		if ($this->configuration->image_extensions != null) {
+		if ($this->configuration->image_extensions !== null) {
 			$adapter->addValidator('Extension', false, $this->configuration->image_extensions);
 		}
-		if ($this->configuration->image_max_size != null) {
+		if ($this->configuration->image_max_size !== null) {
 			$adapter->addValidator('FilesSize', false, $this->configuration->image_max_size);
 		}
 		
@@ -705,10 +705,12 @@ class DataEditionController extends AbstractOGAMController {
 	private function _deleteDirectory($dir) {
 		$this->logger->debug('deleteDirectory ' . $dir);
 		
-		if (!file_exists($dir))
+		if (!file_exists($dir)) {
 			return true;
-		if (!is_dir($dir) || is_link($dir))
+		}
+		if (!is_dir($dir) || is_link($dir)) {
 			return unlink($dir);
+		}
 		foreach (scandir($dir) as $item) {
 			if ($item == '.' || $item == '..') {
 				continue;
