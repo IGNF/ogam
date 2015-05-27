@@ -14,7 +14,7 @@
 
 /**
  * This is a model allowing to access the harmonization service via HTTP calls.
- * 
+ *
  * @package models
  */
 class Application_Model_HarmonizationService_HarmonizationService extends Application_Model_AbstractService_AbstractService {
@@ -39,10 +39,12 @@ class Application_Model_HarmonizationService_HarmonizationService extends Applic
 	/**
 	 * Launch the harmonization process
 	 *
-	 * @param
-	 *        	String the data provider identifier
-	 * @param
-	 *        	String the dataset identifier
+	 * @param String $providerId
+	 *        	the provider identifier
+	 * @param String $datasetId
+	 *        	the dataset identifier
+	 * @param Boolean $removeOnly
+	 *        	remove the data without adding new one
 	 * @return true if the process was OK
 	 * @throws Exception if a problem occured on the server side
 	 */
@@ -90,12 +92,12 @@ class Application_Model_HarmonizationService_HarmonizationService extends Applic
 	/**
 	 * Get the status of the harmonisation process.
 	 *
-	 * @param $datasetId The
-	 *        	identifier of the dataset
-	 * @param $providerId The
-	 *        	identifier of the data provider
-	 * @param $servletName The
-	 *        	name of the servlet to call
+	 * @param String $datasetId
+	 *        	The identifier of the dataset
+	 * @param String $providerId
+	 *        	The identifier of the data provider
+	 * @param String $servletName
+	 *        	The name of the servlet to call
 	 * @return ProcessStatus the status of the process.
 	 * @throws Exception if a problem occured on the server side
 	 */

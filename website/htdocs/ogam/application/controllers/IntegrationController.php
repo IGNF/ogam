@@ -163,8 +163,8 @@ class IntegrationController extends AbstractOGAMController {
 			}
 			
 			$fileelement->setDescription($fieldsDesc);
-			//FIXME:Ligne en dessous à supprimer ? Test ?
-			//$fileelement->setValue('toto');
+			// FIXME:Ligne en dessous à supprimer ? Test ?
+			// $fileelement->setValue('toto');
 			$fileelement->setDisableTranslator(true); // disable translation to avoid the file name translation
 			$fileelement->addDecorator('Description', array(
 				'escape' => false
@@ -334,7 +334,7 @@ class IntegrationController extends AbstractOGAMController {
 			$filename = $upload->getFileName($requestedFile->format, false);
 			$filepath = $upload->getFileName($requestedFile->format);
 			// Print it only if it is not an array (ie: nothing has been selected by the user)
-			if(!is_array($filename)){
+			if (!is_array($filename)) {
 				$this->logger->debug('uploaded filename ' . $filename);
 			}
 			

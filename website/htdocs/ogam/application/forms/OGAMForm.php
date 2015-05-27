@@ -53,6 +53,11 @@ class Application_Form_OGAMForm extends Zend_Form {
 		)
 	);
 
+	/**
+	 * Initialise the Form.
+	 *
+	 * @see Zend_Form::init()
+	 */
 	function init() {
 		$this->addDecorator('HtmlTag', array(
 			'class' => $this->getName()

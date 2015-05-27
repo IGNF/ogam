@@ -19,7 +19,7 @@ class Application_Controllers_Plugin_Bootstrap extends Zend_Controller_Plugin_Ab
 
 	/**
 	 * Accepted languages
-	 * 
+	 *
 	 * @var array
 	 */
 	private $_langs = array(
@@ -29,7 +29,7 @@ class Application_Controllers_Plugin_Bootstrap extends Zend_Controller_Plugin_Ab
 
 	/**
 	 * Objet Zend_View
-	 * 
+	 *
 	 * @var Zend_View
 	 */
 	protected $_view;
@@ -45,29 +45,28 @@ class Application_Controllers_Plugin_Bootstrap extends Zend_Controller_Plugin_Ab
 	}
 
 	/**
-	 * Setup the translation
+	 * Setup the translation.
 	 *
-	 * @param Zend_Controller_Request_Abstract $Request        	
+	 * @param Zend_Controller_Request_Abstract $request        	
 	 * @return void
 	 */
-	public function routeShutdown(Zend_Controller_Request_Abstract $Request) {
-		$front = Zend_Controller_Front::getInstance();
+	public function routeShutdown(Zend_Controller_Request_Abstract $request) {
 		
 		// Définie la langue de l'application suivant l'url ou la valeur en session.
-		$this->_setLang($Request);
+		$this->_setLang($request);
 	}
 
 	/**
 	 * Setup the translation
 	 *
-	 * @param Zend_Controller_Request_Abstract $Request        	
+	 * @param Zend_Controller_Request_Abstract $request        	
 	 * @return void
 	 */
-	private function _setLang(Zend_Controller_Request_Abstract $Request) {
+	private function _setLang(Zend_Controller_Request_Abstract $request) {
 		$locale = Zend_Registry::get('Zend_Locale');
 		
 		// The language parameter
-		$lang = $Request->getParam('lang', null);
+		$lang = $request->getParam('lang', null);
 		$localeNamespace = new Zend_Session_Namespace(__CLASS__);
 		
 		if (null === $lang) {

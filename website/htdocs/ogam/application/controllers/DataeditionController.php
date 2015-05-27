@@ -126,7 +126,7 @@ class DataEditionController extends AbstractOGAMController {
 		// Warning : $formField can be null if no mapping is defined with $tableField
 		
 		// TODO OGAM-73 : Manage all data types for edition (DATE, BOOLEAN, ...), with corresponding validators
-		if ($tableField->type == "STRING") {
+		if ($tableField->type === "STRING") {
 			
 			// The field is a text field
 			$elem = $form->createElement('text', $tableField->data);
@@ -139,13 +139,13 @@ class DataEditionController extends AbstractOGAMController {
 				$elem->addValidator($validator);
 			}
 			$elem->setValue($tableField->value);
-		} else if ($tableField->type == "INTEGER") {
+		} else if ($tableField->type === "INTEGER") {
 			
 			// The field is an integer
 			$elem = $form->createElement('text', $tableField->data);
 			$elem->addValidator(new Zend_Validate_Int());
 			$elem->setValue($tableField->value);
-		} else if ($tableField->type == "NUMERIC") {
+		} else if ($tableField->type === "NUMERIC") {
 			
 			// The field is a numeric
 			$elem = $form->createElement('text', $tableField->data);
@@ -153,7 +153,7 @@ class DataEditionController extends AbstractOGAMController {
 				'locale' => 'en_EN'
 			))); // The locale should correspond to the database config
 			$elem->setValue($tableField->value);
-		} else if ($tableField->type == "DATE") {
+		} else if ($tableField->type === "DATE") {
 			
 			// The field is a date
 			$elem = $form->createElement('text', $tableField->data);
@@ -170,12 +170,12 @@ class DataEditionController extends AbstractOGAMController {
 			}
 			$elem->addValidator($validator);
 			$elem->setValue($tableField->value);
-		} else if ($tableField->type == "COORDINATE") {
+		} else if ($tableField->type === "COORDINATE") {
 			
 			// The field is a geometry info
 			$elem = $form->createElement('text', $tableField->data);
 			$elem->setValue($tableField->value);
-		} else if ($tableField->type == "RANGE") {
+		} else if ($tableField->type === "RANGE") {
 			
 			// The field is a range value
 			$elem = $form->createElement('text', $tableField->data);
@@ -192,16 +192,16 @@ class DataEditionController extends AbstractOGAMController {
 				'min' => $range->min
 			)));
 			$elem->setValue($tableField->value);
-		} else if ($tableField->type == "CODE") {
+		} else if ($tableField->type === "CODE") {
 			
 			$elem = $form->createElement('select', $tableField->data);
 			$elem->setValue($tableField->value);
-		} else if ($tableField->type == "BOOLEAN") {
+		} else if ($tableField->type === "BOOLEAN") {
 			
 			// The field is a boolean
 			$elem = $form->createElement('checkbox', $tableField->data);
 			$elem->setValue($tableField->value);
-		} else if ($tableField->type == "ARRAY") {
+		} else if ($tableField->type === "ARRAY") {
 			
 			// Build a multiple select box
 			$elem = $form->createElement('multiselect', $tableField->data);
@@ -239,7 +239,7 @@ class DataEditionController extends AbstractOGAMController {
 		$this->logger->debug('_getEditDataForm :  mode = ' . $mode);
 		
 		$form = new Application_Form_OGAMForm();
-		if ($mode == 'ADD') {
+		if ($mode === 'ADD') {
 			$form->setAction($this->baseUrl . '/dataedition/validate-add-data');
 		} else {
 			$form->setAction($this->baseUrl . '/dataedition/validate-edit-data');
@@ -331,7 +331,7 @@ class DataEditionController extends AbstractOGAMController {
 		$mode = 'EDIT';
 		
 		// If data is set then we don't need to read from database
-		if ($data == null) {
+		if ($data === null) {
 			
 			// Get the parameters from the URL
 			$request = $this->getRequest();
@@ -405,7 +405,7 @@ class DataEditionController extends AbstractOGAMController {
 			
 			// Delete the images linked to the data if present
 			foreach ($data->getFields() as $field) {
-				if ($field->type == "IMAGE" && $field->value !== "") {
+				if ($field->type === "IMAGE" && $field->value !== "") {
 					$uploadDir = $this->configuration->image_upload_dir;
 					$dir = $uploadDir . "/" . $data->getId() . "/" . $field->getName();
 					$this->_deleteDirectory($dir);
@@ -482,7 +482,7 @@ class DataEditionController extends AbstractOGAMController {
 			
 			try {
 				// Insert or update the data
-				if ($mode == 'ADD') {
+				if ($mode === 'ADD') {
 					$data = $this->genericModel->insertData($data);
 				} else {
 					$this->genericModel->updateData($data);
@@ -495,7 +495,7 @@ class DataEditionController extends AbstractOGAMController {
 				$children = $this->genericModel->getChildren($data);
 				
 				// After a creation if no more children possible
-				if (count($children) == 0 && $mode == 'ADD') {
+				if (count($children) === 0 && $mode === 'ADD') {
 					// We redirect to the parent
 					$ancestors = $this->genericModel->getAncestors($data);
 					if (!empty($ancestors)) {
@@ -543,7 +543,7 @@ class DataEditionController extends AbstractOGAMController {
 		$mode = 'ADD';
 		
 		// If data is set then we don't need to read from database
-		if ($data == null) {
+		if ($data === null) {
 			
 			// Get the parameters from the URL
 			$request = $this->getRequest();
@@ -712,7 +712,7 @@ class DataEditionController extends AbstractOGAMController {
 			return unlink($dir);
 		}
 		foreach (scandir($dir) as $item) {
-			if ($item == '.' || $item == '..') {
+			if ($item === '.' || $item === '..') {
 				continue;
 			}
 			if (!$this->_deleteDirectory($dir . "/" . $item)) {

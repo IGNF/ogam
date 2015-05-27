@@ -375,7 +375,7 @@ class Application_Service_QueryService {
 		// Transform the form request object into a table data object
 		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
 		
-		if (sizeof($formQuery->results) == 0) {
+		if (count($formQuery->results) === 0) {
 			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
 		} else {
 			
@@ -477,11 +477,8 @@ class Application_Service_QueryService {
 			$fromwhere = $websiteSession->SQLFromWhere;
 			$countResult = $websiteSession->count;
 			
-			
 			// Retrive the session-stored info
 			$resultColumns = $websiteSession->resultColumns; // array of TableField
-			
-			$this->logger->debug('$resultColumns : ' . print_r($resultColumns, true));
 			
 			$filter = "";
 			if ($sort != "") {
@@ -773,8 +770,8 @@ class Application_Service_QueryService {
 				
 				// complete the array with the urls of maps1
 				$dataDetails['maps1']['urls'][] = array();
-				for ($i = 0; $i < count($url); $i ++) {
-					$str_url = 'url' . strval($i);
+				$urlCount = count($url);
+				for ($i = 0; $i < $urlCount; $i ++) {
 					$dataDetails['maps1']['urls'][$i]['url'] = $url[$i];
 				}
 			}
@@ -814,6 +811,15 @@ class Application_Service_QueryService {
 		return json_encode($this->getDetailsData($id, $detailsLayers));
 	}
 
+	/**
+	 * Generate an URL for the details map.
+	 *
+	 * @param Array $detailsLayers        	
+	 * @param Array $bb        	
+	 * @param Array $mapservParams        	
+	 * @param Boolean $proxy        	
+	 * @return String
+	 */
 	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
 		$configuration = Zend_Registry::get('configuration');
 		
@@ -849,17 +855,9 @@ class Application_Service_QueryService {
 			foreach ($detailServices as $detailService) {
 				
 				if ($detailService->serviceName == $detailServiceName) {
-					$json = json_decode($detailService->serviceConfig, true);
 					
-					foreach ($json as $key => $val) {
-						if ($key == 'params') {
-							$service = $val['SERVICE'];
-						}
-					}
 					$baseUrl = json_decode($detailService->serviceConfig)->{'urls'}[0];
-					$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName . '&TRANSPARENT=true' . '&FORMAT=image%2Fpng' . '&SERVICE=WMS' . '&VERSION=1.3.0' . '&REQUEST=GetMap' . '&STYLES=' . 
-					// .'&EXCEPTIONS=application%2Fvnd.ogc.se_inimage'
-					'&CRS=EPSG%3A' . $visualisationSRS . '&BBOX=' . $bb['x_min'] . ',' . $bb['y_min'] . ',' . $bb['x_max'] . ',' . $bb['y_max'] . '&WIDTH=300&HEIGHT=300' . '&map.scalebar=STATUS+embed' . '&SESSION_ID=' . session_id() . $mapservParams . ";";
+					$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName . '&TRANSPARENT=true' . '&FORMAT=image%2Fpng' . '&SERVICE=WMS' . '&VERSION=1.3.0' . '&REQUEST=GetMap' . '&STYLES=' . '&CRS=EPSG%3A' . $visualisationSRS . '&BBOX=' . $bb['x_min'] . ',' . $bb['y_min'] . ',' . $bb['x_max'] . ',' . $bb['y_max'] . '&WIDTH=300&HEIGHT=300' . '&map.scalebar=STATUS+embed' . '&SESSION_ID=' . session_id() . $mapservParams . ";";
 				}
 			}
 		}

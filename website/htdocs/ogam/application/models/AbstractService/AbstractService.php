@@ -94,7 +94,7 @@ class Application_Model_AbstractService_AbstractService {
 		$status = new Application_Object_ProcessStatus();
 		$status->status = (string) $dom->Value;
 		
-		if ($dom->TaskName != null && $dom->TaskName != "") {
+		if ($dom->TaskName !== null && $dom->TaskName !== "") {
 			$status->taskName = (string) $dom->TaskName;
 			$status->currentCount = (string) $dom->CurrentCount;
 			$status->totalCount = (string) $dom->TotalCount;

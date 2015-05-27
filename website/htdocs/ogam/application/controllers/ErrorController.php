@@ -14,7 +14,7 @@
 
 /**
  * ErrorController
- * 
+ *
  * @package controllers
  */
 // Don't extends the AbstractOGAMController because of the predispatch redirection
@@ -26,7 +26,7 @@ class ErrorController extends Zend_Controller_Action {
 	protected $logger;
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -99,7 +99,7 @@ class ErrorController extends Zend_Controller_Action {
 	/**
 	 * Manage "No action" or "No controller" exceptions.
 	 *
-	 * @param
+	 * @param Zend_Controller_Response_Exception $error
 	 *        	the error
 	 */
 	private function _noActionException($error) {
@@ -114,7 +114,7 @@ class ErrorController extends Zend_Controller_Action {
 	/**
 	 * Manage database exceptions.
 	 *
-	 * @param
+	 * @param Zend_Controller_Response_Exception $error
 	 *        	the error
 	 */
 	private function _databaseException($error) {
@@ -129,7 +129,7 @@ class ErrorController extends Zend_Controller_Action {
 	/**
 	 * Manage authentication exceptions.
 	 *
-	 * @param
+	 * @param Zend_Controller_Response_Exception $error
 	 *        	the error
 	 */
 	private function _authException($error) {

@@ -468,6 +468,11 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
+	/**
+	 * Export the details as PDF.
+	 *
+	 * @throws Exception
+	 */
 	public function pdfexportAction() {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();

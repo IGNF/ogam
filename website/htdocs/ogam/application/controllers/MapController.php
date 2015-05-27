@@ -566,10 +566,10 @@ class MapController extends AbstractOGAMController {
 			if (strcasecmp($serviceArray[$i], 'wms') == 0) {
 				$spec .= "{
 		        type: 'WMS',
-		        format: 'image/$imageFormatsArray[$i]',
+		        format: 'image/" . $imageFormatsArray[$i] . ",
 		        version: '1.3.0',
-		        layers: ['$serviceLayerNamesArray[$i]'],
-		        baseURL: '$baseUrlsArray[$i]',
+		        layers: ['" . $serviceLayerNamesArray[$i] . "'],
+		        baseURL: '" . $baseUrlsArray[$i] . "',
 		        customParams: {TRANSPARENT:true,SESSION_ID:" . session_id() . "}
 		        },";
 			} elseif (strcasecmp($serviceArray[$i], 'wmts') == 0) {
@@ -579,9 +579,9 @@ class MapController extends AbstractOGAMController {
 		        requestEncoding:'KVP',
 		        matrixSet:'PM',
 		        style:'normal',
-		        format: 'image/$imageFormatsArray[$i]',
-		        layer: '$serviceLayerNamesArray[$i]',
-		        baseURL: '$baseUrlsArray[$i]',
+		        format: 'image/" . $imageFormatsArray[$i] . "',
+		        layer: '" . $serviceLayerNamesArray[$i] . "',
+		        baseURL: '" . $baseUrlsArray[$i] . "',
 		        matrixIds:[
 		            {'identifier':'0','topLeftCorner':[-20037508,20037508],  'resolution':156543.033928,'matrixSize':[1,1],'tileSize':[256,256]},
 		            {'identifier':'1','topLeftCorner':[-20037508,20037508],  'resolution':78271.516964,'matrixSize':[2,2],'tileSize':[256,256]},
@@ -615,9 +615,9 @@ class MapController extends AbstractOGAMController {
 		    pages: [
 		        {
 		        
-		            center: [$centerX,$centerY],
-		            scale: $currentScale,
-		            dpi: $dpi,
+		            center: [" . $centerX . "," . $centerY . "],
+		            scale: " . $currentScale . ",
+		            dpi: " . $dpi . ",
 		            mapTitle: '',
 		            comment:'',
 		            data: [
