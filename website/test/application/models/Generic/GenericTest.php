@@ -163,6 +163,9 @@ class GenericTest extends ControllerTestCase {
 		
 		// Le point en question possède une observation d'espèce
 		$this->assertNotNull($species);
+		
+		echo "Result : " . print_r($species, true);
+		
 		$specie = $species[0];
 		
 		$this->assertNotNull($specie);
