@@ -40,8 +40,8 @@ class CheckconfController extends AbstractOGAMController {
 		$websiteSession->moduleLabel = "Check Configuration";
 		$websiteSession->moduleURL = "checkconf";
 		
-		$this->postgreSQLModel = new Application_Model_System_Postgresql();
-		$this->metadataSystemModel = new Application_Model_System_Metadata();
+		$this->postgreSQLModel = new Application_Model_Database_Postgresql();
+		$this->metadataSystemModel = new Application_Model_Database_Metadata();
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
 	}
 
