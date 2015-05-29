@@ -369,7 +369,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the information about the ancestors of a line of data.
 	 * The key elements in the parent tables must have an existing value in the child.
-	 *
+	 * 
 	 * @param DataObject $data
 	 *        	the data object we're looking at.
 	 * @return List[DataObject] The line of data in the parent tables.
@@ -435,7 +435,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 *        	the data object we're looking at.
 	 * @param String $datasetId
 	 *        	the dataset id
-	 * @return Array[Format => List[DataObject]] The lines of data in the parent tables.
+	 * @return Array[Format => List[DataObject]] The lines of data in the children tables, indexed by format.
 	 */
 	public function getChildren($data, $datasetId = null) {
 		$db = $this->getAdapter();
