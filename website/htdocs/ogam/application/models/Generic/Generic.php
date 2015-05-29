@@ -125,17 +125,17 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get a line of data from a table, given its primary key.
-	 * A list of objects is expected in return.
+	 * Get a list of data objects from a table, given an incomplete primary key.
+	 * A list of data objects is expected in return.
 	 *
 	 * @param DataObject $data
 	 *        	the shell of the data object with the values for the primary key.
 	 * @return Array[DataObject] The complete data objects.
 	 */
-	public function getData($data) {
+	private function _getDataList($data) {
 		$db = $this->getAdapter();
 		
-		$this->logger->info('getData');
+		$this->logger->info('_getDataList');
 		
 		$result = array();
 		
@@ -147,7 +147,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$sql .= " FROM " . $tableFormat->schemaCode . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
 		$sql .= " WHERE(1 = 1) " . $this->genericService->buildWhere(array_merge($data->infoFields, $data->editableFields));
 		
-		$this->logger->info('getData : ' . $sql);
+		$this->logger->info('_getDataList : ' . $sql);
 		
 		$select = $db->prepare($sql);
 		$select->execute();
@@ -488,7 +488,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			}
 			
 			// Get the lines of data corresponding to the partial key
-			$childs = $this->getData($child);
+			$childs = $this->_getDataList($child);
 			
 			// Add to the result
 			$children[$child->tableFormat->format] = $childs;

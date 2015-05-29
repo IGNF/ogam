@@ -69,6 +69,7 @@ class Application_Object_Generic_DataObject {
 	 *
 	 *
 	 *
+	 *
 	 * @return Application_Object_Metadata_TableField the infoFields array
 	 */
 	public function getInfoFields() {
@@ -80,10 +81,23 @@ class Application_Object_Generic_DataObject {
 	 *
 	 *
 	 *
+	 *
 	 * @return Application_Object_Metadata_TableField the editableFields array
 	 */
 	public function getEditableFields() {
 		return $this->editableFields;
+	}
+
+	/**
+	 * Return the editableFields array .
+	 *
+	 *
+	 * @param String $key
+	 *        	a data
+	 * @return Application_Object_Metadata_TableField the editableFields array
+	 */
+	public function getEditableField($key) {
+		return $this->editableFields[trim($key)];
 	}
 
 	/**
