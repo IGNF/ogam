@@ -24,6 +24,7 @@ abstract class ControllerTestCase extends Zend_Test_PHPUnit_ControllerTestCase {
 			$bootstrap = $this->application->getBootstrap();
 			$front = $bootstrap->getResource('FrontController');
 			$front->setParam('bootstrap', $bootstrap);
+			$front->getRouter()->addDefaultRoutes();
 		}
 		
 		$this->logger = Zend_Registry::get("logger");
