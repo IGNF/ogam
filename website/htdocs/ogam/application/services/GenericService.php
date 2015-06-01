@@ -832,7 +832,7 @@ class Application_Service_GenericService {
 	 *        	a criteria.
 	 * @return String the update part of the SQL query (ex : BASAL_AREA = 6.05)
 	 */
-	public function buildUpdateItem($tableField) {
+	public function buildSQLValueItem($tableField) {
 		$sql = "";
 		
 		$value = $tableField->value;
@@ -842,79 +842,45 @@ class Application_Service_GenericService {
 			
 			case "BOOLEAN":
 				// Value is 1 or 0, stored in database as a char(1)
-				$sql = $column . " = " . ($value == true ? '1' : '0');
+				$sql = ($value == true ? '1' : '0');
 				break;
 			case "DATE":
-				$sql = $column . " = to_date('" . $value . "', 'YYYY/MM/DD')";
+				if ($value == "") {
+					$sql = "NULL";
+				} else {
+					$sql = " to_date('" . $value . "', 'YYYY/MM/DD')";
+				}
 				break;
 			case "INTEGER":
 			case "NUMERIC":
+			case "RANGE":
 				if ($value == "") {
-					$sql = $column . " = null";
+					$sql = "NULL";
 				} else {
 					$value = str_replace(",", ".", $value);
-					$sql = $column . " = " . $value;
+					$sql = $value;
 				}
 				break;
 			case "ARRAY":
-				$sql = $column . " = " . $this->arrayToSQLString($value);
+				$sql = $this->arrayToSQLString($value);
 				break;
 			case "CODE":
-				$sql = $column . " = '" . $value . "'";
+				$sql = "'" . $value . "'";
 				break;
 			case "GEOM":
-				$sql = $column . " = ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")";
+				$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")";
 				break;
 			case "STRING":
 			default:
 				// Single value
-				$sql = $column . " = '" . $value . "'";
+				$sql = "'" . $value . "'";
 				break;
 		}
 		
 		return $sql;
 	}
 
-	/**
-	 * Build the insert value clause corresponding to one criteria.
-	 *
-	 * @param TableField $tableField
-	 *        	a criteria.
-	 * @return String the insert part of the SQL query (ex : BASAL_AREA = 6.05)
-	 */
-	public function buildInsertValueItem($field) {
-		$sql = "";
-		
-		if ($field->type == "NUMERIC" || $field->type == "INTEGER" || $field->type == "RANGE") {
-			$sql .= str_replace(",", ".", $field->value);
-		} else if ($field->type == "GEOM") {
-			$sql .= "ST_transform(ST_GeomFromText('" . $field->value . "'," . $this->visualisationSRS . ")," . $this->databaseSRS . ")";
-		} else if ($field->type == "ARRAY") {
-			// Arrays
-			
-			// $field->value should be an array
-			$arrayStr = "'{";
-			
-			if (is_array($field->value)) {
-				
-				foreach ($field->value as $value) {
-					$arrayStr .= $value . ",";
-				}
-				if (count($field->value) !== 0) {
-					$arrayStr = substr($arrayStr, 0, -1); // remove last comma
-				}
-			} else {
-				$arrayStr .= $field->value;
-			}
-			$arrayStr .= "}'";
-			
-			$sql .= $arrayStr;
-		} else {
-			$sql .= "'" . $field->value . "'";
-		}
-		
-		return $sql;
-	}
+	
 
 	/**
 	 * Build the SELECT part for one field.

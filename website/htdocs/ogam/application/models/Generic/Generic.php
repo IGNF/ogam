@@ -202,7 +202,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			
 			if ($field->data != "LINE_NUMBER" && $field->isEditable) {
 				// Hardcoded value
-				$sql .= $this->genericService->buildUpdateItem($field);
+				$sql .=  $field->columnName . " = " . $this->genericService->buildSQLValueItem($field);
 				$sql .= ", ";
 			}
 		}
@@ -306,7 +306,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				
 				// Primary keys that are not set should be serials ...
 				$columns .= $field->columnName . ", ";
-				$values .= $this->genericService->buildInsertValueItem($field);
+				$values .= $this->genericService->buildSQLValueItem($field);
 				$values .= ", ";
 			} else {
 				$this->logger->info('field ' . $field->columnName . " " . $field->isCalculated);
@@ -328,7 +328,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				// Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
 					$columns .= $field->columnName . ", ";
-					$values .= $this->genericService->buildInsertValueItem($field);
+					$values .= $this->genericService->buildSQLValueItem($field);
 					$values .= ", ";
 				}
 			}
