@@ -464,7 +464,7 @@ class Application_Service_GenericService {
 	 *        	an array of values.
 	 * @return the String representation of the array
 	 */
-	public function arrayToSQLString($arrayValues) {
+	private function _arrayToSQLString($arrayValues) {
 		$string = "'{";
 		
 		if (is_array($arrayValues)) {
@@ -647,7 +647,7 @@ class Application_Service_GenericService {
 							$nodeCodes[] = $value; // add the value itself
 							                       
 							// Case of a list of values
-							$stringValue = $this->arrayToSQLString($nodeCodes);
+							$stringValue = $this->_arrayToSQLString($nodeCodes);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
 					} else if ($tableField->subtype == 'TAXREF') {
@@ -664,12 +664,12 @@ class Application_Service_GenericService {
 							$nodeCodes[] = $value; // add the value itself
 							                       
 							// Case of a list of values
-							$stringValue = $this->arrayToSQLString($nodeCodes);
+							$stringValue = $this->_arrayToSQLString($nodeCodes);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
 					} else {
 						
-						$stringValue = $this->arrayToSQLString($value);
+						$stringValue = $this->_arrayToSQLString($value);
 						if (is_array($value)) {
 							// Case of a list of values
 							if ($exact) {
@@ -862,7 +862,7 @@ class Application_Service_GenericService {
 				}
 				break;
 			case "ARRAY":
-				$sql = $this->arrayToSQLString($value);
+				$sql = $this->_arrayToSQLString($value);
 				break;
 			case "CODE":
 				$sql = "'" . $value . "'";
