@@ -723,9 +723,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		}
 
 		// Check if the field is mandatory
-		if (record.required && record.required === "1") {
-			field.allowBlank = false;
-		}
+		field.allowBlank = (record.required != true);
 
 		// Add a tooltip
 		if (!Ext.isEmpty(record.definition)) {
