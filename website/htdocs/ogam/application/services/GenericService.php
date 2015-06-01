@@ -570,8 +570,6 @@ class Application_Service_GenericService {
 	 * @return String the WHERE part of the SQL query (ex : 'AND BASAL_AREA = 6.05')
 	 */
 	public function buildWhereItem($tableField, $exact = false) {
-		$this->logger->debug('buildWhereItem : ' . print_r($tableField, true));
-		
 		$sql = "";
 		
 		$value = $tableField->value;
