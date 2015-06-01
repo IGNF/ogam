@@ -294,6 +294,7 @@ Invalid form;Invalid form
 Data saved;Data saved - Reloading
 Item cannot be deleted because it has children;Item cannot be deleted because it has children
 Error while deleting data;Error while deleting data
+Error inserting data duplicate key;Error while inserting data - The data already exists
 Data deleted;Data deleted
 Add a new localisation;Add a new localisation
 

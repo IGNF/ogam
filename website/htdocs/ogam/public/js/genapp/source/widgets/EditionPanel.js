@@ -813,6 +813,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		// We display the update message
 		if (!Ext.isEmpty(obj.message)) {
 			this.messagePanel.update(obj.message);
+			this.messagePanel.getEl().setStyle('color', '#00ff00');
 		}
 
 		// We redirect
@@ -822,7 +823,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		if (!Ext.isEmpty(obj.errorMessage)) {
 			this.messagePanel.update(obj.errorMessage);
-			console.log('Server-side failure with status code (1): ' + action.response.status);
+			this.messagePanel.getEl().setStyle('color', '#ff0000');
+			console.log('Server-side failure with status code : ' + action.response.status);
 			console.log('errorMessage : ' + action.response.errorMessage);
 		}
 	},
@@ -839,8 +841,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var obj = Ext.util.JSON.decode(action.response.responseText);
 		if (!Ext.isEmpty(obj.errorMessage)) {
 			this.messagePanel.update(obj.errorMessage);
+			this.messagePanel.getEl().setStyle('color', '#ff0000');
 		}
-		console.log('Server-side failure with status code (2): ' + action.response.status);
+		console.log('Server-side failure with status code : ' + action.response.status);
 		console.log('errorMessage : ' + action.response.errorMessage);
 	},
 
@@ -853,6 +856,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var obj = Ext.decode(response.responseText);
 		if (!Ext.isEmpty(obj.message)) {
 			this.messagePanel.update(obj.message);
+			this.messagePanel.getEl().setStyle('color', '#00ff00');
 		}
 		
 		// Set to NOT DIRTY to avoid a warning when leaving the page
@@ -865,7 +869,8 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 
 		if (!Ext.isEmpty(obj.errorMessage)) {
 			this.messagePanel.update(obj.errorMessage);
-			console.log('Server-side failure with status code (1): ' + response.status);
+			this.messagePanel.getEl().setStyle('color', '#ff0000');
+			console.log('Server-side failure with status code : ' + response.status);
 			console.log('errorMessage : ' + response.errorMessage);
 		}
 	},
@@ -878,8 +883,9 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var obj = Ext.decode(response.responseText);
 		if (!Ext.isEmpty(obj.errorMessage)) {
 			this.messagePanel.update(obj.errorMessage);
+			this.messagePanel.getEl().setStyle('color', '#ff0000');
 		}
-		console.log('Server-side failure with status code (2): ' + response.status);
+		console.log('Server-side failure with status code : ' + response.status);
 		console.log('errorMessage : ' + response.errorMessage);
 	},
 

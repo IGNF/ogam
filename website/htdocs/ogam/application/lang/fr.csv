@@ -295,6 +295,7 @@ Data saved;Données sauvegardées - Rechargement
 Item cannot be deleted because it has children;La donnée ne peut pas être effacée car d'autres données sont liées
 Error while deleting data;Erreur lors de la suppression
 Data deleted;Donnée supprimée
+Error inserting data duplicate key;Erreur lors de l'insertion - la donnée existe déjà
 Add a new localisation;Ajouter une nouvelle localisation
 
 ##########################
