@@ -421,16 +421,17 @@ class Application_Service_GenericService {
 		$posInf = strpos($value, "<=");
 		$posSup = strpos($value, ">=");
 		
+		// Cas où les 2 valeurs sont présentes
 		if ($posBetween !== false) {
 			
 			$minValue = substr($value, 0, $posBetween);
 			$maxValue = substr($value, $posBetween + 3);
 			$sql2 = '';
 			
-			if (!empty($minValue)) {
+			if (($minValue !== null) && ($minValue !== '')) {
 				$sql2 .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue . " ";
 			}
-			if (!empty($maxValue)) {
+			if (($maxValue !== null) && ($maxValue !== '')) {
 				if ($sql2 != "") {
 					$sql2 .= ' AND ';
 				}
@@ -438,13 +439,15 @@ class Application_Service_GenericService {
 			}
 			$sql .= '(' . $sql2 . ')';
 		} else if ($posInf !== false) {
+			// Cas où on a juste un max
 			$maxValue = trim(substr($value, $posInf + 2));
-			if (!empty($maxValue)) {
+			if (($maxValue !== null) && ($maxValue !== '')) {
 				$sql .= $tableField->format . "." . $tableField->columnName . " <= " . $maxValue . " ";
 			}
 		} else if ($posSup !== false) {
+			// Cas où on a juste un min
 			$minValue = trim(substr($value, $posSup + 2));
-			if (!empty($minValue)) {
+			if (($minValue !== null) && ($minValue !== '')) {
 				$sql .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue . " ";
 			}
 		} else {
@@ -567,6 +570,8 @@ class Application_Service_GenericService {
 	 * @return String the WHERE part of the SQL query (ex : 'AND BASAL_AREA = 6.05')
 	 */
 	public function buildWhereItem($tableField, $exact = false) {
+		$this->logger->debug('buildWhereItem : ' . print_r($tableField, true));
+		
 		$sql = "";
 		
 		$value = $tableField->value;
@@ -612,6 +617,8 @@ class Application_Service_GenericService {
 					// Numeric values
 					if (is_array($value)) {
 						
+						$this->logger->debug('numeric : ' . print_r($value, true));
+						
 						// Case of a list of values
 						$sql2 = '';
 						foreach ($value as $val) {
@@ -623,6 +630,8 @@ class Application_Service_GenericService {
 							$sql2 = substr($sql2, 0, -4); // remove the last OR
 						}
 						$sql .= " AND (" . $sql2 . ")";
+						
+						$this->logger->debug('$sql2 : ' . $sql2);
 					} else {
 						// Single value
 						if (is_numeric($value) || is_string($value)) {
@@ -879,8 +888,6 @@ class Application_Service_GenericService {
 		
 		return $sql;
 	}
-
-	
 
 	/**
 	 * Build the SELECT part for one field.
