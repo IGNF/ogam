@@ -290,11 +290,9 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	public function insertData($data) {
 		$db = $this->getAdapter();
 		
-		/* @var $data DataObject */
-		$tableFormat = $data->tableFormat;
-		/* @var $tableFormat TableFormat */
-		
 		$this->logger->info('insertData');
+				
+		$tableFormat = $data->tableFormat;
 		
 		// Get the values from the data table
 		$sql = "INSERT INTO " . $tableFormat->schemaCode . "." . $tableFormat->tableName;

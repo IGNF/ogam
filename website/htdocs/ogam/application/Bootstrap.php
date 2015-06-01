@@ -1,12 +1,15 @@
 <?php
 
 // We need for the deserialization of the session objects classes
-require_once APPLICATION_PATH . '/objects/Website/User.php';
-require_once APPLICATION_PATH . '/objects/Website/Role.php';
-require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
+require_once APPLICATION_PATH . '/controllers/Plugin/Bootstrap.php';
+require_once APPLICATION_PATH . '/objects/Generic/DataObject.php';
 require_once APPLICATION_PATH . '/objects/Metadata/Field.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
-require_once APPLICATION_PATH . '/controllers/Plugin/Bootstrap.php';
+require_once APPLICATION_PATH . '/objects/Metadata/Format.php';
+require_once APPLICATION_PATH . '/objects/Metadata/TableFormat.php';
+require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
+require_once APPLICATION_PATH . '/objects/Website/User.php';
+require_once APPLICATION_PATH . '/objects/Website/Role.php';
 
 /**
  * The bootstrap class
