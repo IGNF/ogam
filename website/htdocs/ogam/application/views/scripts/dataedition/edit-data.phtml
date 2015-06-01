@@ -197,7 +197,21 @@
 	$user = $userSession->user; 
 ?>
 <div class='actionLinks'>
-	<a href="<?php echo $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/<?php echo $this->data->tableFormat->schemaCode; ?>/FORMAT/<?php echo $this->data->tableFormat->format; ?>/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?=$this->translate('Add a new localisation');?></a>
+
+<?php
+// Détermination de la table racine dans l'arborescence
+if (!empty($ancestors)){
+	// Si la table courante a des ancêtres, on prend le premier de la liste
+	$racine = $ancestors[0]->tableFormat->format;
+} else {
+	// Sinon on reste sur la table courante
+	$racine = $this->data->tableFormat->format;
+}
+  
+
+?>
+
+	<a href="<?php echo $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/<?php echo $this->data->tableFormat->schemaCode; ?>/FORMAT/<?php echo $racine; ?>/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?=$this->translate('Add a new localisation');?></a>
 </div>
 
 <div id='page'></div>
