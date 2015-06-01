@@ -23,10 +23,9 @@ class Application_Views_Helpers_GenerateEditLink extends Zend_View_Helper_Abstra
 	 * Generate a link corresponding to a data object
 	 *
 	 * @param DataObject $data        	
-	 * @return the HTML link
+	 * @return Application_Object_Website_Link the HTML link
 	 */
 	function generateEditLink($data) {
-		$tableFormat = $data->tableFormat->format;
 		
 		// Build the URL to link to the parent items
 		$urlArray = array(
@@ -38,7 +37,7 @@ class Application_Views_Helpers_GenerateEditLink extends Zend_View_Helper_Abstra
 		$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
 		
 		// Add the format
-		$urlArray['FORMAT'] = $tableFormat;
+		$urlArray['FORMAT'] = $data->tableFormat->format;
 		
 		// Add the PK elements
 		foreach ($data->infoFields as $infoField) {
@@ -58,7 +57,6 @@ class Application_Views_Helpers_GenerateEditLink extends Zend_View_Helper_Abstra
 				$fields[$field->label] = $this->view->escape($field->valueLabel);
 			}
 		}
-		
 		// output the result
 		return array(
 			'url' => $this->view->url($urlArray, null, true),

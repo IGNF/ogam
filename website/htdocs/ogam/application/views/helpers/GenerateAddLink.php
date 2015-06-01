@@ -23,7 +23,7 @@ class Application_Views_Helpers_GenerateAddLink extends Zend_View_Helper_Abstrac
 	 *
 	 * @param String $schema The schema
 	 * @param String $format The format
-	 * @param Array $infoFields The primary keys
+	 * @param Array[Application_Object_Metadata_TableField] $infoFields The primary keys
 	 * @return String the URL for the link
 	 */
 	function generateAddLink($schema, $format, $infoFields) {
