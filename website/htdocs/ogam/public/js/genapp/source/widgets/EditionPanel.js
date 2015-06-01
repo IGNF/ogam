@@ -652,7 +652,7 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 			case 'CHECKBOX':
 				field.xtype = 'switch_checkbox';
 				field.ctCls = 'improvedCheckbox';
-				switch (record.default_value) {
+				switch (record.value) {
 				case 1:
 				case '1':
 				case true:
