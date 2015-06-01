@@ -516,7 +516,14 @@ class DataEditionController extends AbstractOGAMController {
 				echo '}';
 			} catch (Exception $e) {
 				$this->logger->err($e->getMessage());
-				echo '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';
+				
+				if (stripos($e->getMessage(), 'SQLSTATE[23505]') !== false) {
+					// Traitement du cas d'un doublon pour PostgreSQL
+					echo '{"success":false,"errorMessage":' . json_encode($this->translator->translate('Error inserting data duplicate key')) . '}';
+				} else {
+					// Cas général
+					echo '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';
+				}
 			}
 		}
 		
