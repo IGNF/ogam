@@ -657,4 +657,18 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertTrue(is_array($modes));
 		$this->assertEquals(50, count($modes));
 	}
+
+	/**
+	 * Test de la fonction getTaxrefModesCount.
+	 */
+	public function testGetTaxrefModesCount() {
+		
+		// On charge le modèle
+		$metadataModel = new Application_Model_Metadata_Metadata();
+		
+		// On cherche les enfants au rang 2 de 'Plantae'
+		$count = $metadataModel->getTaxrefModesCount('ID_TAXON', 'Planta');
+		
+		$this->assertEquals(528, $count);
+	}
 }
