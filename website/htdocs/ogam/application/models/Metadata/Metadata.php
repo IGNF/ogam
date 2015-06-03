@@ -52,7 +52,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[mode => label]
 	 */
 	public function getModeLabels($unit, $code = null, $query = null) {
-		$key = $this->formatCacheKey('getModeLabels_' . $unit);
+		$key = $this->_formatCacheKey('getModeLabels_' . $unit);
 		
 		$this->logger->debug($key);
 		
@@ -132,7 +132,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return String label
 	 */
 	public function getMode($unit, $mode) {
-		$key = $this->formatCacheKey('getMode_' . $unit . '_' . $mode . '_' . $this->lang);
+		$key = $this->_formatCacheKey('getMode_' . $unit . '_' . $mode . '_' . $this->lang);
 		
 		$this->logger->debug($key);
 		
@@ -183,9 +183,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeLabels($unit, $value = null) {
 		if (is_array($value)) {
-			$key = $this->formatCacheKey('getTreeLabels_' . $unit . '_' . implode("_", $value));
+			$key = $this->_formatCacheKey('getTreeLabels_' . $unit . '_' . implode("_", $value));
 		} else {
-			$key = $this->formatCacheKey('getTreeLabels_' . $unit . '_' . $value);
+			$key = $this->_formatCacheKey('getTreeLabels_' . $unit . '_' . $value);
 		}
 		
 		$this->logger->debug($key);
@@ -235,7 +235,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[code => label]
 	 */
 	public function getTreeModes($unit, $query, $start = null, $limit = null) {
-		$key = $this->formatCacheKey('getTreeModes_' . $unit . '_' . $query . '_' . $start . '_' . $limit);
+		$key = $this->_formatCacheKey('getTreeModes_' . $unit . '_' . $query . '_' . $start . '_' . $limit);
 		
 		$this->logger->debug($key);
 		
@@ -277,7 +277,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Integer
 	 */
 	public function getTreeModesCount($unit, $query) {
-		$key = $this->formatCacheKey('getTreeModesCount_' . $unit . '_' . $query);
+		$key = $this->_formatCacheKey('getTreeModesCount_' . $unit . '_' . $query);
 		
 		$this->logger->debug($key);
 		
@@ -318,7 +318,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		} else {
 			$keycode = $code;
 		}
-		$key = $this->formatCacheKey('getDynamodeLabels_' . $unit . '_' . $keycode . '_' . $query);
+		$key = $this->_formatCacheKey('getDynamodeLabels_' . $unit . '_' . $keycode . '_' . $query);
 		
 		$this->logger->debug($key);
 		
@@ -395,7 +395,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Application_Object_Metadata_TreeNode
 	 */
 	public function getTreeChildren($unit, $parentcode = '*', $levels = 1) {
-		$key = $this->formatCacheKey('getTreeChildren_' . $unit . '_' . $parentcode . '_' . $levels . '_' . $this->lang);
+		$key = $this->_formatCacheKey('getTreeChildren_' . $unit . '_' . $parentcode . '_' . $levels . '_' . $this->lang);
 		
 		$this->logger->debug($key);
 		
@@ -481,7 +481,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[String]
 	 */
 	public function getTreeChildrenCodes($unit, $code = '*', $levels = 1) {
-		$key = $this->formatCacheKey('getTreeChildrenCodes_' . $unit . '_' . $code . '_' . $levels);
+		$key = $this->_formatCacheKey('getTreeChildrenCodes_' . $unit . '_' . $code . '_' . $levels);
 		
 		$this->logger->debug($key);
 		
@@ -742,7 +742,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getTableFields($schema, $format, $datasetID = null) {
 		$this->logger->debug('getTableFields : ' . $datasetID . '_' . $schema . '_' . $format . '_' . $this->lang);
 		
-		$key = $this->formatCacheKey('getTableFields_' . $datasetID . '_' . $schema . '_' . $format . '_' . $this->lang);
+		$key = $this->_formatCacheKey('getTableFields_' . $datasetID . '_' . $schema . '_' . $format . '_' . $this->lang);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -865,7 +865,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		
 		$this->logger->debug('getTableFormat : ' . $schema . ' ' . $format . '_' . $this->lang);
 		
-		$key = $this->formatCacheKey('getTableFormat' . $schema . '_' . $format . '_' . $this->lang);
+		$key = $this->_formatCacheKey('getTableFormat' . $schema . '_' . $format . '_' . $this->lang);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -921,7 +921,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		
 		$this->logger->debug('getTableFormatFromTableName : ' . $schema . ' ' . $table . '_' . $this->lang);
 		
-		$key = $this->formatCacheKey('getTableFormatFromTableName_' . $schema . '_' . $table . '_' . $this->lang);
+		$key = $this->_formatCacheKey('getTableFormatFromTableName_' . $schema . '_' . $table . '_' . $this->lang);
 		
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
@@ -975,7 +975,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[Application_Object_Metadata_FormFormat]
 	 */
 	public function getForms($datasetId, $schemaCode) {
-		$key = $this->formatCacheKey('getForms_' . $datasetId . "_" . $schemaCode . '_' . $this->lang);
+		$key = $this->_formatCacheKey('getForms_' . $datasetId . "_" . $schemaCode . '_' . $this->lang);
 		$this->logger->info('getForms : ' . $key);
 		
 		if ($this->useCache) {
@@ -1051,7 +1051,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getFormFields($dataset, $formFormat, $schema, $mode) {
 		$this->logger->info('getFormFields : ' . $dataset . ' ' . $formFormat . ' ' . $schema . '_' . $this->lang);
 		
-		$key = $this->formatCacheKey('getFormFields_' . $mode . '_' . $dataset . '_' . $formFormat . '_' . $schema . '_' . $this->lang);
+		$key = $this->_formatCacheKey('getFormFields_' . $mode . '_' . $dataset . '_' . $formFormat . '_' . $schema . '_' . $this->lang);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1155,7 +1155,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Application_Object_Metadata_FormField
 	 */
 	public function getFormField($format, $data) {
-		$key = $this->formatCacheKey('formfield_' . $format . '_' . $data . '_' . $this->lang);
+		$key = $this->_formatCacheKey('formfield_' . $format . '_' . $data . '_' . $this->lang);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1235,7 +1235,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getFormToTableMapping($schema, $formField) {
 		$this->logger->info('getFormToTableMapping : ' . $formField->format . " " . $formField->data . " " . $schema . '_' . $this->lang);
 		
-		$key = $this->formatCacheKey('formtotablemapping_' . $formField->format . '_' . $formField->data . '_' . $schema . '_' . $this->lang);
+		$key = $this->_formatCacheKey('formtotablemapping_' . $formField->format . '_' . $formField->data . '_' . $schema . '_' . $this->lang);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1286,7 +1286,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getTableToFormMapping($tableField) {
 		$this->logger->info('getTableToFormMapping : ' . $tableField->format . " " . $tableField->data . ' ' . $this->lang);
 		
-		$key = $this->formatCacheKey('getTableToFormMapping' . $tableField->format . '_' . $tableField->data . '_' . $this->lang);
+		$key = $this->_formatCacheKey('getTableToFormMapping' . $tableField->format . '_' . $tableField->data . '_' . $this->lang);
 		
 		// Get the form description corresponding to the table field
 		$result = null;
@@ -1343,7 +1343,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getTablesTree($tableFormat, $schemaCode) {
 		$this->logger->info('getTablesTree : tableFormat:' . $tableFormat . ' schemaCode:' . $schemaCode);
 		
-		$key = $this->formatCacheKey('getTablesTree_' . $tableFormat . '_' . $schemaCode);
+		$key = $this->_formatCacheKey('getTablesTree_' . $tableFormat . '_' . $schemaCode);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1441,7 +1441,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param String $key        	
 	 * @return String
 	 */
-	public function formatCacheKey($key) {
+	private function _formatCacheKey($key) {
 		$key = str_replace('*', '_', $key); // Zend cache doesn't like special characters
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
@@ -1464,7 +1464,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Application_Object_Metadata_TreeNode
 	 */
 	public function getTaxrefChildren($unit, $parentcode = '*', $levels = 1) {
-		$key = $this->formatCacheKey('getTaxrefChildren_' . $unit . '_' . $parentcode . '_' . $levels);
+		$key = $this->_formatCacheKey('getTaxrefChildren_' . $unit . '_' . $parentcode . '_' . $levels);
 		
 		$this->logger->debug($key);
 		
@@ -1505,29 +1505,35 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$unit
 			));
 			
-			$resultTree = new Application_Object_Metadata_TreeNode(); // The root is empty
-			foreach ($select->fetchAll() as $row) {
-				
-				$parentCode = $row['parent_code'];
-				
-				// Build the new node
-				$tree = new Application_Object_Metadata_TaxrefNode();
-				$tree->code = $row['code'];
-				$tree->name = $row['name'];
-				$tree->completeName = $row['complete_name'];
-				$tree->vernacularName = $row['vernacular_name'];
-				$tree->isLeaf = $row['is_leaf'];
-				$tree->isReference = $row['is_reference'];
-				
-				// Check if a parent can be found in the structure
-				$parentNode = $resultTree->getNode($parentCode);
-				if ($parentNode == null) {
-					// Add the new node to the result root
-					$resultTree->addChild($tree);
-				} else {
-					// Add it to the found parent
-					$parentNode->addChild($tree);
+			$rows = $select->fetchAll();
+			
+			if (!empty($rows)) {
+				$resultTree = new Application_Object_Metadata_TreeNode(); // The root is empty
+				foreach ($rows as $row) {
+					
+					$parentCode = $row['parent_code'];
+					
+					// Build the new node
+					$tree = new Application_Object_Metadata_TaxrefNode();
+					$tree->code = $row['code'];
+					$tree->name = $row['name'];
+					$tree->completeName = $row['complete_name'];
+					$tree->vernacularName = $row['vernacular_name'];
+					$tree->isLeaf = $row['is_leaf'];
+					$tree->isReference = $row['is_reference'];
+					
+					// Check if a parent can be found in the structure
+					$parentNode = $resultTree->getNode($parentCode);
+					if ($parentNode == null) {
+						// Add the new node to the result root
+						$resultTree->addChild($tree);
+					} else {
+						// Add it to the found parent
+						$parentNode->addChild($tree);
+					}
 				}
+			} else {
+				$resultTree = null;
 			}
 			
 			if ($this->useCache) {
@@ -1549,7 +1555,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[String, String]
 	 */
 	public function getTaxrefLabels($unit, $value = null) {
-		$key = $this->formatCacheKey('getTaxrefLabels_' . $unit . '_' . $value);
+		$key = $this->_formatCacheKey('getTaxrefLabels_' . $unit . '_' . $value);
 		
 		$this->logger->debug($key);
 		
@@ -1598,7 +1604,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[Application_Object_Metadata_TaxrefNode]
 	 */
 	public function getTaxrefModes($unit, $query = null, $start = null, $limit = null) {
-		$key = $this->formatCacheKey('getTaxrefModes_' . $unit . '_' . $query . '_' . $start . '_' . $limit);
+		$key = $this->_formatCacheKey('getTaxrefModes_' . $unit . '_' . $query . '_' . $start . '_' . $limit);
 		
 		$this->logger->debug($key);
 		
@@ -1665,7 +1671,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Integer
 	 */
 	public function getTaxrefModesCount($unit, $query = null) {
-		$key = $this->formatCacheKey('getTaxrefModesCount_' . $unit . '_' . $query);
+		$key = $this->_formatCacheKey('getTaxrefModesCount_' . $unit . '_' . $query);
 		
 		$this->logger->debug($key);
 		
@@ -1716,7 +1722,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[String]
 	 */
 	public function getTaxrefChildrenCodes($unit, $code = '*', $levels = 1) {
-		$key = $this->formatCacheKey('getTaxrefChildrenCodes_' . $unit . '_' . $code . '_' . $levels);
+		$key = $this->_formatCacheKey('getTaxrefChildrenCodes_' . $unit . '_' . $code . '_' . $levels);
 		
 		$this->logger->debug($key);
 		

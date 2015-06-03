@@ -561,4 +561,44 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertNotNull($dataSetSpecies);
 		$this->assertEquals('SPECIES', $dataSetSpecies->id);
 	}
+
+	/**
+	 * Test de la fonction getTaxrefChildren.
+	 *
+	 * Cas null.
+	 */
+	public function testGetTaxrefChildrenNull() {
+		
+		// On charge le modèle
+		$metadataModel = new Application_Model_Metadata_Metadata();
+		
+		// then we get the corresponding table field
+		$tree = $metadataModel->getTaxrefChildren('TOTO', 'NODE', 1);
+		
+		$this->assertNull($tree);
+	}
+
+	/**
+	 * Test de la fonction getTaxrefChildren.
+	 *
+	 * Cas nominal.
+	 */
+	public function testGetTaxrefChildren() {
+		
+		// On charge le modèle
+		$metadataModel = new Application_Model_Metadata_Metadata();
+		
+		// On cherche les enfants au rang 1 de 'Plantae'
+		$tree = $metadataModel->getTaxrefChildren('ID_TAXON', '187079', 1);
+		
+		// Ne doit pas être null
+		$this->assertNotNull($tree);
+		
+		// Il doit y avoir des enfants
+		$this->assertFalse(empty($tree->children));
+		
+		// On cherche un des enfants en particulier
+		$item0 = $tree->getNode('187557');		
+		$this->assertEquals('Bacillariophyta', $item0->name);
+	}
 }
