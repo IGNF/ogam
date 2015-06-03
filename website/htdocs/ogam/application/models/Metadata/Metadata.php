@@ -248,7 +248,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " AND unaccent_string(COALESCE(t.label, mt.label)) ilike unaccent_string('%" . $query . "%')";
 		}
 		$req .= " ORDER BY position, code";
-		if ($start != null && $limit != null) {
+		if ($start !== null && $limit !== null) {
 			$req .= " LIMIT " . $limit . " OFFSET " . $start;
 		}
 		
@@ -1592,14 +1592,15 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 	/**
 	 * Return the code and name for a taxref filtered by query.
+	 * Used for the autocomplete box in the criteria field.
 	 *
 	 * @param String $unit
 	 *        	The unit
 	 * @param String $query
 	 *        	the searched text (optional)
-	 * @param String $start
+	 * @param Integer $start
 	 *        	the number of the first row to return (optional)
-	 * @param String $limit
+	 * @param Integer $limit
 	 *        	the max number of row to return (optional)
 	 * @return Array[Application_Object_Metadata_TaxrefNode]
 	 */
@@ -1626,7 +1627,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "      OR vernacular_name ilike '%" . $query . "%')";
 			$req .= " ORDER BY name ";
 			
-			if ($start != null && $limit != null) {
+			if ($start !== null && $limit !== null) {
 				$req .= " LIMIT " . $limit . " OFFSET " . $start;
 			}
 			

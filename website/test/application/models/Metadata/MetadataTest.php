@@ -620,23 +620,41 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertTrue(is_array($codes));
 		$this->assertTrue(in_array('187557', $codes));
 	}
-	
+
 	/**
 	 * Test de la fonction getTaxrefLabels.
 	 */
-	public function testgetTaxrefLabels() {
-	
+	public function testGetTaxrefLabels() {
+		
 		// On charge le modèle
 		$metadataModel = new Application_Model_Metadata_Metadata();
-	
+		
 		// On cherche les enfants au rang 2 de 'Plantae'
 		$labels = $metadataModel->getTaxrefLabels('ID_TAXON', '187079');
-	
+		
 		// Ne doit pas être null
 		$this->assertNotNull($labels);
-			
+		
 		// Il doit y avoir des enfants
 		$this->assertTrue(is_array($labels));
 		$this->assertTrue(in_array('Plantae', $labels));
+	}
+
+	/**
+	 * Test de la fonction getTaxrefModes.
+	 */
+	public function testGetTaxrefModes() {
+		
+		// On charge le modèle
+		$metadataModel = new Application_Model_Metadata_Metadata();
+		
+		// On cherche les enfants au rang 2 de 'Plantae'
+		$modes = $metadataModel->getTaxrefModes('ID_TAXON', 'Planta', 0, 50);
+		
+		// Ne doit pas être null
+		$this->assertNotNull($modes);
+		
+		$this->assertTrue(is_array($modes));
+		$this->assertEquals(50, count($modes));
 	}
 }
