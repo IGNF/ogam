@@ -539,7 +539,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param Result $row        	
 	 * @return Application_Object_Metadata_Dataset
 	 */
-	protected function readDataSet($row) {
+	private function _readDataSet($row) {
 		$dataset = new Application_Object_Metadata_Dataset();
 		$dataset->id = $row['id'];
 		$dataset->label = $row['label'];
@@ -579,7 +579,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$dataset = $this->readDataSet($row);
+			$dataset = $this->_readDataSet($row);
 			$result[$dataset->id] = $dataset;
 		}
 		
@@ -616,7 +616,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$dataset = $this->readDataSet($row);
+			$dataset = $this->_readDataSet($row);
 			$result[$dataset->id] = $dataset;
 		}
 		return $result;
@@ -703,6 +703,31 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Read a table field object from a result line.
+	 *
+	 * @param Result $row        	
+	 * @return Application_Object_Metadata_FormField
+	 */
+	private function _readTableField($row) {
+		$tableField = new Application_Object_Metadata_TableField();
+		$tableField->data = $row['data'];
+		$tableField->format = $row['format'];
+		$tableField->columnName = $row['column_name'];
+		$tableField->isCalculated = $row['is_calculated'];
+		$tableField->isEditable = $row['is_editable'];
+		$tableField->isInsertable = $row['is_insertable'];
+		$tableField->isMandatory = $row['is_mandatory'];
+		$tableField->position = $row['position'];
+		$tableField->label = $row['label'];
+		$tableField->unit = $row['unit'];
+		$tableField->type = $row['type'];
+		$tableField->subtype = $row['subtype'];
+		$tableField->definition = $row['definition'];
+		
+		return $tableField;
+	}
+
+	/**
 	 * Get the list of table fields for a given table format.
 	 * If the dataset is specified, we filter on the fields of the dataset.
 	 *
@@ -762,20 +787,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				$tableField = new Application_Object_Metadata_TableField();
-				$tableField->data = $row['data'];
-				$tableField->format = $row['format'];
-				$tableField->columnName = $row['column_name'];
-				$tableField->isCalculated = $row['is_calculated'];
-				$tableField->isEditable = $row['is_editable'];
-				$tableField->isInsertable = $row['is_insertable'];
-				$tableField->isMandatory = $row['is_mandatory'];
-				$tableField->position = $row['position'];
-				$tableField->label = $row['label'];
-				$tableField->unit = $row['unit'];
-				$tableField->type = $row['type'];
-				$tableField->subtype = $row['subtype'];
-				$tableField->definition = $row['definition'];
+				$tableField = $this->_readTableField($row);
 				
 				$result[$tableField->data] = $tableField;
 			}
@@ -830,20 +842,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			
 			$row = $select->fetch();
 			if ($row) {
-				$tableField = new Application_Object_Metadata_TableField();
-				$tableField->data = $row['data'];
-				$tableField->format = $row['format'];
-				$tableField->columnName = $row['column_name'];
-				$tableField->isCalculated = $row['is_calculated'];
-				$tableField->isEditable = $row['is_editable'];
-				$tableField->isInsertable = $row['is_insertable'];
-				$tableField->isMandatory = $row['is_mandatory'];
-				$tableField->position = $row['position'];
-				$tableField->label = $row['label'];
-				$tableField->unit = $row['unit'];
-				$tableField->type = $row['type'];
-				$tableField->subtype = $row['subtype'];
-				$tableField->definition = $row['definition'];
+				$tableField = $this->_readTableField($row);
 				return $tableField;
 			}
 		}
@@ -1104,22 +1103,8 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				$formField = new Application_Object_Metadata_FormField();
-				$formField->data = $row['data'];
-				$formField->format = $formFormat;
-				$formField->label = $row['label'];
-				$formField->inputType = $row['input_type'];
-				$formField->definition = $row['definition'];
-				$formField->isCriteria = $row['is_criteria'];
-				$formField->isResult = $row['is_result'];
-				$formField->type = $row['type'];
-				$formField->subtype = $row['subtype'];
-				$formField->unit = $row['unit'];
-				$formField->isDefaultResult = $row['is_default_result'];
-				$formField->isDefaultCriteria = $row['is_default_criteria'];
-				$formField->defaultValue = $row['default_value'];
-				$formField->decimals = $row['decimals'];
-				$formField->mask = $row['mask'];
+				$formField = $this->_readFormField($row);
+				
 				$result[] = $formField;
 			}
 			
@@ -1130,6 +1115,34 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		} else {
 			return $cachedResult;
 		}
+	}
+
+	/**
+	 * Read a form field object from a result line.
+	 *
+	 * @param Result $row        	
+	 * @return Application_Object_Metadata_FormField
+	 */
+	private function _readFormField($row) {
+		$formField = new Application_Object_Metadata_FormField();
+		$formField->data = $row['data'];
+		$formField->format = $row['format'];
+		$formField->isCriteria = $row['is_criteria'];
+		$formField->isResult = $row['is_result'];
+		$formField->inputType = $row['input_type'];
+		$formField->isDefaultResult = $row['is_default_result'];
+		$formField->isDefaultCriteria = $row['is_default_criteria'];
+		$formField->defaultValue = $row['default_value'];
+		$formField->definition = $row['definition'];
+		$formField->label = $row['label'];
+		$formField->type = $row['type'];
+		$formField->subtype = $row['subtype'];
+		$formField->unit = $row['unit'];
+		$formField->decimals = $row['decimals'];
+		$formField->mask = $row['mask'];
+		$formField->position = $row['position'];
+		
+		return $formField;
 	}
 
 	/**
@@ -1166,23 +1179,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			));
 			
 			$row = $select->fetch();
-			$formField = new Application_Object_Metadata_FormField();
-			$formField->data = $row['data'];
-			$formField->format = $row['format'];
-			$formField->isCriteria = $row['is_criteria'];
-			$formField->isResult = $row['is_result'];
-			$formField->inputType = $row['input_type'];
-			$formField->isDefaultResult = $row['is_default_result'];
-			$formField->isDefaultCriteria = $row['is_default_criteria'];
-			$formField->defaultValue = $row['default_value'];
-			$formField->definition = $row['definition'];
-			$formField->label = $row['label'];
-			$formField->type = $row['type'];
-			$formField->subtype = $row['subtype'];
-			$formField->unit = $row['unit'];
-			$formField->decimals = $row['decimals'];
-			$formField->mask = $row['mask'];
-			$formField->position = $row['position'];
+			$formField = $this->_readFormField($row);
 			
 			if ($this->useCache) {
 				$this->cache->save($formField, $key);
@@ -1268,20 +1265,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			));
 			
 			$row = $select->fetch();
-			$tableField = new Application_Object_Metadata_TableField();
-			$tableField->data = $row['data'];
-			$tableField->format = $row['format'];
-			$tableField->columnName = $row['column_name'];
-			$tableField->isCalculated = $row['is_calculated'];
-			$tableField->isEditable = $row['is_editable'];
-			$tableField->isInsertable = $row['is_insertable'];
-			$tableField->isMandatory = $row['is_mandatory'];
-			$tableField->position = $row['position'];
-			$tableField->label = $row['label'];
-			$tableField->unit = $row['unit'];
-			$tableField->type = $row['type'];
-			$tableField->subtype = $row['subtype'];
-			$tableField->definition = $row['definition'];
+			$tableField = $this->_readTableField($row);
 			
 			if ($this->useCache) {
 				$this->cache->save($tableField, $key);
@@ -1334,23 +1318,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$row = $select->fetch();
 			
 			if (!empty($row)) {
-				$formField = new Application_Object_Metadata_FormField();
-				$formField->data = $row['data'];
-				$formField->format = $row['format'];
-				$formField->label = $row['label'];
-				$formField->inputType = $row['input_type'];
-				$formField->definition = $row['definition'];
-				$formField->isCriteria = $row['is_criteria'];
-				$formField->isResult = $row['is_result'];
-				$formField->type = $row['type'];
-				$formField->subtype = $row['subtype'];
-				$formField->unit = $row['unit'];
-				$formField->isDefaultResult = $row['is_default_result'];
-				$formField->isDefaultCriteria = $row['is_default_criteria'];
-				$formField->defaultValue = $row['default_value'];
-				$formField->decimals = $row['decimals'];
-				$formField->mask = $row['mask'];
-				$formField->position = $row['position'];
+				$formField = $this->_readFormField($row);
 				
 				if ($this->useCache) {
 					$this->cache->save($formField, $key);
