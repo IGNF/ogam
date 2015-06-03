@@ -214,33 +214,6 @@ class MetadataTest extends ControllerTestCase {
 	}
 
 	/**
-	 * Test la fonction getDatasetsForDisplay.
-	 */
-	public function testGetDatasetsForDisplay() {
-		
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-		
-		// On vérifie que l'on a ramené le bon compte de modalités
-		$datasets = $metadataModel->getDatasetsForDisplay();
-		$this->assertEquals(count($datasets), 2);
-	}
-
-	/**
-	 * Test la fonction getDatasetsForUpload.
-	 */
-	public function testGetDatasetsForUpload() {
-		
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-		
-		$datasets = $metadataModel->getDatasetsForUpload();
-		
-		// On vérifie que l'on a ramené le bon compte de modalités
-		$this->assertEquals(count($datasets), 2);
-	}
-
-	/**
 	 * Test la fonction getRequestedFiles.
 	 */
 	public function testGetRequestedFiles() {
@@ -550,17 +523,38 @@ class MetadataTest extends ControllerTestCase {
 	}
 
 	/**
-	 * Test la fonction getDatasets.
+	 * Test la fonction getDatasetsForDisplay.
 	 */
-	public function testGetDatasets() {
+	public function testGetDatasetsForDisplay() {
 		
 		// On charge le modèle
 		$metadataModel = new Application_Model_Metadata_Metadata();
 		
 		// We search for the geometry column
-		$datasets = $metadataModel->getDatasets();
+		$datasets = $metadataModel->getDatasetsForDisplay();
 		
 		$this->assertNotNull($datasets);
+		$this->assertEquals(2, count($datasets));
+		
+		$dataSetSpecies = $datasets['SPECIES'];
+		
+		$this->assertNotNull($dataSetSpecies);
+		$this->assertEquals('SPECIES', $dataSetSpecies->id);
+	}
+
+	/**
+	 * Test la fonction getDatasetsForUpload.
+	 */
+	public function testGetDatasetsForUpload() {
+		
+		// On charge le modèle
+		$metadataModel = new Application_Model_Metadata_Metadata();
+		
+		// We search for the geometry column
+		$datasets = $metadataModel->getDatasetsForUpload();
+		
+		$this->assertNotNull($datasets);
+		$this->assertEquals(2, count($datasets));
 		
 		$dataSetSpecies = $datasets['SPECIES'];
 		

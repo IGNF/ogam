@@ -44,7 +44,8 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $unit
 	 *        	The unit
-	 * @param String or Array $code
+	 * @param
+	 *        	String or Array $code
 	 *        	a code
 	 * @param String $query
 	 *        	a part of a label
@@ -533,66 +534,19 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get all the available datasets.
+	 * Read a dataset object from a result line.
 	 *
-	 * @return Array[Application_Object_Metadata_Dataset]
-	 */
-	public function getDatasets() {
-		$db = $this->getAdapter();
-		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
-		$req .= " FROM dataset d";
-		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATASET' AND row_pk = dataset_id)";
-		$req .= " ORDER BY dataset_id";
-		
-		$this->logger->info('getDatasets : ' . $req);
-		
-		$select = $db->prepare($req);
-		$select->execute();
-		
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$dataset = new Application_Object_Metadata_Dataset();
-			$dataset->id = $row['id'];
-			$dataset->label = $row['label'];
-			$dataset->definition = $row['definition'];			
-			$dataset->isDefault = $row['is_default'];
-			$result[$dataset->id] = $dataset;
-		}
-		return $result;
-	}
-
-	/**
-	 * Get a dataset.
-	 *
-	 * @param String $datasetId
-	 *        	The dataset identifier
+	 * @param Result $row        	
 	 * @return Application_Object_Metadata_Dataset
 	 */
-	public function getDataset($datasetId) {
-		$db = $this->getAdapter();
-		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, is_default ";
-		$req .= " FROM dataset d";
-		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATASET' AND row_pk = dataset_id) ";
-		$req .= " WHERE dataset_id = ?";
+	protected function readDataSet($row) {
+		$dataset = new Application_Object_Metadata_Dataset();
+		$dataset->id = $row['id'];
+		$dataset->label = $row['label'];
+		$dataset->definition = $row['definition'];
+		$dataset->isDefault = $row['is_default'];
 		
-		$this->logger->info('getDataset : ' . $req);
-		
-		$select = $db->prepare($req);
-		$select->execute(array(
-			$datasetId
-		));
-		
-		$row = $select->fetch();
-		if ($row) {
-			$dataset = new Application_Object_Metadata_Dataset();
-			$dataset->id = $row['id'];
-			$dataset->label = $row['label'];
-			$dataset->isDefault = $row['is_default'];
-			
-			return $dataset;
-		} else {
-			$result = null;
-		}
+		return $dataset;
 	}
 
 	/**
@@ -625,12 +579,8 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$dataset = new Application_Object_Metadata_Dataset();
-			$dataset->id = $row['id'];
-			$dataset->label = $row['label'];
-			$dataset->definition = $row['definition'];
-			$dataset->isDefault = $row['is_default'];
-			$result[] = $dataset;
+			$dataset = $this->readDataSet($row);
+			$result[$dataset->id] = $dataset;
 		}
 		
 		return $result;
@@ -643,7 +593,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getDatasetsForUpload() {
 		$db = $this->getAdapter();
-		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, is_default ";
+		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
 		$req .= " FROM dataset d";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATASET' AND row_pk = dataset_id) ";
 		$req .= " INNER JOIN dataset_files using (dataset_id) ";
@@ -666,11 +616,8 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$dataset = new Application_Object_Metadata_Dataset();
-			$dataset->id = $row['id'];
-			$dataset->label = $row['label'];
-			$dataset->isDefault = $row['is_default'];
-			$result[] = $dataset;
+			$dataset = $this->readDataSet($row);
+			$result[$dataset->id] = $dataset;
 		}
 		return $result;
 	}
