@@ -44,14 +44,14 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $unit
 	 *        	The unit
-	 * @param String $code
+	 * @param String or Array $code
 	 *        	a code
 	 * @param String $query
 	 *        	a part of a label
 	 * @return Array[mode => label]
 	 */
 	public function getModeLabels($unit, $code = null, $query = null) {
-		$key = $this->formatCacheKey('getModeLabels_' . $unit . '_' . $code);
+		$key = $this->formatCacheKey('getModeLabels_' . $unit);
 		
 		$this->logger->debug($key);
 		
@@ -539,7 +539,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getDatasets() {
 		$db = $this->getAdapter();
-		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, is_default ";
+		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
 		$req .= " FROM dataset d";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATASET' AND row_pk = dataset_id)";
 		$req .= " ORDER BY dataset_id";
@@ -554,8 +554,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$dataset = new Application_Object_Metadata_Dataset();
 			$dataset->id = $row['id'];
 			$dataset->label = $row['label'];
+			$dataset->definition = $row['definition'];			
 			$dataset->isDefault = $row['is_default'];
-			$result[] = $dataset;
+			$result[$dataset->id] = $dataset;
 		}
 		return $result;
 	}
