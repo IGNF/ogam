@@ -1710,6 +1710,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 	/**
 	 * Get all the children codes from the reference taxon of a taxon.
+	 * Used when building an SQL WHERE clause for a node of the taxref.
 	 *
 	 * Return an array of codes.
 	 *
