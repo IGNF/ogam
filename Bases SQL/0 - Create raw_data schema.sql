@@ -187,6 +187,7 @@ PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 INV_DATE             DATE                 null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
+CORINE_BIOTOPE 		 character varying(36)[]     null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
 constraint PK_PLOT_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE),
@@ -200,6 +201,7 @@ COMMENT ON COLUMN PLOT_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN PLOT_DATA.CYCLE IS 'The cycle of inventory';
 COMMENT ON COLUMN PLOT_DATA.INV_DATE IS 'The date of inventory';
 COMMENT ON COLUMN PLOT_DATA.IS_FOREST_PLOT IS 'Is the plot a forest plot ?';
+COMMENT ON COLUMN PLOT_DATA.CORINE_BIOTOPE IS 'The biotope of the plot';
 COMMENT ON COLUMN PLOT_DATA.COMMENT IS 'A comment about the plot';
 COMMENT ON COLUMN PLOT_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 

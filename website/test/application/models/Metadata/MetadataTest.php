@@ -93,10 +93,10 @@ class MetadataTest extends ControllerTestCase {
 		// On charge le modèle
 		$metadataModel = new Application_Model_Metadata_Metadata();
 		
-		$taxons = $metadataModel->getTreeLabels('ID_TAXON');
+		$taxons = $metadataModel->getTreeLabels('CORINE_BIOTOPE');
 		
 		// On vérifie que l'on a ramené le bon compte de modalités
-		$this->assertEquals(count($taxons), 41);
+		$this->assertEquals(count($taxons), 1509);
 	}
 
 	/**
@@ -134,30 +134,27 @@ class MetadataTest extends ControllerTestCase {
 		$metadataModel = new Application_Model_Metadata_Metadata();
 		
 		// Requête par défaut, on ramène le noeud racine avec 1 niveau de descendants
-		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON');
-		$this->assertEquals(count($taxonsTree->children), 1); // Il doit y avoir 1 enfant (Fauna)
+		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE');
+		$this->assertEquals(count($taxonsTree->children), 7); // Il doit y avoir 7 enfants
 		$taxon = $taxonsTree->children[0];
-		$this->assertEquals($taxon->code, -1); // le noeud sous la racine est -1
-		$this->assertEquals($taxon->label, 'Fauna');
-		$this->assertEquals(count($taxon->children), 0); // pas d'enfants à ce noeud
+		$this->assertEquals($taxon->code, 1); // le noeud sous la racine est 1 : Habitats littoraux et halophiles
+		$this->assertEquals($taxon->label, 'Habitats littoraux et halophiles');
 		                                                 
 		// Idem
-		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON', '*');
-		$this->assertEquals(count($taxonsTree->children), 1); // Il doit y avoir 1 enfant (Fauna)
+		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE', '*');
+		$this->assertEquals(count($taxonsTree->children), 7); // Il doit y avoir 7 enfants
 		                                                      
 		// Idem
-		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON', '*', 1);
-		$this->assertEquals(count($taxonsTree->children), 1);
+		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE', '*', 1);
+		$this->assertEquals(count($taxonsTree->children), 7);
 		
 		// 1 niveau à partir de Fauna
-		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON', '-1', 1);
-		$this->assertEquals(count($taxonsTree->children), 10); // Il y a 10 enfants à Fauna
+		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE', '4', 1);
+		$this->assertEquals(count($taxonsTree->children), 5); // Il y a 10 enfants à Fauna
 		                                                       
 		// 2 niveaux à partir de la racine
-		$taxonsTree = $metadataModel->getTreeChildren('ID_TAXON', '*', 2);
-		$this->assertEquals(count($taxonsTree->children), 1); // On retrouve fauna
-		$taxon = $taxonsTree->children[0];
-		$this->assertEquals(count($taxon->children), 10); // Il y a 10 enfants à Fauna
+		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE', '*', 2);
+		$this->assertEquals(count($taxonsTree->children), 7); 
 	}
 
 	/**
@@ -169,28 +166,24 @@ class MetadataTest extends ControllerTestCase {
 		$metadataModel = new Application_Model_Metadata_Metadata();
 		
 		// Réquête par défaut, on ramène le noeud racine sur 1 niveau
-		$taxons = $metadataModel->getTreeChildrenCodes('ID_TAXON', '-1');
+		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '1');
 		$this->assertEquals(count($taxons), 1);
-		$rootTaxon = $taxons[0];
-		$this->assertEquals($rootTaxon, -1);
 		
 		// Idem
-		$taxons = $metadataModel->getTreeChildrenCodes('ID_TAXON', '-1', 1);
+		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '1', 1);
 		$this->assertEquals(count($taxons), 1);
-		$rootTaxon = $taxons[0];
-		$this->assertEquals($rootTaxon, -1);
 		
 		// Sur 2 niveaux
-		$taxons = $metadataModel->getTreeChildrenCodes('ID_TAXON', '-1', 2);
-		$this->assertEquals(count($taxons), 11); // on doit trouver 11 codes
+		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '1', 2);
+		$this->assertEquals(count($taxons), 10); // on doit trouver 10 codes
 		                                         
 		// Un noeud fils
-		$taxons = $metadataModel->getTreeChildrenCodes('ID_TAXON', '1000', 1);
+		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '41.1312', 1);
 		$this->assertEquals(count($taxons), 1);
 		
 		// Un noeud avec des enfants
-		$taxons = $metadataModel->getTreeChildrenCodes('ID_TAXON', '22', 2);
-		$this->assertEquals(count($taxons), 6);
+		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '41.11', 2);
+		$this->assertEquals(count($taxons), 3);
 	}
 
 	/**
@@ -202,15 +195,13 @@ class MetadataTest extends ControllerTestCase {
 		$metadataModel = new Application_Model_Metadata_Metadata();
 		
 		// Réquête par défaut, on ramène le noeud racine sur 1 niveau
-		$modes = $metadataModel->getTreeModes('ID_TAXON', 'Habrotrocha');
-		$count = $metadataModel->getTreeModesCount('ID_TAXON', 'Habrotrocha');
+		$modes = $metadataModel->getTreeModes('CORINE_BIOTOPE', 'Forêts');
+		$count = $metadataModel->getTreeModesCount('CORINE_BIOTOPE', 'Forêts');
 		
-		$this->assertEquals(count($modes), 3);
-		$this->assertEquals($count, 3);
+		$this->assertEquals(count($modes), 156);
+		$this->assertEquals($count, 156);
 		
-		$this->assertEquals($modes["1014"], "Habrotrocha angusticollis");
-		$this->assertEquals($modes["1015"], "Habrotrocha ligula ligula");
-		$this->assertEquals($modes["1016"], "Habrotrocha pulchra");
+		$this->assertEquals($modes["41"], "Forêts caducifoliées");
 	}
 
 	/**
@@ -361,6 +352,22 @@ class MetadataTest extends ControllerTestCase {
 		//
 		$formFields = $metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'result');
 		
+		$this->assertEquals(count($formFields), 7);
+		
+		// Les données attendues sont ordonnées
+		$this->assertEquals($formFields[0]->data, 'PROVIDER_ID');
+		$this->assertEquals($formFields[1]->data, 'PLOT_CODE');
+		$this->assertEquals($formFields[2]->data, 'CYCLE');
+		$this->assertEquals($formFields[3]->data, 'INV_DATE');
+		$this->assertEquals($formFields[4]->data, 'IS_FOREST_PLOT');
+		$this->assertEquals($formFields[5]->data, 'CORINE_BIOTOPE');
+		$this->assertEquals($formFields[6]->data, 'COMMENT');
+		
+		//
+		// Same thing for the criterias
+		//
+		$formFields = $metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'criteria');
+		
 		$this->assertEquals(count($formFields), 6);
 		
 		// Les données attendues sont ordonnées
@@ -369,21 +376,7 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertEquals($formFields[2]->data, 'CYCLE');
 		$this->assertEquals($formFields[3]->data, 'INV_DATE');
 		$this->assertEquals($formFields[4]->data, 'IS_FOREST_PLOT');
-		$this->assertEquals($formFields[5]->data, 'COMMENT');
-		
-		//
-		// Same thing for the criterias
-		//
-		$formFields = $metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'criteria');
-		
-		$this->assertEquals(count($formFields), 5);
-		
-		// Les données attendues sont ordonnées
-		$this->assertEquals($formFields[0]->data, 'PROVIDER_ID');
-		$this->assertEquals($formFields[1]->data, 'PLOT_CODE');
-		$this->assertEquals($formFields[2]->data, 'CYCLE');
-		$this->assertEquals($formFields[3]->data, 'INV_DATE');
-		$this->assertEquals($formFields[4]->data, 'IS_FOREST_PLOT');
+		$this->assertEquals($formFields[5]->data, 'CORINE_BIOTOPE');
 	}
 
 	/**
