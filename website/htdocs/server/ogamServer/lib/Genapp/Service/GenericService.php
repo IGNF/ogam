@@ -822,7 +822,7 @@ class Genapp_Service_GenericService {
 							if ($exact) {
 								$sql .= " AND ".$column." = ".$stringValue;
 							} else {
-								$sql .= " AND ANY(".$column.") = '".$value."'";
+								$sql .= " AND '".$value."' = ANY(".$column.")";
 							}
 						}
 					}
