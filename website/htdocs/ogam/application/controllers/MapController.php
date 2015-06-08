@@ -29,6 +29,7 @@ class MapController extends AbstractOGAMController {
 		$this->servicesModel = new Application_Model_Mapping_Services();
 		$this->layersModel = new Application_Model_Mapping_Layers();
 		$this->boundingBoxModel = new Application_Model_Mapping_BoundingBox();
+		$this->scalesModel = new Application_Model_Mapping_Scales();
 		
 		$this->lang = strtoupper($this->translator->getAdapter()->getLocale());
 	}
@@ -68,7 +69,7 @@ class MapController extends AbstractOGAMController {
 		$this->view->projection = "EPSG:" . $configuration->srs_visualisation; // Projection
 		                                                                       
 		// Get the available scales
-		$scales = $this->layersModel->getScales();
+		$scales = $this->scalesModel->getScales();
 		
 		// Transform the available scales into resolutions
 		$resolutions = $this->_getResolutions($scales);
@@ -187,7 +188,7 @@ class MapController extends AbstractOGAMController {
 		$layers = $this->layersModel->getLayersList($providerId);
 		
 		// Get the available scales
-		$scales = $this->layersModel->getScales();
+		$scales = $this->scalesModel->getScales();
 		// Transform the available scales into resolutions
 		$resolutions = $this->_getResolutions($scales);
 		
@@ -537,7 +538,7 @@ class MapController extends AbstractOGAMController {
 		$dpi = $configuration->mapserver_dpi; // Default number of dots per inch in mapserv
 		                                      
 		// Get the scales
-		$scales = $this->layersModel->getScales();
+		$scales = $this->scalesModel->getScales();
 		
 		// Get the current scale
 		$scalesArray = array_values($scales);
