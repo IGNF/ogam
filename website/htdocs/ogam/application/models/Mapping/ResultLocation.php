@@ -200,14 +200,14 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		foreach ($tableFields as $tableField) {
 			if ($tableField->columnName != $locationField->columnName && $tableField->columnName != 'SUBMISSION_ID' && $tableField->columnName != 'PROVIDER_ID' && $tableField->columnName != 'LINE_NUMBER') {
 				// Get the mode label if the field is a modality
-				if ($tableField->type == 'CODE' && $tableField->subtype == 'MODE') {
+				if ($tableField->type === 'CODE' && $tableField->subtype === 'MODE') {
 					$modeAlias = 'm' . $i;
 					$translateAlias = 't' . $i;
 					$cols .= 'COALESCE(' . $translateAlias . '.label, ' . $modeAlias . '.label) as ' . $tableField->columnName . ', ';
 					$joinForMode .= 'LEFT JOIN mode ' . $modeAlias . ' ON ' . $modeAlias . '.CODE = ' . $tableField->columnName . ' AND ' . $modeAlias . '.UNIT = \'' . $tableField->unit . '\' ';
 					$joinForMode .= 'LEFT JOIN translation ' . $translateAlias . ' ON (' . $translateAlias . '.lang = \'' . $lang . '\' AND ' . $translateAlias . '.table_format = \'MODE\' AND ' . $translateAlias . '.row_pk = ' . $modeAlias . '.unit || \',\' || ' . $modeAlias . '.code) ';
 					$i ++;
-				} elseif ($tableField->type == "DATE") {
+				} elseif ($tableField->type === "DATE") {
 					$cols .= 'to_char(' . $tableField->columnName . ', \'YYYY/MM/DD\') as ' . $tableField->columnName . ', ';
 				} else {
 					$cols .= $tableField->columnName . ', ';
