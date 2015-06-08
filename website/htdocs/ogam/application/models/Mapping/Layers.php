@@ -246,28 +246,6 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the list of available scales.
-	 *
-	 * @return Array[String]
-	 */
-	public function getScales() {
-		$db = $this->getAdapter();
-		
-		$req = "SELECT scale FROM scales ORDER BY scale DESC";
-		
-		Zend_Registry::get("logger")->info('getScales : ' . $req);
-		
-		$select = $db->prepare($req);
-		$select->execute();
-		
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$result[] = $row['scale'];
-		}
-		return $result;
-	}
-
-	/**
 	 * Get the list of layer_tree items for a given parendId.
 	 *
 	 * @param String $parentId
