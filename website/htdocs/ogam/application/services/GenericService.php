@@ -640,7 +640,7 @@ class Application_Service_GenericService {
 				case "ARRAY":
 					
 					// Case of a code in a generic TREE
-					if ($tableField->subtype == 'TREE') {
+					if ($tableField->subtype === 'TREE') {
 						
 						if (is_array($value)) {
 							$value = $value[0];
@@ -657,7 +657,7 @@ class Application_Service_GenericService {
 							$stringValue = $this->_arrayToSQLString($nodeCodes);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
-					} else if ($tableField->subtype == 'TAXREF') {
+					} else if ($tableField->subtype === 'TAXREF') {
 						// Case of a code in a Taxonomic referential
 						if (is_array($value)) {
 							$value = $value[0];
@@ -698,7 +698,7 @@ class Application_Service_GenericService {
 				case "CODE":
 					
 					// Case of a code in a generic TREE
-					if ($tableField->subtype == 'TREE') {
+					if ($tableField->subtype === 'TREE') {
 						
 						if (is_array($value)) {
 							$value = $value[0];
@@ -719,7 +719,7 @@ class Application_Service_GenericService {
 							
 							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
 						}
-					} else if ($tableField->subtype == 'TAXREF') {
+					} else if ($tableField->subtype === 'TAXREF') {
 						// Case of a code in a Taxonomic referential
 						if (is_array($value)) {
 							$value = $value[0];
@@ -1045,21 +1045,21 @@ class Application_Service_GenericService {
 		$field->valueLabel = $field->value;
 		
 		// For the SELECT field, get the list of options
-		if ($field->type == "CODE" || $field->type == "ARRAY") {
+		if ($field->type === "CODE" || $field->type === "ARRAY") {
 			
 			// Get the modes => Label
-			if ($field->subtype == "DYNAMIC") {
+			if ($field->subtype === "DYNAMIC") {
 				$modes = $this->metadataModel->getDynamodeLabels($field->unit, $field->value);
-			} else if ($field->subtype == "TREE") {
+			} else if ($field->subtype === "TREE") {
 				$modes = $this->metadataModel->getTreeLabels($field->unit, $field->value);
-			} else if ($field->subtype == "TAXREF") {
+			} else if ($field->subtype === "TAXREF") {
 				$modes = $this->metadataModel->getTaxrefLabels($field->unit, $field->value);
 			} else {
 				$modes = $this->metadataModel->getModeLabels($field->unit, $field->value);
 			}
 			
 			// Populate the label of the currently selected value
-			if ($field->type == "ARRAY") {
+			if ($field->type === "ARRAY") {
 				$labels = array();
 				if (isset($field->value)) {
 					
@@ -1078,5 +1078,30 @@ class Application_Service_GenericService {
 		}
 		
 		return $field;
+	}
+
+	/**
+	 * Get the labels of each mode for a table field.
+	 *
+	 * @param TableField $tableField
+	 *        	a table field
+	 * @return Array[mode => label]
+	 */
+	public function getLabels($tableField) {
+		$labels = array();
+		
+		if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
+			if ($tableField->subtype === "DYNAMIC") {
+				$labels = $this->metadataModel->getDynamodeLabels($tableField->unit);
+			} else if ($tableField->subtype === "TREE") {
+				$labels = $this->metadataModel->getTreeLabels($tableField->unit);
+			} else if ($tableField->subtype === "TAXREF") {
+				$labels = $this->metadataModel->getTaxrefLabels($tableField->unit);
+			} else {
+				$labels = $this->metadataModel->getModeLabels($tableField->unit);
+			}
+		}
+		
+		return $labels;
 	}
 }

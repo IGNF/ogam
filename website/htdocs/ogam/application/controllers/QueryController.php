@@ -606,23 +606,12 @@ class QueryController extends AbstractOGAMController {
 			$criterias .= '// ' . $formField->label . ';';
 			
 			// Get the labels corresponding to the values
-			$traductions = array();
+			$traductions = $this->genericService->getLabels($tableField);
+			
 			$tableField = $this->metadataModel->getFormToTableMapping($websiteSession->schema, $formField);
 			
-			if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
-				if ($tableField->subtype == "DYNAMIC") {
-					$traductions = $this->metadataModel->getDynamodeLabels($tableField->unit);
-				} else if ($tableField->subtype == "TREE") {
-					$traductions = $this->metadataModel->getTreeLabels($tableField->unit);
-				} else if ($tableField->subtype == "TAXREF") {
-					$traductions = $this->metadataModel->getTaxrefLabels($tableField->unit);
-				} else {
-					$traductions = $this->metadataModel->getModeLabels($tableField->unit);
-				}
-			}
-			
 			// The value
-			if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
+			if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
 				if (is_array($criteria->value)) {
 					foreach ($criteria->value as $item) {
 						$criterias .= $traductions[$item] . ", ";
@@ -702,17 +691,8 @@ class QueryController extends AbstractOGAMController {
 					
 					$key = strtolower($tableField->getName());
 					
-					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
-						if ($tableField->subtype == "DYNAMIC") {
-							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TREE") {
-							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TAXREF") {
-							$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
-						} else {
-							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
-						}
-					}
+					// get the labels
+					$traductions[$key] = $this->genericService->getLabels($tableField);
 					
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
@@ -780,11 +760,11 @@ class QueryController extends AbstractOGAMController {
 							if ($value == null) {
 								$this->_print(';');
 							} else {
-								if ($tableField->type == "CODE") {
+								if ($tableField->type === "CODE") {
 									// Manage code traduction
 									$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
 									$this->_print('"' . $label . '";');
-								} else if ($tableField->type == "ARRAY") {
+								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$label = '';
@@ -797,9 +777,9 @@ class QueryController extends AbstractOGAMController {
 									}
 									$label = '[' . $label . ']';
 									$this->_print('"' . $label . '";');
-								} else if ($formField->inputType == "NUMERIC") {
+								} else if ($formField->inputType === "NUMERIC") {
 									// Numeric value
-									if ($formField->decimals != null && $formField->decimals != "") {
+									if ($formField->decimals !== null && $formField->decimals !== "") {
 										$value = number_format($value, $formField->decimals, ',', '');
 									}
 									$this->_print($value . ';');
@@ -877,17 +857,8 @@ class QueryController extends AbstractOGAMController {
 					
 					$key = strtolower($tableField->getName());
 					
-					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
-						if ($tableField->subtype == "DYNAMIC") {
-							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TREE") {
-							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TAXREF") {
-							$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
-						} else {
-							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
-						}
-					}
+					// get the labels
+					$traductions[$key] = $this->genericService->getLabels($tableField);
 					
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
@@ -951,10 +922,10 @@ class QueryController extends AbstractOGAMController {
 							if ($value == null) {
 								$value = "";
 							} else {
-								if ($tableField->type == "CODE") {
+								if ($tableField->type === "CODE") {
 									// Manage code traduction
 									$value = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
-								} else if ($tableField->type == "ARRAY") {
+								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$value = '';
@@ -966,9 +937,9 @@ class QueryController extends AbstractOGAMController {
 										$value = substr($value, 0, -1);
 									}
 									$value = '[' . $value . ']';
-								} else if ($formField->inputType == "NUMERIC") {
+								} else if ($formField->inputType === "NUMERIC") {
 									// Numeric value
-									if ($formField->decimals != null && $formField->decimals != "") {
+									if ($formField->decimals !== null && $formField->decimals !== "") {
 										$value = number_format($value, $formField->decimals);
 									}
 								}
@@ -1053,17 +1024,8 @@ class QueryController extends AbstractOGAMController {
 					
 					$key = strtolower($tableField->getName());
 					
-					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
-						if ($tableField->subtype == "DYNAMIC") {
-							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TREE") {
-							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TAXREF") {
-							$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
-						} else {
-							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
-						}
-					}
+					// Get the labels for the table field
+					$traductions[$key] = $this->genericService->getLabels($tableField);
 					
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
@@ -1124,10 +1086,10 @@ class QueryController extends AbstractOGAMController {
 							if ($value == null) {
 								$value = "";
 							} else {
-								if ($tableField->type == "CODE") {
+								if ($tableField->type === "CODE") {
 									// Manage code traduction
 									$value = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
-								} else if ($tableField->type == "ARRAY") {
+								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$value = '';
@@ -1139,9 +1101,9 @@ class QueryController extends AbstractOGAMController {
 										$value = substr($value, 0, -1);
 									}
 									$value = '[' . $value . ']';
-								} else if ($formField->inputType == "NUMERIC") {
+								} else if ($formField->inputType === "NUMERIC") {
 									// Numeric value
-									if ($formField->decimals != null && $formField->decimals != "") {
+									if ($formField->decimals !== null && $formField->decimals !== "") {
 										$value = number_format($value, $formField->decimals);
 									}
 								}

@@ -103,12 +103,12 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			$field->value = $row[$key];
 			
 			// Store additional info for geometry type
-			if ($field->unit == "GEOM") {
+			if ($field->unit === "GEOM") {
 				$field->xmin = $row[strtolower($key) . '_x_min'];
 				$field->xmax = $row[strtolower($key) . '_x_max'];
 				$field->ymin = $row[strtolower($key) . '_y_min'];
 				$field->ymax = $row[strtolower($key) . '_y_max'];
-			} else if ($field->type == "ARRAY") {
+			} else if ($field->type === "ARRAY") {
 				// For array field we transform the value in a array object
 				$field->value = $this->genericService->stringToArray($field->value);
 			}
@@ -161,7 +161,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				
 				$field->value = $row[strtolower($field->getName())];
 				
-				if ($field->type == "ARRAY") {
+				if ($field->type === "ARRAY") {
 					// For array field we transform the value in a array object
 					$field->value = $this->genericService->stringToArray($field->value);
 				}
@@ -254,11 +254,11 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			/* @var $primaryKey TableField */
 			
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-			if (!($tableFormat->schemaCode == "RAW_DATA" && $primaryKey->data == "SUBMISSION_ID")) {
+			if (!($tableFormat->schemaCode === "RAW_DATA" && $primaryKey->data === "SUBMISSION_ID")) {
 				
-				if ($primaryKey->type == "NUMERIC" || $primaryKey->type == "INTEGER" || $primaryKey->type == "RANGE") {
+				if ($primaryKey->type === "NUMERIC" || $primaryKey->type === "INTEGER" || $primaryKey->type === "RANGE") {
 					$sql .= " AND " . $primaryKey->columnName . " = " . $primaryKey->value;
-				} else if ($primaryKey->type == "ARRAY") {
+				} else if ($primaryKey->type === "ARRAY") {
 					// Arrays not handlmed as primary keys
 					throw new Exception("A primary key should not be of type ARRAY");
 				} else {

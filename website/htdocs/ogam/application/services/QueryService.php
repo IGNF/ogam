@@ -509,12 +509,12 @@ class Application_Service_QueryService {
 				
 				$key = strtolower($tableField->getName());
 				
-				if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
+				if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
 					if ($tableField->subtype == "DYNAMIC") {
 						$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
-					} else if ($tableField->subtype == "TREE") {
+					} else if ($tableField->subtype === "TREE") {
 						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
-					} else if ($tableField->subtype == "TAXREF") {
+					} else if ($tableField->subtype === "TAXREF") {
 						$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
 					} else {
 						$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
@@ -535,10 +535,10 @@ class Application_Service_QueryService {
 					$value = $line[$key];
 					
 					// Manage code traduction
-					if ($tableField->type == "CODE" && $value != "") {
+					if ($tableField->type === "CODE" && $value != "") {
 						$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
 						$json .= json_encode($label == null ? '' : $label) . ',';
-					} else if ($tableField->type == "ARRAY" && $value != "") {
+					} else if ($tableField->type === "ARRAY" && $value != "") {
 						// Split the array items
 						$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 						$label = '';
@@ -695,7 +695,7 @@ class Application_Service_QueryService {
 		$bb2 = null;
 		$locationTable = null;
 		foreach ($data->getFields() as $field) {
-			if ($field->unit == 'GEOM') {
+			if ($field->unit === 'GEOM') {
 				// define a bbox around the location
 				$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 				
@@ -709,7 +709,7 @@ class Application_Service_QueryService {
 		if ($bb == null) {
 			foreach ($ancestors as $ancestor) {
 				foreach ($ancestor->getFields() as $field) {
-					if ($field->unit == 'GEOM') {
+					if ($field->unit === 'GEOM') {
 						// define a bbox around the location
 						$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 						

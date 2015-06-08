@@ -3,6 +3,7 @@
 // We need for the deserialization of the session objects classes
 require_once APPLICATION_PATH . '/controllers/Plugin/Bootstrap.php';
 require_once APPLICATION_PATH . '/objects/Generic/DataObject.php';
+require_once APPLICATION_PATH . '/objects/Generic/FormQuery.php';
 require_once APPLICATION_PATH . '/objects/Metadata/Field.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
 require_once APPLICATION_PATH . '/objects/Metadata/Format.php';
