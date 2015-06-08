@@ -388,15 +388,15 @@ class QueryController extends AbstractOGAMController {
 	 */
 	public function ajaxgetresultrowsAction() {
 		$this->logger->debug('ajaxgetresultrows');
-		
+
 		// Get the datatable parameters
 		$start = $this->getRequest()->getPost('start');
 		$length = $this->getRequest()->getPost('limit');
 		$sort = $this->getRequest()->getPost('sort');
-		$sortDir = $this->getRequest()->getPost('dir');
-		
-		echo $this->queryService->getResultRows($start, $length, $sort, $sortDir);
-		
+		$sortObj = json_decode($sort, true)[0];
+
+		echo $this->queryService->getResultRows($start, $length, $sortObj["property"], $sortObj["direction"]);
+
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
