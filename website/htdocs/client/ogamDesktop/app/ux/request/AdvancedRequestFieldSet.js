@@ -675,6 +675,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				field.xtype = 'checkbox';
 				//field.xtype = 'switch_checkbox'; //FIXME
 				//field.ctCls = 'improvedCheckbox';
+				field.uncheckedValue = 0;
 				switch (record.default_value) {
 				case 1:
 				case '1':
