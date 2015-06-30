@@ -16,7 +16,7 @@ BEGIN
 END
 $body$;
   
-ALTER ROLE ogam SET search_path=public, website, metadata, mapping, raw_data; --, harmonized_data;
+ALTER ROLE ogam SET search_path=public, website, metadata, mapping, raw_data, harmonized_data;
 
 -- website
 GRANT ALL ON SCHEMA website TO ogam;
