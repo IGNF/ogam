@@ -429,6 +429,12 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
 
     valueToRaw: function(value) {
         return this.formatDate(this.parseRangeDate(value));
-    }
+    },
 
+    // @private
+    getSubmitValue: function() {
+        var value = this.getValue();
+
+        return value ? this.formatDate(this.parseRangeDate(value)) : '';
+    }
 });
