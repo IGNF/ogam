@@ -15,3 +15,6 @@ OgamDesktop
 /website/htdocs/client/ogamDesktop/sass/example/bootstrap.json
 /documentation/2 - Conception/metadata/v4/*.csv
 /documentation/2 - Conception/Schémas relationnels/md ogam.sms.bak
+/website/htdocs/server/ogamServer/sessions/sess_*
+/website/htdocs/server/ogamServer/tmp/database/zend_cache---*
+/website/htdocs/server/ogamServer/tmp/language/zend_cache---*
