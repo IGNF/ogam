@@ -21,8 +21,8 @@
 	<property name="classes.dir" value="./classes" />
 	<property name="lib.dir" value="${common.dir}/lib" />
 	<property name="img.dir" value="./img" />
-	<property name="dist.dir" value="${java.io.tmpdir}dist/${application.name}HarmonizationService" />
-	<property name="dist.webapps.dir" value="${java.io.tmpdir}webapp/${application.name}HarmonizationService/" />
+	<property name="dist.dir" value="${java.io.tmpdir}/dist/${application.name}HarmonizationService" />
+	<property name="dist.webapps.dir" value="${java.io.tmpdir}/webapp/${application.name}HarmonizationService/" />
 	<property name="deploy.name" value="${application.name}HarmonizationService" />
 
 	<!-- *** A modifier en fonction du répertoire d'installation de Tomcat *** -->
