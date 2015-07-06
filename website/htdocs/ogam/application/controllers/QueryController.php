@@ -50,16 +50,15 @@ class QueryController extends AbstractOGAMController {
 		
 		// Check if the user can query data
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
-		if (empty($permissions) || !array_key_exists('DATA_QUERY', $permissions)) {
+		$user = $userSession->user;
+		if (empty($user) || !in_array('DATA_QUERY', $user->role->permissionsList)) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
-		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
 		
 		// Check if the user has access to the schema
-		$schemas = $userSession->schemas;
+		$schemas = $user->role->schemasList;
 		if (!in_array($schema, $schemas)) {
 			throw new Zend_Auth_Exception('Permission denied for schema : "' . $schema . '"');
 		}
@@ -95,16 +94,16 @@ class QueryController extends AbstractOGAMController {
 		$websiteSession->moduleURL = "query";
 		
 		// Initialise the models
-		$this->metadataModel = new Genapp_Model_Metadata_Metadata();
-		$this->genericModel = new Genapp_Model_Generic_Generic();
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
+		$this->genericModel = new Application_Model_Generic_Generic();
 		$this->resultLocationModel = new Application_Model_Mapping_ResultLocation();
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
 		
 		// Declare the service used to build generic info from the metadata
-		$this->genericService = new Genapp_Service_GenericService();
+		$this->genericService = new Application_Service_GenericService();
 		
 		// Declare the service used to manage the query module
-		$this->queryService = new Genapp_Service_QueryService($websiteSession->schema);
+		$this->queryService = new Application_Service_QueryService($websiteSession->schema);
 		
 		// Reinit the actie layers
 		$mappingSession = new Zend_Session_Namespace('mapping');
@@ -341,7 +340,7 @@ class QueryController extends AbstractOGAMController {
 		try {
 			
 			// Parse the input parameters and create a request object
-			$formQuery = new Genapp_Object_Generic_FormQuery();
+			$formQuery = new Application_Object_Generic_FormQuery();
 			$formQuery->datasetId = $datasetId;
 			foreach ($_POST as $inputName => $inputValue) {
 				if (strpos($inputName, "criteria__") === 0 && !$this->_isEmptyCriteria($inputValue)) {
@@ -406,7 +405,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('getgridparametersAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -418,16 +417,16 @@ class QueryController extends AbstractOGAMController {
 		$this->view->userProviderId = $userSession->user->providerId;
 		
 		if (!empty($permissions)) {
-			if ($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) {
+			if ($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) {
 				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
-			if ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions)) {
+			if ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions)) {
 				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
-			if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && array_key_exists('DATA_EDITION', $permissions)) {
+			if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && in_array('DATA_EDITION', $permissions)) {
 				$this->view->hideGridDataEditButton = 'false';
 			}
-			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+			if (!in_array('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
 				$this->view->checkEditionRights = 'true';
 			}
 		}
@@ -469,6 +468,11 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
+	/**
+	 * Export the details as PDF.
+	 *
+	 * @throws Exception
+	 */
 	public function pdfexportAction() {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -602,23 +606,12 @@ class QueryController extends AbstractOGAMController {
 			$criterias .= '// ' . $formField->label . ';';
 			
 			// Get the labels corresponding to the values
-			$traductions = array();
+			$traductions = $this->genericService->getLabels($tableField);
+			
 			$tableField = $this->metadataModel->getFormToTableMapping($websiteSession->schema, $formField);
 			
-			if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
-				if ($tableField->subtype == "DYNAMIC") {
-					$traductions = $this->metadataModel->getDynamodeLabels($tableField->unit);
-				} else if ($tableField->subtype == "TREE") {
-					$traductions = $this->metadataModel->getTreeLabels($tableField->unit);
-				} else if ($tableField->subtype == "TAXREF") {
-					$traductions = $this->metadataModel->getTaxrefLabels($tableField->unit);
-				} else {
-					$traductions = $this->metadataModel->getModeLabels($tableField->unit);
-				}
-			}
-			
 			// The value
-			if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
+			if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
 				if (is_array($criteria->value)) {
 					foreach ($criteria->value as $item) {
 						$criterias .= $traductions[$item] . ", ";
@@ -650,7 +643,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('gridCsvExportAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -665,7 +658,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.csv', true);
 		
-		if (array_key_exists('EXPORT_RAW_DATA', $permissions)) {
+		if (in_array('EXPORT_RAW_DATA', $permissions)) {
 			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -698,17 +691,8 @@ class QueryController extends AbstractOGAMController {
 					
 					$key = strtolower($tableField->getName());
 					
-					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
-						if ($tableField->subtype == "DYNAMIC") {
-							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TREE") {
-							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TAXREF") {
-							$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
-						} else {
-							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
-						}
-					}
+					// get the labels
+					$traductions[$key] = $this->genericService->getLabels($tableField);
 					
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
@@ -739,7 +723,7 @@ class QueryController extends AbstractOGAMController {
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
-					$formField = new Genapp_Object_Metadata_FormField();
+					$formField = new Application_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
@@ -776,11 +760,11 @@ class QueryController extends AbstractOGAMController {
 							if ($value == null) {
 								$this->_print(';');
 							} else {
-								if ($tableField->type == "CODE") {
+								if ($tableField->type === "CODE") {
 									// Manage code traduction
 									$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
 									$this->_print('"' . $label . '";');
-								} else if ($tableField->type == "ARRAY") {
+								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$label = '';
@@ -793,9 +777,9 @@ class QueryController extends AbstractOGAMController {
 									}
 									$label = '[' . $label . ']';
 									$this->_print('"' . $label . '";');
-								} else if ($formField->inputType == "NUMERIC") {
+								} else if ($formField->inputType === "NUMERIC") {
 									// Numeric value
-									if ($formField->decimals != null && $formField->decimals != "") {
+									if ($formField->decimals !== null && $formField->decimals !== "") {
 										$value = number_format($value, $formField->decimals, ',', '');
 									}
 									$this->_print($value . ';');
@@ -832,7 +816,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('gridCsvExportAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -847,7 +831,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.kml', true);
 		
-		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
+		if (($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions))) {
 			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -873,17 +857,8 @@ class QueryController extends AbstractOGAMController {
 					
 					$key = strtolower($tableField->getName());
 					
-					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
-						if ($tableField->subtype == "DYNAMIC") {
-							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TREE") {
-							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TAXREF") {
-							$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
-						} else {
-							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
-						}
-					}
+					// get the labels
+					$traductions[$key] = $this->genericService->getLabels($tableField);
 					
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
@@ -903,7 +878,7 @@ class QueryController extends AbstractOGAMController {
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
-					$formField = new Genapp_Object_Metadata_FormField();
+					$formField = new Application_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
@@ -947,10 +922,10 @@ class QueryController extends AbstractOGAMController {
 							if ($value == null) {
 								$value = "";
 							} else {
-								if ($tableField->type == "CODE") {
+								if ($tableField->type === "CODE") {
 									// Manage code traduction
 									$value = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
-								} else if ($tableField->type == "ARRAY") {
+								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$value = '';
@@ -962,9 +937,9 @@ class QueryController extends AbstractOGAMController {
 										$value = substr($value, 0, -1);
 									}
 									$value = '[' . $value . ']';
-								} else if ($formField->inputType == "NUMERIC") {
+								} else if ($formField->inputType === "NUMERIC") {
 									// Numeric value
-									if ($formField->decimals != null && $formField->decimals != "") {
+									if ($formField->decimals !== null && $formField->decimals !== "") {
 										$value = number_format($value, $formField->decimals);
 									}
 								}
@@ -1008,7 +983,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('geojsonExportAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
+		$permissions = $userSession->user->role->permissionsList;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -1023,7 +998,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'pplication/json;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.geojson', true);
 		
-		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
+		if (($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions))) {
 			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -1049,17 +1024,8 @@ class QueryController extends AbstractOGAMController {
 					
 					$key = strtolower($tableField->getName());
 					
-					if ($tableField->type == "CODE" || $tableField->type == "ARRAY") {
-						if ($tableField->subtype == "DYNAMIC") {
-							$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TREE") {
-							$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
-						} else if ($tableField->subtype == "TAXREF") {
-							$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
-						} else {
-							$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
-						}
-					}
+					// Get the labels for the table field
+					$traductions[$key] = $this->genericService->getLabels($tableField);
 					
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
@@ -1078,7 +1044,7 @@ class QueryController extends AbstractOGAMController {
 				if ($sort != "") {
 					// $sort contains the form format and field
 					$split = explode("__", $sort);
-					$formField = new Genapp_Object_Metadata_FormField();
+					$formField = new Application_Object_Metadata_FormField();
 					$formField->format = $split[0];
 					$formField->data = $split[1];
 					$tableField = $this->genericService->getFormToTableMapping($schema, $formField);
@@ -1120,10 +1086,10 @@ class QueryController extends AbstractOGAMController {
 							if ($value == null) {
 								$value = "";
 							} else {
-								if ($tableField->type == "CODE") {
+								if ($tableField->type === "CODE") {
 									// Manage code traduction
 									$value = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
-								} else if ($tableField->type == "ARRAY") {
+								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$value = '';
@@ -1135,9 +1101,9 @@ class QueryController extends AbstractOGAMController {
 										$value = substr($value, 0, -1);
 									}
 									$value = '[' . $value . ']';
-								} else if ($formField->inputType == "NUMERIC") {
+								} else if ($formField->inputType === "NUMERIC") {
 									// Numeric value
-									if ($formField->decimals != null && $formField->decimals != "") {
+									if ($formField->decimals !== null && $formField->decimals !== "") {
 										$value = number_format($value, $formField->decimals);
 									}
 								}

@@ -9,7 +9,7 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV
 // Define current date (For log file name)
 define('DATE_STAMP', date('Y-m-d'));
 
-// Define path to oison application directory
+// Define path to ogam custom application directory
 if (file_exists(APPLICATION_PATH.'/../../custom')) {
 	define('CUSTOM_APPLICATION_PATH', APPLICATION_PATH.'/../../custom/application');
 }

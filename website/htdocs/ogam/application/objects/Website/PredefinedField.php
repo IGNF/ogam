@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,19 +12,17 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent a Predefined Field.
  * This is a kind of criteria form field.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
-class Application_Object_Website_PredefinedField extends Genapp_Object_Metadata_FormField {
+class Application_Object_Website_PredefinedField extends Application_Object_Metadata_FormField {
 
 	/**
 	 * Indicate if the value is fixed ("1") or if the user can select it ("0").
 	 */
 	var $fixed;
-
 }

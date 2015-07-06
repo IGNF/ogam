@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -23,32 +24,24 @@ class IndexController extends Zend_Controller_Action {
 	 */
 	public function init() {
 		parent::init();
-
+		
 		// Set the current module name
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->module = "";
-
+		
 		// Initialise the logger
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$this->logger = $bootstrap->getResource('log');
 	}
 
 	/**
-	 * The "index" action is the default action for all controllers. This
+	 * The "index" action is the default action for all controllers.
+	 * This
 	 * will be the landing page of your application.
 	 */
 	public function indexAction() {
-
 		$this->logger->debug('index');
-
-		try {
-			$this->render('custom-index');
-		} catch (Exception $e) {
-			$this->logger->err($e->getMessage());
-			$this->render('index');
-		}
-
+				
+		$this->render('index');
 	}
-
-
 }

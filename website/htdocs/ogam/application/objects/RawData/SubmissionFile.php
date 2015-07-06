@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,12 +12,11 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent a file of a submission.
- * 
+ *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_RawData_SubmissionFile {
 
@@ -34,5 +34,4 @@ class Application_Object_RawData_SubmissionFile {
 	 * The number of lines in the file
 	 */
 	var $lineNumber;
-
 }

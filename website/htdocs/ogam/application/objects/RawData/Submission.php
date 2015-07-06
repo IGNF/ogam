@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,14 +12,13 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent a submission.
  *
  * A submission is a batch of files that is send to the server in order to be stored in database.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_RawData_Submission {
 
@@ -38,7 +38,8 @@ class Application_Object_RawData_Submission {
 	var $status;
 
 	/**
-	 * The provider (country, organisation, ...) identifier
+	 * The provider (country, organisation, .
+	 * ..) identifier
 	 */
 	var $providerId;
 
@@ -60,10 +61,10 @@ class Application_Object_RawData_Submission {
 	/**
 	 * Add a file to the list.
 	 *
-	 * @param SubmissionFile
+	 * @param
+	 *        	SubmissionFile
 	 */
 	public function addFile($subFile) {
 		$this->files[] = $subFile;
 	}
-
 }

@@ -20,9 +20,9 @@
 
 if (Genapp.EditionPanel) {
     Ext.apply(Genapp.EditionPanel.prototype, {
-        checkEditionRights : <?=$this->checkEditionRights?>    
+        checkEditionRights : <?php echo $this->checkEditionRights?>    
     });    
 }
 
 // User info
-Genapp.userProviderId = '<?=$this->userProviderId?>';
+Genapp.userProviderId = '<?php echo $this->userProviderId?>';

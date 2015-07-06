@@ -20,11 +20,11 @@
 
 
 <h1>
-  <?=$this->translate('Data integration module');?> - <?=$this->translate('Error');?>
+  <?php echo $this->translate('Data integration module');?> - <?php echo $this->translate('Error');?>
 </h1>
 <div class="error-msg">
-    <img class="status-img" src="<?= $this->baseUrl('img/Red_x.png') ?>" /><?= $this->errorMessage ?>
+    <img class="status-img" src="<?php echo  $this->baseUrl('img/Red_x.png') ?>" /><?php echo $this->errorMessage ?>
 </div>
 <div class="bottom-menu">
-    <a href="<?= $this->baseUrl('integration/show-data-submission-page') ?>"><b><?=$this->translate('Submit Data');?></b></a>
+    <a href="<?php echo $this->baseUrl('integration/show-data-submission-page') ?>"><b><?php echo $this->translate('Submit Data');?></b></a>
 </div>

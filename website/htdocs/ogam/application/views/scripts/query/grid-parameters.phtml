@@ -21,11 +21,11 @@
 
 if (Genapp.ConsultationPanel) {
     Ext.apply(Genapp.ConsultationPanel.prototype, {
-        hideGridCsvExportMenuItem : <?=$this->hideGridCsvExportMenuItem?>,
-        hideGridDataEditButton : <?=$this->hideGridDataEditButton?>,
-        checkEditionRights : <?=$this->checkEditionRights?>       
+        hideGridCsvExportMenuItem : <?php echo $this->hideGridCsvExportMenuItem?>,
+        hideGridDataEditButton : <?php echo $this->hideGridDataEditButton?>,
+        checkEditionRights : <?php echo $this->checkEditionRights?>       
     });    
 }
 
 // User info
-Genapp.userProviderId = '<?=$this->userProviderId?>';
+Genapp.userProviderId = '<?php echo $this->userProviderId?>';

@@ -19,22 +19,22 @@
 ?>
 
 <h1>
-   <?=$this->translate('User Management Module');?>
+   <?php echo $this->translate('User Management Module');?>
 </h1>
 
 <div class="left-column">
 <div class="moduletable_menu">
 <h3>
-    <?=$this->translate('Select a menu');?>
+    <?php echo $this->translate('Select a menu');?>
 </h3>
 <ul id="appmenu" class="menu">
 
 <li>
-<a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-users'), null, true) ?>"> <?=$this->translate('Show the users');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-users'), null, true) ?>"> <?php echo $this->translate('Show the users');?></a>
 </li>
 
 <li>
-<a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-roles'), null, true) ?>"> <?=$this->translate('Show the roles');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-roles'), null, true) ?>"> <?php echo $this->translate('Show the roles');?></a>
 </li>
 
 </ul>

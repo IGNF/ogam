@@ -129,7 +129,7 @@ Contact Us;Contact Us
 Layout Head Title;OGAM Application
 Layout Head Meta Keywords;eforest, efdac, jrc, forest
 Layout Head Meta Description;European Forest Data Center
-Layout Copyright;Copyright © IFN 2010. Reproduction authorized provided the source is acknowledged.
+Layout Copyright;Copyright © IGN 2015. Reproduction authorized provided the source is acknowledged.
 Layout Pathway Home;Home
 Translate this site fr;Translate this site in french
 Translate this site en;Translate this site in english
@@ -294,68 +294,12 @@ Invalid form;Invalid form
 Data saved;Data saved - Reloading
 Item cannot be deleted because it has children;Item cannot be deleted because it has children
 Error while deleting data;Error while deleting data
+Error inserting data duplicate key;Error while inserting data - The data already exists
 Data deleted;Data deleted
+Add a new localisation;Add a new localisation
 
 ##########################
 #  Data Query            #
 ##########################
 Data Export;Data Export
 Request Criterias;Request Criterias
-
-################################
-#  indexation / index          #
-################################
-Indices;Index
-Index;Index
-Details;Details
-View the files list;View the files list
-pdfIndexLabel;Index for the pdfs
-pdfIndexDefinition;Index of all the pdfs included in the selected directories
-Index size:;Index size:
-Number of documents:;Number of documents:
-Index directory:;Index directory:
-Files directories:;Files directories:
-Add/Remove the new/deleted files of the files directories into the existing index;Add/Remove the new/deleted files of the files directories into the existing index
-Create a new index and index the files presents into the files directories;Create a new index and index the files presents into the files directories
-Optimize the index;Optimize the index
-
-################################
-#  indexation / parsepdf       #
-################################
-File Content;File Content
-Content of the file:;Content of the file:
-
-#####################################
-#  indexation / getindexstatus      #
-#####################################
-An error occured during the indexation process.;An error occured during the indexation process.
-
-################################
-#   PostProcessPdfIndexation   #
-################################
-A process is already running.;A process is already running.
-
-################################
-#  indexedpdffile / editmeta   #
-################################
-
-################################
-#  indexedpdffile / list       #
-################################
-Indexed PDF Files;Indexed PDF Files
-Indexed files list;Indexed files list
-Files;Files
-View the file;View the file
-View the file content;View the file content
-View the file metadata;View the file metadata
-Edit the Metadata;Edit the Metadata
-Remove the file of the index;Remove the file of the index
-Not implemented;Not implemented
-
-################################
-#  indexedpdffile / viewmeta   #
-################################
-File metadata;File metadata
-Meta data of the file:;Meta data of the file:
-Meta Name;Meta Name
-Meta Value;Meta Value

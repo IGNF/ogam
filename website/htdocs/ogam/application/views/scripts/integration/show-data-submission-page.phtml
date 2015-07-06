@@ -17,63 +17,63 @@
  * @package views
  */
 ?>
-<script type="text/javascript" src="<?= $this->baseUrl('js/progressbar.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/adapter/ext/ext-base.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/extjs/ext-all.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
+<script type="text/javascript" src="<?php echo  $this->baseUrl('js/progressbar.js') ?>"></script>
+<script type="text/javascript" src="<?php echo  $this->baseUrl('js/extjs/adapter/ext/ext-base.js') ?>"></script>
+<script type="text/javascript" src="<?php echo  $this->baseUrl('js/extjs/ext-all.js') ?>"></script>
+<script type="text/javascript" src="<?php echo  $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
 
 <h1>
-   <?=$this->translate('Data integration module');?>
+   <?php echo $this->translate('Data integration module');?>
 </h1>
 
 <!-- Show the currently active location submissions -->
 <?php if(!empty($this->submissions)){ ?>
 <table class="sectiontable">
 <tr>
-    <th style="text-align:center"><?=$this->translate('Submission ID');?></th>
-    <th style="text-align:center"><?=$this->translate('Date');?></th>
-    <th style="text-align:center"><?=$this->translate('Provider Id');?></th>
-    <th style="text-align:center"><?=$this->translate('Dataset');?></th>
-    <th style="text-align:center"><?=$this->translate('Step');?></th>
-    <th style="text-align:center"><?=$this->translate('Status');?></th>
-    <th><?=$this->translate('File');?></th>
-    <th style="text-align:right"><?=$this->translate('Lines');?>&nbsp;</th>
-    <th style="text-align:center"><?=$this->translate('Actions');?></th>
+    <th style="text-align:center"><?php echo $this->translate('Submission ID');?></th>
+    <th style="text-align:center"><?php echo $this->translate('Date');?></th>
+    <th style="text-align:center"><?php echo $this->translate('Provider Id');?></th>
+    <th style="text-align:center"><?php echo $this->translate('Dataset');?></th>
+    <th style="text-align:center"><?php echo $this->translate('Step');?></th>
+    <th style="text-align:center"><?php echo $this->translate('Status');?></th>
+    <th><?php echo $this->translate('File');?></th>
+    <th style="text-align:right"><?php echo $this->translate('Lines');?>&nbsp;</th>
+    <th style="text-align:center"><?php echo $this->translate('Actions');?></th>
     <th></th>
 </tr>
 <?php
 
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
-$permissions = $userSession->permissions;
+$permissions = $userSession->user->role->permissionsList;
 
 
 $i = 0;
 foreach ($this->submissions as $submission) {
 ?>
-<tr class="sectiontableentry<?=$i % 2?>">
-    <td><?= $this->escape($submission->submissionId); ?></td>
-    <td><?= $this->escape($submission->date); ?></td>
-    <td><?= $this->escape($submission->providerId); ?></td>
-    <td><?= $this->escape($submission->datasetId); ?></td>
-    <td><?= $this->escape($submission->step); ?></td>
+<tr class="sectiontableentry<?php echo $i % 2?>">
+    <td><?php echo  $this->escape($submission->submissionId); ?></td>
+    <td><?php echo  $this->escape($submission->date); ?></td>
+    <td><?php echo  $this->escape($submission->providerId); ?></td>
+    <td><?php echo  $this->escape($submission->datasetId); ?></td>
+    <td><?php echo  $this->escape($submission->step); ?></td>
     <td>
             <?php if ($submission->status === "OK" || $submission->status === "CHECKED") : ?>
-            	<?= $this->escape($submission->status); ?>
-                <img src="<?= $this->baseUrl('img/Green_tick.png') ?>" />
+            	<?php echo  $this->escape($submission->status); ?>
+                <img src="<?php echo  $this->baseUrl('img/Green_tick.png') ?>" />
             <?php elseif ($submission->status === "WARNING") : ?>
-            	<?= $this->escape($submission->status); ?>
-                <img src="<?= $this->baseUrl('img/warning_orange.png') ?>" />
+            	<?php echo  $this->escape($submission->status); ?>
+                <img src="<?php echo  $this->baseUrl('img/warning_orange.png') ?>" />
             <?php elseif ($submission->status === "RUNNING") : ?>
-                <div class="tempStatusDiv" id="tempStatusDiv_<?= $submission->submissionId ?>">
+                <div class="tempStatusDiv" id="tempStatusDiv_<?php echo  $submission->submissionId ?>">
                 <script type="text/javascript">
 
                 // Display the progress bar
-                display('progressBar<?= $submission->submissionId ?>', '', 0, '<?= $this->baseUrl('img/') ?>');
+                display('progressBar<?php echo  $submission->submissionId ?>', '', 0, '<?php echo  $this->baseUrl('img/') ?>');
                 
                 // Refresh The status of the submission
-                Genapp.util.getStatus_<?= $submission->submissionId ?> =  function (){
-                    var url = '<?= $this->baseUrl('Integration/') ?>';
+                Genapp.util.getStatus_<?php echo  $submission->submissionId ?> =  function (){
+                    var url = '<?php echo  $this->baseUrl('Integration/') ?>';
                     <?php if ($submission->step === "CHECKED") : ?>
                         url += 'get-check-status';
                     <?php else : ?>
@@ -83,17 +83,17 @@ foreach ($this->submissions as $submission) {
                        url: url,
                        params:{
                            action:'status',
-                           submissionId:<?= $submission->submissionId ?>
+                           submissionId:<?php echo  $submission->submissionId ?>
                        },
                        callback: function(options, success, response){
                             var rp = Ext.decode(response.responseText);
-                            var src = '<?= $this->baseUrl('img/') ?>';
+                            var src = '<?php echo  $this->baseUrl('img/') ?>';
                             switch(rp.status){
                                 case 'OK':
                                 case 'WARNING':
                                 case 'ERROR':
                                 case 'CRASH':
-                                    Ext.TaskMgr.stop(Genapp.util.getStatusTask_<?= $submission->submissionId ?>);
+                                    Ext.TaskMgr.stop(Genapp.util.getStatusTask_<?php echo  $submission->submissionId ?>);
                                     location.reload();
                                     break;
                                 case 'RUNNING':
@@ -104,8 +104,8 @@ foreach ($this->submissions as $submission) {
                                     	percentage = rp.currentCount / total;
                                     }
                                     percentage = (percentage * 100);
-                                    setLabel('progressBar<?= $submission->submissionId ?>', rp.taskName);
-                                    setProgress('progressBar<?= $submission->submissionId ?>', percentage);
+                                    setLabel('progressBar<?php echo  $submission->submissionId ?>', rp.taskName);
+                                    setProgress('progressBar<?php echo  $submission->submissionId ?>', percentage);
                                     break;
                                 default:
                                     return;
@@ -114,18 +114,18 @@ foreach ($this->submissions as $submission) {
                     });
                 }
                 // equivalent using TaskMgr
-                Genapp.util.getStatusTask_<?= $submission->submissionId ?> = {
-                    run: Genapp.util.getStatus_<?= $submission->submissionId ?>,
+                Genapp.util.getStatusTask_<?php echo  $submission->submissionId ?> = {
+                    run: Genapp.util.getStatus_<?php echo  $submission->submissionId ?>,
                     interval: 2000
                 };
-                Ext.TaskMgr.start(Genapp.util.getStatusTask_<?= $submission->submissionId ?>);
+                Ext.TaskMgr.start(Genapp.util.getStatusTask_<?php echo  $submission->submissionId ?>);
                 </script>
                 </div>
             <?php else : //"ERROR" or "CRASH") ?>
-            	<?=
+            	<?php echo 
 		$this->escape($submission->status);
 ?>
-                <img src="<?= $this->baseUrl('img/Red_x.png') ?>" />
+                <img src="<?php echo  $this->baseUrl('img/Red_x.png') ?>" />
             <?php endif; ?>
     </td>
     <td colspan=2>
@@ -133,7 +133,7 @@ foreach ($this->submissions as $submission) {
             <table width="100%">
             <?php foreach ($submission->files as $file) : ?>
                 <tr><td class="file-name">
-                	<span title="<?= $file->fileType ?>">
+                	<span title="<?php echo  $file->fileType ?>">
                     <?php
                         $fileName = $file->fileName;
                         $fileName = strtr($fileName,'\\','/');
@@ -142,7 +142,7 @@ foreach ($this->submissions as $submission) {
                     ?>
                     </span>
                 </td>
-                <td class="line-number"><?= $file->lineNumber ?></td>
+                <td class="line-number"><?php echo  $file->lineNumber ?></td>
                 </tr>
                 
             <?php endforeach; ?>
@@ -154,20 +154,20 @@ foreach ($this->submissions as $submission) {
     <?php
 	if ($submission->step === "INSERTED" && $submission->status === "OK") {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'check-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" ><?=$this->translate('Check data');?></a></p>
+    <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'check-submission'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" ><?php echo $this->translate('Check data');?></a></p>
     <?php }
 	if ($submission->step !== "INIT" && $submission->status !== "DATARUNNING") {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'proxy','action'=>'showreport'), null, true)?>?submissionId=<?=$submission->submissionId;?>" ><?=$this->translate('Show report');?></a></p>
+    <p><a href="<?php echo  $this->url(array('controller'=>'proxy','action'=>'showreport'), 'default', true)?>?submissionId=<?php echo $submission->submissionId;?>" ><?php echo $this->translate('Show report');?></a></p>
     <?php }
     if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Confirm_submission_warning');?>');"><?=$this->translate('Confirm submission');?></a></p>
+    <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Confirm_submission_warning');?>');"><?php echo $this->translate('Confirm submission');?></a></p>
     <?php } 
-    if ($submission->step != "VALIDATED" || (!empty($permissions) && array_key_exists('CANCEL_VALIDATED_SUBMISSION',$permissions))) {
-    	if ($submission->providerId == $userSession->user->providerId || (!empty($permissions) && array_key_exists('CANCEL_OTHER_PROVIDER_SUBMISSION',$permissions))) {
+    if ($submission->step != "VALIDATED" || (!empty($permissions) && in_array('CANCEL_VALIDATED_SUBMISSION',$permissions))) {
+    	if ($submission->providerId == $userSession->user->providerId || (!empty($permissions) && in_array('CANCEL_OTHER_PROVIDER_SUBMISSION',$permissions))) {
 ?>
-    <p><a href="<?= $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?=$submission->submissionId;?>" onClick="return confirm('<?=$this->translate('Are you sure?');?>');"><?=$this->translate('Cancel Submission');?></a></p>
+    <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Are you sure?');?>');"><?php echo $this->translate('Cancel Submission');?></a></p>
 <?php  }
     } ?>        
 </td></tr>
@@ -177,8 +177,8 @@ foreach ($this->submissions as $submission) {
 ?>
 </table>
 <?php } else { ?>
-<div class="no-submission"><?=$this->translate('No submission found');?></div>
+<div class="no-submission"><?php echo $this->translate('No submission found');?></div>
 <?php } ?>
 <p class="subTableLink">
-    <a href="<?= $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?=$this->translate('Create data submission');?></a>
+    <a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?php echo $this->translate('Create data submission');?></a>
 </p>

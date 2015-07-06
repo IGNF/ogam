@@ -33,7 +33,9 @@ Genapp.form.TaxrefField = Ext.extend(Ext.form.ComboBox, {
 			'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 1">'+ '<b>{label}</b>' + '</tpl>'+
 			'<br/>' +
 			'<tpl if="!Ext.isEmpty(values.vernacularName) && values.vernacularName != null">'+ '({vernacularName})' + '</tpl>'+
-        '</div></tpl>', 
+			'<br/>' +
+			'<tpl if="!Ext.isEmpty(values.code) && values.code != null">'+ '({code})' + '</tpl>'+
+		'</div></tpl>', 
 	
 	/**
 	 * Value field in the store

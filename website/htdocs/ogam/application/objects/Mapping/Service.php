@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -11,12 +12,11 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Represent a service item.
  *
  * @package objects
- * @SuppressWarnings checkUnusedVariables
+ *          @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Mapping_Service {
 
@@ -29,6 +29,4 @@ class Application_Object_Mapping_Service {
 	 * The configuration with base url and parameters of the service=.
 	 */
 	var $serviceConfig;
-
-	
 }

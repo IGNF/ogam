@@ -68,7 +68,7 @@ COMMENT ON COLUMN SUBMISSION_FILE.NB_LINE IS 'The number of lines of data in the
 /* Table : LOCATION                                             */
 /*==============================================================*/
 create table LOCATION (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 LAT                  FLOAT8               null,
@@ -136,16 +136,58 @@ CREATE TRIGGER geom_trigger
   EXECUTE PROCEDURE raw_data.geomfromcoordinate();
 */
 
+
+  
+/*========================================================================*/
+/*	Add a trigger to fill the departements column of the location table   */
+/*========================================================================*/
+CREATE OR REPLACE FUNCTION raw_data.departementsfromgeom() RETURNS "trigger" AS
+$BODY$
+BEGIN
+
+    NEW.departement = max(dp) FROM "mapping".departements z WHERE st_intersects(z.the_geom, NEW.the_geom);    
+    RETURN NEW;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE TRIGGER departements_geom_trigger
+  BEFORE INSERT ON raw_data.LOCATION
+  FOR EACH ROW
+  EXECUTE PROCEDURE raw_data.departementsfromgeom();
+  
+  
+  
+/*========================================================================*/
+/*	Add a trigger to fill the communes column of the location table    */
+/*========================================================================*/
+CREATE OR REPLACE FUNCTION raw_data.communesfromgeom() RETURNS "trigger" AS
+$BODY$
+BEGIN
+
+    NEW.communes = (SELECT array_agg(code) FROM (SELECT code FROM "mapping".communes z WHERE st_intersects(z.the_geom, st_transform(NEW.the_geom, 2154)) LIMIT 20) as foo);    
+    RETURN NEW;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE TRIGGER communes_geom_trigger
+  BEFORE INSERT ON raw_data.LOCATION
+  FOR EACH ROW
+  EXECUTE PROCEDURE raw_data.communesfromgeom();
+            
+
 /*==============================================================*/
 /* Table : PLOT_DATA                                            */
 /*==============================================================*/
 create table PLOT_DATA (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 INV_DATE             DATE                 null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
+CORINE_BIOTOPE 		 character varying(36)[]     null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
 constraint PK_PLOT_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE),
@@ -159,6 +201,7 @@ COMMENT ON COLUMN PLOT_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN PLOT_DATA.CYCLE IS 'The cycle of inventory';
 COMMENT ON COLUMN PLOT_DATA.INV_DATE IS 'The date of inventory';
 COMMENT ON COLUMN PLOT_DATA.IS_FOREST_PLOT IS 'Is the plot a forest plot ?';
+COMMENT ON COLUMN PLOT_DATA.CORINE_BIOTOPE IS 'The biotope of the plot';
 COMMENT ON COLUMN PLOT_DATA.COMMENT IS 'A comment about the plot';
 COMMENT ON COLUMN PLOT_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 
@@ -167,7 +210,7 @@ COMMENT ON COLUMN PLOT_DATA.LINE_NUMBER IS 'The position of the line of data in 
 /* Table : SPECIES_DATA                                         */
 /*==============================================================*/
 create table SPECIES_DATA (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
@@ -208,7 +251,7 @@ CREATE SEQUENCE tree_id_seq
 /* Table : TREE_DATA                                         */
 /*==============================================================*/
 create table TREE_DATA (
-SUBMISSION_ID        INT4                 not null,
+SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
@@ -300,5 +343,13 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 
 
 
-
+GRANT ALL ON SCHEMA metadata TO ogam;
 GRANT ALL ON ALL TABLES IN SCHEMA raw_data TO ogam;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA raw_data TO ogam;
+ALTER TABLE raw_data.SUBMISSION OWNER TO ogam;
+ALTER TABLE raw_data.SUBMISSION_FILE OWNER TO ogam;
+ALTER TABLE raw_data.LOCATION OWNER TO ogam;
+ALTER TABLE raw_data.PLOT_DATA OWNER TO ogam;
+ALTER TABLE raw_data.SPECIES_DATA OWNER TO ogam;
+ALTER TABLE raw_data.TREE_DATA OWNER TO ogam;
+ALTER TABLE raw_data.CHECK_ERROR OWNER TO ogam;

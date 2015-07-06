@@ -18,7 +18,7 @@
  */
 ?>
 <h1>
-   <?=$this->translate('Users');?>
+   <?php echo $this->translate('Users');?>
 </h1>
 
 
@@ -26,26 +26,26 @@
 <tr>
 	<th></th>
 	<th></th>
-	<th><?=$this->translate('User Login');?></th>
-	<th><?=$this->translate('User Name');?></th>
-	<th><?=$this->translate('Provider');?></th>
-	<th><?=$this->translate('Email');?></th>
-	<th><?=$this->translate('Role');?></th>
+	<th><?php echo $this->translate('User Login');?></th>
+	<th><?php echo $this->translate('User Name');?></th>
+	<th><?php echo $this->translate('Provider');?></th>
+	<th><?php echo $this->translate('Email');?></th>
+	<th><?php echo $this->translate('Role');?></th>
 	<th></th>
 </tr>
 <?php
 $i = 0;
 foreach($this->users as $user) {
 ?>
-<tr class="sectiontableentry<?=$i % 2?>">
-	<td class="edit-cell"><a title="<?=$this->translate('Edit');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-edit-user'), null, true)?>?userLogin=<?=$user->login;?>">&nbsp;</a></td>
-	<td class="change-password-cell"><a title="<?=$this->translate('Change Password');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-change-password'), null, true)?>?userLogin=<?=$user->login;?>">&nbsp;</a></td>
-	<td><?= $this->escape($user->login); ?></td>
-	<td><?= $this->escape($user->username); ?></td>
-	<td><?= $this->providers[$user->providerId]; ?></td>
-	<td><?= $this->escape($user->email); ?></td>
-	<td><?= $this->escape($user->roleLabel); ?></td>
-	<td class="delete-cell"><a title="<?=$this->translate('Delete');?>" href="<?= $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?=$user->login;?>" onClick="return confirm('<?=$this->translate('Are you sure?')?>');">&nbsp;</a></td>
+<tr class="sectiontableentry<?php echo $i % 2?>">
+	<td class="edit-cell"><a title="<?php echo $this->translate('Edit');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-edit-user'), null, true)?>?userLogin=<?php echo $user->login;?>">&nbsp;</a></td>
+	<td class="change-password-cell"><a title="<?php echo $this->translate('Change Password');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-change-password'), null, true)?>?userLogin=<?php echo $user->login;?>">&nbsp;</a></td>
+	<td><?php echo  $this->escape($user->login); ?></td>
+	<td><?php echo  $this->escape($user->username); ?></td>
+	<td><?php echo  $this->providers[$user->providerId]; ?></td>
+	<td><?php echo  $this->escape($user->email); ?></td>
+	<td><?php echo  $this->escape($user->role->label); ?></td>
+	<td class="delete-cell"><a title="<?php echo $this->translate('Delete');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?php echo $user->login;?>" onClick="return confirm('<?php echo $this->translate('Are you sure?')?>');">&nbsp;</a></td>
 </tr>
 <?php
 $i++;
@@ -54,7 +54,7 @@ $i++;
 </table>
  
 <p class="subTableLink">
-    <a href="<?= $this->url(array('controller'=>'usermanagement','action'=>'show-create-user'), null, true) ?>"><?=$this->translate('Create User');?></a>
+    <a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-create-user'), null, true) ?>"><?php echo $this->translate('Create User');?></a>
 <p/>
 
  

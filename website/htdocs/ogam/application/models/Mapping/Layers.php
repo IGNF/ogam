@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  * 
@@ -13,6 +14,7 @@
 
 /**
  * This is the model for managing web mapping layers.
+ *
  * @package models
  */
 class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
@@ -23,14 +25,14 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 * Initialisation
 	 */
 	public function init() {
-
+		
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
-
+		
 		$translate = Zend_Registry::get('Zend_Translate');
-        $this->lang = strtoupper($translate->getAdapter()->getLocale());
-
-        $this->metadataModel = new Genapp_Model_Metadata_Metadata();
+		$this->lang = strtoupper($translate->getAdapter()->getLocale());
+		
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
 	}
 
 	/**
@@ -38,31 +40,34 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 *
 	 * @return Array[String] The layer names
 	 */
-public function getVectorLayersList() {
-
-		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER');
+	public function getVectorLayersList() {
 		$db = $this->getAdapter();
 		$params = array();
-
+		
 		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, config as feature_service_config ";
 		$req .= " FROM layer_service , layer ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE layer.feature_service_name <> '' AND layer.feature_service_name = layer_service.service_name";
-
+		
 		// Check the user profile
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->role;
+		$role = $userSession->user->role;
 		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
 		$req .= " ORDER BY layer_name";
-
-		Zend_Registry::get("logger")->info('getVectorLayersList : '.$req);
-
+		
+		Zend_Registry::get("logger")->info('getVectorLayersList : ' . $req);
+		
 		$select = $db->prepare($req);
-		$select->execute(array($role->roleCode));
-
+		$select->execute(array(
+			$role->code
+		));
+		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$result[$row['layer_name']] = array($row['layer_label'],$row['feature_service_config']);
+			$result[$row['layer_name']] = array(
+				$row['layer_label'],
+				$row['feature_service_config']
+			);
 		}
 		return $result;
 	}
@@ -70,24 +75,23 @@ public function getVectorLayersList() {
 	/**
 	 * Get the list of available layers for the map.
 	 *
-	 * @param String $providerId the identifier of the provider
+	 * @param String $providerId
+	 *        	the identifier of the provider
 	 * @return Array[Layer]
 	 */
 	public function getLayersList($providerId = null) {
-
-		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER');
 		$db = $this->getAdapter();
 		$params = array();
-
+		
 		$req = " SELECT parent_id, layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, ";
 		$req .= " istransparent, default_opacity, isbaselayer, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
 		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_sld, checked_group, feature_service_name, print_service_name, detail_service_name,view_service_name, legend_service_name ";
 		$req .= " FROM layer ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
 		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
 		$req .= " WHERE (name is not null) ";
 		$req .= " AND layer_tree.is_layer = 1 ";
-
+		
 		// Check the provider id
 		if ($providerId == null) {
 			$req .= ' AND provider_id IS NULL';
@@ -95,20 +99,20 @@ public function getVectorLayersList() {
 			$req .= ' AND (provider_id IS NULL OR provider_id = ?)';
 			$params[] = $providerId;
 		}
-
+		
 		// Check the user profile
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->role;
+		$role = $userSession->user->role;
 		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		$params[] = $role->roleCode;
-
+		$params[] = $role->code;
+		
 		$req .= " ORDER BY (parent_id, position) DESC";
-
-		Zend_Registry::get("logger")->info('getLayersList : '.$req);
-
+		
+		Zend_Registry::get("logger")->info('getLayersList : ' . $req);
+		
 		$select = $db->prepare($req);
 		$select->execute($params);
-
+		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$layer = new Application_Object_Mapping_Layer();
@@ -146,26 +150,24 @@ public function getVectorLayersList() {
 	 * @return Array[Layer]
 	 */
 	public function getAllLayersList() {
-
-		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER');
 		$db = $this->getAdapter();
 		$params = array();
-
+		
 		$req = " SELECT parent_id, layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, ";
 		$req .= " istransparent, default_opacity, isbaselayer, view_service_name, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
 		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_sld, checked_group, print_service_name, detail_service_name, feature_service_name, legend_service_name ";
 		$req .= " FROM layer ";
 		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE (name is not null) ";
 		$req .= " AND layer_tree.is_layer = 1 ";
 		$req .= " ORDER BY (parent_id, position) DESC";
-
-		Zend_Registry::get("logger")->info('getAllLayersList : '.$req);
-
+		
+		Zend_Registry::get("logger")->info('getAllLayersList : ' . $req);
+		
 		$select = $db->prepare($req);
 		$select->execute($params);
-
+		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$layer = new Application_Object_Mapping_Layer();
@@ -201,24 +203,25 @@ public function getVectorLayersList() {
 	/**
 	 * Get the layer definition.
 	 *
-	 * @param String $layerName the layer logical name
+	 * @param String $layerName
+	 *        	the layer logical name
 	 * @return Layer
 	 */
 	public function getLayer($layerName) {
-
-		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER');
 		$db = $this->getAdapter();
-
+		
 		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, view_service_name, feature_service_name, maxscale, minscale, transitioneffect, imageformat, activate_type, has_sld, print_service_name, detail_service_name, legend_service_name ";
 		$req .= " FROM layer ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE layer_name = ?";
-
-		Zend_Registry::get("logger")->info('getLayersList : '.$req);
-
+		
+		Zend_Registry::get("logger")->info('getLayer : ' . $req);
+		
 		$select = $db->prepare($req);
-		$select->execute(array($layerName));
-
+		$select->execute(array(
+			$layerName
+		));
+		
 		$result = array();
 		$row = $select->fetch();
 		$layer = new Application_Object_Mapping_Layer();
@@ -241,53 +244,29 @@ public function getVectorLayersList() {
 		$layer->featureServiceName = $row['feature_service_name'];
 		return $layer;
 	}
-	
-	/**
-	 * Get the list of available scales.
-	 *
-	 * @return Array[String]
-	 */
-	public function getScales() {
-
-		$db = $this->getAdapter();
-
-		$req = "SELECT scale FROM scales ORDER BY scale DESC";
-
-		Zend_Registry::get("logger")->info('getScales : '.$req);
-
-		$select = $db->prepare($req);
-		$select->execute();
-
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$result[] = $row['scale'];
-		}
-		return $result;
-
-	}
 
 	/**
 	 * Get the list of layer_tree items for a given parendId.
 	 *
-	 * @param String $parentId the identifier of the category
-	 * @param String $providerId the identifier of the provider
+	 * @param String $parentId
+	 *        	the identifier of the category
+	 * @param String $providerId
+	 *        	the identifier of the provider
 	 * @return Array[layer_tree]
 	 */
 	public function getLegend($parentId, $providerId = null) {
-
-		Zend_Registry::get("logger")->info('getLegend : parentId : '.$parentId.' - providerId : '.$providerId);
-
-		$tableFormat = $this->metadataModel->getTableFormatFromTableName('MAPPING', 'LAYER');
+		Zend_Registry::get("logger")->info('getLegend : parentId : ' . $parentId . ' - providerId : ' . $providerId);
+		
 		$db = $this->getAdapter();
 		$params = array();
-
+		
 		// Prepare the request
 		$req = " SELECT item_id, parent_id, isbaselayer, is_layer, is_checked, is_expended, COALESCE(t.label, layer.layer_label) as layer_label, layer_name, is_hidden, is_disabled, maxscale, minscale ";
 		$req .= " FROM layer_tree ";
 		$req .= " LEFT OUTER JOIN layer ON (layer_tree.name = layer.layer_name) ";
-		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = layer.layer_name";
-		$req .= " WHERE parent_id = '".$parentId."'";
-
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
+		$req .= " WHERE parent_id = '" . $parentId . "'";
+		
 		// Check the provider id
 		if ($providerId == null) {
 			$req .= ' AND provider_id IS NULL';
@@ -295,20 +274,20 @@ public function getVectorLayersList() {
 			$req .= ' AND (provider_id IS NULL OR provider_id = ?)';
 			$params[] = $providerId;
 		}
-
+		
 		// Check the user profile
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->role;
-		$req = $req.' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		$params[] = $role->roleCode;
-
-		$req = $req." ORDER BY position";
-
-		Zend_Registry::get("logger")->info('layer_model.getLegend() : '.$req);
-
+		$role = $userSession->user->role;
+		$req = $req . ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
+		$params[] = $role->code;
+		
+		$req = $req . " ORDER BY position";
+		
+		Zend_Registry::get("logger")->info('layer_model.getLegend() : ' . $req);
+		
 		$select = $db->prepare($req);
 		$select->execute($params);
-
+		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$legendItem = new Application_Object_Mapping_LegendItem();
@@ -327,7 +306,5 @@ public function getVectorLayersList() {
 			$result[] = $legendItem;
 		}
 		return $result;
-
 	}
-
 }

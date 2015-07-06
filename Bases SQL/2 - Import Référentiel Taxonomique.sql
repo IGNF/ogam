@@ -179,10 +179,6 @@ select distinct regne   -- 5 règnes
 from taxref;
 
 
-select *
-from mode_tree
-limit 20;
-
 -- Identification des taxons utilisés dans FOMA
 select *
 from (
@@ -201,33 +197,29 @@ left join taxref on id_taxon::varchar = cd_nom;
 --
 
 
--- Import dans la table mode_tree
--- DELETE FROM metadata.mode_tree WHERE unit = 'ID_TAXON';
-INSERT INTO metadata.mode_tree(unit, code, parent_code, label, definition)
-SELECT 'ID_TAXON', cd_nom, CD_TAXSUP, LB_NOM, NOM_COMPLET
-FROM taxref
-WHERE cd_nom = cd_ref; 
+-- Import dans la table mode_taxref
+-- DELETE FROM metadata.mode_taxref WHERE unit = 'ID_TAXON';
+INSERT INTO metadata.mode_taxref(unit, code, parent_code, name, complete_name, vernacular_name, is_reference)
+SELECT 'ID_TAXON', cd_nom, CD_TAXSUP, LB_NOM, NOM_COMPLET, nom_vern, case when cd_nom = cd_ref then '1' else '0' end as is_reference
+FROM taxref; 
 
 -- Calcul de la colonne is_leaf
-update mode_tree 
+update mode_taxref 
 set is_leaf = '0';
 
-update mode_tree 
+update mode_taxref 
 set is_leaf = '1'
-where code not in (select distinct parent_code from mode_tree);
+where code not in (select distinct parent_code from mode_taxref);
 
 select * -- 32000 nodes
-from mode_tree
+from mode_taxref
 where is_leaf = '0';
 
 
 
--- Ajout d'un noeud racine
---INSERT INTO metadata.mode_tree(unit, code, parent_code, label, definition, is_leaf)
---SELECT 'ID_TAXON', '0', '*', 'Taxons', 'Taxons', '0';
 
 
-update mode_tree
+update mode_taxref
 set parent_code = '*'
 where unit = 'ID_TAXON' 
 and parent_code = '0';

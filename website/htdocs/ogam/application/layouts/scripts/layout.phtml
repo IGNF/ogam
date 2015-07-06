@@ -17,7 +17,7 @@
  */
 ?>
 
-<?= $this->doctype() ?>
+<?php echo $this->doctype() ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <?php echo $this->headTitle() ?>
@@ -41,8 +41,8 @@
   <script type="text/javascript">
       //Defines the base URL for the scripts
      function sendMail(){
-        pre='<?= $this->contactEmailPrefix; ?>';
-        suf='<?= $this->contactEmailSufix; ?>';
+        pre='<?php echo $this->contactEmailPrefix; ?>';
+        suf='<?php echo $this->contactEmailSufix; ?>';
         document.getElementById('lkContact').href="mailto:" + pre + "@" + suf;
       }
   </script>
@@ -57,14 +57,14 @@
     <div class="header" id="header">
    
         <div id="banner" class="banner">
-            <img border="0" alt="Banner" src="<?= $this->baseUrl('img/banner.jpg');?>"/>
+            <img border="0" alt="Banner" src="<?php echo $this->baseUrl('img/banner.jpg');?>"/>
         </div>
 
         <div id="top" class="top">
 
         <div id="header-beadcrumb" class="header-beadcrumb" style="float:left">
             <span class="pathway">
-            <a href="<?= $this->url(array('controller'=>'index'), 'default', true) ?>" ><b><?= $this->translate('Layout Pathway Home') ?></b></a>
+            <a href="<?php echo $this->url(array('controller'=>'index'), 'default', true) ?>" ><b><?php echo $this->translate('Layout Pathway Home') ?></b></a>
             <?php
                 $website_session = new Zend_Session_Namespace('website');
                 $moduleName = $website_session->module;
@@ -96,12 +96,12 @@
 	        $user = $userSession->user;
 	        if (!empty($user)) {
 	             ?>
-	             <a href="<?= $this->url(array('controller'=>'user', 'action'=>'show-change-password'), 'default', true) ?>" ><?=$this->translate('Change Password');?></a>
+	             <a href="<?php echo $this->url(array('controller'=>'user', 'action'=>'show-change-password'), 'default', true) ?>" ><?php echo $this->translate('Change Password');?></a>
 	             &nbsp;
-	             <a href="<?= $this->url(array('controller'=>'user', 'action'=>'logout'), 'default', true) ?>" ><?=$this->translate('Log out');?></a>
+	             <a href="<?php echo $this->url(array('controller'=>'user', 'action'=>'logout'), 'default', true) ?>" ><?php echo $this->translate('Log out');?></a>
 	<?php
 	         } else {
-	            ?><a href="<?= $this->url(array('controller'=>'user', 'action'=>'index'), 'default', true) ?>" ><?=$this->translate('Log in');?></a>
+	            ?><a href="<?php echo $this->url(array('controller'=>'user', 'action'=>'index'), 'default', true) ?>" ><?php echo $this->translate('Log in');?></a>
 	<?php
 	         }
         }
@@ -114,7 +114,7 @@
 
     <!-- CONTENT -->
     <div class="content" id="content">
-        <?= $this->layout()->content ?>
+        <?php echo $this->layout()->content ?>
     </div>
 
 <!-- Fin du main-body -->
@@ -128,8 +128,8 @@
 
 <div class="footer"  id="footer">
     <div id="footer-ct" class="footer-ct">
-        <?= $this->translate('Layout Copyright');?>&nbsp;
-        <a id="lkContact" onclick="sendMail();" href="#"><?=$this->translate('Contact Us');?></a>
+        <?php echo $this->translate('Layout Copyright');?>&nbsp;
+        <a id="lkContact" onclick="sendMail();" href="#"><?php echo $this->translate('Contact Us');?></a>
     </div>
 </div>
 
