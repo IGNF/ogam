@@ -29,12 +29,8 @@
 
 	<!-- Suppression des répertoires de déploiement -->
 	<target name="cleanest" description="Removes all the generated files or directories">
-		<delete>
-	         <fileset dir="${classes.dir}">
-	            <include name="**/*.*" />
-	            <exclude name=".svn" />
-	         </fileset>
-		</delete>
+		<delete dir="${classes.dir}" quiet="true"/>
+		<mkdir dir="${classes.dir}"/>
 	</target>
 
 	<!-- Compile les sources -->
@@ -55,7 +51,7 @@
 	</target>
 
 	<!-- FindBugs -->
-	<target name="findbugs" description="Static analysis with FindBugs" depends="">
+	<target name="findbugs" description="Static analysis with FindBugs">
 
 		<mkdir dir="${test_result.dir}" />
 
