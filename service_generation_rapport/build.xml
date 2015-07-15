@@ -10,7 +10,7 @@
 	<!-- Définition des properties -->
 	<property name="application.name" value="OGAM" />
 	<property name="workspace.dir" value="${basedir}/../.." />
-	<property name="BIRTReportEngine.dir" value="${workspace.dir}/Service Java Generation de Rapports/generationRapport" /> 
+	<property name="BIRTReportEngine.dir" value="${workspace.dir}/Service_Java_Generation_de_Rapports/generationRapport" /> 
 	<property name="report.dir" value="./report" />
 	<property name="images.dir" value="./images" />
 	<property name="config.dir" value="./config" />
