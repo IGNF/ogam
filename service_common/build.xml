@@ -29,7 +29,7 @@
 
 	<!-- Suppression des répertoires de déploiement -->
 	<target name="cleanest" description="Removes all the generated files or directories">
-		<delete>
+		<delete failonerror="false">
 	         <fileset dir="${classes.dir}">
 	            <include name="**/*.*" />
 	            <exclude name=".svn" />
