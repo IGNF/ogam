@@ -39,7 +39,7 @@
 	<!-- *** A modifier en fonction du répertoire d'installation de Tomcat *** -->
 	<property name="deploy.dir" value="C:/Apache/tomcat-7/webapps" />
 
-	<property name="classpath" value="${lib.dir}/commons-fileupload-1.2.1.jar;${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar;${libraries.dir}/lib/servlet-api.jar;${libraries.dir}/lib/junit.jar;${libraries.dir}/import/org/postgresql/postgresql-8.3-603.jdbc4.jar;${libraries.dir}/lib/dbunit/dbunit.jar;${libraries.dir}/import/com/sun/mail/mail.jar" />
+	<property name="classpath" value="${common.dir}/classes;${lib.dir}/commons-fileupload-1.2.1.jar;${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar;${libraries.dir}/lib/servlet-api.jar;${libraries.dir}/lib/junit.jar;${libraries.dir}/import/org/postgresql/postgresql-8.3-603.jdbc4.jar;${libraries.dir}/lib/dbunit/dbunit.jar;${libraries.dir}/import/com/sun/mail/mail.jar" />
 
 	<!-- Définition de tâches externes  -->
 	<taskdef name="javancss" classname="javancss.JavancssAntTask" classpath="${libraries.dir}/lib/javancss.jar;${libraries.dir}/lib/ccl.jar;${libraries.dir}/libs java/lib/jhbasic.jar" />
@@ -80,12 +80,12 @@
 
 	<!-- Compile les sources -->
 	<target name="compile" description="Compile the sources" depends="cleanest, init">
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" source="1.6" target="1.6" encoding="UTF-8" classpath="${classpath};${common.dir}/classes">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" source="1.6" target="1.6" encoding="UTF-8" classpath="${classpath}">
 			<compilerarg value="-Xlint" />
 		</javac>
 
 		<!-- Compile aussi les classes de test au passage -->
-		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" source="1.6" target="1.6" classpath="${classpath};${common.dir}/classes">
+		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" source="1.6" target="1.6" classpath="${classpath}">
 			<compilerarg value="-Xlint" />
 		</javac>
 	</target>
@@ -175,7 +175,7 @@
 
 			<classpath>
 				<pathelement path="${classes.dir}" />
-				<pathelement path="${classpath};${common.dir}/classes" />
+				<pathelement path="${classpath}" />
 				<path refid="emma.lib" />
 			</classpath>
 
