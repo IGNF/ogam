@@ -55,7 +55,7 @@
 	  	</copy>
 		
 		<!-- Copie des images du projet -->	   
-	  	<copy todir="${dist.dir}/images">
+	  	<copy todir="${dist.dir}/images" failonerror="false">
 	  	    <fileset dir="${images.dir}">
 	  	    </fileset>
 	  	</copy>
