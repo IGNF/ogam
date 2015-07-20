@@ -1,1 +1,5 @@
-ant.importBuild 'build.xml'
+
+
+ant.importBuild('build.xml') { antTargetName ->
+    'ant_' + antTargetName
+}

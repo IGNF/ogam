@@ -1,1 +1,8 @@
-ant.importBuild 'build.xml'
+dependencies {
+	compile project(':service_common')
+	runtime project(':service_common')
+}
+
+ant.importBuild('build.xml') { antTargetName ->
+    'ant_' + antTargetName
+}
