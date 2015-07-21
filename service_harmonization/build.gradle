@@ -3,6 +3,7 @@ dependencies {
 	runtime project(':service_common')
 }
 
+// Import the ANT tasks and rename them
 ant.importBuild('build.xml') { antTargetName ->
     'ant_' + antTargetName
 }

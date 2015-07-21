@@ -1,12 +1,18 @@
+def tomcatHome = 'C:/Apache/tomcat-7'
+    	
+
+
 subprojects {
 
   apply plugin: "java"
   apply plugin: "war"
  
+  // We use Maven repository
   repositories {
     mavenCentral()
   }
 
+  // Define the dependencies
   dependencies {
     testCompile 'junit:junit:4.5'	
 	testCompile 'org.dbunit:dbunit:2.5.0'		
@@ -18,6 +24,7 @@ subprojects {
 	compile 'commons-io:commons-io:1.4'
   }
   
+  // Set the source directories for each subproject
   sourceSets {
 	    main {
 	        java {
@@ -30,11 +37,46 @@ subprojects {
 	        }
 	    }
 	}
+	
+	
+	// Build the war file
+	war {
+		// adds a file-set to the WEB-INF dir.
+    	webInf { 
+    		from ('config') {
+    			include 'log4j.properties'
+    			into ('classes/')
+    		} 
+    	} 
+    	webXml = file('config/web.xml') // copies a file to WEB-INF/web.xml
+	}
+		
+	// Define a new task to deploy the war
+	task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat server.') << {
+	    
+	    
+		println "Copy from build/libs into ${tomcatHome}/webapps"
+		
+		// Copy the war file
+    	copy {
+      		from "build/libs"
+      		into "${tomcatHome}/webapps"
+      		include 'service_integration.war'
+      		rename ('service_integration.war', 'OGAMIntegrationService.war')
+    	}
+    	
+    	// Copy the config file
+    	copy {
+      		from "./config/"
+      		into "${tomcatHome}/conf/Catalina/localhost"
+      		include 'OGAMIntegrationService.xml'
+    	}
+  	}
 
 }
   
 
-
+// Import the ANT tasks and rename them
 ant.importBuild('build.xml') { antTargetName ->
     'ant_' + antTargetName
 }
