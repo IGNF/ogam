@@ -1,11 +1,11 @@
-def tomcatHome = 'C:/Apache/tomcat-7'
-    	
-
 
 subprojects {
 
   apply plugin: "java"
   apply plugin: "war"
+  apply plugin: 'pmd'
+  apply plugin: 'checkstyle'
+  apply plugin: 'findbugs'
  
   // We use Maven repository
   repositories {
@@ -50,29 +50,24 @@ subprojects {
     	} 
     	webXml = file('config/web.xml') // copies a file to WEB-INF/web.xml
 	}
-		
-	// Define a new task to deploy the war
-	task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat server.') << {
-	    
-	    
-		println "Copy from build/libs into ${tomcatHome}/webapps"
-		
-		// Copy the war file
-    	copy {
-      		from "build/libs"
-      		into "${tomcatHome}/webapps"
-      		include 'service_integration.war'
-      		rename ('service_integration.war', 'OGAMIntegrationService.war')
-    	}
-    	
-    	// Copy the config file
-    	copy {
-      		from "./config/"
-      		into "${tomcatHome}/conf/Catalina/localhost"
-      		include 'OGAMIntegrationService.xml'
-    	}
-  	}
-
+	
+	
+	// Config pour PMD
+	pmd {
+		ignoreFailures = true
+	}
+	
+	// Config pour Checkstyle
+	checkstyle {
+		ignoreFailures = true
+		showViolations = false
+	}
+	
+	// Config pour findbugs
+	findbugs {
+		ignoreFailures = true
+	}
+	
 }
   
 
