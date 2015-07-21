@@ -94,7 +94,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		assertEquals("The PH max range should be 100", new BigDecimal(100), range.getMaxValue());
 
-		assertEquals("The PH min range should be 0", new BigDecimal(0), range.getMinValue());
+		assertEquals("The PH min range should be 0", BigDecimal.ZERO, range.getMinValue());
 
 	}
 
