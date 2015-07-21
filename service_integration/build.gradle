@@ -31,3 +31,5 @@ task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat 
 ant.importBuild('build.xml') { antTargetName ->
     'ant_' + antTargetName
 }
+
+defaultTasks 'clean', 'check', 'test', 'jacocoTestReport'

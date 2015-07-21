@@ -1,11 +1,12 @@
 
 subprojects {
 
-  apply plugin: "java"
-  apply plugin: "war"
-  apply plugin: 'pmd'
-  apply plugin: 'checkstyle'
-  apply plugin: 'findbugs'
+  apply plugin: "java"  // compilation + tests unitaires
+  apply plugin: "war"  // war construction
+  apply plugin: 'pmd'  // checks
+  apply plugin: 'checkstyle' // checks
+  apply plugin: 'findbugs'  // checks
+  apply plugin: "jacoco"  // coverage
  
   // We use Maven repository
   repositories {
@@ -77,6 +78,18 @@ subprojects {
 		ignoreFailures = true
 	}
 	
+	// Config for the javadoc
+	javadoc {
+		failOnError = false
+	}
+	
+	jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+	
 }
   
 
@@ -84,3 +97,5 @@ subprojects {
 ant.importBuild('build.xml') { antTargetName ->
     'ant_' + antTargetName
 }
+
+
