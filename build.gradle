@@ -14,11 +14,17 @@ subprojects {
 
   // Define the dependencies
   dependencies {
+  
+  	// For the tests only
     testCompile 'junit:junit:4.5'	
-	testCompile 'org.dbunit:dbunit:2.5.0'		
+	testCompile 'org.dbunit:dbunit:2.5.0'
+	
+	// For compilation only (not deployed to Tomcat)		
 	providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
 	providedCompile 'com.sun.mail:javax.mail:1.5.4'
 	providedCompile 'postgresql:postgresql:9.1-901-1.jdbc4'
+	
+	// For compilation and deployement
 	compile 'log4j:log4j:1.2.14'
 	compile 'commons-fileupload:commons-fileupload:1.2.1'
 	compile 'commons-io:commons-io:1.4'
@@ -40,6 +46,7 @@ subprojects {
 	
 	
 	// Build the war file
+	// Configuration for the war task
 	war {
 		// adds a file-set to the WEB-INF dir.
     	webInf { 
@@ -48,22 +55,24 @@ subprojects {
     			into ('classes/')
     		} 
     	} 
-    	webXml = file('config/web.xml') // copies a file to WEB-INF/web.xml
+    	
+    	// copies a file to WEB-INF/web.xml
+    	webXml = file('config/web.xml') 
 	}
 	
 	
-	// Config pour PMD
+	// Config for PMD
 	pmd {
 		ignoreFailures = true
 	}
 	
-	// Config pour Checkstyle
+	// Config for Checkstyle
 	checkstyle {
 		ignoreFailures = true
 		showViolations = false
 	}
 	
-	// Config pour findbugs
+	// Config for findbugs
 	findbugs {
 		ignoreFailures = true
 	}
@@ -71,7 +80,7 @@ subprojects {
 }
   
 
-// Import the ANT tasks and rename them
+// Import the legacy ANT tasks and rename them
 ant.importBuild('build.xml') { antTargetName ->
     'ant_' + antTargetName
 }
