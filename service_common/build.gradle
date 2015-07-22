@@ -4,7 +4,7 @@
 checkstyle {
 	ignoreFailures = true
 	showViolations = false
-	heckstyleMain.exclude '**/SqlStateSQL99.java'
+	checkstyleMain.exclude '**/SqlStateSQL99.java'
 }
 
 // Import the ANT tasks and rename them
