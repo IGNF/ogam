@@ -94,8 +94,8 @@ subprojects {
   
 
 // Import the legacy ANT tasks and rename them
-ant.importBuild('build.xml') { antTargetName ->
-    'ant_' + antTargetName
-}
+// ant.importBuild('build.xml') { antTargetName ->
+//     'ant_' + antTargetName
+// }
 
 
