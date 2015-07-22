@@ -1,4 +1,5 @@
 <?php
+require_once './TreeNode.php';
 
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
