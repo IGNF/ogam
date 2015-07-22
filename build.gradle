@@ -16,6 +16,7 @@ subprojects {
   // Define the dependencies
   dependencies {
   
+  	
   	// For the tests only
     testCompile 'junit:junit:4.5'	
 	testCompile 'org.dbunit:dbunit:2.5.0'
@@ -84,13 +85,38 @@ subprojects {
 	}
 	
 	jacocoTestReport {
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-}
+	    reports {
+	        xml.enabled = true
+	        html.enabled = true
+	    }
+	}
+	
+	
+//    TODO : Créer un plugin pour JavaNCSS	
+//	  
+//   configurations {
+//    	javancss
+//    }
+    
+//    dependencies {
+//    	compile 'javancss:javancss:30.51'  
+//    }
+	
+//	// Java NCSS
+//	task javancss << {
+//	    mkdir reportsDir
+	
+//	    ant {
+//	        taskdef name:'javancss', classname:'javancss.JavancssAntTask', classpath:configurations.javancss.asPath
+//	        javancss srcdir:'src', abortOnFail:false, generateReport:true, outputfile:"$reportsDir/javancss_metrics.txt", format:'plain'
+//	    }
+//	}
+	
 	
 }
+
+
+
   
 
 // Import the legacy ANT tasks and rename them
