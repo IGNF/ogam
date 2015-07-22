@@ -137,11 +137,10 @@ public class AbstractEFDACTest extends JndiBasedDBTestCase {
 			// HARMONIZED_JNDI_URL);
 
 			// localhost
-			websiteJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/efdac", "eforest", "eforest", WEBSITE_JNDI_URL);
-			rawdataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/efdac", "eforest", "eforest", RAWDATA_JNDI_URL);
-			metadataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/efdac", "eforest", "eforest", METADATA_JNDI_URL);
-			harmonizedJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/efdac", "eforest", "eforest",
-					HARMONIZED_JNDI_URL);
+			websiteJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/efdac", "ogam", "ogam", WEBSITE_JNDI_URL);
+			rawdataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/efdac", "ogam", "ogam", RAWDATA_JNDI_URL);
+			metadataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/efdac", "ogam", "ogam", METADATA_JNDI_URL);
+			harmonizedJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/efdac", "ogam", "ogam", HARMONIZED_JNDI_URL);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
