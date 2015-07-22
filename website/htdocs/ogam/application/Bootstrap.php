@@ -8,6 +8,7 @@ require_once APPLICATION_PATH . '/objects/Metadata/Field.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
 require_once APPLICATION_PATH . '/objects/Metadata/Format.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableFormat.php';
+require_once APPLICATION_PATH . '/objects/Metadata/TreeNode.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
 require_once APPLICATION_PATH . '/objects/Website/User.php';
 require_once APPLICATION_PATH . '/objects/Website/Role.php';
