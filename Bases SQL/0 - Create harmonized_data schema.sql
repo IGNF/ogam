@@ -176,3 +176,4 @@ ALTER TABLE harmonized_data.harmonization_process_submissions OWNER TO ogam;
 ALTER TABLE harmonized_data.harmonized_location OWNER TO ogam;
 ALTER TABLE harmonized_data.harmonized_plot_data OWNER TO ogam;
 ALTER TABLE harmonized_data.harmonized_species_data OWNER TO ogam;
+ALTER TABLE harmonized_data.harmonized_tree_data OWNER TO ogam;
