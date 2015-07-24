@@ -12,7 +12,7 @@ insert into application_parameters (name, value, description) values ( 'autoLogi
 insert into application_parameters (name, value, description) values ( 'defaultUser' , 'visitor' , 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
 insert into application_parameters (name, value, description) values ( 'fileMaxSize' , 100 , 'UPLOAD');
 insert into application_parameters (name, value, description) values ( 'integrationService_url' , 'http://localhost:8080/OGAMIntegrationService/' , 'INTEGRATION SERVICE');
-insert into application_parameters (name, value, description) values ( 'uploadDir' , 'APPLICATION_PATH "/../../upload/' , 'INTEGRATION SERVICE');
+insert into application_parameters (name, value, description) values ( 'uploadDir' , '/var/www/html/upload/' , 'INTEGRATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'harmonizationService_url' , 'http://localhost:8080/OGAMHarmonizationService/' , 'HARMONIZATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'reportGenerationService_url' , 'http://localhost:8080/OGAMRG/' , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'errorReport' , 'ErrorReport.rptdesign' , 'REPORT GENERATION SERVICE');
@@ -25,7 +25,7 @@ insert into application_parameters (name, value, description) values ( 'max_exec
 insert into application_parameters (name, value, description) values ( 'memory_limit' , '1024M' , 'memory limit');
 insert into application_parameters (name, value, description) values ( 'post_max_size' , '100M' , 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
 insert into application_parameters (name, value, description) values ( 'upload_max_filesize' , '100M' , 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
-insert into application_parameters (name, value, description) values ( 'image_upload_dir' , 'APPLICATION_PATH "/../../upload/images' , 'File Upload');
+insert into application_parameters (name, value, description) values ( 'image_upload_dir' , '/var/www/html/upload/images' , 'Images Upload');
 insert into application_parameters (name, value, description) values ( 'image_dir_rights' , 0666 , 'File Upload');
 insert into application_parameters (name, value, description) values ( 'image_extensions' , 'jpg,png,jpeg,gif' , 'File Upload');
 insert into application_parameters (name, value, description) values ( 'image_max_size' , 1000000, 'image max size in bytes');
