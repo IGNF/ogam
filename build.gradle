@@ -7,6 +7,10 @@ subprojects {
   apply plugin: 'checkstyle' // checks
   apply plugin: 'findbugs'  // checks
   apply plugin: "jacoco"  // coverage
+  
+  targetCompatibility  = 1.6
+  sourceCompatibility  = 1.6
+  
  
   // We use Maven repository
   repositories {
@@ -45,6 +49,8 @@ subprojects {
 	        }
 	    }
 	}
+	
+
 	
 	
 	// Build the war file
