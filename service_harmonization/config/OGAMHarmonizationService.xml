@@ -21,6 +21,6 @@
 		url="jdbc:postgresql://localhost:5432/ogam" />	
            
                
-  <Resource name="mail/Session" auth="Container" type="javax.mail.Session" mail.smtp.host="localhost"/>
+  <Resource name="mail/Session" auth="Container" type="javax.mail.Session" mail.smtp.host="smtp1.ign.fr"/>
 
 </Context>
