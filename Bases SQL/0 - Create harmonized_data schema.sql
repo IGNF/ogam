@@ -71,7 +71,7 @@ CREATE INDEX IX_HARMONIZED_LOCATION_SPATIAL_INDEX ON harmonized_data.harmonized_
 CREATE OR REPLACE FUNCTION harmonized_data.geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
-    NEW.the_geom = public.ST_Transform(public.GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326), 3035);
+    NEW.the_geom = public.ST_Transform(public.ST_GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326), 3035);
     RETURN NEW;
 END;
 $BODY$
