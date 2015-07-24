@@ -119,6 +119,7 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CA
 --
 --INSERT INTO DATASET_ROLE_RESTRICTION (ROLE_CODE, DATASET_ID) VALUES ('ADMIN', 'SPECIES');
 
+INSERT INTO layer_role_restriction (layer_name, role_code) VALUES ('all_harmonized_locations', 'ADMIN');
 
 
 

@@ -127,6 +127,60 @@ alter table ROLE_TO_USER
    add constraint FK_ROLE_TO__ROLE_TO_U_ROLE foreign key (ROLE_CODE)
       references ROLE (ROLE_CODE)
       on delete restrict on update restrict;
+      
+      
+/*==============================================================*/
+/* Table : DATASET_ROLE_RESTRICTION                             */
+/*==============================================================*/
+create table DATASET_ROLE_RESTRICTION (
+DATASET_ID           VARCHAR(36)          NOT NULL,
+ROLE_CODE            VARCHAR(36)          NOT NULL,
+constraint PK_DATASET_ROLE_RESTRICTION primary key (DATASET_ID, ROLE_CODE)
+);
+
+COMMENT ON COLUMN DATASET_ROLE_RESTRICTION.DATASET_ID IS 'The logical name of the dataset';
+COMMENT ON COLUMN DATASET_ROLE_RESTRICTION.ROLE_CODE IS 'Code of the role';
+
+ALTER TABLE dataset_role_restriction 
+ADD CONSTRAINT fk_dataset_role_restriction_dataset_id 
+FOREIGN KEY (dataset_id) REFERENCES metadata.DATASET (dataset_id)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE dataset_role_restriction 
+ADD CONSTRAINT fk_dataset_role_restriction_role_code 
+FOREIGN KEY (role_code) REFERENCES website."role" (role_code)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+/*==============================================================*/
+/* Table: layer_profile_restriction                             */
+/* Mark some layers as forbidden for some user profiles         */
+/*==============================================================*/
+CREATE TABLE layer_role_restriction
+(
+  layer_name 			VARCHAR(50)    NOT NULL,   -- Logical name of the layer
+  role_code				VARCHAR(36)    NOT NULL,   -- Role for whom this layer is forbidden
+  PRIMARY KEY  (layer_name, role_code)
+) WITHOUT OIDS;
+
+COMMENT ON COLUMN layer_role_restriction.layer_name IS 'Logical name of the layer';
+COMMENT ON COLUMN layer_role_restriction.role_code IS 'Role for whom this layer is forbidden';
+
+ALTER TABLE layer_role_restriction 
+ADD CONSTRAINT fk_layer_role_restriction_layer_name 
+FOREIGN KEY (layer_name) REFERENCES mapping.layer(layer_name)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE layer_role_restriction 
+ADD CONSTRAINT fk_layer_role_restriction_role_code 
+FOREIGN KEY (role_code) REFERENCES website."role" (role_code)
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+
+
+
+
 
      
       
@@ -261,8 +315,12 @@ ALTER TABLE website.ROLE_TO_SCHEMA OWNER TO ogam;
 ALTER TABLE website.ROLE_TO_USER OWNER TO ogam;
 ALTER TABLE website.PERMISSION OWNER TO ogam;
 ALTER TABLE website.PERMISSION_PER_ROLE OWNER TO ogam;
+ALTER TABLE website.DATASET_ROLE_RESTRICTION OWNER TO ogam;
+ALTER TABLE website.layer_role_restriction OWNER TO ogam;
+
 ALTER TABLE website.PREDEFINED_REQUEST OWNER TO ogam;
 ALTER TABLE website.PREDEFINED_REQUEST_CRITERIA OWNER TO ogam;
 ALTER TABLE website.PREDEFINED_REQUEST_RESULT OWNER TO ogam;
 ALTER TABLE website.PREDEFINED_REQUEST_GROUP_ASSO OWNER TO ogam;
+
 
