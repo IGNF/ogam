@@ -12,7 +12,7 @@ insert into application_parameters (name, value, description) values ( 'autoLogi
 insert into application_parameters (name, value, description) values ( 'defaultUser' , 'visitor' , 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
 insert into application_parameters (name, value, description) values ( 'fileMaxSize' , 100 , 'UPLOAD');
 insert into application_parameters (name, value, description) values ( 'integrationService_url' , 'http://localhost:8080/OGAMIntegrationService/' , 'INTEGRATION SERVICE');
-insert into application_parameters (name, value, description) values ( 'uploadDir' , 'D:/workspace/Eforest/website/htdocs/upload' , 'INTEGRATION SERVICE');
+insert into application_parameters (name, value, description) values ( 'uploadDir' , 'APPLICATION_PATH "/../../upload/' , 'INTEGRATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'harmonizationService_url' , 'http://localhost:8080/OGAMHarmonizationService/' , 'HARMONIZATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'reportGenerationService_url' , 'http://localhost:8080/OGAMRG/' , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'errorReport' , 'ErrorReport.rptdesign' , 'REPORT GENERATION SERVICE');
@@ -52,20 +52,6 @@ insert into application_parameters (name, value, description) values ( 'contactE
 insert into application_parameters (name, value, description) values ( 'csvExportCharset' , 'UTF-8' , 'Csv Export');
 insert into application_parameters (name, value, description) values ( 'language_flags1' , 'fr' , 'Language');
 insert into application_parameters (name, value, description) values ( 'language_flags2' , 'en' , 'Language');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_directory', 'APPLICATION_PATH "/../../index/pdfIndex"' , 'Indices');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_filesDirectories1', 'APPLICATION_PATH "/../public/pdf/"' , 'Indices');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_filesDirectories2', 'APPLICATION_PATH "/../../custom/public/pdf/"' , 'Indices');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_filesCharset', 'ISO-8859-1' , 'Indices');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_maxFileIndexTime' , 300 , 'The maximum of time authorized to index a file (seconde)');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_batchIndexing.maxBufferedDocs', 50 , 'Default to 10. To increase for batch indexing (half of the allowed memory (see memory_get_usage(true) and memory_get_peak_usage(true))).');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_batchIndexing.maxMergeDocs', 1073741823 , 'Default to PHP_INT_MAX. To decrease for batch indexing.');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_batchIndexing.mergeFactor', 50 , 'Default to 10. To increase for batch indexing.');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_filesMetadata1', 'Title', 'Notes: The present order of the filesMetadata is used like the form fields order in the "docSearch" page. The metadata key "ShortFileName" return the file name like "mypdf.pdf". The metadata key "SmallFileName" return the file name like "mypdf". The metadata key "Extension" return the file extension like "pdf"');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_filesMetadata2', 'Author', 'Notes: The present order of the filesMetadata is used like the form fields order in the "docSearch" page. The metadata key "ShortFileName" return the file name like "mypdf.pdf". The metadata key "SmallFileName" return the file name like "mypdf". The metadata key "Extension" return the file extension like "pdf"');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_filesMetadata3', 'Subject' , 'Notes: The present order of the filesMetadata is used like the form fields order in the "docSearch" page. The metadata key "ShortFileName" return the file name like "mypdf.pdf". The metadata key "SmallFileName" return the file name like "mypdf". The metadata key "Extension" return the file extension like "pdf"');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_filesMetadata4', 'Parution', 'Notes: The present order of the filesMetadata is used like the form fields order in the "docSearch" page. The metadata key "ShortFileName" return the file name like "mypdf.pdf". The metadata key "SmallFileName" return the file name like "mypdf". The metadata key "Extension" return the file extension like "pdf"');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_filesMetadata5', 'Publication', 'Notes: The present order of the filesMetadata is used like the form fields order in the "docSearch" page. The metadata key "ShortFileName" return the file name like "mypdf.pdf". The metadata key "SmallFileName" return the file name like "mypdf". The metadata key "Extension" return the file extension like "pdf"');
-insert into application_parameters (name, value, description) values ( 'indices_pdfIndex_filesMetadata6', 'SmallFileName', 'Notes: The present order of the filesMetadata is used like the form fields order in the "docSearch" page. The metadata key "ShortFileName" return the file name like "mypdf.pdf". The metadata key "SmallFileName" return the file name like "mypdf". The metadata key "Extension" return the file extension like "pdf"');
 
 
 
