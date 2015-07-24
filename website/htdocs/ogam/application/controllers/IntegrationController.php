@@ -159,7 +159,7 @@ class IntegrationController extends AbstractOGAMController {
 					$fieldsDesc .= '</span>';
 					$fieldsDesc .= ';&nbsp;<br/>';
 				}
-				$fieldsDesc = substr($fieldsDesc, 0, -7); // remove last comma
+				$fieldsDesc = substr($fieldsDesc, 0, -12); // remove last comma
 			}
 			
 			$fileelement->setDescription($fieldsDesc);
