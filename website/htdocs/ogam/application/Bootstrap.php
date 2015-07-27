@@ -244,12 +244,17 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initAppConfRegistry() {
 		$configuration = new stdClass();
 		
+		// Get the parameters from the OGAM default configuration files
 		$appIniFilePath = APPLICATION_PATH . '/configs/app.ini';
 		if (file_exists($appIniFilePath)) {
-			// Get the parameters from the configuration files
-			if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/configs/app.ini')) {
-				$appIniFilePath = CUSTOM_APPLICATION_PATH . '/configs/app.ini';
-			}
+			$configuration = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array(
+				'allowModifications' => true
+			));
+		}
+		
+		// Get the parameters from the CUSTOM configuration files
+		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/configs/app.ini')) {
+			$appIniFilePath = CUSTOM_APPLICATION_PATH . '/configs/app.ini';
 			$configuration = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array(
 				'allowModifications' => true
 			));
@@ -269,7 +274,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		// Adding of the intern map service url into the parameters
 		$serviceConfig = $parameterModel->getMapServiceUrl();
-		$configuration->map_service_url = json_decode($serviceConfig['config'])->{'urls'}[0];
+		if (!empty($serviceConfig)) {
+			$configuration->map_service_url = json_decode($serviceConfig['config'])->{'urls'}[0];
+		}
 		
 		Zend_Registry::set('configuration', $configuration);
 	}
