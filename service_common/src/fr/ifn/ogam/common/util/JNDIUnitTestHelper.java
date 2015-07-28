@@ -7,11 +7,9 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
- * <p>
- * Title: JNDIUnitTestHelper
- * </p>
- * <p>
- * Description: Simple class used to simulate a JNDI DataSource for use in UnitTests
+ * JNDIUnitTestHelper.
+ *
+ * Simple class used to simulate a JNDI DataSource for use in UnitTests.
  * </p>
  * Usage is Simple in setUp for your UnitTest:<br>
  * 
@@ -21,12 +19,7 @@ import javax.naming.NamingException;
  * }
  * </pre>
  * 
- * <p>
- * Copyright: Copyright (c) 2002
- * </p>
- * <p>
- * Company: JavaRanch
- * </p>
+ * Copyright: Copyright (c) 2002 Company: JavaRanch
  * 
  * @author Carl Trusiak, Sheriff
  * @version 1.0
@@ -42,13 +35,18 @@ public class JNDIUnitTestHelper {
 	private static String contextFactoryName = JNDIUnitTestHelper.class.getPackage().getName() + ".SimpleContextFactory";
 
 	/**
-	 * Intializes the pool and sets it in the InitialContext
+	 * Intializes the pool and sets it in the InitialContext.
 	 * 
 	 * @param dbDriver
+	 *            database driver name
 	 * @param dbUrl
+	 *            database URL
 	 * @param dbLogin
+	 *            database user login
 	 * @param dbPassword
+	 *            database user password
 	 * @param aJndiName
+	 *            a name the the JNDI data source
 	 * @throws IOException
 	 * @throws NamingException
 	 */
@@ -72,7 +70,7 @@ public class JNDIUnitTestHelper {
 	}
 
 	/**
-	 * determines if the pool was successfully initialized or not.
+	 * Determines if the pool was successfully initialized or not.
 	 * 
 	 * @return boolean true if the pool was not successfully initialized.
 	 */
@@ -81,7 +79,7 @@ public class JNDIUnitTestHelper {
 	}
 
 	/**
-	 * shutdowns down the pool and ends the Thread that DbConnectionBroker starts.
+	 * Shutdowns down the pool and ends the Thread that DbConnectionBroker starts.
 	 * 
 	 * @throws NamingException
 	 */

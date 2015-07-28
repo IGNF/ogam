@@ -33,7 +33,7 @@ public class LocalCache {
 	 * 
 	 * This cache is a size-limited cache. When the size limit is exceeded the cache is emptied.
 	 * 
-	 * @param maxCapacity
+	 * @param aMaxSize
 	 *            max size.
 	 */
 	private LocalCache(int aMaxSize) {
@@ -44,6 +44,8 @@ public class LocalCache {
 
 	/**
 	 * LocalCache Factory.
+	 * 
+	 * @return a cache
 	 */
 	public static LocalCache getLocalCache() {
 		return new LocalCache();
@@ -160,6 +162,7 @@ public class LocalCache {
 	 * set the last time the cache was updated.
 	 * 
 	 * @param date
+	 *            the date
 	 */
 	public void setLastUpdateDate(Date date) {
 		lastUpdateDate = new Date(date.getTime());
@@ -178,6 +181,7 @@ public class LocalCache {
 	 * Set if the cache is time limited.
 	 *
 	 * @param isTimeLimited
+	 *            true if limited
 	 */
 	public void setTimeLimited(boolean isTimeLimited) {
 		timeLimited = isTimeLimited;
@@ -186,7 +190,7 @@ public class LocalCache {
 	/**
 	 * Return the max lifetime of the cache.
 	 * 
-	 * @return long
+	 * @return long lifetime in ms
 	 */
 	public long getMaxLifeTime() {
 		return maxLifeTime;
@@ -196,6 +200,7 @@ public class LocalCache {
 	 * Set the max lifetime of the cache.
 	 * 
 	 * @param lifetime
+	 *            the lifetime in ms
 	 */
 	public void setMaxLifeTime(long lifetime) {
 		maxLifeTime = lifetime;
