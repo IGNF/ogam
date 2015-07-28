@@ -10,7 +10,7 @@ import java.util.Date;
 public class LocalCache {
 
 	// Le container de données
-	private Map cachemap;
+	private Map<Object, Object> cachemap;
 
 	// La taille max
 	private int maxSize = -1;
@@ -21,31 +21,53 @@ public class LocalCache {
 	private long maxLifeTime;
 
 	/**
-	 * LocalCache constructor. This cache is a permanent cache.
+	 * LocalCache constructor.
 	 */
 	private LocalCache() {
 		super();
-		cachemap = new HashMap();
+		cachemap = new HashMap<Object, Object>();
 	}
 
 	/**
-	 * LocalCache constructor. This cache is a size-limited cache.
+	 * LocalCache constructor.
+	 * 
+	 * This cache is a size-limited cache. When the size limit is exceeded the cache is emptied.
+	 * 
+	 * @param maxCapacity
+	 *            max size.
 	 */
 	private LocalCache(int aMaxSize) {
 		super();
-		cachemap = new HashMap(aMaxSize);
+		cachemap = new HashMap<Object, Object>(aMaxSize);
 		maxSize = aMaxSize;
 	}
 
 	/**
-	 * LocalCache Factory. Return a local cache with a size limit.
+	 * LocalCache Factory.
+	 */
+	public static LocalCache getLocalCache() {
+		return new LocalCache();
+	}
+
+	/**
+	 * LocalCache Factory. When the size limit is exceeded the cache is emptied.
+	 * 
+	 * @param maxCapacity
+	 *            max size.
+	 * @return a size limited cache
 	 */
 	public static LocalCache getSizeLimitedLocalCache(int aMaxSize) {
 		return new LocalCache(aMaxSize);
 	}
 
 	/**
-	 * LocalCache Factory. Return a local cache with a time limit.
+	 * LocalCache Factory.
+	 * 
+	 * Return a local cache with a time limit. When the time limit is exceeded the cache is emptied.
+	 * 
+	 * @param aMaxLifeTimeInMs
+	 *            a time limit for the cache
+	 * @return a time limited cache
 	 */
 	public static LocalCache getTimeLimitedLocalCache(int aMaxLifeTimeInMs) {
 		LocalCache localCache = new LocalCache();
@@ -55,7 +77,15 @@ public class LocalCache {
 	}
 
 	/**
-	 * LocalCache Factory. Return a local cache with a size and a time limit.
+	 * LocalCache Factory.
+	 * 
+	 * Return a local cache with a size and a time limit.
+	 * 
+	 * @param aMaxSize
+	 *            max size.
+	 * @param aMaxLifeTimeInMs
+	 *            a time limit for the cache
+	 * @return a time limited cache
 	 */
 	public static LocalCache getSizeAndTimeLimitedLocalCache(int aMaxSize, int aMaxLifeTimeInMs) {
 		LocalCache localCache = new LocalCache(aMaxSize);
@@ -65,7 +95,13 @@ public class LocalCache {
 	}
 
 	/**
-	 * Get an Object from cache. If returned result is null, a get from the source should be done.
+	 * Get an Object from cache.
+	 * 
+	 * If returned result is null, a get from the source should be done.
+	 * 
+	 * @param key
+	 *            the key
+	 * @return the cached result
 	 */
 	public Object get(Object key) {
 
@@ -86,14 +122,12 @@ public class LocalCache {
 	}
 
 	/**
-	 * LocalCache Factory.
-	 */
-	public static LocalCache getLocalCache() {
-		return new LocalCache();
-	}
-
-	/**
 	 * Put an Object in cache.
+	 * 
+	 * @param key
+	 *            the key
+	 * @param value
+	 *            the value
 	 */
 	public void put(Object key, Object value) {
 		// Si la taille du cache est trop grande, le cache est remis � z�ro
@@ -114,13 +148,17 @@ public class LocalCache {
 	}
 
 	/**
-	 * @return Date The last time the cache was updated
+	 * Return the last time the cache was updated.
+	 * 
+	 * @return Date
 	 */
 	public Date getLastUpdateDate() {
 		return new Date(lastUpdateDate.getTime());
 	}
 
 	/**
+	 * set the last time the cache was updated.
+	 * 
 	 * @param date
 	 */
 	public void setLastUpdateDate(Date date) {
@@ -128,13 +166,17 @@ public class LocalCache {
 	}
 
 	/**
-	 * @return boolean true is the cache is time limited.
+	 * Return true is the cache is time limited.
+	 * 
+	 * @return boolean
 	 */
 	public boolean isTimeLimited() {
 		return timeLimited;
 	}
 
 	/**
+	 * Set if the cache is time limited.
+	 *
 	 * @param isTimeLimited
 	 */
 	public void setTimeLimited(boolean isTimeLimited) {
@@ -142,13 +184,17 @@ public class LocalCache {
 	}
 
 	/**
-	 * @return long the max life time of the cache
+	 * Return the max lifetime of the cache.
+	 * 
+	 * @return long
 	 */
 	public long getMaxLifeTime() {
 		return maxLifeTime;
 	}
 
 	/**
+	 * Set the max lifetime of the cache.
+	 * 
 	 * @param lifetime
 	 */
 	public void setMaxLifeTime(long lifetime) {

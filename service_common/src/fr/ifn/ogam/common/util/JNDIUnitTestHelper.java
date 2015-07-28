@@ -62,7 +62,7 @@ public class JNDIUnitTestHelper {
 		jndiName = aJndiName;
 
 		// Set up environment for creating initial context
-		Hashtable env = new Hashtable();
+		Hashtable<String, String> env = new Hashtable<String, String>();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, contextFactoryName);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, contextFactoryName);
 		ctx = new InitialContext(env);
