@@ -11,6 +11,9 @@ task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat 
     
 	println "Copy from build/libs into ${tomcatHome}/webapps"
 	
+	
+	delete "${tomcatHome}/webapps/OGAMHarmonizationService"
+	
 	// Copy the war file
 	copy {
   		from "build/libs"
