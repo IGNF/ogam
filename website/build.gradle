@@ -1,1 +1,23 @@
 ant.importBuild 'build.xml'
+
+
+buildscript {
+    repositories {
+        maven {
+            url uri('../repo')
+        }
+    }
+    dependencies {
+        classpath group: 'org.swissphpfriends',
+                name: 'php-build-plugin',
+                version: '0.1-SNAPSHOT'
+    }
+}
+
+apply plugin: 'php-build'
+
+task test(type: org.swissphpfriends.gradle.task.PhpUnit) {
+    path = './src'
+    verbose = true
+    outputTap = true
+}
