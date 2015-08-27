@@ -1,6 +1,6 @@
-ant.importBuild 'build.xml'
+// ant.importBuild 'build.xml'
 
-
+/*
 buildscript {
     repositories {
         maven {
@@ -20,4 +20,18 @@ task test(type: org.swissphpfriends.gradle.task.PhpUnit) {
     path = './test'
     verbose = true
     outputTap = true
+}
+*/
+
+
+// Launch PHPDocumentor
+task PHPDoc(type:Exec) {
+  workingDir '.'
+  
+  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+  	commandLine './vendor/bin/phpdoc.bat'
+  } else {
+  	commandLine './vendor/bin/phpdoc'
+  }
+  args "-d", "./htdocs/ogam/application/", "-t", "./hudson/docs/php/", '--template=responsive-twig'
 }
