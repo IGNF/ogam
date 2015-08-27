@@ -1,6 +1,7 @@
 {
     "require": {
         "phpcheckstyle/phpcheckstyle": ">0.14",
-        "phpunit/phpunit": ">3.4.9"
+        "phpunit/phpunit": ">3.4.9",
+		"phpdocumentor/phpdocumentor": "2.*"
     }
 }
