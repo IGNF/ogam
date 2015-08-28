@@ -39,12 +39,7 @@ task phpdoc(type:Exec, description: 'Launch PHPDoc for documentation generation.
 // Launch PHPCheckstyle
 task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static analysis.') {
   workingDir '.'
-  
-  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-  	commandLine "php" 
-  } else {
-  	commandLine "php"
-  }
+  commandLine "php" 
   args "./vendor/phpcheckstyle/phpcheckstyle/run.php", "--src", "./htdocs/ogam/application/", "--outdir", "./hudson/checkstyle_result/", "--config", "./config/checkstyle_ogam.cfg.xml", "--format", "xml,html", "--linecount"
 }
 
@@ -52,11 +47,25 @@ task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static anal
 // Install Composer
 task installComposer(type:Exec, description: 'Download and install Composer.') {
   workingDir '.'
-  
-  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-  	commandLine "php" 
-  } else {
-  	commandLine "php"
-  }
+  commandLine "php" 
   args "-r", "--src", "readfile('https://getcomposer.org/installer');", "|", "php"
+}
+
+// Install Libraries
+task installLibraries(type:Exec, description: 'Download and install Librairies needed for the project using Composer.') {
+  workingDir '.'
+  commandLine "php" 
+  args "composer.phar", "install"
+}
+
+
+// Launch PHPUnit
+task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
+  workingDir '.'
+  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+  	commandLine './vendor/bin/phpunit.bat'
+  } else {
+  	commandLine './vendor/bin/phpunit'
+  }
+  args "--configuration", "./config/phpunit.xml"
 }
