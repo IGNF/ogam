@@ -25,7 +25,7 @@ task test(type: org.swissphpfriends.gradle.task.PhpUnit) {
 
 
 // Launch PHPDocumentor
-task PHPDoc(type:Exec) {
+task phpdoc(type:Exec, description: 'Launch PHPDoc for documentation generation.') {
   workingDir '.'
   
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
@@ -34,4 +34,29 @@ task PHPDoc(type:Exec) {
   	commandLine './vendor/bin/phpdoc'
   }
   args "-d", "./htdocs/ogam/application/", "-t", "./hudson/docs/php/", '--template=responsive-twig'
+}
+
+// Launch PHPCheckstyle
+task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static analysis.') {
+  workingDir '.'
+  
+  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+  	commandLine "php" 
+  } else {
+  	commandLine "php"
+  }
+  args "./vendor/phpcheckstyle/phpcheckstyle/run.php", "--src", "./htdocs/ogam/application/", "--outdir", "./hudson/checkstyle_result/", "--config", "./config/checkstyle_ogam.cfg.xml", "--format", "xml,html", "--linecount"
+}
+
+
+// Install Composer
+task installComposer(type:Exec, description: 'Download and install Composer.') {
+  workingDir '.'
+  
+  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+  	commandLine "php" 
+  } else {
+  	commandLine "php"
+  }
+  args "-r", "--src", "readfile('https://getcomposer.org/installer');", "|", "php"
 }
