@@ -47,8 +47,11 @@ task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static anal
 // Install Composer
 task installComposer(type:Exec, description: 'Download and install Composer.') {
   workingDir '.'
-  commandLine "php" 
-  args "-r", "--src", "readfile('https://getcomposer.org/installer');", "|", "php"
+  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+  	commandLine "cmd", "/c php -r \"readfile('https://getcomposer.org/installer');\" | php"
+  } else {
+  	commandLine "bash", "-c", "php -r \"readfile('https://getcomposer.org/installer');\" | php" 
+  }
 }
 
 // Install Libraries
@@ -56,7 +59,7 @@ task installLibraries(type:Exec, description: 'Download and install Librairies n
   workingDir '.'
   commandLine "php" 
   args "composer.phar", "install"
-}
+} 
 
 
 // Launch PHPUnit
