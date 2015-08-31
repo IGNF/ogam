@@ -1,29 +1,3 @@
-// ant.importBuild 'build.xml'
-
-/*
-buildscript {
-    repositories {
-        maven {
-            url uri('../repo')
-        }
-    }
-    dependencies {
-        classpath group: 'org.swissphpfriends',
-                name: 'php-build-plugin',
-                version: '0.1-SNAPSHOT'
-    }
-}
-
-apply plugin: 'php-build'
-
-task test(type: org.swissphpfriends.gradle.task.PhpUnit) {
-    path = './test'
-    verbose = true
-    outputTap = true
-}
-*/
-
-
 // Launch PHPDocumentor
 task phpdoc(type:Exec, description: 'Launch PHPDoc for documentation generation.') {
   workingDir '.'
@@ -62,7 +36,7 @@ task installLibraries(type:Exec, description: 'Download and install Librairies n
 } 
 
 
-// Launch PHPUnit
+// Launch PHPUnit (doesn't work, compatibility pb between Zend Framework and lastest PHPUnit versions)
 task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
   workingDir '.'
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
