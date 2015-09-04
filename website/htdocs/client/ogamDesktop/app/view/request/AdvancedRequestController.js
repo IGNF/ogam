@@ -83,7 +83,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 						Ext.Msg.alert('Failure', 'Ajax communication failed');
 						break;
 					case Ext.form.action.Action.SERVER_INVALID:
-						Ext.Msg.alert('Failure', action.result.msg);
+						Ext.Msg.alert('Failure', action.result.errorMessage);
 				}
 			}
 		});
