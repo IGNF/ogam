@@ -107,41 +107,43 @@ ALTER TABLE raw_data.location
       ON UPDATE RESTRICT ON DELETE RESTRICT;
 CREATE INDEX fki_location_submission_id ON raw_data.location(submission_id);
 
+
 /*==========================================================================*/
-/*	Add a trigger to fill the the_geom column of the location table         */
-/*  Use that trigger fct only if you want change the default OGAM behaviour */
+/* Add a trigger to fill the the_geom column of the location table         */
 /*==========================================================================*/
-/*CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
+CREATE OR REPLACE FUNCTION raw_data.a_geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
     BEGIN
-    NEW.the_geom = public.GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);
+    IF NEW.the_geom IS NULL THEN
+		NEW.the_geom = public.ST_GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);	
+    END IF;   
     EXCEPTION
-    WHEN internal_error THEN
-        IF SQLERRM = 'parse error - invalid geometry' THEN
-            RAISE EXCEPTION USING ERRCODE = '09001', MESSAGE = SQLERRM;
-        ELSIF SQLERRM = 'geometry requires more points' THEN
-            RAISE EXCEPTION USING ERRCODE = '09002', MESSAGE = SQLERRM;
-        END IF;
-    END;
+		WHEN internal_error THEN
+		IF SQLERRM = 'parse error - invalid geometry' THEN
+		    RAISE EXCEPTION USING ERRCODE = '09001', MESSAGE = SQLERRM;
+		ELSIF SQLERRM = 'geometry requires more points' THEN
+		    RAISE EXCEPTION USING ERRCODE = '09002', MESSAGE = SQLERRM;
+		END IF;
+	END;
     RETURN NEW;
 END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE TRIGGER geom_trigger
+CREATE TRIGGER a_geom_trigger
   BEFORE INSERT OR UPDATE
   ON raw_data.LOCATION
   FOR EACH ROW
-  EXECUTE PROCEDURE raw_data.geomfromcoordinate();
-*/
+  EXECUTE PROCEDURE raw_data.a_geomfromcoordinate();
+
 
 
   
 /*========================================================================*/
 /*	Add a trigger to fill the departements column of the location table   */
 /*========================================================================*/
-CREATE OR REPLACE FUNCTION raw_data.departementsfromgeom() RETURNS "trigger" AS
+CREATE OR REPLACE FUNCTION raw_data.b_departementsfromgeom() RETURNS "trigger" AS
 $BODY$
 BEGIN
 
@@ -151,17 +153,17 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE TRIGGER departements_geom_trigger
+CREATE TRIGGER b_departements_geom_trigger
   BEFORE INSERT ON raw_data.LOCATION
   FOR EACH ROW
-  EXECUTE PROCEDURE raw_data.departementsfromgeom();
+  EXECUTE PROCEDURE raw_data.b_departementsfromgeom();
   
   
   
 /*========================================================================*/
 /*	Add a trigger to fill the communes column of the location table    */
 /*========================================================================*/
-CREATE OR REPLACE FUNCTION raw_data.communesfromgeom() RETURNS "trigger" AS
+CREATE OR REPLACE FUNCTION raw_data.c_communesfromgeom() RETURNS "trigger" AS
 $BODY$
 BEGIN
 
@@ -171,10 +173,10 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE TRIGGER communes_geom_trigger
+CREATE TRIGGER c_communes_geom_trigger
   BEFORE INSERT ON raw_data.LOCATION
   FOR EACH ROW
-  EXECUTE PROCEDURE raw_data.communesfromgeom();
+  EXECUTE PROCEDURE raw_data.c_communesfromgeom();
             
 
 /*==============================================================*/
@@ -317,27 +319,6 @@ COMMENT ON COLUMN CHECK_ERROR.FOUND_VALUE IS 'The erroreous value (if available)
 COMMENT ON COLUMN CHECK_ERROR.EXPECTED_VALUE IS 'The expected value (if available)';
 COMMENT ON COLUMN CHECK_ERROR.ERROR_MESSAGE IS 'The error message';
 COMMENT ON COLUMN CHECK_ERROR._CREATIONDT IS 'The creation date';
-
-
-
-
-/**
- * This function is used to do accent-insensitive search.
- */
-CREATE OR REPLACE FUNCTION unaccent_string(text) RETURNS text AS $$
-DECLARE
-    input_string text := $1;
-BEGIN
-
-input_string := translate(input_string, 'âãäåāăąÁÂÃÄÅĀĂĄ', 'aaaaaaaaaaaaaaa');
-input_string := translate(input_string, 'èééêëēĕėęěĒĔĖĘĚ', 'eeeeeeeeeeeeeee');
-input_string := translate(input_string, 'ìíîïìĩīĭÌÍÎÏÌĨĪĬ', 'iiiiiiiiiiiiiiii');
-input_string := translate(input_string, 'óôõöōŏőÒÓÔÕÖŌŎŐ', 'ooooooooooooooo');
-input_string := translate(input_string, 'ùúûüũūŭůÙÚÛÜŨŪŬŮ', 'uuuuuuuuuuuuuuuu');
-
-return input_string;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
 
 
 

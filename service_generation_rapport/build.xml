@@ -19,7 +19,7 @@
 	<property name="deploy.name" value="${application.name}RG" />
 	
 	<!-- *** A modifier en fonction du répertoire d'installation de Tomcat *** -->
-	<property name="deploy.dir" value="C:/Program Files/Apache Software Foundation/Tomcat 7.0/webapps/" />
+	<property name="deploy.dir" value="C:/Apache/tomcat-7/webapps/" />
 	
 	
 	<!-- Création des répertoires de travail -->
@@ -55,7 +55,7 @@
 	  	</copy>
 		
 		<!-- Copie des images du projet -->	   
-	  	<copy todir="${dist.dir}/images">
+	  	<copy todir="${dist.dir}/images" failonerror="false">
 	  	    <fileset dir="${images.dir}">
 	  	    </fileset>
 	  	</copy>

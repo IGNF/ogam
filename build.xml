@@ -23,18 +23,8 @@
 		<ant antfile="service_harmonization/build.xml" target="deploy" inheritAll="false" />
 	</target>
 
-	<!-- Deploy the interpolation service -->
-	<target name="deployServiceInterpolation" description="Deploy the interpolation service">
-		<ant antfile="service_interpolation/build.xml" target="deploy" inheritAll="false" />
-	</target>
-
-	<!-- Deploy the calculation service -->
-	<target name="deployServiceCalculation" description="Deploy the calculation service">
-		<ant antfile="service_calculation/build.xml" target="deploy" inheritAll="false" />
-	</target>
-
 	<!-- Deploy all -->
-	<target name="deployAll" description="Deploy all" depends="deployWebSite,deployServiceIntegration,deployReportGenerationService,deployServiceInterpolation,deployServiceHarmonization,deployServiceCalculation">
+	<target name="deployAll" description="Deploy all" depends="deployWebSite,deployServiceIntegration,deployReportGenerationService,deployServiceHarmonization">
 	</target>
 
 

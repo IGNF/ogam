@@ -129,16 +129,16 @@ public class AbstractEFDACTest extends JndiBasedDBTestCase {
 
 			// Initialise the connexion pools
 			// test-webifn
-//			websiteJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://test-webifn:5432/ogam", "ogam", "ogam", WEBSITE_JNDI_URL);
-//			rawdataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://test-webifn:5432/ogam", "ogam", "ogam", RAWDATA_JNDI_URL);
-//			metadataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://test-webifn:5432/ogam", "ogam", "ogam", METADATA_JNDI_URL);
-//			harmonizedJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://test-webifn:5432/ogam", "ogam", "ogam", HARMONIZED_JNDI_URL);
+			// websiteJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://test-webifn:5432/ogam", "ogam", "ogam", WEBSITE_JNDI_URL);
+			// rawdataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://test-webifn:5432/ogam", "ogam", "ogam", RAWDATA_JNDI_URL);
+			// metadataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://test-webifn:5432/ogam", "ogam", "ogam", METADATA_JNDI_URL);
+			// harmonizedJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://test-webifn:5432/ogam", "ogam", "ogam", HARMONIZED_JNDI_URL);
 
 			// localhost
-			websiteJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5433/ogam", "ogam", "ogam", WEBSITE_JNDI_URL);
-			rawdataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5433/ogam", "ogam", "ogam", RAWDATA_JNDI_URL);
-			metadataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5433/ogam", "ogam", "ogam", METADATA_JNDI_URL);
-			harmonizedJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5433/ogam", "ogam", "ogam", HARMONIZED_JNDI_URL);
+			websiteJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/ogam", "ogam", "ogam", WEBSITE_JNDI_URL);
+			rawdataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/ogam", "ogam", "ogam", RAWDATA_JNDI_URL);
+			metadataJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/ogam", "ogam", "ogam", METADATA_JNDI_URL);
+			harmonizedJNDI = new JNDIUnitTestHelper("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/ogam", "ogam", "ogam", HARMONIZED_JNDI_URL);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -174,4 +174,10 @@ public class AbstractEFDACTest extends JndiBasedDBTestCase {
 		}
 	}
 
+	/**
+	 * This test does nothing, its to avoid a problem with Gradle.
+	 */
+	public void testEmpty() throws Exception {
+		assertTrue(true);
+	}
 }

@@ -1,0 +1,7 @@
+{
+  	"require": {
+        "phpcheckstyle/phpcheckstyle": ">0.14",
+        "phpunit/phpunit": "3.7",
+		"phpdocumentor/phpdocumentor": "2.*"
+    }
+}

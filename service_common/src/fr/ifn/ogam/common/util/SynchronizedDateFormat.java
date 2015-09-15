@@ -8,8 +8,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * This class is designed to be a synchronized wrapper for a <code>java.text.DateFormat</code> subclass. In general, these subclasses (most notably the <code>java.text.SimpleDateFormat</code> classes
- * are not thread safe, so we need to synchronize on the internal DateFormat for all delegated calls.
+ * This class is designed to be a synchronized wrapper for a <code>java.text.DateFormat</code> subclass. In general, these subclasses (most notably the
+ * <code>java.text.SimpleDateFormat</code> classes are not thread safe, so we need to synchronize on the internal DateFormat for all delegated calls.
  * 
  * @author Peter M. Goldstein <farsight@alum.mit.edu>
  * 
@@ -131,8 +131,8 @@ public class SynchronizedDateFormat {
 	}
 
 	/**
-	 * Specify whether or not date/time parsing is to be lenient. With lenient parsing, the parser may use heuristics to interpret inputs that do not precisely match this object's format. With strict
-	 * parsing, inputs must match this object's format.
+	 * Specify whether or not date/time parsing is to be lenient. With lenient parsing, the parser may use heuristics to interpret inputs that do not precisely
+	 * match this object's format. With strict parsing, inputs must match this object's format.
 	 * 
 	 * @param lenient
 	 *            when true, parsing is lenient

@@ -179,17 +179,6 @@ select distinct regne   -- 5 règnes
 from taxref;
 
 
--- Identification des taxons utilisés dans FOMA
-select *
-from (
-select distinct id_taxon  -- 160 taxons différents
-from observation_taxon
-) as foo
-left join taxref on id_taxon::varchar = cd_nom;
---where cd_nom <> cd_ref
-
-
-
 
 
 --

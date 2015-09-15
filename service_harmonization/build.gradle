@@ -1,0 +1,38 @@
+dependencies {
+	compile project(':service_common')
+	runtime project(':service_common')
+}
+
+// Define a new task to deploy the war
+task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat server.') << {
+
+    def tomcatHome = 'C:/Apache/tomcat-7'
+    def applicationName = 'OGAM'
+    
+	println "Copy from build/libs into ${tomcatHome}/webapps"
+	
+	
+	delete "${tomcatHome}/webapps/OGAMHarmonizationService"
+	
+	// Copy the war file
+	copy {
+  		from "build/libs"
+  		into "${tomcatHome}/webapps"
+  		include "service_harmonization.war"
+  		rename ("service_harmonization.war", "${applicationName}HarmonizationService.war")
+	}
+	
+	// Copy the config file
+	copy {
+  		from "./config/"
+  		into "${tomcatHome}/conf/Catalina/localhost"
+  		include '${applicationName}HarmonizationService.xml'
+	}
+}
+
+// Import the ANT tasks and rename them
+//ant.importBuild('build.xml') { antTargetName ->
+//    'ant_' + antTargetName
+//}
+
+defaultTasks 'clean', 'check', 'test', 'jacocoTestReport'

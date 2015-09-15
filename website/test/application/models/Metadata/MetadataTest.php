@@ -234,15 +234,13 @@ class MetadataTest extends ControllerTestCase {
 		$fields = $metadataModel->getFileFields('LOCATION_FILE');
 		
 		// On vérifie que l'on a ramené le bon compte de modalités
-		$this->assertEquals(count($fields), 6);
+		$this->assertEquals(count($fields), 4);
 		
 		// Les données attendues sont ordonnées
 		$this->assertEquals($fields[0]->data, 'PLOT_CODE');
 		$this->assertEquals($fields[1]->data, 'LATITUDE');
 		$this->assertEquals($fields[2]->data, 'LONGITUDE');
-		$this->assertEquals($fields[3]->data, 'COMMUNES');
-		$this->assertEquals($fields[4]->data, 'DEPARTEMENT');
-		$this->assertEquals($fields[5]->data, 'COMMENT');
+		$this->assertEquals($fields[3]->data, 'COMMENT');
 	}
 
 	/**

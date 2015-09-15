@@ -81,7 +81,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		List<DatasetData> datasets = metadataDAO.getDatasets();
 
-		assertEquals("There is 1 datasets configured in database", 1, datasets.size());
+		assertEquals("There should be 2 datasets configured in database", 2, datasets.size());
 
 	}
 
@@ -94,7 +94,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		assertEquals("The PH max range should be 100", new BigDecimal(100), range.getMaxValue());
 
-		assertEquals("The PH min range should be 0", new BigDecimal(0), range.getMinValue());
+		assertEquals("The PH min range should be 0", BigDecimal.ZERO, range.getMinValue());
 
 	}
 
@@ -114,7 +114,7 @@ public class MetadataTest extends AbstractEFDACTest {
 	 */
 	public void testGetRequestFiles() throws Exception {
 
-		String requestID = "REQUEST";
+		String requestID = "SPECIES";
 
 		List<FileFormatData> requestFormats = metadataDAO.getDatasetFiles(requestID);
 
@@ -137,7 +137,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		List<FileFieldData> fields = metadataDAO.getFileFields(fileFormat);
 
-		assertEquals("The basic test tree file should have 5 columns", 5, fields.size());
+		assertEquals("The basic test tree file should have 6 columns", 6, fields.size());
 
 	}
 
@@ -218,7 +218,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		logger.debug(fields);
 
-		assertEquals("The PLOT_DATA table should contain 8 fields", fields.size(), 8);
+		assertEquals("The PLOT_DATA table should contain 9 fields", fields.size(), 9);
 
 	}
 

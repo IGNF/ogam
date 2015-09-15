@@ -118,4 +118,14 @@ public class SubmissionData {
 		this.userLogin = userLogin;
 	}
 
+	/**
+	 * Return a string representation of the object.
+	 * 
+	 * @return the string
+	 */
+	@Override
+	public String toString() {
+		return "SubmissionData [submissionId=" + submissionId + "]";
+	}
+
 }
