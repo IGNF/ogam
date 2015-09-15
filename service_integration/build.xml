@@ -76,6 +76,7 @@
 				<exclude name=".svn" />
 			</fileset>
 		</delete>
+		<mkdir dir="${classes.dir}"/>
 	</target>
 
 	<!-- Compile les sources -->
