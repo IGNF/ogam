@@ -1622,9 +1622,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req = " SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name ";
 			$req .= " FROM mode_taxref ";
 			$req .= " WHERE unit = ? ";
-			$req .= " AND (name ilike '%" . $query . "%' ";
-			$req .= "      OR complete_name ilike '%" . $query . "%' ";
-			$req .= "      OR vernacular_name ilike '%" . $query . "%')";
+			$req .= " AND (unaccent_string(name) ilike unaccent_string('%".$query."%') ";
+			$req .= "      OR unaccent_string(complete_name) ilike unaccent_string('%".$query."%') ";
+			$req .= "      OR unaccent_string(vernacular_name) ilike unaccent_string('%".$query."%'))";
 			$req .= " ORDER BY name ";
 			
 			if ($start !== null && $limit !== null) {
@@ -1688,7 +1688,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	FROM mode_taxref ";
 			$req .= "	WHERE unit = ? ";
 			if ($query != null) {
-				$req .= " AND name ilike '%" . $query . "%' or complete_name ilike '%" . $query . "%' or vernacular_name ilike '%" . $query . "%'";
+				$req .= " AND unaccent_string(name) ilike unaccent_string('%".$query."%') ";
+				$req .= " OR  unaccent_string(complete_name) ilike unaccent_string('%".$query."%') ";
+				$req .= " OR  unaccent_string(vernacular_name) ilike unaccent_string('%".$query."%')";
 			}
 			
 			$this->logger->info('getTaxrefModesCount :' . $req);
