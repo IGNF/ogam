@@ -8,7 +8,8 @@ Ext.onReady(function() {
 		if (OpenLayers.Handler.FeatureInfo.prototype) {
 			Ext.apply(OpenLayers.Handler.FeatureInfo.prototype, {
 				alertErrorTitle : "Erreur :",
-				alertRequestFailedMsg : "Désolé, la demande d'informations sur la géométrie a échoué..."
+				alertRequestFailedMsg : "Désolé, la demande d'informations sur la géométrie a échoué...",
+				alertNoLayerMsg : 'Veuillez sélectionner une couche vectorielle ...'
 			});
 		}
 	    if (OpenLayers.Handler.GetFeature.prototype) {
