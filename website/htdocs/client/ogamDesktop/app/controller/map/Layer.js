@@ -160,7 +160,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		// The tabPanels must be activated before to show a
 		// child component
 		var isLayerPanelVisible = this.getLayerspanel().isVisible();
-		this.mapMainWin.getComponent(1).setActiveItem(this.mapMainWin.getComponent(1).getComponent(0));
+		this.getMapaddonspanel().setActiveItem(this.getLayerspanel());
 		
 		var parent = node.parentNode;
 		if (toEnable === false) {
@@ -179,7 +179,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		
 		// Keep the current activated panel activated
 		if (!isLayerPanelVisible) {
-			this.mapMainWin.getComponent(1).setActiveItem(this.mapMainWin.getComponent(1).getComponent(1));
+			this.getMapaddonspanel().setActiveItem(this.getLegendspanel());
 		}
 	},
 
@@ -191,7 +191,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 */
 	afterMapMainWinRender: function(mapmainwin) {
 		this.mapMainWin = mapmainwin;
-		this.mapPanel = this.mapMainWin.getComponent(0);
+		this.mapPanel = this.getMappanel();
 		// Load the LayerService store
 		var serviceStore = this.getStore('map.LayerService');
 		serviceStore.load({
@@ -380,8 +380,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * @return OpenLayers.Layer
 	 */
 	buildLegend : function(layerObject,serviceObject) {
-//		legend = this.getLegendspanel()
-		legend = this.mapMainWin.getComponent(1).getComponent(1)
+		legend = this.getLegendspanel()
+		//legend = this.mapMainWin.getComponent(1).getComponent(1)
 			.add(new Ext.Component({
 				// Extjs 5 doesn't accept '.' into ids
 				id : this.mapPanel.id + layerObject.data.name.replace(/\./g,'-'),
@@ -466,8 +466,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				
 			}
 		}
-		this.mapMainWin.getComponent(1).getComponent(0).setConfig('store', treeLayerStore);
-//		this.getLayerspanel().setConfig('store', treeLayerStore);
+	//	this.mapMainWin.getComponent(1).getComponent(0).setConfig('store', treeLayerStore);
+		this.getLayerspanel().setConfig('store', treeLayerStore);
 	},
 
 	/**

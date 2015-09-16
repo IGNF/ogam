@@ -12,6 +12,12 @@ Ext.define('OgamDesktop.view.map.MainWin', {
 		region: 'center'
 	},{
 		xtype: 'map-addons-panel',
-		region: 'east'
+		region: 'east',
+		split:{
+			tracker:{
+				//with tolerance less than splitter width
+				tolerance:1
+			}
+		}
 	}]
 });

@@ -10,8 +10,6 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanel', {
 	collapsible: true,
 	collapsed: false,
 	collapseDirection: 'right',
-	resizable: true,
-	resizeHandles: 'w',
 	border: true,
 	width: 170,
 	maxWidth: 600,
