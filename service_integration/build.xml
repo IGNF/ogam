@@ -70,7 +70,7 @@
 	<target name="cleanest" depends="clean" description="Removes all the generated files or directories">
 		<delete dir="${deploy.dir}/${deploy.name}/" />
 		<delete file="${deploy.dir}/${deploy.name}.war" />
-		<delete>
+		<delete failonerror="false">
 			<fileset dir="${classes.dir}">
 				<include name="**/*.*" />
 				<exclude name=".svn" />
