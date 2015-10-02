@@ -26,3 +26,7 @@ Pour l'utiliser :
 * installer [VirtualBox](https://www.virtualbox.org/)
 * installer [Vagrant](https://www.vagrantup.com/)
 * `vagrant up` Pour démarrer la VM
+
+Pour se connecter à la VM :
+* utiliser l'interface de VirtualBox
+* (ou) se connecter en SSH sur localhost sur le port 2222 avec le compte vagrant/vagrant  
