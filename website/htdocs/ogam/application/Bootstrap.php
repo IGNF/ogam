@@ -91,7 +91,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$front = $this->getResource('FrontController');
 		$router = $front->getRouter();
-		
+				
 		// Si un controleur existe dans custom alors on le prend en priorité à la place de default
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/controllers/')) {
 			
@@ -106,10 +106,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 						'module' => 'custom',
 						'controller' => $controllerName
 					));
+					
+					//$this->logger->debug("CustomRoute : ".print_r($customRoute, true));
+					
 					$router->addRoute('customRoute_' . $controllerName, $customRoute);
 				}
 			}
 		}
+				
 	}
 
 	/**

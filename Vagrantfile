@@ -10,6 +10,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "debian/jessie64"
  
    #Dev config 
+   config.vm.define "ogam_dev" do |ogam_dev|
+   end
    config.vm.provider "virtualbox" do |v|
       v.memory = 2048
       v.cpus =3

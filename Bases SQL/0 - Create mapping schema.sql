@@ -46,7 +46,7 @@ CREATE TABLE scales
 
 COMMENT ON COLUMN scales.scale IS 'The denominator of the scale, used to calculate the resolutions';
 
-/*==============================================================*//* Table: layer_service                                      *//*==============================================================*/CREATE TABLE layer_service( service_name 			VARCHAR(50)    NOT NULL, config 				VARCHAR(1000),     -- Si version postgresql >= 9.2, utiliser un type json PRIMARY KEY  (service_name))WITHOUT OIDS;COMMENT ON TABLE layer_service IS 'Liste des fournisseurs de services (Mapservers, Géoportail, ...)';COMMENT ON COLUMN layer_service.service_name IS 'Logical name of the service';COMMENT ON COLUMN layer_service.config IS 'OpenLayers config for the service';
+/*==============================================================*//* Table: layer_service                                      *//*==============================================================*/CREATE TABLE layer_service( service_name 			VARCHAR(50)    NOT NULL, config 				VARCHAR(1000),     -- Si version postgresql >= 9.2, utiliser un type json PRIMARY KEY  (service_name))WITHOUT OIDS;COMMENT ON TABLE layer_service IS 'Liste des fournisseurs de services (Mapservers, Géoportail, ...)';COMMENT ON COLUMN layer_service.service_name IS 'Logical name of the service';COMMENT ON COLUMN layer_service.config IS 'OpenLayers config for the service';
 /*==============================================================*/
 /* Table: layer                                      */
 /*==============================================================*/
@@ -137,6 +137,6 @@ COMMENT ON COLUMN bounding_box.bb_xmax IS 'Max longitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_ymax IS 'Max latitude coordinate';
 COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the data provider';
 
-GRANT ALL ON ALL TABLES IN SCHEMA mapping TO ogam;
+GRANT ALL ON SCHEMA mapping TO ogam;GRANT ALL ON ALL TABLES IN SCHEMA mapping TO ogam;GRANT ALL ON ALL SEQUENCES IN SCHEMA mapping TO ogam;
 
         
