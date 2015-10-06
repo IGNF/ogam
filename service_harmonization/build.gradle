@@ -26,7 +26,7 @@ task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat 
 	copy {
   		from "./config/"
   		into "${tomcatHome}/conf/Catalina/localhost"
-  		include '${applicationName}HarmonizationService.xml'
+  		include "${applicationName}HarmonizationService.xml"
 	}
 }
 
