@@ -167,7 +167,7 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
 
 
 
-
+GRANT ALL ON SCHEMA harmonized_data TO ogam;
 GRANT ALL ON ALL TABLES IN SCHEMA harmonized_data TO ogam;
 GRANT ALL ON ALL TABLES IN SCHEMA harmonized_data TO ogam;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA harmonized_data TO ogam;
