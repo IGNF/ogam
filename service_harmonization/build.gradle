@@ -6,8 +6,8 @@ dependencies {
 // Define a new task to deploy the war
 task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat server.') << {
 
-    def tomcatHome = 'C:/Apache/tomcat-7'
-    def applicationName = 'OGAM'
+    def tomcatHome = project.hasProperty('tomcatHome') ? project.getProperty('tomcatHome') : 'C:/Apache/tomcat-7'
+    def applicationName = project.hasProperty('applicationName') ? project.getProperty('applicationName') : 'OGAM'
     
 	println "Copy from build/libs into ${tomcatHome}/webapps"
 	
