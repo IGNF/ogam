@@ -81,7 +81,7 @@ SET client_encoding = 'ISO-8859-1';
 
 -- Copie des données dans la table temporaire
 -- DELETE FROM taxref;
-COPY taxref FROM 'C:/workspace/OGAM/Bases SQL/Referentiels/TAXREFv30.txt' with null '';
+\COPY taxref FROM './Referentiels/TAXREFv30.txt' with null '';
 
 
 

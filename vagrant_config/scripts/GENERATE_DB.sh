@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # Config par défaut :
 server=localhost
@@ -56,7 +56,7 @@ sudo -n -u $username psql -f "0 - Create website schema.sql" -d $database  &>> $
 
 
 echo "****** Import ModTaxRef v8.0 ******"
-sed "s|C://Workspace/OGAM/database|${database_path}|g"  "2 - Import Référentiel Taxonomique.sql" | sudo -n -u postgres psql -d $database &>> $logfile
+sudo -n -u postgres psql -f "2 - Import Référentiel Taxonomique.sql" -d $database &>> $logfile
 
 #echo "****** Populate mapping schema ******"
 sudo -n -u $username psql -f "2 - Populate mapping schema.sql"  -d $database &>> $logfile
@@ -75,8 +75,7 @@ sudo -n -u $username psql -f Referentiels/nuts_0_pgisv2.sql -d $database &>> $lo
 
 
 echo "****** Populate metadata schema ******"
-sed "s|D:/workspace/OGAM/Bases\ SQL|${database_path}|g"  Metadata/"import from csv.sql" | sudo -n -u postgres psql -d $database &>> $logfile
-
+sudo -n -u postgres psql -f "2 - Import Metadata.sql" -d $database &>> $logfile 
 
 echo "****** Populate website schema ******"
 sudo -n -u $username psql -f "2 - Populate website schema.sql" -d $database &>> $logfile
