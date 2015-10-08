@@ -14,6 +14,10 @@ apt-get install -y apache2 php5-common libapache2-mod-php5 php5-cli php5-pgsql
 # Ajout du user vagrant au groupe "www-data"
 sudo usermod -G www-data -a vagrant
 
+# Accès aux logs
+sudo chown www-data:www-data /var/log/apache2 
+sudo -n chmod 774 /var/log/apache2
+
 # Modification du fichier de conf Apache
 echo " 
 ServerName localhost
@@ -29,9 +33,6 @@ sudo a2enmod cgid
 sed -i 's/\;date\.timezone\ \=/date\.timezone\ \=\ Europe\/Paris/g' /etc/php5/cli/php.ini
 sed -i 's/\;date\.timezone\ \=/date\.timezone\ \=\ Europe\/Paris/g' /etc/php5/apache2/php.ini
 sed -i 's/\;date\.timezone\ \=/date\.timezone\ \=\ Europe\/Paris/g' /etc/php5/apache2/php.ini
-
-# ????
-# adduser vagrant www-data
 
 #----------------------------------------------------------------
 # Création des répertoires de log et d'upload et mise à jour des droits

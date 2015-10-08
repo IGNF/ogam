@@ -90,6 +90,10 @@ sudo -n -u $username psql -f "5 - Processing.sql" -d $database &>> $logfile
 
 
 
+echo "****** Overriding defaut config values ******"
+sudo -n -u $username psql -d $database -c "UPDATE website.application_parameters SET value = '/vagrant/ogam/website/htdocs/upload/' WHERE name = 'uploadDir';"  &>> $logfile
+sudo -n -u $username psql -d $database -c "UPDATE website.application_parameters SET value = '/vagrant/ogam/website/htdocs/upload/images/' WHERE name = 'image_upload_dir';"  &>> $logfile
+
 
 echo "Création réussie !"
 exit
