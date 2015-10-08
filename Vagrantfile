@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = "ogam.ign.fr"
   config.vm.network :forwarded_port, host: 8081, guest: 8080,auto_correct: true
   config.vm.network :forwarded_port, host: 5433, guest: 5432,auto_correct: true
-  config.vm.network :forwarded_port, host: 81, guest: 80,auto_correct: true
+  config.vm.network :forwarded_port, host: 8000, guest: 80,auto_correct: true
    
   #disabled le default root
   config.vm.synced_folder ".", "/vagrant", disabled: true
