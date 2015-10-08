@@ -1,3 +1,4 @@
 /classes/
 /build/
 /.gradle/
+/test_result/
