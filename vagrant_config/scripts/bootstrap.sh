@@ -20,6 +20,10 @@ ogam_folder='/vagrant/ogam'
 #pour valider le depot postgres
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | \
   sudo apt-key add -
+
+# Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
+export DEBIAN_FRONTEND=noninteractive
+
   
 apt-get update && apt-get upgrade 
 

@@ -34,8 +34,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #FIXME
   #config.ssh.private_key_path = ['~/.vagrant.d/insecure_private_key', '~/.ssh/id_rsa']
   #config.ssh.forward_agent = true
+  
+  # Remove warnings "stdin: is not a tty"
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+  # config.ssh.pty = true
 
+  #
   # Configure provisionners on the machine to automatically install softwares etc.
+  #
 
   config.vm.provision "bootstrap", type: "shell" do |s|
     s.path = "vagrant_config/scripts/bootstrap.sh"
@@ -49,8 +55,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.path = "vagrant_config/scripts/install_ogam_services.sh"
   end
 
-  config.vm.provision "install_webserver", type: "shell" do |s|
+  config.vm.provision "install_apache", type: "shell" do |s|
     s.path = "vagrant_config/scripts/install_apache.sh"
+  end
+  
+  config.vm.provision "install_mapserv", type: "shell" do |s|
+    s.path = "vagrant_config/scripts/install_mapserv.sh"
+  end
+  
+  config.vm.provision "install_tilecache", type: "shell" do |s|
+    s.path = "vagrant_config/scripts/install_tilecache.sh"
   end
 
   config.vm.provision "install_postgres", type: "shell" do |s|

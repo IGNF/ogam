@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 echo "instal java"
 #----------------------------------------------------------------
+
+# Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
+export DEBIAN_FRONTEND=noninteractive
+
 sudo apt-get install -y openjdk-7-jdk
 
 #----------------------------------------------------------------
-echo "instal ant"
+echo "install ant"
 apt-get install -y ant
 
 #----------------------------------------------------------------
-echo "instal tomcat"
+echo "install tomcat"
 apt-get install -y  tomcat7
 
 apt-get install -y tomcat7-admin tomcat7-docs tomcat7-examples
