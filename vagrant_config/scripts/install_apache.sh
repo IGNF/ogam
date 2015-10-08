@@ -29,11 +29,32 @@ sed -i 's/\;date\.timezone\ \=/date\.timezone\ \=\ Europe\/Paris/g' /etc/php5/ap
 adduser vagrant www-data
 
 #----------------------------------------------------------------
+# mapserv--------------------------------------------------------
 
 apt-get install -y cgi-mapserver mapserver-bin mapserver-doc php5-mapscript libapache2-mod-fcgid
-
+# mapserv is a fcgi compatible, use default config sethandler with .fcgi
+ln /usr/lib/cgi-bin/mapserv /usr/lib/cgi-bin/mapserv.fcgi
+#fin mapserv
 #----------------------------------------------------------------
 sudo a2enmod fcgid
+
+# ---------------------------------------------------------------
+# tilecache #
+#-----
+apt-get install -y tilecache python-flup python-paste python-imaging
+cp -b /vagrant/ogam/vagrant_config/conf/tilecache/tilecache.cfg /etc/tilecache.cfg
+
+#depends on tilecache.cfg
+mkdir /var/www/tilecache
+cd /var/www/tilecache 
+mkdir cache 
+chown root:www-data -R cache
+chmod 775 -R cache/
+
+#@see script/fixtilecache if some tiles miss
+
+# fin tilecache
+# ---------------------------------------------------------------
 
 chown -R www-data  $website_dir && chgrp -R www-data $website_dir && chmod g+s $website_dir
 chown www-data $website_dir && chgrp www-data $website_dir
