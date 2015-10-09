@@ -4,6 +4,9 @@ services_dir='/vagrant/ogam/'
 services_config_dir='/vagrant/ogam/services_configs'
 
 
+# ---------------------------------------------------------------
+# Déploiement des services par Gradle
+# ---------------------------------------------------------------
 
 echo "Deploying all OGAM services"
 
