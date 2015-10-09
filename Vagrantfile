@@ -71,9 +71,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.path = "vagrant_config/scripts/install_postgres.sh"
   end
 
- config.vm.provision "install_db", type: "shell" do |s|
+  config.vm.provision "install_db", type: "shell" do |s|
     s.path = "vagrant_config/scripts/GENERATE_DB.sh"
   end
 
-   # config.vm.provision "shell", inline: "service apache2 restart", run: "always"
+  config.vm.provision "shell", inline: "service apache2 restart", run: "always"
 end
