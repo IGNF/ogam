@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class SimpleContext implements Context {
 
-	private Map table = new HashMap();
+	private Map<String, Object> table = new HashMap<String, Object>();
 
 	/**
 	 * Method lookup not yet implemented.
@@ -36,7 +36,9 @@ public class SimpleContext implements Context {
 	 */
 	public Object lookup(Name name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method lookup() not yet implemented.");
 	}
 
@@ -63,7 +65,9 @@ public class SimpleContext implements Context {
 	 */
 	public void bind(Name name, Object obj) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method bind() not yet implemented.");
 	}
 
@@ -78,7 +82,9 @@ public class SimpleContext implements Context {
 	 */
 	public void bind(String name, Object obj) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		table.put(name, obj);
 	}
 
@@ -93,7 +99,9 @@ public class SimpleContext implements Context {
 	 */
 	public void rebind(Name name, Object obj) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method rebind() not yet implemented.");
 	}
 
@@ -107,7 +115,9 @@ public class SimpleContext implements Context {
 	 */
 	public void rebind(String name, Object obj) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method rebind() not yet implemented.");
 	}
 
@@ -120,7 +130,9 @@ public class SimpleContext implements Context {
 	 */
 	public void unbind(Name name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method unbind() not yet implemented.");
 	}
 
@@ -146,7 +158,9 @@ public class SimpleContext implements Context {
 	 */
 	public void rename(Name oldName, Name newName) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method rename() not yet implemented.");
 	}
 
@@ -161,7 +175,9 @@ public class SimpleContext implements Context {
 	 */
 	public void rename(String oldName, String newName) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method rename() not yet implemented.");
 	}
 
@@ -175,7 +191,9 @@ public class SimpleContext implements Context {
 	 */
 	public NamingEnumeration list(Name name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method list() not yet implemented.");
 	}
 
@@ -189,7 +207,9 @@ public class SimpleContext implements Context {
 	 */
 	public NamingEnumeration list(String name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method list() not yet implemented.");
 	}
 
@@ -203,7 +223,9 @@ public class SimpleContext implements Context {
 	 */
 	public NamingEnumeration listBindings(Name name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method listBindings() not yet implemented.");
 	}
 
@@ -217,7 +239,9 @@ public class SimpleContext implements Context {
 	 */
 	public NamingEnumeration listBindings(String name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method listBindings() not yet implemented.");
 	}
 
@@ -230,7 +254,9 @@ public class SimpleContext implements Context {
 	 */
 	public void destroySubcontext(Name name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method destroySubcontext() not yet implemented.");
 	}
 
@@ -243,7 +269,9 @@ public class SimpleContext implements Context {
 	 */
 	public void destroySubcontext(String name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method destroySubcontext() not yet implemented.");
 	}
 
@@ -257,7 +285,9 @@ public class SimpleContext implements Context {
 	 */
 	public Context createSubcontext(Name name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method createSubcontext() not yet implemented.");
 	}
 
@@ -271,7 +301,9 @@ public class SimpleContext implements Context {
 	 */
 	public Context createSubcontext(String name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method createSubcontext() not yet implemented.");
 	}
 
@@ -285,7 +317,9 @@ public class SimpleContext implements Context {
 	 */
 	public Object lookupLink(Name name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method lookupLink() not yet implemented.");
 	}
 
@@ -299,7 +333,9 @@ public class SimpleContext implements Context {
 	 */
 	public Object lookupLink(String name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method lookupLink() not yet implemented.");
 	}
 
@@ -313,7 +349,9 @@ public class SimpleContext implements Context {
 	 */
 	public NameParser getNameParser(Name name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method getNameParser() not yet implemented.");
 	}
 
@@ -327,7 +365,9 @@ public class SimpleContext implements Context {
 	 */
 	public NameParser getNameParser(String name) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method getNameParser() not yet implemented.");
 	}
 
@@ -342,7 +382,9 @@ public class SimpleContext implements Context {
 	 */
 	public Name composeName(Name name, Name prefix) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method composeName() not yet implemented.");
 	}
 
@@ -357,7 +399,9 @@ public class SimpleContext implements Context {
 	 */
 	public String composeName(String name, String prefix) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method composeName() not yet implemented.");
 	}
 
@@ -371,7 +415,9 @@ public class SimpleContext implements Context {
 	 */
 	public Object addToEnvironment(String propName, Object propVal) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method addToEnvironment() not yet implemented.");
 	}
 
@@ -384,7 +430,9 @@ public class SimpleContext implements Context {
 	 */
 	public Object removeFromEnvironment(String propName) throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method removeFromEnvironment() not yet implemented.");
 	}
 
@@ -396,7 +444,9 @@ public class SimpleContext implements Context {
 	 */
 	public Hashtable getEnvironment() throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method getEnvironment() not yet implemented.");
 	}
 
@@ -407,7 +457,9 @@ public class SimpleContext implements Context {
 	 */
 	public void close() throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method close() not yet implemented.");
 	}
 
@@ -419,7 +471,9 @@ public class SimpleContext implements Context {
 	 */
 	public String getNameInNamespace() throws NamingException {
 
-		/** @todo: Implement this javax.naming.Context method */
+		/**
+		 * @todo: Implement this javax.naming.Context method
+		 */
 		throw new java.lang.UnsupportedOperationException("Method getNameInNamespace() not yet implemented.");
 	}
 }

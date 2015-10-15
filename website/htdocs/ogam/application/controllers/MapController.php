@@ -44,7 +44,7 @@ class MapController extends AbstractOGAMController {
 		
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !in_array('DATA_QUERY', $user->role->permissionsList) || in_array('DATA_QUERY_HARMONIZED', $user->role->permissionsList)) {
+		if (empty($user) || !(in_array('DATA_QUERY', $user->role->permissionsList) || in_array('DATA_QUERY_HARMONIZED', $user->role->permissionsList))) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
 	}

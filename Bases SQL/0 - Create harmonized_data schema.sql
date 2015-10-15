@@ -71,7 +71,7 @@ CREATE INDEX IX_HARMONIZED_LOCATION_SPATIAL_INDEX ON harmonized_data.harmonized_
 CREATE OR REPLACE FUNCTION harmonized_data.geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
-    NEW.the_geom = public.ST_Transform(public.GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326), 3035);
+    NEW.the_geom = public.ST_Transform(public.ST_GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326), 3035);
     RETURN NEW;
 END;
 $BODY$
@@ -167,5 +167,13 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
 
 
 
-
+GRANT ALL ON SCHEMA harmonized_data TO ogam;
 GRANT ALL ON ALL TABLES IN SCHEMA harmonized_data TO ogam;
+GRANT ALL ON ALL TABLES IN SCHEMA harmonized_data TO ogam;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA harmonized_data TO ogam;
+ALTER TABLE harmonized_data.harmonization_process OWNER TO ogam;
+ALTER TABLE harmonized_data.harmonization_process_submissions OWNER TO ogam;
+ALTER TABLE harmonized_data.harmonized_location OWNER TO ogam;
+ALTER TABLE harmonized_data.harmonized_plot_data OWNER TO ogam;
+ALTER TABLE harmonized_data.harmonized_species_data OWNER TO ogam;
+ALTER TABLE harmonized_data.harmonized_tree_data OWNER TO ogam;

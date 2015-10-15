@@ -49,17 +49,17 @@ class GenericTest extends ControllerTestCase {
 		// On renseigne les champs identifiant une ligne de la table avec des valeurs.
 		$pkFields = $data->infoFields;
 		$pkFields['PLOT_DATA__PROVIDER_ID']->value = '1';
-		$pkFields['PLOT_DATA__PLOT_CODE']->value = '01575-14060-4-0T';
+		$pkFields['PLOT_DATA__PLOT_CODE']->value = '01575-14060-4-0TD';
 		$pkFields['PLOT_DATA__CYCLE']->value = '5';
 		
 		// On récupère maintenant le reste des valeurs correspondant à cette ligne
 		$filledData = $genericModel->getDatum($data);
 		
-		// echo "Result : " . print_r($filledData, true);
+		//echo "Result : " . print_r($filledData, true);
 		
 		// On vérifie que l'objet a bien été complété avec des valeurs
 		$this->assertNotNull($filledData);
-		$this->assertEquals($filledData->getEditableField('PLOT_DATA__INV_DATE')->value, '2007/11/27');
+		$this->assertEquals($filledData->getEditableField('PLOT_DATA__INV_DATE')->value, '2015/01/18');
 		$this->assertEquals($filledData->getEditableField('PLOT_DATA__IS_FOREST_PLOT')->value, '1');
 		
 		// On modifie la clé identifiant l'objet
@@ -145,7 +145,7 @@ class GenericTest extends ControllerTestCase {
 		// On renseigne les champs identifiant une ligne de la table avec des valeurs.
 		$pkFields = $data->infoFields;
 		$pkFields['PLOT_DATA__PROVIDER_ID']->value = '1';
-		$pkFields['PLOT_DATA__PLOT_CODE']->value = '01575-14060-4-0T';
+		$pkFields['PLOT_DATA__PLOT_CODE']->value = '01575-14060-4-0TD';
 		$pkFields['PLOT_DATA__CYCLE']->value = '5';
 		
 		// On récupère maintenant le reste des valeurs correspondant à cette ligne

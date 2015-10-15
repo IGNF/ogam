@@ -1,4 +1,5 @@
 set search_path = metadata;
+--\! pwd
 
 --
 -- Remove integrity contraints
@@ -8,7 +9,7 @@ alter table FILE_FORMAT drop constraint FK_FILE_FOR_HERITAGE__FORMAT;
 alter table FORM_FORMAT drop constraint FK_FORM_FOR_HERITAGE__FORMAT;
 alter table TABLE_FORMAT drop constraint FK_TABLE_FO_HERITAGE__FORMAT;
 alter table FILE_FIELD drop constraint FK_FILE_FIE_HERITAGE__FIELD;
-alter table FORM_FIELD drop constraint FK_FORM_FIE_HERITAGE__FIELD;            
+alter table FORM_FIELD drop constraint FK_FORM_FIE_HERITAGE__FIELD; 
 alter table TABLE_FIELD drop constraint FK_TABLE_FI_HERITAGE__FIELD;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_DATASET;
 alter table DATASET_FIELDS drop constraint FK_DATASET_FIELDS_FIELD;
@@ -54,18 +55,17 @@ delete from dataset;
 
 --delete from application_parameters;
 --delete from checks where check_id < 1200;
+\COPY unit from 'unit.csv' with delimiter ';' null ''
+\COPY data from 'data.csv' with delimiter ';' null ''
+\COPY range from 'range.csv' with delimiter ';' null '';
+\COPY mode from 'mode.csv' with delimiter ';' null '';
+\COPY group_mode from 'group_mode.csv' with delimiter ';' null '';
+\COPY mode_tree from 'mode_tree.csv' with delimiter ';' null '';
+\COPY dynamode from 'dynamode.csv' with delimiter ';' null '';
 
-COPY unit from 'D:/workspace/OGAM/Bases SQL/Metadata/unit.csv' with delimiter ';' null '';
-COPY data from 'D:/workspace/OGAM/Bases SQL/Metadata/data.csv' with delimiter ';' null '';
-COPY range from 'D:/workspace/OGAM/Bases SQL/Metadata/range.csv' with delimiter ';' null '';
-COPY mode from 'D:/workspace/OGAM/Bases SQL/Metadata/mode.csv' with delimiter ';' null '';
-COPY group_mode from 'D:/workspace/OGAM/Bases SQL/Metadata/group_mode.csv' with delimiter ';' null '';
-COPY mode_tree from 'D:/workspace/OGAM/Bases SQL/Metadata/mode_tree.csv' with delimiter ';' null '';
-COPY dynamode from 'D:/workspace/OGAM/Bases SQL/Metadata/dynamode.csv' with delimiter ';' null '';
-
-COPY form_format from 'D:/workspace/OGAM/Bases SQL/Metadata/form_format.csv' with delimiter ';' null '';
-COPY table_format from 'D:/workspace/OGAM/Bases SQL/Metadata/table_format.csv' with delimiter ';' null '';
-COPY file_format from 'D:/workspace/OGAM/Bases SQL/Metadata/file_format.csv' with delimiter ';' null '';
+\COPY form_format from 'form_format.csv' with delimiter ';' null '';
+\COPY table_format from 'table_format.csv' with delimiter ';' null '';
+\COPY file_format from 'file_format.csv' with delimiter ';' null '';
 
 -- Fill the parent table
 INSERT INTO format (format, type)
@@ -80,9 +80,9 @@ INSERT INTO format (format, type)
 SELECT format, 'FORM'
 FROM   form_format;
 
-COPY form_field from 'D:/workspace/OGAM/Bases SQL/Metadata/form_field.csv' with delimiter ';' null '';
-COPY file_field from 'D:/workspace/OGAM/Bases SQL/Metadata/file_field.csv' with delimiter ';' null '';
-COPY table_field from 'D:/workspace/OGAM/Bases SQL/Metadata/table_field.csv' with delimiter ';' null '';
+\COPY form_field from 'form_field.csv' with delimiter ';' null '';
+\COPY file_field from 'file_field.csv' with delimiter ';' null '';
+\COPY table_field from 'table_field.csv' with delimiter ';' null '';
 
 -- Fill the parent table
 INSERT INTO field (data, format, type)
@@ -98,19 +98,19 @@ SELECT data, format, 'FORM'
 FROM   form_field;
 
 
-COPY field_mapping from 'D:/workspace/OGAM/Bases SQL/Metadata/field_mapping.csv' with delimiter ';' null '';
+\COPY field_mapping from 'field_mapping.csv' with delimiter ';' null '';
 
-COPY checks (check_id, step, name, label, description, "statement", importance) from 'D:/workspace/OGAM/Bases SQL/Metadata/checks.csv' with delimiter ';' null '';
+\COPY checks (check_id, step, name, label, description, "statement", importance) from 'checks.csv' with delimiter ';' null '';
 
 
-COPY dataset from 'D:/workspace/OGAM/Bases SQL/Metadata/dataset.csv' with delimiter ';' null '';
-COPY dataset_fields from 'D:/workspace/OGAM/Bases SQL/Metadata/dataset_fields.csv' with delimiter ';' null '';
-COPY dataset_files from 'D:/workspace/OGAM/Bases SQL/Metadata/dataset_files.csv' with delimiter ';' null '';
+\COPY dataset from 'dataset.csv' with delimiter ';' null '';
+\COPY dataset_fields from 'dataset_fields.csv' with delimiter ';' null '';
+\COPY dataset_files from 'dataset_files.csv' with delimiter ';' null '';
 
-COPY table_schema from 'D:/workspace/OGAM/Bases SQL/Metadata/table_schema.csv' with delimiter ';' null '';
-COPY table_tree from 'D:/workspace/OGAM/Bases SQL/Metadata/table_tree.csv' with delimiter ';' null '';
+\COPY table_schema from 'table_schema.csv' with delimiter ';' null '';
+\COPY table_tree from 'table_tree.csv' with delimiter ';' null '';
 
-COPY translation from 'D:/workspace/OGAM/Bases SQL/Metadata/translation.csv' with delimiter ';' null '';
+\COPY translation from 'translation.csv' with delimiter ';' null '';
 
 
 -- Fill the empty label and definition for the need of the tests

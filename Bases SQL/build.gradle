@@ -1,0 +1,40 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'postgresql:postgresql:9.0-801.jdbc4'
+  }
+}
+
+plugins {
+  id 'org.liquibase.gradle' version '1.1.1'
+}
+
+liquibase {
+  activities {
+  
+    metadata {
+      defaultSchemaName 'metadata'
+      changeLogFile 'metadata_changelog.xml'
+      url 'jdbc:postgresql://localhost:5432/ogam'
+      username 'ogam'
+      password 'ogam'
+      outputDefaultSchema true
+    }
+    
+     website {
+      defaultSchemaName 'website'
+      changeLogFile 'website_changelog.xml'
+      url 'jdbc:postgresql://localhost:5432/ogam'
+      username 'ogam'
+      password 'ogam'
+      diffTypes 'data'
+      outputDefaultSchema true
+    }
+    
+    runList = 'metadata, website'
+    
+    
+  }
+}

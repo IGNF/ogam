@@ -138,7 +138,6 @@ public class HarmonizationService extends AbstractService {
 			// Prepare the metadata that we will use
 			//
 			List<TableFormatData> harmonizedTables = new ArrayList<TableFormatData>(); // The list of destination harmonized tables concerned by the dataset
-			// Set<TableFieldData> harmonizedFields = new HashSet<TableFieldData>(); // The list of destination fields concerned by the dataset
 
 			// The list of source raw tables concerned by the dataset
 			List<String> rawTables = metadataDAO.getDatasetRawTables(datasetId);
@@ -189,17 +188,18 @@ public class HarmonizationService extends AbstractService {
 					// Prepare some static criteria values
 					TreeMap<String, GenericData> criteriaFields = new TreeMap<String, GenericData>();
 					criteriaFields.put(Data.DATASET_ID, datasetIdData);
+					criteriaFields.put(Data.PROVIDER_ID, providerIdData);
 
 					boolean finished = false;
 					int count = 0;
 					int page = 0;
-					int total = countData(destTableFormat, criteriaFields, providerId);
+					int total = countData(destTableFormat, criteriaFields);
 					while (!finished) {
 
 						//
 						// Build a giant SELECT from the raw tables
 						//
-						List<Map<String, GenericData>> sourceData = readSourceData(destTableFormat, criteriaFields, providerId, page, MAX_LINES);
+						List<Map<String, GenericData>> sourceData = readSourceData(destTableFormat, criteriaFields, page, MAX_LINES);
 
 						Iterator<Map<String, GenericData>> sourceIter = sourceData.iterator();
 						while (sourceIter.hasNext()) {
@@ -209,8 +209,6 @@ public class HarmonizationService extends AbstractService {
 							if (thread != null) {
 								thread.updateInfo("Inserting " + destTableFormatData.getTableName() + " data", count, total);
 							}
-
-							// TODO : Read the complementary data corresponding to this line
 
 							// Add the static data for the destination table
 							sourceFields.put(Data.DATASET_ID, datasetIdData);
@@ -244,7 +242,7 @@ public class HarmonizationService extends AbstractService {
 
 				logger.debug("harmonization done");
 
-			}else{
+			} else {
 				harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.INIT);
 				harmonisationProcessDAO.updateHarmonizationProcessSubmissions(processId, listSubmissions);
 			}
@@ -271,16 +269,14 @@ public class HarmonizationService extends AbstractService {
 	 *            the destination table (in the harmonized schema)
 	 * @param criteriaFields
 	 *            the definition of the fields that are used
-	 * @param countryCode
-	 *            the country code
 	 * @param page
 	 *            the number of pages of data
 	 * @param maxlines
 	 *            the number of lines per page of data
 	 * @return The list of raw data
 	 */
-	private List<Map<String, GenericData>> readSourceData(String destTableFormat, TreeMap<String, GenericData> criteriaFields, String countryCode, int page,
-			int maxlines) throws Exception {
+	private List<Map<String, GenericData>> readSourceData(String destTableFormat, TreeMap<String, GenericData> criteriaFields, int page, int maxlines)
+			throws Exception {
 
 		logger.debug("harmonize data for " + destTableFormat);
 
@@ -292,7 +288,7 @@ public class HarmonizationService extends AbstractService {
 		LinkedList<String> sourceTablesSortedList = genericMapper.getSortedAncestors(Schemas.RAW_DATA, sourceTables);
 
 		// Build a big JOIN SELECT and read the data
-		List<Map<String, GenericData>> result = genericMapper.readData(Schemas.RAW_DATA, sourceTablesSortedList, criteriaFields, countryCode, page, maxlines);
+		List<Map<String, GenericData>> result = genericMapper.readData(Schemas.RAW_DATA, sourceTablesSortedList, criteriaFields, page, maxlines);
 
 		return result;
 
@@ -305,11 +301,9 @@ public class HarmonizationService extends AbstractService {
 	 *            the destination table (in the harmonized schema)
 	 * @param criteriaFields
 	 *            the definition of the fields that are used
-	 * @param countryCode
-	 *            the country code
 	 * @return The list of raw data
 	 */
-	private int countData(String destTableFormat, TreeMap<String, GenericData> criteriaFields, String countryCode) throws Exception {
+	private int countData(String destTableFormat, TreeMap<String, GenericData> criteriaFields) throws Exception {
 
 		logger.debug("harmonize data for " + destTableFormat);
 
@@ -321,7 +315,7 @@ public class HarmonizationService extends AbstractService {
 		LinkedList<String> sourceTablesSortedList = genericMapper.getSortedAncestors(Schemas.RAW_DATA, sourceTables);
 
 		// Build a big JOIN SELECT and read the data
-		return genericMapper.countData(Schemas.RAW_DATA, sourceTablesSortedList, criteriaFields, countryCode);
+		return genericMapper.countData(Schemas.RAW_DATA, sourceTablesSortedList, criteriaFields);
 
 	}
 }

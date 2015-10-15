@@ -4,28 +4,16 @@ import javax.sql.DataSource;
 import javax.naming.Reference;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 import java.io.PrintWriter;
 
 /**
- * <p>
- * Title: SimpleDataSource
- * </p>
- * <p>
- * Description: A very simple datasource. Creates a new Connection to the
- * database everytime it's ask for one so....
- * </p>
- * <p>
- * Copyright: Copyright (c) 2002
- * <p>
- * <p>
- * Company:
- * </p>
+ * SimpleDataSource.
  * 
- * @author unascribed
- * @version 1.0
+ * A very simple datasource. Creates a new Connection to the database everytime it's ask for one so....
+ * 
+ * Used for unit testing without the presence of a JNDI Datasource server.
  */
 class SimpleDataSource extends Reference implements DataSource {
 
@@ -38,7 +26,7 @@ class SimpleDataSource extends Reference implements DataSource {
 	String dbPassword;
 
 	/**
-	 * The serial version ID used to identify the object
+	 * The serial version ID used to identify the object.
 	 */
 	private static final long serialVersionUID = -455284123196591243L;
 
@@ -78,118 +66,129 @@ class SimpleDataSource extends Reference implements DataSource {
 	}
 
 	/**
-	 * Method getConnection
+	 * Method getConnection.
 	 * 
 	 * 
 	 * @param parm1
+	 *            a param (ignored)
 	 * @param parm2
-	 * 
-	 * @return
-	 * 
+	 *            a param (ignored)
+	 * @return a connection
 	 * @throws java.sql.SQLException
 	 * 
 	 */
-	public Connection getConnection(String parm1, String parm2)
-			throws java.sql.SQLException {
+	public Connection getConnection(String parm1, String parm2) throws java.sql.SQLException {
 		return getConnection();
 	}
 
 	/**
-	 * Method getLogWriter not yet implemented.
+	 * Method getLogWriter (not implemented).
 	 * 
-	 * 
-	 * @return
-	 * 
+	 * @return a Printwriter
 	 * @throws java.sql.SQLException
-	 * 
 	 */
 	public PrintWriter getLogWriter() throws java.sql.SQLException {
 
-		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException(
-				"Method getLogWriter() not yet implemented.");
+		/**
+		 * @todo: Implement this javax.sql.DataSource method
+		 */
+		throw new java.lang.UnsupportedOperationException("Method getLogWriter() not yet implemented.");
 	}
 
+	/**
+	 * Method isWrapperFor (not implemented).
+	 * 
+	 * @param iface
+	 * @return a boolean
+	 */
 	public boolean isWrapperFor(Class iface) {
-		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException(
-				"Method isWrapperFor() not yet implemented.");
-
-	}
-
-	public Object unwrap(Class iface) {
-		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException(
-				"Method unwrap() not yet implemented.");
+		/**
+		 * @todo: Implement this javax.sql.DataSource method
+		 */
+		throw new java.lang.UnsupportedOperationException("Method isWrapperFor() not yet implemented.");
 
 	}
 
 	/**
-	 * Method getLoginTimeout not yet implemented.
+	 * Method unwrap (not implemented).
 	 * 
+	 * @param iface
+	 * @return object
+	 */
+	public Object unwrap(Class iface) {
+		/**
+		 * @todo: Implement this javax.sql.DataSource method
+		 */
+		throw new java.lang.UnsupportedOperationException("Method unwrap() not yet implemented.");
+
+	}
+
+	/**
+	 * Method getLoginTimeout (not implemented).
 	 * 
-	 * @return
-	 * 
+	 * @return int
 	 * @throws java.sql.SQLException
-	 * 
 	 */
 	public int getLoginTimeout() throws java.sql.SQLException {
 
-		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException(
-				"Method getLoginTimeout() not yet implemented.");
+		/**
+		 * @todo: Implement this javax.sql.DataSource method
+		 */
+		throw new java.lang.UnsupportedOperationException("Method getLoginTimeout() not yet implemented.");
 	}
 
 	/**
-	 * Method setLogWriter not yet implemented.
-	 * 
+	 * Method setLogWriter (not implemented).
 	 * 
 	 * @param parm1
-	 * 
 	 * @throws java.sql.SQLException
-	 * 
 	 */
 	public void setLogWriter(PrintWriter parm1) throws java.sql.SQLException {
 
-		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException(
-				"Method setLogWriter() not yet implemented.");
+		/**
+		 * @todo: Implement this javax.sql.DataSource method
+		 */
+		throw new java.lang.UnsupportedOperationException("Method setLogWriter() not yet implemented.");
 	}
 
 	/**
-	 * Method setLoginTimeout not yet implemented.
-	 * 
+	 * Method setLoginTimeout (not implemented).
 	 * 
 	 * @param parm1
-	 * 
 	 * @throws java.sql.SQLException
-	 * 
 	 */
 	public void setLoginTimeout(int parm1) throws java.sql.SQLException {
 
-		/** @todo: Implement this javax.sql.DataSource method */
-		throw new java.lang.UnsupportedOperationException(
-				"Method setLoginTimeout() not yet implemented.");
+		/**
+		 * @todo: Implement this javax.sql.DataSource method
+		 */
+		throw new java.lang.UnsupportedOperationException("Method setLoginTimeout() not yet implemented.");
 	}
 
 	/**
+	 * Return a hashcode for the object.
+	 * 
 	 * @see java.lang.Object#hashCode()
+	 * @return the hashcode
 	 */
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((dbDriver == null) ? 0 : dbDriver.hashCode());
+		result = prime * result + ((dbDriver == null) ? 0 : dbDriver.hashCode());
 		result = prime * result + ((dbLogin == null) ? 0 : dbLogin.hashCode());
-		result = prime * result
-				+ ((dbPassword == null) ? 0 : dbPassword.hashCode());
-		result = prime * result
-				+ ((dbServer == null) ? 0 : dbServer.hashCode());
+		result = prime * result + ((dbPassword == null) ? 0 : dbPassword.hashCode());
+		result = prime * result + ((dbServer == null) ? 0 : dbServer.hashCode());
 		return result;
 	}
 
 	/**
+	 * Compare two instances of the object.
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
+	 * 
+	 * @param object
+	 *            instance to compare with
+	 * @return true is the objects are equals
 	 */
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -234,7 +233,9 @@ class SimpleDataSource extends Reference implements DataSource {
 	}
 
 	/**
+	 * Method getParentLogger (not implemented).
 	 * 
+	 * @return a logger
 	 */
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		// TODO Auto-generated method stub

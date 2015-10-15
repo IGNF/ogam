@@ -81,7 +81,7 @@ SET client_encoding = 'ISO-8859-1';
 
 -- Copie des données dans la table temporaire
 -- DELETE FROM taxref;
-COPY taxref FROM 'C:/workspace/OGAM/Bases SQL/Referentiels/TAXREFv30.txt' with null '';
+\COPY taxref FROM './Referentiels/TAXREFv30.txt' with null '';
 
 
 
@@ -177,17 +177,6 @@ where rang = 'KD';
 
 select distinct regne   -- 5 règnes
 from taxref;
-
-
--- Identification des taxons utilisés dans FOMA
-select *
-from (
-select distinct id_taxon  -- 160 taxons différents
-from observation_taxon
-) as foo
-left join taxref on id_taxon::varchar = cd_nom;
---where cd_nom <> cd_ref
-
 
 
 

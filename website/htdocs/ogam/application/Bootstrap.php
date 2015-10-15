@@ -8,6 +8,7 @@ require_once APPLICATION_PATH . '/objects/Metadata/Field.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
 require_once APPLICATION_PATH . '/objects/Metadata/Format.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableFormat.php';
+require_once APPLICATION_PATH . '/objects/Metadata/TreeNode.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
 require_once APPLICATION_PATH . '/objects/Website/User.php';
 require_once APPLICATION_PATH . '/objects/Website/Role.php';
@@ -90,7 +91,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$front = $this->getResource('FrontController');
 		$router = $front->getRouter();
-		
+				
 		// Si un controleur existe dans custom alors on le prend en priorité à la place de default
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/controllers/')) {
 			
@@ -105,10 +106,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 						'module' => 'custom',
 						'controller' => $controllerName
 					));
+					
+					//$this->logger->debug("CustomRoute : ".print_r($customRoute, true));
+					
 					$router->addRoute('customRoute_' . $controllerName, $customRoute);
 				}
 			}
 		}
+				
 	}
 
 	/**
@@ -234,25 +239,50 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 * Register the config.
+	 * Register the configuration.
 	 *
-	 * Take by default the files in ogam/application/config and if present overrides with custom/application/config.
+	 * Take by default the files in ogam/application/config
+	 * If present overrides with custom/application/config.
+	 * If present overrides with the content from the "application_parameters" table.
 	 */
 	protected function _initAppConfRegistry() {
+		$configuration = new stdClass();
+		
+		// Get the parameters from the OGAM default configuration files
+		$appIniFilePath = APPLICATION_PATH . '/configs/app.ini';
+		if (file_exists($appIniFilePath)) {
+			$configuration = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array(
+				'allowModifications' => true
+			));
+		}
+		
+		// Get the parameters from the CUSTOM configuration files
+		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/configs/app.ini')) {
+			$appIniFilePath = CUSTOM_APPLICATION_PATH . '/configs/app.ini';
+			$configuration = new Zend_Config_Ini($appIniFilePath, APPLICATION_ENV, array(
+				'allowModifications' => true
+			));
+		}
+		
 		// get db param
 		$this->bootstrap('Db');
 		$this->bootstrap('Session');
 		$this->bootstrap('RegisterLogger');
 		
-		// Get the parameters
+		// Add the parameters from the database
 		$parameterModel = new Application_Model_Website_ApplicationParameter();
 		$parameters = $parameterModel->getParameters();
+		foreach ($parameters as $k => $v) {
+			$configuration->$k = $v;
+		}
 		
 		// Adding of the intern map service url into the parameters
 		$serviceConfig = $parameterModel->getMapServiceUrl();
-		$parameters->map_service_url = json_decode($serviceConfig['config'])->{'urls'}[0];
+		if (!empty($serviceConfig)) {
+			$configuration->map_service_url = json_decode($serviceConfig['config'])->{'urls'}[0];
+		}
 		
-		Zend_Registry::set('configuration', $parameters);
+		Zend_Registry::set('configuration', $configuration);
 	}
 
 	/**
