@@ -274,7 +274,7 @@ LAYER
     TYPE POINT 
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER"
-    CONNECTION "user=ogam password=ogam dbname=ogam2 host=localhost port=5432"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
             SELECT st_transform(the_geom, 3857) as the_geom, provider_id || '_' || plot_code as oid,plot_code
             FROM location
