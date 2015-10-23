@@ -204,7 +204,7 @@ CREATE SEQUENCE tree_id_seq
   
 
 /*==============================================================*/
-/* Table : TREE_DATA                                         */
+/* Table : TREE_DATA                                            */
 /*==============================================================*/
 create table TREE_DATA (
 SUBMISSION_ID        INT4                 null,

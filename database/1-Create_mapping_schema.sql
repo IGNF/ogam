@@ -18,7 +18,7 @@ constraint PK_RESULT_LOCATION primary key (SESSION_ID, PK)
 WITH OIDS; -- Important : Needed by mapserv
 
 -- Ajout de la colonne point PostGIS
-SELECT AddGeometryColumn('mapping','result_location','the_geom',3035,'GEOMETRY',2);
+SELECT AddGeometryColumn('mapping','result_location','the_geom',3857,'GEOMETRY',2);
 
 -- Spatial Index on the_geom 
 CREATE INDEX IX_RESULT_LOCATION_SPATIAL_INDEX ON mapping.RESULT_LOCATION USING GIST

@@ -52,7 +52,7 @@ constraint PK_HARMONIZED_LOCATION primary key (PROVIDER_ID, PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
-SELECT AddGeometryColumn('harmonized_data','harmonized_location','the_geom',3035,'POINT',2);
+SELECT AddGeometryColumn('harmonized_data','harmonized_location','the_geom',3857,'POINT',2);
 
 COMMENT ON COLUMN HARMONIZED_LOCATION.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZED_LOCATION.PLOT_CODE IS 'The identifier of the plot';
@@ -70,7 +70,7 @@ CREATE INDEX IX_HARMONIZED_LOCATION_SPATIAL_INDEX ON harmonized_data.harmonized_
 CREATE OR REPLACE FUNCTION harmonized_data.geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
-    NEW.the_geom = public.st_transform(public.st_geometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326), 3035);
+    NEW.the_geom = public.st_transform(public.st_geometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326), 3857);
     RETURN NEW;
 END;
 $BODY$
