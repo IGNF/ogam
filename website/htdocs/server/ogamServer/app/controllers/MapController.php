@@ -477,7 +477,7 @@ class MapController extends AbstractOGAMController {
 		// Get the map parameters
 		$center = $this->_getParam('center');
 		$zoom = $this->_getParam('zoom');
-		$layers = $this->_getParam('layers');
+		$layers = json_decode('[' . $this->_getParam('layers') . ']');
 		$centerX = substr($center, stripos($center, "lon=") + 4, stripos($center, ",") - (stripos($center, "lon=") + 4));
 		$centerY = substr($center, stripos($center, "lat=") + 4);
 		
@@ -486,19 +486,16 @@ class MapController extends AbstractOGAMController {
 
 			$this->logger->debug($printservices);
 		
-		// Get the server name for the layers
-		$layerNames = explode(",", $layers);
-		
 		
 		$serviceLayerNames = "";
 		$imageFormats = "";
 		$baseUrls = "";
 		$service = "";
 		
-		foreach ($layerNames as $layerName) {
+		foreach ($layers as $layer) {
 		    
 		    //Get parameters of the layers
-			$layer = $this->layersModel->getLayer($layerName);
+			$layer = $this->layersModel->getLayer($layer->name);
 			$serviceLayerNames .= $layer->serviceLayerName.",";
 			$imageFormats .= $layer->imageFormat.",";
 			
@@ -511,6 +508,21 @@ class MapController extends AbstractOGAMController {
 			        foreach ($json as $key => $val) {
 			             if ($key === 'params'){
 			                    $service .= $val['SERVICE'].",";
+			                    if ($val['tileOrigin']){
+			                    	$tileOrigin = json_encode($val['tileOrigin']);
+			                    };
+			                    if ($val['serverResolutions']){
+			                    	$serverResolutions = json_encode($val['serverResolutions']);
+			                    };
+			                    if ($val['requestEncoding']){
+			                    	$requestEncoding = $val['requestEncoding']?json_encode($val['requestEncoding']):"KVP";
+			                    };
+			                    if ($val['maxExtent']){
+			                    	$maxExtent = json_encode($val['maxExtent']);
+			                    };
+			                    if ($val['matrixSet']){
+			                    	$matrixSet = json_encode($val['matrixSet']);
+			                    };
 			             }
 			        }    
 			    }
@@ -531,9 +543,7 @@ class MapController extends AbstractOGAMController {
 		$scales = $this->layersModel->getScales();
 		    
 		// Get the current scale
-		$scalesArray = array_values($scales);
 		$currentScale = $scales[$zoom];
-		$this->logger->debug('generatemapAction2');
 		//Construction of the json specification, parameter of mapfish-print servlet
 		$spec = "{
     
@@ -544,7 +554,6 @@ class MapController extends AbstractOGAMController {
 		    layers: [";
 		
 		    // Conversion of string lists of layers parameters into array
-		    $layersArray = explode(",", $layers);
 		    $baseUrlsArray = explode(",", $baseUrls);
 		    $serviceLayerNamesArray = explode(",", $serviceLayerNames);
 		    $imageFormatsArray = explode(",", $imageFormats);
@@ -552,54 +561,37 @@ class MapController extends AbstractOGAMController {
 		    
 		    $i=0;
 		    
-		    // TODO : A vérifier, résolutions en dur pour le WMTS à supprimer ?
-		    foreach ($layersArray as $layer) {
+
+		    foreach ($layers as $layer) {
+				$tileSize = json_encode($layer->tileSize);
 		        if (strcasecmp($serviceArray[$i] , 'wms') == 0) {
-		        $spec .= "{
-		        type: 'WMS',
-		        format: 'image/$imageFormatsArray[$i]',
-		        version: '1.3.0',
-		        layers: ['$serviceLayerNamesArray[$i]'],
-		        baseURL: '$baseUrlsArray[$i]',
-		        customParams: {TRANSPARENT:true,SESSION_ID:".session_id()."}
-		        },";
+			        $spec .= "{
+				        type: 'WMS',
+				        opacity: $layer->opacity,
+				        format: 'image/$imageFormatsArray[$i]',
+				        version: '1.3.0',
+				        layers: ['$serviceLayerNamesArray[$i]'],
+				        baseURL: '$baseUrlsArray[$i]',
+				        customParams: {TRANSPARENT:true,SESSION_ID:".session_id()."}
+			        },";
 		        } elseif (strcasecmp($serviceArray[$i] , 'wmts') == 0) {
-		        $spec .="{
-		        type: 'WMTS',
-		        version:1.0.0,
-		        requestEncoding:'KVP',
-		        matrixSet:'PM',
-		        style:'normal',
-		        format: 'image/$imageFormatsArray[$i]',
-		        layer: '$serviceLayerNamesArray[$i]',
-		        baseURL: '$baseUrlsArray[$i]',
-		        matrixIds:[
-		            {'identifier':'0','topLeftCorner':[-20037508,20037508],  'resolution':156543.033928,'matrixSize':[1,1],'tileSize':[256,256]},
-		            {'identifier':'1','topLeftCorner':[-20037508,20037508],  'resolution':78271.516964,'matrixSize':[2,2],'tileSize':[256,256]},
-		            {'identifier':'2','topLeftCorner':[-20037508,20037508],  'resolution':39135.758482,'matrixSize':[4,4],'tileSize':[256,256]},
-		            {'identifier':'3','topLeftCorner':[-20037508,20037508],  'resolution':19567.879241,'matrixSize':[8,8],'tileSize':[256,256]},
-		            {'identifier':'4','topLeftCorner':[-20037508,20037508],  'resolution':9783.9396212,'matrixSize':[16,16],'tileSize':[256,256]},
-		            {'identifier':'5','topLeftCorner':[-20037508,20037508],  'resolution':4891.9698101,'matrixSize':[32,32],'tileSize':[256,256]},
-		            {'identifier':'6','topLeftCorner':[-20037508,20037508],  'resolution':2445.984905,'matrixSize':[64,64],'tileSize':[256,256]},
-		            {'identifier':'7','topLeftCorner':[-20037508,20037508],  'resolution':1222.992453,'matrixSize':[128,128],'tileSize':[256,256]},
-		            {'identifier':'8','topLeftCorner':[-20037508,20037508],  'resolution':611.496226,'matrixSize':[256,256],'tileSize':[256,256]},
-		            {'identifier':'9','topLeftCorner':[-20037508,20037508],  'resolution':305.748113,'matrixSize':[512,512],'tileSize':[256,256]},
-		            {'identifier':'10','topLeftCorner':[-20037508,20037508], 'resolution':152.874057,'matrixSize':[1024,1024],'tileSize':[256,256]},
-		            {'identifier':'11','topLeftCorner':[-20037508,20037508], 'resolution':76.4370289,'matrixSize':[2048,2048],'tileSize':[256,256]},
-		            {'identifier':'12','topLeftCorner':[-20037508,20037508], 'resolution':38.2185145,'matrixSize':[4096,4096],'tileSize':[256,256]},
-		            {'identifier':'13','topLeftCorner':[-20037508,20037508], 'resolution':19.109257,'matrixSize':[8192,8192],'tileSize':[256,256]},
-		            {'identifier':'14','topLeftCorner':[-20037508,20037508], 'resolution':9.554629 ,'matrixSize':[16384,16384],'tileSize':[256,256]},
-		            {'identifier':'15','topLeftCorner':[-20037508,20037508], 'resolution':4.777302 ,'matrixSize':[32768,32768],'tileSize':[256,256]},
-		            {'identifier':'16','topLeftCorner':[-20037508,20037508], 'resolution':2.388657,'matrixSize':[65536,65536],'tileSize':[256,256]},
-		            {'identifier':'17','topLeftCorner':[-20037508,20037508], 'resolution':1.194329 ,'matrixSize':[131072,131072],'tileSize':[256,256]},
-		            {'identifier':'18','topLeftCorner':[-20037508,20037508], 'resolution':0.597164 ,'matrixSize':[262144,262144],'tileSize':[256,256]},
-		            {'identifier':'19','topLeftCorner':[-20037508,20037508], 'resolution':0.298582 ,'matrixSize':[524288,524288],'tileSize':[256,256]},
-		            {'identifier':'20','topLeftCorner':[-20037508,20037508], 'resolution':0.149291 ,'matrixSize':[1048576,1048576],'tileSize':[256,256]},
-		            {'identifier':'21','topLeftCorner':[-20037508,20037508], 'resolution':0.074646  ,'matrixSize':[2097152,2097152],'tileSize':[256,256]}
-		        ],
-		        customParams: {TRANSPARENT:true,SESSION_ID:".session_id()."}
-		    },";
-		    }
+			        $spec .="{
+				        type: 'WMTS',
+				        opacity: $layer->opacity,
+				        baseURL: '$baseUrlsArray[$i]',
+                        requestEncoding: $requestEncoding,
+				        layer: '$serviceLayerNamesArray[$i]',
+				        tileOrigin: $tileOrigin,
+				        tileSize: $tileSize,
+				        zoomOffset: 0,
+				        matrixSet: $matrixSet,
+			        	resolutions: $serverResolutions,
+				        maxExtent: $maxExtent,
+				        formatSuffix: 'image/$imageFormatsArray[$i]',
+				        style: 'normal',
+				        customParams: {TRANSPARENT:true,SESSION_ID:".session_id()."}
+			    	},";
+		    	}
 		        $i++;
 		    }
 		    $spec.= " ],

@@ -130,7 +130,20 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		temp.submit();
 		return temp;
 	}, 
-
+	
+	olLayerToString : function(layer){
+		layerStr = '{';
+		layerStr += '"name":"' + layer.name + '",';
+		layerStr += '"opacity":' + layer.opacity;
+		if (layer.tileSize) {
+			tileSizeArray = [layer.tileSize.h, layer.tileSize.w];
+			layerStr += ', "tileSize": [' + tileSizeArray.toString() + ']';
+		};
+		layerStr += '}';
+		return layerStr;
+	},
+	
+	
 	/**
 	 * Print the map
 	 * 
@@ -140,25 +153,32 @@ Ext.define('OgamDesktop.controller.map.Main',{
 	 *            event The click event
 	 */
 	printMap : function(button, event) {
+		
+		
+		
 		// Get the BBOX
-		var center = this.getMappanel().map.center, zoom = this.getMappanel().map.zoom, i;
-
+		var center = this.getMappanel().map.getCenter(), zoom = this.getMappanel().map.getZoom(), i;
+		console.log(center)
+		console.log(zoom)
+		
 		// Get the layers
 		var activatedLayers = this.getMappanel().map.getLayersBy('visibility', true);
-		var activatedLayersNames = '';
+		var layersToPrint = [];
 		for (i = 0; i < activatedLayers.length; i++) {
 			currentLayer = activatedLayers[i];
 			if (currentLayer.printable !== false &&
 				currentLayer.visibility == true &&
 				currentLayer.inRange == true) {
-				activatedLayersNames += activatedLayers[i].name + ',';
+				layersToPrint.push(this.olLayerToString(currentLayer));
+				console.log(currentLayer)
 			}
 		}
-		activatedLayersNames = activatedLayersNames.substr(0, activatedLayersNames.length - 1);
+
+		console.log(layersToPrint)
 		this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
 			center : center,
 			zoom : zoom,
-			layers : activatedLayersNames
+			layers : layersToPrint
 		});
 	}
 });

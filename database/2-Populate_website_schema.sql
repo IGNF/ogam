@@ -37,10 +37,10 @@ INSERT INTO application_parameters (name, value, description) values ('srs_visua
 INSERT INTO application_parameters (name, value, description) values ('srs_raw_data' , 4326 , 'WEB MAPPING ');
 INSERT INTO application_parameters (name, value, description) values ('srs_harmonized_data' , 3857 , 'WEB MAPPING ');
 INSERT INTO application_parameters (name, value, description) values ('usePerProviderCenter' , false , 'if true the system will look in the "bounding_box" table for centering info for each provider');
-INSERT INTO application_parameters (name, value, description) values ('bbox_x_min' , '-2893330' , 'WEB MAPPING ');
-INSERT INTO application_parameters (name, value, description) values ('bbox_y_min' , '3852395' , 'WEB MAPPING ');
+INSERT INTO application_parameters (name, value, description) values ('bbox_x_min', '-2893330' , 'WEB MAPPING ');
+INSERT INTO application_parameters (name, value, description) values ('bbox_y_min', '3852395' , 'WEB MAPPING ');
 INSERT INTO application_parameters (name, value, description) values ('bbox_x_max', '3086670', 'WEB MAPPING ');
-INSERT INTO application_parameters (name, value, description) values ('bbox_y_max' , '8192395' , 'WEB MAPPING ');
+INSERT INTO application_parameters (name, value, description) values ('bbox_y_max', '8192395' , 'WEB MAPPING ');
 INSERT INTO application_parameters (name, value, description) values ('zoom_level' , '0' , 'WEB MAPPING ');
 INSERT INTO application_parameters (name, value, description) values ('mapserver_dpi' , 72 , 'Default number of dots per inch in mapserv');
 INSERT INTO application_parameters (name, value, description) values ('mapserver_inch_per_kilometer' , 39370.1 , 'Inch to meter conversion factor');
