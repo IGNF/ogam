@@ -116,7 +116,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 						));
 					}
 
-					$this->logger->debug("CustomRoute : ".print_r($customRoute, true));
+					// $this->logger->debug("CustomRoute : ".print_r($customRoute, true));
 
 					$router->addRoute('customRoute_' . $controllerName, $customRoute);
 				}
