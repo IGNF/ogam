@@ -344,7 +344,7 @@ class DataEditionController extends AbstractOGAMController {
 			$request = $this->getRequest();
 			
 			$data = $this->_getDataFromRequest($request);
-			$data = $this->genericModel->getDatumUsingPK($data);
+			$data = $this->genericModel->getDatum($data);
 		}
 		
 		// If the object is not existing then we are in create mode instead of edit mode
@@ -612,7 +612,6 @@ class DataEditionController extends AbstractOGAMController {
 		// Get the parameters from the URL
 		$request = $this->getRequest();
 		$data = $this->_getDataFromRequest($request);
-		$data = $this->genericModel->getDatumUsingPK($data);
 		
 		// Complete the data object with the existing values from the database.
 		$data = $this->genericModel->getDatum($data);
