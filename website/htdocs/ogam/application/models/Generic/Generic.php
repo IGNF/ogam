@@ -123,6 +123,85 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		
 		return $data;
 	}
+	
+	/**
+	 * Fill a line of data with the values a table, given its primary key.
+	 * Only one object is expected in return.
+	 *
+	 * @param DataObject $data
+	 *        	the shell of the data object with the values for the primary key.
+	 * @return DataObject The complete data object.
+	 */
+	public function getDatumUsingPK($data) {
+		$db = $this->getAdapter();
+	
+		$tableFormat = $data->tableFormat;
+	
+		$sql = "SELECT parent_table";
+		$sql .= " FROM TABLE_TREE";
+		$sql .= " WHERE schema_code = '" . $tableFormat->schemaCode . "'";
+		$sql .= " AND child_table = '" . $tableFormat->format . "'";
+		
+		$select = $db->prepare($sql);
+		$select->execute();
+		$row = $select->fetch();
+
+		if ($row['parent_table'] != '*') {
+			// Get the values from the data table
+			$sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
+			$sql .= " FROM " . $tableFormat->schemaCode . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
+			$sql .= " WHERE(1 = 1) " . $this->genericService->buildWhere($data->infoFields);
+		
+			$this->logger->info('getDatumUsingPK : ' . $sql);
+		
+			$select = $db->prepare($sql);
+			$select->execute();
+			$row = $select->fetch();
+		
+			// Fill the values with data from the table
+			foreach ($data->editableFields as $field) {
+				$key = strtolower($field->getName());
+				$field->value = $row[$key];
+			}
+
+			// Fill the values with data from the table
+			foreach ($data->getFields() as $field) {
+					
+				// Fill the value labels for the field
+				$field = $this->genericService->fillValueLabel($field);
+			}
+		}
+		return $data;
+	}
+	
+	/**
+	 * Get the join key
+	 *
+	 * @param DataObject $data
+	 *        	the shell of the data object with the values for the primary key.
+	 * @return joinKeys The joiin keys.
+	 */
+	public function getJoinKeys($data) {
+		$db = $this->getAdapter();
+	
+		$tableFormat = $data->tableFormat;
+	
+		$sql = "SELECT join_key";
+		$sql .= " FROM TABLE_TREE";
+		$sql .= " WHERE schema_code = '" . $tableFormat->schemaCode . "'";
+		$sql .= " AND child_table = '" . $tableFormat->format . "'";
+	
+		$select = $db->prepare($sql);
+		$select->execute();
+		$row = $select->fetch();
+	
+		$joinKeys = $row['join_key'];
+		$joinKeys = explode(',', $joinKeys);
+		$joinKeys = array_map('trim', $joinKeys);
+
+		return $joinKeys;
+	}
+	
 
 	/**
 	 * Get a list of data objects from a table, given an incomplete primary key.
@@ -323,8 +402,9 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			}
 		}
 		foreach ($data->editableFields as $field) {
-			if ($field->value != null && $field->isEditable) {
-				
+			//anna : joinKeys are not primary keys, but are not editable either
+			//if ($field->value != null && $field->isEditable) {
+			if ($field->value != null) {
 				// Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
 					$columns .= $field->columnName . ", ";
