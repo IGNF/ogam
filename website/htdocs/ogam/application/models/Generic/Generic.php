@@ -175,11 +175,11 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	}
 	
 	/**
-	 * Get the join key
+	 * Get the join keys
 	 *
 	 * @param DataObject $data
-	 *        	the shell of the data object with the values for the primary key.
-	 * @return joinKeys The joiin keys.
+	 *        	the shell of the data object.
+	 * @return joinKeys The join keys.
 	 */
 	public function getJoinKeys($data) {
 		$db = $this->getAdapter();
@@ -402,8 +402,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			}
 		}
 		foreach ($data->editableFields as $field) {
-			//anna : joinKeys are not primary keys, but are not editable either
-			//if ($field->value != null && $field->isEditable) {
 			if ($field->value != null) {
 				// Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
