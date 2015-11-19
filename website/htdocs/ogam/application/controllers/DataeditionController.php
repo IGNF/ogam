@@ -112,6 +112,9 @@ class DataEditionController extends AbstractOGAMController {
 	/**
 	 * Generate a Zend Form Element from a TableField description.
 	 *
+	 * This is used only to validate the submitted data.
+	 * The Zend form is not displayed, the actual form is an ExtJS component.
+	 *
 	 * @param Zend_Form $form
 	 *        	the Zend form we want to update
 	 * @param TableField $tableField
@@ -125,94 +128,98 @@ class DataEditionController extends AbstractOGAMController {
 		
 		// Warning : $formField can be null if no mapping is defined with $tableField
 		
-		// TODO OGAM-73 : Manage all data types for edition (DATE, BOOLEAN, ...), with corresponding validators
-		if ($tableField->type === "STRING") {
+		switch ($tableField->type) {
 			
-			// The field is a text field
-			$elem = $form->createElement('text', $tableField->data);
+			case "STRING":
+				
+				// The field is a text field
+				$elem = $form->createElement('text', $tableField->data);
+				
+				// Add a regexp validator if a mask is present
+				if ($formField !== null && $formField->mask !== null) {
+					$validator = new Zend_Validate_Regex(array(
+						'pattern' => $formField->mask
+					));
+					$elem->addValidator($validator);
+				}
+				$elem->setValue($tableField->value);
+				break;
 			
-			// Add a regexp validator if a mask is present
-			if ($formField !== null && $formField->mask !== null) {
-				$validator = new Zend_Validate_Regex(array(
-					'pattern' => $formField->mask
-				));
+			case "INTEGER":
+				
+				// The field is an integer
+				$elem = $form->createElement('text', $tableField->data);
+				$elem->addValidator(new Zend_Validate_Int());
+				$elem->setValue($tableField->value);
+				break;
+			
+			case "NUMERIC":
+				
+				// The field is a numeric
+				$elem = $form->createElement('text', $tableField->data);
+				$elem->addValidator(new Zend_Validate_Float(array(
+					'locale' => 'en_EN'
+				))); // The locale should correspond to the database config
+				$elem->setValue($tableField->value);
+				
+				if ($tableField->subtype === "RANGE") {
+					
+					// Check min and max
+					$range = $this->metadataModel->getRange($tableField->unit);
+					$elem->addValidator(new Zend_Validate_LessThan(array(
+						'max' => $range->max
+					)));
+					$elem->addValidator(new Zend_Validate_GreaterThan(array(
+						'min' => $range->min
+					)));
+				}
+				break;
+			
+			case "DATE":
+				
+				// The field is a date
+				$elem = $form->createElement('text', $tableField->data);
+				// validate the date format
+				if ($formField !== null && $formField->mask !== null) {
+					$validator = new Zend_Validate_Date(array(
+						'format' => $formField->mask,
+						'locale' => 'en_EN'
+					));
+				} else {
+					$validator = new Zend_Validate_Date(array(
+						'locale' => 'en_EN'
+					));
+				}
 				$elem->addValidator($validator);
-			}
-			$elem->setValue($tableField->value);
-		} else if ($tableField->type === "INTEGER") {
+				$elem->setValue($tableField->value);
+				break;
 			
-			// The field is an integer
-			$elem = $form->createElement('text', $tableField->data);
-			$elem->addValidator(new Zend_Validate_Int());
-			$elem->setValue($tableField->value);
-		} else if ($tableField->type === "NUMERIC") {
+			case "CODE":
+				
+				$elem = $form->createElement('select', $tableField->data);
+				$elem->setValue($tableField->value);
+				break;
 			
-			// The field is a numeric
-			$elem = $form->createElement('text', $tableField->data);
-			$elem->addValidator(new Zend_Validate_Float(array(
-				'locale' => 'en_EN'
-			))); // The locale should correspond to the database config
-			$elem->setValue($tableField->value);
-		} else if ($tableField->type === "DATE") {
+			case "BOOLEAN":
+				
+				// The field is a boolean
+				$elem = $form->createElement('checkbox', $tableField->data);
+				$elem->setValue($tableField->value);
+				break;
 			
-			// The field is a date
-			$elem = $form->createElement('text', $tableField->data);
-			// validate the date format
-			if ($formField !== null && $formField->mask !== null) {
-				$validator = new Zend_Validate_Date(array(
-					'format' => $formField->mask,
-					'locale' => 'en_EN'
-				));
-			} else {
-				$validator = new Zend_Validate_Date(array(
-					'locale' => 'en_EN'
-				));
-			}
-			$elem->addValidator($validator);
-			$elem->setValue($tableField->value);
-		} else if ($tableField->type === "COORDINATE") {
+			case "ARRAY":
+				
+				// Build a multiple select box
+				$elem = $form->createElement('multiselect', $tableField->data);
+				$elem->setValue($tableField->value);
+				break;
 			
-			// The field is a geometry info
-			$elem = $form->createElement('text', $tableField->data);
-			$elem->setValue($tableField->value);
-		} else if ($tableField->type === "RANGE") {
-			
-			// The field is a range value
-			$elem = $form->createElement('text', $tableField->data);
-			$elem->addValidator(new Zend_Validate_Float(array(
-				'locale' => 'en_EN'
-			)));
-			
-			// Check min and max
-			$range = $this->metadataModel->getRange($tableField->unit);
-			$elem->addValidator(new Zend_Validate_LessThan(array(
-				'max' => $range->max
-			)));
-			$elem->addValidator(new Zend_Validate_GreaterThan(array(
-				'min' => $range->min
-			)));
-			$elem->setValue($tableField->value);
-		} else if ($tableField->type === "CODE") {
-			
-			$elem = $form->createElement('select', $tableField->data);
-			$elem->setValue($tableField->value);
-		} else if ($tableField->type === "BOOLEAN") {
-			
-			// The field is a boolean
-			$elem = $form->createElement('checkbox', $tableField->data);
-			$elem->setValue($tableField->value);
-		} else if ($tableField->type === "ARRAY") {
-			
-			// Build a multiple select box
-			$elem = $form->createElement('multiselect', $tableField->data);
-			$elem->setValue($tableField->value);
-		} else {
-			
-			// TODO : Manage GEOM fields
-			
-			// Default
-			$elem = $form->createElement('text', $tableField->data);
-			$elem->setValue($tableField->value);
+			case "GEOM":
+			default:
+				
+				// Default
+				$elem = $form->createElement('text', $tableField->data);
+				$elem->setValue($tableField->value);
 		}
 		
 		$elem->setLabel($tableField->label);
@@ -463,7 +470,7 @@ class DataEditionController extends AbstractOGAMController {
 		// Get back info from the session
 		$websiteSession = new Zend_Session_Namespace('website');
 		$data = $websiteSession->data;
-
+		
 		// Get the mode
 		$mode = $this->_getParam('MODE');
 		
@@ -483,12 +490,11 @@ class DataEditionController extends AbstractOGAMController {
 			echo '{"success":false,"errorMessage":' . json_encode($this->translator->translate("Invalid form")) . '}';
 		} else {
 			
-			
-			//join_keys values must not be erased
+			// join_keys values must not be erased
 			$joinKeys = $this->genericModel->getJoinKeys($data);
 			
 			foreach ($data->getFields() as $field) {
-
+				
 				$isNotJoinKey = !in_array($field->columnName, $joinKeys);
 				
 				if ($isNotJoinKey) {

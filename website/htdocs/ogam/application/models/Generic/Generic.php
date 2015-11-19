@@ -286,7 +286,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
 			if (!($tableFormat->schemaCode === "RAW_DATA" && $primaryKey->data === "SUBMISSION_ID")) {
 				
-				if ($primaryKey->type === "NUMERIC" || $primaryKey->type === "INTEGER" || $primaryKey->type === "RANGE") {
+				if ($primaryKey->type === "NUMERIC" || $primaryKey->type === "INTEGER") {
 					$sql .= " AND " . $primaryKey->columnName . " = " . $primaryKey->value;
 				} else if ($primaryKey->type === "ARRAY") {
 					// Arrays not handlmed as primary keys
