@@ -91,7 +91,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		
 		$front = $this->getResource('FrontController');
 		$router = $front->getRouter();
-				
+		
 		// Si un controleur existe dans custom alors on le prend en priorité à la place de default
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/controllers/')) {
 			
@@ -102,18 +102,27 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					$controllerName = substr($file, 0, stripos($file, 'Controller.php'));
 					$controllerName = strtolower($controllerName);
 					$this->logger->debug("Adding custom controller : " . $controllerName);
-					$customRoute = new Zend_Controller_Router_Route("/" . $controllerName . '/:action', array(
-						'module' => 'custom',
-						'controller' => $controllerName
-					));
 					
-					//$this->logger->debug("CustomRoute : ".print_r($customRoute, true));
+					if ($controllerName == 'index') {
+						$customRoute = new Zend_Controller_Router_Route('', array(
+							'module' => 'custom',
+							'controller' => 'index',
+							'action' => 'index'
+						));
+					} else {
+						$customRoute = new Zend_Controller_Router_Route($controllerName . '/:action', array(
+							'module' => 'custom',
+							'controller' => $controllerName,
+							'action' => 'index'
+						));
+					}
+					
+					$this->logger->debug("CustomRoute : " . print_r($customRoute, true));
 					
 					$router->addRoute('customRoute_' . $controllerName, $customRoute);
 				}
 			}
 		}
-				
 	}
 
 	/**
