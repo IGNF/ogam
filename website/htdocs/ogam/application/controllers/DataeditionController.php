@@ -311,6 +311,13 @@ class DataEditionController extends AbstractOGAMController {
 			}
 		}
 		
+		// Complete the other fields with the session values (particulary join_keys)
+		foreach ($data->editableFields as $editableField) {
+			if (!empty($params[$editableField->data])) {
+				$editableField->value = $params[$editableField->data];
+			}
+		}
+		
 		return $data;
 	}
 
@@ -337,6 +344,7 @@ class DataEditionController extends AbstractOGAMController {
 			$request = $this->getRequest();
 			
 			$data = $this->_getDataFromRequest($request);
+			$data = $this->genericModel->getDatum($data);
 		}
 		
 		// If the object is not existing then we are in create mode instead of edit mode
@@ -455,7 +463,7 @@ class DataEditionController extends AbstractOGAMController {
 		// Get back info from the session
 		$websiteSession = new Zend_Session_Namespace('website');
 		$data = $websiteSession->data;
-		
+
 		// Get the mode
 		$mode = $this->_getParam('MODE');
 		
@@ -475,9 +483,18 @@ class DataEditionController extends AbstractOGAMController {
 			echo '{"success":false,"errorMessage":' . json_encode($this->translator->translate("Invalid form")) . '}';
 		} else {
 			
-			// Update the data descriptor with the values submitted
+			
+			//join_keys values must not be erased
+			$joinKeys = $this->genericModel->getJoinKeys($data);
+			
 			foreach ($data->getFields() as $field) {
-				$field->value = $this->_getParam($field->getName());
+
+				$isNotJoinKey = !in_array($field->columnName, $joinKeys);
+				
+				if ($isNotJoinKey) {
+					// Update the data descriptor with the values submitted
+					$field->value = $this->_getParam($field->getName());
+				}
 			}
 			
 			try {
