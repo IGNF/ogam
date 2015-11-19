@@ -7,11 +7,13 @@ OGAM est sous licence GPL.
 
 
 # Documentation
+
 La documentation notamment pour l'installation et la configuration se trouve 
 dans le répertoire documentation
 
 
 # Git
+
 Git est utilisé pour récupérer le projet qui est hébergé sur [Gitlab](http://gitlab.dockerforge.ign.fr/ogam/ogam).
 
 Pour l'utiliser :
@@ -22,6 +24,7 @@ Pour l'utiliser :
 
 
 # Gradle
+
 Gradle est utilisé pour lancer la compilation des composants du projet.
 
 Pour l'utiliser :
@@ -30,6 +33,7 @@ Pour l'utiliser :
 
 
 # Vagrant
+
 Vagrant est utilisé pour instancier une machine virtuelle contenant les services du projet (Apache, Tomcat, Mapserver, ...).
 
 Pour l'utiliser : 

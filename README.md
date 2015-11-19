@@ -10,6 +10,7 @@ OGAM is under GPL license.
 The documentation, installation and configuration procedures, etc is in the "documentation" folder.
 
 # Git
+
 Git is used to get the project from [Gitlab](http://gitlab.dockerforge.ign.fr/ogam/ogam).
 
 To use git :
