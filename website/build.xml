@@ -328,6 +328,18 @@
 	<!-- Launch PHPUnit-->
 	<target name="phpunit" description="Launch PHPUnit" depends="_phpunitwindows, _phpunitunix">
 	</target>
+	
 
+	<!-- Launch JSLint -->
+	<taskdef name="jslint" classname="com.googlecode.jslint4java.ant.JSLintTask" classpath="${libraries.dir}/JSLint4Java/jslint4java.jar" />
+	<target name="jslint">
+		<mkdir dir="./hudson/jslint/" />
+		<jslint haltOnFailure="false" options="sloppy,undef,vars,white,eqeq,plusplus,es5">
+			<formatter type="xml" destfile="./hudson/jslint/jslint.xml" />
+			<predef>Windows</predef>
+			<fileset dir="${src.dir}/ogam/public/js/genapp/source" includes="**/*.js">
+			</fileset>
+		</jslint>
+	</target>
 
 </project>
