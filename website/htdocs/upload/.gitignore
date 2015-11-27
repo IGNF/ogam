@@ -1,3 +1,7 @@
 *
 !images
+<<<<<<< HEAD
 !.gitignore
+=======
+!.gitignore
+>>>>>>> sinp
