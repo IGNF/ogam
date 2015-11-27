@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="//cdn.sencha.com/ext/gpl/5.1.0/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="//cdn.sencha.com/ext/gpl/5.1.0/build/ext-all-debug.js"></script>
+        
+        <script type="text/javascript">
+            Ext.onReady(function () {
+                // global variable
+                win = new Ext.window.Window({
+                    foo     : 'bar',
+                    height  : 200,
+                    width   : 200,
+                    x       : 10,
+                    y       : 10
+                });
+                
+                win.show();
+            })
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
