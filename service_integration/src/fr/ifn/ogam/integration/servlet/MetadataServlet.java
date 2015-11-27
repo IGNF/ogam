@@ -152,7 +152,7 @@ public class MetadataServlet extends HttpServlet {
 	}
 
 	/**
-	 * Return a JSON String listing the needed CSV files for a JRC Requests.
+	 * Return a JSON String listing the needed CSV files for a Dataset.
 	 * 
 	 * @param datasetId
 	 *            the dataset identifier
