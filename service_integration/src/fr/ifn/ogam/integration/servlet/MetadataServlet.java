@@ -94,7 +94,7 @@ public class MetadataServlet extends HttpServlet {
 			//
 			// Get the expected files for a request
 			//
-			if (action.equals(ACTION_GET_REQUEST_FILES)) {
+			if (action.equalsIgnoreCase(ACTION_GET_REQUEST_FILES)) {
 
 				String requestId = request.getParameter(REQUEST_ID);
 				if (requestId == null) {
@@ -107,7 +107,7 @@ public class MetadataServlet extends HttpServlet {
 			//
 			// Get the fields of a data field
 			//
-				if (action.equals(ACTION_GET_FILE_FIELDS)) {
+				if (action.equalsIgnoreCase(ACTION_GET_FILE_FIELDS)) {
 
 				String fileformat = request.getParameter(FILE_FORMAT);
 				if (fileformat == null) {
@@ -121,16 +121,18 @@ public class MetadataServlet extends HttpServlet {
 			//
 			// Reset the caches
 			//
-					if (action.equals(ACTION_RESET_CACHE)) {
+					if (action.equalsIgnoreCase(ACTION_RESET_CACHE)) {
 
 				metadataDAO.clearCaches();
+
+				out.print("Caches cleaned");
 
 			} else
 
 			//
 			// Get the tree hierarchy of the table
 			//
-						if (action.equals(ACTION_GET_TABLES_TREE)) {
+						if (action.equalsIgnoreCase(ACTION_GET_TABLES_TREE)) {
 
 				String tableFormat = request.getParameter(TABLE_FORMAT);
 				if (tableFormat == null) {
