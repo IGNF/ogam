@@ -10,7 +10,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		'OgamDesktop.store.map.Layer',
 		'OgamDesktop.store.map.LayerService',
 		'OgamDesktop.store.map.LayerNode',
-		'Ext.MessageBox'
+		'Ext.window.MessageBox'
 	],
 
 	/**
@@ -380,7 +380,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * @return OpenLayers.Layer
 	 */
 	buildLegend : function(layerObject,serviceObject) {
-		legend = this.getLegendspanel()
+		var legend = this.getLegendspanel()
 		//legend = this.mapMainWin.getComponent(1).getComponent(1)
 			.add(new Ext.Component({
 				// Extjs 5 doesn't accept '.' into ids
@@ -415,7 +415,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	initLayerTree: function(nodes) {
 		
 		// initialize the Tree store based on the map layers
-		treeLayerStore = Ext.create('Ext.data.TreeStore', {
+		var treeLayerStore = Ext.create('Ext.data.TreeStore', {
 			model: 'GeoExt.data.LayerTreeModel',
 			root: {}
 		});
@@ -433,7 +433,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 						rootChild = {
 						text: node.data.text,
 						layer: layer.data,
-						disabled: node.raw.disabled,
+						disabled: node.data.disabled,
 						plugins: [
 							Ext.create('GeoExt.tree.LayerNode')
 						]
