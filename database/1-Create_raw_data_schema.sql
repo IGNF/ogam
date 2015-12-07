@@ -115,7 +115,9 @@ CREATE OR REPLACE FUNCTION raw_data.geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
     BEGIN
-    NEW.the_geom = public.st_geometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);
+    IF NEW.the_geom IS NULL THEN
+		NEW.the_geom = public.ST_GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);	
+    END IF;   
     EXCEPTION
     WHEN internal_error THEN
         IF SQLERRM = 'parse error - invalid geometry' THEN
@@ -129,11 +131,52 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE TRIGGER geom_trigger
+CREATE TRIGGER a_geom_trigger
   BEFORE INSERT OR UPDATE
   ON raw_data.LOCATION
   FOR EACH ROW
   EXECUTE PROCEDURE raw_data.geomfromcoordinate();
+
+
+
+  
+/*========================================================================*/
+/*	Add a trigger to fill the departements column of the location table   */
+/*========================================================================*/
+CREATE OR REPLACE FUNCTION raw_data.b_departementsfromgeom() RETURNS "trigger" AS
+$BODY$
+BEGIN
+
+    NEW.departement = (select max(dp) FROM "mapping".departements z WHERE st_intersects(z.the_geom, NEW.the_geom));    
+    RETURN NEW;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE TRIGGER b_departements_geom_trigger
+  BEFORE INSERT ON raw_data.LOCATION
+  FOR EACH ROW
+  EXECUTE PROCEDURE raw_data.b_departementsfromgeom();
+  
+  
+  
+/*========================================================================*/
+/*	Add a trigger to fill the communes column of the location table    */
+/*========================================================================*/
+CREATE OR REPLACE FUNCTION raw_data.c_communesfromgeom() RETURNS "trigger" AS
+$BODY$
+BEGIN
+
+    NEW.communes = (SELECT array_agg(code) FROM (SELECT code FROM "mapping".communes z WHERE st_intersects(z.the_geom, st_transform(NEW.the_geom, 2154)) LIMIT 20) as foo);    
+    RETURN NEW;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE TRIGGER c_communes_geom_trigger
+  BEFORE INSERT ON raw_data.LOCATION
+  FOR EACH ROW
+  EXECUTE PROCEDURE raw_data.c_communesfromgeom();
 
 /*==============================================================*/
 /* Table : PLOT_DATA                                            */
@@ -145,6 +188,7 @@ PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
 INV_DATE             DATE                 null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
+CORINE_BIOTOPE 		 character varying(36)[]     null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
 constraint PK_PLOT_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE),
@@ -158,6 +202,7 @@ COMMENT ON COLUMN PLOT_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN PLOT_DATA.CYCLE IS 'The cycle of inventory';
 COMMENT ON COLUMN PLOT_DATA.INV_DATE IS 'The date of inventory';
 COMMENT ON COLUMN PLOT_DATA.IS_FOREST_PLOT IS 'Is the plot a forest plot ?';
+COMMENT ON COLUMN PLOT_DATA.CORINE_BIOTOPE IS 'The biotope of the plot';
 COMMENT ON COLUMN PLOT_DATA.COMMENT IS 'A comment about the plot';
 COMMENT ON COLUMN PLOT_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 
