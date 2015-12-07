@@ -272,9 +272,31 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('ajaxgetqueryformAction');
 		
 		$filters = json_decode($this->getRequest()->getQuery('filter'));
-		$requestName = $this->getRequest()->getPost('requestName');
+				
+		$datasetId= $requestName =null;
 		
-		echo $this->queryService->getQueryForm($filters[0]->value, $requestName);
+		if (is_array($filters)) {
+			foreach($filters as $aFilter)
+			{
+				switch($aFilter->property){
+					case 'processId':
+						$datasetId = $aFilter->value;
+						break;
+					case 'requestName':
+						$requestName = $aFilter->value;
+						break;
+					default:
+						$this->logger->debug('filter unattended : ' . $aFilter->property);
+				}
+			}
+			
+		} else {
+			$datasetId = json_decode($this->getRequest()->getQuery('datasetId'));
+			$requestName = $this->getRequest()->getPost('requestName');
+			
+		}
+		
+		echo $this->queryService->getQueryForm($datasetId, $requestName);
 		
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();

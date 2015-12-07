@@ -50,7 +50,7 @@ Ext.define('OgamDesktop.view.result.GridTab', {
 	 * @cfg {Boolean} hideGridDataEditButton if true hide the
 	 *      grid data edit button (defaults to true).
 	 */
-	hideGridDataEditButton : false,
+	hideGridDataEditButton : true,
 	/**
 	 * @cfg {String} editDataButtonTitle The edit Data Button
 	 *      Title (defaults to <tt>'Edit the data'</tt>)

@@ -23,12 +23,10 @@
  *            config The config object
  */
 Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
-	extend: 'Ext.panel.Panel',
+	extend: 'OgamDesktop.ux.request.RequestFieldSet',
 	alias:'widget.advancedrequestfieldset',
 	xtype: 'advanced-request-fieldset',
-	requires:['Ext.data.JsonStore','OgamDesktop.store.Tree',
-	      'OgamDesktop.model.request.object.field.Code',
-	      'OgamDesktop.ux.form.field.*'],
+	requires:[],
 	/**
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
@@ -84,6 +82,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 *      <tt>120</tt>)
 	 */
 	criteriaLabelWidth : 120,
+	
+	
 
 	// private
 	initComponent : function() {
@@ -93,6 +93,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		 * @property criteriaDS
 		 * @type Ext.data.JsonStore
 		 */
+		this.criteriaDS = Ext.data.StoreManager.lookup(this.criteriaDS || 'ext-empty-store');
 		/*this.criteriaDS = new Ext.data.JsonStore({
 			idProperty : 'name',
 			fields : [ {
@@ -180,12 +181,12 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			cls : 'o-ux-adrfs-filter-item',
 			labelWidth : this.criteriaLabelWidth,
 			defaults : {
-				labelStyle : 'padding: 0; margin-top:3px',
+				labelStyle : 'padding: 0;',
 				beforeLabelTpl : '<div class="filterBin">&nbsp;&nbsp;&nbsp;</div>',
 				labelClsExtra : 'columnLabelColor labelNextBin'
 				//width : 180 not used in a form layout (Table-row display)
 			},
-			/* FIXME deprecated ?
+		/*	// FIXME deprecated ?
 			listeners : {
 				'add' : function(container, cmp, index) {
 					var subName = cmp.name, i = 0, foundComponents, tmpName = '', criteriaPanel = cmp.ownerCt, className = 'first-child';
@@ -350,6 +351,9 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			combo.collapse();
 		}
 		// Add the field
+		if (!Ext.isEmpty(records) && !Ext.isIterable(records)){
+			records =[records];
+		}
 		
 		for(var i=0, l=records.length;i<l; i++) {
 			this.criteriaPanel.add(this.self.getCriteriaConfig(records[i].data));
@@ -374,71 +378,6 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		var criteria = this.criteriaPanel.add(this.self.getCriteriaConfig(record.data));
 		//this.criteriaPanel.updateLayout();
 		return criteria;
-	},
-
-	/**
-	 * Construct the default criteria
-	 * 
-	 * @return {Array} An array of the default criteria config
-	 */
-	getDefaultCriteriaConfig : function() {
-		var items = [];
-		this.criteriaDS.each(function(record) {
-			if (record.data.is_default) {
-				// if the field have multiple default values, duplicate the
-				// criteria
-				var defaultValue = record.data.default_value;
-				if (!Ext.isEmpty(defaultValue)) {
-					var defaultValues = defaultValue.split(';'), i;
-					for (i = 0; i < defaultValues.length; i++) {
-						// clone the object
-						var newRecord = record.copy();
-						newRecord.data.default_value = defaultValues[i];
-						this.items.push(this.form.self.getCriteriaConfig(newRecord.data));
-					}
-				} else {
-					this.items.push(this.form.self.getCriteriaConfig(record.data));
-				}
-			}
-		}, {
-			form : this,
-			items : items
-		});
-		return items;
-	},
-
-	/**
-	 * Construct the filled criteria
-	 * 
-	 * @return {Array} An array of the filled criteria config
-	 */
-	getFilledCriteriaConfig : function() {
-		var items = [];
-		this.criteriaDS.each(function(record) {
-			var fieldValues, newRecord, i;
-			// Check if there are some criteriaValues from the predefined
-			// request page
-			if (!Ext.isEmpty(this.form.criteriaValues)) {
-				fieldValues = this.form.criteriaValues['criteria__' + record.data.name];
-				// Check if there are some criteriaValues for this criteria
-				if (!Ext.isEmpty(fieldValues)) {
-					// Transform fieldValues in array if needed
-					if (!Ext.isArray(fieldValues)) {
-						fieldValues = [ fieldValues ];
-					}
-					// Duplicate the criteria if the field have multiple values
-					for (i = 0; i < fieldValues.length; i++) {
-						newRecord = record.copy();
-						newRecord.data.default_value = fieldValues[i];
-						this.items.push(this.form.self.getCriteriaConfig(newRecord.data));
-					}
-				}
-			}
-		}, {
-			form : this,
-			items : items
-		});
-		return items;
 	},
 
 	/**
@@ -560,284 +499,5 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 */
 	removeAllColumns : function() {
 		this.columnsPanel.removeAll();
-	},
-
-	statics: {
-//<locale>		
-		/**
-		 * @cfg {String} criteriaPanelTbarComboEmptyText The criteria Panel Tbar
-		 *      Combo Empty Text (defaults to <tt>'Select...'</tt>)
-		 */
-		criteriaPanelTbarComboEmptyText : 'Select...',
-//</locale>
-		/**
-		 * @cfg {String} dateFormat The date format for the date fields (defaults to
-		 *      <tt>'Y/m/d'</tt>)
-		 */
-		dateFormat : 'Y/m/d',
-
-		/**
-		 * Construct a criteria from the record
-		 * 
-		 * @param {Ext.data.Record}
-		 *            record The criteria combobox record to add. A serialized
-		 *            FormField object.
-		 * @hide
-		 */
-		getCriteriaConfig : function(record) {
-			var cls = this.self || OgamDesktop.ux.request.AdvancedRequestFieldSet;
-			// If the field have multiple default values, duplicate the criteria
-			if (!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1) {
-				var fields = [];
-				var defaultValues = record.default_value.split(';'), i;
-				for (i = 0; i < defaultValues.length; i++) {
-					record.default_value = defaultValues[i];
-					fields.push(cls.getCriteriaConfig(record));
-				}
-				return fields;
-			}
-			var field = {};
-			field.name = 'criteria__' + record.name;
-
-			// Creates the ext field config
-			switch (record.inputType) {
-			case 'SELECT': // The input type SELECT correspond generally to a data
-				// type CODE
-				field.xtype = 'combo';
-				field.formItemCls = 'trigger-field'; // For IE7 layout //TODO needed ?
-				field.hiddenName = field.name;
-				field.triggerAction = 'all';
-				field.typeAhead = true;
-				field.displayField = 'label';
-				field.valueField = 'code';
-				field.emptyText = cls.criteriaPanelTbarComboEmptyText;
-				if (record.subtype === 'DYNAMIC') {
-					field.queryMode = 'remote';
-					field.store = new Ext.data.JsonStore({
-						autoDestroy : true,
-						autoLoad : true,
-						model:'OgamDesktop.model.request.object.field.Code',
-						proxy:{
-							type: 'ajax',
-							url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetdynamiccodes',
-							extraParams : {
-								'unit' : record.unit
-							},
-							reader: {
-								rootProperty:'codes'
-							}
-						}
-						
-					});
-				} else {
-					// Subtype == CODE (other possibilities are not available)
-					field.queryMode = 'remote';
-					field.store = new Ext.data.JsonStore({
-						autoDestroy : true,
-						autoLoad : true,
-						model:'OgamDesktop.model.request.object.field.Code',
-						proxy:{
-							type: 'ajax',
-							url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetcodes',
-							extraParams : {
-								'unit' : record.unit
-							},
-							reader: {
-								rootProperty:'codes'
-							}
-						}
-					});
-				}
-				break;
-			case 'DATE': // The input type DATE correspond generally to a data
-				// type DATE
-				field.xtype = 'daterangefield';
-				field.formItemCls = 'trigger-field'; // For IE7 layout
-				field.format = cls.dateFormat;
-				break;
-			case 'NUMERIC': // The input type NUMERIC correspond generally to a data
-				// type NUMERIC or RANGE
-				field.xtype = 'numberrangefield';
-				field.formItemCls = 'trigger-field'; // For IE7 layout
-				// If RANGE we set the min and max values
-				if (record.subtype === 'RANGE') {
-					field.minValue = record.params.min;
-					field.maxValue = record.params.max;
-					field.decimalPrecision = (record.params.decimals === null) ? 20 : record.params.decimals;
-				}
-				// IF INTEGER we remove the decimals
-				if (record.subtype === 'INTEGER') {
-					field.allowDecimals = false;
-					field.decimalPrecision = 0;
-				}
-				break;
-			case 'CHECKBOX':
-				field.xtype = 'checkbox';
-				//field.xtype = 'switch_checkbox'; //FIXME
-				//field.ctCls = 'improvedCheckbox';
-				field.uncheckedValue = 0;
-				switch (record.default_value) {
-				case 1:
-				case '1':
-				case true:
-				case 'true':
-					field.inputValue = '1';
-					break;
-				default:
-					field.inputValue = '0';
-					break;
-				}
-				// field.boxLabel = record.label;
-				break;
-			case 'RADIO':
-			case 'TEXT':
-				switch (record.subtype) {
-				// TODO : BOOLEAN, COORDINATE
-				case 'INTEGER':
-					field.xtype = 'numberfield';
-					field.allowDecimals = false;
-					break;
-				case 'NUMERIC':
-					field.xtype = 'numberfield';
-					break;
-				default: // STRING
-					field.xtype = 'textfield';
-					break;
-				}
-				break;
-			case 'GEOM':
-				field.xtype = 'geometryfield';
-				field.formItemCls = 'trigger-field'; // For IE7 layout
-				field.hideDrawPointButton = true;
-				field.hideDrawLineButton = true;
-				break;
-			case 'TREE':
-				field.xtype = 'treefield';
-				field.valueLabel = record.valueLabel;
-				//field.unit = record.unit;
-				field.store = {
-					xtype : 'jsonstore',
-					autoDestroy : true,
-					remoteSort : true,
-					model:'OgamDesktop.model.request.object.field.Code',
-					proxy:{
-						type:'ajax',
-						url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettreecodes',
-						extraParams:{unit:record.unit},
-						reader:{
-							idProperty : 'code',
-							totalProperty : 'results',
-							rootProperty : 'rows'
-						}
-					}};
-				field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
-					root :{
-						allowDrag : false,
-						id : '*'
-					},
-					proxy:{
-						extraParams:{unit:record.unit}
-					}});
-				break;
-			case 'TAXREF':
-				field.xtype = 'treefield';
-				field.valueLabel = record.valueLabel;
-				//field.unit = record.unit;
-				field.treePickerColumns = {
-				    items: [{
-				    	xtype: 'treecolumn',
-			            text: "name",
-			            dataIndex: "label"
-			        },{
-			            text: "vernacular",
-			            dataIndex: "vernacularName"
-			        },{
-			        	text: "Reference",
-			        	xtype: 'booleancolumn',
-			            dataIndex: "isReference",
-			            flex:0,
-			            witdh:15
-			        }],
-					defaults : {
-						flex : 1
-					}
-				};
-				field.listConfig={
-					itemTpl:  [
-						'<tpl for=".">',
-						'<div>',
-							'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 0"><i>{label}</i></tpl>',
-							'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 1"><b>{label}</b></tpl>',
-							'<br/>',
-							'<tpl if="!Ext.isEmpty(values.vernacularName) && values.vernacularName != null">({vernacularName})</tpl>',
-				        '</div></tpl>'
-				        ]};
-				field.store = {
-					xtype : 'jsonstore',
-					autoDestroy : true,
-					remoteSort : true,
-					fields:['code', 'label',
-					        'isReference','vernacularName'],//TODO changed to a generate model ?
-					proxy:{
-						type:'ajax',
-						url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettaxrefcodes',
-						extraParams:{unit:record.unit},
-						reader:{
-							idProperty : 'code',
-							totalProperty : 'results',
-							rootProperty : 'rows'
-						}
-					}};
-				field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
-					model:'OgamDesktop.model.NodeRef',
-					root :{
-						allowDrag : false,
-						id : '0'
-					},
-					proxy:{
-						url:Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettaxrefnodes',
-						extraParams:{unit:record.unit}
-					}});
-				break;
-			default:
-				field.xtype = 'field';
-				break;
-			}
-			if (!Ext.isEmpty(record.default_value)) {
-				field.value = record.default_value;
-			}
-			if (!Ext.isEmpty(record.fixed)) {
-				field.disabled = record.fixed;
-			}
-			field.fieldLabel = record.label;
-
-			if (Ext.isEmpty(field.listeners)) {
-				field.listeners = {
-					scope : this
-				};
-			}
-			field.listeners.render = function(cmp) {
-				if (cmp.xtype != 'hidden') {
-
-					// Add the tooltip
-					var binCt = cmp.getEl().parent();
-
-					var labelDiv = cmp.getEl().child('.x-form-item-label');
-					Ext.QuickTips.register({
-						target : labelDiv,
-						title : record.label,
-						text : record.definition,
-						width : 200
-					});
-
-					labelDiv.parent().first().on('click', function(event, el, options) {
-						cmp.ownerCt.remove(cmp);
-					}, this, {
-						single : true
-					});
-				}
-			};
-			return field;
-		}
 	}
 });

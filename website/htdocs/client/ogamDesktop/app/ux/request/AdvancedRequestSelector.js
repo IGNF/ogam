@@ -4,7 +4,9 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 	mixins: {
 		storeholder: 'Ext.util.StoreHolder'
 	},
-	
+
+	criteriaValues:[],
+
     destroy: function () {
         this.mixins.storeholder.destroy.call(this);
         this.callParent();
@@ -16,6 +18,11 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
     
     onBindStore: function(store, initial, propertyName, oldStore){
     	this.reloadForm();
+    },
+    setCriteriaValues:function(value){
+    	console.log('setCriteriaValuess', value);
+    	this.criteriaValues = (Ext.isIterable(value) || Ext.isObject(value)) ? value : [];
+
     },
 	
     reloadForm: function(){
@@ -37,7 +44,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 					title : item.get('label'),
 					id : formId,
 					criteriaDS : criteria,
-					//criteriaValues : criteriaValues, //FIXME
+					criteriaValues : this.criteriaValues, //FIXME
 					columnsDS : columns
 				});
                 // Find the geom criteria and fill the geomCriteriaInfo param

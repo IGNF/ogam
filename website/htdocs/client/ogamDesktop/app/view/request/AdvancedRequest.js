@@ -66,7 +66,8 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		margin : '5 0 5 0',
 		title : this.requestSelectTitle,
 		bind: {
-			store: '{currentProcess.fieldsets}'
+			criteriaValues:'{userchoices}',
+			store: '{fieldsets}'
 		},
 		region : 'center'
 		/*keys : { //FIXME
@@ -114,6 +115,9 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 			bind: {
 				store: '{processStore}',
 				selection:'{currentProcess}'
+			},
+			 listeners:{
+				select:'onUpdateDataset'
 			}
 		}]
 	}];
@@ -121,9 +125,9 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 	},
 	// The bottom tools bar
 	initBbar:function(){
-		this.bbar=[/*{ TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
+		this.bbar=[{ //TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
 				itemId:'CancelButton', type: 'button', text: this.buttonsText.cancel
-		  	},'-',*/{
+		  	},'-',{
 		  		itemId:'ResetButton', type: 'button', text: this.buttonsText.reset
 		  	},{
 		  		xtype: 'tbspacer',

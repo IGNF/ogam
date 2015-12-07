@@ -30,7 +30,8 @@ Ext.define('OgamDesktop.Application', {
 		'result.Grid',
 		'result.Main',
 		'result.Layer',
-		'navigation.DeprecatedDetailGrid'
+		'navigation.DeprecatedDetailGrid',
+		'request.PredefinedRequest'
 	],
 	views: [
 		'main.Main',
@@ -48,8 +49,10 @@ Ext.define('OgamDesktop.Application', {
 		'navigation.MainWin',
 		'navigation.Tab'
 	],
+	session: true,
 
 	launch: function () {
 		// TODO - Launch the application
+		Ext.Loader.loadScript(Ext.manifest.OgamDesktop.requestServiceUrl +'getgridparameters');
 	}
 });

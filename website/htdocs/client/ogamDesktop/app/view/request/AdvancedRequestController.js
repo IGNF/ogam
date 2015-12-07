@@ -56,8 +56,12 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 
 	/**
 	 * Submit the current request form
+	 * @param button submit boutton
+	 *
 	 */
     onSubmit:function(button){
+    	this.getView().fireEvent('beforeRequestForm', this);//the form may fire beforeaction
+    	
     	Ext.Ajax.on('beforerequest', function(conn, options) {
     		this.requestConn = conn;
     	}, this, {
@@ -65,11 +69,9 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
     	});
 		button.up('form').getForm().submit({
 			clientValidation: true,
-			waitMsg: Ext.view.AbstractView.prototype.loadingText,
+			//waitMsg: Ext.view.AbstractView.prototype.loadingText,
+			autoAbort:true,
 			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',
-			params: {
-				newStatus: 'delivered'
-			},
 			success: function(form, action) {
 				this.requestConn = null;
 				button.fireEvent('onRequestFormSubmit', action.result.columns);
@@ -87,6 +89,16 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 				}
 			}
 		});
+	},
+	onUpdateDataset:function(sel, value, old){
+		console.log('onUpdateDataset', arguments);
+		 sel.selection.fieldsets({success:function(records){
+			 
+			 console.log('fieldsets');
+			 
+			 this.getViewModel().set({'userchoices':[],'fieldsets':records});
+			 
+		 }, scope:this});
 	},
 
 	/**

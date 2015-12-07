@@ -3,68 +3,131 @@
  * @deprecated
  */
 Ext.define('OgamDesktop.view.request.PredefinedRequest', {
-	extend: 'Ext.panel.Panel',
+	extend: 'OgamDesktop.view.request.MainWin',
 	alias: 'widget.predefined-request',
-	//extend: 'OgamDesktop.view.request.MainWin',
 	xtype: 'predefined-request',
 	layout: 'hbox',
 	title: 'Predefined Request',
 	frame: true,
 	requires: [
-			'Ext.grid.feature.Grouping',
+		'OgamDesktop.view.request.PredefinedRequestModel',
+		'OgamDesktop.view.request.PredefinedRequestController',
+		'OgamDesktop.ux.request.AdvancedRequestFieldSet',
+		'Ext.grid.feature.Grouping',
 			'OgamDesktop.store.request.PredefinedGroup',
-			'Ext.grid.Panel'
+			'OgamDesktop.view.request.PredefinedRequestSelector',
+			'Ext.grid.Panel',
+			'OgamDesktop.ux.request.AdvancedRequestSelector'
 		],
-		initComponent: function() {
-			var store = new OgamDesktop.store.request.PredefinedGroup();
+	controller: 'predefinedrequest',
+	viewModel:{
+		type:'predefinedrequest'
+	},
+//<loacle>		
+    /**
+     * @cfg {String} resetButtonText
+     * The reset Button Text (defaults to <tt>'Reset'</tt>)
+     */
+    resetButtonText:"Reset",
+    /**
+     * @cfg {String} resetButtonTooltip
+     * The reset Button Tooltip (defaults to <tt>'Reset the form with the default values'</tt>)
+     */
+    resetButtonTooltip:"Reset the form with the default values",
+    /**
+     * @cfg {String} launchRequestButtonText
+     * The launch Request Button Text (defaults to <tt>'Launch the request'</tt>)
+     */
+    launchRequestButtonText:"Launch the request",
+    /**
+     * @cfg {String} launchRequestButtonTooltip
+     * The launch Request Button Tooltip (defaults to <tt>'Launch the request in the consultation page'</tt>)
+     */
+    launchRequestButtonTooltip:"Launch the request in the consultation page",
+    /**
+     * @cfg {String} loadingText
+     * The loading Text (defaults to <tt>'Loading...'</tt>)
+     */
+    loadingText:"Loading...",
+
+    /**
+     * @cfg {String} defaultErrorCardPanelText
+     * The default Error Card Panel Text (defaults to <tt>'Sorry, the loading failed...'</tt>)
+     */
+    defaultErrorCardPanelText:"Sorry, the loading failed...",
+    /**
+     * @cfg {String} criteriaPanelTitle
+     * The criteria Panel Title (defaults to <tt>'Request criteria'</tt>)
+     */
+    criteriaPanelTitle:"Request criteria",	
+//</loacle>
+
+    
+    initItems: function() {
+			var store = new OgamDesktop.store.request.PredefinedGroup({
+				groupField:'group_label'});
 			var columns = [{
 				text: 'Label',
 				flex: 1,
-				dataIndex: 'name'
+				dataIndex: 'label'
 			}];
 
 			var features = [{
 				ftype: 'grouping',
-				groupHeaderTpl: '{name} ({rows.length} Requete{[values.rows.length > 1 ? "s" : ""]})',
-				hideGroupedHeader: true,
+				groupHeaderTpl: '{name} ({children.length:plural("Requete")})',
+				//hideGroupedHeader: true,
 				startCollapsed: true,
-				id: 'requestsGrouping'
+				itemId: 'requestsGrouping'
 			}];
 			
 			this.items = [{
 				xtype: 'gridpanel',
+				height:'100%',
 				store: store,
 				width: '65%',
 				margin: '10 10 10 10',
 				columns: columns,
 				features: features,
-				groupingFeature: features,
+				reference:'requete',
 				listeners: {
-					itemclick: this.onGridRowSelect,
-					scope:this
+					itemclick: 'onGridRowSelect',
 				}
 			},{
-				xtype: 'fieldset',
 				title: 'Request Criteria',
 				hideMode: 'display',
+				itemId:'myfieldset',
+				xtype:'predefined-request-selector',
+				bind:{
+					criteria :{
+						bindTo:'{criteria}',
+						deep:true
+					}
+				},
 				flex: 1,
 				margin: '5 10 10 10',
-				items: [{
-					xtype: 'button',
-					margin: '5 5 5 5',
-					text: 'Reset'
-				},{
-					xtype: 'button',
-					margin: '5 5 5 5',
-					text: 'Launch the request'
-				}]
+				
 			}];
+			this.callParent();
+    },
+	initComponent:function(){
+			this.fbar= [{
+				xtype: 'button',
+				margin: '5 5 5 5',
+				text: this.resetButtonText,
+				tooltip:this.resetButtonTooltip,
+				handler:'onResetRequest'
+			},{
+				xtype: 'button',
+				itemId:'launchRequest',
+				margin: '5 5 5 5',
+				text: this.launchRequestButtonText,
+				tooltip:this.launchRequestButtonTooltip,
+				handler:'onLaunchRequest'
+					
+			}]
 			
 			this.callParent();
 
 
-		},
-		onGridRowSelect : function(sm, row, rec) {
-			
 		}
 	});

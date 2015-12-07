@@ -16,8 +16,11 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestModel', {
     	/**
          * @property {OgamDesktop.model.Process} currentProcess The current selected process
          */
-    	currentProcess:null
+    	currentProcess:null,
+    	fieldsets:null,
+    	userchoices:[]
     },
+
 
     stores: {
     	/**
