@@ -356,6 +356,8 @@ class DataEditionController extends AbstractOGAMController {
 
 		$this->_helper->layout()->disableLayout();
 		$this->render('edit-data');
+		$this->_helper->layout()->disableLayout();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**
@@ -669,7 +671,9 @@ class DataEditionController extends AbstractOGAMController {
 
 		// Create the directory and set the rights
 		$this->_deleteDirectory($destination);
-		mkdir($destination, $this->configuration->image_dir_rights, true);
+		if(false === mkdir($destination, $this->configuration->image_dir_rights, true)){
+			$this->logger->err('failed make dir '.$destination);
+		}
 
 		// Filter the file extensions
 		if ($this->configuration->image_extensions != null) {

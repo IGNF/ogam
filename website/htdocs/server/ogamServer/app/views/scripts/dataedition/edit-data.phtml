@@ -17,81 +17,11 @@
  * @package views
  */
 ?>
-
-<script type="text/javascript" src="<?= $this->baseUrl('js/edition/ext-base.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/edition/ext-all.js') ?>"></script>
-<script type="text/javascript">
-    Ext.namespace('Genapp');
-    Genapp.base_url = "<?= $this->baseUrl('dataedition/..'); ?>/";
-</script>
-
-<script type="text/javascript" src="<?= $this->baseUrl('js/edition/OpenLayers.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/edition/GeoExt.js') ?>"></script>
-
-<script type="text/javascript" src="<?= $this->baseUrl('map/get-map-parameters') ?>"></script>
-<script type="text/javascript">
-	window.Genapp.map = window.OgamDesktop.map;
-</script>
-
-<script type="text/javascript" src="<?= $this->baseUrl('js/edition/genapp.pack.js') ?>"></script>
-<script type="text/javascript">
-	// The ajax response of the addLayersAndLayersTree has been upgraded and is now incompatible.
-	Ext.apply(Genapp.form.GeometryField.prototype, {
-		hideTrigger : true,
-		disabled: true
-	});
-</script>
-
-<!-- Translations -->
-<?php $locale = Zend_Registry::get('Zend_Locale'); ?>
-<script type="text/javascript" src="<?= $this->baseUrl('js/edition/ext-lang-'.$locale.'.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/edition/genapp-lang-'.$locale.'.js') ?>"></script>
-
-<!-- Conf genapp -->
-<script type="text/javascript" src="<?= $this->baseUrl('js/edition/genapp.conf.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('dataedition/getParameters') ?>"></script>
-
-<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('css/edition/ext-all.css') ?>" />
-
-<!-- Gray extend theme -->
-<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('css/edition/xtheme-gray-extend.css') ?>" />
-<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('css/edition/genapp.pack-min.css') ?>" />
-
-<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('css/edition/BasicCheckBox.css') ?>" />
-<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('css/edition/SuperBoxSelect-gray-extend.css') ?>" />
-<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('css/edition/fileuploadfield.css') ?>" />
-<link rel="stylesheet" type="text/css" href="<?= $this->baseUrl('css/edition/extjsux.css') ?>" />
-<style type="text/css">
-	#page>div, #page>div>.x-tab-panel-bwrap>div, #edition_panel, #edition_panel>div>div, #edition_panel>div>div>div{
-		width:  100% !important;
-	}
-	#page>div>.x-tab-panel-bwrap>div, #edition_panel>div>div {
-		height: 100% !important;
-	}
-	#edition_panel>div>div {
-		padding: 20px 0 20px 13px !important;
-	}
-</style>
-
-<script type="text/javascript">
-    Ext.onReady(function(){
-
-    	Genapp.configure();
-        
-        // Override defaut config
-        if (Genapp.CardPanel) {
-            Ext.apply(Genapp.CardPanel.prototype, {
-                shownPages : [ 'editionpage' ],
-                activeItem : 0/*,
-                widthToSubstract : 100, // 2*50 of margin 
-                heightToSubstract : 160 // 120 of header + 30 of footer
-                */
-            });
-        }
-        if (Genapp.EditionPanel) {
-            Ext.apply(Genapp.EditionPanel.prototype, 
-                <?php
-                    $patch = array();
+[
+<?php
+                    $patch = array(
+                    		'xclass' => 'OgamDesktop.view.edition.Panel'
+                    );
 
                     // Unique identifier of the data
                     $patch['dataId'] = $this->dataId;
@@ -128,7 +58,7 @@
                     $childrenConfigOptions = array();
                     foreach ($this->childrenTableLabels as $childFormat => $childTableLabel) {
                         $configOptions = array();
-                        $configOptions['buttonAlign'] = 'center';
+                       // $configOptions['buttonAlign'] = 'center';
                         $configOptions['title'] = $this->escape($childTableLabel);
 
                         // Add the edit links for each child of the current item
@@ -152,29 +82,5 @@
                     $patch['childrenConfigOptions'] = $childrenConfigOptions;
 
                     echo json_encode($patch);
-                ?>
-            );
-        }
-
-        Genapp.buildApplication();
-    });
-</script>
-
-<!-- Link to add a new location
-<?php
-	// Get the user 
-	$userSession = new Zend_Session_Namespace('user');
-	$user = $userSession->user; 
-?>
-<div class='actionLinks'>
-	<a href="<?= $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/<?php echo $this->data->tableFormat->schemaCode; ?>/FORMAT/LOCALISATION_DATA/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?=$this->translate('Add a new localisation');?></a>
-</div>
--->
-
-<div id="page"></div>
-
-<!-- Fields required for history management -->
-<form id="history-form" class="x-hidden">
-	<input type="hidden" id="x-history-field" />
-	<iframe id="x-history-frame"></iframe>
-</form>
+                ?>       
+                ]  

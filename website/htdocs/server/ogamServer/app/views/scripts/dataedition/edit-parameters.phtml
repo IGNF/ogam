@@ -18,11 +18,10 @@
  */
 ?>
 
-if (Genapp.EditionPanel) {
-    Ext.apply(Genapp.EditionPanel.prototype, {
+OgamDesktop.view.edition.Panel.override({
         checkEditionRights : <?=$this->checkEditionRights?>    
-    });    
-}
+});    
+
 
 // User info
-Genapp.userProviderId = '<?=$this->userProviderId?>';
+OgamDesktop.userProviderId = '<?=$this->userProviderId?>';

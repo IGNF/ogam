@@ -7,5 +7,57 @@
  */
 Ext.define('OgamDesktop.view.main.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.main'
+    alias: 'controller.main',
+    control : {
+        '#main' : {
+            tabchange : 'onTabChange'
+        }
+    },
+    routes: {
+    	'consultation_panel':'onConsulation',
+    	'edition_panel:key':{
+    			action:'onEdition',
+    			conditions:{
+    				':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\s,]+))?'
+    			}
+    	}
+    },
+    
+    onTabChange : function(tabPanel, newItem) {
+        var id    = newItem.getId(),
+            child = newItem.child('tabpanel'),
+            subid = '',
+            hash  =  id;
+
+        if (child) {
+            newItem = child.getActiveTab();
+            subid   = ':' + newItem.getId();
+
+            hash += subid;
+        }
+
+        this.redirectTo(hash);
+    },
+    
+	onConsulation:function (){
+		this.getView().setActiveItem(1);
+	},
+
+    onEdition:function(key){
+    	console.log('onEdition');
+    	
+    	if (key !== undefined) {
+	    	var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-edit-data/'+key;
+	    	this.getView().down('#edition_panel').getLoader().load({
+	    		removeAll:true,
+	    		renderer:'component',
+	    		loadMask:true,
+	    		url:href, 
+	    		//success:function(loader, response, option){},
+	    	});
+    	}
+    	this.getView().setActiveItem('edition_panel');
+    	
+    }
+    
 });

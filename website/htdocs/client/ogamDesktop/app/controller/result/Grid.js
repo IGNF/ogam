@@ -8,11 +8,12 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		'OgamDesktop.view.result.GridTab',
 		'OgamDesktop.model.result.Grid',
 		'OgamDesktop.store.result.Grid',
-		'Ext.MessageBox',
+		'Ext.window.MessageBox',
 		'Ext.grid.column.Action',
 		'Ext.grid.column.Date',
 		'Ext.grid.column.Boolean'
 	],
+	uses:['OgamDesktop.view.edition.Panel'],
 	config: {
 		refs: {
 			resultsgrid: 'results-grid'
@@ -88,9 +89,6 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			case 'BOOLEAN': 
 				gridColumn.xtype = 'booleancolumn';
 				break;
-			case 'BOOLEAN': 
-				gridColumn.xtype = 'treecolumn';
-				break;
 			case 'STRING':
 				gridColumn.xtype = 'gridcolumn';
 				break;
@@ -123,6 +121,8 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 
 		// Add 'edit data' action
 		if (!gridTab.hideGridDataEditButton) {
+			Ext.require('OgamDesktop.view.edition.Panel');
+			Ext.Loader.loadScript(Ext.manifest.OgamDesktop.editionServiceUrl+'getParameters');
 			gridColumnCfg.push({
 				xtype: 'actioncolumn',
 				sortable : false,
@@ -137,31 +137,10 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 						// Action managed into result main controller
 						gridTab.fireEvent('onEditDataButtonClick', record);
 
-						var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-edit-data/' + record.data.id;
-						var myFrame = Ext.ComponentQuery.query('uxiframe')[0];
-						if (myFrame) {
-							myFrame.load(href);
-							myFrame.ownerCt.show();
-						} else {
-							Ext.create('Ext.window.Window', {
-								title:'Edition',
-							    width:750,
-							    height:'90%',
-								layout: 'fit',
-								modal: true,
-								closeAction:'hide',
-						        items: {
-						            xtype: 'uxiframe',
-						            src: href
-						        },
-						        listeners:{
-						        	'close':function(){
-						        		grid.getStore().reload();
-						        	}
-						        }
-							}).show();
-						}
-					}
+						this.redirectTo('edition_panel/'+/*encodeURIComponent(*/record.data.id/*)*//*, true*/);
+
+					},
+					scope:this
 				}]
 			});
 		}

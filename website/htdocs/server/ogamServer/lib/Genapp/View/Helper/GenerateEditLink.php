@@ -31,7 +31,7 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 		$tableFormat = $data->tableFormat->format;
 
 		// Build the URL to link to the parent items
-		$urlArray = array('controller' => 'dataedition', 'action' => 'show-edit-data');
+		$urlArray = array('controller' => 'index', 'action' => 'index');
 
 		// Add the schema
 		$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
@@ -61,7 +61,7 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 
 		// output the result
 		return array(
-		    'url' => $this->view->url($urlArray, null, true),
+		    'url' => '#edition_panel' . preg_replace( '/^' . preg_quote('/index/index','/').'/', '', $this->view->url($urlArray, null, true), 1),
 		    'text' => $this->view->escape($data->tableFormat->label),
 		    'fields' => $fields
 		);

@@ -21,14 +21,16 @@ Ext.define('OgamDesktop.view.main.Main', {
 	renderTo: Ext.get('content'),
 	//width: Ext.getBody().getViewSize().width - 80,
 	//height: Ext.getBody().getViewSize().height - 160,
-	activeTab: 0,
-	items: [/*{
+	activeTab: 1,
+	items: [{
+		id:'predefined_request',
 		xtype: 'predefined-request'
-	},*/{
+	},{
 		xtype: 'panel',
 		layout: 'border',
 		title: 'Consultation',
-		id:'consultationTab',
+		id:'consultation_panel',
+		itemId:'consultationTab',
 		items: [{
 			xtype: 'advanced-request',
 			region: 'west'
@@ -71,7 +73,17 @@ Ext.define('OgamDesktop.view.main.Main', {
 				collapseDirection: 'bottom'
 			}]
 		}]
-	}],
+	},
+	{
+		id:'edition_panel',
+		title:'Edition',
+		loader:{
+			removeAll: true,
+			renderer:'component',
+			url:''
+		}
+	}
+	],
 	initComponent : function() {
 		/*Ext.on('resize',function(){
 			this.setWidth(Ext.getBody().getViewSize().width - 80);
