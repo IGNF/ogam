@@ -49,10 +49,13 @@ GRANT ALL ON TABLE raw_data.submission TO ogam;
 GRANT ALL ON TABLE raw_data.submission_file TO ogam;
 GRANT EXECUTE ON FUNCTION raw_data.geomfromcoordinate() TO ogam;
 
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA raw_data TO ogam;
+
+
 -- harmonized-data
 
 GRANT ALL ON SCHEMA harmonized_data TO ogam;
-GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonization_process TO ogam;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE harmonized_data.harmonization_process TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonization_process_submissions TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_location TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_plot_data TO ogam;
@@ -60,6 +63,7 @@ GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_species_data TO
 GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_tree_data TO ogam;
 GRANT EXECUTE ON FUNCTION harmonized_data.geomfromcoordinate() TO ogam;
 GRANT SELECT, USAGE ON TABLE harmonized_data.harmonization_process_harmonization_process_id_seq TO ogam;
+
 
 -- metadata
 GRANT ALL ON SCHEMA metadata TO ogam;
@@ -97,7 +101,11 @@ GRANT SELECT ON TABLE "mapping".layer TO ogam;
 GRANT SELECT ON TABLE "mapping".layer_service TO ogam;
 GRANT SELECT ON TABLE "mapping".layer_tree TO ogam;
 GRANT ALL ON TABLE "mapping".result_location TO ogam;
+
 GRANT SELECT ON TABLE "mapping".scales TO ogam;
+GRANT ALL ON TABLE "mapping".nuts_0 TO ogam;
+GRANT ALL ON TABLE "mapping".departements TO ogam;
+GRANT ALL ON TABLE "mapping".communes TO ogam;
 
 -- referentiels
 GRANT ALL ON SCHEMA referentiels TO ogam;

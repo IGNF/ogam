@@ -89,14 +89,14 @@ COMMENT ON COLUMN taxref.URL IS 'Permalien INPN = ‘http://inpn.mnhn.fr/espece/
 
 
 -- Le fichier est en encodage européen
-SET client_encoding = 'ISO-8859-1';
+-- SET client_encoding = 'ISO-8859-1';
 
 -- Copie des données dans la table temporaire
 -- DELETE FROM taxref;
 
 
 -- remplacer C:\workspace\demo-sinp\database/Referentiels/TAXREFv8.0/TAXREFv80.txt par le chemin complet vers le fichier TAXREFv8.0.txt
-COPY taxref FROM 'D:\DONNEES\Workspace\OGAM\database\Referentiels\TAXREFv80.txt' with null '';
+COPY taxref FROM 'D:/DONNEES/Workspace/OGAM/database/Referentiels/TAXREFv80.txt' with null '';
 
 SET client_encoding = 'UTF-8';
 
@@ -177,7 +177,7 @@ select *
 from taxref where cd_taxsup IS NULL;
 
 -- Insertion d'une racine commune
--- INSERT INTO taxref (regne, cd_nom, cd_taxsup, cd_ref, LB_NOM) VALUES ('V',349525,'*',349525, 'Vivant');
+ INSERT INTO taxref (regne, cd_nom, cd_taxsup, cd_ref, LB_NOM) VALUES ('V',349525,'*',349525, 'Vivant');
 -- DELETE FROM taxref WHERE cd_nom = '349525';
 --UPDATE taxref SET cd_taxsup = '*' WHERE cd_nom IN ('183716','187079','187496');
 
