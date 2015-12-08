@@ -94,9 +94,7 @@ COMMENT ON COLUMN taxref.URL IS 'Permalien INPN = ‘http://inpn.mnhn.fr/espece/
 -- Copie des données dans la table temporaire
 -- DELETE FROM taxref;
 
-
--- remplacer C:\workspace\demo-sinp\database/Referentiels/TAXREFv8.0/TAXREFv80.txt par le chemin complet vers le fichier TAXREFv8.0.txt
-COPY taxref FROM 'D:/DONNEES/Workspace/OGAM/database/Referentiels/TAXREFv80.txt' with null '';
+\COPY taxref FROM './Referentiels/TAXREFv80.txt' with null '';
 
 SET client_encoding = 'UTF-8';
 

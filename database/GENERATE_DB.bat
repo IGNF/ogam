@@ -73,7 +73,7 @@ pause
 psql -f Referentiels\nuts_0.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
 pause
 @echo ****** Populate metadata schema ******
-psql -f Metadata\import_from_csv.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
+psql -f 2-Import_Metadata.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log
 pause
 @echo ****** Populate website schema ******
 psql -f 2-Populate_website_schema.sql -h %server% -U %username% -d %database% -p %port% >> GENERATE_DB.log

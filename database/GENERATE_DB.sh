@@ -125,7 +125,7 @@ echo "Appuyer la touche <Entrée> pour continuer..."
 read touche
 
 echo "****** Populate metadata schema ******"
-psql -f Metadata/import_from_csv.sql -h $server -U $username -d $database -p $port >> GENERATE_DB.log
+psql -f 2-Import_Metadata.sql -h $server -U $username -d $database -p $port >> GENERATE_DB.log
 echo "Appuyer la touche <Entrée> pour continuer..."
 read touche
 
