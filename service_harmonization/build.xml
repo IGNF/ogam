@@ -21,20 +21,20 @@
 	<property name="classes.dir" value="./classes" />
 	<property name="lib.dir" value="${common.dir}/lib" />
 	<property name="img.dir" value="./img" />
-	<property name="dist.dir" value="${java.io.tmpdir}dist/${application.name}HarmonizationService" />
-	<property name="dist.webapps.dir" value="${java.io.tmpdir}webapp/${application.name}HarmonizationService/" />
+	<property name="dist.dir" value="${java.io.tmpdir}/dist/${application.name}HarmonizationService" />
+	<property name="dist.webapps.dir" value="${java.io.tmpdir}/webapp/${application.name}HarmonizationService/" />
 	<property name="deploy.name" value="${application.name}HarmonizationService" />
 
 	<!-- *** A modifier en fonction du répertoire d'installation de Tomcat *** -->
-	<property name="deploy.dir" value="C:/Program Files/Apache Software Foundation/Tomcat 7.0/webapps" />
+	<property name="deploy.dir" value="C:/Apache/tomcat-7/webapps" />
 
-	<property name="classpath" value="${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar;${libraries.dir}/lib/servlet-api.jar;${libraries.dir}/lib/junit.jar;${libraries.dir}/import/org/postgresql/postgis-2.0.0SVN.jar;${libraries.dir}/import/org/postgresql/postgresql-8.3-603.jdbc4.jar;${libraries.dir}/lib/dbunit/dbunit.jar;${libraries.dir}/import/com/sun/mail/mail.jar" />
+	<property name="classpath" value="${common.dir}/classes;${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar;${libraries.dir}/lib/servlet-api.jar;${libraries.dir}/lib/junit.jar;${libraries.dir}/import/org/postgresql/postgis-2.0.0SVN.jar;${libraries.dir}/import/org/postgresql/postgresql-8.3-603.jdbc4.jar;${libraries.dir}/lib/dbunit/dbunit.jar;${libraries.dir}/import/com/sun/mail/mail.jar" />
 
 	<!-- Définition de tâches externes  -->
 	<taskdef name="javancss" classname="javancss.JavancssAntTask" classpath="${libraries.dir}/lib/javancss.jar;${libraries.dir}/lib/ccl.jar;${libraries.dir}/libs java/lib/jhbasic.jar" />
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs.jar" />
 	<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpath="${libraries.dir}/lib/pmd/pmd-4.2.5.jar;${libraries.dir}/lib/pmd/jaxen-1.1.1.jar" />
-	<taskdef resource="checkstyletask.properties" classpath="${libraries.dir}/lib/checkstyle/checkstyle-all-5.0.jar" />
+	<taskdef resource="checkstyletask.properties" classpath="${libraries.dir}/lib/checkstyle/checkstyle-all-5.0.jar;${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar" />
 	<path id="emma.lib">
 		<pathelement location="${emma.dir}/emma.jar" />
 		<pathelement location="${emma.dir}/emma_ant.jar" />
@@ -65,12 +65,12 @@
 
 	<!-- Compile les sources -->
 	<target name="compile" description="Compile the sources" depends="cleanest, init">
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" target="1.5" encoding="UTF-8" classpath="${classpath};${common.dir}/classes">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" target="1.5" encoding="UTF-8" classpath="${classpath}">
 			<compilerarg value="-Xlint" />
 		</javac>
 
 		<!-- Compile aussi les classes de test au passage -->
-		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" target="1.5" classpath="${classpath};${common.dir}/classes">
+		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" target="1.5" classpath="${classpath}">
 			<compilerarg value="-Xlint" />
 		</javac>
 	</target>
@@ -89,10 +89,6 @@
 			<fileset dir="${common.dir}/classes">
 			</fileset>
 		</copy>
-
-		<!-- Copie des librairies communes à l'IFN -->
-		<copy file="${java.io.tmpdir}dist/libs_java/fr.ifn.commons.jar" todir="${dist.dir}/WEB-INF/lib" />
-
 
 		<!-- Copie des librairies externes -->
 		<copy file="${libraries.dir}/import/org/apache/log4j/log4j-1.2.14.jar" todir="${dist.dir}/WEB-INF/lib" />
@@ -163,7 +159,7 @@
 
 			<classpath>
 				<pathelement path="${classes.dir}" />
-				<pathelement path="${classpath};${common.dir}/classes" />
+				<pathelement path="${classpath}" />
 				<path refid="emma.lib" />
 			</classpath>
 
@@ -261,7 +257,7 @@
 
 	<!--Javadoc -->
 	<target name="javadoc" description="Javadoc" depends="">
-		<javadoc packagenames="fr.ifn.ogam.*" sourcepath="${src.dir}" classpath="${classpath};${common.dir}/classes" defaultexcludes="yes" destdir="${test_result.dir}/api" author="true" version="true" use="true" encoding="UTF-8" windowtitle="${application.name}">
+		<javadoc packagenames="fr.ifn.ogam.*" sourcepath="${src.dir}" classpath="${classpath}" defaultexcludes="yes" destdir="${test_result.dir}/api" author="true" version="true" use="true" encoding="UTF-8" windowtitle="${application.name}">
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://commons.apache.org/fileupload/apidocs" />
 		</javadoc>

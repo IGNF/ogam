@@ -111,7 +111,11 @@ public class GenericDAO {
 							// We suppose that the SRID is the one expected in the table
 							TableFieldData tableData = tableColumns.get(sourceData);
 							Integer srid = geometryDAO.getSRID(tableData.getTableName(), tableData.getColumnName());
-							colValues.append("ST_GeomFromText('" + colData.getValue() + "', " + srid + ")");
+							if (colData.getValue().getClass().getName().equals("org.postgresql.util.PGobject")) {
+								colValues.append("'" + colData.getValue().toString() + "'");
+							} else {
+								colValues.append("ST_GeomFromText('" + colData.getValue() + "', " + srid + ")");
+							}
 						}
 					} else {
 						colValues.append("?");
@@ -347,12 +351,15 @@ public class GenericDAO {
 					} else if (field.getType().equalsIgnoreCase(CODE)) {
 						data.setValue(rs.getString(columnName));
 					} else if (field.getType().equalsIgnoreCase(ARRAY)) {
-						java.sql.Array arrayRes = rs.getArray(columnName);
-
-						Object arrayRes2 = arrayRes.getArray();
-						String[] res = (String[]) arrayRes2; // Cast in a array of strings
-
-						data.setValue(res);
+						String val = rs.getString(columnName);
+						if (val == null) {
+							data.setValue(null);
+						} else {
+							java.sql.Array arrayRes = rs.getArray(columnName);
+							Object arrayRes2 = arrayRes.getArray();
+							String[] res = (String[]) arrayRes2; // Cast in a array of strings
+							data.setValue(res);
+						}
 
 					} else if (field.getType().equalsIgnoreCase(IMAGE)) {
 						data.setValue(rs.getString(columnName));

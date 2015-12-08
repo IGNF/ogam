@@ -265,7 +265,7 @@ public class IntegrationService extends GenericMapper {
 						data.setValue(valueObj);
 
 						// Store the descriptor in the common list
-						commonFieldsMap.put(sourceFieldDescriptor.getData(), data);
+						commonFieldsMap.put(mappedFieldDescriptor.getData(), data);
 
 						// Store the name of the table
 						tablesContent.add(mappedFieldDescriptor.getFormat());

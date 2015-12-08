@@ -110,8 +110,7 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Check that a code value correspond to an existing code in a tree of
-	 * codes.
+	 * Check that a code value correspond to an existing code in a tree of codes.
 	 * 
 	 * @param unit
 	 *            the unit of the field to check
@@ -196,8 +195,7 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Check that a value is consistent with the expected type. And convert the
-	 * strig value to the expected type
+	 * Check that a value is consistent with the expected type. And convert the strig value to the expected type
 	 * 
 	 * @param fieldDescriptor
 	 *            the descriptor of the field
@@ -217,7 +215,7 @@ public class GenericMapper {
 				throw new CheckException(MANDATORY_FIELD_MISSING);
 			}
 
-			if (type.equalsIgnoreCase(STRING) || type.equalsIgnoreCase(GEOM) || type.equalsIgnoreCase(IMAGE) || type.equalsIgnoreCase(GEOM)) {
+			if (type.equalsIgnoreCase(STRING) || type.equalsIgnoreCase(GEOM) || type.equalsIgnoreCase(IMAGE)) {
 				result = fieldValue;
 			}
 
@@ -327,8 +325,7 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Check that a value is consistent with the expected mask (regular
-	 * expression).
+	 * Check that a value is consistent with the expected mask (regular expression).
 	 * 
 	 * @param mask
 	 *            the expected mask
@@ -342,15 +339,13 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Get a list of tables used with their ancestors, sorted from the leaf to
-	 * the root.
+	 * Get a list of tables used with their ancestors, sorted from the leaf to the root.
 	 * 
 	 * @param schema
 	 *            the schema in which we are working
 	 * @param destinationTables
 	 *            the list of tables we want to sort
-	 * @return The list of tables used with their ancestors, sorted from the
-	 *         leaf to the root
+	 * @return The list of tables used with their ancestors, sorted from the leaf to the root
 	 */
 	public LinkedList<String> getSortedAncestors(String schema, List<TableFormatData> destinationTables) throws Exception {
 
@@ -440,8 +435,7 @@ public class GenericMapper {
 	}
 
 	/**
-	 * Build the SQL select corresponding to the data to harmonize. Populate the
-	 * list of colums to read
+	 * Build the SQL select corresponding to the data to harmonize. Populate the list of colums to read
 	 * 
 	 * @param schema
 	 *            the schema in which we are working
@@ -451,8 +445,7 @@ public class GenericMapper {
 	 *            some static values that can be used in the WHERE criteria
 	 * @return The list of values
 	 */
-	private String buildSelect(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, String countryCode)
-			throws Exception {
+	private String buildSelect(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields) throws Exception {
 
 		String SELECT = "";
 		String FROM = "";
@@ -549,18 +542,16 @@ public class GenericMapper {
 	 *            the tables we want to read
 	 * @param criteriaFields
 	 *            some static values that can be used in the WHERE criteria
-	 * @param providerId
-	 *            The identifier of the provider
 	 * @param page
 	 *            the page number
 	 * @param maxlines
 	 *            the number of lines per page
 	 * @return The list of values
 	 */
-	public List<Map<String, GenericData>> readData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields,
-			String providerId, int page, int maxlines) throws Exception {
+	public List<Map<String, GenericData>> readData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, int page,
+			int maxlines) throws Exception {
 
-		String SQL = buildSelect(schema, sourceTables, criteriaFields, providerId);
+		String SQL = buildSelect(schema, sourceTables, criteriaFields);
 
 		// Calculate the limits
 		String LIMIT = " LIMIT " + maxlines;
@@ -583,13 +574,11 @@ public class GenericMapper {
 	 *            the tables we want to read
 	 * @param criteriaFields
 	 *            some static values that can be used in the WHERE criteria
-	 * @param providerId
-	 *            the identifier of the provider
 	 * @return The list of values
 	 */
-	public int countData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields, String providerId) throws Exception {
+	public int countData(String schema, LinkedList<String> sourceTables, TreeMap<String, GenericData> criteriaFields) throws Exception {
 
-		String SQL = buildSelect(schema, sourceTables, criteriaFields, providerId);
+		String SQL = buildSelect(schema, sourceTables, criteriaFields);
 
 		return genericDAO.countData(SQL);
 	}

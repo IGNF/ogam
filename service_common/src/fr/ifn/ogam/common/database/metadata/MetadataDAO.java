@@ -1750,4 +1750,24 @@ public class MetadataDAO {
 			}
 		}
 	}
+
+	/**
+	 * Clear the local caches, to reset the metadata.
+	 */
+	public void clearCaches() {
+
+		tableNamesCache.reset();
+		modesCache.reset();
+		dynamodeSQLCache.reset();
+		dynamodeCache.reset();
+		taxrefmodeCache.reset();
+		modeExistCache.reset();
+		treemodeExistCache.reset();
+		rangeCache.reset();
+		fileFieldsCache.reset();
+		datasetFileCache.reset();
+		tableTreeCache.reset();
+
+		logger.debug("Local caches cleaned");
+	}
 }

@@ -197,10 +197,10 @@ public class DataServlet extends AbstractUploadServlet {
 			if (action.equals(ACTION_UPLOAD_DATA) && contentType.matches("multipart/form-data.*")) {
 
 				// Parse the multipart message and store the parts in two lists
-				List uploadedItems = fileUpload.parseRequest(request);
+				List<?> uploadedItems = fileUpload.parseRequest(request);
 				List<FileItem> fileFieldsList = new ArrayList<FileItem>();
 				List<FileItem> formFieldsList = new ArrayList<FileItem>();
-				Iterator iter = uploadedItems.iterator();
+				Iterator<?> iter = uploadedItems.iterator();
 				while (iter.hasNext()) {
 					FileItem item = (FileItem) iter.next();
 					if (item.isFormField()) {
