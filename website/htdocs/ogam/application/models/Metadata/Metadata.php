@@ -830,7 +830,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " LEFT JOIN translation t ON (t.lang = '" . $this->lang . "' AND t.table_format = table_field.format AND t.row_pk = data.data)";
 			$req .= " WHERE table_field.format = ? ";
 			$req .= " AND table_format.schema_code = ? ";
-			$req .= " AND data.unit = 'GEOM' ";
+			$req .= " AND unit.type = 'GEOM' ";
 			
 			$this->logger->info('getTableFields : ' . $req);
 			
