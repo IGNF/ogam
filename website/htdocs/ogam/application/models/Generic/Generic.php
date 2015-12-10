@@ -86,9 +86,11 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		
 		$this->logger->info('getDatum : ' . $tableFormat->format);
 		
+		$schema = $this->metadataModel->getSchema($tableFormat->schemaCode);
+		
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
-		$sql .= " FROM " . $tableFormat->schemaCode . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
+		$sql .= " FROM " . $schema->name . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
 		$sql .= " WHERE(1 = 1) " . $this->genericService->buildWhere($data->infoFields);
 		
 		$this->logger->info('getDatum : ' . $sql);
@@ -172,9 +174,11 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// The table format descriptor
 		$tableFormat = $data->tableFormat;
 		
+		$schema = $this->metadataModel->getSchema($tableFormat->schemaCode);
+		
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
-		$sql .= " FROM " . $tableFormat->schemaCode . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
+		$sql .= " FROM " . $schema->name . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
 		$sql .= " WHERE(1 = 1) " . $this->genericService->buildWhere(array_merge($data->infoFields, $data->editableFields));
 		
 		$this->logger->info('_getDataList : ' . $sql);
@@ -220,10 +224,12 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 		
+		$schema = $this->metadataModel->getSchema($tableFormat->schemaCode);
+		
 		$this->logger->info('updateData');
 		
 		// Get the values from the data table
-		$sql = "UPDATE " . $tableFormat->schemaCode . "." . $tableFormat->tableName . " " . $tableFormat->format;
+		$sql = "UPDATE " . $schema->name . "." . $tableFormat->tableName . " " . $tableFormat->format;
 		$sql .= " SET ";
 		
 		// updates of the data.
@@ -275,8 +281,10 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		
 		$this->logger->info('deleteData');
 		
+		$schema = $this->metadataModel->getSchema($tableFormat->schemaCode);
+		
 		// Get the values from the data table
-		$sql = "DELETE FROM " . $tableFormat->schemaCode . "." . $tableFormat->tableName;
+		$sql = "DELETE FROM " . $schema->name . "." . $tableFormat->tableName;
 		$sql .= " WHERE (1 = 1) ";
 		
 		// Build the WHERE clause with the info from the PK.
@@ -324,8 +332,10 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				
 		$tableFormat = $data->tableFormat;
 		
+		$schema = $this->metadataModel->getSchema($tableFormat->schemaCode);
+		
 		// Get the values from the data table
-		$sql = "INSERT INTO " . $tableFormat->schemaCode . "." . $tableFormat->tableName;
+		$sql = "INSERT INTO " . $schema->name . "." . $tableFormat->tableName;
 		$columns = "";
 		$values = "";
 		$return = "";

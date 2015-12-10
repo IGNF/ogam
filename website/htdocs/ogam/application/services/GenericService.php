@@ -285,6 +285,10 @@ class Application_Service_GenericService {
 		$rootTable = array_shift($tables);
 		$from = " FROM " . $rootTable->tableName . " " . $rootTable->getLogicalName();
 		
+		// Get the root table fields		
+		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
+		$hasColumnProvider = array_key_exists($rootTableFields, 'PROVIDER_ID');
+		
 		// Add the joined tables
 		$i = 0;
 		foreach ($tables as $tableTreeData) {
@@ -315,7 +319,7 @@ class Application_Service_GenericService {
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
 		$permissions = $userSession->user->role->permissionsList;
-		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER', $permissions)) {
+		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER', $permissions) && hasColumnProvider) {
 			$where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
 		}
 		
@@ -352,8 +356,13 @@ class Application_Service_GenericService {
 		//
 		// Get the left table;
 		$tables = $this->getAllFormats($schema, $dataObject);
+		$rootTable = reset ($tables);
 		$reversedTable = array_reverse($tables); // Only variables should be passed by reference
 		$leftTable = array_shift($reversedTable);
+		
+		// Get the root table fields
+		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
+		$hasColumnProvider = array_key_exists($rootTableFields, 'PROVIDER_ID');
 		
 		$uniqueId = "'SCHEMA/" . $schema . "/FORMAT/" . $leftTable->getLogicalName() . "'";
 		
@@ -376,7 +385,7 @@ class Application_Service_GenericService {
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
 		$permissions = $userSession->user->role->permissionsList;
-		if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+		if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions) && $hasColumnProvider) {
 			$select .= ", " . $leftTable->getLogicalName() . ".provider_id as _provider_id";
 		}
 		

@@ -123,6 +123,41 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get a available schema by its code.
+	 *
+	 * @param $schemaCode the
+	 *        	schema code
+	 * @return Schema
+	 */
+	public function getSchema($schemaCode) {
+		$db = $this->getAdapter();
+		$req = "SELECT schema_code, schema_name, COALESCE(t.label, ts.label) as label, COALESCE(t.definition, ts.description) as description";
+		$req .= " FROM table_schema ts";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'TABLE_SCHEMA' AND row_pk = schema_code) ";
+		$req .= " WHERE schema_code = ? ";
+		
+		$this->logger->info('getSchema : ' . $req);
+		
+		$select = $db->prepare($req);
+		$select->execute(array(
+			$schemaCode
+		));
+		
+		$row = $select->fetch();
+		if ($row) {
+			$schema = new Application_Object_Metadata_Schema();
+			$schema->code = $row['schema_code'];
+			$schema->name = $row['schema_name'];
+			$schema->label = $row['label'];
+			$schema->description = $row['description'];
+		} else {
+			$schema = null;
+		}
+		
+		return $schema;
+	}
+
+	/**
 	 * Get the label of a mode.
 	 *
 	 * @param String $unit
@@ -1622,9 +1657,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req = " SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name ";
 			$req .= " FROM mode_taxref ";
 			$req .= " WHERE unit = ? ";
-			$req .= " AND (unaccent_string(name) ilike unaccent_string('%".$query."%') ";
-			$req .= "      OR unaccent_string(complete_name) ilike unaccent_string('%".$query."%') ";
-			$req .= "      OR unaccent_string(vernacular_name) ilike unaccent_string('%".$query."%'))";
+			$req .= " AND (unaccent_string(name) ilike unaccent_string('%" . $query . "%') ";
+			$req .= "      OR unaccent_string(complete_name) ilike unaccent_string('%" . $query . "%') ";
+			$req .= "      OR unaccent_string(vernacular_name) ilike unaccent_string('%" . $query . "%'))";
 			$req .= " ORDER BY name ";
 			
 			if ($start !== null && $limit !== null) {
@@ -1688,9 +1723,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	FROM mode_taxref ";
 			$req .= "	WHERE unit = ? ";
 			if ($query != null) {
-				$req .= " AND unaccent_string(name) ilike unaccent_string('%".$query."%') ";
-				$req .= " OR  unaccent_string(complete_name) ilike unaccent_string('%".$query."%') ";
-				$req .= " OR  unaccent_string(vernacular_name) ilike unaccent_string('%".$query."%')";
+				$req .= " AND unaccent_string(name) ilike unaccent_string('%" . $query . "%') ";
+				$req .= " OR  unaccent_string(complete_name) ilike unaccent_string('%" . $query . "%') ";
+				$req .= " OR  unaccent_string(vernacular_name) ilike unaccent_string('%" . $query . "%')";
 			}
 			
 			$this->logger->info('getTaxrefModesCount :' . $req);
