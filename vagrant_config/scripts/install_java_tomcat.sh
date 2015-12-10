@@ -24,7 +24,7 @@ ln -fs  /usr/share/java/gnumail.jar  $TOMCAT_LIB/javax.mail.jar
 ln -fs  /usr/share/java/postgresql-jdbc4.jar $TOMCAT_LIB/postgresql-jdbc4.jar
 #cp /vagrant/libs_java/import/org/postgresql/postgresql-9.3-1101.jdbc4.jar $TOMCAT_LIB/postgresql-9.3-1101.jdbc4.jar
 
-cp /vagrant/conf/tomcat/tomcat-users.xml /etc/tomcat7/tomcat-users.xml
+cp /vagrant/ogam/vagrant_config/conf/tomcat/tomcat-users.xml /etc/tomcat7/tomcat-users.xml
 
 /etc/init.d/tomcat7 restart
 echo "restart tomcat"
