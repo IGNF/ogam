@@ -1,5 +1,10 @@
 {
     /**
+     * The toolkit to use. Select either "classic" or "modern".
+     */
+    "toolkit": "classic",
+
+    /**
      * The application's namespace.
      */
     "name": "OgamDesktop",
@@ -28,7 +33,7 @@
      * The name of the theme for this application.
      */
     //"theme": "ogamDesktop-theme",
-    "theme": "ext-theme-gray",
+    "theme": "theme-gray",
     
     /**
      * The list of required packages (with optional versions; default is "latest").
@@ -40,7 +45,7 @@
      *      ]
      */
     "requires": [
-		"ext-locale"
+		"locale","ux"
     ],
 
 	"locale": "fr",
@@ -57,7 +62,84 @@
          * root namespace, change this to "". Doing so would change the mapping of
          * "OgamDesktop.view.Foo" to "sass/src/OgamDesktop/view/Foo.scss".
          */
-        "namespace": "OgamDesktop"
+        "namespace": "OgamDesktop",
+		
+		/**
+		 * Comma-separated list of files or folders containing extra Sass. These
+		 * files are automatically included in the Sass compilation. By default this
+		 * is just "etc/all.scss" to allow import directives to control the order
+		 * other files are included.
+		 *
+		 * All "etc" files are included at the top of the Sass compilation in their
+		 * dependency order:
+		 *
+		 *      +-------+---------+
+		 *      |       | base    |
+		 *      | theme +---------+
+		 *      |       | derived |
+		 *      +-------+---------+
+		 *      | packages        |  (in package dependency order)
+		 *      +-----------------+
+		 *      | application     |
+		 *      +-----------------+
+		 */
+		"etc": [
+			"sass/etc/all.scss",
+			"${toolkit.name}/sass/etc/all.scss"
+		],
+
+		/**
+		 * Comma-separated list of folders containing Sass variable definitions
+		 * files. These file can also define Sass mixins for use by components.
+		 *
+		 * All "var" files are included after "etc" files in the Sass compilation in
+		 * dependency order:
+		 *
+		 *      +-------+---------+
+		 *      |       | base    |
+		 *      | theme +---------+
+		 *      |       | derived |
+		 *      +-------+---------+
+		 *      | packages        |  (in package dependency order)
+		 *      +-----------------+
+		 *      | application     |
+		 *      +-----------------+
+		 *
+		 * The "sass/var/all.scss" file is always included at the start of the var
+		 * block before any files associated with JavaScript classes.
+		 */
+		"var": [
+			"sass/var/all.scss",
+			"sass/var",
+			"${toolkit.name}/sass/var"
+		],
+
+		/**
+		 * Comma-separated list of folders containing Sass rule files.
+		 *
+		 * All "src" files are included after "var" files in the Sass compilation in
+		 * dependency order (the same order as "etc"):
+		 *
+		 *      +-------+---------+
+		 *      |       | base    |
+		 *      | theme +---------+
+		 *      |       | derived |
+		 *      +-------+---------+
+		 *      | packages        |  (in package dependency order)
+		 *      +-----------------+
+		 *      | application     |
+		 *      +-----------------+
+		 */
+		"src": [
+			"sass/src",
+			"${toolkit.name}/sass/src"
+		]
+
+		/**
+		 * File used to save sass variables edited via Sencha Inspector. This file
+		 * content will override all other variables.
+		 */
+		// "save": "sass/save.scss"
     },
 
     /**
@@ -103,7 +185,7 @@
      */
     "js": [
         {
-            "path": "http://www.ogam.fr/map/get-map-parameters",
+            "path": "http://localhost:8000/map/get-map-parameters",
             "remote": true
         },{
             /*"path": "lib/OpenLayers/OpenLayers.debug.js",*/
@@ -216,9 +298,9 @@
     
     "development": {
         "OgamDesktop": {
-	    	"requestServiceUrl": "http://www.ogam.fr/query/",
-    		"mapServiceUrl": "http://www.ogam.fr/map/",
-    		"editionServiceUrl": "http://www.ogam.fr/dataedition/"
+	    	"requestServiceUrl": "http://localhost:2202/query/",
+    		"mapServiceUrl": "http://localhost:2202/map/",
+    		"editionServiceUrl": "http://localhost:2202/dataedition/"
 	    }
     },
 
@@ -319,6 +401,7 @@
      * Extra resources to be copied along when build
      */
     "resources": [
+		"resources/images"
     ],
 
     /**

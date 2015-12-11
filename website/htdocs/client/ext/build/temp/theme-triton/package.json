@@ -1,0 +1,36 @@
+{
+  "name": "theme-triton",
+  "namespace": "Ext",
+  "format": "1",
+  "version": "6.0.1.250",
+  "compatVersion": "6.0.0",
+  "creator": "Sencha",
+  "summary": "Ext JS Modern Triton Theme",
+  "detailedDescription": "The Triton theme provides a flat simple look and feel, and uses font icons in place of background images.",
+  "type": "theme",
+  "extend": "theme-neptune",
+  "requires": [
+    "font-awesome",
+    "font-ext"
+  ],
+  "resources": [
+    {
+      "path": "${package.dir}/resources",
+      "output": "shared"
+    }
+  ],
+  "framework": "ext",
+  "toolkit": "modern",
+  "output": "${workspace.subpkg.prefix}/${package.name}",
+  "sass": {
+    "namespace": "Ext",
+    "etc": "${package.dir}/sass/etc/all.scss",
+    "var": "${package.dir}/sass/var",
+    "src": "${package.dir}/sass/src"
+  },
+  "classpath": "${package.dir}/src",
+  "overrides": "${package.dir}/overrides",
+  "resource": {
+    "paths": ""
+  }
+}

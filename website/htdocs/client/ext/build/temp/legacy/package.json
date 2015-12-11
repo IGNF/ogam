@@ -1,0 +1,50 @@
+{
+  "name": "legacy",
+  "namespace": "Ext",
+  "format": "1",
+  "version": "6.0.1.250",
+  "compatVersion": "6.0.0",
+  "creator": "Sencha",
+  "summary": "Legacy / Deprecated Classes",
+  "detailedDescription": "This package contains classes that are no longer supported",
+  "type": "code",
+  "builds": {
+    "classic": {
+      "toolkit": "classic"
+    },
+    "modern": {
+      "toolkit": "modern"
+    }
+  },
+  "framework": "ext",
+  "toolkit": "modern",
+  "theme": "theme-neptune",
+  "output": {
+    "base": "${framework.dir}/build/packages/${package.name}/${toolkit.name}/${build.id}",
+    "js": "..",
+    "sass": ""
+  },
+  "sass": {
+    "namespace": "Ext",
+    "etc": [
+      "${package.dir}/sass/etc/all.scss",
+      "${package.dir}/${toolkit.name}/sass/etc/all.scss"
+    ],
+    "var": [
+      "${package.dir}/sass/var",
+      "${package.dir}/${toolkit.name}/sass/var"
+    ],
+    "src": [
+      "${package.dir}/sass/src",
+      "${package.dir}/${toolkit.name}/sass/src"
+    ]
+  },
+  "classpath": [
+    "${package.dir}/src",
+    "${package.dir}/${toolkit.name}/src"
+  ],
+  "overrides": [
+    "${package.dir}/overrides",
+    "${package.dir}/${toolkit.name}/overrides"
+  ]
+}
