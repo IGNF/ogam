@@ -23,6 +23,13 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * Indicate is the cache should be used.
+	 * 
+	 * @var Boolean
+	 */
+	var $useCache = false;
+
+	/**
 	 * Initialisation
 	 */
 	public function init() {
@@ -30,9 +37,14 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 		
-		$configuration = Zend_Registry::get("configuration");
-		$this->useCache = $configuration->useCache;
-		
+		// Get the useCache flag
+		$configuration = Zend_Registry::get("configuration");		
+		$uc = $configuration->useCache;
+		if (!empty($uc)) {
+			if ((strtolower($uc) == 'true') || ($uc == '1') || ($uc == 1)) {
+				$this->useCache = true;
+			}
+		}		
 		$this->cache = $this->getDefaultMetadataCache();
 		
 		$translate = Zend_Registry::get('Zend_Translate');
@@ -55,7 +67,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$key = $this->_formatCacheKey('getModeLabels_' . $unit);
 		
 		$this->logger->debug($key);
-		
+				
 		// No cache to avoid to increase the number of cache files for all combination
 		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'MODE');
 		
