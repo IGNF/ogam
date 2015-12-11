@@ -20,7 +20,7 @@ insert into application_parameters (name, value, description) values ( 'plotErro
 insert into application_parameters (name, value, description) values ( 'simplifiedReport' , 'SimplifiedReport.rptdesign' , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'max_report_generation_time' , 480 , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'mapReportGenerationService_url' , 'http://localhost:8080/print%2Dservlet%2D2.0%2DSNAPSHOT/pdf' , 'MAPFISH REPORT GENERATION SERVICE');
-insert into application_parameters (name, value, description) values ( 'useCache' , true , 'Cache');
+insert into application_parameters (name, value, description) values ( 'useCache' , false , 'Cache');
 insert into application_parameters (name, value, description) values ( 'max_execution_time' , 480 , 'Timeout , 0 : no limit');
 insert into application_parameters (name, value, description) values ( 'memory_limit' , '1024M' , 'memory limit');
 insert into application_parameters (name, value, description) values ( 'post_max_size' , '100M' , 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
