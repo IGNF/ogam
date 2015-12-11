@@ -836,7 +836,9 @@ class QueryController extends AbstractOGAMController {
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
 			$fromwhere = $websiteSession->SQLFromWhere;
-			$sql = $select . ', ST_AsKML(the_geom) AS KML ' . $fromwhere;
+			$locationField = $websiteSession->locationField;
+			
+			$sql = $select . ', ST_AsKML(' . $locationField->columnName . ') AS KML ' . $fromwhere;
 			
 			// Count the number of lines
 			$total = $websiteSession->count;
@@ -995,7 +997,7 @@ class QueryController extends AbstractOGAMController {
 		$maxLines = 5000;
 		
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'pplication/json;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$this->getResponse()->setHeader('Content-Type', 'application/json;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.geojson', true);
 		
 		if (($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions))) {
@@ -1003,7 +1005,9 @@ class QueryController extends AbstractOGAMController {
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
 			$fromwhere = $websiteSession->SQLFromWhere;
-			$sql = $select . ', ST_AsGeoJSON(the_geom) AS geojson ' . $fromwhere;
+			$locationField = $websiteSession->locationField;
+			
+			$sql = $select . ', ST_AsGeoJSON(' . $locationField->columnName . ') AS geojson ' . $fromwhere;
 			
 			// Count the number of lines
 			$total = $websiteSession->count;

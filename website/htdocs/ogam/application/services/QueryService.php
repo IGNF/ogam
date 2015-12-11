@@ -409,6 +409,7 @@ class Application_Service_QueryService {
 			// Store the metadata in session for subsequent requests
 			$websiteSession->resultColumns = $queryObject->editableFields;
 			$websiteSession->datasetId = $datasetId;
+			$websiteSession->locationField = $locationField;
 			$websiteSession->SQLSelect = $select;
 			$websiteSession->SQLFromWhere = $fromwhere;
 			$websiteSession->queryObject = $queryObject;

@@ -858,7 +858,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param Array[String] $tables
 	 *        	a list of table formats
 	 * @return Application_Object_Metadata_TableField
-	 * @throws an exceptionif the tables contain no geographical information
+	 * @throws an exception if the tables contain no geographical information
 	 */
 	public function getGeometryField($schema, $tables) {
 		$db = $this->getAdapter();
