@@ -41,6 +41,11 @@ Pour l'utiliser :
 * installer [Vagrant](https://www.vagrantup.com/)
 * lancer `vagrant up` à la racine du projet pour démarrer la VM
 
+* En cas de souci lors du mapping des répertoires pour cause de "guest additions" manquant, lancer
+ 
+>vagrant plugin install vagrant-vbguest
+
+
 Pour se connecter à la VM :
 * utiliser l'interface de VirtualBox
 * (ou) se connecter en SSH sur localhost sur le port 2222 avec le compte vagrant/vagrant  

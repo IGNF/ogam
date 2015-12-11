@@ -38,6 +38,10 @@ To use vagrant :
 * install [Vagrant](https://www.vagrantup.com/)
 * launch `vagrant up`  in the project root directory to start the VM
 
+* In case of problem with the "guest additions", launch :
+ 
+>vagrant plugin install vagrant-vbguest
+
 To connect the VM :
 * use VirtualBox interface
 * (or) connect with SSH on localhost on port 2222 with the login vagrant/vagrant  
