@@ -19,3 +19,5 @@ OgamDesktop
 /website/htdocs/server/ogamServer/sessions/sess_*
 /website/htdocs/server/ogamServer/tmp/database/zend_cache---*
 /website/htdocs/server/ogamServer/tmp/language/zend_cache---*
+/website/htdocs/server/ogamServer/upload/*/
+/.gradle/*

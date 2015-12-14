@@ -60,6 +60,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
  config.vm.provision "install_db", type: "shell" do |s|
     s.path = "vagrant_config/scripts/GENERATE_DB.sh"
   end
+  
+ config.vm.provision "install_sencha_6", type: "shell" do |s|
+    s.path = "vagrant_config/scripts/install_sencha_cmd_6.sh"
+  end
 
    config.vm.provision "shell", inline: "service apache2 restart", run: "always"
 end
