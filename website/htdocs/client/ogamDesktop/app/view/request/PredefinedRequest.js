@@ -91,7 +91,13 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 				reference:'requete',
 				listeners: {
 					itemclick: 'onGridRowSelect',
-				}
+				},
+				plugins: [{
+			        ptype: 'rowexpander',
+			        //columnWidth: 0, doesn't work on extjs 6.0.1.250
+			        //headerWidth: 0, doesn't work properly on extjs 6.0.1.250
+			        rowBodyTpl : new Ext.XTemplate('<p class="o-predefined-request-grid-panel-description-text">{definition}</p>')
+			    }]
 			},{
 				title: 'Request Criteria',
 				hideMode: 'display',
