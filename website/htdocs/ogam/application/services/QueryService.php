@@ -696,7 +696,7 @@ class Application_Service_QueryService {
 		$bb2 = null;
 		$locationTable = null;
 		foreach ($data->getFields() as $field) {
-			if ($field->unit === 'GEOM') {
+			if ($field->type === 'GEOM') {
 				// define a bbox around the location
 				$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 				
@@ -710,7 +710,7 @@ class Application_Service_QueryService {
 		if ($bb == null) {
 			foreach ($ancestors as $ancestor) {
 				foreach ($ancestor->getFields() as $field) {
-					if ($field->unit === 'GEOM') {
+					if ($field->type === 'GEOM') {
 						// define a bbox around the location
 						$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 						
