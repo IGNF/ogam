@@ -287,7 +287,7 @@ class Application_Service_GenericService {
 		
 		// Get the root table fields		
 		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
-		$hasColumnProvider = array_key_exists($rootTableFields, 'PROVIDER_ID');
+		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
 		
 		// Add the joined tables
 		$i = 0;
@@ -362,7 +362,7 @@ class Application_Service_GenericService {
 		
 		// Get the root table fields
 		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
-		$hasColumnProvider = array_key_exists($rootTableFields, 'PROVIDER_ID');
+		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
 		
 		$uniqueId = "'SCHEMA/" . $schema . "/FORMAT/" . $leftTable->getLogicalName() . "'";
 		
