@@ -319,7 +319,7 @@ class Application_Service_GenericService {
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
 		$permissions = $userSession->user->role->permissionsList;
-		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER', $permissions) && hasColumnProvider) {
+		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER', $permissions) && $hasColumnProvider) {
 			$where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
 		}
 		
