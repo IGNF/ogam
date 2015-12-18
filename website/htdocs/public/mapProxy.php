@@ -92,6 +92,7 @@ if (strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
 $queriesArg['SERVICE']  = 'WMS';
 
 $uri = $mapServiceURL.'&'.http_build_query($queriesArg);
+//echo $uri;exit;
 //error_log($uri);
 header('Content-Type: image/png');
 $content = file_get_contents($uri);

@@ -22,6 +22,7 @@ DEBUG 5
 # Start of web interface definition
 #
 WEB
+   TEMPLATE "template.html"
    LOG "/vagrant/ogam/website/htdocs/logs/mapserver_ogam.log"
    METADATA
    
@@ -29,15 +30,15 @@ WEB
         WFS_SRS                         "EPSG:3857"
         WFS_ABSTRACT                    "OGAM Data"  
         WFS_MAXFEATURES                 "40"
-        WFS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
+        WFS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
 
         WMS_TITLE                       "OGAM MapServer" 
         WMS_ABSTRACT                    "OGAM Mapserver"
         WMS_ACCESSCONSTRAINTS           "none"
-        WMS_ONLINERESOURCE              "http://localhost/cgi-bin/mapserv.ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
+        WMS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
         WMS_SRS                         "EPSG:3857"
         "ows_enable_request"            "*"
-        "wms_include_items"      "*"
+        "wms_include_items"      		"*"
         "wms_feature_info_mime_type"    "text/html"
         "queryable"    "true"
       
@@ -118,8 +119,7 @@ LAYER
         GML_FEATUREID      "gid" 
         GML_INCLUDE_ITEMS  "all"   
     END
-    DUMP TRUE 
-    TEMPLATE "template.html"
+    DUMP TRUE
     
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
@@ -163,8 +163,8 @@ LAYER
         GML_INCLUDE_ITEMS  "all"    
         "gml_display_group"     "provider_id,plot_code"         
     END
-    DUMP TRUE 
-    template "dummy"
+    DUMP TRUE
+	
     VALIDATION
         'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
     END
@@ -201,7 +201,7 @@ LAYER
         GML_INCLUDE_ITEMS  "all"    
         "gml_display_group"     "provider_id,plot_code"         
     END
-    DUMP TRUE 
+    DUMP TRUE
     
     VALIDATION
         'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
@@ -244,8 +244,8 @@ LAYER
         GML_FEATUREID      "oid" 
         GML_INCLUDE_ITEMS  "all"        
     END
-    DUMP TRUE 
-    template "template.html"
+    DUMP TRUE
+	
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
@@ -273,7 +273,8 @@ LAYER
     TRANSPARENCY 100
     DEBUG 5
     STATUS ON
-    TYPE POINT 
+    TYPE POINT
+	
     CONNECTIONTYPE postgis
     PROCESSING "CLOSE_CONNECTION=DEFER"
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"

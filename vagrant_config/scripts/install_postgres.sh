@@ -1,19 +1,21 @@
 #!/usr/bin/env bash
 
-#Install postgres and postgis
+# ---------------------------------------------------------------
+# Installation des paquets pour PostgreSQL
+# ---------------------------------------------------------------
+
+# Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
+export DEBIAN_FRONTEND=noninteractive
+
 apt-get install -y postgresql-9.4 postgresql-9.4-postgis-2.1 postgresql-contrib
+#libgdal1h
 
-# sudo -n -u postgres psql -c "CREATE USER ogam WITH PASSWORD 'ogam';"
-# sudo -n -u postgres psql -c "CREATE DATABASE ogam OWNER ogam;"
-
-# sudo -n -u postgres psql -d ogam -c "CREATE EXTENSION adminpack; CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"
-
-# sudo -n -u postgres psql -c "CREATE ROLE admin LOGIN ENCRYPTED PASSWORD 'secret' SUPERUSER CREATEDB CREATEROLE;"
-
-# sudo -n -u postgres psql -c "CREATE USER vagrant WITH PASSWORD 'vagrant' SUPERUSER;"
-
+# Modification de la configuration par défaut
 echo "include 'myextrapostgresql.conf'" >> /etc/postgresql/9.4/main/postgresql.conf
 
 cp /vagrant/ogam/vagrant_config/conf/postgres/*.conf /etc/postgresql/9.4/main/ 
 
+#----------------------------------------------------------------
+# Redémarrage PostgreSQL
+#----------------------------------------------------------------
 sudo /etc/init.d/postgresql restart
