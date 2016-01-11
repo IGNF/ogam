@@ -398,6 +398,9 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			combo.collapse();
 		}
 		
+		if (!Ext.isEmpty(records) && !Ext.isIterable(records)){
+			records =[records];
+		}
 		
 		for(var i=0, l=records.length;i<l; i++) {
 			if (this.columnsPanel.down('[name=column__' + records[i].data.name+']')=== null) {
