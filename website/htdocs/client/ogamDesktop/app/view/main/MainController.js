@@ -18,7 +18,7 @@ Ext.define('OgamDesktop.view.main.MainController', {
     	'edition_panel:key':{
     			action:'onEdition',
     			conditions:{
-    				':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\s,]+))?'
+    				':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\.\\s,]+))?'
     			}
     	}
     },
