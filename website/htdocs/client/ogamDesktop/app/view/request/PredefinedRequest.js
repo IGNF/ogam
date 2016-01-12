@@ -14,10 +14,10 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 		'OgamDesktop.view.request.PredefinedRequestController',
 		'OgamDesktop.ux.request.AdvancedRequestFieldSet',
 		'Ext.grid.feature.Grouping',
-			'OgamDesktop.store.request.PredefinedGroup',
-			'OgamDesktop.view.request.PredefinedRequestSelector',
-			'Ext.grid.Panel',
-			'OgamDesktop.ux.request.AdvancedRequestSelector'
+		'OgamDesktop.store.request.PredefinedGroup',
+		'OgamDesktop.view.request.PredefinedRequestSelector',
+		'Ext.grid.Panel',
+		'OgamDesktop.ux.request.AdvancedRequestSelector'
 		],
 	controller: 'predefinedrequest',
 	viewModel:{
@@ -60,6 +60,12 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
      * The criteria Panel Title (defaults to <tt>'Request criteria'</tt>)
      */
     criteriaPanelTitle:"Request criteria",	
+    labelColumnHeader : "Label",
+    /**
+     * @cfg {String} groupTextTpl
+     * The group Text Tpl (defaults to <tt>'{name} ({children.length:plural("Requete")})'</tt>)
+     */
+    groupTextTpl:"{name} ({children.length:plural('Request')})",
 //</loacle>
 
     
@@ -67,14 +73,14 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 			var store = new OgamDesktop.store.request.PredefinedGroup({
 				groupField:'group_label'});
 			var columns = [{
-				text: 'Label',
+				text:this.labelColumnHeader,
 				flex: 1,
 				dataIndex: 'label'
 			}];
 
 			var features = [{
 				ftype: 'grouping',
-				groupHeaderTpl: '{name} ({children.length:plural("Requete")})',
+				groupHeaderTpl: this.groupTextTpl,
 				//hideGroupedHeader: true,
 				startCollapsed: true,
 				itemId: 'requestsGrouping'
@@ -99,7 +105,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 			        rowBodyTpl : new Ext.XTemplate('<p class="o-predefined-request-grid-panel-description-text">{definition}</p>')
 			    }]
 			},{
-				title: 'Request Criteria',
+				title: this.criteriaPanelTitle,
 				hideMode: 'display',
 				itemId:'myfieldset',
 				xtype:'predefined-request-selector',

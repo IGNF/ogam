@@ -150,6 +150,27 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 	}
 });
 
+Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
+	override:'OgamDesktop.view.request.PredefinedRequest',
+	config:{
+		title: 'Requête prédéfinie',
+	},
+	labelColumnHeader : "Libellé",
+	resetButtonText:"Annuler",
+	resetButtonTooltip: "Réinitialise le formulaire avec les valeurs par défaut",
+	launchRequestButtonText:"OK",
+	launchRequestButtonTooltip:"Lance la requête dans la page de consultation",
+	loadingText:"Chargement...",
+	defaultErrorCardPanelText:"Désolé, le chargement a échoué...",
+	criteriaPanelTitle:"Indiquez votre choix :",
+	groupTextTpl:"{name} ({children.length:plural('Requete')})"
+});
+
+Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequestSelector', {
+	override:'OgamDesktop.view.request.PredefinedRequestSelector',
+	defaultCardPanelText : 'Veuillez sélectionner une requête...'
+});
+
 /*
  * view map
  */
