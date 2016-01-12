@@ -82,7 +82,7 @@ unique (PROVIDER_ID, PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
-SELECT AddGeometryColumn('raw_data','location','the_geom',4326,'POINT',2);
+SELECT AddGeometryColumn('raw_data','location','the_geom',3857,'POINT',2);
 
 
 COMMENT ON COLUMN LOCATION.SUBMISSION_ID IS 'The identifier of the submission';
@@ -116,7 +116,7 @@ $BODY$
 BEGIN
     BEGIN
     IF NEW.the_geom IS NULL THEN
-		NEW.the_geom = public.ST_GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);	
+		NEW.the_geom = public.ST_Transform(public.ST_GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326), 3857);	
     END IF;   
     EXCEPTION
     WHEN internal_error THEN
@@ -167,7 +167,7 @@ CREATE OR REPLACE FUNCTION raw_data.c_communesfromgeom() RETURNS "trigger" AS
 $BODY$
 BEGIN
 
-    NEW.communes = (SELECT array_agg(code) FROM (SELECT code FROM "mapping".communes z WHERE st_intersects(z.the_geom, st_transform(NEW.the_geom, 2154)) LIMIT 20) as foo);    
+    NEW.communes = (SELECT array_agg(code) FROM (SELECT code FROM "mapping".communes z WHERE st_intersects(z.the_geom, NEW.the_geom) LIMIT 20) as foo);    
     RETURN NEW;
 END;
 $BODY$

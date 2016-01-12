@@ -87,21 +87,19 @@ COMMENT ON COLUMN taxref.PF IS 'Statut biogéographique en Polynésie française
 COMMENT ON COLUMN taxref.CLI IS 'Statut biogéographique à Clipperton';
 COMMENT ON COLUMN taxref.URL IS 'Permalien INPN = ‘http://inpn.mnhn.fr/espece/cd_nom/’ + CD_NOM';
 
-
 -- Le fichier est en encodage européen
 -- SET client_encoding = 'ISO-8859-1';
 
 -- Copie des données dans la table temporaire
 -- DELETE FROM taxref;
 
-\COPY taxref FROM './Referentiels/TAXREFv80.txt' with null '';
+--\COPY taxref FROM './Referentiels/TAXREFv80.txt' with null '';
+\COPY taxref FROM './Referentiels/TAXREFv80_For_Small_Sample_Data.txt' with null '';
 
 SET client_encoding = 'UTF-8';
 
-
 -- Suppression de la ligne de titre ...
 DELETE FROM taxref where CD_NOM = 'CD_NOM';
-
 
 -- Ajout de la définition des rangs
 -- DROP TABLE taxref_rang;
@@ -127,7 +125,6 @@ INSERT INTO taxref_rang (rang, detail) VALUES ('FO','Forme');
 INSERT INTO taxref_rang (rang, detail) VALUES ('SSFO','Sous-Forme'); 
 INSERT INTO taxref_rang (rang, detail) VALUES ('RACE','Race'); 
 
-
 -- Ajout de la définition des statuts
 -- DROP TABLE taxref_statut;
 create table taxref_statut (
@@ -135,7 +132,6 @@ statut		  		VARCHAR(50)         not null,
 description			VARCHAR(50)          null,
 constraint PK_taxref_statut primary key (statut)
 );
-
 
 INSERT INTO taxref_statut (statut, description) VALUES ('A','Absente'); 
 INSERT INTO taxref_statut (statut, description) VALUES ('B','Accidentelle / Visiteuse'); 
@@ -153,38 +149,27 @@ INSERT INTO taxref_statut (statut, description) VALUES ('X','Eteinte');
 INSERT INTO taxref_statut (statut, description) VALUES ('Y','Introduite éteinte'); 
 INSERT INTO taxref_statut (statut, description) VALUES ('Z','Endémique éteinte'); 
 
-
-
-
-
-
 -- 
 -- Quelques statistiques
 --
-select count(*) from taxref; -- 315 225 taxons
-
-select count(*) from taxref where cd_nom = cd_ref; -- 147 452 taxons de référence
-select count(*) from taxref where cd_nom <> cd_ref; -- 167 773 synonymes
-
-
+--select count(*) from taxref; -- 315 225 taxons
+--select count(*) from taxref where cd_nom = cd_ref; -- 147 452 taxons de référence
+--select count(*) from taxref where cd_nom <> cd_ref; -- 167 773 synonymes
 
 -- 5 Taxons de type "KINGDOM" (ils ont comme parent le taxon 349525 mais celui-ci n'existe pas) 
 
 -- Sinon, il n'y a pas de taxon qui n'a pas de parent.
-select *
-from taxref where cd_taxsup IS NULL;
+-- select * from taxref where cd_taxsup IS NULL;
 
 -- Insertion d'une racine commune
- INSERT INTO taxref (regne, cd_nom, cd_taxsup, cd_ref, LB_NOM) VALUES ('V',349525,'*',349525, 'Vivant');
--- DELETE FROM taxref WHERE cd_nom = '349525';
+INSERT INTO taxref (regne, cd_nom, cd_taxsup, cd_ref, LB_NOM) VALUES ('V',349525,'*',349525, 'Vivant');
+--DELETE FROM taxref WHERE cd_nom = '349525';
 --UPDATE taxref SET cd_taxsup = '*' WHERE cd_nom IN ('183716','187079','187496');
-
 
 -- Création d'index
 --CREATE INDEX cd_ref_ix ON taxref USING btree (cd_ref);
 --CREATE INDEX lb_nom_ix ON taxref USING btree (lb_nom);
 --CREATE INDEX nom_complet_ix ON taxref USING btree (nom_complet);
-
 
 --
 -- Suppression des branches autres que Anymalia, Plantae et Fungi
@@ -234,7 +219,6 @@ FROM node_list
 ORDER BY level, cd_taxsup, cd_nom, lb_nom
 */
 
-
 --
 -- Recopie de la table referentiels.taxref vers la table metadata.mode_taxref 
 --
@@ -242,7 +226,5 @@ INSERT INTO metadata.mode_taxref (unit, code, parent_code, "name", complete_name
 SELECT 'ID_TAXON', cd_nom,  cd_taxsup, lb_nom, nom_complet, nom_vern, '0', case when (cd_nom = cd_ref) then 1 else 0 end
 FROM referentiels.taxref;
 
-
 -- Marquage des feuilles
 update metadata.mode_taxref set is_leaf = '1' where code not in (select distinct parent_code from metadata.mode_taxref);
-
