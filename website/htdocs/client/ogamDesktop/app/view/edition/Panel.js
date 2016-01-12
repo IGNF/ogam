@@ -795,9 +795,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 							idProperty : 'code',
 							totalProperty : 'results',
 							rootProperty : 'rows'
-						},
-						data:codes
-					}};
+						}
+					},
+					data:codes
+				};
 				field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
 					model:'OgamDesktop.model.NodeRef',
 					root :{
