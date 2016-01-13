@@ -81,13 +81,41 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.GeometryField", {
  */
 
 /*
+ * view edition
+ */
+Ext.define('OgamDesktop.locale.fr.view.edition.Panel',{
+	override:'OgamDesktop.view.edition.Panel',
+	geoMapWindowTitle :'Saisir la localisation',
+	unsavedChangesMessage :'Vous avez des modifications non sauvegardées',
+	config:{
+		title : 'Edition'
+	},
+	parentsFSTitle : 'Parents',
+	dataEditFSDeleteButtonText :'Supprimer',
+	dataEditFSDeleteButtonTooltip : 'Supprimer la donnée',
+	dataEditFSDeleteButtonConfirm :'Voulez-vous vraiment effacer cette donnée ?',
+	dataEditFSDeleteButtonDisabledTooltip : 'La donnée ne peut pas être supprimée (des enfants existent)',
+	dataEditFSValidateButtonText :  'Valider',
+	dataEditFSValidateButtonTooltip :  'Sauvegarder les modifications',
+	dataEditFSSavingMessage : 'Sauvegarde en cours ...',
+	dataEditFSLoadingMessage : 'Chargement ...',
+	dataEditFSValidateButtonDisabledTooltip :  'La donnée ne peut pas être éditée (droits manquants)',
+	childrenFSTitle :  'Enfants',
+	childrenFSAddNewChildButtonText : 'Ajouter',
+	childrenFSAddNewChildButtonTooltip : 'Ajouter un nouvel enfant',
+	contentTitleAddPrefix : 'Ajout d\'un(e)',
+	contentTitleEditPrefix : 'Edition d\'un(e)',
+	tipEditPrefix :'Editer le/la/l\''
+});
+
+/*
  * view result
  */
 Ext.define("OgamDesktop.locale.fr.view.result.MainWin", {
 	override: 'OgamDesktop.view.result.MainWin',
-    config: {
-    	title : 'Résultats'
-    },
+	config: {
+		title : 'Résultats'
+	},
 	exportButtonText : "Export",
 	csvExportMenuItemText: 'Export CSV',
 	kmlExportMenuItemText: 'Export KML',
