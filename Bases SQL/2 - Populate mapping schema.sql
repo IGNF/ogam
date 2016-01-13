@@ -47,9 +47,9 @@ DELETE FROM layer_service;
 
 -- Define the services
 -- Liste des fournisseurs de services (Mapservers, Géoportail, ...)
-INSERT INTO layer_service(service_name, config) VALUES ('local_mapserver', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/mapserv?map=/var/www/html/mapserv/ogam.map&"],"params":{"SERVICE":"WMS"}}');
-INSERT INTO layer_service(service_name, config) VALUES ('local_tilecache', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/tilecache?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
-INSERT INTO layer_service(service_name, config) VALUES ('local_mapProxy', '{"urls":["http://ogam-integration.ign.fr/ogam/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service(service_name, config) VALUES ('local_mapserver', '{"urls":["http://localhost:8000/cgi-bin/mapserv?map=/var/www/html/mapserv/ogam.map&"],"params":{"SERVICE":"WMS"}}');
+INSERT INTO layer_service(service_name, config) VALUES ('local_tilecache', '{"urls":["http://localhost:8000/cgi-bin/tilecache?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
+INSERT INTO layer_service(service_name, config) VALUES ('local_mapProxy', '{"urls":["http://localhost:8000/ogam/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
 
 -- Exemple of a distant WMS mapserver
 --INSERT INTO layer_service(service_name, config) VALUES ('mapProxy', '{"urls":["http://test-efdac.ifn.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
