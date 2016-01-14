@@ -76,6 +76,27 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				'path' => 'validators'
 			)
 		));
+		
+		// Add another autoloader to load custom resources before application (native ogam) resources
+		if (defined('CUSTOM_APPLICATION_PATH')) {
+			$customPath = realpath(CUSTOM_APPLICATION_PATH);
+			$customResourceLoader = new Zend_Application_Module_Autoloader(array(
+				'basePath' => $customPath,
+				'namespace' => $resourceLoader->getNamespace()
+			));
+			$customResourceLoader->addResourceTypes(array(
+				'objects' => array(
+					'namespace' => 'Object',
+					'path' => 'objects'
+				)
+			));
+			$customResourceLoader->addResourceTypes(array(
+				'validators' => array(
+					'namespace' => 'Validator',
+					'path' => 'validators'
+				)
+			));
+		}
 	}
 
 	/**
