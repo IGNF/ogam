@@ -13,8 +13,6 @@ dependencies {
 // Add the reports
 war {
 
-	println "Adding reports"
-
 	from('report') {
         include '*.rptdesign'
         into('report')
