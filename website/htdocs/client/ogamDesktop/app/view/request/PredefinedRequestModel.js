@@ -7,11 +7,11 @@
 Ext.define('OgamDesktop.view.request.PredefinedRequestModel', {
     extend: 'Ext.app.ViewModel',
     requires: [
-               'OgamDesktop.model.request.fieldset.Criterion',
+               'OgamDesktop.model.request.fieldset.Criterion'
                ],//needed to fieldsets association !
     alias: 'viewmodel.predefinedrequest',
     data:{
-    	requete:undefined,
+    	requete:undefined
 	},
     formulas:{
     	criteria: {
@@ -28,9 +28,9 @@ Ext.define('OgamDesktop.view.request.PredefinedRequestModel', {
 						},
 				 noCache:false
 				}): [];
-            },
+            }
     	} 
 
-    },
+    }
     
 });

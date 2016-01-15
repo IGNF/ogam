@@ -96,7 +96,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 				features: features,
 				reference:'requete',
 				listeners: {
-					itemclick: 'onGridRowSelect',
+					itemclick: 'onGridRowSelect'
 				},
 				plugins: [{
 			        ptype: 'rowexpander',
@@ -116,7 +116,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 					}
 				},
 				flex: 1,
-				margin: '5 10 10 10',
+				margin: '5 10 10 10'
 				
 			}];
 			this.callParent();

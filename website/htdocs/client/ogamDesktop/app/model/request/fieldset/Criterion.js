@@ -21,10 +21,9 @@ Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
 	},
 
 proxy:{
-
 	reader:{
 		type:'json',
 		rootProperty:'criteria'
-	},
+	}
 }
 });
