@@ -44,12 +44,13 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
 	    			'userchoices' : this.getPredefReqView().getForm().getValues(),
 					'fieldsets':records
 	    		});
+			this.getAdvReqView().getViewModel().notify();
 			this.getAdvReqView().lookupReference('advancedRequestSelector').reloadForm();
+			
     		},
     		scope:this
     	});
     	
     	this.getMainView().getLayout().setActiveItem('consultationTab');
-
     }
 });
