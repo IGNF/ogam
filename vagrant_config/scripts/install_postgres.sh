@@ -7,7 +7,8 @@
 # Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get install -y postgresql-9.4 postgresql-9.4-postgis-2.1 postgresql-contrib
+# L'option --allow-unauthenticated est nécessaire quand on passe par les miroirs IGN.
+apt-get install --allow-unauthenticated -y postgresql-9.4 postgresql-9.4-postgis-2.1 postgresql-contrib
 #libgdal1h
 
 # Modification de la configuration par défaut

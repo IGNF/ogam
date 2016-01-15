@@ -9,7 +9,8 @@ website_dir='/vagrant/ogam/website/htdocs'
 # Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get install -y apache2 php5-common libapache2-mod-php5 php5-cli php5-pgsql 
+# L'option --allow-unauthenticated est nécessaire quand on passe par les miroirs IGN.
+apt-get install --allow-unauthenticated -y apache2 php5-common libapache2-mod-php5 php5-cli php5-pgsql 
 
 # Ajout du user vagrant au groupe "www-data"
 sudo usermod -G www-data -a vagrant
