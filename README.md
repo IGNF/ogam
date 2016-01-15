@@ -33,7 +33,7 @@ To use gradle :
 
 Vagrant is used to instanciate a virtual machine with the project components (Apache, Tomcat, Mapserver, ...).
 
-To use vagrant : 
+**To use vagrant :**
 * install [VirtualBox](https://www.virtualbox.org/)
 * install [Vagrant](https://www.vagrantup.com/)
 * launch `vagrant up`  in the project root directory to start the VM
@@ -42,7 +42,43 @@ To use vagrant :
  
 >vagrant plugin install vagrant-vbguest
 
-To connect the VM :
+* If have to pass through a proxy :
+
+uncomment followed block in /vagrant_config/Scripts/bootstrap.sh :
+
+>cp /vagrant/ogam/vagrant_config/conf/sources.list /etc/apt/sources.list
+
+>cp /vagrant/ogam/vagrant_config/conf/apt-proxy.conf /etc/apt/apt.conf.d/proxy
+
+>
+
+>echo "
+
+>http_proxy=http://proxy.ign.fr:3128
+
+>https_proxy=http://proxy.ign.fr:3128
+
+>HTTP_PROXY=http://proxy.ign.fr:3128
+
+>HTTPS_PROXY=http://proxy.ign.fr:3128
+
+>no_proxy=localhost,127.0.0.0/8,ogam.fr
+
+>" >> /etc/environment
+
+>source /etc/environment
+
+add proxy options in /vagrant_config/Scripts/install_ogam_services.sh :
+ 
+replace :
+
+>cd /vagrant/ogam/ && chmod a+x gradlew && bash gradlew && bash gradlew deploy -PtomcatHome='/var/lib/tomcat7' -PapplicationName='OGAM'
+
+with :
+
+>cd /vagrant/ogam/ && chmod a+x gradlew && bash gradlew -Dhttps.proxyHost=proxy.ign.fr -Dhttps.proxyPort=3128 && bash gradlew deploy -PtomcatHome='/var/lib/tomcat7' -PapplicationName='OGAM' -Dhttps.proxyHost=proxy.ign.fr -Dhttps.proxyPort=3128
+
+**To connect the VM :**
 * use VirtualBox interface
 * (or) connect with SSH on localhost on port 2222 with the login vagrant/vagrant  
 * PostgreSQL is on port 5433, user ogam / ogam
