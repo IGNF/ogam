@@ -4,6 +4,7 @@ ogam_folder='/vagrant/ogam'
 
 # configuration du proxy IGN / dépots apt
 # Pour la configuration du proxy pour gradlew, voir dans le script install_ogam_services.sh
+# Pour la configuration du proxy pour sencha cmd, voir dans le script install_sencha_cmd_6.sh
 
 cp /vagrant/ogam/vagrant_config/conf/sources.list /etc/apt/sources.list
 cp /vagrant/ogam/vagrant_config/conf/apt-proxy.conf /etc/apt/apt.conf.d/proxy
@@ -17,6 +18,9 @@ no_proxy=localhost,127.0.0.0/8,ogam.fr
 " >> /etc/environment
 
 source /etc/environment
+
+export https_proxy=proxy.ign.fr:3128
+export http_proxy=proxy.ign.fr:3128
 
 #pour valider le depot postgres
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | \

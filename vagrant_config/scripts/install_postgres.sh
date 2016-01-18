@@ -8,7 +8,7 @@
 export DEBIAN_FRONTEND=noninteractive
 
 # L'option --allow-unauthenticated est nécessaire quand on passe par les miroirs IGN.
-apt-get install --allow-unauthenticated -y postgresql-9.4 postgresql-9.4-postgis-2.1 postgresql-contrib
+apt-get install -y postgresql-9.4 postgresql-9.4-postgis-2.1 postgresql-contrib
 #libgdal1h
 
 # Modification de la configuration par défaut
