@@ -298,10 +298,9 @@
     
     "development": {
         "OgamDesktop": {
-	    	/** "requestServiceUrl": "http://localhost:2202/query/",
-    		 *  "mapServiceUrl": "http://localhost:2202/map/",
-    		 *  "editionServiceUrl": "http://localhost:2202/dataedition/"
-			 */
+            "requestServiceUrl": "http://localhost:8000/query/",
+            "mapServiceUrl": "http://localhost:8000/map/",
+            "editionServiceUrl": "http://localhost:8000/dataedition/"
 	    }
     },
 
