@@ -20,9 +20,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
     	this.reloadForm();
     },
     setCriteriaValues:function(value){
-    	console.log('setCriteriaValuess', value);
     	this.criteriaValues = (Ext.isIterable(value) || Ext.isObject(value)) ? value : [];
-
     },
 	
     reloadForm: function(){

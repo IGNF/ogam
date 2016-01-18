@@ -8,7 +8,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequestSelector', {
 		/**
 		 * @config OgamDesktop.model.request.fieldset.Criterion[] list/store
 		 */
-		criteria : undefined,
+		criteria : undefined
 	},
 	/**
 	 * @cfg {String} defaultCardPanelText The default Card Panel Text (defaults

@@ -17,14 +17,14 @@ Ext.define('OgamDesktop.model.request.PredefinedGroup',{
 	             {name: 'dataset_id', reference: {type:'OgamDesktop.model.Process', role:'processus', unique:true}}//10
 	        ],
 	        
-	        hasMany: [{// See Ext.data.reader.Reader documentation for example
+	hasMany: [{// See Ext.data.reader.Reader documentation for example
 	            model: 'OgamDesktop.model.request.fieldset.Criterion', name:'criteria', associationKey: 'criteria',proxy:{
 					type:'ajax',
 					url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetpredefinedrequestcriteria'
-				},
-	        },
+				}
+	        }
 /*	        {// See Ext.data.reader.Reader documentation for example
-	            model: 'OgamDesktop.model.request.FieldSet', name:'reqfieldsets',  foreignKey: 'request_name',           rule 3, 5 
+	            model: 'OgamDesktop.model.request.FieldSet', name:'reqfieldsets',  foreignKey: 'request_name',
 	            associationKey: 'reqfieldsets'
 	        }
 */

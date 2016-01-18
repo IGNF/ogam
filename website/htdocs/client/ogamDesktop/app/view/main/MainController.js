@@ -44,7 +44,6 @@ Ext.define('OgamDesktop.view.main.MainController', {
 	},
 
     onEdition:function(key){
-    	console.log('onEdition');
     	
     	if (key !== undefined) {
 	    	var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-edit-data/'+key;
@@ -52,8 +51,7 @@ Ext.define('OgamDesktop.view.main.MainController', {
 	    		removeAll:true,
 	    		renderer:'component',
 	    		loadMask:true,
-	    		url:href, 
-	    		//success:function(loader, response, option){},
+	    		url:href
 	    	});
     	}
     	this.getView().setActiveItem('edition_panel');
