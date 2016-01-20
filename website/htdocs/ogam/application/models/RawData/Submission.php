@@ -14,7 +14,7 @@
 
 /**
  * This is a model allowing access to the submission information.
- * 
+ *
  * @package models
  */
 class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
@@ -31,6 +31,26 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Read a submission object from a result line.
+	 *
+	 * @param Result $row        	
+	 * @return Application_Object_RawData_Submission
+	 */
+	private function _readSubmission($row) {
+		$submission = new Application_Object_RawData_Submission();
+		$submission->submissionId = $submissionId;
+		$submission->step = $row['step'];
+		$submission->status = $row['status'];
+		$submission->providerId = $row['provider_id'];
+		$submission->datasetId = $row['dataset_id'];
+		$submission->datasetLabel = $row['label'];
+		$submission->userLogin = $row['user_login'];
+		$submission->date = $row['_creationdt'];
+		
+		return $submission;
+	}
+
+	/**
 	 * Get some information about the active submissions.
 	 *
 	 * @return Array[Submission]
@@ -38,9 +58,9 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	public function getActiveSubmissions() {
 		$db = $this->getAdapter();
 		
- 		$req = " SELECT submission_id, step, status, provider_id, label, user_login, file_type, file_name, nb_line, _creationdt ";
+		$req = " SELECT submission_id, step, status, provider_id, dataset_id, label, user_login, file_type, file_name, nb_line, _creationdt ";
 		$req .= " FROM raw_data.submission";
-		$req .= " LEFT JOIN  raw_data.submission_file USING (submission_id)";
+		$req .= " LEFT JOIN raw_data.submission_file USING (submission_id)";
 		$req .= " LEFT JOIN metadata.dataset USING (dataset_id)";
 		$req .= " WHERE step <> 'CANCELLED' AND step <> 'INIT'";
 		$req .= " ORDER BY submission_id";
@@ -57,14 +77,8 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 			
 			if (empty($result[$submissionId])) {
 				// Create the new submission
-				$submission = new Application_Object_RawData_Submission();
-				$submission->submissionId = $submissionId;
-				$submission->step = $row['step'];
-				$submission->status = $row['status'];
-				$submission->providerId = $row['provider_id'];
-				$submission->datasetLabel = $row['label'];
-				$submission->userLogin = $row['user_login'];
-				$submission->date = $row['_creationdt'];
+				$submission = $this->_readSubmission($row);
+				
 				$result[$submissionId] = $submission;
 			}
 			// Add file info
@@ -88,10 +102,11 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	public function getSubmissionsForHarmonization() {
 		$db = $this->getAdapter();
 		
-		$req = " SELECT provider_id, dataset_id, max(submission_id) as submission_id, max(step) as step, max(status) as status, max(user_login) as user_login, max( _creationdt) as _creationdt ";
+		$req = " SELECT provider_id, dataset_id, label, max(submission_id) as submission_id, max(step) as step, max(status) as status, max(user_login) as user_login, max( _creationdt) as _creationdt ";
 		$req .= " FROM submission ";
+		$req .= " LEFT JOIN metadata.dataset USING (dataset_id)";
 		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
-		$req .= " GROUP BY provider_id, dataset_id";
+		$req .= " GROUP BY provider_id, dataset_id, label";
 		$req .= " ORDER BY submission_id ";
 		
 		$select = $db->prepare($req);
@@ -102,14 +117,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			
-			$submission = new Application_Object_RawData_Submission();
-			$submission->submissionId = $row['submission_id'];
-			$submission->step = $row['step'];
-			$submission->status = $row['status'];
-			$submission->providerId = $row['provider_id'];
-			$submission->datasetId = $row['dataset_id'];
-			$submission->userLogin = $row['user_login'];
-			$submission->date = $row['_creationdt'];
+			$submission = $this->_readSubmission($row);
 			$result[] = $submission;
 		}
 		return $result;
@@ -127,8 +135,9 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		Zend_Registry::get("logger")->info('getSubmission : ' . $submissionId);
 		
 		$db = $this->getAdapter();
-		$req = " SELECT *";
+		$req = " SELECT submission.*, label";
 		$req .= " FROM submission ";
+		$req .= " LEFT JOIN metadata.dataset USING (dataset_id)";
 		$req .= " WHERE submission_id = ?";
 		
 		$select = $db->prepare($req);
@@ -143,13 +152,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		
 		if (!empty($row)) {
 			// Create the new submission
-			$submission = new Application_Object_RawData_Submission();
-			$submission->submissionId = $submissionId;
-			$submission->step = $row['step'];
-			$submission->status = $row['status'];
-			$submission->providerId = $row['provider_id'];
-			$submission->datasetId = $row['dataset_id'];
-			$submission->userLogin = $row['user_login'];
+			$submission = $this->_readSubmission($row);
 			return $submission;
 		} else {
 			throw new Exception("Submission cannot be found");
