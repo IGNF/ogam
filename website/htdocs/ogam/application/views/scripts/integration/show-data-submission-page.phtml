@@ -55,7 +55,7 @@ foreach ($this->submissions as $submission) {
     <td><?php echo  $this->escape($submission->submissionId); ?></td>
     <td><?php echo  $this->escape($submission->date); ?></td>
     <td><?php echo  $this->escape($submission->providerId); ?></td>
-    <td><?php echo  $this->escape($submission->datasetId); ?></td>
+    <td><?php echo  $this->escape($submission->datasetLabel); ?></td>
     <td><?php echo  $this->escape($submission->step); ?></td>
     <td>
             <?php if ($submission->status === "OK" || $submission->status === "CHECKED") : ?>

@@ -38,11 +38,12 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	public function getActiveSubmissions() {
 		$db = $this->getAdapter();
 		
-		$req = " SELECT submission_id, step, status, provider_id, dataset_id, user_login, file_type, file_name, nb_line, _creationdt ";
-		$req .= " FROM submission ";
-		$req .= " LEFT JOIN submission_file USING (submission_id) ";
-		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
-		$req .= " ORDER BY submission_id ";
+ 		$req = " SELECT submission_id, step, status, provider_id, label, user_login, file_type, file_name, nb_line, _creationdt ";
+		$req .= " FROM raw_data.submission";
+		$req .= " LEFT JOIN  raw_data.submission_file USING (submission_id)";
+		$req .= " LEFT JOIN metadata.dataset USING (dataset_id)";
+		$req .= " WHERE step <> 'CANCELLED' AND step <> 'INIT'";
+		$req .= " ORDER BY submission_id";
 		
 		$select = $db->prepare($req);
 		$select->execute(array());
@@ -61,7 +62,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 				$submission->step = $row['step'];
 				$submission->status = $row['status'];
 				$submission->providerId = $row['provider_id'];
-				$submission->datasetId = $row['dataset_id'];
+				$submission->datasetLabel = $row['label'];
 				$submission->userLogin = $row['user_login'];
 				$submission->date = $row['_creationdt'];
 				$result[$submissionId] = $submission;
