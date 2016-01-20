@@ -224,7 +224,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				method : 'POST',
 				reader:{
 					type:'json',
-					rootProperty : 'data',
+					rootProperty : 'data'
 				}
 			},
 
@@ -289,14 +289,14 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				'load' : this.buildFieldForm,
 				scope : this
 			},
-			waitMsg : 'Loading...'
+			waitMsg :this.dataEditFSLoadingMessage
 		});
 
 		var centerPanelItems = [];
 
 		this.headerPanel = Ext.create({
 			xtype:'box',
-			html : '<h1>' + contentTitlePrefix + this.dataTitle.toLowerCase() + '<h1>'
+			html : '<h1>' + contentTitlePrefix + this.dataTitle.toLowerCase() + '</h1>'
 		});
 		centerPanelItems.push(this.headerPanel);
 
@@ -361,7 +361,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 
 		this.dataEditFS = new Ext.form.FieldSet({
-			title : '&nbsp;' + this.dataTitle + '&nbsp;',
+			title : this.dataTitle ,
 			items : this.dataEditForm
 		});
 		centerPanelItems.push(this.dataEditFS);
@@ -374,7 +374,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					if (typeof this.childrenConfigOptions[i] !== 'function') {
 						var cCO = this.childrenConfigOptions[i];
 						// title
-						cCO['title'] = '&nbsp;' + cCO['title'] + '&nbsp;';
+						cCO['title'] =cCO['title'];
 
 						// html
 						if (Ext.isEmpty(cCO['html'])) {
@@ -1028,7 +1028,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					var value = links[i].fields[data];
 					if (typeof value !== 'function') {
 						value = Ext.isEmpty(value) ? ' -' : value;
-						tipContent += '<b>' + data + ' : </b>' + value + '</br>';
+						tipContent += '<b>' + data + ' : </b>' + value + '<br/>';
 					}
 				}
 				html += '<a href="' + links[i].url + '" ' + 'data-qtitle="<u>' + tipTitle + '</u>" ' + 'data-qwidth="' + this.tipDefaultWidth + '" '

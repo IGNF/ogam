@@ -5,7 +5,7 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     	refs: {
     		mainView:'app-main',
 			predefReqView: 'predefined-request',
-			advReqView: 'advanced-request',
+			advReqView: 'advanced-request'
 		},
         control: {
             'predefined-request button#launchRequest': {//#launchRequest
@@ -29,16 +29,6 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
 		
 	},
     onLaunchRequest:function(){
-    	console.log('va chercher');
-
-    /*	OgamDesktop.model.request.PredefinedGroup.load("DEP", {
-    	    success: function(requete) {
-    	        console.log("requete: " + requete.get('label'));
-    	        requete.getProcess(true);
-    	        console.log(requete, requete.reqfieldsets);
-    	        console.log(requete.reqfieldsets(true).reload());
-    	    }
-    	});*/
     	
     	var prModel= this.getPredefReqView().lookupReference('requete');
    	
@@ -50,16 +40,17 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     	prModel.selection.reqfieldsets({
     		success:function(records){
 	    		console.log('reqfieldsets', records );
-	    		this.getAdvReqView().getViewModel().set({
+			this.getAdvReqView().getViewModel().set({
 	    			'userchoices' : this.getPredefReqView().getForm().getValues(),
-	    			'fieldsets':records
+					'fieldsets':records
 	    		});
-	    		this.getAdvReqView().lookupReference('advancedRequestSelector').reloadForm();
+			this.getAdvReqView().getViewModel().notify();
+			this.getAdvReqView().lookupReference('advancedRequestSelector').reloadForm();
+			
     		},
     		scope:this
     	});
     	
     	this.getMainView().getLayout().setActiveItem('consultationTab');
-
     }
 });

@@ -26,18 +26,11 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	extend: 'OgamDesktop.ux.request.RequestFieldSet',
 	alias:'widget.advancedrequestfieldset',
 	xtype: 'advanced-request-fieldset',
-	requires:[],
+	requires:['OgamDesktop.ux.request.RequestFieldSet'],
 	/**
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
 	frame : true,
-	/**
-	 * @cfg {String} cls An optional extra CSS class that will be added to this
-	 *      component's Element (defaults to 'genapp-query-field-form-panel').
-	 *      This can be useful for adding customized styles to the component or
-	 *      any of its children using standard CSS rules.
-	 */
-	cls : 'genapp-query-field-form-panel',
 	
 //<locale>
 	/**
@@ -82,18 +75,18 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 *      <tt>120</tt>)
 	 */
 	criteriaLabelWidth : 120,
-	
-	
+
 
 	// private
 	initComponent : function() {
+
 		/**
 		 * The criteria Data Store.
 		 * 
 		 * @property criteriaDS
 		 * @type Ext.data.JsonStore
 		 */
-		this.criteriaDS = Ext.data.StoreManager.lookup(this.criteriaDS || 'ext-empty-store');
+
 		/*this.criteriaDS = new Ext.data.JsonStore({
 			idProperty : 'name',
 			fields : [ {
@@ -164,14 +157,22 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			],
 			data : this.columns
 		});*/
-
 		/**
 		 * The panel used to show the criteria.
 		 * 
 		 * @property criteriaPanel
 		 * @type Ext.Panel
 		 */
-		this.criteriaPanel = new Ext.panel.Panel({
+		this.callParent(arguments);
+		this.collapsible = true;
+		this.titleCollapse = true;
+	
+
+		this.updateLayout();
+
+	},
+	initItems:function(){
+				this.criteriaPanel = new Ext.panel.Panel({
 			layout : {
 				type : 'form'
 				//labelWidth: 100 // Don't use this parameter because it change the bin width (Bug Ext! Check with ext 5.0.1 post version)
@@ -216,7 +217,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				scope : this
 			},
 			*/
-			items : Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig(),
+			items :( Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig()),
 			tbar : [ {
 				// Filler
 				xtype : 'tbfill'
@@ -325,12 +326,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		if (!this.items) {
 			this.items = [ this.criteriaPanel, this.columnsPanel ];
 		}
-		this.collapsible = true;
-		this.titleCollapse = true;
-	
-		this.callParent(arguments);
-		this.updateLayout();
-
+		this.callParent();
 	},
 
 	/**

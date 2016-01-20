@@ -45,8 +45,6 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	 */
 	criteriaLabelWidth : 120,
 	
-	
-
 	// private
 	initComponent : function() {
 		/**
@@ -94,7 +92,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			],
 			data : this.criteria
 		});*/
-
+		this.criteriaDS = Ext.data.StoreManager.lookup(this.criteriaDS || 'ext-empty-store');
 		/**
 		 * The columns Data Store.
 		 * 
@@ -125,8 +123,6 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			],
 			data : this.columns
 		});*/
-
-
 		this.callParent(arguments);
 
 	},
@@ -185,7 +181,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			// Check if there are some criteriaValues from the predefined
 			// request page
 			if (!Ext.isEmpty(this.form.criteriaValues)) {
-				fieldValues = this.form.criteriaValues['criteria__' + record.data.name];
+				fieldValues = this.form.criteriaValues['criteria__' + record.data.name+'[]'];
 				// Check if there are some criteriaValues for this criteria
 				if (!Ext.isEmpty(fieldValues)) {
 					// Transform fieldValues in array if needed
@@ -237,13 +233,11 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 
 	
 	setCriteriaDS : function(store) {
-		console.log('setCriteriaDS',store);
 		this.criteriaPanel.removeAll();
 		this.criteriaDS = store;
 		this.criteriaPanel.add(Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig());
 	},
 	getCriteriaDS: function() {
-		console.log('getCriteriaDS');
 		return this.criteriaDS;
 	},
 
