@@ -227,6 +227,8 @@ Ext.define('OgamDesktop.locale.fr.view.map.MapPanel', {
 	drawFeatureControlTitle : "Dessiner un polygone",
 	modifyFeatureControlTitle : "Modifier la géométrie",
 	tbarDeleteFeatureButtonTooltip : "Effacer la géométrie",
+	tbarValidateEditionButtonTooltip : "Valider la(es) modification(s)",
+	tbarCancelEditionButtonTooltip : "Annuler la(es) modification(s)",
 	tbarPreviousButtonTooltip : "Position précédente",
 	tbarNextButtonTooltip : "Position suivante",
 	zoomBoxInControlTitle : "Zoom en avant",

@@ -24,6 +24,15 @@
 Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	extend: 'Ext.form.field.Text',
 	xtype: 'geometryfield',
+    /**
+     * @event featureEditionValidated
+     * Fires when the feature edition on the map is validated.
+     */
+
+    /**
+     * @event featureEditionCancelled
+     * Fires when the feature edition on the map is cancelled.
+     */
 
 	/**
 	 * Internationalization.
@@ -41,7 +50,8 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 *      'x-form-trigger' by default and triggerClass will be appended if
 	 *      specified. (Default to 'x-form-map-trigger')
 	 */
-//	triggerWrapCls : 'x-form-map-trigger',
+	//	triggerWrapCls : 'x-form-map-trigger',
+
 	/**
 	 * @cfg {Boolean} editable false to prevent the user from typing text
 	 *      directly into the field, the field will only respond to a click on
@@ -56,6 +66,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 * @type Genapp.GeoPanel
 	 */
 	mapPanel : null,
+
 	/**
 	 * The current state of the trigger.
 	 * 
@@ -64,12 +75,58 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 */
 	isPressed : false,
 
+	/**
+	 * Set the visibility of the point button into the drawing toolbar
+	 * Default to 'false'.
+	 * 
+	 * @property hideDrawPointButton
+	 * @type {Boolean}
+	 */
+	hideDrawPointButton : false,
+
+	/**
+	 * Set the visibility of the line button into the drawing toolbar
+	 * Default to 'false'.
+	 * 
+	 * @property hideDrawLineButton
+	 * @type {Boolean}
+	 */
+	hideDrawLineButton : false,
+
+	/**
+	 * Set the visibility of the polygon button into the drawing toolbar
+	 * Default to 'false'.
+	 * 
+	 * @property hideDrawPolygonButton
+	 * @type {Boolean}
+	 */
+	hideDrawPolygonButton : false,
+
+	/**
+	 * Set the default activated drawing button into the drawing toolbar
+	 * The possibles values are 'point','line' or 'polygon'.
+	 * Default to 'polygon'.
+	 *
+	 * @property defaultActivatedDrawingButton
+	 * @type {String}
+	 */
+	defaultActivatedDrawingButton : 'polygon',
+
+	/**
+	 * Set the visibility of the validate and the cancel buttons into the drawing toolbar
+	 * Default to 'false'.
+	 *
+	 * @property hideValidateAndCancelButtons
+	 * @type {Boolean}
+	 */
+	hideValidateAndCancelButtons : false,
+
 	triggers:  {
 		editMapTrigger: {
 			cls: Ext.baseCSSPrefix + 'form-search-trigger',//'o-ux-form-field-tools-map-addgeomcriteria',
 			handler: function(field, trigger, event) {
 				if(field.isPressed){
-					field.onUnPress();
+					field.onUnpress();
 				} else {
 					field.onPress();
 				}
@@ -84,18 +141,18 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 		if(!this.isPressed){
 			this.getTrigger('editMapTrigger').getEl().addCls('x-form-trigger-click');
 			this.isPressed = true;
-			this.fireEvent('geomCriteriaPress');
+			this.fireEvent('geomCriteriaPress', this);
 		}
 	},
 
 	/**
 	 * Function handling the unPress event
 	 */
-	onUnPress : function () {
+	onUnpress : function () {
 		if(this.isPressed){
 			this.getTrigger('editMapTrigger').getEl().removeCls('x-form-trigger-click');
 			this.isPressed = false;
-			this.fireEvent('geomCriteriaUnpress');
+			this.fireEvent('geomCriteriaUnpress', this);
 		}
 	},
 
@@ -104,15 +161,6 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 */
 	initComponent : function() {
 		var geometryFields = Ext.ComponentQuery.query('geometryfield');
-		if (geometryFields.length) {
-			geometryFields[0].destroy();
-		}
-
-		// Listen the submit button to unPress the trigger if need
-		// TODO: find a better solution to do that register
-		var submitButton = Ext.ComponentQuery.query('advanced-request button[action = submit]')[0];
-		submitButton.on('onRequestFormSubmit', this.onUnPress, this);
-
 		this.callParent(arguments);
 	},
 
@@ -120,11 +168,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 * On destroy of the geometry field, deactivate query tbar buttons
 	 */
 	onDestroy: function() {
-		// Remove the listener on the submit button
-		// TODO: find a better solution to do that register
-		var submitButton = Ext.ComponentQuery.query('advanced-request button[action = submit]')[0];
-		submitButton.un('onRequestFormSubmit', this.onUnPress, this);
-		this.fireEvent('geomCriteriaDestroy');
+		this.fireEvent('geomCriteriaDestroy', this);
 		this.callParent(arguments);
 	}
 });

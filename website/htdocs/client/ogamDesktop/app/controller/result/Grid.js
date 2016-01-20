@@ -13,14 +13,17 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		'Ext.grid.column.Date',
 		'Ext.grid.column.Boolean'
 	],
-	uses:['OgamDesktop.view.edition.Panel'],
+	uses:[
+	    'OgamDesktop.view.edition.Panel',
+	    'OgamDesktop.view.edition.PanelController'
+	],
 	config: {
 		refs: {
 			resultsgrid: 'results-grid'
 		},
 		control: {
 			'advanced-request button[action = submit]': {
-				onRequestFormSubmit: 'setResultsGrid'
+				requestSuccess: 'setResultsGrid'
 			}
 		}
 	},
@@ -121,7 +124,10 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 
 		// Add 'edit data' action
 		if (!gridTab.hideGridDataEditButton) {
-			Ext.require('OgamDesktop.view.edition.Panel');
+			Ext.require([
+			    'OgamDesktop.view.edition.Panel',
+			    'OgamDesktop.view.edition.PanelController'
+			]);
 			Ext.Loader.loadScript(Ext.manifest.OgamDesktop.editionServiceUrl+'getParameters');
 			gridColumnCfg.push({
 				xtype: 'actioncolumn',

@@ -60,7 +60,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 	 *
 	 */
     onSubmit:function(button){
-    	this.getView().fireEvent('beforeRequestForm', this);//the form may fire beforeaction
+    	button.fireEvent('submitRequest', this);//the form may fire beforeaction
     	
     	Ext.Ajax.on('beforerequest', function(conn, options) {
     		this.requestConn = conn;
@@ -74,7 +74,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',
 			success: function(form, action) {
 				this.requestConn = null;
-				button.fireEvent('onRequestFormSubmit', action.result.columns);
+				button.fireEvent('requestSuccess', action.result.columns);
 			},
 			failure: function(form, action) {
 				switch (action.failureType) {

@@ -398,6 +398,9 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				field.formItemCls = 'trigger-field'; // For IE7 layout
 				field.hideDrawPointButton = true;
 				field.hideDrawLineButton = true;
+				field.hideDrawPolygonButton = false;
+				field.defaultActivatedDrawingButton = 'polygon';
+				field.hideValidateAndCancelButtons = true;
 				break;
 			case 'TREE':
 				field.xtype = 'treefield';

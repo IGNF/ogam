@@ -42,6 +42,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	drawFeatureControlTitle : "Draw a polygon",
 	modifyFeatureControlTitle : "Update the feature",
 	tbarDeleteFeatureButtonTooltip : "Delete the feature",
+	tbarValidateEditionButtonTooltip : "Validate the modification(s)",
+	tbarCancelEditionButtonTooltip : "Cancel the modification(s)",
 	tbarPreviousButtonTooltip : "Previous Position",
 	tbarNextButtonTooltip : "Next Position",
 	zoomBoxInControlTitle : "Zoom in",
@@ -65,8 +67,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	hideSnappingButton : false,
 	hideGetFeatureButton : false,
 	hideFeatureInfoButton : false,
-	hideDrawPointButton: true,
-	hideDrawLineButton: true,
 //	hideGeomCriteriaToolbarButton : true,
 	
 	/**
@@ -354,42 +354,41 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		var zoomToFeatureButton = new Ext.button.Button(zoomToFeatureAction);
 		drawingBtnGroup.add(zoomToFeatureButton);
 
-		// Draw point button
-		var drawPointButton = null;
-		if (!this.hideDrawPointButton) {
-			var drawPointControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point);
+		// Use of tbtext because tbseparator doesn't work...
+		drawingBtnGroup.add({xtype:'tbtext', html: '|', margin:'3 -3 0 -2', style:'color:#aaa'});
 
-			var drawPointAction = Ext.create('GeoExt.Action',{
-				control : drawPointControl,
-				map : this.map,
-				tooltip : this.drawPointControlTitle,
-				toggleGroup : "editing",
-				group : "drawControl",
-				checked : false,
-				iconCls : 'o-map-tools-map-drawpoint',
-				action : 'drawpoint'
-			});
-			var drawPointButton = new Ext.button.Button(drawPointAction)
-			drawingBtnGroup.add(drawPointButton);
-		}
+		// Draw point button
+		var drawPointControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Point);
+
+		var drawPointAction = Ext.create('GeoExt.Action',{
+			control : drawPointControl,
+			map : this.map,
+			tooltip : this.drawPointControlTitle,
+			toggleGroup : "editing",
+			group : "drawControl",
+			checked : false,
+			iconCls : 'o-map-tools-map-drawpoint',
+			action : 'drawpoint'
+		});
+		var drawPointButton = new Ext.button.Button(drawPointAction)
+		drawingBtnGroup.add(drawPointButton);
 
 		// Draw line button
-		var drawLineButton = null;
-		if (!this.hideDrawLineButton) {
-			var drawLineControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path);
-			var drawLineAction = Ext.create('GeoExt.Action',{
-				control : drawLineControl,
-				map : this.map,
-				tooltip : this.drawLineControlTitle,
-				toggleGroup : "editing",
-				group : "drawControl",
-				checked : false,
-				iconCls : 'o-map-tools-map-drawline',
-				action : 'drawline'
-			});
-			var drawLineButton = new Ext.button.Button(drawLineAction);
-			drawingBtnGroup.add(drawLineButton);
-		}
+		var drawLineControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Path);
+
+		var drawLineAction = Ext.create('GeoExt.Action',{
+			control : drawLineControl,
+			map : this.map,
+			tooltip : this.drawLineControlTitle,
+			toggleGroup : "editing",
+			group : "drawControl",
+			checked : false,
+			iconCls : 'o-map-tools-map-drawline',
+			action : 'drawline'
+		});
+		var drawLineButton = new Ext.button.Button(drawLineAction);
+		drawingBtnGroup.add(drawLineButton);
+
 
 		// Draw polygon button.
 		var drawPolygonControl = new OpenLayers.Control.DrawFeature(this.vectorLayer, OpenLayers.Handler.Polygon, {
@@ -449,6 +448,37 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 		});
 		var deleteFeatureButton = new Ext.button.Button(deleteFeatureAction);
 		drawingBtnGroup.add(deleteFeatureButton);
+
+		// Use of tbtext because tbseparator doesn't work...
+		drawingBtnGroup.add({
+			group : "drawValidation",
+			xtype:'tbtext',
+			html: '|',
+			margin:'3 -3 0 -2',
+			style:'color:#aaa'
+		});
+
+		// Validate edition
+		drawingBtnGroup.add({
+			group : "drawValidation",
+		    iconCls : 'o-map-tools-map-validate-edition',
+		    tooltip : this.tbarValidateEditionButtonTooltip,
+		    handler: function(button, event) {
+		    	this.fireEvent('validateFeatureEdition');
+		    },
+		    scope : this
+		});
+
+		// Cancel edition
+		drawingBtnGroup.add({
+			group : "drawValidation",
+		    iconCls : 'o-map-tools-map-cancel-edition',
+		    tooltip : this.tbarCancelEditionButtonTooltip,
+		    handler: function(button, event) {
+		    	this.fireEvent('cancelFeatureEdition');
+		    },
+		    scope : this
+		});
 
 		// As a feature is modified, fire an event on the vector layer.
 		this.vectorLayer.events.on({
