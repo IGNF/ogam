@@ -56,7 +56,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 	<td><?= $harmonizationProcess->datasetId ?></td>
 	<td><?= $harmonizationProcess->date ?></td>
 	<td>
-            <?php if ($harmonizationProcess->submissionStatus == "NOT_VALID") { ?>
+            <?php if ($harmonizationProcess->submissionStatus === "NOT_VALID") { ?>
             	<?= $harmonizationProcess->status ?>
                 <img src="<?= $this->baseUrl('img/warning_orange.png') ?>" title="The raw_data submission is not valid anymore" />
             <?php } else if ($harmonizationProcess->status === "OK") { ?>
@@ -121,8 +121,10 @@ foreach ($this->harmonizations as $harmonizationProcess) {
                 <img src="<?= $this->baseUrl('img/Red_x.png') ?>" />
             <?php } ?></td>
 	<td>
+	<?php if ($harmonizationProcess->submissionStatus !== "NOT_VALID") { ?>
 	    <a onclick="return confirmLauch();" href="<?= $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?= $this->translate('Launch Harmonization');?></a>
 	    <br/><a onclick="return confirmDeletion();" href="<?= $this->url(array('controller'=>'harmonization','action'=>'remove-harmonization-data'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?= $this->translate('Remove Harmonization Data');?></a>
+	<?php } ?>
 	</td>
 </tr>
 <?php
