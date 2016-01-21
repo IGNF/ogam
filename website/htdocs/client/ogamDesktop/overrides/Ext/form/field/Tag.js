@@ -34,57 +34,102 @@ Ext.define('Jarvus.hotfixes.ext.selection.Model.DeprecateSetLastFocused', {
 });
 
 
-/**
- * Ext.form.field.ComboBox crashes unexpectedly when more than one combo with paging presented on the
- * same physical page in the browser:
- * Ext.ComponentManager.register(): Registering duplicate component id "undefined-paging-toolbar"
+/***
+ * TagField TypeError with multiSelect: false
  *
- * Solution: just comment nonexistent pickerId when component boundlist creates. Since this pickerId is
- * nowhere used this should be okay and Ext.Component will make sure about unique identifier by itself.
- *
- * Discussion: https://www.sencha.com/forum/showthread.php?303101
+ * When using the multiSelect: false config in a TagField, Ext 6.0.1. throws an error
+ * cf bug EXTJS-19271
+ *  dicussion https://www.sencha.com/forum/showthread.php?305344-TagField-TypeError-with-multiSelect-false
  */
-Ext.define('Jarvus.hotfixes.form.field.ComboBoxPickerId', {
-    override: 'Ext.form.field.ComboBox',
-    compatibility: ['6.0.0.640', '6.0.1.250'],
-    createPicker: function() {
-        var me = this,
-            picker,
-            pickerCfg = Ext.apply({
-                xtype: 'boundlist',
-                pickerField: me,
-                selectionModel: me.pickerSelectionModel,
-                floating: true,
-                hidden: true,
-                store: me.getPickerStore(),
-                displayField: me.displayField,
-                preserveScrollOnRefresh: true,
-                pageSize: me.pageSize,
-                tpl: me.tpl
-            }, me.listConfig, me.defaultListConfig);
+Ext.define('Override.form.field.Tag', {    
+	override: 'Ext.form.field.Tag',
+	compatibility:  '6.0.1.250',
+	setValue: function(value, /* private */ add, skipLoad) {
+		var me = this,
+		    valueStore = me.valueStore,
+		    valueField = me.valueField,
+		    unknownValues = [],
+		    store = me.store,
+		    autoLoadOnValue = me.autoLoadOnValue,
+		    isLoaded = store.getCount() > 0 || store.isLoaded(),
+		    pendingLoad = store.hasPendingLoad(),
+		    unloaded = autoLoadOnValue && !isLoaded && !pendingLoad,
+		    record, len, i, valueRecord, cls, params;
 
-        picker = me.picker = Ext.widget(pickerCfg);
-        if (me.pageSize) {
-            picker.pagingToolbar.on('beforechange', me.onPageChange, me);
-        }
 
-        // We limit the height of the picker to fit in the space above
-        // or below this field unless the picker has its own ideas about that.
-        if (!picker.initialConfig.maxHeight) {
-            picker.on({
-                beforeshow: me.onBeforePickerShow,
-                scope: me
-            });
-        }
-        picker.getSelectionModel().on({
-            beforeselect: me.onBeforeSelect,
-            beforedeselect: me.onBeforeDeselect,
-            focuschange: me.onFocusChange,
-            scope: me
-        });
+		if (Ext.isEmpty(value)) {
+		    value = Ext.Array.from(value, true); // NEW
+		}
+		else if (Ext.isString(value) && me.multiSelect) {
+		    value = value.split(me.delimiter);
+		}
+		else {
+		    value = Ext.Array.from(value, true);
+		}
 
-        picker.getNavigationModel().navigateOnSpace = false;
 
-        return picker;
-    }
+		if (value && me.queryMode === 'remote' && !store.isEmptyStore && skipLoad !== true && unloaded) {
+		    for (i = 0, len = value.length; i < len; i++) {
+			record = value[i];
+			if (!record || !record.isModel) {
+			    valueRecord = valueStore.findExact(valueField, record);
+			    if (valueRecord > -1) {
+				value[i] = valueStore.getAt(valueRecord);
+			    } else {
+				valueRecord = me.findRecord(valueField, record);
+				if (!valueRecord) {
+				    if (me.forceSelection) {
+					unknownValues.push(record);
+				    } else {
+					valueRecord = {};
+					valueRecord[me.valueField] = record;
+					valueRecord[me.displayField] = record;
+
+
+					cls = me.valueStore.getModel();
+					valueRecord = new cls(valueRecord);
+				    }
+				}
+				if (valueRecord) {
+				    value[i] = valueRecord;
+				}
+			    }
+			}
+		    }
+
+
+		    if (unknownValues.length) {
+			params = {};
+			params[me.valueParam || me.valueField] = unknownValues.join(me.delimiter);
+			store.load({
+			    params: params,
+			    callback: function() {
+				me.setValue(value, add, true);
+				me.autoSize();
+				me.lastQuery = false;
+			    }
+			});
+			return false;
+		    }
+		}
+
+
+		// For single-select boxes, use the last good (formal record) value if possible
+		if (!me.multiSelect && value.length > 0) {
+		    for (i = value.length - 1; i >= 0; i--) {
+			if (value[i].isModel) {
+			    value = value[i];
+			    break;
+			}
+		    }
+		    if (Ext.isArray(value)) {
+			value = value[value.length - 1];
+		    }
+		}
+
+
+		return me.callSuper([value, add]); // NEW
+	}
+
+
 });
