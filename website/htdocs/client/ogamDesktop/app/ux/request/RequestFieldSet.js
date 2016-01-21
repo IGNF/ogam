@@ -395,7 +395,25 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				break;
 			case 'TREE':
 				field.xtype = 'treefield';
-				field.valueLabel = record.valueLabel;
+				var codes=[];
+				if (record.type === 'ARRAY') {
+					field.multiSelect= field.multiple = true;
+					if (record.valueLabel) { // to avoid null pointer
+						for ( var i = 0; i < record.valueLabel.length; i++) {
+							codes.push({
+								code : record.value[i],
+								label : record.valueLabel[i]
+							});
+						}
+					}
+				} else {
+					// case of CODE (single value)
+					codes.push({
+						code : record.value,
+						label : record.valueLabel
+					});
+				}
+
 				//field.unit = record.unit;
 				field.store = {
 					xtype : 'jsonstore',
@@ -411,7 +429,9 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 							totalProperty : 'results',
 							rootProperty : 'rows'
 						}
-					}};
+					},
+					data :  codes
+				};
 				field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
 					root :{
 						allowDrag : false,
@@ -423,7 +443,25 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				break;
 			case 'TAXREF':
 				field.xtype = 'treefield';
-				field.valueLabel = record.valueLabel;
+				var codes=[];
+				if (record.type === 'ARRAY') {
+					field.multiSelect= field.multiple = true;
+					if (record.valueLabel) { // to avoid null pointer
+						for ( var i = 0; i < record.valueLabel.length; i++) {
+							codes.push({
+								code : record.value[i],
+								label : record.valueLabel[i]
+							});
+						}
+					}
+				} else {
+					// case of CODE (single value)
+					codes.push({
+						code : record.value,
+						label : record.valueLabel
+					});
+				}
+
 				//field.unit = record.unit;
 				field.treePickerColumns = {
 				    items: [{
@@ -458,8 +496,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					xtype : 'jsonstore',
 					autoDestroy : true,
 					remoteSort : true,
-					fields:['code', 'label',
-					        'isReference','vernacularName'],//TODO changed to a generate model ?
+					model:'OgamDesktop.model.NodeRef',
 					proxy:{
 						type:'ajax',
 						url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettaxrefcodes',
@@ -469,7 +506,9 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 							totalProperty : 'results',
 							rootProperty : 'rows'
 						}
-					}};
+					},
+					data:codes
+				};
 				field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
 					model:'OgamDesktop.model.NodeRef',
 					root :{
@@ -496,7 +535,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 
 			if (Ext.isEmpty(field.listeners)) {
 				field.listeners = {
-					scope : this
+					// scope : this
 				};
 			}
 			field.listeners.render = function(cmp) {
