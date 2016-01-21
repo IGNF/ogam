@@ -14,6 +14,7 @@
 Ext.define('OgamDesktop.view.edition.Panel', {
 		
 	extend: 'Ext.Panel',
+	controller: 'editionpage',
 	requires:[
 	          'Ext.button.Button',
 	          'Ext.LoadMask',
@@ -445,7 +446,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 * @param {Ext.data.Record}
 	 *            records The records
 	 */
-	buildFieldForm : function(store, records) {
+	buildFieldForm : function(store, records) { console.log('this: ',this)
 		console.log('load','buildFieldForm', arguments );
 		var dataProvider = '';
 
@@ -502,6 +503,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	getFieldConfig : function(record, hideBin) {
 		var field = {};
 		field.name = record.name;
+		field.listeners = {};
 
 		if ((this.mode === this.editMode && !Ext.isEmpty(record.editable) && record.editable !== "1")
 				|| (this.mode === this.addMode && !Ext.isEmpty(record.insertable) && record.insertable !== "1")) {
@@ -673,7 +675,13 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				break;
 			case 'GEOM':
 				field.xtype = 'geometryfield';
-				field.hideSearchButton = true;
+				field.hideDrawPointButton = false;
+				field.hideDrawLineButton = false;
+				field.hideDrawPolygonButton = false;
+				field.defaultActivatedDrawingButton = 'point';
+				field.hideValidateAndCancelButtons = false;
+				field.listeners['featureEditionValidated'] = 'onFeatureEditionEnded';
+				field.listeners['featureEditionCancelled'] = 'onFeatureEditionEnded';
 				field.zoomToFeatureOnInit = true;
 				field.mapWindowTitle = this.geoMapWindowTitle;
 				break;
@@ -841,8 +849,8 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// Add a tooltip
 		if (!Ext.isEmpty(record.definition)) {
-			field.listeners = {
-				'afterrender' : function(cmp) {
+			field.listeners['afterrender'] = {
+				fn: function(cmp) {
 					if (cmp.inputType != 'hidden') {
 						Ext.QuickTips.register({
 							target : cmp.labelEl,
@@ -852,7 +860,8 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 						});
 					}
 				},
-				scope : this
+				scope : this, 
+				single: true
 			};
 		}
 

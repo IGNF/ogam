@@ -51,7 +51,7 @@ Ext.define('OgamDesktop.ux.map.GroupLayerContainer', {
         	store: me.store,
             filter: function(record) {
                 var layer = record.getLayer();
-                return (layer.displayInLayerSwitcher);
+                return (layer && layer.displayInLayerSwitcher);
             },
             addLayerNode: function(node, layerRecord, index) {
             	index = index || 0;

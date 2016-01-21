@@ -22,6 +22,22 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	mapPanel: null,
 
 	/**
+	 * The current edition field linked to the drawing toolbar
+	 * @private
+	 * @property
+	 * @type OgamDesktop.ux.form.field.GeometryField
+	 */
+	currentEditionField: null,
+
+	/**
+	 * The previous edition field id linked to the drawing toolbar
+	 * @private
+	 * @property
+	 * @type String
+	 */
+	previousEditionFieldId: null,
+
+	/**
 	 * The refs to get the views concerned
 	 * and the control to define the handlers of the
 	 * MapPanel, toolbar and LayersPanel events
@@ -32,13 +48,15 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			legendspanel: 'legends-panel',
 			mapaddonspanel: 'map-addons-panel',
 			mappanel: 'map-panel',
-			geometryfield: 'geometryfield'
+			geometryfield: 'geometryfield',
+			consultationpanel : '#consultationTab',
+			mapmainwin :  'map-mainwin'
 		},
 		control: {
 			'geometryfield': {
-				geomCriteriaPress: 'showQueryTbar',
-				geomCriteriaUnpress: 'hideQueryTbar',
-				geomCriteriaDestroy: 'hideQueryTbarAndRemoveFeatures'
+				geomCriteriaPress: 'onGeomCriteriaPress',
+				geomCriteriaUnpress: 'onGeomCriteriaUnpress',
+				geomCriteriaDestroy: 'onGeomCriteriaUnpress'
 			},
 			'map-panel toolbar combobox': {
 				select: 'layerSelected'
@@ -53,98 +71,205 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				afterinitmap: 'setMapLayers',
 				getFeature: 'getFeature',
 				resultswithautozoom: 'zoomOnResultsBBox',
-				featureModified: 'updateVectorLayer'
+				featureModified: 'updateCurrentEditionFieldValue',
+				validateFeatureEdition:'onValidateFeatureEdition',
+				cancelFeatureEdition:'onCancelFeatureEdition'
 			},
 			'layers-panel': {
 				checkchange: 'onCheckChange',
 				nodeEnable: 'nodeEnable'
 			},
 			'advanced-request button[action = submit]': {
-				onRequestFormSubmit: 'hideQueryTbar'
+				submitRequest: 'onSubmitRequest'
 			}
 		}
 	},
-	
+
+	/**
+	 * Manage the validateFeatureEdition event
+	 */
+	onValidateFeatureEdition: function() {
+		this.currentEditionField.fireEvent('featureEditionValidated');
+		this.unpressField();
+	},
+
+	/**
+	 * Manage the cancelFeatureEdition event
+	 */
+	onCancelFeatureEdition: function() {
+		this.currentEditionField.fireEvent('featureEditionCancelled');
+		this.currentEditionField.setValue(this.currentEditionFieldOldValue);
+		this.unpressField();
+	},
+
+	/**
+	 * Set the features of the vector layer from a WKT
+	 */
+	setVectorLayerFeaturesFromWKT: function(wkt) {
+		var mapPanel = this.getMappanel();
+		this.removeVectorLayerFeatures();
+		if (!Ext.isEmpty(wkt)) {
+			var feature = mapPanel.wktFormat.read(wkt);
+			if (Ext.isEmpty(feature)) {
+				console.error(mapPanel.invalidWKTMsg);
+			} else {
+				if (!Array.isArray(feature)) {
+					feature = [feature];
+				}
+				mapPanel.vectorLayer.addFeatures(feature);
+			}
+		}
+	},
+
 	/**
 	 * Update the WKT value of the drawn vector layer into the geometry field of request panel
-	 * 
 	 */
-	updateVectorLayer: function() {
+	updateCurrentEditionFieldValue: function() {
+		var mapPanel = this.getMappanel();
 		var wktValue = null;
-		if (this.getMappanel().vectorLayer.features.length){
-			wktValue = 'MULTIPOLYGON('; 
-			for (var i = 0 ; i < this.getMappanel().vectorLayer.features.length ; i++) {
-				var val = (this.getMappanel().wktFormat.write(this.getMappanel().vectorLayer.features[i]));
-				if (val.indexOf('MULTIPOLYGON', 0) == -1) {
-					val = val.split('POLYGON')[1];
-				} else {
-					val = val.split('MULTIPOLYGON(')[1];
-					val = val.substring(0, val.lastIndexOf(')'));
-				}
-				wktValue = wktValue + val + ',';
-			}
-			wktValue = wktValue.substring(0, wktValue.lastIndexOf(',')) + ')';
+		var featuresNbr = mapPanel.vectorLayer.features.length;
+		if (featuresNbr === 1){ // Avoid the GEOMETRYCOLLECTION for only one feature
+			wktValue = mapPanel.wktFormat.write(mapPanel.vectorLayer.features[0]);
+		} else if (featuresNbr > 1) { // Return a GEOMETRYCOLLECTION
+			wktValue = mapPanel.wktFormat.write(mapPanel.vectorLayer.features);
 		}
-		var geometryField = Ext.ComponentQuery.query('geometryfield');
-		if (geometryField.length){
-			geometryField[0].setValue(wktValue);
+		if (this.currentEditionField !== null){
+			this.currentEditionField.setValue(wktValue);
 		}
 	},
 
-	showQueryTbar: function() {
-		this.setQueryMode(true);
+	/**
+	 * Manage the geometry field press event
+	 * 
+	 * @param {Ext.form.field.Field} field The pressed field
+	 */
+	onGeomCriteriaPress: function(field) {
+		if (this.currentEditionField !== null) {
+			// Deactivation of the previous edition mode and field
+			this.previousEditionFieldId = this.currentEditionField.getId();
+			this.currentEditionField.onUnpress();
+		}
+		this.currentEditionField = field;
+		this.currentEditionFieldOldValue = field.getValue();
+		this.setVectorLayerFeaturesFromWKT(field.getValue());
+		this.toggleDrawingTbar(true);
+		var consultationPanel = this.getConsultationpanel();
+		consultationPanel.ownerCt.setActiveTab(consultationPanel);
+		var mapMainWin = this.getMapmainwin();
+		mapMainWin.ownerCt.setActiveTab(mapMainWin);
 	},
 
-	hideQueryTbar: function() {
-		this.setQueryMode(false);
+	/**
+	 * Manage the geometry field unpress event
+	 * 
+	 * @param {Ext.form.field.Field} field The unpressed field
+	 */
+	onGeomCriteriaUnpress: function(field) {
+		if(field && field.getId() === this.previousEditionFieldId){ // Do nothing
+			this.previousEditionFieldId = null;
+		} else {
+			this.currentEditionField = null;
+			this.toggleDrawingTbar(false);
+			this.removeVectorLayerFeatures();
+		}
 	},
-	
-	hideQueryTbarAndRemoveFeatures: function() {
-		this.setQueryMode(false, true);
+
+	/**
+	 * Deactivation of the previous edition mode and field on a request launch
+	 */
+	onSubmitRequest: function() {
+		this.unpressField();
 	},
-	
+
+	/**
+	 * Unpress the current edition field linked to the drawing toolbar
+	 */
+	unpressField: function() {
+		if (this.currentEditionField !== null) {
+			this.currentEditionField.onUnpress();
+		}
+	},
+
+	/**
+	 * Setup the drawing toolbar buttons (visibilities and default controls)
+	 */
+	setupDrawingTbarButtons: function() {
+		// Set the buttons visibilities
+		var drawPointButton = this.getMappanel().getDockedItems('toolbar button[action = drawpoint]');
+		if (drawPointButton.length) {
+			drawPointButton[0].setVisible(!this.currentEditionField.hideDrawPointButton);
+		}
+		var drawLineButton = this.getMappanel().getDockedItems('toolbar button[action = drawline]');
+		if (drawLineButton.length) {
+			drawLineButton[0].setVisible(!this.currentEditionField.hideDrawLineButton);
+		}
+		var drawPolygonButton = this.getMappanel().getDockedItems('toolbar button[action = drawpolygon]');
+		if (drawPolygonButton.length) {
+			drawPolygonButton[0].setVisible(!this.currentEditionField.hideDrawPolygonButton);
+		}
+		var drawValidationButtons = this.getMappanel().getDockedItems('toolbar [group = drawValidation]');
+		for (var i=0; i < drawValidationButtons.length; i++) {
+			drawValidationButtons[i].setVisible(!this.currentEditionField.hideValidateAndCancelButtons);
+		}
+
+		// Set the default control
+		switch (this.currentEditionField.defaultActivatedDrawingButton) {
+			case 'point' : drawPointButton[0].toggle(true); break;
+			case 'line' : drawLineButton[0].toggle(true); break;
+			case 'polygon' : drawPolygonButton[0].toggle(true); break;
+		}
+	},
+
 	/**
 	 * Activates / Deactivates drawing tbar
-	 * @param {boolean}
-	 *            enable Tbar to Enable or not
+	 * 
+	 * @param {boolean} enable Enable or disable the drawing toolbar
 	 */
-	setQueryMode: function(enable, removeFeatures) {
-		// Activate drawing buttons group
+	toggleDrawingTbar: function(enable) {
+		if(enable){
+			// Setup the drawing toolbar buttons
+			this.setupDrawingTbarButtons();
+		} else {
+			// Deactivates all the drawing toolbar buttons controls on the toolbar disappearance
+			var drawingTbarButtons = this.getMappanel().getDockedItems('toolbar buttongroup[action = drawing] button');
+			for(var i = 0; i < drawingTbarButtons.length; i++){
+				drawingTbarButtons[i].toggle(false);
+			}
+		}
+		// Show or hide drawing buttons group
 		var drawingTbar = this.getMappanel().getDockedItems('toolbar buttongroup[action = drawing]');
 		if (drawingTbar.length) {
 			drawingTbar[0].setVisible(enable);
 		}
-		
-		var drawPolygonButton = this.getMappanel().getDockedItems('toolbar button[action = drawpolygon]');
-		if (drawPolygonButton.length) {
-			drawPolygonButton[0].toggle(enable);
+	},
+
+	/**
+	 * Hide vector layer features
+	 */
+	hideVectorLayerFeatures: function () {
+		var mapPanel = this.getMappanel();
+		for( var i = 0; i < mapPanel.vectorLayer.features.length; i++ ) {
+			mapPanel.vectorLayer.features[i].style = { display: 'none' };
 		}
-		if (!enable) {
-			// Deactivate drawing tbar buttons as tbar disapears
-			var modifyButton = this.getMappanel().getDockedItems('toolbar button[action = modifyfeature]');
-			if (modifyButton.length) {
-				modifyButton[0].toggle(false);
-			}
-			var deleteFeatureButton = this.getMappanel().getDockedItems('toolbar button[action = deletefeature]');
-			if (deleteFeatureButton.length) {
-				deleteFeatureButton[0].toggle(false);
-			}
-			if(removeFeatures){
-				this.getMappanel().vectorLayer.removeAllFeatures();
-			} else {
-				// Hide vector layer features
-				for( var i = 0; i < this.getMappanel().vectorLayer.features.length; i++ ) {
-					this.getMappanel().vectorLayer.features[i].style = { display: 'none' };
-				}
-			}
-			this.getMappanel().vectorLayer.redraw();
-		} else {
-			// Show vector layer features
-			for( var i = 0; i < this.getMappanel().vectorLayer.features.length; i++ ) {
-				this.getMappanel().vectorLayer.features[i].style = null;
-			}
-			this.getMappanel().vectorLayer.redraw();
+		mapPanel.vectorLayer.redraw();
+	},
+
+	/**
+	 * Remove vector layer features
+	 */
+	removeVectorLayerFeatures: function () {
+		this.getMappanel().vectorLayer.removeAllFeatures({'silent':true});
+	},
+
+	/**
+	 * Show vector layer features
+	 */
+	showVectorLayerFeatures: function () {
+		var mapPanel = this.getMappanel();
+		for( var i = 0; i < mapPanel.vectorLayer.features.length; i++ ) {
+			mapPanel.vectorLayer.features[i].style = null;
 		}
+		mapPanel.vectorLayer.redraw();
 	},
 
 	/**
