@@ -39,6 +39,7 @@ class Application_Object_RawData_Submission {
 
 	/**
 	 * The provider (country, organisation, .
+	 *
 	 * ..) identifier
 	 */
 	var $providerId;
@@ -47,6 +48,11 @@ class Application_Object_RawData_Submission {
 	 * The dataset identifier
 	 */
 	var $datasetId;
+
+	/**
+	 * The dataset label
+	 */
+	var $datasetLabel;
 
 	/**
 	 * The login of the user who has done the submission
