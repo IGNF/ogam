@@ -157,8 +157,12 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 
 	// private
 	onTreeChoice : function(view, record) {
-
-		this.addValue(record);
+		if (this.multiple) {
+			this.addValue(record);
+		} else {
+			this.setValue(record);
+		}
+		
 		this.fireEvent('select', this, record);
 		if (this.tree) {
 			this.tree.hide();
