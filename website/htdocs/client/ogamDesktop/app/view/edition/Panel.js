@@ -707,7 +707,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					});
 				}
 				
-				field.valueLabel = record.valueLabel;
+				//field.valueLabel = record.valueLabel;
 				//field.unit = record.unit;
 				field.store = {
 					xtype : 'jsonstore',
@@ -759,7 +759,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					});
 				}
 				
-				field.valueLabel = record.valueLabel;
+				//field.valueLabel = record.valueLabel;
 				//field.unit = record.unit;
 				field.treePickerColumns = {
 				    items: [{
