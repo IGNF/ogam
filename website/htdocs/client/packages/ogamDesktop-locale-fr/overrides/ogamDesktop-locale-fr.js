@@ -51,7 +51,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.TwinNumberField", {
 
 Ext.define("OgamDesktop.locale.fr.ux.form.field.TreeField", {
 	override: "OgamDesktop.ux.form.field.TreeField",
-	emptyText : "Sélectionner..."
+//	emptyText : "Sélectionner..."
 });
 
 Ext.define("OgamDesktop.locale.fr.ux.form.field.NumberRangeField", {

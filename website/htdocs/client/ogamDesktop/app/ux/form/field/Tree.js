@@ -23,7 +23,7 @@
 
 
 Ext.define('OgamDesktop.ux.form.field.Tree', {
-    extend:'Ext.form.field.ComboBox',
+    extend:'Ext.form.field.Tag',
     alias: 'widget.treefield',
 	requires:['OgamDesktop.ux.picker.Tree'],
 
@@ -53,13 +53,14 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 	 * @cfg {String} emptyText The default text to place into an empty field
 	 *      (defaults to 'Select...').
 	 */
-	emptyText : 'Select...',
+	//emptyText : 'Select...', //@see EXTJS-19841., EXTJS-1637
 
 	/**
 	 * Manage multiple values,
 	 */
 	multiple : false,
-	
+
+	multiSelect:false,
 	/**
 	 * @cfg {Ext.grid.column.Column[]/Object} treePickerColumns 
 	 * array of column definition objects which define all columns that appear in this
@@ -121,23 +122,17 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
         var me = this,
         picker = me.tree,
         store = picker.store,
-        value = me.value,
+        values = me.value,
         node;
         
 		if (!me.readOnly && !me.disabled) {
 			if(picker.isVisible()){
 				picker.hide();
 			} else {
-			    if (value) {
-			        node = store.getNodeById(value);
-			    }
-		
-			    if (!node) {
-			        node = store.getRoot();
-			    }
-		
-			    picker.selectPath(node.getPath());
-			    picker.showBy(this.el, "tl-bl?");
+				picker.setSelection(null);//TODO : load node with path ?
+			    //picker.selectPath(node.getPath());ensureVisible
+				//picker.getSlectionModel().select(values);
+				picker.showBy(this.el, "tl-bl?");
 			}
 		}
 	},
@@ -163,7 +158,7 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 	// private
 	onTreeChoice : function(view, record) {
 
-		this.setValue(record);
+		this.addValue(record);
 		this.fireEvent('select', this, record);
 		if (this.tree) {
 			this.tree.hide();
