@@ -127,7 +127,6 @@ class DataEditionController extends AbstractOGAMController {
 	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
 		
 		// Warning : $formField can be null if no mapping is defined with $tableField
-		
 		switch ($tableField->type) {
 			
 			case "STRING":
@@ -490,24 +489,32 @@ class DataEditionController extends AbstractOGAMController {
 			echo '{"success":false,"errorMessage":' . json_encode($this->translator->translate("Invalid form")) . '}';
 		} else {
 			
-			// join_keys values must not be erased
-			$joinKeys = $this->genericModel->getJoinKeys($data);
-			
-			foreach ($data->getFields() as $field) {
-				
-				$isNotJoinKey = !in_array($field->columnName, $joinKeys);
-				
-				if ($isNotJoinKey) {
-					// Update the data descriptor with the values submitted
-					$field->value = $this->_getParam($field->getName());
-				}
-			}
-			
 			try {
-				// Insert or update the data
+				
 				if ($mode === 'ADD') {
+					// Insert the data
+					
+					// join_keys values must not be erased
+					$joinKeys = $this->genericModel->getJoinKeys($data);
+					
+					foreach ($data->getFields() as $field) {
+						$isNotJoinKey = !in_array($field->columnName, $joinKeys);
+						
+						if ($isNotJoinKey) {
+							// Update the data descriptor with the values submitted
+							$field->value = $this->_getParam($field->getName());
+						}
+					}
+					
 					$data = $this->genericModel->insertData($data);
 				} else {
+					// Edit the data
+					
+					// Update the data descriptor with the values submitted (for editable fields only)
+					foreach ($data->getEditableFields() as $field) {
+						$field->value = $this->_getParam($field->getName());
+					}
+					
 					$this->genericModel->updateData($data);
 				}
 				echo '{"success":true, ';

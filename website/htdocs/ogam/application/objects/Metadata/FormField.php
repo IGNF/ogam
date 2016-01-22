@@ -74,6 +74,13 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 	 * @var Boolean
 	 */
 	var $insertable;
+	
+	/**
+	 * Indicate if the field is part of the primary key (for the edition module).
+	 *
+	 * @var Boolean
+	 */
+	var $isPK;
 
 	/**
 	 * Indicate if the field is required (for the edition module).
@@ -126,6 +133,7 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 		$return .= ',"valueLabel":' . json_encode($this->getValueLabel());
 		$return .= ',"editable":' . json_encode($this->editable);
 		$return .= ',"insertable":' . json_encode($this->insertable);
+		$return .= ',"isPK":' . json_encode($this->isPK);		
 		$return .= ',"required":' . json_encode($this->required);
 		return $return;
 	}

@@ -624,8 +624,6 @@ class Application_Service_GenericService {
 					// Numeric values
 					if (is_array($value)) {
 						
-						$this->logger->debug('numeric : ' . print_r($value, true));
-						
 						// Case of a list of values
 						$sql2 = '';
 						foreach ($value as $val) {

@@ -179,7 +179,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
 		$sql .= " FROM " . $schema->name . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
-		$sql .= " WHERE(1 = 1) " . $this->genericService->buildWhere(array_merge($data->infoFields, $data->editableFields));
+		$sql .= " WHERE (1 = 1) " . $this->genericService->buildWhere(array_merge($data->infoFields, $data->editableFields));
 		
 		$this->logger->info('_getDataList : ' . $sql);
 		
@@ -225,8 +225,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		/* @var $tableFormat TableFormat */
 		
 		$schema = $this->metadataModel->getSchema($tableFormat->schemaCode);
-		
-		$this->logger->info('updateData');
 		
 		// Get the values from the data table
 		$sql = "UPDATE " . $schema->name . "." . $tableFormat->tableName . " " . $tableFormat->format;

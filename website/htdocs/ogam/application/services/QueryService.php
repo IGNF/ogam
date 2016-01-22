@@ -200,6 +200,7 @@ class Application_Service_QueryService {
 		foreach ($data->getInfoFields() as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
+				$formField->isPK = "1";
 				$formField->value = $tablefield->value;
 				$formField->valueLabel = $tablefield->valueLabel;
 				$formField->editable = $tablefield->isEditable;
@@ -214,6 +215,7 @@ class Application_Service_QueryService {
 		foreach ($data->getEditableFields() as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
+				$formField->isPK = "0";
 				$formField->value = $tablefield->value;
 				$formField->valueLabel = $tablefield->valueLabel;
 				$formField->editable = $tablefield->isEditable;
