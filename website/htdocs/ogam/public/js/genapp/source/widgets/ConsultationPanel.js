@@ -1387,7 +1387,7 @@ Genapp.ConsultationPanel = Ext
 					 * @return {String} The html code for the column
 					 * @hide
 					 */
-					renderRightTools : function(value, metadata, record, rowIndex, colIndex, store) {
+					renderEditTools : function(value, metadata, record, rowIndex, colIndex, store) {
 
 						var stringFormat = '';
 
@@ -1677,6 +1677,20 @@ Genapp.ConsultationPanel = Ext
 									align : 'center',
 									width : 50
 								} ];
+								
+								if (!this.hideGridDataEditButton) {
+									newCM.push({
+										dataIndex : 'rightTools',
+										header : '',
+										renderer : this.renderEditTools.createDelegate(this),
+										sortable : false,
+										fixed : true,
+										menuDisabled : true,
+										align : 'center',
+										width : 30
+									});
+								}
+								
 								var newRF = [];
 								var columnConf;
 								var readerFieldsConf;
@@ -1727,18 +1741,7 @@ Genapp.ConsultationPanel = Ext
 									newRF.push(readerFieldsConf);
 								}
 
-								if (!this.hideGridDataEditButton) {
-									newCM.push({
-										dataIndex : 'rightTools',
-										header : '',
-										renderer : this.renderRightTools.createDelegate(this),
-										sortable : false,
-										fixed : true,
-										menuDisabled : true,
-										align : 'center',
-										width : 30
-									});
-								}
+								
 
 								// Updates of the store reader metadata
 								this.gridDSReader.updateMetadata({
