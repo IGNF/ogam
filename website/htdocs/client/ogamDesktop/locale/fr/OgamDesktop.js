@@ -1,3 +1,10 @@
+Ext.define("OgamDesktop.locale.fr.view.main.Main", {
+    override: "OgamDesktop.view.main.Main",
+    config:{
+	    homeButtonText: 'Accueil',
+		homeButtonTooltip: "Retourner à la page d'acceuil"
+    }
+});
 Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",
 	criteriaPanelTbarLabel : "Critères",

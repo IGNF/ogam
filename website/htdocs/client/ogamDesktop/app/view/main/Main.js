@@ -22,6 +22,10 @@ Ext.define('OgamDesktop.view.main.Main', {
 	//width: Ext.getBody().getViewSize().width - 80,
 	//height: Ext.getBody().getViewSize().height - 160,
 	activeTab: 1,
+	config : {
+		homeButtonText: 'Home',
+		homeButtonTooltip: 'Go back to the home page'
+	},
 	items: [{
 		id:'predefined_request',
 		xtype: 'predefined-request'
@@ -73,8 +77,7 @@ Ext.define('OgamDesktop.view.main.Main', {
 				collapseDirection: 'bottom'
 			}]
 		}]
-	},
-	{
+	},{
 		id:'edition_panel',
 		title:'Edition',
 		loader:{
@@ -82,9 +85,21 @@ Ext.define('OgamDesktop.view.main.Main', {
 			renderer:'component',
 			url:''
 		}
-	}
-	],
+	}],
 	initComponent : function() {
+		this.getTabBar().add(
+	        [{
+	        	xtype:'tbfill'
+	        },{
+	        	xtype:'button',
+	        	ui:'default-toolbar',
+	        	text: this.homeButtonText,
+	        	tooltip: this.homeButtonTooltip,
+	        	handler: function() {
+	                document.location = window.location.origin;
+	            }
+	        }]
+		);
 		/*Ext.on('resize',function(){
 			this.setWidth(Ext.getBody().getViewSize().width - 80);
 			this.setHeight(Ext.getBody().getViewSize().height - 160);

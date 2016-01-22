@@ -91,7 +91,7 @@ class HarmonizationController extends AbstractOGAMController {
 			$submissionStatus = "VALIDATED";
 			foreach ($process->submissionIDs as $submissionID) {
 				$submission = $this->submissionModel->getSubmission($submissionID);
-				if (!($submission->step === "INSERTED" && $submission->status === "OK")) {
+				if ($submission->step !== "VALIDATED") {
 					$submissionStatus = "NOT_VALID";
 				}
 			}
