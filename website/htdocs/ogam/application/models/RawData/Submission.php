@@ -38,7 +38,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	 */
 	private function _readSubmission($row) {
 		$submission = new Application_Object_RawData_Submission();
-		$submission->submissionId = $submissionId;
+		$submission->submissionId = $row['submission_id'];
 		$submission->step = $row['step'];
 		$submission->status = $row['status'];
 		$submission->providerId = $row['provider_id'];
