@@ -417,7 +417,7 @@ class QueryController extends AbstractOGAMController {
 		$this->view->userProviderId = $userSession->user->providerId;
 		
 		
-			if ($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA', $permissions)) {
+			if ($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) {
 				$this->view->hideGridCsvExportMenuItem = 'false';
 			}
 			if ($schema == 'HARMONIZED_DATA' && $role->isAllowed('EXPORT_HARMONIZED_DATA')) {
