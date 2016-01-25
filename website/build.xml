@@ -150,8 +150,6 @@
 
 	<!-- Suppression des répertoires de travail -->
 	<target name="_clean" depends="_cleanWindows, _cleanUnix">
-		<delete dir="${dist.dir}" />
-		<delete dir="${dist.dir}/../custom/" />
 	</target>
 	
 	<!-- Suppression des répertoires de travail -->
