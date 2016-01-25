@@ -69,7 +69,7 @@ class Application_Service_GenericService {
 		
 		// Get the user rights
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->user->role->permissionsList;
+		$role = $userSession->user->role;
 		
 		// Get children for the current dataset
 		$this->genericModel = new Application_Model_Generic_Generic();
@@ -96,7 +96,7 @@ class Application_Service_GenericService {
 		$json .= $fields . "]";
 		
 		// Add the edit link
-		if (!empty($permissions) && array_key_exists('DATA_EDITION', $permissions)) {
+		if ($role->isAllowed('DATA_EDITION')) {
 			$json .= ',"editURL":' . json_encode($data->getId());
 		} else {
 			$json .= ',"editURL":null';
@@ -318,8 +318,8 @@ class Application_Service_GenericService {
 		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
-		$permissions = $userSession->user->role->permissionsList;
-		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER', $permissions) && $hasColumnProvider) {
+		$role = $userSession->user->role;
+		if (!$role->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
 			$where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
 		}
 		
@@ -384,8 +384,8 @@ class Application_Service_GenericService {
 		// Get back the provider id of the data
 		$userSession = new Zend_Session_Namespace('user');
 		$providerId = $userSession->user->providerId;
-		$permissions = $userSession->user->role->permissionsList;
-		if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions) && $hasColumnProvider) {
+		$role = $userSession->user->role;
+		if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER') && $hasColumnProvider) {
 			$select .= ", " . $leftTable->getLogicalName() . ".provider_id as _provider_id";
 		}
 		

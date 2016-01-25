@@ -55,7 +55,7 @@ class CheckconfController extends AbstractOGAMController {
 		
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !in_array('CHECK_CONF', $user->role->permissionsList)) {
+		if (empty($user) || !$user->role->isAllowed('CHECK_CONF')) {
 			throw new Zend_Auth_Exception('Permission denied for right : CHECK_CONF');
 		}
 	}

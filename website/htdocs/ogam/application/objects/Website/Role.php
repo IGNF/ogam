@@ -58,4 +58,15 @@ class Application_Object_Website_Role {
 	 * @var Array[String]
 	 */
 	var $schemasList = array();
+
+	/**
+	 * Indicate if the role is allowed for a permission.
+	 *
+	 * @param String $permissionName
+	 *        	The permission
+	 * @return Boolean
+	 */
+	function isAllowed($permissionName) {
+		return (!empty($this->permissionsList) && in_array($permissionName, $this->permissionsList));
+	}
 }
