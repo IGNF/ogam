@@ -51,7 +51,7 @@ class HarmonizationController extends AbstractOGAMController {
 		
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !$user->role->isAllowed('DATA_HARMONIZATION')) {
+		if (empty($user) || !$user->isAllowed('DATA_HARMONIZATION')) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_HARMONIZATION');
 		}
 	}

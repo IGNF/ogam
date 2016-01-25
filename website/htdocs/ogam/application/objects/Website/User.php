@@ -68,4 +68,16 @@ class Application_Object_Website_User {
 	 * @var Application_Object_Website_Role
 	 */
 	var $role;
+
+	/**
+	 * Indicate if the user is allowed for a permission.
+	 *
+	 * @param String $permissionName
+	 *        	The permission
+	 * @return Boolean
+	 */
+	function isAllowed($permissionName) {
+		// The user is allowed it its role is.
+		return (!empty($this->role) && $this->role->isAllowed($permissionName));
+	}
 }

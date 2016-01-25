@@ -51,7 +51,7 @@ class QueryController extends AbstractOGAMController {
 		// Check if the user can query data
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !$user->role->isAllowed('DATA_QUERY')) {
+		if (empty($user) || !$user->isAllowed('DATA_QUERY')) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
 		$websiteSession = new Zend_Session_Namespace('website');
