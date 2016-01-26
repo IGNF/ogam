@@ -26,6 +26,10 @@
    <?php echo $this->translate('Data integration module');?>
 </h1>
 
+<p class="onTableLink">
+	<a href="<?php echo $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?php echo $this->translate('Create data submission');?></a>
+</p>
+
 <!-- Show the currently active location submissions -->
 <?php if(!empty($this->submissions)){ ?>
 <table class="sectiontable">
@@ -72,7 +76,7 @@ foreach ($this->submissions as $submission) {
 
                 // Display the progress bar
                 display('progressBar<?php echo  $submission->submissionId ?>', '', 0, '<?php echo  $this->baseUrl('img/') ?>');
-                
+
                 // Refresh The status of the submission
                 Genapp.util.getStatus_<?php echo  $submission->submissionId ?> =  function (){
                     var url = '<?php echo  $this->baseUrl('Integration/') ?>';
@@ -124,9 +128,7 @@ foreach ($this->submissions as $submission) {
                 </script>
                 </div>
             <?php else : //"ERROR" or "CRASH") ?>
-            	<?php echo 
-		$this->escape($submission->status);
-?>
+            	<?php echo $this->escape($submission->status); ?>
                 <img src="<?php echo  $this->baseUrl('img/Red_x.png') ?>" />
             <?php endif; ?>
     </td>
@@ -181,6 +183,3 @@ foreach ($this->submissions as $submission) {
 <?php } else { ?>
 <div class="no-submission"><?php echo $this->translate('No submission found');?></div>
 <?php } ?>
-<p class="subTableLink">
-    <a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?php echo $this->translate('Create data submission');?></a>
-</p>

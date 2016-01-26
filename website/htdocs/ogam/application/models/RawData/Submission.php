@@ -68,7 +68,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		if ($provider_id) {
 			$req .= " AND provider_id = ?";
 		}
-		$req .= " ORDER BY submission_id ";
+		$req .= " ORDER BY _creationdt DESC";
 
 		$select = $db->prepare($req);
 		$select->execute(array());

@@ -171,7 +171,8 @@ Data integration module;Module d'intégration de données
 Submit Data;Soumettre des données
 Submission ID;Id de soumission
 Date;Date
-Provider Id;Id fournisseur 
+Provider Id;Id fournisseur
+User;Utilisateur
 Dataset;Lot de donnée
 Step;Etape
 Status;Statut

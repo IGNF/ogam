@@ -64,7 +64,7 @@ if (!empty($role->permissionsList)) {
 if ($role->isAllowed('DATA_INTEGRATION')) {	
 ?>
 <li>
-<a href="<?php echo  $this->url(array('controller'=>'integration'), 'default', true) ?>" class="pagelink" ><?php echo $this->translate('Data Integration');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'integration', 'action'=>'show-data-submission-page'), 'default', true) ?>" class="pagelink" ><?php echo $this->translate('Data Integration');?></a>
 </li>
 <?php
 }

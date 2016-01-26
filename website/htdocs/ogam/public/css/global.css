@@ -305,6 +305,11 @@ tr td.line-number {
 	text-align: center;
 }
 
+.onTableLink {
+	margin: 20px auto;
+	text-align: center;
+}
+
 .tempStatusDiv {
 	display: inline;
 }
