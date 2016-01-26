@@ -60,6 +60,6 @@ ln -fs /vagrant/ogam/vagrant_config/conf/apache/httpd_ogam.conf /etc/apache2/sit
 # Redémarrage d'Apache
 #----------------------------------------------------------------
 
-service apache2 restart
+sudo /etc/init.d/apache2 restart
 
 
