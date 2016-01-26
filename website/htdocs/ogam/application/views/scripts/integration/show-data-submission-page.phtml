@@ -32,7 +32,8 @@
 <tr>
     <th style="text-align:center"><?php echo $this->translate('Submission ID');?></th>
     <th style="text-align:center"><?php echo $this->translate('Date');?></th>
-    <th style="text-align:center"><?php echo $this->translate('Provider Id');?></th>
+    <th style="text-align:center"><?php echo $this->translate('Provider');?></th>
+    <th style="text-align:center"><?php echo $this->translate('User');?></th>
     <th style="text-align:center"><?php echo $this->translate('Dataset');?></th>
     <th style="text-align:center"><?php echo $this->translate('Step');?></th>
     <th style="text-align:center"><?php echo $this->translate('Status');?></th>
@@ -54,7 +55,8 @@ foreach ($this->submissions as $submission) {
 <tr class="sectiontableentry<?php echo $i % 2?>">
     <td><?php echo  $this->escape($submission->submissionId); ?></td>
     <td><?php echo  $this->escape($submission->date); ?></td>
-    <td><?php echo  $this->escape($submission->providerId); ?></td>
+    <td><?php echo  $this->escape($submission->providerLabel); ?></td>
+    <td><?php echo  $this->escape($submission->userLogin); ?></td>
     <td><?php echo  $this->escape($submission->datasetLabel); ?></td>
     <td><?php echo  $this->escape($submission->step); ?></td>
     <td>
