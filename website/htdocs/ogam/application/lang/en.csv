@@ -164,6 +164,9 @@ Password;Password
 ﻿##########################
 #  Data integration      #
 ##########################
+Submissions;Submissions
+Add data;Add data
+Choose a table:;Choose a table:
 Data integration module;Data integration module
 Submit Data;Submit Data
 Submission ID;Submission ID
@@ -236,19 +239,31 @@ empty_layer;No layer
 User Management Module;User Management Module
 Show the users;Show the users
 Show the roles;Show the roles
+Show the providers;Show the providers
 Change Password;Change Password
 Password Change;Password Change
 Password Change for user:;Password Change for user:
 Create Role;Create Role
 Changing your password;Changing your password
 Create User;Create User
+Create Provider;Create Provider
+Add Provider;Add Provider
 Edit Role;Role edition
 Edit User;User edition
+Edit Provider;Edit Provider
+View related users and content;View related users and content
+Users and content for provider:;Users and content for provider:
+This provider doesn't have any users.;This provider doesn't have any users.
+Datas;Datas
+Nb of datas;Nb of datas
+This provider doesn't have any raw datas.;This provider doesn't have any raw datas.
+Impossible to delete this provider.;Impossible to delete this provider.
 Roles;Roles
 Users;Users
 User Login;User Login
 User Name;User Name
 Provider;Provider
+Providers;Providers
 Email;Email
 Role;Role
 Delete;Delete

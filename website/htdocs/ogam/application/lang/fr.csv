@@ -164,6 +164,9 @@ Password;Mot de passe
 ﻿##########################
 #  Data integration      #
 ##########################
+Submissions;Soumissions
+Add data;Ajout d'observations
+Choose a table:;Choisissez une table :
 Data integration module;Module d'intégration de données
 Submit Data;Soumettre des données
 Submission ID;Id de soumission
@@ -236,19 +239,31 @@ empty_layer;Aucune couche
 User Management Module;Administration des utilisateurs
 Show the users;Afficher les utilisateurs
 Show the roles;Afficher les rôles
+Show the providers;Afficher les organismes
 Change Password;Changer de mot de passe
 Password Change;Modification d'un mot de passe
 Password Change for user:;Modification du mot de passe pour l'utilisateur :
 Changing your password;Modification de votre mot de passe
 Create Role;Créer un rôle
 Create User;Créer un utilisateur
+Create Provider;Créer un organisme
+Add Provider;Créer un organisme
 Edit Role;Edition d'un rôle
 Edit User;Edition d'un utilisateur
+Edit Provider;Edition d'un organisme
+View related users and content;Voir les données et les utilisateurs
+Users and content for provider:;Utilisateurs et données pour l'organisme:
+This provider doesn't have any users.;Cet organisme n'a pas d'utilisateurs
+Datas;Données
+Nb of datas;Nombre de lignes de données
+This provider doesn't have any raw datas.;Cet organisme n'a pas de données en base.
+Impossible to delete this provider.;Il est impossible de supprimer cet organisme\n(données et/ou utilisateurs rattachés).
 Roles;Rôles
 Users;Utilisateurs
 User Login;Login
 User Name;Nom
-Provider;Fournisseur
+Provider;Organisme
+Providers;Organismes
 Email;Email
 Role;Rôle
 Delete;Supprimer
