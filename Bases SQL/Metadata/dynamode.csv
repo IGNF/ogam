@@ -1,1 +1,1 @@
-DEPARTEMENT;SELECT DISTINCT DP as code, NOM_DEPART as label FROM mapping.departements ORDER BY NOM_DEPARTCOMMUNES;SELECT code as code, nom || ' (' || code || ')' as label FROM mapping.communes ORDER BY nom
+DEPARTEMENT;SELECT DISTINCT DP as code, NOM_DEPART as label FROM mapping.departements ORDER BY NOM_DEPARTCOMMUNES;SELECT code as code, nom || ' (' || code || ')' as label FROM mapping.communes ORDER BY nomPROVIDER_ID;SELECT id as code, label FROM website.providers ORDER BY label

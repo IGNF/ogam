@@ -54,8 +54,8 @@ insert into application_parameters (name, value, description) values ( 'language
 insert into application_parameters (name, value, description) values ( 'language_flags2' , 'en' , 'Language');
 
 
-
-
+-- Create a provider
+INSERT INTO providers('id','label','definition') VALUES ('1', 'Defaut', 'Organisme par défaut');
 
 -- Create some roles
 INSERT INTO role(role_code, role_label, role_definition) VALUES ('ADMIN','Administrator', 'Manages the web site');

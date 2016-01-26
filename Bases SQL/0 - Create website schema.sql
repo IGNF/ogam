@@ -176,14 +176,16 @@ ADD CONSTRAINT fk_layer_role_restriction_role_code
 FOREIGN KEY (role_code) REFERENCES website."role" (role_code)
 ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-
-
-
-
-
-
-     
-      
+/*==============================================================*/
+/* Table : PROVIDERS                                            */
+/*==============================================================*/
+CREATE SEQUENCE provider_id_seq;
+CREATE TABLE providers (
+id          character varying NOT NULL DEFAULT nextval('website.provider_id_seq'::text),
+label       character varying,
+definition  character varying,
+CONSTRAINT pk_provider PRIMARY KEY (id)
+);
 
 /*==============================================================*/
 /* Table : PREDEFINED_REQUEST                                   */
