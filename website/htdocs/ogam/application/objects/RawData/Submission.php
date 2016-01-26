@@ -23,44 +23,51 @@
 class Application_Object_RawData_Submission {
 
 	/**
-	 * The submission identifier
+	 * The submission identifier.
 	 */
 	var $submissionId;
 
 	/**
-	 * The submission step
+	 * The submission step.
 	 */
 	var $step;
 
 	/**
-	 * The submission status
+	 * The submission status.
 	 */
 	var $status;
 
 	/**
-	 * The provider (country, organisation, .
-	 *
-	 * ..) identifier
+	 * The provider (country, organisation) identifier.
 	 */
 	var $providerId;
 
 	/**
-	 * The dataset identifier
+	 * The provider label.
+	 *
+	 * (read only)
+	 */
+	var $providerLabel;
+
+	/**
+	 * The dataset identifier.
 	 */
 	var $datasetId;
 
 	/**
-	 * The dataset label
+	 * The dataset label.
+	 *
+	 * (read only)
 	 */
 	var $datasetLabel;
 
 	/**
-	 * The login of the user who has done the submission
+	 * The login of the user who has done the submission.
 	 */
 	var $userLogin;
 
 	/**
-	 * The files of the submission (array of SubmissionFile);
+	 * The files of the submission (array of SubmissionFile).
 	 */
 	var $files = array();
 
