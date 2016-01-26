@@ -3,7 +3,7 @@ Genapp.configure = function() {
 	if (Genapp.ConsultationPanel) {
 		Ext.apply(Genapp.ConsultationPanel.prototype, {
 			hideDetails : false,
-			hideMapDetails : false,
+			hideMapDetails : true,
 			hideCsvExportButton : false,
 			hidePrintMapButton : false,
 			hideCancelButton : false,
