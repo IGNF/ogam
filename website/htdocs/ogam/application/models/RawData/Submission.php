@@ -54,22 +54,24 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	/**
 	 * Get some information about the active submissions.
 	 *
+	 * @param String $providerId
+	 *        	provider to get the submissions from (null for all providers)
 	 * @return Array[Submission]
 	 */
-	public function getActiveSubmissions() {
+	public function getActiveSubmissions($providerId = null) {
 		$db = $this->getAdapter();
-
+		
 		$req = " SELECT submission_id, step, status, provider_id, p.label as provider_label, d.label as dataset_label, user_login, file_type, file_name, nb_line, _creationdt ";
 		$req .= " FROM raw_data.submission s";
 		$req .= " LEFT JOIN raw_data.submission_file USING (submission_id)";
 		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
 		$req .= " LEFT JOIN website.providers p ON p.id = s.provider_id";
 		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
-		if ($provider_id) {
+		if ($providerId) {
 			$req .= " AND provider_id = ?";
 		}
 		$req .= " ORDER BY _creationdt DESC";
-
+		
 		$select = $db->prepare($req);
 		$select->execute(array());
 		
@@ -81,10 +83,10 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 			$submissionId = $row['submission_id'];
 			
 			if (empty($result[$submissionId])) {
-
+				
 				// Create the new submission
 				$submission = $this->_readSubmission($row);
-
+				
 				$result[$submissionId] = $submission;
 			}
 			// Add file info
