@@ -66,7 +66,7 @@ class IntegrationController extends AbstractOGAMController {
 	public function indexAction() {
 		$this->logger->debug('Data integration index');
 		
-		$this->render('index');
+		$this->showDataSubmissionPageAction();
 	}
 
 	/**

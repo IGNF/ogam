@@ -62,7 +62,7 @@ class HarmonizationController extends AbstractOGAMController {
 	public function indexAction() {
 		$this->logger->debug('Data harmonization index');
 		
-		$this->render('index');
+		$this->showHarmonizationPageAction();
 	}
 
 	/**
