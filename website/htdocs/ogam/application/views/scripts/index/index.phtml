@@ -85,7 +85,7 @@ if ($role->isAllowed('DATA_EDITION')  && in_array("RAW_DATA", $schemasList)) {
 if ($role->isAllowed('DATA_HARMONIZATION')) {	
 ?>
 <li>
-<a href="<?php echo  $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" ><?php echo $this->translate('Data Harmonization');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'harmonization', 'action'=>'show-harmonization-page'), null, true) ?>" class="pagelink" ><?php echo $this->translate('Data Harmonization');?></a>
 </li>
 <?php
 }
