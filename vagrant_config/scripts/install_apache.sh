@@ -10,7 +10,7 @@ website_dir='/vagrant/ogam/website/htdocs'
 export DEBIAN_FRONTEND=noninteractive
 
 # L'option --allow-unauthenticated est nécessaire quand on passe par les miroirs IGN.
-apt-get install -y apache2 php5-common libapache2-mod-php5 php5-cli php5-pgsql 
+apt-get install -y apache2 php5-common libapache2-mod-php5 php5-cli php5-pgsql php5-gd
 
 # Ajout du user vagrant au groupe "www-data"
 sudo usermod -G www-data -a vagrant

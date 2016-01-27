@@ -521,38 +521,49 @@ class QueryController extends AbstractOGAMController {
 		// image 1
 		$tmpImgPath1 = Array();
 		for ($i = 0; $i < count($data['maps1']['urls']); $i ++) {
-			$tmpImgPath1[$i] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '0-' . $i) . '.png';
-			file_put_contents($tmpImgPath1[$i], file_get_contents($data['maps1']['urls'][$i]['url']));
+			$url = $data['maps1']['urls'][$i]['url'];
+			$content = @file_get_contents($url);
+			if ($content === false) {
+				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
+			} else {
+				$tmpImgPath1[] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '0-' . $i) . '.png';
+				file_put_contents(end($tmpImgPath1), $content);
+			}
 		}
 		
 		// image 2
 		$tmpImgPath2 = Array();
 		for ($i = 0; $i < count($data['maps2']['urls']); $i ++) {
-			$tmpImgPath2[$i] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '1-' . $i) . '.png';
-			file_put_contents($tmpImgPath2[$i], file_get_contents($data['maps2']['urls'][$i]['url']));
+			$url = $data['maps2']['urls'][$i]['url'];
+			$content = @file_get_contents($url);
+			if ($content === false) {
+				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
+			} else {
+				$tmpImgPath2[] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '1-' . $i) . '.png';
+				file_put_contents(end($tmpImgPath2), $content);
+
+			}
 		}
 		
 		require_once ('html2pdf/html2pdf.class.php');
 		$pdf = new HTML2PDF();
 		// $pdf->setModeDebug();
 		
-		// building of the array of images paths
-		$i = 1;
-		
 		$pdfExportArray = array(
-			'data' => $data,
-			'imgDirPath' => CUSTOM_APPLICATION_PATH . '/../public/img/photos/'
+			'data' => $data
 		);
+		if (defined('CUSTOM_APPLICATION_PATH')) {
+			$pdfExportArray['imgDirPath'] = CUSTOM_APPLICATION_PATH . '/../public/img/photos/';
+		} else {
+			$pdfExportArray['imgDirPath'] = APPLICATION_PATH . '/../public/img/photos/';
+		}
 		
 		foreach ($tmpImgPath1 as $img) {
-			
-			$pdfExportArray['imgPath1'][$i] = strval($img);
-			$i ++;
+			$pdfExportArray['imgPath1'][] = strval($img);
 		}
 		
 		foreach ($tmpImgPath2 as $img) {
-			$pdfExportArray['imgPath2'][$i] = strval($img);
-			$i ++;
+			$pdfExportArray['imgPath2'][] = strval($img);
 		}
 		
 		try {
@@ -562,6 +573,7 @@ class QueryController extends AbstractOGAMController {
 
 		catch (HTML2PDF_exception $e) {
 			$this->logger->debug($e);
+			echo 'An error occured during the pdf creation.';
 		}
 		
 		foreach ($tmpImgPath1 as $img) {
