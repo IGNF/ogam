@@ -15,6 +15,7 @@ ALTER SEQUENCE website.provider_id_seq OWNER TO ogam;
 
 -- Ajout d'un provider par défaut
 INSERT INTO website.providers(id, label, definition) VALUES ('1', 'Defaut', 'Organisme par défaut');
+ALTER sequence website.provider_id_seq restart with 2;
 
 -- Rajout d'un dynamode
 INSERT INTO metadata.dynamode (unit, sql) VALUES ('PROVIDER_ID', 'SELECT id as code, label FROM website.providers ORDER BY label');

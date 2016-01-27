@@ -56,6 +56,7 @@ insert into application_parameters (name, value, description) values ( 'language
 
 -- Create a provider
 INSERT INTO providers('id','label','definition') VALUES ('1', 'Defaut', 'Organisme par défaut');
+ALTER sequence website.provider_id_seq restart with 2;
 
 -- Create some roles
 INSERT INTO role(role_code, role_label, role_definition) VALUES ('ADMIN','Administrator', 'Manages the web site');
