@@ -22,10 +22,8 @@ Ext.define('OgamDesktop.view.main.Main', {
 	//width: Ext.getBody().getViewSize().width - 80,
 	//height: Ext.getBody().getViewSize().height - 160,
 	activeTab: 1,
-	config : {
-		homeButtonText: 'Home',
-		homeButtonTooltip: 'Go back to the home page'
-	},
+	homeButtonText: 'Home',
+	homeButtonTooltip: 'Go back to the home page',
 	items: [{
 		id:'predefined_request',
 		xtype: 'predefined-request'

@@ -8,6 +8,8 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		'OgamDesktop.view.result.GridTab',
 		'OgamDesktop.model.result.Grid',
 		'OgamDesktop.store.result.Grid',
+		'OgamDesktop.ux.data.field.Factory',
+		'OgamDesktop.ux.grid.column.Factory',
 		'Ext.window.MessageBox',
 		'Ext.grid.column.Action',
 		'Ext.grid.column.Date',
@@ -40,7 +42,6 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		var gridTab = this.getResultsgrid();
 		var gridModelCfg = [];
 		var gridColumnCfg = [];
-		var modelField = {};
 
 		// Add 'open details' and 'see on the map' actions
 		var leftActionColumnItems = [];
@@ -75,51 +76,57 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		// Build the result fields for the model and the column
 		for (i in fields) {
 			var field = fields[i];
-			modelField = Ext.create('Ext.data.field.Field', {
+			var fieldConfig = {
 				name: field.name,
-				type: field.type ? field.type.toLowerCase() : 'auto'
-			});
-			gridModelCfg.push(modelField);
-			
-			var gridColumn = {
+				type: field.type ? field.type.toLowerCase() : 'auto',
+				defaultValue : null
+			};
+			var columnConfig = {
 					dataIndex: field.name,
 					text: field.label,
 					tooltip: field.definition,
 					hidden: field.hidden
 				};
-			switch (field.type) {
-			// TODO : CODE, COORDINATE, ARRAY
-			case 'BOOLEAN': 
-				gridColumn.xtype = 'booleancolumn';
-				break;
-			case 'STRING':
-				gridColumn.xtype = 'gridcolumn';
-				break;
-			case 'INTEGER':
-				gridColumn.xtype = 'gridcolumn';
-				break;
-			case 'NUMERIC':
-				gridColumn.xtype = 'numbercolumn';
-				if (field.decimals !== null) {
-					gridColumn.format = this.numberPattern('.', field.decimals);
-				}
-				break;
-			case 'DATE':
-				gridColumn.xtype = 'datecolumn';
-				gridColumn.format = gridTab.dateFormat;
-				break;
-			case 'IMAGE':
-				gridColumn.header = '';
-				gridColumn.width = 30;
-				gridColumn.sortable = false;
-				// TODO : createDelegate deprecated : using of Ext.Function.pass instead, not tested...
-				//gridColumn.renderer = Ext.Function.pass(this.renderIcon, [Ext.String.htmlEncode(field.label)], this);
-				break;
-			default:
-				gridColumn.xtype = 'gridcolumn';
-				break;
+			switch (field.inputType) {
+				case 'CHECKBOX':
+					Ext.applyIf(columnConfig, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig());
+					Ext.applyIf(fieldConfig, OgamDesktop.ux.data.field.Factory.buildCheckboxFieldConfig(field));
+					break;
+				// TODO: refactor the code below to have only the switch on the inputType 
+				default:
+					switch (field.type) {
+						// TODO : CODE, COORDINATE, ARRAY
+						case 'STRING':
+							columnConfig.xtype = 'gridcolumn';
+							break;
+						case 'INTEGER':
+							columnConfig.xtype = 'gridcolumn';
+							break;
+						case 'NUMERIC':
+							columnConfig.xtype = 'numbercolumn';
+							if (field.decimals !== null) {
+								columnConfig.format = this.numberPattern('.', field.decimals);
+							}
+							break;
+						case 'DATE':
+							columnConfig.xtype = 'datecolumn';
+							columnConfig.format = gridTab.dateFormat;
+							break;
+						case 'IMAGE':
+							columnConfig.header = '';
+							columnConfig.width = 30;
+							columnConfig.sortable = false;
+							// TODO : createDelegate deprecated : using of Ext.Function.pass instead, not tested...
+							//columnConfig.renderer = Ext.Function.pass(this.renderIcon, [Ext.String.htmlEncode(field.label)], this);
+							break;
+						default:
+							columnConfig.xtype = 'gridcolumn';
+							break;
+					}
+					break;
 			}
-			gridColumnCfg.push(gridColumn);
+			gridColumnCfg.push(columnConfig);
+			gridModelCfg.push(Ext.create('Ext.data.field.Field', fieldConfig));
 		}
 
 		// Add 'edit data' action

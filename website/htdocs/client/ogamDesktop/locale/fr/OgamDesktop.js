@@ -1,9 +1,7 @@
 Ext.define("OgamDesktop.locale.fr.view.main.Main", {
     override: "OgamDesktop.view.main.Main",
-    config:{
-	    homeButtonText: 'Accueil',
-		homeButtonTooltip: "Retourner à la page d'acceuil"
-    }
+	homeButtonText: 'Accueil',
+	homeButtonTooltip: "Retourner à la page d'acceuil"
 });
 Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",
@@ -81,6 +79,13 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.GeometryField", {
 	mapWindowValidateButtonText : "Valider",
 	mapWindowValidateAndSearchButtonText : "Valider et rechercher",
 	mapWindowCancelButtonText : "Annuler"
+});
+
+Ext.define("OgamDesktop.locale.fr.ux.grid.column.Factory", {
+	override: "OgamDesktop.ux.grid.column.Factory",
+	gridColumnTrueText : 'Oui',
+	gridColumnFalseText : 'Non',
+	gridColumnUndefinedText : '&#160;'
 });
 
 /*

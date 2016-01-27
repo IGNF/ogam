@@ -93,7 +93,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
      * The loading message (defaults to <tt>'Loading...'</tt>)
      */
     loadingMsg: 'Loading...',
-    
+
     initComponent : function() {
     	
         this.title = '<div style="width:'+ this.headerWidth + 'px;">'+this.loadingMsg+'</div>';
@@ -103,9 +103,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
          * @cfg {Ext.XTemplate} tpl
          * A {@link Ext.XTemplate} used to setup the details panel body.
          */
-        
 
-       
         this.tpl = new Ext.XTemplate(
 			'<legends style="display:block; position:absolute; left:1px; top:621px">',
 //			'<legends style="display:block; position:absolute; left:1px; top:1px">',
@@ -116,12 +114,14 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 						'</legend>',
 						'<div class="genapp-query-details-panel-fieldset-body">',
 							'<tpl for="fields">',
-								'<tpl if="type != \'IMAGE\'">',
-									'<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? "-" : values.value]}</p>',
-								'</tpl>',
-//								'<tpl if="type == \'IMAGE\'">', 
-//									'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/photos/\' + values.value + \'\">\']}',
-//								'</tpl>',
+						        '<tpl switch="inputType">',
+						            '<tpl case="CHECKBOX">',
+						            	'<p><b>{label} :</b> {[this.convertBoolean(values)]}</p>',
+						            '<tpl case="IMAGE">',
+//										'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/photos/\' + values.value + \'\">\']}',
+						            '<tpl default>',
+						            	'<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? "-" : values.value]}</p>',
+						        '</tpl>',
 							'</tpl>',
 						'</div>',
 					'</fieldset>',
@@ -155,7 +155,14 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
         '</tpl>',
             {
                 compiled: true,      // compile immediately
-                disableFormats: true // reduce apply time since no formatting
+                disableFormats: true, // reduce apply time since no formatting
+                convertBoolean: function(values){
+                	switch(OgamDesktop.ux.data.field.Factory.buildCheckboxFieldConfig(values).convert(values.value)){
+						case false: return OgamDesktop.ux.grid.column.Factory.gridColumnFalseText;
+						case true: return OgamDesktop.ux.grid.column.Factory.gridColumnTrueText;
+						default: return OgamDesktop.ux.grid.column.Factory.gridColumnUndefinedText;
+                	}
+                }
             }
         );
 

@@ -353,23 +353,8 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					field.decimalPrecision = 0;
 				}
 				break;
-			case 'CHECKBOX':
-				field.xtype = 'checkbox';
-				//field.xtype = 'switch_checkbox'; //FIXME
-				//field.ctCls = 'improvedCheckbox';
-				field.uncheckedValue = 0;
-				switch (record.default_value) {
-				case 1:
-				case '1':
-				case true:
-				case 'true':
-					field.inputValue = '1';
-					break;
-				default:
-					field.inputValue = '0';
-					break;
-				}
-				// field.boxLabel = record.label;
+			case 'CHECKBOX': 
+				Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildCheckboxFieldConfig(record));
 				break;
 			case 'RADIO':
 			case 'TEXT':
@@ -528,7 +513,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				field.xtype = 'field';
 				break;
 			}
-			if (!Ext.isEmpty(record.default_value)) {
+			if (!Ext.isEmpty(record.default_value) && record.inputType !== 'CHECKBOX') { // For a checkbox, the default_value must be applied to the "checked" field parameter not to the "value" field parameter
 				field.value = record.default_value;
 			}
 			if (!Ext.isEmpty(record.fixed)) {

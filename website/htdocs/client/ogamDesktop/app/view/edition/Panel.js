@@ -495,12 +495,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 * 
 	 * @param {Ext.data.Record}
 	 *            record The criteria combobox record to add
-	 * @param {Boolean}
-	 *            hideBin True to hide the bin
 	 * @return a Form Field
 	 * @hide
 	 */
-	getFieldConfig : function(record, hideBin) {
+	getFieldConfig : function(record) {
 		var field = {};
 		field.name = record.name;
 		field.listeners = {};
@@ -641,21 +639,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				}
 				break;
 			case 'CHECKBOX':
-				field.xtype = 'checkbox';
-				field.ctCls = 'improvedCheckbox';
-				switch (record.value) {
-				case 1:
-				case '1':
-				case true:
-				case 'true':
-					field.inputValue = '1';
-					field.uncheckedValue='0';
-					break;
-				default:
-					field.inputValue = '0';
-					break;
-				}
-				// field.boxLabel = record.label;
+				Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildCheckboxFieldConfig(record));
 				break;
 			case 'RADIO':
 			case 'TEXT':
