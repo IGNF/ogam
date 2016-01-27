@@ -18,6 +18,15 @@
  * @package models
  */
 class Application_Model_Website_User extends Zend_Db_Table_Abstract {
+	
+	// == Properties defined in Zend_Db_Table_Abstract
+	
+	// Db table name
+	protected $_name = 'website.users';
+	// Primary key column
+	protected $_primary = 'user_login';
+	// Pk is not auto-generated
+	protected $_sequence = false;
 
 	var $logger;
 
@@ -47,6 +56,8 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$req = " SELECT user_login as login, ";
 		$req .= " user_name as username, ";
 		$req .= " provider_id, ";
+		$req .= " p.label as provider_label, ";
+		$req .= " p.definition as provider_def, ";
 		$req .= " email, ";
 		$req .= " active, ";
 		$req .= " COALESCE(t.label, role_label) as role_label, ";
@@ -55,6 +66,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$req .= " FROM users ";
 		$req .= " LEFT JOIN role_to_user USING (user_login) ";
 		$req .= " LEFT JOIN role USING (role_code) ";
+		$req .= " LEFT JOIN providers p ON p.id = users.provider_id ";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'ROLE' AND row_pk = role_code) ";
 		$req .= " WHERE active = 1 ";
 		$req .= " ORDER BY role_label, user_login";
@@ -70,7 +82,10 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 			$user = new Application_Object_Website_User();
 			$user->login = $result['login'];
 			$user->username = $result['username'];
-			$user->providerId = $result['provider_id'];
+			$user->provider = new Application_Object_Website_Provider();
+			$user->provider->id = $result['provider_id'];
+			$user->provider->label = $result['provider_label'];
+			$user->provider->definition = $result['provider_def'];
 			$user->active = ($result['active'] === 1);
 			$user->email = $result['email'];
 			$user->role = new Application_Object_Website_Role();
@@ -197,7 +212,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$user->username,
-			$user->providerId,
+			$user->provider->id,
 			$user->email,
 			$user->login
 		));
@@ -221,7 +236,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 			$user->login,
 			$user->password,
 			$user->username,
-			$user->providerId,
+			$user->provider->id,
 			$user->email,
 			$user->active ? 1 : 0
 		));
@@ -314,5 +329,18 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$query->execute(array(
 			$userLogin
 		));
+	}
+
+	/**
+	 * Get all users for a given provider
+	 *
+	 * @param
+	 *        	$id
+	 * @return Zend_Db_Table_Rowset_Abstract
+	 */
+	public function findByProviderId($id) {
+		$where = $this->getAdapter()->quoteInto("provider_id = '?'", intval($id));
+		$users = $this->fetchAll($where, 'user_login');
+		return $users;
 	}
 }

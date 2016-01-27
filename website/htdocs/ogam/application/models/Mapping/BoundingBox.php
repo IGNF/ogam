@@ -18,8 +18,19 @@
  * @package models
  */
 class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
+	
+	// == Properties defined in Zend_Db_Table_Abstract
+	
+	// Db table name
+	protected $_name = 'mapping.bounding_box';
+	// Primary key column
+	protected $_primary = 'provider_id';
+	// PK is not auto-incrementes
+	protected $_sequence = false;
 
-	var $logger;
+	protected $logger;
+
+	protected $lang;
 
 	/**
 	 * Initialisation
@@ -28,6 +39,45 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 		
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+	}
+
+	/**
+	 * Get a bounding box by provider id
+	 *
+	 * @param
+	 *        	$id
+	 * @return Rowset
+	 * @throws Exception
+	 */
+	public function getBoundingBox($id) {
+		$row = $this->fetchRow("provider_id = '" . (int) $id . "'");
+		if (!$row) {
+			throw new Exception("Could not find provider $id");
+		}
+		return $row;
+	}
+
+	/**
+	 * Add a new bounding box in Db
+	 *
+	 * @param
+	 *        	$boundingBox
+	 */
+	public function addBoundingBox($boundingBox) {
+		if ($boundingBox instanceof Application_Object_Mapping_BoundingBox) {
+			$boundingBox = (array) $boundingBox;
+		}
+		return $this->insert($boundingBox);
+	}
+
+	/**
+	 * Delete a bounding box from Db
+	 *
+	 * @param
+	 *        	$id
+	 */
+	public function deleteBoundingBox($id) {
+		$this->delete("provider_id = '" . (int) $id . "'");
 	}
 
 	/**

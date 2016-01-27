@@ -42,7 +42,7 @@ foreach($this->users as $user) {
 	<td class="change-password-cell"><a title="<?php echo $this->translate('Change Password');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-change-password'), null, true)?>?userLogin=<?php echo $user->login;?>">&nbsp;</a></td>
 	<td><?php echo  $this->escape($user->login); ?></td>
 	<td><?php echo  $this->escape($user->username); ?></td>
-	<td><?php echo  $this->providers[$user->providerId]; ?></td>
+	<td><?php echo  $this->escape($user->provider->label); ?></td>
 	<td><?php echo  $this->escape($user->email); ?></td>
 	<td><?php echo  $this->escape($user->role->label); ?></td>
 	<td class="delete-cell"><a title="<?php echo $this->translate('Delete');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'delete-user'), null, true)?>?userLogin=<?php echo $user->login;?>" onClick="return confirm('<?php echo $this->translate('Are you sure?')?>');">&nbsp;</a></td>

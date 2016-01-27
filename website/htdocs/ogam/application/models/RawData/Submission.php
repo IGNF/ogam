@@ -61,7 +61,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	public function getActiveSubmissions($providerId = null) {
 		$db = $this->getAdapter();
 		
-		$req = " SELECT submission_id, step, status, provider_id, p.label as provider_label, d.label as dataset_label, user_login, file_type, file_name, nb_line, _creationdt ";
+		$req = " SELECT submission_id, step, status, provider_id, p.label as provider_label, dataset_id, d.label as dataset_label, user_login, file_type, file_name, nb_line, _creationdt ";
 		$req .= " FROM raw_data.submission s";
 		$req .= " LEFT JOIN raw_data.submission_file USING (submission_id)";
 		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
@@ -73,7 +73,11 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		$req .= " ORDER BY submission_id DESC";
 		
 		$select = $db->prepare($req);
-		$select->execute(array());
+		$params = array();
+		if ($providerId) {
+			$params[] = $providerId;
+		}
+		$select->execute($params);
 		
 		Zend_Registry::get("logger")->info('getActiveSubmissions : ' . $req);
 		
