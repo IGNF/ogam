@@ -11,7 +11,7 @@ task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat 
     
 	println "Copy from build/libs into ${tomcatHome}/webapps"
 	
-	delete "${tomcatHome}/webapps/OGAMIntegrationService"
+	delete "${tomcatHome}/webapps/${applicationName}IntegrationService"
 	
 	// Copy the war file
 	copy {
