@@ -293,11 +293,11 @@ class QueryController extends AbstractOGAMController {
 
 	/**
 	 * Check if a criteria is empty.
-	 *
+	 *	(not private as this function is extended in custom directory of derivated applications)
 	 * @param Undef $criteria        	
 	 * @return true if empty
 	 */
-	private function _isEmptyCriteria($criteria) {
+	protected function _isEmptyCriteria($criteria) {
 		if (is_array($criteria)) {
 			$emptyArray = true;
 			foreach ($criteria as $value) {
