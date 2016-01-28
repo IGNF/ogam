@@ -82,16 +82,19 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 			$user = new Application_Object_Website_User();
 			$user->login = $result['login'];
 			$user->username = $result['username'];
-			$user->provider = new Application_Object_Website_Provider();
-			$user->provider->id = $result['provider_id'];
-			$user->provider->label = $result['provider_label'];
-			$user->provider->definition = $result['provider_def'];
 			$user->active = ($result['active'] === 1);
 			$user->email = $result['email'];
 			$user->role = new Application_Object_Website_Role();
 			$user->role->code = $result['role_code'];
 			$user->role->label = $result['role_label'];
 			$user->role->definition = $result['role_definition'];
+			
+			// Get the provider linked to the user
+			$user->provider = new Application_Object_Website_Provider();
+			$user->provider->id = $result['provider_id'];
+			$user->provider->label = $result['provider_label'];
+			$user->provider->definition = $result['provider_def'];
+			
 			$users[] = $user;
 		}
 		
@@ -112,11 +115,14 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$req .= " user_password as password, ";
 		$req .= " user_name as username, ";
 		$req .= " provider_id, ";
+		$req .= " p.label as provider_label, ";
+		$req .= " p.definition as provider_def, ";
 		$req .= " active, ";
 		$req .= " email, ";
 		$req .= " role_code ";
 		$req .= " FROM users ";
 		$req .= " LEFT JOIN role_to_user using(user_login) ";
+		$req .= " LEFT JOIN providers p ON p.id = users.provider_id ";
 		$req .= " WHERE user_login = ? ";
 		$this->logger->info('getUser : ' . $req);
 		
@@ -130,11 +136,16 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		if (!empty($result)) {
 			$user = new Application_Object_Website_User();
 			$user->login = $result['login'];
-			$user->username = $result['username'];
-			$user->providerId = $result['provider_id'];
+			$user->username = $result['username'];			
 			$user->active = ($result['active'] === 1);
 			$user->email = $result['email'];
 			$user->role = $this->roleModel->getRole($result['role_code']);
+			
+			// Get the provider linked to the user
+			$user->provider = new Application_Object_Website_Provider();
+			$user->provider->id = $result['provider_id'];
+			$user->provider->label = $result['provider_label'];
+			$user->provider->definition = $result['provider_def'];
 			
 			return $user;
 		} else {

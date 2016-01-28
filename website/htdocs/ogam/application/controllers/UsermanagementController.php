@@ -136,8 +136,8 @@ class UsermanagementController extends AbstractOGAMController {
 		$providerIdElem = $form->createElement('select', 'providerId');
 		$providerIdElem->setLabel('Provider');
 		$providerIdElem->setRequired(true);
-		if ($user != null) {
-			$providerIdElem->setValue($user->providerId);
+		if ($user != null && $user->provider != null) {
+			$providerIdElem->setValue($user->provider->id);
 		}
 		// $providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
 		$providerModel = new Application_Model_Website_Provider();

@@ -24,7 +24,7 @@ class UserTest extends ControllerTestCase {
 		$this->assertNotNull($user);
 		$this->assertEquals($user->login, 'admin');
 		$this->assertEquals($user->active, true);
-		$this->assertEquals($user->providerId, '1');
+		$this->assertEquals($user->provider->id, '1');
 		$this->assertEquals($user->username, 'admin user');
 	}
 
@@ -64,17 +64,21 @@ class UserTest extends ControllerTestCase {
 		
 		// On charge le modèle
 		$userModel = new Application_Model_Website_User();
+		$providerModel = new Application_Model_Website_Provider();
 		
 		$login = "PHPUnit";
+		
+		// On récupère le provider de test
+		$provider = $providerModel->getProvider("1");
 		
 		// On crée un utilisateur de test
 		$user = new Application_Object_Website_User();
 		$user->login = $login;
-		$user->username = "PHPUnitUser";
-		$user->providerId = "1";
+		$user->username = "PHPUnitUser";		
 		$user->active = false;
 		$user->email = "PHPUnit@ign.fr";
 		$user->roleCode = "ADMIN";
+		$user->provider = $provider;
 		
 		// On fait du ménage au cas où
 		$userModel->deleteUser($login);
@@ -89,7 +93,6 @@ class UserTest extends ControllerTestCase {
 		$this->assertNotNull($user2);
 		$this->assertEquals($login, $user2->login);
 		$this->assertEquals($user->username, $user2->username);
-		$this->assertEquals($user->providerId, $user2->providerId);
 		$this->assertEquals($user->active, $user2->active);
 		$this->assertEquals($user->email, $user2->email);
 		
