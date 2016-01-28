@@ -12,6 +12,7 @@ require_once APPLICATION_PATH . '/objects/Metadata/TreeNode.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
 require_once APPLICATION_PATH . '/objects/Website/User.php';
 require_once APPLICATION_PATH . '/objects/Website/Role.php';
+require_once APPLICATION_PATH . '/objects/Website/Provider.php';
 
 /**
  * The bootstrap class
