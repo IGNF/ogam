@@ -1,11 +1,12 @@
-﻿##########################
+##########################
 #   Consultation         #
 ##########################
 child(ren);linked child(ren)
 No;No
 Yes;Yes
+An error occured during the pdf creation.;An error occured during the pdf creation.
 
-﻿﻿##########################
+##########################
 #   Validation           #
 ##########################
 '%hostname%' does not appear to have a valid MX record for the email address '%value%';'%hostname%' does not appear to have a valid MX record for the email address '%value%'

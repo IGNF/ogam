@@ -573,7 +573,7 @@ class QueryController extends AbstractOGAMController {
 
 		catch (HTML2PDF_exception $e) {
 			$this->logger->debug($e);
-			echo 'An error occured during the pdf creation.';
+			echo '<div style="margin: 20;">' . $this->translator->translate('An error occured during the pdf creation.') . '</div>';
 		}
 		
 		foreach ($tmpImgPath1 as $img) {
