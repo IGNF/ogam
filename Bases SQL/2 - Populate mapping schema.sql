@@ -56,10 +56,10 @@ INSERT INTO layer_service(service_name, config) VALUES ('local_mapProxy', '{"url
 -- Exemple for localhost on Windows
 -- INSERT INTO layer_service(service_name, config) VALUES ('local_mapserver', '{"urls":["http://localhost/cgi-bin/mapserv.exe?map=D:/workspace/ogam_git/mapserv/ogam.map&"],"params":{"SERVICE":"WMS"}}');
 -- INSERT INTO layer_service(service_name, config) VALUES ('local_legend', '{"urls":["http://localhost/cgi-bin/mapserv.exe?map=D:/workspace/ogam_git/mapserv/ogam.map&"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
--- INSERT INTO layer_service(service_name, config) VALUES ('local_tilecache', '{"urls":["http://test-mapserv.ifn.fr/cgi-bin/tilecache_l93?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
+-- INSERT INTO layer_service(service_name, config) VALUES ('local_tilecache', '{"urls":["http://localhost/cgi-bin/mapserv.exe?map=D:/workspace/ogam_git/mapserv/ogam.map&"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
 -- INSERT INTO layer_service(service_name, config) VALUES ('local_mapProxy', '{"urls":["http://localhost/ogam/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
 
-
+	
 
 -- Exemple of a distant WMS mapserver
 --INSERT INTO layer_service(service_name, config) VALUES ('mapProxy', '{"urls":["http://test-efdac.ifn.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
