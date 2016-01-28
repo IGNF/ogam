@@ -414,7 +414,7 @@ class QueryController extends AbstractOGAMController {
 		$this->view->hideGridDataEditButton = 'true';
 		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
 		
-		$this->view->userProviderId = $userSession->user->providerId;
+		$this->view->userProviderId = $userSession->user->provider->id;
 		
 		
 			if ($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) {

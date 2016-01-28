@@ -169,7 +169,7 @@ foreach ($this->submissions as $submission) {
     <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Confirm_submission_warning');?>');"><?php echo $this->translate('Confirm submission');?></a></p>
     <?php } 
     if ($submission->step != "VALIDATED" || ($role->isAllowed('CANCEL_VALIDATED_SUBMISSION'))) {
-    	if ($submission->providerId == $userSession->user->providerId || ($role->isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION'))) {
+    	if ($submission->providerId == $userSession->user->provider->id || ($role->isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION'))) {
 ?>
     <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Are you sure?');?>');"><?php echo $this->translate('Cancel Submission');?></a></p>
 <?php  }

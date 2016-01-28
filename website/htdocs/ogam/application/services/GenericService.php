@@ -317,7 +317,7 @@ class Application_Service_GenericService {
 		// Right management
 		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		$role = $userSession->user->role;
 		if (!$role->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
 			$where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
@@ -383,7 +383,7 @@ class Application_Service_GenericService {
 		// Right management
 		// Get back the provider id of the data
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		$role = $userSession->user->role;
 		if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER') && $hasColumnProvider) {
 			$select .= ", " . $leftTable->getLogicalName() . ".provider_id as _provider_id";

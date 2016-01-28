@@ -56,7 +56,7 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('getMapParametersAction');
 		// Get back the provider id for the current user
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
@@ -177,7 +177,7 @@ class MapController extends AbstractOGAMController {
 		
 		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		
 		// Get the available services base urls and parameters
 		$viewServices = $this->servicesModel->getViewServices();
@@ -392,7 +392,7 @@ class MapController extends AbstractOGAMController {
 		
 		// Get back the country code
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		$this->logger->debug('providerId : ' . $providerId);
 		
 		$item = $this->_getLegendItems(-1, $providerId);

@@ -674,7 +674,7 @@ class DataEditionController extends AbstractOGAMController {
 		
 		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
 		
-		$this->view->userProviderId = $user->providerId;
+		$this->view->userProviderId = $user->provider->id;
 		
 		if (!empty($user) && $user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 			$this->view->checkEditionRights = 'true';
