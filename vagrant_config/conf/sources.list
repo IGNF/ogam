@@ -1,3 +1,0 @@
-deb http://miroir.ign.fr/debian/ jessie main non-free contrib
-deb http://miroir.ign.fr/debian-security/ jessie/updates main non-free contrib
-deb http://miroir.ign.fr/apt.postgresql.org/pub/repos/apt/ jessie-pgdg main
