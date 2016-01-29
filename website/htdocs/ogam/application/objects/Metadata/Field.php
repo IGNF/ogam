@@ -58,7 +58,7 @@ class Application_Object_Metadata_Field {
 	/**
 	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).
 	 * Can be an array in case of a select multiple (will generate a OR clause).
-	 * 
+	 *
 	 * @var mixed Examples of valid values :
 	 *      toto
 	 *      12.6
@@ -81,5 +81,32 @@ class Application_Object_Metadata_Field {
 	 */
 	function getName() {
 		return $this->format . '__' . $this->data;
+	}
+
+	/**
+	 * Return the label.
+	 *
+	 * @return String the label
+	 */
+	function getLabel() {
+		if ($this->label != null) {
+			return $this->label;
+		} else {
+			return $this->data;
+		}
+	}
+
+	/**
+	 * Return the label corresponding to the value.
+	 * For a code, will return the description.
+	 *
+	 * @return String the label
+	 */
+	function getValueLabel() {
+		if ($this->valueLabel != null) {
+			return $this->valueLabel;
+		} else {
+			return $this->value;
+		}
 	}
 }

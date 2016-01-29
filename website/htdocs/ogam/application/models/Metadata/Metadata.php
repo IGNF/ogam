@@ -595,6 +595,38 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		
 		return $dataset;
 	}
+	
+	/**
+	 * Get a dataset.
+	 *
+	 * Used by custom controller in EDB.
+	 *
+	 * @param String $datasetId The dataset identifier
+	 * @return Genapp_Object_Metadata_Dataset
+	 */
+	public function getDataset($datasetId) {
+	
+		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'DATASET');
+		$db = $this->getAdapter();
+		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
+		$req .= " FROM dataset d";
+		$req .= " LEFT JOIN translation t ON lang = '".$this->lang."' AND table_format = '".$tableFormat->format."' AND row_pk = dataset_id";
+		$req .= " WHERE dataset_id = ?";
+	
+		$this->logger->info('getDataset : '.$req);
+	
+		$select = $db->prepare($req);
+		$select->execute(array($datasetId));
+	
+		$row = $select->fetch();
+		if ($row) {
+			$dataset = $this->_readDataSet($row);
+	
+			return $dataset;
+		} else {
+			$result = null;
+		}
+	}
 
 	/**
 	 * Get the available datasets for display.

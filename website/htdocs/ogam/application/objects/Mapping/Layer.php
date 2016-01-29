@@ -22,120 +22,99 @@ class Application_Object_Mapping_Layer {
 
 	/**
 	 * The logical name of the layer.
-	 * 
+	 *
 	 * @var String
 	 */
 	var $layerName;
 
 	/**
 	 * The label of the layer.
-	 * 
+	 *
 	 * @var String
 	 */
 	var $layerLabel;
 
 	/**
 	 * The name of the service layer composing this logical layer.
-	 * 
+	 *
 	 * @var String
 	 */
 	var $serviceLayerName;
 
 	/**
 	 * Indicate if the layer is transparent.
-	 * 
+	 *
 	 * @var Boolean
 	 */
 	var $isTransparent;
 
 	/**
-	 * Force OpenLayer to request one image each time.
-	 * @var Boolean
-	 */
-	var $isUntiled;
-	
-	/**
 	 * Default value of layer opacity : 0 to 100, default value = 100.
-	 * 
+	 *
 	 * @var Integer
 	 */
 	var $defaultOpacity;
 
 	/**
 	 * Indicate if the layer is a base layer.
-	 * 
+	 *
 	 * @var Boolean
 	 */
 	var $isBaseLayer;
 
 	/**
-	 * Indicates the service for displaying the layers in the map panel.
-	 * 
-	 * @var String
+	 * Force OpenLayer to request one image each time.
+	 *
+	 * @var Boolean
 	 */
-	var $viewServiceName;
+	var $isUntiled;
 
 	/**
 	 * The max scale of apparition of the layer.
-	 * 
+	 *
 	 * @var Integer
 	 */
 	var $maxscale;
 
 	/**
 	 * The min scale of apparition of the layer.
-	 * 
+	 *
 	 * @var Integer
 	 */
 	var $minscale;
 
 	/**
+	 * Indicate if the layer has a Legend available.
+	 *
+	 * @var Boolean
+	 */
+	var $hasLegend;
+
+	/**
 	 * The transizion effect to use ('resize' or null).
-	 * 
+	 *
 	 * @var String
 	 */
 	var $transitionEffect;
 
 	/**
-	 * The image format (PNG, JPEG, .
-	 * ..).
-	 * 
+	 * The image format (PNG, JPEG).
+	 *
 	 * @var String
 	 */
 	var $imageFormat;
 
 	/**
-	 * Defines if the item is checked by default.
-	 * 
-	 * @var Boolean.
+	 * If empty, the layer can be seen by any country, if not it is limited to one country.
+	 *
+	 * @var String
 	 */
-	var $isChecked;
-
-	/**
-	 * Defines if the item is hidden by default.
-	 * 
-	 * @var Boolean
-	 */
-	var $isHidden;
-
-	/**
-	 * Defines if the item is disabled (grayed) by default.
-	 * 
-	 * @var Boolean
-	 */
-	var $isDisabled;
-
-	/**
-	 * Tells if the layer launch the generation of a SLD information.
-	 * 
-	 * @var Boolean.
-	 */
-	var $hasSLD;
+	var $providerId;
 
 	/**
 	 * If the layer is activated by an event, defines the category of event that will activate this layer.
 	 * Possible values are : NONE, REQUEST, AGGREGATION, HARMONIZATION.
-	 * 
+	 *
 	 * @var String
 	 */
 	var $activateType;
@@ -144,36 +123,51 @@ class Application_Object_Mapping_Layer {
 	 * Allow to regroup layers.
 	 *
 	 * If two layers are in the same group, they will appear with a radio button in the layer tree.
-	 * 
+	 *
 	 * @var String
 	 */
 	var $checkedGroup;
 
 	/**
+	 * Indicates the service for displaying the layers in the map panel.
+	 *
+	 * @var String
+	 */
+	var $viewServiceName;
+
+	/**
+	 * Indicates the service to call for displaying legend.
+	 *
+	 * @var String
+	 */
+	var $legendServiceName;
+
+	/**
 	 * Indicates the service to call for printing map in pdf.
-	 * 
+	 *
 	 * @var String
 	 */
 	var $printServiceName;
 
 	/**
 	 * Indicates the service to call for detail panel.
-	 * 
+	 *
 	 * @var String
 	 */
 	var $detailServiceName;
 
 	/**
 	 * Indicates the service to call for wfs menu.
-	 * 
+	 *
 	 * @var String
 	 */
-	var $featureInfoServiceName;
-
+	var $featureServiceName;
+	
 	/**
-	 * Indicates the service to call for displaying legend.
-	 * 
-	 * @var String
+	 * Layer Tree info linked to the layer.
+	 * (Used only when retreiving the layers list). 
+	 *
+	 * @var Application_Object_Mapping_LegendItem
 	 */
-	var $legendServiceName;
+	var $treeItem;
 }

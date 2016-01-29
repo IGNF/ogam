@@ -6,6 +6,7 @@ require_once APPLICATION_PATH . '/objects/Generic/DataObject.php';
 require_once APPLICATION_PATH . '/objects/Generic/FormQuery.php';
 require_once APPLICATION_PATH . '/objects/Metadata/Field.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
+include_once APPLICATION_PATH . '/objects/Metadata/FormField.php';
 require_once APPLICATION_PATH . '/objects/Metadata/Format.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableFormat.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TreeNode.php';

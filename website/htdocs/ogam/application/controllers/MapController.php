@@ -253,7 +253,7 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "legendServiceName":"' . $layer->legendServiceName . '"';
 			
 			// Feature Info Service Name
-			$out .= ', "featureInfoServiceName":"' . $layer->featureInfoServiceName . '"';
+			$out .= ', "featureServiceName":"' . $layer->featureServiceName . '"';
 			
 			$out .= ', "params":{';
 			
@@ -271,35 +271,28 @@ class MapController extends AbstractOGAMController {
 			// Image Format
 			$out .= ', "format": "image/' . $layer->imageFormat . '"';
 			
-			// Hidden ?
-			if ($layer->isHidden) {
+			// Hidden
+			if ($layer->treeItem->isHidden) {
 				$out .= ', "isHidden": true';
 			} else {
 				$out .= ', "isHidden": false';
 			}
 			
-			// Disabled ?
-			if ($layer->isDisabled) {
+			// Disabled
+			if ($layer->treeItem->isDisabled) {
 				$out .= ', "isDisabled": true';
 			} else {
 				$out .= ', "isDisabled": false';
 			}
 			
-			// Checked ?
-			if ($layer->isChecked) {
+			// Checked
+			if ($layer->treeItem->isChecked) {
 				$out .= ', "isChecked": true';
 			} else {
 				$out .= ', "isChecked": false';
 			}
 			
 			$out .= ', "activateType": "' . $layer->activateType . '"';
-			
-			// We will test this flag to know if we need to generate a SLD
-			if ($layer->hasSLD) {
-				$out .= ', "hasSLD": true';
-			} else {
-				$out .= ', "hasSLD": false';
-			}
 			
 			// Add the sessionid
 			$out .= ', "session_id": "' . $sessionId . '"';
@@ -313,13 +306,8 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "options":{"buffer": 0';
 			
 			// Node Group
-			if (!empty($layer->parentId)) {
-				$out .= ', "nodeGroup": "' . $layer->parentId . '"';
-			}
-			
-			// Checked Group
-			if (!empty($layer->checkedGroup)) {
-				$out .= ', "checkedGroup": "' . $layer->checkedGroup . '"';
+			if (!empty($layer->treeItem->parentId)) {
+				$out .= ', "nodeGroup": "' . $layer->treeItem->parentId . '"';
 			}
 			
 			// Transition effect
@@ -327,8 +315,8 @@ class MapController extends AbstractOGAMController {
 				$out .= ', "transitionEffect": "' . $layer->transitionEffect . '"';
 			}
 			
-			// Layer visibility by default
-			if ($layer->isDefault) {
+			// Layer visibility by default			
+			if ($layer->treeItem->isChecked) {
 				$out .= ', "visibility": true';
 			} else {
 				$out .= ', "visibility": false';
