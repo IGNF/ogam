@@ -18,6 +18,10 @@
           <option name="url" value="http://gitlab.dockerforge.ign.fr/ogam/ogam.git" />
           <option name="userName" value="" />
         </UrlAndUserName>
+        <UrlAndUserName>
+          <option name="url" value="http://gitlab.dockerforge.ign.fr" />
+          <option name="userName" value="sgalopin" />
+        </UrlAndUserName>
       </list>
     </option>
     <option name="cloneParentDir" value="D:\DONNEES\PhpstormProjects" />
