@@ -1,5 +1,5 @@
 Ext.define('OgamDesktop.view.result.MainWin', {
-	extend: 'OgamDesktop.view.AbstractWin',
+	extend: 'Ext.panel.Panel',
 	requires: [
 		'Ext.button.Split'
 	],
