@@ -81,6 +81,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$legendItem->isChecked = ($row['is_checked'] === 1);
 		$legendItem->isHidden = ($row['is_hidden'] === 1);
 		$legendItem->isDisabled = ($row['is_disabled'] === 1);
+		$legendItem->isExpended = ($row['is_expended'] === 1);
 		$legendItem->layerName = $row['name'];
 		$legendItem->label = $row['layer_label'];
 		$legendItem->checkedGroup = $row['checked_group'];
