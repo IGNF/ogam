@@ -285,7 +285,7 @@ class Application_Service_GenericService {
 		$rootTable = array_shift($tables);
 		$from = " FROM " . $rootTable->tableName . " " . $rootTable->getLogicalName();
 		
-		// Get the root table fields		
+		// Get the root table fields
 		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
 		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
 		
@@ -356,7 +356,7 @@ class Application_Service_GenericService {
 		//
 		// Get the left table;
 		$tables = $this->getAllFormats($schema, $dataObject);
-		$rootTable = reset ($tables);
+		$rootTable = reset($tables);
 		$reversedTable = array_reverse($tables); // Only variables should be passed by reference
 		$leftTable = array_shift($reversedTable);
 		
@@ -1017,12 +1017,13 @@ class Application_Service_GenericService {
 	 * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
 	 */
 	public function getAllFormats($schema, $dataObject) {
+		$this->logger->info('getAllFormats : ' . $schema);
 		
 		// Prepare the list of needed tables
 		$tables = array();
 		foreach ($dataObject->getFields() as $tableField) {
 			
-			if (!in_array($tableField->format, $tables)) {
+			if (!array_key_exists($tableField->format, $tables)) {
 				
 				// Get the ancestors of the table
 				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $schema);
