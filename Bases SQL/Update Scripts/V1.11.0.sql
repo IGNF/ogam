@@ -1,5 +1,5 @@
 --
--- Ajout de la table providers
+-- Ajout de la table des providers
 --
 
 CREATE SEQUENCE website.provider_id_seq;
@@ -22,3 +22,13 @@ INSERT INTO metadata.dynamode (unit, sql) VALUES ('PROVIDER_ID', 'SELECT id as c
 
 -- Ajout dans la table UNIT
 UPDATE metadata.unit SET subtype = 'DYNAMIC' WHERE unit = 'PROVIDER_ID';
+
+
+--
+-- Modification de la table layers, ajout d'un flag pour les couches vectorielles
+--
+ALTER TABLE mapping.layer ADD COLUMN isvector integer;
+COMMENT ON COLUMN mapping.layer.isvector IS 'Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster)';
+
+UPDATE mapping.layer SET isvector = 1 where layer_name = 'result_locations';
+UPDATE mapping.layer SET isvector = 1 where layer_name = 'all_locations';

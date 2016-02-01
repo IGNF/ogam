@@ -57,7 +57,7 @@ CREATE TABLE layer
   service_layer_name 	VARCHAR(500),  -- Name of the corresponding layer(s)
   isTransparent 		INT,           -- Indicate if the layer is transparent  default_opacity       INT,           -- Default value of the layer opacity : 0 to 100
   isBaseLayer	 		INT,		   -- Indicate if the layer is a base layer (or an overlay)
-  isUntiled			 	INT,           -- Force OpenLayer to request one image each time
+  isUntiled			 	INT,           -- Force OpenLayer to request one image each time  isVector			 	INT,           -- Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster)
   maxscale				INT,           -- Max scale of apparation
   minscale				INT,           -- Min scale of apparition
   has_legend    		INT, 	   	   -- If value = 1 is the layer has a legend that should be displayed
@@ -73,7 +73,7 @@ COMMENT ON COLUMN layer.layer_label IS 'Label of the layer';
 COMMENT ON COLUMN layer.service_layer_name IS 'Name of the corresponding layer(s) in the service';COMMENT ON COLUMN layer.default_opacity IS 'Default value of the layer opacity : 0 to 100';
 COMMENT ON COLUMN layer.isTransparent IS 'Indicate if the layer is transparent';
 COMMENT ON COLUMN layer.isBaseLayer IS 'Indicate if the layer is a base layer (or an overlay)';
-COMMENT ON COLUMN layer.isUntiled IS 'Force OpenLayer to request one image each time';
+COMMENT ON COLUMN layer.isUntiled IS 'Force OpenLayer to request one image each time';COMMENT ON COLUMN layer.isVector IS 'Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster)';
 COMMENT ON COLUMN layer.maxscale IS 'Max scale of apparation';
 COMMENT ON COLUMN layer.minscale IS 'Min scale of apparition';
 COMMENT ON COLUMN layer.has_legend IS 'If value = 1 is the layer has a legend that should be displayed';

@@ -141,22 +141,23 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('getvectorlayersAction');
 		
 		// Get the available layers
-		$layerNames = $this->layersModel->getVectorLayersList();
+		$vectorlayers = $this->layersModel->getVectorLayersList();
 		
 		$json = '{"success":true';
 		$json .= ', "layerNames" : [';
 		$json .= '{"code":null,"label":"' . $this->translator->translate('empty_layer') . '","url":null}';
-		foreach ($layerNames as $layerName => $tab) {
-			$layer = $this->layersModel->getLayer($layerName);
-			$viewServiceName = $layer->viewServiceName;
-			$viewService = $this->servicesModel->getService($viewServiceName);
-			$serviceConfig = $viewService->serviceConfig;
-			$url_wms = json_decode($serviceConfig)->{'urls'}[0];
+		foreach ($vectorlayers as $layer) {
+		
+			$viewService = $this->servicesModel->getService($layer->viewServiceName);
+			$featureService =  $this->servicesModel->getService($layer->featureServiceName);
 			
-			$json .= ',{"code":' . json_encode($layerName) . ',';
-			$json .= '"label":' . json_encode($tab[0]) . ',';
-			$json .= '"url":' . json_encode(json_decode($tab[1])->{'urls'}[0]) . ',';
-			$json .= '"url_wms":' . json_encode($url_wms) . '}';
+			$wfsURL = json_decode($featureService->serviceConfig)->{'urls'}[0];
+			$wmsURL = json_decode($viewService->serviceConfig)->{'urls'}[0];
+			
+			$json .= ',{"code":' . json_encode($layer->layerName) . ',';
+			$json .= '"label":' . json_encode($featureService->serviceName) . ',';
+			$json .= '"url":' . json_encode($wfsURL) . ',';
+			$json .= '"url_wms":' . json_encode($wmsURL) . '}';
 		}
 		$json .= ']';
 		$json .= '}';
@@ -406,7 +407,7 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('_getLegendItems : ' . $parentId . " " . $providerId);
 		
 		// Get the list of items corresponding to the asked level
-		$legendItems = $this->layersModel->getLegend($parentId, $providerId);
+		$legendItems = $this->layersModel->getLegendItems($parentId, $providerId);
 		
 		// Get the list of active layers
 		$mappingSession = new Zend_Session_Namespace('mapping');

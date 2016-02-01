@@ -36,43 +36,6 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get the list of available vector layers for the map.
-	 *
-	 * @return Array[String] The layer names
-	 */
-	public function getVectorLayersList() {
-		$db = $this->getAdapter();
-		$params = array();
-		
-		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, config as feature_service_config ";
-		$req .= " FROM layer_service , layer ";
-		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
-		$req .= " WHERE layer.feature_service_name <> '' AND layer.feature_service_name = layer_service.service_name";
-		
-		// Check the user profile
-		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
-		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		$req .= " ORDER BY layer_name";
-		
-		Zend_Registry::get("logger")->info('getVectorLayersList : ' . $req);
-		
-		$select = $db->prepare($req);
-		$select->execute(array(
-			$role->code
-		));
-		
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$result[$row['layer_name']] = array(
-				$row['layer_label'],
-				$row['feature_service_config']
-			);
-		}
-		return $result;
-	}
-
-	/**
 	 * Read a layer object from a result line.
 	 *
 	 * @param Result $row        	
@@ -87,6 +50,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$layer->defaultOpacity = $row['default_opacity'];
 		$layer->isBaseLayer = ($row['isbaselayer'] === 1);
 		$layer->isUntiled = ($row['isuntiled'] === 1);
+		$layer->isVector = ($row['isvector'] === 1);
 		$layer->maxscale = $row['maxscale'];
 		$layer->minscale = $row['minscale'];
 		$layer->hasLegend = ($row['has_legend'] === 1);
@@ -122,6 +86,44 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$legendItem->checkedGroup = $row['checked_group'];
 		
 		return $legendItem;
+	}
+
+	/**
+	 * Get the list of available vector layers for the map.
+	 *
+	 * @return Array[String] The layer names
+	 */
+	public function getVectorLayersList() {
+		$db = $this->getAdapter();
+		$params = array();
+		
+		$req = " SELECT *, COALESCE(t.label, layer.layer_label) as layer_label ";
+		$req .= " FROM layer ";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
+		$req .= " WHERE layer.isvector = 1";
+		
+		// Filtrer on the user restrictions
+		$userSession = new Zend_Session_Namespace('user');
+		if (!empty($userSession) && !empty($userSession->user)) {
+			$role = $userSession->user->role;
+			$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
+			$req .= " ORDER BY layer_name";
+			$params[] = $role->code;
+		}
+		
+		Zend_Registry::get("logger")->info('getVectorLayersList : ' . $req);
+		
+		$select = $db->prepare($req);
+		$select->execute($params);
+		
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			
+			$layer = $this->_readLayer($row);
+			
+			$result[$layer->layerName] = $layer;
+		}
+		return $result;
 	}
 
 	/**
@@ -178,11 +180,13 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$params[] = $providerId;
 		}
 		
-		// Check the user profile
+		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
-		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		$params[] = $role->code;
+		if (!empty($userSession) && !empty($userSession->user)) {
+			$role = $userSession->user->role;
+			$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
+			$params[] = $role->code;
+		}
 		
 		$req .= " ORDER BY (parent_id, position) DESC";
 		
@@ -198,7 +202,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			
 			$layer->treeItem = $this->_readTreeItem($row);
 			
-			$result[] = $layer;
+			$result[$layer->layerName] = $layer;
 		}
 		return $result;
 	}
@@ -212,8 +216,8 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 *        	the identifier of the provider
 	 * @return Array[Application_Object_Mapping_LegendItem]
 	 */
-	public function getLegend($parentId, $providerId = null) {
-		Zend_Registry::get("logger")->info('getLegend : parentId : ' . $parentId . ' - providerId : ' . $providerId);
+	public function getLegendItems($parentId, $providerId = null) {
+		Zend_Registry::get("logger")->info('getLegendItems : parentId : ' . $parentId . ' - providerId : ' . $providerId);
 		
 		$db = $this->getAdapter();
 		$params = array();
@@ -233,15 +237,17 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$params[] = $providerId;
 		}
 		
-		// Check the user profile
+		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
-		$req = $req . ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		$params[] = $role->code;
+		if (!empty($userSession) && !empty($userSession->user)) {
+			$role = $userSession->user->role;
+			$req = $req . ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
+			$params[] = $role->code;
+		}
 		
 		$req = $req . " ORDER BY position";
 		
-		Zend_Registry::get("logger")->info('layer_model.getLegend() : ' . $req);
+		Zend_Registry::get("logger")->info('layer_model.getLegendItems() : ' . $req);
 		
 		$select = $db->prepare($req);
 		$select->execute($params);
@@ -249,7 +255,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$legendItem = $this->_readTreeItem($row);
-			$result[] = $legendItem;
+			$result[$legendItem->itemId] = $legendItem;
 		}
 		return $result;
 	}

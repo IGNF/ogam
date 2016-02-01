@@ -70,6 +70,13 @@ class Application_Object_Mapping_Layer {
 	var $isUntiled;
 
 	/**
+	 * Indicate if the layer contains vector based data.
+	 *
+	 * @var Boolean
+	 */
+	var $isVector;
+
+	/**
 	 * The max scale of apparition of the layer.
 	 *
 	 * @var Integer
