@@ -44,6 +44,8 @@ class ProxyController extends AbstractOGAMController {
 
 	/**
 	 * Extract the content of a String located after a substring.
+	 * 
+	 * Not private because can be used by custom controllers.
 	 *
 	 * @param String $string
 	 *        	the source string
@@ -51,12 +53,14 @@ class ProxyController extends AbstractOGAMController {
 	 *        	the substring to locate
 	 * @return String the part of the string located after the substring
 	 */
-	private function _extractAfter($string, $substring) {
+	protected function _extractAfter($string, $substring) {
 		return substr($string, strpos($string, $substring) + strlen($substring));
 	}
 
 	/**
 	 * Extract the value of a parameter from an URL.
+	 * 
+	 * Not private because can be used by custom controllers.
 	 *
 	 * @param String $url
 	 *        	the url string
@@ -64,7 +68,7 @@ class ProxyController extends AbstractOGAMController {
 	 *        	the parameter name
 	 * @return String the value of the parameter
 	 */
-	private function _extractParam($url, $param) {
+	protected function _extractParam($url, $param) {
 		$end = $this->_extractAfter($url, $param . "=");
 		$endpos = strpos($end, "&");
 		if ($endpos === false) {
@@ -76,12 +80,14 @@ class ProxyController extends AbstractOGAMController {
 
 	/**
 	 * Checks that a string ends with a given substring.
+	 * 
+	 * Not private because can be used by custom controllers.
 	 *
 	 * @param String $str        	
 	 * @param String $sub        	
 	 * @return a boolean
 	 */
-	private function _endsWith($str, $sub) {
+	protected function _endsWith($str, $sub) {
 		return (substr($str, strlen($str) - strlen($sub)) === $sub);
 	}
 
