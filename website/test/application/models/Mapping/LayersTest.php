@@ -90,7 +90,12 @@ class LayersTest extends ControllerTestCase {
 		$resultItem = $legendItems[1];
 		$this->assertNotNull($resultItem);
 		$this->assertEquals('result_locations', $resultItem->layerName);
-		$this->assertEquals('Results', $resultItem->label);
+		$this->assertEquals(true, $resultItem->isLayer);
+		$this->assertEquals(false, $resultItem->isChecked);
+		$this->assertEquals(false, $resultItem->isHidden);
+		$this->assertEquals(true, $resultItem->isDisabled);
+		$this->assertEquals(false, $resultItem->isExpended);
+		$this->assertEquals('', $resultItem->checkedGroup);
 	}
 
 	/**
