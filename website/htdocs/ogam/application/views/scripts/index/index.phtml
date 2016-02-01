@@ -45,8 +45,10 @@ $userSession = new Zend_Session_Namespace('user');
 $user = $userSession->user;
 $role = new Application_Object_Website_Role();
 $schemasList = array();
+$providerId = "";
 if (!empty($user)) {
 	$role = $user->role;
+	$providerId = $user->provider->id;
 	$schemasList = $user->role->schemasList;
 }
 ?>
@@ -78,7 +80,7 @@ if ($role->isAllowed('DATA_QUERY')  && in_array("RAW_DATA", $schemasList)) {
 if ($role->isAllowed('DATA_EDITION')  && in_array("RAW_DATA", $schemasList)) {	
 ?>
 <li>
-<a href="<?php echo  $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?php echo $this->translate('Add a new localisation');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $providerId; ?>" class="pagelink" ><?php echo $this->translate('Add a new localisation');?></a>
 </li>
 <?php
 } 
