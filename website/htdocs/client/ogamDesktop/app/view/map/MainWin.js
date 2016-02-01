@@ -8,10 +8,6 @@ Ext.define('OgamDesktop.view.map.MainWin', {
 	layout: 'border',
 	title: 'Map',
 	items: [{
-		xtype: 'mappanelgx',
-		region: 'west',
-		split: true
-	},{
 		xtype: 'map-panel',
 		region: 'center'
 	},{

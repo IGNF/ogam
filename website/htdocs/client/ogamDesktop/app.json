@@ -193,8 +193,8 @@
             "path": "http://localhost:8000/map/get-map-parameters",
             "remote": true
         },{
-            /*"path": "lib/OpenLayers/ol-debug.js",*/
-            "path": "lib/OpenLayers/ol.js"
+            "path": "lib/OpenLayers/ol-debug.js"
+            //"path": "lib/OpenLayers/ol.js"
         },{
             "path": "lib/addon/OpenLayers/Control/FeatureInfoControl.js",
             "includeInBundle": true

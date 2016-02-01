@@ -5,12 +5,9 @@
  * TODO: An interface for GeoExt
  */
 Ext.define('OgamDesktop.view.map.MapPanel', {
-	//extend: 'GeoExt.panel.Map',
-	extend: 'Ext.panel.Panel',
-	xtype: 'map-panel',
-	width:'100%',
-	height:'100%',
-	layout: 'container',
+    extend: 'Ext.panel.Panel',
+    xtype: 'map-panel',
+    layout: 'fit',
 //	requires: [
 //		'GeoExt.tree.LayerContainer',
 //		'GeoExt.Action',
@@ -92,7 +89,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	 * @cfg {Integer} minZoomLevel The min zoom level for the
 //	 *      map (defaults to <tt>0</tt>)
 //	 */
-//	minZoomLevel : 0,
+	minZoomLevel : 0,
 //	
 //	/**
 //	 * @cfg {String} resultsBBox The results bounding box
@@ -156,37 +153,149 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	 */
 //	map : null,
 //	
-//	/**
-//	 * The zoom slider for the map.
-//	 */
-//	items: [{
-//		xtype: 'gx_zoomslider',
-//		vertical: true,
-//		height: 150,
-//		x: 18,
-//		y: 85,
-//		activeError: 'error',
-//		// The tip with the zoom level at hover
-//		plugins: Ext.create('GeoExt.slider.Tip', {
-//			position: 'top',
-//			getText: function(thumb) {
-//				return Ext.String.format(
-//						'<div><b>{0}</b></div>',
-//						thumb.slider.getZoom()
-//				);
+
+    initComponent: function(){
+        // Init the map
+        this.mapCmp = this.initMapCmp();
+        
+        // Init the Toolbar
+        this.tbar = this.initToolbar();
+        
+        this.callParent(arguments);
+        
+        // add map component
+        this.add(this.mapCmp);
+    },
+    
+    
+    initMapCmp: function(){
+        
+        this.features = new ol.Collection();
+        var source = new ol.source.Vector({features: this.features});
+
+        var vector = new ol.layer.Vector({
+            source: source,
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 255, 255, 0.2)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#ffcc33',
+                    width: 2
+                }),
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                      color: '#ffcc33'
+                    })
+                })
+            })
+        });
+        
+        zoomslider = new ol.control.ZoomSlider();
+        zoomExtent = new ol.control.ZoomToExtent();
+        scaleLine = new ol.control.ScaleLine();
+        mousePos = new ol.control.MousePosition();
+        
+        
+//        var map = new OpenLayers.Map({
+//			'theme' : Ext.manifest.OgamDesktop.OpenLayers.theme, // Tell OpenLayers where the css default theme is
+//			'controls' : [],
+//			'resolutions' : resolutions,
+//			'numZoomLevels' : OgamDesktop.map.numZoomLevels,
+//			'projection' : OgamDesktop.map.projection,
+//			'zoomMethod': null,
+//			'units' : 'm',
+//			'tileSize' : new OpenLayers.Size(OgamDesktop.map.tilesize, OgamDesktop.map.tilesize),
+//			'maxExtent' : new OpenLayers.Bounds(OgamDesktop.map.x_min, OgamDesktop.map.y_min, OgamDesktop.map.x_max, OgamDesktop.map.y_max),
+//			'eventListeners' : {// Hide the legend if needed
+//				'changelayer' : function(o) {
+//					if (o.property === 'visibility') {
+//						this.fireEvent('onLayerVisibilityChange',o.layer);
+//					}
+//				},'getFeature' : function(evt) {
+//					this.fireEvent('getFeature',evt);
+//				},
+//				scope : this
 //			}
-//		})
-//	}],
-//
-//	initComponent: function(){
-//		// Init the map
-//		this.map = this.initMap();
-//		
-//		// Init the Toolbar
-//		this.tbar = this.initToolbar();
-//		
-//		this.callParent(arguments);
-//	},
+//		});
+        
+        
+        
+        
+        
+        map = new ol.Map({
+            logo: false, // no attributions to ol
+            layers: [vector],
+            view: new ol.View({
+                resolutions: OgamDesktop.map.resolutions.slice(this.minZoomLevel),
+                projection : OgamDesktop.map.projection,
+                center: [OgamDesktop.map.x_center, OgamDesktop.map.y_center],
+                zoom: OgamDesktop.map.defaultzoom,
+                extent: [OgamDesktop.map.x_min,OgamDesktop.map.y_min,OgamDesktop.map.x_max,OgamDesktop.map.y_max]
+            }),
+            controls:  [
+                zoomslider,
+                zoomExtent,
+                scaleLine,
+                mousePos
+            ]
+        }); 
+        
+        
+        // this map panel contains "geoext" map component
+        var mapCmp = Ext.create('GeoExt.component.Map', {
+            map: map
+        });
+        
+        // 'afterinitmap' event is catched by the layer controller
+        // that applies the 'setMapLayers' handlers
+        this.fireEvent('afterinitmap', mapCmp.getMap());
+        
+        return mapCmp;
+    },
+    
+    /**
+     * Initialize the map toolbar
+     * 
+     * @hide
+     */
+    initToolbar : function() {
+        // Creation of the toolbar
+        tbar = Ext.create('Ext.toolbar.Toolbar');
+        
+        map = this.mapCmp.getMap();
+        
+        // Draw point button
+        var drawPointButton = new Ext.button.Button({
+            iconCls : 'o-map-tools-map-drawpoint'
+        });
+        drawPointButton.on({
+            click: {
+                fn: function(){
+                    draw = new ol.interaction.Draw({
+                        features: this.features,
+                        type: 'Point'
+                    });
+                    modify = new ol.interaction.Modify({
+                        features: this.features, 
+                        // the SHIFT key must be pressed to delete vertices, so
+                        // that new vertices can be drawn at the same position
+                        // of existing vertices
+                        deleteCondition: function(event) {
+                            return ol.events.condition.shiftKeyOnly(event) &&
+                                ol.events.condition.singleClick(event);
+                        }
+                    });
+                    map.addInteraction(modify);
+                    map.addInteraction(draw);
+                },
+                scope: this
+            }
+        });
+        tbar.add(drawPointButton);
+        return tbar;
+    }
 //
 //	/**
 //	 * Initialize the map
