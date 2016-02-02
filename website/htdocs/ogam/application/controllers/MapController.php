@@ -243,6 +243,13 @@ class MapController extends AbstractOGAMController {
 				$out .= '"singleTile":false';
 			}
 			
+			// Should we display a legend for this layer ?
+			if ($layer->hasLegend) {
+				$out .= ', "hasLegend":true';
+			} else {
+				$out .= ', "hasLegend":false';
+			}
+			
 			// Logical layer name
 			$out .= ', "name":"' . $layer->layerName . '"';
 			
