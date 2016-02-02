@@ -189,7 +189,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$params[] = $role->code;
 		}
 		
-		$req .= " ORDER BY (parent_id, position) DESC";
+		$req .= " ORDER BY (parent_id::int, position) DESC";
 		
 		Zend_Registry::get("logger")->info('getLayersList : ' . $req);
 		
