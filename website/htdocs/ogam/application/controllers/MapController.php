@@ -72,7 +72,7 @@ class MapController extends AbstractOGAMController {
 		$scales = $this->scalesModel->getScales();
 		
 		// Transform the available scales into resolutions
-		$resolutions = $this->_getResolutions($scales);
+		$resolutions = $this->getResolutions($scales);
 		$resolString = implode(",", $resolutions);
 		$this->view->resolutions = $resolString;
 		$this->view->numZoomLevels = count($resolutions);
@@ -112,11 +112,13 @@ class MapController extends AbstractOGAMController {
 
 	/**
 	 * Calculate the resolution array corresponding to the available scales.
+	 * 
+	 * Not private because can be used by custom controllers.
 	 *
 	 * @param Array[Integer] $scales
 	 *        	The list of scales
 	 */
-	private function _getResolutions($scales) {
+	protected function getResolutions($scales) {
 		
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
@@ -191,7 +193,7 @@ class MapController extends AbstractOGAMController {
 		// Get the available scales
 		$scales = $this->scalesModel->getScales();
 		// Transform the available scales into resolutions
-		$resolutions = $this->_getResolutions($scales);
+		$resolutions = $this->getResolutions($scales);
 		
 		// Build the base URL for tiles
 		$sessionId = session_id();
