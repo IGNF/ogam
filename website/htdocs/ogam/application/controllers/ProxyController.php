@@ -163,13 +163,15 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Simulate a GET
+	 * Simulate a GET.
+	 * 
+	 * Not private because can be used by custom controllers.
 	 *
 	 * @param String $url
 	 *        	the url to call
 	 * @throws Exception
 	 */
-	private function _sendGET($url) {
+	protected function _sendGET($url) {
 		$result = "";
 		$handle = fopen($url, "rb");
 		$result = stream_get_contents($handle);
@@ -179,7 +181,9 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Simulate a POST
+	 * Simulate a POST.
+	 * 
+	 * Not private because can be used by custom controllers.
 	 *
 	 * @param String $url
 	 *        	the url to call
@@ -187,7 +191,7 @@ class ProxyController extends AbstractOGAMController {
 	 *        	the post data
 	 * @throws Exception
 	 */
-	private function _sendPOST($url, $data) {
+	protected function _sendPOST($url, $data) {
 		$this->logger->debug('_sendPOST : ' . $url . " data : " . $data);
 		
 		$contentType = "application/xml";
