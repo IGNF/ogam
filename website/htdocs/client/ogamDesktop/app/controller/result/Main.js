@@ -97,7 +97,6 @@ Ext.define('OgamDesktop.controller.result.Main',{
 			Ext.Msg.show({
 				title : this.getResultmainwin().csvExportAlertTitle,
 				msg : this.getResultmainwin().csvExportAlertMsg,
-				cls : 'genapp-query-center-panel-csv-export-alert',
 				buttons : Ext.Msg.OK,
 				fn : launchCsvExport,
 				animEl : this.getResultmainwin().exportButton.getEl(),

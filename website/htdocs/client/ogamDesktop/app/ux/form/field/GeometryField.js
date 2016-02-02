@@ -13,7 +13,7 @@
 /**
  * Provides a Geometry input field.
  * 
- * @class Genapp.form.GeometryField
+ * @class OgamDesktop.ux.form.field.GeometryField
  * @extends Ext.form.TriggerField
  * @constructor Create a new GeometryField
  * @param {Object}
@@ -58,14 +58,6 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 *      the trigger to set the value. (defaults to false).
 	 */
 	editable : false,
-
-	/**
-	 * The map panel.
-	 * 
-	 * @property mapPanel
-	 * @type Genapp.GeoPanel
-	 */
-	mapPanel : null,
 
 	/**
 	 * The current state of the trigger.

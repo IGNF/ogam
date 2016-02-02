@@ -18,7 +18,6 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
 		'GeoExt.slider.LayerOpacity'
 	],
 //	id: 'layerspanel',
-	cls: 'genapp-query-layer-tree-panel',
 	border: false,
 	rootVisible: false,
 	autoScroll: true,

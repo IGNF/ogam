@@ -15,9 +15,9 @@
  * This class is required because the panel class
  * can't be closed but the panel extended class can.
  * 
- * @class Genapp.DetailsPanel
+ * @class OgamDesktop.view.navigation.Tab
  * @extends Ext.Panel
- * @constructor Create a new DetailsPanel
+ * @constructor Create a new navigation Tab
  * @param {Object} config The config object
  */
 Ext.define('OgamDesktop.view.navigation.Tab', {
@@ -52,12 +52,6 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
      * The url to get the details.
      */
     dataUrl:null,
-    /**
-     * @cfg {String} cls
-     * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp-query-details-panel').
-     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
-     */
-//    cls:'genapp-query-details-panel',
     /**
      * @cfg {String} hideSeeChildrenButton
      * True to hide the see children button (defaults to <tt>false</tt>)
@@ -112,13 +106,13 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 						'<legend>',
 							'<div>{title}</div>',
 						'</legend>',
-						'<div class="genapp-query-details-panel-fieldset-body">',
+						'<div>',
 							'<tpl for="fields">',
 						        '<tpl switch="inputType">',
 						            '<tpl case="CHECKBOX">',
 						            	'<p><b>{label} :</b> {[this.convertBoolean(values)]}</p>',
 						            '<tpl case="IMAGE">',
-//										'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/photos/\' + values.value + \'\">\']}',
+//										'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img title=\"\' + values.label + \'\" src=\"' + window.location.origin + '/img/photos/\' + values.value + \'\">\']}',
 						            '<tpl default>',
 						            	'<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? "-" : values.value]}</p>',
 						        '</tpl>',
@@ -139,7 +133,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 								'<div class="o-navigation-childfieldset-rightcolumn">{1}</div>',
 							'</div>',
 //							'<tpl if="type == \'IMAGE\'">', 
-//								'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img class=\"genapp-query-details-image-field\" title=\"\' + values.label + \'\" src=\"' + Genapp.base_url + '/img/photos/\' + values.value + \'\">\']}',
+//								'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img title=\"\' + values.label + \'\" src=\"' + window.location.origin + '/img/photos/\' + values.value + \'\">\']}',
 //							'</tpl>',
 						'</tpl>',
 					'</div>',

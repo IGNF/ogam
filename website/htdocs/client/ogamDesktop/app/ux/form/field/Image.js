@@ -14,7 +14,7 @@
 /**
  * Provides a image upload field
  * 
- * @class Genapp.form.ImageField
+ * @class OgamDesktop.ux.form.field.ImageField
  * @extends Ext.ux.form.FileUploadField
  * @constructor Create a new ImageField
  * @param {Object}
@@ -129,7 +129,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 		// Submit the image
 		if (this.imageForm.getForm().isValid()) {
 			this.imageForm.getForm().submit({
-				url : Genapp.base_url + 'dataedition/ajaximageupload',
+				url : Ext.manifest.OgamDesktop.editionServiceUrl + 'ajaximageupload',
 				method : 'POST',
 				enctype : 'multipart/form-data',
 				waitTitle : 'Connexion au serveur ...',
