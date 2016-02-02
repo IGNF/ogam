@@ -23,8 +23,8 @@ export https_proxy=proxy.ign.fr:3128
 export http_proxy=proxy.ign.fr:3128
 
 #pour valider le depot postgres
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | \
-  sudo apt-key add -
+#~ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | \
+  #~ sudo apt-key add -
 
 # Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
 export DEBIAN_FRONTEND=noninteractive
