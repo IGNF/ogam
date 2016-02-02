@@ -118,7 +118,7 @@ class MapController extends AbstractOGAMController {
 	 * @param Array[Integer] $scales
 	 *        	The list of scales
 	 */
-	private function getResolutions($scales) {
+	protected function getResolutions($scales) {
 		
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
