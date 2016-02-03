@@ -56,7 +56,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				featureModified: 'updateVectorLayer'
 			},
 			'layers-panel': {
-				checkchange: 'onCheckChange',
 				nodeEnable: 'nodeEnable'
 			},
 			'advanced-request button[action = submit]': {
@@ -219,7 +218,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 */
 	//setMapLayers : function(map, vectorLayer, vector, baseLayer, wfsLayer) {
         setMapLayers : function(map) {
-            console.log('map into handler', map);
             // Add the base layer (always first)
             //map.addLayer(baseLayer);
 
@@ -323,11 +321,11 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 
 		// Gets the layer tree model to initialise the Layer
 		// Tree
-		/*var layerNodeStore = this.getStore('map.LayerNode');
+		var layerNodeStore = this.getStore('map.LayerNode');
 		layerNodeStore.load({
 			callback: this.initLayerTree,
 			scope: this
-		});*/
+		});
 	},
 
 	/**
@@ -371,7 +369,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 source = new ol.source.WMTS(objMergeParams);
                 newLayer = new ol.layer.Tile({
                     opacity: layerObject.data.options.opacity,
-                    source: source
+                    source: source,
+                    name: layerObject.data.options.label
                 });
 
             } else if (paramsObj['SERVICE'] === "WMS"){
@@ -381,6 +380,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 });
                 layerOpts = layerObject.data.options;
                 layerOpts['source'] = source;
+                layerOpts['name'] = layerObject.data.options.label;
                 newLayer = new ol.layer.Tile(layerOpts);
             } else {
                     Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");
@@ -435,60 +435,36 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 */
 	initLayerTree: function(nodes) {
 		
-		// initialize the Tree store based on the map layers
-		var treeLayerStore = Ext.create('Ext.data.TreeStore', {
-			model: 'GeoExt.data.LayerTreeModel',
-			root: {}
-		});
-		// for each node, we create a store which is a selection of the map layers store
-		for (i in nodes) {
-			var node = nodes[i];
-			var storeSelection = Ext.create('GeoExt.data.LayerStore');
-			var rootChild = {};
-
-			this.mapPanel.layers.each(function(layer) {
-				if (layer.data.options.nodeGroup && layer.data.options.nodeGroup == node.data.nodeGroup) {
-					storeSelection.add(layer);
-				} else if (layer.data.title == node.data.layer) {
-					// Creation of the layer node
-						rootChild = {
-						text: node.data.text,
-						layer: layer.data,
-						disabled: node.data.disabled,
-						plugins: [
-							Ext.create('GeoExt.tree.LayerNode')
-						]
-					};
-					// Add of the container
-					if (!node.data.hidden) {
-						treeLayerStore.root.appendChild(rootChild);
-					}
-					rootChild = null;
-				}
-			});
-
-			if (rootChild) {
-				// creation of the layer group container
-				rootChild = {
-					text: node.data.text,
-					plugins: [
-						Ext.create('OgamDesktop.ux.map.GroupLayerContainer', {
-							store: storeSelection,
-							nodeGroup: nodes[i].data.nodeGroup,
-							containerCheckedStatus: node.data.checked,
-							containerExpandedStatus: node.data.expanded
-						})
-					]
-				};
-				// add of the container
-				if (!node.data.hidden) {
-					treeLayerStore.root.appendChild(rootChild);
-				}
-				
-			}
-		}
-	//	this.mapMainWin.getComponent(1).getComponent(0).setConfig('store', treeLayerStore);
-		this.getLayerspanel().setConfig('store', treeLayerStore);
+		
+                console.log('tree layer store nodes', nodes);
+                groups =  [];
+                for (i in nodes) {
+                    node = nodes[i].getData();
+                    console.log('node data', node)
+                    if (!node.leaf) {
+                        console.log('map panel layers', this.mapPanel.mapCmp.getMap().getLayers());
+                        groupLayers = [];
+                        this.mapPanel.mapCmp.getMap().getLayers().forEach(function(layer, idx){
+                            console.log('layer', layer);
+                            console.log('layer keys', layer.getKeys());
+                            if (layer.get('nodeGroup') == node.nodeGroup) {
+                                console.log('layer label', layer.get('label'));
+                                groupLayers.push(layer);
+                            }
+                        
+                        });
+                        group = new ol.layer.Group({
+                           name: node.text,
+                           layers: groupLayers
+                        });
+                        this.mapPanel.mapCmp.getMap().getLayers().push(group)
+                    };                 
+                }
+                
+//                treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
+//                    layerGroup: this.mapPanel.mapCmp.getMap().getLayerGroup()
+//                });
+//		this.getLayerspanel().setConfig('store', treeLayerStore);
 	},
 
 	/**
@@ -560,40 +536,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		}
 	},
 
-	/**
-	 * Toggle the children checkbox on the parent checkbox change
-	 * 
-	 * @param {Ext.tree.TreeNode}
-	 *            node The parent node
-	 * @param {Boolean}
-	 *            checked The checked status
-	 * @hide
-	 */
-	onCheckChange : function(node, checked) {
-		if (node.firstChild == null) {
-			if(checked != node.get('layer').getVisibility()) {
-				node._visibilityChanging = true;
-				var layer = node.get('layer');
-				if(checked && layer.isBaseLayer && layer.map) {
-					layer.map.setBaseLayer(layer);
-				} else if(!checked && layer.isBaseLayer && layer.map &&
-					layer.map.baseLayer && layer.id == layer.map.baseLayer.id) {
-					// Must prevent the unchecking of radio buttons
-					node.set('checked', layer.getVisibility());
-				} else {
-					layer.setVisibility(checked);
-				}
-				delete node._visibilityChanging;
-			}
-		}
-		for ( var i = 0 ; i < node.childNodes.length ; i++) {
-			var child = node.childNodes[i];
-			if (!child.get('disabled')) {
-				child.set('checked', checked);
-				this.onCheckChange(child, checked);
-			}
-		}
-	},
 
 	/**
 	 * Zoom to the passed feature on the map

@@ -7,6 +7,7 @@
 Ext.define('OgamDesktop.view.map.MapPanel', {
     extend: 'Ext.panel.Panel',
     xtype: 'map-panel',
+    id: 'map-panel',
     layout: 'fit',
 //	requires: [
 //		'GeoExt.tree.LayerContainer',
@@ -195,34 +196,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
         zoomslider = new ol.control.ZoomSlider();
         zoomExtent = new ol.control.ZoomToExtent();
         scaleLine = new ol.control.ScaleLine();
-        mousePos = new ol.control.MousePosition();
-        
-        
-//        var map = new OpenLayers.Map({
-//			'theme' : Ext.manifest.OgamDesktop.OpenLayers.theme, // Tell OpenLayers where the css default theme is
-//			'controls' : [],
-//			'resolutions' : resolutions,
-//			'numZoomLevels' : OgamDesktop.map.numZoomLevels,
-//			'projection' : OgamDesktop.map.projection,
-//			'zoomMethod': null,
-//			'units' : 'm',
-//			'tileSize' : new OpenLayers.Size(OgamDesktop.map.tilesize, OgamDesktop.map.tilesize),
-//			'maxExtent' : new OpenLayers.Bounds(OgamDesktop.map.x_min, OgamDesktop.map.y_min, OgamDesktop.map.x_max, OgamDesktop.map.y_max),
-//			'eventListeners' : {// Hide the legend if needed
-//				'changelayer' : function(o) {
-//					if (o.property === 'visibility') {
-//						this.fireEvent('onLayerVisibilityChange',o.layer);
-//					}
-//				},'getFeature' : function(evt) {
-//					this.fireEvent('getFeature',evt);
-//				},
-//				scope : this
-//			}
-//		});
-        
-        
-        
-        
+        mousePos = new ol.control.MousePosition();   
         
         map = new ol.Map({
             logo: false, // no attributions to ol
@@ -232,7 +206,12 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
                 projection : OgamDesktop.map.projection,
                 center: [OgamDesktop.map.x_center, OgamDesktop.map.y_center],
                 zoom: OgamDesktop.map.defaultzoom,
-                extent: [OgamDesktop.map.x_min,OgamDesktop.map.y_min,OgamDesktop.map.x_max,OgamDesktop.map.y_max]
+                extent: [
+                    OgamDesktop.map.x_min,
+                    OgamDesktop.map.y_min,
+                    OgamDesktop.map.x_max,
+                    OgamDesktop.map.y_max
+                ]
             }),
             controls:  [
                 zoomslider,
@@ -240,8 +219,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
                 scaleLine,
                 mousePos
             ]
-        }); 
-        
+        });
         
         // this map panel contains "geoext" map component
         var mapCmp = Ext.create('GeoExt.component.Map', {
