@@ -1507,9 +1507,9 @@ class QueryController extends AbstractOGAMController {
 				$hasChild = true;
 			}
 			
-			echo '{success:true' . ', id:' . json_encode(implode('', $id)) . ', title:' . json_encode($locationTableInfo->label . ' (' . count($locationsData) . ')') . ', hasChild:' . json_encode($hasChild) . ', columns:' . json_encode($columns) . ', fields:' . json_encode($locationFields) . ', data:' . json_encode($locationsData) . '}';
+			echo '{"success":true' . ', "id":' . json_encode(implode('', $id)) . ', "title":' . json_encode($locationTableInfo->label . ' (' . count($locationsData) . ')') . ', "hasChild":' . json_encode($hasChild) . ', "columns":' . json_encode($columns) . ', "fields":' . json_encode($locationFields) . ', "data":' . json_encode($locationsData) . '}';
 		} else {
-			echo '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
+			echo '{"success":true, "id":null, "title":null, "hasChild":false, "columns":[], "fields":[], "data":[]}';
 		}
 		
 		// No View, we send directly the output
