@@ -306,20 +306,6 @@ class MetadataTest extends ControllerTestCase {
 	}
 
 	/**
-	 * Test la fonction getTableFormatFromTableName.
-	 */
-	public function testGetTableFormatFromTableName() {
-		
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-		
-		$tableFormat = $metadataModel->getTableFormatFromTableName('RAW_DATA', 'LOCATION');
-		
-		//
-		$this->assertEquals($tableFormat->format, 'LOCATION_DATA');
-	}
-
-	/**
 	 * Test la fonction getForms.
 	 */
 	public function testGetForms() {

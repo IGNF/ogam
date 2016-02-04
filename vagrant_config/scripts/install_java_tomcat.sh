@@ -65,4 +65,4 @@ chown tomcat7:tomcat7 /var/lib/tomcat7/staging/
 #----------------------------------------------------------------
 # Redémarrage Tomcat
 #----------------------------------------------------------------
-/etc/init.d/tomcat7 restart
+sudo /etc/init.d/tomcat7 restart

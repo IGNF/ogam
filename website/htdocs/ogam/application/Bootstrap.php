@@ -6,12 +6,14 @@ require_once APPLICATION_PATH . '/objects/Generic/DataObject.php';
 require_once APPLICATION_PATH . '/objects/Generic/FormQuery.php';
 require_once APPLICATION_PATH . '/objects/Metadata/Field.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
+include_once APPLICATION_PATH . '/objects/Metadata/FormField.php';
 require_once APPLICATION_PATH . '/objects/Metadata/Format.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableFormat.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TreeNode.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
 require_once APPLICATION_PATH . '/objects/Website/User.php';
 require_once APPLICATION_PATH . '/objects/Website/Role.php';
+require_once APPLICATION_PATH . '/objects/Website/Provider.php';
 
 /**
  * The bootstrap class
@@ -76,6 +78,27 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				'path' => 'validators'
 			)
 		));
+		
+		// Add another autoloader to load custom resources before application (native ogam) resources
+		if (defined('CUSTOM_APPLICATION_PATH')) {
+			$customPath = realpath(CUSTOM_APPLICATION_PATH);
+			$customResourceLoader = new Zend_Application_Module_Autoloader(array(
+				'basePath' => $customPath,
+				'namespace' => $resourceLoader->getNamespace()
+			));
+			$customResourceLoader->addResourceTypes(array(
+				'objects' => array(
+					'namespace' => 'Object',
+					'path' => 'objects'
+				)
+			));
+			$customResourceLoader->addResourceTypes(array(
+				'validators' => array(
+					'namespace' => 'Validator',
+					'path' => 'validators'
+				)
+			));
+		}
 	}
 
 	/**
@@ -116,8 +139,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 							'action' => 'index'
 						));
 					}
-					
-					$this->logger->debug("CustomRoute : " . print_r($customRoute, true));
 					
 					$router->addRoute('customRoute_' . $controllerName, $customRoute);
 				}

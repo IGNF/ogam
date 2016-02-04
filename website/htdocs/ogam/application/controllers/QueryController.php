@@ -51,7 +51,7 @@ class QueryController extends AbstractOGAMController {
 		// Check if the user can query data
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !in_array('DATA_QUERY', $user->role->permissionsList)) {
+		if (empty($user) || !$user->isAllowed('DATA_QUERY')) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -293,11 +293,12 @@ class QueryController extends AbstractOGAMController {
 
 	/**
 	 * Check if a criteria is empty.
-	 *
+	 * (not private as this function is extended in custom directory of derivated applications)
+	 * 
 	 * @param Undef $criteria        	
 	 * @return true if empty
 	 */
-	private function _isEmptyCriteria($criteria) {
+	protected function _isEmptyCriteria($criteria) {
 		if (is_array($criteria)) {
 			$emptyArray = true;
 			foreach ($criteria as $value) {
@@ -405,7 +406,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('getgridparametersAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->user->role->permissionsList;
+		$role = $userSession->user->role;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -414,22 +415,21 @@ class QueryController extends AbstractOGAMController {
 		$this->view->hideGridDataEditButton = 'true';
 		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
 		
-		$this->view->userProviderId = $userSession->user->providerId;
+		$this->view->userProviderId = $userSession->user->provider->id;
 		
-		if (!empty($permissions)) {
-			if ($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) {
-				$this->view->hideGridCsvExportMenuItem = 'false';
-			}
-			if ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions)) {
-				$this->view->hideGridCsvExportMenuItem = 'false';
-			}
-			if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && in_array('DATA_EDITION', $permissions)) {
-				$this->view->hideGridDataEditButton = 'false';
-			}
-			if (!in_array('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
-				$this->view->checkEditionRights = 'true';
-			}
+		if ($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) {
+			$this->view->hideGridCsvExportMenuItem = 'false';
 		}
+		if ($schema == 'HARMONIZED_DATA' && $role->isAllowed('EXPORT_HARMONIZED_DATA')) {
+			$this->view->hideGridCsvExportMenuItem = 'false';
+		}
+		if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && $role->isAllowed('DATA_EDITION')) {
+			$this->view->hideGridDataEditButton = 'false';
+		}
+		if ($role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
+			$this->view->checkEditionRights = 'true';
+		}
+		
 		$this->_helper->layout()->disableLayout();
 		$this->render('grid-parameters');
 		$this->getResponse()->setHeader('Content-type', 'application/javascript');
@@ -643,7 +643,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('gridCsvExportAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->user->role->permissionsList;
+		$role = $userSession->user->role;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -658,7 +658,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.csv', true);
 		
-		if (in_array('EXPORT_RAW_DATA', $permissions)) {
+		if ($role->isAllowed('EXPORT_RAW_DATA')) {
 			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -816,7 +816,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('gridCsvExportAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->user->role->permissionsList;
+		$role = $userSession->user->role;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -831,12 +831,14 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.kml', true);
 		
-		if (($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions))) {
+		if (($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) || ($schema == 'HARMONIZED_DATA' && $role->isAllowed('EXPORT_HARMONIZED_DATA'))) {
 			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
 			$fromwhere = $websiteSession->SQLFromWhere;
-			$sql = $select . ', ST_AsKML(the_geom) AS KML ' . $fromwhere;
+			$locationField = $websiteSession->locationField;
+			
+			$sql = $select . ', ST_AsKML(' . $locationField->columnName . ') AS KML ' . $fromwhere;
 			
 			// Count the number of lines
 			$total = $websiteSession->count;
@@ -983,7 +985,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('geojsonExportAction');
 		
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->user->role->permissionsList;
+		$role = $userSession->user->role;
 		
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -995,15 +997,17 @@ class QueryController extends AbstractOGAMController {
 		$maxLines = 5000;
 		
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'pplication/json;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$this->getResponse()->setHeader('Content-Type', 'application/json;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.geojson', true);
 		
-		if (($schema == 'RAW_DATA' && in_array('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && in_array('EXPORT_HARMONIZED_DATA', $permissions))) {
+		if (($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) || ($schema == 'HARMONIZED_DATA' && $role->isAllowed('EXPORT_HARMONIZED_DATA'))) {
 			
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
 			$fromwhere = $websiteSession->SQLFromWhere;
-			$sql = $select . ', ST_AsGeoJSON(the_geom) AS geojson ' . $fromwhere;
+			$locationField = $websiteSession->locationField;
+			
+			$sql = $select . ', ST_AsGeoJSON(' . $locationField->columnName . ') AS geojson ' . $fromwhere;
 			
 			// Count the number of lines
 			$total = $websiteSession->count;
@@ -1464,11 +1468,9 @@ class QueryController extends AbstractOGAMController {
 				}
 				// Setup the fields and columns config
 				if ($locationsIndex === (count($locations) - 1)) {
-					// Get the table format
-					$tableFormat = $this->metadataModel->getTableFormatFromTableName($schema, $locationTableInfo->tableName);
-					$format = $tableFormat->format;
+					
 					// Get the table fields
-					$tableFields = $this->metadataModel->getTableFields($schema, $format, null);
+					$tableFields = $this->metadataModel->getTableFields($schema, $locationTableInfo->format, null);
 					$tFOrdered = array();
 					foreach ($tableFields as $tableField) {
 						$tFOrdered[$tableField->columnName] = $tableField;
@@ -1505,9 +1507,9 @@ class QueryController extends AbstractOGAMController {
 				$hasChild = true;
 			}
 			
-			echo '{success:true' . ', id:' . json_encode(implode('', $id)) . ', title:' . json_encode($locationTableInfo->label . ' (' . count($locationsData) . ')') . ', hasChild:' . json_encode($hasChild) . ', columns:' . json_encode($columns) . ', fields:' . json_encode($locationFields) . ', data:' . json_encode($locationsData) . '}';
+			echo '{"success":true' . ', "id":' . json_encode(implode('', $id)) . ', "title":' . json_encode($locationTableInfo->label . ' (' . count($locationsData) . ')') . ', "hasChild":' . json_encode($hasChild) . ', "columns":' . json_encode($columns) . ', "fields":' . json_encode($locationFields) . ', "data":' . json_encode($locationsData) . '}';
 		} else {
-			echo '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
+			echo '{"success":true, "id":null, "title":null, "hasChild":false, "columns":[], "fields":[], "data":[]}';
 		}
 		
 		// No View, we send directly the output

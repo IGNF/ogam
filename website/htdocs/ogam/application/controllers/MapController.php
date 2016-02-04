@@ -44,7 +44,7 @@ class MapController extends AbstractOGAMController {
 		
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !(in_array('DATA_QUERY', $user->role->permissionsList) || in_array('DATA_QUERY_HARMONIZED', $user->role->permissionsList))) {
+		if (empty($user) || !($user->isAllowed('DATA_QUERY') || $user->isAllowed('DATA_QUERY_HARMONIZED'))) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_QUERY');
 		}
 	}
@@ -56,7 +56,7 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('getMapParametersAction');
 		// Get back the provider id for the current user
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
@@ -72,7 +72,7 @@ class MapController extends AbstractOGAMController {
 		$scales = $this->scalesModel->getScales();
 		
 		// Transform the available scales into resolutions
-		$resolutions = $this->_getResolutions($scales);
+		$resolutions = $this->getResolutions($scales);
 		$resolString = implode(",", $resolutions);
 		$this->view->resolutions = $resolString;
 		$this->view->numZoomLevels = count($resolutions);
@@ -112,11 +112,13 @@ class MapController extends AbstractOGAMController {
 
 	/**
 	 * Calculate the resolution array corresponding to the available scales.
+	 * 
+	 * Not private because can be used by custom controllers.
 	 *
 	 * @param Array[Integer] $scales
 	 *        	The list of scales
 	 */
-	private function _getResolutions($scales) {
+	protected function getResolutions($scales) {
 		
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
@@ -141,22 +143,23 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('getvectorlayersAction');
 		
 		// Get the available layers
-		$layerNames = $this->layersModel->getVectorLayersList();
+		$vectorlayers = $this->layersModel->getVectorLayersList();
 		
 		$json = '{"success":true';
 		$json .= ', "layerNames" : [';
 		$json .= '{"code":null,"label":"' . $this->translator->translate('empty_layer') . '","url":null}';
-		foreach ($layerNames as $layerName => $tab) {
-			$layer = $this->layersModel->getLayer($layerName);
-			$viewServiceName = $layer->viewServiceName;
-			$viewService = $this->servicesModel->getService($viewServiceName);
-			$serviceConfig = $viewService->serviceConfig;
-			$url_wms = json_decode($serviceConfig)->{'urls'}[0];
+		foreach ($vectorlayers as $layer) {
+		
+			$viewService = $this->servicesModel->getService($layer->viewServiceName);
+			$featureService =  $this->servicesModel->getService($layer->featureServiceName);
 			
-			$json .= ',{"code":' . json_encode($layerName) . ',';
-			$json .= '"label":' . json_encode($tab[0]) . ',';
-			$json .= '"url":' . json_encode(json_decode($tab[1])->{'urls'}[0]) . ',';
-			$json .= '"url_wms":' . json_encode($url_wms) . '}';
+			$wfsURL = json_decode($featureService->serviceConfig)->{'urls'}[0];
+			$wmsURL = json_decode($viewService->serviceConfig)->{'urls'}[0];
+			
+			$json .= ',{"code":' . json_encode($layer->layerName) . ',';
+			$json .= '"label":' . json_encode($featureService->serviceName) . ',';
+			$json .= '"url":' . json_encode($wfsURL) . ',';
+			$json .= '"url_wms":' . json_encode($wmsURL) . '}';
 		}
 		$json .= ']';
 		$json .= '}';
@@ -177,7 +180,7 @@ class MapController extends AbstractOGAMController {
 		
 		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		
 		// Get the available services base urls and parameters
 		$viewServices = $this->servicesModel->getViewServices();
@@ -190,7 +193,7 @@ class MapController extends AbstractOGAMController {
 		// Get the available scales
 		$scales = $this->scalesModel->getScales();
 		// Transform the available scales into resolutions
-		$resolutions = $this->_getResolutions($scales);
+		$resolutions = $this->getResolutions($scales);
 		
 		// Build the base URL for tiles
 		$sessionId = session_id();
@@ -240,6 +243,13 @@ class MapController extends AbstractOGAMController {
 				$out .= '"singleTile":false';
 			}
 			
+			// Should we display a legend for this layer ?
+			if ($layer->hasLegend) {
+				$out .= ', "hasLegend":true';
+			} else {
+				$out .= ', "hasLegend":false';
+			}
+			
 			// Logical layer name
 			$out .= ', "name":"' . $layer->layerName . '"';
 			
@@ -253,7 +263,7 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "legendServiceName":"' . $layer->legendServiceName . '"';
 			
 			// Feature Info Service Name
-			$out .= ', "featureInfoServiceName":"' . $layer->featureInfoServiceName . '"';
+			$out .= ', "featureServiceName":"' . $layer->featureServiceName . '"';
 			
 			$out .= ', "params":{';
 			
@@ -271,35 +281,28 @@ class MapController extends AbstractOGAMController {
 			// Image Format
 			$out .= ', "format": "image/' . $layer->imageFormat . '"';
 			
-			// Hidden ?
-			if ($layer->isHidden) {
+			// Hidden
+			if ($layer->treeItem->isHidden) {
 				$out .= ', "isHidden": true';
 			} else {
 				$out .= ', "isHidden": false';
 			}
 			
-			// Disabled ?
-			if ($layer->isDisabled) {
+			// Disabled
+			if ($layer->treeItem->isDisabled) {
 				$out .= ', "isDisabled": true';
 			} else {
 				$out .= ', "isDisabled": false';
 			}
 			
-			// Checked ?
-			if ($layer->isChecked) {
+			// Checked
+			if ($layer->treeItem->isChecked) {
 				$out .= ', "isChecked": true';
 			} else {
 				$out .= ', "isChecked": false';
 			}
 			
 			$out .= ', "activateType": "' . $layer->activateType . '"';
-			
-			// We will test this flag to know if we need to generate a SLD
-			if ($layer->hasSLD) {
-				$out .= ', "hasSLD": true';
-			} else {
-				$out .= ', "hasSLD": false';
-			}
 			
 			// Add the sessionid
 			$out .= ', "session_id": "' . $sessionId . '"';
@@ -313,13 +316,8 @@ class MapController extends AbstractOGAMController {
 			$out .= ', "options":{"buffer": 0';
 			
 			// Node Group
-			if (!empty($layer->parentId)) {
-				$out .= ', "nodeGroup": "' . $layer->parentId . '"';
-			}
-			
-			// Checked Group
-			if (!empty($layer->checkedGroup)) {
-				$out .= ', "checkedGroup": "' . $layer->checkedGroup . '"';
+			if (!empty($layer->treeItem->parentId)) {
+				$out .= ', "nodeGroup": "' . $layer->treeItem->parentId . '"';
 			}
 			
 			// Transition effect
@@ -327,8 +325,8 @@ class MapController extends AbstractOGAMController {
 				$out .= ', "transitionEffect": "' . $layer->transitionEffect . '"';
 			}
 			
-			// Layer visibility by default
-			if ($layer->isDefault) {
+			// Layer visibility by default			
+			if ($layer->treeItem->isChecked) {
 				$out .= ', "visibility": true';
 			} else {
 				$out .= ', "visibility": false';
@@ -392,7 +390,7 @@ class MapController extends AbstractOGAMController {
 		
 		// Get back the country code
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		$this->logger->debug('providerId : ' . $providerId);
 		
 		$item = $this->_getLegendItems(-1, $providerId);
@@ -418,7 +416,7 @@ class MapController extends AbstractOGAMController {
 		$this->logger->debug('_getLegendItems : ' . $parentId . " " . $providerId);
 		
 		// Get the list of items corresponding to the asked level
-		$legendItems = $this->layersModel->getLegend($parentId, $providerId);
+		$legendItems = $this->layersModel->getLegendItems($parentId, $providerId);
 		
 		// Get the list of active layers
 		$mappingSession = new Zend_Session_Namespace('mapping');

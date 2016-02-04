@@ -71,6 +71,19 @@ public class CheckException extends Exception {
 	}
 
 	/**
+	 * Constructor.
+	 * 
+	 * @param checkCode
+	 *            the identifier of the check.
+	 * @param message
+	 *            the message of the check.
+	 */
+	public CheckException(Integer checkCode, String message) {
+		super(message);
+		this.checkCode = checkCode;
+	}
+
+	/**
 	 * Initialise the error label table.
 	 * 
 	 * @param anErrorLabels

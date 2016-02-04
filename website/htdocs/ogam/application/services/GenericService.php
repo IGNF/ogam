@@ -69,7 +69,7 @@ class Application_Service_GenericService {
 		
 		// Get the user rights
 		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->user->role->permissionsList;
+		$role = $userSession->user->role;
 		
 		// Get children for the current dataset
 		$this->genericModel = new Application_Model_Generic_Generic();
@@ -96,7 +96,7 @@ class Application_Service_GenericService {
 		$json .= $fields . "]";
 		
 		// Add the edit link
-		if (!empty($permissions) && array_key_exists('DATA_EDITION', $permissions)) {
+		if ($role->isAllowed('DATA_EDITION')) {
 			$json .= ',"editURL":' . json_encode($data->getId());
 		} else {
 			$json .= ',"editURL":null';
@@ -285,6 +285,10 @@ class Application_Service_GenericService {
 		$rootTable = array_shift($tables);
 		$from = " FROM " . $rootTable->tableName . " " . $rootTable->getLogicalName();
 		
+		// Get the root table fields
+		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
+		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
+		
 		// Add the joined tables
 		$i = 0;
 		foreach ($tables as $tableTreeData) {
@@ -313,9 +317,9 @@ class Application_Service_GenericService {
 		// Right management
 		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
-		$permissions = $userSession->user->role->permissionsList;
-		if (!array_key_exists('DATA_QUERY_OTHER_PROVIDER', $permissions)) {
+		$providerId = $userSession->user->provider->id;
+		$role = $userSession->user->role;
+		if (!$role->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
 			$where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
 		}
 		
@@ -352,8 +356,13 @@ class Application_Service_GenericService {
 		//
 		// Get the left table;
 		$tables = $this->getAllFormats($schema, $dataObject);
+		$rootTable = reset($tables);
 		$reversedTable = array_reverse($tables); // Only variables should be passed by reference
 		$leftTable = array_shift($reversedTable);
+		
+		// Get the root table fields
+		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
+		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
 		
 		$uniqueId = "'SCHEMA/" . $schema . "/FORMAT/" . $leftTable->getLogicalName() . "'";
 		
@@ -374,9 +383,9 @@ class Application_Service_GenericService {
 		// Right management
 		// Get back the provider id of the data
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
-		$permissions = $userSession->user->role->permissionsList;
-		if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+		$providerId = $userSession->user->provider->id;
+		$role = $userSession->user->role;
+		if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER') && $hasColumnProvider) {
 			$select .= ", " . $leftTable->getLogicalName() . ".provider_id as _provider_id";
 		}
 		
@@ -614,8 +623,6 @@ class Application_Service_GenericService {
 				case "NUMERIC":
 					// Numeric values
 					if (is_array($value)) {
-						
-						$this->logger->debug('numeric : ' . print_r($value, true));
 						
 						// Case of a list of values
 						$sql2 = '';
@@ -1010,12 +1017,13 @@ class Application_Service_GenericService {
 	 * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
 	 */
 	public function getAllFormats($schema, $dataObject) {
+		$this->logger->info('getAllFormats : ' . $schema);
 		
 		// Prepare the list of needed tables
 		$tables = array();
 		foreach ($dataObject->getFields() as $tableField) {
 			
-			if (!in_array($tableField->format, $tables)) {
+			if (!array_key_exists($tableField->format, $tables)) {
 				
 				// Get the ancestors of the table
 				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $schema);

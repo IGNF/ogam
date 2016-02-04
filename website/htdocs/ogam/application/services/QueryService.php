@@ -200,6 +200,7 @@ class Application_Service_QueryService {
 		foreach ($data->getInfoFields() as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
+				$formField->isPK = "1";
 				$formField->value = $tablefield->value;
 				$formField->valueLabel = $tablefield->valueLabel;
 				$formField->editable = $tablefield->isEditable;
@@ -214,6 +215,7 @@ class Application_Service_QueryService {
 		foreach ($data->getEditableFields() as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
+				$formField->isPK = "0";
 				$formField->value = $tablefield->value;
 				$formField->valueLabel = $tablefield->valueLabel;
 				$formField->editable = $tablefield->isEditable;
@@ -409,6 +411,7 @@ class Application_Service_QueryService {
 			// Store the metadata in session for subsequent requests
 			$websiteSession->resultColumns = $queryObject->editableFields;
 			$websiteSession->datasetId = $datasetId;
+			$websiteSession->locationField = $locationField;
 			$websiteSession->SQLSelect = $select;
 			$websiteSession->SQLFromWhere = $fromwhere;
 			$websiteSession->queryObject = $queryObject;
@@ -436,8 +439,8 @@ class Application_Service_QueryService {
 			
 			// Right management : add the provider id of the data
 			$userSession = new Zend_Session_Namespace('user');
-			$permissions = $userSession->user->role->permissionsList;
-			if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+			$role = $userSession->user->role;
+			if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
 			}
 			
@@ -565,8 +568,8 @@ class Application_Service_QueryService {
 				                                                        
 				// Right management : add the provider id of the data
 				$userSession = new Zend_Session_Namespace('user');
-				$permissions = $userSession->user->role->permissionsList;
-				if (!array_key_exists('DATA_EDITION_OTHER_PROVIDER', $permissions)) {
+				$role = $userSession->user->role;
+				if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 					$json .= ',' . json_encode($line['_provider_id']);
 				}
 				
@@ -695,7 +698,7 @@ class Application_Service_QueryService {
 		$bb2 = null;
 		$locationTable = null;
 		foreach ($data->getFields() as $field) {
-			if ($field->unit === 'GEOM') {
+			if ($field->type === 'GEOM') {
 				// define a bbox around the location
 				$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 				
@@ -709,7 +712,7 @@ class Application_Service_QueryService {
 		if ($bb == null) {
 			foreach ($ancestors as $ancestor) {
 				foreach ($ancestor->getFields() as $field) {
-					if ($field->unit === 'GEOM') {
+					if ($field->type === 'GEOM') {
 						// define a bbox around the location
 						$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 						

@@ -590,3 +590,11 @@ dt {
 .actionLinks {
 	padding: 5px;
 }
+
+/*************************************************************/
+/*     Desaturate Images (black and white )                  */
+/*************************************************************/
+.desaturate{
+	-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
+}

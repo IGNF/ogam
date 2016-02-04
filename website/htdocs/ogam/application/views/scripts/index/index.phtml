@@ -43,16 +43,18 @@
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
 $user = $userSession->user;
-$permissions = array();
+$role = new Application_Object_Website_Role();
 $schemasList = array();
+$providerId = "";
 if (!empty($user)) {
-	$permissions = $user->role->permissionsList;
+	$role = $user->role;
+	$providerId = $user->provider->id;
 	$schemasList = $user->role->schemasList;
 }
 ?>
 <div class="left-column">
 <?php
-if (!empty($permissions)) {
+if (!empty($role->permissionsList)) {
 ?>
 <div class="moduletable_menu">
 <h3>
@@ -61,36 +63,36 @@ if (!empty($permissions)) {
 <ul id="appmenu" class="menu">
 
 <?php 
-if (!empty($permissions) && in_array('DATA_INTEGRATION',$permissions)) {	
+if ($role->isAllowed('DATA_INTEGRATION')) {	
 ?>
 <li>
-<a href="<?php echo  $this->url(array('controller'=>'integration'), 'default', true) ?>" class="pagelink" ><?php echo $this->translate('Data Integration');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'integration', 'action'=>'show-data-submission-page'), 'default', true) ?>" class="pagelink" ><?php echo $this->translate('Data Integration');?></a>
 </li>
 <?php
 }
-if (!empty($permissions) && in_array('DATA_QUERY',$permissions)  && in_array("RAW_DATA", $schemasList)) {	
+if ($role->isAllowed('DATA_QUERY')  && in_array("RAW_DATA", $schemasList)) {	
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/RAW_DATA" class="pagelink" ><?php echo $this->translate('Visualize Raw Data');?></a>
 </li>
 <?php
 }
-if (!empty($permissions) && in_array('DATA_EDITION' ,$permissions)  && in_array("RAW_DATA", $schemasList)) {	
+if ($role->isAllowed('DATA_EDITION')  && in_array("RAW_DATA", $schemasList)) {	
 ?>
 <li>
-<a href="<?php echo  $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $user->username; ?>" class="pagelink" ><?php echo $this->translate('Add a new localisation');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $providerId; ?>" class="pagelink" ><?php echo $this->translate('Add a new localisation');?></a>
 </li>
 <?php
 } 
-if (!empty($permissions) && in_array('DATA_HARMONIZATION', $permissions)) {	
+if ($role->isAllowed('DATA_HARMONIZATION')) {	
 ?>
 <li>
-<a href="<?php echo  $this->url(array('controller'=>'harmonization'), null, true) ?>" class="pagelink" ><?php echo $this->translate('Data Harmonization');?></a>
+<a href="<?php echo  $this->url(array('controller'=>'harmonization', 'action'=>'show-harmonization-page'), null, true) ?>" class="pagelink" ><?php echo $this->translate('Data Harmonization');?></a>
 </li>
 <?php
 }
 
-if (!empty($permissions) && in_array('DATA_QUERY',$permissions)  && in_array("HARMONIZED_DATA", $schemasList)) {
+if ($role->isAllowed('DATA_QUERY')  && in_array("HARMONIZED_DATA", $schemasList)) {
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/HARMONIZED_DATA" class="pagelink" ><?php echo $this->translate('Visualize Harmonized Data');?></a>
@@ -98,7 +100,7 @@ if (!empty($permissions) && in_array('DATA_QUERY',$permissions)  && in_array("HA
 <?php
 }
  
-if (!empty($permissions) && in_array('MANAGE_USERS', $permissions)) {	
+if ($role->isAllowed('MANAGE_USERS')) {	
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" ><?php echo $this->translate('User Administration');?></a>
@@ -106,7 +108,7 @@ if (!empty($permissions) && in_array('MANAGE_USERS', $permissions)) {
 <?php
 }
 
-if (!empty($permissions) && in_array('CHECK_CONF', $permissions)) {
+if ($role->isAllowed('CHECK_CONF')) {
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'checkconf'), null, true) ?>" class="pagelink" ><?php echo $this->translate('Check Configuration');?></a>
@@ -127,7 +129,7 @@ if($configuration->autoLogin == 1){
 <div class="moduletable_menu">
 <ul id="appmenu2" class="menu">
 <?php
-if (empty($permissions)) {
+if (empty($role)) {
 ?>
 <li>
 <a href="<?php echo  $this->baseUrl('user/index') ?>"><?php echo $this->translate('Log in');?></a>

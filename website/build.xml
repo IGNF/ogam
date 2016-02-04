@@ -5,6 +5,9 @@
     whoever sets a property first freezes it for the rest of the build;
     they are most definitely not variables. -->
 	<property file="build.ppts" />
+	
+	<property file="./config/version.number" />
+	<buildnumber file="./config/build.number" />
 
 	<!-- Define the properties -->
 	<property name="libraries.dir" value="../../libs_php" />
@@ -149,9 +152,20 @@
 
 
 	<!-- Suppression des répertoires de travail -->
-	<target name="_clean">
+	<target name="_clean" depends="_cleanWindows, _cleanUnix">
+	</target>
+	
+	<!-- Suppression des répertoires de travail -->
+	<target name="_cleanWindows" depends="_targetCheck" if="isWindows">
+		<echo>Windows</echo>
 		<delete dir="${dist.dir}" />
 		<delete dir="${dist.dir}/../custom/" />
+	</target>
+	
+	<!-- Deploy website -->
+	<target name="_cleanUnix" depends="_targetCheck" if="isUnix">
+		<echo>Unix</echo>
+		<!-- do nothing -->
 	</target>
 
 	<!-- Prépare le répertoire à copier pour le site web -->
@@ -212,9 +226,11 @@
 		<copy todir="${dist.dir}" overwrite="true" verbose="true">
 			<fileset dir="${src.dir}">
 				<include name="**/application/views/scripts/**/*.phtml" />
+				<include name="**/application/layouts/scripts/**/*.phtml" />
 			</fileset>
 			<fileset dir="${src.dir}/../custom/" erroronmissingdir="false">
 				<include name="**/application/views/scripts/**/*.phtml" />
+				<include name="**/application/layouts/scripts/**/*.phtml" />
 			</fileset>
 			<filterchain>
 				<replaceregex pattern="/js/extjs/ext-all-debug.js" replace="/js/extjs/ext-all.js" />
@@ -223,6 +239,8 @@
 				<replaceregex pattern="Debug mode start -->" replace="Debug mode start" />
 				<replaceregex pattern=" Production mode end -->" replace="!-- Production mode end -->" />
 				<replaceregex pattern="!-- Debug mode end -->" replace=" Debug mode end -->" />
+				<replaceregex pattern="@version_number@" replace="${version.number}" />			
+				<replaceregex pattern="@build_number@" replace="${build.number}" />				
 			</filterchain>
 		</copy>
 

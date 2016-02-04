@@ -14,7 +14,7 @@
 
 /**
  * Model used to access the system tables of PostgreSQL.
- * 
+ *
  * @package models
  */
 class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
@@ -146,8 +146,6 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 		foreach ($results as $result) {
 			
 			$key = new Application_Object_System_ForeignKey();
-			
-			$this->logger->info('found  : ' . $result['table']);
 			
 			$key->table = $result['table'];
 			$key->sourceTable = $result['source_table'];

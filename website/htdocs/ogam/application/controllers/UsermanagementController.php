@@ -136,11 +136,13 @@ class UsermanagementController extends AbstractOGAMController {
 		$providerIdElem = $form->createElement('select', 'providerId');
 		$providerIdElem->setLabel('Provider');
 		$providerIdElem->setRequired(true);
-		if ($user != null) {
-			$providerIdElem->setValue($user->providerId);
+		if ($user != null && $user->provider != null) {
+			$providerIdElem->setValue($user->provider->id);
 		}
-		$providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
-		
+		// $providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
+		$providerModel = new Application_Model_Website_Provider();
+		$providers = $providerModel->getProvidersList();
+
 		$providerIdElem->addMultiOptions($providers);
 		
 		//
@@ -337,6 +339,58 @@ class UsermanagementController extends AbstractOGAMController {
 		return $form;
 	}
 
+
+	/**
+	 * Build and return the provider form.
+	 *
+	 * @return a Zend Form
+	 */
+	private function _getProviderForm() {
+		$form = new Application_Form_OGAMForm(array(
+				'attribs' => array(
+						'name' => 'provider-form',
+				)
+		));
+
+		//
+		// Add the provider_id element
+		//
+		$id = $form->createElement('hidden', 'id');
+		$id->addFilter('Int');
+
+		// Add the label element:
+		$label = $form->createElement('text', 'label');
+		$label->setLabel('Label');
+		$label->addValidator('alnum', false, array('allowWhiteSpace' => true));
+		$label->addValidator('stringLength', false, array(
+				1,
+				20
+		));
+		$label->setRequired(true);
+
+		// Unicité du label
+		//$label->addValidator(new Application_Validator_ProviderNotExist());
+
+		// Add the definition element:
+		$definition = $form->createElement('text', 'definition');
+		$definition->setLabel('definition');
+		$label->addValidator('alnum', false, array('allowWhiteSpace' => true));
+		$definition->addValidator('stringLength', false, array(
+				0,
+				200
+		));
+		$definition->setRequired(false);
+
+		// Create the submit button
+		$submitElement = $form->createElement('submit', 'submit');
+		$submitElement->setLabel('Submit');
+
+		// Add elements to form:
+		$form->addElements(array($id, $label, $definition, $submitElement));
+
+		return $form;
+	}
+
 	/**
 	 * Check the user form validity and update the user information.
 	 *
@@ -387,9 +441,10 @@ class UsermanagementController extends AbstractOGAMController {
 			
 			// Build the user
 			$user = new Application_Object_Website_User();
+			$providers = new Application_Model_Website_Provider();
 			$user->login = $userLogin;
 			$user->username = $userName;
-			$user->providerId = $providerId;
+			$user->provider = $providers->getProvider($providerId);
 			$user->email = $email;
 			$user->active = true;
 			
@@ -536,6 +591,7 @@ class UsermanagementController extends AbstractOGAMController {
 		}
 	}
 
+
 	/**
 	 * Show the user management page.
 	 *
@@ -559,13 +615,52 @@ class UsermanagementController extends AbstractOGAMController {
 		$users = $this->userModel->getUsersList();
 		
 		// Get the list of providers
-		$providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
+		// $providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
 		
 		$this->view->users = $users;
-		$this->view->providers = $providers;
+		// $this->view->providers = $providers;
 		
 		return $this->render('show-users');
 	}
+
+	/**
+	 * Show the providers
+	 *
+	 * @return a view
+	 */
+	public function showProvidersAction() {
+		$this->logger->debug('showProvidersAction');
+
+		$providers = new Application_Model_Website_Provider();
+		$this->view->providers = $providers->fetchAll(null, 'id');
+		$this->view->isDeletable = array();
+		foreach ($this->view->providers as $provider) {
+			$this->view->isDeletable[$provider->id] = $providers->isProviderDeletable($provider->id);
+		}
+		return $this->render('show-providers');
+	}
+
+	/**
+	 * Show everything related to a provider :
+	 * Users, Submissions, Raw data (not related to submissions)
+	 *
+	 * @return a view
+	 */
+	public function showProviderContentAction() {
+		$this->logger->debug('showProviderContentAction');
+
+		$id = (int) $this->_getParam('id', 0);
+		if ($id > 0) {
+			$providers = new Application_Model_Website_Provider();
+			$this->view->provider = $providers->getProvider($id);
+			$this->view->users = $providers->getProviderUsers($id);
+			$this->view->submissions = $providers->getProviderActiveSubmissions($id);
+			$this->view->rawDataCount = $providers->getProviderNbOfRawDatasByTable($id);
+
+			return $this->render('show-provider-content');
+		}
+	}
+
 
 	/**
 	 * Show the roles.
@@ -734,4 +829,94 @@ class UsermanagementController extends AbstractOGAMController {
 		
 		$this->render('show-change-password');
 	}
+
+
+	/**
+	 * Add a provider.
+	 *
+	 */
+	public function addProviderAction() {
+		// Generate the form
+		$form = $this->_getProviderForm('create', null);
+		$this->view->form = $form;
+
+		if ($this->getRequest()->isPost()) {
+			$formData = $this->getRequest()->getPost();
+			if ($form->isValid($formData)) {
+				$label = $form->getValue('label');
+				$definition = $form->getValue('definition');
+
+				$providers = new Application_Model_Website_Provider();
+				$providerId = $providers->addProvider($label, $definition);
+
+				// Also add a line in the 'bounding_box' table - the bb is the world
+				$bbox = new Application_Object_Mapping_BoundingBox();
+				$bbox->provider_id = $providerId;
+
+				$bboxModel = new Application_Model_Mapping_BoundingBox();
+				$bboxModel->addBoundingBox($bbox);
+
+				$this->_helper->redirector('show-providers');
+			}
+			else {
+				$form->populate($formData);
+			}
+		}
+		$this->render('add-provider');
+	}
+
+	/**
+	 * Edit a provider
+	 */
+	function editProviderAction() {
+		// Generate the form
+		$form = $this->_getProviderForm('edit', null);
+		$this->view->form = $form;
+
+		if ($this->getRequest()->isPost()) {
+			$formData = $this->getRequest()->getPost();
+			if ($form->isValid($formData)) {
+				$provider_id = (int)$form->getValue('id');
+				$label = $form->getValue('label');
+				$definition = $form->getValue('definition');
+
+				$providers = new Application_Model_Website_Provider();
+				$providers->updateProvider($provider_id, $label, $definition);
+
+				$this->_helper->redirector('show-providers');
+			}
+			else {
+				$form->populate($formData);
+			}
+		} else {
+			$id = $this->_getParam('id', 0);
+			if ($id > 0) {
+				$providers = new Application_Model_Website_Provider();
+				$provider = $providers->getProvider($id);
+				$form->populate($provider->toArray());
+			}
+		}
+		$this->render('edit-provider');
+	}
+
+
+	/**
+	 * Delete a provider.
+	 */
+	public function deleteProviderAction() {
+		$providerId = $this->_getParam("id");
+
+		// First delete Bounding Box
+		$bboxModel = new Application_Model_Mapping_BoundingBox();
+		$bboxModel->deleteBoundingBox($providerId);
+
+		// Then the provider
+		$providers = new Application_Model_Website_Provider();
+		$providers->deleteProvider($providerId);
+
+		$this->_helper->redirector('show-providers');
+	}
+
+
+
 }

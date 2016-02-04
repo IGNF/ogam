@@ -23,6 +23,13 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * Indicate is the cache should be used.
+	 *
+	 * @var Boolean
+	 */
+	var $useCache = false;
+
+	/**
 	 * Initialisation
 	 */
 	public function init() {
@@ -30,9 +37,14 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 		
+		// Get the useCache flag
 		$configuration = Zend_Registry::get("configuration");
-		$this->useCache = $configuration->useCache;
-		
+		$uc = $configuration->useCache;
+		if (!empty($uc)) {
+			if ((strtolower($uc) == 'true') || ($uc == '1') || ($uc == 1)) {
+				$this->useCache = true;
+			}
+		}
 		$this->cache = $this->getDefaultMetadataCache();
 		
 		$translate = Zend_Registry::get('Zend_Translate');
@@ -56,13 +68,10 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		
 		$this->logger->debug($key);
 		
-		// No cache to avoid to increase the number of cache files for all combination
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'MODE');
-		
 		$db = $this->getAdapter();
 		$req = "SELECT code, COALESCE(t.label, m.label) as label ";
 		$req .= " FROM mode m";
-		$req .= " LEFT JOIN translation t ON lang = '" . $this->lang . "' AND table_format = '" . $tableFormat->format . "' AND row_pk = m.unit || ',' || m.code";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'MODE' AND row_pk = m.unit || ',' || m.code)";
 		$req .= " WHERE unit = ? ";
 		if (!empty($query)) {
 			$req .= " AND COALESCE(t.label, m.label) ilike '" . $query . "%'";
@@ -120,6 +129,41 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		}
 		
 		return $result;
+	}
+
+	/**
+	 * Get a available schema by its code.
+	 *
+	 * @param $schemaCode the
+	 *        	schema code
+	 * @return Schema
+	 */
+	public function getSchema($schemaCode) {
+		$db = $this->getAdapter();
+		$req = "SELECT schema_code, schema_name, COALESCE(t.label, ts.label) as label, COALESCE(t.definition, ts.description) as description";
+		$req .= " FROM table_schema ts";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'TABLE_SCHEMA' AND row_pk = schema_code) ";
+		$req .= " WHERE schema_code = ? ";
+		
+		$this->logger->info('getSchema : ' . $req);
+		
+		$select = $db->prepare($req);
+		$select->execute(array(
+			$schemaCode
+		));
+		
+		$row = $select->fetch();
+		if ($row) {
+			$schema = new Application_Object_Metadata_Schema();
+			$schema->code = $row['schema_code'];
+			$schema->name = $row['schema_name'];
+			$schema->label = $row['label'];
+			$schema->description = $row['description'];
+		} else {
+			$schema = null;
+		}
+		
+		return $schema;
 	}
 
 	/**
@@ -550,6 +594,39 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get a dataset.
+	 *
+	 * Used by custom controller in EDB.
+	 *
+	 * @param String $datasetId
+	 *        	The dataset identifier
+	 * @return Genapp_Object_Metadata_Dataset
+	 */
+	public function getDataset($datasetId) {
+		$db = $this->getAdapter();
+		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
+		$req .= " FROM dataset d";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATASET' AND row_pk = dataset_id)";
+		$req .= " WHERE dataset_id = ?";
+		
+		$this->logger->info('getDataset : ' . $req);
+		
+		$select = $db->prepare($req);
+		$select->execute(array(
+			$datasetId
+		));
+		
+		$row = $select->fetch();
+		if ($row) {
+			$dataset = $this->_readDataSet($row);
+			
+			return $dataset;
+		} else {
+			$result = null;
+		}
+	}
+
+	/**
 	 * Get the available datasets for display.
 	 *
 	 * @return Array[Application_Object_Metadata_Dataset]
@@ -558,7 +635,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
 		$req .= " FROM dataset d";
-		$req .= " LEFT JOIN translation t ON lang = '" . $this->lang . "' AND table_format = 'METADATA' AND row_pk = dataset_id";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATASET' AND row_pk = dataset_id)";
 		$req .= " INNER JOIN dataset_fields using (dataset_id) ";
 		
 		// Check the role restrictions
@@ -811,7 +888,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param Array[String] $tables
 	 *        	a list of table formats
 	 * @return Application_Object_Metadata_TableField
-	 * @throws an exceptionif the tables contain no geographical information
+	 * @throws an exception if the tables contain no geographical information
 	 */
 	public function getGeometryField($schema, $tables) {
 		$db = $this->getAdapter();
@@ -830,7 +907,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " LEFT JOIN translation t ON (t.lang = '" . $this->lang . "' AND t.table_format = table_field.format AND t.row_pk = data.data)";
 			$req .= " WHERE table_field.format = ? ";
 			$req .= " AND table_format.schema_code = ? ";
-			$req .= " AND data.unit = 'GEOM' ";
+			$req .= " AND unit.type = 'GEOM' ";
 			
 			$this->logger->info('getTableFields : ' . $req);
 			
@@ -875,7 +952,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			// Get the fields specified by the format
 			$req = "SELECT table_name, COALESCE(t.label, tf.label) as label, primary_key ";
 			$req .= " FROM table_format tf";
-			$req .= " LEFT JOIN translation t ON lang = '" . $this->lang . "' AND table_format = 'TABLE_FORMAT' AND row_pk = format";
+			$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'TABLE_FORMAT' AND row_pk = format)";
 			$req .= " WHERE schema_code = ? ";
 			$req .= " AND format = ? ";
 			
@@ -892,66 +969,6 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$tableFormat = new Application_Object_Metadata_TableFormat();
 			$tableFormat->format = $format;
 			$tableFormat->schemaCode = $schema;
-			$tableFormat->tableName = $row['table_name'];
-			$tableFormat->label = $row['label'];
-			$tableFormat->setPrimaryKeys($row['primary_key']);
-			
-			if ($this->useCache) {
-				$this->cache->save($tableFormat, $key);
-			}
-			return $tableFormat;
-		} else {
-			return $cachedResult;
-		}
-	}
-
-	/**
-	 * Get the information about a table format from the physical table name.
-	 *
-	 * This function is used in the proxy controller because we receive a physical table name from mapserver.
-	 *
-	 * @param String $schema
-	 *        	the schema code
-	 * @param String $table
-	 *        	the table name
-	 * @return Application_Object_Metadata_TableFormat
-	 */
-	public function getTableFormatFromTableName($schema, $table) {
-		$db = $this->getAdapter();
-		
-		$this->logger->debug('getTableFormatFromTableName : ' . $schema . ' ' . $table . '_' . $this->lang);
-		
-		$key = $this->_formatCacheKey('getTableFormatFromTableName_' . $schema . '_' . $table . '_' . $this->lang);
-		
-		if ($this->useCache) {
-			$cachedResult = $this->cache->load($key);
-		}
-		
-		if (empty($cachedResult)) {
-			
-			// Get the fields specified by the format
-			$req = "SELECT format, schema_code, table_name, COALESCE(t.label, tf.label) as label, primary_key ";
-			$req .= " FROM table_format tf";
-			$req .= " LEFT JOIN translation t ON lang = '" . $this->lang . "' ";
-			// We can't use getTableFormatFromTableName() function here to avoid infinity loop
-			$req .= " AND table_format = (SELECT format FROM table_format WHERE schema_code = 'TABLE_FORMAT') ";
-			$req .= " AND row_pk = format";
-			$req .= " WHERE schema_code = ? ";
-			$req .= " AND table_name = upper(?) ";
-			
-			$this->logger->info('getTableFormat : ' . $req);
-			
-			$select = $db->prepare($req);
-			$select->execute(array(
-				$schema,
-				$table
-			));
-			
-			$row = $select->fetch();
-			
-			$tableFormat = new Application_Object_Metadata_TableFormat();
-			$tableFormat->format = $row['format'];
-			$tableFormat->schemaCode = $row['schema_code'];
 			$tableFormat->tableName = $row['table_name'];
 			$tableFormat->label = $row['label'];
 			$tableFormat->setPrimaryKeys($row['primary_key']);
@@ -1446,6 +1463,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
 		$key = str_replace('.', '_', $key);
+		$key = str_replace('$', '_', $key);
 		
 		return $key;
 	}
@@ -1622,9 +1640,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req = " SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name ";
 			$req .= " FROM mode_taxref ";
 			$req .= " WHERE unit = ? ";
-			$req .= " AND (unaccent_string(name) ilike unaccent_string('%".$query."%') ";
-			$req .= "      OR unaccent_string(complete_name) ilike unaccent_string('%".$query."%') ";
-			$req .= "      OR unaccent_string(vernacular_name) ilike unaccent_string('%".$query."%'))";
+			$req .= " AND (unaccent_string(name) ilike unaccent_string('%" . $query . "%') ";
+			$req .= "      OR unaccent_string(complete_name) ilike unaccent_string('%" . $query . "%') ";
+			$req .= "      OR unaccent_string(vernacular_name) ilike unaccent_string('%" . $query . "%'))";
 			$req .= " ORDER BY name ";
 			
 			if ($start !== null && $limit !== null) {
@@ -1688,9 +1706,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	FROM mode_taxref ";
 			$req .= "	WHERE unit = ? ";
 			if ($query != null) {
-				$req .= " AND unaccent_string(name) ilike unaccent_string('%".$query."%') ";
-				$req .= " OR  unaccent_string(complete_name) ilike unaccent_string('%".$query."%') ";
-				$req .= " OR  unaccent_string(vernacular_name) ilike unaccent_string('%".$query."%')";
+				$req .= " AND unaccent_string(name) ilike unaccent_string('%" . $query . "%') ";
+				$req .= " OR  unaccent_string(complete_name) ilike unaccent_string('%" . $query . "%') ";
+				$req .= " OR  unaccent_string(vernacular_name) ilike unaccent_string('%" . $query . "%')";
 			}
 			
 			$this->logger->info('getTaxrefModesCount :' . $req);

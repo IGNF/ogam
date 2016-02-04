@@ -55,7 +55,7 @@ class IntegrationController extends AbstractOGAMController {
 		
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !in_array('DATA_INTEGRATION', $user->role->permissionsList)) {
+		if (empty($user) || !$user->isAllowed('DATA_INTEGRATION')) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_INTEGRATION');
 		}
 	}
@@ -66,7 +66,7 @@ class IntegrationController extends AbstractOGAMController {
 	public function indexAction() {
 		$this->logger->debug('Data integration index');
 		
-		$this->render('index');
+		$this->showDataSubmissionPageAction();
 	}
 
 	/**
@@ -257,7 +257,7 @@ class IntegrationController extends AbstractOGAMController {
 		
 		$userSession = new Zend_Session_Namespace('user');
 		$userLogin = $userSession->user->login;
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		$this->logger->debug('userLogin : ' . $userLogin);
 		$this->logger->debug('providerId : ' . $providerId);
 		
@@ -315,7 +315,7 @@ class IntegrationController extends AbstractOGAMController {
 		
 		// Get the user info
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->providerId;
+		$providerId = $userSession->user->provider->id;
 		
 		// Get the configuration info
 		$configuration = Zend_Registry::get("configuration");

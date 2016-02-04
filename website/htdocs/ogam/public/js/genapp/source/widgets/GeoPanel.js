@@ -487,14 +487,14 @@ Genapp.GeoPanel = Ext
 							}
 
 							// Create the legends
-							if (layerObject.legendServiceName != '') {
+							if (layerObject.legendServiceName != '' && layerObject.hasLegend) {
 
 								// Get the JSON legend service name
 								var legendServiceName=layerObject.legendServiceName;
 								var legendServiceNameStr = 'layersObject.legend_services.'+legendServiceName.toString();
 								var legendServiceObject=eval('('+legendServiceNameStr+')');
 								
-								this.buildLegend(layerObject,legendServiceObject);
+								this.buildLegend(layerObject, legendServiceObject);
 							}
 						}
 						

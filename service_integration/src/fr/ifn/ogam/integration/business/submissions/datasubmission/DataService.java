@@ -203,7 +203,7 @@ public class DataService extends AbstractService {
 				String filePath = requestParameters.get(fileFormat.getFormat());
 
 				// Insert the data in database with automatic mapping ...
-				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, filePath, fileFormat.getFormat(), requestParameters, this.thread);
+				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, filePath, fileFormat.getFormat(), fileFormat.getFileType(), requestParameters, this.thread);
 
 			}
 

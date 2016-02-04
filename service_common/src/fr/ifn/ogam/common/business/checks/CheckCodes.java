@@ -86,4 +86,9 @@ public interface CheckCodes {
 	 */
 	Integer NO_MAPPING = 1109;
 
+	/**
+	 * Trigger exception.
+	 */
+	Integer TRIGGER_EXCEPTION = 1110;
+
 }

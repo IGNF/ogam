@@ -26,6 +26,10 @@ delete from translation;
 delete from table_tree;
 delete from table_schema;
 
+delete from dataset_files;
+delete from dataset_fields;
+delete from dataset;
+
 delete from file_field;
 delete from table_field;
 delete from form_field;
@@ -48,9 +52,6 @@ delete from unit;
 
 delete from checks where check_id <= 1200;
 
-delete from dataset_files;
-delete from dataset_fields;
-delete from dataset;
 
 
 --delete from application_parameters;

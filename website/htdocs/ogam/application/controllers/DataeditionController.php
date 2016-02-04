@@ -81,7 +81,7 @@ class DataEditionController extends AbstractOGAMController {
 		
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !in_array('DATA_EDITION', $user->role->permissionsList)) {
+		if (empty($user) || !$user->isAllowed('DATA_EDITION')) {
 			throw new Zend_Auth_Exception('Permission denied for right : DATA_EDITION');
 		}
 	}
@@ -127,7 +127,6 @@ class DataEditionController extends AbstractOGAMController {
 	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
 		
 		// Warning : $formField can be null if no mapping is defined with $tableField
-		
 		switch ($tableField->type) {
 			
 			case "STRING":
@@ -490,24 +489,32 @@ class DataEditionController extends AbstractOGAMController {
 			echo '{"success":false,"errorMessage":' . json_encode($this->translator->translate("Invalid form")) . '}';
 		} else {
 			
-			// join_keys values must not be erased
-			$joinKeys = $this->genericModel->getJoinKeys($data);
-			
-			foreach ($data->getFields() as $field) {
-				
-				$isNotJoinKey = !in_array($field->columnName, $joinKeys);
-				
-				if ($isNotJoinKey) {
-					// Update the data descriptor with the values submitted
-					$field->value = $this->_getParam($field->getName());
-				}
-			}
-			
 			try {
-				// Insert or update the data
+				
 				if ($mode === 'ADD') {
+					// Insert the data
+					
+					// join_keys values must not be erased
+					$joinKeys = $this->genericModel->getJoinKeys($data);
+					
+					foreach ($data->getFields() as $field) {
+						$isNotJoinKey = !in_array($field->columnName, $joinKeys);
+						
+						if ($isNotJoinKey) {
+							// Update the data descriptor with the values submitted
+							$field->value = $this->_getParam($field->getName());
+						}
+					}
+					
 					$data = $this->genericModel->insertData($data);
 				} else {
+					// Edit the data
+					
+					// Update the data descriptor with the values submitted (for editable fields only)
+					foreach ($data->getEditableFields() as $field) {
+						$field->value = $this->_getParam($field->getName());
+					}
+					
 					$this->genericModel->updateData($data);
 				}
 				echo '{"success":true, ';
@@ -667,9 +674,9 @@ class DataEditionController extends AbstractOGAMController {
 		
 		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
 		
-		$this->view->userProviderId = $user->providerId;
+		$this->view->userProviderId = $user->provider->id;
 		
-		if (!empty($user) && in_array('DATA_EDITION_OTHER_PROVIDER', $user->role->permissionsList)) {
+		if (!empty($user) && $user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 			$this->view->checkEditionRights = 'true';
 		}
 		

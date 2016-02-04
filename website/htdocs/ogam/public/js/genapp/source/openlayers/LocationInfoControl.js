@@ -130,6 +130,7 @@ OpenLayers.Handler.LocationInfo = OpenLayers.Class(OpenLayers.Handler, {
 				this.control.getLocationInfo(result);
 			}
 		 } catch (e) {
+			console.log(e);
 		 	Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		 }
 	},

@@ -20,7 +20,7 @@ insert into application_parameters (name, value, description) values ( 'plotErro
 insert into application_parameters (name, value, description) values ( 'simplifiedReport' , 'SimplifiedReport.rptdesign' , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'max_report_generation_time' , 480 , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'mapReportGenerationService_url' , 'http://localhost:8080/print%2Dservlet%2D2.0%2DSNAPSHOT/pdf' , 'MAPFISH REPORT GENERATION SERVICE');
-insert into application_parameters (name, value, description) values ( 'useCache' , true , 'Cache');
+insert into application_parameters (name, value, description) values ( 'useCache' , false , 'Cache');
 insert into application_parameters (name, value, description) values ( 'max_execution_time' , 480 , 'Timeout , 0 : no limit');
 insert into application_parameters (name, value, description) values ( 'memory_limit' , '1024M' , 'memory limit');
 insert into application_parameters (name, value, description) values ( 'post_max_size' , '100M' , 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
@@ -46,7 +46,7 @@ insert into application_parameters (name, value, description) values ( 'mapserve
 insert into application_parameters (name, value, description) values ( 'mapserver_inch_per_kilometer' , 39370.1 , 'Inch to meter conversion factor');
 insert into application_parameters (name, value, description) values ( 'featureinfo_margin' , 1000 , 'bounding box margin around the user click (in the unit of the map)');
 insert into application_parameters (name, value, description) values ( 'featureinfo_typename' , 'result_locations' , 'Layer that is queried');
-insert into application_parameters (name, value, description) values ( 'featureinfo_maxfeatures' , 20 , 'Max number of features returned by a click on the map. If 0 then there is no limit; If 1 the direct access to the detail');
+insert into application_parameters (name, value, description) values ( 'featureinfo_maxfeatures' , 1 , 'Max number of features returned by a click on the map. If 0 then there is no limit; If 1 the direct access to the detail');
 insert into application_parameters (name, value, description) values ( 'contactEmailPrefix' , 'ogam' , 'Email');
 insert into application_parameters (name, value, description) values ( 'contactEmailSufix' , 'ign.fr' , 'Email');
 insert into application_parameters (name, value, description) values ( 'csvExportCharset' , 'UTF-8' , 'Csv Export');
@@ -54,8 +54,9 @@ insert into application_parameters (name, value, description) values ( 'language
 insert into application_parameters (name, value, description) values ( 'language_flags2' , 'en' , 'Language');
 
 
-
-
+-- Create a provider
+INSERT INTO providers('id','label','definition') VALUES ('1', 'Defaut', 'Organisme par défaut');
+ALTER sequence website.provider_id_seq restart with 2;
 
 -- Create some roles
 INSERT INTO role(role_code, role_label, role_definition) VALUES ('ADMIN','Administrator', 'Manages the web site');

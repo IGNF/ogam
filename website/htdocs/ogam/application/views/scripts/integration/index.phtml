@@ -11,9 +11,9 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
-
 /**
  * Default view for the integration module.
+ * 
  * @package views
  */
 ?>
@@ -23,9 +23,9 @@
 </h1>
 
 <div class="left-column">
-<div class="moduletable_menu">
+	<div class="moduletable_menu">
 
-<ul id="appmenu" class="menu">
+		<ul id="appmenu" class="menu">
 
 <?php
 $user_session = new Zend_Session_Namespace('user');
@@ -33,11 +33,10 @@ $role = $user_session->role;
 ?>
 
 
-<li>
-<a href="<?php echo $this->url(array('controller'=>'integration','action'=>'show-data-submission-page'), null, true) ?>"><?php echo $this->translate('Submit Data');?></a>
-</li>
+<li><a
+				href="<?php echo $this->url(array('controller'=>'integration','action'=>'show-data-submission-page'), null, true) ?>"><?php echo $this->translate('Submit Data');?></a>
+			</li>
 
-</ul>
+		</ul>
+	</div>
 </div>
-</div>
-

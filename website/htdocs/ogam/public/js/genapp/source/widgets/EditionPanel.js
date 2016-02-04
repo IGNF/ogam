@@ -316,6 +316,10 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 				mapping : 'required'
 			}, // is the field required?
 			{
+				name : 'isPK',
+				mapping : 'isPK'
+			}, // is the field part of the primary key
+			{
 				name : 'params',
 				mapping : 'params'
 			} // reserved for min/max or list of codes
@@ -537,7 +541,11 @@ Genapp.EditionPanel = Ext.extend(Ext.Panel, {
 		var field = {};
 		field.name = record.name;
 
-		if ((this.mode == "EDIT" && !Ext.isEmpty(record.editable) && record.editable !== "1")
+		if (this.mode == "EDIT" && record.isPK == "1") {
+			field.xtype = 'textfield';		
+			field.disabled = true;			
+			record.value = record.valueLabel;
+		} else if ((this.mode == "EDIT" && !Ext.isEmpty(record.editable) && record.editable !== "1")
 				|| (this.mode == "ADD" && !Ext.isEmpty(record.insertable) && record.insertable !== "1")) {
 			field.xtype = 'hidden';
 		} else {

@@ -14,7 +14,7 @@
 
 /**
  * This is a model allowing access to the submission information.
- * 
+ *
  * @package models
  */
 class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
@@ -31,21 +31,53 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Read a submission object from a result line.
+	 *
+	 * @param Result $row        	
+	 * @return Application_Object_RawData_Submission
+	 */
+	private function _readSubmission($row) {
+		$submission = new Application_Object_RawData_Submission();
+		$submission->submissionId = $row['submission_id'];
+		$submission->step = $row['step'];
+		$submission->status = $row['status'];
+		$submission->providerId = $row['provider_id'];
+		$submission->providerLabel = $row['provider_label'];
+		$submission->datasetId = $row['dataset_id'];
+		$submission->datasetLabel = $row['dataset_label'];
+		$submission->userLogin = $row['user_login'];
+		$submission->date = $row['_creationdt'];
+		
+		return $submission;
+	}
+
+	/**
 	 * Get some information about the active submissions.
 	 *
+	 * @param String $providerId
+	 *        	provider to get the submissions from (null for all providers)
 	 * @return Array[Submission]
 	 */
-	public function getActiveSubmissions() {
+	public function getActiveSubmissions($providerId = null) {
 		$db = $this->getAdapter();
 		
-		$req = " SELECT submission_id, step, status, provider_id, dataset_id, user_login, file_type, file_name, nb_line, _creationdt ";
-		$req .= " FROM submission ";
-		$req .= " LEFT JOIN submission_file USING (submission_id) ";
+		$req = " SELECT submission_id, step, status, provider_id, p.label as provider_label, dataset_id, d.label as dataset_label, user_login, file_type, file_name, nb_line, _creationdt ";
+		$req .= " FROM raw_data.submission s";
+		$req .= " LEFT JOIN raw_data.submission_file USING (submission_id)";
+		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
+		$req .= " LEFT JOIN website.providers p ON p.id = s.provider_id";
 		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
-		$req .= " ORDER BY submission_id ";
+		if ($providerId) {
+			$req .= " AND provider_id = ?";
+		}
+		$req .= " ORDER BY submission_id DESC";
 		
 		$select = $db->prepare($req);
-		$select->execute(array());
+		$params = array();
+		if ($providerId) {
+			$params[] = $providerId;
+		}
+		$select->execute($params);
 		
 		Zend_Registry::get("logger")->info('getActiveSubmissions : ' . $req);
 		
@@ -55,15 +87,10 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 			$submissionId = $row['submission_id'];
 			
 			if (empty($result[$submissionId])) {
+				
 				// Create the new submission
-				$submission = new Application_Object_RawData_Submission();
-				$submission->submissionId = $submissionId;
-				$submission->step = $row['step'];
-				$submission->status = $row['status'];
-				$submission->providerId = $row['provider_id'];
-				$submission->datasetId = $row['dataset_id'];
-				$submission->userLogin = $row['user_login'];
-				$submission->date = $row['_creationdt'];
+				$submission = $this->_readSubmission($row);
+				
 				$result[$submissionId] = $submission;
 			}
 			// Add file info
@@ -87,10 +114,12 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	public function getSubmissionsForHarmonization() {
 		$db = $this->getAdapter();
 		
-		$req = " SELECT provider_id, dataset_id, max(submission_id) as submission_id, max(step) as step, max(status) as status, max(user_login) as user_login, max( _creationdt) as _creationdt ";
-		$req .= " FROM submission ";
+		$req = " SELECT provider_id, p.label as provider_label, dataset_id, d.label as dataset_label, max(submission_id) as submission_id, max(step) as step, max(status) as status, max(user_login) as user_login, max( _creationdt) as _creationdt ";
+		$req .= " FROM submission";
+		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
+		$req .= " LEFT JOIN website.providers p ON p.id = provider_id";
 		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
-		$req .= " GROUP BY provider_id, dataset_id";
+		$req .= " GROUP BY provider_id, provider_label, dataset_id, dataset_label";
 		$req .= " ORDER BY submission_id ";
 		
 		$select = $db->prepare($req);
@@ -101,14 +130,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			
-			$submission = new Application_Object_RawData_Submission();
-			$submission->submissionId = $row['submission_id'];
-			$submission->step = $row['step'];
-			$submission->status = $row['status'];
-			$submission->providerId = $row['provider_id'];
-			$submission->datasetId = $row['dataset_id'];
-			$submission->userLogin = $row['user_login'];
-			$submission->date = $row['_creationdt'];
+			$submission = $this->_readSubmission($row);
 			$result[] = $submission;
 		}
 		return $result;
@@ -126,8 +148,10 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		Zend_Registry::get("logger")->info('getSubmission : ' . $submissionId);
 		
 		$db = $this->getAdapter();
-		$req = " SELECT *";
+		$req = " SELECT submission.*, p.label as provider_label, d.label as dataset_label";
 		$req .= " FROM submission ";
+		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
+		$req .= " LEFT JOIN website.providers p ON p.id = provider_id";
 		$req .= " WHERE submission_id = ?";
 		
 		$select = $db->prepare($req);
@@ -142,13 +166,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		
 		if (!empty($row)) {
 			// Create the new submission
-			$submission = new Application_Object_RawData_Submission();
-			$submission->submissionId = $submissionId;
-			$submission->step = $row['step'];
-			$submission->status = $row['status'];
-			$submission->providerId = $row['provider_id'];
-			$submission->datasetId = $row['dataset_id'];
-			$submission->userLogin = $row['user_login'];
+			$submission = $this->_readSubmission($row);
 			return $submission;
 		} else {
 			throw new Exception("Submission cannot be found");

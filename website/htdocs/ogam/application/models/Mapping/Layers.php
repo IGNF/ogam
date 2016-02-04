@@ -36,6 +36,60 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Read a layer object from a result line.
+	 *
+	 * @param Result $row        	
+	 * @return Application_Object_Mapping_Layer
+	 */
+	private function _readLayer($row) {
+		$layer = new Application_Object_Mapping_Layer();
+		$layer->layerName = $row['layer_name'];
+		$layer->layerLabel = $row['layer_label'];
+		$layer->serviceLayerName = $row['service_layer_name'];
+		$layer->isTransparent = ($row['istransparent'] === 1);
+		$layer->defaultOpacity = $row['default_opacity'];
+		$layer->isBaseLayer = ($row['isbaselayer'] === 1);
+		$layer->isUntiled = ($row['isuntiled'] === 1);
+		$layer->isVector = ($row['isvector'] === 1);
+		$layer->maxscale = $row['maxscale'];
+		$layer->minscale = $row['minscale'];
+		$layer->hasLegend = ($row['has_legend'] === 1);
+		$layer->transitionEffect = $row['transitioneffect'];
+		$layer->imageFormat = $row['imageformat'];
+		$layer->providerId = $row['provider_id'];
+		$layer->activateType = $row['activate_type'];
+		$layer->viewServiceName = $row['view_service_name'];
+		$layer->legendServiceName = $row['legend_service_name'];
+		$layer->printServiceName = $row['print_service_name'];
+		$layer->detailServiceName = $row['detail_service_name'];
+		$layer->featureServiceName = $row['feature_service_name'];
+		
+		return $layer;
+	}
+
+	/**
+	 * Read a layer tree item.
+	 *
+	 * @param Result $row        	
+	 * @return Application_Object_Mapping_LegendItem
+	 */
+	private function _readTreeItem($row) {
+		$legendItem = new Application_Object_Mapping_LegendItem();
+		$legendItem->itemId = $row['item_id'];
+		$legendItem->parentId = $row['parent_id'];
+		$legendItem->isLayer = ($row['is_layer'] === 1);
+		$legendItem->isChecked = ($row['is_checked'] === 1);
+		$legendItem->isHidden = ($row['is_hidden'] === 1);
+		$legendItem->isDisabled = ($row['is_disabled'] === 1);
+		$legendItem->isExpended = ($row['is_expended'] === 1);
+		$legendItem->layerName = $row['name'];
+		$legendItem->label = $row['layer_label'];
+		$legendItem->checkedGroup = $row['checked_group'];
+		
+		return $legendItem;
+	}
+
+	/**
 	 * Get the list of available vector layers for the map.
 	 *
 	 * @return Array[String] The layer names
@@ -44,158 +98,31 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 		$params = array();
 		
-		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, config as feature_service_config ";
-		$req .= " FROM layer_service , layer ";
+		$req = " SELECT *, COALESCE(t.label, layer.layer_label) as layer_label ";
+		$req .= " FROM layer ";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
-		$req .= " WHERE layer.feature_service_name <> '' AND layer.feature_service_name = layer_service.service_name";
+		$req .= " WHERE layer.isvector = 1";
 		
-		// Check the user profile
+		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
-		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		$req .= " ORDER BY layer_name";
+		if (!empty($userSession) && !empty($userSession->user)) {
+			$role = $userSession->user->role;
+			$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
+			$req .= " ORDER BY layer_name";
+			$params[] = $role->code;
+		}
 		
 		Zend_Registry::get("logger")->info('getVectorLayersList : ' . $req);
 		
 		$select = $db->prepare($req);
-		$select->execute(array(
-			$role->code
-		));
-		
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$result[$row['layer_name']] = array(
-				$row['layer_label'],
-				$row['feature_service_config']
-			);
-		}
-		return $result;
-	}
-
-	/**
-	 * Get the list of available layers for the map.
-	 *
-	 * @param String $providerId
-	 *        	the identifier of the provider
-	 * @return Array[Layer]
-	 */
-	public function getLayersList($providerId = null) {
-		$db = $this->getAdapter();
-		$params = array();
-		
-		$req = " SELECT parent_id, layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, ";
-		$req .= " istransparent, default_opacity, isbaselayer, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
-		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_sld, checked_group, feature_service_name, print_service_name, detail_service_name,view_service_name, legend_service_name ";
-		$req .= " FROM layer ";
-		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
-		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
-		$req .= " WHERE (name is not null) ";
-		$req .= " AND layer_tree.is_layer = 1 ";
-		
-		// Check the provider id
-		if ($providerId == null) {
-			$req .= ' AND provider_id IS NULL';
-		} else {
-			$req .= ' AND (provider_id IS NULL OR provider_id = ?)';
-			$params[] = $providerId;
-		}
-		
-		// Check the user profile
-		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
-		$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		$params[] = $role->code;
-		
-		$req .= " ORDER BY (parent_id, position) DESC";
-		
-		Zend_Registry::get("logger")->info('getLayersList : ' . $req);
-		
-		$select = $db->prepare($req);
 		$select->execute($params);
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$layer = new Application_Object_Mapping_Layer();
-			$layer->parentId = $row['parent_id'];
-			$layer->layerName = $row['layer_name'];
-			$layer->layerLabel = $row['layer_label'];
-			$layer->serviceLayerName = $row['service_layer_name'];
-			$layer->isTransparent = ($row['istransparent'] === 1);
-			$layer->defaultOpacity = $row['default_opacity'];
-			$layer->isBaseLayer = ($row['isbaselayer'] === 1);
-			$layer->maxscale = $row['maxscale'];
-			$layer->minscale = $row['minscale'];
-			$layer->transitionEffect = $row['transitioneffect'];
-			$layer->imageFormat = $row['imageformat'];
-			$layer->isDefault = ($row['is_checked'] === 1);
-			$layer->isHidden = ($row['is_hidden'] === 1);
-			$layer->isDisabled = ($row['is_disabled'] === 1);
-			$layer->isChecked = ($row['is_checked'] === 1);
-			$layer->activateType = $row['activate_type'];
-			$layer->hasSLD = ($row['has_sld'] === 1);
-			$layer->checkedGroup = $row['checked_group'];
-			$layer->viewServiceName = $row['view_service_name'];
-			$layer->legendServiceName = $row['legend_service_name'];
-			$layer->printServiceName = $row['print_service_name'];
-			$layer->detailServiceName = $row['detail_service_name'];
-			$layer->featureServiceName = $row['feature_service_name'];
-			$result[] = $layer;
-		}
-		return $result;
-	}
-
-	/**
-	 * Get the list of all available layers.
-	 *
-	 * @return Array[Layer]
-	 */
-	public function getAllLayersList() {
-		$db = $this->getAdapter();
-		$params = array();
-		
-		$req = " SELECT parent_id, layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, ";
-		$req .= " istransparent, default_opacity, isbaselayer, view_service_name, maxscale, minscale, transitioneffect, imageformat, is_checked, ";
-		$req .= " is_hidden, is_disabled, is_checked, activate_type, has_sld, checked_group, print_service_name, detail_service_name, feature_service_name, legend_service_name ";
-		$req .= " FROM layer ";
-		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
-		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
-		$req .= " WHERE (name is not null) ";
-		$req .= " AND layer_tree.is_layer = 1 ";
-		$req .= " ORDER BY (parent_id, position) DESC";
-		
-		Zend_Registry::get("logger")->info('getAllLayersList : ' . $req);
-		
-		$select = $db->prepare($req);
-		$select->execute($params);
-		
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$layer = new Application_Object_Mapping_Layer();
-			$layer->parentId = $row['parent_id'];
-			$layer->layerName = $row['layer_name'];
-			$layer->layerLabel = $row['layer_label'];
-			$layer->serviceLayerName = $row['service_layer_name'];
-			$layer->isTransparent = $row['istransparent'];
-			$layer->defaultOpacity = $row['default_opacity'];
-			$layer->isBaseLayer = $row['isbaselayer'];
-			$layer->viewServiceName = $row['view_service_name'];
-			$layer->featureServiceName = $row['feature_service_name'];
-			$layer->maxscale = $row['maxscale'];
-			$layer->minscale = $row['minscale'];
-			$layer->transitionEffect = $row['transitioneffect'];
-			$layer->imageFormat = $row['imageformat'];
-			$layer->isDefault = $row['is_checked'];
-			$layer->isHidden = $row['is_hidden'];
-			$layer->isDisabled = $row['is_disabled'];
-			$layer->isChecked = $row['is_checked'];
-			$layer->activateType = $row['activate_type'];
-			$layer->hasSLD = $row['has_sld'];
-			$layer->checkedGroup = $row['checked_group'];
-			$layer->printServiceName = $row['print_service_name'];
-			$layer->detailServiceName = $row['detail_service_name'];
-			$layer->featureInfoServiceName = $row['feature_info_service_name'];
-			$layer->legendServiceName = $row['legend_service_name'];
-			$result[] = $layer;
+			
+			$layer = $this->_readLayer($row);
+			
+			$result[$layer->layerName] = $layer;
 		}
 		return $result;
 	}
@@ -210,9 +137,8 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	public function getLayer($layerName) {
 		$db = $this->getAdapter();
 		
-		$req = " SELECT layer_name, COALESCE(t.label, layer.layer_label) as layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, view_service_name, feature_service_name, maxscale, minscale, transitioneffect, imageformat, activate_type, has_sld, print_service_name, detail_service_name, legend_service_name ";
+		$req = " SELECT *";
 		$req .= " FROM layer ";
-		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE layer_name = ?";
 		
 		Zend_Registry::get("logger")->info('getLayer : ' . $req);
@@ -222,27 +148,64 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$layerName
 		));
 		
-		$result = array();
 		$row = $select->fetch();
-		$layer = new Application_Object_Mapping_Layer();
-		$layer->layerName = $row['layer_name'];
-		$layer->layerLabel = $row['layer_label'];
-		$layer->serviceLayerName = $row['service_layer_name'];
-		$layer->isTransparent = ($row['istransparent'] === 1);
-		$layer->defaultOpacity = $row['default_opacity'];
-		$layer->isBaseLayer = ($row['isbaselayer'] === 1);
-		$layer->maxscale = $row['maxscale'];
-		$layer->minscale = $row['minscale'];
-		$layer->transitionEffect = $row['transitioneffect'];
-		$layer->imageFormat = $row['imageformat'];
-		$layer->activateType = $row['activate_type'];
-		$layer->hasSLD = ($row['has_sld'] === 1);
-		$layer->viewServiceName = $row['view_service_name'];
-		$layer->legendServiceName = $row['legend_service_name'];
-		$layer->printServiceName = $row['print_service_name'];
-		$layer->detailServiceName = $row['detail_service_name'];
-		$layer->featureServiceName = $row['feature_service_name'];
+		
+		$layer = $this->_readLayer($row);
+		
 		return $layer;
+	}
+
+	/**
+	 * Get the list of available layers for the map.
+	 * The layers are linked to the layer tree.
+	 *
+	 * @param String $providerId
+	 *        	the identifier of the provider
+	 * @return Array[Layer]
+	 */
+	public function getLayersList($providerId = null) {
+		$db = $this->getAdapter();
+		$params = array();
+		
+		$req = " SELECT * ";
+		$req .= " FROM layer ";
+		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
+		$req .= " WHERE (name is not null) ";
+		$req .= " AND layer_tree.is_layer = 1 ";
+		
+		// Check the provider id
+		if ($providerId == null) {
+			$req .= ' AND provider_id IS NULL';
+		} else {
+			$req .= ' AND (provider_id IS NULL OR provider_id = ?)';
+			$params[] = $providerId;
+		}
+		
+		// Filtrer on the user restrictions
+		$userSession = new Zend_Session_Namespace('user');
+		if (!empty($userSession) && !empty($userSession->user)) {
+			$role = $userSession->user->role;
+			$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
+			$params[] = $role->code;
+		}
+		
+		$req .= " ORDER BY (parent_id::int, position) DESC";
+		
+		Zend_Registry::get("logger")->info('getLayersList : ' . $req);
+		
+		$select = $db->prepare($req);
+		$select->execute($params);
+		
+		$result = array();
+		foreach ($select->fetchAll() as $row) {
+			
+			$layer = $this->_readLayer($row);
+			
+			$layer->treeItem = $this->_readTreeItem($row);
+			
+			$result[$layer->layerName] = $layer;
+		}
+		return $result;
 	}
 
 	/**
@@ -252,16 +215,16 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 *        	the identifier of the category
 	 * @param String $providerId
 	 *        	the identifier of the provider
-	 * @return Array[layer_tree]
+	 * @return Array[Application_Object_Mapping_LegendItem]
 	 */
-	public function getLegend($parentId, $providerId = null) {
-		Zend_Registry::get("logger")->info('getLegend : parentId : ' . $parentId . ' - providerId : ' . $providerId);
+	public function getLegendItems($parentId, $providerId = null) {
+		Zend_Registry::get("logger")->info('getLegendItems : parentId : ' . $parentId . ' - providerId : ' . $providerId);
 		
 		$db = $this->getAdapter();
 		$params = array();
 		
 		// Prepare the request
-		$req = " SELECT item_id, parent_id, isbaselayer, is_layer, is_checked, is_expended, COALESCE(t.label, layer.layer_label) as layer_label, layer_name, is_hidden, is_disabled, maxscale, minscale ";
+		$req = " SELECT layer_tree.*, COALESCE(t.label, layer.layer_label) as layer_label ";
 		$req .= " FROM layer_tree ";
 		$req .= " LEFT OUTER JOIN layer ON (layer_tree.name = layer.layer_name) ";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
@@ -275,35 +238,25 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$params[] = $providerId;
 		}
 		
-		// Check the user profile
+		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
-		$req = $req . ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-		$params[] = $role->code;
+		if (!empty($userSession) && !empty($userSession->user)) {
+			$role = $userSession->user->role;
+			$req = $req . ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
+			$params[] = $role->code;
+		}
 		
 		$req = $req . " ORDER BY position";
 		
-		Zend_Registry::get("logger")->info('layer_model.getLegend() : ' . $req);
+		Zend_Registry::get("logger")->info('layer_model.getLegendItems() : ' . $req);
 		
 		$select = $db->prepare($req);
 		$select->execute($params);
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$legendItem = new Application_Object_Mapping_LegendItem();
-			$legendItem->itemId = $row['item_id'];
-			$legendItem->parentId = $row['parent_id'];
-			$legendItem->isBaseLayer = ($row['isbaselayer'] === 1);
-			$legendItem->isLayer = ($row['is_layer'] === 1);
-			$legendItem->isChecked = ($row['is_checked'] === 1);
-			$legendItem->isExpended = ($row['is_expended'] === 1);
-			$legendItem->label = $row['layer_label'];
-			$legendItem->layerName = $row['layer_name'];
-			$legendItem->isHidden = ($row['is_hidden'] === 1);
-			$legendItem->isDisabled = ($row['is_disabled'] === 1);
-			$legendItem->maxScale = $row['maxscale'];
-			$legendItem->minScale = $row['minscale'];
-			$result[] = $legendItem;
+			$legendItem = $this->_readTreeItem($row);
+			$result[$legendItem->itemId] = $legendItem;
 		}
 		return $result;
 	}

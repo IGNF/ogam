@@ -58,7 +58,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 	<td>
             <?php if ($harmonizationProcess->submissionStatus == "NOT_VALID") { ?>
             	<?php echo $harmonizationProcess->status ?>
-                <img src="<?php echo $this->baseUrl('img/warning_orange.png') ?>" title="The raw_data submission is not valid anymore" />
+                <img src="<?php echo $this->baseUrl('img/warning_orange.png') ?>" title="The submission has not been validated" />
             <?php } else if ($harmonizationProcess->status === "OK") { ?>
             	<?php echo $harmonizationProcess->status ?>
                 <img src="<?php echo $this->baseUrl('img/Green_tick.png') ?>" />
