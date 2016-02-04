@@ -68,11 +68,9 @@ class UsermanagementController extends AbstractOGAMController {
 	 *        	String the mode of the form ('create' or 'edit')
 	 * @param
 	 *        	User the user
-	 * @param
-	 *        	Role the role of the user
 	 * @return a Zend Form
 	 */
-	private function _getUserForm($mode = null, $user = null, $role = null) {
+	private function _getUserForm($mode = null, $user = null) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'user-form',
@@ -142,7 +140,7 @@ class UsermanagementController extends AbstractOGAMController {
 		// $providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
 		$providerModel = new Application_Model_Website_Provider();
 		$providers = $providerModel->getProvidersList();
-
+		
 		$providerIdElem->addMultiOptions($providers);
 		
 		//
@@ -161,8 +159,8 @@ class UsermanagementController extends AbstractOGAMController {
 		$roleCodeElem = $form->createElement('select', 'roleCode');
 		$roleCodeElem->setLabel('Role');
 		$roleCodeElem->setRequired(true);
-		if ($role != null) {
-			$roleCodeElem->setValue($role->code);
+		if ($user->role != null) {
+			$roleCodeElem->setValue($user->role->code);
 		}
 		// Add the list of available roles
 		$rolesList = $this->roleModel->getRolesList();
@@ -339,7 +337,6 @@ class UsermanagementController extends AbstractOGAMController {
 		return $form;
 	}
 
-
 	/**
 	 * Build and return the provider form.
 	 *
@@ -347,47 +344,56 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	private function _getProviderForm() {
 		$form = new Application_Form_OGAMForm(array(
-				'attribs' => array(
-						'name' => 'provider-form',
-				)
+			'attribs' => array(
+				'name' => 'provider-form'
+			)
 		));
-
+		
 		//
 		// Add the provider_id element
 		//
 		$id = $form->createElement('hidden', 'id');
 		$id->addFilter('Int');
-
+		
 		// Add the label element:
 		$label = $form->createElement('text', 'label');
 		$label->setLabel('Label');
-		$label->addValidator('alnum', false, array('allowWhiteSpace' => true));
+		$label->addValidator('alnum', false, array(
+			'allowWhiteSpace' => true
+		));
 		$label->addValidator('stringLength', false, array(
-				1,
-				20
+			1,
+			20
 		));
 		$label->setRequired(true);
-
+		
 		// Unicité du label
-		//$label->addValidator(new Application_Validator_ProviderNotExist());
-
+		// $label->addValidator(new Application_Validator_ProviderNotExist());
+		
 		// Add the definition element:
 		$definition = $form->createElement('text', 'definition');
 		$definition->setLabel('definition');
-		$label->addValidator('alnum', false, array('allowWhiteSpace' => true));
+		$label->addValidator('alnum', false, array(
+			'allowWhiteSpace' => true
+		));
 		$definition->addValidator('stringLength', false, array(
-				0,
-				200
+			0,
+			200
 		));
 		$definition->setRequired(false);
-
+		
 		// Create the submit button
 		$submitElement = $form->createElement('submit', 'submit');
 		$submitElement->setLabel('Submit');
-
+		
 		// Add elements to form:
-		$form->addElements(array($id, $label, $definition, $submitElement));
-
+		$form->addElements(array(
+			$id,
+			$label,
+			$definition,
+			$submitElement
+		));
+		
 		return $form;
 	}
 
@@ -591,7 +597,6 @@ class UsermanagementController extends AbstractOGAMController {
 		}
 	}
 
-
 	/**
 	 * Show the user management page.
 	 *
@@ -630,7 +635,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	public function showProvidersAction() {
 		$this->logger->debug('showProvidersAction');
-
+		
 		$providers = new Application_Model_Website_Provider();
 		$this->view->providers = $providers->fetchAll(null, 'id');
 		$this->view->isDeletable = array();
@@ -648,7 +653,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 */
 	public function showProviderContentAction() {
 		$this->logger->debug('showProviderContentAction');
-
+		
 		$id = (int) $this->_getParam('id', 0);
 		if ($id > 0) {
 			$providers = new Application_Model_Website_Provider();
@@ -656,11 +661,10 @@ class UsermanagementController extends AbstractOGAMController {
 			$this->view->users = $providers->getProviderUsers($id);
 			$this->view->submissions = $providers->getProviderActiveSubmissions($id);
 			$this->view->rawDataCount = $providers->getProviderNbOfRawDatasByTable($id);
-
+			
 			return $this->render('show-provider-content');
 		}
 	}
-
 
 	/**
 	 * Show the roles.
@@ -711,11 +715,8 @@ class UsermanagementController extends AbstractOGAMController {
 		// Get the user info from database
 		$user = $this->userModel->getUser($userLogin);
 		
-		// Get the role of the user
-		$role = $this->roleModel->getRole($user->code);
-		
 		// Generate the form
-		$form = $this->_getUserForm('edit', $user, $role);
+		$form = $this->_getUserForm('edit', $user);
 		$this->view->form = $form;
 		
 		$this->render('show-edit-user');
@@ -830,35 +831,32 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->render('show-change-password');
 	}
 
-
 	/**
 	 * Add a provider.
-	 *
 	 */
 	public function addProviderAction() {
 		// Generate the form
 		$form = $this->_getProviderForm('create', null);
 		$this->view->form = $form;
-
+		
 		if ($this->getRequest()->isPost()) {
 			$formData = $this->getRequest()->getPost();
 			if ($form->isValid($formData)) {
 				$label = $form->getValue('label');
 				$definition = $form->getValue('definition');
-
+				
 				$providers = new Application_Model_Website_Provider();
 				$providerId = $providers->addProvider($label, $definition);
-
+				
 				// Also add a line in the 'bounding_box' table - the bb is the world
 				$bbox = new Application_Object_Mapping_BoundingBox();
 				$bbox->provider_id = $providerId;
-
+				
 				$bboxModel = new Application_Model_Mapping_BoundingBox();
 				$bboxModel->addBoundingBox($bbox);
-
+				
 				$this->_helper->redirector('show-providers');
-			}
-			else {
+			} else {
 				$form->populate($formData);
 			}
 		}
@@ -872,20 +870,19 @@ class UsermanagementController extends AbstractOGAMController {
 		// Generate the form
 		$form = $this->_getProviderForm('edit', null);
 		$this->view->form = $form;
-
+		
 		if ($this->getRequest()->isPost()) {
 			$formData = $this->getRequest()->getPost();
 			if ($form->isValid($formData)) {
-				$provider_id = (int)$form->getValue('id');
+				$provider_id = (int) $form->getValue('id');
 				$label = $form->getValue('label');
 				$definition = $form->getValue('definition');
-
+				
 				$providers = new Application_Model_Website_Provider();
 				$providers->updateProvider($provider_id, $label, $definition);
-
+				
 				$this->_helper->redirector('show-providers');
-			}
-			else {
+			} else {
 				$form->populate($formData);
 			}
 		} else {
@@ -899,24 +896,20 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->render('edit-provider');
 	}
 
-
 	/**
 	 * Delete a provider.
 	 */
 	public function deleteProviderAction() {
 		$providerId = $this->_getParam("id");
-
+		
 		// First delete Bounding Box
 		$bboxModel = new Application_Model_Mapping_BoundingBox();
 		$bboxModel->deleteBoundingBox($providerId);
-
+		
 		// Then the provider
 		$providers = new Application_Model_Website_Provider();
 		$providers->deleteProvider($providerId);
-
+		
 		$this->_helper->redirector('show-providers');
 	}
-
-
-
 }
