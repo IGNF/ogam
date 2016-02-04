@@ -293,7 +293,8 @@ class QueryController extends AbstractOGAMController {
 
 	/**
 	 * Check if a criteria is empty.
-	 *	(not private as this function is extended in custom directory of derivated applications)
+	 * (not private as this function is extended in custom directory of derivated applications)
+	 * 
 	 * @param Undef $criteria        	
 	 * @return true if empty
 	 */
@@ -416,19 +417,18 @@ class QueryController extends AbstractOGAMController {
 		
 		$this->view->userProviderId = $userSession->user->provider->id;
 		
-		
-			if ($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) {
-				$this->view->hideGridCsvExportMenuItem = 'false';
-			}
-			if ($schema == 'HARMONIZED_DATA' && $role->isAllowed('EXPORT_HARMONIZED_DATA')) {
-				$this->view->hideGridCsvExportMenuItem = 'false';
-			}
-			if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && $role->isAllowed('DATA_EDITION')) {
-				$this->view->hideGridDataEditButton = 'false';
-			}
-			if ($role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
-				$this->view->checkEditionRights = 'true';
-			}
+		if ($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) {
+			$this->view->hideGridCsvExportMenuItem = 'false';
+		}
+		if ($schema == 'HARMONIZED_DATA' && $role->isAllowed('EXPORT_HARMONIZED_DATA')) {
+			$this->view->hideGridCsvExportMenuItem = 'false';
+		}
+		if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && $role->isAllowed('DATA_EDITION')) {
+			$this->view->hideGridDataEditButton = 'false';
+		}
+		if ($role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
+			$this->view->checkEditionRights = 'true';
+		}
 		
 		$this->_helper->layout()->disableLayout();
 		$this->render('grid-parameters');
@@ -1468,11 +1468,9 @@ class QueryController extends AbstractOGAMController {
 				}
 				// Setup the fields and columns config
 				if ($locationsIndex === (count($locations) - 1)) {
-					// Get the table format
-					$tableFormat = $this->metadataModel->getTableFormatFromTableName($schema, $locationTableInfo->tableName);
-					$format = $tableFormat->format;
+					
 					// Get the table fields
-					$tableFields = $this->metadataModel->getTableFields($schema, $format, null);
+					$tableFields = $this->metadataModel->getTableFields($schema, $locationTableInfo->format, null);
 					$tFOrdered = array();
 					foreach ($tableFields as $tableField) {
 						$tFOrdered[$tableField->columnName] = $tableField;
