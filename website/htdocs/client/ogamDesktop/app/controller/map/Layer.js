@@ -584,10 +584,10 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                     };                 
                 }
                 
-//                treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
-//                    layerGroup: this.mapPanel.mapCmp.getMap().getLayerGroup()
-//                });
-//		this.getLayerspanel().setConfig('store', treeLayerStore);
+                treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
+                    layerGroup: this.mapPanel.mapCmp.getMap().getLayerGroup()
+                });
+		this.getLayerspanel().setConfig('store', treeLayerStore);
 	},
 
 	/**

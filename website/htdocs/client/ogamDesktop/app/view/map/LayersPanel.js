@@ -17,13 +17,5 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
     viewConfig: {
         plugins: { ptype: 'treeviewdragdrop' }
     },
-    flex: 1,
-    store: null,
-    initComponent: function(){
-
-        this.store = Ext.create('GeoExt.data.store.LayersTree', {
-            layerGroup: Ext.getCmp('map-panel').mapCmp.getMap().getLayerGroup()
-        });
-        this.callParent(arguments);
-    }
+    flex: 1
 });
