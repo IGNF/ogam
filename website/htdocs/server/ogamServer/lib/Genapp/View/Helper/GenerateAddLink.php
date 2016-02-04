@@ -43,7 +43,7 @@ class Genapp_View_Helper_GenerateAddLink extends Zend_View_Helper_Abstract {
 		}
 
 		// output the result
-		return $this->view->url($urlArray, null, true);
+		return '#edition-add' . preg_replace( '/^' . preg_quote('/dataedition/show-add-data','/').'/', '', $this->view->url($urlArray, null, true), 1);
 	}
 
 }

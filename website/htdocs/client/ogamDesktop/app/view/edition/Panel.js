@@ -24,7 +24,8 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	uses:[
 'Ext.form.field.Tag',
 'OgamDesktop.ux.form.field.*',
-'Ext.form.field.*'
+'Ext.form.field.*',
+'Ext.window.Toast'
 	      ],
 	xtype:'editionpage',
 //<locale>	
@@ -388,8 +389,8 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 							xtype:'button',
 							text : this.childrenFSAddNewChildButtonText,
 							tooltip : this.childrenFSAddNewChildButtonTooltip,
-							handler : (function(location) {
-								this.ownerCt.getLoader().load({url:location});
+							handler:(function(location) {
+								this.lookupController().redirectTo(location);
 							}).bind(this,cCO['AddChildURL']),
 							scope : this
 						});
@@ -922,8 +923,14 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 
 		// We redirect
-		if (!Ext.isEmpty(obj.redirectLink)) {		
-			this.ownerCt.getLoader().load({url:obj.redirectLink});
+		if (!Ext.isEmpty(obj.redirectLink)) {
+			if( obj.redirectLink.startsWith('#')){//same hash with # bugs with force
+				//maybe an action route
+				this.lookupController().redirectTo(obj.redirectLink.substr(1), true);
+			}
+			else{ 
+				this.lookupController().redirectTo(obj.redirectLink);
+			}
 		}
 
 		if (!Ext.isEmpty(obj.errorMessage)) {
@@ -970,7 +977,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// Return to the index page
 		if (!Ext.isEmpty(obj.redirectLink)) {
-			this.ownerCt.getLoader().load({url:obj.redirectLink});
+			this.lookupController().redirectTo(obj.redirectLink, true)
+		} else if (obj.success) {
+			this.close();
+			Ext.toast(obj.message);
 		}
 
 		if (!Ext.isEmpty(obj.errorMessage)) {

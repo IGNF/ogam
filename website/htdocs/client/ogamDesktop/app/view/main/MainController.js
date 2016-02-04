@@ -13,14 +13,36 @@ Ext.define('OgamDesktop.view.main.MainController', {
             tabchange : 'onTabChange'
         }
     },
+     listen : {
+        controller : {
+            '#' : {
+                unmatchedroute : 'onUnmatchedRoute'
+            }
+        }
+    },
+
+    onUnmatchedRoute : function(hash) {
+       console.debug('unmatch route', hash);
+    },
     routes: {
+	//id-tab routes
     	'consultation_panel':'onConsulation',
-    	'edition_panel:key':{
+	'edition_panel':'onEdition',
+	
+	//action routes
+    	'edition-edit:key':{
     			action:'onEdition',
     			conditions:{
     				':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\.\\s,]+))?'
     			}
-    	}
+    	},
+	'edition-add:key':{
+		action:'onAdd',
+		conditions:{
+			':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\.\\s,]+))?'
+		}
+	}
+	
     },
     
     onTabChange : function(tabPanel, newItem) {
@@ -44,7 +66,7 @@ Ext.define('OgamDesktop.view.main.MainController', {
 	},
 
     onEdition:function(key){
-    	
+
     	if (key !== undefined) {
 	    	var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-edit-data/'+key;
 	    	this.getView().down('#edition_panel').getLoader().load({
@@ -56,6 +78,19 @@ Ext.define('OgamDesktop.view.main.MainController', {
     	}
     	this.getView().setActiveItem('edition_panel');
     	
+    },
+        onAdd:function(key){
+    	
+    	if (key !== undefined) {
+	    	var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-add-data/'+key;
+	    	this.getView().down('#edition_panel').getLoader().load({
+	    		removeAll:true,
+	    		renderer:'component',
+	    		loadMask:true,
+	    		url:href
+	    	});
+    	}
+    	this.getView().setActiveItem('edition_panel');
+    	
     }
-    
 });

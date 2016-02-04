@@ -150,7 +150,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 						// Action managed into result main controller
 						gridTab.fireEvent('onEditDataButtonClick', record);
 
-						this.redirectTo('edition_panel/'+/*encodeURIComponent(*/record.data.id/*)*//*, true*/);
+						this.redirectTo('edition-edit/'+/*encodeURIComponent(*/record.data.id/*)*//*, true*/);
 
 					},
 					scope:this

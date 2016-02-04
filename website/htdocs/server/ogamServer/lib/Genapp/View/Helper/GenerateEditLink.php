@@ -61,7 +61,7 @@ class Genapp_View_Helper_GenerateEditLink extends Zend_View_Helper_Abstract {
 
 		// output the result
 		return array(
-		    'url' => '#edition_panel' . preg_replace( '/^' . preg_quote('/index/index','/').'/', '', $this->view->url($urlArray, null, true), 1),
+		    'url' => '#edition-edit' . preg_replace( '/^' . preg_quote('/index/index','/').'/', '', $this->view->url($urlArray, null, true), 1),
 		    'text' => $this->view->escape($data->tableFormat->label),
 		    'fields' => $fields
 		);
