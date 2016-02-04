@@ -4,37 +4,26 @@
  * TODO: An interface for GeoExt
  */
 Ext.define('OgamDesktop.view.map.LayersPanel', {
-	extend: 'GeoExt.tree.Panel',
-	xtype: 'layers-panel',
-//	mixins: ['OgamDesktop.view.interface.LayersPanel'],
-	requires: [
-		'OgamDesktop.ux.map.GroupLayerContainer',
-		'Ext.data.TreeStore',
-		'GeoExt.data.LayerTreeModel',
-		'GeoExt.data.LayerStore',
-		'GeoExt.tree.LayerNode',
-		'GeoExt.plugins.ContextMenuPlugin',
-		'GeoExt.slider.Tip',
-		'GeoExt.slider.LayerOpacity'
-	],
-//	id: 'layerspanel',
-	border: false,
-	rootVisible: false,
-	autoScroll: true,
-	title:'Layers',
-	viewConfig: {
-		plugins: [{ // To let drag and drop of tree nodes
-			ptype: 'treeviewdragdrop',
-			appendOnly: false
-		},{ // To disable nodes
-			ptype: 'dvp_nodedisabled'
-		}]
-	},
-	// Context menu with opacity slider, added by Lucia:
-	plugins: Ext.create('GeoExt.plugins.ContextMenuPlugin',{
-		sliderOptions : {
-			aggressive : true,
-			plugins : Ext.create('GeoExt.slider.Tip')
-		}
-	})
+    extend: 'Ext.tree.Panel',
+    xtype: 'layers-panel',
+    requires: [
+        'Ext.data.TreeStore'
+    ],
+    //cls: 'genapp-query-layer-tree-panel',
+    border: false,
+    rootVisible: false,
+    autoScroll: true,
+    title:'Layers',
+    viewConfig: {
+        plugins: { ptype: 'treeviewdragdrop' }
+    },
+    flex: 1,
+    store: null,
+    initComponent: function(){
+
+        this.store = Ext.create('GeoExt.data.store.LayersTree', {
+            layerGroup: Ext.getCmp('map-panel').mapCmp.getMap().getLayerGroup()
+        });
+        this.callParent(arguments);
+    }
 });

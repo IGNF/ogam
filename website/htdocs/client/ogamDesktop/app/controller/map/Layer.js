@@ -76,7 +76,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 				cancelFeatureEdition:'onCancelFeatureEdition'
 			},
 			'layers-panel': {
-				checkchange: 'onCheckChange',
 				nodeEnable: 'nodeEnable'
 			},
 			'advanced-request button[action = submit]': {
@@ -342,25 +341,26 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	/**
 	 * Set the layers of the map
 	 */
-	setMapLayers : function(map, vectorLayer, vector, baseLayer, wfsLayer) {
-		// Add the base layer (always first)
-		map.addLayer(baseLayer);
-		
-		if (this.mapPanel) {
-			// Add the available layers
-			for ( var i = 0; i < this.mapPanel.layersList.length; i++) {
-				map.addLayer(this.mapPanel.layersList[i]);
-			}
-			// Add the WFS layer
-			if (!this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
-				map.addLayer(this.mapPanel.wfsLayer);
-				this.mapPanel.snappingControl.addTargetLayer(this.mapPanel.wfsLayer);
-			}
-		}
-		
-		// Add the vector layer
-		map.addLayer(vectorLayer);
-		map.addLayer(vector);
+	//setMapLayers : function(map, vectorLayer, vector, baseLayer, wfsLayer) {
+        setMapLayers : function(map) {
+            // Add the base layer (always first)
+            //map.addLayer(baseLayer);
+
+            if (this.mapPanel) {
+                // Add the available layers
+                for ( var i = 0; i < this.mapPanel.layersList.length; i++) {
+                    map.addLayer(this.mapPanel.layersList[i]);
+                }
+                // Add the WFS layer
+                /*if (!this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
+                    map.addLayer(this.mapPanel.wfsLayer);
+                    this.mapPanel.snappingControl.addTargetLayer(this.mapPanel.wfsLayer);
+                }*/
+            }
+
+            // Add the vector layer
+//            map.addLayer(vectorLayer);
+//            map.addLayer(vector);
 	},
 
 	/**
@@ -410,7 +410,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		};
 
 		// Set the style
-		var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
+		/*var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
 			fillOpacity : 0,
 			strokeColor : "green",
 			strokeWidth : 3,
@@ -439,9 +439,10 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		this.mapPanel.wfsLayer.displayInLayerSwitcher = false;
 		this.mapPanel.wfsLayer.extractAttributes = false;
 		this.mapPanel.wfsLayer.styleMap = styleMap;
-		this.mapPanel.wfsLayer.visibility = false;
+		this.mapPanel.wfsLayer.visibility = false;*/
 
-		this.setMapLayers(this.mapPanel.map, this.mapPanel.baseLayer, this.mapPanel.vectorLayer, this.mapPanel.vector, this.mapPanel.wfsLayer);
+		//this.setMapLayers(this.mapPanel.map, this.mapPanel.baseLayer, this.mapPanel.vectorLayer, this.mapPanel.vector, this.mapPanel.wfsLayer);
+                this.setMapLayers(this.mapPanel.mapCmp.getMap());
 
 		// Gets the layer tree model to initialise the Layer
 		// Tree
@@ -462,37 +463,57 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * @return OpenLayers.Layer
 	 */
 	buildLayer : function(layerObject, serviceObject) {
-		var url = serviceObject.data.config.urls;
-			//Merges the service parameters and the layer parameters
-			var paramsObj = {};
-			for (var attrname in layerObject.data.params) { paramsObj[attrname] = layerObject.data.params[attrname]; }
-			for (var attrname in serviceObject.data.config.params) { paramsObj[attrname] = serviceObject.data.config.params[attrname]; }
-			if (serviceObject.data.config.params.SERVICE=="WMTS") {
-				//creation and merging of wmts parameters
-				var layer=paramsObj.layers[0];
-				var tileOrigin = new OpenLayers.LonLat(-20037508,20037508); //coordinates of top left corner of the matrixSet : usual value of geoportal, google maps 
-				var serverResolutions = [156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646]; 
-				// the usual 22 values of resolutions accepted by wmts servers geoportal
-				
-				var obj={options:layerObject.data.options,name:layerObject.data.name,url:url.toString(),layer:layer,tileOrigin:tileOrigin,serverResolutions:serverResolutions,opacity:layerObject.data.options.opacity,visibility:layerObject.data.options.visibility,isBaseLayer:layerObject.data.options.isBaseLayer};
-				var objMergeParams= {};
-				for (var attrname in obj) { objMergeParams[attrname] = obj[attrname]; }
-				for (var attrname in paramsObj) { objMergeParams[attrname] = paramsObj[attrname]; }
-				newLayer = new OpenLayers.Layer.WMTS(objMergeParams);
+            var url = serviceObject.data.config.urls;
+            //Merges the service parameters and the layer parameters
+            var paramsObj = {};
+            for (var attrname in layerObject.data.params) { paramsObj[attrname] = layerObject.data.params[attrname]; }
+            for (var attrname in serviceObject.data.config.params) { paramsObj[attrname] = serviceObject.data.config.params[attrname]; }
+            if (paramsObj.SERVICE === "WMTS") {
+                //creation and merging of wmts parameters
+                var layer=paramsObj.layers[0];
+                var origin = paramsObj.tileOrigin; //coordinates of top left corner of the matrixSet
+                var resolutions = paramsObj.serverResolutions;
+                var matrixIds = [];
+                for (i in resolutions){
+                    matrixIds[i] = i;
+                };
+                var tileGrid = new ol.tilegrid.WMTS({
+                    origin: origin,
+                    resolutions: resolutions,
+                    matrixIds: matrixIds
+                });
+                
+                var obj={
+                    url:url.toString(),
+                    layer:layer,
+                    tileGrid:tileGrid
+                };
+                var objMergeParams= {};
+                for (var attrname in obj) { objMergeParams[attrname] = obj[attrname]; }
+                for (var attrname in paramsObj) { objMergeParams[attrname] = paramsObj[attrname]; }
+                source = new ol.source.WMTS(objMergeParams);
+                newLayer = new ol.layer.Tile({
+                    opacity: layerObject.data.options.opacity,
+                    source: source,
+                    name: layerObject.data.options.label
+                });
 
-			} else if (serviceObject.data.config.params.SERVICE=="WMS"){
-				newLayer = new OpenLayers.Layer.WMS(layerObject.data.name , url , paramsObj , layerObject.data.options);
-			} else {
-				Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");
-			}
-			
-			if (layerObject.data.params.isHidden) {
-				newLayer.displayInLayerSwitcher = false;
-			} else {
-				newLayer.displayInLayerSwitcher = true;
-			}
+            } else if (paramsObj['SERVICE'] === "WMS"){
+                source = new ol.source.TileWMS({
+                    url: url,
+                    params: paramsObj
+                });
+                layerOpts = layerObject.data.options;
+                layerOpts['source'] = source;
+                layerOpts['name'] = layerObject.data.options.label;
+                newLayer = new ol.layer.Tile(layerOpts);
+            } else {
+                    Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");
+            }
 
-		return newLayer;
+            newLayer.displayInLayerSwitcher = !layerObject.data.params.isHidden;
+
+            return newLayer;
 	},
 
 	/**
@@ -538,61 +559,35 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 *            nodes The 'LayerNode' store records to fill the layers tree
 	 */
 	initLayerTree: function(nodes) {
-		
-		// initialize the Tree store based on the map layers
-		var treeLayerStore = Ext.create('Ext.data.TreeStore', {
-			model: 'GeoExt.data.LayerTreeModel',
-			root: {}
-		});
-		// for each node, we create a store which is a selection of the map layers store
-		for (i in nodes) {
-			var node = nodes[i];
-			var storeSelection = Ext.create('GeoExt.data.LayerStore');
-			var rootChild = {};
-
-			this.mapPanel.layers.each(function(layer) {
-				if (layer.data.options.nodeGroup && layer.data.options.nodeGroup == node.data.nodeGroup) {
-					storeSelection.add(layer);
-				} else if (layer.data.title == node.data.layer) {
-					// Creation of the layer node
-						rootChild = {
-						text: node.data.text,
-						layer: layer.data,
-						disabled: node.data.disabled,
-						plugins: [
-							Ext.create('GeoExt.tree.LayerNode')
-						]
-					};
-					// Add of the container
-					if (!node.data.hidden) {
-						treeLayerStore.root.appendChild(rootChild);
-					}
-					rootChild = null;
-				}
-			});
-
-			if (rootChild) {
-				// creation of the layer group container
-				rootChild = {
-					text: node.data.text,
-					plugins: [
-						Ext.create('OgamDesktop.ux.map.GroupLayerContainer', {
-							store: storeSelection,
-							nodeGroup: nodes[i].data.nodeGroup,
-							containerCheckedStatus: node.data.checked,
-							containerExpandedStatus: node.data.expanded
-						})
-					]
-				};
-				// add of the container
-				if (!node.data.hidden) {
-					treeLayerStore.root.appendChild(rootChild);
-				}
-				
-			}
-		}
-	//	this.mapMainWin.getComponent(1).getComponent(0).setConfig('store', treeLayerStore);
-		this.getLayerspanel().setConfig('store', treeLayerStore);
+                console.log('tree layer store nodes', nodes);
+                groups =  [];
+                for (i in nodes) {
+                    node = nodes[i].getData();
+                    console.log('node data', node)
+                    if (!node.leaf) {
+                        console.log('map panel layers', this.mapPanel.mapCmp.getMap().getLayers());
+                        groupLayers = [];
+                        this.mapPanel.mapCmp.getMap().getLayers().forEach(function(layer, idx){
+                            console.log('layer', layer);
+                            console.log('layer keys', layer.getKeys());
+                            if (layer.get('nodeGroup') == node.nodeGroup) {
+                                console.log('layer label', layer.get('label'));
+                                groupLayers.push(layer);
+                            }
+                        
+                        });
+                        group = new ol.layer.Group({
+                           name: node.text,
+                           layers: groupLayers
+                        });
+                        this.mapPanel.mapCmp.getMap().getLayers().push(group)
+                    };                 
+                }
+                
+//                treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
+//                    layerGroup: this.mapPanel.mapCmp.getMap().getLayerGroup()
+//                });
+//		this.getLayerspanel().setConfig('store', treeLayerStore);
 	},
 
 	/**
@@ -660,41 +655,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			// Add the feature to the vector layer
 			if (this.mapPanel.vectorLayer !== null) {
 				this.mapPanel.vectorLayer.addFeatures(evt.feature);
-			}
-		}
-	},
-
-	/**
-	 * Toggle the children checkbox on the parent checkbox change
-	 * 
-	 * @param {Ext.tree.TreeNode}
-	 *            node The parent node
-	 * @param {Boolean}
-	 *            checked The checked status
-	 * @hide
-	 */
-	onCheckChange : function(node, checked) {
-		if (node.firstChild == null) {
-			if(checked != node.get('layer').getVisibility()) {
-				node._visibilityChanging = true;
-				var layer = node.get('layer');
-				if(checked && layer.isBaseLayer && layer.map) {
-					layer.map.setBaseLayer(layer);
-				} else if(!checked && layer.isBaseLayer && layer.map &&
-					layer.map.baseLayer && layer.id == layer.map.baseLayer.id) {
-					// Must prevent the unchecking of radio buttons
-					node.set('checked', layer.getVisibility());
-				} else {
-					layer.setVisibility(checked);
-				}
-				delete node._visibilityChanging;
-			}
-		}
-		for ( var i = 0 ; i < node.childNodes.length ; i++) {
-			var child = node.childNodes[i];
-			if (!child.get('disabled')) {
-				child.set('checked', checked);
-				this.onCheckChange(child, checked);
 			}
 		}
 	},
