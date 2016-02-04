@@ -13,12 +13,13 @@
 /**
  * Show one field form.
  * 
- * The following parameters are expected : title : The title of the form id :
- * The identifier of the form
+ * The following parameters are expected : 
+ *     title : The title of the form
+ *     id : The identifier of the form
  * 
- * @class Genapp.FieldForm
- * @extends Ext.Panel
- * @constructor Create a new FieldForm
+ * @class OgamDesktop.ux.request.AdvancedRequestFieldSet
+ * @extends OgamDesktop.ux.request.RequestFieldSet
+ * @constructor Create a new AdvancedRequestFieldSet
  * @param {Object}
  *            config The config object
  */
@@ -272,8 +273,6 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				type : 'plus',
 				xtype :'tool',
 				tooltip : this.columnsPanelTbarAddAllButtonTooltip,
-				ctCls : 'genapp-tb-btn',
-				iconCls : 'genapp-tb-btn-add',
 				handler : this.addAllColumns,
 				scope : this
 			}, {
@@ -281,8 +280,6 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				xtype :'tool',
 				type : 'minus',
 				tooltip : this.columnsPanelTbarRemoveAllButtonTooltip,
-				ctCls : 'genapp-tb-btn',
-				iconCls : 'genapp-tb-btn-remove',
 				handler : this.removeAllColumns,
 				scope : this
 			}, {
@@ -448,8 +445,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 					'render' : function(cmp) {
 						Ext.QuickTips.register({
 							target : cmp.getEl(),
-							title : record.label, //Genapp.util.htmlStringFormat(record.label),
-							text : record.definition, //Genapp.util.htmlStringFormat(record.definition),
+							title : record.label,
+							text : record.definition,
 							width : 200
 						});
 					},

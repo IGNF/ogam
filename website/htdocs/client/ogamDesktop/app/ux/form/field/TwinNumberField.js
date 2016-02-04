@@ -14,7 +14,7 @@
  * 
  * A twin number field.
  * 
- * @class Genapp.form.TwinNumberField
+ * @class OgamDesktop.ux.form.field.TwinNumberField
  * @extends Ext.form.TwinTriggerField
  * @constructor Create a new TwinNumberField
  * @param {Object}

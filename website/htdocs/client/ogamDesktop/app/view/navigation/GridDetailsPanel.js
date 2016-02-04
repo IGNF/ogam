@@ -36,12 +36,6 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
     autoScroll:true,
     
     /**
-     * @cfg {String} cls
-     * An optional extra CSS class that will be added to this component's Element (defaults to 'genapp-query-grid-details-panel').
-     * This can be useful for adding customized styles to the component or any of its children using standard CSS rules.
-     */
-    cls:'genapp-query-grid-details-panel',
-    /**
      * @cfg {String} loadingMsg
      * The loading message (defaults to <tt>'Loading...'</tt>)
      */

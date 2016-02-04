@@ -7,7 +7,6 @@ Ext.define('OgamDesktop.view.map.LegendsPanel', {
 	xtype: 'legends-panel',
 	title:'Legends',
 //	id: 'legendspanel',
-	cls : 'genapp-query-legend-panel',
 	frame : true,
 	autoScroll : true
 });

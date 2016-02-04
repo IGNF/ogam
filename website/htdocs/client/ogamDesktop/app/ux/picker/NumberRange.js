@@ -83,7 +83,7 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 	 * The min field.
 	 * 
 	 * @property minField
-	 * @type Genapp.form.TwinNumberField
+	 * @type OgamDesktop.ux.form.field.TwinNumberField
 	 */
 	minField : null,
 
@@ -91,7 +91,7 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 	 * The max field.
 	 * 
 	 * @property maxField
-	 * @type Genapp.form.TwinNumberField
+	 * @type OgamDesktop.ux.form.field.TwinNumberField
 	 */
 	maxField : null,
 

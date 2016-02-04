@@ -16,9 +16,9 @@
  * The following parameters are expected : title : The title of the form id :
  * The identifier of the form
  * 
- * @class Genapp.FieldForm
- * @extends Ext.Panel
- * @constructor Create a new FieldForm
+ * @class OgamDesktop.ux.request.RequestFieldSet
+ * @extends Ext.panel.Panel
+ * @constructor Create a new RequestFieldSet
  * @param {Object}
  *            config The config object
  */
@@ -31,13 +31,6 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
 	frame : true,
-	/**
-	 * @cfg {String} cls An optional extra CSS class that will be added to this
-	 *      component's Element (defaults to 'genapp-query-field-form-panel').
-	 *      This can be useful for adding customized styles to the component or
-	 *      any of its children using standard CSS rules.
-	 */
-	cls : 'genapp-query-field-form-panel',
 	
 	/**
 	 * @cfg {Integer} criteriaLabelWidth The criteria Label Width (defaults to

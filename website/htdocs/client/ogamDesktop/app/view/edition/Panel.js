@@ -4,7 +4,7 @@
  * An EditionPanel correspond to the complete page for editing/inserting a table
  * row.
  * 
- * @class Genapp.EditionPanel
+ * @class OgamDesktop.view.edition.Panel
  * @extends Ext.Panel
  * @constructor Create a new Edition Panel
  * @param {Object}
@@ -49,13 +49,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 */
 	title : 'Edition',
 //</locale>	
-	/**
-	 * @cfg {String} cls An optional extra CSS class that will be added to this
-	 *      component's Element (defaults to 'genapp_edition_panel'). This can
-	 *      be useful for adding customized styles to the component or any of
-	 *      its children using standard CSS rules.
-	 */
-	cls : 'genapp_edition_panel',
 
 	/**
 	 * @cfg {String} dataId Unique identifier of the data being edited.
@@ -479,7 +472,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		if (this.checkEditionRights) {
 
 			// Look for the provider of the data
-			if (Genapp.userProviderId !== dataProvider) {
+			if (OgamDesktop.userProviderId !== dataProvider) {
 				this.validateButton.disable();
 				this.validateButton.setTooltip(this.dataEditFSValidateButtonDisabledTooltip);
 			}
