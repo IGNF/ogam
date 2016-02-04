@@ -167,6 +167,7 @@ public class IntegrationService extends GenericMapper {
 							fieldData.setData(destFieldDescriptor.getData());
 							fieldData.setFormat(destFieldDescriptor.getFormat());
 							fieldData.setType(destFieldDescriptor.getType());
+							fieldData.setSubtype(destFieldDescriptor.getSubtype());
 							fieldData.setUnit(destFieldDescriptor.getUnit());
 							fieldData.setIsMandatory(true);
 
