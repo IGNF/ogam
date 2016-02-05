@@ -9,6 +9,10 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
     xtype: 'map-panel',
     id: 'map-panel',
     layout: 'fit',
+    controller: 'mappanel',
+    requires: [
+    	'OgamDesktop.view.map.MapToolbar'
+    ],
 //	requires: [
 //		'GeoExt.tree.LayerContainer',
 //		'GeoExt.Action',
@@ -155,12 +159,13 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	map : null,
 //	
 
+	tbar: {
+		xtype:'maptoolbar'
+	},
+
     initComponent: function(){
         // Init the map
         this.mapCmp = this.initMapCmp();
-        
-        // Init the Toolbar
-        this.tbar = this.initToolbar();
         
         this.callParent(arguments);
         
@@ -223,7 +228,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
         
         // this map panel contains "geoext" map component
         var mapCmp = Ext.create('GeoExt.component.Map', {
-            map: map
+            map: map,
+            reference: 'mapCmp'
         });
         
         // 'afterinitmap' event is catched by the layer controller
@@ -231,49 +237,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
         this.fireEvent('afterinitmap', mapCmp.getMap());
         
         return mapCmp;
-    },
-    
-    /**
-     * Initialize the map toolbar
-     * 
-     * @hide
-     */
-    initToolbar : function() {
-        // Creation of the toolbar
-        tbar = Ext.create('Ext.toolbar.Toolbar');
-        
-        map = this.mapCmp.getMap();
-        
-        // Draw point button
-        var drawPointButton = new Ext.button.Button({
-            iconCls : 'o-map-tools-map-drawpoint'
-        });
-        drawPointButton.on({
-            click: {
-                fn: function(){
-                    draw = new ol.interaction.Draw({
-                        features: this.features,
-                        type: 'Point'
-                    });
-                    modify = new ol.interaction.Modify({
-                        features: this.features, 
-                        // the SHIFT key must be pressed to delete vertices, so
-                        // that new vertices can be drawn at the same position
-                        // of existing vertices
-                        deleteCondition: function(event) {
-                            return ol.events.condition.shiftKeyOnly(event) &&
-                                ol.events.condition.singleClick(event);
-                        }
-                    });
-                    map.addInteraction(modify);
-                    map.addInteraction(draw);
-                },
-                scope: this
-            }
-        });
-        tbar.add(drawPointButton);
-        return tbar;
     }
+    
 //
 //	/**
 //	 * Initialize the map
