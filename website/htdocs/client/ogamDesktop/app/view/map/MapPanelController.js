@@ -5,10 +5,14 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.mappanel',
 
-	getLayer : function(layerCode) {
-        var mapCmp = this.lookupReference('mapCmp');
+    init : function() {
+        this.map = this.lookupReference('mapCmp').getMap();
+        this.currentMapInteractions = null;
+    },
+
+    getMapLayer : function (layerCode) {
         var me = {"layerCode":layerCode};
-        mapCmp.getMap().getLayers().forEach(
+        this.map.getLayers().forEach(
             function(el, index, c_array){
                 if (el.get('code') === this.layerCode) {
                     this.layer = el;
@@ -19,28 +23,47 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         return me.layer;
     },
 
-    onDrawPointButtonPress : function() {
-        var features = this.getLayer('drawingLayer').getSource().getFeaturesCollection();
+    addCurrentMapInteractions : function (interactions) {
+        if (this.currentMapInteractions !== null){
+            this.removeCurrentMapInteractions();
+        }
+        this.currentMapInteractions = interactions;
+        for (var i = 0; i < interactions.length; i++) {
+            this.map.addInteraction(interactions[i]);
+        }
+    },
 
-        draw = new ol.interaction.Draw({
-            features: features,
-            type: 'Point'
-        });
-
-        modify = new ol.interaction.Modify({
-            features: features, 
-            // the SHIFT key must be pressed to delete vertices, so
-            // that new vertices can be drawn at the same position
-            // of existing vertices
-            deleteCondition: function(event) {
-                return ol.events.condition.shiftKeyOnly(event) &&
-                    ol.events.condition.singleClick(event);
+    removeCurrentMapInteractions : function () {
+        if (this.currentMapInteractions !== null){
+            for (var i = 0; i < this.currentMapInteractions.length; i++) {
+                this.map.removeInteraction(this.currentMapInteractions[i]);
             }
-        });
+            this.currentMapInteractions = null;
+        }
+    },
 
-        var mapCmp = this.lookupReference('mapCmp');
-        mapCmp.getMap().addInteraction(modify);
-        mapCmp.getMap().addInteraction(draw);
+    onDrawPointButtonToggle : function (button, pressed, eOpts) {
+        if (pressed) {
+            var features = this.getMapLayer('drawingLayer').getSource().getFeaturesCollection();
+            this.addCurrentMapInteractions([
+                new ol.interaction.Draw({
+                    features: features,
+                    type: 'Point'
+                }),
+                new ol.interaction.Modify({
+                    features: features, 
+                    // the SHIFT key must be pressed to delete vertices, so
+                    // that new vertices can be drawn at the same position
+                    // of existing vertices
+                    deleteCondition: function(event) {
+                        return ol.events.condition.shiftKeyOnly(event) &&
+                            ol.events.condition.singleClick(event);
+                    }
+                })
+            ]);
+        } else {
+            this.removeCurrentMapInteractions();
+        }
     }
 });
 
