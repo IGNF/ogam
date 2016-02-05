@@ -1473,7 +1473,7 @@ class QueryController extends AbstractOGAMController {
 					$tableFields = $this->metadataModel->getTableFields($schema, $locationTableInfo->format, null);
 					$tFOrdered = array();
 					foreach ($tableFields as $tableField) {
-						$tFOrdered[$tableField->columnName] = $tableField;
+						$tFOrdered[strtoupper($tableField->columnName)] = $tableField;
 					}
 					foreach ($location as $columnName => $value) {
 						$tableField = $tFOrdered[strtoupper($columnName)];
