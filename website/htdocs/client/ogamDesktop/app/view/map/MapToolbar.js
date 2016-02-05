@@ -66,14 +66,14 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             tooltip: this.drawLineButtonTooltip,
             toggleGroup : "editing",
             listeners: {
-                click: 'onDrawLineButtonPress'
+                click: 'onDrawLineButtonToggle'
             }
         },{
             iconCls : 'o-map-tools-map-drawpolygon',
             tooltip: this.drawPolygonButtonTooltip,
             toggleGroup : "editing",
             listeners: {
-                click: 'onDrawPlygonButtonPress'
+                click: 'onDrawPolygonButtonToggle'
             }
         },{
             iconCls : 'o-map-tools-map-selectFeature',

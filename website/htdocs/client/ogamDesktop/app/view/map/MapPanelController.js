@@ -42,13 +42,13 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         }
     },
 
-    onDrawPointButtonToggle : function (button, pressed, eOpts) {
+    onDrawButtonToggle : function (pressed, drawType) {
         if (pressed) {
             var features = this.getMapLayer('drawingLayer').getSource().getFeaturesCollection();
             this.addCurrentMapInteractions([
                 new ol.interaction.Draw({
                     features: features,
-                    type: 'Point'
+                    type: drawType
                 }),
                 new ol.interaction.Modify({
                     features: features, 
@@ -64,6 +64,18 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         } else {
             this.removeCurrentMapInteractions();
         }
+    },
+
+    onDrawPointButtonToggle : function (button, pressed, eOpts) {
+        this.onDrawButtonToggle(pressed, 'Point');
+    },
+
+    onDrawLineButtonToggle : function (button, pressed, eOpts) {
+        this.onDrawButtonToggle(pressed, 'LineString');
+    },
+
+    onDrawPolygonButtonToggle : function (button, pressed, eOpts) {
+        this.onDrawButtonToggle(pressed, 'Polygon');
     }
 });
 
