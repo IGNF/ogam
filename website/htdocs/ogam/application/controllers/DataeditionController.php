@@ -672,12 +672,12 @@ class DataEditionController extends AbstractOGAMController {
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
 		
-		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
+		$this->view->checkEditionRights = 'true'; // By default, we don't check for rights on the data
 		
 		$this->view->userProviderId = $user->provider->id;
 		
 		if (!empty($user) && $user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
-			$this->view->checkEditionRights = 'true';
+			$this->view->checkEditionRights = 'false';
 		}
 		
 		$this->_helper->layout()->disableLayout();

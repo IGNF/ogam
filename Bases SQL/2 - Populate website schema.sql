@@ -75,18 +75,15 @@ INSERT INTO ROLE_TO_SCHEMA(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'RAW_DATA');
 INSERT INTO ROLE_TO_SCHEMA(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'HARMONIZED_DATA');
 
 
+DELETE FROM permission_per_role;
+DELETE FROM permission;
+
 -- List the permissions of the web site
 INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_USERS', 'Manage users');
 INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_INTEGRATION', 'Provide data');
---INSERT INTO permission(permission_code, permission_label) VALUES ('OVERVIEW', 'See an overview board');
 INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_QUERY', 'Visualise data');
 INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_QUERY_OTHER_PROVIDER', 'Visualise data from other provider');
 INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_HARMONIZATION', 'Launch the harmonization process');
---INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_AGGREGATION', 'Launch the aggregation process');
---INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_QUERY_AGGREGATED', 'Visualise aggregated data');
---INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_INTERPOLATION', 'Launch the interpolation process');
---INSERT INTO permission(permission_code, permission_label) VALUES ('DOCUMENTATION', 'Visualise the project public documentation');
---INSERT INTO permission(permission_code, permission_label) VALUES ('PRIVATE_DOCUMENTATION', 'Visualise the project private documentation');
 INSERT INTO permission(permission_code, permission_label) VALUES ('EXPORT_RAW_DATA', 'Export the raw data as a CSV file');
 INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_EDITION', 'Add / Update / Delete data');
 INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_EDITION_OTHER_PROVIDER', 'Add / Update / Delete data from another provider');
@@ -100,13 +97,6 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DA
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_QUERY');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_QUERY_OTHER_PROVIDER');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_HARMONIZATION');
---INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_QUERY_HARMONIZED');
---INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_AGGREGATION');
---INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_QUERY_AGGREGATED');
---INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_INTERPOLATION');
---INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'OVERVIEW');
---INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DOCUMENTATION');
---INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'PRIVATE_DOCUMENTATION');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'EXPORT_RAW_DATA');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_EDITION');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_EDITION_OTHER_PROVIDER');
