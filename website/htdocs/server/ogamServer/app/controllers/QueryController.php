@@ -80,7 +80,9 @@ class QueryController extends AbstractOGAMController {
 		
 		if ($schema !== null) {
 			$websiteSession->schema = $schema;
-		} else {
+		}
+
+		if (!isset($websiteSession->schema) || empty($websiteSession->schema)) {
 			// Default value
 			$websiteSession->schema = 'RAW_DATA';
 		}
@@ -391,7 +393,7 @@ class QueryController extends AbstractOGAMController {
 			echo $this->queryService->getResultColumns($datasetId, $formQuery, $withSQL);
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			echo '{"success":false,errorMessage:"' . json_encode($e->getMessage()) . '"}';
+			echo '{"success":false,errorMessage:' . json_encode($e->getMessage()) . '}';
 		}
 		
 		// Activate the result layer
