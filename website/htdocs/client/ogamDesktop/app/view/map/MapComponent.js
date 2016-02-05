@@ -8,6 +8,8 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
         logo: false, // no attributions to ol
         layers: [
             new ol.layer.Vector({
+                code: 'drawingLayer',
+                name: 'Drawing layer',
                 source: new ol.source.Vector({features: new ol.Collection()}),
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
@@ -40,7 +42,6 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
         }),
         controls:  [
             new ol.control.ZoomSlider(),
-            new ol.control.ZoomToExtent(),
             new ol.control.ScaleLine(),
             new ol.control.MousePosition()
         ]
