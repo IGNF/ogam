@@ -5,7 +5,7 @@
 /database/GENERATE_DB.log
 /documentation/2 - Conception/metadata/v4/*.csv
 /documentation/2 - Conception/Schémas relationnels/md ogam.sms.bak
-/website/htdocs/public/ogamDesktop/*
+/website/htdocs/public/OgamDesktop/*
 /website/htdocs/client/build
 /website/htdocs/client/ogamDesktop/bootstrap.json
 /website/htdocs/client/ogamDesktop/bootstrap.css
