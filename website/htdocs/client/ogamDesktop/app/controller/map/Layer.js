@@ -442,7 +442,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 		this.mapPanel.wfsLayer.visibility = false;*/
 
 		//this.setMapLayers(this.mapPanel.map, this.mapPanel.baseLayer, this.mapPanel.vectorLayer, this.mapPanel.vector, this.mapPanel.wfsLayer);
-                this.setMapLayers(this.mapPanel.mapCmp.getMap());
+                this.setMapLayers(this.mapPanel.lookupReference('mapCmp').getMap());
 
 		// Gets the layer tree model to initialise the Layer
 		// Tree
@@ -565,9 +565,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                     node = nodes[i].getData();
                     console.log('node data', node)
                     if (!node.leaf) {
-                        console.log('map panel layers', this.mapPanel.mapCmp.getMap().getLayers());
+                        console.log('map panel layers', this.mapPanel.lookupReference('mapCmp').getMap().getLayers());
                         groupLayers = [];
-                        this.mapPanel.mapCmp.getMap().getLayers().forEach(function(layer, idx){
+                        this.mapPanel.lookupReference('mapCmp').getMap().getLayers().forEach(function(layer, idx){
                             console.log('layer', layer);
                             console.log('layer keys', layer.getKeys());
                             if (layer.get('nodeGroup') == node.nodeGroup) {
@@ -580,12 +580,12 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                            name: node.text,
                            layers: groupLayers
                         });
-                        this.mapPanel.mapCmp.getMap().getLayers().push(group)
+                        this.mapPanel.lookupReference('mapCmp').getMap().getLayers().push(group)
                     };                 
                 }
                 
                 treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
-                    layerGroup: this.mapPanel.mapCmp.getMap().getLayerGroup()
+                    layerGroup: this.mapPanel.lookupReference('mapCmp').getMap().getLayerGroup()
                 });
 		this.getLayerspanel().setConfig('store', treeLayerStore);
 	},

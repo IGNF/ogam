@@ -11,7 +11,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
     layout: 'fit',
     controller: 'mappanel',
     requires: [
-    	'OgamDesktop.view.map.MapToolbar'
+    	'OgamDesktop.view.map.MapToolbar',
+    	'OgamDesktop.view.map.MapComponent'
     ],
 //	requires: [
 //		'GeoExt.tree.LayerContainer',
@@ -158,88 +159,15 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	 */
 //	map : null,
 //	
+	dockedItems: [{
+		xtype:'maptoolbar',
+		dock: 'top'
+	}],
 
-	tbar: {
-		xtype:'maptoolbar'
-	},
+    items: [{
+        xtype: 'mapcomponent'
+    }]
 
-    initComponent: function(){
-        // Init the map
-        this.mapCmp = this.initMapCmp();
-        
-        this.callParent(arguments);
-        
-        // add map component
-        this.add(this.mapCmp);
-    },
-    
-    
-    initMapCmp: function(){
-        
-        this.features = new ol.Collection();
-        var source = new ol.source.Vector({features: this.features});
-
-        var vector = new ol.layer.Vector({
-            source: source,
-            style: new ol.style.Style({
-                fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.2)'
-                }),
-                stroke: new ol.style.Stroke({
-                    color: '#ffcc33',
-                    width: 2
-                }),
-                image: new ol.style.Circle({
-                    radius: 7,
-                    fill: new ol.style.Fill({
-                      color: '#ffcc33'
-                    })
-                })
-            })
-        });
-        
-        zoomslider = new ol.control.ZoomSlider();
-        zoomExtent = new ol.control.ZoomToExtent();
-        scaleLine = new ol.control.ScaleLine();
-        mousePos = new ol.control.MousePosition();   
-        
-        map = new ol.Map({
-            logo: false, // no attributions to ol
-            layers: [vector],
-            view: new ol.View({
-                resolutions: OgamDesktop.map.resolutions.slice(this.minZoomLevel),
-                projection : OgamDesktop.map.projection,
-                center: [OgamDesktop.map.x_center, OgamDesktop.map.y_center],
-                zoom: OgamDesktop.map.defaultzoom,
-                extent: [
-                    OgamDesktop.map.x_min,
-                    OgamDesktop.map.y_min,
-                    OgamDesktop.map.x_max,
-                    OgamDesktop.map.y_max
-                ]
-            }),
-            controls:  [
-                zoomslider,
-                zoomExtent,
-                scaleLine,
-                mousePos
-            ]
-        });
-        
-        // this map panel contains "geoext" map component
-        var mapCmp = Ext.create('GeoExt.component.Map', {
-            map: map,
-            reference: 'mapCmp'
-        });
-        
-        // 'afterinitmap' event is catched by the layer controller
-        // that applies the 'setMapLayers' handlers
-        this.fireEvent('afterinitmap', mapCmp.getMap());
-        
-        return mapCmp;
-    }
-    
-//
 //	/**
 //	 * Initialize the map
 //	 * 
