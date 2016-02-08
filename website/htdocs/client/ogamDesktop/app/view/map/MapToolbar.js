@@ -32,28 +32,31 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             margin:'3 -3 0 -2',
             style:'color:#aaa'
         },{
-            xtype: 'splitbutton',
-            iconCls : 'o-map-tools-map-loadvectorlayer',
-            tooltip: this.loadVectorLayerButtonTooltip,
-            menu: [{
-                text:'Menu Item 1'
-            },{
-                text:'Menu Item 2'
-            },{
-                text:'Menu Item 3'
-            }]
-        },{
             iconCls : 'o-map-tools-map-snapping',
             tooltip: this.snappingButtonTooltip,
             enableToggle: true,
             listeners: {
-                click: 'onSnappingButtonPress'
+                toggle: 'onSnappingButtonToggle'
+            }
+        },{
+            iconCls : 'o-map-tools-map-modifyfeature',
+            tooltip: this.modifyfeatureButtonTooltip,
+            enableToggle: true,
+            listeners: {
+                toggle: 'onModifyfeatureButtonToggle'
             }
         },{ // Use of tbtext because tbseparator doesn't work...
             xtype:'tbtext',
             html: '|',
             margin:'3 -3 0 -2',
             style:'color:#aaa'
+        },{
+            iconCls : 'o-map-tools-map-select',
+            tooltip: this.selectButtonTooltip,
+            toggleGroup : "editing",
+            listeners: {
+                toggle: 'onSelectButtonToggle'
+            }
         },{
             iconCls : 'o-map-tools-map-drawpoint',
             tooltip: this.drawPointButtonTooltip,
@@ -66,21 +69,14 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             tooltip: this.drawLineButtonTooltip,
             toggleGroup : "editing",
             listeners: {
-                click: 'onDrawLineButtonToggle'
+                toggle: 'onDrawLineButtonToggle'
             }
         },{
             iconCls : 'o-map-tools-map-drawpolygon',
             tooltip: this.drawPolygonButtonTooltip,
             toggleGroup : "editing",
             listeners: {
-                click: 'onDrawPolygonButtonToggle'
-            }
-        },{
-            iconCls : 'o-map-tools-map-selectFeature',
-            tooltip: this.selectFeatureButtonTooltip,
-            toggleGroup : "editing",
-            listeners: {
-                click: 'onSelectFeatureButtonPress'
+                toggle: 'onDrawPolygonButtonToggle'
             }
         },{ // Use of tbtext because tbseparator doesn't work...
             xtype:'tbtext',
@@ -88,11 +84,22 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             margin:'3 -3 0 -2',
             style:'color:#aaa'
         },{
-            iconCls : 'o-map-tools-map-modifyfeature',
-            tooltip: this.modifyFeatureButtonTooltip,
+            xtype: 'splitbutton',
+            iconCls : 'o-map-tools-map-loadvectorlayer',
+            tooltip: this.loadVectorLayerButtonTooltip,
+            menu: [{
+                text:'Menu Item 1'
+            },{
+                text:'Menu Item 2'
+            },{
+                text:'Menu Item 3'
+            }]
+        },{
+            iconCls : 'o-map-tools-map-selectFeature',
+            tooltip: this.selectFeatureButtonTooltip,
             toggleGroup : "editing",
             listeners: {
-                click: 'onModifyFeatureButtonPress'
+                click: 'onSelectFeatureButtonPress'
             }
         },{
             iconCls : 'o-map-tools-map-deletefeature',

@@ -7,7 +7,6 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
 
     init : function() {
         this.map = this.lookupReference('mapCmp').getMap();
-        this.currentMapInteractions = null;
     },
 
     getMapLayer : function (layerCode) {
@@ -23,59 +22,75 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         return me.layer;
     },
 
-    addCurrentMapInteractions : function (interactions) {
-        if (this.currentMapInteractions !== null){
-            this.removeCurrentMapInteractions();
-        }
-        this.currentMapInteractions = interactions;
-        for (var i = 0; i < interactions.length; i++) {
-            this.map.addInteraction(interactions[i]);
-        }
-    },
-
-    removeCurrentMapInteractions : function () {
-        if (this.currentMapInteractions !== null){
-            for (var i = 0; i < this.currentMapInteractions.length; i++) {
-                this.map.removeInteraction(this.currentMapInteractions[i]);
+    onControlButtonPress : function (button, interaction) {
+        this.map.addInteraction(interaction);
+        button.on({
+            toggle: {
+                fn: function(){
+                    this.map.removeInteraction(interaction);
+                }, 
+                scope: this,
+                single: true
             }
-            this.currentMapInteractions = null;
+        });
+    },
+
+    onSnappingButtonToggle : function (button, pressed, eOpts) {
+        if (pressed) {
+            var snapInter = new ol.interaction.Snap({
+                source: this.getMapLayer('drawingLayer').getSource()
+            });
+            this.onControlButtonPress(button, snapInter);
+            // The snap interaction must be added last, as it needs to be the first to handle the pointermove event.
+            var listenerKey = this.map.getInteractions().on("add", function (collectionEvent) {
+                if (!(collectionEvent.element instanceof ol.interaction.Snap)) { // To avoid an infinite loop
+                    this.map.removeInteraction(snapInter);
+                    this.map.addInteraction(snapInter);
+                }
+            }, this);
+            button.on({
+                toggle: {
+                    fn: function () {
+                        ol.Observable.unByKey(listenerKey);
+                    }, 
+                    scope: this,
+                    single: true
+                }
+            });
         }
     },
 
-    onDrawButtonToggle : function (pressed, drawType) {
-        if (pressed) {
-            var features = this.getMapLayer('drawingLayer').getSource().getFeaturesCollection();
-            this.addCurrentMapInteractions([
-                new ol.interaction.Draw({
-                    features: features,
-                    type: drawType
-                }),
-                new ol.interaction.Modify({
-                    features: features, 
-                    // the SHIFT key must be pressed to delete vertices, so
-                    // that new vertices can be drawn at the same position
-                    // of existing vertices
-                    deleteCondition: function(event) {
-                        return ol.events.condition.shiftKeyOnly(event) &&
-                            ol.events.condition.singleClick(event);
-                    }
-                })
-            ]);
-        } else {
-            this.removeCurrentMapInteractions();
-        }
+    onModifyfeatureButtonToggle : function (button, pressed, eOpts) {
+        pressed && this.onControlButtonPress(button, new ol.interaction.Modify({
+            features: this.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
+            deleteCondition: function(event) {
+                return ol.events.condition.shiftKeyOnly(event) &&
+                    ol.events.condition.singleClick(event);
+            }
+        }));
+    },
+
+    onSelectButtonToggle : function (button, pressed, eOpts) {
+        pressed && this.onControlButtonPress(button, new ol.interaction.Select());
+    },
+
+    onDrawButtonToggle : function (button, pressed, drawType) {
+        pressed && this.onControlButtonPress(button, new ol.interaction.Draw({
+            features: this.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
+            type: drawType
+        }));
     },
 
     onDrawPointButtonToggle : function (button, pressed, eOpts) {
-        this.onDrawButtonToggle(pressed, 'Point');
+        this.onDrawButtonToggle(button, pressed, 'Point');
     },
 
     onDrawLineButtonToggle : function (button, pressed, eOpts) {
-        this.onDrawButtonToggle(pressed, 'LineString');
+        this.onDrawButtonToggle(button, pressed, 'LineString');
     },
 
     onDrawPolygonButtonToggle : function (button, pressed, eOpts) {
-        this.onDrawButtonToggle(pressed, 'Polygon');
+        this.onDrawButtonToggle(button, pressed, 'Polygon');
     }
 });
 
