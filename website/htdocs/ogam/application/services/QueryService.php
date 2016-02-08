@@ -456,6 +456,35 @@ class Application_Service_QueryService {
 	}
 
 	/**
+	 * Returns the value of a field.
+	 *
+	 * @param Application_Object_Metadata_TableField $tableField
+	 *        	the tablefield name
+	 * @param String $value
+	 *        	the value of the field
+	 * @return String The label
+	 */
+	private function _getValueLabel($tableField, $value) {
+		$label = '';
+		
+		if (empty($value)) {
+			return "";
+		}
+		
+		if ($tableField->subtype == "DYNAMIC") {
+			$label = $this->metadataModel->getDynamodeLabels($tableField->unit, $value)[$value];
+		} else if ($tableField->subtype === "TREE") {
+			$label = $this->metadataModel->getTreeLabels($tableField->unit, $value)[$value];
+		} else if ($tableField->subtype === "TAXREF") {
+			$label = $this->metadataModel->getTaxrefLabels($tableField->unit, $value)[$value];
+		} else {
+			$label = $this->metadataModel->getModeLabels($tableField->unit, $value)[$value];
+		}
+		
+		return $label;
+	}
+
+	/**
 	 * Get a page of query result data.
 	 *
 	 * @param Integer $start
@@ -506,25 +535,6 @@ class Application_Service_QueryService {
 			// Execute the request
 			$result = $this->genericModel->executeRequest($select . $fromwhere . $filter);
 			
-			// Prepare the needed traductions
-			$traductions = array();
-			foreach ($resultColumns as $tableField) {
-				
-				$key = strtolower($tableField->getName());
-				
-				if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
-					if ($tableField->subtype == "DYNAMIC") {
-						$traductions[$key] = $this->metadataModel->getDynamodeLabels($tableField->unit);
-					} else if ($tableField->subtype === "TREE") {
-						$traductions[$key] = $this->metadataModel->getTreeLabels($tableField->unit);
-					} else if ($tableField->subtype === "TAXREF") {
-						$traductions[$key] = $this->metadataModel->getTaxrefLabels($tableField->unit);
-					} else {
-						$traductions[$key] = $this->metadataModel->getModeLabels($tableField->unit);
-					}
-				}
-			}
-			
 			// Send the result as a JSON String
 			$json = '{"success":true,';
 			$json .= '"total":' . $countResult . ',';
@@ -539,14 +549,14 @@ class Application_Service_QueryService {
 					
 					// Manage code traduction
 					if ($tableField->type === "CODE" && $value != "") {
-						$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+						$label = $this->_getValueLabel($tableField, $value);
 						$json .= json_encode($label == null ? '' : $label) . ',';
 					} else if ($tableField->type === "ARRAY" && $value != "") {
 						// Split the array items
 						$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 						$label = '';
 						foreach ($arrayValues as $arrayValue) {
-							$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
+							$label .= $this->_getValueLabel($tableField, $arrayValue);
 							$label .= ',';
 						}
 						if ($label != '') {
