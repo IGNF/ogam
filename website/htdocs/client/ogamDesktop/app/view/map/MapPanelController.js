@@ -91,6 +91,18 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
 
     onDrawPolygonButtonToggle : function (button, pressed, eOpts) {
         this.onDrawButtonToggle(button, pressed, 'Polygon');
+    },
+
+    onZoomToMaxExtentButtonPress : function (button, e, eOpts ) {
+        this.map.getView().fit(
+            [
+                OgamDesktop.map.x_min,
+                OgamDesktop.map.y_min,
+                OgamDesktop.map.x_max,
+                OgamDesktop.map.y_max
+            ], 
+            this.map.getSize()
+        );
     }
 });
 

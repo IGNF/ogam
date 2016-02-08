@@ -97,14 +97,12 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
         },{
             iconCls : 'o-map-tools-map-selectFeature',
             tooltip: this.selectFeatureButtonTooltip,
-            toggleGroup : "editing",
             listeners: {
                 click: 'onSelectFeatureButtonPress'
             }
         },{
             iconCls : 'o-map-tools-map-deletefeature',
             tooltip: this.deleteFeatureButtonTooltip,
-            toggleGroup : "editing",
             listeners: {
                 click: 'onDeleteFeatureButtonPress'
             }
