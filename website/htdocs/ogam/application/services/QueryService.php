@@ -456,35 +456,6 @@ class Application_Service_QueryService {
 	}
 
 	/**
-	 * Returns the value of a field.
-	 *
-	 * @param Application_Object_Metadata_TableField $tableField
-	 *        	the tablefield name
-	 * @param String $value
-	 *        	the value of the field
-	 * @return String The label
-	 */
-	private function _getValueLabel($tableField, $value) {
-		$label = '';
-		
-		if (empty($value)) {
-			return "";
-		}
-		
-		if ($tableField->subtype == "DYNAMIC") {
-			$label = $this->metadataModel->getDynamodeLabels($tableField->unit, $value)[$value];
-		} else if ($tableField->subtype === "TREE") {
-			$label = $this->metadataModel->getTreeLabels($tableField->unit, $value)[$value];
-		} else if ($tableField->subtype === "TAXREF") {
-			$label = $this->metadataModel->getTaxrefLabels($tableField->unit, $value)[$value];
-		} else {
-			$label = $this->metadataModel->getModeLabels($tableField->unit, $value)[$value];
-		}
-		
-		return $label;
-	}
-
-	/**
 	 * Get a page of query result data.
 	 *
 	 * @param Integer $start
@@ -549,14 +520,14 @@ class Application_Service_QueryService {
 					
 					// Manage code traduction
 					if ($tableField->type === "CODE" && $value != "") {
-						$label = $this->_getValueLabel($tableField, $value);
+						$label = $this->genericService->getValueLabel($tableField, $value);
 						$json .= json_encode($label == null ? '' : $label) . ',';
 					} else if ($tableField->type === "ARRAY" && $value != "") {
 						// Split the array items
 						$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 						$label = '';
 						foreach ($arrayValues as $arrayValue) {
-							$label .= $this->_getValueLabel($tableField, $arrayValue);
+							$label .= $this->genericService->getValueLabel($tableField, $arrayValue);
 							$label .= ',';
 						}
 						if ($label != '') {

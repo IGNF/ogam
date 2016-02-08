@@ -1112,4 +1112,33 @@ class Application_Service_GenericService {
 		
 		return $labels;
 	}
+	
+	/**
+	 * Returns the value of a field.
+	 *
+	 * @param Application_Object_Metadata_TableField $tableField
+	 *        	the tablefield name
+	 * @param String $value
+	 *        	the value of the field
+	 * @return String The label
+	 */
+	public function getValueLabel($tableField, $value) {
+		$label = '';
+	
+		if (empty($value)) {
+			return "";
+		}
+	
+		if ($tableField->subtype == "DYNAMIC") {
+			$label = $this->metadataModel->getDynamodeLabels($tableField->unit, $value)[$value];
+		} else if ($tableField->subtype === "TREE") {
+			$label = $this->metadataModel->getTreeLabels($tableField->unit, $value)[$value];
+		} else if ($tableField->subtype === "TAXREF") {
+			$label = $this->metadataModel->getTaxrefLabels($tableField->unit, $value)[$value];
+		} else {
+			$label = $this->metadataModel->getModeLabels($tableField->unit, $value)[$value];
+		}
+	
+		return $label;
+	}
 }
