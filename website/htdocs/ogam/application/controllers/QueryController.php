@@ -413,7 +413,7 @@ class QueryController extends AbstractOGAMController {
 		
 		$this->view->hideGridCsvExportMenuItem = 'true'; // By default the export is hidden
 		$this->view->hideGridDataEditButton = 'true';
-		$this->view->checkEditionRights = 'true'; // By default, we don't check for rights on the data
+		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
 		
 		$this->view->userProviderId = $userSession->user->provider->id;
 		
@@ -427,7 +427,7 @@ class QueryController extends AbstractOGAMController {
 			$this->view->hideGridDataEditButton = 'false';
 		}
 		if ($role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
-			$this->view->checkEditionRights = 'false';
+			$this->view->checkEditionRights = 'true';
 		}
 		
 		$this->_helper->layout()->disableLayout();
@@ -535,7 +535,7 @@ class QueryController extends AbstractOGAMController {
 		
 		try {
 			$pdf->writeHTML($this->view->partial('query/pdfexport.phtml', $pdfExportArray));
-			$pdf->Output($this->_removeAccents($data['title']) . '.pdf', 'D');
+			$pdf->Output($this->removeAccents($data['title']) . '.pdf', 'D');
 		} 
 
 		catch (HTML2PDF_exception $e) {
@@ -549,24 +549,6 @@ class QueryController extends AbstractOGAMController {
 		foreach ($tmpImgPath2 as $img) {
 			unlink($img);
 		}
-	}
-
-	/**
-	 * Remove the accents.
-	 *
-	 * @param String $str
-	 *        	The string
-	 * @param String $charset
-	 *        	The string charset
-	 */
-	private function _removeAccents($str, $charset = 'utf-8') {
-		$str = htmlentities($str, ENT_NOQUOTES, $charset);
-		
-		$str = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
-		$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
-		$str = preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
-		
-		return $str;
 	}
 
 	/**
@@ -1362,6 +1344,7 @@ class QueryController extends AbstractOGAMController {
 		
 		$unit = $this->getRequest()->getParam('unit');
 		$query = pg_escape_string($this->getRequest()->getParam('query'));
+		$query = $this->genericService->removeAccents($query);
 		$start = $this->getRequest()->getParam('start');
 		$limit = $this->getRequest()->getParam('limit');
 		

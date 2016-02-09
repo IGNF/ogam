@@ -882,7 +882,11 @@ class Application_Service_GenericService {
 				$sql = "'" . $value . "'";
 				break;
 			case "GEOM":
-				$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")";
+				if ($value == "") {
+					$sql = "NULL";
+				} else {
+					$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")";
+				}
 				break;
 			case "STRING":
 			default:
@@ -1144,5 +1148,23 @@ class Application_Service_GenericService {
 		}
 	
 		return $label;
+	}
+
+	/**
+	 * Remove the accents.
+	 *
+	 * @param String $str
+	 *        	The string
+	 * @param String $charset
+	 *        	The string charset
+	 */
+	public function removeAccents($str, $charset = 'utf-8') {
+		$str = htmlentities($str, ENT_NOQUOTES, $charset);
+		
+		$str = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+		$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
+		$str = preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
+		
+		return $str;
 	}
 }
