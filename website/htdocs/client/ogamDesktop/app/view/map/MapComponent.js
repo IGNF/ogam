@@ -46,7 +46,7 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
 		    new ol.control.MousePosition({
 				className:'o-map-tools-map-mouse-position',
 				coordinateFormat :function(coords){
-					var template = 'X: {x} - Y: {y}';
+					var template = 'X: {x} - Y: {y} ' + OgamDesktop.map.projection;
 					return ol.coordinate.format(coords, template);
 		    }})
 		]

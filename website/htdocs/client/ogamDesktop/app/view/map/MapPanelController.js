@@ -102,18 +102,6 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         this.onDrawButtonToggle(button, pressed, 'Polygon');
     },
 
-    onZoomToMaxExtentButtonPress : function (button, e, eOpts ) {
-        this.map.getView().fit(
-            [
-                OgamDesktop.map.x_min,
-                OgamDesktop.map.y_min,
-                OgamDesktop.map.x_max,
-                OgamDesktop.map.y_max
-            ], 
-            this.map.getSize()
-        );
-    },
-
     onDeleteFeatureButtonPress : function (button, e, eOpts) {
         var drawingLayerSource = this.getMapLayer('drawingLayer').getSource();
         var featuresCollection = this.selectInteraction.getFeatures();
@@ -125,6 +113,31 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         );
         // Remove all the features of the selection layer
         featuresCollection.clear();
+    },
+
+    // TODO: @PEG : Ajouter l'attribut code: 'results' à la couche des résultats,
+    onZoomToResultFeaturesButtonPress : function (button, e, eOpts) {
+        var extent = this.getMapLayer('results').getSource().getExtent();
+        if (ol.extent.isEmpty(extent)) {
+            Ext.Msg.alert('Zoom to result features :', 'The drawing layer contains no feature on which to zoom.');
+        } else {
+            this.map.getView().fit(
+                extent, 
+                this.map.getSize()
+            );
+        }
+    },
+
+    onZoomToMaxExtentButtonPress : function (button, e, eOpts) {
+        this.map.getView().fit(
+            [
+                OgamDesktop.map.x_min,
+                OgamDesktop.map.y_min,
+                OgamDesktop.map.x_max,
+                OgamDesktop.map.y_max
+            ], 
+            this.map.getSize()
+        );
     }
 });
 
