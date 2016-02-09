@@ -43,6 +43,7 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
 		controls:  [
 		    new ol.control.ZoomSlider(),
 		    new ol.control.ScaleLine(),
+			new ol.control.Scale ({className:'o-map-tools-map-scale'}),
 		    new ol.control.MousePosition({
 				className:'o-map-tools-map-mouse-position',
 				coordinateFormat :function(coords){
