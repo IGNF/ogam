@@ -67,6 +67,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			'map-mainwin': {
 				afterrender: 'afterMapMainWinRender'
 			},
+                        'mapcomponent': {
+                            changelayervisibility: 'updateLayerNode'
+                        },
 			'map-panel': {
 				afterinitmap: 'setMapLayers',
 				getFeature: 'getFeature',
@@ -306,7 +309,13 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			this.getMapaddonspanel().setActiveItem(this.getLegendspanel());
 		}
 	},
-
+        updateLayerNode: function(lyr, toEnable) {
+            console.log('--------  UPDATE LAYER NODE HANDLER  --------');
+            console.log('lyr', lyr);
+            console.log('visibility', toEnable);
+            
+            
+        },
 	/**
 	 * Handler of 'afterrender' event for the MapPanel.
 	 * 
@@ -314,14 +323,14 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 *            mappanel the MapPanel
 	 */
 	afterMapMainWinRender: function(mapmainwin) {
-		this.mapMainWin = mapmainwin;
-		this.mapPanel = this.getMappanel();
-		// Load the LayerService store
-		var serviceStore = this.getStore('map.LayerService');
-		serviceStore.load({
-			callback: this.onServiceStoreLoad,
-			scope: this
-		});
+            this.mapMainWin = mapmainwin;
+            this.mapPanel = this.getMappanel();
+            // Load the LayerService store
+            var serviceStore = this.getStore('map.LayerService');
+            serviceStore.load({
+                    callback: this.onServiceStoreLoad,
+                    scope: this
+            });
 	},
 
 	/**
@@ -495,7 +504,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 newLayer = new ol.layer.Tile({
                     opacity: layerObject.data.options.opacity,
                     source: source,
-                    name: layerObject.data.options.label
+                    name: layerObject.data.options.label,
+                    minResolution: 88.19439681947
                 });
 
             } else if (paramsObj['SERVICE'] === "WMS"){
@@ -506,6 +516,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 layerOpts = layerObject.data.options;
                 layerOpts['source'] = source;
                 layerOpts['name'] = layerObject.data.options.label;
+                layerOpts['minResolution'] = 88.19439681947;
+                layerOpts['maxResolution'] = 1763.8879363894;
                 newLayer = new ol.layer.Tile(layerOpts);
             } else {
                     Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");
@@ -559,19 +571,13 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 *            nodes The 'LayerNode' store records to fill the layers tree
 	 */
 	initLayerTree: function(nodes) {
-                console.log('tree layer store nodes', nodes);
                 groups =  [];
                 for (i in nodes) {
                     node = nodes[i].getData();
-                    console.log('node data', node)
                     if (!node.leaf) {
-                        console.log('map panel layers', this.mapPanel.lookupReference('mapCmp').getMap().getLayers());
                         groupLayers = [];
                         this.mapPanel.lookupReference('mapCmp').getMap().getLayers().forEach(function(layer, idx){
-                            console.log('layer', layer);
-                            console.log('layer keys', layer.getKeys());
                             if (layer.get('nodeGroup') == node.nodeGroup) {
-                                console.log('layer label', layer.get('label'));
                                 groupLayers.push(layer);
                             }
                         

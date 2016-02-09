@@ -27,7 +27,7 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
             })
         ],
         view: new ol.View({
-            resolutions: OgamDesktop.map.resolutions.slice(this.minZoomLevel),
+            resolutions: OgamDesktop.map.resolutions,
             projection : OgamDesktop.map.projection,
             center: [OgamDesktop.map.x_center, OgamDesktop.map.y_center],
             zoom: OgamDesktop.map.defaultzoom,
@@ -44,5 +44,30 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
             new ol.control.ScaleLine(),
             new ol.control.MousePosition()
         ]
-    })
+    }),
+   isResInLayerRange: function(lyr, res){
+       if (res >= lyr.getMinResolution() && res < lyr.getMaxResolution()) { // in range
+           return true;
+       } else { // out of range
+           return false;
+       }
+   },
+   initComponent: function(){
+       this.getMap().getLayers().forEach(function(lyr){
+            lyr.setVisible(lyr.getVisible());
+       });
+       
+       this.getMap().getView().on('change:resolution', function(e){
+          curRes = e.target.get(e.key); // new value of resolution
+          oldRes = e.oldValue; // old value of resolution
+          this.getMap().getLayers().forEach(function(lyr){
+              if (this.isResInLayerRange(lyr, curRes) && !this.isResInLayerRange(lyr, oldRes)) {
+                  this.fireEvent('changelayervisibility', lyr, true);
+              } else if (!this.isResInLayerRange(lyr, curRes) && this.isResInLayerRange(lyr, oldRes)) {
+                  this.fireEvent('changelayervisibility', lyr, false);
+              };
+          }, this);
+       }, this);
+       this.callParent(arguments);
+   }
 });

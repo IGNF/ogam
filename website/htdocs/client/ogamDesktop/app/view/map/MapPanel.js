@@ -91,11 +91,6 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	 */
 //	isDrawingMap: true,
 //	
-//	/**
-//	 * @cfg {Integer} minZoomLevel The min zoom level for the
-//	 *      map (defaults to <tt>0</tt>)
-//	 */
-	minZoomLevel : 0,
 //	
 //	/**
 //	 * @cfg {String} resultsBBox The results bounding box

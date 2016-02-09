@@ -158,8 +158,6 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		
 		// Get the BBOX
 		var center = this.getMappanel().map.getCenter(), zoom = this.getMappanel().map.getZoom(), i;
-		console.log(center)
-		console.log(zoom)
 		
 		// Get the layers
 		var activatedLayers = this.getMappanel().map.getLayersBy('visibility', true);
@@ -170,11 +168,9 @@ Ext.define('OgamDesktop.controller.map.Main',{
 				currentLayer.visibility == true &&
 				currentLayer.inRange == true) {
 				layersToPrint.push(this.olLayerToString(currentLayer));
-				console.log(currentLayer)
 			}
 		}
 
-		console.log(layersToPrint)
 		this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
 			center : center,
 			zoom : zoom,

@@ -8,7 +8,6 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
 	onDrawPointButtonPress : function() {
 		var mapCmp = this.lookupReference('mapCmp');
 		var features = new ol.Collection();
-		console.log('mapCmp : ', mapCmp);
         draw = new ol.interaction.Draw({
             features: features,
             type: 'Point'
