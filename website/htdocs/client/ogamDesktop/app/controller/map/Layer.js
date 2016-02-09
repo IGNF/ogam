@@ -505,7 +505,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                     opacity: layerObject.data.options.opacity,
                     source: source,
                     name: layerObject.data.options.label,
-                    minResolution: 88.19439681947
+                    minResolution: 88.19439681947,
+                    printable: true
                 });
 
             } else if (paramsObj['SERVICE'] === "WMS"){
@@ -518,6 +519,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 layerOpts['name'] = layerObject.data.options.label;
                 layerOpts['minResolution'] = 88.19439681947;
                 layerOpts['maxResolution'] = 1763.8879363894;
+                layerOpts['printable'] = true;
                 newLayer = new ol.layer.Tile(layerOpts);
             } else {
                     Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");

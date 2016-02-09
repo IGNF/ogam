@@ -152,14 +152,14 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
         tooltip: this.zoomInButtonTooltip,
         toggleGroup : "consultation",
         listeners: {
-            click: 'onZoomInButtonPress'
+            toggle: 'onZoomInButtonPress'
         }
     },{
         iconCls : 'o-map-tools-map-pan',
         tooltip: this.mapPanButtonTooltip,
         toggleGroup : "consultation",
         listeners: {
-            click: 'onMapPanButtonPress'
+            toggle: 'onMapPanButtonPress'
         }
     },'-',{
         iconCls : 'o-map-tools-map-zoomtoresultfeatures',

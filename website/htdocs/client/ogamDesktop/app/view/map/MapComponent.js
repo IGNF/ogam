@@ -6,10 +6,12 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
 
     map: new ol.Map({
         logo: false, // no attributions to ol
+        interactions: ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false}),
         layers: [
             new ol.layer.Vector({
                 code: 'drawingLayer',
                 name: 'Drawing layer',
+                printable: false,
                 source: new ol.source.Vector({features: new ol.Collection()}),
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({

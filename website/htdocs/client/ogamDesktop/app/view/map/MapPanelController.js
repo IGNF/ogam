@@ -21,7 +21,44 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         );
         return me.layer;
     },
+    
+    /**
+     * Create and submit a form
+     * 
+     * @param {String}
+     *            url The form url
+     * @param {object}
+     *            params The form params
+     */
+    post: function(url, params) {
+        var temp = document.createElement("form"), x;
+        temp.action = url;
+        temp.method = "POST";
+        temp.style.display = "none";
+        for (x in params) {
+            var opt = document.createElement("textarea");
+            opt.name = x;
+            opt.value = params[x];
+            temp.appendChild(opt);
+        }
+        document.body.appendChild(temp);
+        temp.submit();
+        return temp;
+    }, 
 
+    olLayerToString : function(layer){
+        layerStr = '{';
+        layerStr += '"name":"' + layer.name + '",';
+        layerStr += '"opacity":' + layer.opacity;
+        if (layer.tileSize) {
+            tileSizeArray = [layer.tileSize.h, layer.tileSize.w];
+            layerStr += ', "tileSize": [' + tileSizeArray.toString() + ']';
+        };
+        layerStr += '}';
+        return layerStr;
+    },
+	
+	
     onControlButtonPress : function (button, interaction) {
         this.map.addInteraction(interaction);
         button.on({
@@ -103,6 +140,56 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
             ], 
             this.map.getSize()
         );
+    },
+
+    onZoomInButtonPress : function (button, pressed, eOpts) {
+        dzInter = new ol.interaction.DragZoom({
+            condition: ol.events.condition.always,
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 3
+                }),
+                fill: new ol.style.Fill({
+                    color: [255, 255, 255, 0.4]
+                })
+            })
+        });
+        pressed && this.onControlButtonPress(button, dzInter);
+    },
+
+    onMapPanButtonPress : function (button, pressed, eOpts) {
+        this.map.getInteractions().forEach(function(interaction){
+          if (interaction instanceof ol.interaction.DragPan) {
+              interaction.setActive(true);
+          }
+       });
+    },
+
+    onPrintMapButtonPress : function(button, pressed, eOpts) {
+        // Get the BBOX
+        var center = this.map.getView().getCenter(), zoom = this.map.getView().getZoom(), i;
+        // Get the layers
+        var activatedLayers = [];
+        this.map.getLayers().forEach(function(lyr){
+            if (lyr.getVisible()){
+                activatedLayers.push(lyr);
+            }
+        });
+        var layersToPrint = [];
+        for (i in activatedLayers) {
+                lyr = activatedLayers[i];
+                if (lyr.get('printable') !== false &&
+                    lyr.getVisible() === true) {
+                    layersToPrint.push(this.olLayerToString(lyr));
+                }
+        }
+        console.log('layers to print array', layersToPrint);
+        this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
+                center : center,
+                zoom : zoom,
+                layers : layersToPrint
+        });
     }
 });
 
