@@ -22,6 +22,18 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         return me.layer;
     },
 
+    onZoomToDrawingFeaturesButtonPress : function (button, e, eOpts ) {
+        var extent = this.getMapLayer('drawingLayer').getSource().getExtent();
+        if (ol.extent.isEmpty(extent)) {
+            Ext.Msg.alert('Zoom to drawing features :', 'The drawing layer contains no feature on which to zoom.');
+        } else {
+            this.map.getView().fit(
+                extent, 
+                this.map.getSize()
+            );
+        }
+    },
+
     onControlButtonPress : function (button, interaction) {
         this.map.addInteraction(interaction);
         button.on({
