@@ -289,7 +289,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code)";
 		$req .= " WHERE unit = ?";
 		if ($query != null) {
-			$req .= " AND unaccent_string(COALESCE(t.label, mt.label)) ilike unaccent_string('%" . $query . "%')";
+			$req .= " AND unaccent(COALESCE(t.label, mt.label)) ilike unaccent('%" . $query . "%')";
 		}
 		$req .= " ORDER BY position, code";
 		if ($start !== null && $limit !== null) {
@@ -330,7 +330,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " FROM mode_tree ";
 		$req .= " WHERE unit = ?";
 		if ($query != null) {
-			$req .= " AND unaccent_string(label) ilike unaccent_string('%" . $query . "%')";
+			$req .= " AND unaccent(label) ilike unaccent('%" . $query . "%')";
 		}
 		
 		$this->logger->info('getTreeModesCount : ' . $req);
@@ -1640,9 +1640,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req = " SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name ";
 			$req .= " FROM mode_taxref ";
 			$req .= " WHERE unit = ? ";
-			$req .= " AND (unaccent_string(name) ilike unaccent_string('%" . $query . "%') ";
-			$req .= "      OR unaccent_string(complete_name) ilike unaccent_string('%" . $query . "%') ";
-			$req .= "      OR unaccent_string(vernacular_name) ilike unaccent_string('%" . $query . "%'))";
+			$req .= " AND (unaccent(name) ilike unaccent('%" . $query . "%') ";
+			$req .= "      OR unaccent(complete_name) ilike unaccent('%" . $query . "%') ";
+			$req .= "      OR unaccent(vernacular_name) ilike unaccent('%" . $query . "%'))";
 			$req .= " ORDER BY name ";
 			
 			if ($start !== null && $limit !== null) {
@@ -1706,9 +1706,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	FROM mode_taxref ";
 			$req .= "	WHERE unit = ? ";
 			if ($query != null) {
-				$req .= " AND unaccent_string(name) ilike unaccent_string('%" . $query . "%') ";
-				$req .= " OR  unaccent_string(complete_name) ilike unaccent_string('%" . $query . "%') ";
-				$req .= " OR  unaccent_string(vernacular_name) ilike unaccent_string('%" . $query . "%')";
+				$req .= " AND unaccent(name) ilike unaccent('%" . $query . "%') ";
+				$req .= " OR  unaccent(complete_name) ilike unaccent('%" . $query . "%') ";
+				$req .= " OR  unaccent(vernacular_name) ilike unaccent('%" . $query . "%')";
 			}
 			
 			$this->logger->info('getTaxrefModesCount :' . $req);
