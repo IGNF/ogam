@@ -1143,7 +1143,7 @@ class Application_Service_GenericService {
 			$labels = $this->metadataModel->getTaxrefLabels($tableField->unit, $value);
 			$label = $labels[$value];
 		} else {
-			$label = $this->metadataModel->getModeLabels($tableField->unit, $value);
+			$labels = $this->metadataModel->getModeLabels($tableField->unit, $value);
 			$label = $labels[$value];
 		}
 
