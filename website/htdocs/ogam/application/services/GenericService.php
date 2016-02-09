@@ -470,7 +470,7 @@ class Application_Service_GenericService {
 	/**
 	 * Return the SQL String representation of an array.
 	 *
-	 * Example : Array ( [0] => Boynes, [1] => Ascoux ) => {Boynes, Vrigny}
+	 * Example : Array ( [0] => Boynes, [1] => Ascoux ) => {Boynes, Ascoux}
 	 *
 	 * @param Array[String] $value
 	 *        	an array of values.
@@ -495,7 +495,7 @@ class Application_Service_GenericService {
 	/**
 	 * Return an Array object corresponding to a SQL string.
 	 *
-	 * Example : {Boynes, Vrigny} => Array ( [0] => Boynes, [1] => Ascoux )
+	 * Example : {Boynes, Ascoux} => Array ( [0] => Boynes, [1] => Ascoux )
 	 *
 	 * @param String $value
 	 *        	an array of values.
