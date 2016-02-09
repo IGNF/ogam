@@ -7,7 +7,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
 
     init : function() {
         this.map = this.lookupReference('mapCmp').getMap();
-        this.currentMapInteractions = null;
+        this.selectInteraction = new ol.interaction.Select();
     },
 
     getMapLayer : function (layerCode) {
@@ -23,59 +23,121 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         return me.layer;
     },
 
-    addCurrentMapInteractions : function (interactions) {
-        if (this.currentMapInteractions !== null){
-            this.removeCurrentMapInteractions();
-        }
-        this.currentMapInteractions = interactions;
-        for (var i = 0; i < interactions.length; i++) {
-            this.map.addInteraction(interactions[i]);
-        }
-    },
-
-    removeCurrentMapInteractions : function () {
-        if (this.currentMapInteractions !== null){
-            for (var i = 0; i < this.currentMapInteractions.length; i++) {
-                this.map.removeInteraction(this.currentMapInteractions[i]);
-            }
-            this.currentMapInteractions = null;
-        }
-    },
-
-    onDrawButtonToggle : function (pressed, drawType) {
-        if (pressed) {
-            var features = this.getMapLayer('drawingLayer').getSource().getFeaturesCollection();
-            this.addCurrentMapInteractions([
-                new ol.interaction.Draw({
-                    features: features,
-                    type: drawType
-                }),
-                new ol.interaction.Modify({
-                    features: features, 
-                    // the SHIFT key must be pressed to delete vertices, so
-                    // that new vertices can be drawn at the same position
-                    // of existing vertices
-                    deleteCondition: function(event) {
-                        return ol.events.condition.shiftKeyOnly(event) &&
-                            ol.events.condition.singleClick(event);
-                    }
-                })
-            ]);
+    onZoomToDrawingFeaturesButtonPress : function (button, e, eOpts) {
+        var extent = this.getMapLayer('drawingLayer').getSource().getExtent();
+        if (ol.extent.isEmpty(extent)) {
+            Ext.Msg.alert('Zoom to drawing features :', 'The drawing layer contains no feature on which to zoom.');
         } else {
-            this.removeCurrentMapInteractions();
+            this.map.getView().fit(
+                extent, 
+                this.map.getSize()
+            );
         }
+    },
+
+    onControlButtonPress : function (button, interaction) {
+        this.map.addInteraction(interaction);
+        button.on({
+            toggle: {
+                fn: this.map.removeInteraction.bind(this.map, interaction),
+                scope: this,
+                single: true
+            }
+        });
+    },
+
+    onSnappingButtonToggle : function (button, pressed, eOpts) {
+        if (pressed) {
+            var snapInter = new ol.interaction.Snap({
+                source: this.getMapLayer('drawingLayer').getSource()
+            });
+            this.onControlButtonPress(button, snapInter);
+            // The snap interaction must be added last, as it needs to be the first to handle the pointermove event.
+            var listenerKey = this.map.getInteractions().on("add", function (collectionEvent) {
+                if (!(collectionEvent.element instanceof ol.interaction.Snap)) { // To avoid an infinite loop
+                    this.map.removeInteraction(snapInter);
+                    this.map.addInteraction(snapInter);
+                }
+            }, this);
+            button.on({
+                toggle: {
+                    fn: ol.Observable.unByKey.bind(ol.Observable, listenerKey),
+                    scope: this,
+                    single: true
+                }
+            });
+        }
+    },
+
+    onModifyfeatureButtonToggle : function (button, pressed, eOpts) {
+        pressed && this.onControlButtonPress(button, new ol.interaction.Modify({
+            features: this.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
+            deleteCondition: function(event) {
+                return ol.events.condition.shiftKeyOnly(event) &&
+                    ol.events.condition.singleClick(event);
+            }
+        }));
+    },
+
+    onSelectButtonToggle : function (button, pressed, eOpts) {
+        pressed && this.onControlButtonPress(button, this.selectInteraction);
+    },
+
+    onDrawButtonToggle : function (button, pressed, drawType) {
+        pressed && this.onControlButtonPress(button, new ol.interaction.Draw({
+            features: this.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
+            type: drawType
+        }));
     },
 
     onDrawPointButtonToggle : function (button, pressed, eOpts) {
-        this.onDrawButtonToggle(pressed, 'Point');
+        this.onDrawButtonToggle(button, pressed, 'Point');
     },
 
     onDrawLineButtonToggle : function (button, pressed, eOpts) {
-        this.onDrawButtonToggle(pressed, 'LineString');
+        this.onDrawButtonToggle(button, pressed, 'LineString');
     },
 
     onDrawPolygonButtonToggle : function (button, pressed, eOpts) {
-        this.onDrawButtonToggle(pressed, 'Polygon');
+        this.onDrawButtonToggle(button, pressed, 'Polygon');
+    },
+
+    onDeleteFeatureButtonPress : function (button, e, eOpts) {
+        var drawingLayerSource = this.getMapLayer('drawingLayer').getSource();
+        var featuresCollection = this.selectInteraction.getFeatures();
+        featuresCollection.forEach(
+            function(el, index, c_array){
+                // Remove the feature of the drawing layer
+                drawingLayerSource.removeFeature(el);
+            }
+        );
+        // Remove all the features of the selection layer
+        featuresCollection.clear();
+    },
+
+    // TODO: @PEG : Ajouter l'attribut code: 'results' à la couche des résultats,
+    onZoomToResultFeaturesButtonPress : function (button, e, eOpts) {
+        var extent = this.getMapLayer('results').getSource().getExtent();
+        if (ol.extent.isEmpty(extent)) {
+            Ext.Msg.alert('Zoom to result features :', 'The drawing layer contains no feature on which to zoom.');
+        } else {
+            this.map.getView().fit(
+                extent, 
+                this.map.getSize()
+            );
+        }
+    },
+
+    onZoomToMaxExtentButtonPress : function (button, e, eOpts) {
+        this.map.getView().fit(
+            [
+                OgamDesktop.map.x_min,
+                OgamDesktop.map.y_min,
+                OgamDesktop.map.x_max,
+                OgamDesktop.map.y_max
+            ], 
+            this.map.getSize()
+        );
     }
 });
 
