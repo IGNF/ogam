@@ -236,7 +236,7 @@ class Application_Service_GenericService {
 	 *
 	 * @param String $schema
 	 *        	the schema
-	 * @param FormField $formField
+	 * @param Application_Object_Metadata_FormField $formField
 	 *        	the form field
 	 * @param Boolean $copyValues
 	 *        	is true the values will be copied
@@ -1093,31 +1093,6 @@ class Application_Service_GenericService {
 	}
 
 	/**
-	 * Get the labels of each mode for a table field.
-	 *
-	 * @param TableField $tableField
-	 *        	a table field
-	 * @return Array[mode => label]
-	 */
-	public function getLabels($tableField) {
-		$labels = array();
-
-		if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
-			if ($tableField->subtype === "DYNAMIC") {
-				$labels = $this->metadataModel->getDynamodeLabels($tableField->unit);
-			} else if ($tableField->subtype === "TREE") {
-				$labels = $this->metadataModel->getTreeLabels($tableField->unit);
-			} else if ($tableField->subtype === "TAXREF") {
-				$labels = $this->metadataModel->getTaxrefLabels($tableField->unit);
-			} else {
-				$labels = $this->metadataModel->getModeLabels($tableField->unit);
-			}
-		}
-
-		return $labels;
-	}
-
-	/**
 	 * Returns the value of a field.
 	 *
 	 * @param Application_Object_Metadata_TableField $tableField
@@ -1133,7 +1108,7 @@ class Application_Service_GenericService {
 			return "";
 		}
 
-		if ($tableField->subtype == "DYNAMIC") {
+		if ($tableField->subtype === "DYNAMIC") {
 			$labels = $this->metadataModel->getDynamodeLabels($tableField->unit, $value);
 			$label = $labels[$value];
 		} else if ($tableField->subtype === "TREE") {

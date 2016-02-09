@@ -587,20 +587,17 @@ class QueryController extends AbstractOGAMController {
 			$formField = $this->metadataModel->getFormField($criteria->format, $criteria->data);
 			$criterias .= '// ' . $formField->label . ';';
 
-			// Get the labels corresponding to the values
-			$traductions = $this->genericService->getLabels($tableField);
-
 			$tableField = $this->metadataModel->getFormToTableMapping($websiteSession->schema, $formField);
 
 			// The value
 			if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
 				if (is_array($criteria->value)) {
 					foreach ($criteria->value as $item) {
-						$criterias .= $traductions[$item] . ", ";
+						$criterias .= $this->genericService->getValueLabel($tableField, $item) . ", ";
 					}
 					$criterias = substr($criterias, 0, -2);
 				} else {
-					$criterias .= $traductions[$criteria->value];
+					$criterias .= $this->genericService->getValueLabel($tableField, $criteria->value);
 				}
 			} else {
 				if (is_array($criteria->value)) {
@@ -616,6 +613,37 @@ class QueryController extends AbstractOGAMController {
 		}
 
 		return $criterias;
+	}
+
+	private $traductions = array();
+
+	/**
+	 * Get a label from a code, use a local cache mechanism.
+	 *
+	 * @param Application_Object_Metadata_TableField $tableField
+	 *        	the field descriptor
+	 * @param String $value
+	 *        	the code to translate
+	 */
+	private function _getLabelCache($tableField, $value) {
+		$label = '';
+		$key = strtolower($tableField->getName());
+
+		// Check in local cache
+		if (isset($this->traductions[$key][$value])) {
+			$label = $this->traductions[$key][$value];
+		} else {
+			// Check in database
+			$trad = $this->genericService->getValueLabel($tableField, $value);
+
+			// Put in cache
+			if (!empty($trad)) {
+				$label = $trad;
+				$this->traductions[$key][$value] = $trad;
+			}
+		}
+
+		return $label;
 	}
 
 	/**
@@ -667,14 +695,11 @@ class QueryController extends AbstractOGAMController {
 				// Retrive the session-stored info
 				$resultColumns = $websiteSession->resultColumns; // array of TableField
 
-				// Prepare the needed traductions and the form info
+				// Prepare the form info
 				$traductions = array();
 				foreach ($resultColumns as $tableField) {
 
 					$key = strtolower($tableField->getName());
-
-					// get the labels
-					$traductions[$key] = $this->genericService->getLabels($tableField);
 
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
@@ -743,15 +768,17 @@ class QueryController extends AbstractOGAMController {
 								$this->_print(';');
 							} else {
 								if ($tableField->type === "CODE") {
-									// Manage code traduction
-									$label = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+
+									$label = $this->_getLabelCache($tableField, $value);
+
 									$this->_print('"' . $label . '";');
 								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$label = '';
 									foreach ($arrayValues as $arrayValue) {
-										$label .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
+
+										$label .= $this->_getLabelCache($tableField, $arrayValue);
 										$label .= ',';
 									}
 									if ($label != '') {
@@ -841,9 +868,6 @@ class QueryController extends AbstractOGAMController {
 
 					$key = strtolower($tableField->getName());
 
-					// get the labels
-					$traductions[$key] = $this->genericService->getLabels($tableField);
-
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
 				}
@@ -900,37 +924,34 @@ class QueryController extends AbstractOGAMController {
 							$key = strtolower($tableField->getName());
 							$value = $line[$key];
 							$formField = $formFields[$key];
+							$label = $value;
 
-							$label = $formField->label;
-
-							if ($value == null) {
-								$value = "";
-							} else {
+							if ($value !== null) {
 								if ($tableField->type === "CODE") {
 									// Manage code traduction
-									$value = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+									$label = $this->_getLabelCache($tableField, $value);
 								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
-									$value = '';
+									$label = '';
 									foreach ($arrayValues as $arrayValue) {
-										$value .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
-										$value .= ',';
+										$label .= $this->_getLabelCache($tableField, $arrayValue);
+										$label .= ',';
 									}
 									if ($label != '') {
-										$value = substr($value, 0, -1);
+										$label = substr($label, 0, -1);
 									}
-									$value = '[' . $value . ']';
+									$label = '[' . $label . ']';
 								} else if ($formField->inputType === "NUMERIC") {
 									// Numeric value
 									if ($formField->decimals !== null && $formField->decimals !== "") {
-										$value = number_format($value, $formField->decimals);
+										$label = number_format($value, $formField->decimals);
 									}
 								}
 							}
 
-							$this->_print('<Data name="' . $label . '">');
-							$this->_print('<value>' . $value . '</value>');
+							$this->_print('<Data name="' . $formField->label . '">');
+							$this->_print('<value>' . $label . '</value>');
 							$this->_print('</Data>');
 						}
 						$this->_print("</ExtendedData>");
@@ -1010,9 +1031,6 @@ class QueryController extends AbstractOGAMController {
 
 					$key = strtolower($tableField->getName());
 
-					// Get the labels for the table field
-					$traductions[$key] = $this->genericService->getLabels($tableField);
-
 					// Get the full description of the form field
 					$formFields[$key] = $this->genericService->getTableToFormMapping($tableField);
 				}
@@ -1067,35 +1085,34 @@ class QueryController extends AbstractOGAMController {
 							$value = $line[$key];
 							$formField = $formFields[$key];
 
-							$label = $formField->label;
+							$label = $value;
 
-							if ($value == null) {
-								$value = "";
-							} else {
+							if ($value !== null) {
 								if ($tableField->type === "CODE") {
 									// Manage code traduction
-									$value = isset($traductions[$key][$value]) ? $traductions[$key][$value] : '';
+									$label = $this->_getLabelCache($tableField, $value);
 								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
-									$value = '';
+									$label = '';
 									foreach ($arrayValues as $arrayValue) {
-										$value .= isset($traductions[$key][$arrayValue]) ? $traductions[$key][$arrayValue] : '';
-										$value .= ',';
+
+										$label .= $this->_getLabelCache($tableField, $arrayValue);
+										$label .= ',';
 									}
 									if ($label != '') {
-										$value = substr($value, 0, -1);
+										$label = substr($label, 0, -1);
 									}
-									$value = '[' . $value . ']';
+									$label = '[' . $label . ']';
 								} else if ($formField->inputType === "NUMERIC") {
 									// Numeric value
 									if ($formField->decimals !== null && $formField->decimals !== "") {
-										$value = number_format($value, $formField->decimals);
+										$label = number_format($value, $formField->decimals);
 									}
 								}
 							}
 
-							$this->_print('"' . $label . '": "' . $value . '", ');
+							$this->_print('"' . $formField->label . '": "' . $label . '", ');
 						}
 						$this->_print("}");
 

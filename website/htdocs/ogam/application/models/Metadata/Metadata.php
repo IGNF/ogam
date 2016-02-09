@@ -1245,7 +1245,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $schema
 	 *        	the name of the schema (RAW_DATA or HARMONIZED_DATA)
-	 * @param FormField $formField
+	 * @param Application_Object_Metadata_FormField $formField
 	 *        	the form field
 	 * @return Application_Object_Metadata_TableField
 	 */
