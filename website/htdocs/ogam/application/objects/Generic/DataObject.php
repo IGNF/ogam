@@ -70,6 +70,7 @@ class Application_Object_Generic_DataObject {
 	 *
 	 *
 	 *
+	 *
 	 * @return Application_Object_Metadata_TableField the infoFields array
 	 */
 	public function getInfoFields() {
@@ -82,6 +83,7 @@ class Application_Object_Generic_DataObject {
 	 *
 	 *
 	 *
+	 *
 	 * @return Application_Object_Metadata_TableField the editableFields array
 	 */
 	public function getEditableFields() {
@@ -90,6 +92,7 @@ class Application_Object_Generic_DataObject {
 
 	/**
 	 * Return the editableFields array .
+	 *
 	 *
 	 *
 	 * @param String $key
@@ -126,13 +129,13 @@ class Application_Object_Generic_DataObject {
 	 */
 	public function getFormats() {
 		$formats = array();
-		
+
 		foreach ($this->getFields() as $field) {
 			if (!in_array($field->format, $formats)) {
 				$formats[] = $field->format;
 			}
 		}
-		
+
 		return $formats;
 	}
 
@@ -143,14 +146,14 @@ class Application_Object_Generic_DataObject {
 	 */
 	public function hasGeometry() {
 		$hasGeom = false;
-		
+
 		foreach ($this->getFields() as $field) {
 			if ($field->type == 'GEOM') {
 				$hasGeom = true;
 				break;
 			}
 		}
-		
+
 		return $hasGeom;
 	}
 

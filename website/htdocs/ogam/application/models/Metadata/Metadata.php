@@ -1517,7 +1517,6 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 			$select = $db->prepare($req);
 
-
 			$select->execute(array(
 				$unit,
 				$parentcode,
@@ -1525,7 +1524,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			));
 
 			$rows = $select->fetchAll();
-			
+
 			if (!empty($rows)) {
 				$resultTree = new Application_Object_Metadata_TreeNode(); // The root is empty
 				foreach ($rows as $row) {

@@ -50,7 +50,7 @@ class Application_Object_Metadata_Dataset {
 		$json .= ',"label":' . json_encode($this->label);
 		$json .= ',"definition":' . json_encode($this->definition);
 		$json .= ',"is_default":' . json_encode($this->isDefault);
-		
+
 		return $json;
 	}
 }

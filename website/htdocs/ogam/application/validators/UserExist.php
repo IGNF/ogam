@@ -47,14 +47,14 @@ class Application_Validator_UserExist extends Zend_Validate_Abstract {
 	public function isValid($value, $context = null) {
 		$value = (string) $value;
 		$this->_setValue($value);
-		
+
 		// Check that the user exist
 		$userModel = new Application_Model_Website_User();
 		$duplicate = $userModel->getUser($value);
 		if (!empty($duplicate)) {
 			return true;
 		}
-		
+
 		$this->_error(self::USER_NOT_EXIST);
 		return false;
 	}

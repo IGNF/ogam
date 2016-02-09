@@ -42,13 +42,13 @@ class Application_Service_GenericService {
 	 * Constructor.
 	 */
 	function Application_Service_GenericService() {
-		
+
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
-		
+
 		// Initialise the metadata models
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
-		
+
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
 		$this->visualisationSRS = $configuration->srs_visualisation;
@@ -66,15 +66,15 @@ class Application_Service_GenericService {
 	 */
 	public function datumToDetailJSON($data, $datasetId = null) {
 		$this->logger->info('datumToDetailJSON');
-		
+
 		// Get the user rights
 		$userSession = new Zend_Session_Namespace('user');
 		$role = $userSession->user->role;
-		
+
 		// Get children for the current dataset
 		$this->genericModel = new Application_Model_Generic_Generic();
 		$children = $this->genericModel->getChildren($data, $datasetId);
-		
+
 		$childrenCount = 0;
 		if (!empty($children)) {
 			$childrenCount = count(current($children));
@@ -94,16 +94,16 @@ class Application_Service_GenericService {
 			return '';
 		}
 		$json .= $fields . "]";
-		
+
 		// Add the edit link
 		if ($role->isAllowed('DATA_EDITION')) {
 			$json .= ',"editURL":' . json_encode($data->getId());
 		} else {
 			$json .= ',"editURL":null';
 		}
-		
+
 		$json .= '}';
-		
+
 		return $json;
 	}
 
@@ -118,11 +118,11 @@ class Application_Service_GenericService {
 	 */
 	public function dataToGridDetailJSON($id, $data) {
 		$this->logger->info('dataToDetailJSON');
-		
+
 		$json = "";
-		
+
 		if (!empty($data)) {
-			
+
 			// The columns config to setup the grid columnModel
 			$columns = array();
 			// The columns max length to setup the column width
@@ -134,7 +134,7 @@ class Application_Service_GenericService {
 			// The data to full the store
 			$locationsData = array();
 			$firstData = $data[0];
-			
+
 			// Dump each row values
 			foreach ($data as $datum) {
 				$locationData = array();
@@ -151,7 +151,7 @@ class Application_Service_GenericService {
 				}
 				array_push($locationsData, $locationData);
 			}
-			
+
 			// Add the colums description
 			foreach ($formFields as $field) {
 				// Set the column model and the location fields
@@ -169,7 +169,7 @@ class Application_Service_GenericService {
 				array_push($columns, $column);
 				array_push($locationFields, $dataIndex);
 			}
-			
+
 			// Check if the table has a child table
 			$hasChild = false;
 			$children = $this->metadataModel->getChildrenTableLabels($firstData->tableFormat);
@@ -211,23 +211,23 @@ class Application_Service_GenericService {
 	 * @return FormField
 	 */
 	public function getTableToFormMapping($tableField, $copyValues = false) {
-		
+
 		// Get the description of the form field
 		$formField = $this->metadataModel->getTableToFormMapping($tableField);
-		
+
 		// Clone the object to avoid modifying existing object
 		if ($formField != null) {
 			$formField = clone $formField;
 		}
-		
+
 		// Copy the values
 		if ($copyValues == true && $formField != null && $tableField->value != null) {
-			
+
 			// Copy the value and label
 			$formField->value = $tableField->value;
 			$formField->valueLabel = $tableField->valueLabel;
 		}
-		
+
 		return $formField;
 	}
 
@@ -243,22 +243,22 @@ class Application_Service_GenericService {
 	 * @return Application_Object_Metadata_TableField
 	 */
 	public function getFormToTableMapping($schema, $formField, $copyValues = false) {
-		
+
 		// Get the description of the corresponding table field
 		$tableField = $this->metadataModel->getFormToTableMapping($schema, $formField);
-		
+
 		// Clone the object to avoid modifying existing object
 		if ($tableField != null) {
 			$tableField = clone $tableField;
 		}
-		
+
 		// Copy the values
 		if ($copyValues == true && $tableField != null && $formField->value != null) {
-			
+
 			// Copy the value
 			$tableField->value = $formField->value;
 		}
-		
+
 		return $tableField;
 	}
 
@@ -273,30 +273,30 @@ class Application_Service_GenericService {
 	 */
 	public function generateSQLFromWhereRequest($schema, $dataObject) {
 		$this->logger->debug('generateSQLFromWhereRequest');
-		
+
 		//
 		// Prepare the FROM clause
 		//
-		
+
 		// Prepare the list of needed tables
 		$tables = $this->getAllFormats($schema, $dataObject);
-		
+
 		// Add the root table;
 		$rootTable = array_shift($tables);
 		$from = " FROM " . $rootTable->tableName . " " . $rootTable->getLogicalName();
-		
+
 		// Get the root table fields
 		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
 		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
-		
+
 		// Add the joined tables
 		$i = 0;
 		foreach ($tables as $tableTreeData) {
 			$i ++;
-			
+
 			// Join the table
 			$from .= " JOIN " . $tableTreeData->tableName . " " . $tableTreeData->getLogicalName() . " on (";
-			
+
 			// Add the join keys
 			$keys = explode(',', $tableTreeData->keys);
 			foreach ($keys as $key) {
@@ -305,7 +305,7 @@ class Application_Service_GenericService {
 			$from = substr($from, 0, -5);
 			$from .= ") ";
 		}
-		
+
 		//
 		// Prepare the WHERE clause
 		//
@@ -313,7 +313,7 @@ class Application_Service_GenericService {
 		foreach ($dataObject->infoFields as $tableField) {
 			$where .= $this->buildWhereItem($tableField, false);
 		}
-		
+
 		// Right management
 		// Get back the provider id of the user
 		$userSession = new Zend_Session_Namespace('user');
@@ -322,9 +322,9 @@ class Application_Service_GenericService {
 		if (!$role->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
 			$where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
 		}
-		
+
 		$sql = $from . $where;
-		
+
 		// Return the completed SQL request
 		return $sql;
 	}
@@ -340,7 +340,7 @@ class Application_Service_GenericService {
 	 */
 	public function generateSQLSelectRequest($schema, $dataObject) {
 		$this->logger->debug('generateSQLSelectRequest');
-		
+
 		//
 		// Prepare the SELECT clause
 		//
@@ -349,7 +349,7 @@ class Application_Service_GenericService {
 			$select .= $this->buildSelectItem($tableField) . ", ";
 		}
 		$select = substr($select, 0, -2);
-		
+
 		//
 		// Create a unique identifier for each line
 		// We use the last column of the leaf table
@@ -359,13 +359,13 @@ class Application_Service_GenericService {
 		$rootTable = reset($tables);
 		$reversedTable = array_reverse($tables); // Only variables should be passed by reference
 		$leftTable = array_shift($reversedTable);
-		
+
 		// Get the root table fields
 		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
 		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
-		
+
 		$uniqueId = "'SCHEMA/" . $schema . "/FORMAT/" . $leftTable->getLogicalName() . "'";
-		
+
 		$identifiers = explode(',', $leftTable->identifiers);
 		foreach ($identifiers as $identifier) {
 			$identifier = trim($identifier);
@@ -373,13 +373,13 @@ class Application_Service_GenericService {
 			$uniqueId .= " || '/' || '" . $identifier . "/' ||" . $leftTable->getLogicalName() . "." . trim($identifier);
 		}
 		$select .= ", " . $uniqueId . " as id";
-		
+
 		// Detect the column containing the geographical information
 		$locationField = $this->metadataModel->getGeometryField($schema, array_keys($tables));
-		
+
 		// Add the location centroid (for zooming on the map)
 		$select .= ", st_astext(st_centroid(st_transform(" . $locationField->format . "." . $locationField->columnName . "," . $this->visualisationSRS . "))) as location_centroid ";
-		
+
 		// Right management
 		// Get back the provider id of the data
 		$userSession = new Zend_Session_Namespace('user');
@@ -388,7 +388,7 @@ class Application_Service_GenericService {
 		if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER') && $hasColumnProvider) {
 			$select .= ", " . $leftTable->getLogicalName() . ".provider_id as _provider_id";
 		}
-		
+
 		// Return the completed SQL request
 		return $select;
 	}
@@ -402,12 +402,12 @@ class Application_Service_GenericService {
 	 */
 	public function buildWhere($criterias) {
 		$sql = "";
-		
+
 		// Build the WHERE clause with the info from the PK.
 		foreach ($criterias as $tableField) {
 			$sql .= $this->buildWhereItem($tableField, true); // exact match
 		}
-		
+
 		return $sql;
 	}
 
@@ -418,7 +418,7 @@ class Application_Service_GenericService {
 	 *        	a criteria field.
 	 * @param String $value
 	 *        	a numeric criterium.
-	 *        	
+	 *
 	 *        	Examples of values :
 	 *        	12
 	 *        	12.5
@@ -429,14 +429,14 @@ class Application_Service_GenericService {
 		$posBetween = strpos($value, " - ");
 		$posInf = strpos($value, "<=");
 		$posSup = strpos($value, ">=");
-		
+
 		// Cas où les 2 valeurs sont présentes
 		if ($posBetween !== false) {
-			
+
 			$minValue = substr($value, 0, $posBetween);
 			$maxValue = substr($value, $posBetween + 3);
 			$sql2 = '';
-			
+
 			if (($minValue !== null) && ($minValue !== '')) {
 				$sql2 .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue . " ";
 			}
@@ -463,7 +463,7 @@ class Application_Service_GenericService {
 			// One value, we make an equality comparison
 			$sql .= $tableField->format . "." . $tableField->columnName . " = " . $value;
 		}
-		
+
 		return $sql;
 	}
 
@@ -478,7 +478,7 @@ class Application_Service_GenericService {
 	 */
 	private function _arrayToSQLString($arrayValues) {
 		$string = "'{";
-		
+
 		if (is_array($arrayValues)) {
 			foreach ($arrayValues as $value) {
 				$string .= $value . ",";
@@ -488,7 +488,7 @@ class Application_Service_GenericService {
 			$string .= $arrayValues;
 		}
 		$string .= "}'";
-		
+
 		return $string;
 	}
 
@@ -506,11 +506,11 @@ class Application_Service_GenericService {
 		$values = str_replace("}", "", $values);
 		$values = trim($values);
 		$valuesArray = explode(",", $values);
-		
+
 		foreach ($valuesArray as $v) {
 			$v = trim($v);
 		}
-		
+
 		return $valuesArray;
 	}
 
@@ -521,7 +521,7 @@ class Application_Service_GenericService {
 	 *        	a criteria field.
 	 * @param String $value
 	 *        	a date criterium.
-	 *        	
+	 *
 	 *        	Examples of values :
 	 *        	YYYY/MM/DD : for equality
 	 *        	>= YYYY/MM/DD : for the superior value
@@ -532,7 +532,7 @@ class Application_Service_GenericService {
 		$sql = "";
 		$value = trim($value);
 		$column = $tableField->format . "." . $tableField->columnName;
-		
+
 		if (!empty($value)) {
 			if (strlen($value) == 10) {
 				// Case "YYYY/MM/DD"
@@ -561,11 +561,11 @@ class Application_Service_GenericService {
 				}
 			}
 		}
-		
+
 		if ($sql == "") {
 			throw new Exception("Invalid data format");
 		}
-		
+
 		return $sql;
 	}
 
@@ -580,14 +580,14 @@ class Application_Service_GenericService {
 	 */
 	public function buildWhereItem($tableField, $exact = false) {
 		$sql = "";
-		
+
 		$value = $tableField->value;
 		$column = $tableField->format . "." . $tableField->columnName;
-		
+
 		if ($value != null && $value != '' && $value != array()) {
-			
+
 			switch ($tableField->type) {
-				
+
 				case "BOOLEAN":
 					// Value is 1 or 0, stored in database as a char(1)
 					if (is_array($value)) {
@@ -597,7 +597,7 @@ class Application_Service_GenericService {
 						$sql .= " AND " . $column . " = '" . $value . "'";
 					}
 					break;
-				
+
 				case "DATE":
 					// Numeric values
 					if (is_array($value)) {
@@ -623,7 +623,7 @@ class Application_Service_GenericService {
 				case "NUMERIC":
 					// Numeric values
 					if (is_array($value)) {
-						
+
 						// Case of a list of values
 						$sql2 = '';
 						foreach ($value as $val) {
@@ -635,7 +635,7 @@ class Application_Service_GenericService {
 							$sql2 = substr($sql2, 0, -4); // remove the last OR
 						}
 						$sql .= " AND (" . $sql2 . ")";
-						
+
 						$this->logger->debug('$sql2 : ' . $sql2);
 					} else {
 						// Single value
@@ -645,21 +645,21 @@ class Application_Service_GenericService {
 					}
 					break;
 				case "ARRAY":
-					
+
 					// Case of a code in a generic TREE
 					if ($tableField->subtype === 'TREE') {
-						
+
 						if (is_array($value)) {
 							$value = $value[0];
 						}
-						
+
 						if ($exact) {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
 							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
 							$nodeCodes[] = $value; // add the value itself
-							                       
+
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeCodes);
 							$sql .= " AND " . $column . " && " . $stringValue;
@@ -669,20 +669,20 @@ class Application_Service_GenericService {
 						if (is_array($value)) {
 							$value = $value[0];
 						}
-						
+
 						if ($exact) {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected taxon
 							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($tableField->unit, $value, 0);
 							$nodeCodes[] = $value; // add the value itself
-							                       
+
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeCodes);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
 					} else {
-						
+
 						$stringValue = $this->_arrayToSQLString($value);
 						if (is_array($value)) {
 							// Case of a list of values
@@ -700,30 +700,30 @@ class Application_Service_GenericService {
 							}
 						}
 					}
-					
+
 					break;
 				case "CODE":
-					
+
 					// Case of a code in a generic TREE
 					if ($tableField->subtype === 'TREE') {
-						
+
 						if (is_array($value)) {
 							$value = $value[0];
 						}
-						
+
 						if ($exact) {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
 							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
 							$nodeCodes[] = $value; // add the value itself
-							
+
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
 								$sql2 .= "'" . $nodeCode . "',";
 							}
 							$sql2 = substr($sql2, 0, -1); // remove last comma
-							
+
 							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
 						}
 					} else if ($tableField->subtype === 'TAXREF') {
@@ -731,25 +731,25 @@ class Application_Service_GenericService {
 						if (is_array($value)) {
 							$value = $value[0];
 						}
-						
+
 						if ($exact) {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
-							
+
 							// Get all the children of a selected taxon
 							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($tableField->unit, $value, 0);
 							$nodeCodes[] = $value; // add the value itself
-							
+
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
 								$sql2 .= "'" . $nodeCode . "',";
 							}
 							$sql2 = substr($sql2, 0, -1); // remove last comma
-							
+
 							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
 						}
 					} else {
-						
+
 						// String
 						if (is_array($value)) {
 							// Case of a list of values
@@ -835,7 +835,7 @@ class Application_Service_GenericService {
 					break;
 			}
 		}
-		
+
 		return $sql;
 	}
 
@@ -848,12 +848,12 @@ class Application_Service_GenericService {
 	 */
 	public function buildSQLValueItem($tableField) {
 		$sql = "";
-		
+
 		$value = $tableField->value;
 		$column = $tableField->columnName;
-		
+
 		switch ($tableField->type) {
-			
+
 			case "BOOLEAN":
 				// Value is 1 or 0, stored in database as a char(1)
 				$sql = ($value == true ? '1' : '0');
@@ -894,7 +894,7 @@ class Application_Service_GenericService {
 				$sql = "'" . $value . "'";
 				break;
 		}
-		
+
 		return $sql;
 	}
 
@@ -907,7 +907,7 @@ class Application_Service_GenericService {
 	 */
 	public function buildSelectItem($field) {
 		$sql = "";
-		
+
 		if ($field->type === "DATE") {
 			$sql .= "to_char(" . $field->format . "." . $field->columnName . ", 'YYYY/MM/DD') as " . $field->getName();
 		} else if ($field->unit === "GEOM") {
@@ -921,7 +921,7 @@ class Application_Service_GenericService {
 		} else {
 			$sql .= $field->format . "." . $field->columnName . " as " . $field->getName();
 		}
-		
+
 		return $sql;
 	}
 
@@ -934,15 +934,15 @@ class Application_Service_GenericService {
 	 */
 	public function buildSelect($tableFields) {
 		$sql = "";
-		
+
 		// Iterate through the fields
 		foreach ($tableFields as $field) {
 			$sql .= $this->buildSelectItem($field) . ", ";
 		}
-		
+
 		// Remove the last comma
 		$sql = substr($sql, 0, -2);
-		
+
 		return $sql;
 	}
 
@@ -958,18 +958,18 @@ class Application_Service_GenericService {
 	 * @return DataObject the DataObject structure (with no values set)
 	 */
 	public function buildDataObject($schema, $format, $datasetId = null) {
-		
+
 		// Prepare a data object to be filled
 		$data = new Application_Object_Generic_DataObject();
-		
+
 		$data->datasetId = $datasetId;
-		
+
 		// Get the description of the table
 		$data->tableFormat = $this->metadataModel->getTableFormat($schema, $format);
-		
+
 		// Get all the description of the Table Fields corresponding to the format
 		$tableFields = $this->metadataModel->getTableFields($schema, $format, $datasetId);
-		
+
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
 			if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
@@ -980,7 +980,7 @@ class Application_Service_GenericService {
 				$data->addEditableField($tableField);
 			}
 		}
-		
+
 		return $data;
 	}
 
@@ -995,19 +995,19 @@ class Application_Service_GenericService {
 	 */
 	public function getFormQueryToTableData($schema, $formQuery) {
 		$result = new Application_Object_Generic_DataObject();
-		
+
 		$result->datasetId = $formQuery->datasetId;
-		
+
 		foreach ($formQuery->criterias as $formField) {
 			$tableField = $this->getFormToTableMapping($schema, $formField, true);
 			$result->addInfoField($tableField);
 		}
-		
+
 		foreach ($formQuery->results as $formField) {
 			$tableField = $this->getFormToTableMapping($schema, $formField);
 			$result->addEditableField($tableField);
 		}
-		
+
 		return $result;
 	}
 
@@ -1022,16 +1022,16 @@ class Application_Service_GenericService {
 	 */
 	public function getAllFormats($schema, $dataObject) {
 		$this->logger->info('getAllFormats : ' . $schema);
-		
+
 		// Prepare the list of needed tables
 		$tables = array();
 		foreach ($dataObject->getFields() as $tableField) {
-			
+
 			if (!array_key_exists($tableField->format, $tables)) {
-				
+
 				// Get the ancestors of the table
 				$ancestors = $this->metadataModel->getTablesTree($tableField->format, $schema);
-				
+
 				// Reverse the order of the list and store by indexing with the table name
 				// The root table (LOCATION) should appear first
 				$ancestors = array_reverse($ancestors);
@@ -1040,7 +1040,7 @@ class Application_Service_GenericService {
 				}
 			}
 		}
-		
+
 		return $tables;
 	}
 
@@ -1052,13 +1052,13 @@ class Application_Service_GenericService {
 	 * @return String the value label
 	 */
 	public function fillValueLabel($field) {
-		
+
 		// By default we keep the value as a label
 		$field->valueLabel = $field->value;
-		
+
 		// For the SELECT field, get the list of options
 		if ($field->type === "CODE" || $field->type === "ARRAY") {
-			
+
 			// Get the modes => Label
 			if ($field->subtype === "DYNAMIC") {
 				$modes = $this->metadataModel->getDynamodeLabels($field->unit, $field->value);
@@ -1069,12 +1069,12 @@ class Application_Service_GenericService {
 			} else {
 				$modes = $this->metadataModel->getModeLabels($field->unit, $field->value);
 			}
-			
+
 			// Populate the label of the currently selected value
 			if ($field->type === "ARRAY") {
 				$labels = array();
 				if (isset($field->value)) {
-					
+
 					foreach ($field->value as $mode) {
 						if (isset($modes[$mode])) {
 							$labels[] = $modes[$mode];
@@ -1088,7 +1088,7 @@ class Application_Service_GenericService {
 				}
 			}
 		}
-		
+
 		return $field;
 	}
 
@@ -1101,7 +1101,7 @@ class Application_Service_GenericService {
 	 */
 	public function getLabels($tableField) {
 		$labels = array();
-		
+
 		if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
 			if ($tableField->subtype === "DYNAMIC") {
 				$labels = $this->metadataModel->getDynamodeLabels($tableField->unit);
@@ -1113,10 +1113,10 @@ class Application_Service_GenericService {
 				$labels = $this->metadataModel->getModeLabels($tableField->unit);
 			}
 		}
-		
+
 		return $labels;
 	}
-	
+
 	/**
 	 * Returns the value of a field.
 	 *
@@ -1128,11 +1128,11 @@ class Application_Service_GenericService {
 	 */
 	public function getValueLabel($tableField, $value) {
 		$label = '';
-	
+
 		if (empty($value)) {
 			return "";
 		}
-	
+
 		if ($tableField->subtype == "DYNAMIC") {
 			$labels = $this->metadataModel->getDynamodeLabels($tableField->unit, $value);
 			$label = $labels[$value];
@@ -1146,7 +1146,7 @@ class Application_Service_GenericService {
 			$label = $this->metadataModel->getModeLabels($tableField->unit, $value);
 			$label = $labels[$value];
 		}
-	
+
 		return $label;
 	}
 
@@ -1160,11 +1160,11 @@ class Application_Service_GenericService {
 	 */
 	public function removeAccents($str, $charset = 'utf-8') {
 		$str = htmlentities($str, ENT_NOQUOTES, $charset);
-		
+
 		$str = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
 		$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
 		$str = preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
-		
+
 		return $str;
 	}
 }
