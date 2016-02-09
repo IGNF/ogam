@@ -13,13 +13,13 @@ class BoundingBoxTest extends ControllerTestCase {
 	 * Cas nominal.
 	 */
 	public function testGetCenter() {
-		
+
 		// On charge le modèle
 		$bbModel = new Application_Model_Mapping_BoundingBox();
-		
+
 		// On récupère le centre pour le fournisseur "1"
 		$center = $bbModel->getCenter('1');
-		
+
 		// On vérifie le résultat attendu
 		$this->assertNotNull($center);
 		$this->assertEquals($center->x, 4680000);
@@ -32,13 +32,13 @@ class BoundingBoxTest extends ControllerTestCase {
 	 * Cas d'erreur.
 	 */
 	public function testGetCenterNull() {
-		
+
 		// On charge le modèle
 		$bbModel = new Application_Model_Mapping_BoundingBox();
-		
+
 		// On récupère le centre pour le fournisseur "TOTO"
 		$center = $bbModel->getCenter('TOTO');
-		
+
 		// On vérifie le résultat attendu
 		$this->assertNull($center);
 	}
