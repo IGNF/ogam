@@ -7,6 +7,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
 
     init : function() {
         this.map = this.lookupReference('mapCmp').getMap();
+        this.selectInteraction = new ol.interaction.Select();
     },
 
     getMapLayer : function (layerCode) {
@@ -22,7 +23,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         return me.layer;
     },
 
-    onZoomToDrawingFeaturesButtonPress : function (button, e, eOpts ) {
+    onZoomToDrawingFeaturesButtonPress : function (button, e, eOpts) {
         var extent = this.getMapLayer('drawingLayer').getSource().getExtent();
         if (ol.extent.isEmpty(extent)) {
             Ext.Msg.alert('Zoom to drawing features :', 'The drawing layer contains no feature on which to zoom.');
@@ -38,9 +39,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         this.map.addInteraction(interaction);
         button.on({
             toggle: {
-                fn: function(){
-                    this.map.removeInteraction(interaction);
-                }, 
+                fn: this.map.removeInteraction.bind(this.map, interaction),
                 scope: this,
                 single: true
             }
@@ -62,9 +61,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
             }, this);
             button.on({
                 toggle: {
-                    fn: function () {
-                        ol.Observable.unByKey(listenerKey);
-                    }, 
+                    fn: ol.Observable.unByKey.bind(ol.Observable, listenerKey),
                     scope: this,
                     single: true
                 }
@@ -83,7 +80,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
     },
 
     onSelectButtonToggle : function (button, pressed, eOpts) {
-        pressed && this.onControlButtonPress(button, new ol.interaction.Select());
+        pressed && this.onControlButtonPress(button, this.selectInteraction);
     },
 
     onDrawButtonToggle : function (button, pressed, drawType) {
@@ -115,6 +112,19 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
             ], 
             this.map.getSize()
         );
+    },
+
+    onDeleteFeatureButtonPress : function (button, e, eOpts) {
+        var drawingLayerSource = this.getMapLayer('drawingLayer').getSource();
+        var featuresCollection = this.selectInteraction.getFeatures();
+        featuresCollection.forEach(
+            function(el, index, c_array){
+                // Remove the feature of the drawing layer
+                drawingLayerSource.removeFeature(el);
+            }
+        );
+        // Remove all the features of the selection layer
+        featuresCollection.clear();
     }
 });
 
