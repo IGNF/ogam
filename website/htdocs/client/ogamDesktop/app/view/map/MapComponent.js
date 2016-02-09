@@ -8,6 +8,8 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
         logo: false, // no attributions to ol
         layers: [
             new ol.layer.Vector({
+                code: 'drawingLayer',
+                name: 'Drawing layer',
                 source: new ol.source.Vector({features: new ol.Collection()}),
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
@@ -27,7 +29,7 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
             })
         ],
         view: new ol.View({
-            resolutions: OgamDesktop.map.resolutions,
+            resolutions: OgamDesktop.map.resolutions.slice(this.minZoomLevel),
             projection : OgamDesktop.map.projection,
             center: [OgamDesktop.map.x_center, OgamDesktop.map.y_center],
             zoom: OgamDesktop.map.defaultzoom,
@@ -40,11 +42,16 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
         }),
         controls:  [
             new ol.control.ZoomSlider(),
-            new ol.control.ZoomToExtent(),
             new ol.control.ScaleLine(),
-            new ol.control.MousePosition()
+            new ol.control.MousePosition({
+                className:'o-map-tools-map-mouse-position',
+                coordinateFormat :function(coords){
+                    var template = 'X: {x} - Y: {y}';
+                    return ol.coordinate.format(coords, template);
+            }})
         ]
     }),
+            
    isResInLayerRange: function(lyr, res){
        if (res >= lyr.getMinResolution() && res < lyr.getMaxResolution()) { // in range
            return true;

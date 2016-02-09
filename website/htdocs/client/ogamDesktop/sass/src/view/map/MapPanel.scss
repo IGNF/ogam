@@ -1,26 +1,23 @@
-.o-map-tools-map-featureinfo {
+.o-map-tools-map-layerfeatureinfo {
+    background-image:url(images/OgamDesktop/tools/map/map_magnify.png) !important;
+}
+.o-map-tools-map-resultfeatureinfo {
     background-image:url(images/OgamDesktop/tools/map/information.png) !important;
 }
 .o-map-tools-map-zoomin {
     background-image:url(images/OgamDesktop/tools/map/magnifier_zoom_in.png) !important;
 }
-.o-map-tools-map-zoomout {
-    background-image:url(images/OgamDesktop/tools/map/magnifier_zoom_out.png) !important;
-}
-.o-map-tools-map-zoomfull {
+.o-map-tools-map-zoomtomaxextent {
     background-image:url(images/OgamDesktop/tools/map/world.png) !important;
 }
 .o-map-tools-map-pan {
     background-image:url(images/OgamDesktop/tools/map/icon_pan.png) !important;
 }
-.o-map-tools-map-back {
-    background-image:url(images/OgamDesktop/tools/map/arrow_rotate_clockwise.png) !important;
-}
-.o-map-tools-map-next {
-    background-image:url(images/OgamDesktop/tools/map/arrow_rotate_anticlockwise.png) !important;
+.o-map-tools-map-loadvectorlayer {
+    background-image:url(images/OgamDesktop/tools/map/map_add.png) !important;
 }
 .o-map-tools-map-drawpoint {
-    background-image:url(images/OgamDesktop/tools/map/draw_point_off.png) !important;
+    background-image:url(images/OgamDesktop/tools/map/draw_point.png) !important;
 }
 .o-map-tools-map-drawline {
     background-image:url(images/OgamDesktop/tools/map/draw_line_off.png) !important;
@@ -28,19 +25,22 @@
 .o-map-tools-map-drawpolygon {
     background-image:url(images/OgamDesktop/tools/map/draw_polygon_off.png) !important;
 }
+.o-map-tools-map-select {
+    background-image:url(images/OgamDesktop/tools/map/cursor.png) !important;
+}
 .o-map-tools-map-modifyfeature {
     background-image:url(images/OgamDesktop/tools/map/move_vertex_off.png) !important;
 }
 .o-map-tools-map-deletefeature {
     background-image:url(images/OgamDesktop/tools/edit/bin.gif) !important;
 }
-.o-map-tools-map-validate-edition {
+.o-map-tools-map-validateedition {
     background-image:url(images/OgamDesktop/tools/map/tick.png) !important;
 }
-.o-map-tools-map-cancel-edition {
+.o-map-tools-map-canceledition {
     background-image:url(images/OgamDesktop/tools/map/cross.png) !important;
 }
-.o-map-tools-map-zoomstations {
+.o-map-tools-map-zoomtoresultfeatures, .o-map-tools-map-zoomtodrawingfeatures {
     background-image:url(images/OgamDesktop/tools/map/arrow_in.png) !important;
 }
 .o-map-tools-map-snapping {
@@ -51,4 +51,9 @@
 }
 .o-map-tools-map-printMap {
     background-image:url(images/OgamDesktop/tools/doc/printer.png) !important;
+}
+.o-map-tools-map-mouse-position {
+	bottom:8px;
+	right:8px;
+	position:absolute;
 }
