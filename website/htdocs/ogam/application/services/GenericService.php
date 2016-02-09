@@ -1130,13 +1130,17 @@ class Application_Service_GenericService {
 		}
 	
 		if ($tableField->subtype == "DYNAMIC") {
-			$label = $this->metadataModel->getDynamodeLabels($tableField->unit, $value)[$value];
+			$labels = $this->metadataModel->getDynamodeLabels($tableField->unit, $value);
+			$label = $labels[$value];
 		} else if ($tableField->subtype === "TREE") {
-			$label = $this->metadataModel->getTreeLabels($tableField->unit, $value)[$value];
+			$labels = $this->metadataModel->getTreeLabels($tableField->unit, $value);
+			$label = $labels[$value];
 		} else if ($tableField->subtype === "TAXREF") {
-			$label = $this->metadataModel->getTaxrefLabels($tableField->unit, $value)[$value];
+			$labels = $this->metadataModel->getTaxrefLabels($tableField->unit, $value);
+			$label = $labels[$value];
 		} else {
-			$label = $this->metadataModel->getModeLabels($tableField->unit, $value)[$value];
+			$label = $this->metadataModel->getModeLabels($tableField->unit, $value);
+			$label = $labels[$value];
 		}
 	
 		return $label;
