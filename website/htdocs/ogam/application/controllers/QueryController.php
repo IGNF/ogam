@@ -413,7 +413,7 @@ class QueryController extends AbstractOGAMController {
 		
 		$this->view->hideGridCsvExportMenuItem = 'true'; // By default the export is hidden
 		$this->view->hideGridDataEditButton = 'true';
-		$this->view->checkEditionRights = 'false'; // By default, we don't check for rights on the data
+		$this->view->checkEditionRights = 'true'; // By default, we don't check for rights on the data
 		
 		$this->view->userProviderId = $userSession->user->provider->id;
 		
@@ -427,7 +427,7 @@ class QueryController extends AbstractOGAMController {
 			$this->view->hideGridDataEditButton = 'false';
 		}
 		if ($role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
-			$this->view->checkEditionRights = 'true';
+			$this->view->checkEditionRights = 'false';
 		}
 		
 		$this->_helper->layout()->disableLayout();
