@@ -68,7 +68,8 @@ $queryParamsAllow = array( // paramNom => requis
 	'SERVICE',
 	'REQUEST',
 	'FORMAT',
-	'LAYER'
+	'LAYER',
+	'CRS'
 );
 
 // Vérifie que les paramètres sont dans la liste des ceux autorisés
