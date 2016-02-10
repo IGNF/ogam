@@ -151,12 +151,14 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         // Remove all the features of the selection layer
         featuresCollection.clear();
     },
-
-    // TODO: @PEG : Ajouter l'attribut code: 'results' à la couche des résultats,
-    onZoomToResultFeaturesButtonPress : function (button, e, eOpts) {
-        var extent = this.getMapLayer('results').getSource().getExtent();
+    
+    zoomToResultFeatures : function () {
+        // Get wkt geometry corresponding to the result BBOX
+        var resultsBBox = this.getView().resultsBBox ? this.getView().resultsBBox : 'POLYGON EMPTY';
+        var wktGeom = this.getView().wktFormat.readGeometry(resultsBBox);
+        var extent = wktGeom.getExtent();
         if (ol.extent.isEmpty(extent)) {
-            Ext.Msg.alert('Zoom to result features :', 'The drawing layer contains no feature on which to zoom.');
+            Ext.Msg.alert('Zoom to result features :', 'There is no result features.');
         } else {
             this.map.getView().fit(
                 extent, 

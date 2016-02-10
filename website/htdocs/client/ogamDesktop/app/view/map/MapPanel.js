@@ -73,11 +73,11 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	hideFeatureInfoButton : false,
 ////	hideGeomCriteriaToolbarButton : true,
 //	
-//	/**
-//	 * @cfg {Boolean} autoZoomOnResultsFeatures True to zoom
-//	 *      automatically on the results features
-//	 */
-//	autoZoomOnResultsFeatures : true,
+	/**
+	 * @cfg {Boolean} autoZoomOnResultsFeatures True to zoom
+	 *      automatically on the results features
+	 */
+	autoZoomOnResultsFeatures : true,
 //	
 //	/**
 //	 * @cfg {Boolean} hidePrintMapButton if true hide the Print
@@ -122,13 +122,13 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	 */
 //	services: [],
 //	
-//	/**
-//	 * The wkt format.
-//	 * 
-//	 * @type {OpenLayers.Format.WKT}
-//	 * @property wktFormat
-//	 */
-//	wktFormat : new OpenLayers.Format.WKT(),
+	/**
+	 * The wkt format.
+	 * 
+	 * @type {OpenLayers.Format.WKT}
+	 * @property wktFormat
+	 */
+	wktFormat : new ol.format.WKT(),
 //
 //	/**
 //	 * The WFS layer.
@@ -154,14 +154,18 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	 */
 //	map : null,
 //	
-	dockedItems: [{
-		xtype:'maptoolbar',
-		dock: 'top'
-	}],
+    dockedItems: [{
+        xtype:'maptoolbar',
+        dock: 'top'
+    }],
 
     items: [{
         xtype: 'mapcomponent'
-    }]
+    }],
+
+    listeners: {
+        resultswithautozoom: 'zoomToResultFeatures'
+    }
 
 //	/**
 //	 * Initialize the map

@@ -165,7 +165,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
         iconCls : 'o-map-tools-map-zoomtoresultfeatures',
         tooltip: this.zoomToResultFeaturesButtonTooltip,
         listeners: {
-            click: 'onZoomToResultFeaturesButtonPress'
+            click: 'zoomToResultFeatures'
         }
     },{
         iconCls : 'o-map-tools-map-zoomtomaxextent',

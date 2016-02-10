@@ -61,9 +61,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			'map-panel toolbar combobox': {
 				select: 'layerSelected'
 			},
-			'map-panel toolbar button[action="zoomtoresults"]': {
-				click: 'zoomOnResultsBBox'
-			},
 			'map-mainwin': {
 				afterrender: 'afterMapMainWinRender'
 			},
@@ -73,7 +70,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 			'map-panel': {
 				afterinitmap: 'setMapLayers',
 				getFeature: 'getFeature',
-				resultswithautozoom: 'zoomOnResultsBBox',
 				featureModified: 'updateCurrentEditionFieldValue',
 				validateFeatureEdition:'onValidateFeatureEdition',
 				cancelFeatureEdition:'onCancelFeatureEdition'
@@ -520,6 +516,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 layerOpts['minResolution'] = 88.19439681947;
                 layerOpts['maxResolution'] = 1763.8879363894;
                 layerOpts['printable'] = true;
+                if (layerObject.data.params.activateType.toLowerCase() === 'request'){
+                    layerOpts['code'] = 'results';
+                }
                 newLayer = new ol.layer.Tile(layerOpts);
             } else {
                     Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");
@@ -698,46 +697,5 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 
 		// Center on the feature
 		this.mapPanel.map.setCenter(new OpenLayers.LonLat(feature.geometry.x, feature.geometry.y), 7);
-	},
-
-	/**
-	 * Zoom on the provided bounding box
-	 * 
-	 * {String} wkt The wkt of the bounding box
-	 */
-	zoomOnBBox : function(wkt) {
-		if (!Ext.isEmpty(wkt)) {
-
-			// The ratio by which features' bounding box should
-			// be scaled
-			var ratio = 1;
-
-			// The maximum zoom level to zoom to
-			var maxZoomLevel = this.mapPanel.map.numZoomLevels - 1;
-
-			// Parse the feature location and create a Feature
-			// Object
-			var feature = this.mapPanel.wktFormat.read(wkt);
-
-			var bounds = feature.geometry.getBounds();
-
-			bounds = bounds.scale(ratio);
-
-			var zoom = 0;
-			if ((bounds.getWidth() === 0) && (bounds.getHeight() === 0)) {
-				zoom = maxZoomLevel;
-			} else {
-				var desiredZoom = this.mapPanel.map.getZoomForExtent(bounds);
-				zoom = (desiredZoom > maxZoomLevel) ? maxZoomLevel : desiredZoom;
-			}
-			this.mapPanel.map.setCenter(bounds.getCenterLonLat(), zoom);
-		}
-	},
-
-	/**
-	 * Zoom on the results bounding box
-	 */
-	zoomOnResultsBBox : function() {
-		this.zoomOnBBox(this.mapPanel.resultsBBox);
 	}
 });
