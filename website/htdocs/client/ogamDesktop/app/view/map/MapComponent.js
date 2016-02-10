@@ -3,15 +3,13 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
     extend: "GeoExt.component.Map",
     xtype: 'mapcomponent',
     reference: 'mapCmp',
-
     map: new ol.Map({
         logo: false, // no attributions to ol
-        interactions: ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false}),
+        interactions: ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false}), // disable rotation
         layers: [
             new ol.layer.Vector({
                 code: 'drawingLayer',
                 name: 'Drawing layer',
-                printable: false,
                 source: new ol.source.Vector({features: new ol.Collection()}),
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
@@ -31,7 +29,7 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
             })
         ],
         view: new ol.View({
-            resolutions: OgamDesktop.map.resolutions.slice(this.minZoomLevel),
+            resolutions: OgamDesktop.map.resolutions,
             projection : OgamDesktop.map.projection,
             center: [OgamDesktop.map.x_center, OgamDesktop.map.y_center],
             zoom: OgamDesktop.map.defaultzoom,
@@ -45,10 +43,11 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
         controls:  [
             new ol.control.ZoomSlider(),
             new ol.control.ScaleLine(),
+            new ol.control.Scale ({className:'o-map-tools-map-scale'}),
             new ol.control.MousePosition({
                 className:'o-map-tools-map-mouse-position',
                 coordinateFormat :function(coords){
-                    var template = 'X: {x} - Y: {y}';
+                    var template = 'X: {x} - Y: {y} ' + OgamDesktop.map.projection;
                     return ol.coordinate.format(coords, template);
             }})
         ]
