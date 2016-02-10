@@ -133,7 +133,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 							'action' => 'index'
 						));
 					} else {
-						$customRoute = new Zend_Controller_Router_Route($controllerName . '/:action', array(
+						$customRoute = new Zend_Controller_Router_Route($controllerName . '/:action/*', array(
 							'module' => 'custom',
 							'controller' => $controllerName,
 							'action' => 'index'
