@@ -24,19 +24,19 @@ class DataEditionController extends AbstractOGAMController {
 	/**
 	 * The models.
 	 */
-	private $metadataModel;
+	protected $metadataModel;
 
-	private $genericModel;
+	protected $genericModel;
 
 	/**
 	 * The generic service.
 	 */
-	private $genericService;
+	protected $genericService;
 
 	/**
 	 * The config.
 	 */
-	private $configuration;
+	protected $configuration;
 
 	/**
 	 * Initialise the controler
@@ -124,7 +124,7 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param Boolean $isKey
 	 *        	is the field a primary key ?
 	 */
-	private function _getFormElement($form, $tableField, $formField, $isKey = false) {
+	protected function _getFormElement($form, $tableField, $formField, $isKey = false) {
 		
 		// Warning : $formField can be null if no mapping is defined with $tableField
 		switch ($tableField->type) {
@@ -241,7 +241,7 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param Boolean $complete
 	 *        	indicate if the function must generate all the list of codes
 	 */
-	private function _getEditDataForm($data, $mode) {
+	protected function _getEditDataForm($data, $mode) {
 		$this->logger->debug('_getEditDataForm :  mode = ' . $mode);
 		
 		$form = new Application_Form_OGAMForm();
@@ -302,7 +302,7 @@ class DataEditionController extends AbstractOGAMController {
 	 *        	The request object.
 	 * @return DataObject the data object
 	 */
-	private function _getDataFromRequest($request) {
+	protected function _getDataFromRequest($request) {
 		$params = $request->getUserParams();
 		
 		$schema = $params["SCHEMA"];
@@ -739,7 +739,7 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param String $dir        	
 	 * @return boolean @suppressWarning checkProhibitedFunctions unlink
 	 */
-	private function _deleteDirectory($dir) {
+	protected function _deleteDirectory($dir) {
 		$this->logger->debug('deleteDirectory ' . $dir);
 		
 		if (!file_exists($dir)) {
