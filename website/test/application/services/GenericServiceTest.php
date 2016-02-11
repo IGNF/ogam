@@ -7,7 +7,7 @@ require_once TEST_PATH . 'ControllerTestCase.php';
  */
 class GenericServiceTest extends ControllerTestCase {
 
-	protected $queryService;
+	protected $genericService;
 
 	/**
 	 * Set up the test case.
@@ -18,7 +18,7 @@ class GenericServiceTest extends ControllerTestCase {
 		parent::setUp();
 
 		// On instancie le service
-		$this->queryService = new Application_Service_GenericService();
+		$this->genericService = new Application_Service_GenericService();
 	}
 
 	/**
@@ -33,11 +33,11 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->subtype = "MODE";
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->queryService->getValueLabel($field, '');
+		$label = $this->genericService->getValueLabel($field, '');
 		$this->assertEquals('', $label);
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->queryService->getValueLabel($field, null);
+		$label = $this->genericService->getValueLabel($field, null);
 		$this->assertEquals('', $label);
 	}
 
@@ -53,7 +53,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->subtype = "MODE";
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->queryService->getValueLabel($field, '031.001.041');
+		$label = $this->genericService->getValueLabel($field, '031.001.041');
 		$this->assertEquals('Salix caprea', $label);
 	}
 
@@ -69,7 +69,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->subtype = "DYNAMIC";
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->queryService->getValueLabel($field, '45');
+		$label = $this->genericService->getValueLabel($field, '45');
 		$this->assertEquals('LOIRET', $label);
 	}
 
@@ -85,7 +85,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->subtype = "TREE";
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->queryService->getValueLabel($field, '41');
+		$label = $this->genericService->getValueLabel($field, '41');
 		$this->assertEquals('Forêts caducifoliées', $label);
 	}
 
@@ -101,7 +101,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->subtype = "TAXREF";
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->queryService->getValueLabel($field, '409299');
+		$label = $this->genericService->getValueLabel($field, '409299');
 		$this->assertEquals('Acalles nudiusculus', $label);
 	}
 
@@ -117,7 +117,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->subtype = "DYNAMIC";
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->queryService->getValueLabel($field, '45050');
+		$label = $this->genericService->getValueLabel($field, '45050');
 		$this->assertEquals('BOYNES (45050)', $label);
 	}
 
@@ -133,7 +133,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->subtype = "TREE";
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->queryService->getValueLabel($field, '38.11');
+		$label = $this->genericService->getValueLabel($field, '38.11');
 		$this->assertEquals('Pâturages continus', $label);
 	}
 
@@ -141,7 +141,7 @@ class GenericServiceTest extends ControllerTestCase {
 	 * Test de la fonction removeAccents().
 	 */
 	public function testRemoveAccents() {
-		$label = $this->queryService->removeAccents('Tèst d\'élimînàtiôn des âçcènts');
+		$label = $this->genericService->removeAccents('Tèst d\'élimînàtiôn des âçcènts');
 
 		$this->assertEquals('Test d\'elimination des accents', $label);
 	}
@@ -153,7 +153,7 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On récupère un descripteur d'objet pour le format "Location"
 		// On ne précise pas de dataset, il n'y a donc pas de filtrage sur les champs disponibles
-		$data = $this->queryService->buildDataObject('RAW_DATA', 'LOCATION_DATA');
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'LOCATION_DATA');
 
 		// $this->logger->info('data : ' . print_r($data, true));
 
@@ -206,7 +206,7 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On récupère un descripteur d'objet pour le format "Location"
 		// On ne précise pas de dataset
-		$data = $this->queryService->buildDataObject('RAW_DATA', 'LOCATION_DATA', 'SPECIES');
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'LOCATION_DATA', 'SPECIES');
 
 		// $this->logger->info('data : ' . print_r($data, true));
 
@@ -230,10 +230,10 @@ class GenericServiceTest extends ControllerTestCase {
 	public function testGetAllFormats() {
 
 		// On récupère un descripteur d'objet pour le format "SPECIES"
-		$data = $this->queryService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
 
 		// On récupère la liste des formats de tables dans la hiérarchie de cet objet.
-		$hierarchie = $this->queryService->getAllFormats('RAW_DATA', $data);
+		$hierarchie = $this->genericService->getAllFormats('RAW_DATA', $data);
 
 		// $this->logger->info('hierarchie : ' . print_r($hierarchie, true));
 
