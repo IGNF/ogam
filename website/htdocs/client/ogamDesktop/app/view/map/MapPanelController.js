@@ -167,6 +167,99 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         }
     },
 
+
+	/**
+	 * Zoom to the passed feature on the map
+	 * 
+	 * @param {String}
+	 *            id The plot id
+	 * @param {String}
+	 *            wkt The wkt feature
+	 */
+	zoomToFeature : function(id, wkt) {
+//		var wktGeom = this.getView().wktFormat.readGeometry(wkt);
+//                var source = new ol.source.Vector({
+//                    wrapX : false
+//                });
+//                var vector = new ol.layer.Vector({
+//                   source : source 
+//                });
+//                this.map.addLayer(vector);
+            var feature = this.getView().wktFormat.readFeature(wkt);
+            var source = new ol.source.Vector();
+            var vectorLyr = new ol.layer.Vector({
+               source : source
+            });
+
+            var start = new Date().getTime();
+            var listenerKey;
+            var duration = 1500; // Animation duration
+            var map = this.map;
+                    map.addLayer(vectorLyr);
+            function animate(event) {
+                var vectorContext = event.vectorContext;
+                var frameState = event.frameState;
+                var flashGeom = feature.getGeometry().clone();
+                var elapsed = frameState.time - start;
+                var elapsedRatio = elapsed / duration;
+                // radius will be 5 at start and 30 at end.
+                var radius = ol.easing.easeOut(elapsedRatio) * 25 + 5;
+                var opacity = ol.easing.easeOut(1 - elapsedRatio);
+      //          console.log(flashGeom);
+                var flashStyle = new ol.style.Circle({
+                    radius: radius,
+                    snapToPixel: false,
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255, 0, 0, ' + opacity + ')',
+                        width: 1
+                    })
+                });
+                var highlightStyle = new ol.style.Style({
+                    geometry: flashGeom,
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255, 0, 0, ' + opacity + ')',
+                        width: 1
+                    }),
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255, 0, 0, ' + opacity + ')'
+                    }),
+                            image: new ol.style.Circle({
+                                radius: 7,
+                                fill: new ol.style.Fill({
+                                  color: 'rgba(255, 0, 0, ' + opacity + ')'
+                                })
+                            })
+                });
+                var geomType = feature.getGeometry().getType();
+                if (geomType === 'Polygon'){
+                    vectorContext.setImageStyle(flashStyle);
+                    vectorContext.drawPointGeometry(flashGeom, null);
+                    if (elapsed > duration) {
+                        ol.Observable.unByKey(listenerKey);
+                        return;
+                    }
+                    // tell OL3 to continue postcompose animation
+                    map.render();
+//                } else if (geomType === 'LineString' || geomType === 'MultiLineString') {
+                    // @TODO 
+                } else if (geomType === 'Point' || geomType === 'MultiPolygon') {
+                    vectorLyr.setStyle(highlightStyle);
+                    if (source.getFeatures().length == 0) {
+                        source.addFeature(feature);
+                    }
+                    if (elapsed > duration) {
+                        ol.Observable.unByKey(listenerKey);
+                        return;
+                    }
+                    map.render();
+                    
+//                    event.vectorContext.renderFeature(feature, highlightStyle); //@TODO test with polygons data
+                }
+            }
+            listenerKey = map.on('postcompose', animate);
+            map.getView().fit(feature.getGeometry().getExtent(), map.getSize());
+	},
+
     onZoomToMaxExtentButtonPress : function (button, e, eOpts) {
         this.map.getView().fit(
             [
@@ -227,6 +320,23 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
                 zoom : zoom,
                 layers : layersToPrint
         });
+    },
+    
+    onResultFeatureInfoButtonPress : function(button, pressed, eOpts) {
+        this.map.on("click", function(e) {
+            console.log(e);
+            var lon = e.coordinate[0], lat=e.coordinate[1];
+            Ext.Ajax.request({
+                url : Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetlocationinfo?LON='+lon+'&LAT='+lat,
+                success : function(rpse, options) {
+                    var result = Ext.decode(rpse.responseText);
+                    this.getView().fireEvent('getLocationInfo', {'result': result});
+                    console.log('response to location info', result);
+                },
+                scope: this
+            });
+        }, this);
+        //this.map.forEachFeatureAtPixel()
     }
 });
 

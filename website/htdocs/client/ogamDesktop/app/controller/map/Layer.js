@@ -501,7 +501,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                     opacity: layerObject.data.options.opacity,
                     source: source,
                     name: layerObject.data.options.label,
-                    minResolution: 88.19439681947,
+//                    minResolution: 88.19439681947,
                     printable: true
                 });
 
@@ -513,8 +513,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 layerOpts = layerObject.data.options;
                 layerOpts['source'] = source;
                 layerOpts['name'] = layerObject.data.options.label;
-                layerOpts['minResolution'] = 88.19439681947;
-                layerOpts['maxResolution'] = 1763.8879363894;
+//                layerOpts['minResolution'] = 88.19439681947;
+//                layerOpts['maxResolution'] = 1763.8879363894;
                 layerOpts['printable'] = true;
                 if (layerObject.data.params.activateType.toLowerCase() === 'request'){
                     layerOpts['code'] = 'results';
