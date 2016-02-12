@@ -42,4 +42,37 @@ class BoundingBoxTest extends ControllerTestCase {
 		// On vérifie le résultat attendu
 		$this->assertNull($center);
 	}
+
+	/**
+	 * Test Create / Read / Update / Delete.
+	 */
+	public function testCRUD() {
+
+		// On charge le modèle
+		$bbModel = new Application_Model_Mapping_BoundingBox();
+
+		$providerId = "TestProvider";
+
+		// On fait le ménage préventivement (cas d'un test non terminé)
+		$bbModel->deleteBoundingBox($providerId);
+
+		// On crée une bbox
+		$bbox = Application_Object_Mapping_BoundingBox::createBoundingBox(0, 10, 0, 10);
+
+		// On l'insère en base
+		$bbModel->addBoundingBox($providerId, $bbox);
+
+		// On recharge la bbox
+		$bbox2 = $bbModel->getBoundingBox($providerId);
+
+		// On vérifie qu'on a bien les mêmes infos
+		$this->assertNotNull($bbox2);
+		$this->assertEquals($bbox->xmin, $bbox2->xmin);
+		$this->assertEquals($bbox->xmax, $bbox2->xmax);
+		$this->assertEquals($bbox->ymin, $bbox2->ymin);
+		$this->assertEquals($bbox->ymax, $bbox2->ymax);
+
+		// On fait le ménage
+		$bbModel->deleteBoundingBox($providerId);
+	}
 }
