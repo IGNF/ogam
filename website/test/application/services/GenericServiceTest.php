@@ -190,13 +190,6 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// Le format LOCALISATION possède une géométrie
 		$this->assertTrue($data->hasGeometry());
-
-		// On renseigne des valeurs pour les éléments de la clé
-		$providerField->value = 'TestProvider';
-		$plotField->value = '1234';
-
-		// On vérifie l'identificant unique de la donnée
-		$this->assertEquals('SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/TestProvider/PLOT_CODE/1234', $data->getId());
 	}
 
 	/**
