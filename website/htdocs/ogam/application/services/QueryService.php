@@ -54,10 +54,10 @@ class Application_Service_QueryService {
 	 *        	the schema
 	 */
 	function Application_Service_QueryService($schema) {
-		
+
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
-		
+
 		// Initialise the metadata models
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
 		$this->genericModel = new Application_Model_Generic_Generic();
@@ -65,10 +65,10 @@ class Application_Service_QueryService {
 		$this->predefinedRequestModel = new Application_Model_Website_PredefinedRequest();
 		$this->layersModel = new Application_Model_Mapping_Layers();
 		$this->servicesModel = new Application_Model_Mapping_Services();
-		
+
 		// The service used to build generic info from the metadata
 		$this->genericService = new Application_Service_GenericService();
-		
+
 		// Configure the schema
 		$this->schema = $schema;
 	}
@@ -81,7 +81,7 @@ class Application_Service_QueryService {
 	 */
 	private function _generateQueryFormsJSON($forms) {
 		$json = '{"success":true,"data":[';
-		
+
 		foreach ($forms as $form) {
 			// Add the criteria
 			$json .= '{' . $form->toJSON() . ',"criteria":[';
@@ -111,7 +111,7 @@ class Application_Service_QueryService {
 			$json = substr($json, 0, -1);
 		}
 		$json = $json . ']}';
-		
+
 		return $json;
 	}
 
@@ -140,7 +140,7 @@ class Application_Service_QueryService {
 		$format = str_replace("ss", "s", $format);
 		$format = str_replace("A", "a", $format);
 		$format = str_replace("S", "u", $format);
-		
+
 		return $format;
 	}
 
@@ -154,17 +154,17 @@ class Application_Service_QueryService {
 	 */
 	private function _generateEditFieldJSON($formField) {
 		$json = "{";
-		
+
 		// Set the default value
 		if ($formField->value == null) {
 			if ($formField->defaultValue == '%LOGIN%') {
-				
+
 				// Set the currently loggued user
 				$userSession = new Zend_Session_Namespace('user');
 				$user = $userSession->user;
 				$formField->value = $user->login;
 			} else if ($formField->defaultValue == '%TODAY%') {
-				
+
 				// Set the current date
 				if ($formField->mask != null) {
 					$formField->value = date($this->_convertDateFormat($formField->mask));
@@ -175,16 +175,16 @@ class Application_Service_QueryService {
 				$formField->value = $formField->defaultValue;
 			}
 		}
-		
+
 		$json .= $formField->toEditJSON();
-		
+
 		// For the RANGE field, get the min and max values
 		if ($formField->type == "NUMERIC" && $formField->subtype == "RANGE") {
 			$range = $this->metadataModel->getRange($formField->unit);
 			$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 		}
 		$json .= "},";
-		
+
 		return $json;
 	}
 
@@ -196,7 +196,7 @@ class Application_Service_QueryService {
 	 */
 	private function _generateEditFormJSON($data) {
 		$json = '{"success":true,"data":[';
-		
+
 		foreach ($data->getInfoFields() as $tablefield) {
 			$formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 			if (!empty($formField)) {
@@ -208,7 +208,7 @@ class Application_Service_QueryService {
 				$formField->required = !$tablefield->isCalculated; // If the field is not calculated and if it is part of the key
 				$formField->data = $tablefield->data; // The name of the data is the table one
 				$formField->format = $tablefield->format; // The name of the data is the table one
-				
+
 				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
 			}
 		}
@@ -223,15 +223,15 @@ class Application_Service_QueryService {
 				$formField->required = $tablefield->isMandatory;
 				$formField->data = $tablefield->data; // The name of the data is the table one
 				$formField->format = $tablefield->format; // The name of the data is the table one
-				
+
 				$json .= $this->_generateEditFieldJSON($formField, $tablefield);
 			}
 		}
-		
+
 		$json = substr($json, 0, -1);
-		
+
 		$json .= ']}';
-		
+
 		return $json;
 	}
 
@@ -244,10 +244,10 @@ class Application_Service_QueryService {
 	 */
 	private function _getPredefinedRequest($requestName) {
 		$this->logger->debug('_getPredefinedRequest');
-		
+
 		// Get the saved values for the forms
 		$savedRequest = $this->predefinedRequestModel->getPredefinedRequest($requestName);
-		
+
 		// Get the default values for the forms
 		$forms = $this->metadataModel->getForms($savedRequest->datasetID, $savedRequest->schemaCode);
 		foreach ($forms as $form) {
@@ -255,28 +255,28 @@ class Application_Service_QueryService {
 			$form->criteriaList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'criteria');
 			$form->resultsList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'result');
 		}
-		
+
 		// Update the default values with the saved values.
 		foreach ($forms as $form) {
 			foreach ($form->criteriaList as $criteria) {
 				$criteria->isDefaultCriteria = '0';
 				$criteria->defaultValue = '';
-				
+
 				if (array_key_exists($criteria->getName(), $savedRequest->criteriaList)) {
 					$criteria->isDefaultCriteria = '1';
 					$criteria->defaultValue = $savedRequest->criteriaList[$criteria->getName()]->value;
 				}
 			}
-			
+
 			foreach ($form->resultsList as $result) {
 				$result->isDefaultResult = '0';
-				
+
 				if (array_key_exists($result->getName(), $savedRequest->resultsList)) {
 					$result->isDefaultResult = '1';
 				}
 			}
 		}
-		
+
 		// return the forms
 		return $forms;
 	}
@@ -288,7 +288,7 @@ class Application_Service_QueryService {
 	 */
 	public function getDatasets() {
 		$datasetIds = $this->metadataModel->getDatasetsForDisplay();
-		
+
 		$json = '{"metaData":{';
 		$json .= '"root":"rows",';
 		$json .= '"fields":[';
@@ -299,16 +299,16 @@ class Application_Service_QueryService {
 		$json .= ']';
 		$json .= '},';
 		$json .= '"rows":[';
-		
+
 		foreach ($datasetIds as $dataset) {
 			$json .= '{' . $dataset->toJSON() . '},';
 		}
 		$json = substr($json, 0, -1); // remove last comma
-		
+
 		json_encode($datasetIds);
-		
+
 		$json .= ']}';
-		
+
 		return $json;
 	}
 
@@ -323,7 +323,7 @@ class Application_Service_QueryService {
 	 */
 	public function getQueryForm($datasetId, $requestName) {
 		$this->logger->debug('getQueryForm');
-		
+
 		if (!empty($requestName)) {
 			// If request name is filled then we are coming from the predefined request screen
 			// and we build the form corresponding to the request
@@ -337,7 +337,7 @@ class Application_Service_QueryService {
 				$form->resultsList = $this->metadataModel->getFormFields($datasetId, $form->format, $this->schema, 'result');
 			}
 		}
-		
+
 		return $this->_generateQueryFormsJSON($forms);
 	}
 
@@ -350,7 +350,7 @@ class Application_Service_QueryService {
 	 */
 	public function getEditForm($data) {
 		$this->logger->debug('getEditForm');
-		
+
 		return $this->_generateEditFormJSON($data);
 	}
 
@@ -367,45 +367,45 @@ class Application_Service_QueryService {
 	 */
 	public function getResultColumns($datasetId, $formQuery, $withSQL = false) {
 		$this->logger->debug('getResultColumns');
-		
+
 		$json = "";
-		
+
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
 		$visualisationSRS = $configuration->srs_visualisation;
-		
+
 		// Transform the form request object into a table data object
 		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
-		
+
 		if (count($formQuery->results) === 0) {
 			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
 		} else {
-			
+
 			// Generate the SQL Request
 			$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
 			$fromwhere = $this->genericService->generateSQLFromWhereRequest($this->schema, $queryObject);
-			
+
 			$this->logger->debug('$select : ' . $select);
 			$this->logger->debug('$fromwhere : ' . $fromwhere);
-			
+
 			// Clean previously stored results
 			$sessionId = session_id();
 			$this->logger->debug('SessionId : ' . $sessionId);
 			$this->resultLocationModel->cleanPreviousResults($sessionId);
-			
+
 			// Identify the field carrying the location information
 			$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
 			$locationField = $this->metadataModel->getGeometryField($this->schema, array_keys($tables));
 			$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
-			
+
 			// Run the request to store a temporary result table (for the web mapping)
 			$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
-			
+
 			// Calculate the number of lines of result
 			$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count " . $fromwhere);
-			
+
 			// TODO : Move this part somewhere else
-			
+
 			// Get the website session
 			$websiteSession = new Zend_Session_Namespace('website');
 			// Store the metadata in session for subsequent requests
@@ -417,18 +417,18 @@ class Application_Service_QueryService {
 			$websiteSession->queryObject = $queryObject;
 			$websiteSession->count = $countResult[0]['count']; // result count
 			$websiteSession->schema = $this->schema;
-			
+
 			// Send the result as a JSON String
 			$json = '{"success":true,';
-			
+
 			// Metadata
 			$json .= '"columns":[';
 			// Get the titles of the columns
 			foreach ($formQuery->results as $formField) {
-				
+
 				// Get the full description of the form field
 				$formField = $this->metadataModel->getFormField($formField->format, $formField->data);
-				
+
 				// Export the JSON
 				$json .= '{' . $formField->toJSON() . ', "hidden":false},';
 			}
@@ -436,22 +436,22 @@ class Application_Service_QueryService {
 			$json .= '{"name":"id","label":"Identifier of the line","inputType":"TEXT","definition":"The plot identifier", "hidden":true}';
 			// Add the plot location in WKT
 			$json .= ',{"name":"location_centroid","label":"Location centroid","inputType":"TEXT","definition":"The plot location", "hidden":true}';
-			
+
 			// Right management : add the provider id of the data
 			$userSession = new Zend_Session_Namespace('user');
 			$role = $userSession->user->role;
 			if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
 			}
-			
+
 			$json .= ']';
-			
+
 			if ($withSQL) {
 				$json .= ', "SQL":' . json_encode($select . $fromwhere);
 			}
 			$json .= '}';
 		}
-		
+
 		return $json;
 	}
 
@@ -471,18 +471,18 @@ class Application_Service_QueryService {
 	public function getResultRows($start, $length, $sort, $sortDir) {
 		$this->logger->debug('getResultRows');
 		$json = "";
-		
+
 		try {
-			
+
 			// Retrieve the SQL request from the session
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
 			$fromwhere = $websiteSession->SQLFromWhere;
 			$countResult = $websiteSession->count;
-			
+
 			// Retrive the session-stored info
 			$resultColumns = $websiteSession->resultColumns; // array of TableField
-			
+
 			$filter = "";
 			if ($sort != "") {
 				// $sort contains the form format and field
@@ -502,22 +502,22 @@ class Application_Service_QueryService {
 			if (!empty($start)) {
 				$filter .= " OFFSET " . $start;
 			}
-			
+
 			// Execute the request
 			$result = $this->genericModel->executeRequest($select . $fromwhere . $filter);
-			
+
 			// Send the result as a JSON String
 			$json = '{"success":true,';
 			$json .= '"total":' . $countResult . ',';
 			$json .= '"rows":[';
 			foreach ($result as $line) {
 				$json .= '[';
-				
+
 				foreach ($resultColumns as $tableField) {
-					
+
 					$key = strtolower($tableField->getName());
 					$value = $line[$key];
-					
+
 					// Manage code traduction
 					if ($tableField->type === "CODE" && $value != "") {
 						$label = $this->genericService->getValueLabel($tableField, $value);
@@ -534,26 +534,26 @@ class Application_Service_QueryService {
 							$label = substr($label, 0, -1);
 						}
 						$label = '[' . $label . ']';
-						
+
 						$json .= json_encode($label == null ? '' : $label) . ',';
 					} else {
 						$json .= json_encode($value) . ',';
 					}
 				}
-				
+
 				// Add the line id
 				$json .= json_encode($line['id']);
-				
+
 				// Add the plot location in WKT
 				$json .= ',' . json_encode($line['location_centroid']); // The last column is the location center
-				                                                        
+
 				// Right management : add the provider id of the data
 				$userSession = new Zend_Session_Namespace('user');
 				$role = $userSession->user->role;
 				if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 					$json .= ',' . json_encode($line['_provider_id']);
 				}
-				
+
 				$json .= '],';
 			}
 			if (sizeof($result) != 0) {
@@ -562,66 +562,16 @@ class Application_Service_QueryService {
 			$json .= ']}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			$json = "{success:false,errorMessage:'" . json_encode($e->getMessage()) . "'}";
+			$json = '{"success":false,"errorMessage":"' . json_encode($e->getMessage()) . '"}';
 		}
-		
-		return $json;
-	}
 
-	/**
-	 * Setup the BoundingBox.
-	 *
-	 * @param Integer $xmin
-	 *        	x min position
-	 * @param Integer $xmax
-	 *        	x max position
-	 * @param Integer $ymin
-	 *        	y min position
-	 * @param Integer $ymax
-	 *        	y max position
-	 * @return Array the setup BoundingBox
-	 */
-	private function _setupBoundingBox($xmin, $xmax, $ymin, $ymax, $minSize = 10000) {
-		$diffX = $xmax - $xmin;
-		$diffY = $ymax - $ymin;
-		
-		// Enlarge the bb if it's too small (like for the point)
-		if ($diffX < $minSize) {
-			$addX = ($minSize - $diffX) / 2;
-			$xmin = $xmin - $addX;
-			$xmax = $xmax + $addX;
-			$diffX = $minSize;
-		}
-		if ($diffY < $minSize) {
-			$addY = ($minSize - $diffY) / 2;
-			$ymin = $ymin - $addY;
-			$ymax = $ymax + $addY;
-			$diffY = $minSize;
-		}
-		
-		// Setup the bb like a square
-		$diffXY = $diffX - $diffY;
-		if ($diffXY < 0) {
-			// The bb is highter than large
-			$xmin = $xmin + $diffXY / 2;
-			$xmax = $xmax - $diffXY / 2;
-		} else {
-			// The bb is larger than highter
-			$ymin = $ymin - $diffXY / 2;
-			$ymax = $ymax + $diffXY / 2;
-		}
-		return array(
-			'x_min' => $xmin,
-			'y_min' => $ymin,
-			'x_max' => $xmax,
-			'y_max' => $ymax
-		);
+		return $json;
 	}
 
 	/**
 	 * Decode the identifier
 	 *
-	 * @param String $id        	
+	 * @param String $id
 	 * @return Array the decoded id
 	 */
 	private function _decodeId($id) {
@@ -652,27 +602,27 @@ class Application_Service_QueryService {
 	 */
 	public function getDetailsData($id, $detailsLayers, $datasetId = null, $proxy = true) {
 		$this->logger->debug('getDetailsData : ' . $id);
-		
+
 		// Transform the identifier in an array
 		$keyMap = $this->_decodeId($id);
-		
+
 		// Prepare a data object to be filled
 		$data = $this->genericService->buildDataObject($keyMap['SCHEMA'], $keyMap['FORMAT'], null);
-		
+
 		// Complete the primary key info with the session values
 		foreach ($data->infoFields as $infoField) {
 			if (!empty($keyMap[$infoField->data])) {
 				$infoField->value = $keyMap[$infoField->data];
 			}
 		}
-		
+
 		// Get the detailled data
 		$this->genericModel->getDatum($data);
-		
+
 		// The data ancestors
 		$ancestors = $this->genericModel->getAncestors($data);
 		$ancestors = array_reverse($ancestors);
-		
+
 		// Look for a geometry object in order to calculate a bounding box
 		// Look for the plot location
 		$bb = null;
@@ -681,11 +631,11 @@ class Application_Service_QueryService {
 		foreach ($data->getFields() as $field) {
 			if ($field->type === 'GEOM') {
 				// define a bbox around the location
-				$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-				
+				$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+
 				// Prepare an overview bbox
-				$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 50000);
-				
+				$bb2 = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 50000);
+
 				$locationTable = $data;
 				break;
 			}
@@ -695,28 +645,28 @@ class Application_Service_QueryService {
 				foreach ($ancestor->getFields() as $field) {
 					if ($field->type === 'GEOM') {
 						// define a bbox around the location
-						$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-						
+						$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+
 						// Prepare an overview bbox
-						$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-						
+						$bb2 = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+
 						$locationTable = $ancestor;
 						break;
 					}
 				}
 			}
 		}
-		
+
 		// Defines the mapsserver parameters.
 		$mapservParams = '';
 		foreach ($locationTable->getInfoFields() as $primaryKey) {
 			$mapservParams .= '&' . $primaryKey->columnName . '=' . $primaryKey->value;
 		}
-		
+
 		// Title of the detail message
 		$dataDetails = array();
 		$dataDetails['formats'] = array();
-		
+
 		// List all the formats, starting with the ancestors
 		foreach ($ancestors as $ancestor) {
 			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
@@ -724,13 +674,13 @@ class Application_Service_QueryService {
 				$dataDetails['formats'][] = json_decode($ancestorJSON, true);
 			}
 		}
-		
+
 		// Add the current data
 		$dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
 		if ($dataJSON !== '') {
 			$dataDetails['formats'][] = json_decode($dataJSON, true);
 		}
-		
+
 		// Defines the panel title
 		$titlePK = '';
 		foreach ($data->infoFields as $infoField) {
@@ -741,17 +691,17 @@ class Application_Service_QueryService {
 		}
 		$dataInfo = end($dataDetails['formats']);
 		$dataDetails['title'] = $dataInfo['title'] . ' (' . $titlePK . ')';
-		
+
 		// Add the localisation maps
 		if (!empty($detailsLayers)) {
 			if ($detailsLayers[0] != '') {
 				$url = array();
 				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams, $proxy)));
-				
+
 				$dataDetails['maps1'] = array(
 					'title' => 'image'
 				);
-				
+
 				// complete the array with the urls of maps1
 				$dataDetails['maps1']['urls'][] = array();
 				$urlCount = count($url);
@@ -759,14 +709,14 @@ class Application_Service_QueryService {
 					$dataDetails['maps1']['urls'][$i]['url'] = $url[$i];
 				}
 			}
-			
+
 			if ($detailsLayers[1] != '') {
 				$url = array();
 				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams, $proxy)));
 				$dataDetails['maps2'] = array(
 					'title' => 'overview'
 				);
-				
+
 				// complete the array with the urls of maps2
 				$dataDetails['maps2']['urls'][] = array();
 				for ($i = 0; $i < count($url); $i ++) {
@@ -774,7 +724,7 @@ class Application_Service_QueryService {
 				}
 			}
 		}
-		
+
 		return $dataDetails;
 	}
 
@@ -791,42 +741,42 @@ class Application_Service_QueryService {
 	 */
 	public function getDetails($id, $detailsLayers, $datasetId = null) {
 		$this->logger->debug('getDetails : ' . $id);
-		
+
 		return json_encode($this->getDetailsData($id, $detailsLayers));
 	}
 
 	/**
 	 * Generate an URL for the details map.
 	 *
-	 * @param Array $detailsLayers        	
-	 * @param Array $bb        	
-	 * @param Array $mapservParams        	
-	 * @param Boolean $proxy        	
+	 * @param Array $detailsLayers
+	 * @param Array $bb
+	 * @param Array $mapservParams
+	 * @param Boolean $proxy
 	 * @return String
 	 */
 	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
 		$configuration = Zend_Registry::get('configuration');
-		
+
 		// Configure the projection systems
 		$visualisationSRS = $configuration->srs_visualisation;
-		
+
 		// Get the base urls for the services
 		if (!$proxy) {
 			$detailServices = $this->servicesModel->getPrintServices();
 		} else {
 			$detailServices = $this->servicesModel->getDetailServices();
 		}
-		
+
 		// Get the server name for the layers
 		$layerNames = explode(",", $detailsLayers);
 		// $serviceLayerNames = "";
 		$baseUrls = "";
-		
+
 		foreach ($layerNames as $layerName) {
-			
+
 			$layer = $this->layersModel->getLayer($layerName);
 			$serviceLayerName = $layer->serviceLayerName;
-			
+
 			// Get the base Url for detail service
 			if (!$proxy) {
 				$detailServiceName = $layer->printServiceName;
@@ -835,18 +785,18 @@ class Application_Service_QueryService {
 					$detailServiceName = $layer->detailServiceName;
 				}
 			}
-			
+
 			foreach ($detailServices as $detailService) {
-				
+
 				if ($detailService->serviceName == $detailServiceName) {
-					
+
 					$baseUrl = json_decode($detailService->serviceConfig)->{'urls'}[0];
 					$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName . '&TRANSPARENT=true' . '&FORMAT=image%2Fpng' . '&SERVICE=WMS' . '&VERSION=1.3.0' . '&REQUEST=GetMap' . '&STYLES=' . '&CRS=EPSG%3A' . $visualisationSRS . '&BBOX=' . $bb['x_min'] . ',' . $bb['y_min'] . ',' . $bb['x_max'] . ',' . $bb['y_max'] . '&WIDTH=300&HEIGHT=300' . '&map.scalebar=STATUS+embed' . '&SESSION_ID=' . session_id() . $mapservParams . ";";
 				}
 			}
 		}
 		$baseUrls = substr($baseUrls, 0, -1); // remove last semicolon
-		
+
 		return $baseUrls;
 	}
 
@@ -859,21 +809,21 @@ class Application_Service_QueryService {
 	 */
 	public function ajaxgetchildren($id) {
 		$keyMap = $this->_decodeId($id);
-		
+
 		// Prepare a data object to be filled
 		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
-		
+
 		// Complete the primary key
 		foreach ($data->infoFields as $infoField) {
 			if (!empty($keyMap[$infoField->data])) {
 				$infoField->value = $keyMap[$infoField->data];
 			}
 		}
-		
+
 		// Get children too
 		$websiteSession = new Zend_Session_Namespace('website');
 		$children = $this->genericModel->getChildren($data, $websiteSession->datasetId);
-		
+
 		// Add the children
 		$json = "";
 		if (!empty($children)) {
@@ -896,23 +846,23 @@ class Application_Service_QueryService {
 	 * @return JSON The list of predefined requests
 	 */
 	public function getPredefinedRequestList($sort, $dir) {
-		
+
 		// Get the predefined values for the forms
 		$predefinedRequestList = $this->predefinedRequestModel->getPredefinedRequestList($this->schema, $dir, $sort);
-		
+
 		// Generate the JSON string
 		$total = count($predefinedRequestList);
 		$json = '{"success":true, "total":' . $total . ',"rows":[';
-		
+
 		foreach ($predefinedRequestList as $predefinedRequest) {
 			$json .= $predefinedRequest->toJSON() . ",";
 		}
 		if (!empty($predefinedRequestList)) {
 			$json = substr($json, 0, -1); // remove the last colon
 		}
-		
+
 		$json .= ']}';
-		
+
 		return $json;
 	}
 
@@ -925,35 +875,35 @@ class Application_Service_QueryService {
 	 */
 	public function getPredefinedRequestCriteria($requestName) {
 		$this->logger->debug('getPredefinedRequestCriteria');
-		
+
 		// Get the predefined values for the forms
 		$predefinedRequestCriterias = $this->predefinedRequestModel->getPredefinedRequestCriteria($requestName);
-		
+
 		// Generate the JSON string
 		$total = count($predefinedRequestCriterias);
 		$json = '{"success":true, "criteria":[';
-		
+
 		foreach ($predefinedRequestCriterias as $criteria) {
-			
+
 			$json .= '{';
 			$json .= $criteria->toCriteriaJSON();
-			
+
 			// add some specific options
 			if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
 				// For the RANGE field, get the min and max values
 				$range = $this->metadataModel->getRange($criteria->unit);
 				$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 			}
-			
+
 			$json .= '},';
 		}
-		
+
 		if ($total != 0) {
 			$json = substr($json, 0, -1);
 		}
-		
+
 		$json .= ']}';
-		
+
 		return $json;
 	}
 }

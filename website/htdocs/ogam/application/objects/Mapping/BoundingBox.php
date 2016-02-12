@@ -13,7 +13,7 @@
  */
 
 /**
- * Represent a providers's role.
+ * Represent a Bounding Box.
  *
  * @package objects
  *          @SuppressWarnings checkUnusedVariables
@@ -21,45 +21,92 @@
 class Application_Object_Mapping_BoundingBox {
 
 	/**
-	 * The provider Id.
-	 *
-	 * @var
-	 *
-	 */
-	var $provider_id;
-
-	/**
-	 * XMin
+	 * X Min.
 	 *
 	 * @var int
 	 */
-	var $bb_xmin = -899390;
+	var $xmin = -899390;
 
 	/**
-	 * YMin
+	 * Y Min.
 	 *
 	 * @var int
 	 */
-	var $bb_ymin = 6742320;
+	var $ymin = 6742320;
 
 	/**
-	 * XMax
+	 * X Max.
 	 *
 	 * @var int
 	 */
-	var $bb_xmax = 1351350;
+	var $xmax = 1351350;
 
 	/**
-	 * YMAx
+	 * Y Max.
 	 *
 	 * @var int
 	 */
-	var $bb_ymax = 4883370;
+	var $ymax = 4883370;
 
 	/**
-	 * Zoom level
+	 * Zoom Level (optional).
 	 *
 	 * @var int
 	 */
-	var $zoom_level = 1;
+	var $zoomLevel = 0;
+
+	/**
+	 * Create a new BoundingBox object, making sure that the Box is square.
+	 *
+	 * @param Integer $xmin
+	 *        	x min position
+	 * @param Integer $xmax
+	 *        	x max position
+	 * @param Integer $ymin
+	 *        	y min position
+	 * @param Integer $ymax
+	 *        	y max position
+	 * @param Integer $minSize
+	 *        	min size (default to 10 000)
+	 * @return Application_Object_Mapping_BoundingBox the BoundingBox
+	 */
+	public static function createBoundingBox($xmin, $xmax, $ymin, $ymax, $minSize = 10000) {
+		$diffX = abs($xmax - $xmin);
+		$diffY = abs($ymax - $ymin);
+
+		// Enlarge the bb if it's too small (like for the point)
+		if ($diffX < $minSize) {
+			$addX = ($minSize - $diffX) / 2;
+			$xmin = $xmin - $addX;
+			$xmax = $xmax + $addX;
+			$diffX = $minSize;
+		}
+		if ($diffY < $minSize) {
+			$addY = ($minSize - $diffY) / 2;
+			$ymin = $ymin - $addY;
+			$ymax = $ymax + $addY;
+			$diffY = $minSize;
+		}
+
+		// Setup the bb like a square
+		$diffXY = $diffX - $diffY;
+
+		if ($diffXY < 0) {
+			// The bb is highter than large
+			$xmin = $xmin + $diffXY / 2;
+			$xmax = $xmax - $diffXY / 2;
+		} else if ($diffXY > 0) {
+			// The bb is larger than highter
+			$ymin = $ymin - $diffXY / 2;
+			$ymax = $ymax + $diffXY / 2;
+		}
+
+		$bb = new Application_Object_Mapping_BoundingBox();
+		$bb->xmin = $xmin;
+		$bb->ymin = $ymin;
+		$bb->xmax = $xmax;
+		$bb->ymax = $ymax;
+
+		return $bb;
+	}
 }

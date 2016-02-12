@@ -2,13 +2,13 @@
 
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- * 
+ *
  * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
- * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
- * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
@@ -18,9 +18,9 @@
  * @package models
  */
 class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
-	
+
 	// == Properties defined in Zend_Db_Table_Abstract
-	
+
 	// Db table name
 	protected $_name = 'mapping.bounding_box';
 	// Primary key column
@@ -36,48 +36,94 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 	 * Initialisation
 	 */
 	public function init() {
-		
+
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 	}
 
 	/**
-	 * Get a bounding box by provider id
+	 * Read a BBox object from a result line.
 	 *
-	 * @param
-	 *        	$id
-	 * @return Rowset
-	 * @throws Exception
+	 * @param Result $row
+	 * @return Application_Object_Mapping_BoundingBox
 	 */
-	public function getBoundingBox($id) {
-		$row = $this->fetchRow("provider_id = '" . (int) $id . "'");
-		if (!$row) {
-			throw new Exception("Could not find provider $id");
-		}
-		return $row;
+	private function _readBBox($row) {
+		$bbox = new Application_Object_Mapping_BoundingBox();
+		$bbox->xmin = $row['bb_xmin'];
+		$bbox->ymin = $row['bb_ymin'];
+		$bbox->xmax = $row['bb_xmax'];
+		$bbox->ymax = $row['bb_ymax'];
+		$bbox->zoomLevel = $row['zoom_level'];
+
+		return $bbox;
 	}
 
 	/**
-	 * Add a new bounding box in Db
+	 * Get a bounding box by provider id.
 	 *
-	 * @param
-	 *        	$boundingBox
+	 * @param String $providerId
+	 * @return Application_Object_Mapping_BoundingBox
+	 * @throws Exception
 	 */
-	public function addBoundingBox($boundingBox) {
-		if ($boundingBox instanceof Application_Object_Mapping_BoundingBox) {
-			$boundingBox = (array) $boundingBox;
+	public function getBoundingBox($providerId) {
+		$db = $this->getAdapter();
+
+		$req = " SELECT *";
+		$req .= " FROM mapping.bounding_box ";
+		$req .= " WHERE provider_id = ?";
+
+		Zend_Registry::get("logger")->info('getBoundingBox : ' . $req);
+
+		$select = $db->prepare($req);
+		$select->execute(array(
+			$providerId
+		));
+
+		$row = $select->fetch();
+		if (!$row) {
+			throw new Exception("Could not find BBox for provider " . $providerId);
 		}
-		return $this->insert($boundingBox);
+
+		$bbox = $this->_readBBox($row);
+
+		return $bbox;
+	}
+
+	/**
+	 * Add a new bounding box in database.
+	 *
+	 * @param String $providerId
+	 *        	the provider id
+	 * @param Application_Object_Mapping_BoundingBox $boundingBox
+	 *        	the bounding box
+	 */
+	public function addBoundingBox($providerId, $boundingBox) {
+		$db = $this->getAdapter();
+
+		$req = " INSERT INTO mapping.bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level)";
+		$req .= " VALUES (?, ?, ?, ?, ?, ?)";
+
+		$this->logger->info('addBoundingBox : ' . $req);
+
+		$query = $db->prepare($req);
+		$query->execute(array(
+			$providerId,
+			$boundingBox->xmin,
+			$boundingBox->ymin,
+			$boundingBox->xmax,
+			$boundingBox->ymax,
+			$boundingBox->zoomLevel
+		));
 	}
 
 	/**
 	 * Delete a bounding box from Db
 	 *
-	 * @param
-	 *        	$id
+	 * @param String $providerId
+	 *        	the provider id
 	 */
-	public function deleteBoundingBox($id) {
-		$this->delete("provider_id = '" . (int) $id . "'");
+	public function deleteBoundingBox($providerId) {
+		$this->delete("provider_id = '" . $providerId . "'");
 	}
 
 	/**
@@ -89,25 +135,25 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 	 */
 	public function getCenter($providerId) {
 		$db = $this->getAdapter();
-		
+
 		$req = " SELECT (bb_xmin + bb_xmax) / 2 as x_center, (bb_ymin + bb_ymax) / 2 as y_center, zoom_level ";
 		$req .= " FROM bounding_box ";
 		$req .= " WHERE provider_id = ?";
-		
+
 		Zend_Registry::get("logger")->info('getCenter : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$providerId
 		));
-		
+
 		$row = $select->fetch();
 		if (!empty($row)) {
 			$center = new Application_Object_Mapping_Center();
 			$center->x = $row['x_center'];
 			$center->y = $row['y_center'];
 			$center->defaultzoom = $row['zoom_level'];
-			
+
 			return $center;
 		} else {
 			return null;
