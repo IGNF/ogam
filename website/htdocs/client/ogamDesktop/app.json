@@ -196,6 +196,8 @@
             "path": "lib/OpenLayers/ol-debug.js"
             //"path": "lib/OpenLayers/ol.js"
         },{
+            "path": "lib/OpenLayers/Scalecontrol.js"
+        },{
             "path": "lib/addon/OpenLayers/Control/FeatureInfoControl.js",
             "includeInBundle": true
         },{
@@ -388,7 +390,7 @@
          * List of items in the CACHE MANIFEST section
          */
         "cache": [
-            "index.html"
+         //   "index.html"
         ],
         /**
          * List of items in the NETWORK section
