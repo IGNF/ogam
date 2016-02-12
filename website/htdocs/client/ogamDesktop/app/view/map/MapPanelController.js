@@ -46,6 +46,10 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         });
     },
 
+    onSnappingButtonRender :  function (button, eOpts) {
+        this.onSelectWFSFeatureButtonRender(button, eOpts);
+    },
+
     onSnappingButtonToggle : function (button, pressed, eOpts) {
         if (pressed) {
             var snapInter = new ol.interaction.Snap({
@@ -67,6 +71,32 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
                 }
             });
         }
+    },
+
+    onSnappingButtonMenuItemPress : function(menu, item, e, eOpts) {
+        console.log('item', item);
+        var vectorSource = new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: function(extent) {
+                return /*item.config.data.url*/ 'http://localhost:8000/mapProxy.php?' + 
+                    'service=WFS&version=1.1.0&request=GetFeature&outputFormat=geojsonogr&srsname=EPSG:3857' +
+                    '&typename='+item.itemId+'&' +
+                    '&bbox=' + extent.join(',') + ',EPSG:3857';
+            },
+            strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
+                maxZoom: 19
+            }))
+        });
+        var vector = new ol.layer.Vector({
+        source: vectorSource,
+        style: new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 255, 1.0)',
+            width: 2
+          })
+        })
+      });
+        this.map.addLayer(vector);
     },
 
     onModifyfeatureButtonToggle : function (button, pressed, eOpts) {
@@ -102,6 +132,109 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         this.onDrawButtonToggle(button, pressed, 'Polygon');
     },
 
+    onSelectWFSFeatureButtonRender : function (button, eOpts) {
+        Ext.create('Ext.data.Store', {
+            autoLoad: true,
+            proxy: {
+                type: 'ajax',
+                url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
+                actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
+                reader: {
+                    type: 'json',
+                    rootProperty: 'layerNames'
+                }
+            },
+            fields : [{
+                name : 'code',
+                mapping : 'code'
+            }, {
+                name : 'label',
+                mapping : 'label'
+            }, {
+                name : 'url',
+                mapping : 'url'
+            }, {
+                name : 'url_wms',
+                mapping : 'url_wms'
+            }],
+            listeners: {
+                'load': function(store, records, successful, eOpts){
+                    var menu = button.getMenu();
+                    store.each(function(record){
+                        menu.add({
+                            text : record.get('label'),
+                            itemId : record.get('code'),
+                            data : {
+                                url : record.get('url'),
+                                url_wms : record.get('url_wms')
+                            }
+                        });
+                    },this);
+                }
+            }
+        });
+    },
+
+    onSelectWFSFeatureButtonToggle : function (button, pressed, eOpts) {
+        if (pressed) {
+
+        }
+    },
+
+    onSelectWFSFeatureButtoMenuItemPress : function(menu, item, e, eOpts) {
+
+    },
+/*
+    onLoadVectorLayerButtonPress : function (button, e, eOpts) {
+        button.setMenu({
+            xtype:'menu',
+            defaults: {
+                iconCls: 'o-map-tools-map-addicon'
+            },
+            items: [{
+                text: 'plain item 1'
+            },{
+                text: 'plain item 2'
+            },{
+                text: 'plain item 3'
+            }]
+        })
+    },*/
+
+//          this.layerSelector = Ext.create('Ext.form.field.ComboBox',{
+//              xtype: 'layerselector',
+//              editable: false,
+//              emptyText: this.LayerSelectorEmptyTextValue,
+//              triggerAction : 'all',
+//              store : Ext.create('Ext.data.Store',{
+//                  autoLoad: true,
+//                  proxy: {
+//                      type: 'ajax',
+//                      url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
+//                      actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
+//                      reader: {
+//                          type: 'json',
+//                          rootProperty: 'layerNames'
+//                      }
+//                  },
+//                  fields : [ {
+//                      name : 'code',
+//                      mapping : 'code'
+//                  }, {
+//                      name : 'label',
+//                      mapping : 'label'
+//                  }, {
+//                      name : 'url',
+//                      mapping : 'url'
+//                  }, {
+//                      name : 'url_wms',
+//                      mapping : 'url_wms'
+//                  }]
+//              }),
+//              valueField : 'code',
+//              displayField : 'label'
+//          });
+
     onDeleteFeatureButtonPress : function (button, e, eOpts) {
         var drawingLayerSource = this.getMapLayer('drawingLayer').getSource();
         var featuresCollection = this.selectInteraction.getFeatures();
@@ -119,7 +252,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
     onZoomToResultFeaturesButtonPress : function (button, e, eOpts) {
         var extent = this.getMapLayer('results').getSource().getExtent();
         if (ol.extent.isEmpty(extent)) {
-            Ext.Msg.alert('Zoom to result features :', 'The drawing layer contains no feature on which to zoom.');
+            Ext.Msg.alert('Zoom to result features :', 'The results layer contains no feature on which to zoom.');
         } else {
             this.map.getView().fit(
                 extent, 

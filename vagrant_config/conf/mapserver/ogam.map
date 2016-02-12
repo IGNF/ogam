@@ -91,6 +91,20 @@ OUTPUTFORMAT
   FORMATOPTION QUALITY=80 
 END
 
+OUTPUTFORMAT
+	NAME "geojsonogr"
+	DRIVER "OGR/GEOJSON"
+	MIMETYPE "application/json; subtype=geojson; charset=utf-8"
+	FORMATOPTION "FORM=simple"
+END
+
+OUTPUTFORMAT
+  NAME "geojsontpl"
+  DRIVER "TEMPLATE"
+  MIMETYPE "application/json; subtype=geojson; charset=utf-8"
+  FORMATOPTION "FILE=geoJSONTemplate.js"
+END
+
 #
 # Start of legend
 #
@@ -116,8 +130,10 @@ LAYER
 #    DEBUG 5
     METADATA
         WFS_TITLE        "Country Boundaries"
+		WFS_GETFEATURE_FORMATLIST		"geojsonogr,geojsontpl"
+		WFS_ENCODING "UTF-8"
         GML_FEATUREID      "gid" 
-        GML_INCLUDE_ITEMS  "all"   
+        GML_INCLUDE_ITEMS  "all"
     END
     DUMP TRUE
     
@@ -125,7 +141,6 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM nuts_0 USING UNIQUE gid USING srid=3035"
-    CLASSITEM "cell_id"
     LABELITEM "cell_id"
     CLASS
           NAME 'Country'    
