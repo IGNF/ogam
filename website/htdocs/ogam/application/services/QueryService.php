@@ -749,8 +749,11 @@ class Application_Service_QueryService {
 	 * Generate an URL for the details map.
 	 *
 	 * @param Array $detailsLayers
-	 * @param Array $bb
+	 *        	List of layers to display
+	 * @param Application_Model_Mapping_BoundingBox $bb
+	 *        	bounding box
 	 * @param Array $mapservParams
+	 *        	Parameters for mapserver
 	 * @param Boolean $proxy
 	 * @return String
 	 */
@@ -791,7 +794,7 @@ class Application_Service_QueryService {
 				if ($detailService->serviceName == $detailServiceName) {
 
 					$baseUrl = json_decode($detailService->serviceConfig)->{'urls'}[0];
-					$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName . '&TRANSPARENT=true' . '&FORMAT=image%2Fpng' . '&SERVICE=WMS' . '&VERSION=1.3.0' . '&REQUEST=GetMap' . '&STYLES=' . '&CRS=EPSG%3A' . $visualisationSRS . '&BBOX=' . $bb['x_min'] . ',' . $bb['y_min'] . ',' . $bb['x_max'] . ',' . $bb['y_max'] . '&WIDTH=300&HEIGHT=300' . '&map.scalebar=STATUS+embed' . '&SESSION_ID=' . session_id() . $mapservParams . ";";
+					$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName . '&TRANSPARENT=true' . '&FORMAT=image%2Fpng' . '&SERVICE=WMS' . '&VERSION=1.3.0' . '&REQUEST=GetMap' . '&STYLES=' . '&CRS=EPSG%3A' . $visualisationSRS . '&BBOX=' . $bb->xmin . ',' . $bb->ymin . ',' . $bb->xmax . ',' . $bb->ymax . '&WIDTH=300&HEIGHT=300' . '&map.scalebar=STATUS+embed' . '&SESSION_ID=' . session_id() . $mapservParams . ";";
 				}
 			}
 		}
