@@ -794,7 +794,21 @@ class Application_Service_QueryService {
 				if ($detailService->serviceName == $detailServiceName) {
 
 					$baseUrl = json_decode($detailService->serviceConfig)->{'urls'}[0];
-					$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName . '&TRANSPARENT=true' . '&FORMAT=image%2Fpng' . '&SERVICE=WMS' . '&VERSION=1.3.0' . '&REQUEST=GetMap' . '&STYLES=' . '&CRS=EPSG%3A' . $visualisationSRS . '&BBOX=' . $bb->xmin . ',' . $bb->ymin . ',' . $bb->xmax . ',' . $bb->ymax . '&WIDTH=300&HEIGHT=300' . '&map.scalebar=STATUS+embed' . '&SESSION_ID=' . session_id() . $mapservParams . ";";
+					$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName;
+					$baseUrls .= '&TRANSPARENT=true';
+					$baseUrls .= '&FORMAT=image%2Fpng';
+					$baseUrls .= '&SERVICE=WMS';
+					$baseUrls .= '&VERSION=1.3.0';
+					$baseUrls .= '&REQUEST=GetMap';
+					$baseUrls .= '&STYLES=';
+					$baseUrls .= '&CRS=EPSG%3A' . $visualisationSRS;
+					$baseUrls .= '&SRS=EPSG%3A' . $visualisationSRS;
+					$baseUrls .= '&BBOX=' . $bb->xmin . ',' . $bb->ymin . ',' . $bb->xmax . ',' . $bb->ymax;
+					$baseUrls .= '&WIDTH=300';
+					$baseUrls .= '&HEIGHT=300';
+					$baseUrls .= '&map.scalebar=STATUS+embed';
+					$baseUrls .= '&SESSION_ID=' . session_id();
+					$baseUrls .= $mapservParams . ";";
 				}
 			}
 		}
