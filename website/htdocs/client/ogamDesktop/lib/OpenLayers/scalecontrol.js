@@ -37,10 +37,10 @@ ol.control.Scale.render = function(mapEvent) {
 */
 ol.control.Scale.prototype.getCurrentScale= function(){
 	var view = this.getMap().getView();
-	var proj = view.getProjection()
+	var proj = view.getProjection();
 	var resolution =  view.getResolution();
-	var dpi = 25.4 / 0.28;
-	var mpu = proj.getMetersPerUnit()
+	var dpi =72;// 25.4 / 0.28;
+	var mpu = proj.getMetersPerUnit();
 	var scale= resolution * mpu * 39.3701 * dpi;
 	return scale;
 }
