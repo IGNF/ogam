@@ -88,7 +88,6 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('init schema : ' . $websiteSession->schema);
 		
 		// Set the current module name
-		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->module = "query";
 		$websiteSession->moduleLabel = "Query Data (" . $websiteSession->schema . ")";
 		$websiteSession->moduleURL = "query";
@@ -1598,6 +1597,16 @@ class QueryController extends AbstractOGAMController {
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+	}
+	public function ajaxrestresultlocationAction() {
+		$sessionId = session_id();
+		$this->resultLocationModel->cleanPreviousResults($sessionId);
+		
+		echo '{success:true}';
+		
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 }
 

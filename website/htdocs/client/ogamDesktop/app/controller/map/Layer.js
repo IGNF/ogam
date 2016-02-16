@@ -731,5 +731,16 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 */
 	zoomOnResultsBBox : function() {
 		this.zoomOnBBox(this.mapPanel.resultsBBox);
+	},
+		
+	onLaunch:function(){
+		//clean previous request or result in server side
+		Ext.Ajax.request({
+		 url: Ext.manifest.OgamDesktop.requestServiceUrl+'ajaxrestresultlocation',
+		 failure: function(response, opts) {
+
+			 console.warm('server-side failure with status code ' + response.status);
+		 }
+		});
 	}
 });

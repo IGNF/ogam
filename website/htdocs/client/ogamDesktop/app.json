@@ -196,7 +196,7 @@
             "path": "lib/OpenLayers/ol-debug.js"
             //"path": "lib/OpenLayers/ol.js"
         },{
-            "path": "lib/OpenLayers/Scalecontrol.js"
+            "path": "lib/OpenLayers/scalecontrol.js"
         },{
             "path": "lib/addon/OpenLayers/Control/FeatureInfoControl.js",
             "includeInBundle": true
