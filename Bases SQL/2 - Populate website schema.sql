@@ -131,6 +131,7 @@ INSERT INTO predefined_request_group(group_name, label, definition, position) VA
 
 -- Création d'une requête prédéfinie
 INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('SPECIES', 'RAW_DATA', 'SPECIES', 'Distribution par espèce', 'Distribution par espèce en forêt', now());
+INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('TAXREF', 'RAW_DATA', 'SPECIES', 'Recherche par taxon', 'Recherche par taxon', now());
 INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('DEP', 'RAW_DATA', 'SPECIES', 'Espèces par département', 'Espèces par département', now());
 
 
@@ -151,8 +152,18 @@ INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP'
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'SPECIES_FORM', 'SPECIES_CODE');
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'SPECIES_FORM', 'BASAL_AREA');
 
+INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON', '14959', NULL);
+INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'PLOT_CODE');
+INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'CYCLE');
+INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'INV_DATE');
+INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'IS_FOREST_PLOT');
+INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'SPECIES_CODE');
+INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON');
+INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'BASAL_AREA');
+
 
 -- Rattachement de la requête prédéfinies au thème
 INSERT INTO website.predefined_request_group_asso(group_name, request_name, position) VALUES ('SPECIES', 'SPECIES', 1);
 INSERT INTO website.predefined_request_group_asso(group_name, request_name, position) VALUES ('SPECIES', 'DEP', 2);
+INSERT INTO website.predefined_request_group_asso(group_name, request_name, position) VALUES ('SPECIES', 'TAXREF', 3);
 
