@@ -8,6 +8,11 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
     init : function() {
         this.map = this.lookupReference('mapCmp').getMap();
         this.selectInteraction = new ol.interaction.Select();
+        this.drawingLayerSnappingInteraction = new ol.interaction.Snap({
+            source: this.getMapLayer('drawingLayer').getSource()
+        });
+        this.snappingLayerSnappingInteraction = null;
+        this.riseSnappingInteractionListenerKey = null;
     },
 
     getMapLayer : function (layerCode) {
@@ -52,51 +57,97 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
 
     onSnappingButtonToggle : function (button, pressed, eOpts) {
         if (pressed) {
-            var snapInter = new ol.interaction.Snap({
-                source: this.getMapLayer('drawingLayer').getSource()
-            });
-            this.onControlButtonPress(button, snapInter);
-            // The snap interaction must be added last, as it needs to be the first to handle the pointermove event.
-            var listenerKey = this.map.getInteractions().on("add", function (collectionEvent) {
-                if (!(collectionEvent.element instanceof ol.interaction.Snap)) { // To avoid an infinite loop
-                    this.map.removeInteraction(snapInter);
-                    this.map.addInteraction(snapInter);
-                }
-            }, this);
-            button.on({
-                toggle: {
-                    fn: ol.Observable.unByKey.bind(ol.Observable, listenerKey),
-                    scope: this,
-                    single: true
-                }
-            });
+            this.map.addInteraction(this.drawingLayerSnappingInteraction);
+            if(this.snappingLayerSnappingInteraction !== null){
+                this.map.addInteraction(this.snappingLayerSnappingInteraction);
+            } 
+            this.updateRiseSnappingInteractionListener();
+        } else {
+            this.map.removeInteraction(this.drawingLayerSnappingInteraction);
+            if(this.snappingLayerSnappingInteraction !== null){
+                this.map.removeInteraction(this.snappingLayerSnappingInteraction);
+            }
+            this.removeRiseSnappingInteractionListener();
         }
     },
 
-    onSnappingButtonMenuItemPress : function(menu, item, e, eOpts) {
-        console.log('item', item);
-        var vectorSource = new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: function(extent) {
-                return /*item.config.data.url*/ 'http://localhost:8000/mapProxy.php?' + 
-                    'service=WFS&version=1.1.0&request=GetFeature&outputFormat=geojsonogr&srsname=EPSG:3857' +
-                    '&typename='+item.itemId+'&' +
-                    '&bbox=' + extent.join(',') + ',EPSG:3857';
-            },
-            strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
-                maxZoom: 19
-            }))
+    removeRiseSnappingInteractionListener: function () {
+        ol.Observable.unByKey(this.riseSnappingInteractionListenerKey);
+        this.riseSnappingInteractionListenerKey = null;
+    },
+
+    updateRiseSnappingInteractionListener: function () {
+            // The snap interaction must be added last, as it needs to be the first to handle the pointermove event.
+            if (this.riseSnappingInteractionListenerKey !== null){
+                this.removeRiseSnappingInteractionListener();
+            }
+            this.riseSnappingInteractionListenerKey = this.map.getInteractions().on("add", function (collectionEvent) {
+                if (!(collectionEvent.element instanceof ol.interaction.Snap)) { // To avoid an infinite loop
+                    this.map.removeInteraction(this.drawingLayerSnappingInteraction);
+                    this.map.removeInteraction(this.snappingLayerSnappingInteraction);
+                    this.map.addInteraction(this.drawingLayerSnappingInteraction);
+                    if (this.snappingLayerSnappingInteraction !== null) {
+                        this.map.addInteraction(this.snappingLayerSnappingInteraction);
+                    }
+                }
+            }, this);
+    },
+
+    destroyAndRemoveSnappingInteraction : function(){
+        this.map.removeInteraction(this.snappingLayerSnappingInteraction);
+        this.snappingLayerSnappingInteraction = null;
+        this.updateRiseSnappingInteractionListener();
+    },
+
+    updateSnappingInteraction : function(){
+        this.snappingLayerSnappingInteraction = new ol.interaction.Snap({
+            source: this.getMapLayer('snappingLayer').getSource()
         });
-        var vector = new ol.layer.Vector({
-        source: vectorSource,
-        style: new ol.style.Style({
-          stroke: new ol.style.Stroke({
-            color: 'rgba(0, 0, 255, 1.0)',
-            width: 2
-          })
-        })
-      });
-        this.map.addLayer(vector);
+    },
+
+    updateAndAddSnappingInteraction : function(){
+        this.map.removeInteraction(this.snappingLayerSnappingInteraction);
+        this.updateSnappingInteraction();
+        this.map.addInteraction(this.snappingLayerSnappingInteraction);
+        this.updateRiseSnappingInteractionListener();
+    },
+
+    onSnappingButtonMenuItemPress : function(menu, item, e, eOpts) {
+
+        // Changes the checkbox behaviour to a radio button behaviour
+        var itemIsChecked = item.checked;
+        menu.items.each(function(item, index, len){
+            item.setChecked(false, true);
+        });
+        item.setChecked(itemIsChecked, true);
+
+        if (itemIsChecked) {
+            // Update the data source
+            this.snapSource = new ol.source.Vector({
+                format: new ol.format.GeoJSON(),
+                url: function(extent) {
+                    return item.config.data.url +
+                        '&outputFormat=geojsonogr' +
+                        '&srsname=EPSG:3857' +
+                        '&typename=' + item.itemId +
+                        '&bbox=' + extent.join(',') + ',EPSG:3857';
+                },
+                strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
+                    maxZoom: 3
+                }))
+            });
+            // Update the snapping layer and the snapping interaction
+            this.getMapLayer('snappingLayer').setSource(this.snapSource);
+            if (menu.ownerCmp.pressed) {
+                this.updateAndAddSnappingInteraction();
+            } else {
+                this.updateSnappingInteraction();
+            }
+        } else {
+            // Clear the snapping layer and remove the snapping interaction
+            this.getMapLayer('snappingLayer').setSource(new ol.source.Vector({features: new ol.Collection()}));
+            this.destroyAndRemoveSnappingInteraction();
+        }
     },
 
     onModifyfeatureButtonToggle : function (button, pressed, eOpts) {

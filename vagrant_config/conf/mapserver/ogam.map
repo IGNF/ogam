@@ -29,9 +29,11 @@ WEB
         WFS_TITLE                       "OGAM MapServer"  
         WFS_SRS                         "EPSG:3857"
         WFS_ABSTRACT                    "OGAM Data"  
-        WFS_MAXFEATURES                 "40"
+        #WFS_MAXFEATURES                 "30000"
         WFS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
-
+		WFS_GETFEATURE_FORMATLIST		"geojsonogr,geojsontpl"
+		WFS_ENCODING "UTF-8"
+		
         WMS_TITLE                       "OGAM MapServer" 
         WMS_ABSTRACT                    "OGAM Mapserver"
         WMS_ACCESSCONSTRAINTS           "none"
@@ -130,8 +132,6 @@ LAYER
 #    DEBUG 5
     METADATA
         WFS_TITLE        "Country Boundaries"
-		WFS_GETFEATURE_FORMATLIST		"geojsonogr,geojsontpl"
-		WFS_ENCODING "UTF-8"
         GML_FEATUREID      "gid" 
         GML_INCLUDE_ITEMS  "all"
     END

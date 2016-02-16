@@ -8,25 +8,42 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
 		logo: false, // no attributions to ol
 		layers: [
 		    new ol.layer.Vector({
-			code: 'drawingLayer',
-			name: 'Drawing layer',
-			source: new ol.source.Vector({features: new ol.Collection()}),
-			style: new ol.style.Style({
-			    fill: new ol.style.Fill({
-				color: 'rgba(255, 255, 255, 0.2)'
-			    }),
-			    stroke: new ol.style.Stroke({
-				color: '#ffcc33',
-				width: 2
-			    }),
-			    image: new ol.style.Circle({
-				radius: 7,
-				fill: new ol.style.Fill({
-				  color: '#ffcc33'
-				})
-			    })
-			})
-		    })
+    			code: 'drawingLayer',
+    			name: 'Drawing layer',
+    			source: new ol.source.Vector({features: new ol.Collection()}),
+    			style: new ol.style.Style({
+    			    fill: new ol.style.Fill({
+    				    color: 'rgba(255, 255, 255, 0.2)'
+    			    }),
+    			    stroke: new ol.style.Stroke({
+    				    color: '#ffcc33',
+    				    width: 2
+    			    }),
+    			    image: new ol.style.Circle({
+    				    radius: 7,
+    				    fill: new ol.style.Fill({
+    				        color: '#ffcc33'
+    				    })
+    			    })
+    			})
+		    }),
+            new ol.layer.Vector({
+                code: 'snappingLayer',
+                name: 'Snapping layer',
+                source: new ol.source.Vector({features: new ol.Collection()}),
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(0, 0, 255, 1.0)',
+                        width: 2
+                    }),
+                    image: new ol.style.Circle({
+                        radius: 2,
+                        fill: new ol.style.Fill({
+                            color: 'rgba(0, 0, 255, 1.0)'
+                        })
+                    })
+                })
+            })
 		],
 		view: new ol.View({
 		    resolutions: OgamDesktop.map.resolutions.slice(this.minZoomLevel),
