@@ -7,7 +7,9 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
 
     init : function() {
         this.map = this.lookupReference('mapCmp').getMap();
-        this.selectInteraction = new ol.interaction.Select();
+        this.selectInteraction = new ol.interaction.Select({
+            layers: [this.getMapLayer('drawingLayer')]
+        });
         this.drawingLayerSnappingInteraction = new ol.interaction.Snap({
             source: this.getMapLayer('drawingLayer').getSource()
         });
@@ -62,12 +64,14 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
                 this.map.addInteraction(this.snappingLayerSnappingInteraction);
             } 
             this.updateRiseSnappingInteractionListener();
+            this.getMapLayer('snappingLayer').setVisible(true);
         } else {
             this.map.removeInteraction(this.drawingLayerSnappingInteraction);
             if(this.snappingLayerSnappingInteraction !== null){
                 this.map.removeInteraction(this.snappingLayerSnappingInteraction);
             }
             this.removeRiseSnappingInteractionListener();
+            this.getMapLayer('snappingLayer').setVisible(false);
         }
     },
 
@@ -142,11 +146,13 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
                 this.updateAndAddSnappingInteraction();
             } else {
                 this.updateSnappingInteraction();
+                menu.ownerCmp.toggle(true);
             }
         } else {
             // Clear the snapping layer and remove the snapping interaction
             this.getMapLayer('snappingLayer').setSource(new ol.source.Vector({features: new ol.Collection()}));
             this.destroyAndRemoveSnappingInteraction();
+            menu.ownerCmp.pressed && menu.ownerCmp.toggle(false);
         }
     },
 
