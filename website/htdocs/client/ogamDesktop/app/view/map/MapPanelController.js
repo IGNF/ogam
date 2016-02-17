@@ -15,6 +15,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         });
         this.snappingLayerSnappingInteraction = null;
         this.riseSnappingInteractionListenerKey = null;
+        this.selectWFSFeatureListenerKey = null;
     },
 
     getMapLayer : function (layerCode) {
@@ -136,6 +137,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
                         '&typename=' + item.itemId +
                         '&bbox=' + extent.join(',') + ',EPSG:3857';
                 },
+                crossOrigin: 'anonymous',
                 strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
                     maxZoom: 3
                 }))
@@ -167,6 +169,7 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
     },
 
     onSelectButtonToggle : function (button, pressed, eOpts) {
+        // TODO : http://openlayers.org/en/v3.13.0/examples/box-selection.html
         pressed && this.onControlButtonPress(button, this.selectInteraction);
     },
 
@@ -234,63 +237,61 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
 
     onSelectWFSFeatureButtonToggle : function (button, pressed, eOpts) {
         if (pressed) {
-
+            var checkedItem = null;
+            button.getMenu().items.each(function(item, index, len) {
+                item.checked && (checkedItem = item);
+            });
+            if (checkedItem !== null) {
+                this.updateAndAddSelectWFSFeatureListener(checkedItem);
+            } else {
+                Ext.Msg.alert('Select feature(s) :', 'Please select a layer.');
+                button.toggle(false);
+            }
+        } else {
+            this.removeSelectWFSFeatureListener();
         }
+    },
+
+    removeSelectWFSFeatureListener: function () {
+        ol.Observable.unByKey(this.selectWFSFeatureListenerKey);
+        this.selectWFSFeatureListenerKey = null;
+    },
+
+    updateAndAddSelectWFSFeatureListener: function(item) {
+        this.removeSelectWFSFeatureListener();
+        this.selectWFSFeatureListenerKey = this.map.on('singleclick', function(evt) {
+            var url = item.config.data.url +
+                '&outputFormat=geojsonogr' +
+                '&srsname=EPSG:3857' +
+                '&typename=' + item.itemId +
+                '&bbox=' + ol.extent.boundingExtent([evt.coordinate]).join(',') + ',EPSG:3857';
+            ol.featureloader.xhr(
+                url,
+                new ol.format.GeoJSON()
+            ).call(this.getMapLayer('drawingLayer').getSource());
+        },this);
     },
 
     onSelectWFSFeatureButtoMenuItemPress : function(menu, item, e, eOpts) {
 
-    },
-/*
-    onLoadVectorLayerButtonPress : function (button, e, eOpts) {
-        button.setMenu({
-            xtype:'menu',
-            defaults: {
-                iconCls: 'o-map-tools-map-addicon'
-            },
-            items: [{
-                text: 'plain item 1'
-            },{
-                text: 'plain item 2'
-            },{
-                text: 'plain item 3'
-            }]
-        })
-    },*/
+        // Changes the checkbox behaviour to a radio button behaviour
+        var itemIsChecked = item.checked;
+        menu.items.each(function(item, index, len){
+            item.setChecked(false, true);
+        });
+        item.setChecked(itemIsChecked, true);
 
-//          this.layerSelector = Ext.create('Ext.form.field.ComboBox',{
-//              xtype: 'layerselector',
-//              editable: false,
-//              emptyText: this.LayerSelectorEmptyTextValue,
-//              triggerAction : 'all',
-//              store : Ext.create('Ext.data.Store',{
-//                  autoLoad: true,
-//                  proxy: {
-//                      type: 'ajax',
-//                      url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
-//                      actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
-//                      reader: {
-//                          type: 'json',
-//                          rootProperty: 'layerNames'
-//                      }
-//                  },
-//                  fields : [ {
-//                      name : 'code',
-//                      mapping : 'code'
-//                  }, {
-//                      name : 'label',
-//                      mapping : 'label'
-//                  }, {
-//                      name : 'url',
-//                      mapping : 'url'
-//                  }, {
-//                      name : 'url_wms',
-//                      mapping : 'url_wms'
-//                  }]
-//              }),
-//              valueField : 'code',
-//              displayField : 'label'
-//          });
+        if (itemIsChecked) {
+            if (menu.ownerCmp.pressed) {
+                this.updateAndAddSelectWFSFeatureListener(item);
+            } else {
+                menu.ownerCmp.toggle(true);
+            }
+        } else {
+            this.removeSelectWFSFeatureListener();
+            menu.ownerCmp.pressed && menu.ownerCmp.toggle(false);
+        }
+    },
 
     onDeleteFeatureButtonPress : function (button, e, eOpts) {
         var drawingLayerSource = this.getMapLayer('drawingLayer').getSource();

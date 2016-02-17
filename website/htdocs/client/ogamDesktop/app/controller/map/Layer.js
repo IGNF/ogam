@@ -495,7 +495,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 newLayer = new ol.layer.Tile({
                     opacity: layerObject.data.options.opacity,
                     source: source,
-                    name: layerObject.data.options.label
+                    name: layerObject.data.options.label,
+                    code: layerObject.data.name
                 });
 
             } else if (paramsObj['SERVICE'] === "WMS"){
@@ -506,6 +507,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 layerOpts = layerObject.data.options;
                 layerOpts['source'] = source;
                 layerOpts['name'] = layerObject.data.options.label;
+                layerOpts['code'] = layerObject.data.name;
                 newLayer = new ol.layer.Tile(layerOpts);
             } else {
                     Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");
