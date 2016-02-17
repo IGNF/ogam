@@ -7,6 +7,7 @@
  */
 Ext.define('OgamDesktop.view.map.MapToolbar', {
     extend: 'Ext.toolbar.Toolbar',
+    controller: 'maptoolbar',
     requires: [
     ],
     uses: [
@@ -15,7 +16,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
     xtype:'maptoolbar',
     items:[{
         xtype:'buttongroup',
-        hidden: false,
+        hidden: true,
         action: 'drawing',
         defaults: {
           iconAlign:'top'

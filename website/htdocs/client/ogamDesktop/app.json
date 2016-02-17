@@ -305,9 +305,9 @@
     
     "development": {
         "OgamDesktop": {
-            "requestServiceUrl": "http://localhost:8000/query/",
-            "mapServiceUrl": "http://localhost:8000/map/",
-            "editionServiceUrl": "http://localhost:8000/dataedition/"
+            "requestServiceUrl": "http://www.ogam.fr/query/",
+            "mapServiceUrl": "http://www.ogam.fr/map/",
+            "editionServiceUrl": "http://www.ogam.fr/dataedition/"
 	    }
     },
 

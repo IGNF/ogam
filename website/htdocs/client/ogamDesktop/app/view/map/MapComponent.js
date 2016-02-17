@@ -2,7 +2,6 @@
 Ext.define("OgamDesktop.view.map.MapComponent",{
     extend: "GeoExt.component.Map",
     xtype: 'mapcomponent',
-    reference: 'mapCmp',
 
 	    map: new ol.Map({
 		logo: false, // no attributions to ol

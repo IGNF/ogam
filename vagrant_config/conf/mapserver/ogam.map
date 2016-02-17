@@ -40,6 +40,7 @@ WEB
         WMS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
         WMS_SRS                         "EPSG:3857"
         "ows_enable_request"            "*"
+        "wms_enable_request"            "*"
         "wms_include_items"      		"*"
         "wms_feature_info_mime_type"    "text/html"
         "queryable"    "true"
@@ -130,8 +131,10 @@ LAYER
     TYPE POLYGON
     STATUS ON 
 #    DEBUG 5
+    TEMPLATE "geoJSONTemplate.js"
     METADATA
         WFS_TITLE        "Country Boundaries"
+        "wms_feature_info_mime_type"  "application/json"
         GML_FEATUREID      "gid" 
         GML_INCLUDE_ITEMS  "all"
     END

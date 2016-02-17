@@ -165,7 +165,8 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 	}],
 
     items: [{
-        xtype: 'mapcomponent'
+        xtype: 'mapcomponent',
+        reference: 'mapCmp'
     }]
 
 //	/**

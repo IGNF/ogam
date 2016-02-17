@@ -257,7 +257,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 	 * Remove vector layer features
 	 */
 	removeVectorLayerFeatures: function () {
-		this.getMappanel().vectorLayer.removeAllFeatures({'silent':true});
+		this.getMappanel().getController().getMapLayer('drawingLayer').getSource().clear({'fast':true});
 	},
 
 	/**
