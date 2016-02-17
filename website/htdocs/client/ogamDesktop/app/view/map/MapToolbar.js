@@ -32,11 +32,22 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             margin:'3 -3 0 -2',
             style:'color:#aaa'
         },{
+            xtype:'splitbutton',
             iconCls : 'o-map-tools-map-snapping',
             tooltip: this.snappingButtonTooltip,
             enableToggle: true,
             listeners: {
-                toggle: 'onSnappingButtonToggle'
+                toggle: 'onSnappingButtonToggle',
+                render: 'onSnappingButtonRender'
+            },
+            menu : {
+                xtype: 'menu',
+                defaults: {
+                    xtype: 'menucheckitem'
+                },
+                listeners:{
+                    click : 'onSnappingButtonMenuItemPress'
+                }
             }
         },{
             iconCls : 'o-map-tools-map-modifyfeature',
@@ -78,27 +89,23 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             listeners: {
                 toggle: 'onDrawPolygonButtonToggle'
             }
-        },{ // Use of tbtext because tbseparator doesn't work...
-            xtype:'tbtext',
-            html: '|',
-            margin:'3 -3 0 -2',
-            style:'color:#aaa'
         },{
-            xtype: 'splitbutton',
-            iconCls : 'o-map-tools-map-loadvectorlayer',
-            tooltip: this.loadVectorLayerButtonTooltip,
-            menu: [{
-                text:'Menu Item 1'
-            },{
-                text:'Menu Item 2'
-            },{
-                text:'Menu Item 3'
-            }]
-        },{
-            iconCls : 'o-map-tools-map-selectFeature',
-            tooltip: this.selectFeatureButtonTooltip,
+            xtype:'splitbutton',
+            iconCls : 'o-map-tools-map-selectWFSFeature',
+            tooltip: this.selectWFSFeatureButtonTooltip,
+            toggleGroup : "editing",
             listeners: {
-                click: 'onSelectFeatureButtonPress'
+                render: 'onSelectWFSFeatureButtonRender',
+                toggle: 'onSelectWFSFeatureButtonToggle'
+            },
+            menu : {
+                xtype: 'menu',
+                defaults: {
+                    xtype: 'menucheckitem'
+                },
+                listeners:{
+                    click : 'onSelectWFSFeatureButtoMenuItemPress'
+                }
             }
         },{
             iconCls : 'o-map-tools-map-deletefeature',

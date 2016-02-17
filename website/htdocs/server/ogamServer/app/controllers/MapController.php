@@ -144,8 +144,7 @@ class MapController extends AbstractOGAMController {
 		$layerNames = $this->layersModel->getVectorLayersList();
 
 		$json  = '{"success":true';
-		$json .= ', layerNames : [';
-		$json .= '{"code":null, "label":"' . $this->translator->translate('empty_layer') .'","url":null},';
+		$json .= ', "layerNames" : [';
 		foreach ($layerNames as $layerName => $tab) {
 		    $layer = $this->layersModel->getLayer($layerName);
 		    $viewServiceName = $layer->viewServiceName;
@@ -155,7 +154,14 @@ class MapController extends AbstractOGAMController {
 		    
 			$json .= '{"code":'.json_encode($layerName).',';
 			$json .= '"label":'. json_encode($tab[0]).',';
-			$json .= '"url":'. json_encode(json_decode($tab[1])->{'urls'}[0]).',';
+			$layer_service = json_decode($tab[1]);
+			$layer_service_params = $layer_service->{'params'};
+			$url = rtrim($layer_service->{'urls'}[0],'?').'?';
+			foreach ($layer_service_params as $pKey => $pValue) {
+				$url .= $pKey .'='.$pValue.'&';
+			}
+			$url = rtrim($url, '&');
+			$json .= '"url":'. json_encode($url).',';
 			$json .= '"url_wms":'. json_encode($url_wms).'},';
 		}
 		if (!empty($layerNames)) {

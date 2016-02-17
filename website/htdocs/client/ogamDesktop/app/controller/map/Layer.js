@@ -183,47 +183,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                                 }
                             }
                         }
-                        vectorLyr = new ol.layer.Vector({
-                            code: 'drawingLayer',
-                            printable: false,
-                            displayInLayerSwitcher: false,
-                            name: 'Drawing layer',
-                            source: new ol.source.Vector({features: new ol.Collection()}),
-                            style: new ol.style.Style({
-                                fill: new ol.style.Fill({
-                                    color: 'rgba(255, 255, 255, 0.2)'
-                                }),
-                                stroke: new ol.style.Stroke({
-                                    color: '#ffcc33',
-                                    width: 2
-                                }),
-                                image: new ol.style.Circle({
-                                    radius: 7,
-                                    fill: new ol.style.Fill({
-                                      color: '#ffcc33'
-                                    })
-                                })
-                            })
-                        });
-                        WFSLyr = new ol.layer.Vector({
-                            code: 'wfsLayer',
-                            name: 'WFS Layer',
-                            source: new ol.source.Vector({
-                                format: new ol.format.GML(),
-                                //strategy: ol.loadingstrategy.bbox()
-                            }),
-                            style: new ol.style.Style({
-                                fillOpacity : 0,
-                                stroke : new ol.style.Stroke({
-                                    color: 'rgba(0, 255, 0, 1.0)',
-                                    width: 3
-                                })
-                            }),
-                            printable: false,
-                            displayInLayerSwitcher: false
-                        });
-                        layersList.push(vectorLyr);
-                        layersList.push(WFSLyr);
+                        
                         var map = this.getMappanel().lookupReference('mapCmp').getMap();
                         for (var i in layersList) {
                             var lyr = layersList[i];
@@ -249,7 +209,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 });
             }
         }); 
-    }
+    },
 
 
 //	/**
@@ -482,229 +442,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 //            
 //        },
 //	/**
-//	 * Handler of 'afterrender' event for the MapPanel.
-//	 * 
-//	 * @param {object}
-//	 *            mappanel the MapPanel
-//	 */
-//	afterMapMainWinRender: function(mapmainwin) {
-//            this.mapMainWin = mapmainwin;
-//            this.mapPanel = this.getMappanel();
-//            // Load the LayerService store
-//            var serviceStore = this.getStore('map.LayerService');
-//            serviceStore.load({
-//                    callback: this.onServiceStoreLoad,
-//                    scope: this
-//            });
-//	},
-//        
-//	/**
-//	 * Set the layers of the map
-//	 */
-//	//setMapLayers : function(map, vectorLayer, vector, baseLayer, wfsLayer) {
-//        setMapLayers : function(map) {
-//            // Add the base layer (always first)
-//            //map.addLayer(baseLayer);
-//
-//            if (this.mapPanel) {
-//                // Add the available layers
-//                for ( var i = 0; i < this.mapPanel.layersList.length; i++) {
-//                    map.addLayer(this.mapPanel.layersList[i]);
-//                }
-////                // Add the WFS layer
-////                if (!this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
-////                    map.addLayer(this.mapPanel.wfsLayer);
-////                    this.mapPanel.snappingControl.addTargetLayer(this.mapPanel.wfsLayer);
-////                }
-//            }
-//
-//            // Add the vector layer
-////            map.addLayer(vectorLayer);
-////            map.addLayer(vector);
-//	},
-//
-//	/**
-//	 * Get services and load Layer store.
-//	 */
-//	onServiceStoreLoad: function(services) {
-//		this.mapPanel.services = services;
-//		
-//		// Load the Layer store
-//		var layerStore = this.getStore('map.Layer');
-//		layerStore.load({
-//			callback: this.addLayers,
-//			scope: this
-//		});
-//	},
-//
-//
-//	/**
-//	 * Build the layers from the Layer store records and add them to the
-//	 * map. Get the layers tree from the LayerNode store and build the
-//	 * layers tree.
-//	 */
-//	addLayers : function(layers) {
-//		// Reset the arrays
-//		this.mapPanel.layersList = [];
-//		this.mapPanel.layersActivation = {};
-//		// Rebuild the list of available layers
-//		for (i in layers) {
-//			var layerObject = layers[i];
-//			// Get the view service name
-//			var viewServiceName = layerObject.data.viewServiceName;
-//			for (i in this.mapPanel.services) {
-//				var service = this.mapPanel.services[i];
-//				if (service.data.name == viewServiceName) {
-//					viewServiceObject = service;
-//					break;
-//				}
-//			};
-//			
-//			// Build the new OpenLayers layer object and add it
-//			// to the list
-//			var newLayer = this.buildLayer(layerObject, viewServiceObject);
-//			this.mapPanel.layersList.push(newLayer);
-//
-//			// Fill the list of active layers
-//			var activateType = layerObject.data.params.activateType.toLowerCase();
-//			if (Ext.isEmpty(this.mapPanel.layersActivation[activateType])) {
-//				this.mapPanel.layersActivation[activateType] = [ layerObject.data.name ];
-//			} else {
-//				this.mapPanel.layersActivation[activateType].push(layerObject.data.name);
-//			}
-//			// Create the legends
-//			var legendServiceName = layerObject.data.legendServiceName;
-//			for (i in this.mapPanel.services) {
-//				var service = this.mapPanel.services[i];
-//				if (service.data.name == legendServiceName) {
-//					legendServiceObject = service;
-//					this.buildLegend(layerObject, legendServiceObject);
-//					break;
-//				}
-//			};
-//		};
-//
-//		vectorLyr = new ol.layer.Vector({
-//                code: 'drawingLayer',
-//                printable: false,
-//                displayInLayerSwitcher: false,
-//                name: 'Drawing layer',
-//                source: new ol.source.Vector({features: new ol.Collection()}),
-//                style: new ol.style.Style({
-//                    fill: new ol.style.Fill({
-//                        color: 'rgba(255, 255, 255, 0.2)'
-//                    }),
-//                    stroke: new ol.style.Stroke({
-//                        color: '#ffcc33',
-//                        width: 2
-//                    }),
-//                    image: new ol.style.Circle({
-//                        radius: 7,
-//                        fill: new ol.style.Fill({
-//                          color: '#ffcc33'
-//                        })
-//                    })
-//                })
-//            });
-//            WFSLyr = new ol.layer.Vector({
-//                source: new ol.source.Vector({
-//                    code: 'wfsLayer',
-//                    name: 'WFS Layer',
-//                    format: new ol.format.GML(),
-////                    strategy: ol.loadingstrategy.bbox()
-//                }),
-//                style: new ol.style.Style({
-//                    fillOpacity : 0,
-//                    stroke : new ol.style.Stroke({
-//                        color: 'rgba(0, 255, 0, 1.0)',
-//                        width: 3
-//                    })
-//                }),
-//                printable: false,
-//                displayInLayerSwitcher: false
-//            });
-//            this.mapPanel.layersList.push(vectorLyr);
-//            this.mapPanel.layersList.push(WFSLyr);
-//		//this.setMapLayers(this.mapPanel.map, this.mapPanel.baseLayer, this.mapPanel.vectorLayer, this.mapPanel.vector, this.mapPanel.wfsLayer);
-//                this.setMapLayers(this.mapPanel.lookupReference('mapCmp').getMap());
-//
-//		// Gets the layer tree model to initialise the Layer
-//		// Tree
-//		var layerNodeStore = this.getStore('map.LayerNode');
-//		layerNodeStore.load({
-//			callback: this.initLayerTree,
-//			scope: this
-//		});
-//	},
-//
-//	/**
-//	 * Build one OpenLayer Layer from the 'Layer' store record.
-//	 * @param {Object}
-//	 *            layerObject The 'Layer' store record
-//	 * @param {Object}
-//	 *            serviceObject The 'LayerService' store record for the legend
-//	 *            corresponding to the layer
-//	 * @return OpenLayers.Layer
-//	 */
-//	buildLayer : function(layerObject, serviceObject) {
-//            var url = serviceObject.data.config.urls;
-//            //Merges the service parameters and the layer parameters
-//            var paramsObj = {};
-//            for (var attrname in layerObject.data.params) { paramsObj[attrname] = layerObject.data.params[attrname]; }
-//            for (var attrname in serviceObject.data.config.params) { paramsObj[attrname] = serviceObject.data.config.params[attrname]; }
-//            if (paramsObj.SERVICE === "WMTS") {
-//                //creation and merging of wmts parameters
-//                var layer=paramsObj.layers[0];
-//                var origin = paramsObj.tileOrigin; //coordinates of top left corner of the matrixSet
-//                var resolutions = paramsObj.serverResolutions;
-//                var matrixIds = [];
-//                for (i in resolutions){
-//                    matrixIds[i] = i;
-//                };
-//                var tileGrid = new ol.tilegrid.WMTS({
-//                    origin: origin,
-//                    resolutions: resolutions,
-//                    matrixIds: matrixIds
-//                });
-//                var obj={
-//                    url:url.toString(),
-//                    layer:layer,
-//                    tileGrid:tileGrid
-//                };
-//                var objMergeParams= {};
-//                for (var attrname in obj) { objMergeParams[attrname] = obj[attrname]; }
-//                for (var attrname in paramsObj) { objMergeParams[attrname] = paramsObj[attrname]; }
-//                source = new ol.source.WMTS(objMergeParams);
-//                newLayer = new ol.layer.Tile({
-//                    opacity: layerObject.data.options.opacity,
-//                    source: source,
-//                    name: layerObject.data.options.label,
-////                    minResolution: 88.19439681947,
-//                    printable: true
-//                });
-//            } else if (paramsObj['SERVICE'] === "WMS"){
-//                source = new ol.source.TileWMS({
-//                    url: url,
-//                    params: paramsObj
-//                });
-//                layerOpts = layerObject.data.options;
-//                layerOpts['source'] = source;
-//                layerOpts['name'] = layerObject.data.options.label;
-////                layerOpts['minResolution'] = 88.19439681947;
-////                layerOpts['maxResolution'] = 1763.8879363894;
-//                layerOpts['printable'] = true;
-//                if (layerObject.data.params.activateType.toLowerCase() === 'request'){
-//                    layerOpts['code'] = 'results';
-//                }
-//                newLayer = new ol.layer.Tile(layerOpts);
-//            } else {
-//                    Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");
-//            }
-//            newLayer.displayInLayerSwitcher = !layerObject.data.params.isHidden;
-//            return newLayer;
-//	},
-//
-//	/**
 //	 * Build a Legend Object from a 'Layer' store record.
 //	 * @param {Object}
 //	 *            layerObject The 'Layer' store record
@@ -741,47 +478,72 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 //		}
 //	},
 //
-//	/**
-//	 * Build a Legend Object from a 'Layer' store record.
-//	 * @param {Array}
-//	 *            nodes The 'LayerNode' store records to fill the layers tree
-//	 */
-//	initLayerTree: function(nodes) {
-//                groups =  [];
-//                for (i in nodes) {
-//                    node = nodes[i].getData();
-//                    if (!node.leaf) {
-//                        groupLayers = [];
-//                        this.mapPanel.lookupReference('mapCmp').getMap().getLayers().forEach(function(layer, idx){
-//                            if (layer.get('nodeGroup') == node.nodeGroup) {
-//                                groupLayers.push(layer);
-//                            }
-//                        });
-//                        group = new ol.layer.Group({
-//                           name: node.text,
-//                           layers: groupLayers
-//                        });
-//                        this.mapPanel.lookupReference('mapCmp').getMap().getLayers().push(group)
-//                    };                 
-//                }
-//                
-//                treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
-//                    layerGroup: this.mapPanel.lookupReference('mapCmp').getMap().getLayerGroup()
-//                });
-//		this.getLayerspanel().setConfig('store', treeLayerStore);
-//	},
 //
-//	
 //	/**
-//	 * A feature has been selected using the GetFeatureControl
-//	 * tool.
+//	 * A layer has been selected in the layer selector
 //	 */
-//	getFeature : function(evt) {
-//		if (evt.mapId == this.mapPanel.map.id) {
-//			// Add the feature to the vector layer
-//			if (this.mapPanel.vectorLayer !== null) {
-//				this.mapPanel.vectorLayer.addFeatures(evt.feature);
+//	layerSelected : function(combo, value) {
+//		if (value[0].data.code !== null) {
+//			var layerName = value[0].data.code;
+//			var url = value[0].data.url;
+//			var popupTitle = this.popupTitle;
+//			// Change the WFS layer typename
+//			this.mapPanel.wfsLayer.protocol.featureType = layerName;
+//			this.mapPanel.wfsLayer.protocol.options.featureType = layerName;
+//			this.mapPanel.wfsLayer.protocol.format.featureType = layerName;
+//			this.mapPanel.wfsLayer.protocol.params.typename = layerName;
+//			this.mapPanel.wfsLayer.protocol.options.url = url;
+//
+//			// Remove all current features
+//			this.mapPanel.wfsLayer.destroyFeatures();
+//
+//			// Copy the visibility range from the original
+//			// layer
+//			originalLayers = this.mapPanel.map.getLayersByName(layerName);
+//			if (originalLayers != null) {
+//				originalLayer = originalLayers[0];
+//				this.mapPanel.wfsLayer.maxResolution = originalLayer.maxResolution;
+//				this.mapPanel.wfsLayer.maxScale = originalLayer.maxScale;
+//				this.mapPanel.wfsLayer.minResolution = originalLayer.minResolution;
+//				this.mapPanel.wfsLayer.minScale = originalLayer.minScale;
+//				this.mapPanel.wfsLayer.alwaysInRange = false;
+//				this.mapPanel.wfsLayer.calculateInRange();
 //			}
+//
+//			// Make it visible
+//			this.mapPanel.wfsLayer.setVisibility(true);
+//
+//			// Force a refresh (rebuild the WFS URL)
+//			this.mapPanel.wfsLayer.moveTo(null, true, false);
+//
+//			// Set the layer name in other tools
+//			if (this.mapPanel.getFeatureControl !== null) {
+//				this.mapPanel.getFeatureControl.layerName = layerName;
+//			}
+//
+//			this.mapPanel.wfsLayer.refresh();
+//			this.mapPanel.wfsLayer.strategies[0].update({force:true});
+//
+//		} else {
+//			// Hide the layer
+//			this.mapPanel.wfsLayer.setVisibility(false);
 //		}
-//	}
+//		
+//		// Set the layer name in feature info tool
+//		if (this.mapPanel.featureInfoControl !== null) {
+//			this.mapPanel.featureInfoControl.layerName = layerName;
+//		}
+//	},
+	
+
+	onLaunch:function(){
+		//clean previous request or result in server side
+		Ext.Ajax.request({
+		 url: Ext.manifest.OgamDesktop.requestServiceUrl+'ajaxrestresultlocation',
+		 failure: function(response, opts) {
+
+			 console.warm('server-side failure with status code ' + response.status);
+		 }
+		});
+	}
 });
