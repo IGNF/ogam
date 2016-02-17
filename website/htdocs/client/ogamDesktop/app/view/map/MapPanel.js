@@ -97,15 +97,15 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	 *      (defaults to <tt>null</tt>)
 //	 */
 //	resultsBBox : null,
-//	
-//	/**
-//	 * @cfg {Object} layersActivation A object containing few
-//	 *      arrays of layers ordered by activation type
-//	 *      (defaults to <tt>{}</tt>) {
-//	 *      'request':[resultLayer, resultLayer0, resultLayer1]
-//	 */
-//	layersActivation : {},
-//
+	
+	/**
+	 * @cfg {Object} layersActivation A object containing few
+	 *      arrays of layers ordered by activation type
+	 *      (defaults to <tt>{}</tt>) {
+	 *      'request':[resultLayer, resultLayer0, resultLayer1]
+	 */
+	layersActivation : {},
+
 //	/**
 //	 * The list of OL layers.
 //	 * 
@@ -136,7 +136,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //	 * @type {OpenLayers.Layer.Vector}
 //	 * @property wfsLayer
 //	 */
-//	wfsLayer : null,
+	wfsLayer : null,
 //	
 //	/**
 //	 * The vector layer.
@@ -580,7 +580,7 @@ Ext.define('OgamDesktop.view.map.MapPanel', {
 //			
 //			// Add separator
 //			tbar.add('-');
-//		}		
+//		}
 //
 //		navBtnGroup = Ext.create('Ext.container.ButtonGroup', {
 //			defaults: {

@@ -167,7 +167,6 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
         }
     },
 
-
 	/**
 	 * Zoom to the passed feature on the map
 	 * 
@@ -177,14 +176,6 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
 	 *            wkt The wkt feature
 	 */
 	zoomToFeature : function(id, wkt) {
-//		var wktGeom = this.getView().wktFormat.readGeometry(wkt);
-//                var source = new ol.source.Vector({
-//                    wrapX : false
-//                });
-//                var vector = new ol.layer.Vector({
-//                   source : source 
-//                });
-//                this.map.addLayer(vector);
             var feature = this.getView().wktFormat.readFeature(wkt);
             var source = new ol.source.Vector();
             var vectorLyr = new ol.layer.Vector({
@@ -252,8 +243,6 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
                         return;
                     }
                     map.render();
-                    
-//                    event.vectorContext.renderFeature(feature, highlightStyle); //@TODO test with polygons data
                 }
             }
             listenerKey = map.on('postcompose', animate);
@@ -321,22 +310,146 @@ Ext.define('OgamDesktop.view.edition.MapPanelController', {
                 layers : layersToPrint
         });
     },
+    getLocationInfo : function(e) {
+        var lon = e.coordinate[0], lat=e.coordinate[1];
+        var url = Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetlocationinfo?LON='+lon+'&LAT='+lat;
+        if (OgamDesktop.map.featureinfo_maxfeatures !== 0) {
+            url = url + "&MAXFEATURES=" + OgamDesktop.map.featureinfo_maxfeatures;
+        }
+        Ext.Ajax.request({
+            url : url,
+            success : function(rpse, options) {
+                var result = Ext.decode(rpse.responseText);
+                this.getView().fireEvent('getLocationInfo', {'result': result});
+            },
+            failure : function(rpse, options) {
+                Ext.Msg.alert('Erreur', 'Sorry, bad request...');
+            },
+            scope: this
+        });
+    },
     
     onResultFeatureInfoButtonPress : function(button, pressed, eOpts) {
-        this.map.on("click", function(e) {
-            console.log(e);
-            var lon = e.coordinate[0], lat=e.coordinate[1];
-            Ext.Ajax.request({
-                url : Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetlocationinfo?LON='+lon+'&LAT='+lat,
-                success : function(rpse, options) {
-                    var result = Ext.decode(rpse.responseText);
-                    this.getView().fireEvent('getLocationInfo', {'result': result});
-                    console.log('response to location info', result);
-                },
-                scope: this
-            });
-        }, this);
-        //this.map.forEachFeatureAtPixel()
+        if (pressed) {
+            this.map.on("click", this.getLocationInfo, this);
+        } else {
+            this.map.un("click", this.getLocationInfo, this);
+        }
+    },
+//    
+//    fillVectorList : function(button, e) {
+//        console.log('fill vector list ');
+//        
+//        var vectorLyrStore = Ext.create('Ext.data.Store',{
+//            autoLoad: true,
+//            proxy: {
+//                type: 'ajax',
+//                url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
+//                actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
+//                reader: {
+//                    type: 'json',
+//                    rootProperty: 'layerNames'
+//                }
+//            },
+//            fields : [ {
+//                name : 'code',
+//                mapping : 'code'
+//            }, {
+//                name : 'label',
+//                mapping : 'label'
+//            }, {
+//                name : 'url',
+//                mapping : 'url'
+//            }, {
+//                name : 'url_wms',
+//                mapping : 'url_wms'
+//            }]
+//        });
+//        var menu = new Ext.menu.Menu();
+//        vectorLyrStore.on('load', function(me, vLyrs, success) {
+//            console.log('success', success)
+//            console.log('v lyr store', me);
+//            console.log('vLyrs', vLyrs);
+//            console.log('button vector layers', button);
+//            if (success) {
+//                var items = [];
+//                for (var i in vLyrs) {
+//                    vLyr = vLyrs[i];
+//                    console.log('data label', vLyr.getData().label);
+//                    item = new Ext.Component({
+//                        text : vLyr.getData().label
+//                    });
+//                    console.log('item', item);
+//                    console.log('item text', item.text);
+//                    items.push(item);
+//                }
+//                menu.setConfig('items', items)
+//                console.log('menu', menu);
+//                button.setMenu(menu);
+//                button.showMenu(e);
+//            }
+//        });
+//    },
+
+    onSelectVectorLayer : function(combo, vLyr, eOpts) {
+        this.selectedVectorLayer = vLyr;
+    },
+    
+    activateVectorLayerInfo : function(button, e) {
+        if (this.selectedVectorLayer && this.selectedVectorLayer !== null) {
+            var layerName = this.selectedVectorLayer.getData().code;
+            var url = this.selectedVectorLayer.getData().url;
+        }
+//        if (value[0].data.code !== null) {
+//            var layerName = value[0].data.code;
+//            var url = value[0].data.url;
+//            var popupTitle = this.popupTitle;
+//            // Change the WFS layer typename
+//            this.mapPanel.wfsLayer.protocol.featureType = layerName;
+//            this.mapPanel.wfsLayer.protocol.options.featureType = layerName;
+//            this.mapPanel.wfsLayer.protocol.format.featureType = layerName;
+//            this.mapPanel.wfsLayer.protocol.params.typename = layerName;
+//            this.mapPanel.wfsLayer.protocol.options.url = url;
+//
+//            // Remove all current features
+//            this.mapPanel.wfsLayer.destroyFeatures();
+//
+//            // Copy the visibility range from the original
+//            // layer
+//            originalLayers = this.mapPanel.map.getLayersByName(layerName);
+//            if (originalLayers != null) {
+//                    originalLayer = originalLayers[0];
+//                this.mapPanel.wfsLayer.maxResolution = originalLayer.maxResolution;
+//                this.mapPanel.wfsLayer.maxScale = originalLayer.maxScale;
+//                this.mapPanel.wfsLayer.minResolution = originalLayer.minResolution;
+//                this.mapPanel.wfsLayer.minScale = originalLayer.minScale;
+//                this.mapPanel.wfsLayer.alwaysInRange = false;
+//                this.mapPanel.wfsLayer.calculateInRange();
+//            }
+//
+//            // Make it visible
+//            this.mapPanel.wfsLayer.setVisibility(true);
+//
+//            // Force a refresh (rebuild the WFS URL)
+//            this.mapPanel.wfsLayer.moveTo(null, true, false);
+//
+//            // Set the layer name in other tools
+//            if (this.mapPanel.getFeatureControl !== null) {
+//                this.mapPanel.getFeatureControl.layerName = layerName;
+//            }
+//
+//            this.mapPanel.wfsLayer.refresh();
+//            this.mapPanel.wfsLayer.strategies[0].update({force:true});
+//
+//        } else {
+//            // Hide the layer
+//            this.mapPanel.wfsLayer.setVisibility(false);
+//        }
+//
+//        // Set the layer name in feature info tool
+//        if (this.mapPanel.featureInfoControl !== null) {
+//            this.mapPanel.featureInfoControl.layerName = layerName;
+//        }
     }
 });
 

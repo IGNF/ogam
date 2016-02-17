@@ -6,28 +6,6 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
     map: new ol.Map({
         logo: false, // no attributions to ol
         interactions: ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false}), // disable rotation
-        layers: [
-            new ol.layer.Vector({
-                code: 'drawingLayer',
-                name: 'Drawing layer',
-                source: new ol.source.Vector({features: new ol.Collection()}),
-                style: new ol.style.Style({
-                    fill: new ol.style.Fill({
-                        color: 'rgba(255, 255, 255, 0.2)'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#ffcc33',
-                        width: 2
-                    }),
-                    image: new ol.style.Circle({
-                        radius: 7,
-                        fill: new ol.style.Fill({
-                          color: '#ffcc33'
-                        })
-                    })
-                })
-            })
-        ],
         view: new ol.View({
             resolutions: OgamDesktop.map.resolutions,
             projection : OgamDesktop.map.projection,

@@ -24,10 +24,10 @@ Ext.define('OgamDesktop.controller.map.Legend',{
                 mapaddonspanel: 'map-addons-panel'
             },
             control: {
-//			'map-panel': {
+			'map-panel': {
 //				onLayerVisibilityChange: 'toggleLayersAndLegendsForZoom',
-//				onGetResultsBBox: 'enableLayersAndLegends'
-//			},
+				onGetResultsBBox: 'enableLayersAndLegends'
+			},
                 'mapcomponent': {
                     changelayervisibility: 'toggleLayersAndLegendsForZoom'
                 }
@@ -129,6 +129,7 @@ Ext.define('OgamDesktop.controller.map.Legend',{
 	 */
 	enableLayersAndLegends : function(layerNames, check, setForceDisable) {
             if (!Ext.isEmpty(layerNames)) {
+                console.log('layerNames', layerNames)
                 var i;
                 for (i = 0; i < layerNames.length; i++) {
                     var node;
@@ -139,7 +140,7 @@ Ext.define('OgamDesktop.controller.map.Legend',{
                         if (layerNode.data.layer && layerNode.data.layer.name == layerNames[i]){
                             node = layerNode;
                         }
-                    })
+                    });
                     if (!Ext.isEmpty(node)) {
                         var nodeId = node.id;
                         if (setForceDisable !== false) {
@@ -149,24 +150,30 @@ Ext.define('OgamDesktop.controller.map.Legend',{
                             node.data.disabled = false;
                             this.getLayerspanel().fireEvent('nodeEnable', node, true);
                         }
-
                         if (check === true) {
                             // Change check status
                             this.getLayerspanel().fireEvent('checkchange', node, true);
-
                             // Note: the redraw must be done before
                             // to
                             // check the node
                             // to avoid to redisplay the old layer
                             // images before the new one
-                            var layers = this.getMappanel().map.getLayersByName(layerNames[i]);
-                            layers[0].redraw(true);
+                            var mapLayers = this.getMappanel().lookupReference('mapCmp').getMap().getLayers();
+                            var layer;
+                            for (var j in mapLayers) {
+                                var lyr = mapLayers[j];
+                                if (lyr.get('name') === layerNames[i]) {
+                                   layer = lyr ;
+                                }
+                            }
+                            if (layer) {
+                                layer.redraw(true);
+                            }
                             this.toggleNodeCheckbox(nodeId, true);
                         }
                     }
                 }
                 this.setLegendsVisible(layerNames, true);
-
             } else {
                 console.warn('EnableLayersAndLegends : layerNames parameter is empty.');
             }
