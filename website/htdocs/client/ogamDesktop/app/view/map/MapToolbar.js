@@ -137,37 +137,68 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
         xtype : 'tbspacer',
         flex: 1
     },{
-        xtype: 'splitbutton',
         iconCls : 'o-map-tools-map-layerfeatureinfo',
         tooltip: this.layerFeatureInfoButtonTooltip,
         toggleGroup : "consultation",
-        menu: [{
-            text:'Menu Item 1'
-        },{
-            text:'Menu Item 2'
-        },{
-            text:'Menu Item 3'
-        }]
+        listeners: {
+            click: 'onLayerFeatureInfoButtonPress'
+        }
+    },{
+        xtype: 'combo',
+        editable: false,
+        emptyText: this.LayerSelectorEmptyTextValue,
+        triggerAction : 'all',
+        store : Ext.create('Ext.data.Store',{
+            autoLoad: true,
+            proxy: {
+                type: 'ajax',
+                url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
+                actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
+                reader: {
+                    type: 'json',
+                    rootProperty: 'layerNames'
+                }
+            },
+            fields : [ {
+                name : 'code',
+                mapping : 'code'
+            }, {
+                name : 'label',
+                mapping : 'label'
+            }, {
+                name : 'url',
+                mapping : 'url'
+            }, {
+                name : 'url_wms',
+                mapping : 'url_wms'
+            }]
+        }),
+        autoSelect : true,
+        valueField : 'code',
+        displayField : 'label',
+        listeners: {
+            select: 'onSelectVectorLayer'
+        }
     },{
         iconCls : 'o-map-tools-map-resultfeatureinfo',
         tooltip: this.resultFeatureInfoButtonTooltip,
         toggleGroup : "consultation",
         listeners: {
-            click: 'onResultFeatureInfoButtonPress'
+            toggle: 'onResultFeatureInfoButtonPress'
         }
     },'-',{
         iconCls : 'o-map-tools-map-zoomin',
         tooltip: this.zoomInButtonTooltip,
         toggleGroup : "consultation",
         listeners: {
-            click: 'onZoomInButtonPress'
+            toggle: 'onZoomInButtonPress'
         }
     },{
         iconCls : 'o-map-tools-map-pan',
         tooltip: this.mapPanButtonTooltip,
         toggleGroup : "consultation",
         listeners: {
-            click: 'onMapPanButtonPress'
+            toggle: 'onMapPanButtonPress'
         }
     },'-',{
         iconCls : 'o-map-tools-map-zoomtoresultfeatures',

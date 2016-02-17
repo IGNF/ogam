@@ -8,12 +8,11 @@ Ext.define('OgamDesktop.controller.result.Main',{
 	requires: [
 		'OgamDesktop.view.result.GridTab',
 		'OgamDesktop.view.result.MainWin',
-		'OgamDesktop.view.main.Main',
-		'OgamDesktop.view.map.MapPanel'
+		'OgamDesktop.view.main.Main'
 	],
 	config: {
 		refs: {
-			mappanel: 'map-panel',
+			mappanel: '#map-panel',
 			mapmainwin: 'map-mainwin',
 			resultmainwin: 'result-mainwin'
 		},
@@ -39,7 +38,7 @@ Ext.define('OgamDesktop.controller.result.Main',{
 	 */
 	seeOnMap: function(feature) {
 		this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
-		this.getController('map.Layer').zoomToFeature(feature.id, feature.location_centroid);
+		this.getMappanel().getController().zoomToFeature(feature.id, feature.location_centroid);
 	},
 
 	/**

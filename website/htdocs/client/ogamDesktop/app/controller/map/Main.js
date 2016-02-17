@@ -5,7 +5,6 @@
 Ext.define('OgamDesktop.controller.map.Main',{
 	extend: 'OgamDesktop.controller.AbstractWin',
 	requires: [
-		'OgamDesktop.view.map.MapPanel',
 		'Ext.grid.column.Number'
 	],
 
@@ -16,14 +15,11 @@ Ext.define('OgamDesktop.controller.map.Main',{
 	 */
 	config: {
 		refs: {
-			mappanel: 'map-panel',
+			mappanel: '#map-panel',
 			detailTab: 'grid-detail-panel'
 		},		
 		control: {
-			'map-panel toolbar button[action="print"]': {
-				click: 'printMap'
-			},
-			'map-panel': {
+			'#map-panel': {
 				getLocationInfo: 'showResultDetail',
 				getLocationInfoActivated: 'locationInfoStateChange'
 			},
@@ -103,82 +99,8 @@ Ext.define('OgamDesktop.controller.map.Main',{
 //		var detailGrid = Ext.create('OgamDesktop.view.navigation.GridDetailsPanel', {
 //			initConf: results
 //		});
+                console.log('show result details event', evt);
 		this.getDetailTab().configureDetailGrid(evt.result);
 		this.getDetailTab().expand();
-	},
-
-	/**
-	 * Create and submit a form
-	 * 
-	 * @param {String}
-	 *            url The form url
-	 * @param {object}
-	 *            params The form params
-	 */
-	post: function(url, params) {
-		var temp = document.createElement("form"), x;
-		temp.action = url;
-		temp.method = "POST";
-		temp.style.display = "none";
-		for (x in params) {
-			var opt = document.createElement("textarea");
-			opt.name = x;
-			opt.value = params[x];
-			temp.appendChild(opt);
-		}
-		document.body.appendChild(temp);
-		temp.submit();
-		return temp;
-	}, 
-	
-	olLayerToString : function(layer){
-		layerStr = '{';
-		layerStr += '"name":"' + layer.name + '",';
-		layerStr += '"opacity":' + layer.opacity;
-		if (layer.tileSize) {
-			tileSizeArray = [layer.tileSize.h, layer.tileSize.w];
-			layerStr += ', "tileSize": [' + tileSizeArray.toString() + ']';
-		};
-		layerStr += '}';
-		return layerStr;
-	},
-	
-	
-	/**
-	 * Print the map
-	 * 
-	 * @param {Ext.Button}
-	 *            button The print map button
-	 * @param {EventObject}
-	 *            event The click event
-	 */
-	printMap : function(button, event) {
-		
-		
-		
-		// Get the BBOX
-		var center = this.getMappanel().map.getCenter(), zoom = this.getMappanel().map.getZoom(), i;
-		console.log(center)
-		console.log(zoom)
-		
-		// Get the layers
-		var activatedLayers = this.getMappanel().map.getLayersBy('visibility', true);
-		var layersToPrint = [];
-		for (i = 0; i < activatedLayers.length; i++) {
-			currentLayer = activatedLayers[i];
-			if (currentLayer.printable !== false &&
-				currentLayer.visibility == true &&
-				currentLayer.inRange == true) {
-				layersToPrint.push(this.olLayerToString(currentLayer));
-				console.log(currentLayer)
-			}
-		}
-
-		console.log(layersToPrint)
-		this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
-			center : center,
-			zoom : zoom,
-			layers : layersToPrint
-		});
 	}
 });

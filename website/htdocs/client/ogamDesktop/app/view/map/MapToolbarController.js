@@ -6,33 +6,29 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     alias: 'controller.maptoolbar',
 
     init : function() {
-        this.map = this.getView().up('map-panel').child('mapcomponent').getMap();
+        var mapCmp = this.getView().up('panel').child('mapcomponent');
+        this.map = mapCmp.getMap();
+        this.mapCmpCtrl = mapCmp.getController();
         this.selectInteraction = new ol.interaction.Select({
-            layers: [this.getMapLayer('drawingLayer')]
+            layers: [this.mapCmpCtrl.getMapLayer('drawingLayer')]
         });
         this.drawingLayerSnappingInteraction = new ol.interaction.Snap({
-            source: this.getMapLayer('drawingLayer').getSource()
+            source: this.mapCmpCtrl.getMapLayer('drawingLayer').getSource()
         });
         this.snappingLayerSnappingInteraction = null;
         this.riseSnappingInteractionListenerKey = null;
         this.selectWFSFeatureListenerKey = null;
     },
 
-    getMapLayer : function (layerCode) {
-        var me = {"layerCode":layerCode};
-        this.map.getLayers().forEach(
-            function(el, index, c_array){
-                if (el.get('code') === this.layerCode) {
-                    this.layer = el;
-                }
-            },
-            me
-        );
-        return me.layer;
-    },
+
+// ********************************************************************************************************* //
+//                                                                                                           //
+//          Edition buttons                                                                                  //
+//                                                                                                           //
+// ********************************************************************************************************* //
 
     onZoomToDrawingFeaturesButtonPress : function (button, e, eOpts) {
-        var extent = this.getMapLayer('drawingLayer').getSource().getExtent();
+        var extent = this.mapCmpCtrl.getMapLayer('drawingLayer').getSource().getExtent();
         if (ol.extent.isEmpty(extent)) {
             Ext.Msg.alert('Zoom to drawing features :', 'The drawing layer contains no feature on which to zoom.');
         } else {
@@ -65,14 +61,14 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 this.map.addInteraction(this.snappingLayerSnappingInteraction);
             } 
             this.updateRiseSnappingInteractionListener();
-            this.getMapLayer('snappingLayer').setVisible(true);
+            this.mapCmpCtrl.getMapLayer('snappingLayer').setVisible(true);
         } else {
             this.map.removeInteraction(this.drawingLayerSnappingInteraction);
             if(this.snappingLayerSnappingInteraction !== null){
                 this.map.removeInteraction(this.snappingLayerSnappingInteraction);
             }
             this.removeRiseSnappingInteractionListener();
-            this.getMapLayer('snappingLayer').setVisible(false);
+            this.mapCmpCtrl.getMapLayer('snappingLayer').setVisible(false);
         }
     },
 
@@ -106,7 +102,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
     updateSnappingInteraction : function(){
         this.snappingLayerSnappingInteraction = new ol.interaction.Snap({
-            source: this.getMapLayer('snappingLayer').getSource()
+            source: this.mapCmpCtrl.getMapLayer('snappingLayer').getSource()
         });
     },
 
@@ -143,7 +139,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 }))
             });
             // Update the snapping layer and the snapping interaction
-            this.getMapLayer('snappingLayer').setSource(this.snapSource);
+            this.mapCmpCtrl.getMapLayer('snappingLayer').setSource(this.snapSource);
             if (menu.ownerCmp.pressed) {
                 this.updateAndAddSnappingInteraction();
             } else {
@@ -152,7 +148,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             }
         } else {
             // Clear the snapping layer and remove the snapping interaction
-            this.getMapLayer('snappingLayer').setSource(new ol.source.Vector({features: new ol.Collection()}));
+            this.mapCmpCtrl.getMapLayer('snappingLayer').setSource(new ol.source.Vector({features: new ol.Collection()}));
             this.destroyAndRemoveSnappingInteraction();
             menu.ownerCmp.pressed && menu.ownerCmp.toggle(false);
         }
@@ -160,7 +156,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
     onModifyfeatureButtonToggle : function (button, pressed, eOpts) {
         pressed && this.onControlButtonPress(button, new ol.interaction.Modify({
-            features: this.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
+            features: this.mapCmpCtrl.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
             deleteCondition: function(event) {
                 return ol.events.condition.shiftKeyOnly(event) &&
                     ol.events.condition.singleClick(event);
@@ -175,7 +171,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
     onDrawButtonToggle : function (button, pressed, drawType) {
         pressed && this.onControlButtonPress(button, new ol.interaction.Draw({
-            features: this.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
+            features: this.mapCmpCtrl.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
             type: drawType
         }));
     },
@@ -269,7 +265,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             ol.featureloader.xhr(
                 url,
                 new ol.format.GeoJSON()
-            ).call(this.getMapLayer('drawingLayer').getSource());
+            ).call(this.mapCmpCtrl.getMapLayer('drawingLayer').getSource());
         },this);
     },
 
@@ -295,7 +291,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     },
 
     onDeleteFeatureButtonPress : function (button, e, eOpts) {
-        var drawingLayerSource = this.getMapLayer('drawingLayer').getSource();
+        var drawingLayerSource = this.mapCmpCtrl.getMapLayer('drawingLayer').getSource();
         var featuresCollection = this.selectInteraction.getFeatures();
         featuresCollection.forEach(
             function(el, index, c_array){
@@ -315,17 +311,128 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         this.getView().fireEvent('cancelFeatureEdition');
     },
 
-    // TODO: @PEG : Ajouter l'attribut code: 'results' à la couche des résultats,
-    onZoomToResultFeaturesButtonPress : function (button, e, eOpts) {
-        var extent = this.getMapLayer('results').getSource().getExtent();
-        if (ol.extent.isEmpty(extent)) {
-            Ext.Msg.alert('Zoom to result features :', 'The results layer contains no feature on which to zoom.');
-        } else {
-            this.map.getView().fit(
-                extent, 
-                this.map.getSize()
-            );
+
+// ********************************************************************************************************* //
+//                                                                                                           //
+//          Consultation buttons                                                                             //
+//                                                                                                           //
+// ********************************************************************************************************* //
+
+    onLayerFeatureInfoButtonPress : function (button, e, eOpts) {
+        this.mapCmpCtrl.activateVectorLayerInfo();
+    },
+
+//    fillVectorList : function(button, e) {
+//        console.log('fill vector list ');
+//        
+//        var vectorLyrStore = Ext.create('Ext.data.Store',{
+//            autoLoad: true,
+//            proxy: {
+//                type: 'ajax',
+//                url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
+//                actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
+//                reader: {
+//                    type: 'json',
+//                    rootProperty: 'layerNames'
+//                }
+//            },
+//            fields : [ {
+//                name : 'code',
+//                mapping : 'code'
+//            }, {
+//                name : 'label',
+//                mapping : 'label'
+//            }, {
+//                name : 'url',
+//                mapping : 'url'
+//            }, {
+//                name : 'url_wms',
+//                mapping : 'url_wms'
+//            }]
+//        });
+//        var menu = new Ext.menu.Menu();
+//        vectorLyrStore.on('load', function(me, vLyrs, success) {
+//            console.log('success', success)
+//            console.log('v lyr store', me);
+//            console.log('vLyrs', vLyrs);
+//            console.log('button vector layers', button);
+//            if (success) {
+//                var items = [];
+//                for (var i in vLyrs) {
+//                    vLyr = vLyrs[i];
+//                    console.log('data label', vLyr.getData().label);
+//                    item = new Ext.Component({
+//                        text : vLyr.getData().label
+//                    });
+//                    console.log('item', item);
+//                    console.log('item text', item.text);
+//                    items.push(item);
+//                }
+//                menu.setConfig('items', items)
+//                console.log('menu', menu);
+//                button.setMenu(menu);
+//                button.showMenu(e);
+//            }
+//        });
+//    },
+
+    onSelectVectorLayer : function(combo, vLyr, eOpts) {
+        this.selectedVectorLayer = vLyr;
+    },
+
+    getLocationInfo : function(e) {
+        var lon = e.coordinate[0], lat=e.coordinate[1];
+        var url = Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetlocationinfo?LON='+lon+'&LAT='+lat;
+        if (OgamDesktop.map.featureinfo_maxfeatures !== 0) {
+            url = url + "&MAXFEATURES=" + OgamDesktop.map.featureinfo_maxfeatures;
         }
+        Ext.Ajax.request({
+            url : url,
+            success : function(rpse, options) {
+                var result = Ext.decode(rpse.responseText);
+                this.getView().fireEvent('getLocationInfo', {'result': result});
+            },
+            failure : function(rpse, options) {
+                Ext.Msg.alert('Erreur', 'Sorry, bad request...');
+            },
+            scope: this
+        });
+    },
+    
+    onResultFeatureInfoButtonPress : function(button, pressed, eOpts) {
+        if (pressed) {
+            this.map.on("click", this.getLocationInfo, this);
+        } else {
+            this.map.un("click", this.getLocationInfo, this);
+        }
+    },
+
+    onZoomInButtonPress : function (button, pressed, eOpts) {
+        dzInter = new ol.interaction.DragZoom({
+            condition: ol.events.condition.always,
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    width: 3
+                }),
+                fill: new ol.style.Fill({
+                    color: [255, 255, 255, 0.4]
+                })
+            })
+        });
+        pressed && this.onControlButtonPress(button, dzInter);
+    },
+
+    onMapPanButtonPress : function (button, pressed, eOpts) {
+        this.map.getInteractions().forEach(function(interaction){
+          if (interaction instanceof ol.interaction.DragPan) {
+              interaction.setActive(true);
+          }
+       });
+    },
+
+    onZoomToResultFeaturesButtonPress : function (button, e, eOpts) {
+        this.mapCmpCtrl.zoomToResultFeatures();
     },
 
     onZoomToMaxExtentButtonPress : function (button, e, eOpts) {
@@ -338,5 +445,67 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             ], 
             this.map.getSize()
         );
+    },
+
+    /**
+     * Create and submit a form
+     * 
+     * @param {String}
+     *            url The form url
+     * @param {object}
+     *            params The form params
+     */
+    post: function(url, params) {
+        var temp = document.createElement("form"), x;
+        temp.action = url;
+        temp.method = "POST";
+        temp.style.display = "none";
+        for (x in params) {
+            var opt = document.createElement("textarea");
+            opt.name = x;
+            opt.value = params[x];
+            temp.appendChild(opt);
+        }
+        document.body.appendChild(temp);
+        temp.submit();
+        return temp;
+    }, 
+
+    olLayerToString : function(layer){
+        layerStr = '{';
+        layerStr += '"name":"' + layer.name + '",';
+        layerStr += '"opacity":' + layer.opacity;
+        if (layer.tileSize) {
+            tileSizeArray = [layer.tileSize.h, layer.tileSize.w];
+            layerStr += ', "tileSize": [' + tileSizeArray.toString() + ']';
+        };
+        layerStr += '}';
+        return layerStr;
+    },
+
+    onPrintMapButtonPress : function(button, pressed, eOpts) {
+        // Get the BBOX
+        var center = this.map.getView().getCenter(), zoom = this.map.getView().getZoom(), i;
+        // Get the layers
+        var activatedLayers = [];
+        this.map.getLayers().forEach(function(lyr){
+            if (lyr.getVisible()){
+                activatedLayers.push(lyr);
+            }
+        });
+        var layersToPrint = [];
+        for (i in activatedLayers) {
+                lyr = activatedLayers[i];
+                if (lyr.get('printable') !== false &&
+                    lyr.getVisible() === true) {
+                    layersToPrint.push(this.olLayerToString(lyr));
+                }
+        }
+        console.log('layers to print array', layersToPrint);
+        this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
+                center : center,
+                zoom : zoom,
+                layers : layersToPrint
+        });
     }
 });

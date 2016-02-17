@@ -35,7 +35,6 @@ Ext.define('OgamDesktop.Application', {
 	],
 	views: [
 		'main.Main',
-		'map.MapPanel',
 		'map.LayersPanel',
 		'map.LegendsPanel',
 		'map.MainWin',
