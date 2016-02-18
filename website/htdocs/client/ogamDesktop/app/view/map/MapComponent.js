@@ -31,7 +31,6 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
 ////  legendPanelTabTip : "The layers's legends",
 //  panZoomBarControlTitle : "Zoom",
 //  navigationControlTitle : "Drag the map",
-//  invalidWKTMsg : "The feature cannot be displayed",
 //  zoomToFeaturesControlTitle : "Zoom to the features",
 //  zoomToResultControlTitle : "Zoom to the results",
 //  drawPointControlTitle : "Draw a point",
@@ -114,14 +113,6 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
 //   * @type array
 //   */
 //  services: [],
-//  
-  /**
-   * The wkt format.
-   * 
-   * @type {OpenLayers.Format.WKT}
-   * @property wktFormat
-   */
-  wktFormat : new ol.format.WKT(),
 //
 //  /**
 //   * The WFS layer.
@@ -154,7 +145,7 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
         layers: [
             new ol.layer.Vector({
                 code: 'drawingLayer',
-		name: 'Drawing layer',
+                name: 'Drawing layer',
                 printable: false,
                 displayInLayerSwitcher: false,
                 source: new ol.source.Vector({features: new ol.Collection()}),

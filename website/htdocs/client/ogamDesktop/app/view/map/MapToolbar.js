@@ -16,6 +16,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
     xtype:'maptoolbar',
     items:[{
         xtype:'buttongroup',
+        itemId: 'drawingButtonsGroup',
         hidden: true,
         action: 'drawing',
         defaults: {
@@ -70,21 +71,24 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
                 toggle: 'onSelectButtonToggle'
             }
         },{
-            iconCls : 'o-map-tools-map-drawpoint',
+            itemId: 'drawPointButton',
+            iconCls: 'o-map-tools-map-drawpoint',
             tooltip: this.drawPointButtonTooltip,
             toggleGroup : "editing",
             listeners: {
                 toggle: 'onDrawPointButtonToggle'
             }
         },{
-            iconCls : 'o-map-tools-map-drawline',
+            itemId: 'drawLineButton',
+            iconCls: 'o-map-tools-map-drawline',
             tooltip: this.drawLineButtonTooltip,
             toggleGroup : "editing",
             listeners: {
                 toggle: 'onDrawLineButtonToggle'
             }
         },{
-            iconCls : 'o-map-tools-map-drawpolygon',
+            itemId: 'drawPolygonButton',
+            iconCls: 'o-map-tools-map-drawpolygon',
             tooltip: this.drawPolygonButtonTooltip,
             toggleGroup : "editing",
             listeners: {
@@ -92,7 +96,8 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             }
         },{
             xtype:'splitbutton',
-            iconCls : 'o-map-tools-map-selectWFSFeature',
+            itemId: 'selectWFSFeatureButton',
+            iconCls: 'o-map-tools-map-selectWFSFeature',
             tooltip: this.selectWFSFeatureButtonTooltip,
             toggleGroup : "editing",
             listeners: {
@@ -115,18 +120,20 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
                 click: 'onDeleteFeatureButtonPress'
             }
         },{ // Use of tbtext because tbseparator doesn't work...
-            group : "drawValidation",
             xtype:'tbtext',
+            group: 'drawValidation',
             html: '|',
             margin:'3 -3 0 -2',
             style:'color:#aaa'
         },{
+            group: 'drawValidation',
             iconCls : 'o-map-tools-map-validateedition',
             tooltip: this.validateEditionButtonTooltip,
             listeners: {
                 click: 'onValidateEditionButtonPress'
             }
         },{
+            group: 'drawValidation',
             iconCls : 'o-map-tools-map-canceledition',
             tooltip: this.cancelEditionButtonTooltip,
             listeners: {
