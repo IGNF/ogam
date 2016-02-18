@@ -154,6 +154,30 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Returns the number of results in the results table.
+	 *
+	 * @param
+	 *        	String the user session id.
+	 * @return Integer the number of results
+	 */
+	public function getResultsCount($sessionId) {
+		$db = $this->getAdapter();
+
+		$req = "SELECT count(*) FROM result_location WHERE session_id = ?";
+
+		$this->logger->info('getResultsCount session_id : ' . $sessionId);
+		$this->logger->info('getResultsCount request : ' . $req);
+
+		$select = $db->prepare($req);
+		$select->execute(array(
+			$sessionId
+		));
+		$result = $select->fetchColumn(0);
+
+		return $result;
+	}
+
+	/**
 	 * Returns the intersected location information.
 	 *
 	 * @param String $sessionId
