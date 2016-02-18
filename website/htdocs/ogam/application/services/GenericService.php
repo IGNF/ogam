@@ -58,7 +58,7 @@ class Application_Service_GenericService {
 	/**
 	 * Serialize the data object as a JSON string.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the data object we're looking at.
 	 * @param String $dataset
 	 *        	the dataset identifier (optional), limit the children to the current dataset.
@@ -112,7 +112,7 @@ class Application_Service_GenericService {
 	 *
 	 * @param String $id
 	 *        	the id for the returned dataset
-	 * @param List[DataObject] $data
+	 * @param List[Application_Object_Generic_DataObject] $data
 	 *        	the data object we're looking at.
 	 * @return JSON
 	 */
@@ -204,7 +204,7 @@ class Application_Service_GenericService {
 	/**
 	 * Get the form field corresponding to the table field.
 	 *
-	 * @param TableField $tableField
+	 * @param Application_Object_Metadata_TableField $tableField
 	 *        	the table field
 	 * @param Boolean $copyValues
 	 *        	is true the values will be copied
@@ -267,7 +267,7 @@ class Application_Service_GenericService {
 	 *
 	 * @param String $schema
 	 *        	the schema
-	 * @param DataObject $dataObject
+	 * @param Application_Object_Generic_DataObject $dataObject
 	 *        	the query object (list of TableFields)
 	 * @return String a SQL request
 	 */
@@ -334,7 +334,7 @@ class Application_Service_GenericService {
 	 *
 	 * @param String $schema
 	 *        	the schema
-	 * @param DataObject $dataObject
+	 * @param Application_Object_Generic_DataObject $dataObject
 	 *        	the query object (list of TableFields)
 	 * @return String a SQL request
 	 */
@@ -396,7 +396,7 @@ class Application_Service_GenericService {
 	/**
 	 * Build the WHERE clause corresponding to a list of criterias.
 	 *
-	 * @param Array[TableField] $criterias
+	 * @param Array[Application_Object_Metadata_TableField] $criterias
 	 *        	the criterias.
 	 * @return String the WHERE part of the SQL query
 	 */
@@ -414,7 +414,7 @@ class Application_Service_GenericService {
 	/**
 	 * Build a WHERE criteria for a single numeric value.
 	 *
-	 * @param TableField $tableField
+	 * @param Application_Object_Metadata_TableField $tableField
 	 *        	a criteria field.
 	 * @param String $value
 	 *        	a numeric criterium.
@@ -955,7 +955,7 @@ class Application_Service_GenericService {
 	 *        	the name of the format
 	 * @param String $datasetId
 	 *        	the dataset identifier
-	 * @return DataObject the DataObject structure (with no values set)
+	 * @return Application_Object_Generic_DataObject the DataObject structure (with no values set)
 	 */
 	public function buildDataObject($schema, $format, $datasetId = null) {
 
@@ -991,7 +991,7 @@ class Application_Service_GenericService {
 	 *        	the schema
 	 * @param FormQuery $formQuery
 	 *        	the list of form fields
-	 * @return DataObject $dataObject a data object (with data from different tables)
+	 * @return Application_Object_Generic_DataObject $dataObject a data object (with data from different tables)
 	 */
 	public function getFormQueryToTableData($schema, $formQuery) {
 		$result = new Application_Object_Generic_DataObject();
@@ -1016,7 +1016,7 @@ class Application_Service_GenericService {
 	 *
 	 * @param String $schema
 	 *        	the schema
-	 * @param DataObject $dataObject
+	 * @param Application_Object_Generic_DataObject $dataObject
 	 *        	the list of table fields
 	 * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
 	 */
@@ -1045,84 +1045,57 @@ class Application_Service_GenericService {
 	}
 
 	/**
-	 * Fill the (Form or Table) field with the labels corresponding to the code value.
+	 * Find the labels corresponding to the code value.
 	 *
-	 * @param Field $field
-	 *        	a form field
-	 * @return String the value label
+	 * @param Application_Object_Metadata_Field $tableField
+	 *        	a table field descriptor
+	 * @param [String|Array] $value
+	 *        	a value
+	 * @return String or Array The labels
 	 */
-	public function fillValueLabel($field) {
+	public function getValueLabel($tableField, $value) {
+
+		// If empty, no label
+		if ($value === null || $value === '') {
+			return "";
+		}
 
 		// By default we keep the value as a label
-		$field->valueLabel = $field->value;
+		$valueLabel = $value;
 
-		// For the SELECT field, get the list of options
-		if ($field->type === "CODE" || $field->type === "ARRAY") {
+		// For the CODE and ARRAY fields, we get the labels in the metadata
+		if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
 
 			// Get the modes => Label
-			if ($field->subtype === "DYNAMIC") {
-				$modes = $this->metadataModel->getDynamodeLabels($field->unit, $field->value);
-			} else if ($field->subtype === "TREE") {
-				$modes = $this->metadataModel->getTreeLabels($field->unit, $field->value);
-			} else if ($field->subtype === "TAXREF") {
-				$modes = $this->metadataModel->getTaxrefLabels($field->unit, $field->value);
+			if ($tableField->subtype === "DYNAMIC") {
+				$modes = $this->metadataModel->getDynamodeLabels($tableField->unit, $value);
+			} else if ($tableField->subtype === "TREE") {
+				$modes = $this->metadataModel->getTreeLabels($tableField->unit, $value);
+			} else if ($tableField->subtype === "TAXREF") {
+				$modes = $this->metadataModel->getTaxrefLabels($tableField->unit, $value);
 			} else {
-				$modes = $this->metadataModel->getModeLabels($field->unit, $field->value);
+				$modes = $this->metadataModel->getModeLabels($tableField->unit, $value);
 			}
 
-			// Populate the label of the currently selected value
-			if ($field->type === "ARRAY") {
+			// Populate the labels of the currently selected values
+			if (is_array($value)) {
 				$labels = array();
-				if (isset($field->value)) {
-
-					foreach ($field->value as $mode) {
+				if (isset($value)) {
+					foreach ($value as $mode) {
 						if (isset($modes[$mode])) {
 							$labels[] = $modes[$mode];
 						}
 					}
-					$field->valueLabel = $labels;
+					$valueLabel = $labels;
 				}
 			} else {
-				if (isset($modes[$field->value])) {
-					$field->valueLabel = $modes[$field->value];
+				if (isset($modes[$value])) {
+					$valueLabel = $modes[$value];
 				}
 			}
 		}
 
-		return $field;
-	}
-
-	/**
-	 * Returns the value of a field.
-	 *
-	 * @param Application_Object_Metadata_TableField $tableField
-	 *        	the tablefield name
-	 * @param String $value
-	 *        	the value of the field
-	 * @return String The label
-	 */
-	public function getValueLabel($tableField, $value) {
-		$label = '';
-
-		if (empty($value)) {
-			return "";
-		}
-
-		if ($tableField->subtype === "DYNAMIC") {
-			$labels = $this->metadataModel->getDynamodeLabels($tableField->unit, $value);
-			$label = $labels[$value];
-		} else if ($tableField->subtype === "TREE") {
-			$labels = $this->metadataModel->getTreeLabels($tableField->unit, $value);
-			$label = $labels[$value];
-		} else if ($tableField->subtype === "TAXREF") {
-			$labels = $this->metadataModel->getTaxrefLabels($tableField->unit, $value);
-			$label = $labels[$value];
-		} else {
-			$labels = $this->metadataModel->getModeLabels($tableField->unit, $value);
-			$label = $labels[$value];
-		}
-
-		return $label;
+		return $valueLabel;
 	}
 
 	/**

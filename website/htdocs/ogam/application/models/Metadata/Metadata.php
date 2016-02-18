@@ -1296,7 +1296,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the form field corresponding to the table field.
 	 *
-	 * @param TableField $tableField
+	 * @param Application_Object_Metadata_TableField $tableField
 	 *        	the table field
 	 * @return Array[Application_Object_Metadata_FormField]
 	 */
@@ -1573,7 +1573,11 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[String, String]
 	 */
 	public function getTaxrefLabels($unit, $value = null) {
-		$key = $this->_formatCacheKey('getTaxrefLabels_' . $unit . '_' . $value);
+		if (is_array($value)) {
+			$key = $this->_formatCacheKey('getTaxrefLabels_' . $unit . '_' . implode("_", $value));
+		} else {
+			$key = $this->_formatCacheKey('getTaxrefLabels_' . $unit . '_' . $value);
+		}
 
 		$this->logger->debug($key);
 

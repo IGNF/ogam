@@ -583,32 +583,25 @@ class QueryController extends AbstractOGAMController {
 		// List all the criterias
 		foreach ($formQuery->getCriterias() as $criteria) {
 
-			// Get the description (to get the labels)
+			// Get the descriptor of the form field
 			$formField = $this->metadataModel->getFormField($criteria->format, $criteria->data);
 			$criterias .= '// ' . $formField->label . ';';
 
+			// Get the corresponding table field
 			$tableField = $this->metadataModel->getFormToTableMapping($websiteSession->schema, $formField);
 
-			// The value
-			if ($tableField->type === "CODE" || $tableField->type === "ARRAY") {
-				if (is_array($criteria->value)) {
-					foreach ($criteria->value as $item) {
-						$criterias .= $this->genericService->getValueLabel($tableField, $item) . ", ";
-					}
-					$criterias = substr($criterias, 0, -2);
-				} else {
-					$criterias .= $this->genericService->getValueLabel($tableField, $criteria->value);
-				}
+			// Fill the value of the table field
+			$tableField->value = $criteria->value;
+
+			// Get the value label
+			$tableField->valueLabel = $this->genericService->getValueLabel($tableField, $tableField->value);
+
+			if (is_array($tableField->value)) {
+				$criterias .= implode(', ', $tableField->valueLabel);
 			} else {
-				if (is_array($criteria->value)) {
-					foreach ($criteria->value as $item) {
-						$criterias .= $item . ", ";
-					}
-					$criterias = substr($criterias, 0, -2);
-				} else {
-					$criterias .= $criteria->value;
-				}
+				$criterias .= $tableField->valueLabel;
 			}
+
 			$criterias .= "\n";
 		}
 

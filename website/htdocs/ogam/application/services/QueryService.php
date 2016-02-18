@@ -191,7 +191,7 @@ class Application_Service_QueryService {
 	/**
 	 * Generate the JSON structure corresponding to a list of edit fields.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the data object to edit
 	 */
 	private function _generateEditFormJSON($data) {
@@ -344,7 +344,7 @@ class Application_Service_QueryService {
 	/**
 	 * Get the form fields for a data to edit.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the data object to edit
 	 * @return JSON.
 	 */

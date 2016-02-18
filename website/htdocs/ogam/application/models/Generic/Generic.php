@@ -75,9 +75,9 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * Fill a line of data with the values a table, given its primary key.
 	 * Only one object is expected in return.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the shell of the data object with the values for the primary key.
-	 * @return DataObject The complete data object.
+	 * @return Application_Object_Generic_DataObject The complete data object.
 	 */
 	public function getDatum($data) {
 		$db = $this->getAdapter();
@@ -120,7 +120,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		foreach ($data->getFields() as $field) {
 
 			// Fill the value labels for the field
-			$field = $this->genericService->fillValueLabel($field);
+			$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
 		}
 
 		return $data;
@@ -129,7 +129,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the join keys
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the shell of the data object.
 	 * @return joinKeys The join keys.
 	 */
@@ -158,9 +158,9 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * Get a list of data objects from a table, given an incomplete primary key.
 	 * A list of data objects is expected in return.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the shell of the data object with the values for the primary key.
-	 * @return Array[DataObject] The complete data objects.
+	 * @return Array[Application_Object_Generic_DataObject] The complete data objects.
 	 */
 	private function _getDataList($data) {
 		$db = $this->getAdapter();
@@ -199,7 +199,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				}
 
 				// Fill the value labels for the field
-				$field = $this->genericService->fillValueLabel($field);
+				$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
 			}
 
 			$result[] = $child;
@@ -211,14 +211,14 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	/**
 	 * Update a line of data from a table.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the shell of the data object with the values for the primary key.
 	 * @throws an exception if an error occur during update
 	 */
 	public function updateData($data) {
 		$db = $this->getAdapter();
 
-		/* @var $data DataObject */
+		/* @var $data Application_Object_Generic_DataObject */
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
@@ -230,7 +230,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		// updates of the data.
 		foreach ($data->editableFields as $field) {
-			/* @var $field TableField */
+			/* @var $field Application_Object_Metadata_TableField */
 
 			if ($field->data != "LINE_NUMBER" && $field->isEditable) {
 				// Hardcoded value
@@ -264,14 +264,14 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	/**
 	 * Delete a line of data from a table.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the shell of the data object with the values for the primary key.
 	 * @throws an exception if an error occur during delete
 	 */
 	public function deleteData($data) {
 		$db = $this->getAdapter();
 
-		/* @var $data DataObject */
+		/* @var $data Application_Object_Generic_DataObject */
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
@@ -285,7 +285,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		// Build the WHERE clause with the info from the PK.
 		foreach ($data->infoFields as $primaryKey) {
-			/* @var $primaryKey TableField */
+			/* @var $primaryKey Application_Object_Metadata_TableField */
 
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
 			if (!($tableFormat->schemaCode === "RAW_DATA" && $primaryKey->data === "SUBMISSION_ID")) {
@@ -316,9 +316,9 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	/**
 	 * Insert a line of data from a table.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the shell of the data object to insert.
-	 * @return DataObject $data the eventually edited data object.
+	 * @return Application_Object_Generic_DataObject $data the eventually edited data object.
 	 * @throws an exception if an error occur during insert
 	 */
 	public function insertData($data) {
@@ -403,16 +403,16 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * Get the information about the ancestors of a line of data.
 	 * The key elements in the parent tables must have an existing value in the child.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the data object we're looking at.
-	 * @return List[DataObject] The line of data in the parent tables.
+	 * @return List[Application_Object_Generic_DataObject] The line of data in the parent tables.
 	 */
 	public function getAncestors($data) {
 		$db = $this->getAdapter();
 
 		$ancestors = array();
 
-		/* @var $data DataObject */
+		/* @var $data Application_Object_Generic_DataObject */
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 
@@ -464,18 +464,18 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the information about the children of a line of data.
 	 *
-	 * @param DataObject $data
+	 * @param Application_Object_Generic_DataObject $data
 	 *        	the data object we're looking at.
 	 * @param String $datasetId
 	 *        	the dataset id
-	 * @return Array[Format => List[DataObject]] The lines of data in the children tables, indexed by format.
+	 * @return Array[Format => List[Application_Object_Generic_DataObject]] The lines of data in the children tables, indexed by format.
 	 */
 	public function getChildren($data, $datasetId = null) {
 		$db = $this->getAdapter();
 
 		$children = array();
 
-		/* @var $data DataObject */
+		/* @var $data Application_Object_Generic_DataObject */
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 

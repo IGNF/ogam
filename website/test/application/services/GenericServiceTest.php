@@ -22,119 +22,181 @@ class GenericServiceTest extends ControllerTestCase {
 	}
 
 	/**
-	 * Test de la fonction getValueLabel(), cas vides.
+	 * Test de la fonction fillValueLabel(), cas vides.
 	 */
-	public function testGetValueLabelEmpty() {
+	public function testFillValueLabelEmpty() {
 
 		// On crée un objet avec un code à traduire en libellé
 		$field = new Application_Object_Metadata_TableField();
 		$field->unit = 'SPECIES_CODE';
 		$field->type = "CODE";
 		$field->subtype = "MODE";
+		$field->value = '';
 
-		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->genericService->getValueLabel($field, '');
-		$this->assertEquals('', $label);
+		// On vérifie que le libellé est vide
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$this->assertEquals('', $field->getValueLabel());
 
-		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->genericService->getValueLabel($field, null);
-		$this->assertEquals('', $label);
+		// On vérifie que le libellé est vide
+		$field->value = null;
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$this->assertEquals('', $field->getValueLabel());
 	}
 
 	/**
-	 * Test de la fonction getValueLabel().
+	 * Test de la fonction fillValueLabel().
 	 */
-	public function testGetValueLabelMode() {
+	public function testFillValueLabelMode() {
 
 		// On crée un objet avec un code à traduire en libellé
 		$field = new Application_Object_Metadata_TableField();
 		$field->unit = 'SPECIES_CODE';
 		$field->type = "CODE";
 		$field->subtype = "MODE";
+		$field->value = '031.001.041';
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->genericService->getValueLabel($field, '031.001.041');
-		$this->assertEquals('Salix caprea', $label);
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$this->assertEquals('Salix caprea', $field->getValueLabel());
 	}
 
 	/**
-	 * Test de la fonction getValueLabel().
+	 * Test de la fonction fillValueLabel().
 	 */
-	public function testGetValueLabelDynamode() {
+	public function testFillValueLabelDynamode() {
 
 		// On crée un objet avec un code à traduire en libellé
 		$field = new Application_Object_Metadata_TableField();
 		$field->unit = 'DEPARTEMENT';
 		$field->type = "CODE";
 		$field->subtype = "DYNAMIC";
+		$field->value = '45';
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->genericService->getValueLabel($field, '45');
-		$this->assertEquals('LOIRET', $label);
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$this->assertEquals('LOIRET', $field->getValueLabel());
 	}
 
 	/**
-	 * Test de la fonction getValueLabel().
+	 * Test de la fonction fillValueLabel().
 	 */
-	public function testGetValueLabelTree() {
-
-		// On crée un objet avec un code à traduire en libellé
-		$field = new Application_Object_Metadata_TableField();
-		$field->unit = 'CORINE_BIOTOPE';
-		$field->type = "CODE";
-		$field->subtype = "TREE";
-
-		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->genericService->getValueLabel($field, '41');
-		$this->assertEquals('Forêts caducifoliées', $label);
-	}
-
-	/**
-	 * Test de la fonction getValueLabel().
-	 */
-	public function testGetValueLabelTaxref() {
-
-		// On crée un objet avec un code à traduire en libellé
-		$field = new Application_Object_Metadata_TableField();
-		$field->unit = 'ID_TAXON';
-		$field->type = "CODE";
-		$field->subtype = "TAXREF";
-
-		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->genericService->getValueLabel($field, '409299');
-		$this->assertEquals('Acalles nudiusculus', $label);
-	}
-
-	/**
-	 * Test de la fonction getValueLabel().
-	 */
-	public function testGetValueLabelArrayDynamode() {
+	public function testFillValueLabelArrayDynamode() {
 
 		// On crée un objet avec un code à traduire en libellé
 		$field = new Application_Object_Metadata_TableField();
 		$field->unit = 'COMMUNES';
 		$field->type = "ARRAY";
 		$field->subtype = "DYNAMIC";
+		$field->value = '45050';
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->genericService->getValueLabel($field, '45050');
-		$this->assertEquals('BOYNES (45050)', $label);
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$this->assertEquals('BOYNES (45050)', $field->getValueLabel());
+
+		// Cas d'un ARRAY
+		$field->value = array(
+			'45050',
+			'45051'
+		);
+
+		// On récupère le libellé d'un code et on le vérifie
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$communes = $field->getValueLabel();
+		$this->assertEquals('BOYNES (45050)', $communes[0]);
+		$this->assertEquals('BRAY-EN-VAL (45051)', $communes[1]);
 	}
 
 	/**
-	 * Test de la fonction getValueLabel().
+	 * Test de la fonction fillValueLabel().
 	 */
-	public function testGetValueLabelArrayTree() {
+	public function testFillValueLabelTree() {
+
+		// On crée un objet avec un code à traduire en libellé
+		$field = new Application_Object_Metadata_TableField();
+		$field->unit = 'CORINE_BIOTOPE';
+		$field->type = "CODE";
+		$field->subtype = "TREE";
+		$field->value = '41';
+
+		// On récupère le libellé d'un code et on le vérifie
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$this->assertEquals('Forêts caducifoliées', $field->getValueLabel());
+	}
+
+	/**
+	 * Test de la fonction fillValueLabel().
+	 */
+	public function testFillValueLabelArrayTree() {
 
 		// On crée un objet avec un code à traduire en libellé
 		$field = new Application_Object_Metadata_TableField();
 		$field->unit = 'CORINE_BIOTOPE';
 		$field->type = "ARRAY";
 		$field->subtype = "TREE";
+		$field->value = '38.11';
 
 		// On récupère le libellé d'un code et on le vérifie
-		$label = $this->genericService->getValueLabel($field, '38.11');
-		$this->assertEquals('Pâturages continus', $label);
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$this->assertEquals('Pâturages continus', $field->getValueLabel());
+
+		// Cas d'un ARRAY
+		$field->value = array(
+			'38.11',
+			'38.12'
+		);
+
+		// On récupère le libellé d'un code et on le vérifie
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$biotopes = $field->getValueLabel();
+		$this->assertEquals('Pâturages continus', $biotopes[0]);
+		$this->assertEquals('Pâturages interrompus par des fossés', $biotopes[1]);
+	}
+
+	/**
+	 * Test de la fonction fillValueLabel().
+	 */
+	public function testFillValueLabelTaxref() {
+
+		// On crée un objet avec un code à traduire en libellé
+		$field = new Application_Object_Metadata_TableField();
+		$field->unit = 'ID_TAXON';
+		$field->type = "CODE";
+		$field->subtype = "TAXREF";
+		$field->value = '409299';
+
+		// On récupère le libellé d'un code et on le vérifie
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$this->assertEquals('Acalles nudiusculus', $field->getValueLabel());
+	}
+
+	/**
+	 * Test de la fonction fillValueLabel().
+	 */
+	public function testFillValueLabelArrayTaxref() {
+
+		// On crée un objet avec un code à traduire en libellé
+		$field = new Application_Object_Metadata_TableField();
+		$field->unit = 'ID_TAXON';
+		$field->type = "ARRAY";
+		$field->subtype = "TAXREF";
+		$field->value = '409299';
+
+		// On récupère le libellé d'un code et on le vérifie
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$this->assertEquals('Acalles nudiusculus', $field->getValueLabel());
+
+
+		// Cas d'un ARRAY
+		$field->value = array(
+			'409299',
+			'196303'
+		);
+
+		// On récupère le libellé d'un code et on le vérifie
+		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+		$taxons = $field->getValueLabel();
+		$this->assertEquals('Acalles nudiusculus', $taxons[0]);
+		$this->assertEquals('Pirata', $taxons[1]);
 	}
 
 	/**
