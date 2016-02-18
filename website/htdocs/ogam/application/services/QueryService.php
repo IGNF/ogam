@@ -384,6 +384,7 @@ class Application_Service_QueryService {
 			// Generate the SQL Request
 			$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
 			$fromwhere = $this->genericService->generateSQLFromWhereRequest($this->schema, $queryObject);
+			$SQLPkey = $this->genericService->generateSQLPrimaryKey($this->schema, $queryObject);
 
 			$this->logger->debug('$select : ' . $select);
 			$this->logger->debug('$fromwhere : ' . $fromwhere);
@@ -414,6 +415,7 @@ class Application_Service_QueryService {
 			$websiteSession->locationField = $locationField;
 			$websiteSession->SQLSelect = $select;
 			$websiteSession->SQLFromWhere = $fromwhere;
+			$websiteSession->SQLPkey = $SQLPkey;
 			$websiteSession->queryObject = $queryObject;
 			$websiteSession->count = $countResult[0]['count']; // result count
 			$websiteSession->schema = $this->schema;
@@ -477,11 +479,17 @@ class Application_Service_QueryService {
 			// Retrieve the SQL request from the session
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
-			$fromwhere = $websiteSession->SQLFromWhere;
-			$countResult = $websiteSession->count;
+			// Il ne doit pas y avoir de DISTINCT pour pouvoir faire un Index Scan
+			$select = str_replace(" DISTINCT", "", $select);
 
-			// Retrive the session-stored info
-			$resultColumns = $websiteSession->resultColumns; // array of TableField
+			$fromwhere = $websiteSession->SQLFromWhere;
+
+			// From part of the request : we extract the "from" part of FROMWHERE
+			$from = substr($fromwhere, 0, strpos($fromwhere, "WHERE"));
+
+			// Subquery (for getting desired rows)
+			$pKey = $websiteSession->SQLPkey;
+			$subquery = "SELECT $pKey $fromwhere ";
 
 			$filter = "";
 			if ($sort != "") {
@@ -492,9 +500,11 @@ class Application_Service_QueryService {
 				$formField->data = $split[1];
 				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
 				$key = $tableField->getName();
-				$filter .= " ORDER BY " . $key . " " . $sortDir . ", id";
+				// $filter .= " ORDER BY " . $key . " " . $sortDir . ", id";
+				$filter .= " ORDER BY " . $key . " " . $sortDir;
 			} else {
-				$filter .= " ORDER BY id"; // default sort to ensure consistency
+				// $filter .= " ORDER BY id"; // default sort to ensure consistency
+				$filter .= " ORDER BY $pKey";
 			}
 			if (!empty($length)) {
 				$filter .= " LIMIT " . $length;
@@ -502,9 +512,18 @@ class Application_Service_QueryService {
 			if (!empty($start)) {
 				$filter .= " OFFSET " . $start;
 			}
+			$subquery .= $filter;
+
+			// Build complete query
+			$query = $select . $from . " WHERE ($pKey) IN (" . $subquery . ")";
 
 			// Execute the request
-			$result = $this->genericModel->executeRequest($select . $fromwhere . $filter);
+			// $result = $this->genericModel->executeRequest($select . $fromwhere . $filter);
+			$result = $this->genericModel->executeRequest($query);
+
+			// Retrive the session-stored info
+			$resultColumns = $websiteSession->resultColumns; // array of TableField
+			$countResult = $websiteSession->count;
 
 			// Send the result as a JSON String
 			$json = '{"success":true,';

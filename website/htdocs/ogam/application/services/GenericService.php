@@ -394,6 +394,31 @@ class Application_Service_GenericService {
 	}
 
 	/**
+	 * Generate the primary key of the left table of the query.
+	 * Fields composing the pkey are prefixed with the table label
+	 *
+	 * @param String $schema
+	 *        	the schema
+	 * @param Application_Object_Generic_DataObject $dataObject
+	 *        	the query object (list of TableFields)
+	 * @return String a primary key
+	 */
+	public function generateSQLPrimaryKey($schema, $dataObject) {
+		$this->logger->debug('generateSQLPrimaryKey');
+
+		// Get the left table;
+		$tables = $this->getAllFormats($schema, $dataObject);
+		$leftTable = array_pop($tables);
+
+		$identifiers = explode(',', $leftTable->identifiers);
+		foreach ($identifiers as $index => $identifier) {
+			$identifiers[$index] = $leftTable->getLogicalName() . "." . trim($identifier);
+		}
+
+		return implode(',', $identifiers);
+	}
+
+	/**
 	 * Build the WHERE clause corresponding to a list of criterias.
 	 *
 	 * @param Array[Application_Object_Metadata_TableField] $criterias
