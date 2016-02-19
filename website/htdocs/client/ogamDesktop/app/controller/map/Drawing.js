@@ -10,7 +10,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 	* @type {ol.format.WKT}
 	* @property wktFormat
 	*/
-	wktFormat : new ol.format.WKT(),
+	wktFormat : new ol.format.WKT({splitCollection:true}),
 
 	/**
 	 * The current edition field linked to the drawing toolbar
