@@ -5,6 +5,16 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.maptoolbar',
 
+    config: {
+        listen: {
+            store:{
+                '#vectorLayerStore': {
+                    load: 'onVectorLayerStoreLoad'
+                }
+            }
+        }
+    },
+
     init : function() {
         var mapCmp = this.getView().up('panel').child('mapcomponent');
         this.map = mapCmp.getMap();
@@ -20,6 +30,22 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         this.selectWFSFeatureListenerKey = null;
     },
 
+    onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
+        var menuItems = [];
+        store.each( function(record) {
+            menuItems.push({
+                text : record.get('label'),
+                itemId : record.get('code'),
+                data : {
+                    url : record.get('url'),
+                    url_wms : record.get('url_wms')
+                }
+            });
+        });
+        this.lookupReference('snappingButton').getMenu().add(menuItems);
+        this.lookupReference('selectWFSFeatureButton').getMenu().add(menuItems);
+        this.lookupReference('layerFeatureInfoButton').getMenu().add(menuItems);
+    },
 
 // ********************************************************************************************************* //
 //                                                                                                           //
@@ -48,10 +74,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 single: true
             }
         });
-    },
-
-    onSnappingButtonRender :  function (button, eOpts) {
-        this.onSelectWFSFeatureButtonRender(button, eOpts);
     },
 
     onSnappingButtonToggle : function (button, pressed, eOpts) {
@@ -188,50 +210,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         this.onDrawButtonToggle(button, pressed, 'Polygon');
     },
 
-    onSelectWFSFeatureButtonRender : function (button, eOpts) {
-        // TODO : Create a OgamDesktop.store.map.VectorLayer or use the OgamDesktop.store.map.Layer
-        Ext.create('Ext.data.Store', {
-            autoLoad: true,
-            proxy: {
-                type: 'ajax',
-                url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
-                actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
-                reader: {
-                    type: 'json',
-                    rootProperty: 'layerNames'
-                }
-            },
-            fields : [{
-                name : 'code',
-                mapping : 'code'
-            }, {
-                name : 'label',
-                mapping : 'label'
-            }, {
-                name : 'url',
-                mapping : 'url'
-            }, {
-                name : 'url_wms',
-                mapping : 'url_wms'
-            }],
-            listeners: {
-                'load': function(store, records, successful, eOpts){
-                    var menu = button.getMenu();
-                    store.each(function(record){
-                        menu.add({
-                            text : record.get('label'),
-                            itemId : record.get('code'),
-                            data : {
-                                url : record.get('url'),
-                                url_wms : record.get('url_wms')
-                            }
-                        });
-                    },this);
-                }
-            }
-        });
-    },
-
     onSelectWFSFeatureButtonToggle : function (button, pressed, eOpts) {
         if (pressed) {
             var checkedItem = null;
@@ -269,7 +247,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         },this);
     },
 
-    onSelectWFSFeatureButtoMenuItemPress : function(menu, item, e, eOpts) {
+    onSelectWFSFeatureButtonMenuItemPress : function(menu, item, e, eOpts) {
 
         // Changes the checkbox behaviour to a radio button behaviour
         var itemIsChecked = item.checked;
@@ -317,6 +295,9 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 //          Consultation buttons                                                                             //
 //                                                                                                           //
 // ********************************************************************************************************* //
+
+    onLayerFeatureInfoButtonToggle: function(){},
+    onLayerFeatureInfoButtonMenuItemPress: function(){},
 
     onLayerFeatureInfoButtonPress : function (button, e, eOpts) {
         this.mapCmpCtrl.activateVectorLayerInfo();
