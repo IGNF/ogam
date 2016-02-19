@@ -65,12 +65,7 @@ class Application_Object_Generic_DataObject {
 	}
 
 	/**
-	 * Return the infoFields array .
-	 *
-	 *
-	 *
-	 *
-	 *
+	 * Return the infoFields array.
 	 *
 	 * @return Application_Object_Metadata_TableField the infoFields array
 	 */
@@ -79,12 +74,7 @@ class Application_Object_Generic_DataObject {
 	}
 
 	/**
-	 * Return the editableFields array .
-	 *
-	 *
-	 *
-	 *
-	 *
+	 * Return the editableFields array.
 	 *
 	 * @return Application_Object_Metadata_TableField the editableFields array
 	 */
@@ -93,10 +83,7 @@ class Application_Object_Generic_DataObject {
 	}
 
 	/**
-	 * Return the editableFields array .
-	 *
-	 *
-	 *
+	 * Return the editableFields array.
 	 *
 	 * @param String $key
 	 *        	a data

@@ -310,10 +310,183 @@ class GenericServiceTest extends ControllerTestCase {
 		// On récupère un descripteur d'objet pour le format "SPECIES"
 		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
 
-		// On récupère la liste des formats de tables dans la hiérarchie de cet objet.
+		// On récupère la PK correspondant à ce format.
 		$pk = $this->genericService->generateSQLPrimaryKey('RAW_DATA', $data);
 
 		$this->assertNotNull($pk);
 		$this->assertEquals('SPECIES_DATA.PROVIDER_ID,SPECIES_DATA.PLOT_CODE,SPECIES_DATA.CYCLE,SPECIES_DATA.SPECIES_CODE', $pk);
+	}
+
+	/**
+	 * Test de la fonction generateSQLSelectRequest().
+	 */
+	public function testGenerateSQLSelectRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		// On récupère la liste des formats de tables dans la hiérarchie de cet objet.
+		$select = $this->genericService->generateSQLSelectRequest('RAW_DATA', $data);
+
+		$this->assertNotNull($select);
+		$this->assertTrue(strpos($select, 'SELECT ') !== false);
+		$this->assertTrue(strpos($select, 'SPECIES_DATA.SUBMISSION_ID as SPECIES_DATA__SUBMISSION_ID') !== false);
+		$this->assertTrue(strpos($select, 'SPECIES_DATA.ID_TAXON as SPECIES_DATA__ID_TAXON') !== false);
+		$this->assertTrue(strpos($select, 'SPECIES_DATA.BASAL_AREA as SPECIES_DATA__BASAL_AREA') !== false);
+		$this->assertTrue(strpos($select, 'SPECIES_DATA.COMMENT as SPECIES_DATA__COMMENT') !== false);
+		$this->assertTrue(strpos($select, 'SPECIES_DATA.LINE_NUMBER as SPECIES_DATA__LINE_NUMBER') !== false);
+		$this->assertTrue(strpos($select, 'st_astext(st_centroid(st_transform(LOCATION_DATA.THE_GEOM,3035))) as location_centroid') !== false);
+
+		// $this->assertEquals("SELECT DISTINCT SPECIES_DATA.SUBMISSION_ID as SPECIES_DATA__SUBMISSION_ID, SPECIES_DATA.ID_TAXON as SPECIES_DATA__ID_TAXON, SPECIES_DATA.BASAL_AREA as SPECIES_DATA__BASAL_AREA, SPECIES_DATA.COMMENT as SPECIES_DATA__COMMENT, SPECIES_DATA.LINE_NUMBER as SPECIES_DATA__LINE_NUMBER, 'SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA' || '/' || 'PROVIDER_ID/' ||SPECIES_DATA.PROVIDER_ID || '/' || 'PLOT_CODE/' ||SPECIES_DATA.PLOT_CODE || '/' || 'CYCLE/' ||SPECIES_DATA.CYCLE || '/' || 'SPECIES_CODE/' ||SPECIES_DATA.SPECIES_CODE as id, st_astext(st_centroid(st_transform(LOCATION_DATA.THE_GEOM,3035))) as location_centroid", $select);
+	}
+
+	/**
+	 * Test de la fonction generateSQLFROMRequest().
+	 */
+	public function testGenerateSQLFromRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		// On récupère la liste des formats de tables dans la hiérarchie de cet objet.
+		$from = $this->genericService->generateSQLFromRequest('RAW_DATA', $data);
+
+		$this->assertNotNull($from);
+		$this->assertTrue(strpos($from, 'FROM LOCATION LOCATION_DATA ') !== false);
+		$this->assertTrue(strpos($from, 'JOIN PLOT_DATA PLOT_DATA on (PLOT_DATA.PROVIDER_ID = LOCATION_DATA.PROVIDER_ID AND PLOT_DATA.PLOT_CODE = LOCATION_DATA.PLOT_CODE)') !== false);
+		$this->assertTrue(strpos($from, 'JOIN SPECIES_DATA SPECIES_DATA on (SPECIES_DATA.PROVIDER_ID = PLOT_DATA.PROVIDER_ID AND SPECIES_DATA.PLOT_CODE = PLOT_DATA.PLOT_CODE AND SPECIES_DATA.CYCLE = PLOT_DATA.CYCLE)') !== false);
+		//$this->assertEquals(' FROM LOCATION LOCATION_DATA JOIN PLOT_DATA PLOT_DATA on (PLOT_DATA.PROVIDER_ID = LOCATION_DATA.PROVIDER_ID AND PLOT_DATA.PLOT_CODE = LOCATION_DATA.PLOT_CODE)  JOIN SPECIES_DATA SPECIES_DATA on (SPECIES_DATA.PROVIDER_ID = PLOT_DATA.PROVIDER_ID AND SPECIES_DATA.PLOT_CODE = PLOT_DATA.PLOT_CODE AND SPECIES_DATA.CYCLE = PLOT_DATA.CYCLE)', $from);
+	}
+
+	/**
+	 * Test de la fonction generateSQLWhereRequest().
+	 */
+	public function testGenerateSQLWhereEmptyRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals('WHERE (1 = 1)', trim($where));
+	}
+
+	/**
+	 * Test de la fonction generateSQLWhereRequest().
+	 */
+	public function testGenerateSQLWhereCodeRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		//
+		// Ajout d'un critère
+		//
+		$field = new Application_Object_Metadata_TableField();
+		$field->data = "DEPARTEMENT";
+		$field->columnName = "DEPARTEMENT";
+		$field->format = "LOCATION_DATA";
+		$field->unit = "DEPARTEMENT";
+		$field->type = "CODE";
+		$field->subtype = "DYNAMIC";
+		$field->value = array('45');
+		$data->addInfoField($field);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1)  AND LOCATION_DATA.DEPARTEMENT IN ('45')", trim($where));
+	}
+
+	/**
+	 * Test de la fonction generateSQLWhereRequest().
+	 */
+	public function testGenerateSQLWhereDateRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		//
+		// Ajout d'un critère
+		//
+		$field = new Application_Object_Metadata_TableField();
+		$field->data = "INV_DATE";
+		$field->columnName = "INV_DATE";
+		$field->format = "PLOT_DATA";
+		$field->unit = "DATE";
+		$field->type = "DATE";
+		$field->subtype = null;
+		$field->value = array('2016/02/18 - 2016/02/19');
+		$data->addInfoField($field);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1)  AND ((PLOT_DATA.INV_DATE >= to_date('2016/02/18', 'YYYY/MM/DD') AND  PLOT_DATA.INV_DATE <= to_date('2016/02/19', 'YYYY/MM/DD')) )", trim($where));
+	}
+
+	/**
+	 * Test de la fonction generateSQLWhereRequest().
+	 */
+	public function testGenerateSQLWhereBooleanRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		//
+		// Ajout d'un critère
+		//
+		$field = new Application_Object_Metadata_TableField();
+		$field->data = "IS_FOREST_PLOT";
+		$field->columnName = "IS_FOREST_PLOT";
+		$field->format = "PLOT_DATA";
+		$field->unit = "IS_FOREST_PLOT";
+		$field->type = "BOOLEAN";
+		$field->subtype = null;
+		$field->value = array('1');
+		$data->addInfoField($field);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1)  AND PLOT_DATA.IS_FOREST_PLOT = '1'", trim($where));
+	}
+
+	/**
+	 * Test de la fonction generateSQLWhereRequest().
+	 */
+	public function testGenerateSQLWhereNumericRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		//
+		// Ajout d'un critère
+		//
+		$field = new Application_Object_Metadata_TableField();
+		$field->data = "BASAL_AREA";
+		$field->columnName = "BASAL_AREA";
+		$field->format = "SPECIES_DATA";
+		$field->unit = "M2/HA";
+		$field->type = "NUMERIC";
+		$field->subtype = "RANGE";
+		$field->value = array('>= 50');
+		$data->addInfoField($field);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1)  AND (SPECIES_DATA.BASAL_AREA >= 50 )", trim($where));
 	}
 }

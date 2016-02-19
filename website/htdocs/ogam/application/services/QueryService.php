@@ -383,11 +383,13 @@ class Application_Service_QueryService {
 
 			// Generate the SQL Request
 			$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
-			$fromwhere = $this->genericService->generateSQLFromWhereRequest($this->schema, $queryObject);
+			$from = $this->genericService->generateSQLFromRequest($this->schema, $queryObject);
+			$where = $this->genericService->generateSQLWhereRequest($this->schema, $queryObject);
 			$SQLPkey = $this->genericService->generateSQLPrimaryKey($this->schema, $queryObject);
 
 			$this->logger->debug('$select : ' . $select);
-			$this->logger->debug('$fromwhere : ' . $fromwhere);
+			$this->logger->debug('$from : ' . $from);
+			$this->logger->debug('$where : ' . $where);
 
 			// Clean previously stored results
 			$sessionId = session_id();
@@ -400,10 +402,10 @@ class Application_Service_QueryService {
 			$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
 
 			// Run the request to store a temporary result table (for the web mapping)
-			$this->resultLocationModel->fillLocationResult($fromwhere, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+			$this->resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
 
 			// Calculate the number of lines of result
-			$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count " . $fromwhere);
+			$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count " . $from . $where);
 
 			// TODO : Move this part somewhere else
 
@@ -414,7 +416,8 @@ class Application_Service_QueryService {
 			$websiteSession->datasetId = $datasetId;
 			$websiteSession->locationField = $locationField;
 			$websiteSession->SQLSelect = $select;
-			$websiteSession->SQLFromWhere = $fromwhere;
+			$websiteSession->SQLFrom = $from;
+			$websiteSession->SQLWhere = $where;
 			$websiteSession->SQLPkey = $SQLPkey;
 			$websiteSession->queryObject = $queryObject;
 			$websiteSession->count = $countResult[0]['count']; // result count
@@ -449,7 +452,7 @@ class Application_Service_QueryService {
 			$json .= ']';
 
 			if ($withSQL) {
-				$json .= ', "SQL":' . json_encode($select . $fromwhere);
+				$json .= ', "SQL":' . json_encode($select . $from . $where);
 			}
 			$json .= '}';
 		}
@@ -482,14 +485,12 @@ class Application_Service_QueryService {
 			// Il ne doit pas y avoir de DISTINCT pour pouvoir faire un Index Scan
 			$select = str_replace(" DISTINCT", "", $select);
 
-			$fromwhere = $websiteSession->SQLFromWhere;
-
-			// From part of the request : we extract the "from" part of FROMWHERE
-			$from = substr($fromwhere, 0, strpos($fromwhere, "WHERE"));
+			$from = $websiteSession->SQLFrom;
+			$where = $websiteSession->SQLWhere;
 
 			// Subquery (for getting desired rows)
 			$pKey = $websiteSession->SQLPkey;
-			$subquery = "SELECT $pKey $fromwhere ";
+			$subquery = "SELECT " . $pKey . $from . $where;
 
 			$filter = "";
 			if ($sort != "") {
@@ -500,10 +501,8 @@ class Application_Service_QueryService {
 				$formField->data = $split[1];
 				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
 				$key = $tableField->getName();
-				// $filter .= " ORDER BY " . $key . " " . $sortDir . ", id";
 				$filter .= " ORDER BY " . $key . " " . $sortDir;
 			} else {
-				// $filter .= " ORDER BY id"; // default sort to ensure consistency
 				$filter .= " ORDER BY $pKey";
 			}
 			if (!empty($length)) {
@@ -515,10 +514,9 @@ class Application_Service_QueryService {
 			$subquery .= $filter;
 
 			// Build complete query
-			$query = $select . $from . " WHERE ($pKey) IN (" . $subquery . ")";
+			$query = $select . $from . " WHERE (" . $pKey . ") IN (" . $subquery . ")";
 
 			// Execute the request
-			// $result = $this->genericModel->executeRequest($select . $fromwhere . $filter);
 			$result = $this->genericModel->executeRequest($query);
 
 			// Retrive the session-stored info

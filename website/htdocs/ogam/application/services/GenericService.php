@@ -263,7 +263,7 @@ class Application_Service_GenericService {
 	}
 
 	/**
-	 * Generate the SQL request corresponding to a list of parameters
+	 * Generate the FROM clause of the SQL request corresponding to a list of parameters.
 	 *
 	 * @param String $schema
 	 *        	the schema
@@ -271,8 +271,8 @@ class Application_Service_GenericService {
 	 *        	the query object (list of TableFields)
 	 * @return String a SQL request
 	 */
-	public function generateSQLFromWhereRequest($schema, $dataObject) {
-		$this->logger->debug('generateSQLFromWhereRequest');
+	public function generateSQLFromRequest($schema, $dataObject) {
+		$this->logger->debug('generateSQLFromRequest');
 
 		//
 		// Prepare the FROM clause
@@ -284,10 +284,6 @@ class Application_Service_GenericService {
 		// Add the root table;
 		$rootTable = array_shift($tables);
 		$from = " FROM " . $rootTable->tableName . " " . $rootTable->getLogicalName();
-
-		// Get the root table fields
-		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
-		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
 
 		// Add the joined tables
 		$i = 0;
@@ -306,6 +302,31 @@ class Application_Service_GenericService {
 			$from .= ") ";
 		}
 
+		return $from;
+	}
+
+	/**
+	 * Generate the WHERE clause of the SQL request corresponding to a list of parameters.
+	 *
+	 * @param String $schema
+	 *        	the schema
+	 * @param Application_Object_Generic_DataObject $dataObject
+	 *        	the query object (list of TableFields)
+	 * @return String a SQL request
+	 */
+	public function generateSQLWhereRequest($schema, $dataObject) {
+		$this->logger->debug('generateSQLWhereRequest');
+
+		// Prepare the list of needed tables
+		$tables = $this->getAllFormats($schema, $dataObject);
+
+		// Add the root table;
+		$rootTable = array_shift($tables);
+
+		// Get the root table fields
+		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
+		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
+
 		//
 		// Prepare the WHERE clause
 		//
@@ -315,18 +336,18 @@ class Application_Service_GenericService {
 		}
 
 		// Right management
-		// Get back the provider id of the user
+		// Check the provider id of the logged user
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->provider->id;
-		$role = $userSession->user->role;
-		if (!$role->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
-			$where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
+		if (!empty($userSession->user)) {
+			$providerId = $userSession->user->provider->id;
+			$role = $userSession->user->role;
+			if (!$role->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
+				$where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
+			}
 		}
 
-		$sql = $from . $where;
-
 		// Return the completed SQL request
-		return $sql;
+		return $where;
 	}
 
 	/**
@@ -383,10 +404,12 @@ class Application_Service_GenericService {
 		// Right management
 		// Get back the provider id of the data
 		$userSession = new Zend_Session_Namespace('user');
-		$providerId = $userSession->user->provider->id;
-		$role = $userSession->user->role;
-		if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER') && $hasColumnProvider) {
-			$select .= ", " . $leftTable->getLogicalName() . ".provider_id as _provider_id";
+		if (!empty($userSession->user)) {
+			$providerId = $userSession->user->provider->id;
+			$role = $userSession->user->role;
+			if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER') && $hasColumnProvider) {
+				$select .= ", " . $leftTable->getLogicalName() . ".provider_id as _provider_id";
+			}
 		}
 
 		// Return the completed SQL request
@@ -660,8 +683,6 @@ class Application_Service_GenericService {
 							$sql2 = substr($sql2, 0, -4); // remove the last OR
 						}
 						$sql .= " AND (" . $sql2 . ")";
-
-						$this->logger->debug('$sql2 : ' . $sql2);
 					} else {
 						// Single value
 						if (is_numeric($value) || is_string($value)) {

@@ -665,8 +665,9 @@ class QueryController extends AbstractOGAMController {
 
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
-			$fromwhere = $websiteSession->SQLFromWhere;
-			$sql = $select . $fromwhere;
+			$from = $websiteSession->SQLFrom;
+			$where = $websiteSession->SQLWhere;
+			$sql = $select . $from . $where;
 
 			// Count the number of lines
 			$total = $websiteSession->count;
@@ -837,10 +838,11 @@ class QueryController extends AbstractOGAMController {
 
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
-			$fromwhere = $websiteSession->SQLFromWhere;
+			$from = $websiteSession->SQLFrom;
+			$where = $websiteSession->SQLWhere;
 			$locationField = $websiteSession->locationField;
 
-			$sql = $select . ', ST_AsKML(' . $locationField->columnName . ') AS KML ' . $fromwhere;
+			$sql = $select . ', ST_AsKML(' . $locationField->columnName . ') AS KML ' . $from . $where;
 
 			// Count the number of lines
 			$total = $websiteSession->count;
@@ -1000,10 +1002,11 @@ class QueryController extends AbstractOGAMController {
 
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
-			$fromwhere = $websiteSession->SQLFromWhere;
+			$from = $websiteSession->SQLFrom;
+			$where = $websiteSession->SQLWhere;
 			$locationField = $websiteSession->locationField;
 
-			$sql = $select . ', ST_AsGeoJSON(' . $locationField->columnName . ') AS geojson ' . $fromwhere;
+			$sql = $select . ', ST_AsGeoJSON(' . $locationField->columnName . ') AS geojson ' . $from . $where;
 
 			// Count the number of lines
 			$total = $websiteSession->count;
