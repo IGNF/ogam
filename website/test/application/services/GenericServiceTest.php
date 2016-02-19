@@ -185,7 +185,6 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
 		$this->assertEquals('Acalles nudiusculus', $field->getValueLabel());
 
-
 		// Cas d'un ARRAY
 		$field->value = array(
 			'409299',
@@ -301,5 +300,20 @@ class GenericServiceTest extends ControllerTestCase {
 		$this->assertEquals('LOCATION_DATA', $keys[0]);
 		$this->assertEquals('PLOT_DATA', $keys[1]);
 		$this->assertEquals('SPECIES_DATA', $keys[2]);
+	}
+
+	/**
+	 * Test de la fonction generateSQLPrimaryKey().
+	 */
+	public function testGenerateSQLPrimaryKey() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		// On récupère la liste des formats de tables dans la hiérarchie de cet objet.
+		$pk = $this->genericService->generateSQLPrimaryKey('RAW_DATA', $data);
+
+		$this->assertNotNull($pk);
+		$this->assertEquals('SPECIES_DATA.PROVIDER_ID,SPECIES_DATA.PLOT_CODE,SPECIES_DATA.CYCLE,SPECIES_DATA.SPECIES_CODE', $pk);
 	}
 }
