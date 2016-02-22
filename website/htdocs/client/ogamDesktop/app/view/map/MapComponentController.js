@@ -9,15 +9,27 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         this.map = this.getView().getMap();
     },
 
-    getMapLayer : function (layerCode) {console.log('this',this);
+    getMapLayer : function (layerCode) {
         var me = {"layerCode":layerCode};
-        this.map.getLayers().forEach(
+        var lyrGrp;
+        if (arguments.length > 1) {
+            lyrGrp = arguments[1];
+        } else {
+            lyrGrp = this.map.getLayerGroup();
+        }
+        lyrGrp.getLayers().forEach(
             function(el, index, c_array){
-                if (el.get('code') === this.layerCode) {
-                    this.layer = el;
+                if (el.get('code') === me.layerCode) {
+                    me.layer = el;
+                    return;
+                } else if (el.isLayerGroup) {
+                    if (this.getMapLayer(layerCode, el)) {
+                        me.layer = this.getMapLayer(layerCode, el)
+                        return;
+                    };
                 }
             },
-            me
+            this
         );
         return me.layer;
     },
@@ -27,56 +39,6 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
             var layerName = this.selectedVectorLayer.getData().code;
             var url = this.selectedVectorLayer.getData().url;
         }
-//        if (value[0].data.code !== null) {
-//            var layerName = value[0].data.code;
-//            var url = value[0].data.url;
-//            var popupTitle = this.popupTitle;
-//            // Change the WFS layer typename
-//            this.mapPanel.wfsLayer.protocol.featureType = layerName;
-//            this.mapPanel.wfsLayer.protocol.options.featureType = layerName;
-//            this.mapPanel.wfsLayer.protocol.format.featureType = layerName;
-//            this.mapPanel.wfsLayer.protocol.params.typename = layerName;
-//            this.mapPanel.wfsLayer.protocol.options.url = url;
-//
-//            // Remove all current features
-//            this.mapPanel.wfsLayer.destroyFeatures();
-//
-//            // Copy the visibility range from the original
-//            // layer
-//            originalLayers = this.mapPanel.map.getLayersByName(layerName);
-//            if (originalLayers != null) {
-//                    originalLayer = originalLayers[0];
-//                this.mapPanel.wfsLayer.maxResolution = originalLayer.maxResolution;
-//                this.mapPanel.wfsLayer.maxScale = originalLayer.maxScale;
-//                this.mapPanel.wfsLayer.minResolution = originalLayer.minResolution;
-//                this.mapPanel.wfsLayer.minScale = originalLayer.minScale;
-//                this.mapPanel.wfsLayer.alwaysInRange = false;
-//                this.mapPanel.wfsLayer.calculateInRange();
-//            }
-//
-//            // Make it visible
-//            this.mapPanel.wfsLayer.setVisibility(true);
-//
-//            // Force a refresh (rebuild the WFS URL)
-//            this.mapPanel.wfsLayer.moveTo(null, true, false);
-//
-//            // Set the layer name in other tools
-//            if (this.mapPanel.getFeatureControl !== null) {
-//                this.mapPanel.getFeatureControl.layerName = layerName;
-//            }
-//
-//            this.mapPanel.wfsLayer.refresh();
-//            this.mapPanel.wfsLayer.strategies[0].update({force:true});
-//
-//        } else {
-//            // Hide the layer
-//            this.mapPanel.wfsLayer.setVisibility(false);
-//        }
-//
-//        // Set the layer name in feature info tool
-//        if (this.mapPanel.featureInfoControl !== null) {
-//            this.mapPanel.featureInfoControl.layerName = layerName;
-//        }
     },
 
     // TODO: @PEG : Ajouter l'attribut code: 'results' à la couche des résultats,
@@ -94,6 +56,7 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
                 this.map.getSize()
             );
         }
+        this.map.render();
     },
 
     /**

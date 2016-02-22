@@ -253,6 +253,8 @@
         {
             "path": "lib/OpenLayers/ol.css"
         },{
+            "path": "resources/css/node-disabled.css"
+        },{
             "path": "bootstrap.css",
             "bootstrap": true
         }

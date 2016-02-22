@@ -38,7 +38,7 @@ Ext.define('OgamDesktop.controller.result.Main',{
 	 */
 	seeOnMap: function(feature) {
 		this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
-		this.getMappanel().getController().zoomToFeature(feature.id, feature.location_centroid);
+		this.getMappanel().child('mapcomponent').getController().zoomToFeature(feature.id, feature.location_centroid);
 	},
 
 	/**

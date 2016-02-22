@@ -156,7 +156,6 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
                 code: 'drawingLayer',
 		name: 'Drawing layer',
                 printable: false,
-                displayInLayerSwitcher: false,
                 source: new ol.source.Vector({features: new ol.Collection()}),
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
@@ -188,8 +187,7 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
                         width: 3
                     })
                 }),
-                printable: false,
-                displayInLayerSwitcher: false
+                printable: false
             }),
             new ol.layer.Vector({
                 code: 'snappingLayer',
@@ -235,29 +233,37 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
         ]
     }),
             
-   isResInLayerRange: function(lyr, res){
-       if (res >= lyr.getMinResolution() && res < lyr.getMaxResolution()) { // in range
-           return true;
-       } else { // out of range
-           return false;
-       }
-   },
-   initComponent: function(){
-       this.getMap().getLayers().forEach(function(lyr){
-            lyr.setVisible(lyr.getVisible());
-       });
-       
-       this.getMap().getView().on('change:resolution', function(e){
-          curRes = e.target.get(e.key); // new value of resolution
-          oldRes = e.oldValue; // old value of resolution
-          this.getMap().getLayers().forEach(function(lyr){
-              if (this.isResInLayerRange(lyr, curRes) && !this.isResInLayerRange(lyr, oldRes)) {
-                  this.fireEvent('changelayervisibility', lyr, true);
-              } else if (!this.isResInLayerRange(lyr, curRes) && this.isResInLayerRange(lyr, oldRes)) {
-                  this.fireEvent('changelayervisibility', lyr, false);
-              };
-          }, this);
-       }, this);
-       this.callParent(arguments);
-   }
+    isResInLayerRange: function(lyr, res){
+        if (res >= lyr.getMinResolution() && res < lyr.getMaxResolution()) { // in range
+            return true;
+        } else { // out of range
+            return false;
+        }
+    },
+    
+    retrieveChangedLayers : function(layerGrp, resDep, resDest) {
+        layerGrp.getLayers().forEach(function(lyr) {
+            if (lyr.isLayerGroup) {
+                this.retrieveChangedLayers(lyr, resDep, resDest);
+            } else {
+                if (this.isResInLayerRange(lyr, resDest) && !this.isResInLayerRange(lyr, resDep)) {
+                       this.fireEvent('changevisibilityrange', lyr, true);
+                   } else if (!this.isResInLayerRange(lyr, resDest) && this.isResInLayerRange(lyr, resDep)) {
+                       this.fireEvent('changevisibilityrange', lyr, false);
+                   };
+                }
+        }, this);
+    },
+    
+    initComponent: function(){
+        this.getMap().getLayers().forEach(function(lyr){
+             lyr.setVisible(lyr.getVisible());
+        });
+        this.getMap().getView().on('change:resolution', function(e){
+            curRes = e.target.get(e.key); // new value of resolution
+            oldRes = e.oldValue; // old value of resolution
+            this.retrieveChangedLayers(this.getMap().getLayerGroup(), oldRes, curRes);
+        }, this);
+        this.callParent(arguments);
+    }
 });
