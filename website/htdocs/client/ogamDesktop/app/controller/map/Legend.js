@@ -165,8 +165,6 @@ Ext.define('OgamDesktop.controller.map.Legend',{
                         }
                     });
                     if (!Ext.isEmpty(node)) {
-                        node.getOlLayer().set('disabled', true);
-                        node.set("cls", 'dvp-tree-node-disabled'); 
                         if (uncheck) {
                             this.toggleNodeCheckbox(node.id, false);
                         }
