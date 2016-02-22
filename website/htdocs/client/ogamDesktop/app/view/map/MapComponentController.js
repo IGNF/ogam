@@ -5,8 +5,21 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.mapcomponent',
 
-    init : function() {console.log('init',this);
+   /**
+    * The wkt format.
+    * 
+    * @type {ol.format.WKT}
+    * @property wktFormat
+    */
+    wktFormat : new ol.format.WKT(),
+
+    init : function() {
         this.map = this.getView().getMap();
+        var drawingLayerSource = this.getMapLayer('drawingLayer').getSource();
+        var listenerFct = this.fireEvent.bind(this.getView(), ['drawingLayerFeatureChange']);
+        drawingLayerSource.on('addfeature', listenerFct);
+        drawingLayerSource.on('removefeature', listenerFct);
+        drawingLayerSource.on('changefeature', listenerFct);
     },
 
     getMapLayer : function (layerCode) {
@@ -45,7 +58,7 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
     zoomToResultFeatures : function () {
         // Get wkt geometry corresponding to the result BBOX
         var resultsBBox = this.getView().resultsBBox ? this.getView().resultsBBox : 'POLYGON EMPTY';
-        var wktGeom = this.getView().wktFormat.readGeometry(resultsBBox);
+        var wktGeom = this.wktFormat.readGeometry(resultsBBox);
         var extent = wktGeom.getExtent();
         /*var extent = this.getMapLayer('results').getSource().getExtent();*/
         if (ol.extent.isEmpty(extent)) {
@@ -68,7 +81,7 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
      *            wkt The wkt feature
      */
     zoomToFeature : function(id, wkt) {
-            var feature = this.getView().wktFormat.readFeature(wkt);
+            var feature = this.wktFormat.readFeature(wkt);
             var source = new ol.source.Vector();
             var vectorLyr = new ol.layer.Vector({
                source : source

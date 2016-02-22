@@ -8,7 +8,12 @@
 Ext.define('OgamDesktop.view.map.MapToolbar', {
     extend: 'Ext.toolbar.Toolbar',
     controller: 'maptoolbar',
+    viewModel: {
+        type: 'maptoolbar'
+    },
     requires: [
+        'OgamDesktop.view.map.MapToolbarController',
+        'OgamDesktop.view.map.MapToolbarModel'
     ],
     uses: [
     ],
@@ -16,6 +21,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
     xtype:'maptoolbar',
     items:[{
         xtype:'buttongroup',
+        itemId: 'drawingButtonsGroup',
         hidden: true,
         action: 'drawing',
         defaults: {
@@ -34,12 +40,12 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             style:'color:#aaa'
         },{
             xtype:'splitbutton',
-            iconCls : 'o-map-tools-map-snapping',
+            reference: 'snappingButton',
+            iconCls: 'o-map-tools-map-snapping',
             tooltip: this.snappingButtonTooltip,
             enableToggle: true,
             listeners: {
-                toggle: 'onSnappingButtonToggle',
-                render: 'onSnappingButtonRender'
+                toggle: 'onSnappingButtonToggle'
             },
             menu : {
                 xtype: 'menu',
@@ -70,21 +76,24 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
                 toggle: 'onSelectButtonToggle'
             }
         },{
-            iconCls : 'o-map-tools-map-drawpoint',
+            itemId: 'drawPointButton',
+            iconCls: 'o-map-tools-map-drawpoint',
             tooltip: this.drawPointButtonTooltip,
             toggleGroup : "editing",
             listeners: {
                 toggle: 'onDrawPointButtonToggle'
             }
         },{
-            iconCls : 'o-map-tools-map-drawline',
+            itemId: 'drawLineButton',
+            iconCls: 'o-map-tools-map-drawline',
             tooltip: this.drawLineButtonTooltip,
             toggleGroup : "editing",
             listeners: {
                 toggle: 'onDrawLineButtonToggle'
             }
         },{
-            iconCls : 'o-map-tools-map-drawpolygon',
+            itemId: 'drawPolygonButton',
+            iconCls: 'o-map-tools-map-drawpolygon',
             tooltip: this.drawPolygonButtonTooltip,
             toggleGroup : "editing",
             listeners: {
@@ -92,11 +101,12 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             }
         },{
             xtype:'splitbutton',
-            iconCls : 'o-map-tools-map-selectWFSFeature',
+            reference: 'selectWFSFeatureButton',
+            itemId: 'selectWFSFeatureButton',
+            iconCls: 'o-map-tools-map-selectWFSFeature',
             tooltip: this.selectWFSFeatureButtonTooltip,
             toggleGroup : "editing",
             listeners: {
-                render: 'onSelectWFSFeatureButtonRender',
                 toggle: 'onSelectWFSFeatureButtonToggle'
             },
             menu : {
@@ -105,7 +115,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
                     xtype: 'menucheckitem'
                 },
                 listeners:{
-                    click : 'onSelectWFSFeatureButtoMenuItemPress'
+                    click : 'onSelectWFSFeatureButtonMenuItemPress'
                 }
             }
         },{
@@ -115,18 +125,20 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
                 click: 'onDeleteFeatureButtonPress'
             }
         },{ // Use of tbtext because tbseparator doesn't work...
-            group : "drawValidation",
             xtype:'tbtext',
+            group: 'drawValidation',
             html: '|',
             margin:'3 -3 0 -2',
             style:'color:#aaa'
         },{
+            group: 'drawValidation',
             iconCls : 'o-map-tools-map-validateedition',
             tooltip: this.validateEditionButtonTooltip,
             listeners: {
                 click: 'onValidateEditionButtonPress'
             }
         },{
+            group: 'drawValidation',
             iconCls : 'o-map-tools-map-canceledition',
             tooltip: this.cancelEditionButtonTooltip,
             listeners: {
@@ -137,47 +149,22 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
         xtype : 'tbspacer',
         flex: 1
     },{
-        iconCls : 'o-map-tools-map-layerfeatureinfo',
+        xtype:'splitbutton',
+        reference: 'layerFeatureInfoButton',
+        iconCls: 'o-map-tools-map-layerfeatureinfo',
         tooltip: this.layerFeatureInfoButtonTooltip,
         toggleGroup : "consultation",
         listeners: {
-            click: 'onLayerFeatureInfoButtonPress'
-        }
-    },{
-        xtype: 'combo',
-        editable: false,
-        emptyText: this.LayerSelectorEmptyTextValue,
-        triggerAction : 'all',
-        store : Ext.create('Ext.data.Store',{
-            autoLoad: true,
-            proxy: {
-                type: 'ajax',
-                url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
-                actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
-                reader: {
-                    type: 'json',
-                    rootProperty: 'layerNames'
-                }
+            toggle: 'onLayerFeatureInfoButtonToggle'
+        },
+        menu : {
+            xtype: 'menu',
+            defaults: {
+                xtype: 'menucheckitem'
             },
-            fields : [ {
-                name : 'code',
-                mapping : 'code'
-            }, {
-                name : 'label',
-                mapping : 'label'
-            }, {
-                name : 'url',
-                mapping : 'url'
-            }, {
-                name : 'url_wms',
-                mapping : 'url_wms'
-            }]
-        }),
-        autoSelect : true,
-        valueField : 'code',
-        displayField : 'label',
-        listeners: {
-            select: 'onSelectVectorLayer'
+            listeners:{
+                click : 'onLayerFeatureInfoButtonMenuItemPress'
+            }
         }
     },{
         iconCls : 'o-map-tools-map-resultfeatureinfo',

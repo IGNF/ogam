@@ -5,6 +5,16 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.maptoolbar',
 
+    config: {
+        listen: {
+            store:{
+                '#vectorLayerStore': {
+                    load: 'onVectorLayerStoreLoad'
+                }
+            }
+        }
+    },
+
     init : function() {
         var mapCmp = this.getView().up('panel').child('mapcomponent');
         this.map = mapCmp.getMap();
@@ -18,8 +28,25 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         this.snappingLayerSnappingInteraction = null;
         this.riseSnappingInteractionListenerKey = null;
         this.selectWFSFeatureListenerKey = null;
+        this.layerFeatureInfoListenerKey = null;
     },
 
+    onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
+        var menuItems = [];
+        store.each( function(record) {
+            menuItems.push({
+                text : record.get('label'),
+                itemId : record.get('code'),
+                data : {
+                    url : record.get('url'),
+                    url_wms : record.get('url_wms')
+                }
+            });
+        });
+        this.lookupReference('snappingButton').getMenu().add(menuItems);
+        this.lookupReference('selectWFSFeatureButton').getMenu().add(menuItems);
+        this.lookupReference('layerFeatureInfoButton').getMenu().add(menuItems);
+    },
 
 // ********************************************************************************************************* //
 //                                                                                                           //
@@ -48,10 +75,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 single: true
             }
         });
-    },
-
-    onSnappingButtonRender :  function (button, eOpts) {
-        this.onSelectWFSFeatureButtonRender(button, eOpts);
     },
 
     onSnappingButtonToggle : function (button, pressed, eOpts) {
@@ -188,50 +211,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         this.onDrawButtonToggle(button, pressed, 'Polygon');
     },
 
-    onSelectWFSFeatureButtonRender : function (button, eOpts) {
-        // TODO : Create a OgamDesktop.store.map.VectorLayer or use the OgamDesktop.store.map.Layer
-        Ext.create('Ext.data.Store', {
-            autoLoad: true,
-            proxy: {
-                type: 'ajax',
-                url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
-                actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
-                reader: {
-                    type: 'json',
-                    rootProperty: 'layerNames'
-                }
-            },
-            fields : [{
-                name : 'code',
-                mapping : 'code'
-            }, {
-                name : 'label',
-                mapping : 'label'
-            }, {
-                name : 'url',
-                mapping : 'url'
-            }, {
-                name : 'url_wms',
-                mapping : 'url_wms'
-            }],
-            listeners: {
-                'load': function(store, records, successful, eOpts){
-                    var menu = button.getMenu();
-                    store.each(function(record){
-                        menu.add({
-                            text : record.get('label'),
-                            itemId : record.get('code'),
-                            data : {
-                                url : record.get('url'),
-                                url_wms : record.get('url_wms')
-                            }
-                        });
-                    },this);
-                }
-            }
-        });
-    },
-
     onSelectWFSFeatureButtonToggle : function (button, pressed, eOpts) {
         if (pressed) {
             var checkedItem = null;
@@ -269,7 +248,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         },this);
     },
 
-    onSelectWFSFeatureButtoMenuItemPress : function(menu, item, e, eOpts) {
+    onSelectWFSFeatureButtonMenuItemPress : function(menu, item, e, eOpts) {
 
         // Changes the checkbox behaviour to a radio button behaviour
         var itemIsChecked = item.checked;
@@ -318,9 +297,82 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 //                                                                                                           //
 // ********************************************************************************************************* //
 
-    onLayerFeatureInfoButtonPress : function (button, e, eOpts) {
-        this.mapCmpCtrl.activateVectorLayerInfo();
+    onLayerFeatureInfoButtonToggle : function (button, pressed, eOpts) {
+        if (pressed) {
+            var checkedItem = null;
+            button.getMenu().items.each(function(item, index, len) {
+                item.checked && (checkedItem = item);
+            });
+            if (checkedItem !== null) {
+                this.updateAndAddLayerFeatureInfoListener(checkedItem);
+            } else {
+                Ext.Msg.alert('Select feature(s) :', 'Please select a layer.');
+                button.toggle(false);
+            }
+        } else {
+            this.removeLayerFeatureInfoListener();
+        }
     },
+
+    removeLayerFeatureInfoListener: function () {
+        ol.Observable.unByKey(this.layerFeatureInfoListenerKey);
+        this.layerFeatureInfoListenerKey = null;
+    },
+
+    updateAndAddLayerFeatureInfoListener: function(item) {
+        this.removeLayerFeatureInfoListener();
+        this.layerFeatureInfoListenerKey = this.map.on('singleclick', function(evt) {
+            var url = item.config.data.url +
+                '&outputFormat=geojsonogr' +
+                '&srsname=EPSG:3857' +
+                '&typename=' + item.itemId +
+                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), 1000).join(',') + ',EPSG:3857';
+            ol.featureloader.loadFeaturesXhr(
+                url,
+                new ol.format.GeoJSON(),
+                function(features, dataProjection) {
+                    var msg = '', i = 1;
+                    features.forEach(function(feature){
+                        msg += '<u>Feature ' + i++ +':</u></br>';
+                        var properties = feature.getProperties();
+                        for(var propertie in properties) { 
+                           if (properties.hasOwnProperty(propertie) && propertie !== 'geometry') {
+                               msg += propertie + ': ' + properties[propertie] + '</br>';
+                           }
+                        }
+                        msg += '</br>';
+                    });
+                    (msg !== '') && Ext.Msg.alert('Feature(s) information :', msg);
+                },
+                ol.nullFunction /* FIXME handle error */
+            ).call(this.mapCmpCtrl.getMapLayer('drawingLayer').getSource());
+        },this);
+    },
+
+    onLayerFeatureInfoButtonMenuItemPress : function(menu, item, e, eOpts) {
+
+        // Changes the checkbox behaviour to a radio button behaviour
+        var itemIsChecked = item.checked;
+        menu.items.each(function(item, index, len){
+            item.setChecked(false, true);
+        });
+        item.setChecked(itemIsChecked, true);
+
+        if (itemIsChecked) {
+            if (menu.ownerCmp.pressed) {
+                this.updateAndAddLayerFeatureInfoListener(item);
+            } else {
+                menu.ownerCmp.toggle(true);
+            }
+        } else {
+            this.removeLayerFeatureInfoListener();
+            menu.ownerCmp.pressed && menu.ownerCmp.toggle(false);
+        }
+    },
+
+//   onLayerFeatureInfoButtonPress : function (button, e, eOpts) {
+//       this.mapCmpCtrl.activateVectorLayerInfo();
+//   },
 
 //    fillVectorList : function(button, e) {
 //        console.log('fill vector list ');
@@ -376,9 +428,9 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 //        });
 //    },
 
-    onSelectVectorLayer : function(combo, vLyr, eOpts) {
-        this.selectedVectorLayer = vLyr;
-    },
+//    onSelectVectorLayer : function(combo, vLyr, eOpts) {
+//        this.selectedVectorLayer = vLyr;
+//    },
 
     getLocationInfo : function(e) {
         var lon = e.coordinate[0], lat=e.coordinate[1];
