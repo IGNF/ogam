@@ -130,6 +130,8 @@ Ext.define('OgamDesktop.controller.map.Legend',{
                     });
                     if (!Ext.isEmpty(node)) {
                         if (check) {
+                            node.getOlLayer().set('disabled', false);
+                            node.set("cls", ''); 
                             this.toggleNodeCheckbox(node.id, true);
                         }
                     }

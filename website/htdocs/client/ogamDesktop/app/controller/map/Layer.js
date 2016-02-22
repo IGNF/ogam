@@ -190,12 +190,28 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                         });
                         treeLayerStore.each(function(item) {
                             cls = item.getOlLayer().get('disabled') ? 'dvp-tree-node-disabled' : '';
+                            console.log(item.getOlLayer().get('code'))
                             item.set("cls", cls);
-                            item.set("checked", item.getOlLayer().get('checked'));
+//                            if (item.getOlLayer().isLayerGroup) {
+//                                var count = 0;
+//                                var first;
+//                                var idem = true;
+//                                item.getOlLayer().getLayers().forEach(function(lyr) {
+//                                    if (count === 0) {
+//                                        first = lyr.get('checked');
+//                                    } else if (lyr.get('checked') != first) {
+//                                        idem = false;
+//                                    } 
+//                                    count = 1;
+//                                });
+//                                if (idem) {
+//                                    item.set('checked', first);
+//                                }
+//                            }
+//                            item.set("checked", item.getOlLayer().get('checked'));
 //                            if (item.getOlLayer().get('expanded')) {
 //                                item.set("expandable", true);
 ////                                item.set("expanded", item.getOlLayer().get('expanded'));
-//                                item.expand();
 //                            }
                         });
                         this.getLayerspanel().setConfig('store', treeLayerStore);
@@ -218,11 +234,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         this.getLayerspanel().getStore().each(function (item) {
             if (item.getOlLayer() === lyr) {
                 if (toEnable) {
-                    console.log('enable ', lyr.get('code'));
                     item.getOlLayer().set('disabled', false);
                     item.set("cls", ''); 
                 } else {
-                    console.log('disable ', lyr.get('code'));
                     item.getOlLayer().set('disabled', true);
                     item.set("cls", 'dvp-tree-node-disabled'); 
                 }
