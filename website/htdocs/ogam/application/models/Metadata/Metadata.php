@@ -373,7 +373,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
 		$req2 = "SELECT * ";
 		$req2 .= " FROM (" . $req . ") as foo ";
-		$req2 .= " WHERE (1 = 1) ";
+		$req2 .= " WHERE (1 = 1)";
 		if (!empty($query)) {
 			$req2 .= " AND label ilike '" . $query . "%'";
 		}

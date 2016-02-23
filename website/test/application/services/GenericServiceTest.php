@@ -2,6 +2,7 @@
 require_once TEST_PATH . 'ControllerTestCase.php';
 
 /**
+ * Test the Generic Service.
  *
  * @package services
  */
@@ -355,7 +356,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$this->assertTrue(strpos($from, 'FROM LOCATION LOCATION_DATA ') !== false);
 		$this->assertTrue(strpos($from, 'JOIN PLOT_DATA PLOT_DATA on (PLOT_DATA.PROVIDER_ID = LOCATION_DATA.PROVIDER_ID AND PLOT_DATA.PLOT_CODE = LOCATION_DATA.PLOT_CODE)') !== false);
 		$this->assertTrue(strpos($from, 'JOIN SPECIES_DATA SPECIES_DATA on (SPECIES_DATA.PROVIDER_ID = PLOT_DATA.PROVIDER_ID AND SPECIES_DATA.PLOT_CODE = PLOT_DATA.PLOT_CODE AND SPECIES_DATA.CYCLE = PLOT_DATA.CYCLE)') !== false);
-		//$this->assertEquals(' FROM LOCATION LOCATION_DATA JOIN PLOT_DATA PLOT_DATA on (PLOT_DATA.PROVIDER_ID = LOCATION_DATA.PROVIDER_ID AND PLOT_DATA.PLOT_CODE = LOCATION_DATA.PLOT_CODE)  JOIN SPECIES_DATA SPECIES_DATA on (SPECIES_DATA.PROVIDER_ID = PLOT_DATA.PROVIDER_ID AND SPECIES_DATA.PLOT_CODE = PLOT_DATA.PLOT_CODE AND SPECIES_DATA.CYCLE = PLOT_DATA.CYCLE)', $from);
+		// $this->assertEquals(' FROM LOCATION LOCATION_DATA JOIN PLOT_DATA PLOT_DATA on (PLOT_DATA.PROVIDER_ID = LOCATION_DATA.PROVIDER_ID AND PLOT_DATA.PLOT_CODE = LOCATION_DATA.PLOT_CODE) JOIN SPECIES_DATA SPECIES_DATA on (SPECIES_DATA.PROVIDER_ID = PLOT_DATA.PROVIDER_ID AND SPECIES_DATA.PLOT_CODE = PLOT_DATA.PLOT_CODE AND SPECIES_DATA.CYCLE = PLOT_DATA.CYCLE)', $from);
 	}
 
 	/**
@@ -383,7 +384,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
 
 		//
-		// Ajout d'un critère
+		// Ajout d'un critère sur un code simple
 		//
 		$field = new Application_Object_Metadata_TableField();
 		$field->data = "DEPARTEMENT";
@@ -392,7 +393,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->unit = "DEPARTEMENT";
 		$field->type = "CODE";
 		$field->subtype = "DYNAMIC";
-		$field->value = array('45');
+		$field->value = '45';
 		$data->addInfoField($field);
 
 		// On récupère le where correspondant
@@ -400,7 +401,21 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1)  AND LOCATION_DATA.DEPARTEMENT IN ('45')", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND LOCATION_DATA.DEPARTEMENT = '45'", trim($where));
+
+		//
+		// Ajout d'un critère sur une liste de codes
+		//
+		$field->value = array(
+			'45'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND LOCATION_DATA.DEPARTEMENT IN ('45')", trim($where));
 	}
 
 	/**
@@ -412,7 +427,8 @@ class GenericServiceTest extends ControllerTestCase {
 		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
 
 		//
-		// Ajout d'un critère
+		// Ajout d'un critère date simple
+		// YYYY/MM/DD
 		//
 		$field = new Application_Object_Metadata_TableField();
 		$field->data = "INV_DATE";
@@ -421,7 +437,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->unit = "DATE";
 		$field->type = "DATE";
 		$field->subtype = null;
-		$field->value = array('2016/02/18 - 2016/02/19');
+		$field->value = '2016/02/18';
 		$data->addInfoField($field);
 
 		// On récupère le where correspondant
@@ -429,7 +445,62 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1)  AND ((PLOT_DATA.INV_DATE >= to_date('2016/02/18', 'YYYY/MM/DD') AND  PLOT_DATA.INV_DATE <= to_date('2016/02/19', 'YYYY/MM/DD')) )", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.INV_DATE = to_date('2016/02/18', 'YYYY/MM/DD'))", trim($where));
+
+		//
+		// Ajout plusieurs dates simples
+		// YYYY/MM/DD
+		//
+		$field->value = array(
+			'2016/02/18',
+			'2016/02/19'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND ((PLOT_DATA.INV_DATE = to_date('2016/02/18', 'YYYY/MM/DD')) OR (PLOT_DATA.INV_DATE = to_date('2016/02/19', 'YYYY/MM/DD')))", trim($where));
+
+		//
+		// Critère "Min"
+		// >= YYYY/MM/DD
+		//
+		$field->value = '>= 2016/02/18';
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.INV_DATE >= to_date('2016/02/18', 'YYYY/MM/DD'))", trim($where));
+
+		//
+		// Critère "Max"
+		// >= YYYY/MM/DD
+		//
+		$field->value = '<= 2016/02/18';
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.INV_DATE <= to_date('2016/02/18', 'YYYY/MM/DD'))", trim($where));
+
+		//
+		// Critère "Range"
+		// YYYY/MM/DD - YYYY/MM/DD
+		//
+		$field->value = '2016/02/18 - 2016/02/19';
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.INV_DATE >= to_date('2016/02/18', 'YYYY/MM/DD') AND PLOT_DATA.INV_DATE <= to_date('2016/02/19', 'YYYY/MM/DD'))", trim($where));
 	}
 
 	/**
@@ -441,7 +512,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
 
 		//
-		// Ajout d'un critère
+		// Ajout d'un critère simple
 		//
 		$field = new Application_Object_Metadata_TableField();
 		$field->data = "IS_FOREST_PLOT";
@@ -450,7 +521,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->unit = "IS_FOREST_PLOT";
 		$field->type = "BOOLEAN";
 		$field->subtype = null;
-		$field->value = array('1');
+		$field->value = '1';
 		$data->addInfoField($field);
 
 		// On récupère le where correspondant
@@ -458,7 +529,33 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1)  AND PLOT_DATA.IS_FOREST_PLOT = '1'", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND PLOT_DATA.IS_FOREST_PLOT = '1'", trim($where));
+
+		//
+		// Sous forme de boolean
+		//
+		$field->value = true;
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND PLOT_DATA.IS_FOREST_PLOT = '1'", trim($where));
+
+		//
+		// Sous forme de tableau
+		//
+		$field->value = array(
+			'1'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND PLOT_DATA.IS_FOREST_PLOT = '1'", trim($where));
 	}
 
 	/**
@@ -470,7 +567,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
 
 		//
-		// Ajout d'un critère
+		// Ajout d'un critère sur une valeur simple
 		//
 		$field = new Application_Object_Metadata_TableField();
 		$field->data = "BASAL_AREA";
@@ -479,7 +576,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->unit = "M2/HA";
 		$field->type = "NUMERIC";
 		$field->subtype = "RANGE";
-		$field->value = array('>= 50');
+		$field->value = '50';
 		$data->addInfoField($field);
 
 		// On récupère le where correspondant
@@ -487,6 +584,63 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1)  AND (SPECIES_DATA.BASAL_AREA >= 50 )", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND (SPECIES_DATA.BASAL_AREA = 50)", trim($where));
+
+		//
+		// Ajout d'un critère sur le min
+		//
+		$field->value = array(
+			'>= 50'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (SPECIES_DATA.BASAL_AREA >= 50)", trim($where));
+
+		//
+		// Critère sur min / max
+		//
+		$field->value = array(
+			'50 - 100'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND ((SPECIES_DATA.BASAL_AREA >= 50 AND SPECIES_DATA.BASAL_AREA <= 100))", trim($where));
+
+		//
+		// Critère sur max
+		//
+		$field->value = array(
+			'<= 100'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (SPECIES_DATA.BASAL_AREA <= 100)", trim($where));
+
+		//
+		// Critère sur min ou max
+		//
+		$field->value = array(
+			'>= 50',
+			'<= 100'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (SPECIES_DATA.BASAL_AREA >= 50 OR SPECIES_DATA.BASAL_AREA <= 100)", trim($where));
 	}
 }

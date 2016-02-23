@@ -330,7 +330,7 @@ class Application_Service_GenericService {
 		//
 		// Prepare the WHERE clause
 		//
-		$where = " WHERE (1 = 1) ";
+		$where = " WHERE (1 = 1)";
 		foreach ($dataObject->infoFields as $tableField) {
 			$where .= $this->buildWhereItem($tableField, false);
 		}
@@ -486,26 +486,26 @@ class Application_Service_GenericService {
 			$sql2 = '';
 
 			if (($minValue !== null) && ($minValue !== '')) {
-				$sql2 .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue . " ";
+				$sql2 .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue;
 			}
 			if (($maxValue !== null) && ($maxValue !== '')) {
 				if ($sql2 != "") {
 					$sql2 .= ' AND ';
 				}
-				$sql2 .= $tableField->format . "." . $tableField->columnName . " <= " . $maxValue . " ";
+				$sql2 .= $tableField->format . "." . $tableField->columnName . " <= " . $maxValue;
 			}
 			$sql .= '(' . $sql2 . ')';
 		} else if ($posInf !== false) {
 			// Cas où on a juste un max
 			$maxValue = trim(substr($value, $posInf + 2));
 			if (($maxValue !== null) && ($maxValue !== '')) {
-				$sql .= $tableField->format . "." . $tableField->columnName . " <= " . $maxValue . " ";
+				$sql .= $tableField->format . "." . $tableField->columnName . " <= " . $maxValue;
 			}
 		} else if ($posSup !== false) {
 			// Cas où on a juste un min
 			$minValue = trim(substr($value, $posSup + 2));
 			if (($minValue !== null) && ($minValue !== '')) {
-				$sql .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue . " ";
+				$sql .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue;
 			}
 		} else {
 			// One value, we make an equality comparison
@@ -586,26 +586,26 @@ class Application_Service_GenericService {
 				// Case "YYYY/MM/DD"
 				if (Zend_Date::isDate($value, 'YYYY/MM/DD')) {
 					// One value, we make an equality comparison
-					$sql .= $column . " = to_date('" . $value . "', 'YYYY/MM/DD') ";
+					$sql .="(" .  $column . " = to_date('" . $value . "', 'YYYY/MM/DD'))";
 				}
 			} else if (strlen($value) == 13 && substr($value, 0, 2) == '>=') {
 				// Case ">= YYYY/MM/DD"
 				$beginDate = substr($value, 3, 10);
 				if (Zend_Date::isDate($beginDate, 'YYYY/MM/DD')) {
-					$sql .= $column . " >= to_date('" . $beginDate . "', 'YYYY/MM/DD') ";
+					$sql .= "(" . $column . " >= to_date('" . $beginDate . "', 'YYYY/MM/DD'))";
 				}
 			} else if (strlen($value) == 13 && substr($value, 0, 2) == '<=') {
 				// Case "<= YYYY/MM/DD"
 				$endDate = substr($value, 3, 10);
 				if (Zend_Date::isDate($endDate, 'YYYY/MM/DD')) {
-					$sql .= $column . " <= to_date('" . $endDate . "', 'YYYY/MM/DD') ";
+					$sql .= "(" . $column . " <= to_date('" . $endDate . "', 'YYYY/MM/DD'))";
 				}
 			} else if (strlen($value) == 23) {
 				// Case "YYYY/MM/DD - YYYY/MM/DD"
 				$beginDate = substr($value, 0, 10);
 				$endDate = substr($value, 13, 10);
 				if (Zend_Date::isDate($beginDate, 'YYYY/MM/DD') && Zend_Date::isDate($endDate, 'YYYY/MM/DD')) {
-					$sql .= "(" . $column . " >= to_date('" . $beginDate . "', 'YYYY/MM/DD') AND  " . $column . " <= to_date('" . $endDate . "', 'YYYY/MM/DD')) ";
+					$sql .= "(" . $column . " >= to_date('" . $beginDate . "', 'YYYY/MM/DD') AND " . $column . " <= to_date('" . $endDate . "', 'YYYY/MM/DD'))";
 				}
 			}
 		}
@@ -642,6 +642,8 @@ class Application_Service_GenericService {
 						$value = $value[0];
 						$sql .= " AND " . $column . " = '" . $value . "'";
 					} else if (is_bool($value)) {
+						$sql .= " AND " . $column . " = '" . $value . "'";
+					} else {
 						$sql .= " AND " . $column . " = '" . $value . "'";
 					}
 					break;
@@ -686,7 +688,7 @@ class Application_Service_GenericService {
 					} else {
 						// Single value
 						if (is_numeric($value) || is_string($value)) {
-							$sql .= " AND " . $this->_buildNumericWhereItem($tableField, $value);
+							$sql .= " AND (" . $this->_buildNumericWhereItem($tableField, $value). ")";
 						}
 					}
 					break;
@@ -823,9 +825,9 @@ class Application_Service_GenericService {
 						foreach ($value as $val) {
 							if ($val != null && $val != '' && is_string($val)) {
 								if ($exact) {
-									$sql .= "ST_Equals(" . $column . ", st_transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
 								} else {
-									$sql .= "ST_intersects(" . $column . ", st_transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+									$sql .= "ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
 								}
 								$sql .= " OR ";
 								$oradded = true;
@@ -838,9 +840,9 @@ class Application_Service_GenericService {
 					} else {
 						if (is_string($value)) {
 							if ($exact) {
-								$sql .= " AND ST_Equals(" . $column . ", ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+								$sql .= " AND ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
 							} else {
-								$sql .= " AND ST_intersects(" . $column . ", ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+								$sql .= " AND ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
 							}
 						}
 					}
