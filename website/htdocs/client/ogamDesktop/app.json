@@ -282,6 +282,8 @@
         {
             "path": "lib/OpenLayers/ol.css"
         },{
+            "path": "resources/css/node-disabled.css"
+        },{
             "path": "resources/GeoExt/css/gx-popup.css"
         },{
             "path": "resources/css/geoext-addon.css"

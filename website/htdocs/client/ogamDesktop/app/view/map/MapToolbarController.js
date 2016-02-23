@@ -452,7 +452,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             url : url,
             success : function(rpse, options) {
                 var result = Ext.decode(rpse.responseText);
-                this.getView().fireEvent('getLocationInfo', {'result': result});
+                this.getView().up('panel').fireEvent('getLocationInfo', {'result': result});
             },
             failure : function(rpse, options) {
                 Ext.Msg.alert('Erreur', 'Sorry, bad request...');
@@ -534,8 +534,9 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     }, 
 
     olLayerToString : function(layer){
+        console.log('layer to convert into string', layer);
         layerStr = '{';
-        layerStr += '"name":"' + layer.name + '",';
+        layerStr += '"name":"' + layer.get('code') + '",';
         layerStr += '"opacity":' + layer.opacity;
         if (layer.tileSize) {
             tileSizeArray = [layer.tileSize.h, layer.tileSize.w];
@@ -544,25 +545,31 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         layerStr += '}';
         return layerStr;
     },
-
+    
+    retrieveLayersToPrint : function(layerGrp) {
+        var layersToPrint = [];
+        layerGrp.getLayers().forEach(function(lyr) {
+            console.log('lyr', lyr);
+            if (lyr.isLayerGroup) {
+                console.log('layer grp', lyr);
+                for (var i in this.retrieveLayersToPrint(lyr)) {
+                    layersToPrint.push(this.retrieveLayersToPrint(lyr)[i]);
+                };
+            } else {
+                
+                if (lyr.getVisible() && lyr.get('printable')) {
+                    layersToPrint.push(this.olLayerToString(lyr));
+                }
+            }  
+        }, this);
+        return layersToPrint;
+    },
+    
     onPrintMapButtonPress : function(button, pressed, eOpts) {
         // Get the BBOX
         var center = this.map.getView().getCenter(), zoom = this.map.getView().getZoom(), i;
         // Get the layers
-        var activatedLayers = [];
-        this.map.getLayers().forEach(function(lyr){
-            if (lyr.getVisible()){
-                activatedLayers.push(lyr);
-            }
-        });
-        var layersToPrint = [];
-        for (i in activatedLayers) {
-                lyr = activatedLayers[i];
-                if (lyr.get('printable') !== false &&
-                    lyr.getVisible() === true) {
-                    layersToPrint.push(this.olLayerToString(lyr));
-                }
-        }
+        var layersToPrint = this.retrieveLayersToPrint(this.mapCmpCtrl.getMapLayer('treeGrp'));
         console.log('layers to print array', layersToPrint);
         this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
                 center : center,

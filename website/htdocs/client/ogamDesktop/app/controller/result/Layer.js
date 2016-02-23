@@ -28,10 +28,10 @@ Ext.define('OgamDesktop.controller.result.Layer',{
                 var mapCmp = this.getMappanel().child('mapcomponent');
                 mapCmp.resultsBBox = response.resultsbbox;
                 if (mapCmp.autoZoomOnResultsFeatures === true) {
-                        mapCmp.fireEvent('resultswithautozoom');
+                    mapCmp.fireEvent('resultswithautozoom');
                 }
                 // Display the results layer
-                mapCmp.fireEvent('onGetResultsBBox',mapCmp.layersActivation['request'], true, true);
+                mapCmp.fireEvent('onGetResultsBBox',mapCmp.layersActivation['request'], true);
             },
             scope: this
         });
