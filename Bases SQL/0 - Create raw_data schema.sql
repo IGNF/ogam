@@ -131,6 +131,7 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
+DROP TRIGGER IF EXISTS a_geom_trigger ON raw_data.LOCATION;
 CREATE TRIGGER a_geom_trigger
   BEFORE INSERT OR UPDATE
   ON raw_data.LOCATION
@@ -153,6 +154,7 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
+DROP TRIGGER IF EXISTS b_departements_geom_trigger ON raw_data.LOCATION;
 CREATE TRIGGER b_departements_geom_trigger
   BEFORE INSERT ON raw_data.LOCATION
   FOR EACH ROW
@@ -173,10 +175,33 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
+DROP TRIGGER IF EXISTS c_communes_geom_trigger ON raw_data.LOCATION;
 CREATE TRIGGER c_communes_geom_trigger
   BEFORE INSERT ON raw_data.LOCATION
   FOR EACH ROW
   EXECUTE PROCEDURE raw_data.c_communesfromgeom();
+  
+  
+  
+/*========================================================================*/
+/*	Add a trigger to fill the communes column of the location table    */
+/*========================================================================*/
+CREATE OR REPLACE FUNCTION raw_data.d_latlonfromgeom() RETURNS "trigger" AS
+$BODY$
+BEGIN
+
+    NEW.long = ST_X(ST_Transform(NEW.the_geom, 4326));    
+    NEW.lat = ST_Y(ST_Transform(NEW.the_geom, 4326));
+    RETURN NEW;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+DROP TRIGGER IF EXISTS d_latlon_geom_trigger ON raw_data.LOCATION;
+CREATE TRIGGER d_latlon_geom_trigger
+  BEFORE INSERT ON raw_data.LOCATION
+  FOR EACH ROW
+  EXECUTE PROCEDURE raw_data.d_latlonfromgeom();
             
 
 /*==============================================================*/
