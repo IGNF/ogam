@@ -29,6 +29,10 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         this.riseSnappingInteractionListenerKey = null;
         this.selectWFSFeatureListenerKey = null;
         this.layerFeatureInfoListenerKey = null;
+        this.popup = Ext.create('GeoExt.component.Popup', {
+            map: this.map,
+            width: 160
+        });
     },
 
     onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
@@ -317,6 +321,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     removeLayerFeatureInfoListener: function () {
         ol.Observable.unByKey(this.layerFeatureInfoListenerKey);
         this.layerFeatureInfoListenerKey = null;
+        this.popup.hide();
     },
 
     updateAndAddLayerFeatureInfoListener: function(item) {
@@ -333,19 +338,24 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 function(features, dataProjection) {
                     var msg = '', i = 1;
                     features.forEach(function(feature){
-                        msg += '<u>Feature ' + i++ +':</u></br>';
+                        msg += '<u>Feature ' + i++ +':</u><br />';
                         var properties = feature.getProperties();
                         for(var propertie in properties) { 
                            if (properties.hasOwnProperty(propertie) && propertie !== 'geometry') {
-                               msg += propertie + ': ' + properties[propertie] + '</br>';
+                               msg += propertie + ': ' + properties[propertie] + '<br />';
                            }
                         }
-                        msg += '</br>';
+                        msg += '<br />';
                     });
-                    (msg !== '') && Ext.Msg.alert('Feature(s) information :', msg);
+                    // set content and position popup
+                    if (msg !== '') {
+                        this.popup.setHtml('<p>'+msg+'</p>');
+                        this.popup.position(evt.coordinate);
+                        this.popup.show();
+                    }
                 },
                 ol.nullFunction /* FIXME handle error */
-            ).call(this.mapCmpCtrl.getMapLayer('drawingLayer').getSource());
+            ).call(this);
         },this);
     },
 
