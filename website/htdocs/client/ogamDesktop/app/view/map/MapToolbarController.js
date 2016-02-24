@@ -29,6 +29,19 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         this.riseSnappingInteractionListenerKey = null;
         this.selectWFSFeatureListenerKey = null;
         this.layerFeatureInfoListenerKey = null;
+        this.popup = Ext.create('GeoExt.component.Popup', {
+            map: this.map,
+            width: 160,
+            tpl: [
+                '<p><tpl for="features">',
+                    '<u>Feature {#}:</u><br />',
+                    '<tpl foreach=".">',
+                        '{$}: {.}<br />',
+                    '</tpl>',
+                '<br /></tpl></p>'
+            ]
+        });
+        this.coordinateExtentDefaultBuffer = OgamDesktop.map.featureinfo_margin ? OgamDesktop.map.featureinfo_margin : 1000;
     },
 
     onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
@@ -147,14 +160,15 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
         if (itemIsChecked) {
             // Update the data source
+            var projection = this.map.getView().getProjection().getCode();
             this.snapSource = new ol.source.Vector({
                 format: new ol.format.GeoJSON(),
                 url: function(extent) {
                     return item.config.data.url +
                         '&outputFormat=geojsonogr' +
-                        '&srsname=EPSG:3857' +
+                        '&srsname=' + projection +
                         '&typename=' + item.itemId +
-                        '&bbox=' + extent.join(',') + ',EPSG:3857';
+                        '&bbox=' + extent.join(',') + ',' + projection;
                 },
                 crossOrigin: 'anonymous',
                 strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
@@ -235,12 +249,13 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
     updateAndAddSelectWFSFeatureListener: function(item) {
         this.removeSelectWFSFeatureListener();
+        var projection = this.map.getView().getProjection().getCode();
         this.selectWFSFeatureListenerKey = this.map.on('singleclick', function(evt) {
             var url = item.config.data.url +
                 '&outputFormat=geojsonogr' +
-                '&srsname=EPSG:3857' +
+                '&srsname=' + projection +
                 '&typename=' + item.itemId +
-                '&bbox=' + ol.extent.boundingExtent([evt.coordinate]).join(',') + ',EPSG:3857';
+                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',' + projection;
             ol.featureloader.xhr(
                 url,
                 new ol.format.GeoJSON()
@@ -317,35 +332,38 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     removeLayerFeatureInfoListener: function () {
         ol.Observable.unByKey(this.layerFeatureInfoListenerKey);
         this.layerFeatureInfoListenerKey = null;
+        this.popup.hide();
     },
 
     updateAndAddLayerFeatureInfoListener: function(item) {
         this.removeLayerFeatureInfoListener();
+        var projection = this.map.getView().getProjection().getCode();
         this.layerFeatureInfoListenerKey = this.map.on('singleclick', function(evt) {
             var url = item.config.data.url +
                 '&outputFormat=geojsonogr' +
-                '&srsname=EPSG:3857' +
+                '&srsname=' + projection +
                 '&typename=' + item.itemId +
-                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), 1000).join(',') + ',EPSG:3857';
+                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',' + projection;
             ol.featureloader.loadFeaturesXhr(
                 url,
                 new ol.format.GeoJSON(),
                 function(features, dataProjection) {
-                    var msg = '', i = 1;
+                    // Set up the data object
+                    var data = {features:[]};
                     features.forEach(function(feature){
-                        msg += '<u>Feature ' + i++ +':</u></br>';
                         var properties = feature.getProperties();
-                        for(var propertie in properties) { 
-                           if (properties.hasOwnProperty(propertie) && propertie !== 'geometry') {
-                               msg += propertie + ': ' + properties[propertie] + '</br>';
-                           }
-                        }
-                        msg += '</br>';
+                        delete properties.geometry;
+                        data.features.push(properties);
                     });
-                    (msg !== '') && Ext.Msg.alert('Feature(s) information :', msg);
+                    // Set content and position popup
+                    if (data.features.length !== 0) {
+                        this.popup.setData(data);
+                        this.popup.position(evt.coordinate);
+                        this.popup.show();
+                    }
                 },
                 ol.nullFunction /* FIXME handle error */
-            ).call(this.mapCmpCtrl.getMapLayer('drawingLayer').getSource());
+            ).call(this);
         },this);
     },
 
