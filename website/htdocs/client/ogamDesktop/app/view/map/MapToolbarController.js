@@ -149,16 +149,15 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         this.updateRiseSnappingInteractionListener();
     },
 
-    onSnappingButtonMenuItemPress : function(menu, item, e, eOpts) {
-
+    onSnappingButtonMenuItemCheckChange : function(item, checked, eOpts) {
         // Changes the checkbox behaviour to a radio button behaviour
-        var itemIsChecked = item.checked;
+        var menu = item.parentMenu;
         menu.items.each(function(item, index, len){
             item.setChecked(false, true);
         });
-        item.setChecked(itemIsChecked, true);
+        item.setChecked(checked, true);
 
-        if (itemIsChecked) {
+        if (checked) {
             // Update the data source
             var projection = this.map.getView().getProjection().getCode();
             this.snapSource = new ol.source.Vector({
@@ -263,16 +262,15 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         },this);
     },
 
-    onSelectWFSFeatureButtonMenuItemPress : function(menu, item, e, eOpts) {
-
+    onSelectWFSFeatureButtonMenuItemCheckChange : function(item, checked, eOpts) {
         // Changes the checkbox behaviour to a radio button behaviour
-        var itemIsChecked = item.checked;
+        var menu = item.parentMenu;
         menu.items.each(function(item, index, len){
             item.setChecked(false, true);
         });
-        item.setChecked(itemIsChecked, true);
+        item.setChecked(checked, true);
 
-        if (itemIsChecked) {
+        if (checked) {
             if (menu.ownerCmp.pressed) {
                 this.updateAndAddSelectWFSFeatureListener(item);
             } else {
@@ -367,16 +365,15 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         },this);
     },
 
-    onLayerFeatureInfoButtonMenuItemPress : function(menu, item, e, eOpts) {
-
+    onLayerFeatureInfoButtonMenuItemCheckChange : function(item, checked, eOpts) {
         // Changes the checkbox behaviour to a radio button behaviour
-        var itemIsChecked = item.checked;
+        var menu = item.parentMenu;
         menu.items.each(function(item, index, len){
             item.setChecked(false, true);
         });
-        item.setChecked(itemIsChecked, true);
+        item.setChecked(checked, true);
 
-        if (itemIsChecked) {
+        if (checked) {
             if (menu.ownerCmp.pressed) {
                 this.updateAndAddLayerFeatureInfoListener(item);
             } else {
@@ -387,68 +384,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             menu.ownerCmp.pressed && menu.ownerCmp.toggle(false);
         }
     },
-
-//   onLayerFeatureInfoButtonPress : function (button, e, eOpts) {
-//       this.mapCmpCtrl.activateVectorLayerInfo();
-//   },
-
-//    fillVectorList : function(button, e) {
-//        console.log('fill vector list ');
-//        
-//        var vectorLyrStore = Ext.create('Ext.data.Store',{
-//            autoLoad: true,
-//            proxy: {
-//                type: 'ajax',
-//                url: Ext.manifest.OgamDesktop.mapServiceUrl + 'ajaxgetvectorlayers',
-//                actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
-//                reader: {
-//                    type: 'json',
-//                    rootProperty: 'layerNames'
-//                }
-//            },
-//            fields : [ {
-//                name : 'code',
-//                mapping : 'code'
-//            }, {
-//                name : 'label',
-//                mapping : 'label'
-//            }, {
-//                name : 'url',
-//                mapping : 'url'
-//            }, {
-//                name : 'url_wms',
-//                mapping : 'url_wms'
-//            }]
-//        });
-//        var menu = new Ext.menu.Menu();
-//        vectorLyrStore.on('load', function(me, vLyrs, success) {
-//            console.log('success', success)
-//            console.log('v lyr store', me);
-//            console.log('vLyrs', vLyrs);
-//            console.log('button vector layers', button);
-//            if (success) {
-//                var items = [];
-//                for (var i in vLyrs) {
-//                    vLyr = vLyrs[i];
-//                    console.log('data label', vLyr.getData().label);
-//                    item = new Ext.Component({
-//                        text : vLyr.getData().label
-//                    });
-//                    console.log('item', item);
-//                    console.log('item text', item.text);
-//                    items.push(item);
-//                }
-//                menu.setConfig('items', items)
-//                console.log('menu', menu);
-//                button.setMenu(menu);
-//                button.showMenu(e);
-//            }
-//        });
-//    },
-
-//    onSelectVectorLayer : function(combo, vLyr, eOpts) {
-//        this.selectedVectorLayer = vLyr;
-//    },
 
     getLocationInfo : function(e) {
         var lon = e.coordinate[0], lat=e.coordinate[1];

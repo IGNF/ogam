@@ -50,10 +50,10 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             menu : {
                 xtype: 'menu',
                 defaults: {
-                    xtype: 'menucheckitem'
-                },
-                listeners:{
-                    click : 'onSnappingButtonMenuItemPress'
+                    xtype: 'menucheckitem',
+                    listeners:{
+                        checkchange : 'onSnappingButtonMenuItemCheckChange'
+                    }
                 }
             }
         },{
@@ -112,10 +112,10 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             menu : {
                 xtype: 'menu',
                 defaults: {
-                    xtype: 'menucheckitem'
-                },
-                listeners:{
-                    click : 'onSelectWFSFeatureButtonMenuItemPress'
+                    xtype: 'menucheckitem',
+                    listeners:{
+                        checkchange : 'onSelectWFSFeatureButtonMenuItemCheckChange'
+                    }
                 }
             }
         },{
@@ -160,10 +160,10 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
         menu : {
             xtype: 'menu',
             defaults: {
-                xtype: 'menucheckitem'
-            },
-            listeners:{
-                click : 'onLayerFeatureInfoButtonMenuItemPress'
+                xtype: 'menucheckitem',
+                listeners:{
+                    checkchange : 'onLayerFeatureInfoButtonMenuItemCheckChange'
+                }
             }
         }
     },{

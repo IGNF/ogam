@@ -201,9 +201,15 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 			this.setupDrawingTbarButtons();
 		} else {
 			// Deactivates all the drawing toolbar buttons controls on the toolbar disappearance
-			var drawingTbarButtons = drawingButtonsGroup.items.filter('toggleGroup', 'editing');
+			var drawingTbarButtons = drawingButtonsGroup.items.filter('enableToggle', true);
 			drawingTbarButtons.each(function(item){
 				item.toggle(false);
+				var itemMenu = item.getMenu();
+				if(itemMenu !== null){
+					itemMenu.items.each(function(item, index, len){
+						item.setChecked(false, false);
+					});
+				}
 			});
 		}
 		// Show or hide drawing buttons group
