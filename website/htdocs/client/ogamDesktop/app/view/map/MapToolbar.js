@@ -13,7 +13,10 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
     },
     requires: [
         'OgamDesktop.view.map.MapToolbarController',
-        'OgamDesktop.view.map.MapToolbarModel'
+        'OgamDesktop.view.map.MapToolbarModel',
+        'OgamDesktop.view.map.toolbar.SnappingButton',
+        'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
+        'OgamDesktop.view.map.toolbar.LayerFeatureInfoButton'
     ],
     uses: [
     ],
@@ -39,23 +42,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             margin:'3 -3 0 -2',
             style:'color:#aaa'
         },{
-            xtype:'splitbutton',
-            reference: 'snappingButton',
-            iconCls: 'o-map-tools-map-snapping',
-            tooltip: this.snappingButtonTooltip,
-            enableToggle: true,
-            listeners: {
-                toggle: 'onSnappingButtonToggle'
-            },
-            menu : {
-                xtype: 'menu',
-                defaults: {
-                    xtype: 'menucheckitem',
-                    listeners:{
-                        checkchange : 'onSnappingButtonMenuItemCheckChange'
-                    }
-                }
-            }
+            xtype:'snappingbutton'
         },{
             iconCls : 'o-map-tools-map-modifyfeature',
             tooltip: this.modifyfeatureButtonTooltip,
@@ -100,24 +87,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
                 toggle: 'onDrawPolygonButtonToggle'
             }
         },{
-            xtype:'splitbutton',
-            reference: 'selectWFSFeatureButton',
-            itemId: 'selectWFSFeatureButton',
-            iconCls: 'o-map-tools-map-selectWFSFeature',
-            tooltip: this.selectWFSFeatureButtonTooltip,
-            toggleGroup : "editing",
-            listeners: {
-                toggle: 'onSelectWFSFeatureButtonToggle'
-            },
-            menu : {
-                xtype: 'menu',
-                defaults: {
-                    xtype: 'menucheckitem',
-                    listeners:{
-                        checkchange : 'onSelectWFSFeatureButtonMenuItemCheckChange'
-                    }
-                }
-            }
+            xtype:'selectwfsfeaturebutton'
         },{
             iconCls : 'o-map-tools-map-deletefeature',
             tooltip: this.deleteFeatureButtonTooltip,
@@ -149,23 +119,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
         xtype : 'tbspacer',
         flex: 1
     },{
-        xtype:'splitbutton',
-        reference: 'layerFeatureInfoButton',
-        iconCls: 'o-map-tools-map-layerfeatureinfo',
-        tooltip: this.layerFeatureInfoButtonTooltip,
-        toggleGroup : "consultation",
-        listeners: {
-            toggle: 'onLayerFeatureInfoButtonToggle'
-        },
-        menu : {
-            xtype: 'menu',
-            defaults: {
-                xtype: 'menucheckitem',
-                listeners:{
-                    checkchange : 'onLayerFeatureInfoButtonMenuItemCheckChange'
-                }
-            }
-        }
+        xtype:'layerfeatureinfobutton'
     },{
         iconCls : 'o-map-tools-map-resultfeatureinfo',
         tooltip: this.resultFeatureInfoButtonTooltip,
