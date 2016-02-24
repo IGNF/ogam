@@ -76,7 +76,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                             code: lyrNode.nodeGroup,
                             visible: !lyrNode.hidden,
                             displayInLayerSwitcher: !lyrNode.hidden,
-                            expanded: lyrNode.expanded
+                            expanded: lyrNode.expanded,
+                            checked: lyrNode.checked,
+                            disabled: lyrNode.disabled
                         });
                         layersList.push(olGrp);
                     }
@@ -144,12 +146,16 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                                     olLayerOpts['printable'] = true;
                                     olLayerOpts['visible'] = !layer.params.isHidden;
                                     olLayerOpts['displayInLayerSwitcher'] = !layer.params.isHidden;
-                                    olLayerOpts['disabled'] = layer.params.isDisabled;
                                     olLayerOpts['checked'] = layer.params.isChecked;
                                     if (layer.options.resolutions) {
                                         var resolutions = layer.options.resolutions;
                                         olLayerOpts['minResolution'] = resolutions[resolutions.length - 1];
                                         olLayerOpts['maxResolution'] = resolutions[0];
+                                    }
+                                    olLayerOpts['disabled'] = layer.params.isDisabled;
+                                    var curRes = mapCmp.getMap().getView().getResolution();
+                                    if (curRes < olLayerOpts['minResolution'] || curRes >= olLayerOpts['maxResolution']) {
+                                        olLayerOpts['disabled'] = true;
                                     }
                                     var olLayer = new ol.layer.Tile(olLayerOpts);
                                     olLayer.on('change:visible', function(e) {
@@ -189,35 +195,27 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                             layerGroup: treeLayersGroup
                         });
                         treeLayerStore.each(function(item) {
-                            cls = item.getOlLayer().get('disabled') ? 'dvp-tree-node-disabled' : '';
-                            console.log(item.getOlLayer().get('code'))
+                            console.log('item', item)
+                            console.log('layer ', item.getOlLayer().get('code'),' disabled ? ', item.getOlLayer().get('disabled'))
+                            var cls = item.getOlLayer().get('disabled') ? 'dvp-tree-node-disabled' : '';
                             item.set("cls", cls);
-//                            if (item.getOlLayer().isLayerGroup) {
-//                                var count = 0;
-//                                var first;
-//                                var idem = true;
-//                                item.getOlLayer().getLayers().forEach(function(lyr) {
-//                                    if (count === 0) {
-//                                        first = lyr.get('checked');
-//                                    } else if (lyr.get('checked') != first) {
-//                                        idem = false;
-//                                    } 
-//                                    count = 1;
-//                                });
-//                                if (idem) {
-//                                    item.set('checked', first);
-//                                }
-//                            }
-//                            item.set("checked", item.getOlLayer().get('checked'));
-//                            if (item.getOlLayer().get('expanded')) {
-//                                item.set("expandable", true);
-////                                item.set("expanded", item.getOlLayer().get('expanded'));
-//                            }
+                            item.set("checked", item.getOlLayer().get('checked'));
+                            if (item.getOlLayer().get('expanded')) {
+                                item.expand();
+                                item.set("expanded", item.getOlLayer().get('expanded'));
+                            };
+                            if (item.childNodes.length > 0) {
+                                for (var k in item.childNodes) {
+                                    var child = item.childNodes[k];
+                                    var childCls = child.getOlLayer().get('disabled') ? 'dvp-tree-node-disabled' : '';
+                                    child.set('cls', childCls);
+                                    child.set('checked', child.getOlLayer().get('checked'));
+                                }
+                            }
                         });
                         this.getLayerspanel().setConfig('store', treeLayerStore);
                         Ext.apply(this.getLayerspanel().getView(), {
                             onCheckChange: Ext.Function.createInterceptor(this.getLayerspanel().getView().onCheckChange,function(e) {
-                                console.log('event check', e);
                                 if (e.record.getOlLayer().get('disabled')) {
                                     return false;
                                 }
