@@ -152,14 +152,15 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
         if (itemIsChecked) {
             // Update the data source
+            var projection = this.map.getView().getProjection().getCode();
             this.snapSource = new ol.source.Vector({
                 format: new ol.format.GeoJSON(),
                 url: function(extent) {
                     return item.config.data.url +
                         '&outputFormat=geojsonogr' +
-                        '&srsname=EPSG:3857' +
+                        '&srsname=' + projection +
                         '&typename=' + item.itemId +
-                        '&bbox=' + extent.join(',') + ',EPSG:3857';
+                        '&bbox=' + extent.join(',') + ',' + projection;
                 },
                 crossOrigin: 'anonymous',
                 strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
@@ -240,12 +241,13 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
     updateAndAddSelectWFSFeatureListener: function(item) {
         this.removeSelectWFSFeatureListener();
+        var projection = this.map.getView().getProjection().getCode();
         this.selectWFSFeatureListenerKey = this.map.on('singleclick', function(evt) {
             var url = item.config.data.url +
                 '&outputFormat=geojsonogr' +
-                '&srsname=EPSG:3857' +
+                '&srsname=' + projection +
                 '&typename=' + item.itemId +
-                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',EPSG:3857';
+                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',' + projection;
             ol.featureloader.xhr(
                 url,
                 new ol.format.GeoJSON()
@@ -327,12 +329,13 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
     updateAndAddLayerFeatureInfoListener: function(item) {
         this.removeLayerFeatureInfoListener();
+        var projection = this.map.getView().getProjection().getCode();
         this.layerFeatureInfoListenerKey = this.map.on('singleclick', function(evt) {
             var url = item.config.data.url +
                 '&outputFormat=geojsonogr' +
-                '&srsname=EPSG:3857' +
+                '&srsname=' + projection +
                 '&typename=' + item.itemId +
-                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',EPSG:3857';
+                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',' + projection;
             ol.featureloader.loadFeaturesXhr(
                 url,
                 new ol.format.GeoJSON(),
