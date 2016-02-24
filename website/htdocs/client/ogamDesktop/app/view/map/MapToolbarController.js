@@ -33,6 +33,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             map: this.map,
             width: 160
         });
+        this.coordinateExtentDefaultBuffer = OgamDesktop.map.featureinfo_margin ? OgamDesktop.map.featureinfo_margin : 1000;
     },
 
     onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
@@ -244,7 +245,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 '&outputFormat=geojsonogr' +
                 '&srsname=EPSG:3857' +
                 '&typename=' + item.itemId +
-                '&bbox=' + ol.extent.boundingExtent([evt.coordinate]).join(',') + ',EPSG:3857';
+                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',EPSG:3857';
             ol.featureloader.xhr(
                 url,
                 new ol.format.GeoJSON()
@@ -331,7 +332,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 '&outputFormat=geojsonogr' +
                 '&srsname=EPSG:3857' +
                 '&typename=' + item.itemId +
-                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), 1000).join(',') + ',EPSG:3857';
+                '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',EPSG:3857';
             ol.featureloader.loadFeaturesXhr(
                 url,
                 new ol.format.GeoJSON(),
