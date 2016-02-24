@@ -31,7 +31,15 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         this.layerFeatureInfoListenerKey = null;
         this.popup = Ext.create('GeoExt.component.Popup', {
             map: this.map,
-            width: 160
+            width: 160,
+            tpl: [
+                '<p><tpl for="features">',
+                    '<u>Feature {#}:</u><br />',
+                    '<tpl foreach=".">',
+                        '{$}: {.}<br />',
+                    '</tpl>',
+                '<br /></tpl></p>'
+            ]
         });
         this.coordinateExtentDefaultBuffer = OgamDesktop.map.featureinfo_margin ? OgamDesktop.map.featureinfo_margin : 1000;
     },
@@ -340,20 +348,16 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 url,
                 new ol.format.GeoJSON(),
                 function(features, dataProjection) {
-                    var msg = '', i = 1;
+                    // Set up the data object
+                    var data = {features:[]};
                     features.forEach(function(feature){
-                        msg += '<u>Feature ' + i++ +':</u><br />';
                         var properties = feature.getProperties();
-                        for(var propertie in properties) { 
-                           if (properties.hasOwnProperty(propertie) && propertie !== 'geometry') {
-                               msg += propertie + ': ' + properties[propertie] + '<br />';
-                           }
-                        }
-                        msg += '<br />';
+                        delete properties.geometry;
+                        data.features.push(properties);
                     });
-                    // set content and position popup
-                    if (msg !== '') {
-                        this.popup.setHtml('<p>'+msg+'</p>');
+                    // Set content and position popup
+                    if (data.features.length !== 0) {
+                        this.popup.setData(data);
                         this.popup.position(evt.coordinate);
                         this.popup.show();
                     }
