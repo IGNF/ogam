@@ -42,5 +42,29 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
                 contextMenu.showAt(e.getXY());
             }
         }
+    },
+    countLoadedStores: 0,
+    stores: {},
+    initComponent : function() {
+        var layerNodeStore = Ext.getStore('map.LayerNode');
+        var layerStore = Ext.getStore('map.Layer');
+        var serviceStore = Ext.getStore('map.LayerService');
+        layerNodeStore.on('load', function(store, records) {
+            this.fireEvent('storeLoaded',  'layerNodes', records );
+        }, this);
+        layerStore.on('load', function(store, records) {
+            this.fireEvent('storeLoaded', 'layers', records);
+        }, this);
+        serviceStore.on('load', function(store, records) {
+            this.fireEvent('storeLoaded', 'services', records);
+        }, this);
+        this.on('storeLoaded', function(storeName, storeRecords) {
+            this.countLoadedStores += 1;
+            this.stores[storeName] = storeRecords;
+            if (this.countLoadedStores === 3) {
+                this.fireEvent('layersPanelStoresLoaded', this.stores);
+            }
+        }, this)
+        this.callParent(arguments);
     }
 });

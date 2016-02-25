@@ -91,25 +91,14 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
             var listenerKey;
             var duration = 1500; // Animation duration
             var map = this.map;
-                    map.addLayer(vectorLyr);
+            map.addLayer(vectorLyr);
             function animate(event) {
                 var vectorContext = event.vectorContext;
                 var frameState = event.frameState;
                 var flashGeom = feature.getGeometry().clone();
                 var elapsed = frameState.time - start;
                 var elapsedRatio = elapsed / duration;
-                // radius will be 5 at start and 30 at end.
-                var radius = ol.easing.easeOut(elapsedRatio) * 25 + 5;
                 var opacity = ol.easing.easeOut(1 - elapsedRatio);
-      //          console.log(flashGeom);
-                var flashStyle = new ol.style.Circle({
-                    radius: radius,
-                    snapToPixel: false,
-                    stroke: new ol.style.Stroke({
-                        color: 'rgba(255, 0, 0, ' + opacity + ')',
-                        width: 1
-                    })
-                });
                 var highlightStyle = new ol.style.Style({
                     geometry: flashGeom,
                     stroke: new ol.style.Stroke({
@@ -126,29 +115,15 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
                                 })
                             })
                 });
-                var geomType = feature.getGeometry().getType();
-                if (geomType === 'Polygon'){
-                    vectorContext.setImageStyle(flashStyle);
-                    vectorContext.drawPointGeometry(flashGeom, null);
-                    if (elapsed > duration) {
-                        ol.Observable.unByKey(listenerKey);
-                        return;
-                    }
-                    // tell OL3 to continue postcompose animation
-                    map.render();
-//                } else if (geomType === 'LineString' || geomType === 'MultiLineString') {
-                    // @TODO 
-                } else if (geomType === 'Point' || geomType === 'MultiPolygon') {
-                    vectorLyr.setStyle(highlightStyle);
-                    if (source.getFeatures().length == 0) {
-                        source.addFeature(feature);
-                    }
-                    if (elapsed > duration) {
-                        ol.Observable.unByKey(listenerKey);
-                        return;
-                    }
-                    map.render();
+                vectorLyr.setStyle(highlightStyle);
+                if (source.getFeatures().length === 0) {
+                    source.addFeature(feature);
                 }
+                if (elapsed > duration) {
+                    ol.Observable.unByKey(listenerKey);
+                    return;
+                }
+                map.render();
             }
             listenerKey = map.on('postcompose', animate);
             map.getView().fit(feature.getGeometry().getExtent(), map.getSize());

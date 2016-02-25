@@ -7,9 +7,11 @@ Ext.define('OgamDesktop.store.map.Layer',{
 	extend: 'Ext.data.Store',
 	id: 'layerStore',
 	model: 'OgamDesktop.model.map.Layer',
+        autoLoad : true,
 	// Way to access data (ajax) and to read them (json)
 	proxy: {
 		type: 'ajax',
+                isSynchronous: true,
 		url: Ext.manifest.OgamDesktop.mapServiceUrl +'ajaxgetlayers',
 		actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
 		reader: {
