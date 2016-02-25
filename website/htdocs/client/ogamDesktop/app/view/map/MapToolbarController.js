@@ -224,7 +224,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     }, 
 
     olLayerToString : function(layer){
-        console.log('layer to convert into string', layer);
         layerStr = '{';
         layerStr += '"name":"' + layer.get('code') + '",';
         layerStr += '"opacity":' + layer.opacity;
@@ -239,9 +238,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     retrieveLayersToPrint : function(layerGrp) {
         var layersToPrint = [];
         layerGrp.getLayers().forEach(function(lyr) {
-            console.log('lyr', lyr);
             if (lyr.isLayerGroup) {
-                console.log('layer grp', lyr);
                 for (var i in this.retrieveLayersToPrint(lyr)) {
                     layersToPrint.push(this.retrieveLayersToPrint(lyr)[i]);
                 };
