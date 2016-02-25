@@ -8,17 +8,40 @@ require_once TEST_PATH . 'ControllerTestCase.php';
  */
 class GenericTest extends ControllerTestCase {
 
+	protected $genericModel;
+
+	/**
+	 * Set up the test case.
+	 *
+	 * @see sources/library/Zend/Test/PHPUnit/Zend_Test_PHPUnit_ControllerTestCase::setUp()
+	 */
+	public function setUp() {
+		parent::setUp();
+
+		// On instancie le service
+		$this->genericModel = new Application_Model_Generic_Generic();
+	}
+
+	/**
+	 * Clean up after the test case.
+	 */
+	public function tearDown() {
+
+		// Ferme les connections
+		$db = $this->genericModel->getAdapter();
+		$db->closeConnection();
+
+		$this->genericModel = null;
+	}
+
 	/**
 	 * Test "executeRequest".
 	 * Cas nominal.
 	 */
 	public function testExecuteRequest() {
 
-		// On charge le modèle
-		$genericModel = new Application_Model_Generic_Generic();
-
 		// On récupère le centre pour le fournisseur "1"
-		$result = $genericModel->executeRequest('SELECT 1 as count');
+		$result = $this->genericModel->executeRequest('SELECT 1 as count');
 
 		$this->assertNotNull($result);
 
@@ -32,9 +55,6 @@ class GenericTest extends ControllerTestCase {
 	 * Création, lecture, mise à jour et effacement d'une donnée dans une table.
 	 */
 	public function testCRUDDatum() {
-
-		// On charge le modèle
-		$genericModel = new Application_Model_Generic_Generic();
 
 		// On charge le service de manipulation des objets génériques
 		$genericService = new Application_Service_GenericService();
@@ -53,7 +73,7 @@ class GenericTest extends ControllerTestCase {
 		$pkFields['PLOT_DATA__CYCLE']->value = '5';
 
 		// On récupère maintenant le reste des valeurs correspondant à cette ligne
-		$filledData = $genericModel->getDatum($data);
+		$filledData = $this->genericModel->getDatum($data);
 
 		// echo "Result : " . print_r($filledData, true);
 
@@ -67,34 +87,31 @@ class GenericTest extends ControllerTestCase {
 		$newData->getInfoField('PLOT_DATA__CYCLE')->value = '1';
 
 		// Et on l'enregistre en base, créant ainsi un nouvel objet 'plot_data' sur la même localisation.
-		$genericModel->insertData($newData);
+		$this->genericModel->insertData($newData);
 
 		// Lecture pour vérifier que ça a fonctionné
-		$newData2 = $genericModel->getDatum($newData);
+		$newData2 = $this->genericModel->getDatum($newData);
 		$this->assertNotNull($newData2);
 
 		// On met à jour l'objet en base
 		$newData2->getEditableField('PLOT_DATA__INV_DATE')->value = '2015/05/29';
 		$newData2->getEditableField('PLOT_DATA__IS_FOREST_PLOT')->value = '0';
-		$genericModel->updateData($newData2);
+		$this->genericModel->updateData($newData2);
 
 		// Lecture pour vérifier que ça a fonctionné
-		$newData3 = $genericModel->getDatum($newData2);
+		$newData3 = $this->genericModel->getDatum($newData2);
 		$this->assertNotNull($newData3);
 		$this->assertEquals($newData3->getEditableField('PLOT_DATA__INV_DATE')->value, '2015/05/29');
 		$this->assertEquals($newData3->getEditableField('PLOT_DATA__IS_FOREST_PLOT')->value, '0');
 
 		// Ménage : On supprime en base l'objet que l'on viens de créer
-		$genericModel->deleteData($newData3);
+		$this->genericModel->deleteData($newData3);
 	}
 
 	/**
 	 * Test de la fonction de récupération des parents d'un objet.
 	 */
 	public function testAncestors() {
-
-		// On charge le modèle
-		$genericModel = new Application_Model_Generic_Generic();
 
 		// On charge le service de manipulation des objets génériques
 		$genericService = new Application_Service_GenericService();
@@ -111,11 +128,11 @@ class GenericTest extends ControllerTestCase {
 		$pkFields['PLOT_DATA__CYCLE']->value = '5';
 
 		// On récupère maintenant le reste des valeurs correspondant à cette ligne
-		$filledData = $genericModel->getDatum($data);
+		$filledData = $this->genericModel->getDatum($data);
 
 		// On récupère les ancêtres de l'objet en question
 		// Normalement, pour notre point on doit récupérer une localisation
-		$ancestors = $genericModel->getAncestors($filledData);
+		$ancestors = $this->genericModel->getAncestors($filledData);
 
 		$this->assertNotNull($ancestors);
 		$ancestor = $ancestors[0];
@@ -130,9 +147,6 @@ class GenericTest extends ControllerTestCase {
 	 * Test de la fonction de récupération des enfants d'un objet.
 	 */
 	public function testGetChildren() {
-
-		// On charge le modèle
-		$genericModel = new Application_Model_Generic_Generic();
 
 		// On charge le service de manipulation des objets génériques
 		$genericService = new Application_Service_GenericService();
@@ -149,11 +163,11 @@ class GenericTest extends ControllerTestCase {
 		$pkFields['PLOT_DATA__CYCLE']->value = '5';
 
 		// On récupère maintenant le reste des valeurs correspondant à cette ligne
-		$filledData = $genericModel->getDatum($data);
+		$filledData = $this->genericModel->getDatum($data);
 
 		// On récupère les ancêtres de l'objet en question
 		// Normalement, pour notre point on doit récupérer une localisation
-		$children = $genericModel->getChildren($filledData, 'SPECIES');
+		$children = $this->genericModel->getChildren($filledData, 'SPECIES');
 
 		// echo "Result : " . print_r($children, true);
 

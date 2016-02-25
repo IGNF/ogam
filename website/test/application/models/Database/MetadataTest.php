@@ -8,16 +8,39 @@ require_once TEST_PATH . 'ControllerTestCase.php';
  */
 class ModelDatabaseMetadataTest extends ControllerTestCase {
 
+	protected $databaseModel;
+
+	/**
+	 * Set up the test case.
+	 *
+	 * @see sources/library/Zend/Test/PHPUnit/Zend_Test_PHPUnit_ControllerTestCase::setUp()
+	 */
+	public function setUp() {
+		parent::setUp();
+
+		// On instancie le service
+		$this->databaseModel = new Application_Model_Database_Metadata();
+	}
+
+	/**
+	 * Clean up after the test case.
+	 */
+	public function tearDown() {
+
+		// Ferme les connections
+		$db = $this->databaseModel->getAdapter();
+		$db->closeConnection();
+
+		$this->databaseModel = null;
+	}
+
 	/**
 	 * Test de la fonction getTables().
 	 */
 	public function testGetTables() {
 
-		// On charge le modèle
-		$databaseModel = new Application_Model_Database_Metadata();
-
 		// On récupère la liste des tables documentées dans le métamodèles
-		$tables = $databaseModel->getTables();
+		$tables = $this->databaseModel->getTables();
 
 		// On vérifie que l'on a ramené les bonnes valeurs
 		$this->assertNotNull($tables);
@@ -31,11 +54,8 @@ class ModelDatabaseMetadataTest extends ControllerTestCase {
 	 */
 	public function testGetFields() {
 
-		// On charge le modèle
-		$databaseModel = new Application_Model_Database_Metadata();
-
 		// On récupère la liste des tables documentées dans le métamodèles
-		$fields = $databaseModel->getFields();
+		$fields = $this->databaseModel->getFields();
 
 		// On vérifie que l'on a ramené les bonnes valeurs
 		$this->assertNotNull($fields);
@@ -49,11 +69,8 @@ class ModelDatabaseMetadataTest extends ControllerTestCase {
 	 */
 	public function testGetForeignKeys() {
 
-		// On charge le modèle
-		$databaseModel = new Application_Model_Database_Metadata();
-
 		// On récupère la liste des tables documentées dans le métamodèles
-		$fks = $databaseModel->getForeignKeys();
+		$fks = $this->databaseModel->getForeignKeys();
 
 		// On vérifie que l'on a ramené les bonnes valeurs
 		$this->assertNotNull($fks);

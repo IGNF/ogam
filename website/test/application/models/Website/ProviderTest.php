@@ -10,18 +10,41 @@ require_once TEST_PATH . 'ControllerTestCase.php';
  */
 class ProviderTest extends ControllerTestCase {
 
+	protected $providerModel;
+
+	/**
+	 * Set up the test case.
+	 *
+	 * @see sources/library/Zend/Test/PHPUnit/Zend_Test_PHPUnit_ControllerTestCase::setUp()
+	 */
+	public function setUp() {
+		parent::setUp();
+
+		// On instancie le modèle
+		$this->providerModel = new Application_Model_Website_Provider();
+	}
+
+	/**
+	 * Clean up after the test case.
+	 */
+	public function tearDown() {
+
+		// Ferme les connections
+		$db = $this->providerModel->getAdapter();
+		$db->closeConnection();
+
+		$this->providerModel = null;
+	}
+
 	/**
 	 * Test "getProvider".
 	 * Cas nominal.
 	 */
 	public function testGetProvider() {
-		
-		// On charge le modèle
-		$providerModel = new Application_Model_Website_Provider();
-		
+
 		// On vérifie que le provider "1" existe
-		$provider = $providerModel->getProvider('1');
-		
+		$provider = $this->providerModel->getProvider('1');
+
 		// On vérifie que l'on a ramené le bon user
 		$this->assertNotNull($provider);
 		$this->assertEquals($provider->id, '1');
@@ -34,14 +57,11 @@ class ProviderTest extends ControllerTestCase {
 	 * Cas null.
 	 */
 	public function testGetProviderNull() {
-		
-		// On charge le modèle
-		$providerModel = new Application_Model_Website_Provider();
-		
+
 		// On vérifie que le user "TOTO" n'existe pas
 		try {
-			$provider = $providerModel->getProvider('TOTO');
-			
+			$provider = $this->providerModel->getProvider('TOTO');
+
 			$this->assertTrue(false);
 		} catch (Exception $e) {
 			// On attend une exception
@@ -53,12 +73,8 @@ class ProviderTest extends ControllerTestCase {
 	 * Test "getProvidersList".
 	 */
 	public function testGetProvidersList() {
-		
-		// On charge le modèle
-		$providerModel = new Application_Model_Website_Provider();
-		
-		$providers = $providerModel->getProvidersList();
-		
+		$providers = $this->providerModel->getProvidersList();
+
 		$this->assertNotNull($providers);
 		$this->assertTrue(is_array($providers));
 		$this->assertTrue(count($providers) > 0);
@@ -68,31 +84,28 @@ class ProviderTest extends ControllerTestCase {
 	 * Test CRUD provider.
 	 */
 	public function testCRUDProvider() {
-		
-		// On charge le modèle
-		$providerModel = new Application_Model_Website_Provider();
-		
+
 		// On crée un nouveau provider
-		$providerId = $providerModel->addProvider("PHPUnitProvider", "Test provider");
-		
+		$providerId = $this->providerModel->addProvider("PHPUnitProvider", "Test provider");
+
 		// On récupère le provider créé
-		$provider = $providerModel->getProvider($providerId);
-		
+		$provider = $this->providerModel->getProvider($providerId);
+
 		// On vérifie les valeurs
 		$this->assertEquals("PHPUnitProvider", $provider->label);
 		$this->assertEquals("Test provider", $provider->definition);
-		
+
 		// On modifie le provider
-		$providerModel->updateProvider($providerId, "PHPUnitProvider2", "Test provider2");
-		
+		$this->providerModel->updateProvider($providerId, "PHPUnitProvider2", "Test provider2");
+
 		// On récupère le provider modifié
-		$provider = $providerModel->getProvider($providerId);
-		
+		$provider = $this->providerModel->getProvider($providerId);
+
 		// On vérifie que la modif a eu lieu
 		$this->assertEquals("PHPUnitProvider2", $provider->label);
 		$this->assertEquals("Test provider2", $provider->definition);
-		
+
 		// On supprime le provider de test
-		$providerModel->deleteProvider($providerId);
+		$this->providerModel->deleteProvider($providerId);
 	}
 }

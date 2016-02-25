@@ -764,13 +764,12 @@ class Application_Service_GenericService {
 						} else {
 							// Get all the children of a selected node
 							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
-							$nodeCodes[] = $value; // add the value itself
 
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
-								$sql2 .= "'" . $nodeCode . "',";
+								$sql2 .= "'" . $nodeCode . "', ";
 							}
-							$sql2 = substr($sql2, 0, -1); // remove last comma
+							$sql2 = substr($sql2, 0, -2); // remove last comma
 
 							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
 						}
@@ -786,13 +785,12 @@ class Application_Service_GenericService {
 
 							// Get all the children of a selected taxon
 							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($tableField->unit, $value, 0);
-							$nodeCodes[] = $value; // add the value itself
 
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
-								$sql2 .= "'" . $nodeCode . "',";
+								$sql2 .= "'" . $nodeCode . "', ";
 							}
-							$sql2 = substr($sql2, 0, -1); // remove last comma
+							$sql2 = substr($sql2, 0, -2); // remove last comma
 
 							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
 						}
@@ -825,9 +823,9 @@ class Application_Service_GenericService {
 						foreach ($value as $val) {
 							if ($val != null && $val != '' && is_string($val)) {
 								if ($exact) {
-									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+									$sql .= "(ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
 								} else {
-									$sql .= "ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+									$sql .= "(ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
 								}
 								$sql .= " OR ";
 								$oradded = true;
@@ -840,9 +838,9 @@ class Application_Service_GenericService {
 					} else {
 						if (is_string($value)) {
 							if ($exact) {
-								$sql .= " AND ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+								$sql .= " AND (ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
 							} else {
-								$sql .= " AND ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+								$sql .= " AND (ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
 							}
 						}
 					}

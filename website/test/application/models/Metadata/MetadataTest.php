@@ -10,16 +10,39 @@ require_once TEST_PATH . 'ControllerTestCase.php';
  */
 class MetadataTest extends ControllerTestCase {
 
+	protected $metadataModel;
+
+	/**
+	 * Set up the test case.
+	 *
+	 * @see sources/library/Zend/Test/PHPUnit/Zend_Test_PHPUnit_ControllerTestCase::setUp()
+	 */
+	public function setUp() {
+		parent::setUp();
+
+		// On instancie le service
+		$this->metadataModel = new Application_Model_Metadata_Metadata();
+	}
+
+	/**
+	 * Clean up after the test case.
+	 */
+	public function tearDown() {
+
+		// Ferme les connections
+		$db = $this->metadataModel->getAdapter();
+		$db->closeConnection();
+
+		$this->metadataModel = null;
+	}
+
 	/**
 	 * Test la fonction getSchemas.
 	 */
 	public function testGetSchemas() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// On vérifie que le user "admin" existe
-		$schemas = $metadataModel->getSchemas();
+		$schemas = $this->metadataModel->getSchemas();
 
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($schemas), 2);
@@ -36,24 +59,21 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetModeLabels() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// On récupère la liste des esp^èces
-		$modes = $metadataModel->getModeLabels('SPECIES_CODE');
+		$modes = $this->metadataModel->getModeLabels('SPECIES_CODE');
 
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($modes), 303);
 
 		// On filtre sur un code
-		$modes = $metadataModel->getModeLabels('SPECIES_CODE', '999');
+		$modes = $this->metadataModel->getModeLabels('SPECIES_CODE', '999');
 
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($modes), 1);
 		$this->assertEquals($modes['999'], 'Other broadleaves');
 
 		// On filtre sur une liste de codes
-		$modes = $metadataModel->getModeLabels('SPECIES_CODE', array(
+		$modes = $this->metadataModel->getModeLabels('SPECIES_CODE', array(
 			'999',
 			'998'
 		));
@@ -64,7 +84,7 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertEquals($modes['998'], 'Other conifers');
 
 		// On filtre sur un libellé
-		$modes = $metadataModel->getModeLabels('SPECIES_CODE', null, 'Acacia');
+		$modes = $this->metadataModel->getModeLabels('SPECIES_CODE', null, 'Acacia');
 
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($modes), 11);
@@ -75,11 +95,8 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetMode() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// On vérifie que le user "admin" existe
-		$modeLabel = $metadataModel->getMode('PROVIDER_ID', '1');
+		$modeLabel = $this->metadataModel->getMode('PROVIDER_ID', '1');
 
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals($modeLabel, 'France');
@@ -89,11 +106,7 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getTreeLabels.
 	 */
 	public function testGetTreeLabels() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$taxons = $metadataModel->getTreeLabels('CORINE_BIOTOPE');
+		$taxons = $this->metadataModel->getTreeLabels('CORINE_BIOTOPE');
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($taxons), 1509);
@@ -103,23 +116,19 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getDynamodeLabels.
 	 */
 	public function testGetDynamodeLabels() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$departements = $metadataModel->getDynamodeLabels('DEPARTEMENT');
+		$departements = $this->metadataModel->getDynamodeLabels('DEPARTEMENT');
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($departements), 97);
 
 		// Test avec un bout de libellé
-		$departements = $metadataModel->getDynamodeLabels('DEPARTEMENT', '45');
+		$departements = $this->metadataModel->getDynamodeLabels('DEPARTEMENT', '45');
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($departements), 1);
 
 		// Test avec un code
-		$departements = $metadataModel->getDynamodeLabels('DEPARTEMENT', null, 'LOIR');
+		$departements = $this->metadataModel->getDynamodeLabels('DEPARTEMENT', null, 'LOIR');
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($departements), 4);
@@ -130,30 +139,27 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTreeChildren() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// Requête par défaut, on ramène le noeud racine avec 1 niveau de descendants
-		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE');
+		$taxonsTree = $this->metadataModel->getTreeChildren('CORINE_BIOTOPE');
 		$this->assertEquals(count($taxonsTree->children), 7); // Il doit y avoir 7 enfants
 		$taxon = $taxonsTree->children[0];
 		$this->assertEquals($taxon->code, 1); // le noeud sous la racine est 1 : Habitats littoraux et halophiles
 		$this->assertEquals($taxon->label, 'Habitats littoraux et halophiles');
 
 		// Idem
-		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE', '*');
+		$taxonsTree = $this->metadataModel->getTreeChildren('CORINE_BIOTOPE', '*');
 		$this->assertEquals(count($taxonsTree->children), 7); // Il doit y avoir 7 enfants
 
 		// Idem
-		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE', '*', 1);
+		$taxonsTree = $this->metadataModel->getTreeChildren('CORINE_BIOTOPE', '*', 1);
 		$this->assertEquals(count($taxonsTree->children), 7);
 
 		// 1 niveau à partir de Fauna
-		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE', '4', 1);
+		$taxonsTree = $this->metadataModel->getTreeChildren('CORINE_BIOTOPE', '4', 1);
 		$this->assertEquals(count($taxonsTree->children), 5); // Il y a 10 enfants à Fauna
 
 		// 2 niveaux à partir de la racine
-		$taxonsTree = $metadataModel->getTreeChildren('CORINE_BIOTOPE', '*', 2);
+		$taxonsTree = $this->metadataModel->getTreeChildren('CORINE_BIOTOPE', '*', 2);
 		$this->assertEquals(count($taxonsTree->children), 7);
 	}
 
@@ -162,27 +168,24 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTreeChildrenCodes() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// Réquête par défaut, on ramène le noeud racine sur 1 niveau
-		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '1');
+		$taxons = $this->metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '1');
 		$this->assertEquals(count($taxons), 1);
 
 		// Idem
-		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '1', 1);
+		$taxons = $this->metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '1', 1);
 		$this->assertEquals(count($taxons), 1);
 
 		// Sur 2 niveaux
-		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '1', 2);
+		$taxons = $this->metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '1', 2);
 		$this->assertEquals(count($taxons), 10); // on doit trouver 10 codes
 
 		// Un noeud fils
-		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '41.1312', 1);
+		$taxons = $this->metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '41.1312', 1);
 		$this->assertEquals(count($taxons), 1);
 
 		// Un noeud avec des enfants
-		$taxons = $metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '41.11', 2);
+		$taxons = $this->metadataModel->getTreeChildrenCodes('CORINE_BIOTOPE', '41.11', 2);
 		$this->assertEquals(count($taxons), 3);
 	}
 
@@ -191,12 +194,9 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTreeModes() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// Réquête par défaut, on ramène le noeud racine sur 1 niveau
-		$modes = $metadataModel->getTreeModes('CORINE_BIOTOPE', 'Forêts');
-		$count = $metadataModel->getTreeModesCount('CORINE_BIOTOPE', 'Forêts');
+		$modes = $this->metadataModel->getTreeModes('CORINE_BIOTOPE', 'Forêts');
+		$count = $this->metadataModel->getTreeModesCount('CORINE_BIOTOPE', 'Forêts');
 
 		$this->assertEquals(count($modes), 156);
 		$this->assertEquals($count, 156);
@@ -208,11 +208,7 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getRequestedFiles.
 	 */
 	public function testGetRequestedFiles() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$datasets = $metadataModel->getRequestedFiles('SPECIES');
+		$datasets = $this->metadataModel->getRequestedFiles('SPECIES');
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($datasets), 3);
@@ -227,11 +223,7 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getFileFields.
 	 */
 	public function testGetFileFields() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$fields = $metadataModel->getFileFields('LOCATION_FILE');
+		$fields = $this->metadataModel->getFileFields('LOCATION_FILE');
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($fields), 4);
@@ -247,11 +239,7 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getTableFields.
 	 */
 	public function testGetTableFields() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$fields = $metadataModel->getTableFields('RAW_DATA', 'LOCATION_DATA');
+		$fields = $this->metadataModel->getTableFields('RAW_DATA', 'LOCATION_DATA');
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($fields), 10);
@@ -271,7 +259,7 @@ class MetadataTest extends ControllerTestCase {
 		//
 		// Same thing but filter with a dataset specified
 		//
-		$fields = $metadataModel->getTableFields('RAW_DATA', 'LOCATION_DATA', 'SPECIES');
+		$fields = $this->metadataModel->getTableFields('RAW_DATA', 'LOCATION_DATA', 'SPECIES');
 
 		// On vérifie que l'on a ramené le bon compte de modalités
 		$this->assertEquals(count($fields), 10);
@@ -293,11 +281,7 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getTableFormat.
 	 */
 	public function testGetTableFormat() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$tableFormat = $metadataModel->getTableFormat('RAW_DATA', 'LOCATION_DATA');
+		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', 'LOCATION_DATA');
 
 		//
 		$this->assertEquals($tableFormat->tableName, 'LOCATION');
@@ -309,11 +293,7 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getForms.
 	 */
 	public function testGetForms() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$forms = $metadataModel->getForms('SPECIES', 'RAW_DATA');
+		$forms = $this->metadataModel->getForms('SPECIES', 'RAW_DATA');
 
 		$this->assertEquals(count($forms), 3);
 
@@ -328,13 +308,10 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetFormFields() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		//
 		// Get the result fields available for the form 'plot'
 		//
-		$formFields = $metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'result');
+		$formFields = $this->metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'result');
 
 		$this->assertEquals(count($formFields), 7);
 
@@ -350,7 +327,7 @@ class MetadataTest extends ControllerTestCase {
 		//
 		// Same thing for the criterias
 		//
-		$formFields = $metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'criteria');
+		$formFields = $this->metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'criteria');
 
 		$this->assertEquals(count($formFields), 6);
 
@@ -367,11 +344,7 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getFormField.
 	 */
 	public function testGetFormField() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$formField = $metadataModel->getFormField('PLOT_FORM', 'IS_FOREST_PLOT');
+		$formField = $this->metadataModel->getFormField('PLOT_FORM', 'IS_FOREST_PLOT');
 
 		// Les données attendues sont ordonnées
 		$this->assertEquals($formField->label, 'Is a forest plot');
@@ -382,11 +355,7 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getRange.
 	 */
 	public function testGetRange() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$range = $metadataModel->getRange('PERCENTAGE');
+		$range = $this->metadataModel->getRange('PERCENTAGE');
 
 		// Les données attendues sont ordonnées
 		$this->assertEquals($range->min, 0);
@@ -398,14 +367,11 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetFormToTableMapping() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// first we get a form field
-		$formField = $metadataModel->getFormField('PLOT_FORM', 'IS_FOREST_PLOT');
+		$formField = $this->metadataModel->getFormField('PLOT_FORM', 'IS_FOREST_PLOT');
 
 		// then we get the corresponding table field
-		$tableField = $metadataModel->getFormToTableMapping('RAW_DATA', $formField);
+		$tableField = $this->metadataModel->getFormToTableMapping('RAW_DATA', $formField);
 
 		// $this->logger->debug('testGetFormToTableMapping : '.print_r($tableField,true));
 
@@ -418,17 +384,14 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTableToFormMapping() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// first we get a form field
-		$formField = $metadataModel->getFormField('PLOT_FORM', 'IS_FOREST_PLOT');
+		$formField = $this->metadataModel->getFormField('PLOT_FORM', 'IS_FOREST_PLOT');
 
 		// then we get the corresponding table field
-		$tableField = $metadataModel->getFormToTableMapping('RAW_DATA', $formField);
+		$tableField = $this->metadataModel->getFormToTableMapping('RAW_DATA', $formField);
 
 		// then we get back the form field
-		$formField2 = $metadataModel->getTableToFormMapping($tableField);
+		$formField2 = $this->metadataModel->getTableToFormMapping($tableField);
 
 		// Les données attendues sont ordonnées
 		$this->assertEquals($formField, $formField2);
@@ -438,11 +401,7 @@ class MetadataTest extends ControllerTestCase {
 	 * Test la fonction getTablesTree.
 	 */
 	public function testGetTablesTree() {
-
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
-		$tablesTree = $metadataModel->getTablesTree('SPECIES_DATA', 'RAW_DATA');
+		$tablesTree = $this->metadataModel->getTablesTree('SPECIES_DATA', 'RAW_DATA');
 
 		$this->assertEquals(count($tablesTree), 3);
 
@@ -457,14 +416,11 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetChildrenTableLabels() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// First we get a table format
-		$tableFormat = $metadataModel->getTableFormat('RAW_DATA', 'PLOT_DATA');
+		$tableFormat = $this->metadataModel->getTableFormat('RAW_DATA', 'PLOT_DATA');
 
 		// Then we get the available children
-		$childTables = $metadataModel->getChildrenTableLabels($tableFormat);
+		$childTables = $this->metadataModel->getChildrenTableLabels($tableFormat);
 
 		$this->assertEquals(count($childTables), 2);
 
@@ -478,9 +434,6 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetGeometryField() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// The list of tables where to search
 		$tables = array(
 			'LOCATION_DATA',
@@ -489,7 +442,7 @@ class MetadataTest extends ControllerTestCase {
 		);
 
 		// We search for the geometry column
-		$geometryField = $metadataModel->getGeometryField('RAW_DATA', $tables);
+		$geometryField = $this->metadataModel->getGeometryField('RAW_DATA', $tables);
 
 		$this->assertNotNull($geometryField);
 
@@ -504,11 +457,8 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetDatasetsForDisplay() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// We search for the geometry column
-		$datasets = $metadataModel->getDatasetsForDisplay();
+		$datasets = $this->metadataModel->getDatasetsForDisplay();
 
 		$this->assertNotNull($datasets);
 		$this->assertEquals(2, count($datasets));
@@ -524,11 +474,8 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetDatasetsForUpload() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// We search for the geometry column
-		$datasets = $metadataModel->getDatasetsForUpload();
+		$datasets = $this->metadataModel->getDatasetsForUpload();
 
 		$this->assertNotNull($datasets);
 		$this->assertEquals(2, count($datasets));
@@ -546,11 +493,8 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTaxrefChildrenNull() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// then we get the corresponding table field
-		$tree = $metadataModel->getTaxrefChildren('TOTO', 'NODE', 1);
+		$tree = $this->metadataModel->getTaxrefChildren('TOTO', 'NODE', 1);
 
 		$this->assertNull($tree);
 	}
@@ -562,11 +506,8 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTaxrefChildren() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// On cherche les enfants au rang 2 de 'Plantae'
-		$tree = $metadataModel->getTaxrefChildren('ID_TAXON', '187079', 2);
+		$tree = $this->metadataModel->getTaxrefChildren('ID_TAXON', '187079', 2);
 
 		// Ne doit pas être null
 		$this->assertNotNull($tree);
@@ -584,11 +525,8 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTaxrefChildrenCodes() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// On cherche les enfants au rang 2 de 'Plantae'
-		$codes = $metadataModel->getTaxrefChildrenCodes('ID_TAXON', '187079', 2);
+		$codes = $this->metadataModel->getTaxrefChildrenCodes('ID_TAXON', '187079', 2);
 
 		// Ne doit pas être null
 		$this->assertNotNull($codes);
@@ -603,11 +541,8 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTaxrefLabels() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// On cherche les enfants au rang 2 de 'Plantae'
-		$labels = $metadataModel->getTaxrefLabels('ID_TAXON', '187079');
+		$labels = $this->metadataModel->getTaxrefLabels('ID_TAXON', '187079');
 
 		// Ne doit pas être null
 		$this->assertNotNull($labels);
@@ -622,11 +557,8 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTaxrefModes() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// On cherche les enfants au rang 2 de 'Plantae'
-		$modes = $metadataModel->getTaxrefModes('ID_TAXON', 'Planta', 0, 50);
+		$modes = $this->metadataModel->getTaxrefModes('ID_TAXON', 'Planta', 0, 50);
 
 		// Ne doit pas être null
 		$this->assertNotNull($modes);
@@ -640,11 +572,8 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetTaxrefModesCount() {
 
-		// On charge le modèle
-		$metadataModel = new Application_Model_Metadata_Metadata();
-
 		// On cherche les enfants au rang 2 de 'Plantae'
-		$count = $metadataModel->getTaxrefModesCount('ID_TAXON', 'Planta');
+		$count = $this->metadataModel->getTaxrefModesCount('ID_TAXON', 'Planta');
 
 		$this->assertEquals(528, $count);
 	}
