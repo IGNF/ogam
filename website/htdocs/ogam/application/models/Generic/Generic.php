@@ -241,7 +241,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// remove last comma
 		$sql = substr($sql, 0, -2);
 
-		$sql .= " WHERE(1 = 1)";
+		$sql .= " WHERE (1 = 1)";
 
 		// Build the WHERE clause with the info from the PK.
 		foreach ($data->infoFields as $primaryKey) {

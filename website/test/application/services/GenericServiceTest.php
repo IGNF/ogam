@@ -730,5 +730,168 @@ class GenericServiceTest extends ControllerTestCase {
 		// On vérifie le résultat
 		$this->assertNotNull($where);
 		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((3697781 2714044,3693936 2709776,3700497 2710164,3697781 2714044))', 3035), 4326)))", trim($where));
+
+		//
+		// Ajout d'un critère sur un liste de valeurs
+		//
+		$field->value = array(
+			'POLYGON((0 0,2 0,2 2,0 0))',
+			'POLYGON((0 0,1 0,1 1,0 0))'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((0 0,2 0,2 2,0 0))', 3035), 4326)) OR ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((0 0,1 0,1 1,0 0))', 3035), 4326)))", trim($where));
 	}
+
+	/**
+	 * Test de la fonction generateSQLWhereStringRequest().
+	 */
+	public function testGenerateSQLWhereStringRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		//
+		// Ajout d'un critère sur une valeur simple
+		//
+		$field = new Application_Object_Metadata_TableField();
+		$field->data = "COMMENT";
+		$field->columnName = "COMMENT";
+		$field->format = "PLOT_DATA";
+		$field->unit = "COMMENT";
+		$field->type = "STRING";
+		$field->subtype = "NULL";
+		$field->value = 'test';
+		$data->addInfoField($field);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.COMMENT ILIKE '%test%')", trim($where));
+
+		//
+		// Ajout d'un critère sur un liste de valeurs
+		//
+		$field->value = array(
+			'test1',
+			'test2'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.COMMENT ILIKE '%test1%' OR PLOT_DATA.COMMENT ILIKE '%test2%')", trim($where));
+	}
+
+	/**
+	 * Test de la fonction generateSQLWhereArrayRequest().
+	 */
+	public function testGenerateSQLWhereArrayRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		//
+		// Ajout d'un critère sur un code simple
+		//
+		$field = new Application_Object_Metadata_TableField();
+		$field->data = "COMMUNES";
+		$field->columnName = "COMMUNES";
+		$field->format = "LOCATION_DATA";
+		$field->unit = "COMMUNES";
+		$field->type = "ARRAY";
+		$field->subtype = "DYNAMIC";
+		$field->value = '45050';
+		$data->addInfoField($field);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND '45050' = ANY(LOCATION_DATA.COMMUNES)", trim($where));
+
+		//
+		// Ajout d'un critère sur une liste de codes
+		//
+		$field->value = array(
+			'45050',
+			'45051'
+		);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND LOCATION_DATA.COMMUNES && '{\"45050\",\"45051\"}'", trim($where));
+	}
+
+	/**
+	 * Test de la fonction generateSQLWhereArrayTreeRequest().
+	 */
+	public function testGenerateSQLWhereArrayTreeRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		//
+		// Ajout d'un critère sur un code de type arborescent
+		//
+		$field = new Application_Object_Metadata_TableField();
+		$field->data = "CORINE_BIOTOPE";
+		$field->columnName = "CORINE_BIOTOPE";
+		$field->format = "PLOT_DATA";
+		$field->unit = "CORINE_BIOTOPE";
+		$field->type = "ARRAY";
+		$field->subtype = "TREE";
+		$field->value = '13.1'; // 13.1 est le parent de 13.11 et 13.12
+		$data->addInfoField($field);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND PLOT_DATA.CORINE_BIOTOPE && '{\"13.1\",\"13.11\",\"13.12\"}'", trim($where));
+
+	}
+
+	/**
+	 * Test de la fonction generateSQLWhereArrayTaxrefRequest().
+	 */
+	public function testGenerateSQLWhereArrayTaxrefRequest() {
+
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+
+		//
+		// Ajout d'un critère sur un code de type arborescent
+		//
+		$field = new Application_Object_Metadata_TableField();
+		$field->data = "ID_TAXON";
+		$field->columnName = "ID_TAXON";
+		$field->format = "SPECIES_DATA";
+		$field->unit = "ID_TAXON";
+		$field->type = "ARRAY";
+		$field->subtype = "TAXREF";
+		$field->value = '201070'; // 201070 est le taxon parent de 220213, 220214 et 220215
+		$data->addInfoField($field);
+
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND SPECIES_DATA.ID_TAXON && '{\"201070\",\"220213\",\"220214\",\"220215\"}'", trim($where));
+	}
+
 }

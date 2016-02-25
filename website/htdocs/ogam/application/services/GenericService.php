@@ -518,7 +518,7 @@ class Application_Service_GenericService {
 	/**
 	 * Return the SQL String representation of an array.
 	 *
-	 * Example : Array ( [0] => Boynes, [1] => Ascoux ) => {Boynes, Ascoux}
+	 * Example : Array ( [0] => Boynes, [1] => Ascoux ) => {"Boynes", "Ascoux"}
 	 *
 	 * @param Array[String] $value
 	 *        	an array of values.
@@ -529,7 +529,7 @@ class Application_Service_GenericService {
 
 		if (is_array($arrayValues)) {
 			foreach ($arrayValues as $value) {
-				$string .= $value . ",";
+				$string .= '"' . $value . '",';
 			}
 			$string = substr($string, 0, -1); // Remove last comma
 		} else {
@@ -543,7 +543,7 @@ class Application_Service_GenericService {
 	/**
 	 * Return an Array object corresponding to a SQL string.
 	 *
-	 * Example : {Boynes, Ascoux} => Array ( [0] => Boynes, [1] => Ascoux )
+	 * Example : {"Boynes", "Ascoux"} => Array ( [0] => Boynes, [1] => Ascoux )
 	 *
 	 * @param String $value
 	 *        	an array of values.
@@ -552,6 +552,7 @@ class Application_Service_GenericService {
 	public function stringToArray($value) {
 		$values = str_replace("{", "", $value);
 		$values = str_replace("}", "", $values);
+		$values = str_replace('"', "", $values);
 		$values = trim($values);
 		$valuesArray = explode(",", $values);
 
@@ -586,7 +587,7 @@ class Application_Service_GenericService {
 				// Case "YYYY/MM/DD"
 				if (Zend_Date::isDate($value, 'YYYY/MM/DD')) {
 					// One value, we make an equality comparison
-					$sql .="(" .  $column . " = to_date('" . $value . "', 'YYYY/MM/DD'))";
+					$sql .= "(" . $column . " = to_date('" . $value . "', 'YYYY/MM/DD'))";
 				}
 			} else if (strlen($value) == 13 && substr($value, 0, 2) == '>=') {
 				// Case ">= YYYY/MM/DD"
@@ -688,7 +689,7 @@ class Application_Service_GenericService {
 					} else {
 						// Single value
 						if (is_numeric($value) || is_string($value)) {
-							$sql .= " AND (" . $this->_buildNumericWhereItem($tableField, $value). ")";
+							$sql .= " AND (" . $this->_buildNumericWhereItem($tableField, $value) . ")";
 						}
 					}
 					break;
@@ -706,7 +707,6 @@ class Application_Service_GenericService {
 						} else {
 							// Get all the children of a selected node
 							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
-							$nodeCodes[] = $value; // add the value itself
 
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeCodes);
@@ -723,7 +723,6 @@ class Application_Service_GenericService {
 						} else {
 							// Get all the children of a selected taxon
 							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($tableField->unit, $value, 0);
-							$nodeCodes[] = $value; // add the value itself
 
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeCodes);
@@ -823,9 +822,9 @@ class Application_Service_GenericService {
 						foreach ($value as $val) {
 							if ($val != null && $val != '' && is_string($val)) {
 								if ($exact) {
-									$sql .= "(ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
+									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
 								} else {
-									$sql .= "(ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
+									$sql .= "ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
 								}
 								$sql .= " OR ";
 								$oradded = true;
@@ -870,12 +869,13 @@ class Application_Service_GenericService {
 					} else {
 						if (is_string($value)) {
 							// Single value
-							$sql .= " AND " . $column;
+							$sql .= " AND (" . $column;
 							if ($exact) {
 								$sql .= " = '" . $value . "'";
 							} else {
 								$sql .= " ILIKE '%" . $value . "%'";
 							}
+							$sql .= ")";
 						}
 					}
 					break;
