@@ -315,7 +315,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$pk = $this->genericService->generateSQLPrimaryKey('RAW_DATA', $data);
 
 		$this->assertNotNull($pk);
-		$this->assertEquals('SPECIES_DATA.PROVIDER_ID,SPECIES_DATA.PLOT_CODE,SPECIES_DATA.CYCLE,SPECIES_DATA.SPECIES_CODE', $pk);
+		$this->assertEquals('SPECIES_DATA.PROVIDER_ID,SPECIES_DATA.PLOT_CODE,SPECIES_DATA.CYCLE,SPECIES_DATA.ID_TAXON', $pk);
 	}
 
 	/**
@@ -332,7 +332,6 @@ class GenericServiceTest extends ControllerTestCase {
 		$this->assertNotNull($select);
 		$this->assertTrue(strpos($select, 'SELECT ') !== false);
 		$this->assertTrue(strpos($select, 'SPECIES_DATA.SUBMISSION_ID as SPECIES_DATA__SUBMISSION_ID') !== false);
-		$this->assertTrue(strpos($select, 'SPECIES_DATA.ID_TAXON as SPECIES_DATA__ID_TAXON') !== false);
 		$this->assertTrue(strpos($select, 'SPECIES_DATA.BASAL_AREA as SPECIES_DATA__BASAL_AREA') !== false);
 		$this->assertTrue(strpos($select, 'SPECIES_DATA.COMMENT as SPECIES_DATA__COMMENT') !== false);
 		$this->assertTrue(strpos($select, 'SPECIES_DATA.LINE_NUMBER as SPECIES_DATA__LINE_NUMBER') !== false);
