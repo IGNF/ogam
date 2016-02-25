@@ -3,7 +3,7 @@
  * map main view.
  */
 Ext.define('OgamDesktop.controller.map.Main',{
-	extend: 'OgamDesktop.controller.AbstractWin',
+	extend: 'Ext.app.Controller',
 	requires: [
 		'Ext.grid.column.Number'
 	],

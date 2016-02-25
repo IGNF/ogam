@@ -4,7 +4,7 @@
 Ext.define('OgamDesktop.store.result.Grid',{
 	extend: 'Ext.data.Store',
 	// The model is dynamically changed.
-	model: 'OgamDesktop.model.result.Grid',
+	model: 'Ext.data.Model',
 	remoteSort: true,
 	proxy: {
 		type: 'ajax',

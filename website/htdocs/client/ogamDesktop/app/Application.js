@@ -13,9 +13,7 @@ Ext.define('OgamDesktop.Application', {
 		'map.LayerService',
 		'request.fieldset.Criterion',
 		'request.fieldset.Column',
-		'request.object.field.Code',
-		'request.object.Field',
-		'result.Grid'
+		'request.object.field.Code'
 	],
 	stores: [
 		'map.LayerNode',

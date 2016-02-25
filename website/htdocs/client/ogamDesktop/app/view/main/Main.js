@@ -14,9 +14,6 @@ Ext.define('OgamDesktop.view.main.Main', {
 	layout: 'card',
 	itemId: 'main',
 	controller: 'main',
-	viewModel: {
-		type: 'main'
-	},
 	extend: 'Ext.tab.Panel',
 	renderTo: Ext.get('content'),
 	//width: Ext.getBody().getViewSize().width - 80,

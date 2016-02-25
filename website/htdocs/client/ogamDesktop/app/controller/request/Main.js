@@ -1,5 +1,5 @@
 Ext.define('OgamDesktop.controller.request.Main',{
-	extend: 'OgamDesktop.controller.AbstractWin',
+	extend: 'Ext.app.Controller',
 	
 	
 	
