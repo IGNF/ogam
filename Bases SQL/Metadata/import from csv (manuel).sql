@@ -1,4 +1,4 @@
-﻿set search_path = metadata;
+set search_path = metadata;
 --\! pwd
 
 --
