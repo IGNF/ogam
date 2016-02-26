@@ -80,6 +80,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     
     buildLayersTree : function() {
         var mapPanel = this.getMappanel();
+        var mapCmp = mapPanel.child('mapcomponent');
+        var curRes = mapCmp.getMap().getView().getResolution();
         var layersPanel = this.getLayerspanel();
         var layersList = [];
         var layerGrpsList = [];
@@ -106,7 +108,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             for (var j in this.treeStores['services']){
                 var service = this.treeStores['services'][j];
                 if (service.get('name') === layer.get('legendServiceName')) {
-                    this.getLegendspanel().fireEvent('onReadyToBuildLegend', layer, service);
+                    this.getLegendspanel().fireEvent('onReadyToBuildLegend', curRes, layer, service);
                 };
                 if (service.get('name') === layer.get('viewServiceName')) {
                     var source;
@@ -140,14 +142,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                         olLayerOpts['session_id'] = layer.get('params').session_id;
                         source = new ol.source.WMTS(sourceWMTSOpts);
                     }
-                    var activateType = layer.get('params').activateType.toLowerCase();
-                    var mapCmp = mapPanel.child('mapcomponent');
-                    var mapCmpCtrl = mapCmp.getController();
-                    if (Ext.isEmpty(mapCmpCtrl.layersActivation[activateType])) {
-                        mapCmpCtrl.layersActivation[activateType] = [layer.get('name')];
-                    } else {
-                        mapCmpCtrl.layersActivation[activateType].push(layer.get('name'));
-                    }
                     olLayerOpts['source'] = source;
                     olLayerOpts['name'] = layer.get('options').label;
                     olLayerOpts['opacity'] = layer.get('options').opacity;
@@ -162,13 +156,19 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                         olLayerOpts['maxResolution'] = resolutions[0];
                     }
                     olLayerOpts['disabled'] = layer.get('params').isDisabled;
-                    var curRes = mapCmp.getMap().getView().getResolution();
                     if (curRes < olLayerOpts['minResolution'] || curRes >= olLayerOpts['maxResolution']) {
                         olLayerOpts['disabled'] = true;
                     }
                     var olLayer = new ol.layer.Tile(olLayerOpts);
+                    var activateType = layer.get('params').activateType.toLowerCase();
+                    var mapCmpCtrl = mapCmp.getController();
+                    if (Ext.isEmpty(mapCmpCtrl.layersActivation[activateType])) {
+                        mapCmpCtrl.layersActivation[activateType] = [olLayer];
+                    } else {
+                        mapCmpCtrl.layersActivation[activateType].push(olLayer);
+                    }
                     olLayer.on('change:visible', function(e) {
-                        mapCmp.fireEvent('changelayervisibility', this, e.target.get(e.key));
+                        mapCmpCtrl.fireEvent('changelayervisibility', this, e.target.get(e.key));
                     });
                     if (layer.get('options').nodeGroup == -1){
                         layersList.push(olLayer);

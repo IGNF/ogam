@@ -6,6 +6,7 @@
 Ext.define('OgamDesktop.view.map.LayersPanel', {
     extend: 'Ext.tree.Panel',
     xtype: 'layers-panel',
+    controller: 'layerspanel',
     requires: [
         'Ext.data.TreeStore'
     ],

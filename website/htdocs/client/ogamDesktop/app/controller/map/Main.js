@@ -53,7 +53,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
                     mapCmp.fireEvent('resultswithautozoom');
                 }
                 // Display the results layer
-                mapCmp.fireEvent('onGetResultsBBox',mapCmpCtrl.layersActivation['request'], true);
+                mapCmpCtrl.fireEvent('onGetResultsBBox',mapCmpCtrl.layersActivation['request'], true);
             },
             scope: this
         });

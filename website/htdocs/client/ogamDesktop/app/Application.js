@@ -24,7 +24,6 @@ Ext.define('OgamDesktop.Application', {
 	controllers: [
 		'map.Drawing',
 		'map.Layer',
-		'map.Legend',
 		'map.Main',
 		'result.Grid',
 		'result.Main',
