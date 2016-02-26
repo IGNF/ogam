@@ -28,7 +28,6 @@ Ext.define('OgamDesktop.Application', {
 		'map.Main',
 		'result.Grid',
 		'result.Main',
-		'result.Layer',
 		'navigation.Main',
 		'request.PredefinedRequest'
 	],
