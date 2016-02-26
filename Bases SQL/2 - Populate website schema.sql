@@ -5,8 +5,8 @@ DELETE FROM application_parameters;
 -- TEST DATABASE Parameters
 INSERT INTO application_parameters (name, value, description) values ('UploadDirectory','/var/tmp/ogam_upload','Directory where the CSV files are uploaded');
 INSERT INTO application_parameters (name, value, description) values ('Test','OK','For test purposes');
-INSERT INTO application_parameters (name, value, description) values ('fromMail','OGAM@ifn.fr','The application email');
-INSERT INTO application_parameters (name, value, description) values ('toMail','benoit.pesty@ifn.fr','The destination email');
+INSERT INTO application_parameters (name, value, description) values ('fromMail','OGAM@ign.fr','The application email');
+INSERT INTO application_parameters (name, value, description) values ('toMail','benoit.pesty@ign.fr','The destination email');
 
 insert into application_parameters (name, value, description) values ( 'autoLogin' , 0 , 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
 insert into application_parameters (name, value, description) values ( 'defaultUser' , 'visitor' , 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
