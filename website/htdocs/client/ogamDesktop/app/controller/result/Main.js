@@ -12,15 +12,10 @@ Ext.define('OgamDesktop.controller.result.Main',{
 	],
 	config: {
 		refs: {
-			mappanel: '#map-panel',
-			mapmainwin: 'map-mainwin',
 			resultmainwin: 'result-mainwin'
 		},
 		control: {
 			'results-grid': {
-				onOpenNavigationButtonClick: 'openNavigation',
-				onSeeOnMapButtonClick: 'seeOnMap',
-				onEditDataButtonClick: 'openEditForm',
 				resultsload: 'disableExportButton'
 			},
 			'result-mainwin': {
@@ -29,42 +24,6 @@ Ext.define('OgamDesktop.controller.result.Main',{
 		}
 	},
 
-	/**
-	 * Show the map container and zoom on the result BBox.
-	 * 
-	 * @param {Object}
-	 *            feature The feature corresponding to the grid row,
-	 *            contains id and geometry.
-	 */
-	seeOnMap: function(feature) {
-		this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
-		this.getMappanel().child('mapcomponent').getController().zoomToFeature(feature.id, feature.location_centroid);
-	},
-
-	/**
-	 * Show the Navigation container and display the data card.
-	 * 
-	 * @param {Object}
-	 *            grid The results grid view.
-	 * @param {integer}
-	 *            rowIndex The index of the clicked data row.
-	 */
-	openNavigation: function(record) {
-		console.log('open navigation grid', record);
-	},
-
-	/**
-	 * Show the data edit form of the clicked row.
-	 * 
-	 * @param {Object}
-	 *            grid The results grid view.
-	 * @param {integer}
-	 *            rowIndex The index of the clicked data row
-	 */
-	openEditForm: function(record) {
-		console.log('open edit form grid', record);
-	},
-	
 	/**
 	 * Show the data edit form of the clicked row.
 	 * 
@@ -79,9 +38,8 @@ Ext.define('OgamDesktop.controller.result.Main',{
 		} else {
 			this.getResultmainwin().exportButton.disable();
 		}
-		
 	},
-	
+
 	/**
 	 * Export the data as a CSV file
 	 * 

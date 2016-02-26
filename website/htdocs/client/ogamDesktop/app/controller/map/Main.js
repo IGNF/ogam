@@ -26,7 +26,8 @@ Ext.define('OgamDesktop.controller.map.Main',{
 				beforedetailsgridrowleave: 'setResultStateToDefault'
 			},
 			'results-grid': {
-                resultsload: 'getResultsBbox'
+                resultsload: 'getResultsBbox',
+                onSeeOnMapButtonClick: 'seeOnMap'
             }
 		}
 	},
@@ -55,5 +56,17 @@ Ext.define('OgamDesktop.controller.map.Main',{
             },
             scope: this
         });
-    }
+    },
+
+    /**
+	 * Show the map container and zoom on the result BBox.
+	 * 
+	 * @param {Object}
+	 *            feature The feature corresponding to the grid row,
+	 *            contains id and geometry.
+	 */
+	seeOnMap: function(feature) {
+		this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
+		this.getMappanel().child('mapcomponent').getController().zoomToFeature(feature.id, feature.location_centroid);
+	}
 });
