@@ -1,4 +1,4 @@
-Ext.define('OgamDesktop.controller.navigation.DeprecatedDetailGrid',{
+Ext.define('OgamDesktop.controller.navigation.Main',{
 	extend: 'Ext.app.Controller',
 	/**
 	 * The refs to get the views concerned

@@ -29,7 +29,7 @@ Ext.define('OgamDesktop.Application', {
 		'result.Grid',
 		'result.Main',
 		'result.Layer',
-		'navigation.DeprecatedDetailGrid',
+		'navigation.Main',
 		'request.PredefinedRequest'
 	],
 	views: [
