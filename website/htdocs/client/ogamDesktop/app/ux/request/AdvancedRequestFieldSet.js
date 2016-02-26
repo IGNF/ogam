@@ -103,8 +103,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			labelWidth : this.criteriaLabelWidth,
 			defaults : {
 				labelStyle : 'padding: 0;',
-				beforeLabelTpl : '<div class="filterBin">&nbsp;&nbsp;&nbsp;</div>',
-				labelClsExtra : 'columnLabelColor labelNextBin'
+				beforeLabelTpl : '<div class="o-ux-adrfs-filterBin">&nbsp;&nbsp;&nbsp;</div>',
+				labelClsExtra : 'o-columnLabelColor o-ux-adrfs-labelNextBin'
 				//width : 180 not used in a form layout (Table-row display)
 			},
 			items :( Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig()),
@@ -310,7 +310,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				xtype : 'box',
 				autoEl : {
 					tag : 'div',
-					cls : 'columnLabelBin columnLabelBinColor',
+					cls : 'o-ux-adrfs-columnLabelBin o-ux-adrfs-columnLabelBinColor',
 					html : '&nbsp;&nbsp;&nbsp;&nbsp;'
 				},
 				listeners : {
@@ -327,7 +327,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				xtype : 'box',
 				autoEl : {
 					tag : 'span',
-					cls : 'columnLabel columnLabelColor',
+					cls : 'o-columnLabel columnLabelColor',
 					html : record.label
 				},
 				listeners : {
