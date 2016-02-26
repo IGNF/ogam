@@ -142,10 +142,11 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                     }
                     var activateType = layer.get('params').activateType.toLowerCase();
                     var mapCmp = mapPanel.child('mapcomponent');
-                    if (Ext.isEmpty(mapCmp.layersActivation[activateType])) {
-                        mapCmp.layersActivation[activateType] = [layer.get('name')];
+                    var mapCmpCtrl = mapCmp.getController();
+                    if (Ext.isEmpty(mapCmpCtrl.layersActivation[activateType])) {
+                        mapCmpCtrl.layersActivation[activateType] = [layer.get('name')];
                     } else {
-                        mapCmp.layersActivation[activateType].push(layer.get('name'));
+                        mapCmpCtrl.layersActivation[activateType].push(layer.get('name'));
                     }
                     olLayerOpts['source'] = source;
                     olLayerOpts['name'] = layer.get('options').label;

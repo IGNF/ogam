@@ -13,6 +13,20 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
     */
     wktFormat : new ol.format.WKT(),
 
+   /**
+    * @cfg {Boolean} autoZoomOnResultsFeatures True to zoom
+    *      automatically on the results features
+    */
+    autoZoomOnResultsFeatures : true,
+
+   /**
+    * @cfg {Object} layersActivation A object containing few
+    *      arrays of layers ordered by activation type
+    *      (defaults to <tt>{}</tt>) {
+    *      'request':[resultLayer, resultLayer0, resultLayer1]
+    */
+    layersActivation : {},
+
     init : function() {
         this.map = this.getView().getMap();
         var drawingLayerSource = this.getMapLayer('drawingLayer').getSource();
@@ -20,6 +34,36 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         drawingLayerSource.on('addfeature', listenerFct);
         drawingLayerSource.on('removefeature', listenerFct);
         drawingLayerSource.on('changefeature', listenerFct);
+        this.map.getLayers().forEach(function(lyr){
+             lyr.setVisible(lyr.getVisible());
+        });
+        this.map.getView().on('change:resolution', function(e){
+            curRes = e.target.get(e.key); // new value of resolution
+            oldRes = e.oldValue; // old value of resolution
+            this.retrieveChangedLayers(this.map.getLayerGroup(), oldRes, curRes);
+        }, this);
+    },
+
+    isResInLayerRange: function(lyr, res){
+        if (res >= lyr.getMinResolution() && res < lyr.getMaxResolution()) { // in range
+            return true;
+        } else { // out of range
+            return false;
+        }
+    },
+
+    retrieveChangedLayers : function(layerGrp, resDep, resDest) {
+        layerGrp.getLayers().forEach(function(lyr) {
+            if (lyr.isLayerGroup) {
+                this.retrieveChangedLayers(lyr, resDep, resDest);
+            } else {
+                if (this.isResInLayerRange(lyr, resDest) && !this.isResInLayerRange(lyr, resDep)) {
+                       this.fireEvent('changevisibilityrange', lyr, true);
+                   } else if (!this.isResInLayerRange(lyr, resDest) && this.isResInLayerRange(lyr, resDep)) {
+                       this.fireEvent('changevisibilityrange', lyr, false);
+                   };
+                }
+        }, this);
     },
 
     getMapLayer : function (layerCode) {

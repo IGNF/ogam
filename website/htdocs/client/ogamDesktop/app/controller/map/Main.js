@@ -47,12 +47,13 @@ Ext.define('OgamDesktop.controller.map.Main',{
             success : function(rpse, options) {
                 var response = Ext.decode(rpse.responseText);
                 var mapCmp = this.getMappanel().child('mapcomponent');
+                var mapCmpCtrl = mapCmp.getController();
                 mapCmp.resultsBBox = response.resultsbbox;
-                if (mapCmp.autoZoomOnResultsFeatures === true) {
+                if (mapCmpCtrl.autoZoomOnResultsFeatures === true) {
                     mapCmp.fireEvent('resultswithautozoom');
                 }
                 // Display the results layer
-                mapCmp.fireEvent('onGetResultsBBox',mapCmp.layersActivation['request'], true);
+                mapCmp.fireEvent('onGetResultsBBox',mapCmpCtrl.layersActivation['request'], true);
             },
             scope: this
         });
