@@ -21,13 +21,7 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     onPredefinedRequest:function(){
     	this.getMainView().setActiveItem(this.getPredefReqView());
     },
-	
-	/**
-	 * Show the FormPanel corresponding to the selected row into the predefined requests grid.
-	 */
-	onGridRowSelect: function(){
-		
-	},
+
     onLaunchRequest:function(){
     	
     	var prModel= this.getPredefReqView().lookupReference('requete');
