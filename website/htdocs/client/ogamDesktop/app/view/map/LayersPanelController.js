@@ -19,5 +19,23 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
         // Change check status
         this.getView().getView().fireEvent('checkchange', node, toggleCheck);
         node.set('checked', toggleCheck);
+    },
+
+    /**
+     * Return the layer node
+     * 
+     * @param {OpenLayers.Layer}
+     *            layer The layer
+     */
+    getLayerNode : function(layer) {
+        var node;
+        // Get the tree store of the layers tree panel and scan it.
+        var layerStore = this.getView().getStore();
+        layerStore.each(function(layerNode){
+            if (!layerNode.data.isLayerGroup && layerNode.data.get('code') === layer.get('code')) {
+                node = layerNode;
+            }
+        });
+        return node;
     }
 });

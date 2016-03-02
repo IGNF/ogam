@@ -8,7 +8,6 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
     listen: {
          controller: {
              'mapcomponent': {
-                 //changelayervisibility: 'toggleLayersAndLegends',
                  changevisibilityrange: 'toggleLayersAndLegendsForZoom',
                  onGetResultsBBox: 'enableRequestLayersAndLegends'
              }
@@ -16,13 +15,13 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
      },
 
     init : function() {
-        this.LayersPanel = this.getView().child('layers-panel');
-        this.LayersPanelCtrl = this.LayersPanel.getController();
-        this.LegendsPanelCtrl = this.getView().child('legends-panel').getController();
+        this.layersPanel = this.getView().child('layers-panel');
+        this.layersPanelCtrl = this.layersPanel.getController();
+        this.legendsPanelCtrl = this.getView().child('legends-panel').getController();
     },
 
     /**
-     * Toggle the layer node and legend in function of the zoom
+     * Toggle the layer and legend in function of the zoom
      * range
      * 
      * @param {OpenLayers.Layer}
@@ -31,28 +30,22 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
      *            enable True to enable the layers and legends
      */
     toggleLayersAndLegendsForZoom : function(layer, enable) {
-        var node;
-        // Get the tree store of the layers tree panel and scan it.
-        var layerStore = this.LayersPanel.getStore();
-        layerStore.each(function(layerNode){
-            if (!layerNode.data.isLayerGroup && layerNode.data.get('code') === layer.get('code')) {
-                node = layerNode;
-            }
-        });
+        var node = this.layersPanelCtrl.getLayerNode(layer);
         if (!Ext.isEmpty(node) && !node.hidden) {
-            node.set("cls", enable ? '':'dvp-tree-node-disabled');
             if (!enable) {
-                this.disableLayersAndLegends([ layer ], false);
+                // Disable Layers And Legends
+                this.toggleLayersAndLegends(false, [ layer ], false, true);
             } else {
                 if (node.forceDisable !== true) {
-                    this.enableLayersAndLegends([ layer ], false);
+                    // Enable Layers And Legends
+                    this.toggleLayersAndLegends(true, [ layer ], false, true);
                 }
             }
         }
     },
 
     /**
-     * Enable and show the layer(s) node and show the legend(s)
+     * Enable and show the layer(s) and show the legend(s)
      * 
      * @param {Boolean}
      *            enable True to enable the layers and legends
@@ -61,74 +54,37 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
      * @param {Boolean}
      *            toggleNodeCheckbox True to toggle the layerTree node
      *            checkbox (default to false)
+     * @param {Boolean}
+     *            toggleNodeAvailability True to toggle the layerTree node
+     *            availability (default to false)
      */
-    toggleLayersAndLegends : function(enable, layers, toggleNodeCheckbox) {
+    toggleLayersAndLegends : function(enable, layers, toggleNodeCheckbox, toggleNodeAvailability) {
         if (!Ext.isEmpty(enable) && !Ext.isEmpty(layers)) {
+            var node;
             for (var i in layers) {
-                var node;
-                // Get the tree store of the layers tree panel and scan it.
-                var layerStore = this.LayersPanel.getStore();
-                layerStore.each(function(layerNode){
-                    if (layerNode.getOlLayer().get('code') === layers[i].get('code')){
-                        node = layerNode;
-                    }
-                });
+                node = this.layersPanelCtrl.getLayerNode(layers[i]);
                 if (!Ext.isEmpty(node)) {
                     node.getOlLayer().set('disabled', !enable);
-                    toggleNodeCheckbox && this.LayersPanelCtrl.toggleNodeCheckbox(node.id, enable);
+                    toggleNodeCheckbox && this.layersPanelCtrl.toggleNodeCheckbox(node.id, enable);
+                    toggleNodeAvailability && node.set("cls", enable ? '':'dvp-tree-node-disabled');
                 }
             }
-            this.LegendsPanelCtrl.setLegendsVisible(layers, enable);
+            this.legendsPanelCtrl.setLegendsVisible(layers, enable);
         } else {
-            console.warn('EnableLayersAndLegends : enable or/and layers parameter(s) is/are empty.');
+            console.warn('toggleLayersAndLegends : enable or/and layers parameter(s) is/are empty.');
         }
     },
 
     /**
-     * Enable and show the layer(s) node and show the legend(s)
+     * Enable and show the request layer(s) and legend(s)
      * 
      * @param {Array}
-     *            layers The layers
+     *            layers The request layers
      * @param {Boolean}
-     *            check True to check the layerTree node
+     *            toggleNodeCheckbox True to toggle the layerTree node
      *            checkbox (default to false)
      */
-    enableLayersAndLegends : function(layers, check) {
-        this.toggleLayersAndLegends(true, layers, check);
-    },
-
-    /**
-     * Disable (and hide if asked) the layer(s) And hide the
-     * legend(s)
-     * 
-     * @param {Array}
-     *            layers The layers
-     * @param {Boolean}
-     *            uncheck True to uncheck the layerTree node
-     *            checkbox (default to false)
-    **/
-    disableLayersAndLegends : function(layers, uncheck) {
-        this.toggleLayersAndLegends(false, layers, uncheck);
-    },
-
-    enableRequestLayersAndLegends: function(layers, check) {
-        if (!Ext.isEmpty(layers)) {
-            for (var i in layers) {
-                var node;
-                // Get the tree store of the layers tree panel and scan it.
-                var layerStore = this.LayersPanel.getStore();
-                layerStore.each(function(layerNode){
-                    if (layerNode.getOlLayer().get('code') === layers[i].get('code')){
-                        node = layerNode;
-                    }
-                });
-                if (!Ext.isEmpty(node)) {
-                    node.set("cls", '');
-                }
-            }
-        } else {
-            console.warn('EnableLayersAndLegends : enable or/and layers parameter(s) is/are empty.');
-        }
-        this.toggleLayersAndLegends(true, layers, check);
+    enableRequestLayersAndLegends: function(layers, toggleNodeCheckbox) {
+        this.toggleLayersAndLegends(true, layers, toggleNodeCheckbox, true);
     }
 });
