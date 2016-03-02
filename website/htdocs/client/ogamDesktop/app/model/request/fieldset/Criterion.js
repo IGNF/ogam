@@ -16,14 +16,14 @@ Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
         { name: 'type', type: 'string' },
         { name: 'unit', type: 'string' }
     ],
-	getCriteriaField:function(){
-		return OgamDesktop.ux.request.RequestFieldSet.getCriteriaConfig(this.getData(), true);
-	},
+    proxy:{
+    	reader:{
+    		type:'json',
+    		rootProperty:'criteria'
+    	}
+    },
 
-proxy:{
-	reader:{
-		type:'json',
-		rootProperty:'criteria'
-	}
-}
+    getCriteriaField: function() {
+        return OgamDesktop.ux.request.RequestFieldSet.getCriteriaConfig(this.getData(), true);
+    }
 });

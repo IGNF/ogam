@@ -32,6 +32,16 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		}
 	},
 
+    onLaunch:function(){
+        //clean previous request or result in server side
+        Ext.Ajax.request({
+            url: Ext.manifest.OgamDesktop.requestServiceUrl+'ajaxrestresultlocation',
+            failure: function(response, opts) {
+                console.warn('server-side failure with status code ' + response.status);
+            }
+        });
+    },
+
 	setResultStateToSelected: function(record) {
 		this.getMappanel().highlightObject(record);
 	},
@@ -53,7 +63,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
                     mapCmp.fireEvent('resultswithautozoom');
                 }
                 // Display the results layer
-                mapCmpCtrl.fireEvent('onGetResultsBBox',mapCmpCtrl.layersActivation['request'], true);
+                mapCmpCtrl.fireEvent('resultsBBoxChanged', mapCmpCtrl, mapCmp.resultsBBox);
             },
             scope: this
         });

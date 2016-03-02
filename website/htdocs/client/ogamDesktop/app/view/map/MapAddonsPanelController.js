@@ -9,7 +9,7 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
          controller: {
              'mapcomponent': {
                  changevisibilityrange: 'toggleLayersAndLegendsForZoom',
-                 onGetResultsBBox: 'enableRequestLayersAndLegends'
+                 resultsBBoxChanged: 'enableRequestLayersAndLegends'
              }
          }
      },
@@ -34,11 +34,11 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
         if (!Ext.isEmpty(node) && !node.hidden) {
             if (!enable) {
                 // Disable Layers And Legends
-                this.toggleLayersAndLegends(false, [ layer ], false, true);
+                this.toggleLayersAndLegends(false, [ layer ], false);
             } else {
                 if (node.forceDisable !== true) {
                     // Enable Layers And Legends
-                    this.toggleLayersAndLegends(true, [ layer ], false, true);
+                    this.toggleLayersAndLegends(true, [ layer ], false);
                 }
             }
         }
@@ -54,19 +54,15 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
      * @param {Boolean}
      *            toggleNodeCheckbox True to toggle the layerTree node
      *            checkbox (default to false)
-     * @param {Boolean}
-     *            toggleNodeAvailability True to toggle the layerTree node
-     *            availability (default to false)
      */
-    toggleLayersAndLegends : function(enable, layers, toggleNodeCheckbox, toggleNodeAvailability) {
+    toggleLayersAndLegends : function(enable, layers, toggleNodeCheckbox) {
         if (!Ext.isEmpty(enable) && !Ext.isEmpty(layers)) {
             var node;
             for (var i in layers) {
                 node = this.layersPanelCtrl.getLayerNode(layers[i]);
                 if (!Ext.isEmpty(node)) {
-                    node.getOlLayer().set('disabled', !enable);
-                    toggleNodeCheckbox && this.layersPanelCtrl.toggleNodeCheckbox(node.id, enable);
-                    toggleNodeAvailability && node.set("cls", enable ? '':'dvp-tree-node-disabled');
+                    this.layersPanelCtrl.updateLayerNode(node, enable);
+                    toggleNodeCheckbox && this.layersPanelCtrl.toggleNodeCheckbox(node, enable);
                 }
             }
             this.legendsPanelCtrl.setLegendsVisible(layers, enable);
@@ -77,14 +73,8 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
 
     /**
      * Enable and show the request layer(s) and legend(s)
-     * 
-     * @param {Array}
-     *            layers The request layers
-     * @param {Boolean}
-     *            toggleNodeCheckbox True to toggle the layerTree node
-     *            checkbox (default to false)
      */
-    enableRequestLayersAndLegends: function(layers, toggleNodeCheckbox) {
-        this.toggleLayersAndLegends(true, layers, toggleNodeCheckbox, true);
+    enableRequestLayersAndLegends: function(mapCmpCtrl) {
+        this.toggleLayersAndLegends(true, mapCmpCtrl.layersActivation['request'], true);
     }
 });

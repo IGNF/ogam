@@ -52,9 +52,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             'map-mainwin': {
                 afterrender: 'afterMapMainWinRendered'
             },
-            'mapcomponent': {
-                changevisibilityrange: 'updateLayerNode'
-            },
             'layerspanel': {
                 layersPanelStoresLoaded: 'afterLayersPanelStoresLoaded'
             }
@@ -227,30 +224,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                     return false;
                 }
             })
-        });
-    },
-
-    updateLayerNode: function(lyr, toEnable) {
-        this.getLayerspanel().getStore().each(function (item) {
-            if (item.getOlLayer() === lyr) {
-                if (toEnable) {
-                    item.getOlLayer().set('disabled', false);
-                    item.set("cls", ''); 
-                } else {
-                    item.getOlLayer().set('disabled', true);
-                    item.set("cls", 'dvp-tree-node-disabled'); 
-                }
-            }
-        });
-    },
-        
-    onLaunch:function(){
-        //clean previous request or result in server side
-        Ext.Ajax.request({
-            url: Ext.manifest.OgamDesktop.requestServiceUrl+'ajaxrestresultlocation',
-            failure: function(response, opts) {
-                console.warn('server-side failure with status code ' + response.status);
-            }
         });
     }
 });

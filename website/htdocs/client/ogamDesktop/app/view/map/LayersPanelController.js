@@ -9,13 +9,12 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
      * Toggle the node checkbox
      * 
      * @param {Integer}
-     *            nodeId The node id
+     *            node The node
      * @param {Boolean}
      *            toggleCheck True to check, false to uncheck the box. If no
      *            value was passed, toggles the checkbox
      */
-    toggleNodeCheckbox : function(nodeId, toggleCheck) {
-        var node = this.getView().getStore().getNodeById(nodeId);
+    toggleNodeCheckbox : function(node, toggleCheck) {
         // Change check status
         this.getView().getView().fireEvent('checkchange', node, toggleCheck);
         node.set('checked', toggleCheck);
@@ -37,5 +36,15 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
             }
         });
         return node;
+    },
+
+    updateLayerNode: function(node, enable) {
+        if (enable) {
+            node.getOlLayer().set('disabled', false);
+            node.set("cls", ''); 
+        } else {
+            node.getOlLayer().set('disabled', true);
+            node.set("cls", 'dvp-tree-node-disabled'); 
+        }
     }
 });
