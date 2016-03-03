@@ -20,12 +20,10 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
     autoZoomOnResultsFeatures : true,
 
    /**
-    * @cfg {Object} layersActivation A object containing few
-    *      arrays of layers ordered by activation type
-    *      (defaults to <tt>{}</tt>) {
-    *      'request':[resultLayer, resultLayer0, resultLayer1]
+    * @cfg {Object} requestLayers 
+    *      A array of ol layers dependents of the request
     */
-    layersActivation : {},
+    requestLayers : [],
 
     init : function() {
         this.map = this.getView().getMap();

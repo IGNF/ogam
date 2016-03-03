@@ -75,6 +75,6 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
      * Enable and show the request layer(s) and legend(s)
      */
     enableRequestLayersAndLegends: function(mapCmpCtrl) {
-        this.toggleLayersAndLegends(true, mapCmpCtrl.layersActivation['request'], true);
+        this.toggleLayersAndLegends(true, mapCmpCtrl.requestLayers, true);
     }
 });
