@@ -5,6 +5,16 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.layerspanel',
 
+    init: function() {
+        Ext.apply(this.getView().getView(), {
+            onCheckChange: Ext.Function.createInterceptor(this.getView().getView().onCheckChange,function(e) {
+                if (e.record.getOlLayer().get('disabled')) {
+                    return false;
+                }
+            })
+        });
+    },
+
     /**
      * Toggle the node checkbox
      * 

@@ -79,8 +79,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         var mapPanel = this.getMappanel();
         var mapCmp = mapPanel.child('mapcomponent');
         var curRes = mapCmp.getMap().getView().getResolution();
-        var layersPanel = this.getLayerspanel();
-        var layersList = [];
+        // Creations of the tree node group
         var layerGrpsList = [];
         for (var i in this.treeStores['layerNodes']){
             var lyrNode = this.treeStores['layerNodes'][i];
@@ -97,19 +96,22 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 layerGrpsList.push(olGrp);
             }
         };
+        // Creations of the layers list
+        var layersList = [];
         for (var i in this.treeStores['layers']){
             var layer = this.treeStores['layers'][i];
-            var sourceWMSOpts = {};
-            var sourceWMTSOpts = {};
-            var olLayerOpts = {};
             for (var j in this.treeStores['services']){
                 var service = this.treeStores['services'][j];
                 if (service.get('name') === layer.get('legendServiceName')) {
                     this.getLegendspanel().fireEvent('onReadyToBuildLegend', curRes, layer, service);
                 };
                 if (service.get('name') === layer.get('viewServiceName')) {
+
+                    // Sets the layer source
                     var source;
                     if (service.get('config').params.SERVICE === 'WMS') {
+                        // Sets the WMS layer source
+                        var sourceWMSOpts = {};
                         sourceWMSOpts['params'] = {
                             'layers': layer.get('params').layers,
                             'REQUEST': service.get('config').params.REQUEST,
@@ -119,7 +121,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                         sourceWMSOpts['urls'] = service.get('config').urls;
                         source = new ol.source.TileWMS(sourceWMSOpts);
                     } else if (service.get('config').params.SERVICE === 'WMTS') {
-                        //creation and merging of wmts parameters
+                        // Sets the WMTS layer source
                         var origin = service.get('config').params.tileOrigin; //coordinates of top left corner of the matrixSet
                         var resolutions = service.get('config').params.serverResolutions;
                         var matrixIds = [];
@@ -131,14 +133,18 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                             resolutions: resolutions,
                             matrixIds: matrixIds
                         });
+                        var sourceWMTSOpts = {};
                         sourceWMTSOpts['urls'] = service.get('config').urls;
                         sourceWMTSOpts['layer'] = layer.get('name');
                         sourceWMTSOpts['tileGrid'] = tileGrid;
                         sourceWMTSOpts['matrixSet'] = service.get('config').params.matrixSet;
                         sourceWMTSOpts['style'] = service.get('config').params.style;
-                        olLayerOpts['session_id'] = layer.get('params').session_id;
                         source = new ol.source.WMTS(sourceWMTSOpts);
                     }
+
+                    // Sets the layer options
+                    var olLayerOpts = {};
+                    olLayerOpts['session_id'] = layer.get('params').session_id;
                     olLayerOpts['source'] = source;
                     olLayerOpts['name'] = layer.get('options').label;
                     olLayerOpts['opacity'] = layer.get('options').opacity;
@@ -156,7 +162,11 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                     if (curRes < olLayerOpts['minResolution'] || curRes >= olLayerOpts['maxResolution']) {
                         olLayerOpts['disabled'] = true;
                     }
+
+                    // Creates the layer
                     var olLayer = new ol.layer.Tile(olLayerOpts);
+
+                    // Adds the layer to layersActivation
                     var activateType = layer.get('params').activateType.toLowerCase();
                     var mapCmpCtrl = mapCmp.getController();
                     if (Ext.isEmpty(mapCmpCtrl.layersActivation[activateType])) {
@@ -164,12 +174,13 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                     } else {
                         mapCmpCtrl.layersActivation[activateType].push(olLayer);
                     }
-                    olLayer.on('change:visible', function(e) {
-                        mapCmpCtrl.fireEvent('changelayervisibility', this, e.target.get(e.key));
-                    });
+
+                    // Adds the layer to the layers list
                     if (layer.get('options').nodeGroup == -1){
+                        // Adds the layer to the list
                         layersList.push(olLayer);
                     } else {
+                        // Adds the layer to its group and add the group to the list
                         for (var k in layerGrpsList) {
                             var lyrGrp =  layerGrpsList[k];
                             if (layer.get('options').nodeGroup == lyrGrp.get('grpId')) {
@@ -184,7 +195,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 }
             }
         }
-        var map = mapPanel.child('mapcomponent').getMap();
+        // Create a unique ol.layer.Group for the tree's layer
         var layersCollection = new Ext.util.MixedCollection();
         layersCollection.addAll(layersList);
         var filterOnDisplayInLayerSwitcher = new Ext.util.Filter({
@@ -197,33 +208,34 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             layers: treeLayersCollection.getRange(),
             code: 'treeGrp'
         });
-        map.addLayer(treeLayersGroup);
+        mapCmp.getMap().addLayer(treeLayersGroup);
+
+        // Create the GeoExt tree store
         var treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
             layerGroup: treeLayersGroup
         });
+
+        // Sets up the store records
         function eachRecursive(item) {
             if (item.childNodes.length > 0){
+                // Node group
                 if (item.getOlLayer().get('expanded')) {
                     item.expand();
-                    item.set("expanded", item.getOlLayer().get('expanded'));
+                    item.set("expanded", true);
                 };
                 for (var k in item.childNodes) {
                     eachRecursive(item.childNodes[k]);
                 }
             } else {
+                // Node
                 var cls = item.getOlLayer().get('disabled') ? 'dvp-tree-node-disabled' : '';
                 item.set("cls", cls);
                 item.set("checked", item.getOlLayer().get('checked'));
             }
         };
         treeLayerStore.each(eachRecursive);
-        layersPanel.setConfig('store', treeLayerStore);
-        Ext.apply(layersPanel.getView(), {
-            onCheckChange: Ext.Function.createInterceptor(layersPanel.getView().onCheckChange,function(e) {
-                if (e.record.getOlLayer().get('disabled')) {
-                    return false;
-                }
-            })
-        });
+
+        // Adds the store to the layers panel
+        this.getLayerspanel().setConfig('store', treeLayerStore);
     }
 });

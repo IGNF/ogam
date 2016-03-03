@@ -62,7 +62,6 @@ Ext.define('OgamDesktop.controller.map.Main',{
                 if (mapCmpCtrl.autoZoomOnResultsFeatures === true) {
                     mapCmp.fireEvent('resultswithautozoom');
                 }
-                // Display the results layer
                 mapCmpCtrl.fireEvent('resultsBBoxChanged', mapCmpCtrl, mapCmp.resultsBBox);
             },
             scope: this
