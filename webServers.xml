@@ -1,9 +1,0 @@
-<application>
-  <component name="WebServers">
-    <option name="servers">
-      <webServer id="5196b42a-c1f5-4099-ac85-0116d77d7743" name="OGAM" url="http://localhost:8000">
-        <fileTransfer accessType="LOCAL" />
-      </webServer>
-    </option>
-  </component>
-</application>
