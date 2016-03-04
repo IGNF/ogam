@@ -22,14 +22,14 @@ class Application_Object_Metadata_TableField extends Application_Object_Metadata
 
 	/**
 	 * The physical name of the column.
-	 * 
+	 *
 	 * @var String
 	 */
 	var $columnName;
 
 	/**
 	 * Indicate if the field is calculated during an INSERT or UPDATE.
-	 * 
+	 *
 	 * @var bool
 	 */
 	var $isCalculated;
@@ -37,7 +37,7 @@ class Application_Object_Metadata_TableField extends Application_Object_Metadata
 	/**
 	 * Indicate if the field is editable in the edition module.
 	 * Some fields present in the database and calculated by triggers or serials may not be displayed on the screen.
-	 * 
+	 *
 	 * @var bool
 	 */
 	var $isEditable;
@@ -45,7 +45,7 @@ class Application_Object_Metadata_TableField extends Application_Object_Metadata
 	/**
 	 * Indicate if the field is insertable in the edition module.
 	 * Some fields may be editable in "update" mode but may not be displayed when creating a new data (for example a "departement" calculated by trigger on insert).
-	 * 
+	 *
 	 * @var bool
 	 */
 	var $isInsertable;
@@ -53,7 +53,7 @@ class Application_Object_Metadata_TableField extends Application_Object_Metadata
 	/**
 	 * Indicate if the field is mandatory in the edition module.
 	 * The PK fields are always mandatory, but some other fields may be declared as mandatory by the administrator.
-	 * 
+	 *
 	 * @var bool
 	 */
 	var $isMandatory;

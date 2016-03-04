@@ -37,7 +37,7 @@ class Application_Object_Metadata_TreeNode {
 
 	/**
 	 * The childs.
-	 * 
+	 *
 	 * @var Array[TreeNodes]
 	 */
 	var $children = array();
@@ -70,7 +70,7 @@ class Application_Object_Metadata_TreeNode {
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -104,7 +104,7 @@ class Application_Object_Metadata_TreeNode {
 			}
 			$return .= '}';
 		}
-		
+
 		return $return;
 	}
 }

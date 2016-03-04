@@ -7,7 +7,7 @@ html {
 	height: 100%;
 }
 
-h1,h2,h3 {
+h1, h2, h3 {
 	color: #135CAE;
 }
 
@@ -30,7 +30,7 @@ img {
 	border: 0 none;
 }
 
-ul,ol {
+ul, ol {
 	margin-left: 2em;
 }
 
@@ -94,19 +94,19 @@ body {
 }
 
 .fr-flag {
-    background-image: url(../img/fr_flag.png) !important;
-    width: 30px;
-    height: 16px;
-    margin-top: 3px;
-    float: left;
+	background-image: url(../img/fr_flag.png) !important;
+	width: 30px;
+	height: 16px;
+	margin-top: 3px;
+	float: left;
 }
 
 .en-flag {
-    background-image: url(../img/en_flag.png) !important;
-    width: 30px;
-    height:16px;
-    margin-top: 3px;
-    float: left;
+	background-image: url(../img/en_flag.png) !important;
+	width: 30px;
+	height: 16px;
+	margin-top: 3px;
+	float: left;
 }
 
 .banner {
@@ -121,7 +121,7 @@ body {
 	border-bottom: 1px dotted #CCCCCC;
 	border-top: 1px dotted #CCCCCC;
 	padding: 2px 5px;
-	background-color: #EEEEEE; 
+	background-color: #EEEEEE;
 	height: 21px;
 }
 
@@ -129,12 +129,12 @@ body {
 	background-color: #FFFFFF;
 }
 
-.content h1,.content h2 {
+.content h1, .content h2 {
 	text-align: center;
 	margin-top: 20px;
 }
 
-.footer,.push {
+.footer, .push {
 	height: 40px; /* .push must be the same height as .footer */
 }
 
@@ -217,7 +217,7 @@ div.moduletable_menu a:hover {
 	text-decoration: none;
 }
 
-div.moduletable_menu a:link,div.moduletable_menu a:active,div.moduletable_menu a:visited
+div.moduletable_menu a:link, div.moduletable_menu a:active, div.moduletable_menu a:visited
 	{
 	background-image: url(../img/greybullet2.png);
 	background-position: 5px 50%;
@@ -256,10 +256,10 @@ tr.sectiontableentry0 td {
 }
 
 tr td.file-name {
-    font-style: italic;
-    font-size: 0.8em;
-    padding:0px 3px 10px 3px!important;
-    line-height:0.8em;
+	font-style: italic;
+	font-size: 0.8em;
+	padding: 0px 3px 10px 3px !important;
+	line-height: 0.8em;
 }
 
 tr.sectiontableentry1 td {
@@ -268,14 +268,14 @@ tr.sectiontableentry1 td {
 }
 
 tr td.line-number {
-    text-align: right;
+	text-align: right;
 }
 
 .csv-export {
 	background-image: url(../img/table_save.png) !important;
 }
 
-.sectiontableentry0 img,.sectiontableentry1 img {
+.sectiontableentry0 img, .sectiontableentry1 img {
 	height: 16px;
 	border: 0 none;
 	margin: 0 0 0 10px;
@@ -305,6 +305,11 @@ tr td.line-number {
 	text-align: center;
 }
 
+.onTableLink {
+	margin: 20px auto;
+	text-align: center;
+}
+
 .tempStatusDiv {
 	display: inline;
 }
@@ -316,138 +321,169 @@ img.percentImage {
 	background-position: 1px 0;
 }
 
-.no-submission, .password-change-user-name{
-    margin: 50px 0;
-    text-align: center;
+.no-submission, .password-change-user-name {
+	margin: 50px 0;
+	text-align: center;
 }
-td.view-cell{
-    background: url(../img/magnifier.png) 5px 5px no-repeat;
-    width:21px;
+
+td.view-cell {
+	background: url(../img/magnifier.png) 5px 5px no-repeat;
+	width: 21px;
 }
-.view-cell a{
-    padding: 1px 8px;
+
+.view-cell a {
+	padding: 1px 8px;
 }
-td.pdf-cell{
-    background: url(../img/icon_pdf.gif) 5px 5px no-repeat;
-    width:21px;
+
+td.pdf-cell {
+	background: url(../img/icon_pdf.gif) 5px 5px no-repeat;
+	width: 21px;
 }
-.pdf-cell a{
-    padding: 1px 8px;
+
+.pdf-cell a {
+	padding: 1px 8px;
 }
-td.view-content-cell{
-    background: url(../img/page_white_magnify.png) 5px 5px no-repeat;
-    width:21px;
+
+td.view-content-cell {
+	background: url(../img/page_white_magnify.png) 5px 5px no-repeat;
+	width: 21px;
 }
-.view-content-cell a{
-    padding: 1px 8px;
+
+.view-content-cell a {
+	padding: 1px 8px;
 }
-td.view-meta-cell{
-    background: url(../img/page_white_database.png) 5px 5px no-repeat;
-    width:21px;
+
+td.view-meta-cell {
+	background: url(../img/page_white_database.png) 5px 5px no-repeat;
+	width: 21px;
 }
-.view-meta-cell a{
-    padding: 1px 8px;
+
+.view-meta-cell a {
+	padding: 1px 8px;
 }
-td.edit-cell{
-    background: url(../img/page_white_edit.png) 5px 5px no-repeat;
-    width:21px;
+
+td.edit-cell {
+	background: url(../img/page_white_edit.png) 5px 5px no-repeat;
+	width: 21px;
 }
-.edit-cell a{
-    padding: 1px 8px;
+
+.edit-cell a {
+	padding: 1px 8px;
 }
-td.change-password-cell{
-    background: url(../img/key.png) 5px 5px no-repeat;
-    width:21px;
+
+td.change-password-cell {
+	background: url(../img/key.png) 5px 5px no-repeat;
+	width: 21px;
 }
-.change-password-cell a{
-    padding: 1px 8px;
+
+.change-password-cell a {
+	padding: 1px 8px;
 }
-td.delete-cell{
-    background: url(../img/delete.png) 5px 5px no-repeat;
-    width:21px;
+
+td.delete-cell {
+	background: url(../img/delete.png) 5px 5px no-repeat;
+	width: 21px;
 }
-.delete-cell a{
-    padding: 1px 8px;
+
+.delete-cell a {
+	padding: 1px 8px;
 }
-.index-cell .index-cell-create{
-    background: url(../img/folder_link.png) top left no-repeat;
-    padding: 1px 8px;
+
+.index-cell .index-cell-create {
+	background: url(../img/folder_link.png) top left no-repeat;
+	padding: 1px 8px;
 }
-.index-cell .index-cell-update{
-    background: url(../img/folder_add.png) top left no-repeat;
-    padding: 1px 8px;
+
+.index-cell .index-cell-update {
+	background: url(../img/folder_add.png) top left no-repeat;
+	padding: 1px 8px;
 }
-.index-label-cell{
-    width: 200px;
+
+.index-label-cell {
+	width: 200px;
 }
-.optimize-cell a{
-    background: url(../img/compress.png) top left no-repeat;
-    padding: 1px 8px;
+
+.optimize-cell a {
+	background: url(../img/compress.png) top left no-repeat;
+	padding: 1px 8px;
 }
-.files-list-cell a{
-    background: url(../img/folder_explore.png) top left no-repeat;
-    padding: 1px 8px;
+
+.files-list-cell a {
+	background: url(../img/folder_explore.png) top left no-repeat;
+	padding: 1px 8px;
 }
+
 .file_contents {
-    padding: 0 40px 40px 40px;
+	padding: 0 40px 40px 40px;
 }
 
 /**************************************/
 /**      Zend Form CSS               **/
 /**************************************/
-
 .form-super-ct {
-    background-color: #F7F7F7;
-    border-bottom: 2px dotted #CCCCCC;
-    border-top: 2px dotted #CCCCCC;
-    margin: 50px auto;
-    padding: 22px 40px;
+	background-color: #F7F7F7;
+	border-bottom: 2px dotted #CCCCCC;
+	border-top: 2px dotted #CCCCCC;
+	margin: 50px auto;
+	padding: 22px 40px;
 }
+
 .form-ct {
-    margin:0 auto;
-    width:350px;
+	margin: 0 auto;
+	width: 350px;
 }
-.zend_form .element, .zend_form .button{
-    position: relative;
+
+.zend_form .element, .zend_form .button {
+	position: relative;
 }
-.zend_form .multiCheckbox label{
-    margin-left:30px;
+
+.zend_form .multiCheckbox label {
+	margin-left: 30px;
 }
-.zend_form .multiCheckbox label.title{
-    display:block;
-    font-weight: bold;
-    margin:10px 0;
+
+.zend_form .multiCheckbox label.title {
+	display: block;
+	font-weight: bold;
+	margin: 10px 0;
 }
-.zend_form .multiCheckbox input{
-    width:auto;
-    margin-top:6px;
+
+.zend_form .multiCheckbox input {
+	width: auto;
+	margin-top: 6px;
 }
-.zend_form input{
-    width:200px;
-    position: absolute;
-    right: 0;
+
+.zend_form input {
+	width: 200px;
+	position: absolute;
+	right: 0;
 }
-.zend_form select{
-   width: 204px;
-   position: absolute;
-   right: 0;
+
+.zend_form select {
+	width: 204px;
+	position: absolute;
+	right: 0;
 }
-.zend_form .file input{
-    width: auto;
+
+.zend_form .file input {
+	width: auto;
 }
-.zend_form .button{
-    margin-top:20px;
-    height: 25px;
+
+.zend_form .button {
+	margin-top: 20px;
+	height: 25px;
 }
-.zend_form .button input{
-    width:100px;
+
+.zend_form .button input {
+	width: 100px;
 }
-.zend_form .hint-title{
-    font-weight: bold;
+
+.zend_form .hint-title {
+	font-weight: bold;
 }
-.zend_form .file .hint{
-    background-color:#F0F0F0;
-    margin: 10px 0;
+
+.zend_form .file .hint {
+	background-color: #F0F0F0;
+	margin: 10px 0;
 }
 
 /**************************************/
@@ -460,22 +496,25 @@ td.delete-cell{
 
 /** data-submission-form **/
 .data-submission-form .form-ct {
-    width:500px;
+	width: 500px;
 }
-.data-submission-form .zend_form select{
-   width: 400px;
+
+.data-submission-form .zend_form select {
+	width: 400px;
 }
 
 /** data-upload-form **/
 .data-upload-form .form-ct {
-    width:450px;
+	width: 450px;
 }
-.data-upload-form .zend_form .file .hint{
-    width:1000px;
-    margin-left:-275px;
+
+.data-upload-form .zend_form .file .hint {
+	width: 1000px;
+	margin-left: -275px;
 }
-.data-upload-form .zend_form label{
-    font-weight: bold;
+
+.data-upload-form .zend_form label {
+	font-weight: bold;
 }
 
 /**************************************/
@@ -484,12 +523,12 @@ td.delete-cell{
 
 /** change-current-user-password-form **/
 .change-current-user-password-form .form-ct {
-    width:370px;
+	width: 370px;
 }
 
 /** login-form **/
 .login-form .form-ct {
-    width:300px;
+	width: 300px;
 }
 
 /**************************************/
@@ -498,43 +537,45 @@ td.delete-cell{
 
 /** user-form **/
 .user-form .form-ct {
-    width:370px;
+	width: 370px;
 }
 
 /** change-user-password-form **/
 .change-user-password-form .form-ct {
-    width:370px;
+	width: 370px;
 }
 
 /** role-form **/
 .role-form .form-ct {
-    width:370px;
+	width: 370px;
 }
-
 
 /************************************************************/
 /*      Checkconf Page                                      */
 /************************************************************/
-.checkconf-page{
-    background-color: #F7F7F7;
-    border-bottom: 2px dotted #CCCCCC;
-    border-top: 2px dotted #CCCCCC;
-    margin: 50px auto;
-    padding: 22px 40px;
-}
-.checkconf-page h2{
-    margin: 20px 0;
-}
-.checkconf-page h4{
-    margin: 10px 0;
-}
-.checkconf-page .green{
-    color: green;
-}
-.checkconf-page .red{
-    color: red;
+.checkconf-page {
+	background-color: #F7F7F7;
+	border-bottom: 2px dotted #CCCCCC;
+	border-top: 2px dotted #CCCCCC;
+	margin: 50px auto;
+	padding: 22px 40px;
 }
 
+.checkconf-page h2 {
+	margin: 20px 0;
+}
+
+.checkconf-page h4 {
+	margin: 10px 0;
+}
+
+.checkconf-page .green {
+	color: green;
+}
+
+.checkconf-page .red {
+	color: red;
+}
 
 /************************************************************/
 /*      Tooltips CSS                                        */
@@ -589,4 +630,12 @@ dt {
 /************************************************************/
 .actionLinks {
 	padding: 5px;
+}
+
+/*************************************************************/
+/*     Desaturate Images (black and white )                  */
+/*************************************************************/
+.desaturate {
+	-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
 }

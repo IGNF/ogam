@@ -73,9 +73,9 @@ class Application_Form_OGAMForm extends Zend_Form {
 	 * settings as specified in the form object (including plugin loader
 	 * prefix paths, default decorators, etc.).
 	 *
-	 * @param string $type        	
-	 * @param string $name        	
-	 * @param array|Zend_Config $options        	
+	 * @param string $type
+	 * @param string $name
+	 * @param array|Zend_Config $options
 	 * @return Zend_Form_Element
 	 */
 	public function createElement($type, $name, $options = null) {

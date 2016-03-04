@@ -1,11 +1,15 @@
 CREATE SCHEMA metadata;
 
 
+CREATE EXTENSION unaccent;
 
 /**
  * This function is used to do accent-insensitive search.
+ * 
+ * For PostgreSQL before 9.1
  */
-CREATE OR REPLACE FUNCTION public.unaccent_string(text) RETURNS text AS $$
+/*
+CREATE OR REPLACE FUNCTION public.unaccent(text) RETURNS text AS $$
 DECLARE
     input_string text := $1;
 BEGIN
@@ -19,6 +23,8 @@ input_string := translate(input_string, 'ùúûüũūŭůÙÚÛÜŨŪŬŮ', 'uuu
 return input_string;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
+
+*/
 
 
 SET SEARCH_PATH = metadata, public;
@@ -129,7 +135,7 @@ CREATE INDEX mode_tree_parent_code_idx
   (parent_code);
   
 CREATE INDEX mode_tree_parent_label_idx
-  ON metadata.mode_tree USING btree (unaccent_string(label));
+  ON metadata.mode_tree USING btree (unaccent(label));
   
 /*==============================================================*/
 /* Table : MODE_TAXREF                                          */
@@ -161,13 +167,13 @@ CREATE INDEX mode_taxref_parent_code_idx
   ON metadata.mode_taxref USING btree (parent_code);
   
 CREATE INDEX mode_taxref_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent_string(NAME));
+  ON metadata.mode_taxref USING btree (unaccent(NAME));
   
 CREATE INDEX mode_taxref_COMPLETE_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent_string(COMPLETE_NAME));
+  ON metadata.mode_taxref USING btree (unaccent(COMPLETE_NAME));
   
 CREATE INDEX mode_taxref_VERNACULAR_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent_string(VERNACULAR_NAME));
+  ON metadata.mode_taxref USING btree (unaccent(VERNACULAR_NAME));
 
 
 /*==============================================================*/

@@ -150,6 +150,7 @@ OpenLayers.Handler.GetFeature = OpenLayers.Class(OpenLayers.Handler, {
 			this.control.getFeature(feature);
 
 		} catch (e) {
+			console.log(e);
 			Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		}
 	},

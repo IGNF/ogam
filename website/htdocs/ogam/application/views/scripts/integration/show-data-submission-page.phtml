@@ -26,13 +26,18 @@
    <?php echo $this->translate('Data integration module');?>
 </h1>
 
+<p class="onTableLink">
+	<a href="<?php echo $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?php echo $this->translate('Create data submission');?></a>
+</p>
+
 <!-- Show the currently active location submissions -->
 <?php if(!empty($this->submissions)){ ?>
 <table class="sectiontable">
 <tr>
     <th style="text-align:center"><?php echo $this->translate('Submission ID');?></th>
     <th style="text-align:center"><?php echo $this->translate('Date');?></th>
-    <th style="text-align:center"><?php echo $this->translate('Provider Id');?></th>
+    <th style="text-align:center"><?php echo $this->translate('Provider');?></th>
+    <th style="text-align:center"><?php echo $this->translate('User');?></th>
     <th style="text-align:center"><?php echo $this->translate('Dataset');?></th>
     <th style="text-align:center"><?php echo $this->translate('Step');?></th>
     <th style="text-align:center"><?php echo $this->translate('Status');?></th>
@@ -45,7 +50,7 @@
 
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
-$permissions = $userSession->user->role->permissionsList;
+$role = $userSession->user->role;
 
 
 $i = 0;
@@ -54,8 +59,9 @@ foreach ($this->submissions as $submission) {
 <tr class="sectiontableentry<?php echo $i % 2?>">
     <td><?php echo  $this->escape($submission->submissionId); ?></td>
     <td><?php echo  $this->escape($submission->date); ?></td>
-    <td><?php echo  $this->escape($submission->providerId); ?></td>
-    <td><?php echo  $this->escape($submission->datasetId); ?></td>
+    <td><?php echo  $this->escape($submission->providerLabel); ?></td>
+    <td><?php echo  $this->escape($submission->userLogin); ?></td>
+    <td><?php echo  $this->escape($submission->datasetLabel); ?></td>
     <td><?php echo  $this->escape($submission->step); ?></td>
     <td>
             <?php if ($submission->status === "OK" || $submission->status === "CHECKED") : ?>
@@ -70,7 +76,7 @@ foreach ($this->submissions as $submission) {
 
                 // Display the progress bar
                 display('progressBar<?php echo  $submission->submissionId ?>', '', 0, '<?php echo  $this->baseUrl('img/') ?>');
-                
+
                 // Refresh The status of the submission
                 Genapp.util.getStatus_<?php echo  $submission->submissionId ?> =  function (){
                     var url = '<?php echo  $this->baseUrl('Integration/') ?>';
@@ -122,9 +128,7 @@ foreach ($this->submissions as $submission) {
                 </script>
                 </div>
             <?php else : //"ERROR" or "CRASH") ?>
-            	<?php echo 
-		$this->escape($submission->status);
-?>
+            	<?php echo $this->escape($submission->status); ?>
                 <img src="<?php echo  $this->baseUrl('img/Red_x.png') ?>" />
             <?php endif; ?>
     </td>
@@ -164,8 +168,8 @@ foreach ($this->submissions as $submission) {
 ?>
     <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Confirm_submission_warning');?>');"><?php echo $this->translate('Confirm submission');?></a></p>
     <?php } 
-    if ($submission->step != "VALIDATED" || (!empty($permissions) && in_array('CANCEL_VALIDATED_SUBMISSION',$permissions))) {
-    	if ($submission->providerId == $userSession->user->providerId || (!empty($permissions) && in_array('CANCEL_OTHER_PROVIDER_SUBMISSION',$permissions))) {
+    if ($submission->step != "VALIDATED" || ($role->isAllowed('CANCEL_VALIDATED_SUBMISSION'))) {
+    	if ($submission->providerId == $userSession->user->provider->id || ($role->isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION'))) {
 ?>
     <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Are you sure?');?>');"><?php echo $this->translate('Cancel Submission');?></a></p>
 <?php  }
@@ -179,6 +183,3 @@ foreach ($this->submissions as $submission) {
 <?php } else { ?>
 <div class="no-submission"><?php echo $this->translate('No submission found');?></div>
 <?php } ?>
-<p class="subTableLink">
-    <a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?php echo $this->translate('Create data submission');?></a>
-</p>

@@ -43,7 +43,7 @@ class Application_Object_Metadata_TableFormat extends Application_Object_Metadat
 	/**
 	 * Set the primary keys
 	 *
-	 * @param String $keys        	
+	 * @param String $keys
 	 */
 	public function setPrimaryKeys($keys) {
 		$this->primaryKeys = array();

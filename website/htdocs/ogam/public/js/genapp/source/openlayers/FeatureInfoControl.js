@@ -195,6 +195,7 @@ OpenLayers.Handler.FeatureInfo = OpenLayers.Class(OpenLayers.Handler, {
 			this.control.displayPopup(this.ll, result);
 
 		} catch (e) {
+			console.log(e);
 			Ext.Msg.alert(this.alertErrorTitle, this.alertRequestFailedMsg);
 		}
 	},

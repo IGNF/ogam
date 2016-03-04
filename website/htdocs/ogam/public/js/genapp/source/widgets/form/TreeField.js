@@ -109,14 +109,14 @@ Genapp.form.TreeField = Ext.extend(Ext.form.ComboBox, {
 
 		this.store.setBaseParam('unit', this.unit);
 
-		// Add the default value to the store
-		var rc = {};
-		rc[this.valueField] = this.value;
-		rc[this.displayField] = this.valueLabel;
-		this.getStore().add(new Ext.data.Record(rc));
-
 		// Set the current value to the default value
 		this.setValue(this.value);
+		
+		// Add the default value and its label to the store
+		var record = {};
+		record[this.valueField] = this.value;
+		record[this.displayField] = (this.valueLabel !== undefined) ? this.valueLabel : this.value;
+		this.getStore().add(new Ext.data.Record(record));
 	},
 
 	/**

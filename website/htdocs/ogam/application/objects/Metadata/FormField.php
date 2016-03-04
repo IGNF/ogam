@@ -22,6 +22,7 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 
 	/**
 	 * The input type of the field (SELECT, TEXT, .
+	 *
 	 * ..).
 	 */
 	var $inputType;
@@ -76,6 +77,13 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 	var $insertable;
 
 	/**
+	 * Indicate if the field is part of the primary key (for the edition module).
+	 *
+	 * @var Boolean
+	 */
+	var $isPK;
+
+	/**
 	 * Indicate if the field is required (for the edition module).
 	 *
 	 * @var Boolean
@@ -126,6 +134,7 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 		$return .= ',"valueLabel":' . json_encode($this->getValueLabel());
 		$return .= ',"editable":' . json_encode($this->editable);
 		$return .= ',"insertable":' . json_encode($this->insertable);
+		$return .= ',"isPK":' . json_encode($this->isPK);
 		$return .= ',"required":' . json_encode($this->required);
 		return $return;
 	}
@@ -137,14 +146,14 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 	 */
 	public function toDetailJSON() {
 		$return = '{"label":' . json_encode($this->label);
-		
+
 		if ($this->inputType == 'NUMERIC' && $this->decimals != null && $this->decimals != "") {
 			$this->valueLabel = number_format($this->valueLabel, $this->decimals);
 		}
-		
+
 		$return .= ',"value":' . json_encode($this->getValueLabel());
 		$return .= ',"type":' . json_encode($this->inputType) . '}';
-		
+
 		return $return;
 	}
 

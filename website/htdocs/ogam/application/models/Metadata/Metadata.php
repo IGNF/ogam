@@ -23,18 +23,30 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * Indicate is the cache should be used.
+	 *
+	 * @var Boolean
+	 */
+	var $useCache = false;
+
+	/**
 	 * Initialisation
 	 */
 	public function init() {
-		
+
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
-		
+
+		// Get the useCache flag
 		$configuration = Zend_Registry::get("configuration");
-		$this->useCache = $configuration->useCache;
-		
+		$uc = $configuration->useCache;
+		if (!empty($uc)) {
+			if ((strtolower($uc) == 'true') || ($uc == '1') || ($uc == 1)) {
+				$this->useCache = true;
+			}
+		}
 		$this->cache = $this->getDefaultMetadataCache();
-		
+
 		$translate = Zend_Registry::get('Zend_Translate');
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
 	}
@@ -53,16 +65,13 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getModeLabels($unit, $code = null, $query = null) {
 		$key = $this->_formatCacheKey('getModeLabels_' . $unit);
-		
+
 		$this->logger->debug($key);
-		
-		// No cache to avoid to increase the number of cache files for all combination
-		$tableFormat = $this->getTableFormatFromTableName('METADATA', 'MODE');
-		
+
 		$db = $this->getAdapter();
 		$req = "SELECT code, COALESCE(t.label, m.label) as label ";
 		$req .= " FROM mode m";
-		$req .= " LEFT JOIN translation t ON lang = '" . $this->lang . "' AND table_format = '" . $tableFormat->format . "' AND row_pk = m.unit || ',' || m.code";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'MODE' AND row_pk = m.unit || ',' || m.code)";
 		$req .= " WHERE unit = ? ";
 		if (!empty($query)) {
 			$req .= " AND COALESCE(t.label, m.label) ilike '" . $query . "%'";
@@ -75,19 +84,19 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			}
 		}
 		$req .= " ORDER BY position, code";
-		
+
 		$this->logger->info('getModeLabels : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$unit
 		));
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$result[$row['code']] = $row['label'];
 		}
-		
+
 		return $result;
 	}
 
@@ -102,12 +111,12 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " FROM table_schema ts";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'TABLE_SCHEMA' AND row_pk = schema_code) ";
 		$req .= " WHERE schema_code NOT IN ('METADATA', 'PUBLIC', 'WEBSITE') ORDER BY ts";
-		
+
 		$this->logger->info('getSchemas : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array());
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$schema = new Application_Object_Metadata_Schema();
@@ -115,11 +124,46 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$schema->name = $row['schema_name'];
 			$schema->label = $row['label'];
 			$schema->description = $row['description'];
-			
+
 			$result[$schema->code] = $schema;
 		}
-		
+
 		return $result;
+	}
+
+	/**
+	 * Get a available schema by its code.
+	 *
+	 * @param $schemaCode the
+	 *        	schema code
+	 * @return Schema
+	 */
+	public function getSchema($schemaCode) {
+		$db = $this->getAdapter();
+		$req = "SELECT schema_code, schema_name, COALESCE(t.label, ts.label) as label, COALESCE(t.definition, ts.description) as description";
+		$req .= " FROM table_schema ts";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'TABLE_SCHEMA' AND row_pk = schema_code) ";
+		$req .= " WHERE schema_code = ? ";
+
+		$this->logger->info('getSchema : ' . $req);
+
+		$select = $db->prepare($req);
+		$select->execute(array(
+			$schemaCode
+		));
+
+		$row = $select->fetch();
+		if ($row) {
+			$schema = new Application_Object_Metadata_Schema();
+			$schema->code = $row['schema_code'];
+			$schema->name = $row['schema_name'];
+			$schema->label = $row['label'];
+			$schema->description = $row['description'];
+		} else {
+			$schema = null;
+		}
+
+		return $schema;
 	}
 
 	/**
@@ -133,36 +177,36 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getMode($unit, $mode) {
 		$key = $this->_formatCacheKey('getMode_' . $unit . '_' . $mode . '_' . $this->lang);
-		
+
 		$this->logger->debug($key);
-		
+
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
 			$req = "SELECT code, COALESCE(t.label, m.label) as label";
 			$req .= " FROM mode m";
 			$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'MODE' AND row_pk = m.unit || ',' || m.code) ";
 			$req .= " WHERE unit = ? AND code = ? ORDER BY position, code";
-			
+
 			$this->logger->info('getMode : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$unit,
 				$mode
 			));
-			
+
 			$row = $select->fetch();
 			if ($row) {
 				$result = $row['label'];
 			} else {
 				$result = null;
 			}
-			
+
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
 			}
@@ -187,11 +231,11 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		} else {
 			$key = $this->_formatCacheKey('getTreeLabels_' . $unit . '_' . $value);
 		}
-		
+
 		$this->logger->debug($key);
-		
+
 		// No cache to avoid to increase the number of cache files for all combination
-		
+
 		$db = $this->getAdapter();
 		$req = "SELECT code, COALESCE(t.label, mt.label) as label ";
 		$req .= " FROM mode_tree mt";
@@ -205,19 +249,19 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			}
 		}
 		$req .= " ORDER BY position, code";
-		
+
 		$this->logger->info('getTreeLabels : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$unit
 		));
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$result[$row['code']] = $row['label'];
 		}
-		
+
 		return $result;
 	}
 
@@ -236,34 +280,34 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeModes($unit, $query, $start = null, $limit = null) {
 		$key = $this->_formatCacheKey('getTreeModes_' . $unit . '_' . $query . '_' . $start . '_' . $limit);
-		
+
 		$this->logger->debug($key);
-		
+
 		$db = $this->getAdapter();
 		$req = "SELECT code, COALESCE(t.label, mt.label) as label ";
 		$req .= " FROM mode_tree mt";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code)";
 		$req .= " WHERE unit = ?";
 		if ($query != null) {
-			$req .= " AND unaccent_string(COALESCE(t.label, mt.label)) ilike unaccent_string('%" . $query . "%')";
+			$req .= " AND unaccent(COALESCE(t.label, mt.label)) ilike unaccent('%" . $query . "%')";
 		}
 		$req .= " ORDER BY position, code";
 		if ($start !== null && $limit !== null) {
 			$req .= " LIMIT " . $limit . " OFFSET " . $start;
 		}
-		
+
 		$this->logger->info('getTreeModes : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$unit
 		));
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$result[$row['code']] = $row['label'];
 		}
-		
+
 		return $result;
 	}
 
@@ -278,26 +322,26 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeModesCount($unit, $query) {
 		$key = $this->_formatCacheKey('getTreeModesCount_' . $unit . '_' . $query);
-		
+
 		$this->logger->debug($key);
-		
+
 		$db = $this->getAdapter();
 		$req = "SELECT count(code) ";
 		$req .= " FROM mode_tree ";
 		$req .= " WHERE unit = ?";
 		if ($query != null) {
-			$req .= " AND unaccent_string(label) ilike unaccent_string('%" . $query . "%')";
+			$req .= " AND unaccent(label) ilike unaccent('%" . $query . "%')";
 		}
-		
+
 		$this->logger->info('getTreeModesCount : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$unit
 		));
-		
+
 		$result = array();
-		
+
 		return $select->fetchColumn(0);
 	}
 
@@ -319,17 +363,17 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$keycode = $code;
 		}
 		$key = $this->_formatCacheKey('getDynamodeLabels_' . $unit . '_' . $keycode . '_' . $query);
-		
+
 		$this->logger->debug($key);
-		
+
 		// No cache to avoid to increase the number of cache files for all combination
-		
+
 		$db = $this->getAdapter();
 		$req = $this->_getDynamodeSQL($unit);
-		
+
 		$req2 = "SELECT * ";
 		$req2 .= " FROM (" . $req . ") as foo ";
-		$req2 .= " WHERE (1 = 1) ";
+		$req2 .= " WHERE (1 = 1)";
 		if (!empty($query)) {
 			$req2 .= " AND label ilike '" . $query . "%'";
 		}
@@ -340,17 +384,17 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$req2 .= " AND code = '" . $code . "'";
 			}
 		}
-		
+
 		$this->logger->info('getDynamodeLabels : ' . $req2);
-		
+
 		$select = $db->prepare($req2);
 		$select->execute(array());
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$result[$row['code']] = $row['label'];
 		}
-		
+
 		return $result;
 	}
 
@@ -364,16 +408,16 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	private function _getDynamodeSQL($unit) {
 		$db = $this->getAdapter();
 		$req = "SELECT sql FROM dynamode WHERE unit = ?";
-		
+
 		$this->logger->info('_getDynamodeSQL : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$unit
 		));
-		
+
 		$row = $select->fetch();
-		
+
 		if (!empty($row)) {
 			return $row['sql'];
 		} else {
@@ -396,15 +440,15 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeChildren($unit, $parentcode = '*', $levels = 1) {
 		$key = $this->_formatCacheKey('getTreeChildren_' . $unit . '_' . $parentcode . '_' . $levels . '_' . $this->lang);
-		
+
 		$this->logger->debug($key);
-		
+
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
 			$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
 			$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
@@ -424,29 +468,29 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	FROM node_list nl";
 			$req .= "	LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'MODE_TREE' AND row_pk = nl.unit || ',' || nl.code) ";
 			$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
-			
+
 			$this->logger->info('getTreeChildren : ' . $unit . ' ' . $parentcode);
 			$this->logger->info('getTreeChildren : ' . $req);
-			
+
 			$select = $db->prepare($req);
-			
+
 			$select->execute(array(
 				$unit,
 				$parentcode,
 				$unit
 			));
-			
+
 			$resultTree = new Application_Object_Metadata_TreeNode(); // The root is empty
 			foreach ($select->fetchAll() as $row) {
-				
+
 				$parentCode = $row['parent_code'];
-				
+
 				// Build the new node
 				$tree = new Application_Object_Metadata_TreeNode();
 				$tree->code = $row['code'];
 				$tree->label = $row['label'];
 				$tree->isLeaf = $row['is_leaf'];
-				
+
 				// Check if a parent can be found in the structure
 				$parentNode = $resultTree->getNode($parentCode);
 				if ($parentNode == null) {
@@ -457,7 +501,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 					$parentNode->addChild($tree);
 				}
 			}
-			
+
 			if ($this->useCache) {
 				$this->cache->save($resultTree, $key);
 			}
@@ -482,15 +526,15 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTreeChildrenCodes($unit, $code = '*', $levels = 1) {
 		$key = $this->_formatCacheKey('getTreeChildrenCodes_' . $unit . '_' . $code . '_' . $levels);
-		
+
 		$this->logger->debug($key);
-		
+
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
 			$req = "WITH RECURSIVE node_list( unit, code, parent_code, label, definition, position, is_leaf, level) AS ( ";
 			$req .= "	    SELECT unit, code, parent_code, label, definition, position, is_leaf, 1 ";
@@ -509,21 +553,21 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	SELECT * ";
 			$req .= "	FROM node_list ";
 			$req .= "	ORDER BY level, position, code "; // level is used to ensure correct construction of the structure
-			
+
 			$this->logger->info('getTreeChildrenCodes : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$unit,
 				$code,
 				$unit
 			));
-			
+
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
 				$result[] = $row['code'];
 			}
-			
+
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
 			}
@@ -536,7 +580,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Read a dataset object from a result line.
 	 *
-	 * @param Result $row        	
+	 * @param Result $row
 	 * @return Application_Object_Metadata_Dataset
 	 */
 	private function _readDataSet($row) {
@@ -545,8 +589,41 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$dataset->label = $row['label'];
 		$dataset->definition = $row['definition'];
 		$dataset->isDefault = $row['is_default'];
-		
+
 		return $dataset;
+	}
+
+	/**
+	 * Get a dataset.
+	 *
+	 * Used by custom controller in EDB.
+	 *
+	 * @param String $datasetId
+	 *        	The dataset identifier
+	 * @return Genapp_Object_Metadata_Dataset
+	 */
+	public function getDataset($datasetId) {
+		$db = $this->getAdapter();
+		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
+		$req .= " FROM dataset d";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATASET' AND row_pk = dataset_id)";
+		$req .= " WHERE dataset_id = ?";
+
+		$this->logger->info('getDataset : ' . $req);
+
+		$select = $db->prepare($req);
+		$select->execute(array(
+			$datasetId
+		));
+
+		$row = $select->fetch();
+		if ($row) {
+			$dataset = $this->_readDataSet($row);
+
+			return $dataset;
+		} else {
+			$result = null;
+		}
 	}
 
 	/**
@@ -558,9 +635,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$db = $this->getAdapter();
 		$req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
 		$req .= " FROM dataset d";
-		$req .= " LEFT JOIN translation t ON lang = '" . $this->lang . "' AND table_format = 'METADATA' AND row_pk = dataset_id";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATASET' AND row_pk = dataset_id)";
 		$req .= " INNER JOIN dataset_fields using (dataset_id) ";
-		
+
 		// Check the role restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		$params = array();
@@ -569,20 +646,20 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
 			$params[] = $role->code;
 		}
-		
+
 		$req .= " ORDER BY dataset_id";
-		
+
 		$this->logger->info('getDatasetsForDisplay : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute($params);
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$dataset = $this->_readDataSet($row);
 			$result[$dataset->id] = $dataset;
 		}
-		
+
 		return $result;
 	}
 
@@ -597,7 +674,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " FROM dataset d";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATASET' AND row_pk = dataset_id) ";
 		$req .= " INNER JOIN dataset_files using (dataset_id) ";
-		
+
 		// Check the role restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		$params = array();
@@ -606,14 +683,14 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
 			$params[] = $role->code;
 		}
-		
+
 		$req .= " ORDER BY dataset_id";
-		
+
 		$this->logger->info('getDatasetsForUpload : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute($params);
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$dataset = $this->_readDataSet($row);
@@ -637,14 +714,14 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN file_format using (format) ";
 		$req .= " WHERE dataset_id = ? ";
 		$req .= " ORDER BY position";
-		
+
 		$this->logger->info('getRequestedFiles : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$datasetId
 		));
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$datasetFile = new Application_Object_Metadata_DatasetFile();
@@ -665,9 +742,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getFileFields($fileFormat) {
 		$db = $this->getAdapter();
-		
+
 		$this->logger->debug('getFileFields : ' . $fileFormat);
-		
+
 		// Get the fields specified by the format
 		$req = "SELECT file_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type as type, unit.subtype as subtype, COALESCE(t.definition, data.definition) as definition ";
 		$req .= " FROM file_field ";
@@ -676,14 +753,14 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATA' AND row_pk = data.data) ";
 		$req .= " WHERE format = ? ";
 		$req .= " ORDER BY position ASC";
-		
+
 		$this->logger->info('getFileFields : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$fileFormat
 		));
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$fileField = new Application_Object_Metadata_FileField();
@@ -698,14 +775,14 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$fileField->mask = $row['mask'];
 			$result[] = $fileField;
 		}
-		
+
 		return $result;
 	}
 
 	/**
 	 * Read a table field object from a result line.
 	 *
-	 * @param Result $row        	
+	 * @param Result $row
 	 * @return Application_Object_Metadata_FormField
 	 */
 	private function _readTableField($row) {
@@ -723,7 +800,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$tableField->type = $row['type'];
 		$tableField->subtype = $row['subtype'];
 		$tableField->definition = $row['definition'];
-		
+
 		return $tableField;
 	}
 
@@ -741,16 +818,16 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTableFields($schema, $format, $datasetID = null) {
 		$this->logger->debug('getTableFields : ' . $datasetID . '_' . $schema . '_' . $format . '_' . $this->lang);
-		
+
 		$key = $this->_formatCacheKey('getTableFields_' . $datasetID . '_' . $schema . '_' . $format . '_' . $this->lang);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
-			
+
 			// Get the fields specified by the format
 			$req = "SELECT DISTINCT table_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type, unit.subtype, COALESCE(t.definition, data.definition) as definition ";
 			$req .= " FROM table_field ";
@@ -768,9 +845,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " AND table_format.schema_code = ? ";
 			$req .= " AND table_field.format = ? ";
 			$req .= " ORDER BY table_field.position ";
-			
+
 			$this->logger->info('getTableFields : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			if ($datasetID != null) {
 				$select->execute(array(
@@ -784,14 +861,14 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 					$format
 				));
 			}
-			
+
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
 				$tableField = $this->_readTableField($row);
-				
+
 				$result[$tableField->data] = $tableField;
 			}
-			
+
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
 			}
@@ -811,16 +888,16 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @param Array[String] $tables
 	 *        	a list of table formats
 	 * @return Application_Object_Metadata_TableField
-	 * @throws an exceptionif the tables contain no geographical information
+	 * @throws an exception if the tables contain no geographical information
 	 */
 	public function getGeometryField($schema, $tables) {
 		$db = $this->getAdapter();
-		
+
 		$this->logger->debug('getGeometryField : ' . $schema);
-		
+
 		// We do the seach table by table in the inverse order
 		foreach (array_reverse($tables) as $tableName) {
-			
+
 			// Get the fields specified by the format
 			$req = "SELECT DISTINCT table_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type, unit.subtype, COALESCE(t.definition, data.definition) as definition ";
 			$req .= " FROM table_field ";
@@ -830,23 +907,23 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " LEFT JOIN translation t ON (t.lang = '" . $this->lang . "' AND t.table_format = table_field.format AND t.row_pk = data.data)";
 			$req .= " WHERE table_field.format = ? ";
 			$req .= " AND table_format.schema_code = ? ";
-			$req .= " AND data.unit = 'GEOM' ";
-			
+			$req .= " AND unit.type = 'GEOM' ";
+
 			$this->logger->info('getTableFields : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$tableName,
 				$schema
 			));
-			
+
 			$row = $select->fetch();
 			if ($row) {
 				$tableField = $this->_readTableField($row);
 				return $tableField;
 			}
 		}
-		
+
 		// No GEOM column found
 		throw new Exception("No geographical information detected");
 	}
@@ -862,100 +939,40 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTableFormat($schema, $format) {
 		$db = $this->getAdapter();
-		
+
 		$this->logger->debug('getTableFormat : ' . $schema . ' ' . $format . '_' . $this->lang);
-		
+
 		$key = $this->_formatCacheKey('getTableFormat' . $schema . '_' . $format . '_' . $this->lang);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			// Get the fields specified by the format
 			$req = "SELECT table_name, COALESCE(t.label, tf.label) as label, primary_key ";
 			$req .= " FROM table_format tf";
-			$req .= " LEFT JOIN translation t ON lang = '" . $this->lang . "' AND table_format = 'TABLE_FORMAT' AND row_pk = format";
+			$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'TABLE_FORMAT' AND row_pk = format)";
 			$req .= " WHERE schema_code = ? ";
 			$req .= " AND format = ? ";
-			
+
 			$this->logger->info('getTableFormat : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$schema,
 				$format
 			));
-			
+
 			$row = $select->fetch();
-			
+
 			$tableFormat = new Application_Object_Metadata_TableFormat();
 			$tableFormat->format = $format;
 			$tableFormat->schemaCode = $schema;
 			$tableFormat->tableName = $row['table_name'];
 			$tableFormat->label = $row['label'];
 			$tableFormat->setPrimaryKeys($row['primary_key']);
-			
-			if ($this->useCache) {
-				$this->cache->save($tableFormat, $key);
-			}
-			return $tableFormat;
-		} else {
-			return $cachedResult;
-		}
-	}
 
-	/**
-	 * Get the information about a table format from the physical table name.
-	 *
-	 * This function is used in the proxy controller because we receive a physical table name from mapserver.
-	 *
-	 * @param String $schema
-	 *        	the schema code
-	 * @param String $table
-	 *        	the table name
-	 * @return Application_Object_Metadata_TableFormat
-	 */
-	public function getTableFormatFromTableName($schema, $table) {
-		$db = $this->getAdapter();
-		
-		$this->logger->debug('getTableFormatFromTableName : ' . $schema . ' ' . $table . '_' . $this->lang);
-		
-		$key = $this->_formatCacheKey('getTableFormatFromTableName_' . $schema . '_' . $table . '_' . $this->lang);
-		
-		if ($this->useCache) {
-			$cachedResult = $this->cache->load($key);
-		}
-		
-		if (empty($cachedResult)) {
-			
-			// Get the fields specified by the format
-			$req = "SELECT format, schema_code, table_name, COALESCE(t.label, tf.label) as label, primary_key ";
-			$req .= " FROM table_format tf";
-			$req .= " LEFT JOIN translation t ON lang = '" . $this->lang . "' ";
-			// We can't use getTableFormatFromTableName() function here to avoid infinity loop
-			$req .= " AND table_format = (SELECT format FROM table_format WHERE schema_code = 'TABLE_FORMAT') ";
-			$req .= " AND row_pk = format";
-			$req .= " WHERE schema_code = ? ";
-			$req .= " AND table_name = upper(?) ";
-			
-			$this->logger->info('getTableFormat : ' . $req);
-			
-			$select = $db->prepare($req);
-			$select->execute(array(
-				$schema,
-				$table
-			));
-			
-			$row = $select->fetch();
-			
-			$tableFormat = new Application_Object_Metadata_TableFormat();
-			$tableFormat->format = $row['format'];
-			$tableFormat->schemaCode = $row['schema_code'];
-			$tableFormat->tableName = $row['table_name'];
-			$tableFormat->label = $row['label'];
-			$tableFormat->setPrimaryKeys($row['primary_key']);
-			
 			if ($this->useCache) {
 				$this->cache->save($tableFormat, $key);
 			}
@@ -977,13 +994,13 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	public function getForms($datasetId, $schemaCode) {
 		$key = $this->_formatCacheKey('getForms_' . $datasetId . "_" . $schemaCode . '_' . $this->lang);
 		$this->logger->info('getForms : ' . $key);
-		
+
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
 			$req = " SELECT distinct form_format.format, COALESCE(t.label, form_format.label) as label, COALESCE(t.definition, form_format.definition) as definition, position ";
 			$req .= " FROM ( ";
@@ -1003,9 +1020,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "      LEFT JOIN form_format on (form_format.format = foo.format) ";
 			$req .= "      LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'FORM_FORMAT' AND row_pk = form_format.format) ";
 			$req .= "      ORDER BY position";
-			
+
 			$this->logger->info('getForms : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			if (!empty($datasetId)) {
 				$select->execute(array(
@@ -1017,7 +1034,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 					$schemaCode
 				));
 			}
-			
+
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
 				$formFormat = new Application_Object_Metadata_FormFormat();
@@ -1050,35 +1067,35 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getFormFields($dataset, $formFormat, $schema, $mode) {
 		$this->logger->info('getFormFields : ' . $dataset . ' ' . $formFormat . ' ' . $schema . '_' . $this->lang);
-		
+
 		$key = $this->_formatCacheKey('getFormFields_' . $mode . '_' . $dataset . '_' . $formFormat . '_' . $schema . '_' . $this->lang);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
-			
+
 			$param = array();
-			
+
 			// Select the list of available fields for the table (excepted the FK)
 			$req = " SELECT DISTINCT form_field.*, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, unit.type, unit.subtype, unit.unit ";
 			$req .= " FROM form_field ";
 			$req .= " LEFT JOIN data using (data) ";
 			$req .= " LEFT JOIN unit using (unit) ";
 			$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATA' AND row_pk = data.data) ";
-			
+
 			// Check the field format
 			$req .= " WHERE format = ?";
 			$param[] = $formFormat;
-			
+
 			// Check the field type (result or criteria)
 			if ($mode == "result") {
 				$req .= " AND is_result = '1'";
 			} else {
 				$req .= " AND is_criteria = '1'";
 			}
-			
+
 			// If a dataset has been selected, filter the available options
 			if (!empty($dataset)) {
 				$req .= " AND (data IN ( ";
@@ -1093,21 +1110,21 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$param[] = $schema;
 				$param[] = $formFormat;
 			}
-			
+
 			$req .= " ORDER BY form_field.position";
-			
+
 			$this->logger->info('getFormFields : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute($param);
-			
+
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
 				$formField = $this->_readFormField($row);
-				
+
 				$result[] = $formField;
 			}
-			
+
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
 			}
@@ -1120,7 +1137,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Read a form field object from a result line.
 	 *
-	 * @param Result $row        	
+	 * @param Result $row
 	 * @return Application_Object_Metadata_FormField
 	 */
 	private function _readFormField($row) {
@@ -1141,7 +1158,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$formField->decimals = $row['decimals'];
 		$formField->mask = $row['mask'];
 		$formField->position = $row['position'];
-		
+
 		return $formField;
 	}
 
@@ -1160,9 +1177,9 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$cachedResult = $this->cache->load($key);
 		}
 		if (empty($cachedResult)) {
-			
+
 			$this->logger->info('getFormField : ' . $format . ", " . $data);
-			
+
 			$db = $this->getAdapter();
 			$req = " SELECT form_field.*, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, unit.type, unit.subtype, unit.unit ";
 			$req .= " FROM form_field ";
@@ -1171,16 +1188,16 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATA' AND row_pk = data.data) ";
 			$req .= " WHERE format = ? ";
 			$req .= " AND   data = ?";
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$format,
 				$data
 			));
-			
+
 			$row = $select->fetch();
 			$formField = $this->_readFormField($row);
-			
+
 			if ($this->useCache) {
 				$this->cache->save($formField, $key);
 			}
@@ -1199,19 +1216,19 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getRange($unit) {
 		$this->logger->info('getRange : ' . $unit);
-		
+
 		$db = $this->getAdapter();
 		$req = "SELECT min, max ";
 		$req .= " FROM range ";
 		$req .= " WHERE unit = ?";
-		
+
 		$this->logger->info('getRange : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$unit
 		));
-		
+
 		$row = $select->fetch();
 		if ($row) {
 			$range = new Application_Object_Metadata_Range();
@@ -1228,19 +1245,19 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $schema
 	 *        	the name of the schema (RAW_DATA or HARMONIZED_DATA)
-	 * @param FormField $formField
+	 * @param Application_Object_Metadata_FormField $formField
 	 *        	the form field
 	 * @return Application_Object_Metadata_TableField
 	 */
 	public function getFormToTableMapping($schema, $formField) {
 		$this->logger->info('getFormToTableMapping : ' . $formField->format . " " . $formField->data . " " . $schema . '_' . $this->lang);
-		
+
 		$key = $this->_formatCacheKey('formtotablemapping_' . $formField->format . '_' . $formField->data . '_' . $schema . '_' . $this->lang);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
 			$req = " SELECT table_field.*, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, unit.unit, unit.type, unit.subtype ";
 			$req .= " FROM field_mapping ";
@@ -1254,19 +1271,19 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " AND schema_code = ? ";
 			$req .= " AND mapping_type = 'FORM'";
 			$req .= " ORDER BY table_field.position ";
-			
+
 			$this->logger->info('getFormToTableMapping : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$formField->format,
 				$formField->data,
 				$schema
 			));
-			
+
 			$row = $select->fetch();
 			$tableField = $this->_readTableField($row);
-			
+
 			if ($this->useCache) {
 				$this->cache->save($tableField, $key);
 			}
@@ -1279,22 +1296,22 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the form field corresponding to the table field.
 	 *
-	 * @param TableField $tableField
+	 * @param Application_Object_Metadata_TableField $tableField
 	 *        	the table field
 	 * @return Array[Application_Object_Metadata_FormField]
 	 */
 	public function getTableToFormMapping($tableField) {
 		$this->logger->info('getTableToFormMapping : ' . $tableField->format . " " . $tableField->data . ' ' . $this->lang);
-		
+
 		$key = $this->_formatCacheKey('getTableToFormMapping' . $tableField->format . '_' . $tableField->data . '_' . $this->lang);
-		
+
 		// Get the form description corresponding to the table field
 		$result = null;
 		if ($this->useCache) {
 			$result = $this->cache->load($key);
 		}
 		if (empty($result)) {
-			
+
 			$db = $this->getAdapter();
 			$req = " SELECT form_field.*, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, unit.unit, unit.type, unit.subtype ";
 			$req .= " FROM form_field ";
@@ -1306,27 +1323,27 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= " WHERE field_mapping.dst_format = ? ";
 			$req .= " AND field_mapping.dst_data = ? ";
 			$req .= " ORDER BY form_format.position, form_field.position ";
-			
+
 			$this->logger->info('getTableToFormMapping : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$tableField->format,
 				$tableField->data
 			));
-			
+
 			$row = $select->fetch();
-			
+
 			if (!empty($row)) {
 				$formField = $this->_readFormField($row);
-				
+
 				if ($this->useCache) {
 					$this->cache->save($formField, $key);
 				}
 				$result = $formField;
 			}
 		}
-		
+
 		return $result; // clone to avoid updating the values of the cached result
 	}
 
@@ -1342,51 +1359,51 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTablesTree($tableFormat, $schemaCode) {
 		$this->logger->info('getTablesTree : tableFormat:' . $tableFormat . ' schemaCode:' . $schemaCode);
-		
+
 		$key = $this->_formatCacheKey('getTablesTree_' . $tableFormat . '_' . $schemaCode);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
 		if (empty($cachedResult)) {
-			
+
 			$result = array();
-			
+
 			$db = $this->getAdapter();
 			$req = " SELECT child_table, parent_table, join_key, primary_key, table_format.table_name ";
 			$req .= " FROM table_tree ";
 			$req .= " LEFT JOIN table_format on (child_table = table_format.format) ";
 			$req .= " WHERE child_table = ? ";
 			$req .= " AND table_tree.schema_code = ?";
-			
+
 			$this->logger->info('getTablesTree : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$tableFormat,
 				$schemaCode
 			));
-			
+
 			$row = $select->fetch();
-			
+
 			if (empty($row)) {
 				$this->logger->err("Table ancestor cannot be found");
 				throw new Exception("Table ancestor cannot be found");
 			}
-			
+
 			$tableTreeData = new Application_Object_Metadata_TableTreeData();
 			$tableTreeData->tableFormat = $row['child_table'];
 			$tableTreeData->parentTable = $row['parent_table'];
 			$tableTreeData->keys = $row['join_key'];
 			$tableTreeData->identifiers = $row['primary_key'];
 			$tableTreeData->tableName = $row['table_name'];
-			
+
 			$result[] = $tableTreeData;
-			
+
 			// Recursively call the function if needed
 			if ($tableTreeData->parentTable != "*") {
 				$result = array_merge($result, $this->getTablesTree($tableTreeData->parentTable, $schemaCode));
 			}
-			
+
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
 			}
@@ -1405,11 +1422,11 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getChildrenTableLabels($tableFormat) {
 		$db = $this->getAdapter();
-		
+
 		$childrenLabels = array();
-		
+
 		Zend_Registry::get("logger")->info('getChildren');
-		
+
 		// Get the children of the current table
 		$sql = "SELECT TABLE_TREE.child_table as format, COALESCE(t.label, TABLE_FORMAT.label) as label ";
 		$sql .= " FROM TABLE_TREE ";
@@ -1417,20 +1434,20 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$sql .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'TABLE_FORMAT' AND row_pk = TABLE_FORMAT.format) ";
 		$sql .= " WHERE TABLE_TREE.SCHEMA_CODE = '" . $tableFormat->schemaCode . "'";
 		$sql .= " AND parent_table = '" . $tableFormat->format . "'";
-		
+
 		Zend_Registry::get("logger")->info('getChildren : ' . $sql);
-		
+
 		$select = $db->prepare($sql);
 		$select->execute();
-		
+
 		foreach ($select->fetchAll() as $row) {
 			$format = $row['format'];
 			$label = $row['label'];
-			
+
 			// Add to the result
 			$childrenLabels[$format] = $label;
 		}
-		
+
 		return $childrenLabels;
 	}
 
@@ -1438,7 +1455,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 *
 	 * Format the provided string to use it like a cache key
 	 *
-	 * @param String $key        	
+	 * @param String $key
 	 * @return String
 	 */
 	private function _formatCacheKey($key) {
@@ -1446,7 +1463,8 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$key = str_replace(' ', '_', $key);
 		$key = str_replace('-', '_', $key);
 		$key = str_replace('.', '_', $key);
-		
+		$key = str_replace('$', '_', $key);
+
 		return $key;
 	}
 
@@ -1465,17 +1483,17 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTaxrefChildren($unit, $parentcode = '*', $levels = 1) {
 		$key = $this->_formatCacheKey('getTaxrefChildren_' . $unit . '_' . $parentcode . '_' . $levels);
-		
+
 		$this->logger->debug($key);
-		
+
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
-			
+
 			$req = "WITH RECURSIVE node_list( unit, code, parent_code, name, complete_name, vernacular_name, is_reference, is_leaf, level) AS (  ";
 			$req .= "	    SELECT unit, code, parent_code, name, complete_name, vernacular_name, is_reference, is_leaf, 1";
 			$req .= "		FROM mode_taxref ";
@@ -1487,32 +1505,32 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "		INNER JOIN node_list on (child.parent_code = node_list.code AND child.unit = node_list.unit) ";
 			$req .= "		WHERE child.unit = ? ";
 			if ($levels != 0) {
-				$req .= "		AND level < " . $levels . " ";
+				$req .= "	AND level < " . $levels . " ";
 			}
 			$req .= "	) ";
 			$req .= "	SELECT * ";
 			$req .= "	FROM node_list ";
 			$req .= "	ORDER BY level, parent_code, name "; // level is used to ensure correct construction of the structure
-			
+
 			$this->logger->info('getTaxrefChildren : ' . $parentcode);
 			$this->logger->info('getTaxrefChildren : ' . $req);
-			
+
 			$select = $db->prepare($req);
-			
+
 			$select->execute(array(
 				$unit,
 				$parentcode,
 				$unit
 			));
-			
+
 			$rows = $select->fetchAll();
-			
+
 			if (!empty($rows)) {
 				$resultTree = new Application_Object_Metadata_TreeNode(); // The root is empty
 				foreach ($rows as $row) {
-					
+
 					$parentCode = $row['parent_code'];
-					
+
 					// Build the new node
 					$tree = new Application_Object_Metadata_TaxrefNode();
 					$tree->code = $row['code'];
@@ -1521,7 +1539,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 					$tree->vernacularName = $row['vernacular_name'];
 					$tree->isLeaf = $row['is_leaf'];
 					$tree->isReference = $row['is_reference'];
-					
+
 					// Check if a parent can be found in the structure
 					$parentNode = $resultTree->getNode($parentCode);
 					if ($parentNode == null) {
@@ -1535,7 +1553,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			} else {
 				$resultTree = null;
 			}
-			
+
 			if ($this->useCache) {
 				$this->cache->save($resultTree, $key);
 			}
@@ -1555,14 +1573,18 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 * @return Array[String, String]
 	 */
 	public function getTaxrefLabels($unit, $value = null) {
-		$key = $this->_formatCacheKey('getTaxrefLabels_' . $unit . '_' . $value);
-		
+		if (is_array($value)) {
+			$key = $this->_formatCacheKey('getTaxrefLabels_' . $unit . '_' . implode("_", $value));
+		} else {
+			$key = $this->_formatCacheKey('getTaxrefLabels_' . $unit . '_' . $value);
+		}
+
 		$this->logger->debug($key);
-		
+
 		// No cache to avoid to increase the number of cache files for all combination
-		
+
 		$db = $this->getAdapter();
-		
+
 		$req = "	SELECT code, name ";
 		$req .= "	FROM mode_taxref ";
 		$req .= "	WHERE unit = ? ";
@@ -1574,19 +1596,19 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			}
 		}
 		$req .= "	ORDER BY name ";
-		
+
 		$this->logger->info('getTaxrefLabels ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$unit
 		));
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$result[$row['code']] = $row['name'];
 		}
-		
+
 		return $result;
 	}
 
@@ -1606,41 +1628,40 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTaxrefModes($unit, $query = null, $start = null, $limit = null) {
 		$key = $this->_formatCacheKey('getTaxrefModes_' . $unit . '_' . $query . '_' . $start . '_' . $limit);
-		
+
 		$this->logger->debug($key);
-		
+
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
-			
-			// TODO : Performances à améliorer
-			// TODO : Tri par pertinence
+
 			$req = " SELECT code, is_leaf, is_reference, name, complete_name, vernacular_name ";
 			$req .= " FROM mode_taxref ";
 			$req .= " WHERE unit = ? ";
-			$req .= " AND (unaccent_string(name) ilike unaccent_string('%".$query."%') ";
-			$req .= "      OR unaccent_string(complete_name) ilike unaccent_string('%".$query."%') ";
-			$req .= "      OR unaccent_string(vernacular_name) ilike unaccent_string('%".$query."%'))";
+			$req .= " AND (unaccent(name) ilike '%" . $query . "%' ";
+			$req .= "      OR unaccent(complete_name) ilike '%" . $query . "%' ";
+			$req .= "      OR unaccent(vernacular_name) ilike '%" . $query . "%'";
+			$req .= "      OR code ilike '" . $query . "%')";
 			$req .= " ORDER BY name ";
-			
+
 			if ($start !== null && $limit !== null) {
 				$req .= " LIMIT " . $limit . " OFFSET " . $start;
 			}
-			
+
 			$this->logger->info('getTaxrefModes :' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$unit
 			));
-			
+
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
-				
+
 				// Build the new node
 				$node = new Application_Object_Metadata_TaxrefNode();
 				$node->code = $row['code'];
@@ -1649,10 +1670,10 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 				$node->vernacularName = $row['vernacular_name'];
 				$node->isLeaf = $row['is_leaf'];
 				$node->isReference = $row['is_reference'];
-				
+
 				$result[] = $node;
 			}
-			
+
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
 			}
@@ -1673,35 +1694,36 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTaxrefModesCount($unit, $query = null) {
 		$key = $this->_formatCacheKey('getTaxrefModesCount_' . $unit . '_' . $query);
-		
+
 		$this->logger->debug($key);
-		
+
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			$db = $this->getAdapter();
-			
+
 			$req = "	SELECT count(code) ";
 			$req .= "	FROM mode_taxref ";
 			$req .= "	WHERE unit = ? ";
 			if ($query != null) {
-				$req .= " AND unaccent_string(name) ilike unaccent_string('%".$query."%') ";
-				$req .= " OR  unaccent_string(complete_name) ilike unaccent_string('%".$query."%') ";
-				$req .= " OR  unaccent_string(vernacular_name) ilike unaccent_string('%".$query."%')";
+				$req .= " AND unaccent(name) ilike '%" . $query . "%' ";
+				$req .= " OR  unaccent(complete_name) ilike '%" . $query . "%' ";
+				$req .= " OR  unaccent(vernacular_name) ilike '%" . $query . "%'";
+				$req .= " OR  code ilike '" . $query . "%'";
 			}
-			
+
 			$this->logger->info('getTaxrefModesCount :' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$unit
 			));
-			
+
 			$result = $select->fetchColumn(0);
-			
+
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
 			}
@@ -1727,15 +1749,15 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	 */
 	public function getTaxrefChildrenCodes($unit, $code = '*', $levels = 1) {
 		$key = $this->_formatCacheKey('getTaxrefChildrenCodes_' . $unit . '_' . $code . '_' . $levels);
-		
+
 		$this->logger->debug($key);
-		
+
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
-		
+
 		if (empty($cachedResult)) {
-			
+
 			$this->logger->info('getTaxrefChildrenCodes : ' . $code . '_' . $levels);
 			$db = $this->getAdapter();
 			$req = "WITH RECURSIVE node_list( code, level) AS ( ";
@@ -1755,21 +1777,21 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 			$req .= "	SELECT * ";
 			$req .= "	FROM node_list ";
 			$req .= "	ORDER BY level, code "; // level is used to ensure correct construction of the structure
-			
+
 			$this->logger->info('getTaxrefChildrenCodes : ' . $req);
-			
+
 			$select = $db->prepare($req);
 			$select->execute(array(
 				$unit,
 				$code,
 				$unit
 			));
-			
+
 			$result = array();
 			foreach ($select->fetchAll() as $row) {
 				$result[] = $row['code'];
 			}
-			
+
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
 			}

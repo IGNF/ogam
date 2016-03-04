@@ -2,13 +2,13 @@
 
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- * 
+ *
  * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
- * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
- * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
@@ -25,7 +25,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 * Initialisation
 	 */
 	public function init() {
-		
+
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 	}
@@ -37,9 +37,9 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 *        	the FROM / WHERE part of the SQL Request
 	 * @param String $sessionId
 	 *        	the user session id.
-	 * @param TableField $locationField
+	 * @param Application_Object_Metadata_TableField $locationField
 	 *        	the location field.
-	 * @param TableFormat $locationTable
+	 * @param Application_Object_Metadata_TableFormat $locationTable
 	 *        	the location table
 	 * @param String $visualisationSRS
 	 *        	the projection system used for visualisation.
@@ -47,14 +47,14 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	public function fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS) {
 		$db = $this->getAdapter();
 		$db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
-		
+
 		if ($sqlWhere != null) {
 			$keys = $locationTable->primaryKeys;
-			
+
 			$request = " INSERT INTO result_location (session_id, format, pk, the_geom ) ";
 			$request .= " SELECT DISTINCT '" . $sessionId . "', ";
 			$request .= "'" . $locationTable->format . "', ";
-			
+
 			// Ajout des clés primaires de la table portant l'info géométrique
 			$keyColumns = "";
 			foreach ($keys as $key) {
@@ -64,13 +64,13 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 				$keyColumns = substr($keyColumns, 0, -11);
 			}
 			$request .= $keyColumns . ", ";
-			
+
 			// Ajout de la colonne portant la géométrie
 			$request .= " st_transform(" . $locationTable->format . "." . $locationField->columnName . "," . $visualisationSRS . ") as the_geom ";
 			$request .= $sqlWhere;
-			
+
 			$this->logger->info('fillLocationResult : ' . $request);
-			
+
 			$query = $db->prepare($request);
 			$query->execute();
 		}
@@ -85,11 +85,11 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 */
 	public function cleanPreviousResults($sessionId) {
 		$db = $this->getAdapter();
-		
+
 		$req = "DELETE FROM result_location WHERE session_id = ? OR (_creationdt < CURRENT_TIMESTAMP - INTERVAL '2 days')";
-		
+
 		$this->logger->info('cleanPreviousResults request : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$sessionId
@@ -105,20 +105,20 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 */
 	public function getPlotLocations($sessionId) {
 		$db = $this->getAdapter();
-		
+
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
-		
+
 		$req = "SELECT st_astext(st_transform(the_geom," . $projection . ")) as position FROM result_location WHERE session_id = ?";
-		
+
 		$this->logger->info('getPlotLocations session_id : ' . $sessionId);
 		$this->logger->info('getPlotLocations request : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$sessionId
 		));
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$result[] = $row['position'];
@@ -135,21 +135,45 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 */
 	public function getResultsBBox($sessionId) {
 		$db = $this->getAdapter();
-		
+
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
-		
+
 		$req = "SELECT st_astext(st_extent(st_transform(the_geom," . $projection . "))) as wkt FROM result_location WHERE session_id = ?";
-		
+
 		$this->logger->info('getResultsBBox session_id : ' . $sessionId);
 		$this->logger->info('getResultsBBox request : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$sessionId
 		));
 		$result = $select->fetchColumn(0);
-		
+
+		return $result;
+	}
+
+	/**
+	 * Returns the number of results in the results table.
+	 *
+	 * @param
+	 *        	String the user session id.
+	 * @return Integer the number of results
+	 */
+	public function getResultsCount($sessionId) {
+		$db = $this->getAdapter();
+
+		$req = "SELECT count(*) FROM result_location WHERE session_id = ?";
+
+		$this->logger->info('getResultsCount session_id : ' . $sessionId);
+		$this->logger->info('getResultsCount request : ' . $req);
+
+		$select = $db->prepare($req);
+		$select->execute(array(
+			$sessionId
+		));
+		$result = $select->fetchColumn(0);
+
 		return $result;
 	}
 
@@ -167,21 +191,21 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 */
 	public function getLocationInfo($sessionId, $lon, $lat) {
 		$db = $this->getAdapter();
-		
+
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
-		
+
 		$margin = $configuration->featureinfo_margin;
-		
+
 		$translate = Zend_Registry::get('Zend_Translate');
 		$lang = strtoupper($translate->getAdapter()->getLocale());
-		
+
 		$websiteSession = new Zend_Session_Namespace('website');
 		// Get the current used schema
 		$schema = $websiteSession->schema;
 		// Get the last query done
 		$queryObject = $websiteSession->queryObject;
-		
+
 		$genericService = new Application_Service_GenericService();
 		$metadataModel = new Application_Model_Metadata_Metadata();
 		// Extract the location table from the last query
@@ -192,7 +216,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		$locationTableInfo = $metadataModel->getTableFormat($schema, $locationField->format);
 		// Get the location table columns
 		$tableFields = $metadataModel->getTableFields($schema, $locationField->format, null);
-		
+
 		// Setup the location table columns for the select
 		$cols = '';
 		$joinForMode = '';
@@ -214,7 +238,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 				}
 			}
 		}
-		
+
 		// Setup the location table pks for the join on the location table
 		// and for the pk column
 		$pkscols = '';
@@ -232,26 +256,26 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		} else {
 			throw new Exception('No columns found for the location table.');
 		}
-		
+
 		$req = "SELECT " . $cols . " ";
 		$req .= "FROM result_location r ";
 		$req .= "LEFT JOIN " . $locationTableInfo->tableName . " l on (r.format = '" . $locationTableInfo->format . "' AND r.pk = " . $pkscols . ") ";
 		$req .= $joinForMode;
 		$req .= "WHERE r.session_id = ? ";
 		$req .= "and ST_DWithin(r.the_geom, ST_SetSRID(ST_Point(?, ?)," . $projection . "), " . $margin . ")";
-		
+
 		$this->logger->info('getLocationInfo session_id : ' . $sessionId);
 		$this->logger->info('getLocationInfo lon : ' . $lon);
 		$this->logger->info('getLocationInfo lat : ' . $lat);
 		$this->logger->info('getLocationInfo request : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$sessionId,
 			$lon,
 			$lat
 		));
-		
+
 		return $select->fetchAll();
 	}
 }

@@ -44,7 +44,7 @@ class Application_Object_Metadata_FileField extends Application_Object_Metadata_
 		$json .= ',"isMandatory":' . json_encode($this->isMandatory);
 		$json .= ',"definition":' . json_encode($this->definition);
 		$json .= ',"mask":' . json_encode($this->mask);
-		
+
 		return $json;
 	}
 }

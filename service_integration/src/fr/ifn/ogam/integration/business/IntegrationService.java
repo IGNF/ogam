@@ -76,7 +76,7 @@ public class IntegrationService extends GenericMapper {
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
 	 * @return the status of the update
 	 */
-	public boolean insertData(Integer submissionId, String filePath, String sourceFormat, Map<String, String> requestParameters, AbstractThread thread)
+	public boolean insertData(Integer submissionId, String filePath, String sourceFormat, String fileType, Map<String, String> requestParameters, AbstractThread thread)
 			throws Exception {
 
 		logger.debug("insertData");
@@ -114,7 +114,7 @@ public class IntegrationService extends GenericMapper {
 			}
 
 			// Store the name and path of the file
-			submissionDAO.addSubmissionFile(submissionId, sourceFormat, filePath, csvFile.getRowsCount());
+			submissionDAO.addSubmissionFile(submissionId, fileType, filePath, csvFile.getRowsCount());
 
 			// Get the destination formats
 			Map<String, TableFormatData> destFormatsMap = metadataDAO.getFormatMapping(sourceFormat, MappingTypes.FILE_MAPPING);
@@ -167,6 +167,7 @@ public class IntegrationService extends GenericMapper {
 							fieldData.setData(destFieldDescriptor.getData());
 							fieldData.setFormat(destFieldDescriptor.getFormat());
 							fieldData.setType(destFieldDescriptor.getType());
+							fieldData.setSubtype(destFieldDescriptor.getSubtype());
 							fieldData.setUnit(destFieldDescriptor.getUnit());
 							fieldData.setIsMandatory(true);
 
@@ -265,7 +266,7 @@ public class IntegrationService extends GenericMapper {
 						data.setValue(valueObj);
 
 						// Store the descriptor in the common list
-						commonFieldsMap.put(sourceFieldDescriptor.getData(), data);
+						commonFieldsMap.put(mappedFieldDescriptor.getData(), data);
 
 						// Store the name of the table
 						tablesContent.add(mappedFieldDescriptor.getFormat());

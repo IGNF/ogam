@@ -5,8 +5,8 @@ function onfailure($url) {
 	header('Location: ' . $url);
 }
 
-require_once APPLICATION_PATH . '/objects/website/Role.php';
-require_once APPLICATION_PATH . '/objects/website/User.php';
+require_once APPLICATION_PATH . '/objects/Website/Role.php';
+require_once APPLICATION_PATH . '/objects/Website/User.php';
 
 /*
  * require_once APPLICATION_PATH . '/../library/Zend/Exception.php';
@@ -68,7 +68,8 @@ $queryParamsAllow = array( // paramNom => requis
 	'SERVICE',
 	'REQUEST',
 	'FORMAT',
-	'LAYER'
+	'LAYER',
+	'CRS'
 );
 
 // Vérifie que les paramètres sont dans la liste des ceux autorisés

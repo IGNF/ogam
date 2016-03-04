@@ -22,28 +22,28 @@ class Application_Views_Helpers_GenerateEditLink extends Zend_View_Helper_Abstra
 	/**
 	 * Generate a link corresponding to a data object
 	 *
-	 * @param DataObject $data        	
+	 * @param Application_Object_Generic_DataObject $data
 	 * @return Application_Object_Website_Link the HTML link
 	 */
 	function generateEditLink($data) {
-		
+
 		// Build the URL to link to the parent items
 		$urlArray = array(
 			'controller' => 'dataedition',
 			'action' => 'show-edit-data'
 		);
-		
+
 		// Add the schema
 		$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
-		
+
 		// Add the format
 		$urlArray['FORMAT'] = $data->tableFormat->format;
-		
+
 		// Add the PK elements
 		foreach ($data->infoFields as $infoField) {
 			$urlArray[$infoField->data] = $infoField->value;
 		}
-		
+
 		// Add the fields to generate the tooltip
 		$fields = array();
 		foreach ($data->getFields() as $field) {

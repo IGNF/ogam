@@ -26,6 +26,10 @@ delete from translation;
 delete from table_tree;
 delete from table_schema;
 
+delete from dataset_files;
+delete from dataset_fields;
+delete from dataset;
+
 delete from file_field;
 delete from table_field;
 delete from form_field;
@@ -48,9 +52,6 @@ delete from unit;
 
 delete from checks where check_id <= 1200;
 
-delete from dataset_files;
-delete from dataset_fields;
-delete from dataset;
 
 
 --delete from application_parameters;
@@ -272,6 +273,7 @@ OR (input_type = 'DATE' AND type <> 'DATE')
 OR (input_type = 'SELECT' AND NOT (type = 'ARRAY' or TYPE = 'CODE') AND (subtype = 'CODE' OR subtype = 'DYNAMIC'))
 OR (input_type = 'TEXT' AND type <> 'STRING')
 OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')
+OR (input_type = 'RADIO' AND type <> 'BOOLEAN')
 OR (input_type = 'GEOM' AND type <> 'GEOM')
 OR (input_type = 'IMAGE' AND type <> 'IMAGE')
 OR (input_type = 'TREE' AND NOT ((type = 'ARRAY' or TYPE = 'CODE') AND subtype = 'TREE'))

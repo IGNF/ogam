@@ -14,7 +14,7 @@
 
 /**
  * This is the model for managing web mapping layers.
- * 
+ *
  * @package models
  */
 class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
@@ -36,6 +36,20 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Read a service from a row.
+	 *
+	 * @param Result $row        	
+	 * @return Application_Object_Mapping_Service
+	 */
+	private function _readService($row) {
+		$service = new Application_Object_Mapping_Service();
+		$service->serviceName = $row['service_name'];
+		$service->serviceConfig = $row['config'];
+		
+		return $service;
+	}
+
+	/**
 	 * Get the view services.
 	 *
 	 * @return Service
@@ -54,10 +68,8 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$service = new Application_Object_Mapping_Service();
-			$service->serviceName = $row['service_name'];
-			$service->serviceConfig = $row['config'];
-			$result[] = $service;
+			$service = $this->_readService($row);
+			$result[$service->serviceName] = $service;
 		}
 		return $result;
 	}
@@ -82,10 +94,8 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$service = new Application_Object_Mapping_Service();
-			$service->serviceName = $row['service_name'];
-			$service->serviceConfig = $row['config'];
-			$result[] = $service;
+			$service = $this->_readService($row);
+			$result[$service->serviceName] = $service;
 		}
 		return $result;
 	}
@@ -109,10 +119,8 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$service = new Application_Object_Mapping_Service();
-			$service->serviceName = $row['service_name'];
-			$service->serviceConfig = $row['config'];
-			$result[] = $service;
+			$service = $this->_readService($row);
+			$result[$service->serviceName] = $service;
 		}
 		return $result;
 	}
@@ -136,10 +144,8 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$service = new Application_Object_Mapping_Service();
-			$service->serviceName = $row['service_name'];
-			$service->serviceConfig = $row['config'];
-			$result[] = $service;
+			$service = $this->_readService($row);
+			$result[$service->serviceName] = $service;
 		}
 		return $result;
 	}
@@ -163,37 +169,8 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			$service = new Application_Object_Mapping_Service();
-			$service->serviceName = $row['service_name'];
-			$service->serviceConfig = $row['config'];
-			$result[] = $service;
-		}
-		return $result;
-	}
-
-	/**
-	 * Get the feature info services for displaying the labels of the layers.
-	 *
-	 * @return Service
-	 */
-	public function getFeatureInfoServices() {
-		$db = $this->getAdapter();
-		
-		$req = " SELECT service_name,config FROM layer_service, layer";
-		$req .= " WHERE layer.feature_info_service_name = layer_service.service_name ";
-		$req .= " GROUP BY service_name, config";
-		
-		Zend_Registry::get("logger")->info('getFeatureInfoServices : ' . $req);
-		
-		$select = $db->prepare($req);
-		$select->execute();
-		
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$service = new Application_Object_Mapping_Service();
-			$service->serviceName = $row['service_name'];
-			$service->serviceConfig = $row['config'];
-			$result[] = $service;
+			$service = $this->_readService($row);
+			$result[$service->serviceName] = $service;
 		}
 		return $result;
 	}
@@ -222,9 +199,9 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		
 		$result = array();
 		$row = $select->fetch();
-		$service = new Application_Object_Mapping_Service();
-		$service->serviceName = $row['service_name'];
-		$service->serviceConfig = $row['config'];
+		
+		$service = $this->_readService($row);
+		
 		return $service;
 	}
 }

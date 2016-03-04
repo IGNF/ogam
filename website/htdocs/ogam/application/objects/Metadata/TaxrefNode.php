@@ -27,7 +27,7 @@ class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata
 
 	/**
 	 * The childs.
-	 * 
+	 *
 	 * @var Array[TaxrefNodes]
 	 */
 	var $children = array();
@@ -74,7 +74,7 @@ class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -100,7 +100,7 @@ class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata
 			}
 			$return .= ',"vernacularName":' . json_encode($this->vernacularName);
 			$return .= ',"isReference":' . json_encode($this->isReference);
-			
+
 			if (!empty($this->children)) {
 				$return .= ',"children": [';
 				foreach ($this->children as $child) {
@@ -111,7 +111,7 @@ class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata
 			}
 			$return .= '}';
 		}
-		
+
 		return $return;
 	}
 }

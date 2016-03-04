@@ -1,0 +1,64 @@
+<?php
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
+
+/**
+ * Show the providers of the web site.
+ * @package views
+ */
+?>
+<h1>
+   <?php echo $this->translate('Providers');?>
+</h1>
+
+
+<table class="sectiontable">
+<tr>
+	<th><?php echo $this->translate('id');?></th>
+	<th><?php echo $this->translate('Provider Id');?></th>
+	<th><?php echo $this->translate('Definition');?></th>
+	<th></th>
+	<th></th>
+	<th></th>
+</tr>
+<?php
+$i = 0;
+foreach($this->providers as $provider) {
+?>
+<tr class="sectiontableentry<?php echo $i % 2?>">
+	<td><?php echo  $this->escape($provider->id); ?></td>
+	<td><?php echo  $this->escape($provider->label); ?></td>
+	<td><?php echo  $this->escape($provider->definition); ?></td>
+	<td class="view-cell"><a title="<?php echo $this->translate('View related users and content');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-provider-content'), null, true)?>?id=<?php echo $this->escape($provider->id);?>">&nbsp;</a></td>
+	<td class="edit-cell"><a title="<?php echo $this->translate('Edit');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'edit-provider'), null, true)?>?id=<?php echo $this->escape($provider->id);?>">&nbsp;</a></td>
+	<?php if ($this->isDeletable[$provider->id]) { ?>
+		<td class="delete-cell">
+			<a title="<?php echo $this->translate('Delete');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'delete-provider'), null, true)?>?id=<?php echo $this->escape($provider->id);?>" onClick="return confirm('<?php echo $this->translate('Are you sure?')?>');">&nbsp;</a>
+		</td>
+	<?php } else { ?>
+		<td class="delete-cell desaturate">
+			<a title="<?php echo $this->translate('Delete');?>" href="#" onClick="alert('<?php echo $this->translate('Impossible to delete this provider.')?>');">&nbsp;</a>
+		</td>
+	<?php } ?>
+</tr>
+<?php
+$i++;
+}
+?>
+</table>
+ 
+<p class="subTableLink">
+    <a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'add-provider'), null, true) ?>"><?php echo $this->translate('Create Provider');?></a>
+<p/>
+
+ 

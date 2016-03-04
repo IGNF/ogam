@@ -209,20 +209,26 @@ public class GenericDAO {
 			} else if (SqlStateSQL99.ERRCODE_NOT_NULL_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
 				throw new CheckException(MANDATORY_FIELD_MISSING);
 			} else if (SqlStateSQL99.ERRCODE_FOREIGN_KEY_VIOLATION.equalsIgnoreCase(sqle.getSQLState())) {
-				CheckException ce = new CheckException(INTEGRITY_CONSTRAINT);
 				String message = sqle.getMessage();
-				int pos = message.indexOf("Détail : ");
-				if (pos == -1) {
-					pos = message.indexOf("Detail : ");
-				}
+				// remove message header
+				int pos = message.indexOf(": ");
 				if (pos != -1) {
-					message = message.substring(pos + 9);
+					message = message.substring(pos + 2);
 				}
-				ce.setFoundValue(message);
+				CheckException ce = new CheckException(INTEGRITY_CONSTRAINT, message);
 				throw ce;
+			} else if (SqlStateSQL99.ERRCODE_TRIGGERED_ACTION_EXCEPTION.equalsIgnoreCase(sqle.getSQLState())) {
+				String message = sqle.getMessage();
+				// remove message header
+				int pos = message.indexOf(": ");
+				if (pos != -1) {
+					message = message.substring(pos + 2);
+				}
+				throw new CheckException(TRIGGER_EXCEPTION, message);
 			} else {
 				logger.error("SQL STATE : " + sqle.getSQLState());
-				throw new CheckException(UNEXPECTED_SQL_ERROR);
+				String message = sqle.getMessage();
+				throw new CheckException(UNEXPECTED_SQL_ERROR, message);
 			}
 		} catch (Exception e) {
 

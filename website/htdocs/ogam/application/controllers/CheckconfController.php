@@ -1,13 +1,13 @@
 <?php
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- * 
+ *
  * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
- * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
- * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 require_once 'AbstractOGAMController.php';
@@ -33,13 +33,13 @@ class CheckconfController extends AbstractOGAMController {
 	 */
 	public function init() {
 		parent::init();
-		
+
 		// Set the current module name
 		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->module = "checkconf";
 		$websiteSession->moduleLabel = "Check Configuration";
 		$websiteSession->moduleURL = "checkconf";
-		
+
 		$this->postgreSQLModel = new Application_Model_Database_Postgresql();
 		$this->metadataSystemModel = new Application_Model_Database_Metadata();
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
@@ -52,10 +52,10 @@ class CheckconfController extends AbstractOGAMController {
 	 */
 	function preDispatch() {
 		parent::preDispatch();
-		
+
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !in_array('CHECK_CONF', $user->role->permissionsList)) {
+		if (empty($user) || !$user->isAllowed('CHECK_CONF')) {
 			throw new Zend_Auth_Exception('Permission denied for right : CHECK_CONF');
 		}
 	}
@@ -64,10 +64,10 @@ class CheckconfController extends AbstractOGAMController {
 	 * The "index" action is the default action for all controllers.
 	 */
 	public function indexAction() {
-		
+
 		// Check the PHP config
 		$this->checkPhpParameters();
-		
+
 		// Check the database
 		$this->checkDatabase();
 	}
@@ -77,10 +77,11 @@ class CheckconfController extends AbstractOGAMController {
 	 */
 	function checkPhpParameters() {
 		$this->logger->debug('Checking PHP parameters');
-		
+
 		/**
 		 * Note:
 		 * "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .
+		 *
 		 *
 		 *
 		 * htaccess or httpd.conf).
@@ -90,7 +91,7 @@ class CheckconfController extends AbstractOGAMController {
 		$configuration = Zend_Registry::get("configuration");
 		$errorMsg = $this->view->translate('Error: %value% minimum');
 		$phpParameters = array();
-		
+
 		// Checks the post_max_size php parameters
 		$postMaxSizeMin = $configuration->post_max_size;
 		$postMaxSizeMinInt = substr($postMaxSizeMin, 0, -1);
@@ -100,12 +101,12 @@ class CheckconfController extends AbstractOGAMController {
 			'name' => 'post_max_size',
 			'value' => $postMaxSize
 		);
-		
+
 		if ($postMaxSizeMinInt !== null && $postMaxSizeInt < $postMaxSizeMinInt) {
 			$postMaxSizeMsg['error'] = str_replace('%value%', $postMaxSizeMin, $errorMsg);
 		}
 		array_push($phpParameters, $postMaxSizeMsg);
-		
+
 		// Checks the upload_max_filesize php parameters
 		$uploadMaxFilesizeMin = $configuration->upload_max_filesize;
 		$uploadMaxFilesizeMinInt = substr($uploadMaxFilesizeMin, 0, -1);
@@ -119,7 +120,7 @@ class CheckconfController extends AbstractOGAMController {
 			$uploadMaxFilesizeMsg['error'] = str_replace('%value%', $uploadMaxFilesizeMin, $errorMsg);
 		}
 		array_push($phpParameters, $uploadMaxFilesizeMsg);
-		
+
 		// Add the parameters to the view
 		$this->view->phpParameters = $phpParameters;
 	}
@@ -129,16 +130,16 @@ class CheckconfController extends AbstractOGAMController {
 	 */
 	function checkDatabase() {
 		$this->logger->debug('Checking database');
-		
+
 		// Check the schemas
 		$this->_checkSchemas();
-		
+
 		// Check if the expected tables are found
 		$this->_checkTables();
-		
+
 		// Check if the expected fields are found
 		$this->_checkFields();
-		
+
 		// Checks the foreign keys
 		$this->_checkForeignKeys();
 	}
@@ -147,15 +148,15 @@ class CheckconfController extends AbstractOGAMController {
 	 * Checks the schemas.
 	 */
 	private function _checkSchemas() {
-		
+
 		// Get the list of expected schema objects
 		$expectedSchemas = $this->metadataModel->getSchemas();
-		
+
 		$existingSchemas = $this->postgreSQLModel->getSchemas();
-		
+
 		$missingSchemasMsg = array();
 		foreach ($expectedSchemas as $expectedSchema) {
-			
+
 			if (!in_array(strtoupper($expectedSchema->name), $existingSchemas)) {
 				$missingSchemasMsg[] = sprintf($this->view->translate("The schema '%s' described in the metadata doesn't exist in the system."), $expectedSchema->label);
 			}
@@ -168,19 +169,19 @@ class CheckconfController extends AbstractOGAMController {
 	 */
 	private function _checkForeignKeys() {
 		$expectedFKs = $this->metadataSystemModel->getForeignKeys();
-		
+
 		$existingFKs = $this->postgreSQLModel->getForeignKeys();
-		
+
 		$missingFKsMsg = array();
 		foreach ($expectedFKs as $foreignKey) {
-			
+
 			$id = $foreignKey->table . '__' . $foreignKey->sourceTable;
-			
+
 			if (!array_key_exists($id, $existingFKs)) {
 				$missingFKsMsg[] = sprintf($this->view->translate("The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system."), $foreignKey->table, $foreignKey->sourceTable);
 			} else {
 				$foundFK = $existingFKs[$id];
-				
+
 				//
 				// Check the primary keys
 				//
@@ -198,22 +199,22 @@ class CheckconfController extends AbstractOGAMController {
 	 */
 	private function _checkFields() {
 		$expectedFields = $this->metadataSystemModel->getFields();
-		
+
 		$existingFields = $this->postgreSQLModel->getFields();
-		
+
 		$missingFieldsMsg = array();
 		$fieldTypeMsg = array();
 		foreach ($expectedFields as $key => $field) {
 			if (!array_key_exists($key, $existingFields)) {
 				$missingFieldsMsg[] = sprintf($this->view->translate("The Expected data '%s' of the table '%s' of the schema '%s' is not found."), $field->columnName, $field->tableName, $field->schemaName);
 			} else {
-				
+
 				//
 				// Check field type
 				//
 				$foundField = $existingFields[$key];
 				$msg = sprintf($this->view->translate("The field '%s' of the table '%s' of the schema '%s' is of type '%s' which is incompatible with the metadata definition: '%s'."), $field->columnName, $field->tableName, $field->schemaName, $foundField->type, $field->type);
-				
+
 				switch ($field->type) {
 					case "ARRAY":
 						if ($foundField->type !== 'ARRAY') {
@@ -274,9 +275,9 @@ class CheckconfController extends AbstractOGAMController {
 	 */
 	private function _checkTables() {
 		$expectedTables = $this->metadataSystemModel->getTables();
-		
+
 		$existingTables = $this->postgreSQLModel->getTables();
-		
+
 		$missingTablesMsg = array();
 		$primaryKeysMsg = array();
 		foreach ($expectedTables as $key => $table) {
@@ -284,7 +285,7 @@ class CheckconfController extends AbstractOGAMController {
 				$missingTablesMsg[] = sprintf($this->view->translate("The expected table '%s' of the schema '%s' is not found."), $table->tableName, $table->schemaName);
 			} else {
 				$foundTable = $existingTables[$key];
-				
+
 				//
 				// Check the primary keys
 				//

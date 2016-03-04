@@ -2,4 +2,4 @@ composer.phar
 vendor
 build
 .gradle
-
+config/build.number

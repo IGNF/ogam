@@ -131,6 +131,7 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
+DROP TRIGGER IF EXISTS a_geom_trigger ON raw_data.LOCATION;
 CREATE TRIGGER a_geom_trigger
   BEFORE INSERT OR UPDATE
   ON raw_data.LOCATION
@@ -153,6 +154,7 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
+DROP TRIGGER IF EXISTS b_departements_geom_trigger ON raw_data.LOCATION;
 CREATE TRIGGER b_departements_geom_trigger
   BEFORE INSERT ON raw_data.LOCATION
   FOR EACH ROW
@@ -173,10 +175,33 @@ END;
 $BODY$
   LANGUAGE 'plpgsql' VOLATILE;
 
+DROP TRIGGER IF EXISTS c_communes_geom_trigger ON raw_data.LOCATION;
 CREATE TRIGGER c_communes_geom_trigger
   BEFORE INSERT ON raw_data.LOCATION
   FOR EACH ROW
   EXECUTE PROCEDURE raw_data.c_communesfromgeom();
+  
+  
+  
+/*========================================================================*/
+/*	Add a trigger to fill the communes column of the location table    */
+/*========================================================================*/
+CREATE OR REPLACE FUNCTION raw_data.d_latlonfromgeom() RETURNS "trigger" AS
+$BODY$
+BEGIN
+
+    NEW.long = ST_X(ST_Transform(NEW.the_geom, 4326));    
+    NEW.lat = ST_Y(ST_Transform(NEW.the_geom, 4326));
+    RETURN NEW;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+DROP TRIGGER IF EXISTS d_latlon_geom_trigger ON raw_data.LOCATION;
+CREATE TRIGGER d_latlon_geom_trigger
+  BEFORE INSERT ON raw_data.LOCATION
+  FOR EACH ROW
+  EXECUTE PROCEDURE raw_data.d_latlonfromgeom();
             
 
 /*==============================================================*/
@@ -216,7 +241,6 @@ SUBMISSION_ID        INT4                 null,
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
-SPECIES_CODE         VARCHAR(36)          not null,
 ID_TAXON             VARCHAR(36)          not null,
 BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
@@ -230,7 +254,6 @@ COMMENT ON COLUMN SPECIES_DATA.SUBMISSION_ID IS 'The identifier of the submissio
 COMMENT ON COLUMN SPECIES_DATA.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN SPECIES_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN SPECIES_DATA.CYCLE IS 'The cycle of inventory';
-COMMENT ON COLUMN SPECIES_DATA.SPECIES_CODE IS 'The code of the specie';
 COMMENT ON COLUMN SPECIES_DATA.ID_TAXON IS 'Identifiant de taxon';
 COMMENT ON COLUMN SPECIES_DATA.BASAL_AREA IS 'The proportion of surface covered by this specie on the plot (in m2/ha)';
 COMMENT ON COLUMN SPECIES_DATA.COMMENT IS 'A comment about the species';

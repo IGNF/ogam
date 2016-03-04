@@ -47,7 +47,7 @@ class Application_Validator_PasswordConfirmation extends Zend_Validate_Abstract 
 	public function isValid($value, $context = null) {
 		$value = (string) $value;
 		$this->_setValue($value);
-		
+
 		if (is_array($context)) {
 			if (isset($context['confirmPassword']) && ($value == $context['confirmPassword'])) {
 				return true;
@@ -55,7 +55,7 @@ class Application_Validator_PasswordConfirmation extends Zend_Validate_Abstract 
 		} elseif (is_string($context) && ($value == $context)) {
 			return true;
 		}
-		
+
 		$this->_error(self::NOT_MATCH);
 		return false;
 	}
