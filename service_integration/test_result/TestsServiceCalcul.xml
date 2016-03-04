@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="2" hostname="NOGENT-BPESTY" name="fr.ifn.eforest.integration.AllTests" tests="15" time="0.825" timestamp="2011-02-18T08:46:19">
+  <properties>
+    <property name="java.vendor" value="Sun Microsystems Inc." />
+    <property name="lib.dir" value="../service_common/lib" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="eclipse.pdebuild.templates" value="/C:/eclipse_helios/plugins/org.eclipse.pde.build_3.6.1.R36x_v20100823/templates/" />
+    <property name="sun.management.compiler" value="HotSpot Client Compiler" />
+    <property name="os.name" value="Windows XP" />
+    <property name="sun.boot.class.path" value="C:\Program Files\Java\jre6\lib\resources.jar;C:\Program Files\Java\jre6\lib\rt.jar;C:\Program Files\Java\jre6\lib\sunrsasign.jar;C:\Program Files\Java\jre6\lib\jsse.jar;C:\Program Files\Java\jre6\lib\jce.jar;C:\Program Files\Java\jre6\lib\charsets.jar;C:\Program Files\Java\jre6\lib\modules\jdk.boot.jar;C:\Program Files\Java\jre6\classes" />
+    <property name="findbugs.home" value="../../libs_java/lib/findbugs" />
+    <property name="workspace.dir" value="C:\workspace\OGAM\service_integration/../.." />
+    <property name="sun.desktop" value="windows" />
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="ant.home" value="C:\eclipse_helios\plugins\org.apache.ant_1.7.1.v20100518-1145" />
+    <property name="java.runtime.version" value="1.6.0_23-b05" />
+    <property name="application.name" value="OGAM" />
+    <property name="user.name" value="bpesty" />
+    <property name="deploy.dir" value="C:/Program Files/Apache Software Foundation/Tomcat 7.0.6/webapps" />
+    <property name="user.language" value="fr" />
+    <property name="libraries.dir" value="../../libs_java" />
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jre6\bin" />
+    <property name="ant.project.name" value="OGAMIntegrationService" />
+    <property name="java.version" value="1.6.0_23" />
+    <property name="user.timezone" value="" />
+    <property name="sun.arch.data.model" value="32" />
+    <property name="img.dir" value="./img" />
+    <property name="classpath" value="../service_common/lib/commons-fileupload-1.2.1.jar;../../libs_java/import/org/apache/log4j/log4j-1.2.14.jar;../../libs_java/lib/servlet-api.jar;../../libs_java/lib/junit.jar;../../libs_java/import/org/postgresql/postgresql-8.3-603.jdbc4.jar;../../libs_java/lib/dbunit/dbunit.jar;../../libs_java/import/com/sun/mail/mail.jar" />
+    <property name="emma.coverage.out.file" value="./test_result/coverage.emma" />
+    <property name="java.endorsed.dirs" value="C:\Program Files\Java\jre6\lib\endorsed" />
+    <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86" />
+    <property name="sun.jnu.encoding" value="Cp1252" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="file.separator" value="\" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="classes.dir" value="./classes" />
+    <property name="java.class.version" value="50.0" />
+    <property name="user.country" value="FR" />
+    <property name="java.home" value="C:\Program Files\Java\jre6" />
+    <property name="dist.dir" value="C:\DOCUME~1\bpesty\LOCALS~1\Temp\dist/OGAMIntegrationService" />
+    <property name="dist.webapps.dir" value="C:\DOCUME~1\bpesty\LOCALS~1\Temp\webapp/OGAMIntegrationService/" />
+    <property name="java.vm.info" value="mixed mode, sharing" />
+    <property name="ant.file" value="C:\workspace\OGAM\service_integration\build.xml" />
+    <property name="os.version" value="5.1" />
+    <property name="path.separator" value=";" />
+    <property name="java.vm.version" value="19.0-b09" />
+    <property name="user.variant" value="" />
+    <property name="ant.library.dir" value="C:\eclipse_helios\plugins\org.apache.ant_1.7.1.v20100518-1145\lib" />
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
+    <property name="eclipse.pdebuild.scripts" value="/C:/eclipse_helios/plugins/org.eclipse.pde.build_3.6.1.R36x_v20100823/scripts/" />
+    <property name="user.home" value="C:\Documents and Settings\bpesty" />
+    <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="java.library.path" value="C:\Program Files\Java\jre6\bin;.;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:/Program Files/Java/jre6/bin/client;C:/Program Files/Java/jre6/bin;C:/Program Files/Java/jre6/lib/i386;C:\Program Files\PHP\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Fichiers communs\GTK\2.0\bin;;C:\Program Files\instantclient_11_1;C:\Program Files\jEdit;C:\Program Files\Graphviz2.24\bin;C:\WINDOWS\system32\WindowsPowerShell\v1.0;C:\Program Files\Microsoft SQL Server\80\Tools\BINN;C:\Program Files\EasyFrom;C:\Program Files\Samsung\Samsung PC Studio 3\;C:\Program Files\instantclient_11_1;c:/Program Files/Python/;C:\Program Files\R\R-2.11.1\bin;C:\workspace\libs_java\lib\ant;C:\ms4w\tools\gdal-ogr;C:\ms4w\Apache\cgi-bin;C:\ms4w\Apache\bin;C:\Program Files\PostgreSQL\9.0\bin" />
+    <property name="java.vendor.url" value="http://java.sun.com/" />
+    <property name="ant.file.OGAMIntegrationService" value="C:\workspace\OGAM\service_integration\build.xml" />
+    <property name="java.vm.vendor" value="Sun Microsystems Inc." />
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+    <property name="java.class.path" value="C:\workspace\OGAM\service_integration\classes;C:\workspace\OGAM\service_common\lib\commons-fileupload-1.2.1.jar;C:\workspace\libs_java\import\org\apache\log4j\log4j-1.2.14.jar;C:\workspace\libs_java\lib\servlet-api.jar;C:\workspace\libs_java\lib\junit.jar;C:\workspace\libs_java\import\org\postgresql\postgresql-8.3-603.jdbc4.jar;C:\workspace\libs_java\lib\dbunit\dbunit.jar;C:\workspace\libs_java\import\com\sun\mail\mail.jar;C:\workspace\OGAM\service_common\classes;C:\workspace\libs_java\lib\emma\emma.jar;C:\workspace\libs_java\lib\emma\emma_ant.jar;C:\eclipse_helios\plugins\org.apache.ant_1.7.1.v20100518-1145\lib\ant-launcher.jar;C:\eclipse_helios\plugins\org.apache.ant_1.7.1.v20100518-1145\lib\ant.jar;C:\eclipse_helios\plugins\org.apache.ant_1.7.1.v20100518-1145\lib\ant-junit.jar" />
+    <property name="ant.version" value="Apache Ant version 1.7.1 compiled on June 27 2008" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="java.vm.specification.version" value="1.0" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="sun.os.patch.level" value="Service Pack 3" />
+    <property name="eclipse.pdebuild.home" value="/C:/eclipse_helios/plugins/org.eclipse.pde.build_3.6.1.R36x_v20100823/./" />
+    <property name="java.io.tmpdir" value="C:\DOCUME~1\bpesty\LOCALS~1\Temp\" />
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi" />
+    <property name="os.arch" value="x86" />
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+    <property name="java.ext.dirs" value="C:\Program Files\Java\jre6\lib\ext;C:\WINDOWS\Sun\Java\lib\ext" />
+    <property name="common.dir" value="../service_common" />
+    <property name="user.dir" value="C:\workspace\OGAM\service_integration" />
+    <property name="emma.coverage.out.merge" value="false" />
+    <property name="emma.dir" value="../../libs_java/lib/emma" />
+    <property name="line.separator" value="
+" />
+    <property name="java.vm.name" value="Java HotSpot(TM) Client VM" />
+    <property name="deploy.name" value="OGAMIntegrationService" />
+    <property name="basedir" value="C:\workspace\OGAM\service_integration" />
+    <property name="ant.java.version" value="1.6" />
+    <property name="ant.core.lib" value="C:\eclipse_helios\plugins\org.apache.ant_1.7.1.v20100518-1145\lib\ant.jar" />
+    <property name="file.encoding" value="Cp1252" />
+    <property name="test_result.dir" value="./test_result" />
+    <property name="java.specification.version" value="1.6" />
+    <property name="src.dir" value="./src" />
+  </properties>
+  <testcase classname="fr.ifn.eforest.integration.business.DataServiceTest" name="testDataSubmission" time="0.28">
+    <failure message="null" type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: null
+	at fr.ifn.eforest.integration.business.DataServiceTest.testDataSubmission(DataServiceTest.java:102)
+</failure>
+  </testcase>
+  <testcase classname="fr.ifn.eforest.integration.business.GenericMapperTest" name="testGetSortedAncestors" time="0.078" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testCheckCode" time="0.047" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetModes" time="0.031">
+    <failure message="There is 34 differents country codes expected:&lt;34&gt; but was:&lt;304&gt;" type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: There is 34 differents country codes expected:&lt;34&gt; but was:&lt;304&gt;
+	at fr.ifn.eforest.integration.database.MetadataTest.testGetModes(MetadataTest.java:61)
+</failure>
+  </testcase>
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetJRCRequests" time="0.031" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetRange" time="0.016" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetType" time="0.016" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetRequestFiles" time="0.047" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetFileFields" time="0.031" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetTablesTree" time="0.015" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetFormatMapping" time="0.031" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetField" time="0.032" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetFieldMapping" time="0.031" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetTableFields" time="0.031" />
+  <testcase classname="fr.ifn.eforest.integration.database.MetadataTest" name="testGetTableName" time="0.031" />
+  <system-out><![CDATA[DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT nextval('submission_id_seq') as submissionid
+TRACE [main]: INSERT INTO submission (submission_id, provider_id, dataset_id, user_login, step) values (?, ?, ?, ?, ?)
+ERROR [main]: org.postgresql.util.PSQLException: ERROR: column "provider_id" of relation "submission" does not exist
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT DISTINCT table_format.format as format, table_name, is_column_oriented  FROM field_mapping LEFT JOIN table_format on (field_mapping.dst_format = table_format.format)  WHERE field_mapping.src_format = ?  AND   field_mapping.mapping_type = ? 
+TRACE [main]: SELECT DISTINCT table_format.format as format, table_name, is_column_oriented  FROM field_mapping LEFT JOIN table_format on (field_mapping.dst_format = table_format.format)  WHERE field_mapping.src_format = ?  AND   field_mapping.mapping_type = ? 
+TRACE [main]: SELECT child_table, parent_table, join_key  FROM table_tree  WHERE child_table = ?  AND schema_code = ?
+TRACE [main]: SELECT child_table, parent_table, join_key  FROM table_tree  WHERE child_table = ?  AND schema_code = ?
+TRACE [main]: SELECT child_table, parent_table, join_key  FROM table_tree  WHERE child_table = ?  AND schema_code = ?
+DEBUG [main]: sortedList : [SPECIES_DATA, PLOT_DATA, LOCATION_DATA]
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT mode FROM mode WHERE unit = ? AND code = ?
+TRACE [main]: SELECT mode FROM mode WHERE unit = ? AND code = ?
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT code, label FROM mode WHERE unit = ? ORDER BY position, code
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT dataset_id, label FROM dataset
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT min, max FROM range WHERE unit = ?
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT type  FROM unit  LEFT JOIN data on (data.unit = unit.unit) WHERE data.data = ? 
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT file_format.format, file_type FROM dataset_files LEFT JOIN file_format USING (format) WHERE dataset_id = ? ORDER BY position
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT data.data, data.unit, mask, unit.type as type, is_mandatory  FROM file_field  LEFT JOIN data on (file_field.data = data.data) LEFT JOIN unit on (data.unit = unit.unit) WHERE format = ?  ORDER BY position ASC
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+DEBUG [main]: [SPECIES_DATA / PLOT_DATA - [SUBMISSION_ID,  COUNTRY_CODE,  PLOT_CODE,  CYCLE], PLOT_DATA / LOCATION_DATA - [COUNTRY_CODE,  PLOT_CODE], LOCATION_DATA / * - []]
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT DISTINCT table_format.format as format, table_name, is_column_oriented  FROM field_mapping LEFT JOIN table_format on (field_mapping.dst_format = table_format.format)  WHERE field_mapping.src_format = ?  AND   field_mapping.mapping_type = ? 
+DEBUG [main]: {SPECIES_DATA=SPECIES_DATA - SPECIES_DATA}
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT data.data, data.unit, mask, unit.type as type, is_mandatory   FROM data  LEFT JOIN unit on (data.unit = unit.unit) LEFT JOIN file_field on (file_field.data = data.data) WHERE data.data = ? 
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT field_mapping.src_data as fieldname, field_mapping.dst_format as format, table_name, column_name, is_column_oriented, unit.type  FROM field_mapping LEFT JOIN table_format on (field_mapping.dst_format = table_format.format)  LEFT JOIN table_field on (field_mapping.dst_format = table_field.format and field_mapping.dst_data = table_field.data) LEFT JOIN data on (table_field.data = data.data)  LEFT JOIN unit on (data.unit = unit.unit)  WHERE field_mapping.src_format = ?  AND   field_mapping.mapping_type = ? 
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT table_field.data as fieldname, table_name, column_name, is_column_oriented, table_format.format, unit.type  FROM table_format  LEFT JOIN table_field on (table_field.format = table_format.format)  LEFT JOIN data on (table_field.data = data.data)  LEFT JOIN unit on (data.unit = unit.unit)  WHERE table_format.format = ?  AND is_calculated <> '1'
+DEBUG [main]: [PLOT_DATA - SUBMISSION_ID, PLOT_DATA - COUNTRY_CODE, PLOT_DATA - STRATUM_CODE, PLOT_DATA - PLOT_CODE, PLOT_DATA - CYCLE, PLOT_DATA - REF_YEAR_BEGIN, PLOT_DATA - REF_YEAR_END, PLOT_DATA - INV_DATE, PLOT_DATA - STATISTICAL_WEIGHT, PLOT_DATA - DOMAIN_FOREST, PLOT_DATA - DOMAIN_BASAL_AREA, PLOT_DATA - IS_FOREST_PLOT, PLOT_DATA - IS_PARTITIONNING_PLOT, PLOT_DATA - COMMENT, PLOT_DATA - LINE_NUMBER]
+DEBUG [main]: Cleaning the metadata after the test
+DEBUG [main]: Preparing the metadata for the test
+TRACE [main]: SELECT table_name, is_column_oriented, format, schema_code FROM table_format WHERE format = ?
+DEBUG [main]: Cleaning the metadata after the test
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

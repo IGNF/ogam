@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doc>
+   <sources>
+		<source src="../htdocs/ogam/public/js/extjs/src" match="*.js"/> 
+		<source src="../htdocs/ogam/public/js/extjsux/basiccheckbox" match="*.js"/>
+		<source src="../htdocs/ogam/public/js/genapp/source/widgets" match="*.js"/>
+	</sources>
+	<tags>
+		<tag name="author" title="Author"/>
+		<tag name="version" title="Version"/>
+		<tag name="note" format="&lt;i&gt;NOTE: {0}&lt;/i&gt;"/>
+		<tag name="demo" title="Demo" format="&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;" />
+		<tag name="xtype" title="xtype"/>
+		<tag name="brick" title="brick-icon"/>
+	</tags>
+</doc>
