@@ -30,8 +30,8 @@ insert into application_parameters (name, value, description) values ( 'image_di
 insert into application_parameters (name, value, description) values ( 'image_extensions' , 'jpg,png,jpeg,gif' , 'File Upload');
 insert into application_parameters (name, value, description) values ( 'image_max_size' , 1000000, 'image max size in bytes');
 insert into application_parameters (name, value, description) values ( 'tilesize' , 500 , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'query_details_layers1' , 'result_locations,nuts_0' , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'result_locations,nuts_0' , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'query_details_layers1' , 'result_locations,nuts_0,departements,communes', 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'result_locations,nuts_0,departements', 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'proxy_service_name' , 'local_mapserver' , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3035 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 4326 , 'WEB MAPPING ');
