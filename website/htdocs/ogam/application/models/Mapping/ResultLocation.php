@@ -52,10 +52,14 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 			$keys = $locationTable->primaryKeys;
 
 			$request = " INSERT INTO result_location (session_id, format, pk, the_geom ) ";
+
+			// L'identifiant de session de l'utilisateur
 			$request .= " SELECT DISTINCT '" . $sessionId . "', ";
+
+			// Le nom de la table portant l'info géométrique
 			$request .= "'" . $locationTable->format . "', ";
 
-			// Ajout des clés primaires de la table portant l'info géométrique
+			// Ajout des clés primaires de la table
 			$keyColumns = "";
 			foreach ($keys as $key) {
 				$keyColumns .= $locationTable->format . "." . $key . " || '__' || ";
