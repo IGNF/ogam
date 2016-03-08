@@ -815,7 +815,7 @@ class Application_Service_QueryService {
 					$baseUrls .= '&TRANSPARENT=true';
 					$baseUrls .= '&FORMAT=image%2Fpng';
 					$baseUrls .= '&SERVICE=WMS';
-					$baseUrls .= '&VERSION=1.3.0';
+					$baseUrls .= '&VERSION=1.0.0';
 					$baseUrls .= '&REQUEST=GetMap';
 					$baseUrls .= '&STYLES=';
 					$baseUrls .= '&CRS=EPSG%3A' . $visualisationSRS;
