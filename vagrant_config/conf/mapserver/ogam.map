@@ -139,6 +139,84 @@ LAYER
 	END
 END
 
+#
+# Departements
+#
+LAYER  
+	NAME departements
+	TYPE POLYGON
+	STATUS ON 
+	
+    METADATA
+        WFS_TITLE        "Départements"
+        GML_FEATUREID      "gid" 
+        GML_INCLUDE_ITEMS  "all"   
+    END
+    DUMP TRUE 
+    
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT st_transform(the_geom, 3035) as the_geom, dp, gid as oid  
+            FROM mapping.departements
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+	CLASSITEM "dp"
+	LABELITEM "dp"
+	CLASS
+	      NAME 'Départements'	
+	      OUTLINECOLOR 0 0 0      
+	      LABEL
+				COLOR  255 0 0
+				FONT arial_win
+				TYPE truetype
+				SIZE 8
+				POSITION AUTO          
+				PARTIALS FALSE
+				BUFFER 5
+				OUTLINECOLOR 255 255 255           
+	     END     
+    END
+    PROJECTION
+		    "init=epsg:3035"
+	END
+END
+
+
+#
+# Communes
+#
+LAYER  
+	NAME communes
+	TYPE POLYGON
+	STATUS ON 
+	
+    METADATA
+        WFS_TITLE        "Communes"
+        GML_FEATUREID      "gid" 
+        GML_INCLUDE_ITEMS  "all"   
+    END
+    DUMP TRUE 
+    
+	CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT st_transform(the_geom, 3035) as the_geom, code, code as oid  
+            FROM mapping.communes
+        ) as foo USING UNIQUE oid USING srid=3035
+    "
+	CLASSITEM "code"
+	CLASS
+	      NAME 'Commune'	
+	      OUTLINECOLOR 0 0 0       
+    END
+    PROJECTION
+		    "init=epsg:3035"
+	END
+END
+
 
 
 #
