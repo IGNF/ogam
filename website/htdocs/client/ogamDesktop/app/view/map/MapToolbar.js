@@ -22,7 +22,9 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
     ],
     alias: 'widget.maptoolbar',
     xtype:'maptoolbar',
-    items:[{
+    initItems:function(){
+		Ext.Object.merge(this,{items:
+		[{
         xtype:'buttongroup',
         itemId: 'drawingButtonsGroup',
         hidden: true,
@@ -159,5 +161,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
         listeners: {
             click: 'onPrintMapButtonPress'
         }
-    }]
+    }]});
+	this.callParent();
+    }
 });

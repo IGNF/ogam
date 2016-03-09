@@ -221,39 +221,38 @@ Ext.define('OgamDesktop.locale.fr.view.map.MainWin', {//TODO fix override warnin
 	}
 });
 
-Ext.define('OgamDesktop.locale.fr.view.map.MapPanel', {
-	override: 'OgamDesktop.view.map.MapPanel',
-	popupTitle : 'Information(s) sur la géométrie',
-	tabTip : "La carte avec les localisations des résultats de la requête",
-//	layerPanelTitle : "Couches",
-//	layerPanelTabTip : "L'arbre de sélection des couches",
-//	legendPanelTitle : "Légendes",
-//	legendPanelTabTip : "Les legendes des couches",
-	panZoomBarControlTitle : "Zoom",
-	navigationControlTitle : "Déplacer la carte",
-	invalidWKTMsg : "La géométrie ne peut être affichée",
-	zoomToFeaturesControlTitle : "Zoomer sur la sélection",
-	zoomToResultControlTitle : "Zoomer sur le résultat",
-	drawPointControlTitle : "Dessiner un point",
-	drawLineControlTitle : "Dessiner une ligne",
-	drawFeatureControlTitle : "Dessiner un polygone",
-	modifyFeatureControlTitle : "Modifier la géométrie",
-	tbarDeleteFeatureButtonTooltip : "Effacer la géométrie",
-	tbarValidateEditionButtonTooltip : "Valider la(es) modification(s)",
-	tbarCancelEditionButtonTooltip : "Annuler la(es) modification(s)",
-	tbarPreviousButtonTooltip : "Position précédente",
-	tbarNextButtonTooltip : "Position suivante",
-	zoomBoxInControlTitle : "Zoom en avant",
-	zoomBoxOutControlTitle : "Zoom en arrière",
-	zoomToMaxExtentControlTitle : "Zoom arrière maximum",
-	snappingControlTitle:'Snapping',
-	locationInfoControlTitle : "Voir les informations sur le point",
-	LayerSelectorEmptyTextValue: "Selectionner une couche",
-	selectFeatureControlTitle : "Selectionner un contour de sur la couche sélectionnée",
-	featureInfoControlTitle : "Voir les informations sur la couche sélectionnée",
-	legalMentionsLinkText : "Mentions légales",
-	addGeomCriteriaButtonText : "Sélectionner une zone géographique",
-	printMapButtonText : 'Imprimer la carte'
+Ext.define('OgamDesktop.locale.fr.view.map.MapToolbar', {
+	override: 'OgamDesktop.view.map.MapToolbar',
+	zoomToDrawingFeaturesButtonTooltip: "Zoomer sur la sélection",
+	modifyfeatureButtonTooltip:"Modifier la géométrie",
+	selectButtonTooltip:"Selectionner une géometrie",
+	drawPointButtonTooltip:"Dessiner un point",
+	drawLineButtonTooltip:"Dessiner une ligne",
+	drawPolygonButtonTooltip: "Dessiner un polygone",
+	deleteFeatureButtonTooltip:"Effacer la géométrie",
+	validateEditionButtonTooltip:"Valider la(es) modification(s)",
+	cancelEditionButtonTooltip:"Annuler la(es) modification(s)",
+	resultFeatureInfoButtonTooltip: "Voir les informations sur le point",
+	zoomInButtonTooltip:'Zoom en avant',
+	mapPanButtonTooltip:'Déplacer la carte',
+	zoomToResultFeaturesButtonTooltip:"Zoomer sur le résultat",
+	zoomToMaxExtentButtonTooltip: "Zoom arrière maximum",
+	printMapButtonTooltip:'Imprimer la carte'
+});
+
+Ext.define('OgamDesktop.locale.fr.view.map.toolbar.LayerFeatureInfoButton', {
+	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButton',
+	tooltip: "Voir les informations sur la couche sélectionnée"
+});
+
+Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SnappingButton', {
+	override:'OgamDesktop.view.map.toolbar.SnappingButton',
+	tooltip: 'Snapping'
+});
+
+Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SelectWFSFeatureButton', {
+	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
+	tooltip: "Selectionner un contour de sur la couche sélectionnée"
 });
 
 Ext.define('OgamDesktop.locale.fr.view.map.MapAddonsPanel', {
