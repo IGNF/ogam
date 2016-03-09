@@ -55,7 +55,7 @@ insert into application_parameters (name, value, description) values ( 'language
 
 
 -- Create a provider
-INSERT INTO providers('id','label','definition') VALUES ('1', 'Defaut', 'Organisme par défaut');
+INSERT INTO providers(id,label,definition) VALUES ('1', 'Defaut', 'Organisme par défaut');
 ALTER sequence website.provider_id_seq restart with 2;
 
 -- Create some roles
@@ -110,7 +110,7 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CA
 --
 --INSERT INTO DATASET_ROLE_RESTRICTION (ROLE_CODE, DATASET_ID) VALUES ('ADMIN', 'SPECIES');
 
-INSERT INTO layer_role_restriction (layer_name, role_code) VALUES ('all_harmonized_locations', 'ADMIN');
+--INSERT INTO layer_role_restriction (layer_name, role_code) VALUES ('all_harmonized_locations', 'ADMIN');
 
 
 

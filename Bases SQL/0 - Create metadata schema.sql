@@ -1,7 +1,15 @@
 CREATE SCHEMA metadata;
 
 
+/**
+ * This function is used to do accent-insensitive search.
+ * 
+ * For PostgreSQL after 9.1
+ */
 CREATE EXTENSION unaccent;
+
+-- Cf http://www.postgresql.org/message-id/201012021544.oB2FiTn1041521@wwwmaster.postgresql.org
+ALTER FUNCTION unaccent(text) IMMUTABLE;
 
 /**
  * This function is used to do accent-insensitive search.

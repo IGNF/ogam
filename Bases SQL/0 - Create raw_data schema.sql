@@ -245,9 +245,9 @@ ID_TAXON             VARCHAR(36)          not null,
 BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
 LINE_NUMBER			 INTEGER			  null,
-constraint PK_SPECIES_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
+constraint PK_SPECIES_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, ID_TAXON),
 constraint FK_SPECIES_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
-unique (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE)   
+unique (PROVIDER_ID, PLOT_CODE, CYCLE, ID_TAXON)   
 );
 
 COMMENT ON COLUMN SPECIES_DATA.SUBMISSION_ID IS 'The identifier of the submission';
