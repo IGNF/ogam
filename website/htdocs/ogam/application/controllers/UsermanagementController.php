@@ -70,7 +70,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 *        	User the user
 	 * @return a Zend Form
 	 */
-	private function _getUserForm($mode = null, $user = null) {
+	protected function getUserForm($mode = null, $user = null) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'user-form',
@@ -245,7 +245,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 *        	the role
 	 * @return a Zend Form
 	 */
-	private function _getRoleForm($mode = null, $role = null) {
+	protected function getRoleForm($mode = null, $role = null) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'role-form',
@@ -413,7 +413,7 @@ class UsermanagementController extends AbstractOGAMController {
 
 		// Check the validity of the form
 		$mode = $_POST['mode'];
-		$form = $this->_getUserForm($mode);
+		$form = $this->getUserForm($mode);
 		$this->logger->debug('validateUserAction mode = ' . $mode);
 
 		if (!$form->isValid($_POST)) {
@@ -546,7 +546,7 @@ class UsermanagementController extends AbstractOGAMController {
 
 		// Check the validity of the form
 		$mode = $_POST['mode'];
-		$form = $this->_getRoleForm($mode);
+		$form = $this->getRoleForm($mode);
 
 		if (!$form->isValid($_POST)) {
 			// Failed validation; redisplay form
@@ -692,7 +692,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->logger->debug('showCreateUserAction');
 
 		// Generate the form
-		$form = $this->_getUserForm('create', null, null);
+		$form = $this->getUserForm('create', null, null);
 		$this->view->form = $form;
 
 		// Eventually add an error message
@@ -716,7 +716,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$user = $this->userModel->getUser($userLogin);
 
 		// Generate the form
-		$form = $this->_getUserForm('edit', $user);
+		$form = $this->getUserForm('edit', $user);
 		$this->view->form = $form;
 
 		$this->render('show-edit-user');
@@ -735,7 +735,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$role = $this->roleModel->getRole($roleCode);
 
 		// Generate the form
-		$form = $this->_getRoleForm('edit', $role);
+		$form = $this->getRoleForm('edit', $role);
 		$this->view->form = $form;
 
 		$this->render('show-edit-role');
@@ -751,7 +751,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->logger->debug('showCreateRoleAction');
 
 		// Generate the form
-		$form = $this->_getRoleForm('create', null);
+		$form = $this->getRoleForm('create', null);
 		$this->view->form = $form;
 
 		// Eventually add an error message
