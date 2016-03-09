@@ -90,7 +90,6 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('init schema : ' . $websiteSession->schema);
 		
 		// Set the current module name
-		$websiteSession = new Zend_Session_Namespace('website');
 		$websiteSession->module = "query";
 		$websiteSession->moduleLabel = "Query Data (" . $websiteSession->schema . ")";
 		$websiteSession->moduleURL = "query";
@@ -1068,7 +1067,7 @@ class QueryController extends AbstractOGAMController {
 		$maxLines = 5000;
 	
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'pplication/json;charset='.$configuration->csvExportCharset.';application/force-download;', true);
+		$this->getResponse()->setHeader('Content-Type', 'application/json;charset='.$configuration->csvExportCharset.';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_'.date('dmy_Hi').'.geojson', true);
 	
 		if (($schema == 'RAW_DATA' && array_key_exists('EXPORT_RAW_DATA', $permissions)) || ($schema == 'HARMONIZED_DATA' && array_key_exists('EXPORT_HARMONIZED_DATA', $permissions))) {
@@ -1600,6 +1599,16 @@ class QueryController extends AbstractOGAMController {
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+	}
+	public function ajaxrestresultlocationAction() {
+		$sessionId = session_id();
+		$this->resultLocationModel->cleanPreviousResults($sessionId);
+		
+		echo '{success:true}';
+		
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 }
 

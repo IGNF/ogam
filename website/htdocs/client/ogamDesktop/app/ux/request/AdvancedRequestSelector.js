@@ -24,12 +24,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
     },
 	
     reloadForm: function(){
-
 		this.removeAll();
-
-		// Removes the loading message
-		//this.formsPanel.body.update();
-
 		this.store.getData().each(function(item, idex, length){
 
 			var criteria = item.criteria();
@@ -42,37 +37,11 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 					title : item.get('label'),
 					id : formId,
 					criteriaDS : criteria,
-					criteriaValues : this.criteriaValues, //FIXME
+					criteriaValues : this.criteriaValues,
 					columnsDS : columns
 				});
-                // Find the geom criteria and fill the geomCriteriaInfo param
-                /*for (j = 0; j < criteria.length; j++) {
-                    if(criteria[j].type === 'GEOM'){
-                        this.geomCriteriaInfo = {
-                            'formId' : formId,
-                            'id' : criteria[j].name //FIXME
-                        }
-                    }
-                }*/ 
 			}
 		},this);
-		
 		this.updateLayout();
-		
-		/*if (!Ext.isEmpty(apiParams)) {
-			if (apiParams.collapseQueryPanel === true) {
-				this.queryPanel.collapse();
-			}
-			if (apiParams.launchRequest === true) {
-				this.submitRequest();
-			}
-		}*/ //FIXME
-    	
     }
-
-	/*keys : { //FIXME
-		key : Ext.EventObject.ENTER,
-		fn : this.submitRequest,
-		scope : this
-	}*/
 });

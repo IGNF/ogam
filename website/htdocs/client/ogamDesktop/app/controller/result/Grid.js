@@ -6,7 +6,6 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	extend: 'Ext.app.Controller',
 	requires: [
 		'OgamDesktop.view.result.GridTab',
-		'OgamDesktop.model.result.Grid',
 		'OgamDesktop.store.result.Grid',
 		'OgamDesktop.ux.data.field.Factory',
 		'OgamDesktop.ux.grid.column.Factory',
@@ -38,7 +37,8 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	 *            send as query form is submitted
 	 */
 	setResultsGrid: function(fields) {
-		var gridModel = this.getModel('result.Grid');
+		var resultStore = this.getStore('result.Grid');
+		var gridModel = resultStore.getModel();
 		var gridTab = this.getResultsgrid();
 		var gridModelCfg = [];
 		var gridColumnCfg = [];
@@ -163,7 +163,6 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		
 		// Update the results grid store binding the model to it
 		// and apply pageSize value.
-		var resultStore = this.getStore('result.Grid');
 		resultStore.setConfig('pageSize', gridTab.gridPageSize);
 		resultStore.setModel(gridModel);
 

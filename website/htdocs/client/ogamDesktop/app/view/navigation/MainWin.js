@@ -16,6 +16,7 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
      */
     exportAsPdfButtonText: "Exporter en pdf",
     //</locale>
+
 	listeners : {
 		'render' : function(panel) {
 			panel.items.on('remove', function(item) {
@@ -25,39 +26,17 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 			}, panel);
 		}
 	},
-//	items: [{
-//		xtype: 'panel',
-//		layout: 'form',
-//		items: Ext.create('Ext.Editor', {
-//			updateEl: true,
-//			items: {
-//		        xtype: 'textfield',
-//		        labelValue: 'test'
-//		    }
-//		})
-//	}],
+
 	initComponent: function() {
-		
-//		var resultsGridArray = Ext.ComponentQuery.query('results-grid');
-//		var resultsGrid;
-//		for (var i = 0 ; i < resultsGridArray.length ; i++) {
-//			resultsGrid = resultsGridArray[i];
-//			Ext.getCmp('main').on('onEditDataButtonClick', this.openDetails, this);
-//		}
 		this.tbar= this.createToolbar();
 		this.callParent(arguments);
 	},
+
 	/**
 	 * build the (top) tool bar 
 	 */
 	createToolbar :function(){
-		return [/*{
-			xtype: 'button', text: 'New localisation'
-	   	},{
-	   		xtype: 'button', text: 'Edit'
-	   	},{
-	   		xtype: 'button', text: 'Delete'
-	   	},*/{
+		return [{
 	   		xtype: 'button',
 	   		text: this.exportAsPdfButtonText,
 	   		iconCls: 'o-navigation-tools-doc-pdfexport',
@@ -66,9 +45,9 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 	   				button.ownerCt.ownerCt.exportAsPDF();
 	   			}
 	   		}
-	}];
+		}];
 	},
-	
+
 	/**
 	 * Open the row details
 	 * 
@@ -91,7 +70,7 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 			this.setActiveTab(tab);
 		}
 	},
-	
+
     /**
      * Export the details panel as PDF
      */

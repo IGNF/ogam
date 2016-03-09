@@ -393,7 +393,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				this.childrenFS = new Ext.form.FieldSet({
 					// title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
 					items : childrenItems,
-					cls : 'columnLabelColor'
+					cls : 'o-columnLabelColor'
 				});
 				centerPanelItems.push(this.childrenFS);
 			}
@@ -503,7 +503,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		} else {
 
 			// Set the CSS for the field
-			field.itemCls = 'trigger-field columnLabelColor';
+			field.itemCls = 'trigger-field o-columnLabelColor';
 
 			// Creates the ext field config
 			switch (record.inputType) {

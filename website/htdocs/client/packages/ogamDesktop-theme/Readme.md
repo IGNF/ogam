@@ -1,2 +1,0 @@
-# ogamDesktop-theme - Read Me
-

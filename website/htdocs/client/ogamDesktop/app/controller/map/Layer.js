@@ -3,773 +3,299 @@
  * tree layers, map layers, map controls.
  */
 Ext.define('OgamDesktop.controller.map.Layer',{
-	extend: 'Ext.app.Controller',
-	requires: [
-		'OgamDesktop.view.map.MapPanel',
-		'OgamDesktop.view.map.LayersPanel',
-		'OgamDesktop.store.map.Layer',
-		'OgamDesktop.store.map.LayerService',
-		'OgamDesktop.store.map.LayerNode',
-		'Ext.window.MessageBox'
-	],
+    extend: 'Ext.app.Controller',
+    requires: [
+            'OgamDesktop.view.map.LayersPanel',
+            'OgamDesktop.store.map.Layer',
+            'OgamDesktop.store.map.LayerService',
+            'OgamDesktop.store.map.LayerNode',
+            'Ext.window.MessageBox'
+    ],
 
-	/**
-	 * The map panel view.
-	 * @private
-	 * @property
-	 * @type OgamDesktop.view.map.MapPanel
-	 */
-	mapPanel: null,
+    /**
+     * The map panel view.
+     * @private
+     * @property
+     * @type OgamDesktop.view.map.MapPanel
+     */
+    mapPanel: null,
 
-	/**
-	 * The current edition field linked to the drawing toolbar
-	 * @private
-	 * @property
-	 * @type OgamDesktop.ux.form.field.GeometryField
-	 */
-	currentEditionField: null,
+    /**
+     * The current edition field linked to the drawing toolbar
+     * @private
+     * @property
+     * @type OgamDesktop.ux.form.field.GeometryField
+     */
+    currentEditionField: null,
 
-	/**
-	 * The previous edition field id linked to the drawing toolbar
-	 * @private
-	 * @property
-	 * @type String
-	 */
-	previousEditionFieldId: null,
+    /**
+     * The previous edition field id linked to the drawing toolbar
+     * @private
+     * @property
+     * @type String
+     */
+    previousEditionFieldId: null,
 
-	/**
-	 * The refs to get the views concerned
-	 * and the control to define the handlers of the
-	 * MapPanel, toolbar and LayersPanel events
-	 */
-	config: {
-		refs: {
-			layerspanel: 'layers-panel',
-			legendspanel: 'legends-panel',
-			mapaddonspanel: 'map-addons-panel',
-			mappanel: 'map-panel',
-			geometryfield: 'geometryfield',
-			consultationpanel : '#consultationTab',
-			mapmainwin :  'map-mainwin'
-		},
-		control: {
-			'geometryfield': {
-				geomCriteriaPress: 'onGeomCriteriaPress',
-				geomCriteriaUnpress: 'onGeomCriteriaUnpress',
-				geomCriteriaDestroy: 'onGeomCriteriaUnpress'
-			},
-			'map-panel toolbar combobox': {
-				select: 'layerSelected'
-			},
-			'map-panel toolbar button[action="zoomtoresults"]': {
-				click: 'zoomOnResultsBBox'
-			},
-			'map-mainwin': {
-				afterrender: 'afterMapMainWinRender'
-			},
-			'map-panel': {
-				afterinitmap: 'setMapLayers',
-				getFeature: 'getFeature',
-				resultswithautozoom: 'zoomOnResultsBBox',
-				featureModified: 'updateCurrentEditionFieldValue',
-				validateFeatureEdition:'onValidateFeatureEdition',
-				cancelFeatureEdition:'onCancelFeatureEdition'
-			},
-			'layers-panel': {
-				checkchange: 'onCheckChange',
-				nodeEnable: 'nodeEnable'
-			},
-			'advanced-request button[action = submit]': {
-				submitRequest: 'onSubmitRequest'
-			}
-		}
-	},
+    /**
+     * The refs to get the views concerned
+     * and the control to define the handlers of the
+     * MapPanel, toolbar and LayersPanel events
+     */
+    config: {
+        refs: {
+                layerspanel: 'layers-panel',
+                legendspanel: 'legends-panel',
+                mappanel: '#map-panel'
+        },
+        control: {
+            'map-mainwin': {
+                afterrender: 'afterMapMainWinRendered'
+            },
+            'layerspanel': {
+                layersPanelStoresLoaded: 'afterLayersPanelStoresLoaded'
+            }
+        }
+    },
+    eventCounter : 0,
+    treeStores : [],
 
-	/**
-	 * Manage the validateFeatureEdition event
-	 */
-	onValidateFeatureEdition: function() {
-		this.currentEditionField.fireEvent('featureEditionValidated');
-		this.unpressField();
-	},
+    afterMapMainWinRendered : function() {
+        this.eventCounter += 1;
+        if (this.eventCounter === 2) {
+            this.setupMapAndTreeLayers();
+        }
+    },
 
-	/**
-	 * Manage the cancelFeatureEdition event
-	 */
-	onCancelFeatureEdition: function() {
-		this.currentEditionField.fireEvent('featureEditionCancelled');
-		this.currentEditionField.setValue(this.currentEditionFieldOldValue);
-		this.unpressField();
-	},
+    afterLayersPanelStoresLoaded : function(treeStores) {
+        this.treeStores = treeStores;
+        this.eventCounter += 1;
+        if (this.eventCounter === 2) {
+            this.setupMapAndTreeLayers();
+        }
+    },
 
-	/**
-	 * Set the features of the vector layer from a WKT
-	 */
-	setVectorLayerFeaturesFromWKT: function(wkt) {
-		var mapPanel = this.getMappanel();
-		this.removeVectorLayerFeatures();
-		if (!Ext.isEmpty(wkt)) {
-			var feature = mapPanel.wktFormat.read(wkt);
-			if (Ext.isEmpty(feature)) {
-				console.error(mapPanel.invalidWKTMsg);
-			} else {
-				if (!Array.isArray(feature)) {
-					feature = [feature];
-				}
-				mapPanel.vectorLayer.addFeatures(feature);
-			}
-		}
-	},
+   /**
+     * Sets up the map and the tree layers
+     * @private
+     * @return void
+     */
+    setupMapAndTreeLayers : function() {
+        var mapCmp = this.getMappanel().child('mapcomponent');
 
-	/**
-	 * Update the WKT value of the drawn vector layer into the geometry field of request panel
-	 */
-	updateCurrentEditionFieldValue: function() {
-		var mapPanel = this.getMappanel();
-		var wktValue = null;
-		var featuresNbr = mapPanel.vectorLayer.features.length;
-		if (featuresNbr === 1){ // Avoid the GEOMETRYCOLLECTION for only one feature
-			wktValue = mapPanel.wktFormat.write(mapPanel.vectorLayer.features[0]);
-		} else if (featuresNbr > 1) { // Return a GEOMETRYCOLLECTION
-			wktValue = mapPanel.wktFormat.write(mapPanel.vectorLayer.features);
-		}
-		if (this.currentEditionField !== null){
-			this.currentEditionField.setValue(wktValue);
-		}
-	},
+        // Creation of the layers collection
+        var layersCollection = this.buildLayersCollection();
 
-	/**
-	 * Manage the geometry field press event
-	 * 
-	 * @param {Ext.form.field.Field} field The pressed field
-	 */
-	onGeomCriteriaPress: function(field) {
-		if (this.currentEditionField !== null) {
-			// Deactivation of the previous edition mode and field
-			this.previousEditionFieldId = this.currentEditionField.getId();
-			this.currentEditionField.onUnpress();
-		}
-		this.currentEditionField = field;
-		this.currentEditionFieldOldValue = field.getValue();
-		this.setVectorLayerFeaturesFromWKT(field.getValue());
-		this.toggleDrawingTbar(true);
-		var consultationPanel = this.getConsultationpanel();
-		consultationPanel.ownerCt.setActiveTab(consultationPanel);
-		var mapMainWin = this.getMapmainwin();
-		mapMainWin.ownerCt.setActiveTab(mapMainWin);
-	},
+        // Identifies the request layers
+        var filterOnRequestActivateType = new Ext.util.Filter({
+            filterFn : function(item) {
+                return item.get('activateType') === 'request';
+            }
+        });
+        var requestLayersCollection = layersCollection.filter(filterOnRequestActivateType);
+        mapCmp.getController().requestLayers = requestLayersCollection.getRange();
 
-	/**
-	 * Manage the geometry field unpress event
-	 * 
-	 * @param {Ext.form.field.Field} field The unpressed field
-	 */
-	onGeomCriteriaUnpress: function(field) {
-		if(field && field.getId() === this.previousEditionFieldId){ // Do nothing
-			this.previousEditionFieldId = null;
-		} else {
-			this.currentEditionField = null;
-			this.toggleDrawingTbar(false);
-			this.removeVectorLayerFeatures();
-		}
-	},
+        // Adds the layers to the map
+        var filterOnDisplayInLayerSwitcher = new Ext.util.Filter({
+            filterFn : function(item) {
+                return item.get('displayInLayerSwitcher');
+            }
+        });
+        var treeLayersCollection = layersCollection.filter(filterOnDisplayInLayerSwitcher);
+        var treeLayersGroup = new ol.layer.Group({
+            layers: treeLayersCollection.getRange(),
+            code: 'treeGrp'
+        });
+        mapCmp.getMap().addLayer(treeLayersGroup);
 
-	/**
-	 * Deactivation of the previous edition mode and field on a request launch
-	 */
-	onSubmitRequest: function() {
-		this.unpressField();
-	},
+        // Adds the store to the layers tree
+        this.getLayerspanel().setConfig('store', this.buildGeoExtStore(treeLayersGroup));
+    },
 
-	/**
-	 * Unpress the current edition field linked to the drawing toolbar
-	 */
-	unpressField: function() {
-		if (this.currentEditionField !== null) {
-			this.currentEditionField.onUnpress();
-		}
-	},
+   /**
+     * Build a layers collection
+     * @private
+     * @return Ext.util.MixedCollection
+     */
+    buildLayersCollection: function() {
+        var mapCmp = this.getMappanel().child('mapcomponent');
+        var curRes = mapCmp.getMap().getView().getResolution();
 
-	/**
-	 * Setup the drawing toolbar buttons (visibilities and default controls)
-	 */
-	setupDrawingTbarButtons: function() {
-		// Set the buttons visibilities
-		var drawPointButton = this.getMappanel().getDockedItems('toolbar button[action = drawpoint]');
-		if (drawPointButton.length) {
-			drawPointButton[0].setVisible(!this.currentEditionField.hideDrawPointButton);
-		}
-		var drawLineButton = this.getMappanel().getDockedItems('toolbar button[action = drawline]');
-		if (drawLineButton.length) {
-			drawLineButton[0].setVisible(!this.currentEditionField.hideDrawLineButton);
-		}
-		var drawPolygonButton = this.getMappanel().getDockedItems('toolbar button[action = drawpolygon]');
-		if (drawPolygonButton.length) {
-			drawPolygonButton[0].setVisible(!this.currentEditionField.hideDrawPolygonButton);
-		}
-		var drawValidationButtons = this.getMappanel().getDockedItems('toolbar [group = drawValidation]');
-		for (var i=0; i < drawValidationButtons.length; i++) {
-			drawValidationButtons[i].setVisible(!this.currentEditionField.hideValidateAndCancelButtons);
-		}
+        // Creation of the layer group list
+        var layerGrpsList = [];
+        for (var i in this.treeStores['layerNodes']){
+            var lyrNode = this.treeStores['layerNodes'][i];
+            if (!lyrNode.get('leaf')) {
+                olGrp = new ol.layer.Group({
+                    name: lyrNode.get('text'),
+                    grpId: lyrNode.get('nodeGroup'),
+                    visible: !lyrNode.get('hidden'),
+                    displayInLayerSwitcher: !lyrNode.get('hidden'),
+                    expanded: lyrNode.get('expanded'),
+                    checked: lyrNode.get('checked'),
+                    disabled: lyrNode.get('disabled')
+                });
+                layerGrpsList.push(olGrp);
+            }
+        };
 
-		// Set the default control
-		switch (this.currentEditionField.defaultActivatedDrawingButton) {
-			case 'point' : drawPointButton[0].toggle(true); break;
-			case 'line' : drawLineButton[0].toggle(true); break;
-			case 'polygon' : drawPolygonButton[0].toggle(true); break;
-		}
-	},
+        // Creation of the layers list
+        var layersList = [];
+        for (var i in this.treeStores['layers']){
+            var layer = this.treeStores['layers'][i];
+            for (var j in this.treeStores['services']){
+                var service = this.treeStores['services'][j];
+                if (service.get('name') === layer.get('legendServiceName')) {
+                    this.getLegendspanel().fireEvent('onReadyToBuildLegend', curRes, layer, service);
+                };
+                if (service.get('name') === layer.get('viewServiceName')) {
 
-	/**
-	 * Activates / Deactivates drawing tbar
-	 * 
-	 * @param {boolean} enable Enable or disable the drawing toolbar
-	 */
-	toggleDrawingTbar: function(enable) {
-		if(enable){
-			// Setup the drawing toolbar buttons
-			this.setupDrawingTbarButtons();
-		} else {
-			// Deactivates all the drawing toolbar buttons controls on the toolbar disappearance
-			var drawingTbarButtons = this.getMappanel().getDockedItems('toolbar buttongroup[action = drawing] button');
-			for(var i = 0; i < drawingTbarButtons.length; i++){
-				drawingTbarButtons[i].toggle(false);
-			}
-		}
-		// Show or hide drawing buttons group
-		var drawingTbar = this.getMappanel().getDockedItems('toolbar buttongroup[action = drawing]');
-		if (drawingTbar.length) {
-			drawingTbar[0].setVisible(enable);
-		}
-	},
+                    // Creates the layer
+                    var olLayer = this.buildOlLayer(layer, service, curRes);
 
-	/**
-	 * Hide vector layer features
-	 */
-	hideVectorLayerFeatures: function () {
-		var mapPanel = this.getMappanel();
-		for( var i = 0; i < mapPanel.vectorLayer.features.length; i++ ) {
-			mapPanel.vectorLayer.features[i].style = { display: 'none' };
-		}
-		mapPanel.vectorLayer.redraw();
-	},
+                    // Adds the layer to the layers list
+                    if (layer.get('options').nodeGroup == -1) {
+                        // Adds the layer to the list
+                        layersList.push(olLayer);
+                    } else {
+                        // Adds the layer to its group and add the group to the list
+                        for (var k in layerGrpsList) {
+                            var lyrGrp =  layerGrpsList[k];
+                            if (layer.get('options').nodeGroup == lyrGrp.get('grpId')) {
+                                var lyrs = lyrGrp.getLayers();
+                                lyrs.push(olLayer);
+                                lyrGrp.setLayers(lyrs);
+                                layersList.push(lyrGrp);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-	/**
-	 * Remove vector layer features
-	 */
-	removeVectorLayerFeatures: function () {
-		this.getMappanel().vectorLayer.removeAllFeatures({'silent':true});
-	},
+        var layersCollection = new Ext.util.MixedCollection();
+        layersCollection.addAll(layersList);
 
-	/**
-	 * Show vector layer features
-	 */
-	showVectorLayerFeatures: function () {
-		var mapPanel = this.getMappanel();
-		for( var i = 0; i < mapPanel.vectorLayer.features.length; i++ ) {
-			mapPanel.vectorLayer.features[i].style = null;
-		}
-		mapPanel.vectorLayer.redraw();
-	},
+        return layersCollection;
+    },
 
-	/**
-	 * Handler of 'nodeEnable' event fires (into Legend controller)
-	 * enable or disable tree node.
-	 * 
-	 * @param {object}
-	 *            node The node to enable / disable
-	 * @param {boolean}
-	 *            toEnable True if the node is to enable, false else
-	 */
-	nodeEnable: function(node, toEnable) {
-		// The tabPanels must be activated before to show a
-		// child component
-		var isLayerPanelVisible = this.getLayerspanel().isVisible();
-		this.getMapaddonspanel().setActiveItem(this.getLayerspanel());
-		
-		var parent = node.parentNode;
-		if (toEnable === false) {
-			// Apply css class for disabled node
-			node.data.cls = 'dvp-tree-node-disabled';
-		} else {
-			// Apply default css class
-			node.data.cls = '';
-		}
-		
-		// Necessary to correctly update the tree panel
-		if (!parent.collapsed) {
-			parent.collapse();
-			parent.expand();
-		}
-		
-		// Keep the current activated panel activated
-		if (!isLayerPanelVisible) {
-			this.getMapaddonspanel().setActiveItem(this.getLegendspanel());
-		}
-	},
+   /**
+     * Build a OpenLayers source
+     * @private
+     * @param {OgamDesktop.model.map.Layer}
+     *            layer The layer
+     * @param {OgamDesktop.model.map.LayerService}
+     *            service The service used per the layer
+     * @return ol.source...
+     */
+    buildOlSource: function(layer, service) {
+        var serviceType = service.get('config').params.SERVICE;
+        switch (serviceType) {
+        case 'WMS':
+            // Sets the WMS layer source
+            var sourceWMSOpts = {};
+            sourceWMSOpts['params'] = {
+                'layers': layer.get('params').layers,
+                'REQUEST': service.get('config').params.REQUEST,
+                'VERSION': service.get('config').params.VERSION,
+                'session_id': layer.get('params').session_id
+            };
+            sourceWMSOpts['urls'] = service.get('config').urls;
+            return new ol.source.TileWMS(sourceWMSOpts);
+        case 'WMTS':
+            // Sets the WMTS layer source
+            var origin = service.get('config').params.tileOrigin; //coordinates of top left corner of the matrixSet
+            var resolutions = service.get('config').params.serverResolutions;
+            var matrixIds = [];
+            for (var i in resolutions){
+                matrixIds[i] = i;
+            };
+            var tileGrid = new ol.tilegrid.WMTS({
+                origin: origin,
+                resolutions: resolutions,
+                matrixIds: matrixIds
+            });
+            var sourceWMTSOpts = {};
+            sourceWMTSOpts['urls'] = service.get('config').urls;
+            sourceWMTSOpts['layer'] = layer.get('name');
+            sourceWMTSOpts['tileGrid'] = tileGrid;
+            sourceWMTSOpts['matrixSet'] = service.get('config').params.matrixSet;
+            sourceWMTSOpts['style'] = service.get('config').params.style;
+            return new ol.source.WMTS(sourceWMTSOpts);
+        default:
+            console.error('buildSource: The "' + serviceType + '" service type is not supported.');
+        }
+    },
 
-	/**
-	 * Handler of 'afterrender' event for the MapPanel.
-	 * 
-	 * @param {object}
-	 *            mappanel the MapPanel
-	 */
-	afterMapMainWinRender: function(mapmainwin) {
-		this.mapMainWin = mapmainwin;
-		this.mapPanel = this.getMappanel();
-		// Load the LayerService store
-		var serviceStore = this.getStore('map.LayerService');
-		serviceStore.load({
-			callback: this.onServiceStoreLoad,
-			scope: this
-		});
-	},
+   /**
+     * Build a OpenLayers layer
+     * @private
+     * @param {OgamDesktop.model.map.Layer}
+     *            layer The layer
+     * @param {OgamDesktop.model.map.LayerService}
+     *            service The service used per the layer
+     * @param {number}
+     *            curRes The map current resolution
+     * @return ol.layer.Tile
+     */
+    buildOlLayer: function(layer, service, curRes) {
+        var olLayerOpts = {};
+        olLayerOpts['session_id'] = layer.get('params').session_id;
+        olLayerOpts['source'] = this.buildOlSource(layer, service);
+        olLayerOpts['name'] = layer.get('options').label;
+        olLayerOpts['opacity'] = layer.get('options').opacity;
+        olLayerOpts['code'] = layer.get('name');
+        olLayerOpts['printable'] = true;
+        olLayerOpts['visible'] = !layer.get('params').isHidden;
+        olLayerOpts['displayInLayerSwitcher'] = !layer.get('params').isHidden;
+        olLayerOpts['checked'] = layer.get('params').isChecked;
+        if (layer.get('options').resolutions) {
+            var resolutions = layer.get('options').resolutions;
+            olLayerOpts['minResolution'] = resolutions[resolutions.length - 1];
+            olLayerOpts['maxResolution'] = resolutions[0];
+        }
+        olLayerOpts['disabled'] = layer.get('params').isDisabled;
+        if (curRes < olLayerOpts['minResolution'] || curRes >= olLayerOpts['maxResolution']) {
+            olLayerOpts['disabled'] = true;
+        }
+        olLayerOpts['activateType'] = layer.get('params').activateType.toLowerCase();
 
-	/**
-	 * Get services and load Layer store.
-	 */
-	onServiceStoreLoad: function(services) {
-		this.mapPanel.services = services;
-		
-		// Load the Layer store
-		var layerStore = this.getStore('map.Layer');
-		layerStore.load({
-			callback: this.addLayers,
-			scope: this
-		});
-	},
+        return new ol.layer.Tile(olLayerOpts);
+    },
 
-	/**
-	 * Set the layers of the map
-	 */
-	setMapLayers : function(map, vectorLayer, vector, baseLayer, wfsLayer) {
-		// Add the base layer (always first)
-		map.addLayer(baseLayer);
-		
-		if (this.mapPanel) {
-			// Add the available layers
-			for ( var i = 0; i < this.mapPanel.layersList.length; i++) {
-				map.addLayer(this.mapPanel.layersList[i]);
-			}
-			// Add the WFS layer
-			if (!this.hideLayerSelector && this.mapPanel.wfsLayer !== null) {
-				map.addLayer(this.mapPanel.wfsLayer);
-				this.mapPanel.snappingControl.addTargetLayer(this.mapPanel.wfsLayer);
-			}
-		}
-		
-		// Add the vector layer
-		map.addLayer(vectorLayer);
-		map.addLayer(vector);
-	},
+   /**
+     * Build a GeoExt tree store
+     * @private
+     * @param {ol.layer.Group}
+     *            layerGroup The store layer group
+     * @return GeoExt.data.store.LayersTree
+     */
+    buildGeoExtStore: function(layerGroup) {
+        // Create the GeoExt tree store
+        var treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
+            layerGroup: layerGroup
+        });
 
-	/**
-	 * Build the layers from the Layer store records and add them to the
-	 * map. Get the layers tree from the LayerNode store and build the
-	 * layers tree.
-	 */
-	addLayers : function(layers) {
-		// Reset the arrays
-		this.mapPanel.layersList = [];
-		this.mapPanel.layersActivation = {};
-		// Rebuild the list of available layers
-		for (i in layers) {
-			var layerObject = layers[i];
-			// Get the view service name
-			var viewServiceName = layerObject.data.viewServiceName;
-			for (i in this.mapPanel.services) {
-				var service = this.mapPanel.services[i];
-				if (service.data.name == viewServiceName) {
-					viewServiceObject = service;
-					break;
-				}
-			};
-			
-			// Build the new OpenLayers layer object and add it
-			// to the list
-			var newLayer = this.buildLayer(layerObject, viewServiceObject);
-			this.mapPanel.layersList.push(newLayer);
+        // Sets up the store records
+        function eachRecursive(item) {
+            if (item.childNodes.length > 0){
+                // Node group
+                if (item.getOlLayer().get('expanded')) {
+                    item.expand();
+                    item.set("expanded", true);
+                };
+                for (var k in item.childNodes) {
+                    eachRecursive(item.childNodes[k]);
+                }
+            } else {
+                // Node
+                var cls = item.getOlLayer().get('disabled') ? 'dvp-tree-node-disabled' : '';
+                item.set("cls", cls);
+                item.set("checked", item.getOlLayer().get('checked'));
+            }
+        };
+        treeLayerStore.each(eachRecursive);
 
-			// Fill the list of active layers
-			var activateType = layerObject.data.params.activateType.toLowerCase();
-			if (Ext.isEmpty(this.mapPanel.layersActivation[activateType])) {
-				this.mapPanel.layersActivation[activateType] = [ layerObject.data.name ];
-			} else {
-				this.mapPanel.layersActivation[activateType].push(layerObject.data.name);
-			}
-			// Create the legends
-			var legendServiceName = layerObject.data.legendServiceName;
-			for (i in this.mapPanel.services) {
-				var service = this.mapPanel.services[i];
-				if (service.data.name == legendServiceName) {
-					legendServiceObject = service;
-					this.buildLegend(layerObject, legendServiceObject);
-					break;
-				}
-			};
-		};
-
-		// Set the style
-		var styleMap = new OpenLayers.StyleMap(OpenLayers.Util.applyDefaults({
-			fillOpacity : 0,
-			strokeColor : "green",
-			strokeWidth : 3,
-			strokeOpacity : 1
-		}, OpenLayers.Feature.Vector.style["default"]));
-
-		this.mapPanel.wfsLayer = new OpenLayers.Layer.Vector("WFS Layer", 
-			{
-				strategies:[new OpenLayers.Strategy.BBOX()],
-				protocol: new OpenLayers.Protocol.HTTP({
-					url: null,
-					params:
-					{
-						typename: null,
-						service: "WFS",
-						format: "WFS",
-						version: "1.0.0",
-						request: "GetFeature",
-						srs: OgamDesktop.map.projection
-					}, 
-					format: new OpenLayers.Format.GML({extractAttributes: true})
-				})
-			});
-
-		this.mapPanel.wfsLayer.printable = false;
-		this.mapPanel.wfsLayer.displayInLayerSwitcher = false;
-		this.mapPanel.wfsLayer.extractAttributes = false;
-		this.mapPanel.wfsLayer.styleMap = styleMap;
-		this.mapPanel.wfsLayer.visibility = false;
-
-		this.setMapLayers(this.mapPanel.map, this.mapPanel.baseLayer, this.mapPanel.vectorLayer, this.mapPanel.vector, this.mapPanel.wfsLayer);
-
-		// Gets the layer tree model to initialise the Layer
-		// Tree
-		var layerNodeStore = this.getStore('map.LayerNode');
-		layerNodeStore.load({
-			callback: this.initLayerTree,
-			scope: this
-		});
-	},
-
-	/**
-	 * Build one OpenLayer Layer from the 'Layer' store record.
-	 * @param {Object}
-	 *            layerObject The 'Layer' store record
-	 * @param {Object}
-	 *            serviceObject The 'LayerService' store record for the legend
-	 *            corresponding to the layer
-	 * @return OpenLayers.Layer
-	 */
-	buildLayer : function(layerObject, serviceObject) {
-		var url = serviceObject.data.config.urls;
-			//Merges the service parameters and the layer parameters
-			var paramsObj = {};
-			for (var attrname in layerObject.data.params) { paramsObj[attrname] = layerObject.data.params[attrname]; }
-			for (var attrname in serviceObject.data.config.params) { paramsObj[attrname] = serviceObject.data.config.params[attrname]; }
-			if (serviceObject.data.config.params.SERVICE=="WMTS") {
-				//creation and merging of wmts parameters
-				var layer=paramsObj.layers[0];
-				var tileOrigin = new OpenLayers.LonLat(-20037508,20037508); //coordinates of top left corner of the matrixSet : usual value of geoportal, google maps 
-				var serverResolutions = [156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646]; 
-				// the usual 22 values of resolutions accepted by wmts servers geoportal
-				
-				var obj={options:layerObject.data.options,name:layerObject.data.name,url:url.toString(),layer:layer,tileOrigin:tileOrigin,serverResolutions:serverResolutions,opacity:layerObject.data.options.opacity,visibility:layerObject.data.options.visibility,isBaseLayer:layerObject.data.options.isBaseLayer};
-				var objMergeParams= {};
-				for (var attrname in obj) { objMergeParams[attrname] = obj[attrname]; }
-				for (var attrname in paramsObj) { objMergeParams[attrname] = paramsObj[attrname]; }
-				newLayer = new OpenLayers.Layer.WMTS(objMergeParams);
-
-			} else if (serviceObject.data.config.params.SERVICE=="WMS"){
-				newLayer = new OpenLayers.Layer.WMS(layerObject.data.name , url , paramsObj , layerObject.data.options);
-			} else {
-				Ext.Msg.alert("Please provide the \"" + layerObject.data.viewServiceName + "\" service type.");
-			}
-			
-			if (layerObject.data.params.isHidden) {
-				newLayer.displayInLayerSwitcher = false;
-			} else {
-				newLayer.displayInLayerSwitcher = true;
-			}
-
-		return newLayer;
-	},
-
-	/**
-	 * Build a Legend Object from a 'Layer' store record.
-	 * @param {Object}
-	 *            layerObject The 'Layer' store record
-	 * @param {Object}
-	 *            serviceObject The 'LayerService' store record for the legend
-	 *            corresponding to the layer
-	 * @return OpenLayers.Layer
-	 */
-	buildLegend : function(layerObject,serviceObject) {
-		var legend = this.getLegendspanel()
-		//legend = this.mapMainWin.getComponent(1).getComponent(1)
-			.add(new Ext.Component({
-				// Extjs 5 doesn't accept '.' into ids
-				id : this.mapPanel.id + layerObject.data.name.replace(/\./g,'-'),
-					autoEl : {
-						tag : 'div',
-						children : [{
-							tag : 'span',
-							html : layerObject.data.options.label,
-							cls : 'x-form-item x-form-item-label'
-						},{
-							tag : 'img',
-							src : serviceObject.data.config.urls.toString()
-							+ 'LAYER='+ layerObject.data.params.layers
-							+ '&SERVICE=' + serviceObject.data.config.params.SERVICE+ '&VERSION=' + serviceObject.data.config.params.VERSION + '&REQUEST=' + serviceObject.data.config.params.REQUEST
-							+ '&Format=image/png&WIDTH=160&HASSLD=' + (layerObject.data.params.hasSLD ? 'true' : 'false')
-						}]
-					}
-			}));
-		if (layerObject.data.params.isDisabled || layerObject.data.params.isHidden || !layerObject.data.params.isChecked) {
-			legend.on('render', function(cmp) {
-				cmp.hide();
-			});
-		}
-	},
-
-	/**
-	 * Build a Legend Object from a 'Layer' store record.
-	 * @param {Array}
-	 *            nodes The 'LayerNode' store records to fill the layers tree
-	 */
-	initLayerTree: function(nodes) {
-		
-		// initialize the Tree store based on the map layers
-		var treeLayerStore = Ext.create('Ext.data.TreeStore', {
-			model: 'GeoExt.data.LayerTreeModel',
-			root: {}
-		});
-		// for each node, we create a store which is a selection of the map layers store
-		for (i in nodes) {
-			var node = nodes[i];
-			var storeSelection = Ext.create('GeoExt.data.LayerStore');
-			var rootChild = {};
-
-			this.mapPanel.layers.each(function(layer) {
-				if (layer.data.options.nodeGroup && layer.data.options.nodeGroup == node.data.nodeGroup) {
-					storeSelection.add(layer);
-				} else if (layer.data.title == node.data.layer) {
-					// Creation of the layer node
-						rootChild = {
-						text: node.data.text,
-						layer: layer.data,
-						disabled: node.data.disabled,
-						plugins: [
-							Ext.create('GeoExt.tree.LayerNode')
-						]
-					};
-					// Add of the container
-					if (!node.data.hidden) {
-						treeLayerStore.root.appendChild(rootChild);
-					}
-					rootChild = null;
-				}
-			});
-
-			if (rootChild) {
-				// creation of the layer group container
-				rootChild = {
-					text: node.data.text,
-					plugins: [
-						Ext.create('OgamDesktop.ux.map.GroupLayerContainer', {
-							store: storeSelection,
-							nodeGroup: nodes[i].data.nodeGroup,
-							containerCheckedStatus: node.data.checked,
-							containerExpandedStatus: node.data.expanded
-						})
-					]
-				};
-				// add of the container
-				if (!node.data.hidden) {
-					treeLayerStore.root.appendChild(rootChild);
-				}
-				
-			}
-		}
-	//	this.mapMainWin.getComponent(1).getComponent(0).setConfig('store', treeLayerStore);
-		this.getLayerspanel().setConfig('store', treeLayerStore);
-	},
-
-	/**
-	 * A layer has been selected in the layer selector
-	 */
-	layerSelected : function(combo, value) {
-		if (value[0].data.code !== null) {
-			var layerName = value[0].data.code;
-			var url = value[0].data.url;
-			var popupTitle = this.popupTitle;
-			// Change the WFS layer typename
-			this.mapPanel.wfsLayer.protocol.featureType = layerName;
-			this.mapPanel.wfsLayer.protocol.options.featureType = layerName;
-			this.mapPanel.wfsLayer.protocol.format.featureType = layerName;
-			this.mapPanel.wfsLayer.protocol.params.typename = layerName;
-			this.mapPanel.wfsLayer.protocol.options.url = url;
-
-			// Remove all current features
-			this.mapPanel.wfsLayer.destroyFeatures();
-
-			// Copy the visibility range from the original
-			// layer
-			originalLayers = this.mapPanel.map.getLayersByName(layerName);
-			if (originalLayers != null) {
-				originalLayer = originalLayers[0];
-				this.mapPanel.wfsLayer.maxResolution = originalLayer.maxResolution;
-				this.mapPanel.wfsLayer.maxScale = originalLayer.maxScale;
-				this.mapPanel.wfsLayer.minResolution = originalLayer.minResolution;
-				this.mapPanel.wfsLayer.minScale = originalLayer.minScale;
-				this.mapPanel.wfsLayer.alwaysInRange = false;
-				this.mapPanel.wfsLayer.calculateInRange();
-			}
-
-			// Make it visible
-			this.mapPanel.wfsLayer.setVisibility(true);
-
-			// Force a refresh (rebuild the WFS URL)
-			this.mapPanel.wfsLayer.moveTo(null, true, false);
-
-			// Set the layer name in other tools
-			if (this.mapPanel.getFeatureControl !== null) {
-				this.mapPanel.getFeatureControl.layerName = layerName;
-			}
-
-			this.mapPanel.wfsLayer.refresh();
-			this.mapPanel.wfsLayer.strategies[0].update({force:true});
-
-		} else {
-			// Hide the layer
-			this.mapPanel.wfsLayer.setVisibility(false);
-		}
-		
-		// Set the layer name in feature info tool
-		if (this.mapPanel.featureInfoControl !== null) {
-			this.mapPanel.featureInfoControl.layerName = layerName;
-		}
-	},
-	
-	/**
-	 * A feature has been selected using the GetFeatureControl
-	 * tool.
-	 */
-	getFeature : function(evt) {
-		if (evt.mapId == this.mapPanel.map.id) {
-			// Add the feature to the vector layer
-			if (this.mapPanel.vectorLayer !== null) {
-				this.mapPanel.vectorLayer.addFeatures(evt.feature);
-			}
-		}
-	},
-
-	/**
-	 * Toggle the children checkbox on the parent checkbox change
-	 * 
-	 * @param {Ext.tree.TreeNode}
-	 *            node The parent node
-	 * @param {Boolean}
-	 *            checked The checked status
-	 * @hide
-	 */
-	onCheckChange : function(node, checked) {
-		if (node.firstChild == null) {
-			if(checked != node.get('layer').getVisibility()) {
-				node._visibilityChanging = true;
-				var layer = node.get('layer');
-				if(checked && layer.isBaseLayer && layer.map) {
-					layer.map.setBaseLayer(layer);
-				} else if(!checked && layer.isBaseLayer && layer.map &&
-					layer.map.baseLayer && layer.id == layer.map.baseLayer.id) {
-					// Must prevent the unchecking of radio buttons
-					node.set('checked', layer.getVisibility());
-				} else {
-					layer.setVisibility(checked);
-				}
-				delete node._visibilityChanging;
-			}
-		}
-		for ( var i = 0 ; i < node.childNodes.length ; i++) {
-			var child = node.childNodes[i];
-			if (!child.get('disabled')) {
-				child.set('checked', checked);
-				this.onCheckChange(child, checked);
-			}
-		}
-	},
-
-	/**
-	 * Zoom to the passed feature on the map
-	 * 
-	 * @param {String}
-	 *            id The plot id
-	 * @param {String}
-	 *            wkt The wkt feature
-	 */
-	zoomToFeature : function(id, wkt) {
-
-		// Parse the feature location and create a Feature
-		// Object
-		var feature = this.mapPanel.wktFormat.read(wkt);
-
-		// Add the plot id as an attribute of the object
-		feature.attributes.id = id.substring(id.lastIndexOf('__') + 2);
-
-		// Remove previous features
-		this.mapPanel.vectorLayer.destroyFeatures(this.mapPanel.vectorLayer.features);
-
-		// Move the vector layer above all others
-		this.mapPanel.map.setLayerIndex(this.mapPanel.vectorLayer, 100);
-		if (feature) {
-			// Add the feature
-			this.mapPanel.vectorLayer.addFeatures([ feature ]);
-		} else {
-			alert(this.mapPanel.invalidWKTMsg);
-		}
-
-		// Center on the feature
-		this.mapPanel.map.setCenter(new OpenLayers.LonLat(feature.geometry.x, feature.geometry.y), 7);
-	},
-
-	/**
-	 * Zoom on the provided bounding box
-	 * 
-	 * {String} wkt The wkt of the bounding box
-	 */
-	zoomOnBBox : function(wkt) {
-		if (!Ext.isEmpty(wkt)) {
-
-			// The ratio by which features' bounding box should
-			// be scaled
-			var ratio = 1;
-
-			// The maximum zoom level to zoom to
-			var maxZoomLevel = this.mapPanel.map.numZoomLevels - 1;
-
-			// Parse the feature location and create a Feature
-			// Object
-			var feature = this.mapPanel.wktFormat.read(wkt);
-
-			var bounds = feature.geometry.getBounds();
-
-			bounds = bounds.scale(ratio);
-
-			var zoom = 0;
-			if ((bounds.getWidth() === 0) && (bounds.getHeight() === 0)) {
-				zoom = maxZoomLevel;
-			} else {
-				var desiredZoom = this.mapPanel.map.getZoomForExtent(bounds);
-				zoom = (desiredZoom > maxZoomLevel) ? maxZoomLevel : desiredZoom;
-			}
-			this.mapPanel.map.setCenter(bounds.getCenterLonLat(), zoom);
-		}
-	},
-
-	/**
-	 * Zoom on the results bounding box
-	 */
-	zoomOnResultsBBox : function() {
-		this.zoomOnBBox(this.mapPanel.resultsBBox);
-	}
+        return treeLayerStore;
+    }
 });

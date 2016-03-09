@@ -29,15 +29,18 @@ WEB
         WFS_TITLE                       "OGAM MapServer"  
         WFS_SRS                         "EPSG:3857"
         WFS_ABSTRACT                    "OGAM Data"  
-        WFS_MAXFEATURES                 "40"
+        #WFS_MAXFEATURES                 "30000"
         WFS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
-
+		WFS_GETFEATURE_FORMATLIST		"geojsonogr,geojsontpl"
+		WFS_ENCODING "UTF-8"
+		
         WMS_TITLE                       "OGAM MapServer" 
         WMS_ABSTRACT                    "OGAM Mapserver"
         WMS_ACCESSCONSTRAINTS           "none"
         WMS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
         WMS_SRS                         "EPSG:3857"
         "ows_enable_request"            "*"
+        "wms_enable_request"            "*"
         "wms_include_items"      		"*"
         "wms_feature_info_mime_type"    "text/html"
         "queryable"    "true"
@@ -91,6 +94,20 @@ OUTPUTFORMAT
   FORMATOPTION QUALITY=80 
 END
 
+OUTPUTFORMAT
+	NAME "geojsonogr"
+	DRIVER "OGR/GEOJSON"
+	MIMETYPE "application/json; subtype=geojson; charset=utf-8"
+	FORMATOPTION "FORM=simple"
+END
+
+OUTPUTFORMAT
+  NAME "geojsontpl"
+  DRIVER "TEMPLATE"
+  MIMETYPE "application/json; subtype=geojson; charset=utf-8"
+  FORMATOPTION "FILE=geoJSONTemplate.js"
+END
+
 #
 # Start of legend
 #
@@ -114,10 +131,12 @@ LAYER
     TYPE POLYGON
     STATUS ON 
 #    DEBUG 5
+    TEMPLATE "geoJSONTemplate.js"
     METADATA
         WFS_TITLE        "Country Boundaries"
+        "wms_feature_info_mime_type"  "application/json"
         GML_FEATUREID      "gid" 
-        GML_INCLUDE_ITEMS  "all"   
+        GML_INCLUDE_ITEMS  "all"
     END
     DUMP TRUE
     
@@ -125,7 +144,6 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM nuts_0 USING UNIQUE gid USING srid=3035"
-    CLASSITEM "cell_id"
     LABELITEM "cell_id"
     CLASS
           NAME 'Country'    

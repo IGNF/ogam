@@ -3,9 +3,10 @@
  * map main view.
  */
 Ext.define('OgamDesktop.controller.map.Main',{
-	extend: 'OgamDesktop.controller.AbstractWin',
+	extend: 'Ext.app.Controller',
 	requires: [
-		'OgamDesktop.view.map.MapPanel',
+		'OgamDesktop.view.result.GridTab',
+        'OgamDesktop.view.main.Main',
 		'Ext.grid.column.Number'
 	],
 
@@ -16,169 +17,66 @@ Ext.define('OgamDesktop.controller.map.Main',{
 	 */
 	config: {
 		refs: {
-			mappanel: 'map-panel',
-			detailTab: 'grid-detail-panel'
+			mappanel: '#map-panel',
+            mapmainwin: 'map-mainwin'
 		},		
 		control: {
-			'map-panel toolbar button[action="print"]': {
-				click: 'printMap'
-			},
-			'map-panel': {
-				getLocationInfo: 'showResultDetail',
-				getLocationInfoActivated: 'locationInfoStateChange'
-			},
 			'deprecated-detail-grid': {
 				beforedetailsgridrowenter: 'setResultStateToSelected',
 				beforedetailsgridrowleave: 'setResultStateToDefault'
-			}
+			},
+			'results-grid': {
+                resultsload: 'getResultsBbox',
+                onSeeOnMapButtonClick: 'seeOnMap'
+            }
 		}
 	},
+
+    onLaunch:function(){
+        //clean previous request or result in server side
+        Ext.Ajax.request({
+            url: Ext.manifest.OgamDesktop.requestServiceUrl+'ajaxrestresultlocation',
+            failure: function(response, opts) {
+                console.warn('server-side failure with status code ' + response.status);
+            }
+        });
+    },
 
 	setResultStateToSelected: function(record) {
 		this.getMappanel().highlightObject(record);
 	},
-	
+
 	setResultStateToDefault: function(record) {
 		this.getMappanel().showObjectInDefaultStyle(record);
 	},
-	
-	// TODO : a buffer around the mouse cursor
-	locationInfoStateChange: function(activated) {
-		console.log('activated', activated);
-	},
-	
-	showResultDetail: function(evt) {
-//		this.getMappanel().vector.removeAllFeatures();
-//		console.log('results', results);
-//		var style = new OpenLayers.Style({
-//			pointRadius: 8,
-//			strokeWidth: 2,
-//			strokeOpacity: 0.7,
-//			graphicName: 'star',
-//			strokeColor: "black",
-//			fillColor: "red",
-//			fillOpacity: 1
-//		});
-//		var styleMap =  new OpenLayers.StyleMap({
-//			"default": style,
-//			select: {
-//				fillColor: "red",
-//				pointRadius: 7,
-//				strokeColor: "red",
-//				strokeWidth: 2
-//			},
-//			renderers: ['Canvas']
-//		});
-//		this.getMappanel().vector.styleMap = styleMap;
-//		var segmentLength = 5;
-//
-//		var res = this.getMappanel().map.getResolution();
-//		var curMapUnits = this.getMappanel().map.getUnits();
-//		var inches = OpenLayers.INCHES_PER_UNIT;
-//
-//		// convert maxWidth to map units
-//		var barSize = segmentLength * res * inches[curMapUnits];
-//
-//		var angleDelta = 0;
-//		if (results.data.length) {
-//			angleDelta = 2*Math.PI/results.data.length;
-//		}
-//		
-//		for (var i = 0 ; i < results.data.length ; i++) {
-//			console.log(i);
-//			var Feature = OpenLayers.Feature.Vector;
-//			var Geometry = OpenLayers.Geometry;
-//			var features = [
-//				new Feature(new Geometry.LineString([
-//					new Geometry.Point(llLocation.lon, llLocation.lat),
-//					new Geometry.Point(llLocation.lon + barSize*Math.cos((i)*angleDelta), llLocation.lat + barSize*Math.sin((i)*angleDelta))
-//				])),
-//				new Feature(new Geometry.Point(llLocation.lon + barSize*Math.cos((i)*angleDelta), llLocation.lat + barSize*Math.sin((i)*angleDelta)))
-//			];
-//			this.getMappanel().vector.addFeatures(features);
-//		}
-//		this.getMappanel().vector.redraw();
-		
-		
-//		var detailGrid = Ext.create('OgamDesktop.view.navigation.GridDetailsPanel', {
-//			initConf: results
-//		});
-		this.getDetailTab().configureDetailGrid(evt.result);
-		this.getDetailTab().expand();
-	},
 
-	/**
-	 * Create and submit a form
-	 * 
-	 * @param {String}
-	 *            url The form url
-	 * @param {object}
-	 *            params The form params
-	 */
-	post: function(url, params) {
-		var temp = document.createElement("form"), x;
-		temp.action = url;
-		temp.method = "POST";
-		temp.style.display = "none";
-		for (x in params) {
-			var opt = document.createElement("textarea");
-			opt.name = x;
-			opt.value = params[x];
-			temp.appendChild(opt);
-		}
-		document.body.appendChild(temp);
-		temp.submit();
-		return temp;
-	}, 
-	
-	olLayerToString : function(layer){
-		layerStr = '{';
-		layerStr += '"name":"' + layer.name + '",';
-		layerStr += '"opacity":' + layer.opacity;
-		if (layer.tileSize) {
-			tileSizeArray = [layer.tileSize.h, layer.tileSize.w];
-			layerStr += ', "tileSize": [' + tileSizeArray.toString() + ']';
-		};
-		layerStr += '}';
-		return layerStr;
-	},
-	
-	
-	/**
-	 * Print the map
-	 * 
-	 * @param {Ext.Button}
-	 *            button The print map button
-	 * @param {EventObject}
-	 *            event The click event
-	 */
-	printMap : function(button, event) {
-		
-		
-		
-		// Get the BBOX
-		var center = this.getMappanel().map.getCenter(), zoom = this.getMappanel().map.getZoom(), i;
-		console.log(center)
-		console.log(zoom)
-		
-		// Get the layers
-		var activatedLayers = this.getMappanel().map.getLayersBy('visibility', true);
-		var layersToPrint = [];
-		for (i = 0; i < activatedLayers.length; i++) {
-			currentLayer = activatedLayers[i];
-			if (currentLayer.printable !== false &&
-				currentLayer.visibility == true &&
-				currentLayer.inRange == true) {
-				layersToPrint.push(this.olLayerToString(currentLayer));
-				console.log(currentLayer)
-			}
-		}
+	getResultsBbox: function(emptyResult) {
+        this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
+        Ext.Ajax.request({
+            url : Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetresultsbbox',
+            success : function(rpse, options) {
+                var response = Ext.decode(rpse.responseText);
+                var mapCmp = this.getMappanel().child('mapcomponent');
+                var mapCmpCtrl = mapCmp.getController();
+                mapCmp.resultsBBox = response.resultsbbox;
+                if (mapCmpCtrl.autoZoomOnResultsFeatures === true) {
+                    mapCmp.fireEvent('resultswithautozoom');
+                }
+                mapCmpCtrl.fireEvent('resultsBBoxChanged', mapCmpCtrl, mapCmp.resultsBBox);
+            },
+            scope: this
+        });
+    },
 
-		console.log(layersToPrint)
-		this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
-			center : center,
-			zoom : zoom,
-			layers : layersToPrint
-		});
+    /**
+	 * Show the map container and zoom on the result BBox.
+	 * 
+	 * @param {Object}
+	 *            feature The feature corresponding to the grid row,
+	 *            contains id and geometry.
+	 */
+	seeOnMap: function(feature) {
+		this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
+		this.getMappanel().child('mapcomponent').getController().zoomToFeature(feature.id, feature.location_centroid);
 	}
 });

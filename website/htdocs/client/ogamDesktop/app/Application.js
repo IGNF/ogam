@@ -13,9 +13,7 @@ Ext.define('OgamDesktop.Application', {
 		'map.LayerService',
 		'request.fieldset.Criterion',
 		'request.fieldset.Column',
-		'request.object.field.Code',
-		'request.object.Field',
-		'result.Grid'
+		'request.object.field.Code'
 	],
 	stores: [
 		'map.LayerNode',
@@ -24,18 +22,16 @@ Ext.define('OgamDesktop.Application', {
 		'result.Grid'
 	],
 	controllers: [
+		'map.Drawing',
 		'map.Layer',
-		'map.Legend',
 		'map.Main',
 		'result.Grid',
 		'result.Main',
-		'result.Layer',
-		'navigation.DeprecatedDetailGrid',
+		'navigation.Main',
 		'request.PredefinedRequest'
 	],
 	views: [
 		'main.Main',
-		'map.MapPanel',
 		'map.LayersPanel',
 		'map.LegendsPanel',
 		'map.MainWin',

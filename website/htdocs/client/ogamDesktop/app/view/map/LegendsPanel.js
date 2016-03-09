@@ -5,8 +5,8 @@
 Ext.define('OgamDesktop.view.map.LegendsPanel', {
 	extend: 'Ext.container.Container',
 	xtype: 'legends-panel',
+	controller: 'legendspanel',
 	title:'Legends',
-//	id: 'legendspanel',
 	frame : true,
 	autoScroll : true
 });

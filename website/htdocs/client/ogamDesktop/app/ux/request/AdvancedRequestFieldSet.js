@@ -80,144 +80,33 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 
 	// private
 	initComponent : function() {
+		this.callParent(arguments);
+		this.collapsible = true;
+		this.titleCollapse = true;
+		this.updateLayout();
+	},
 
-		/**
-		 * The criteria Data Store.
-		 * 
-		 * @property criteriaDS
-		 * @type Ext.data.JsonStore
-		 */
-
-		/*this.criteriaDS = new Ext.data.JsonStore({
-			idProperty : 'name',
-			fields : [ {
-				name : 'name',
-				mapping : 'name'
-			}, {
-				name : 'label',
-				mapping : 'label'
-			}, {
-				name : 'inputType',
-				mapping : 'inputType'
-			}, {
-				name : 'unit',
-				mapping : 'unit'
-			}, {
-				name : 'type',
-				mapping : 'type'
-			}, {
-				name : 'subtype',
-				mapping : 'subtype'
-			}, {
-				name : 'definition',
-				mapping : 'definition'
-			}, {
-				name : 'is_default',
-				mapping : 'is_default'
-			}, {
-				name : 'default_value',
-				mapping : 'default_value'
-			}, {
-				name : 'decimals',
-				mapping : 'decimals'
-			}, {
-				name : 'params',
-				mapping : 'params'
-			} // reserved for min/max or list of codes
-			],
-			data : this.criteria
-		});*/
-
-		/**
-		 * The columns Data Store.
-		 * 
-		 * @property columnsDS
-		 * @type Ext.data.JsonStore
-		 */
-		/*this.columnsDS = new Ext.data.JsonStore({
-			idProperty : 'name',
-			fields : [ {
-				name : 'name',
-				mapping : 'name'
-			}, {
-				name : 'label',
-				mapping : 'label'
-			}, {
-				name : 'definition',
-				mapping : 'definition'
-			}, {
-				name : 'is_default',
-				mapping : 'is_default'
-			}, {
-				name : 'decimals',
-				mapping : 'decimals'
-			}, {
-				name : 'params',
-				mapping : 'params'
-			} // reserved for min/max or list of codes
-			],
-			data : this.columns
-		});*/
+	initItems:function(){
 		/**
 		 * The panel used to show the criteria.
 		 * 
 		 * @property criteriaPanel
 		 * @type Ext.Panel
 		 */
-		this.callParent(arguments);
-		this.collapsible = true;
-		this.titleCollapse = true;
-	
-
-		this.updateLayout();
-
-	},
-	initItems:function(){
-				this.criteriaPanel = new Ext.panel.Panel({
+		this.criteriaPanel = new Ext.panel.Panel({
 			layout : {
 				type : 'form'
 				//labelWidth: 100 // Don't use this parameter because it change the bin width (Bug Ext! Check with ext 5.0.1 post version)
 			},
-			//hidden : Ext.isEmpty(this.criteriaDS) ? true : false, //FIXME
 			hideMode : 'offsets',
 			cls : 'o-ux-adrfs-filter-item',
 			labelWidth : this.criteriaLabelWidth,
 			defaults : {
 				labelStyle : 'padding: 0;',
-				beforeLabelTpl : '<div class="filterBin">&nbsp;&nbsp;&nbsp;</div>',
-				labelClsExtra : 'columnLabelColor labelNextBin'
+				beforeLabelTpl : '<div class="o-ux-adrfs-filterBin">&nbsp;&nbsp;&nbsp;</div>',
+				labelClsExtra : 'o-columnLabelColor o-ux-adrfs-labelNextBin'
 				//width : 180 not used in a form layout (Table-row display)
 			},
-		/*	// FIXME deprecated ?
-			listeners : {
-				'add' : function(container, cmp, index) {
-					var subName = cmp.name, i = 0, foundComponents, tmpName = '', criteriaPanel = cmp.ownerCt, className = 'first-child';
-					if (container.defaultType === 'panel') { // The add event
-						// is not only
-						// called for
-						// the items
-						// Add a class to the first child for IE7 layout
-						if (index === 0) {
-							if (cmp.rendered) {
-								cmp.getEl().addClass(className);
-							} else {
-								if (cmp.itemCls) {
-									cmp.itemCls += ' ' + className;
-								} else {
-									cmp.itemCls = className;
-								}
-							}
-						}
-						// Setup the name of the field
-						do {
-							tmpName = subName + '[' + i++ + ']';
-						} while (criteriaPanel.items.findIndex('name', tmpName) !== -1);
-						cmp.name = cmp.hiddenName = tmpName;
-					}
-				},
-				scope : this
-			},
-			*/
 			items :( Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig()),
 			tbar : [ {
 				// Filler
@@ -421,7 +310,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				xtype : 'box',
 				autoEl : {
 					tag : 'div',
-					cls : 'columnLabelBin columnLabelBinColor',
+					cls : 'o-ux-adrfs-columnLabelBin o-ux-adrfs-columnLabelBinColor',
 					html : '&nbsp;&nbsp;&nbsp;&nbsp;'
 				},
 				listeners : {
@@ -438,7 +327,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				xtype : 'box',
 				autoEl : {
 					tag : 'span',
-					cls : 'columnLabel columnLabelColor',
+					cls : 'o-columnLabel columnLabelColor',
 					html : record.label
 				},
 				listeners : {

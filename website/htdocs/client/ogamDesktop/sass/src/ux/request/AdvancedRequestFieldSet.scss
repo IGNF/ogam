@@ -11,13 +11,7 @@
 .x-menu-number-range-item .x-toolbar-footer {
 	background-color: $panel-frame-background-color;
 }
-.filterDateSelect { //FIXME
-    float: left;
-    /*margin-left: -27px;*/
-    position:relative;
-    z-index:2;
-}
-.filterBin {
+.o-ux-adrfs-filterBin {
 	background:transparent url(images/OgamDesktop/tools/edit/bin.gif) no-repeat scroll;
     cursor:pointer;
     height:12px;
@@ -25,7 +19,7 @@
     display: table-cell;
     background-position: 0px 5px;
 }
-.labelNextBin span {
+.o-ux-adrfs-labelNextBin span {
 	margin-top : 4px !important;
 	white-space: normal !important;
 }
@@ -35,18 +29,15 @@
 .o-ux-adrfs-column-item {
 	margin: 5px 0;
 }
-.columnLabelBinColor {
+.o-ux-adrfs-columnLabelBinColor {
     background:transparent url(images/OgamDesktop/tools/edit/bin.gif) no-repeat scroll;
 }
-.columnLabelColor {
+.o-columnLabelColor {
     color: $form-field-color;
 }
-.columnLabelBin {
+.o-ux-adrfs-columnLabelBin {
     cursor:pointer;
     display:inline !important;
     margin:0 5px;
-}
-.columnLabel {
-    display:inline !important;
 }
 /*****************************************************************************************************/

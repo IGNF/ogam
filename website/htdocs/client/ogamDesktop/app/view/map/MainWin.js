@@ -8,8 +8,18 @@ Ext.define('OgamDesktop.view.map.MainWin', {
 	layout: 'border',
 	title: 'Map',
 	items: [{
-		xtype: 'map-panel',
-		region: 'center'
+		xtype: 'panel',
+		id: 'map-panel',
+		region: 'center',
+	    layout: 'fit',
+	    dockedItems: [{
+	        xtype:'maptoolbar',
+	        dock: 'top'
+	    }],
+	    items: [{
+	        xtype: 'mapcomponent',
+	        reference: 'mapCmp'
+	    }]
 	},{
 		xtype: 'map-addons-panel',
 		region: 'east',
