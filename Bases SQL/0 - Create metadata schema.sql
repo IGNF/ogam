@@ -6,17 +6,19 @@ CREATE SCHEMA metadata;
  * 
  * For PostgreSQL after 9.1
  */
+/*
 CREATE EXTENSION unaccent;
 
 -- Cf http://www.postgresql.org/message-id/201012021544.oB2FiTn1041521@wwwmaster.postgresql.org
 ALTER FUNCTION unaccent(text) IMMUTABLE;
+*/
 
 /**
  * This function is used to do accent-insensitive search.
  * 
  * For PostgreSQL before 9.1
  */
-/*
+
 CREATE OR REPLACE FUNCTION public.unaccent(text) RETURNS text AS $$
 DECLARE
     input_string text := $1;
@@ -32,7 +34,6 @@ return input_string;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
-*/
 
 
 SET SEARCH_PATH = metadata, public;
