@@ -117,17 +117,17 @@ create table HARMONIZED_SPECIES_DATA (
 PROVIDER_ID          VARCHAR(36)          not null,
 PLOT_CODE            VARCHAR(36)          not null,
 CYCLE	             VARCHAR(36)          not null,
-SPECIES_CODE         VARCHAR(36)          not null,
+ID_TAXON             VARCHAR(36)          not null,
 BASAL_AREA			 FLOAT8	              null,
 COMMENT              VARCHAR(255)         null,
-constraint PK_HARMONIZED_SPECIES_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, SPECIES_CODE),
+constraint PK_HARMONIZED_SPECIES_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, ID_TAXON),
 constraint FK_HARMONIZED_SPECIES_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references HARMONIZED_PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE)
 );
 
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.CYCLE IS 'The cycle of inventory';
-COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.SPECIES_CODE IS 'The code of the specie';
+COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.ID_TAXON IS 'Identifiant de taxon';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.BASAL_AREA IS 'The proportion of surface covered by this specie on the plot (in m2/ha)';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.COMMENT IS 'A comment about the species';
 
