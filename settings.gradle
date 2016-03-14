@@ -1,1 +1,1 @@
-include ":service_common", ":service_integration", ":service_harmonization"
+include ":service_common", ":service_integration", ":service_harmonization", "website:htdocs:client:ogamDesktop"
