@@ -56,17 +56,17 @@ delete from checks where check_id <= 1200;
 
 --delete from application_parameters;
 --delete from checks where check_id < 1200;
-COPY unit from 'D:/workspace/ogam_git/Bases SQL/Metadata/unit.csv' with delimiter ';' null '';
-COPY data from 'D:/workspace/ogam_git/Bases SQL/Metadata/data.csv' with delimiter ';' null '';
-COPY range from 'D:/workspace/ogam_git/Bases SQL/Metadata/range.csv' with delimiter ';' null '';
-COPY mode from 'D:/workspace/ogam_git/Bases SQL/Metadata/mode.csv' with delimiter ';' null '';
-COPY group_mode from 'D:/workspace/ogam_git/Bases SQL/Metadata/group_mode.csv' with delimiter ';' null '';
-COPY mode_tree from 'D:/workspace/ogam_git/Bases SQL/Metadata/mode_tree.csv' with delimiter ';' null '';
-COPY dynamode from 'D:/workspace/ogam_git/Bases SQL/Metadata/dynamode.csv' with delimiter ';' null '';
+COPY unit from 'D:/workspace/ogam_git/database/Metadata/unit.csv' with delimiter ';' null '';
+COPY data from 'D:/workspace/ogam_git/database/Metadata/data.csv' with delimiter ';' null '';
+COPY range from 'D:/workspace/ogam_git/database/Metadata/range.csv' with delimiter ';' null '';
+COPY mode from 'D:/workspace/ogam_git/database/Metadata/mode.csv' with delimiter ';' null '';
+COPY group_mode from 'D:/workspace/ogam_git/database/Metadata/group_mode.csv' with delimiter ';' null '';
+COPY mode_tree from 'D:/workspace/ogam_git/database/Metadata/mode_tree.csv' with delimiter ';' null '';
+COPY dynamode from 'D:/workspace/ogam_git/database/Metadata/dynamode.csv' with delimiter ';' null '';
 
-COPY form_format from 'D:/workspace/ogam_git/Bases SQL/Metadata/form_format.csv' with delimiter ';' null '';
-COPY table_format from 'D:/workspace/ogam_git/Bases SQL/Metadata/table_format.csv' with delimiter ';' null '';
-COPY file_format from 'D:/workspace/ogam_git/Bases SQL/Metadata/file_format.csv' with delimiter ';' null '';
+COPY form_format from 'D:/workspace/ogam_git/database/Metadata/form_format.csv' with delimiter ';' null '';
+COPY table_format from 'D:/workspace/ogam_git/database/Metadata/table_format.csv' with delimiter ';' null '';
+COPY file_format from 'D:/workspace/ogam_git/database/Metadata/file_format.csv' with delimiter ';' null '';
 
 -- Fill the parent table
 INSERT INTO format (format, type)
@@ -81,9 +81,9 @@ INSERT INTO format (format, type)
 SELECT format, 'FORM'
 FROM   form_format;
 
-COPY form_field from 'D:/workspace/ogam_git/Bases SQL/Metadata/form_field.csv' with delimiter ';' null '';
-COPY file_field from 'D:/workspace/ogam_git/Bases SQL/Metadata/file_field.csv' with delimiter ';' null '';
-COPY table_field from 'D:/workspace/ogam_git/Bases SQL/Metadata/table_field.csv' with delimiter ';' null '';
+COPY form_field from 'D:/workspace/ogam_git/database/Metadata/form_field.csv' with delimiter ';' null '';
+COPY file_field from 'D:/workspace/ogam_git/database/Metadata/file_field.csv' with delimiter ';' null '';
+COPY table_field from 'D:/workspace/ogam_git/database/Metadata/table_field.csv' with delimiter ';' null '';
 
 -- Fill the parent table
 INSERT INTO field (data, format, type)
@@ -99,19 +99,19 @@ SELECT data, format, 'FORM'
 FROM   form_field;
 
 
-COPY field_mapping from 'D:/workspace/ogam_git/Bases SQL/Metadata/field_mapping.csv' with delimiter ';' null '';
+COPY field_mapping from 'D:/workspace/ogam_git/database/Metadata/field_mapping.csv' with delimiter ';' null '';
 
-COPY checks (check_id, step, name, label, description, "statement", importance) from 'D:/workspace/ogam_git/Bases SQL/Metadata/checks.csv' with delimiter ';' null '';
+COPY checks (check_id, step, name, label, description, "statement", importance) from 'D:/workspace/ogam_git/database/Metadata/checks.csv' with delimiter ';' null '';
 
 
-COPY dataset from 'D:/workspace/ogam_git/Bases SQL/Metadata/dataset.csv' with delimiter ';' null '';
-COPY dataset_fields from 'D:/workspace/ogam_git/Bases SQL/Metadata/dataset_fields.csv' with delimiter ';' null '';
-COPY dataset_files from 'D:/workspace/ogam_git/Bases SQL/Metadata/dataset_files.csv' with delimiter ';' null '';
+COPY dataset from 'D:/workspace/ogam_git/database/Metadata/dataset.csv' with delimiter ';' null '';
+COPY dataset_fields from 'D:/workspace/ogam_git/database/Metadata/dataset_fields.csv' with delimiter ';' null '';
+COPY dataset_files from 'D:/workspace/ogam_git/database/Metadata/dataset_files.csv' with delimiter ';' null '';
 
-COPY table_schema from 'D:/workspace/ogam_git/Bases SQL/Metadata/table_schema.csv' with delimiter ';' null '';
-COPY table_tree from 'D:/workspace/ogam_git/Bases SQL/Metadata/table_tree.csv' with delimiter ';' null '';
+COPY table_schema from 'D:/workspace/ogam_git/database/Metadata/table_schema.csv' with delimiter ';' null '';
+COPY table_tree from 'D:/workspace/ogam_git/database/Metadata/table_tree.csv' with delimiter ';' null '';
 
-COPY translation from 'D:/workspace/ogam_git/Bases SQL/Metadata/translation.csv' with delimiter ';' null '';
+COPY translation from 'D:/workspace/ogam_git/database/Metadata/translation.csv' with delimiter ';' null '';
 
 
 -- Fill the empty label and definition for the need of the tests

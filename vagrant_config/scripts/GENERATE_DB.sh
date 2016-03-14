@@ -10,7 +10,7 @@ echo "Host : $server"
 echo "User name : $username"
 echo "Port : $port"
 echo "Database : $database"
-database_path="/vagrant/ogam/Bases SQL"
+database_path="/vagrant/ogam/database"
 
 cd "${database_path}"
 
