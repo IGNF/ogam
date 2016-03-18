@@ -150,7 +150,6 @@ CREATE INDEX nuts_0_the_geom_gist ON nuts_0 USING gist (the_geom);
 REVOKE ALL ON TABLE nuts_0 FROM PUBLIC;
 REVOKE ALL ON TABLE nuts_0 FROM postgres;
 GRANT ALL ON TABLE nuts_0 TO postgres;
-GRANT ALL ON TABLE nuts_0 TO ogam;
 
 
 --
@@ -162,7 +161,6 @@ GRANT ALL ON TABLE nuts_0 TO ogam;
 REVOKE ALL ON SEQUENCE nuts_0_gid_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE nuts_0_gid_seq FROM postgres;
 GRANT ALL ON SEQUENCE nuts_0_gid_seq TO postgres;
-GRANT ALL ON SEQUENCE nuts_0_gid_seq TO ogam;
 
 
 -- Completed on 2014-03-25 17:52:23
