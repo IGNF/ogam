@@ -32,6 +32,7 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_criteri
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_group TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_group_asso TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_result TO ogam;
+GRANT SELECT ON TABLE website.providers TO ogam;
 GRANT SELECT ON TABLE website.dataset_role_restriction TO ogam;
 GRANT SELECT ON TABLE website.layer_role_restriction TO ogam;
 
