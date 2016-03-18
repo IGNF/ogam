@@ -16,7 +16,7 @@
  * Represent an abstract Format.
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Metadata_Format {
 

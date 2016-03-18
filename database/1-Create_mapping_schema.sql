@@ -1,4 +1,5 @@
-SET client_encoding='UTF8';CREATE SCHEMA mapping;
+SET client_encoding TO 'UTF8';
+CREATE SCHEMA mapping;
 SET SEARCH_PATH = mapping, public;
 
 
@@ -17,7 +18,7 @@ constraint PK_RESULT_LOCATION primary key (SESSION_ID, PK)
 WITH OIDS; -- Important : Needed by mapserv
 
 -- Ajout de la colonne point PostGIS
-SELECT AddGeometryColumn('mapping','result_location','the_geom',3035,'GEOMETRY',2);
+SELECT AddGeometryColumn('mapping','result_location','the_geom',3857,'GEOMETRY',2);
 
 -- Spatial Index on the_geom 
 CREATE INDEX IX_RESULT_LOCATION_SPATIAL_INDEX ON mapping.RESULT_LOCATION USING GIST
@@ -46,7 +47,22 @@ CREATE TABLE scales
 
 COMMENT ON COLUMN scales.scale IS 'The denominator of the scale, used to calculate the resolutions';
 
-/*==============================================================*//* Table: layer_service                                      *//*==============================================================*/CREATE TABLE layer_service( service_name 			VARCHAR(50)    NOT NULL, config 				VARCHAR(1000),     -- Si version postgresql >= 9.2, utiliser un type json PRIMARY KEY  (service_name))WITHOUT OIDS;COMMENT ON TABLE layer_service IS 'Liste des fournisseurs de services (Mapservers, Géoportail, ...)';COMMENT ON COLUMN layer_service.service_name IS 'Logical name of the service';COMMENT ON COLUMN layer_service.config IS 'OpenLayers config for the service';
+
+
+/*==============================================================*/
+/* Table: layer_service                                      */
+/*==============================================================*/
+CREATE TABLE layer_service
+(
+ service_name 			VARCHAR(50)    NOT NULL,
+ config 				VARCHAR(1000),     -- Si version postgresql >= 9.2, utiliser un type json
+ PRIMARY KEY  (service_name)
+)WITHOUT OIDS;
+
+COMMENT ON TABLE layer_service IS 'Liste des fournisseurs de services (Mapservers, Géoportail, ...)';
+COMMENT ON COLUMN layer_service.service_name IS 'Logical name of the service';
+COMMENT ON COLUMN layer_service.config IS 'OpenLayers config for the service';
+
 /*==============================================================*/
 /* Table: layer                                      */
 /*==============================================================*/
@@ -55,25 +71,36 @@ CREATE TABLE layer
   layer_name 			VARCHAR(50)    NOT NULL,   -- Logical name of the layer
   layer_label 			VARCHAR(100),  -- Label of the layer
   service_layer_name 	VARCHAR(500),  -- Name of the corresponding layer(s)
-  isTransparent 		INT,           -- Indicate if the layer is transparent  default_opacity       INT,           -- Default value of the layer opacity : 0 to 100
+  isTransparent 		INT,           -- Indicate if the layer is transparent
+  default_opacity       INT,           -- Default value of the layer opacity : 0 to 100
   isBaseLayer	 		INT,		   -- Indicate if the layer is a base layer (or an overlay)
-  isUntiled			 	INT,           -- Force OpenLayer to request one image each time  isVector			 	INT,           -- Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster)
+  isUntiled			 	INT,           -- Force OpenLayer to request one image each time
+  isVector			 	INT,           -- Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster)
   maxscale				INT,           -- Max scale of apparation
   minscale				INT,           -- Min scale of apparition
   has_legend    		INT, 	   	   -- If value = 1 is the layer has a legend that should be displayed
   transitionEffect		VARCHAR(50),   -- Transition effect (resize or null)
   imageFormat			VARCHAR(10),   -- Image format (PNG or JPEG)
   provider_id 		    VARCHAR(36),   -- If empty, the layer can be seen by any country, if not it is limited to one country
-  activate_type         VARCHAR(36),   -- Group of event that will activate this layer (NONE, REQUEST)  view_service_name	    VARCHAR(50),   -- Indicates the service for the map visualisation  legend_service_name	VARCHAR(50),   -- Indicates the service for the legend
-  print_service_name	VARCHAR(50),   -- Indicates the service for the print function  detail_service_name	VARCHAR(50),   -- Indicates the service for the detail panel display   feature_service_name		VARCHAR(50),   -- Indicates the service for the wfs  PRIMARY KEY  (layer_name)
+  activate_type         VARCHAR(36),   -- Group of event that will activate this layer (NONE, REQUEST)
+  view_service_name	    VARCHAR(50),   -- Indicates the service for the map visualisation
+  legend_service_name	VARCHAR(50),   -- Indicates the service for the legend
+  print_service_name	VARCHAR(50),   -- Indicates the service for the print function
+  detail_service_name	VARCHAR(50),   -- Indicates the service for the detail panel display 
+  feature_service_name	VARCHAR(50),   -- Indicates the service for the wfs
+  layer_group_id 		INT,		   -- Indicates the layer group id
+  PRIMARY KEY  (layer_name)
 ) WITHOUT OIDS;
-COMMENT ON TABLE layer IS 'Liste des layers';
+
+COMMENT ON TABLE layer IS 'Liste des layers';
 COMMENT ON COLUMN layer.layer_name IS 'Logical name of the layer';
 COMMENT ON COLUMN layer.layer_label IS 'Label of the layer';
-COMMENT ON COLUMN layer.service_layer_name IS 'Name of the corresponding layer(s) in the service';COMMENT ON COLUMN layer.default_opacity IS 'Default value of the layer opacity : 0 to 100';
+COMMENT ON COLUMN layer.service_layer_name IS 'Name of the corresponding layer(s) in the service';
+COMMENT ON COLUMN layer.default_opacity IS 'Default value of the layer opacity : 0 to 100';
 COMMENT ON COLUMN layer.isTransparent IS 'Indicate if the layer is transparent';
 COMMENT ON COLUMN layer.isBaseLayer IS 'Indicate if the layer is a base layer (or an overlay)';
-COMMENT ON COLUMN layer.isUntiled IS 'Force OpenLayer to request one image each time';COMMENT ON COLUMN layer.isVector IS 'Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster)';
+COMMENT ON COLUMN layer.isUntiled IS 'Force OpenLayer to request one image each time';
+COMMENT ON COLUMN layer.isVector IS 'Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster)';
 COMMENT ON COLUMN layer.maxscale IS 'Max scale of apparation';
 COMMENT ON COLUMN layer.minscale IS 'Min scale of apparition';
 COMMENT ON COLUMN layer.has_legend IS 'If value = 1 is the layer has a legend that should be displayed';
@@ -81,7 +108,12 @@ COMMENT ON COLUMN layer.transitionEffect IS 'Transition effect (resize or null)'
 COMMENT ON COLUMN layer.imageFormat IS 'Image format (PNG or JPEG)';
 COMMENT ON COLUMN layer.provider_id IS 'If empty, the layer can be seen by any provider if not it is limited to one provider';
 COMMENT ON COLUMN layer.activate_type IS 'Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or INTERPOLATION)';
-COMMENT ON COLUMN layer.view_service_name IS 'Indicates the service for the map visualisation';COMMENT ON COLUMN layer.legend_service_name IS 'Indicates the service for the legend';COMMENT ON COLUMN layer.print_service_name IS 'Indicates the service for the print function';COMMENT ON COLUMN layer.detail_service_name IS 'Indicates the service for the detail panel display';COMMENT ON COLUMN layer.feature_service_name IS 'Indicates the service for the wfs';
+COMMENT ON COLUMN layer.view_service_name IS 'Indicates the service for the map visualisation';
+COMMENT ON COLUMN layer.legend_service_name IS 'Indicates the service for the legend';
+COMMENT ON COLUMN layer.print_service_name IS 'Indicates the service for the print function';
+COMMENT ON COLUMN layer.detail_service_name IS 'Indicates the service for the detail panel display';
+COMMENT ON COLUMN layer.feature_service_name IS 'Indicates the service for the wfs';
+COMMENT ON COLUMN layer.layer_group_id IS 'Indicates the layer group id';
 
 /*==============================================================*/
 /*  Table: Layer_tree                                               */
@@ -134,7 +166,3 @@ COMMENT ON COLUMN bounding_box.bb_ymin IS 'Min latitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_xmax IS 'Max longitude coordinate';
 COMMENT ON COLUMN bounding_box.bb_ymax IS 'Max latitude coordinate';
 COMMENT ON COLUMN bounding_box.zoom_level IS 'Default zoom level for the data provider';
-
-GRANT ALL ON SCHEMA mapping TO ogam;GRANT ALL ON ALL TABLES IN SCHEMA mapping TO ogam;GRANT ALL ON ALL SEQUENCES IN SCHEMA mapping TO ogam;
-
-        

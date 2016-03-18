@@ -152,7 +152,8 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 		}
 
 		$return .= ',"value":' . json_encode($this->getValueLabel());
-		$return .= ',"type":' . json_encode($this->inputType) . '}';
+		$return .= ',"inputType":'.json_encode($this->inputType);
+		$return .= ',"type":'.json_encode($this->type).'}';
 
 		return $return;
 	}

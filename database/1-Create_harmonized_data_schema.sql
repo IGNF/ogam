@@ -1,9 +1,8 @@
+SET client_encoding TO 'UTF8';
 CREATE SCHEMA harmonized_data;
-
 SET SEARCH_PATH = harmonized_data, public;
 
  
-  
 /*==============================================================*/
 /* Table : HARMONIZATION_PROCESS                                */
 /*==============================================================*/
@@ -53,7 +52,7 @@ constraint PK_HARMONIZED_LOCATION primary key (PROVIDER_ID, PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
-SELECT AddGeometryColumn('harmonized_data','harmonized_location','the_geom',3035,'POINT',2);
+SELECT AddGeometryColumn('harmonized_data','harmonized_location','the_geom',3857,'POINT',2);
 
 COMMENT ON COLUMN HARMONIZED_LOCATION.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZED_LOCATION.PLOT_CODE IS 'The identifier of the plot';
@@ -71,7 +70,7 @@ CREATE INDEX IX_HARMONIZED_LOCATION_SPATIAL_INDEX ON harmonized_data.harmonized_
 CREATE OR REPLACE FUNCTION harmonized_data.geomfromcoordinate() RETURNS "trigger" AS
 $BODY$
 BEGIN
-    NEW.the_geom = public.ST_Transform(public.ST_GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326), 3035);
+    NEW.the_geom = public.st_transform(public.st_geometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326), 3857);
     RETURN NEW;
 END;
 $BODY$
@@ -127,7 +126,7 @@ constraint FK_HARMONIZED_SPECIES_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PL
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.CYCLE IS 'The cycle of inventory';
-COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.ID_TAXON IS 'Identifiant de taxon';
+COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.ID_TAXON IS 'The identifiant of the taxon';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.BASAL_AREA IS 'The proportion of surface covered by this specie on the plot (in m2/ha)';
 COMMENT ON COLUMN HARMONIZED_SPECIES_DATA.COMMENT IS 'A comment about the species';
 
@@ -166,14 +165,3 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.PHOTO IS 'A picture of the tree';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
 
 
-
-GRANT ALL ON SCHEMA harmonized_data TO ogam;
-GRANT ALL ON ALL TABLES IN SCHEMA harmonized_data TO ogam;
-GRANT ALL ON ALL TABLES IN SCHEMA harmonized_data TO ogam;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA harmonized_data TO ogam;
-ALTER TABLE harmonized_data.harmonization_process OWNER TO ogam;
-ALTER TABLE harmonized_data.harmonization_process_submissions OWNER TO ogam;
-ALTER TABLE harmonized_data.harmonized_location OWNER TO ogam;
-ALTER TABLE harmonized_data.harmonized_plot_data OWNER TO ogam;
-ALTER TABLE harmonized_data.harmonized_species_data OWNER TO ogam;
-ALTER TABLE harmonized_data.harmonized_tree_data OWNER TO ogam;

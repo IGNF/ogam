@@ -55,7 +55,7 @@ sudo -n usermod -G tomcat7 -a vagrant
 sudo -n chmod 774 /var/log/tomcat7
 sudo -n chown tomcat7:tomcat7 /var/log/tomcat7
 
-# Pour le dÃ©ploiement
+# Pour le déploiement
 mkdir /var/lib/tomcat7/staging 
 chmod 775 /var/lib/tomcat7/staging/
 chown tomcat7:tomcat7 /var/lib/tomcat7/staging/
@@ -63,6 +63,6 @@ chown tomcat7:tomcat7 /var/lib/tomcat7/staging/
 
 
 #----------------------------------------------------------------
-# RedÃ©marrage Tomcat
+# Redémarrage Tomcat
 #----------------------------------------------------------------
 sudo /etc/init.d/tomcat7 restart

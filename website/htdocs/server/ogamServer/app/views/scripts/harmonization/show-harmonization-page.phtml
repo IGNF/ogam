@@ -17,10 +17,8 @@
  * @package views
  */
 ?>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/progressbar.js') ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/extjs/adapter/ext/ext-base.js') ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/extjs/ext-all.js') ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/genapp/source/genapp.js') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/integration/progressbar.js') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/integration/later.min.js') ?>"></script>
 
 <script type="text/javascript">
 	function confirmLauch() {
@@ -56,7 +54,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 	<td><?php echo $harmonizationProcess->datasetId ?></td>
 	<td><?php echo $harmonizationProcess->date ?></td>
 	<td>
-            <?php if ($harmonizationProcess->submissionStatus == "NOT_VALID") { ?>
+            <?php if ($harmonizationProcess->submissionStatus === "NOT_VALID") { ?>
             	<?php echo $harmonizationProcess->status ?>
                 <img src="<?php echo $this->baseUrl('img/warning_orange.png') ?>" title="The submission has not been validated" />
             <?php } else if ($harmonizationProcess->status === "OK") { ?>
@@ -121,8 +119,10 @@ foreach ($this->harmonizations as $harmonizationProcess) {
                 <img src="<?php echo $this->baseUrl('img/Red_x.png') ?>" />
             <?php } ?></td>
 	<td>
-	    <a onclick="return confirmLauch();" href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?php echo $this->translate('Launch Harmonization');?></a>
-	    <br/><a onclick="return confirmDeletion();" href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'remove-harmonization-data'), null, true)?>?DATASET_ID=<?=$harmonizationProcess->datasetId;?>&PROVIDER_ID=<?=$harmonizationProcess->providerId;?>" ><?php echo $this->translate('Remove Harmonization Data');?></a>
+	<?php if ($harmonizationProcess->submissionStatus !== "NOT_VALID") { ?>
+	    <a onclick="return confirmLauch();" href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?php echo $harmonizationProcess->datasetId;?>&PROVIDER_ID=<?php echo $harmonizationProcess->providerId;?>" ><?php echo $this->translate('Launch Harmonization');?></a>
+	    <br/><a onclick="return confirmDeletion();" href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'remove-harmonization-data'), null, true)?>?DATASET_ID=<?php echo $harmonizationProcess->datasetId;?>&PROVIDER_ID=<?php echo $harmonizationProcess->providerId;?>" ><?php echo $this->translate('Remove Harmonization Data');?></a>
+	<?php } ?>
 	</td>
 </tr>
 <?php

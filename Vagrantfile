@@ -14,15 +14,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    end
    config.vm.provider "virtualbox" do |v|
       v.memory = 2048
-      v.cpus =3
+      v.cpus = 3
       v.name = "ogam_dev"
    end
 
-  #config.vm.network "private_network", ip: "192.168.50.7"
+  config.vm.network "private_network", ip: "192.168.50.4"
   config.vm.hostname = "ogam.ign.fr"
-  config.vm.network :forwarded_port, host: 8081, guest: 8080,auto_correct: true
-  config.vm.network :forwarded_port, host: 5433, guest: 5432,auto_correct: true
+  #host = guest + 50000
+  #config.vm.network :forwarded_port, host: 8081, guest: 8080,auto_correct: true
+  #config.vm.network :forwarded_port, host: 5433, guest: 5432,auto_correct: true
   config.vm.network :forwarded_port, host: 8000, guest: 80,auto_correct: true
+  #config.vm.network :forwarded_port, host: 1842, guest: 1841
    
   #disabled le default root
   config.vm.synced_folder ".", "/vagrant", disabled: true
@@ -30,11 +32,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.synced_folder ".", "/vagrant/ogam", disabled: false, create:true
   #some rightsfix to website , TODO move into provider ?
   config.vm.synced_folder "website/htdocs",'/vagrant/ogam/website/htdocs', owner:"www-data",group: "www-data"
-  
+
   #FIXME
   #config.ssh.private_key_path = ['~/.vagrant.d/insecure_private_key', '~/.ssh/id_rsa']
   #config.ssh.forward_agent = true
-  
+
   # Remove warnings "stdin: is not a tty"
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
   # config.ssh.pty = true
@@ -74,6 +76,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "install_db", type: "shell" do |s|
     s.path = "vagrant_config/scripts/GENERATE_DB.sh"
   end
+  
+ config.vm.provision "install_sencha_cmd_6", type: "shell" do |s|
+    s.path = "vagrant_config/scripts/install_sencha_cmd_6.sh"
+  end
 
-  config.vm.provision "shell", inline: "service apache2 restart", run: "always"
+   config.vm.provision "shell", inline: "service apache2 restart", run: "always"
 end

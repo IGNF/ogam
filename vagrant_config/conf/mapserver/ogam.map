@@ -22,21 +22,25 @@ DEBUG 5
 # Start of web interface definition
 #
 WEB
+   TEMPLATE "template.html"
    LOG "/vagrant/ogam/website/htdocs/logs/mapserver_ogam.log"
    METADATA
    
-		WFS_TITLE   					"OGAM MapServer"  
-		WFS_SRS     					"EPSG:3035"
-		WFS_ABSTRACT   					"OGAM Data"  
-		WFS_MAXFEATURES    				"10"
-		WFS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.fcgi?map=/vagrant/ogam/vagrant_config/mapserver/ogam.map&"
+	WFS_TITLE   					"OGAM MapServer"  
+        WFS_SRS                         "EPSG:3857"
+        WFS_ABSTRACT                    "OGAM Data"  
+        #WFS_MAXFEATURES                 "30000"
+        WFS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
+	WFS_GETFEATURE_FORMATLIST		"geojsonogr,geojsontpl"
+	WFS_ENCODING "UTF-8"
 
-		WMS_TITLE 						"OGAM MapServer" 
-		WMS_ABSTRACT 					"OGAM Mapserver"
-		WMS_ACCESSCONSTRAINTS 			"none"
-		WMS_ONLINERESOURCE 				"http://localhost/cgi-bin/mapserv.fcgi?map=/vagrant/ogam/vagrant_config/mapserver/ogam.map&"
-		WMS_SRS    						"EPSG:3035"
+	WMS_TITLE 						"OGAM MapServer" 
+	WMS_ABSTRACT 					"OGAM Mapserver"
+	WMS_ACCESSCONSTRAINTS 			"none"
+        WMS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
+        WMS_SRS                         "EPSG:3857"
         "ows_enable_request"            "*"
+        "wms_enable_request"            "*"
         "wms_include_items"      "*"
         "wms_feature_info_mime_type"    "text/html"
         "queryable"    "true"
@@ -50,10 +54,16 @@ WEB
 		"wcs_metadatalink_type"        "TC211"
 		"wcs_metadatalink_format"      "text/plain"
     END
+	VALIDATION
+        # %SESSION_ID% must be 40 letters or digits
+        'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
+        #%PLOT_CODE% must be 16 letters or digits or dot or dash
+        PLOT_CODE          '^[a-zA-Z0-9\.\-]{0,16}$'
+    END
 END
 
 PROJECTION
-  "init=epsg:3035"
+  "init=epsg:3857"
 END
 
 SCALEBAR
@@ -84,6 +94,20 @@ OUTPUTFORMAT
   FORMATOPTION QUALITY=80 
 END
 
+OUTPUTFORMAT
+  NAME "geojsonogr"
+  DRIVER "OGR/GEOJSON"
+  MIMETYPE "application/json; subtype=geojson; charset=utf-8"
+  FORMATOPTION "FORM=simple"
+END
+
+OUTPUTFORMAT
+  NAME "geojsontpl"
+  DRIVER "TEMPLATE"
+  MIMETYPE "application/json; subtype=geojson; charset=utf-8"
+  FORMATOPTION "FILE=geoJSONTemplate.js"
+END
+
 #
 # Start of legend
 #
@@ -106,9 +130,11 @@ LAYER
 	NAME nuts_0
 	TYPE POLYGON
 	STATUS ON 
-	
+#    DEBUG 5
+    TEMPLATE "geoJSONTemplate.js"
     METADATA
         WFS_TITLE        "Country Boundaries"
+        "wms_feature_info_mime_type"  "application/json"
         GML_FEATUREID      "gid" 
         GML_INCLUDE_ITEMS  "all"   
     END
@@ -118,7 +144,6 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM nuts_0 USING UNIQUE gid USING srid=3035"
-	CLASSITEM "cell_id"
 	LABELITEM "cell_id"
 	CLASS
 	      NAME 'Country'	
@@ -233,7 +258,7 @@ LAYER
     	GML_FEATUREID      "oid" 
     	GML_INCLUDE_ITEMS  "all"    
     	"gml_groups"        	"display"
-		"gml_display_group" 	"provider_id,plot_code" 	 	
+	"gml_display_group" 	"provider_id,plot_code" 	 	
   	END
   	DUMP TRUE 
   	
@@ -248,7 +273,7 @@ LAYER
             SELECT the_geom, format, pk, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POLYGON'
               AND session_id = '%SESSION_ID%'
-        ) as foo USING UNIQUE oid USING srid=3035
+        ) as foo USING UNIQUE oid USING srid=3857
     "
     
     SYMBOLSCALEDENOM 3000000
@@ -272,7 +297,7 @@ LAYER
     	GML_FEATUREID      "oid" 
     	GML_INCLUDE_ITEMS  "all"    
     	"gml_groups"        	"display"
-		"gml_display_group" 	"provider_id,plot_code" 	 	
+	"gml_display_group" 	"provider_id,plot_code" 	 	
   	END
   	DUMP TRUE 
   	
@@ -287,7 +312,7 @@ LAYER
             SELECT the_geom, format, pk, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POINT'
               AND session_id = '%SESSION_ID%'
-        ) as foo USING UNIQUE oid USING srid=3035
+        ) as foo USING UNIQUE oid USING srid=3857
     "
     
     SYMBOLSCALEDENOM 3000000
@@ -295,6 +320,7 @@ LAYER
       NAME 'Result location'
       STYLE
       	MINSIZE 3
+        MAXSIZE 7
         COLOR 238 153 0
         OUTLINECOLOR 238 153 0
         SYMBOL "circle"
@@ -322,9 +348,9 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
-            SELECT st_transform(the_geom, 3035) as the_geom, plot_code as oid  
+            SELECT st_transform(the_geom, 3857) as the_geom, plot_code as oid  
             FROM location
-        ) as foo USING UNIQUE oid USING srid=3035
+        ) as foo USING UNIQUE oid USING srid=3857
     "
     
     SYMBOLSCALEDENOM 3000000
@@ -340,4 +366,33 @@ LAYER
 END 
 
 
+LAYER
+    NAME "plot_location_detail"
+    TRANSPARENCY 100
+    DEBUG 5
+    STATUS ON
+    TYPE POINT
+	
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT st_transform(the_geom, 3857) as the_geom, provider_id || '_' || plot_code as oid,plot_code
+            FROM location
+        ) as foo USING UNIQUE oid USING srid=3857"
+
+
+    FILTER "plot_code = '%PLOT_CODE%'"
+  
+    CLASS
+      STYLE
+        SIZE 30
+        WIDTH 2
+        MAXSIZE 30
+        MINSIZE 30
+        OUTLINECOLOR 255 0 0
+        SYMBOL "square"
+      END
+    END
+END 
 END # Map File

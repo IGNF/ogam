@@ -1,7 +1,10 @@
-﻿﻿##########################
+##########################
 #   Consultation         #
 ##########################
 child(ren);enfant(s) rattaché(s)
+No;Non
+Yes;Oui
+An error occured during the pdf creation.;Une erreur est survenue durant la création du pdf.
 
 ##########################
 #   Validation           #

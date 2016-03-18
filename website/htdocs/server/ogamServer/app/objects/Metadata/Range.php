@@ -16,7 +16,7 @@
  * Represent a range of a unit.
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Metadata_Range {
 

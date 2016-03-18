@@ -16,7 +16,7 @@
  * Represent the status of a process (integration or harmonization service).
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_ProcessStatus {
 

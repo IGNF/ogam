@@ -16,7 +16,7 @@
  * Represent a Table Format (a table in a database).
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Metadata_TableFormat extends Application_Object_Metadata_Format {
 

@@ -380,7 +380,10 @@ class DataEditionController extends AbstractOGAMController {
 		$this->view->message = $message;
 		$this->view->childrenTableLabels = $childrenTableLabels;
 
+		$this->_helper->layout()->disableLayout();
 		$this->render('edit-data');
+		$this->_helper->layout()->disableLayout();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**
@@ -437,15 +440,14 @@ class DataEditionController extends AbstractOGAMController {
 
 			$result = '{"success":true';
 
-			// Redirect to the index page by default
-			$redirectURL = $this->view->baseUrl('dataedition/..');
 			// If the data has an ancestor, we redirect to this ancestor
 			if (!empty($ancestors)) {
 				$parent = $ancestors[0];
-				$redirectURL .= '/dataedition/show-edit-data/' . $parent->getId();
+				$redirectURL = $this->view->generateEditLink($parent)['url'];
+				$result .= ', "redirectLink":'.json_encode($redirectURL);
 			}
 
-			$result .= ', "redirectLink":' . json_encode($redirectURL);
+			
 
 			$result .= ', "message":' . json_encode($this->translator->translate("Data deleted")) . '}';
 		}
@@ -530,14 +532,14 @@ class DataEditionController extends AbstractOGAMController {
 					$ancestors = $this->genericModel->getAncestors($data);
 					if (!empty($ancestors)) {
 						$ancestor = $ancestors[0];
-						$redirectURL = $this->getRequest()->getBasePath() . '/dataedition/show-edit-data/' . $ancestor->getId();
+						$redirectURL = '#edition-edit/'.$ancestor->getId();
 					} else {
-						$redirectURL = $this->getRequest()->getBasePath() . '/dataedition/show-edit-data/' . $data->getId();
+						$redirectURL = '#edition-edit/'.$data->getId();
 					}
 					echo '"redirectLink":' . json_encode($redirectURL) . ',';
 				} else {
 					// We redirect to the newly created or edited item
-					$redirectURL = $this->getRequest()->getBasePath() . '/dataedition/show-edit-data/' . $data->getId();
+					$redirectURL = '#edition-edit/'.$data->getId();
 					echo '"redirectLink":' . json_encode($redirectURL) . ',';
 				}
 
@@ -611,6 +613,7 @@ class DataEditionController extends AbstractOGAMController {
 		$this->view->mode = $mode;
 		$this->view->message = $message;
 
+		$this->_helper->layout()->disableLayout();
 		$this->render('edit-data');
 	}
 
@@ -708,7 +711,9 @@ class DataEditionController extends AbstractOGAMController {
 
 		// Create the directory and set the rights
 		$this->_deleteDirectory($destination);
-		mkdir($destination, $this->configuration->image_dir_rights, true);
+		if(false === mkdir($destination, $this->configuration->image_dir_rights, true)){
+			$this->logger->err('failed make dir '.$destination);
+		}
 
 		// Filter the file extensions
 		if ($this->configuration->image_extensions !== null) {

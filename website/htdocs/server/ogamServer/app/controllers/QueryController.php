@@ -80,9 +80,10 @@ class QueryController extends AbstractOGAMController {
 		// Si une valeur est demandée en URL on change le schéma
 		if ($schema !== null) {
 			$websiteSession->schema = $schema;
-		} else if (empty($websiteSession->schema)) {
-			// Si on a un schéma en mémoire on le conserve
-			// Sinon on prend une valeur par défaut
+		}
+
+		if (!isset($websiteSession->schema) || empty($websiteSession->schema)) {
+			// Default value
 			$websiteSession->schema = 'RAW_DATA';
 		}
 
@@ -137,7 +138,12 @@ class QueryController extends AbstractOGAMController {
 			$this->view->defaultTab = 'predefined';
 		}
 
-		$this->render('show-query-form');
+		//$this->render('show-query-form');
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
+		$redirector->gotoUrl($this->view->baseUrl('/odp/index.html'));
 	}
 
 	/**
@@ -266,9 +272,31 @@ class QueryController extends AbstractOGAMController {
 	public function ajaxgetqueryformAction() {
 		$this->logger->debug('ajaxgetqueryformAction');
 
-		$datasetId = $this->getRequest()->getPost('datasetId');
-		$requestName = $this->getRequest()->getPost('requestName');
+		$filters = json_decode($this->getRequest()->getQuery('filter'));
+				
+		$datasetId= $requestName =null;
+		
+		if (is_array($filters)) {
+			foreach($filters as $aFilter)
+			{
+				switch($aFilter->property){
+					case 'processId':
+						$datasetId = $aFilter->value;
+						break;
+					case 'requestName':
+						$requestName = $aFilter->value;
+						break;
+					default:
+						$this->logger->debug('filter unattended : ' . $aFilter->property);
+				}
+			}
+			
+		} else {
+			$datasetId = json_decode($this->getRequest()->getQuery('datasetId'));
+			$requestName = $this->getRequest()->getPost('requestName');
 
+		}
+		
 		echo $this->queryService->getQueryForm($datasetId, $requestName);
 
 		// No View, we send directly the JSON
@@ -365,7 +393,7 @@ class QueryController extends AbstractOGAMController {
 			echo $this->queryService->getResultColumns($datasetId, $formQuery, $withSQL);
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			echo '{"success":false,errorMessage:"' . json_encode($e->getMessage()) . '"}';
+			echo '{"success":false,errorMessage:' . json_encode($e->getMessage()) . '}';
 		}
 
 		// Activate the result layer
@@ -389,9 +417,9 @@ class QueryController extends AbstractOGAMController {
 		$start = $this->getRequest()->getPost('start');
 		$length = $this->getRequest()->getPost('limit');
 		$sort = $this->getRequest()->getPost('sort');
-		$sortDir = $this->getRequest()->getPost('dir');
+		$sortObj = json_decode($sort, true)[0];
 
-		echo $this->queryService->getResultRows($start, $length, $sort, $sortDir);
+		echo $this->queryService->getResultRows($start, $length, $sortObj["property"], $sortObj["direction"]);
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -499,38 +527,49 @@ class QueryController extends AbstractOGAMController {
 		// image 1
 		$tmpImgPath1 = Array();
 		for ($i = 0; $i < count($data['maps1']['urls']); $i ++) {
-			$tmpImgPath1[$i] = APPLICATION_PATH . '/../../tmp/images/' . md5($id . session_id() . '0-' . $i) . '.png';
-			file_put_contents($tmpImgPath1[$i], file_get_contents($data['maps1']['urls'][$i]['url']));
+			$url = $data['maps1']['urls'][$i]['url'];
+			$content = @file_get_contents($url);
+			if ($content === false) {
+				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
+			} else {
+				$tmpImgPath1[] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '0-' . $i) . '.png';
+				file_put_contents(end($tmpImgPath1), $content);
+			}
 		}
 
 		// image 2
 		$tmpImgPath2 = Array();
 		for ($i = 0; $i < count($data['maps2']['urls']); $i ++) {
-			$tmpImgPath2[$i] = APPLICATION_PATH . '/../../tmp/images/' . md5($id . session_id() . '1-' . $i) . '.png';
-			file_put_contents($tmpImgPath2[$i], file_get_contents($data['maps2']['urls'][$i]['url']));
+			$url = $data['maps2']['urls'][$i]['url'];
+			$content = @file_get_contents($url);
+			if ($content === false) {
+				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
+			} else {
+				$tmpImgPath2[] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '1-' . $i) . '.png';
+				file_put_contents(end($tmpImgPath2), $content);
+
+			}
 		}
 
 		require_once ('html2pdf/html2pdf.class.php');
 		$pdf = new HTML2PDF();
 		// $pdf->setModeDebug();
 
-		// building of the array of images paths
-		$i = 1;
-
 		$pdfExportArray = array(
-			'data' => $data,
-			'imgDirPath' => CUSTOM_APPLICATION_PATH . '/../public/img/photos/'
+			'data' => $data
 		);
+		if (defined('CUSTOM_APPLICATION_PATH')) {
+			$pdfExportArray['imgDirPath'] = CUSTOM_APPLICATION_PATH . '/../public/img/photos/';
+		} else {
+			$pdfExportArray['imgDirPath'] = APPLICATION_PATH . '/../public/img/photos/';
+		}
 
 		foreach ($tmpImgPath1 as $img) {
-
-			$pdfExportArray['imgPath1'][$i] = strval($img);
-			$i ++;
+			$pdfExportArray['imgPath1'][] = strval($img);
 		}
 
 		foreach ($tmpImgPath2 as $img) {
-			$pdfExportArray['imgPath2'][$i] = strval($img);
-			$i ++;
+			$pdfExportArray['imgPath2'][] = strval($img);
 		}
 
 		try {
@@ -540,6 +579,7 @@ class QueryController extends AbstractOGAMController {
 
 		catch (HTML2PDF_exception $e) {
 			$this->logger->debug($e);
+			echo '<div style="margin: 20;">' . $this->translator->translate('An error occured during the pdf creation.') . '</div>';
 		}
 
 		foreach ($tmpImgPath1 as $img) {
@@ -1515,6 +1555,16 @@ class QueryController extends AbstractOGAMController {
 		// No View, we send directly the output
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
+	}
+	public function ajaxrestresultlocationAction() {
+		$sessionId = session_id();
+		$this->resultLocationModel->cleanPreviousResults($sessionId);
+		
+		echo '{success:true}';
+		
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 }
 

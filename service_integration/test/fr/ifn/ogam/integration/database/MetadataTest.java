@@ -137,7 +137,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		List<FileFieldData> fields = metadataDAO.getFileFields(fileFormat);
 
-		assertEquals("The basic test tree file should have 5 columns", 5, fields.size());
+		assertEquals("The basic test tree file should have 6 columns", 6, fields.size());
 
 	}
 

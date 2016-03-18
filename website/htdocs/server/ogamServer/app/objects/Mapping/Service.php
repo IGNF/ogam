@@ -16,7 +16,7 @@
  * Represent a service item.
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Mapping_Service {
 

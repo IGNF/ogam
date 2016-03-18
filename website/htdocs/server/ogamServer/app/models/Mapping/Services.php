@@ -54,65 +54,14 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 	 *
 	 * @return Service
 	 */
-	public function getViewServices() {
-		$db = $this->getAdapter();
+	public function getServices() {
 		
-		$req = " SELECT service_name, config FROM layer_service, layer";
-		$req .= " WHERE layer.view_service_name = layer_service.service_name ";
-		$req .= " GROUP BY service_name, config";
-		
-		Zend_Registry::get("logger")->info('getViewServices : ' . $req);
-		
-		$select = $db->prepare($req);
-		$select->execute();
-		
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$service = $this->_readService($row);
-			$result[$service->serviceName] = $service;
-		}
-		return $result;
-	}
-
-	/**
-	 * Get the feature services.
-	 *
-	 * @return Service
-	 */
-	public function getFeatureServices() {
-		$db = $this->getAdapter();
-		
-		$req = " SELECT service_name, config ";
-		$req .= " FROM layer_service, layer";
-		$req .= " WHERE layer.feature_service_name = layer_service.service_name ";
-		$req .= " GROUP BY service_name, config";
-		
-		Zend_Registry::get("logger")->info('getFeatureServices : ' . $req);
-		
-		$select = $db->prepare($req);
-		$select->execute();
-		
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
-			$service = $this->_readService($row);
-			$result[$service->serviceName] = $service;
-		}
-		return $result;
-	}
-
-	/**
-	 * Get the print services (local).
-	 *
-	 * @return Service
-	 */
-	public function getPrintServices() {
 		$db = $this->getAdapter();
 		
 		$req = " SELECT service_name,config FROM layer_service, layer";
-		$req .= " WHERE layer.print_service_name = layer_service.service_name ";
 		$req .= " GROUP BY service_name, config";
 		
-		Zend_Registry::get("logger")->info('getPrintServices : ' . $req);
+		Zend_Registry::get("logger")->info('getServices : '.$req);
 		
 		$select = $db->prepare($req);
 		$select->execute();
@@ -146,29 +95,30 @@ class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 		foreach ($select->fetchAll() as $row) {
 			$service = $this->_readService($row);
 			$result[$service->serviceName] = $service;
-		}
-		return $result;
+	    }
+	    return $result;
 	}
 
 	/**
-	 * Get the legend services.
+	 * Get the print services (local).
 	 *
 	 * @return Service
 	 */
-	public function getLegendServices() {
-		$db = $this->getAdapter();
-		
-		$req = " SELECT service_name,config FROM layer_service, layer";
-		$req .= " WHERE layer.legend_service_name = layer_service.service_name ";
-		$req .= " GROUP BY service_name, config";
-		
-		Zend_Registry::get("logger")->info('getLegendServices : ' . $req);
-		
-		$select = $db->prepare($req);
-		$select->execute();
-		
-		$result = array();
-		foreach ($select->fetchAll() as $row) {
+	public function getPrintServices() {
+	
+	    $db = $this->getAdapter();
+	
+	    $req = " SELECT service_name,config FROM layer_service, layer";
+	    $req .= " WHERE layer.print_service_name = layer_service.service_name ";
+	    $req .= " GROUP BY service_name, config";
+	
+	    Zend_Registry::get("logger")->info('getPrintServices : '.$req);
+	
+	    $select = $db->prepare($req);
+	    $select->execute();
+	
+	    $result = array();
+	    foreach ($select->fetchAll() as $row) {
 			$service = $this->_readService($row);
 			$result[$service->serviceName] = $service;
 		}

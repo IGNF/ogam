@@ -27,10 +27,9 @@ class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata
 
 	/**
 	 * The childs.
-	 *
-	 * @var Array[TaxrefNodes]
+	 * @var $children Array[TaxrefNodes]
 	 */
-	var $children = array();
+
 
 	/**
 	 * The short name of the taxon.
@@ -53,30 +52,8 @@ class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata
 	 * @param Application_Object_Metadata_TreeNode $child
 	 *        	a node to add
 	 */
-	public function addChild($child) {
-		$this->children[] = $child;
-	}
 
-	/**
-	 * Return a node in the tree structure.
-	 *
-	 * @param String $code
-	 *        	a node code
-	 * @return TreeNode the TreeNode found, null if not found
-	 */
-	public function getNode($aCode) {
-		if ($this->code == $aCode) {
-			return $this;
-		} else {
-			foreach ($this->children as $child) {
-				if ($child->getNode($aCode)) {
-					return $child;
-				}
-			}
-		}
 
-		return null;
-	}
 
 	/**
 	 * Serialize the object as a JSON.
@@ -84,6 +61,7 @@ class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata
 	 * @return JSON the descriptor
 	 */
 	public function toJSON() {
+
 		$return = '';
 		if (empty($this->code) && empty($this->label)) {
 			// Case when the root is just a placeholder, we return only the children

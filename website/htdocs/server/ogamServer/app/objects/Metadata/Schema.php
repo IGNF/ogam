@@ -16,7 +16,7 @@
  * Represent a database schema.
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Metadata_Schema {
 

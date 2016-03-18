@@ -7,7 +7,7 @@
 -- Started on 2014-03-25 17:52:22
 
 SET statement_timeout = 0;
-SET client_encoding = 'UTF8';
+SET client_encoding TO 'UTF8';
 SET standard_conforming_strings = off;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -31,7 +31,7 @@ CREATE TABLE nuts_0 (
     the_geom public.geometry,
     CONSTRAINT enforce_dims_the_geom CHECK ((public.st_ndims(the_geom) = 2)),
     CONSTRAINT enforce_geotype_the_geom CHECK (((public.geometrytype(the_geom) = 'MULTIPOLYGON'::text) OR (the_geom IS NULL))),
-    CONSTRAINT enforce_srid_the_geom CHECK ((public.st_srid(the_geom) = 3035))
+    CONSTRAINT enforce_st_srid_the_geom CHECK ((public.st_srid(the_geom) = 3035))
 );
 
 

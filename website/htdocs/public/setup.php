@@ -1,7 +1,7 @@
 <?php
 
 // Define path to application directory
-defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__FILE__).'/../application'));
+defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__FILE__).'/../server/ogamServer/app'));
 
 // Define application environment
 defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
@@ -9,19 +9,19 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV
 // Define current date (For log file name)
 define('DATE_STAMP', date('Y-m-d'));
 
-// Define path to ogam custom application directory
-if (file_exists(APPLICATION_PATH.'/../../custom')) {
-	define('CUSTOM_APPLICATION_PATH', APPLICATION_PATH.'/../../custom/application');
+// Define path to  ogam custom application directory
+if (file_exists(realpath(dirname(__FILE__).'/../custom'))) {
+	define('CUSTOM_APPLICATION_PATH', realpath(dirname(__FILE__).'/../custom/server/ogamServer/app'));
 }
 
-// Ensure library/ is on include_path
+// Ensure libraries is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
-	realpath(APPLICATION_PATH.'/../library'),
+	realpath(APPLICATION_PATH.'/../lib'),
 	get_include_path()
 )));
-if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/../library')) {
+if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH.'/../lib')) {
 	set_include_path(implode(PATH_SEPARATOR, array(
-		realpath(CUSTOM_APPLICATION_PATH.'/../library'),
+		realpath(CUSTOM_APPLICATION_PATH.'/../lib'),
 		get_include_path()
 	)));
 }

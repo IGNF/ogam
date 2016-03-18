@@ -16,7 +16,7 @@
  * Represent a Field.
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Metadata_Field {
 

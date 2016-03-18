@@ -16,7 +16,7 @@
  * Represent a Field of a Database.
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Metadata_TableField extends Application_Object_Metadata_Field {
 

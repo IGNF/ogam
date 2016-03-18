@@ -1,5 +1,5 @@
+SET client_encoding TO 'UTF8';
 CREATE SCHEMA raw_data;
-
 SET SEARCH_PATH = raw_data, public;
 
 --
@@ -82,7 +82,7 @@ unique (PROVIDER_ID, PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
-SELECT AddGeometryColumn('raw_data','location','the_geom',4326,'POINT',2);
+SELECT AddGeometryColumn('raw_data','location','the_geom',3857,'POINT',2);
 
 
 COMMENT ON COLUMN LOCATION.SUBMISSION_ID IS 'The identifier of the submission';
@@ -119,13 +119,13 @@ BEGIN
 		NEW.the_geom = public.ST_GeometryFromText('POINT(' || NEW.LONG || ' ' || NEW.LAT || ')', 4326);	
     END IF;   
     EXCEPTION
-		WHEN internal_error THEN
-		IF SQLERRM = 'parse error - invalid geometry' THEN
-		    RAISE EXCEPTION USING ERRCODE = '09001', MESSAGE = SQLERRM;
-		ELSIF SQLERRM = 'geometry requires more points' THEN
-		    RAISE EXCEPTION USING ERRCODE = '09002', MESSAGE = SQLERRM;
-		END IF;
-	END;
+    WHEN internal_error THEN
+        IF SQLERRM = 'parse error - invalid geometry' THEN
+            RAISE EXCEPTION USING ERRCODE = '09001', MESSAGE = SQLERRM;
+        ELSIF SQLERRM = 'geometry requires more points' THEN
+            RAISE EXCEPTION USING ERRCODE = '09002', MESSAGE = SQLERRM;
+        END IF;
+    END;
     RETURN NEW;
 END;
 $BODY$
@@ -169,7 +169,7 @@ CREATE OR REPLACE FUNCTION raw_data.c_communesfromgeom() RETURNS "trigger" AS
 $BODY$
 BEGIN
 
-    NEW.communes = (SELECT array_agg(code) FROM (SELECT code FROM "mapping".communes z WHERE st_intersects(z.the_geom, st_transform(NEW.the_geom, 2154)) LIMIT 20) as foo);    
+    NEW.communes = (SELECT array_agg(code) FROM (SELECT code FROM "mapping".communes z WHERE st_intersects(z.the_geom, NEW.the_geom) LIMIT 20) as foo);    
     RETURN NEW;
 END;
 $BODY$
@@ -273,7 +273,7 @@ CREATE SEQUENCE tree_id_seq
   
 
 /*==============================================================*/
-/* Table : TREE_DATA                                         */
+/* Table : TREE_DATA                                            */
 /*==============================================================*/
 create table TREE_DATA (
 SUBMISSION_ID        INT4                 null,
@@ -342,18 +342,3 @@ COMMENT ON COLUMN CHECK_ERROR.FOUND_VALUE IS 'The erroreous value (if available)
 COMMENT ON COLUMN CHECK_ERROR.EXPECTED_VALUE IS 'The expected value (if available)';
 COMMENT ON COLUMN CHECK_ERROR.ERROR_MESSAGE IS 'The error message';
 COMMENT ON COLUMN CHECK_ERROR._CREATIONDT IS 'The creation date';
-
-
-
-
-
-GRANT ALL ON SCHEMA raw_data TO ogam;
-GRANT ALL ON ALL TABLES IN SCHEMA raw_data TO ogam;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA raw_data TO ogam;
-ALTER TABLE raw_data.SUBMISSION OWNER TO ogam;
-ALTER TABLE raw_data.SUBMISSION_FILE OWNER TO ogam;
-ALTER TABLE raw_data.LOCATION OWNER TO ogam;
-ALTER TABLE raw_data.PLOT_DATA OWNER TO ogam;
-ALTER TABLE raw_data.SPECIES_DATA OWNER TO ogam;
-ALTER TABLE raw_data.TREE_DATA OWNER TO ogam;
-ALTER TABLE raw_data.CHECK_ERROR OWNER TO ogam;

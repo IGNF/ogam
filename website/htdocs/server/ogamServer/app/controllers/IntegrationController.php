@@ -94,6 +94,7 @@ class IntegrationController extends AbstractOGAMController {
 				$requestElement->setValue($dataset->id);
 			}
 		}
+		$requestElement->setDisableTranslator(true);
 		$requestElement->addMultiOptions($datasetIds);
 
 		//
@@ -297,7 +298,7 @@ class IntegrationController extends AbstractOGAMController {
 			return $this->_forward('index');
 		}
 
-		// Check the validity of the From
+		// Check the validity of the Form
 		$form = $this->_getDataUploadForm();
 		if (!$form->isValid($_POST)) {
 			$this->logger->debug('form is not valid');
@@ -472,11 +473,11 @@ class IntegrationController extends AbstractOGAMController {
 			$status = $this->integrationServiceModel->getStatus($submissionId, $servletName);
 
 			// Echo the result as a JSON
-			echo '{success:true, status:\'' . $status->status . '\', taskName:\'' . $status->taskName . '\', currentCount:\'' . $status->currentCount . '\', totalCount:\'' . $status->totalCount . '\'}';
+			echo '{"success":true, "status":"'.$status->status.'", "taskName":"'.$status->taskName.'", "currentCount":"'.$status->currentCount.'", "totalCount":"'.$status->totalCount.'"}';
 		} catch (Exception $e) {
 			$this->logger->err('Error during get: ' . $e);
 			$this->view->errorMessage = $e->getMessage();
-			echo '{success:false, errorMsg: \'\'}';
+			echo '{"success":false, "errorMsg":""}';
 		}
 
 		// No View, we send directly the javascript

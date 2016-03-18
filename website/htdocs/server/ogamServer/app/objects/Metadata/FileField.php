@@ -16,7 +16,7 @@
  * Represent a Field of a File.
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Metadata_FileField extends Application_Object_Metadata_Field {
 

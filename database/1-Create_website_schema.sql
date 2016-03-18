@@ -1,5 +1,5 @@
+SET client_encoding TO 'UTF8';
 CREATE SCHEMA website;
-
 SET SEARCH_PATH = website, public;
 
 /*==============================================================*/
@@ -204,7 +204,7 @@ constraint PK_PREDEFINED_REQUEST primary key (REQUEST_NAME)
 
 alter table PREDEFINED_REQUEST
 add constraint FK_PREDEFINED_REQUEST_DATASET foreign key (DATASET_ID)
-      references METADATA.DATASET (DATASET_ID)
+      references metadata.DATASET (DATASET_ID)
       on delete restrict on update restrict;
       
 COMMENT ON COLUMN PREDEFINED_REQUEST.REQUEST_NAME IS 'The request name';
@@ -302,27 +302,3 @@ ALTER TABLE ONLY predefined_request_group_asso
     FOREIGN KEY (request_name) 
     REFERENCES predefined_request(request_name) ON UPDATE RESTRICT ON DELETE RESTRICT;
     
-
-
-
-
-GRANT ALL ON SCHEMA website TO ogam;
-GRANT ALL ON ALL TABLES IN SCHEMA website TO ogam;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA website TO ogam;
-
-ALTER TABLE website.APPLICATION_PARAMETERS OWNER TO ogam;
-ALTER TABLE website.USERS OWNER TO ogam;
-ALTER TABLE website.ROLE OWNER TO ogam;
-ALTER TABLE website.ROLE_TO_SCHEMA OWNER TO ogam;
-ALTER TABLE website.ROLE_TO_USER OWNER TO ogam;
-ALTER TABLE website.PERMISSION OWNER TO ogam;
-ALTER TABLE website.PERMISSION_PER_ROLE OWNER TO ogam;
-ALTER TABLE website.DATASET_ROLE_RESTRICTION OWNER TO ogam;
-ALTER TABLE website.layer_role_restriction OWNER TO ogam;
-
-ALTER TABLE website.PREDEFINED_REQUEST OWNER TO ogam;
-ALTER TABLE website.PREDEFINED_REQUEST_CRITERIA OWNER TO ogam;
-ALTER TABLE website.PREDEFINED_REQUEST_RESULT OWNER TO ogam;
-ALTER TABLE website.PREDEFINED_REQUEST_GROUP_ASSO OWNER TO ogam;
-
-

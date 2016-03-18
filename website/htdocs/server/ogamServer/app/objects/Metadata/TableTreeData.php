@@ -16,7 +16,7 @@
  * Represent an information about a table in the table hierarchical tree.
  *
  * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
  */
 class Application_Object_Metadata_TableTreeData {
 

@@ -60,7 +60,7 @@ class Application_Object_Metadata_TreeNode {
 	 * @return TreeNode the TreeNode found, null if not found
 	 */
 	public function getNode($aCode) {
-		if ($this->code == $aCode) {
+		if ($this->code === $aCode) {
 			return $this;
 		} else {
 			foreach ($this->children as $child) {

@@ -1,0 +1,20 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.php text eol=lf
+*.phtml text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.js text eol=lf
+*.sql text eol=lf
+
+# Declare files that will always have CRLF line endings on checkout.
+*.bat text eol=crlf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
+*.gif binary
+*.dll binary
+*.fdf binary

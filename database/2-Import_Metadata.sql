@@ -1,2 +1,2 @@
 \cd Metadata
-\ir 'import from csv.sql'
+\ir 'import_from_csv.sql'

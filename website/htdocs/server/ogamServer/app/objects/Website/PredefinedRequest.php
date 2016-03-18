@@ -140,9 +140,9 @@ class Application_Object_Website_PredefinedRequest {
 		$json .= json_encode($this->requestName);
 		$json .= ',' . json_encode($this->label);
 		$json .= ',' . json_encode($this->definition);
-		$json .= ','; // click
+// 		$json .= ',0'; // click
 		$json .= ',' . json_encode($this->date);
-		$json .= ','; // criteria_hint
+// 		$json .= ',null'; // criteria_hint
 		$json .= ',' . json_encode($this->position);
 		$json .= ',' . json_encode($this->groupName);
 		$json .= ',' . json_encode($this->groupLabel);

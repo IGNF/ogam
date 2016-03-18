@@ -17,7 +17,7 @@ apt-get install -y tilecache python-flup python-paste python-imaging
 cp -b /vagrant/ogam/vagrant_config/conf/tilecache/tilecache.cfg /etc/tilecache.cfg
 
 # ---------------------------------------------------------------
-# CrÃ©ation du rÃ©pertoire pour stocker le cache
+# Création du répertoire pour stocker le cache
 # ---------------------------------------------------------------
 
 mkdir /var/www/tilecache
@@ -28,7 +28,7 @@ chmod 775 -R cache/
 
 
 # ---------------------------------------------------------------
-# Correction d'un bug dans la version par dÃ©faut de tilecache
+# Correction d'un bug dans la version par défaut de tilecache
 # ---------------------------------------------------------------
 
 # the file tilecache/Layer.py revision2.11 have a buggus in getCell function (since 2.1 ?). this failed get tile in some corner situation.
@@ -43,4 +43,3 @@ if [ -f $tilecacheLayer ] ; then
 else
    echo "tilecache Layer.py not found, fix manualy..."
 fi
-
