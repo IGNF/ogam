@@ -981,7 +981,6 @@ class Application_Service_QueryService {
 				}
 			}
 		}
-		}
 		if ($baseUrls != "") {
 			$baseUrls = substr($baseUrls, 0, -1); // remove last semicolon
 		}
