@@ -79,7 +79,7 @@ class MapController extends AbstractOGAMController {
 
 		$this->logger->debug('$configuration->usePerProviderCenter : ' . $configuration->usePerProviderCenter);
 
-		if ($configuration->usePerProviderCenter == 1) {
+		if ($configuration->usePerProviderCenter === '1' || (strtolower($configuration->usePerProviderCenter) === 'true')) {
 			// Center the map on the provider location
 			$center = $this->boundingBoxModel->getCenter($providerId);
 			$this->view->defaultzoom = $center->defaultzoom;

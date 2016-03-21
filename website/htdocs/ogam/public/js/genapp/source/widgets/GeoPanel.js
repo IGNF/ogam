@@ -396,7 +396,9 @@ Genapp.GeoPanel = Ext
 							layout : 'anchor',
 							tbar : this.mapToolbar,
 							items : [ zSlider ],
-							map : this.map
+							map : this.map,
+							center : this.map.center,
+							zoom : this.map.zoom,
 						});
 						
 						// Add the panel to the items
@@ -428,6 +430,7 @@ Genapp.GeoPanel = Ext
 						}
 
 						Genapp.GeoPanel.superclass.initComponent.call(this);
+						
 					},
 
 					/**
@@ -725,8 +728,6 @@ Genapp.GeoPanel = Ext
 						}));
 						
 
-						// Zoom the map to the user country level
-						map.setCenter(new OpenLayers.LonLat(Genapp.map.x_center, Genapp.map.y_center), Genapp.map.defaultzoom);
 
 						// For the GEOM criteria
 						// TODO : Split this in another file
@@ -767,6 +768,9 @@ Genapp.GeoPanel = Ext
 							map.addControl(selectControl);
 							selectControl.activate();
 						}
+						
+						// Zoom the map to the user country level
+						map.setCenter(new OpenLayers.LonLat(Genapp.map.x_center, Genapp.map.y_center), Genapp.map.defaultzoom);
 
 						return map;
 					},
