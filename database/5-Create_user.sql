@@ -52,9 +52,14 @@ GRANT EXECUTE ON FUNCTION raw_data.a_geomfromcoordinate() TO ogam;
 
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA raw_data TO ogam;
 
+-- ogam must be owner of the table to be able to see the foreign keys (for configuration checking)
+ALTER TABLE raw_data.location OWNER TO ogam;
+ALTER TABLE raw_data.plot_data OWNER TO ogam;
+ALTER TABLE raw_data.species_data OWNER TO ogam;
+ALTER TABLE raw_data.tree_data OWNER TO ogam;
+
 
 -- harmonized-data
-
 GRANT ALL ON SCHEMA harmonized_data TO ogam;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE harmonized_data.harmonization_process TO ogam;
 GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonization_process_submissions TO ogam;
@@ -64,6 +69,13 @@ GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_species_data TO
 GRANT SELECT, INSERT, DELETE ON TABLE harmonized_data.harmonized_tree_data TO ogam;
 GRANT EXECUTE ON FUNCTION harmonized_data.geomfromcoordinate() TO ogam;
 GRANT SELECT, USAGE ON TABLE harmonized_data.harmonization_process_harmonization_process_id_seq TO ogam;
+
+-- ogam must be owner of the table to be able to see the foreign keys (for configuration checking)
+ALTER TABLE harmonized_data.harmonized_location OWNER TO ogam;
+ALTER TABLE harmonized_data.harmonized_plot_data OWNER TO ogam;
+ALTER TABLE harmonized_data.harmonized_species_data OWNER TO ogam;
+ALTER TABLE harmonized_data.harmonized_tree_data OWNER TO ogam;
+
 
 
 -- metadata
