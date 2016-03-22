@@ -1,8 +1,3 @@
---
--- Jouer les scripts suivants (se trouvant dans le répertoire mapping) :
--- nuts_0.sql
-
-
 SET SEARCH_PATH = mapping, public;
 
 --
@@ -17,6 +12,7 @@ INSERT INTO scales(scale) VALUES (1000000);  --  1 M
 INSERT INTO scales(scale) VALUES (500000);   --  500 K
 INSERT INTO scales(scale) VALUES (250000);   --  250 K
 INSERT INTO scales(scale) VALUES (100000);   --  100 K
+
 /*
 INSERT INTO scales VALUES (866688.03242073394);
 INSERT INTO scales VALUES (433344.01762768999);
@@ -38,71 +34,53 @@ INSERT INTO scales VALUES (13542);
 --
 -- Configure the layers
 --
-
-
 DELETE FROM layer_tree;
 DELETE FROM layer;
 DELETE FROM layer_service;
 
 
 -- Define the services
--- Liste des fournisseurs de services (Mapservers, Géoportail, ...)
-INSERT INTO layer_service(service_name, config) VALUES ('local_mapserver', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/mapserv?map=/var/www/html/mapserv/ogam.map&"],"params":{"SERVICE":"WMS"}}');
-INSERT INTO layer_service(service_name, config) VALUES ('local_legend', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/mapserv?map=/var/www/html/mapserv/ogam.map&"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
-INSERT INTO layer_service(service_name, config) VALUES ('local_tilecache', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/tilecache?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
-INSERT INTO layer_service(service_name, config) VALUES ('local_mapProxy', '{"urls":["http://ogam-integration.ign.fr/ogam/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
-
-
--- Exemple for localhost on Windows
--- INSERT INTO layer_service(service_name, config) VALUES ('local_mapserver', '{"urls":["http://localhost/cgi-bin/mapserv.exe?map=D:/workspace/ogam_git/mapserv/ogam.map&"],"params":{"SERVICE":"WMS"}}');
--- INSERT INTO layer_service(service_name, config) VALUES ('local_legend', '{"urls":["http://localhost/cgi-bin/mapserv.exe?map=D:/workspace/ogam_git/mapserv/ogam.map&"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
--- INSERT INTO layer_service(service_name, config) VALUES ('local_tilecache', '{"urls":["http://localhost/cgi-bin/mapserv.exe?map=D:/workspace/ogam_git/mapserv/ogam.map&"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
--- INSERT INTO layer_service(service_name, config) VALUES ('local_mapProxy', '{"urls":["http://localhost/ogam/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
-
-	
-
--- Exemple of a distant WMS mapserver
---INSERT INTO layer_service(service_name, config) VALUES ('mapProxy', '{"urls":["http://test-efdac.ifn.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
---INSERT INTO layer_service(service_name, config) VALUES ('proxy_wfs', '{"urls":["http://test-efdac.ifn.fr/proxy/getwfs?"],"params":{"SERVICE":"WFS","VERSION":"1.0.0","REQUEST":"GetFeature"}}');
---INSERT INTO layer_service(service_name, config) VALUES ('legend_mapProxy', '{"urls":["http://test-efdac.ifn.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
-
--- Exemple of a WMTS service (geoportal)
---INSERT INTO layer_service(service_name, config) VALUES ('geoportal_wfs', '{"urls": ["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/wfs?"], "params": {"SERVICE":"WFS","VERSION":"1.0.0","REQUEST":"getFeature"}}');
---INSERT INTO layer_service(service_name, config) VALUES ('geoportal_wms', '{"urls":["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/r/wms?"],"params":{"SERVICE":"WMS","VERSION":"1.3.0","REQUEST":"GetMap"}}');
---INSERT INTO layer_service(service_name, config) VALUES ('geoportal_wmts', '{"urls": ["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/wmts?"],"params":{"SERVICE":"WMTS","VERSION":"1.0.0","REQUEST":"getTile","style":"normal","matrixSet":"PM"}}');
-
+INSERT INTO layer_service (service_name, config) VALUES ('Local_Mapserv_WMS_GetMap', '{"urls":["http://localhost/mapserv.ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_Proxy_WFS_GetFeature', '{"urls":["http://www.ogam.fr/proxy/getwfs?"],"params":{"SERVICE":"WFS","VERSION":"1.0.0","REQUEST":"GetFeature"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WMS_GetLegendGraphic', '{"urls":["http://www.ogam.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WMS_GetMap', '{"urls":["http://www.ogam.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WFS_GetFeature', '{"urls":["http://www.ogam.fr/mapProxy.php?"],"params":{"SERVICE":"WFS","VERSION":"1.1.0","REQUEST":"GetFeature"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_TileCache_WMS_GetMap', '{"urls":["http://www.ogam.fr/cgi-bin/tilecache?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Geoportal_WMS_GetMap', '{"urls":["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/r/wms?"],"params":{"SERVICE":"WMS","VERSION":"1.3.0","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Geoportal_WMTS_GetTile', '{"urls":["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/wmts?"],"params":{"SERVICE":"WMTS","VERSION":"1.0.0","REQUEST":"getTile","style":"normal","matrixSet":"PM","requestEncoding":"KVP","maxExtent":[-20037508, -20037508, 20037508, 20037508],"serverResolutions":[156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646],"tileOrigin":[-20037508,20037508]}}');
+-- Integration config
+INSERT INTO layer_service (service_name, config) VALUES ('Integration_Mapserv_WMS_GetMap', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/mapserv.ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Integration_Mapserv_WMS_GetLegendGraphic', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/mapserv.ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Integration_TileCache_WMS_GetMap', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/tilecache?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Integration_MapProxy_WMS_GetMap', '{"urls":["http://ogam-integration.ign.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
 
 
 -- Define the layers
--- Liste des couches carto disponibles
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, isVector, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('result_locations', 'Results', 'result_locations', 1, 0, 1, 1, null, null, null, 'PNG',  0, null, 'REQUEST', 'local_mapserver', 'local_legend','local_mapserver','local_mapserver', 'local_mapserver');
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, isVector, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('all_locations', 'Plot Locations', 'all_locations', 1, 0, 1, 1, null, null, null, 'PNG', 1, null, 'NONE', 'local_mapserver', 'local_legend','local_mapserver','local_mapserver', 'local_mapserver');
---INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, isVector, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('all_harmonized_locations', 'Plot Locations', 'all_harmonized_locations', 1, 0, 1, 1, null, null, null, 'PNG', 1, null,'NONE', 'local_tilecache', 'legend_mapProxy','local_mapserver','local_mapserver', 'local_mapserver');
-
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, isVector, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('limitesadministratives', 'Limites administratives', null, 0, 0, 0, 0, 0, 0, 'resize', 'PNG',  1, null, 'NONE', 'local_tilecache', 'local_legend','local_mapserver','local_mapserver', 'local_mapserver');
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, isVector, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('nuts_0', 'Pays', 'nuts_0', 1, 0, 0, 0, 60000000, 50000, 'resize', 'PNG',  1, null, 'NONE', 'local_tilecache', 'local_legend','local_mapserver','local_mapserver', 'local_mapserver');
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, isVector, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('departements', 'Départements', 'departements', 1, 0, 0, 0, 5000000, 1, 'resize', 'PNG',  1, null, 'NONE', 'local_tilecache', 'local_legend','local_mapserver','local_mapserver', 'local_mapserver');
-INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, isVector, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('communes', 'Communes', 'communes', 1, 0, 0, 0, 500000, 1, 'resize', 'PNG',  1, null, 'NONE', 'local_tilecache', 'local_legend','local_mapserver','local_mapserver', 'local_mapserver');
---INSERT INTO layer (layer_name, layer_label, service_layer_name, isTransparent, isBaseLayer, isUntiled, isVector, maxscale, minscale, transitionEffect, imageFormat, has_legend, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('ORTHOIMAGERY.ORTHOPHOTOS', 'BD Ortho', 'ORTHOIMAGERY.ORTHOPHOTOS', 1, 0, 0, 0, NULL, NULL, 'resize', 'jpeg', 1, NULL, 'NONE', 'geoportal_wmts', 'geoportal_wms', 'geoportal_wms', 'geoportal_wms', 'local_mapserver');
-
--- Define the layers legend
--- Définition de l'arbre des couches, avec leur hiérarchie
-INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (1, -1, 1, 0, 0, 1, 0, 'result_locations', null, 1);
-INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (2, -1, 1, 0, 1, 0, 0, 'all_locations', null, 2);
---INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (4, -1, 1, 0, 1, 0, 0, 'all_harmonized_locations', null, 4);
-
-INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (20, -1, 0, 0, 0, 0, 1, 'limitesadministratives', null, 20);
-INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (21, 20, 1, 1, 0, 0, 0, 'nuts_0', null, 21);
-INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (22, 20, 1, 0, 0, 0, 0, 'departements', null, 22);
-INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (23, 20, 1, 0, 0, 0, 0, 'communes', null, 23);
---INSERT INTO layer_tree(item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, checked_group, position) VALUES (30, -1, 1, 1, 0, 0, 0, 'ORTHOIMAGERY.ORTHOPHOTOS', null, 30);
+-- Locations
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('result_locations', 'Résultats', 'result_locations', 1, 100, 0, 1, 1, NULL, NULL, 0, NULL, 'PNG', NULL, 'REQUEST', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('all_locations', 'Toutes les localisations', 'all_locations', 1, 100, 0, 1, 1, NULL, NULL, 1, NULL, 'PNG', NULL, 'NONE', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('all_harmonized_locations', 'Toutes les localisations', 'all_harmonized_locations', 1, 100, 0, 1, 1, NULL, NULL, 1, NULL, 'PNG', NULL, 'NONE', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('location_detail', NULL, 'plot_location_detail', 1, 100, 0, 0, 1, NULL, NULL, 0, NULL, 'PNG', NULL, 'NONE', NULL, NULL, NULL, 'Local_MapProxy_WMS_GetMap', NULL);
+-- Boundaries
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('boundaries', 'Limites administratives', NULL, 0, 0, 0, 0, 0, 0, 0, 1, NULL, 'PNG', NULL, 'NONE', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('countries', 'Pays', 'nuts_0', 1, 100, 0, 0, 0, NULL, 500000, 1, 'resize', 'PNG', NULL, 'NONE', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('departements', 'Départements', 'departements', 1, 100, 0, 0, 0, 5000000, 1, 1, 'resize', 'PNG', NULL, 'NONE', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('communes', 'Communes', 'communes', 1, 100, 0, 0, 0, 500000, 1, 1, 'resize', 'PNG', NULL, 'NONE', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+-- Background
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('background', 'Fonds', NULL, 0, 0, 0, 0, 0, 0, 0, 1, NULL, 'PNG', NULL, 'NONE', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('ortho_photos', 'Photos aériennes', 'ORTHOIMAGERY.ORTHOPHOTOS', 0, 50, 0, 0, 0, 0, 0, 0, 'resize', 'jpeg', NULL, 'NONE', 'Geoportal_WMTS_GetTile', NULL, 'Geoportal_WMTS_GetTile', 'Geoportal_WMTS_GetTile', NULL);
 
 
---
--- Forbid some layers for some profiles
---
+-- Define the layers tree
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (22, '20', 1, 0, 0, 0, 0, 'departements', 22, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (23, '20', 1, 0, 0, 0, 0, 'communes', 23, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (20, '-1', 0, 0, 0, 0, 1, 'boundaries', 20, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (21, '20', 1, 1, 0, 0, 0, 'countries', 21, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (1, '-1', 1, 0, 0, 1, 0, 'result_locations', 1, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (2, '-1', 1, 0, 0, 0, 0, 'all_locations', 2, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (30, '-1', 0, 0, 0, 0, 1, 'background', 30, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (31, '30', 1, 1, 0, 0, 0, 'ortho_photos', 31, NULL);
 
 
---
 -- Configure the bounding box for all data providers
-INSERT INTO bounding_box (provider_id, zoom_level, bb_xmin, bb_ymin, bb_xmax, bb_ymax) values ('1', 1, '1690000', '1000000', '7670000', '5340000');
+INSERT INTO bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level) VALUES ('1', 3200000, 2060000, 4220000, 3160000, 1);

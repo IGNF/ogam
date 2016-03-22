@@ -88,7 +88,6 @@ CREATE TABLE layer
   print_service_name	VARCHAR(50),   -- Indicates the service for the print function
   detail_service_name	VARCHAR(50),   -- Indicates the service for the detail panel display 
   feature_service_name	VARCHAR(50),   -- Indicates the service for the wfs
-  layer_group_id 		INT,		   -- Indicates the layer group id
   PRIMARY KEY  (layer_name)
 ) WITHOUT OIDS;
 
@@ -113,7 +112,6 @@ COMMENT ON COLUMN layer.legend_service_name IS 'Indicates the service for the le
 COMMENT ON COLUMN layer.print_service_name IS 'Indicates the service for the print function';
 COMMENT ON COLUMN layer.detail_service_name IS 'Indicates the service for the detail panel display';
 COMMENT ON COLUMN layer.feature_service_name IS 'Indicates the service for the wfs';
-COMMENT ON COLUMN layer.layer_group_id IS 'Indicates the layer group id';
 
 /*==============================================================*/
 /*  Table: Layer_tree                                               */

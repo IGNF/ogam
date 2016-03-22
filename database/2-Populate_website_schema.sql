@@ -29,24 +29,24 @@ insert into application_parameters (name, value, description) values ( 'image_up
 insert into application_parameters (name, value, description) values ( 'image_dir_rights' , 0666 , 'File Upload');
 insert into application_parameters (name, value, description) values ( 'image_extensions' , 'jpg,png,jpeg,gif' , 'File Upload');
 insert into application_parameters (name, value, description) values ( 'image_max_size' , 1000000, 'image max size in bytes');
-insert into application_parameters (name, value, description) values ( 'tilesize' , 500 , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'query_details_layers1' , 'result_locations,nuts_0,departements,communes', 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'result_locations,nuts_0,departements', 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'proxy_service_name' , 'local_mapserver' , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3035 , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 4326 , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'srs_harmonized_data' , 3035 , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'tilesize' , 256 , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'query_details_layers1' , 'ortho_photos,result_locations,countries,departements,communes', 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'ortho_photos,result_locations,countries,departements,communes,location_detail', 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'proxy_service_name' , 'Local_Mapserv_WMS_GetMap' , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3857 , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 3857 , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'srs_harmonized_data' , 3857 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'usePerProviderCenter' , false , 'if true the system will look in the "bounding_box" table for centering info for each provider');
-insert into application_parameters (name, value, description) values ( 'bbox_x_min' , '1690000' , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'bbox_y_min' , '1000000' , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'bbox_x_max' , '7670000' , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'bbox_y_max' , '5340000' , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'bbox_x_min' , '-2893330' , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'bbox_y_min' , '3852395' , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'bbox_x_max' , '3086670' , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'bbox_y_max' , '8192395' , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'zoom_level' , '0' , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'mapserver_dpi' , 72 , 'Default number of dots per inch in mapserv');
 insert into application_parameters (name, value, description) values ( 'mapserver_inch_per_kilometer' , 39370.1 , 'Inch to meter conversion factor');
 insert into application_parameters (name, value, description) values ( 'featureinfo_margin' , 1000 , 'bounding box margin around the user click (in the unit of the map)');
 insert into application_parameters (name, value, description) values ( 'featureinfo_typename' , 'result_locations' , 'Layer that is queried');
-insert into application_parameters (name, value, description) values ( 'featureinfo_maxfeatures' , 1 , 'Max number of features returned by a click on the map. If 0 then there is no limit; If 1 the direct access to the detail');
+insert into application_parameters (name, value, description) values ( 'featureinfo_maxfeatures' , 20 , 'Max number of features returned by a click on the map. If 0 then there is no limit; If 1 the direct access to the detail');
 insert into application_parameters (name, value, description) values ( 'contactEmailPrefix' , 'ogam' , 'Email');
 insert into application_parameters (name, value, description) values ( 'contactEmailSufix' , 'ign.fr' , 'Email');
 insert into application_parameters (name, value, description) values ( 'csvExportCharset' , 'UTF-8' , 'Csv Export');
@@ -60,20 +60,20 @@ ALTER sequence website.provider_id_seq restart with 2;
 
 -- Create some roles
 INSERT INTO role(role_code, role_label, role_definition) VALUES ('ADMIN','Administrator', 'Manages the web site');
-
+INSERT INTO role(role_code, role_label, role_definition) VALUES ('VISITOR','Visitor', 'Visites the website');
 
 -- Create some users
 INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', '1', null); 
-
+INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('visitor', '4ed0428505b0b89fe7bc1a01928ef1bd4c77c1be', 'Visitor', '1', '1', null); 
 
 -- Link the users to their roles
 INSERT INTO role_to_user(user_login, role_code) VALUES ('admin', 'ADMIN');
-
+INSERT INTO role_to_user(user_login, role_code) VALUES ('visitor', 'VISITOR');
 
 -- Link the schemas to their roles
 INSERT INTO ROLE_TO_SCHEMA(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'RAW_DATA');
 INSERT INTO ROLE_TO_SCHEMA(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'HARMONIZED_DATA');
-
+INSERT INTO ROLE_TO_SCHEMA(ROLE_CODE, SCHEMA_CODE) VALUES ('VISITOR', 'RAW_DATA');
 
 DELETE FROM permission_per_role;
 DELETE FROM permission;
@@ -103,6 +103,8 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DA
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CHECK_CONF');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_VALIDATED_SUBMISSION');
 INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_OTHER_PROVIDER_SUBMISSION');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY');
+INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY_OTHER_PROVIDER');
 
 
 --
