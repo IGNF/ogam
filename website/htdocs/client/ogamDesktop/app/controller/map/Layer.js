@@ -157,20 +157,22 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                         // Adds the layer to the list
                         layersList.push(olLayer);
                     } else {
-                        // Adds the layer to its group and add the group to the list
+                        // Adds the layer to its group
                         for (var k in layerGrpsList) {
-                            var lyrGrp =  layerGrpsList[k];
-                            if (layer.get('options').nodeGroup == lyrGrp.get('grpId')) {
-                                var lyrs = lyrGrp.getLayers();
+                            if (layer.get('options').nodeGroup == layerGrpsList[k].get('grpId')) {
+                                var lyrs = layerGrpsList[k].getLayers();
                                 lyrs.push(olLayer);
-                                lyrGrp.setLayers(lyrs);
-                                layersList.push(lyrGrp);
+                                layerGrpsList[k].setLayers(lyrs);
                                 break;
                             }
                         }
                     }
                 }
             }
+        }
+        // Add the groups to the list
+        for (var k in layerGrpsList) {
+            layersList.push(layerGrpsList[k]);
         }
 
         var layersCollection = new Ext.util.MixedCollection();
@@ -217,7 +219,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             });
             var sourceWMTSOpts = {};
             sourceWMTSOpts['urls'] = service.get('config').urls;
-            sourceWMTSOpts['layer'] = layer.get('name');
+            sourceWMTSOpts['layer'] = layer.get('params').layers;
             sourceWMTSOpts['tileGrid'] = tileGrid;
             sourceWMTSOpts['matrixSet'] = service.get('config').params.matrixSet;
             sourceWMTSOpts['style'] = service.get('config').params.style;
