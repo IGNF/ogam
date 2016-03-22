@@ -20,11 +20,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.network "private_network", ip: "192.168.50.4"
   config.vm.hostname = "ogam.ign.fr"
-  #host = guest + 50000
-  #config.vm.network :forwarded_port, host: 8081, guest: 8080,auto_correct: true
-  #config.vm.network :forwarded_port, host: 5433, guest: 5432,auto_correct: true
+  config.vm.network :forwarded_port, host: 8081, guest: 8080,auto_correct: true
+  config.vm.network :forwarded_port, host: 5433, guest: 5432,auto_correct: true
   config.vm.network :forwarded_port, host: 8000, guest: 80,auto_correct: true
-  #config.vm.network :forwarded_port, host: 1842, guest: 1841
+
    
   #disabled le default root
   config.vm.synced_folder ".", "/vagrant", disabled: true
