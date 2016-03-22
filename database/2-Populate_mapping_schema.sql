@@ -40,7 +40,7 @@ DELETE FROM layer_service;
 
 
 -- Define the services
-INSERT INTO layer_service (service_name, config) VALUES ('Local_Mapserv_WMS_GetMap', '{"urls":["http://localhost/mapserv.ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_Mapserv_WMS_GetMap', '{"urls":["http://localhost/mapserv-ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
 INSERT INTO layer_service (service_name, config) VALUES ('Local_Proxy_WFS_GetFeature', '{"urls":["http://www.ogam.fr/proxy/getwfs?"],"params":{"SERVICE":"WFS","VERSION":"1.0.0","REQUEST":"GetFeature"}}');
 INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WMS_GetLegendGraphic', '{"urls":["http://www.ogam.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
 INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WMS_GetMap', '{"urls":["http://www.ogam.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
@@ -69,7 +69,7 @@ INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, d
 -- Background
 INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('background', 'Fonds', NULL, 0, 0, 0, 0, 0, 0, 0, 1, NULL, 'PNG', NULL, 'NONE', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('ortho_photos', 'Photos aériennes', 'ORTHOIMAGERY.ORTHOPHOTOS', 0, 50, 0, 0, 0, 0, 0, 0, 'resize', 'jpeg', NULL, 'NONE', 'Geoportal_WMTS_GetTile', NULL, 'Geoportal_WMTS_GetTile', 'Geoportal_WMTS_GetTile', NULL);
-
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, isvector, maxscale, minscale, has_legend, transitioneffect, imageformat, provider_id, activate_type, view_service_name, legend_service_name, print_service_name, detail_service_name, feature_service_name) VALUES ('scan25','Carte topographique','GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN25TOUR', 0, 50, 0, 0, 0, 0, 0, 0, 'resize', 'jpeg', NULL, 'NONE', 'Geoportal_WMTS_GetTile', NULL, 'Geoportal_WMTS_GetTile', 'Geoportal_WMTS_GetTile', NULL);
 
 -- Define the layers tree
 INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (22, '20', 1, 0, 0, 0, 0, 'departements', 22, NULL);
@@ -79,8 +79,8 @@ INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_
 INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (1, '-1', 1, 0, 0, 1, 0, 'result_locations', 1, NULL);
 INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (2, '-1', 1, 0, 0, 0, 0, 'all_locations', 2, NULL);
 INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (30, '-1', 0, 0, 0, 0, 1, 'background', 30, NULL);
-INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (31, '30', 1, 1, 0, 0, 0, 'ortho_photos', 31, NULL);
-
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (31, '30', 1, 0, 0, 0, 0, 'ortho_photos', 31, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (32, '30', 1, 1, 0, 0, 0, 'scan25', 32, NULL);
 
 -- Configure the bounding box for all data providers
 INSERT INTO bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level) VALUES ('1', 3200000, 2060000, 4220000, 3160000, 1);
