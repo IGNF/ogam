@@ -102,7 +102,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         });
         var treeLayersCollection = layersCollection.filter(filterOnDisplayInLayerSwitcher);
         var treeLayersGroup = new ol.layer.Group({
-            layers: treeLayersCollection.getRange(),
+            layers: treeLayersCollection.getRange().reverse(),
             code: 'treeGrp'
         });
         mapCmp.getMap().addLayer(treeLayersGroup);
