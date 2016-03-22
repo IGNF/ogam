@@ -7,14 +7,14 @@ task phpdoc(type:Exec, description: 'Launch PHPDoc for documentation generation.
   } else {
   	commandLine './vendor/bin/phpdoc'
   }
-  args "-d", "./htdocs/ogam/application/", "-t", "./hudson/docs/php/", '--template=responsive-twig'
+  args "-d", "./htdocs/server/ogamServer/app/", "-t", "./hudson/docs/php/", '--template=responsive-twig'
 }
 
 // Launch PHPCheckstyle
 task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static analysis.') {
   workingDir '.'
   commandLine "php" 
-  args "./vendor/phpcheckstyle/phpcheckstyle/run.php", "--src", "./htdocs/ogam/application/", "--outdir", "./hudson/checkstyle_result/", "--config", "./config/checkstyle_ogam.cfg.xml", "--format", "xml,html", "--linecount"
+  args "./vendor/phpcheckstyle/phpcheckstyle/run.php", "--src", "./htdocs/htdocs/server/ogamServer/app/", "--outdir", "./hudson/checkstyle_result/", "--config", "./config/checkstyle_ogam.cfg.xml", "--format", "xml,html", "--linecount"
 }
 
 
