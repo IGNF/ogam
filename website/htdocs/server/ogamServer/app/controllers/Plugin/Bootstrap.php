@@ -100,6 +100,15 @@ class Application_Controllers_Plugin_Bootstrap extends Zend_Controller_Plugin_Ab
 		$translate = Zend_Registry::get('Zend_Translate');
 		$translate->getAdapter()->setLocale($locale);
 
+		// Get the logger
+		$logger = Zend_Registry::get("logger");
+
+		// Attach it to the translation instance
+		$translate->setOptions(array(
+			'log' => $logger,
+			'logUntranslated' => true
+		));
+
 		// Save the language in session and in the view
 		$this->_view->local = $localeNamespace->lang = $lang;
 
