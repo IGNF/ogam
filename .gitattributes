@@ -1,20 +1,129 @@
-# Set the default behavior, in case people don't have core.autocrlf set.
+# Set the default behavior for files detected as text, convert in LF.
+* text eol=lf
 
-# Explicitly declare text files you want to always be normalized and converted
-# to native line endings on checkout.
-*.php text eol=lf
-*.phtml text eol=lf
-*.html text eol=lf
-*.md text eol=lf
-*.js text eol=lf
-*.sql text eol=lf
+#
+# To get all file extensions in the project
+# find . -type f | perl -ne 'print $1 if m/\.([^.\/]+)$/' | sort -u
+#
 
-# Declare files that will always have CRLF line endings on checkout.
+#
+# These files are text and should be normalized (Convert crlf => lf)
+#
+
+# source code
+*.php text
+*.c text
+*.css text
+*.sass text
+*.scss text
+*.less text
+*.styl text
+*.js text
+*.ts text
+*.coffee text
+*.json text
+*.htm text
+*.html text
+*.phtml text
+*.xml text
+*.py text
+*.svg text
+*.txt text
+*.TXT text
+*.ini text
+*.inc text
+*.pl text
+*.rb text
+*.py text
+*.scm text
+*.sql text
+*.df text
+*.java text
+*.js text
+*.json text
+*.jsp text
+*.jspf text
+*.svg text
+*.tld text
+*.txt text
+*.xml text
+*.kml text
+
+
+# server config
+.htaccess text
+
+# git config
+.gitattributes text
+.gitignore text
+.gitconfig text
+
+
+# mapserv config
+*.map text
+
+# misc config
+*.cfg text
+*.conf text
+*.yaml text
+*.yml text
+*.list text
+*.properties text
+*.setting text
+
+# Documentation
+*.md text
+
+
+# Data
+*.csv text
+*.CSV text
+
+# Scripts
+# Pas de convertion en LF pour les scripts shell Windows
+Vagrantfile text
+gradlew text
+*.gradle text
+*.sh text
 *.bat text eol=crlf
+*.cmd text eol=crlf
 
-# Denote all files that are truly binary and should not be modified.
+
+#
+# These files are binary and should be left untouched
+#
+
+# (binary is a macro for -text -diff)
 *.png binary
 *.jpg binary
+*.jpeg binary
 *.gif binary
+*.ico binary
+*.swf binary
+*.svg binary
+*.gz binary
+*.zip binary
+*.7z binary
+*.ttf binary
+*.pdf binary
+*.class binary
 *.dll binary
-*.fdf binary
+*.eps binary
+*.exe binary
+*.exec binary
+*.ear binary
+*.jar binary
+*.so binary
+*.war binary
+*.ods binary
+*.otf binary
+*.phar binary
+*.doc binary
+*.xls binary
+*.xlf binary
+*.mcd binary
+*.mpd binary
+*.ppt binary
+*.cgi binary
+*.rptconfig binary
+*.rptdesign binary
