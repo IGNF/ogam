@@ -48,7 +48,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE raw_data.species_data TO ogam;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE raw_data.tree_data TO ogam;
 GRANT ALL ON TABLE raw_data.submission TO ogam;
 GRANT ALL ON TABLE raw_data.submission_file TO ogam;
-GRANT EXECUTE ON FUNCTION raw_data.geomfromcoordinate() TO ogam;
+GRANT EXECUTE ON FUNCTION raw_data.a_geomfromcoordinate() TO ogam;
 
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA raw_data TO ogam;
 
@@ -105,6 +105,7 @@ GRANT ALL ON TABLE "mapping".result_location TO ogam;
 
 GRANT SELECT ON TABLE "mapping".scales TO ogam;
 GRANT ALL ON TABLE "mapping".nuts_0 TO ogam;
+GRANT ALL ON SEQUENCE "mapping".nuts_0_gid_seq TO ogam;
 GRANT ALL ON TABLE "mapping".departements TO ogam;
 GRANT ALL ON TABLE "mapping".communes TO ogam;
 

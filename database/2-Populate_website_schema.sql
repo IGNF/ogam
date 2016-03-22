@@ -12,7 +12,7 @@ insert into application_parameters (name, value, description) values ( 'autoLogi
 insert into application_parameters (name, value, description) values ( 'defaultUser' , 'visitor' , 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
 insert into application_parameters (name, value, description) values ( 'fileMaxSize' , 100 , 'UPLOAD');
 insert into application_parameters (name, value, description) values ( 'integrationService_url' , 'http://localhost:8080/OGAMIntegrationService/' , 'INTEGRATION SERVICE');
-insert into application_parameters (name, value, description) values ( 'uploadDir' , '/var/www/html/upload/' , 'INTEGRATION SERVICE');
+insert into application_parameters (name, value, description) values ( 'uploadDir' , '/var/www/html/upload/' , 'Directory where the PHP server depose the files for the INTEGRATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'harmonizationService_url' , 'http://localhost:8080/OGAMHarmonizationService/' , 'HARMONIZATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'reportGenerationService_url' , 'http://localhost:8080/OGAMRG/' , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'errorReport' , 'ErrorReport.rptdesign' , 'REPORT GENERATION SERVICE');
@@ -34,7 +34,7 @@ insert into application_parameters (name, value, description) values ( 'query_de
 insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'ortho_photos,result_locations,countries,departements,communes,location_detail', 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'proxy_service_name' , 'Local_Mapserv_WMS_GetMap' , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3857 , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 3857 , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 4326 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'srs_harmonized_data' , 3857 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'usePerProviderCenter' , false , 'if true the system will look in the "bounding_box" table for centering info for each provider');
 insert into application_parameters (name, value, description) values ( 'bbox_x_min' , '-2893330' , 'WEB MAPPING ');

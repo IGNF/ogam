@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 
 # Config par défaut :
-server=localhost
 database=ogam
 username=postgres
 
 echo "Création de la base de donnée par défaut d'OGAM avec la configuration suivante :"
-echo "Host : $server"
 echo "User name : $username"
-echo "Port : $port"
 echo "Database : $database"
 database_path="/vagrant/ogam/database"
 
@@ -85,7 +82,7 @@ sudo -n -u $username psql -f 5-Create_user.sql -d $database  &>> $logfile
 echo "****** Overriding defaut config values ******"
 sudo -n -u $username psql -d $database -c "UPDATE website.application_parameters SET value = '/var/tmp/ogam_upload' WHERE name = 'UploadDirectory';"  &>> $logfile
 sudo -n -u $username psql -d $database -c "UPDATE website.application_parameters SET value = '/vagrant/ogam/website/htdocs/server/ogamServer/upload' WHERE name = 'uploadDir';"  &>> $logfile
-sudo -n -u $username psql -d $database -c "UPDATE website.application_parameters SET value = '/vagrant/ogam/website/htdocs/upload/images/' WHERE name = 'image_upload_dir';"  &>> $logfile
+sudo -n -u $username psql -d $database -c "UPDATE website.application_parameters SET value = '/vagrant/ogam/website/htdocs/server/ogamServer/upload/images/' WHERE name = 'image_upload_dir';"  &>> $logfile
 
 #sudo -n -u $username psql -d $database -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost:8000/mapProxy.php?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.1.1\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_mapProxy';"  &>> $logfile
 sudo -n -u $username psql -d $database -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost/mapserv-ogam?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.1.1\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_mapserver';"  &>> $logfile

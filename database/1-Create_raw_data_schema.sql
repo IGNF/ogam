@@ -82,7 +82,7 @@ unique (PROVIDER_ID, PLOT_CODE)
 );
 
 -- Ajout de la colonne point PostGIS
-SELECT AddGeometryColumn('raw_data','location','the_geom',3857,'POINT',2);
+SELECT AddGeometryColumn('raw_data','location','the_geom',4326,'POINT',2);
 
 
 COMMENT ON COLUMN LOCATION.SUBMISSION_ID IS 'The identifier of the submission';
