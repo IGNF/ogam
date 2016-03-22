@@ -133,7 +133,7 @@ LAYER
 #    DEBUG 5
     TEMPLATE "geoJSONTemplate.js"
     METADATA
-        WFS_TITLE        "Country Boundaries"
+        WFS_TITLE        "Pays"
         "wms_feature_info_mime_type"  "application/json"
         GML_FEATUREID      "gid" 
         GML_INCLUDE_ITEMS  "all"   
@@ -146,7 +146,7 @@ LAYER
     DATA "the_geom FROM nuts_0 USING UNIQUE gid USING srid=3035"
 	LABELITEM "cell_id"
 	CLASS
-	      NAME 'Country'	
+	      NAME 'Pays'
 	      OUTLINECOLOR 0 0 0      
 	      LABEL
 				COLOR  255 0 0
@@ -190,7 +190,7 @@ LAYER
 	CLASSITEM "dp"
 	LABELITEM "dp"
 	CLASS
-	      NAME 'Départements'	
+	      NAME 'Departements' #The use of accent is forbiden here
 	      OUTLINECOLOR 0 0 0      
 	      LABEL
 				COLOR  255 0 0
@@ -234,7 +234,7 @@ LAYER
     "
 	CLASSITEM "code"
 	CLASS
-	      NAME 'Commune'	
+	      NAME 'Communes'
 	      OUTLINECOLOR 0 0 0       
     END
     PROJECTION

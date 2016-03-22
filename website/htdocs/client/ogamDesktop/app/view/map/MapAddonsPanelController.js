@@ -10,6 +10,9 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
              'mapcomponent': {
                  changevisibilityrange: 'toggleLayersAndLegendsForZoom',
                  resultsBBoxChanged: 'enableRequestLayersAndLegends'
+             },
+             'layerspanel':{
+                checkchange: 'onLayerCheckChange'
              }
          }
      },
@@ -18,6 +21,18 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
         this.layersPanel = this.getView().child('layers-panel');
         this.layersPanelCtrl = this.layersPanel.getController();
         this.legendsPanelCtrl = this.getView().child('legends-panel').getController();
+    },
+
+    /**
+     * Toggle the legend in function of the layer tree node check state
+     * 
+     * @param {GeoExt.data.model.LayerTreeNode}
+     *            node The layer tree node
+     * @param {Boolean}
+     *            checked True if the node is checked
+     */
+    onLayerCheckChange : function(node, checked) {
+        this.legendsPanelCtrl.setLegendsVisible([node.getOlLayer()], checked);
     },
 
     /**

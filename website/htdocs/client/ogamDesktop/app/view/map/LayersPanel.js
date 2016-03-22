@@ -65,7 +65,10 @@ Ext.define('OgamDesktop.view.map.LayersPanel', {
             if (this.countLoadedStores === 3) {
                 this.fireEvent('layersPanelStoresLoaded', this.stores);
             }
-        }, this)
+        }, this);
+        this.on('checkchange', function(node, checked, e, eOpts) {
+                this.getController().fireEvent('checkchange', node, checked);
+        }, this);
         this.callParent(arguments);
     }
 });
