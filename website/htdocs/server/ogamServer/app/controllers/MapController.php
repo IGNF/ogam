@@ -148,24 +148,28 @@ class MapController extends AbstractOGAMController {
 
 		$json = '{"success":true';
 		$json .= ', "layerNames" : [';
-		foreach ($vectorlayers as $layerName => $tab) {
+		foreach ($vectorlayers as $layerName => $layer) {
 			
-			$layer = $this->layersModel->getLayer($layerName);
 			$viewService = $this->servicesModel->getService($layer->viewServiceName);
 			$serviceConfig = $viewService->serviceConfig;
 		    
-			$url_wms = json_decode($serviceConfig)->{'urls'}[0];
-		    
+			$url_wms = empty($serviceConfig) ? null :json_decode($serviceConfig)->{'urls'}[0];
+
+			$featureService = (($layer->featureServiceName == '')? null : $this->servicesModel->getService($layer->featureServiceName));
+			
 			$json .= '{"code":'.json_encode($layerName).',';
-			$json .= '"label":'. json_encode($tab[0]).',';
-			$layer_service = json_decode($tab[1]);
-			$layer_service_params = $layer_service->{'params'};
-			$url = rtrim($layer_service->{'urls'}[0],'?').'?';
-			foreach ($layer_service_params as $pKey => $pValue) {
-				$url .= $pKey .'='.$pValue.'&';
+			$json .= '"label":'. json_encode($layer->layerLabel ).',';
+			
+			if (!empty($featureService)){
+				$layer_service = json_decode($featureService->serviceConfig);
+				$layer_service_params = $layer_service->{'params'};
+				$url = rtrim($layer_service->{'urls'}[0],'?').'?';
+				foreach ($layer_service_params as $pKey => $pValue) {
+					$url .= $pKey .'='.$pValue.'&';
+				}
+				$url = rtrim($url, '&');
+				$json .= '"url":'. json_encode($url).',';
 			}
-			$url = rtrim($url, '&');
-			$json .= '"url":'. json_encode($url).',';
 			$json .= '"url_wms":'. json_encode($url_wms).'},';
 		}
 		if (!empty($layerNames)) {
