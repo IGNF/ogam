@@ -6,10 +6,10 @@
     
     <filter>
         <whitelist>
-            <directory suffix=".php">./htdocs/ogam/application/</directory>
+            <directory suffix=".php">./ogamServer/app/</directory>
             <exclude>
-                <file>./htdocs/ogam/application/Bootstrap.php</file>
-                <directory suffix=".phtml">./htdocs/ogam/application/</directory>
+                <file>./ogamServer/app/Bootstrap.php</file>
+                <directory suffix=".phtml">./ogamServer/app/</directory>
             </exclude>
         </whitelist>
     </filter>
