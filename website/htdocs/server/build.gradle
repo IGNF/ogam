@@ -39,30 +39,13 @@ task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static anal
 
 
 
-// Download PHPUnit
-// Using Composer does not work because the versions available are not compatible with Zend Framework 1
-//task downloadPHPUnit(type: Copy, description: 'Download PHPUnit 3.4.x from GitHub as it is not available from Composer repo.') {
-	
-//	def f = new File('./vendor/phpunit34.zip')
-//	if (!f.exists()) {
-//	    new URL('https://github.com/adamlundrigan/PHPUnit-PHAR/archive/feature/phar34.zip').withInputStream{ i -> f.withOutputStream{ it << i }}
-//	}
-		
-	// Unzip
-//	def outputDir = file('./vendor/')
-//	from zipTree(f)
-//	into outputDir
-//}
-
-
-
 // Launch PHPUnit
 task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
   workingDir '.'
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-  	// commandLine "cmd", "/c php -r ./vendor/PHPUnit-PHAR-feature-phar34/phpunit.php"
+  	commandLine "cmd", "/c php ./vendor/phpunit/phpunit/phpunit --configuration ./test/phpunit.xml"
   	// commandLine './vendor/PHPUnit-PHAR-feature-phar34/phpunit.bat'
-  	// commandLine "php", "./vendor/PHPUnit-PHAR-feature-phar34/phpunit.php", "-configuration", "./test/phpunit.xml" 
+  	//commandLine "php", "php ./vendor/phpunit/phpunit/phpunit", "-configuration", "./test/phpunit.xml" 
   } else {
   	commandLine './vendor/PHPUnit-PHAR-feature-phar34/phpunit', "-configuration", "./test/phpunit.xml"
   }
