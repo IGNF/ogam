@@ -73,7 +73,7 @@ Ext.define('OgamDesktop.view.map.LegendsPanelController', {
         mapAddonsPanel.setActiveItem(this.getView());
 
         for (var i in layers) {
-            var layerName = layers[i].get('code');
+            var layerName = layers[i].get('name');
             var legendCmp = this.getView().getComponent(this.getView().id + layerName);
             if (!Ext.isEmpty(legendCmp)) {
                 if (visible === true) {

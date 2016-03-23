@@ -64,8 +64,8 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         }, this);
     },
 
-    getMapLayer : function (layerCode) {
-        var me = {"layerCode":layerCode};
+    getMapLayer : function (layerName) {
+        var me = {"layerName":layerName};
         var lyrGrp;
         if (arguments.length > 1) {
             lyrGrp = arguments[1];
@@ -74,12 +74,12 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         }
         lyrGrp.getLayers().forEach(
             function(el, index, c_array){
-                if (el.get('code') === me.layerCode) {
+                if (el.get('name') === me.layerName) {
                     me.layer = el;
                     return;
                 } else if (el.isLayerGroup) {
-                    if (this.getMapLayer(layerCode, el)) {
-                        me.layer = this.getMapLayer(layerCode, el)
+                    if (this.getMapLayer(layerName, el)) {
+                        me.layer = this.getMapLayer(layerName, el)
                         return;
                     };
                 }
@@ -91,12 +91,11 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
 
     activateVectorLayerInfo : function() {
         if (this.selectedVectorLayer && this.selectedVectorLayer !== null) {
-            var layerName = this.selectedVectorLayer.getData().code;
+            var layerName = this.selectedVectorLayer.getData().name;
             var url = this.selectedVectorLayer.getData().url;
         }
     },
 
-    // TODO: @PEG : Ajouter l'attribut code: 'results' à la couche des résultats,
     zoomToResultFeatures : function () {
         // Get wkt geometry corresponding to the result BBOX
         var resultsBBox = this.getView().resultsBBox ? this.getView().resultsBBox : 'POLYGON EMPTY';

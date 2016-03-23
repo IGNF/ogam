@@ -275,7 +275,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
     olLayerToString : function(layer){
         layerStr = '{';
-        layerStr += '"name":"' + layer.get('code') + '",';
+        layerStr += '"name":"' + layer.get('name') + '",';
         layerStr += '"opacity":' + layer.opacity;
         if (layer.tileSize) {
             tileSizeArray = [layer.tileSize.h, layer.tileSize.w];

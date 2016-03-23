@@ -41,7 +41,7 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
         // Get the tree store of the layers tree panel and scan it.
         var layerStore = this.getView().getStore();
         layerStore.each(function(layerNode){
-            if (!layerNode.data.isLayerGroup && layerNode.data.get('code') === layer.get('code')) {
+            if (!layerNode.data.isLayerGroup && layerNode.data.get('name') === layer.get('name')) {
                 node = layerNode;
             }
         });

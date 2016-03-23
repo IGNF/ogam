@@ -95,20 +95,13 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         mapCmp.getController().requestLayers = requestLayersCollection.getRange();
 
         // Adds the layers to the map
-        var filterOnDisplayInLayerSwitcher = new Ext.util.Filter({
-            filterFn : function(item) {
-                return item.get('displayInLayerSwitcher');
-            }
-        });
-        var treeLayersCollection = layersCollection.filter(filterOnDisplayInLayerSwitcher);
-        var treeLayersGroup = new ol.layer.Group({
-            layers: treeLayersCollection.getRange().reverse(),
-            code: 'treeGrp'
-        });
-        mapCmp.getMap().addLayer(treeLayersGroup);
+        var map = mapCmp.getMap();
+        layersCollection.each(function(item, index, len){
+            map.addLayer(item);
+        }, this);
 
         // Adds the store to the layers tree
-        this.getLayerspanel().setConfig('store', this.buildGeoExtStore(treeLayersGroup));
+        this.getLayerspanel().setConfig('store', this.buildGeoExtStore());
     },
 
    /**
@@ -127,6 +120,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             if (!lyrNode.get('leaf')) {
                 olGrp = new ol.layer.Group({
                     name: lyrNode.get('text'),
+                    text: lyrNode.get('text'),
                     grpId: lyrNode.get('nodeGroup'),
                     visible: !lyrNode.get('hidden'),
                     displayInLayerSwitcher: !lyrNode.get('hidden'),
@@ -176,7 +170,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         }
 
         var layersCollection = new Ext.util.MixedCollection();
-        layersCollection.addAll(layersList);
+        layersCollection.addAll(layersList.reverse());
 
         return layersCollection;
     },
@@ -244,9 +238,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         var olLayerOpts = {};
         olLayerOpts['session_id'] = layer.get('params').session_id;
         olLayerOpts['source'] = this.buildOlSource(layer, service);
-        olLayerOpts['name'] = layer.get('options').label;
+        olLayerOpts['name'] = layer.get('name');
+        olLayerOpts['text'] = layer.get('options').label;
         olLayerOpts['opacity'] = layer.get('options').opacity;
-        olLayerOpts['code'] = layer.get('name');
         olLayerOpts['printable'] = true;
         olLayerOpts['visible'] = !layer.get('params').isHidden;
         olLayerOpts['displayInLayerSwitcher'] = !layer.get('params').isHidden;
@@ -268,35 +262,41 @@ Ext.define('OgamDesktop.controller.map.Layer',{
    /**
      * Build a GeoExt tree store
      * @private
-     * @param {ol.layer.Group}
-     *            layerGroup The store layer group
      * @return GeoExt.data.store.LayersTree
      */
-    buildGeoExtStore: function(layerGroup) {
+    buildGeoExtStore: function() {
+        var mapCmp = this.getMappanel().child('mapcomponent');
+
         // Create the GeoExt tree store
         var treeLayerStore = Ext.create('GeoExt.data.store.LayersTree', {
-            layerGroup: layerGroup
+            layerGroup: mapCmp.getMap().getLayerGroup(),
+            textProperty: 'text',
+            folderToggleMode: 'classic'
         });
 
-        // Sets up the store records
-        function eachRecursive(item) {
-            if (item.childNodes.length > 0){
-                // Node group
-                if (item.getOlLayer().get('expanded')) {
-                    item.expand();
-                    item.set("expanded", true);
-                };
-                for (var k in item.childNodes) {
-                    eachRecursive(item.childNodes[k]);
+        // Filters the layers in function of their 'displayInLayerSwitcher' property
+        treeLayerStore.filterBy(function(record) {
+            return record.getOlLayer().get('displayInLayerSwitcher') === true;
+        }, this);
+
+        // Sets up the store records 
+        // See GeoExt.data.model.LayerTreeNode and Ext.data.NodeInterface for the item properties
+        treeLayerStore.getRoot().cascadeBy({
+            'after' : function(node) {
+                var layer = node.getOlLayer();
+                if(layer){
+                    if (node.childNodes.length > 0){ // Node group
+                        if (layer.get('expanded')) {
+                            node.expand();
+                        };
+                    } else { // Node
+                        var cls = layer.get('disabled') ? 'dvp-tree-node-disabled' : '';
+                        node.set("cls", cls);
+                        node.set("checked", layer.get('checked'));
+                    }
                 }
-            } else {
-                // Node
-                var cls = item.getOlLayer().get('disabled') ? 'dvp-tree-node-disabled' : '';
-                item.set("cls", cls);
-                item.set("checked", item.getOlLayer().get('checked'));
             }
-        };
-        treeLayerStore.each(eachRecursive);
+        });
 
         return treeLayerStore;
     }

@@ -19,8 +19,8 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
         interactions: ol.interaction.defaults({altShiftDragRotate:false, pinchRotate:false}), // disable rotation
         layers: [
             new ol.layer.Vector({
-                code: 'drawingLayer',
-                name: 'Drawing layer',
+                name: 'drawingLayer',
+                text: 'Drawing layer',
                 printable: false,
                 source: new ol.source.Vector({features: new ol.Collection()}),
                 style: new ol.style.Style({
@@ -40,8 +40,8 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
                 })
             }),
             new ol.layer.Vector({
-                code: 'snappingLayer',
-                name: 'Snapping layer',
+                name: 'snappingLayer',
+                text: 'Snapping layer',
                 source: new ol.source.Vector({features: new ol.Collection()}),
                 visible: false,
                 style: new ol.style.Style({
