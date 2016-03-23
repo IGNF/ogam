@@ -42,7 +42,7 @@ class GenerateAddLinkTest extends ControllerTestCase {
 
 		$this->assertNotNull($link);
 
-		$this->assertEquals('/ogam/dataedition/show-add-data/SCHEMA/mySchema/FORMAT/myFormat/myfield1/value1/myfield2/value2', $link);
+		$this->assertEquals('#edition-add/SCHEMA/mySchema/FORMAT/myFormat/myfield1/value1/myfield2/value2', $link);
 		// echo "Result : " . print_r($link, true);
 	}
 }

@@ -62,7 +62,7 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
             resolutions: OgamDesktop.map.resolutions,
             projection : OgamDesktop.map.projection,
             center: [OgamDesktop.map.x_center, OgamDesktop.map.y_center],
-            zoom: OgamDesktop.map.defaultzoom,
+            zoom: OgamDesktop.map.zoomLevel,
             extent: [
                 OgamDesktop.map.x_min,
                 OgamDesktop.map.y_min,

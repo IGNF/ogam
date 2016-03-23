@@ -335,7 +335,7 @@ class GenericServiceTest extends ControllerTestCase {
 		$this->assertTrue(strpos($select, 'SPECIES_DATA.BASAL_AREA as SPECIES_DATA__BASAL_AREA') !== false);
 		$this->assertTrue(strpos($select, 'SPECIES_DATA.COMMENT as SPECIES_DATA__COMMENT') !== false);
 		$this->assertTrue(strpos($select, 'SPECIES_DATA.LINE_NUMBER as SPECIES_DATA__LINE_NUMBER') !== false);
-		$this->assertTrue(strpos($select, 'st_astext(st_centroid(st_transform(LOCATION_DATA.THE_GEOM,3035))) as location_centroid') !== false);
+		$this->assertTrue(strpos($select, 'st_astext(st_centroid(st_transform(LOCATION_DATA.THE_GEOM,3857))) as location_centroid') !== false);
 
 		// $this->assertEquals("SELECT DISTINCT SPECIES_DATA.SUBMISSION_ID as SPECIES_DATA__SUBMISSION_ID, SPECIES_DATA.ID_TAXON as SPECIES_DATA__ID_TAXON, SPECIES_DATA.BASAL_AREA as SPECIES_DATA__BASAL_AREA, SPECIES_DATA.COMMENT as SPECIES_DATA__COMMENT, SPECIES_DATA.LINE_NUMBER as SPECIES_DATA__LINE_NUMBER, 'SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA' || '/' || 'PROVIDER_ID/' ||SPECIES_DATA.PROVIDER_ID || '/' || 'PLOT_CODE/' ||SPECIES_DATA.PLOT_CODE || '/' || 'CYCLE/' ||SPECIES_DATA.CYCLE || '/' || 'SPECIES_CODE/' ||SPECIES_DATA.SPECIES_CODE as id, st_astext(st_centroid(st_transform(LOCATION_DATA.THE_GEOM,3035))) as location_centroid", $select);
 	}
@@ -465,7 +465,8 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->unit = "ID_TAXON";
 		$field->type = "CODE";
 		$field->subtype = "TAXREF";
-		$field->value = '201070'; // 201070 est le taxon parent de 220213, 220214 et 220215
+		$field->value = '669477'; // 669477 est le taxon parent de 670322, 442048 et 526292
+
 		$data->addInfoField($field);
 
 		// On récupère le where correspondant
@@ -473,7 +474,7 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1) AND SPECIES_DATA.ID_TAXON IN ('201070', '220213', '220214', '220215')", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND SPECIES_DATA.ID_TAXON IN ('669477', '442048', '526292', '670322')", trim($where));
 	}
 
 	/**
@@ -728,7 +729,7 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((3697781 2714044,3693936 2709776,3700497 2710164,3697781 2714044))', 3035), 4326)))", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((3697781 2714044,3693936 2709776,3700497 2710164,3697781 2714044))', 3857), 4326)))", trim($where));
 
 		//
 		// Ajout d'un critère sur un liste de valeurs
@@ -743,7 +744,7 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((0 0,2 0,2 2,0 0))', 3035), 4326)) OR ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((0 0,1 0,1 1,0 0))', 3035), 4326)))", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((0 0,2 0,2 2,0 0))', 3857), 4326)) OR ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((0 0,1 0,1 1,0 0))', 3857), 4326)))", trim($where));
 	}
 
 	/**
@@ -882,15 +883,16 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->unit = "ID_TAXON";
 		$field->type = "ARRAY";
 		$field->subtype = "TAXREF";
-		$field->value = '201070'; // 201070 est le taxon parent de 220213, 220214 et 220215
+		$field->value = '669477'; // 669477 est le taxon parent de 670322, 442048 et 526292
 		$data->addInfoField($field);
+
 
 		// On récupère le where correspondant
 		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1) AND SPECIES_DATA.ID_TAXON && '{\"201070\",\"220213\",\"220214\",\"220215\"}'", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND SPECIES_DATA.ID_TAXON && '{\"669477\",\"442048\",\"526292\",\"670322\"}'", trim($where));
 	}
 
 }

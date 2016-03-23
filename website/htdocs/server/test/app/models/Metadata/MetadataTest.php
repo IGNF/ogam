@@ -507,7 +507,7 @@ class MetadataTest extends ControllerTestCase {
 	public function testGetTaxrefChildren() {
 
 		// On cherche les enfants au rang 2 de 'Plantae'
-		$tree = $this->metadataModel->getTaxrefChildren('ID_TAXON', '187079', 2);
+		$tree = $this->metadataModel->getTaxrefChildren('ID_TAXON', '186042', 2);
 
 		// Ne doit pas être null
 		$this->assertNotNull($tree);
@@ -516,8 +516,8 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertFalse(empty($tree->children));
 
 		// On cherche un des enfants en particulier
-		$item0 = $tree->getNode('187557');
-		$this->assertEquals('Bacillariophyta', $item0->name);
+		$item0 = $tree->getNode('669477');
+		$this->assertEquals('Aphrodroma', $item0->name);
 	}
 
 	/**
@@ -526,14 +526,14 @@ class MetadataTest extends ControllerTestCase {
 	public function testGetTaxrefChildrenCodes() {
 
 		// On cherche les enfants au rang 2 de 'Plantae'
-		$codes = $this->metadataModel->getTaxrefChildrenCodes('ID_TAXON', '187079', 2);
+		$codes = $this->metadataModel->getTaxrefChildrenCodes('ID_TAXON', '186042', 2);
 
 		// Ne doit pas être null
 		$this->assertNotNull($codes);
 
 		// Il doit y avoir des enfants
 		$this->assertTrue(is_array($codes));
-		$this->assertTrue(in_array('187557', $codes));
+		$this->assertTrue(in_array('669477', $codes));
 	}
 
 	/**
@@ -564,7 +564,7 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertNotNull($modes);
 
 		$this->assertTrue(is_array($modes));
-		$this->assertEquals(50, count($modes));
+		$this->assertEquals(20, count($modes));
 	}
 
 	/**
@@ -575,6 +575,6 @@ class MetadataTest extends ControllerTestCase {
 		// On cherche les enfants au rang 2 de 'Plantae'
 		$count = $this->metadataModel->getTaxrefModesCount('ID_TAXON', 'Planta');
 
-		$this->assertEquals(528, $count);
+		$this->assertEquals(20, $count);
 	}
 }

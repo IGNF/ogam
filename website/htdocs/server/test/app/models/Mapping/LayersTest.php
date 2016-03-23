@@ -14,21 +14,21 @@ class LayersTest extends ControllerTestCase {
 	 * This test is based on default data.
 	 */
 	public function testGetLayer() {
-		
+
 		// On charge le modèle
 		$layersModel = new Application_Model_Mapping_Layers();
-		
+
 		// On récupère le layer des résultats
 		$resultLayer = $layersModel->getLayer('result_locations');
-		
+
 		// On vérifie le résultat attendu
 		$this->assertNotNull($resultLayer);
-		
+
 		$this->assertEquals('result_locations', $resultLayer->layerName);
-		$this->assertEquals('Results', $resultLayer->layerLabel);
+		$this->assertEquals('Résultats', $resultLayer->layerLabel);
 		$this->assertEquals('result_locations', $resultLayer->serviceLayerName);
 		$this->assertEquals(true, $resultLayer->isTransparent);
-		$this->assertEquals(null, $resultLayer->defaultOpacity);
+		$this->assertEquals(100, $resultLayer->defaultOpacity);
 		$this->assertEquals(false, $resultLayer->isBaseLayer);
 		$this->assertEquals(true, $resultLayer->isUntiled);
 		$this->assertEquals(true, $resultLayer->isVector);
@@ -39,11 +39,11 @@ class LayersTest extends ControllerTestCase {
 		$this->assertEquals('PNG', $resultLayer->imageFormat);
 		$this->assertEquals(null, $resultLayer->providerId);
 		$this->assertEquals('REQUEST', $resultLayer->activateType);
-		$this->assertEquals('local_mapserver', $resultLayer->viewServiceName);
-		$this->assertEquals('local_legend', $resultLayer->legendServiceName);
-		$this->assertEquals('local_mapserver', $resultLayer->printServiceName);
-		$this->assertEquals('local_mapserver', $resultLayer->detailServiceName);
-		$this->assertEquals('local_mapserver', $resultLayer->featureServiceName);
+		$this->assertEquals('Local_MapProxy_WMS_GetMap', $resultLayer->viewServiceName);
+		$this->assertEquals('Local_MapProxy_WMS_GetLegendGraphic', $resultLayer->legendServiceName);
+		$this->assertEquals('Local_Mapserv_WMS_GetMap', $resultLayer->printServiceName);
+		$this->assertEquals('Local_MapProxy_WMS_GetMap', $resultLayer->detailServiceName);
+		$this->assertEquals('Local_MapProxy_WFS_GetFeature', $resultLayer->featureServiceName);
 	}
 
 	/**
@@ -52,21 +52,21 @@ class LayersTest extends ControllerTestCase {
 	 * This test is based on default data.
 	 */
 	public function testGetLayersList() {
-		
+
 		// On charge le modèle
 		$layersModel = new Application_Model_Mapping_Layers();
-		
+
 		// On récupère le layer des résultats
 		$layers = $layersModel->getLayersList();
-		
+
 		// On vérifie le résultat attendu
 		$this->assertNotNull($layers);
 		$this->assertTrue(is_array($layers));
-		
+
 		// Le résultat doit contenir le layer "résultats"
 		$resultLayer = $layers['result_locations'];
 		$this->assertNotNull($resultLayer);
-		$this->assertEquals('Results', $resultLayer->layerLabel);
+		$this->assertEquals('Résultats', $resultLayer->layerLabel);
 	}
 
 	/**
@@ -75,17 +75,17 @@ class LayersTest extends ControllerTestCase {
 	 * This test is based on default data.
 	 */
 	public function testGetLegendItems() {
-		
+
 		// On charge le modèle
 		$layersModel = new Application_Model_Mapping_Layers();
-		
+
 		// On récupère le layer des résultats
 		$legendItems = $layersModel->getLegendItems(-1);
-		
+
 		// On vérifie le résultat attendu
 		$this->assertNotNull($legendItems);
 		$this->assertTrue(is_array($legendItems));
-		
+
 		// Le résultat doit contenir le layer "résultats"
 		$resultItem = $legendItems[1];
 		$this->assertNotNull($resultItem);
@@ -104,21 +104,21 @@ class LayersTest extends ControllerTestCase {
 	 * This test is based on default data.
 	 */
 	public function testGetVectorLayersList() {
-		
+
 		// On charge le modèle
 		$layersModel = new Application_Model_Mapping_Layers();
-		
+
 		// On récupère le layer des résultats
 		$vectorLayers = $layersModel->getVectorLayersList();
-		
+
 		// On vérifie le résultat attendu
 		$this->assertNotNull($vectorLayers);
 		$this->assertTrue(is_array($vectorLayers));
-		
+
 		// Le résultat doit contenir le layer "résultats"
 		$resultLayer = $vectorLayers['result_locations'];
-		
+
 		$this->assertNotNull($resultLayer);
-		$this->assertEquals('Results', $resultLayer->layerLabel);
+		$this->assertEquals('Résultats', $resultLayer->layerLabel);
 	}
 }

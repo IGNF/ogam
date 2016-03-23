@@ -43,11 +43,9 @@ task phpcheckstyle(type:Exec, description: 'Launch PHPCHeckstyle for static anal
 task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
   workingDir '.'
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-  	commandLine "cmd", "/c php ./vendor/phpunit/phpunit/phpunit --configuration ./test/phpunit.xml"
-  	// commandLine './vendor/PHPUnit-PHAR-feature-phar34/phpunit.bat'
-  	//commandLine "php", "php ./vendor/phpunit/phpunit/phpunit", "-configuration", "./test/phpunit.xml" 
+  	commandLine "cmd", "/c", "php ./vendor/phpunit/phpunit/phpunit"
   } else {
-  	commandLine './vendor/PHPUnit-PHAR-feature-phar34/phpunit', "-configuration", "./test/phpunit.xml"
+  	commandLine './vendor/phpunit/phpunit/phpunit'
   }
-  args "--configuration", "./config/phpunit.xml"
+  args "--configuration", "./test/phpunit.xml"
 }

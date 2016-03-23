@@ -40,7 +40,7 @@ class GenerateEditLinkTest extends ControllerTestCase {
 
 		// echo "Result : " . print_r($link, true);
 
-		$this->assertEquals('/ogam/dataedition/show-edit-data/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/01575-14060-4-0T/CYCLE/5', $link['url']);
+		$this->assertEquals('#edition-edit/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/01575-14060-4-0T/CYCLE/5', $link['url']);
 	}
 }
 

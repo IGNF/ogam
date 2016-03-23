@@ -79,15 +79,15 @@ class MapController extends AbstractOGAMController {
 
 		$this->logger->debug('$configuration->usePerProviderCenter : ' . $configuration->usePerProviderCenter);
 
-		if ($configuration->usePerProviderCenter == 1) {
+		if ($configuration->usePerProviderCenter === '1' || (strtolower($configuration->usePerProviderCenter) === 'true')) {
 			// Center the map on the provider location
 			$center = $this->boundingBoxModel->getCenter($providerId);
-			$this->view->defaultzoom = $center->defaultzoom;
+			$this->view->zoomLevel = $center->zoomLevel;
 			$this->view->centerX = $center->x;
 			$this->view->centerY = $center->y;
 		} else {
 			// Use default settings
-			$this->view->defaultzoom = $configuration->zoom_level;
+			$this->view->zoomLevel = $configuration->zoom_level;
 			$this->view->centerX = ($configuration->bbox_x_min + $configuration->bbox_x_max) / 2;
 			$this->view->centerY = ($configuration->bbox_y_min + $configuration->bbox_y_max) / 2;
 		}
@@ -149,17 +149,17 @@ class MapController extends AbstractOGAMController {
 		$json = '{"success":true';
 		$json .= ', "layerNames" : [';
 		foreach ($vectorlayers as $layerName => $layer) {
-			
+
 			$viewService = $this->servicesModel->getService($layer->viewServiceName);
 			$serviceConfig = $viewService->serviceConfig;
-		    
+
 			$url_wms = empty($serviceConfig) ? null :json_decode($serviceConfig)->{'urls'}[0];
 
 			$featureService = (($layer->featureServiceName == '')? null : $this->servicesModel->getService($layer->featureServiceName));
-			
+
 			$json .= '{"code":'.json_encode($layerName).',';
 			$json .= '"label":'. json_encode($layer->layerLabel ).',';
-			
+
 			if (!empty($featureService)){
 				$layer_service = json_decode($featureService->serviceConfig);
 				$layer_service_params = $layer_service->{'params'};
@@ -208,7 +208,7 @@ class MapController extends AbstractOGAMController {
 
 		// Build the base URL for tiles
 		$sessionId = session_id();
-		
+
 		$out = '{"services":[';
 		foreach ($services as $service) {
 			$out .= '{"name":"'.$service->serviceName.'"';

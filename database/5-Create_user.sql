@@ -32,9 +32,10 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_criteri
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_group TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_group_asso TO ogam;
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.predefined_request_result TO ogam;
-GRANT SELECT ON TABLE website.providers TO ogam;
-GRANT SELECT ON TABLE website.dataset_role_restriction TO ogam;
-GRANT SELECT ON TABLE website.layer_role_restriction TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.providers TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.dataset_role_restriction TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE website.layer_role_restriction TO ogam;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA website TO ogam;
 
 -- raw-data
 GRANT ALL ON SCHEMA raw_data TO ogam;
@@ -109,7 +110,7 @@ GRANT SELECT ON TABLE metadata.translation TO ogam;
 
 -- mapping
 GRANT ALL ON SCHEMA "mapping" TO ogam;
-GRANT SELECT ON TABLE "mapping".bounding_box TO ogam;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "mapping".bounding_box TO ogam;
 GRANT SELECT ON TABLE "mapping".layer TO ogam;
 GRANT SELECT ON TABLE "mapping".layer_service TO ogam;
 GRANT SELECT ON TABLE "mapping".layer_tree TO ogam;
