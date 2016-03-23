@@ -115,17 +115,17 @@ class Application_Service_GenericService {
 	 * @return ARRAY
 	 */
 	public function datumToDetailArray($data, $datasetId = null) {
-		
+
 		$this->logger->info('datumToDetailJSON', $data);
-	
+
 		// Get the user rights
 		$userSession = new Zend_Session_Namespace('user');
 		$permissions = $userSession->permissions;
-	
+
 		// Get children for the current dataset
 		$this->genericModel = new Genapp_Model_Generic_Generic();
 		$children = $this->genericModel->getChildren($data, $datasetId);
-	
+
 		$childrenCount = 0;
 		if (!empty($children)) {
 			$childrenCount = count(current($children));
@@ -149,7 +149,7 @@ class Application_Service_GenericService {
 			return '';
 		}
 		$out['fields'] = $fields;
-	
+
 		// Add the edit link
 		if (!empty($permissions) && array_key_exists('DATA_EDITION', $permissions)) {
 			$out['editURL'] = json_encode($data->getId());
@@ -241,14 +241,14 @@ class Application_Service_GenericService {
 	 * @return ARRAY
 	 */
 	public function dataToGridDetailArray($id, $data) {
-	
+
 		$this->logger->info('dataToDetailArray');
-	
+
 		if (!empty($data)) {
-	
+
 			// The columns config to setup the grid columnModel
 			$columns = array(array(
-					
+
 					'header' => 'Informations',
 					'dataIndex' => 'informations',
 					'editable' => false,
@@ -263,7 +263,7 @@ class Application_Service_GenericService {
 			// The data to full the store
 			$locationsData = array();
 			$firstData = $data[0];
-	
+
 			// Dump each row values
 			foreach ($data as $datum) {
 				$locationData = array();
@@ -273,7 +273,7 @@ class Application_Service_GenericService {
 				foreach ($datum->getInfoFields() as $field) {
 					$locationData[1] .= $field->valueLabel. ', ';
 				}
-				
+
 				if($locationData[1] != ""){
 					$locationData[1] = substr($locationData[1], 0, -2);
 				}
@@ -288,7 +288,7 @@ class Application_Service_GenericService {
 				}
 				array_push($locationsData, $locationData);
 			}
-	
+
 			// Add the colums description
 			foreach ($formFields as $field) {
 				// Set the column model and the location fields
@@ -306,7 +306,7 @@ class Application_Service_GenericService {
 				array_push($columns, $column);
 				array_push($locationFields, $dataIndex);
 			}
-	
+
 			// Check if the table has a child table
 			$hasChild = false;
 			$children = $this->metadataModel->getChildrenTableLabels($firstData->tableFormat);
@@ -319,7 +319,7 @@ class Application_Service_GenericService {
 			$out['hasChild'] = $hasChild;
 			$out['columns'] = array_values($columns);
 			$out['fields'] = array_values($locationFields);
-			$out['data'] = array_values($locationsData); 
+			$out['data'] = array_values($locationsData);
 			return $out;
 		} else {
 			return null;
@@ -675,7 +675,9 @@ class Application_Service_GenericService {
 			foreach ($arrayValues as $value) {
 				$string .= '"' . $value . '",';
 			}
-			$string = substr($string, 0, -1); // Remove last comma
+			if (!empty($arrayValues)) {
+				$string = substr($string, 0, -1); // Remove last comma
+			}
 		} else {
 			$string .= $arrayValues;
 		}

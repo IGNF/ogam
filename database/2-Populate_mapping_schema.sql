@@ -13,24 +13,6 @@ INSERT INTO scales(scale) VALUES (500000);   --  500 K
 INSERT INTO scales(scale) VALUES (250000);   --  250 K
 INSERT INTO scales(scale) VALUES (100000);   --  100 K
 
-/*
-INSERT INTO scales VALUES (866688.03242073394);
-INSERT INTO scales VALUES (433344.01762768999);
-INSERT INTO scales VALUES (216672.00739652201);
-INSERT INTO scales VALUES (108336.003698261);
-INSERT INTO scales VALUES (54168.0018491304);
-INSERT INTO scales VALUES (6770.9998768103997);
-INSERT INTO scales VALUES (3385.5013557287998);
-INSERT INTO scales VALUES (1692.7492605407999);
-INSERT INTO scales VALUES (846.37463027039996);
-INSERT INTO scales VALUES (1550000);
-INSERT INTO scales VALUES (3000000);
-INSERT INTO scales VALUES (6000000);
-INSERT INTO scales VALUES (423);
-INSERT INTO scales VALUES (27084);
-INSERT INTO scales VALUES (13542);
-*/
-
 --
 -- Configure the layers
 --
@@ -83,4 +65,4 @@ INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_
 INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (32, '30', 1, 1, 0, 0, 0, 'scan25', 32, NULL);
 
 -- Configure the bounding box for all data providers
-INSERT INTO bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level) VALUES ('1', 3200000, 2060000, 4220000, 3160000, 1);
+INSERT INTO bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level) VALUES ('1', 3200000, 2060000, 4220000, 3160000, 0);

@@ -9,12 +9,12 @@ website_dir='/vagrant/ogam/website/htdocs'
 # Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get install -y apache2 php5-common libapache2-mod-php5 php5-cli php5-pgsql php5-gd
+apt-get install -y apache2 php5-common libapache2-mod-php5 php5-cli php5-pgsql php5-gd php5-xdebug
 
 # Ajout du user vagrant au groupe "www-data"
 sudo usermod -G www-data -a vagrant
 
-# Accès aux logs
+# Accï¿½s aux logs
 sudo chown www-data:www-data /var/log/apache2 
 sudo -n chmod 774 /var/log/apache2
 
@@ -23,23 +23,23 @@ echo "
 ServerName localhost
 " >> /etc/apache2/apache2.conf
 
-# Activation des modules Apache utilisés
+# Activation des modules Apache utilisï¿½s
 sudo a2enmod rewrite
 sudo a2enmod expires
 sudo a2enmod cgi
 sudo a2enmod cgid
 
-# Mise à jour de la timezone dans les fichiers de conf PHP
+# Mise ï¿½ jour de la timezone dans les fichiers de conf PHP
 sed -i 's/\;date\.timezone\ \=/date\.timezone\ \=\ Europe\/Paris/g' /etc/php5/cli/php.ini
 sed -i 's/\;date\.timezone\ \=/date\.timezone\ \=\ Europe\/Paris/g' /etc/php5/apache2/php.ini
 sed -i "s/allow_url_fopen = .*/allow_url_fopen = On/" /etc/php5/apache2/php.ini
 
-# Pour le développement
+# Pour le dï¿½veloppement
 sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/apache2/php.ini
 sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/apache2/php.ini
 
 #----------------------------------------------------------------
-# Création des répertoires de log et d'upload et mise à jour des droits
+# Crï¿½ation des rï¿½pertoires de log et d'upload et mise ï¿½ jour des droits
 #----------------------------------------------------------------
 
 
@@ -61,7 +61,7 @@ ln -fs /vagrant/ogam/vagrant_config/conf/apache/httpd_ogam.conf /etc/apache2/sit
 /usr/sbin/a2dissite 000-default
 
 #----------------------------------------------------------------
-# Redémarrage d'Apache
+# Redï¿½marrage d'Apache
 #----------------------------------------------------------------
 
 service apache2 restart

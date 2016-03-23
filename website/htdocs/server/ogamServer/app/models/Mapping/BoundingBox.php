@@ -152,7 +152,7 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 			$center = new Application_Object_Mapping_Center();
 			$center->x = $row['x_center'];
 			$center->y = $row['y_center'];
-			$center->defaultzoom = $row['zoom_level'];
+			$center->zoomLevel = $row['zoom_level'];
 
 			return $center;
 		} else {
