@@ -163,11 +163,11 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->unit = 'ID_TAXON';
 		$field->type = "CODE";
 		$field->subtype = "TAXREF";
-		$field->value = '409299';
+		$field->value = '669477';
 
 		// On récupère le libellé d'un code et on le vérifie
 		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
-		$this->assertEquals('Acalles nudiusculus', $field->getValueLabel());
+		$this->assertEquals('Aphrodroma', $field->getValueLabel());
 	}
 
 	/**
@@ -180,23 +180,23 @@ class GenericServiceTest extends ControllerTestCase {
 		$field->unit = 'ID_TAXON';
 		$field->type = "ARRAY";
 		$field->subtype = "TAXREF";
-		$field->value = '409299';
+		$field->value = '669477';
 
 		// On récupère le libellé d'un code et on le vérifie
 		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
-		$this->assertEquals('Acalles nudiusculus', $field->getValueLabel());
+		$this->assertEquals('Aphrodroma', $field->getValueLabel());
 
 		// Cas d'un ARRAY
 		$field->value = array(
-			'409299',
-			'196303'
+			"670322",
+			"442048"
 		);
 
 		// On récupère le libellé d'un code et on le vérifie
 		$field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
 		$taxons = $field->getValueLabel();
-		$this->assertEquals('Acalles nudiusculus', $taxons[0]);
-		$this->assertEquals('Pirata', $taxons[1]);
+		$this->assertEquals('Aphrodroma brevirostris', $taxons[0]);
+		$this->assertEquals('Lugensa brevirostris', $taxons[1]);
 	}
 
 	/**
