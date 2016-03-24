@@ -1,8 +1,2 @@
 //ant.importBuild 'build.xml'
-// Import the ANT tasks and rename them
-ant.importBuild('build.xml') { antTargetName ->
-    'ant_' + antTargetName
-}
-
-
 defaultTasks 'clean','build'
