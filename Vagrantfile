@@ -80,6 +80,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.path = "vagrant_config/scripts/install_sencha_cmd_6.sh"
   end
   
+ config.vm.provision "install_dev_tools", type: "shell" do |s|
+    s.path = "vagrant_config/scripts/install_dev_tools.sh"
+  end
+  
  config.vm.provision "build_ogam_desktop", type: "shell" do |s|
     s.path = "vagrant_config/scripts/build_ogam_desktop.sh"
   end
