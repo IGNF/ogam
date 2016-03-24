@@ -281,10 +281,12 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 
         // Sets up the store records 
         // See GeoExt.data.model.LayerTreeNode and Ext.data.NodeInterface for the item properties
+        // The each fonction doesn't work as expected in extjs v6.0.1.250
+        // The getRoot().cascaseBy() function doesn't use the filtered store
         treeLayerStore.getRoot().cascadeBy({
             'after' : function(node) {
                 var layer = node.getOlLayer();
-                if(layer){
+                if(layer && layer.get('displayInLayerSwitcher') === true){
                     if (node.childNodes.length > 0){ // Node group
                         if (layer.get('expanded')) {
                             node.expand();
