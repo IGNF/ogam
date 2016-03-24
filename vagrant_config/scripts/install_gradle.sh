@@ -26,4 +26,6 @@ export PATH="\$PATH:\$GRADLE_HOME/bin"
 # Enable the daemon
 # ---------------------------------------------------------------
 sudo mkdir -p /home/vagrant/.gradle/
+sudo chown vagrant:vagrant /home/vagrant/.gradle/
+sudo chmod 775 /home/vagrant/.gradle/
 touch /home/vagrant/.gradle/gradle.properties && echo "org.gradle.daemon=true" >> /home/vagrant/.gradle/gradle.properties
