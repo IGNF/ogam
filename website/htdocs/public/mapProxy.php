@@ -56,6 +56,7 @@ $queryParamsAllow = array(//paramNom => requis
     'WIDTH' ,
     'HEIGHT' ,
     'SESSION_ID' ,
+    'PLOT_CODE' ,// TODO: use the query parameter
     'TRANSPARENT' ,
     'VERSION' ,
     'STYLES' ,
