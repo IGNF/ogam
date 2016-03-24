@@ -89,7 +89,7 @@ Ext.define('OgamDesktop.view.map.toolbar.SnappingButtonController', {
             this.snapSource = new ol.source.Vector({
                 format: new ol.format.GeoJSON(),
                 url: function(extent) {
-                    return item.config.data.url +
+                    return item.config.data.featureServiceUrl +
                         '&outputFormat=geojsonogr' +
                         '&srsname=' + projection +
                         '&typename=' + item.itemId +

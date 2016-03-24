@@ -157,8 +157,8 @@ class MapController extends AbstractOGAMController {
 
 			$featureService = (($layer->featureServiceName == '')? null : $this->servicesModel->getService($layer->featureServiceName));
 
-			$json .= '{"code":'.json_encode($layerName).',';
-			$json .= '"label":'. json_encode($layer->layerLabel ).',';
+			$json .= '{"serviceLayerName":'.json_encode($layer->serviceLayerName).',';
+			$json .= '"layerLabel":'. json_encode($layer->layerLabel).',';
 
 			if (!empty($featureService)){
 				$layer_service = json_decode($featureService->serviceConfig);
@@ -168,9 +168,8 @@ class MapController extends AbstractOGAMController {
 					$url .= $pKey .'='.$pValue.'&';
 				}
 				$url = rtrim($url, '&');
-				$json .= '"url":'. json_encode($url).',';
+				$json .= '"featureServiceUrl":'. json_encode($url).'},';
 			}
-			$json .= '"url_wms":'. json_encode($url_wms).'},';
 		}
 		if (!empty($layerNames)) {
 			$json = substr($json, 0, -1);

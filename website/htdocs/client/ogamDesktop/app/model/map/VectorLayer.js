@@ -6,9 +6,8 @@
 Ext.define('OgamDesktop.model.map.VectorLayer',{
 	extend: 'Ext.data.Model',
 	fields: [
-		{name : 'code',type: 'string'},
-        {name : 'label', type: 'string'},
-        {name : 'url', type: 'string'},
-        {name : 'url_wms', type: 'string'}
+		{name : 'serviceLayerName',type: 'string'},
+        {name : 'layerLabel', type: 'string'},
+        {name : 'featureServiceUrl', type: 'string'}
 	]
 });

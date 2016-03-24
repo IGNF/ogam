@@ -51,7 +51,7 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
         this.removeLayerFeatureInfoListener();
         var projection = this.map.getView().getProjection().getCode();
         this.layerFeatureInfoListenerKey = this.map.on('singleclick', function(evt) {
-            var url = item.config.data.url +
+            var url = item.config.data.featureServiceUrl +
                 '&outputFormat=geojsonogr' +
                 '&srsname=' + projection +
                 '&typename=' + item.itemId +

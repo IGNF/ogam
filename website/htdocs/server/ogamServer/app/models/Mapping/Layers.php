@@ -101,7 +101,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$req = " SELECT *, COALESCE(t.label, layer.layer_label) as layer_label ";
 		$req .= " FROM layer ";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
-		$req .= " WHERE layer.isvector = 1";
+		$req .= " WHERE layer.feature_service_name IS NOT NULL";
 		
 		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
