@@ -1,6 +1,10 @@
 {
-  	"require": {
+  	"config": {
+  		"secure-http" : false
+  	 },
+  	 "require": {
         "phpcheckstyle/phpcheckstyle": ">0.14",
-        "phpdocumentor/phpdocumentor": "2.*"
+        "phpdocumentor/phpdocumentor": "2.*",
+        "phpunit/phpunit": "4.*"
     }
 }
