@@ -40,7 +40,7 @@ sudo chmod -R 774 /vagrant/ogam/website/htdocs/client/vendor
 #----------------------------------------------------------------
 echo " 
 # Ajout de la commande sencha au PATH
-export PATH=$PATH:/vagrant/ogam/website/htdocs/client/vendor/Sencha/Cmd
+export PATH="\$PATH:/vagrant/ogam/website/htdocs/client/vendor/Sencha/Cmd"
 cd /vagrant/ogam/
 " >> /home/vagrant/.bashrc
 

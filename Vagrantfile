@@ -52,10 +52,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.path = "vagrant_config/scripts/install_java_tomcat.sh"
   end
 
-  config.vm.provision "install_ogam_services", type: "shell" do |s|
-    s.path = "vagrant_config/scripts/install_ogam_services.sh"
-  end
-
   config.vm.provision "install_apache", type: "shell" do |s|
     s.path = "vagrant_config/scripts/install_apache.sh"
   end
@@ -75,18 +71,26 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "install_db", type: "shell" do |s|
     s.path = "vagrant_config/scripts/GENERATE_DB.sh"
   end
-  
- config.vm.provision "install_sencha_cmd_6", type: "shell" do |s|
+    
+  config.vm.provision "install_gradle", type: "shell" do |s|
+    s.path = "vagrant_config/scripts/install_gradle.sh"
+  end
+ 
+  config.vm.provision "install_sencha_cmd_6", type: "shell" do |s|
     s.path = "vagrant_config/scripts/install_sencha_cmd_6.sh"
   end
   
- config.vm.provision "install_dev_tools", type: "shell" do |s|
+  config.vm.provision "install_dev_tools", type: "shell" do |s|
     s.path = "vagrant_config/scripts/install_dev_tools.sh"
   end
+    
+  config.vm.provision "install_ogam_services", type: "shell" do |s|
+    s.path = "vagrant_config/scripts/install_ogam_services.sh"
+  end
   
- config.vm.provision "build_ogam_desktop", type: "shell" do |s|
+  config.vm.provision "build_ogam_desktop", type: "shell" do |s|
     s.path = "vagrant_config/scripts/build_ogam_desktop.sh"
   end
   
-   config.vm.provision "shell", inline: "service apache2 restart", run: "always"
+  config.vm.provision "shell", inline: "service apache2 restart", run: "always"
 end
