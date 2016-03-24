@@ -138,7 +138,7 @@ INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, de
 
 
 -- Configuration des requêtes prédéfinies
-INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed) VALUES ('SPECIES', 'SPECIES_FORM', 'SPECIES_CODE', '026.001.006', NULL);
+INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed) VALUES ('SPECIES', 'TREE_FORM', 'SPECIES_CODE', '026.001.006', NULL);
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'PLOT_CODE');
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'CYCLE');
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'INV_DATE');
@@ -154,7 +154,7 @@ INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP'
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'SPECIES_FORM', 'SPECIES_CODE');
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'SPECIES_FORM', 'BASAL_AREA');
 
-INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON', '14959', NULL);
+INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON', '196709', NULL);
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'PLOT_CODE');
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'CYCLE');
 INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'INV_DATE');
