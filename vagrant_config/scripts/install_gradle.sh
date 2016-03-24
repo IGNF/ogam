@@ -20,3 +20,9 @@ echo "
 export GRADLE_HOME="/vagrant/ogam/gradle/wrapper/dists/gradle-2.5-bin/7mk8vyobxfh3eazpg3pi2y9mv/gradle-2.5"
 export PATH="\$PATH:\$GRADLE_HOME/bin"
 " >> /home/vagrant/.bashrc
+
+
+# ---------------------------------------------------------------
+# Enable the daemon
+# ---------------------------------------------------------------
+touch /home/vagrant/.gradle/gradle.properties && echo "org.gradle.daemon=true" >> /home/vagrant/.gradle/gradle.properties
