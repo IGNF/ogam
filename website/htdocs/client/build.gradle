@@ -1,0 +1,7 @@
+// Import tasks from Sencha Cmd ANT file
+ant.importBuild('ogamDesktop/build.xml') { antTargetName ->
+    'sencha_' + antTargetName
+}
+
+
+defaultTasks 'clean','build'
