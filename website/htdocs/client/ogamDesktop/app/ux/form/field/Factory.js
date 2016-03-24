@@ -95,8 +95,6 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
                     console.warn('The checkbox field value default type is set to Boolean');
                     break;
             }
-            console.log('record', record);
-            console.log('field', field);
             return field;
         }
     };
