@@ -1,5 +1,6 @@
+#!/usr/bin/env bash
 #----------------------------------------------------------------
 # Launch Sencha Cmd to compile the JS and CSS
 #----------------------------------------------------------------
 cd /vagrant/ogam/website/htdocs/client/ogamDesktop
-/root/bin/Sencha/Cmd/sencha app build
+/vagrant/ogam/website/htdocs/client/vendor/Sencha/Cmd/sencha app build
