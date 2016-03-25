@@ -42,5 +42,5 @@ echo "
 # Ajout de la commande sencha au PATH
 export PATH="\$PATH:/vagrant/ogam/website/htdocs/client/vendor/Sencha/Cmd"
 cd /vagrant/ogam/
-" >> /home/vagrant/.bashrc
+" >> /home/vagrant/.profile
 
