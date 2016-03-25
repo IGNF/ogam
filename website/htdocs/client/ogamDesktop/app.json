@@ -225,7 +225,7 @@
      */
     "js": [
         {
-            "path": "http://localhost:8000/map/get-map-parameters",
+            "path": "http://192.168.50.4/map/get-map-parameters",
             "remote": true
         },{
             "path": "lib/OpenLayers/ol-debug.js"
@@ -360,9 +360,9 @@
      */
     "development": {
         "OgamDesktop": {
-            "requestServiceUrl": "http://www.ogam.fr/query/",
-            "mapServiceUrl": "http://www.ogam.fr/map/",
-            "editionServiceUrl": "http://www.ogam.fr/dataedition/"
+            "requestServiceUrl": "http://192.168.50.4/query/",
+            "mapServiceUrl": "http://192.168.50.4/map/",
+            "editionServiceUrl": "http://192.168.50.4/dataedition/"
         },
         "tags": [
             // You can add this tag to enable Fashion when using app watch or
