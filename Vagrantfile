@@ -43,6 +43,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # Configure provisionners on the machine to automatically install softwares etc.
   #
+  
+  #
+  # The following provisions are executed as "root" 
+  #
 
   config.vm.provision "bootstrap", type: "shell" do |s|
     s.path = "vagrant_config/scripts/bootstrap.sh"
@@ -83,13 +87,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "install_dev_tools", type: "shell" do |s|
     s.path = "vagrant_config/scripts/install_dev_tools.sh"
   end
+  
+  #
+  # The following provisions are executed as "vagrant" 
+  #
     
-  config.vm.provision "install_ogam_services", type: "shell" do |s|
+  config.vm.provision "install_composer_libraries", privileged: false, type: "shell" do |s|
+    s.path = "vagrant_config/scripts/install_composer_libraries.sh"
+  end
+    
+  config.vm.provision "install_ogam_services", privileged: false, type: "shell" do |s|
     s.path = "vagrant_config/scripts/install_ogam_services.sh"
   end
   
-  config.vm.provision "build_ogam_desktop", type: "shell" do |s|
-    s.inline = "bash /vagrant/ogam/vagrant_config/scripts/build_ogam_desktop.sh"
+  config.vm.provision "build_ogam_desktop", privileged: false, type: "shell" do |s|
+    s.path = "vagrant_config/scripts/build_ogam_desktop.sh"
   end
   
   config.vm.provision "shell", inline: "service apache2 restart", run: "always"

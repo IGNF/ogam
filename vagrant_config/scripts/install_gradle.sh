@@ -15,15 +15,14 @@ chmod a+x gradlew
 # ---------------------------------------------------------------
 # Configure the PATH for the vagrant user
 # ---------------------------------------------------------------
-source /home/vagrant/.bashrc
 if [ -z "$GRADLE_HOME" ] || [ "$GRADLE_HOME" != "/vagrant/ogam/gradle/wrapper/dists/gradle-2.5-bin/7mk8vyobxfh3eazpg3pi2y9mv/gradle-2.5" ]; then
 echo " 
 # Ajout de la commande gradle au PATH
 export GRADLE_HOME="/vagrant/ogam/gradle/wrapper/dists/gradle-2.5-bin/7mk8vyobxfh3eazpg3pi2y9mv/gradle-2.5"
 export PATH="\$PATH:\$GRADLE_HOME/bin"
-" >> /home/vagrant/.bashrc
+" >> /home/vagrant/.profile
 fi
-sudo -u vagrant -n bash gradlew
+
 # ---------------------------------------------------------------
 # Enable the daemon
 # ---------------------------------------------------------------
