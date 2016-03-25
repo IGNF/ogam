@@ -49,20 +49,26 @@ cp /vagrant/ogam/vagrant_config/conf/tomcat/tomcat-users.xml /etc/tomcat7/tomcat
 #----------------------------------------------------------------
 # Modification des droits
 #----------------------------------------------------------------
+# http://superuser.com/questions/632618/best-practice-for-access-permission-to-users-for-apache-tomcat
+
 
 # Pour les logs
 sudo -n usermod -G tomcat7 -a vagrant
 sudo -n chmod 774 /var/log/tomcat7
 sudo -n chown tomcat7:tomcat7 /var/log/tomcat7
 
-# Pour le déploiement
+# Pour le dÃ©ploiement
 mkdir /var/lib/tomcat7/staging 
-chmod 775 /var/lib/tomcat7/staging/
-chown tomcat7:tomcat7 /var/lib/tomcat7/staging/
+chmod -R 777 /var/lib/tomcat7
+chown -R tomcat7:tomcat7 /var/lib/tomcat7
+
+# Pour la conf
+chmod -R 777 /etc/tomcat7
+chown -R tomcat7:tomcat7 /etc/tomcat7
 
 
 
 #----------------------------------------------------------------
-# Redémarrage Tomcat
+# RedÃ©marrage Tomcat
 #----------------------------------------------------------------
 sudo /etc/init.d/tomcat7 restart

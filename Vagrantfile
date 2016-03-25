@@ -73,7 +73,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provision "install_db", type: "shell" do |s|
-    s.path = "vagrant_config/scripts/GENERATE_DB.sh"
+    s.path = "vagrant_config/scripts/install_db.sh"
   end
     
   config.vm.provision "install_gradle", type: "shell" do |s|

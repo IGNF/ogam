@@ -11,15 +11,15 @@ CREATE SCHEMA metadata;
  * It is created in order to be usable as an immutable function for the creation of indexes.
  */
 CREATE EXTENSION unaccent;
+
 ALTER FUNCTION unaccent(text) RENAME TO unaccent_mutable;
+
 CREATE OR REPLACE FUNCTION unaccent(text) RETURNS text AS
 $$
     SELECT unaccent_mutable($1::text);
 $$
 LANGUAGE 'sql' IMMUTABLE;
 
-
-*/
 
 /**
  * This function is used to do accent-insensitive search.
