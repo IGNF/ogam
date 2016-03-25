@@ -5,8 +5,8 @@
 # Download the Sencha Cmd archive
 #----------------------------------------------------------------
 sudo -n apt-get install -y unzip
-export https_proxy=proxy.ign.fr:3128
-export http_proxy=proxy.ign.fr:3128
+#export https_proxy=proxy.ign.fr:3128
+#export http_proxy=proxy.ign.fr:3128
 
 if [ ! -f "./SenchaCmd-6.0.2.14-linux-amd64.sh.zip" ]; then
 	wget http://cdn.sencha.com/cmd/6.0.2.14/no-jre/SenchaCmd-6.0.2.14-linux-amd64.sh.zip
@@ -23,8 +23,8 @@ sudo chmod -R 774 /vagrant/ogam/website/htdocs/client/vendor
 sudo ./SenchaCmd-6.0.2.14-linux-amd64.sh -q -dir /vagrant/ogam/website/htdocs/client/vendor/Sencha/Cmd/6.0.2.14/
 
 # Ajout du proxy IGN à la config 
-echo '-Dhttp.proxyHost=proxy.ign.fr' >> /vagrant/ogam/website/htdocs/client/vendor/Sencha/Cmd/6.0.2.14/sencha.vmoptions
-echo '-Dhttp.proxyPort=3128' >> /vagrant/ogam/website/htdocs/client/vendor/Sencha/Cmd/6.0.2.14/sencha.vmoptions
+#echo '-Dhttp.proxyHost=proxy.ign.fr' >> /vagrant/ogam/website/htdocs/client/vendor/Sencha/Cmd/6.0.2.14/sencha.vmoptions
+#echo '-Dhttp.proxyPort=3128' >> /vagrant/ogam/website/htdocs/client/vendor/Sencha/Cmd/6.0.2.14/sencha.vmoptions
 
 
 #----------------------------------------------------------------

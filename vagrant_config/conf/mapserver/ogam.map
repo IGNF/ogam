@@ -58,7 +58,7 @@ WEB
         # %SESSION_ID% must be 40 letters or digits
         'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
         #%PLOT_CODE% must be 16 letters or digits or dot or dash
-        PLOT_CODE          '^[a-zA-Z0-9\.\-]{0,16}$'
+        'PLOT_CODE'      '^[a-zA-Z0-9\.\-]{0,17}$'
     END
 END
 
@@ -185,8 +185,7 @@ LAYER
     DATA "the_geom FROM (
             SELECT st_transform(the_geom, 3035) as the_geom, dp, gid as oid  
             FROM mapping.departements
-        ) as foo USING UNIQUE oid USING srid=3035
-    "
+        ) as foo USING UNIQUE oid USING srid=3035"
 	CLASSITEM "dp"
 	LABELITEM "dp"
 	CLASS
@@ -230,8 +229,7 @@ LAYER
     DATA "the_geom FROM (
             SELECT st_transform(the_geom, 3035) as the_geom, code, code as oid  
             FROM mapping.communes
-        ) as foo USING UNIQUE oid USING srid=3035
-    "
+        ) as foo USING UNIQUE oid USING srid=3035"
 	CLASSITEM "code"
 	CLASS
 	      NAME 'Communes'
@@ -273,8 +271,7 @@ LAYER
             SELECT the_geom, format, pk, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POLYGON'
               AND session_id = '%SESSION_ID%'
-        ) as foo USING UNIQUE oid USING srid=3857
-    "
+        ) as foo USING UNIQUE oid USING srid=3857"
     
     SYMBOLSCALEDENOM 3000000
     CLASS
@@ -350,8 +347,7 @@ LAYER
     DATA "the_geom FROM (
             SELECT st_transform(the_geom, 3857) as the_geom, plot_code as oid  
             FROM location
-        ) as foo USING UNIQUE oid USING srid=3857
-    "
+        ) as foo USING UNIQUE oid USING srid=3857"
     
     SYMBOLSCALEDENOM 3000000
     CLASS
@@ -377,13 +373,13 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER"
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
-            SELECT st_transform(the_geom, 3857) as the_geom, provider_id || '_' || plot_code as oid,plot_code
+            SELECT st_transform(the_geom, 3857) as the_geom, provider_id || '_' || plot_code as oid, plot_code
             FROM location
+
         ) as foo USING UNIQUE oid USING srid=3857"
 
-
     FILTER "plot_code = '%PLOT_CODE%'"
-  
+
     CLASS
       STYLE
         SIZE 30
@@ -392,7 +388,7 @@ LAYER
         MINSIZE 30
         OUTLINECOLOR 255 0 0
         SYMBOL "square"
-      END
+      END 
     END
 END 
 END # Map File

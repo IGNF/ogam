@@ -13,7 +13,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    config.vm.define "ogam_dev" do |ogam_dev|
    end
    config.vm.provider "virtualbox" do |v|
-      v.memory = 2048
+      v.memory = 3072
       v.cpus = 3
       v.name = "ogam_dev"
    end
@@ -37,7 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #config.ssh.forward_agent = true
 
   # Remove warnings "stdin: is not a tty"
-  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+  #config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
   # config.ssh.pty = true
 
   #
@@ -89,7 +89,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   
   config.vm.provision "build_ogam_desktop", type: "shell" do |s|
-    s.path = "vagrant_config/scripts/build_ogam_desktop.sh"
+    s.inline = "bash /vagrant/ogam/vagrant_config/scripts/build_ogam_desktop.sh"
   end
   
   config.vm.provision "shell", inline: "service apache2 restart", run: "always"

@@ -21,7 +21,6 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
             new ol.layer.Vector({
                 name: 'drawingLayer',
                 text: 'Drawing layer',
-                printable: false,
                 source: new ol.source.Vector({features: new ol.Collection()}),
                 style: new ol.style.Style({
                     fill: new ol.style.Fill({
@@ -43,7 +42,6 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
                 name: 'snappingLayer',
                 text: 'Snapping layer',
                 source: new ol.source.Vector({features: new ol.Collection()}),
-                visible: false,
                 style: new ol.style.Style({
                     stroke: new ol.style.Stroke({
                         color: 'rgba(0, 0, 255, 1.0)',

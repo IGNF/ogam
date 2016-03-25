@@ -787,10 +787,10 @@ class Application_Service_QueryService {
 		foreach ($data->getFields() as $field) {
 			if ($field->unit == 'GEOM') {
 				// define a bbox around the location
-				$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+				$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 	
 				// Prepare an overview bbox
-				$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 50000);
+				$bb2 = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 50000);
 				 
 				$locationTable = $data;
 				break;
@@ -801,10 +801,10 @@ class Application_Service_QueryService {
 				foreach ($ancestor->getFields() as $field) {
 					if ($field->unit == 'GEOM') {
 						// define a bbox around the location
-						$bb = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
+						$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 	
 						// Prepare an overview bbox
-						$bb2 = $this->_setupBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
+						$bb2 = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
 	
 						$locationTable = $ancestor;
 						break;
@@ -861,8 +861,8 @@ class Application_Service_QueryService {
 				 
 				//complete the array with the urls of maps1
 				$dataDetails['maps1']['urls'][] = array();
-				for ($i=0;$i<count($url);$i++) {
-					$str_url = 'url'.strval($i);
+				$urlCount = count($url);
+				for ($i = 0; $i < $urlCount; $i ++) {
 					$dataDetails['maps1']['urls'][$i]['url'] = $url[$i];
 				}
 			}
@@ -968,7 +968,7 @@ class Application_Service_QueryService {
 					$baseUrls .= '&HEIGHT=300';
 					$baseUrls .= '&map.scalebar=STATUS+embed';
 					$baseUrls .= '&SESSION_ID=' . session_id();
-					$baseUrls .= $mapservParams . ";";
+					$baseUrls .= $mapservParams;
         				$versionWMS = json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
 					if (substr_compare($versionWMS, '1.3', 0, 3) === 0) {
 						$baseUrls .='&CRS=EPSG%3A'.$visualisationSRS;

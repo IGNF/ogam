@@ -91,7 +91,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 		});
 	},
 	onUpdateDataset:function(sel, value, old){
-		console.log('onUpdateDataset', arguments);
 		this.getViewModel().set('userchoices',[]);
 		 sel.selection.fieldsets({success:function(records){
 			this.getViewModel().set('fieldsets',records);

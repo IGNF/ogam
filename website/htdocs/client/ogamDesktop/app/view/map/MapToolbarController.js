@@ -75,8 +75,8 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     },
 
     onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
-        var menuItems = [];console.log('records', records);
-        store.each( function(record) {console.log('record', record);
+        var menuItems = [];
+        store.each( function(record) {
             menuItems.push({
                 text : record.get('layerLabel'),
                 itemId : record.get('serviceLayerName'),

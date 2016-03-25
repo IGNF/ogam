@@ -31,7 +31,7 @@ insert into application_parameters (name, value, description) values ( 'image_ex
 insert into application_parameters (name, value, description) values ( 'image_max_size' , 1000000, 'image max size in bytes');
 insert into application_parameters (name, value, description) values ( 'tilesize' , 256 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'query_details_layers1' , 'ortho_photos,result_locations,countries,departements,communes', 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'ortho_photos,result_locations,countries,departements,communes,location_detail', 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'ortho_photos,location_detail,countries,departements', 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'proxy_service_name' , 'Local_Mapserv_WMS_GetMap' , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3857 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 4326 , 'WEB MAPPING ');
@@ -47,6 +47,7 @@ insert into application_parameters (name, value, description) values ( 'mapserve
 insert into application_parameters (name, value, description) values ( 'featureinfo_margin' , 1000 , 'bounding box margin around the user click (in the unit of the map)');
 insert into application_parameters (name, value, description) values ( 'featureinfo_typename' , 'result_locations' , 'Layer that is queried');
 insert into application_parameters (name, value, description) values ( 'featureinfo_maxfeatures' , 20 , 'Max number of features returned by a click on the map. If 0 then there is no limit; If 1 the direct access to the detail');
+INSERT INTO application_parameters (name, value, description) values ('featureinfo_selectmode', 'buffer', 'Method to return closest features : "distance" or "buffer"');
 insert into application_parameters (name, value, description) values ( 'contactEmailPrefix' , 'ogam' , 'Email');
 insert into application_parameters (name, value, description) values ( 'contactEmailSufix' , 'ign.fr' , 'Email');
 insert into application_parameters (name, value, description) values ( 'csvExportCharset' , 'UTF-8' , 'Csv Export');
@@ -132,7 +133,7 @@ DELETE FROM predefined_request;
 INSERT INTO predefined_request_group(group_name, label, definition, position) VALUES ('SPECIES', 'Distribution par espèce', 'Distribution par espèce', 1);
 
 -- Création d'une requête prédéfinie
-INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('SPECIES', 'RAW_DATA', 'SPECIES', 'Distribution par espèce', 'Distribution par espèce en forêt', now());
+INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('SPECIES', 'RAW_DATA', 'TREES', 'Distribution par espèce', 'Distribution par espèce en forêt', now());
 INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('TAXREF', 'RAW_DATA', 'SPECIES', 'Recherche par taxon', 'Recherche par taxon', now());
 INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('DEP', 'RAW_DATA', 'SPECIES', 'Espèces par département', 'Espèces par département', now());
 
