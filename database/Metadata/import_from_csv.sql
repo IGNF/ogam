@@ -1,5 +1,5 @@
 SET client_encoding TO 'UTF8';
-set search_path = metadata;
+set search_path = metadata, public;
 --\! pwd
 
 --
