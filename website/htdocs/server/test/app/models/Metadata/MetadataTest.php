@@ -348,7 +348,7 @@ class MetadataTest extends ControllerTestCase {
 
 		// Les données attendues sont ordonnées
 		$this->assertEquals($formField->label, 'Is a forest plot');
-		$this->assertEquals($formField->type, 'BOOLEAN');
+		$this->assertEquals($formField->type, 'STRING');
 	}
 
 	/**

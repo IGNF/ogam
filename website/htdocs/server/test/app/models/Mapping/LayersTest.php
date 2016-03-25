@@ -43,7 +43,7 @@ class LayersTest extends ControllerTestCase {
 		$this->assertEquals('Local_MapProxy_WMS_GetLegendGraphic', $resultLayer->legendServiceName);
 		$this->assertEquals('Local_Mapserv_WMS_GetMap', $resultLayer->printServiceName);
 		$this->assertEquals('Local_MapProxy_WMS_GetMap', $resultLayer->detailServiceName);
-		$this->assertEquals('Local_MapProxy_WFS_GetFeature', $resultLayer->featureServiceName);
+		$this->assertEquals(null, $resultLayer->featureServiceName);
 	}
 
 	/**
@@ -116,9 +116,9 @@ class LayersTest extends ControllerTestCase {
 		$this->assertTrue(is_array($vectorLayers));
 
 		// Le résultat doit contenir le layer "résultats"
-		$resultLayer = $vectorLayers['result_locations'];
+		$resultLayer = $vectorLayers['all_locations'];
 
 		$this->assertNotNull($resultLayer);
-		$this->assertEquals('Résultats', $resultLayer->layerLabel);
+		$this->assertEquals('Localisations', $resultLayer->layerLabel);
 	}
 }
