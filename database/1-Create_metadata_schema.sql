@@ -19,8 +19,6 @@ $$
 LANGUAGE 'sql' IMMUTABLE;
 
 
-*/
-
 /**
  * This function is used to do accent-insensitive search.
  * 
