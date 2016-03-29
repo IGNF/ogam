@@ -23,11 +23,11 @@ DELETE FROM layer_service;
 
 -- Define the services
 INSERT INTO layer_service (service_name, config) VALUES ('Local_Mapserv_WMS_GetMap', '{"urls":["http://localhost/mapserv-ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
-INSERT INTO layer_service (service_name, config) VALUES ('Local_Proxy_WFS_GetFeature', '{"urls":["http://www.ogam.fr/proxy/getwfs?"],"params":{"SERVICE":"WFS","VERSION":"1.0.0","REQUEST":"GetFeature"}}');
-INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WMS_GetLegendGraphic', '{"urls":["http://www.ogam.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
-INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WMS_GetMap', '{"urls":["http://www.ogam.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
-INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WFS_GetFeature', '{"urls":["http://www.ogam.fr/mapProxy.php?"],"params":{"SERVICE":"WFS","VERSION":"1.1.0","REQUEST":"GetFeature"}}');
-INSERT INTO layer_service (service_name, config) VALUES ('Local_TileCache_WMS_GetMap', '{"urls":["http://www.ogam.fr/cgi-bin/tilecache?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_Proxy_WFS_GetFeature', '{"urls":["http://192.168.50.4/proxy/getwfs?"],"params":{"SERVICE":"WFS","VERSION":"1.0.0","REQUEST":"GetFeature"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WMS_GetLegendGraphic', '{"urls":["http://192.168.50.4/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WMS_GetMap', '{"urls":["http://192.168.50.4/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WFS_GetFeature', '{"urls":["http://192.168.50.4/mapProxy.php?"],"params":{"SERVICE":"WFS","VERSION":"1.1.0","REQUEST":"GetFeature"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_TileCache_WMS_GetMap', '{"urls":["http://192.168.50.4/cgi-bin/tilecache?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
 INSERT INTO layer_service (service_name, config) VALUES ('Geoportal_WMS_GetMap', '{"urls":["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/r/wms?"],"params":{"SERVICE":"WMS","VERSION":"1.3.0","REQUEST":"GetMap"}}');
 INSERT INTO layer_service (service_name, config) VALUES ('Geoportal_WMTS_GetTile', '{"urls":["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/wmts?"],"params":{"SERVICE":"WMTS","VERSION":"1.0.0","REQUEST":"getTile","style":"normal","matrixSet":"PM","requestEncoding":"KVP","maxExtent":[-20037508, -20037508, 20037508, 20037508],"serverResolutions":[156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646],"tileOrigin":[-20037508,20037508]}}');
 -- Integration config
