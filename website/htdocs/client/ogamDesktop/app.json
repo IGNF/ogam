@@ -224,10 +224,7 @@
      *
      */
     "js": [
-        {
-            "path": "http://192.168.50.4/map/get-map-parameters",
-            "remote": true
-        },{
+		{
             "path": "lib/OpenLayers/ol-debug.js"
             //"path": "lib/OpenLayers/ol.js"
         },{
