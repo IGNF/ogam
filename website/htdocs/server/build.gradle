@@ -23,7 +23,7 @@ task phpdoc(type:Exec, description: 'Launch PHPDoc for documentation generation.
   workingDir '.'
   
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-  	commandLine './vendor/bin/phpdoc.bat'
+  	commandLine './vendor/phpdocumentor/phpdocumentor/bin/phpdoc.bat'
   } else {
   	commandLine './vendor/bin/phpdoc'
   }

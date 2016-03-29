@@ -11,6 +11,9 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt-get install -y apache2 php5-common libapache2-mod-php5 php5-cli php5-pgsql php5-gd php5-xdebug
 
+# Pour phpdoc
+sudo apt-get install -y php5-intl graphviz  
+
 # Ajout du user vagrant au groupe "www-data"
 sudo usermod -G www-data -a vagrant
 
