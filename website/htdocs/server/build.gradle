@@ -27,7 +27,7 @@ task phpdoc(type:Exec, description: 'Launch PHPDoc for documentation generation.
   } else {
   	commandLine './vendor/bin/phpdoc'
   }
-  args "-d", "./ogamServer/app/", "-t", "./build/docs/php/", '--template=responsive-twig'
+  args "-d", "./ogamServer/app/", "-t", "./build/docs/", '--template=responsive-twig'
 }
 
 // Launch PHPCheckstyle
