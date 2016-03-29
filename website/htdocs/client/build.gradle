@@ -4,4 +4,17 @@ ant.importBuild('ogamDesktop/build.xml') { antTargetName ->
 }
 
 
+// Launch JSDuck
+task jsduck(type:Exec, description: 'Launch JSDuck for documentation generation.') {
+  workingDir '.'
+  
+  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+  	commandLine 'jsduck'
+  } else {
+  	commandLine 'jsduck'
+  }
+  args "./ogamDeskTop/app", "--output", "./build/docs/"
+}
+
+
 defaultTasks 'clean','build'

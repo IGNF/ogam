@@ -20,15 +20,6 @@ To use git :
 * launch `git clone ssh://git@gitlab.dockerforge.ign.fr:10022/ogam/ogam.git` in the project root directory to clone it.
 
 
-# Gradle
-
-Gradle is used to launch the build of the components of the project.
-
-To use gradle :
-* install [Gradle](https://gradle.org/)
-* launch `gradle tasks`  in the project root directory to get the list of available tasks
-
-
 # Vagrant
 
 Vagrant is used to instanciate a virtual machine with the project components (Apache, Tomcat, Mapserver, ...).
@@ -79,7 +70,19 @@ with :
 >cd /vagrant/ogam/ && chmod a+x gradlew && bash gradlew -Dhttps.proxyHost=proxy.ign.fr -Dhttps.proxyPort=3128 && bash gradlew deploy -PtomcatHome='/var/lib/tomcat7' -PapplicationName='OGAM' -Dhttps.proxyHost=proxy.ign.fr -Dhttps.proxyPort=3128
 
 **To connect the VM :**
+* use the command "vagrant ssh"
 * use VirtualBox interface
 * (or) connect with SSH on localhost on port 2222 with the login vagrant/vagrant  
 * PostgreSQL is on port 5433, user ogam / ogam
 * Web site is on localhost:8000, user admin / admin
+
+
+
+
+# Gradle
+
+Gradle is used to launch the build of the components of the project.
+
+To use gradle :
+* install [Gradle](https://gradle.org/)
+* launch `gradle tasks`  in the project root directory to get the list of available tasks

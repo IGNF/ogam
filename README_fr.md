@@ -22,16 +22,6 @@ Pour l'utiliser :
 * générer une clé SSH pour pouvoir se connecter au projet : cf http://gitlab.dockerforge.ign.fr/help/ssh/ssh.
 * lancer `git clone ssh://git@gitlab.dockerforge.ign.fr:10022/ogam/ogam.git` à la racine du projet pour faire un clone du projet sur son poste
 
-
-# Gradle
-
-Gradle est utilisé pour lancer la compilation des composants du projet.
-
-Pour l'utiliser :
-* installer [Gradle](https://gradle.org/)
-* lancer `gradle tasks` à la racine du projet pour obtenir la liste des tâches disponibles
-
-
 # Vagrant
 
 Vagrant est utilisé pour instancier une machine virtuelle contenant les services du projet (Apache, Tomcat, Mapserver, ...).
@@ -83,7 +73,21 @@ par :
 
 
 **Pour se connecter à la VM :**
+* utiliser la commande "vagrant ssh"
 * utiliser l'interface de VirtualBox
 * (ou) se connecter en SSH sur localhost sur le port 2222 avec le compte vagrant/vagrant  
 * PostgreSQL est accessible via le port 5433, user ogam / ogam
 * Le site Web est sur localhost:8000, user admin / admin
+
+
+
+
+# Gradle
+
+Gradle est utilisé pour lancer la compilation des composants du projet.
+
+Gradle est installé par défaut dans la VM et les tâches ont été testées dans la VM.
+
+Il est possible aussi de l'utiliser directement depuis la machine hôte (Windows par exemple), il faut pour cela l'installer ([Gradle](https://gradle.org/)).
+
+* lancer `gradle tasks` à la racine du projet pour obtenir la liste des tâches disponibles
