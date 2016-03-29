@@ -278,6 +278,8 @@
         {
             "path": "lib/OpenLayers/ol.css"
         },{
+            "path": "resources/css/ol-overrides.css"
+        },{
             "path": "resources/css/node-disabled.css"
         },{
             "path": "resources/GeoExt/css/gx-popup.css"
