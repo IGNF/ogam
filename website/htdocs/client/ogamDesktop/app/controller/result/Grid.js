@@ -60,7 +60,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			tooltip: "<b>"+gridTab.seeOnMapButtonTitle+"</b><br/>"+gridTab.seeOnMapButtonTip,
 			handler: function(grid, rowIndex, colIndex, item, e, record, row) {
 				// Action managed into result main controller
-				gridTab.fireEvent('onSeeOnMapButtonClick', record.data);
+				gridTab.fireEvent('seeOnMapButtonClick', record.data);
 			}
 		});
 		gridColumnCfg.push({

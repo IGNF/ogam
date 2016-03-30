@@ -26,9 +26,11 @@ Ext.define('OgamDesktop.controller.map.Main',{
 				beforedetailsgridrowleave: 'setResultStateToDefault'
 			},
 			'results-grid': {
-                resultsload: 'getResultsBbox',
-                onSeeOnMapButtonClick: 'seeOnMap'
-            }
+                seeOnMapButtonClick: 'onSeeOnMapButtonClick'
+            },
+            'advanced-request button[action = submit]': {
+				requestSuccess: 'onRequestSuccess'
+			}
 		}
 	},
 
@@ -50,7 +52,30 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		this.getMappanel().showObjectInDefaultStyle(record);
 	},
 
-	getResultsBbox: function(emptyResult) {
+    /**
+	 * Show the map container and zoom on the result BBox.
+	 * 
+	 * @param {Object}
+	 *            feature The feature corresponding to the grid row,
+	 *            contains id and geometry.
+	 */
+	onSeeOnMapButtonClick: function(feature) {
+		this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
+		this.getMappanel().child('mapcomponent').getController().zoomToFeature(feature.id, feature.location_centroid);
+	},
+
+    /**
+	 * Update the map on request success
+	 */
+	onRequestSuccess: function() {
+		this.getResultsBbox();
+		this.updateRequestLayers();
+	},
+
+    /**
+	 * Update the map results bounding box
+	 */
+	getResultsBbox: function() {
         this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
         Ext.Ajax.request({
             url : Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetresultsbbox',
@@ -69,14 +94,19 @@ Ext.define('OgamDesktop.controller.map.Main',{
     },
 
     /**
-	 * Show the map container and zoom on the result BBox.
-	 * 
-	 * @param {Object}
-	 *            feature The feature corresponding to the grid row,
-	 *            contains id and geometry.
+	 * Update the request layers
 	 */
-	seeOnMap: function(feature) {
-		this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
-		this.getMappanel().child('mapcomponent').getController().zoomToFeature(feature.id, feature.location_centroid);
+	updateRequestLayers: function() {
+		var mapCmp = this.getMappanel().child('mapcomponent');
+		// Forces the layer to redraw itself
+        var requestLayers = mapCmp.getController().requestLayers;
+        requestLayers.forEach(function(element, index, array){
+        	/**
+        	 * Note : 
+        	 * The ol.source.changed and ol.source.dispatchEvent('change') functions 
+        	 * doesn't work with openlayers v3.12.1
+        	 */
+        	element.getSource().updateParams({"_dc": Date.now()});
+        });
 	}
 });
