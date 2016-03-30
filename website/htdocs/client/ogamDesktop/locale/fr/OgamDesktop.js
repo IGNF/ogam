@@ -234,7 +234,6 @@ Ext.define('OgamDesktop.locale.fr.view.map.MapToolbar', {
 	cancelEditionButtonTooltip:"Annuler la(es) modification(s)",
 	resultFeatureInfoButtonTooltip: "Voir les informations sur le point",
 	zoomInButtonTooltip:'Zoom en avant',
-	mapPanButtonTooltip:'Déplacer la carte',
 	zoomToResultFeaturesButtonTooltip:"Zoomer sur le résultat",
 	zoomToMaxExtentButtonTooltip: "Zoom arrière maximum",
 	printMapButtonTooltip:'Imprimer la carte'

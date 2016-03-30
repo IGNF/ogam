@@ -224,14 +224,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         pressed && this.onControlButtonPress(button, dzInter);
     },
 
-    onMapPanButtonPress : function (button, pressed, eOpts) {
-        this.map.getInteractions().forEach(function(interaction){
-          if (interaction instanceof ol.interaction.DragPan) {
-              interaction.setActive(true);
-          }
-       });
-    },
-
     onZoomToResultFeaturesButtonPress : function (button, e, eOpts) {
         this.mapCmpCtrl.zoomToResultFeatures();
     },
