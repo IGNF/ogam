@@ -22,11 +22,13 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		refs: {
 			resultsgrid: 'results-grid'
 		},
-		control: {
-			'advanced-request button[action = submit]': {
-				requestSuccess: 'setResultsGrid'
-			}
-		}
+		listen: {
+        	controller: {
+            	'advancedrequest': {
+            		requestSuccess: 'setResultsGrid'
+            	}
+            }
+        }
 	},
 
 	/**
