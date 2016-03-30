@@ -130,13 +130,14 @@ LAYER
 	NAME nuts_0
 	TYPE POLYGON
 	STATUS ON 
-#    DEBUG 5
+    #DEBUG 5
     TEMPLATE "geoJSONTemplate.js"
     METADATA
         WFS_TITLE        "Pays"
-        "wms_feature_info_mime_type"  "application/json"
+        WMS_FEATURE_INFO_MIME_TYPE  "application/json"
         GML_FEATUREID      "gid" 
-        GML_INCLUDE_ITEMS  "all"   
+        GML_INCLUDE_ITEMS  "cell_id"
+        GML_CELL_ID_ALIAS  "Code pays"  
     END
     DUMP TRUE 
     
@@ -146,21 +147,21 @@ LAYER
     DATA "the_geom FROM nuts_0 USING UNIQUE gid USING srid=3035"
 	LABELITEM "cell_id"
 	CLASS
-	      NAME 'Pays'
-	      OUTLINECOLOR 0 0 0      
-	      LABEL
-				COLOR  255 0 0
-				FONT arial_win
-				TYPE truetype
-				SIZE 8
-				POSITION AUTO          
-				PARTIALS FALSE
-				BUFFER 5
-				OUTLINECOLOR 255 255 255           
-	     END     
-    END
-    PROJECTION
-		    "init=epsg:3035"
+	  NAME 'Pays'
+	  OUTLINECOLOR 0 0 0      
+    LABEL
+			COLOR  255 0 0
+			FONT arial_win
+			TYPE truetype
+			SIZE 8
+			POSITION AUTO          
+			PARTIALS FALSE
+			BUFFER 5
+			OUTLINECOLOR 255 255 255           
+    END     
+  END
+  PROJECTION
+		"init=epsg:3035"
 	END
 END
 
@@ -175,7 +176,13 @@ LAYER
     METADATA
         WFS_TITLE        "Départements"
         GML_FEATUREID      "gid" 
-        GML_INCLUDE_ITEMS  "all"   
+        GML_INCLUDE_ITEMS  "nom_depart,dp,perimeter,area,nom_region,ra"
+        GML_NOM_DEPART_ALIAS  "Département"
+        GML_DP_ALIAS  "Code département"
+        GML_PERIMETER_ALIAS  "Périmètre (m)"
+        GML_AREA_ALIAS  "Surface (m2)"
+        GML_NOM_REGION_ALIAS  "Région"
+        GML_RA_ALIAS  "Code région"
     END
     DUMP TRUE 
     
@@ -183,7 +190,7 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
-            SELECT st_transform(the_geom, 3035) as the_geom, dp, gid as oid  
+            SELECT st_transform(the_geom, 3035) as the_geom, nom_depart, dp, perimeter, area, nom_region,ra, gid as oid  
             FROM mapping.departements
         ) as foo USING UNIQUE oid USING srid=3035"
 	CLASSITEM "dp"
@@ -219,7 +226,9 @@ LAYER
     METADATA
         WFS_TITLE        "Communes"
         GML_FEATUREID      "gid" 
-        GML_INCLUDE_ITEMS  "all"   
+        GML_INCLUDE_ITEMS  "nom,code"
+        GML_NOM_ALIAS  "Commune"
+        GML_CODE_ALIAS  "Code INSEE" 
     END
     DUMP TRUE 
     
@@ -227,7 +236,7 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
-            SELECT st_transform(the_geom, 3035) as the_geom, code, code as oid  
+            SELECT st_transform(the_geom, 3035) as the_geom, nom, code, oid  
             FROM mapping.communes
         ) as foo USING UNIQUE oid USING srid=3035"
 	CLASSITEM "code"
@@ -337,7 +346,10 @@ LAYER
     METADATA
     	WFS_TITLE		   "All Plots"
     	GML_FEATUREID      "oid" 
-    	GML_INCLUDE_ITEMS  "all"      	
+    	GML_INCLUDE_ITEMS  "plot_code,lat,long"
+      GML_PLOT_CODE_ALIAS  "Code"
+      GML_LAT_ALIAS  "Latitude"
+      GML_LONG_ALIAS  "Longitude"  	
   	END
   	DUMP TRUE 
     
@@ -345,13 +357,13 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
-            SELECT st_transform(the_geom, 3857) as the_geom, plot_code as oid  
+            SELECT st_transform(the_geom, 3857) as the_geom, plot_code, lat, long, plot_code as oid  
             FROM location
         ) as foo USING UNIQUE oid USING srid=3857"
     
     SYMBOLSCALEDENOM 3000000
     CLASS
-      NAME 'Plot location'
+      NAME 'Localisations'
       STYLE
       	MINSIZE 3
         COLOR 150 150 150

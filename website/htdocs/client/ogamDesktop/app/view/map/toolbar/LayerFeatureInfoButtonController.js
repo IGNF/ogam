@@ -11,7 +11,7 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
         this.layerFeatureInfoListenerKey = null;
         this.popup = Ext.create('GeoExt.component.Popup', {
             map: this.map,
-            width: 160,
+            width: 200,
             tpl: [
                 '<p><tpl for="features">',
                     '<u>Feature {#}:</u><br />',
