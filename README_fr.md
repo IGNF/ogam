@@ -77,7 +77,7 @@ par :
 * utiliser l'interface de VirtualBox
 * (ou) se connecter en SSH sur localhost sur le port 2222 avec le compte vagrant/vagrant  
 * PostgreSQL est accessible via le port 5433, user ogam / ogam
-* Le site Web est sur localhost:8000, user admin / admin
+* Le site Web est sur http://192.168.50.4/, user admin / admin
 
 
 
