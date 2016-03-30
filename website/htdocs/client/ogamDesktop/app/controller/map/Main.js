@@ -27,17 +27,21 @@ Ext.define('OgamDesktop.controller.map.Main',{
 			},
 			'results-grid': {
                 seeOnMapButtonClick: 'onSeeOnMapButtonClick'
-            },
-            'advanced-request button[action = submit]': {
-				requestSuccess: 'onRequestSuccess'
-			}
-		}
+            }
+		},
+		listen: {
+        	controller: {
+            	'advancedrequest': {
+            		requestSuccess: 'onRequestSuccess'
+            	}
+            }
+        }
 	},
 
     onLaunch:function(){
         //clean previous request or result in server side
         Ext.Ajax.request({
-            url: Ext.manifest.OgamDesktop.requestServiceUrl+'ajaxrestresultlocation',
+            url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxrestresultlocation',
             failure: function(response, opts) {
                 console.warn('server-side failure with status code ' + response.status);
             }

@@ -74,7 +74,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',
 			success: function(form, action) {
 				this.requestConn = null;
-				button.fireEvent('requestSuccess', action.result.columns);
+				this.fireEvent('requestSuccess', action.result.columns);
 			},
 			failure: function(form, action) {
 				switch (action.failureType) {
@@ -87,9 +87,11 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 					case Ext.form.action.Action.SERVER_INVALID:
 						Ext.Msg.alert('Failure', action.result.errorMessage);
 				}
-			}
+			},
+			scope: this
 		});
 	},
+
 	onUpdateDataset:function(sel, value, old){
 		this.getViewModel().set('userchoices',[]);
 		 sel.selection.fieldsets({success:function(records){

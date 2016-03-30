@@ -297,7 +297,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         // Get the BBOX
         var center = this.map.getView().getCenter(), zoom = this.map.getView().getZoom(), i;
         // Get the layers
-        var layersToPrint = this.retrieveLayersToPrint(this.mapCmpCtrl.getMapLayer('treeGrp'));
+        var layersToPrint = this.retrieveLayersToPrint(this.map.getLayerGroup());
         console.log('layers to print array', layersToPrint);
         this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
                 center : center,
