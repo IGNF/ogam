@@ -241,7 +241,8 @@ Ext.define('OgamDesktop.locale.fr.view.map.MapToolbar', {
 
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.LayerFeatureInfoButton', {
 	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButton',
-	tooltip: "Voir les informations sur la couche sélectionnée"
+	tooltip: 'Voir les informations sur la couche sélectionnée',
+	popupTitleText: 'Information(s) sur la géométrie'
 });
 
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SnappingButton', {
