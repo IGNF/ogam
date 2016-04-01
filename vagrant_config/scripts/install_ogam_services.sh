@@ -11,7 +11,7 @@ echo "Path : $PATH"
 # Create upload directory
 # ---------------------------------------------------------------
 
-sudo -n mkdir /var/tmp/ogam_upload
+sudo -n mkdir -p /var/tmp/ogam_upload
 sudo -n chmod 774 /var/tmp/ogam_upload
 sudo -n chown tomcat7:tomcat7 /var/tmp/ogam_upload
 
