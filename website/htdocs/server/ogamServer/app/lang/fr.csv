@@ -262,6 +262,7 @@ Datas;Données
 Nb of datas;Nombre de lignes de données
 This provider doesn't have any raw datas.;Cet organisme n'a pas de données en base.
 Impossible to delete this provider.;Il est impossible de supprimer cet organisme\n(données et/ou utilisateurs rattachés).
+Impossible to delete this role.;Il est impossible de supprimer ce rôle\n(utilisateurs rattachés).
 Roles;Rôles
 Users;Utilisateurs
 User Login;Login

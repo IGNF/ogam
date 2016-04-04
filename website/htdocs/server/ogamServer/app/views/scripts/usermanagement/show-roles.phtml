@@ -39,14 +39,22 @@ foreach ($this->roles as $role) {
 	<td><?php echo  $this->escape($role->code); ?></td>
 	<td><?php echo  $this->escape($role->label); ?></td>
 	<td><?php echo  $this->escape($role->definition); ?></td>
-	<td class="delete-cell"><a title="<?php echo $this->translate('Delete');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'delete-role'), null, true)?>?roleCode=<?php echo $role->code;?>" onClick="return confirm('<?php echo $this->translate('Are you sure?')?>');">&nbsp;</a></td>
+	<?php if ($this->isDeletable[$role->code]) { ?>
+		<td class="delete-cell">
+			<a title="<?php echo $this->translate('Delete');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'delete-role'), null, true)?>?roleCode=<?php echo $role->code;?>" onClick="return confirm('<?php echo $this->translate('Are you sure?')?>');">&nbsp;</a></td>
+		</td>
+	<?php } else { ?>
+		<td class="delete-cell desaturate">
+			<a title="<?php echo $this->translate('Delete');?>" href="#" onClick="alert('<?php echo $this->translate('Impossible to delete this role.')?>');">&nbsp;</a>
+		</td>
+	<?php } ?>
 </tr>
 <?php
 	$i++;
 }
 ?>
 </table>
- 
+
 <p class="subTableLink">
     <a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-create-role'), null, true) ?>"><?php echo $this->translate('Create Role');?></a>
 <p/>
