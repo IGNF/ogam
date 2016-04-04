@@ -43,7 +43,7 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Get a provider by id
+	 * Get a provider by id.
 	 *
 	 * @param
 	 *        	$id
@@ -53,7 +53,7 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	public function getProvider($id) {
 		$row = $this->fetchRow("id = '" . $id . "'");
 		if (!$row) {
-			throw new Exception("Could not find provider $id");
+			throw new Exception("Could not find provider " . $id);
 		}
 		return $row;
 	}

@@ -66,7 +66,9 @@ chown -R tomcat7:tomcat7 /var/lib/tomcat7
 chmod -R 777 /etc/tomcat7
 chown -R tomcat7:tomcat7 /etc/tomcat7
 
-
+# On change les droits par défaut sur les fichiers créé par Tomcat
+# Pour que le groupe tomcat7 puisse supprimer un fichier de /webapps
+sed -i 's/umask 022/umask 002/g' /etc/init.d/tomcat7
 
 #----------------------------------------------------------------
 # Redémarrage Tomcat

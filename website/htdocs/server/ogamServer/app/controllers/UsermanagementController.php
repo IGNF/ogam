@@ -679,6 +679,11 @@ class UsermanagementController extends AbstractOGAMController {
 
 		$this->view->roles = $roles;
 
+		$this->view->isDeletable = array();
+		foreach ($this->view->roles as $roles) {
+			$this->view->isDeletable[$roles->code] = $this->roleModel->isRoleDeletable($roles->code);
+		}
+
 		return $this->render('show-roles');
 	}
 
@@ -784,7 +789,7 @@ class UsermanagementController extends AbstractOGAMController {
 	public function deleteRoleAction() {
 		$this->logger->debug('deleteRoleAction');
 
-		// Get the user login
+		// Get the role to delete
 		$roleCode = $this->_getParam("roleCode");
 
 		// Delete the user

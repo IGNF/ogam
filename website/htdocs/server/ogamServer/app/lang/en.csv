@@ -147,14 +147,13 @@ Data Edition;Data Edition
 Visualize Raw Data;Visualize Raw Data
 Query Data (RAW_DATA);Visualize Raw Data
 Query Data (HARMONIZED_DATA);Visualize Validated Data
+Add a new localisation;Add a new localisation
 Data Harmonization;Data Copy
 Visualize Harmonized Data;Visualize Validated Data
 Query Harmonized Data;Visualize Validated Data
 User Administration;User Administration
 Check Configuration;Check the configuration
 Manage Users;User Administration
-Index Files;Index Files
-File Indexation;Index Files
 
 ﻿##########################
 #   User login           #
@@ -261,6 +260,7 @@ Datas;Datas
 Nb of datas;Nb of datas
 This provider doesn't have any raw datas.;This provider doesn't have any raw datas.
 Impossible to delete this provider.;Impossible to delete this provider.
+Impossible to delete this role.;Impossible to delete this role.
 Roles;Roles
 Users;Users
 User Login;User Login
@@ -314,7 +314,7 @@ Item cannot be deleted because it has children;Item cannot be deleted because it
 Error while deleting data;Error while deleting data
 Error inserting data duplicate key;Error while inserting data - The data already exists
 Data deleted;Data deleted
-Add a new localisation;Add a new localisation
+
 
 ##########################
 #  Data Query            #

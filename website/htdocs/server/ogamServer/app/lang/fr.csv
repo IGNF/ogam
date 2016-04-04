@@ -125,10 +125,10 @@ Incorrect password;Mot de passe incorrect
 ##########################
 #   Layout               #
 ##########################
-Log out;Se déconnecter
-Log in;Se connecter
-Change login;Changer d'utilisateur
-Contact Us;Nous contacter
+Log out;Déconnexion
+Log in;Connexion
+Change login;Changement d'utilisateur
+Contact Us;Contact
 Layout Head Title;Application OGAM
 Layout Head Meta Keywords;eforest, efdac, jrc, forêt
 Layout Head Meta Description;Centre de donnée sur les forêts européennes
@@ -147,14 +147,14 @@ Data Edition;Edition des données
 Visualize Raw Data;Visualisation des données brutes
 Query Data (RAW_DATA);Visualisation des données brutes
 Query Data (HARMONIZED_DATA);Visualisation des données validées
+Add a new localisation;Ajout d'une nouvelle localisation
 Data Harmonization;Recopie des données
 Visualize Harmonized Data;Visualisation des données validées
 Query Harmonized Data;Visualisation des données validées
 User Administration;Administration des utilisateurs
-Check Configuration;Vérifier la configuration
+Check Configuration;Vérification de la configuration
 Manage Users;Administration des utilisateurs
-Index Files;Indexer les fichiers
-File Indexation;Indexer les fichiers
+
 
 ﻿##########################
 #   User login           #
@@ -193,7 +193,7 @@ Confirm_submission_warning;Une fois validées, les données seront disponibles p
 Submit;Valider
 Error;Erreur
 The expected fields are:;Les champs attendus sont : 
-Are you sure?;Etes-vous sur ?
+Are you sure?;Etes-vous sûr ?
 No submission found;Aucune soumission trouvée.
 
 ﻿##########################
@@ -244,7 +244,7 @@ User Management Module;Administration des utilisateurs
 Show the users;Afficher les utilisateurs
 Show the roles;Afficher les rôles
 Show the providers;Afficher les organismes
-Change Password;Changer de mot de passe
+Change Password;Changement de mot de passe
 Password Change;Modification d'un mot de passe
 Password Change for user:;Modification du mot de passe pour l'utilisateur :
 Changing your password;Modification de votre mot de passe
@@ -262,6 +262,7 @@ Datas;Données
 Nb of datas;Nombre de lignes de données
 This provider doesn't have any raw datas.;Cet organisme n'a pas de données en base.
 Impossible to delete this provider.;Il est impossible de supprimer cet organisme\n(données et/ou utilisateurs rattachés).
+Impossible to delete this role.;Il est impossible de supprimer ce rôle\n(utilisateurs rattachés).
 Roles;Rôles
 Users;Utilisateurs
 User Login;Login
@@ -315,7 +316,7 @@ Item cannot be deleted because it has children;La donnée ne peut pas être effa
 Error while deleting data;Erreur lors de la suppression
 Data deleted;Donnée supprimée
 Error inserting data duplicate key;Erreur lors de l'insertion - la donnée existe déjà
-Add a new localisation;Ajouter une nouvelle localisation
+
 
 ##########################
 #  Data Query            #
