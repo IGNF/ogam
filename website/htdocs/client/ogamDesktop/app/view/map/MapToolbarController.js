@@ -294,15 +294,87 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     },
     
     onPrintMapButtonPress : function(button, pressed, eOpts) {
-        // Get the BBOX
-        var center = this.map.getView().getCenter(), zoom = this.map.getView().getZoom(), i;
-        // Get the layers
-        var layersToPrint = this.retrieveLayersToPrint(this.map.getLayerGroup());
-        console.log('layers to print array', layersToPrint);
-        this.post(Ext.manifest.OgamDesktop.mapServiceUrl +'printmap', {
-                center : center,
-                zoom : zoom,
-                layers : layersToPrint
+        var mapAddonsPanel = this.getView().up('map-mainwin').child('map-addons-panel');
+        var legendsPanel = mapAddonsPanel.child('legends-panel');
+
+        // Forces the render of the legends panel items
+        // TODO: Find a workaround
+        if(!legendsPanel.isVisible()){
+            var activeTab = mapAddonsPanel.getActiveTab();
+            mapAddonsPanel.setActiveTab(legendsPanel);
+            mapAddonsPanel.setActiveTab(activeTab);
+        }
+
+        // Gets the activated legends
+        // Note: The legend panel body is not fully taken to avoid the ids
+        var legendBody = [{
+            tag:'div',
+            style:'margin-left: -10px;font-size: large;border-bottom: solid 1px #d0d0d0;padding-left:5px;',
+            html: OgamDesktop.view.map.LegendsPanel.prototype.title
+        }];
+        legendsPanel.items.each(function(item){
+            if(item.isVisible()){
+                legendBody.push({tag:'p', html: item.el.getHtml()});
+            }
         });
+
+        // Builds the print preview
+        this.map.once('postcompose', function(event) {
+            Ext.getBody().createChild({
+                tag: 'div',
+                id: 'o-map-print',
+                style:'position:absolute;width:100%;height:100%;background-color:white;z-index: 5;padding:20px;',
+                children: [{
+                    tag: 'img',
+                    style:'float: left;height:630px;margin:0 30px 30px 0;border: solid 1px #d0d0d0;',
+                    src: event.context.canvas.toDataURL('image/png')
+                },{
+                    tag: 'div',
+                    cls: 'o-print-div',
+                    style:'float: left;height:100%',
+                    children: [{
+                        tag:'div',
+                        style:'border-left: solid 1px #d0d0d0;padding-left:10px',
+                        children:legendBody
+                    },{
+                        tag:'div',
+                        style:'border-left: solid 1px #d0d0d0;padding-left:10px',
+                        children:[{
+                            tag:'div',
+                            id:'o-map-print-comment-title',
+                            style:'margin:0 0 10px -10px;font-size: large;border-bottom: solid 1px #d0d0d0;padding-left:5px;',
+                            html: 'Commentaire'
+                        },{
+                            tag:'textarea',
+                            id:'o-map-print-comment-textarea',
+                            onchange:'Ext.get(\'o-map-print-comment-div\').dom.innerHTML = (Ext.get(\'o-map-print-comment-textarea\').dom.value !== \'\') ? Ext.get(\'o-map-print-comment-textarea\').dom.value:\'Aucun commentaire.\';',
+                            placeholder:"Vous pouvez commenter ici votre impression.",
+                            style:'border-left: solid 1px #d0d0d0;width:250px;height:100px;'
+                        },{
+                            tag:'div',
+                            id:'o-map-print-comment-div',
+                            html:'Aucun commentaire.',
+                            style:'width:250px;display:none'
+                        }]
+                    },{
+                        tag: 'div',
+                        id: 'o-map-print-tbar',
+                        style:'padding-top:10px;',
+                        cls: 'o-print-tbar',
+                        children: [{
+                            tag:'button',
+                            style:'margin-right:10px',
+                            html:'Imprimer',
+                            onclick:'window.print();'
+                        },{
+                            tag:'button',
+                            html:'Annuler',
+                            onclick:'Ext.getBody().first().destroy();'
+                        }]
+                    }]
+                }]
+            },Ext.getBody().first());
+        });
+        this.map.renderSync();
     }
 });

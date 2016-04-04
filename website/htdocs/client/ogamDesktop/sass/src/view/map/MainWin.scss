@@ -56,3 +56,11 @@
 	left:8px;
 	position:absolute;
 }
+@media print {
+  body > div, #o-map-print-comment-textarea, #o-map-print-tbar {
+    display:none;
+  }
+  #o-map-print, #o-map-print-comment-div {
+    display:block !important;
+  }
+}

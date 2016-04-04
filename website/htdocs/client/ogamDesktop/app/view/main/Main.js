@@ -15,7 +15,6 @@ Ext.define('OgamDesktop.view.main.Main', {
 	itemId: 'main',
 	controller: 'main',
 	extend: 'Ext.tab.Panel',
-	renderTo: Ext.get('content'),
 	//width: Ext.getBody().getViewSize().width - 80,
 	//height: Ext.getBody().getViewSize().height - 160,
 	activeTab: 1,

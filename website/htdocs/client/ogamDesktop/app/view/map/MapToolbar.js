@@ -12,6 +12,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
         type: 'maptoolbar'
     },
     requires: [
+        'Ext.Img',
         'OgamDesktop.view.map.MapToolbarController',
         'OgamDesktop.view.map.MapToolbarModel',
         'OgamDesktop.view.map.toolbar.SnappingButton',

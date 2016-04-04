@@ -14,6 +14,7 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanel', {
 	width: 170,
 	maxWidth: 600,
 	layout: 'card',
+	deferredRender: false,
 	defaults: {
 		closable: false
 	},
