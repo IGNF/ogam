@@ -197,6 +197,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 'session_id': layer.get('params').session_id
             };
             sourceWMSOpts['urls'] = service.get('config').urls;
+            sourceWMSOpts['crossOrigin'] = 'anonymous';
             return new ol.source.TileWMS(sourceWMSOpts);
         case 'WMTS':
             // Sets the WMTS layer source
@@ -217,6 +218,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             sourceWMTSOpts['tileGrid'] = tileGrid;
             sourceWMTSOpts['matrixSet'] = service.get('config').params.matrixSet;
             sourceWMTSOpts['style'] = service.get('config').params.style;
+            sourceWMTSOpts['crossOrigin'] = 'anonymous';
             return new ol.source.WMTS(sourceWMTSOpts);
         default:
             console.error('buildSource: The "' + serviceType + '" service type is not supported.');

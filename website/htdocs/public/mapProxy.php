@@ -102,6 +102,8 @@ if (strcasecmp($queriesArg['SERVICE'] , "WFS") !== 0) {
     header('Content-Type: application/json,subtype=geojson,charset=utf-8');
 }
 
+header('Access-Control-Allow-Origin: *');
+
 $uri = rtrim($mapServiceURL,'?').'?'.http_build_query($queriesArg);
 //echo $uri;exit;
 //error_log($uri);
