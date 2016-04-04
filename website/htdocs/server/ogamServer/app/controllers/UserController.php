@@ -320,7 +320,7 @@ class UserController extends Zend_Controller_Action {
 			$this->userModel->updatePassword($login, $cryptedPassword);
 
 			// Return to the index
-			$this->_redirect('/index');
+			$this->_redirect('/');
 		}
 	}
 
