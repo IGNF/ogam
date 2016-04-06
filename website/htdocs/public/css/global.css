@@ -458,6 +458,14 @@ td.delete-cell {
 	right: 0;
 }
 
+.zend_form input:-moz-read-only { /* For Firefox */
+    background-color: lightgray;
+}
+
+.zend_form input:read-only { 
+    background-color: lightgray;
+}
+
 .zend_form select {
 	width: 204px;
 	position: absolute;
