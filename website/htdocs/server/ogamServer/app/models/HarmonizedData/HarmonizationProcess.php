@@ -39,9 +39,10 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 	 */
 	public function getHarmonizationProcessInfo($activeSubmission) {
 		$db = $this->getAdapter();
-		$req = " SELECT * ";
+		$req = " SELECT *, d.label as dataset_label ";
 		$req .= " FROM harmonization_process ";
 		$req .= " LEFT JOIN harmonization_process_submissions USING (harmonization_process_id) ";
+		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
 		$req .= " WHERE provider_id = ? ";
 		$req .= " AND  dataset_id = ? ";
 		$req .= " ORDER BY harmonization_process_id DESC LIMIT 1";
@@ -63,6 +64,7 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 			$harmonizationProcess->harmonizationId = $result['harmonization_process_id'];
 			$harmonizationProcess->status = $result['harmonization_status'];
 			$harmonizationProcess->date = $result['_creationdt'];
+			$harmonizationProcess->datasetLabel = $result['dataset_label'];
 		} else {
 			$harmonizationProcess->status = 'UNDONE';
 		}

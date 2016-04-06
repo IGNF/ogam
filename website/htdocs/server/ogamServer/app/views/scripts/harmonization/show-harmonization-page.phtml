@@ -51,7 +51,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
 	<td><?php echo $harmonizationProcess->providerId; ?></td>
-	<td><?php echo $harmonizationProcess->datasetId ?></td>
+	<td><?php echo $harmonizationProcess->datasetLabel ?></td>
 	<td><?php echo $harmonizationProcess->date ?></td>
 	<td>
             <?php if ($harmonizationProcess->submissionStatus === "NOT_VALID") { ?>
