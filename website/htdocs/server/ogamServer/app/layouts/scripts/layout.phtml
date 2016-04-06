@@ -46,7 +46,7 @@
         document.getElementById('lkContact').href="mailto:" + pre + "@" + suf;
       }
   </script>
-</head> 
+</head>
 <body>
 
 <div id="wrapper" class="wrapper">
@@ -55,7 +55,7 @@
 <div id="main-body" class="main-body">
     <!-- HEADER -->
     <div class="header" id="header">
-   
+
         <div id="banner" class="banner">
             <img border="0" alt="Banner" src="<?php echo $this->baseUrl('img/banner.jpg');?>"/>
         </div>
@@ -83,10 +83,10 @@
         $configuration = Zend_Registry::get("configuration");
         $language_flags[] = $configuration->language_flags1;
         $language_flags[] = $configuration->language_flags2;
-        
+
         if (!empty($language_flags)) {
             foreach($language_flags as $flag){
-                if(!empty($flag)){
+                if(!empty($flag) && ($flag !== $this->locale)) {
                     echo '<a href="?lang='.$flag.'" ><div class="'.$flag.'-flag" title="'.$this->translate('Translate this site '.$flag).'">&nbsp;</div></a>';
                 }
             }
@@ -121,7 +121,7 @@
 </div>
 
     <!-- Utilisé pour maintenir le bas de page en bas -->
-    <div id="push" class="push"></div> 
+    <div id="push" class="push"></div>
 
 <!-- Fin du wrapper -->
 </div>

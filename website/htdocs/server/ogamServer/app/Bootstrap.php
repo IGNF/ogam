@@ -21,7 +21,7 @@ require_once APPLICATION_PATH . '/objects/Website/Provider.php';
  * @SuppressWarnings protectedFunctionNaming
  */
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
-	
+
 	// The logger
 	var $logger = null;
 
@@ -31,7 +31,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initPlugins() {
 		$this->bootstrap('View');
 		$view = $this->getResource('View');
-		
+
 		$front = Zend_Controller_Front::getInstance();
 		// Pour la gestion de la langue de l'application
 		$front->registerPlugin(new Application_Controllers_Plugin_Bootstrap($view));
@@ -49,12 +49,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Log not enabled in config.ini');
 		}
 		$this->logger = $this->getResource('Log');
-		
+
 		// Log l'URL appelée
 		if (isset($_SERVER['REQUEST_URI'])) {
 			$this->logger->debug($_SERVER['REQUEST_URI']);
 		}
-		
+
 		if (empty($this->logger)) {
 			throw new Zend_Exception('Logger object is empty.');
 		}
@@ -78,7 +78,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				'path' => 'validators'
 			)
 		));
-		
+
 		// Add another autoloader to load custom resources before application (native ogam) resources
 		if (defined('CUSTOM_APPLICATION_PATH')) {
 			$customPath = realpath(CUSTOM_APPLICATION_PATH);
@@ -107,17 +107,17 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * @throws Zend_Exception
 	 */
 	protected function _initCustomRouter() {
-		
+
 		// Vérifie que le contrôleur frontal est bien présent, et le récupère
 		$this->bootstrap('FrontController');
 		$this->bootstrap('Router');
-		
+
 		$front = $this->getResource('FrontController');
 		$router = $front->getRouter();
-		
+
 		// Si un controleur existe dans custom alors on le prend en priorité à la place de default
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/controllers/')) {
-			
+
 			// Scan des controleurs présents
 			$files = scandir(CUSTOM_APPLICATION_PATH . '/controllers/');
 			foreach ($files as $file) {
@@ -125,7 +125,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					$controllerName = substr($file, 0, stripos($file, 'Controller.php'));
 					$controllerName = strtolower($controllerName);
 					$this->logger->debug("Adding custom controller : " . $controllerName);
-					
+
 					if ($controllerName == 'index') {
 						$customRoute = new Zend_Controller_Router_Route('', array(
 							'module' => 'custom',
@@ -139,7 +139,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 							'action' => 'index'
 						));
 					}
-					
+
 					$router->addRoute('customRoute_' . $controllerName, $customRoute);
 				}
 			}
@@ -159,7 +159,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap('AppConfSession');
 		$configuration = Zend_Registry::get('configuration');
 		$baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
-		
+
 		// Initialisons la vue
 		$view = new Zend_View();
 		$view->doctype('XHTML1_STRICT');
@@ -173,24 +173,24 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$view->headLink()->appendStylesheet($baseUrl . 'css/global.css');
 		$view->contactEmailPrefix = $configuration->contactEmailPrefix;
 		$view->contactEmailSufix = $configuration->contactEmailSufix;
-		
+
 		// Si le répertoire custom existe alors on le prend en priorité
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/views/')) {
 			$view->addBasePath(CUSTOM_APPLICATION_PATH . '/views/');
 		}
 		$view->addBasePath(APPLICATION_PATH . '/views/');
-		
+
 		// Path to the helpers
 		$view->addHelperPath(APPLICATION_PATH . "/views/helpers", 'Application_Views_Helpers');
-		
+
 		// Ajoutons là au ViewRenderer
 		$viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('ViewRenderer');
 		$viewRenderer->setView($view);
-		
+
 		// Retourner la vue pour qu'elle puisse être stockée par le bootstrap
 		return $view;
 	}
-	
+
 	// Do not call this function _initTranslate() !
 	/**
 	 *
@@ -203,7 +203,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap('Translate');
 		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('AppConfSession');
-		
+
 		if (!$this->hasPluginResource('Translate')) {
 			throw new Zend_Exception('Translate not enabled in application.ini');
 		}
@@ -224,20 +224,20 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		if (empty($locale)) {
 			throw new Zend_Exception('Locale object is empty.');
 		}
-		
+
 		// Setup the translation
-		// !!! Note: the translate local correspond to the file name only.
+		// !!! Note: the translate locale correspond to the file name only.
 		$translations = $this->_addTranslation(array(
 			APPLICATION_PATH . '/lang'
 		), $translate);
-		
+
 		// Setup the translation with files specific to the app
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/lang/')) {
 			$translations = $this->_addTranslation(array(
 				CUSTOM_APPLICATION_PATH . '/lang'
 			), $translate);
 		}
-		
+
 		Zend_Registry::set('Zend_Translate', $translate); // store in the registry for the view helper
 		Zend_Validate_Abstract::setDefaultTranslator($translate); // use the translator for validation
 	}
@@ -277,7 +277,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 */
 	protected function _initAppConfRegistry() {
 		$configuration = new stdClass();
-		
+
 		// Get the parameters from the OGAM default configuration files
 		$appIniFilePath = APPLICATION_PATH . '/configs/app.ini';
 		if (file_exists($appIniFilePath)) {
@@ -285,7 +285,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				'allowModifications' => true
 			));
 		}
-		
+
 		// Get the parameters from the CUSTOM configuration files
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/configs/app.ini')) {
 			$appIniFilePath = CUSTOM_APPLICATION_PATH . '/configs/app.ini';
@@ -293,25 +293,25 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				'allowModifications' => true
 			));
 		}
-		
+
 		// get db param
 		$this->bootstrap('Db');
 		$this->bootstrap('Session');
 		$this->bootstrap('RegisterLogger');
-		
+
 		// Add the parameters from the database
 		$parameterModel = new Application_Model_Website_ApplicationParameter();
 		$parameters = $parameterModel->getParameters();
 		foreach ($parameters as $k => $v) {
 			$configuration->$k = $v;
 		}
-		
+
 		// Adding of the intern map service url into the parameters
 		$serviceConfig = $parameterModel->getMapServiceUrl();
 		if (!empty($serviceConfig)) {
 			$configuration->map_service_url = json_decode($serviceConfig['config'])->{'urls'}[0];
 		}
-		
+
 		Zend_Registry::set('configuration', $configuration);
 	}
 
@@ -322,11 +322,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap('Session');
 		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('RegisterLogger');
-		
+
 		$configuration = Zend_Registry::get('configuration');
 		$configurationSession = new Zend_Session_Namespace('user');
 		$configurationSession = new Zend_Session_Namespace('configuration');
-		
+
 		$configurationSession->configuration = array(
 			"map_service_url" => $configuration->map_service_url
 		); // Needed into mapProxy.php file to improve performances (avoiding a db connection).
@@ -370,15 +370,15 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		if ($configuration->autoLogin) {
 			$userSession = new Zend_Session_Namespace('user');
 			$user = $userSession->user;
-			
+
 			if (empty($user)) {
 				$userModel = new Application_Model_Website_User();
-				
+
 				// Get the user informations
 				$user = $userModel->getUser($configuration->defaultUser);
-				
+
 				$this->logger->debug('Autologin default user : ' . $user->login);
-				
+
 				if (!is_null($user)) {
 					// Store the user in session
 					$userSession->connected = true;

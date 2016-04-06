@@ -110,7 +110,7 @@ class Application_Controllers_Plugin_Bootstrap extends Zend_Controller_Plugin_Ab
 		));
 
 		// Save the language in session and in the view
-		$this->_view->local = $localeNamespace->lang = $lang;
+		$this->_view->locale = $localeNamespace->lang = $lang;
 
 		// Addition of a META balise in the view for the language
 		$this->_view->headMeta()->appendHttpEquiv('Content-Language', $lang);
