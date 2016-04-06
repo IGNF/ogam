@@ -970,7 +970,8 @@ class Application_Service_GenericService {
 								if ($exact) {
 									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
 								} else {
-									$sql .= "ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+									// The ST_Buffer(0) is used to correct the "Relate Operation called with a LWGEOMCOLLECTION type" error.
+									$sql .= "ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "), 0))";
 								}
 								$sql .= " OR ";
 								$oradded = true;
@@ -985,7 +986,7 @@ class Application_Service_GenericService {
 							if ($exact) {
 								$sql .= " AND (ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
 							} else {
-								$sql .= " AND (ST_Intersects(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
+								$sql .= " AND (ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "), 0)))";
 							}
 						}
 					}
