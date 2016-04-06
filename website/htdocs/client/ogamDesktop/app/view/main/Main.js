@@ -9,6 +9,12 @@ Ext.define('OgamDesktop.view.main.Main', {
 	//extend: 'Ext.container.Container',
 
 	xtype: 'app-main',
+	requires:[
+		'Ext.plugin.Viewport'
+	],
+	plugins:[
+		'viewport'
+	],
 	plain: true,
 	frame: true,
 	layout: 'card',
