@@ -78,9 +78,14 @@ if ($role->isAllowed('DATA_QUERY')  && in_array("RAW_DATA", $schemasList)) {
 <?php
 }
 if ($role->isAllowed('DATA_EDITION')  && in_array("RAW_DATA", $schemasList)) {	
+$providerField = new Application_Object_Metadata_TableField();
+$providerField->data = 'PROVIDER_ID';
+$providerField->format = 'LOCATION_DATA';
+$providerField->value = "$providerId";
+
 ?>
 <li>
-<a href="<?php echo  $this->url(array('controller'=>'dataedition', 'action'=>'show-add-data'), null, true) ?>/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $providerId; ?>" class="pagelink" ><?php echo $this->translate('Add a new localisation');?></a>
+<a href="odp/index.html<?php //echo $this->generateAddLink('RAW_DATA','LOCATION_DATA',array($providerField)); ?>#edition-add/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $providerId; ?>" class="pagelink" ><?php echo $this->translate('Add a new localisation');?></a>
 </li>
 <?php
 } 
