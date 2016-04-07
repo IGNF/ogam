@@ -306,10 +306,10 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }
 
         // Gets the activated legends
-        // Note: The legend panel body is not fully taken to avoid the ids
+        // Note: The legend panel body is not fully taken to avoid the ids duplication
         var legendBody = [{
             tag:'div',
-            style:'margin-left: -10px;font-size: large;border-bottom: solid 1px #d0d0d0;padding-left:5px;',
+            cls:'o-map-print-legends-title',
             html: OgamDesktop.view.map.LegendsPanel.prototype.title
         }];
         legendsPanel.items.each(function(item){
@@ -319,62 +319,101 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         });
 
         // Builds the print preview
-        this.map.once('postcompose', function(event) {
-            Ext.getBody().createChild({
+        Ext.getBody().createChild({
+            tag: 'div',
+            cls: 'o-map-print-main-div',
+            children: [{ // Map
                 tag: 'div',
-                id: 'o-map-print',
-                style:'position:absolute;width:100%;height:100%;background-color:white;z-index: 5;padding:20px;',
-                children: [{
-                    tag: 'img',
-                    style:'float: left;height:630px;margin:0 30px 30px 0;border: solid 1px #d0d0d0;',
-                    src: event.context.canvas.toDataURL('image/png')
-                },{
-                    tag: 'div',
-                    cls: 'o-print-div',
-                    style:'float: left;height:100%',
-                    children: [{
+                id: 'o-map-print-map-overview',
+                children: [{ // Screenshot
+                    tag:'div',
+                    id:'o-map-print-map-screenshot',
+                    children:[{ // Screenshot image of the map
+                        tag: 'img',
+                        id: 'o-map-print-map-img'
+                    },{ // Scale line with a relative width
                         tag:'div',
-                        style:'border-left: solid 1px #d0d0d0;padding-left:10px',
-                        children:legendBody
-                    },{
-                        tag:'div',
-                        style:'border-left: solid 1px #d0d0d0;padding-left:10px',
+                        cls:'ol-scale-line ol-unselectable',
                         children:[{
-                            tag:'div',
-                            id:'o-map-print-comment-title',
-                            style:'margin:0 0 10px -10px;font-size: large;border-bottom: solid 1px #d0d0d0;padding-left:5px;',
-                            html: 'Commentaire'
-                        },{
-                            tag:'textarea',
-                            id:'o-map-print-comment-textarea',
-                            onchange:'Ext.get(\'o-map-print-comment-div\').dom.innerHTML = (Ext.get(\'o-map-print-comment-textarea\').dom.value !== \'\') ? Ext.get(\'o-map-print-comment-textarea\').dom.value:\'Aucun commentaire.\';',
-                            placeholder:"Vous pouvez commenter ici votre impression.",
-                            style:'border-left: solid 1px #d0d0d0;width:250px;height:100px;'
-                        },{
-                            tag:'div',
-                            id:'o-map-print-comment-div',
-                            html:'Aucun commentaire.',
-                            style:'width:250px;display:none'
-                        }]
-                    },{
-                        tag: 'div',
-                        id: 'o-map-print-tbar',
-                        style:'padding-top:10px;',
-                        cls: 'o-print-tbar',
-                        children: [{
-                            tag:'button',
-                            style:'margin-right:10px',
-                            html:'Imprimer',
-                            onclick:'window.print();'
-                        },{
-                            tag:'button',
-                            html:'Annuler',
-                            onclick:'Ext.getBody().first().destroy();'
+                            tag: 'div',
+                            id: 'o-map-print-map-scale-line-inner',
+                            cls: 'ol-scale-line-inner'
                         }]
                     }]
                 }]
-            },Ext.getBody().first());
-        });
-        this.map.renderSync();
+            },{ // Legends
+                tag: 'div',
+                cls: 'o-print-addons-div',
+                children: [{
+                    tag: 'div',
+                    cls: 'o-print-legends-div',
+                    children: legendBody
+                },{ // Comment
+                    tag: 'div',
+                    cls: 'o-print-comment-div',
+                    children: [{
+                        tag: 'div',
+                        cls: 'o-map-print-comment-title',
+                        html: 'Commentaire'
+                    },{
+                        tag: 'textarea',
+                        id: 'o-map-print-comment-textarea',
+                        placeholder: 'Vous pouvez commenter ici votre impression.'
+                    },{
+                        tag: 'div',
+                        id: 'o-map-print-comment-div',
+                        html: 'Aucun commentaire.'
+                    }]
+                },{ // Toolbar with print and cancel buttons
+                    tag: 'div',
+                    cls: 'o-map-print-tbar',
+                    children: [{
+                        tag: 'button',
+                        id: 'o-print-tbar-print-button',
+                        html: 'Imprimer'
+                    },{
+                        tag: 'button',
+                        id: 'o-print-tbar-cancel-button',
+                        html: 'Annuler'
+                    }]
+                }]
+            }]
+        },Ext.getBody().first());
+
+        // Teleports the map to improve the screenshot resolution (enlarges the map before the screenshot)
+        this.map.setTarget('o-map-print-map-overview');
+
+        // Prepares the preview on print button click
+        Ext.get('o-print-tbar-print-button').on('click', function() {
+            
+            // Updates the comment div with the text area content
+            var textareaValue = Ext.get('o-map-print-comment-textarea').dom.value;
+            Ext.get('o-map-print-comment-div').dom.innerHTML = (textareaValue !== '') ? textareaValue:'Aucun commentaire.';            
+
+            // Updates the map and scale line screenshot
+            // Note: The default navigator screenshot doesn't work well in landscape mode
+            this.map.once('postcompose', function(event) {
+                var canvas = event.context.canvas;
+
+                // Updates the map screenshot image source
+                Ext.get('o-map-print-map-img').dom.src = canvas.toDataURL('image/png');
+
+                // Updates the relative scale line text and width
+                var olScaleLine = Ext.get('o-map-print-map-overview').query('.ol-viewport .ol-scale-line-inner',false)[0];
+                var relativeScaleLine = Ext.get('o-map-print-map-scale-line-inner').dom;
+                relativeScaleLine.style = 'width:' + olScaleLine.getWidth()*100/canvas.width + '%';
+                relativeScaleLine.innerHTML = olScaleLine.getHtml();
+            },this);
+
+            this.map.renderSync();
+            window.print();
+
+        },this);
+
+        // Destroys the print div and teleports the map on cancel button click
+        Ext.get('o-print-tbar-cancel-button').on('click', function() {
+            this.map.setTarget('o-map');
+            Ext.getBody().first().destroy();
+        },this);
     }
 });

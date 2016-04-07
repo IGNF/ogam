@@ -2,7 +2,7 @@
 Ext.define("OgamDesktop.view.map.MapComponent",{
     extend: "GeoExt.component.Map",
     xtype: 'mapcomponent',
-
+    id:'o-map',
     controller: 'mapcomponent',
     listeners: {
         resultswithautozoom: 'zoomToResultFeatures'

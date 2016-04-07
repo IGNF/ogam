@@ -56,11 +56,124 @@
 	left:8px;
 	position:absolute;
 }
-@media print {
-  body > div, #o-map-print-comment-textarea, #o-map-print-tbar {
+
+                ///////////////////
+                // Print preview //
+                ///////////////////
+
+.o-map-print-main-div {
+    position:absolute;
+    width:100%;
+    height:100%;
+    background-color:white;
+    z-index:5;
+    padding:20px;
+}
+#o-map-print-map-overview {
+    float:left;
+    border:solid 1px #d0d0d0;
+}
+#o-map-print-map-screenshot {
+    position: relative;
     display:none;
-  }
-  #o-map-print, #o-map-print-comment-div {
-    display:block !important;
-  }
+}
+#o-map-print-map-screenshot .ol-scale-line {
+    width:100%;
+}
+.o-print-addons-div {
+    float: left;
+}
+.o-print-legends-div, .o-print-comment-div {
+    border-left:solid 1px #d0d0d0;
+    padding-left:10px
+}
+.o-map-print-legends-title, .o-map-print-comment-title {
+    margin-left: -10px;
+    font-size: large;
+    border-bottom: solid 1px #d0d0d0;
+    padding-left:5px;
+}
+.o-map-print-comment-title {
+    margin:0 0 10px -10px;
+}
+#o-map-print-comment-textarea {
+    border-left: solid 1px #d0d0d0;
+    width:100%;
+    height:100px;
+}
+#o-map-print-comment-div {
+    width:100%;
+    display:none;
+}
+.o-map-print-tbar {
+    padding-top:10px;
+}
+#o-print-tbar-print-button {
+    margin-right:10px;
+}
+@media (orientation:portrait) {
+.o-map-print-main-div {
+background-color:red;
+}
+    #o-map-print-map-overview {
+        width:100%;
+        height:75%;
+    }
+    #o-map-print-map-img {
+        width:100%;
+        height:auto;
+    }
+    .o-print-addons-div {
+        width:100%;
+        padding-top:30px;
+    }
+}
+@media (orientation:landscape) {
+.o-map-print-main-div {
+background-color:green;
+}
+    #o-map-print-map-overview {
+        width:75%;
+        height:100%;
+    }
+    #o-map-print-map-img  {
+        width:auto;
+        height:100%;
+    }
+    .o-print-addons-div {
+        width:20%;
+        padding-left:30px;
+    }
+}
+@media print and (orientation:portrait) {
+    #o-map-print-map-overview { // Must take the image size (map screenshot)
+        width:100%;
+        height:auto;
+        display:block; // Must stay here (near the size change), to force the refreshment by the browser
+    }
+    #o-map-print-map-screenshot { // Must take the image size (map screenshot)
+        width:100%;
+        height:auto;
+        display:block; // Must stay here (near the size change), to force the refreshment by the browser
+    }
+}
+@media print and (orientation:landscape) {
+    #o-map-print-map-overview { // Must take the image size (map screenshot)
+        width:auto;
+        height:100%;
+        display:block; // Must stay here (near the size change), to force the refreshment by the browser
+    }
+    #o-map-print-map-screenshot { // Must take the image size (map screenshot)
+        width:auto;
+        height:100%;
+        display:block; // Must stay here (near the size change), to force the refreshment by the browser
+    }
+}
+@media print {
+    body > div, #o-map-print-map-overview .ol-viewport, #o-map-print-comment-textarea, .o-map-print-tbar {
+        display:none;
+    }
+    .o-map-print-main-div, #o-map-print-comment-div {
+        display:block;
+    }
 }
