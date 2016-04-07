@@ -734,6 +734,36 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get a File_Format object by its format.
+	 *
+	 * @param String $fileFormat
+	 * @return Application_Object_Metadata_DatasetFile
+	 */
+	public function getFileFormat($fileFormat) {
+		$db = $this->getAdapter();
+		$req = "SELECT format, file_type, COALESCE(t.label, file_format.label) as label
+				FROM file_format
+				LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'FILE_FORMAT' AND row_pk = format)
+				WHERE format = ?";
+
+		$this->logger->info('getFileFormat : ' . $req);
+
+		$select = $db->prepare($req);
+		$select->execute(array(
+			$fileFormat
+		));
+
+		$row = $select->fetch();
+
+		$datasetFile = new Application_Object_Metadata_DatasetFile();
+		$datasetFile->fileType = $row['file_type'];
+		$datasetFile->format = $row['format'];
+		$datasetFile->label = $row['label'];
+
+		return $datasetFile;
+	}
+
+	/**
 	 * Get the list of requested fields for the file.
 	 *
 	 * @param String $fileFormat

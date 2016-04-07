@@ -112,8 +112,15 @@ class IntegrationController extends AbstractOGAMController {
 
 	/**
 	 * Build and return the pdata upload form.
+	 *
+	 * @param bool $showDetail
+	 *        	show the list of expected fields in the form (description)
+	 * @param bool $model
+	 *        	link to a CSV model file
+	 * @return Application_Form_OGAMForm
+	 * @throws Zend_Form_Exception
 	 */
-	private function _getDataUploadForm($showDetail = false) {
+	private function _getDataUploadForm($showDetail = false, $model = false) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'data-upload-form',
@@ -140,18 +147,34 @@ class IntegrationController extends AbstractOGAMController {
 			$fileelement = $form->createElement('file', $requestedFile->format);
 
 			$fileelement->setLabel($this->translator->translate($requestedFile->label . ': '));
-			$fieldsDesc = '<span class="hint-title">';
+
+			$fieldsDesc = '';
+
+			// Show a link to dowload a model CSV file (header line with the names of the fields)
+			if ($model) {
+				$link = $this->_helper->url('export-file-model', 'integration', '') . '?fileFormat=' . $requestedFile->format;
+				$icon = "<img src='/img/icon-csv.png'>";
+				$anchor = $this->translator->translate('Download a file model for') . ' ' . $requestedFile->label;
+				$fieldsDesc .= "<p class='align_images'>" . $icon . "<a href='" . $link . "'>" . $anchor . "</a></p>";
+			}
+
 			if ($showDetail) {
 				// Get some more informations in the metadata base
 				$fields = $this->metadataModel->getFileFields($requestedFile->format);
+				$fieldsDesc .= '<span class="hint-title">';
 				$fieldsDesc .= $this->translator->translate('The expected fields are:<br/>');
+				$fieldsDesc .= '</span>';
 				foreach ($fields as $field) {
-					$fieldsDesc .= '</span><span title="';
+					$fieldsDesc .= '<span title="';
 					$fieldsDesc .= $field->definition; // the tooltip
 					if (!empty($field->mask)) {
 						$fieldsDesc .= ' : format = ' . $field->mask;
 					}
-					$fieldsDesc .= '">';
+					$fieldsDesc .= '"';
+					if ($field->isMandatory == 1) {
+						$fieldsDesc .= ' class="mandatory_field"';
+					}
+					$fieldsDesc .= '>';
 					$fieldsDesc .= $field->label;
 					if ($field->isMandatory == 1) {
 						$fieldsDesc .= ' *';
@@ -225,7 +248,25 @@ class IntegrationController extends AbstractOGAMController {
 	public function showUploadDataAction() {
 		$this->logger->debug('showUploadDataAction');
 
-		$this->view->form = $this->_getDataUploadForm(true);
+		// Get the parameters from configuration file
+		$configuration = Zend_Registry::get("configuration");
+
+		$this->logger->debug('showUploadFileDetail : ' . print_r($configuration->showUploadFileDetail, true));
+
+		if (!isset($configuration->showUploadFileDetail)) {
+			$showDetail = true;
+		} else {
+			$showDetail = ($configuration->showUploadFileDetail == 1);
+		}
+		if (!isset($configuration->showUploadFileModel)) {
+			$showModel = true;
+		} else {
+			$showModel = ($configuration->showUploadFileModel == 1);
+		}
+
+		$this->logger->debug('$showDetail : ' . $showDetail);
+
+		$this->view->form = $this->_getDataUploadForm($showDetail, $showModel);
 
 		$this->render('show-upload-data');
 	}
@@ -473,7 +514,7 @@ class IntegrationController extends AbstractOGAMController {
 			$status = $this->integrationServiceModel->getStatus($submissionId, $servletName);
 
 			// Echo the result as a JSON
-			echo '{"success":true, "status":"'.$status->status.'", "taskName":"'.$status->taskName.'", "currentCount":"'.$status->currentCount.'", "totalCount":"'.$status->totalCount.'"}';
+			echo '{"success":true, "status":"' . $status->status . '", "taskName":"' . $status->taskName . '", "currentCount":"' . $status->currentCount . '", "totalCount":"' . $status->totalCount . '"}';
 		} catch (Exception $e) {
 			$this->logger->err('Error during get: ' . $e);
 			$this->view->errorMessage = $e->getMessage();
@@ -497,5 +538,56 @@ class IntegrationController extends AbstractOGAMController {
 	 */
 	public function getCheckStatusAction() {
 		$this->_getStatus('CheckServlet');
+	}
+
+	/**
+	 * Generate a CSV file, model for import files,
+	 * with as first line (commented), the names of the expected fields, with mandatory fields (*) and date formats.
+	 * Param : file format
+	 *
+	 * @throws Zend_Exception
+	 */
+	public function exportFileModelAction() {
+		// -- Load user for checking permissions
+		// todo : add a permission for this action ?
+		$userSession = new Zend_Session_Namespace('user');
+		$role = $userSession->user->role;
+
+		// -- Get the file
+		$fileFormat = $this->_getParam("fileFormat");
+		$datasetFile = $this->metadataModel->getFileFormat($fileFormat);
+
+		// -- Get file infos and fields - ordered by position
+		$fieldNames = array();
+
+		$fields = $this->metadataModel->getFileFields($fileFormat);
+		foreach ($fields as $field) {
+			$fieldNames[] = $field->label . ((!empty($field->mask)) ? ' (' . $field->mask . ') ' : '') . (($field->isMandatory == 1) ? ' *' : '');
+		}
+
+		// -- Comment this line
+		$fieldNames[0] = '// ' . $fieldNames[0];
+
+		// -- Export results to a CSV file
+
+		// Define the header of the response
+		$configuration = Zend_Registry::get("configuration");
+		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=CSV_Model_' . $datasetFile->label . '_' . date('dmy_Hi') . '.csv', true);
+
+		// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
+		if ($configuration->csvExportCharset == 'UTF-8') {
+			echo (chr(0xEF));
+			echo (chr(0xBB));
+			echo (chr(0xBF));
+		}
+
+		// Opens the standard output as a file flux
+		$out = fopen('php://output', 'w');
+		fputcsv($out, $fieldNames, ';');
+		fclose($out);
+
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
 	}
 }

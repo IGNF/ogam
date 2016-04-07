@@ -525,6 +525,14 @@ td.delete-cell {
 	font-weight: bold;
 }
 
+.file.element {
+	margin-bottom: 30px;
+}
+
+.mandatory_field {
+	color: red;
+}
+
 /**************************************/
 /** User Part
 /**************************************/
@@ -646,4 +654,30 @@ dt {
 .desaturate {
 	-webkit-filter: grayscale(100%);
 	filter: grayscale(100%);
+}
+
+/*************************************************************/
+/*     Align vertically images and text                      */
+/*************************************************************/
+p.align_images,
+a.align_images,
+div.align_images,
+h4.align_images,
+h3.align_images,
+button.align_images,
+ul.align_images li,
+td.align_images,
+span.align_images {
+	line-height: 1em;
+}
+p.align_images img,
+a.align_images img,
+div.align_images img,
+h4.align_images img,
+h3.align_images img,
+button.align_images img,
+ul.align_images li img,
+td.align_images img,
+span.align_images img {
+	vertical-align: middle;
 }
