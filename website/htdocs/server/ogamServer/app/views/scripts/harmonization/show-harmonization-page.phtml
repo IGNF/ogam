@@ -51,7 +51,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 ?>
 <tr class="sectiontableentry<?=$i % 2?>">
 	<td><?php echo $harmonizationProcess->providerId; ?></td>
-	<td><?php echo $harmonizationProcess->datasetId ?></td>
+	<td><?php echo $harmonizationProcess->datasetLabel ?></td>
 	<td><?php echo $harmonizationProcess->date ?></td>
 	<td>
             <?php if ($harmonizationProcess->submissionStatus === "NOT_VALID") { ?>
@@ -66,7 +66,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 
              	// Display the progress bar
                 display('progressBar<?php echo $harmonizationProcess->harmonizationId;?>', '', 0, '<?php echo $this->baseUrl('img/') ?>');
-                
+
              	// Refresh The status of the submission
                 Genapp.util.getStatus_<?php echo $harmonizationProcess->harmonizationId; ?> =  function (){
                     Ext.Ajax.request({
@@ -74,7 +74,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
                        params:{
                            DATASET_ID:'<?php echo $harmonizationProcess->datasetId; ?>',
                            PROVIDER_ID:'<?php echo $harmonizationProcess->providerId; ?>',
-                           action:'status'                               
+                           action:'status'
                        },
                        callback: function(options, success, response){
                             var rp = Ext.decode(response.responseText);
@@ -114,7 +114,7 @@ foreach ($this->harmonizations as $harmonizationProcess) {
                 </div>
             <?php } else if ($harmonizationProcess->status == "") { ?>
             <?php } else { //"ERROR" or "CRASH") ?>
-            	<?php echo 
+            	<?php echo
 		$harmonizationProcess->status ?>
                 <img src="<?php echo $this->baseUrl('img/Red_x.png') ?>" />
             <?php } ?></td>
@@ -134,5 +134,5 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 <div class="no-submission"><?php echo $this->translate('No submission found');?></div>
 <?php } ?>
 <p class="subTableLink">
-    <a href="<?php echo $this->url(array('controller'=>'harmonization'), null, true) ?>"><?php echo $this->translate('Back');?></a>
+    <a href="<?php echo $this->url(array('controller'=>'index'), null, true) ?>"><?php echo $this->translate('Back');?></a>
 </p>
