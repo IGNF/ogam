@@ -1103,7 +1103,7 @@ class Application_Service_GenericService {
 
 		if ($field->type === "DATE") {
 			$sql .= "to_char(" . $field->format . "." . $field->columnName . ", 'YYYY/MM/DD') as " . $field->getName();
-		} else if ($field->unit === "GEOM") {
+		} else if ($field->type === "GEOM") {
 			// Special case for THE_GEOM
 			$sql .= "st_asText(st_transform(" . $field->format . "." . $field->columnName . "," . $this->visualisationSRS . ")) as location, ";
 			$sql .= "st_asText(st_transform(" . $field->format . "." . $field->columnName . "," . $this->visualisationSRS . ")) as " . $field->getName() . ", ";
