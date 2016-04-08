@@ -90,5 +90,15 @@ public interface CheckCodes {
 	 * Trigger exception.
 	 */
 	Integer TRIGGER_EXCEPTION = 1110;
+	
+	/**
+	 * Invalid geometry.
+	 */
+	Integer INVALID_GEOMETRY = 1111;
+	
+	/**
+	 * Wrong geometry type.
+	 */
+	Integer WRONG_GEOMETRY_TYPE = 1112;
 
 }

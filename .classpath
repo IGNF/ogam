@@ -16,11 +16,6 @@
 	<classpathentry kind="lib" path="service_common/lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="service_common/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="service_common/lib/JRI.jar"/>
+	<classpathentry kind="lib" path="/libs_java/import/com/vividsolutions/jts/jts-1.13.jar"/>
 	<classpathentry kind="output" path="service_integration/classes"/>
-	<buildpathentry kind="src" path="src"/>
-	<buildpathentry kind="con" path="org.eclipse.dltk.mod.launching.INTERPRETER_CONTAINER"/>
-	<buildpathentry kind="con" path="org.eclipse.vjet.eclipse.core.JSNATIVE_CONTAINER/JS Native Types"/>
-	<buildpathentry kind="con" path="org.eclipse.vjet.eclipse.core.BROWSER_CONTAINER/Browser SDK"/>
-	<buildpathentry kind="con" path="org.eclipse.vjet.eclipse.core.VJO_CONTAINER/VJO LIB"/>
-	<buildpathentry combineaccessrules="false" kind="prj" path="/ExtJSTL-4.2"/>
 </classpath>
