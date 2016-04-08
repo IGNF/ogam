@@ -268,6 +268,7 @@ FROM unit
 WHERE (type = 'CODE' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC', 'TAXREF'))
 OR    (type = 'ARRAY' AND subtype NOT IN ('MODE', 'TREE', 'DYNAMIC', 'TAXREF'))
 OR    (type = 'NUMERIC' AND subtype NOT IN ('RANGE', 'COORDINATE'))
+OR    (type = 'GEOM' AND NOT (subtype IS NULL OR subtype IN ('POINT', 'LINESTRING', 'POLYGON')))
 UNION
 -- the unit type is not consistent with the form field input type
 SELECT form_field.format || '_' || form_field.data, 'The form field input type (' || input_type || ') is not consistent with the unit type (' || type || ')'

@@ -105,7 +105,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 			$field->value = $row[$key];
 
 			// Store additional info for geometry type
-			if ($field->unit === "GEOM") {
+			if ($field->type === "GEOM") {
 				$field->xmin = $row[strtolower($key) . '_x_min'];
 				$field->xmax = $row[strtolower($key) . '_x_max'];
 				$field->ymin = $row[strtolower($key) . '_y_min'];

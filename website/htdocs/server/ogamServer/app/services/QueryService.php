@@ -761,10 +761,10 @@ class Application_Service_QueryService {
 
 		// Transform the identifier in an array
 		$keyMap = $this->_decodeId($id);
-	
+
 		// Prepare a data object to be filled
 		$data = $this->genericService->buildDataObject($keyMap['SCHEMA'], $keyMap['FORMAT'], null);
-	
+
 		// Complete the primary key info with the session values
 		foreach ($data->infoFields as $infoField) {
 			if (!empty($keyMap[$infoField->data])) {
@@ -774,24 +774,24 @@ class Application_Service_QueryService {
 
 		// Get the detailled data
 		$this->genericModel->getDatum($data);
-	
+
 		// The data ancestors
 		$ancestors = $this->genericModel->getAncestors($data);
 		$ancestors = array_reverse($ancestors);
-	
+
 		// Look for a geometry object in order to calculate a bounding box
 		// Look for the plot location
 		$bb = null;
 		$bb2 = null;
 		$locationTable = null;
 		foreach ($data->getFields() as $field) {
-			if ($field->unit == 'GEOM') {
+			if ($field->type === 'GEOM') {
 				// define a bbox around the location
 				$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-	
+
 				// Prepare an overview bbox
 				$bb2 = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 50000);
-				 
+
 				$locationTable = $data;
 				break;
 			}
@@ -799,30 +799,30 @@ class Application_Service_QueryService {
 		if ($bb == null) {
 			foreach ($ancestors as $ancestor) {
 				foreach ($ancestor->getFields() as $field) {
-					if ($field->unit == 'GEOM') {
+					if ($field->type === 'GEOM') {
 						// define a bbox around the location
 						$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-	
+
 						// Prepare an overview bbox
 						$bb2 = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-	
+
 						$locationTable = $ancestor;
 						break;
 					}
 				}
 			}
 		}
-	
+
 		// Defines the mapsserver parameters.
 		$mapservParams = '';
 		foreach ($locationTable->getInfoFields() as $primaryKey) {
 			$mapservParams .= '&'.$primaryKey->columnName.'='.$primaryKey->value;
 		}
-	
+
 		// Title of the detail message
 		$dataDetails = array();
 		$dataDetails['formats'] = array();
-	
+
 		// List all the formats, starting with the ancestors
 		foreach ($ancestors as $ancestor) {
 			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
@@ -830,13 +830,13 @@ class Application_Service_QueryService {
 				$dataDetails['formats'][] = json_decode($ancestorJSON, true);
 			}
 		}
-	
+
 		// Add the current data
 		$dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
 		if ($dataJSON !== '') {
 			$dataDetails['formats'][] = json_decode($dataJSON, true);
 		}
-	
+
 		// Defines the panel title
 		$titlePK = '';
 		foreach ($data->infoFields as $infoField) {
@@ -847,7 +847,7 @@ class Application_Service_QueryService {
 		}
 		$dataInfo = end($dataDetails['formats']);
 		$dataDetails['title'] = $dataInfo['title'].' ('.$titlePK.')';
-	
+
 		// Add the localisation maps
 		if (!empty($detailsLayers)) {
 			if ($detailsLayers[0] != '') {
@@ -858,7 +858,7 @@ class Application_Service_QueryService {
 				$dataDetails['maps1'] = array(
 						'title' => 'image'
 				);
-				 
+
 				//complete the array with the urls of maps1
 				$dataDetails['maps1']['urls'][] = array();
 				$urlCount = count($url);
@@ -866,7 +866,7 @@ class Application_Service_QueryService {
 					$dataDetails['maps1']['urls'][$i]['url'] = $url[$i];
 				}
 			}
-	
+
 			if ($detailsLayers[1] != '') {
 				$url = array();
 				$url = explode(";",($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1],
@@ -874,7 +874,7 @@ class Application_Service_QueryService {
 				$dataDetails['maps2'] = array(
 						'title' => 'overview'
 				);
-				 
+
 				//complete the array with the urls of maps2
 				$dataDetails['maps2']['urls'][] = array();
 				for ($i=0;$i<count($url);$i++) {
@@ -885,7 +885,7 @@ class Application_Service_QueryService {
 		}
 		// Prepare a data object to be filled
 		$data2 = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
-		
+
 		// Complete the primary key
 		foreach ($data2->infoFields as $infoField) {
 			if (!empty($keyMap[$infoField->data])) {
@@ -895,7 +895,7 @@ class Application_Service_QueryService {
 		// Get children too
 		$websiteSession = new Zend_Session_Namespace('website');
 		$children = $this->genericModel->getChildren($data2, $websiteSession->datasetId);
-		
+
 		// Add the children
 		foreach ($children as $listChild) {
 			$dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
