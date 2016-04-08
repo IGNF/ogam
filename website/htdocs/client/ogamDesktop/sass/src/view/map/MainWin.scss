@@ -157,24 +157,20 @@
     #o-map-print-map-overview { // Must take the image size (map screenshot)
         width:100%;
         height:auto;
-        display: inline-block; // Must stay here (near the size change), to force the refreshment by the browser
     }
     #o-map-print-map-screenshot { // Must take the image size (map screenshot)
         width:100%;
         height:auto;
-        display:block; // Must stay here (near the size change), to force the refreshment by the browser
     }
 }
 @media print and (orientation:landscape) {
     #o-map-print-map-overview { // Must take the image size (map screenshot)
         width:auto;
         height:100%;
-        display: inline-block; // Must stay here (near the size change), to force the refreshment by the browser
     }
     #o-map-print-map-screenshot { // Must take the image size (map screenshot)
         width:auto;
         height:100%;
-        display:block; // Must stay here (near the size change), to force the refreshment by the browser
     }
 }
 @media print {
@@ -183,8 +179,5 @@
     }
     .o-map-print-main-div, #o-map-print-map-screenshot, #o-map-print-comment-div {
         display:block;
-    }
-    #o-map-print-map-overview {
-        display: inline-block;
     }
 }
