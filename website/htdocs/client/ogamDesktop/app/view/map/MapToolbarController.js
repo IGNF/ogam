@@ -307,6 +307,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
         // Gets the activated legends
         // Note: The legend panel body is not fully taken to avoid the ids duplication
+        // TODO: Find a workaround (Use a filtered legends store...)
         var legendBody = [{
             tag:'div',
             cls:'o-map-print-legends-title',
@@ -314,7 +315,17 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }];
         legendsPanel.items.each(function(item){
             if(item.isVisible()){
-                legendBody.push({tag:'p', html: item.el.getHtml()});
+                legendBody.push({
+                    tag:'div',
+                    cls:'o-print-legend-div',
+                    children: [{
+                        tag:'span',
+                        html: item.el.first().getHtml()
+                    },{
+                        tag:'img',
+                        src: item.el.last().dom.src
+                    }]
+                });
             }
         });
 
