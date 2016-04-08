@@ -336,7 +336,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             if(item.isVisible()){
                 legendBody.push({
                     tag:'div',
-                    cls:'o-print-legend-div',
+                    cls:'o-map-print-legend-div',
                     children: [{
                         tag:'span',
                         html: item.el.first().getHtml()
@@ -351,7 +351,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         // Builds the print preview
         Ext.getBody().createChild({
             tag: 'div',
-            cls: 'o-map-print-main-div',
+            id: 'o-map-print-main-div',
             children: [{ // Map
                 tag: 'div',
                 id: 'o-map-print-map-overview',
@@ -373,14 +373,14 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 }]
             },{ // Legends
                 tag: 'div',
-                cls: 'o-print-addons-div',
+                cls: 'o-map-print-addons-div',
                 children: [{
                     tag: 'div',
-                    cls: 'o-print-legends-div',
+                    cls: 'o-map-print-legends-div',
                     children: legendBody
                 },{ // Comment
                     tag: 'div',
-                    cls: 'o-print-comment-div',
+                    cls: 'o-map-print-comment-div',
                     children: [{
                         tag: 'div',
                         cls: 'o-map-print-comment-title',
@@ -396,43 +396,43 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                     }]
                 },{ // Print options
                     tag: 'div',
-                    cls: 'o-print-options-div',
+                    cls: 'o-map-print-options-div',
                     children: [{
                         tag: 'div',
                         cls: 'o-map-print-options-title',
                         html: 'Impression'
                     },{
                         tag:'div',
-                        cls:'o-print-option-div',
+                        cls:'o-map-print-option-div',
                         children: [{
                             tag: 'input',
                             type: 'checkbox',
                             id: 'o-map-print-options-adjust-checkbox'
                         },{
-                            tag:'label',
+                            tag: 'label',
                             html: 'Ajuster la carte à la page'
                         }]
                     },{
                         tag:'div',
-                        cls:'o-print-option-div',
+                        cls:'o-map-print-option-div',
                         children: [{
                             tag: 'input',
                             type: 'checkbox',
                             id: 'o-map-print-options-square-checkbox'
                         },{
-                            tag:'label',
-                            html: 'Formater la carte en 1/1'
+                            tag: 'label',
+                            html: 'Formater la carte au 1/1'
                         }]
                     },{ // Toolbar with print and cancel buttons
                         tag: 'div',
                         cls: 'o-map-print-tbar',
                         children: [{
                             tag: 'button',
-                            id: 'o-print-tbar-print-button',
+                            id: 'o-map-print-tbar-print-button',
                             html: 'Imprimer'
                         },{
                             tag: 'button',
-                            id: 'o-print-tbar-cancel-button',
+                            id: 'o-map-print-tbar-cancel-button',
                             html: 'Annuler'
                         }]
                     }]
@@ -443,14 +443,18 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         // Teleports the map to improve the screenshot resolution (enlarges the map before the screenshot)
         this.map.setTarget('o-map-print-map-overview');
 
-        // 
+        // Adds/Removes the class "page-map-adjust" on adjust checkbox change
         Ext.get('o-map-print-options-adjust-checkbox').on('change', function(event, el) {
             if (el.checked) {
-
+                Ext.get('o-map-print-main-div').addCls('page-map-adjust');
             } else {
-
+                Ext.get('o-map-print-main-div').removeCls('page-map-adjust');
             }
         },this);
+
+        // Checks by default the adjust checkbox
+        Ext.get('o-map-print-main-div').addCls('page-map-adjust');
+        Ext.get('o-map-print-options-adjust-checkbox').dom.checked = true; // Doesn't fires the change event
 
         // Resizes the map on square checkbox change
         Ext.get('o-map-print-options-square-checkbox').on('change', this.resizeMap, this);
@@ -459,7 +463,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         Ext.getWin().on('resize', this.resizeMap, this);
 
         // Prepares the preview on print button click
-        Ext.get('o-print-tbar-print-button').on('click', function() {
+        Ext.get('o-map-print-tbar-print-button').on('click', function() {
             
             // Updates the comment div with the text area content
             var textareaValue = Ext.get('o-map-print-comment-textarea').dom.value;
@@ -486,10 +490,10 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         },this);
 
         // Destroys the print div and teleports the map on cancel button click
-        Ext.get('o-print-tbar-cancel-button').on('click', function() {
+        Ext.get('o-map-print-tbar-cancel-button').on('click', function() {
             Ext.getWin().un('orientationchange', this.resizeMap, this);
             this.map.setTarget('o-map');
-            Ext.getBody().first().destroy();
+            Ext.get('o-map-print-main-div').destroy();
         },this);
     }
 });
