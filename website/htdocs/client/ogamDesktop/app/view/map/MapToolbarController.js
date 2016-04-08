@@ -292,6 +292,25 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }, this);
         return layersToPrint;
     },
+
+    resizeMap : function() {console.log('args',arguments);
+        var mapTarget = Ext.get('o-map-print-map-overview');
+        var squareCheckbox = Ext.get('o-map-print-options-square-checkbox');
+        // Remove the height and width of the style attribute
+        mapTarget.setHeight(); 
+        mapTarget.setWidth();
+        if (squareCheckbox.dom.checked) {
+            if (window.matchMedia("(orientation: landscape)").matches) {
+                mapTarget.setWidth(mapTarget.getHeight());
+                this.map.updateSize();
+            } else {
+                mapTarget.setHeight(mapTarget.getWidth());
+                this.map.updateSize();
+            }
+        } else {
+            this.map.updateSize();
+        }
+    },
     
     onPrintMapButtonPress : function(button, pressed, eOpts) {
         var mapAddonsPanel = this.getView().up('map-mainwin').child('map-addons-panel');
@@ -375,17 +394,47 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                         id: 'o-map-print-comment-div',
                         html: 'Aucun commentaire.'
                     }]
-                },{ // Toolbar with print and cancel buttons
+                },{ // Print options
                     tag: 'div',
-                    cls: 'o-map-print-tbar',
+                    cls: 'o-print-options-div',
                     children: [{
-                        tag: 'button',
-                        id: 'o-print-tbar-print-button',
-                        html: 'Imprimer'
+                        tag: 'div',
+                        cls: 'o-map-print-options-title',
+                        html: 'Impression'
                     },{
-                        tag: 'button',
-                        id: 'o-print-tbar-cancel-button',
-                        html: 'Annuler'
+                        tag:'div',
+                        cls:'o-print-option-div',
+                        children: [{
+                            tag: 'input',
+                            type: 'checkbox',
+                            id: 'o-map-print-options-adjust-checkbox'
+                        },{
+                            tag:'label',
+                            html: 'Ajuster la carte à la page'
+                        }]
+                    },{
+                        tag:'div',
+                        cls:'o-print-option-div',
+                        children: [{
+                            tag: 'input',
+                            type: 'checkbox',
+                            id: 'o-map-print-options-square-checkbox'
+                        },{
+                            tag:'label',
+                            html: 'Formater la carte en 1/1'
+                        }]
+                    },{ // Toolbar with print and cancel buttons
+                        tag: 'div',
+                        cls: 'o-map-print-tbar',
+                        children: [{
+                            tag: 'button',
+                            id: 'o-print-tbar-print-button',
+                            html: 'Imprimer'
+                        },{
+                            tag: 'button',
+                            id: 'o-print-tbar-cancel-button',
+                            html: 'Annuler'
+                        }]
                     }]
                 }]
             }]
@@ -393,6 +442,21 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
         // Teleports the map to improve the screenshot resolution (enlarges the map before the screenshot)
         this.map.setTarget('o-map-print-map-overview');
+
+        // 
+        Ext.get('o-map-print-options-adjust-checkbox').on('change', function(event, el) {
+            if (el.checked) {
+
+            } else {
+
+            }
+        },this);
+
+        // Resizes the map on square checkbox change
+        Ext.get('o-map-print-options-square-checkbox').on('change', this.resizeMap, this);
+
+        // Resizes the map on window resizing
+        Ext.getWin().on('resize', this.resizeMap, this);
 
         // Prepares the preview on print button click
         Ext.get('o-print-tbar-print-button').on('click', function() {
@@ -423,6 +487,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
         // Destroys the print div and teleports the map on cancel button click
         Ext.get('o-print-tbar-cancel-button').on('click', function() {
+            Ext.getWin().un('orientationchange', this.resizeMap, this);
             this.map.setTarget('o-map');
             Ext.getBody().first().destroy();
         },this);
