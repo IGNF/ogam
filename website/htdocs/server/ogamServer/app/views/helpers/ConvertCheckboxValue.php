@@ -16,7 +16,7 @@
  *
  * @package Application_Views_Helpers
  */
-class Application_View_Helper_ConvertCheckboxValue extends Zend_View_Helper_Abstract {
+class Application_Views_Helpers_ConvertCheckboxValue extends Zend_View_Helper_Abstract {
 
 	/**
 	 * Convert a checkbox field value depending of the field's type
@@ -39,7 +39,7 @@ class Application_View_Helper_ConvertCheckboxValue extends Zend_View_Helper_Abst
                 switch (true) {
                     case ($v === false): $booleanValue = false; break;
                     case ($v === true): $booleanValue = true; break;
-                    default: 
+                    default:
                         $this->logger->warn('The value must be set to true or false for a checkbox field with a "BOOLEAN" type');
                         $booleanValue = null;
                 }
@@ -48,7 +48,7 @@ class Application_View_Helper_ConvertCheckboxValue extends Zend_View_Helper_Abst
                 switch (true) {
                     case ($v === "0"): $booleanValue = false; break;
                     case ($v === "1"): $booleanValue = true; break;
-                    default: 
+                    default:
                         $this->logger->warn('The value must be set to "0" or "1" for a checkbox field with a "STRING" type');
                         $booleanValue = null;
                 }

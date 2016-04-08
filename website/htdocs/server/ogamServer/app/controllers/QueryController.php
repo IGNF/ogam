@@ -273,9 +273,9 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('ajaxgetqueryformAction');
 
 		$filters = json_decode($this->getRequest()->getQuery('filter'));
-				
+
 		$datasetId= $requestName =null;
-		
+
 		if (is_array($filters)) {
 			foreach($filters as $aFilter)
 			{
@@ -290,13 +290,13 @@ class QueryController extends AbstractOGAMController {
 						$this->logger->debug('filter unattended : ' . $aFilter->property);
 				}
 			}
-			
+
 		} else {
 			$datasetId = json_decode($this->getRequest()->getQuery('datasetId'));
 			$requestName = $this->getRequest()->getPost('requestName');
 
 		}
-		
+
 		echo $this->queryService->getQueryForm($datasetId, $requestName);
 
 		// No View, we send directly the JSON
@@ -574,7 +574,7 @@ class QueryController extends AbstractOGAMController {
 
 		try {
 			$pdf->writeHTML($this->view->partial('query/pdfexport.phtml', $pdfExportArray));
-			$pdf->Output($this->removeAccents($data['title']) . '.pdf', 'D');
+			$pdf->Output($this->genericService->removeAccents($data['title']) . '.pdf', 'D');
 		}
 
 		catch (HTML2PDF_exception $e) {
@@ -1559,9 +1559,9 @@ class QueryController extends AbstractOGAMController {
 	public function ajaxrestresultlocationAction() {
 		$sessionId = session_id();
 		$this->resultLocationModel->cleanPreviousResults($sessionId);
-		
+
 		echo '{success:true}';
-		
+
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
