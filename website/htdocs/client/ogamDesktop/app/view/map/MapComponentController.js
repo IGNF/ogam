@@ -89,13 +89,6 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         return me.layer;
     },
 
-    activateVectorLayerInfo : function() {
-        if (this.selectedVectorLayer && this.selectedVectorLayer !== null) {
-            var layerName = this.selectedVectorLayer.getData().name;
-            var url = this.selectedVectorLayer.getData().url;
-        }
-    },
-
     zoomToResultFeatures : function () {
         // Get wkt geometry corresponding to the result BBOX
         var resultsBBox = this.getView().resultsBBox ? this.getView().resultsBBox : 'POLYGON EMPTY';
