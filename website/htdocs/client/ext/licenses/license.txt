@@ -3,17 +3,32 @@ Copyright (c) 2006-2015, Sencha Inc.
 All rights reserved.
 licensing@sencha.com
 
-options: http://www.sencha.com/license
-license: http://www.sencha.com/legal/sencha-sdk-software-license-agreement
+http://www.sencha.com/license
 
-
-Evaluation/Trial License
+Open Source License
 ------------------------------------------------------------------------------------------
-This version of Sencha Ext JS is licensed commercially for a limited period for evaluation 
-purposes only. Production use or use beyond the applicable evaluation period is prohibited 
-under this license.
-See http://www.sencha.com/legal/sencha-sdk-software-license-agreement (Trial License) 
-for license terms.
+This version of Ext JS is licensed under the terms of the Open Source GPL 3.0 license. 
+
+http://www.gnu.org/licenses/gpl.html
+
+There are several FLOSS exceptions available for use with this release for
+open source applications that are distributed under a license other than GPL.
+
+* Open Source License Exception for Applications
+
+  http://www.sencha.com/products/floss-exception.php
+
+* Open Source License Exception for Development
+
+  http://www.sencha.com/products/ux-exception.php
+
+
+Alternate Licensing
+------------------------------------------------------------------------------------------
+Commercial and OEM Licenses are available for an alternate download of Ext JS.
+This is the appropriate option if you are creating proprietary applications and you are 
+not prepared to distribute and share the source code of your application under the 
+GPL v3 license. Please visit http://www.sencha.com/license for more details.
 
 
 Third Party Content
@@ -32,10 +47,6 @@ Location: http://www.JSON.org/js.html
 Library: flexible-js-formatting - date parsing and formatting
 License: MIT
 Location: http://code.google.com/p/flexible-js-formatting/
-
-Library: spin.js - animated graphic
-License: MIT
-Location: http://fgnass.github.com/spin.js/
 
 Library: sparkline.js - micro charts
 License: BSD

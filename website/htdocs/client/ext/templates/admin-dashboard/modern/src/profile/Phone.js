@@ -1,4 +1,4 @@
-﻿Ext.define('Admin.profile.Phone', {
+Ext.define('Admin.profile.Phone', {
     extend: 'Ext.app.Profile',
 
     requires: [
