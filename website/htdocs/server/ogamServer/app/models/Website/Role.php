@@ -19,10 +19,15 @@
  */
 class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
 

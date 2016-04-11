@@ -2,13 +2,13 @@
 
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- * 
+ *
  * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
- * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
- * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
@@ -19,13 +19,18 @@
  */
 class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
-		
+
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 	}
@@ -33,7 +38,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	/**
 	 * Read a submission object from a result line.
 	 *
-	 * @param Result $row        	
+	 * @param Result $row
 	 * @return Application_Object_RawData_Submission
 	 */
 	private function _readSubmission($row) {
@@ -47,7 +52,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		$submission->datasetLabel = $row['dataset_label'];
 		$submission->userLogin = $row['user_login'];
 		$submission->date = $row['_creationdt'];
-		
+
 		return $submission;
 	}
 
@@ -60,7 +65,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	 */
 	public function getActiveSubmissions($providerId = null) {
 		$db = $this->getAdapter();
-		
+
 		$req = " SELECT submission_id, step, status, provider_id, p.label as provider_label, dataset_id, d.label as dataset_label, user_login, file_type, file_name, nb_line, _creationdt ";
 		$req .= " FROM raw_data.submission s";
 		$req .= " LEFT JOIN raw_data.submission_file USING (submission_id)";
@@ -71,26 +76,26 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 			$req .= " AND provider_id = ?";
 		}
 		$req .= " ORDER BY submission_id DESC";
-		
+
 		$select = $db->prepare($req);
 		$params = array();
 		if ($providerId) {
 			$params[] = $providerId;
 		}
 		$select->execute($params);
-		
+
 		Zend_Registry::get("logger")->info('getActiveSubmissions : ' . $req);
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			
+
 			$submissionId = $row['submission_id'];
-			
+
 			if (empty($result[$submissionId])) {
-				
+
 				// Create the new submission
 				$submission = $this->_readSubmission($row);
-				
+
 				$result[$submissionId] = $submission;
 			}
 			// Add file info
@@ -99,7 +104,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 			$submissionFile->fileType = $row['file_type'];
 			$submissionFile->lineNumber = $row['nb_line'];
 			$submission->addFile($submissionFile);
-			
+
 			// Add the submission to the list
 			$result[$submissionId] = $submission;
 		}
@@ -113,7 +118,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	 */
 	public function getSubmissionsForHarmonization() {
 		$db = $this->getAdapter();
-		
+
 		$req = " SELECT provider_id, p.label as provider_label, dataset_id, d.label as dataset_label, max(submission_id) as submission_id, max(step) as step, max(status) as status, max(user_login) as user_login, max( _creationdt) as _creationdt ";
 		$req .= " FROM submission";
 		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
@@ -121,15 +126,15 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		$req .= " WHERE step <>  'CANCELLED' AND step <> 'INIT'";
 		$req .= " GROUP BY provider_id, provider_label, dataset_id, dataset_label";
 		$req .= " ORDER BY submission_id ";
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array());
-		
+
 		Zend_Registry::get("logger")->info('getSubmissionsForHarmonization : ' . $req);
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			
+
 			$submission = $this->_readSubmission($row);
 			$result[] = $submission;
 		}
@@ -146,24 +151,24 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	 */
 	public function getSubmission($submissionId) {
 		Zend_Registry::get("logger")->info('getSubmission : ' . $submissionId);
-		
+
 		$db = $this->getAdapter();
 		$req = " SELECT submission.*, p.label as provider_label, d.label as dataset_label";
 		$req .= " FROM submission ";
 		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
 		$req .= " LEFT JOIN website.providers p ON p.id = provider_id";
 		$req .= " WHERE submission_id = ?";
-		
+
 		$select = $db->prepare($req);
-		
+
 		$select->execute(array(
 			$submissionId
 		));
-		
+
 		Zend_Registry::get("logger")->info('getSubmission : ' . $req);
-		
+
 		$row = $select->fetch();
-		
+
 		if (!empty($row)) {
 			// Create the new submission
 			$submission = $this->_readSubmission($row);

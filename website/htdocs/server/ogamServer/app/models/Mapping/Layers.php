@@ -2,13 +2,13 @@
 
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- * 
+ *
  * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
- * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
- * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
@@ -19,26 +19,31 @@
  */
 class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
-		
+
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
-		
+
 		$translate = Zend_Registry::get('Zend_Translate');
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
-		
+
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
 	}
 
 	/**
 	 * Read a layer object from a result line.
 	 *
-	 * @param Result $row        	
+	 * @param Result $row
 	 * @return Application_Object_Mapping_Layer
 	 */
 	private function _readLayer($row) {
@@ -63,14 +68,14 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$layer->printServiceName = $row['print_service_name'];
 		$layer->detailServiceName = $row['detail_service_name'];
 		$layer->featureServiceName = $row['feature_service_name'];
-		
+
 		return $layer;
 	}
 
 	/**
 	 * Read a layer tree item.
 	 *
-	 * @param Result $row        	
+	 * @param Result $row
 	 * @return Application_Object_Mapping_LegendItem
 	 */
 	private function _readTreeItem($row) {
@@ -85,7 +90,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$legendItem->layerName = $row['name'];
 		$legendItem->label = $row['layer_label'];
 		$legendItem->checkedGroup = $row['checked_group'];
-		
+
 		return $legendItem;
 	}
 
@@ -97,12 +102,12 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	public function getVectorLayersList() {
 		$db = $this->getAdapter();
 		$params = array();
-		
+
 		$req = " SELECT *, COALESCE(t.label, layer.layer_label) as layer_label ";
 		$req .= " FROM layer ";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE layer.feature_service_name IS NOT NULL";
-		
+
 		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		if (!empty($userSession) && !empty($userSession->user)) {
@@ -111,17 +116,17 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$req .= " ORDER BY layer_name";
 			$params[] = $role->code;
 		}
-		
+
 		Zend_Registry::get("logger")->info('getVectorLayersList : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute($params);
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			
+
 			$layer = $this->_readLayer($row);
-			
+
 			$result[$layer->layerName] = $layer;
 		}
 		return $result;
@@ -136,22 +141,22 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 */
 	public function getLayer($layerName) {
 		$db = $this->getAdapter();
-		
+
 		$req = " SELECT *";
 		$req .= " FROM layer ";
 		$req .= " WHERE layer_name = ?";
-		
+
 		Zend_Registry::get("logger")->info('getLayer : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute(array(
 			$layerName
 		));
-		
+
 		$row = $select->fetch();
-		
+
 		$layer = $this->_readLayer($row);
-		
+
 		return $layer;
 	}
 
@@ -166,13 +171,13 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	public function getLayersList($providerId = null) {
 		$db = $this->getAdapter();
 		$params = array();
-		
+
 		$req = " SELECT * ";
 		$req .= " FROM layer ";
 		$req .= " LEFT JOIN layer_tree ON (layer_tree.name = layer.layer_name ) ";
 		$req .= " WHERE (name is not null) ";
 		$req .= " AND layer_tree.is_layer = 1 ";
-		
+
 		// Check the provider id
 		if ($providerId == null) {
 			$req .= ' AND provider_id IS NULL';
@@ -180,7 +185,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$req .= ' AND (provider_id IS NULL OR provider_id = ?)';
 			$params[] = $providerId;
 		}
-		
+
 		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		if (!empty($userSession) && !empty($userSession->user)) {
@@ -188,21 +193,21 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
 			$params[] = $role->code;
 		}
-		
+
 		$req .= " ORDER BY position ASC";
-		
+
 		Zend_Registry::get("logger")->info('getLayersList : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute($params);
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
-			
+
 			$layer = $this->_readLayer($row);
-			
+
 			$layer->treeItem = $this->_readTreeItem($row);
-			
+
 			$result[$layer->layerName] = $layer;
 		}
 		return $result;
@@ -219,17 +224,17 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 */
 	public function getLegendItems($parentId, $providerId = null) {
 		Zend_Registry::get("logger")->info('getLegendItems : parentId : ' . $parentId . ' - providerId : ' . $providerId);
-		
+
 		$db = $this->getAdapter();
 		$params = array();
-		
+
 		// Prepare the request
 		$req = " SELECT layer_tree.*, COALESCE(t.label, layer.layer_label) as layer_label ";
 		$req .= " FROM layer_tree ";
 		$req .= " LEFT OUTER JOIN layer ON (layer_tree.name = layer.layer_name) ";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE parent_id = '" . $parentId . "'";
-		
+
 		// Check the provider id
 		if ($providerId == null) {
 			$req .= ' AND provider_id IS NULL';
@@ -237,7 +242,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$req .= ' AND (provider_id IS NULL OR provider_id = ?)';
 			$params[] = $providerId;
 		}
-		
+
 		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		if (!empty($userSession) && !empty($userSession->user)) {
@@ -245,14 +250,14 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 			$req = $req . ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
 			$params[] = $role->code;
 		}
-		
+
 		$req = $req . " ORDER BY position";
-		
+
 		Zend_Registry::get("logger")->info('layer_model.getLegendItems() : ' . $req);
-		
+
 		$select = $db->prepare($req);
 		$select->execute($params);
-		
+
 		$result = array();
 		foreach ($select->fetchAll() as $row) {
 			$legendItem = $this->_readTreeItem($row);

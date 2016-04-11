@@ -19,8 +19,18 @@
  */
 class Application_Model_IntegrationService_IntegrationService extends Application_Model_AbstractService_AbstractService {
 
+	/**
+	 * The URL of the service.
+	 *
+	 * @var String
+	 */
 	var $serviceUrl;
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**

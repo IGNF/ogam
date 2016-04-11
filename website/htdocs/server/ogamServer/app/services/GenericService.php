@@ -23,6 +23,8 @@ class Application_Service_GenericService {
 
 	/**
 	 * The logger.
+	 *
+	 * @var Zend_Log
 	 */
 	var $logger;
 
@@ -110,12 +112,13 @@ class Application_Service_GenericService {
 	/**
 	 * Return a formated array
 	 *
-	 * @param DataObject $data the data object we're looking at.
-	 * @param String $dataset the dataset identifier (optional), limit the children to the current dataset.
+	 * @param DataObject $data
+	 *        	the data object we're looking at.
+	 * @param String $dataset
+	 *        	the dataset identifier (optional), limit the children to the current dataset.
 	 * @return ARRAY
 	 */
 	public function datumToDetailArray($data, $datasetId = null) {
-
 		$this->logger->info('datumToDetailJSON', $data);
 
 		// Get the user rights
@@ -140,7 +143,7 @@ class Application_Service_GenericService {
 		$formFields = $this->getFormFieldsOrdered($data->getFields());
 		foreach ($formFields as $formField) {
 			// Add the corresponding JSON
-			$fields .= $formField->toDetailJSON().",";
+			$fields .= $formField->toDetailJSON() . ",";
 		}
 		// remove last comma
 		if ($fields != '') {
@@ -236,18 +239,20 @@ class Application_Service_GenericService {
 	/**
 	 * Serialize a list of data objects as an array for a display into a Ext.GridPanel.
 	 *
-	 * @param String $id the id for the returned dataset
-	 * @param List[DataObject] $data the data object we're looking at.
+	 * @param String $id
+	 *        	the id for the returned dataset
+	 * @param List[DataObject] $data
+	 *        	the data object we're looking at.
 	 * @return ARRAY
 	 */
 	public function dataToGridDetailArray($id, $data) {
-
 		$this->logger->info('dataToDetailArray');
 
 		if (!empty($data)) {
 
 			// The columns config to setup the grid columnModel
-			$columns = array(array(
+			$columns = array(
+				array(
 
 					'header' => 'Informations',
 					'dataIndex' => 'informations',
@@ -255,11 +260,15 @@ class Application_Service_GenericService {
 					'tooltip' => 'Informations',
 					'width' => 150,
 					'type' => 'STRING'
-			));
+				)
+			);
 			// The columns max length to setup the column width
 			$columnsMaxLength = array();
 			// The fields config to setup the store reader
-			$locationFields = array('id', 'informations');
+			$locationFields = array(
+				'id',
+				'informations'
+			);
 			// The data to full the store
 			$locationsData = array();
 			$firstData = $data[0];
@@ -271,10 +280,10 @@ class Application_Service_GenericService {
 				$locationData[0] = $datum->getId();
 				$locationData[1] = "";
 				foreach ($datum->getInfoFields() as $field) {
-					$locationData[1] .= $field->valueLabel. ', ';
+					$locationData[1] .= $field->valueLabel . ', ';
 				}
 
-				if($locationData[1] != ""){
+				if ($locationData[1] != "") {
 					$locationData[1] = substr($locationData[1], 0, -2);
 				}
 				$formFields = $this->getFormFieldsOrdered($datum->getFields());
@@ -292,16 +301,16 @@ class Application_Service_GenericService {
 			// Add the colums description
 			foreach ($formFields as $field) {
 				// Set the column model and the location fields
-				$dataIndex = $firstData->tableFormat->format.'__'.$field->data;
+				$dataIndex = $firstData->tableFormat->format . '__' . $field->data;
 				// Adds the column header to prevent it from being truncated too
 				array_push($columnsMaxLength[$field->data], strlen($field->label));
 				$column = array(
-						'header' => $field->label,
-						'dataIndex' => $dataIndex,
-						'editable' => false,
-						'tooltip' => $field->definition,
-						'width' => 150, //max($columnsMaxLength[$field->data]) * 7
-						'type' => $field->type
+					'header' => $field->label,
+					'dataIndex' => $dataIndex,
+					'editable' => false,
+					'tooltip' => $field->definition,
+					'width' => 150, // max($columnsMaxLength[$field->data]) * 7
+					'type' => $field->type
 				);
 				array_push($columns, $column);
 				array_push($locationFields, $dataIndex);
@@ -315,7 +324,7 @@ class Application_Service_GenericService {
 			}
 			$out = Array();
 			$out['id'] = $id;
-			$out['title'] = $firstData->tableFormat->label.' ('.count($locationsData).')';
+			$out['title'] = $firstData->tableFormat->label . ' (' . count($locationsData) . ')';
 			$out['hasChild'] = $hasChild;
 			$out['columns'] = array_values($columns);
 			$out['fields'] = array_values($locationFields);

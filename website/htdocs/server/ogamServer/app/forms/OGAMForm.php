@@ -10,20 +10,18 @@
  * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
-
-/**
- *
- * @see Zend_Form
- */
 require_once 'Zend/Form.php';
 
 /**
- * Application_Form_OGAMForm
+ * Form Template for OGAM.
  *
  * @package Application_Form_OGAMForm
  */
 class Application_Form_OGAMForm extends Zend_Form {
 
+	/**
+	 * The decorators for the form.
+	 */
 	protected $_decorators = array(
 		array(
 			'decorator' => 'FormElements',
@@ -66,7 +64,7 @@ class Application_Form_OGAMForm extends Zend_Form {
 	}
 
 	/**
-	 * Create an element
+	 * Create an element.
 	 *
 	 * Acts as a factory for creating elements. Elements created with this
 	 * method will not be attached to the form, but will contain element

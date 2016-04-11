@@ -2,26 +2,29 @@
 
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- * 
+ *
  * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
- * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
- * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
 /**
- * ErrorController
+ * ErrorController.
+ *
+ * Don't extends the AbstractOGAMController because of the predispatch redirection.
  *
  * @package controllers
  */
-// Don't extends the AbstractOGAMController because of the predispatch redirection
 class ErrorController extends Zend_Controller_Action {
 
 	/**
-	 * The logger
+	 * The logger.
+	 *
+	 * @var Zend_Log
 	 */
 	protected $logger;
 
@@ -30,7 +33,7 @@ class ErrorController extends Zend_Controller_Action {
 	 */
 	public function init() {
 		parent::init();
-		
+
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$this->logger = $bootstrap->getResource('log');
 	}
@@ -49,30 +52,30 @@ class ErrorController extends Zend_Controller_Action {
 	 * @return void
 	 */
 	public function errorAction() {
-		
+
 		// Ensure the default view suffix is used so we always return good
 		// content
 		$this->_helper->viewRenderer->setViewSuffix('phtml');
-		
+
 		// Grab the error object from the request
 		$error = $this->_getParam('error_handler');
-		
+
 		// Log the error
 		$this->logger->err('Error : ' . $error->exception);
-		
+
 		// pass the environment to the view script so we can conditionally
 		// display more/less information
 		$this->view->env = $this->getInvokeArg('env');
-		
+
 		// pass the actual exception object to the view
 		$this->view->exception = $error->exception;
-		
+
 		// pass the request to the view
 		$this->view->request = $error->request;
-		
+
 		// Clean the response body
 		$this->_response->clearBody();
-		
+
 		// $errors will be an object set as a parameter of the request object,
 		// type is a property
 		switch ($error->type) {
@@ -106,7 +109,7 @@ class ErrorController extends Zend_Controller_Action {
 		// 404 error -- controller or action not found
 		$this->getResponse()->setHttpResponseCode(404);
 		$this->view->message = 'Page not found';
-		
+
 		// Go to the error page
 		$this->render('error');
 	}
@@ -121,7 +124,7 @@ class ErrorController extends Zend_Controller_Action {
 		// 404 error -- controller or action not found
 		$this->getResponse()->setHttpResponseCode(403);
 		$this->view->message = 'Database Error';
-		
+
 		// Go to the error page
 		$this->render('error');
 	}
@@ -134,11 +137,11 @@ class ErrorController extends Zend_Controller_Action {
 	 */
 	private function _authException($error) {
 		$this->logger->err('_authException');
-		
+
 		if ($this->getRequest()->isXmlHttpRequest()) {
 			// We come from a AJAX request
 			echo '{"success":false,"errorMessage":' . json_encode($error->exception->getMessage()) . '}';
-			
+
 			// No View, we send directly the JSON
 			$this->_helper->layout()->disableLayout();
 			$this->_helper->viewRenderer->setNoRender();
@@ -159,7 +162,7 @@ class ErrorController extends Zend_Controller_Action {
 	private function _defaultException($error) {
 		$this->getResponse()->setHttpResponseCode(500);
 		$this->view->message = 'Application error';
-		
+
 		// Go to the error page
 		$this->render('error');
 	}

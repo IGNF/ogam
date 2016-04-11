@@ -2,13 +2,13 @@
 
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- * 
+ *
  * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
- * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices. 
- * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents. 
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 
@@ -19,16 +19,21 @@
  */
 class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
-		
+
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
-		
+
 		$translate = Zend_Registry::get('Zend_Translate');
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
 	}
@@ -43,12 +48,12 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 */
 	private function _savePredefinedRequestResult($requestName, $resultColumn) {
 		$db = $this->getAdapter();
-		
+
 		$req = " INSERT INTO predefined_request_result (request_name, format, data )";
 		$req .= " VALUES (?, ?, ?)";
-		
+
 		$this->logger->info('_savePredefinedRequestResult : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$requestName,
@@ -67,12 +72,12 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 */
 	private function _savePredefinedRequestCriteria($requestName, $criteriaColumn) {
 		$db = $this->getAdapter();
-		
+
 		$req = " INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed )";
 		$req .= " VALUES (?, ?, ?, ?, ?)";
-		
+
 		$this->logger->info('_savePredefinedRequestCriteria : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$requestName,
@@ -91,13 +96,13 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 */
 	public function savePredefinedRequest($predefinedRequest) {
 		$db = $this->getAdapter();
-		
+
 		// Save the request
 		$req = " INSERT INTO predefined_request (request_name, schema_code, dataset_id, definition, label)";
 		$req .= " VALUES (?, ?, ?, ?, ?)";
-		
+
 		$this->logger->info('savePredefinedRequest : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$predefinedRequest->requestName,
@@ -106,13 +111,13 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 			$predefinedRequest->definition,
 			$predefinedRequest->label
 		));
-		
+
 		// Save the request results columns
 		$resultFieldsList = $predefinedRequest->resultsList;
 		foreach ($resultFieldsList as $resultField) {
 			$this->_savePredefinedRequestResult($predefinedRequest->requestName, $resultField);
 		}
-		
+
 		// Save the request results criterias
 		$criteriaFieldsList = $predefinedRequest->criteriaList;
 		foreach ($criteriaFieldsList as $criteriaField) {
@@ -129,7 +134,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 */
 	public function getPredefinedRequest($requestName) {
 		$db = $this->getAdapter();
-		
+
 		// Get the request
 		$req = " SELECT pr.request_name, ";
 		$req .= "       COALESCE(t.label, pr.label) as label, ";
@@ -148,20 +153,20 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$req .= " LEFT JOIN dataset on (pr.dataset_id = dataset.dataset_id)";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'PREDEFINED_REQUEST' AND row_pk = pr.request_name) ";
 		$req .= " WHERE pr.request_name = ?";
-		
+
 		$this->logger->info('getPredefinedRequest : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
-		
+
 		$result = $query->fetch();
-		
+
 		if (empty($result)) {
 			return null;
 		}
-		
+
 		$request = new Application_Object_Website_PredefinedRequest();
 		$request->requestName = $result['request_name'];
 		$request->schemaCode = $result['schema_code'];
@@ -174,13 +179,13 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$request->groupLabel = $result['group_label'];
 		$request->groupPosition = $result['group_position'];
 		$request->datasetLabel = $result['dataset_label'];
-		
+
 		// Get the request result columns
 		$request->resultsList = $this->getPredefinedRequestResults($requestName);
-		
+
 		// Get the request criteria columns
 		$request->criteriaList = $this->getPredefinedRequestCriteria($requestName);
-		
+
 		return $request;
 	}
 
@@ -197,7 +202,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 */
 	public function getPredefinedRequestList($schema = 'RAW_DATA', $dir = 'ASC', $sort = 'request_name') {
 		$db = $this->getAdapter();
-		
+
 		// Prevent the sql injections
 		$columnNames = array(
 			'request_name',
@@ -221,7 +226,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		if (!in_array($dir, $dirs, true)) {
 			$dir = $dirs[0];
 		}
-		
+
 		// Get the request
 		$req = " SELECT pr.request_name, ";
 		$req .= "       COALESCE(t.label, pr.label) as label, ";
@@ -241,12 +246,12 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'PREDEFINED_REQUEST' AND row_pk = pr.request_name) ";
 		$req .= " WHERE pr.schema_code = '" . $schema . "'";
 		$req .= " ORDER BY " . $sort . " " . $dir;
-		
+
 		$this->logger->info('getPredefinedRequestList : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute();
-		
+
 		$requestList = array();
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
@@ -262,10 +267,10 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 			$request->groupLabel = $result['group_label'];
 			$request->groupPosition = $result['group_position'];
 			$request->datasetLabel = $result['dataset_label'];
-			
+
 			$requestList[$request->requestName] = $request;
 		}
-		
+
 		return $requestList;
 	}
 
@@ -278,27 +283,27 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 */
 	public function getPredefinedRequestResults($requestName) {
 		$db = $this->getAdapter();
-		
+
 		// Get the request result columns
 		$req = " SELECT * ";
 		$req .= " FROM predefined_request_result ";
 		$req .= " WHERE request_name = ?";
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
-		
+
 		$resultsList = array();
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
 			$field = new Application_Object_Website_PredefinedField();
 			$field->format = $result['format'];
 			$field->data = $result['data'];
-			
+
 			$resultsList[$field->getName()] = $field;
 		}
-		
+
 		return $resultsList;
 	}
 
@@ -311,7 +316,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 */
 	public function getPredefinedRequestCriteria($requestName) {
 		$db = $this->getAdapter();
-		
+
 		// Get the request
 		$req = " SELECT format, data, value, fixed, type, subtype, data.unit, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, form_field.*";
 		$req .= " FROM predefined_request_criteria";
@@ -320,14 +325,14 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$req .= " LEFT JOIN unit using (unit)";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATA' AND row_pk = data.data) ";
 		$req .= " WHERE request_name = ?";
-		
+
 		$this->logger->info('getPredefinedRequestCriteria : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
-		
+
 		$criteriaList = array();
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
@@ -349,10 +354,10 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 			$field->defaultValue = $result['value'];
 			$field->decimals = $result['decimals'];
 			$field->mask = $result['mask'];
-			
+
 			$criteriaList[$field->getName()] = $field;
 		}
-		
+
 		return $criteriaList;
 	}
 
@@ -364,32 +369,32 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 */
 	public function deletePredefinedRequest($requestName) {
 		$db = $this->getAdapter();
-		
+
 		// delete the request criterias
 		$req = " DELETE FROM predefined_request_criteria WHERE request_name = ?";
-		
+
 		$this->logger->info('deletePredefinedRequest : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
-		
+
 		// delete the request results
 		$req = " DELETE FROM predefined_request_result WHERE request_name = ?";
-		
+
 		$this->logger->info('deletePredefinedRequest : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
-		
+
 		// delete the request
 		$req = " DELETE FROM predefined_request WHERE request_name = ?";
-		
+
 		$this->logger->info('deletePredefinedRequest : ' . $req);
-		
+
 		$query = $db->prepare($req);
 		$query->execute(array(
 			$requestName

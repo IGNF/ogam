@@ -19,6 +19,11 @@
  */
 class Application_Model_AbstractService_AbstractService {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**

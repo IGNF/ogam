@@ -21,16 +21,22 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 	/**
 	 * The system of projection for the visualisation.
+	 *
+	 * @var String
 	 */
 	var $visualisationSRS;
 
 	/**
 	 * The logger.
+	 *
+	 * @var Zend_Log
 	 */
 	var $logger;
 
 	/**
 	 * The generic service.
+	 *
+	 * @var Application_Service_GenericService
 	 */
 	var $genericService;
 

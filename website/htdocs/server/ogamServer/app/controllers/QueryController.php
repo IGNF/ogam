@@ -41,6 +41,13 @@ class QueryController extends AbstractOGAMController {
 	protected $queryService;
 
 	/**
+	 * Local cache for trads.
+	 *
+	 * @var Array
+	 */
+	private $traductions = array();
+
+	/**
 	 * Check if the authorization is valid this controler.
 	 *
 	 * @throws an Exception if the user doesn't have the rights
@@ -65,7 +72,7 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -138,7 +145,7 @@ class QueryController extends AbstractOGAMController {
 			$this->view->defaultTab = 'predefined';
 		}
 
-		//$this->render('show-query-form');
+		// $this->render('show-query-form');
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -274,12 +281,11 @@ class QueryController extends AbstractOGAMController {
 
 		$filters = json_decode($this->getRequest()->getQuery('filter'));
 
-		$datasetId= $requestName =null;
+		$datasetId = $requestName = null;
 
 		if (is_array($filters)) {
-			foreach($filters as $aFilter)
-			{
-				switch($aFilter->property){
+			foreach ($filters as $aFilter) {
+				switch ($aFilter->property) {
 					case 'processId':
 						$datasetId = $aFilter->value;
 						break;
@@ -290,11 +296,9 @@ class QueryController extends AbstractOGAMController {
 						$this->logger->debug('filter unattended : ' . $aFilter->property);
 				}
 			}
-
 		} else {
 			$datasetId = json_decode($this->getRequest()->getQuery('datasetId'));
 			$requestName = $this->getRequest()->getPost('requestName');
-
 		}
 
 		echo $this->queryService->getQueryForm($datasetId, $requestName);
@@ -306,7 +310,7 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the list of available datasets
+	 * AJAX function : Get the list of available datasets.
 	 *
 	 * @return JSON The list of forms
 	 */
@@ -547,7 +551,6 @@ class QueryController extends AbstractOGAMController {
 			} else {
 				$tmpImgPath2[] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '1-' . $i) . '.png';
 				file_put_contents(end($tmpImgPath2), $content);
-
 			}
 		}
 
@@ -592,7 +595,7 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Return the node children
+	 * Return the node children.
 	 *
 	 * @return JSON representing the detail of the children.
 	 */
@@ -647,8 +650,6 @@ class QueryController extends AbstractOGAMController {
 
 		return $criterias;
 	}
-
-	private $traductions = array();
 
 	/**
 	 * Get a label from a code, use a local cache mechanism.
@@ -1178,7 +1179,7 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Convert and display the UTF-8 encoded string to the configured charset
+	 * Convert and display the UTF-8 encoded string to the configured charset.
 	 *
 	 * @param $output The
 	 *        	string to encode and to display
@@ -1556,7 +1557,11 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
-	public function ajaxrestresultlocationAction() {
+
+	/**
+	 * Clean the result location table.
+	 */
+	public function ajaxresetresultlocationAction() {
 		$sessionId = session_id();
 		$this->resultLocationModel->cleanPreviousResults($sessionId);
 

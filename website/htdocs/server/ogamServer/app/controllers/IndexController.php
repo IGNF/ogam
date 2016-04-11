@@ -13,14 +13,14 @@
  */
 
 /**
- * IndexController is the default controller for this application
+ * IndexController is the default controller for this application.
  *
  * @package controllers
  */
 class IndexController extends Zend_Controller_Action {
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -36,8 +36,8 @@ class IndexController extends Zend_Controller_Action {
 
 	/**
 	 * The "index" action is the default action for all controllers.
-	 * This
-	 * will be the landing page of your application.
+	 *
+	 * This will be the landing page of your application.
 	 */
 	public function indexAction() {
 		$this->logger->debug('index');

@@ -25,7 +25,6 @@ class DataEditionController extends AbstractOGAMController {
 	 * The models.
 	 */
 	protected $metadataModel;
-
 	protected $genericModel;
 
 	/**
@@ -39,7 +38,7 @@ class DataEditionController extends AbstractOGAMController {
 	protected $configuration;
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -390,7 +389,6 @@ class DataEditionController extends AbstractOGAMController {
 	 * Delete a data.
 	 *
 	 * @return the index view.
-	 *
 	 */
 	public function ajaxDeleteDataAction() {
 		$this->logger->debug('ajaxDeleteDataAction');
@@ -447,7 +445,7 @@ class DataEditionController extends AbstractOGAMController {
 				$result .= ', "redirectLink":'.json_encode($redirectURL);
 			}
 
-			
+
 
 			$result .= ', "message":' . json_encode($this->translator->translate("Data deleted")) . '}';
 		}
@@ -618,7 +616,7 @@ class DataEditionController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the AJAX structure corresponding to the edition form
+	 * AJAX function : Get the AJAX structure corresponding to the edition form.
 	 *
 	 * @return JSON The list of forms
 	 */
@@ -644,7 +642,7 @@ class DataEditionController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the AJAX structure corresponding to the add form
+	 * AJAX function : Get the AJAX structure corresponding to the add form.
 	 *
 	 * @return JSON The list of forms
 	 */

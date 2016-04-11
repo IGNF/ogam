@@ -20,7 +20,7 @@ require_once 'AbstractOGAMController.php';
 class ProxyController extends AbstractOGAMController {
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -92,7 +92,7 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Get a Tile from Mapserver
+	 * Get a Tile from Mapserver.
 	 */
 	function gettileAction() {
 		$this->logger->debug(__METHOD__);
@@ -220,7 +220,7 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Get a Tile from Tilecache
+	 * Get a Tile from Tilecache.
 	 */
 	function getcachedtileAction() {
 		$configuration = Zend_Registry::get("configuration");
@@ -255,7 +255,7 @@ class ProxyController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Get a Legend Image
+	 * Get a Legend Image.
 	 */
 	function getlegendimageAction() {
 		$uri = $_SERVER["REQUEST_URI"];

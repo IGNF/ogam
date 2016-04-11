@@ -19,10 +19,15 @@ require_once 'AbstractOGAMController.php';
  */
 class IntegrationController extends AbstractOGAMController {
 
+	/**
+	 * Redirector Helper.
+	 *
+	 * @var Zend_Controller_Action_Helper_Redirector
+	 */
 	protected $_redirector = null;
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();

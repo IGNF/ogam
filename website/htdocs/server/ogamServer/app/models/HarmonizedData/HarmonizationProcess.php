@@ -19,10 +19,15 @@
  */
 class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Table_Abstract {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
 
@@ -31,7 +36,7 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 	}
 
 	/**
-	 * Get the status of the last harmonization process for a given provider and dataset
+	 * Get the status of the last harmonization process for a given provider and dataset.
 	 *
 	 * @param Submission $activeSubmission
 	 *        	a submission
@@ -73,7 +78,7 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 	}
 
 	/**
-	 * Get the raw_data submissions used by a harmonization process
+	 * Get the raw_data submissions used by a harmonization process.
 	 *
 	 * @param HarmonizationProcess $harmonizationProcess
 	 *        	the process to complete

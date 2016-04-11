@@ -20,7 +20,7 @@ require_once 'AbstractOGAMController.php';
 class MapController extends AbstractOGAMController {
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -153,22 +153,22 @@ class MapController extends AbstractOGAMController {
 			$viewService = $this->servicesModel->getService($layer->viewServiceName);
 			$serviceConfig = $viewService->serviceConfig;
 
-			$url_wms = empty($serviceConfig) ? null :json_decode($serviceConfig)->{'urls'}[0];
+			$url_wms = empty($serviceConfig) ? null : json_decode($serviceConfig)->{'urls'}[0];
 
-			$featureService = (($layer->featureServiceName == '')? null : $this->servicesModel->getService($layer->featureServiceName));
+			$featureService = (($layer->featureServiceName == '') ? null : $this->servicesModel->getService($layer->featureServiceName));
 
-			$json .= '{"serviceLayerName":'.json_encode($layer->serviceLayerName).',';
-			$json .= '"layerLabel":'. json_encode($layer->layerLabel).',';
+			$json .= '{"serviceLayerName":' . json_encode($layer->serviceLayerName) . ',';
+			$json .= '"layerLabel":' . json_encode($layer->layerLabel) . ',';
 
-			if (!empty($featureService)){
+			if (!empty($featureService)) {
 				$layer_service = json_decode($featureService->serviceConfig);
 				$layer_service_params = $layer_service->{'params'};
-				$url = rtrim($layer_service->{'urls'}[0],'?').'?';
+				$url = rtrim($layer_service->{'urls'}[0], '?') . '?';
 				foreach ($layer_service_params as $pKey => $pValue) {
-					$url .= $pKey .'='.$pValue.'&';
+					$url .= $pKey . '=' . $pValue . '&';
 				}
 				$url = rtrim($url, '&');
-				$json .= '"featureServiceUrl":'. json_encode($url).'},';
+				$json .= '"featureServiceUrl":' . json_encode($url) . '},';
 			}
 		}
 		if (!empty($layerNames)) {
@@ -210,15 +210,15 @@ class MapController extends AbstractOGAMController {
 
 		$out = '{"services":[';
 		foreach ($services as $service) {
-			$out .= '{"name":"'.$service->serviceName.'"';
-			$out .= ', "config":'.$service->serviceConfig.'},';
+			$out .= '{"name":"' . $service->serviceName . '"';
+			$out .= ', "config":' . $service->serviceConfig . '},';
 		}
 
 		// Remove the last comma
 		if (!empty($services)) {
 			$out = substr($out, 0, -1);
 		}
-		echo $out.'],';
+		echo $out . '],';
 
 		// For each available layer, build the corresponding URL and definition
 		$out = '"layers":[';
@@ -484,7 +484,7 @@ class MapController extends AbstractOGAMController {
 		// Get the base urls for the services
 		$printservices = $this->servicesModel->getPrintServices();
 
-			$this->logger->debug($printservices);
+		$this->logger->debug($printservices);
 
 		$serviceLayerNames = "";
 		$imageFormats = "";
@@ -507,21 +507,26 @@ class MapController extends AbstractOGAMController {
 					foreach ($json as $key => $val) {
 						if ($key === 'params') {
 							$service .= $val['SERVICE'] . ",";
-			                    if ($val['tileOrigin']){
-			                    	$tileOrigin = json_encode($val['tileOrigin']);
-			                    };
-			                    if ($val['serverResolutions']){
-			                    	$serverResolutions = json_encode($val['serverResolutions']);
-			                    };
-			                    if ($val['requestEncoding']){
-			                    	$requestEncoding = $val['requestEncoding']?json_encode($val['requestEncoding']):"KVP";
-			                    };
-			                    if ($val['maxExtent']){
-			                    	$maxExtent = json_encode($val['maxExtent']);
-			                    };
-			                    if ($val['matrixSet']){
-			                    	$matrixSet = json_encode($val['matrixSet']);
-			                    };
+							if ($val['tileOrigin']) {
+								$tileOrigin = json_encode($val['tileOrigin']);
+							}
+							;
+							if ($val['serverResolutions']) {
+								$serverResolutions = json_encode($val['serverResolutions']);
+							}
+							;
+							if ($val['requestEncoding']) {
+								$requestEncoding = $val['requestEncoding'] ? json_encode($val['requestEncoding']) : "KVP";
+							}
+							;
+							if ($val['maxExtent']) {
+								$maxExtent = json_encode($val['maxExtent']);
+							}
+							;
+							if ($val['matrixSet']) {
+								$matrixSet = json_encode($val['matrixSet']);
+							}
+							;
 						}
 					}
 				}
@@ -560,7 +565,7 @@ class MapController extends AbstractOGAMController {
 		$i = 0;
 
 		foreach ($layers as $layer) {
-				$tileSize = json_encode($layer->tileSize);
+			$tileSize = json_encode($layer->tileSize);
 			if (strcasecmp($serviceArray[$i], 'wms') == 0) {
 				$spec .= "{
 		        type: 'WMS',

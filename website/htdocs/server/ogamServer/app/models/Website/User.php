@@ -28,10 +28,15 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	// Pk is not auto-generated
 	protected $_sequence = false;
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
 

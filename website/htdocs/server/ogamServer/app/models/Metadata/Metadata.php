@@ -1,6 +1,4 @@
 <?php
-require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
-
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -12,6 +10,7 @@ require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
  * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
+require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
 
 /**
  * This is the Metadata model.
@@ -20,6 +19,11 @@ require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
  */
 class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**
@@ -30,7 +34,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	var $useCache = false;
 
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
 

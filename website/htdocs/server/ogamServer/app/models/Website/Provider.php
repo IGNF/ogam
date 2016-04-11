@@ -28,25 +28,25 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	// Sequence name for generating next provider_id value
 	protected $_sequence = 'website.provider_id_seq';
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	protected $logger;
 
-	protected $lang;
-
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
 		$this->logger = Zend_Registry::get("logger");
-
-		$translate = Zend_Registry::get('Zend_Translate');
-		$this->lang = strtoupper($translate->getAdapter()->getLocale());
 	}
 
 	/**
 	 * Get a provider by id.
 	 *
-	 * @param
-	 *        	$id
+	 * @param String $id
+	 *        	the identifier of the provider
 	 * @return Rowset
 	 * @throws Exception
 	 */
@@ -61,10 +61,10 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	/**
 	 * Add a new provider in Db
 	 *
-	 * @param
-	 *        	$label
-	 * @param
-	 *        	$definition
+	 * @param String $label
+	 *        	The label
+	 * @param String $definition
+	 *        	The definition
 	 * @return mixed : last id inserted
 	 */
 	public function addProvider($label, $definition = '') {
@@ -76,12 +76,12 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Update a provider in Db
+	 * Update a provider in Db.
 	 *
-	 * @param
-	 *        	$id
-	 * @param
-	 *        	$label
+	 * @param String $id
+	 *        	the identifier of the provider
+	 * @param String $label
+	 *        	The label
 	 * @param string $definition
 	 */
 	public function updateProvider($id, $label, $definition = '') {
@@ -93,10 +93,10 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Delete a provider from Db
+	 * Delete a provider from Db.
 	 *
-	 * @param
-	 *        	$id
+	 * @param String $id
+	 *        	the identifier of the provider
 	 */
 	public function deleteProvider($id) {
 		$this->delete("id = '" . $id . "'");
@@ -122,9 +122,10 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get the users linked to a provider.
 	 *
-	 * @param
-	 *        	$id
+	 * @param String $id
+	 *        	the identifier of the provider
 	 * @return Array of Rowset
 	 */
 	public function getProviderUsers($id) {
@@ -133,9 +134,10 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get the submissions linked to a provider.
 	 *
-	 * @param
-	 *        	$id
+	 * @param String $id
+	 *        	the identifier of the provider
 	 * @return Array of Rowset
 	 */
 	public function getProviderActiveSubmissions($id) {
@@ -144,10 +146,11 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Get the number of lines of data linked to a provider.
 	 *
-	 * @param
-	 *        	$id
-	 * @return array
+	 * @param String $id
+	 *        	the identifier of the provider
+	 * @return Array
 	 */
 	public function getProviderNbOfRawDatasByTable($id) {
 		$db = $this->getAdapter();
@@ -166,7 +169,7 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 		foreach ($select->fetchAll() as $row) {
 			$tableName = $row['table_name'];
 
-			$countReq = "select count(*) from $tableName where provider_id = ?";
+			$countReq = "select count(*) from " . $tableName . " where provider_id = ?";
 			$count = $db->prepare($countReq);
 			$count->execute(array(
 				$id
@@ -180,11 +183,11 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Returns true if you can safely delete a provider
+	 * Returns true if you can safely delete a provider.
 	 * (no data or users related to it)
 	 *
-	 * @param $id provider
-	 *        	id
+	 * @param String $id
+	 *        	the identifier of the provider
 	 * @return bool
 	 */
 	public function isProviderDeletable($id) {

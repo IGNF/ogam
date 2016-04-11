@@ -13,19 +13,19 @@
  */
 
 /**
- * UserController is the controller that manages the current user session
+ * UserController is the controller that manages the current user session.
  *
  * @package controllers
  */
 class UserController extends Zend_Controller_Action {
 
 	/**
-	 * Base URL of the web site
+	 * Base URL of the web site.
 	 */
 	protected $baseUrl;
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -55,6 +55,9 @@ class UserController extends Zend_Controller_Action {
 
 	/**
 	 * Build and return the login form.
+	 *
+	 * @param String $salt
+	 *        	The hidden salt for authentication
 	 */
 	private function _getLoginForm($salt) {
 		$form = new Application_Form_OGAMForm(array(
