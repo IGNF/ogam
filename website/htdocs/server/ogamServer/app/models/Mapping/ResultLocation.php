@@ -15,7 +15,8 @@
 /**
  * This is the model for managing result locations (for the web mapping).
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Mapping
  */
 class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 

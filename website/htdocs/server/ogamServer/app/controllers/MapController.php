@@ -15,7 +15,7 @@ require_once 'AbstractOGAMController.php';
 /**
  * MapController is the controller that manages the web-mapping interface.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class MapController extends AbstractOGAMController {
 

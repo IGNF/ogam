@@ -15,7 +15,7 @@ require_once 'AbstractOGAMController.php';
 /**
  * HarmonizationController is the controller that manages the data harmonization process (copy data from one schema to another).
  *
- * @package controllers
+ * @package Application_Controller
  */
 class HarmonizationController extends AbstractOGAMController {
 
@@ -131,6 +131,8 @@ class HarmonizationController extends AbstractOGAMController {
 	/**
 	 * Launch the harmonization process.
 	 *
+	 * @param Boolean $removeOnly
+	 *        	If true then we remove the old data without copying new data.
 	 * @return a View
 	 */
 	private function _launchHarmonization($removeOnly = false) {

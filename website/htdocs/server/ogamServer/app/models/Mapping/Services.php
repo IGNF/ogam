@@ -15,7 +15,8 @@
 /**
  * This is the model for managing web mapping layers.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Mapping
  */
 class Application_Model_Mapping_Services extends Zend_Db_Table_Abstract {
 

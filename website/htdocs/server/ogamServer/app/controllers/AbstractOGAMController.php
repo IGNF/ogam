@@ -15,7 +15,7 @@
 /**
  * AbstractOGAMController is the common controler for the OGAM application.
  *
- * @package controllers
+ * @package Application_Controller
  */
 abstract class AbstractOGAMController extends Zend_Controller_Action {
 

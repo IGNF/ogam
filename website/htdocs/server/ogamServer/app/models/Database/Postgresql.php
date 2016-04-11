@@ -15,7 +15,8 @@
 /**
  * Model used to access the system tables of PostgreSQL.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Database
  */
 class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 

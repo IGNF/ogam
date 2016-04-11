@@ -15,7 +15,7 @@ require_once 'AbstractOGAMController.php';
 /**
  * QueryController is the controller that manages the query module.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class QueryController extends AbstractOGAMController {
 

@@ -15,7 +15,8 @@ require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
 /**
  * This is the Metadata model.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Metadata
  */
 class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 

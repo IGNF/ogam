@@ -16,8 +16,10 @@
  * Represent a Predefined Field.
  * This is a kind of criteria form field.
  *
- * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Website
  */
 class Application_Object_Website_PredefinedField extends Application_Object_Metadata_FormField {
 
@@ -25,7 +27,6 @@ class Application_Object_Website_PredefinedField extends Application_Object_Meta
 	 * Indicate if the value is fixed ("1") or if the user can select it ("0").
 	 */
 	var $fixed;
-
 
 	/**
 	 * Serialize the criteria as a JSON string
@@ -46,5 +47,4 @@ class Application_Object_Website_PredefinedField extends Application_Object_Meta
 		$return .= ',"fixed":' . json_encode($this->fixed); // for predefined criterias
 		return $return;
 	}
-
 }

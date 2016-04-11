@@ -15,7 +15,8 @@
 /**
  * This is a model allowing access to the submission information.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage RawData
  */
 class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 

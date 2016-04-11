@@ -15,7 +15,7 @@ require_once 'AbstractOGAMController.php';
 /**
  * IntegrationController is the controller that manages the data integration.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class IntegrationController extends AbstractOGAMController {
 
@@ -192,8 +192,6 @@ class IntegrationController extends AbstractOGAMController {
 			}
 
 			$fileelement->setDescription($fieldsDesc);
-			// FIXME:Ligne en dessous à supprimer ? Test ?
-			// $fileelement->setValue('toto');
 			$fileelement->setDisableTranslator(true); // disable translation to avoid the file name translation
 			$fileelement->addDecorator('Description', array(
 				'escape' => false

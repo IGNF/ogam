@@ -15,7 +15,8 @@
 /**
  * This is a model allowing access to the harmonization process information.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage HarmonizedData
  */
 class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Table_Abstract {
 

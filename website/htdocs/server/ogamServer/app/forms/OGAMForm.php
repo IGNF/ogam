@@ -15,7 +15,7 @@ require_once 'Zend/Form.php';
 /**
  * Form Template for OGAM.
  *
- * @package Application_Form_OGAMForm
+ * @package Application_Form
  */
 class Application_Form_OGAMForm extends Zend_Form {
 

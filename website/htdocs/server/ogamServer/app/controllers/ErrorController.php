@@ -17,7 +17,7 @@
  *
  * Don't extends the AbstractOGAMController because of the predispatch redirection.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class ErrorController extends Zend_Controller_Action {
 

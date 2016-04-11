@@ -15,7 +15,8 @@
 /**
  * This is a model allowing generic access to the RAW_DATA tables.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Generic
  */
 class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 

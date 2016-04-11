@@ -15,8 +15,10 @@
 /**
  * A data object is used to store a values of a line of data (from any table of a database).
  *
- * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Generic
  */
 class Application_Object_Generic_DataObject {
 

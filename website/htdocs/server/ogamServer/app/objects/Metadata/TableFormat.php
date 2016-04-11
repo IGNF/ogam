@@ -15,8 +15,10 @@
 /**
  * Represent a Table Format (a table in a database).
  *
- * @package objects
  * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_TableFormat extends Application_Object_Metadata_Format {
 

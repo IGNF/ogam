@@ -15,7 +15,8 @@
 /**
  * This is the model for managing scales.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Mapping
  */
 class Application_Model_Mapping_Scales extends Zend_Db_Table_Abstract {
 

@@ -15,7 +15,7 @@ require_once 'AbstractOGAMController.php';
 /**
  * Proxy used to safely route the request to the mapserver.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class ProxyController extends AbstractOGAMController {
 

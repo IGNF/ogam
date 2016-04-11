@@ -15,7 +15,8 @@
 /**
  * This is the PredefinedRequest model.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Website
  */
 class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract {
 

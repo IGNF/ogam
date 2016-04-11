@@ -17,7 +17,7 @@
  *
  * This service handles transformations between data objects and generate generic SQL requests from the metadata.
  *
- * @package service
+ * @package Application_Service
  */
 class Application_Service_GenericService {
 
@@ -37,7 +37,6 @@ class Application_Service_GenericService {
 	 * The projection systems.
 	 */
 	var $databaseSRS;
-
 	var $visualisationSRS;
 
 	/**

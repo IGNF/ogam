@@ -15,7 +15,7 @@ require_once 'AbstractOGAMController.php';
 /**
  * CheckConfController is the controller that checks the environment configuration.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class CheckconfController extends AbstractOGAMController {
 

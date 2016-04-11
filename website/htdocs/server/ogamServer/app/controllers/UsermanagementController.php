@@ -15,7 +15,7 @@ require_once 'AbstractOGAMController.php';
 /**
  * UsermanagementController is the controller that manages the users
  *
- * @package controllers
+ * @package Application_Controller
  */
 class UsermanagementController extends AbstractOGAMController {
 
@@ -200,6 +200,9 @@ class UsermanagementController extends AbstractOGAMController {
 
 	/**
 	 * Build and return the change password form.
+	 *
+	 * @param String $login
+	 *        	the login
 	 */
 	private function _getChangePasswordForm($login = null) {
 		$form = new Application_Form_OGAMForm(array(

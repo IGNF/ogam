@@ -17,7 +17,7 @@
  *
  * This service handles the queries used to feed the query interface with ajax requests.
  *
- * @package service
+ * @package Application_Service
  */
 class Application_Service_QueryService {
 

@@ -15,8 +15,10 @@
 /**
  * Represent a node in a taxonomic referential.
  *
- * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata_TreeNode {
 
@@ -27,9 +29,9 @@ class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata
 
 	/**
 	 * The childs.
+	 *
 	 * @var $children Array[TaxrefNodes]
 	 */
-
 
 	/**
 	 * The short name of the taxon.
@@ -53,15 +55,12 @@ class Application_Object_Metadata_TaxrefNode extends Application_Object_Metadata
 	 *        	a node to add
 	 */
 
-
-
 	/**
 	 * Serialize the object as a JSON.
 	 *
 	 * @return JSON the descriptor
 	 */
 	public function toJSON() {
-
 		$return = '';
 		if (empty($this->code) && empty($this->label)) {
 			// Case when the root is just a placeholder, we return only the children

@@ -15,7 +15,7 @@
 /**
  * IndexController is the default controller for this application.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class IndexController extends Zend_Controller_Action {
 

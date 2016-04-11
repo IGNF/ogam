@@ -15,8 +15,10 @@
 /**
  * Represent an information about a table in the table hierarchical tree.
  *
- * @package objects
  * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_TableTreeData {
 

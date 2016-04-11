@@ -15,8 +15,10 @@
 /**
  * Represent a Field of a Database.
  *
- * @package objects
  * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_TableField extends Application_Object_Metadata_Field {
 

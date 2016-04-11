@@ -15,7 +15,7 @@
 /**
  * UserController is the controller that manages the current user session.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class UserController extends Zend_Controller_Action {
 

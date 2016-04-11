@@ -15,8 +15,10 @@
 /**
  * Represent a mode of a unit.
  *
- * @package objects
  * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_Mode {
 

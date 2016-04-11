@@ -15,7 +15,8 @@
 /**
  * This is the Provider model.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Website
  */
 class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 

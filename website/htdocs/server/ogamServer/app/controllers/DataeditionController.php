@@ -15,7 +15,7 @@ require_once 'AbstractOGAMController.php';
 /**
  * DataEditionController is the controller that allow the edition of simple data.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class DataEditionController extends AbstractOGAMController {
 

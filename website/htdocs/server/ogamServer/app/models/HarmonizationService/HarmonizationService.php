@@ -15,7 +15,8 @@
 /**
  * This is a model allowing to access the harmonization service via HTTP calls.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage HarmonizationService
  */
 class Application_Model_HarmonizationService_HarmonizationService extends Application_Model_AbstractService_AbstractService {
 
