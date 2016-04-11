@@ -481,7 +481,7 @@ class Application_Service_QueryService {
 			$pKey = $websiteSession->SQLPkey;
 			$subquery = "SELECT " . $pKey . $from . $where;
 
-			$filter = "";
+			$order = "";
 			if ($sort != "") {
 				// $sort contains the form format and field
 				$split = explode("__", $sort);
@@ -489,21 +489,22 @@ class Application_Service_QueryService {
 				$formField->format = $split[0];
 				$formField->data = $split[1];
 				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
-				$key = $tableField->getName();
-				$filter .= " ORDER BY " . $key . " " . $sortDir;
+				$key = $tableField->format . "." . $tableField->data;
+				$order .= " ORDER BY " . $key . " " . $sortDir;
 			} else {
-				$filter .= " ORDER BY $pKey";
+				$order .= " ORDER BY ". $pKey;
 			}
+
+			$filter = "";
 			if (!empty($length)) {
 				$filter .= " LIMIT " . $length;
 			}
 			if (!empty($start)) {
 				$filter .= " OFFSET " . $start;
 			}
-			$subquery .= $filter;
 
 			// Build complete query
-			$query = $select . $from . " WHERE (" . $pKey . ") IN (" . $subquery . ")";
+			$query = $select . $from . " WHERE (" . $pKey . ") IN (" . $subquery . $order . $filter . ")" . $order;
 
 			// Execute the request
 			$result = $this->genericModel->executeRequest($query);
