@@ -21,9 +21,11 @@
 class Application_Object_Metadata_FormField extends Application_Object_Metadata_Field {
 
 	/**
-	 * The input type of the field (SELECT, TEXT, .
+	 * The input type of the field.
 	 *
-	 * ..).
+	 * SELECT, DATE, NUMERIC, CHECKBOX, RADIO, TEXT, GEOM, TREE, TAXREF or IMAGE.
+	 *
+	 * @var String
 	 */
 	var $inputType;
 
@@ -34,31 +36,44 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 
 	/**
 	 * True if the field is a result.
+	 *
+	 * @var Boolean
 	 */
 	var $isResult;
 
 	/**
 	 * True if the field is a default criteria.
+	 *
+	 * @var Boolean
 	 */
 	var $isDefaultCriteria;
 
 	/**
 	 * True if the field is a default result.
+	 *
+	 * @var Boolean
 	 */
 	var $isDefaultResult;
 
 	/**
 	 * default value for the criteria.
+	 *
+	 * @var String
 	 */
 	var $defaultValue;
 
 	/**
 	 * the number of decimals for a numeric value.
+	 *
+	 * @var Integer
 	 */
 	var $decimals;
 
 	/**
-	 * the mask (for dates).
+	 * The mask (for dates).
+	 * Exemple : yyyy-MM-dd
+	 *
+	 * @var String
 	 */
 	var $mask;
 
@@ -152,8 +167,8 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 		}
 
 		$return .= ',"value":' . json_encode($this->getValueLabel());
-		$return .= ',"inputType":'.json_encode($this->inputType);
-		$return .= ',"type":'.json_encode($this->type).'}';
+		$return .= ',"inputType":' . json_encode($this->inputType);
+		$return .= ',"type":' . json_encode($this->type) . '}';
 
 		return $return;
 	}
@@ -174,6 +189,7 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 		$return .= ',"is_default":' . $this->isDefaultCriteria;
 		$return .= ',"default_value":' . json_encode($this->defaultValue);
 		$return .= ',"decimals":' . json_encode($this->decimals);
+		$return .= ',"fixed":' . json_encode($this->fixed); // for predefined criterias
 		return $return;
 	}
 
