@@ -74,6 +74,35 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			width : 40,
 			items: leftActionColumnItems
 		});
+		
+		// Add 'edit data' action
+		if (!gridTab.hideGridDataEditButton) {
+			Ext.require([
+			    'OgamDesktop.view.edition.Panel',
+			    'OgamDesktop.view.edition.PanelController'
+			]);
+			Ext.Loader.loadScript(Ext.manifest.OgamDesktop.editionServiceUrl+'getParameters');
+			gridColumnCfg.push({
+				xtype: 'actioncolumn',
+				sortable : false,
+				fixed : true,
+				menuDisabled : true,
+				align : 'center',
+				width : 30,
+				items:[{
+					iconCls: 'o-result-tools-edit-editdetails',
+					tooltip: "<b>"+gridTab.editDataButtonTitle+"</b><br/>"+gridTab.editDataButtonTip,
+					handler: function(grid, rowIndex, colIndex, item, e, record, row) {
+						// Action managed into result main controller
+						gridTab.fireEvent('onEditDataButtonClick', record);
+
+						this.redirectTo('edition-edit/'+/*encodeURIComponent(*/record.data.id/*)*//*, true*/);
+
+					},
+					scope:this
+				}]
+			});
+		}
 
 		// Build the result fields for the model and the column
 		for (i in fields) {
@@ -131,34 +160,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			gridModelCfg.push(Ext.create('Ext.data.field.Field', fieldConfig));
 		}
 
-		// Add 'edit data' action
-		if (!gridTab.hideGridDataEditButton) {
-			Ext.require([
-			    'OgamDesktop.view.edition.Panel',
-			    'OgamDesktop.view.edition.PanelController'
-			]);
-			Ext.Loader.loadScript(Ext.manifest.OgamDesktop.editionServiceUrl+'getParameters');
-			gridColumnCfg.push({
-				xtype: 'actioncolumn',
-				sortable : false,
-				fixed : true,
-				menuDisabled : true,
-				align : 'center',
-				width : 30,
-				items:[{
-					iconCls: 'o-result-tools-edit-editdetails',
-					tooltip: "<b>"+gridTab.editDataButtonTitle+"</b><br/>"+gridTab.editDataButtonTip,
-					handler: function(grid, rowIndex, colIndex, item, e, record, row) {
-						// Action managed into result main controller
-						gridTab.fireEvent('onEditDataButtonClick', record);
-
-						this.redirectTo('edition-edit/'+/*encodeURIComponent(*/record.data.id/*)*//*, true*/);
-
-					},
-					scope:this
-				}]
-			});
-		}
+		
 
 		// Update the grid model
 		gridModel.replaceFields(gridModelCfg, true);
