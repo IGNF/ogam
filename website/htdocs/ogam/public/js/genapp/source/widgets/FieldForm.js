@@ -117,6 +117,9 @@ Genapp.FieldForm = Ext.extend(Ext.Panel, {
 				name : 'decimals',
 				mapping : 'decimals'
 			}, {
+				name : 'fixed',
+				mapping : 'fixed'
+			}, {
 				name : 'params',
 				mapping : 'params'
 			} // reserved for min/max or list of codes

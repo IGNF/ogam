@@ -493,6 +493,7 @@ listeners: {
                                 {name:'is_default',mapping:'is_default'},
                                 {name:'default_value',mapping:'default_value'},
                                 {name:'decimals',mapping:'decimals'},
+                                {name:'fixed',mapping:'fixed'},
                                 {name:'params',mapping:'params'}
                             ]
                     });

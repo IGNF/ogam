@@ -21,9 +21,9 @@
 class Application_Object_Metadata_FormField extends Application_Object_Metadata_Field {
 
 	/**
-	 * The input type of the field (SELECT, TEXT, .
+	 * The input type of the field.
 	 *
-	 * ..).
+	 * SELECT, TEXT, ....
 	 */
 	var $inputType;
 
@@ -173,6 +173,7 @@ class Application_Object_Metadata_FormField extends Application_Object_Metadata_
 		$return .= ',"is_default":' . $this->isDefaultCriteria;
 		$return .= ',"default_value":' . json_encode($this->defaultValue);
 		$return .= ',"decimals":' . json_encode($this->decimals);
+		$return .= ',"fixed":' . json_encode($this->fixed); // for predefined criterias
 		return $return;
 	}
 
