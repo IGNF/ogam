@@ -19,6 +19,11 @@ require_once 'AbstractOGAMController.php';
  */
 class DataEditionController extends AbstractOGAMController {
 
+	/**
+	 * Redirector Helper.
+	 *
+	 * @var Zend_Controller_Action_Helper_Redirector
+	 */
 	protected $_redirector = null;
 
 	/**

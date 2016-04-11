@@ -59,7 +59,7 @@ class Application_Model_Website_Provider extends Zend_Db_Table_Abstract {
 	}
 
 	/**
-	 * Add a new provider in Db
+	 * Add a new provider in Db.
 	 *
 	 * @param String $label
 	 *        	The label
