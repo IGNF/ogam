@@ -338,21 +338,29 @@ class IntegrationController extends AbstractOGAMController {
 
 		// Check the validity of the POST
 		if (!$this->getRequest()->isPost()) {
-			$this->logger->debug('form is not a POST');
+			$this->logger->err('form is not a POST');
 			return $this->_forward('index');
 		}
 
 		// Check the validity of the Form
 		$form = $this->_getDataUploadForm();
 		if (!$form->isValid($_POST)) {
-			$this->logger->debug('form is not valid');
+			$this->logger->err('form is not valid');
 			$this->view->form = $form;
 			return $this->render('show-upload-data');
 		}
 
 		// Upload the files on Server
+		$options = array(
+			'ignoreNoFile' => TRUE
+		);
 		$upload = new Zend_File_Transfer_Adapter_Http();
-		$upload->receive();
+		$upload->setOptions($options);
+
+		if (!$upload->receive()) {
+			$messages = $upload->getMessages();
+			$this->logger->err('Download errors : ' . print_r($messages, true));
+		}
 
 		// Get the submission info
 		$dataSession = new Zend_Session_Namespace('submission');
@@ -372,12 +380,14 @@ class IntegrationController extends AbstractOGAMController {
 		$dataSubmission = $this->submissionModel->getSubmission($submission->submissionId);
 		$requestedFiles = $this->metadataModel->getRequestedFiles($dataSubmission->datasetId);
 
-		$allFilesUploaded = true;
-		foreach ($requestedFiles as $requestedFile) {
+		foreach ($requestedFiles as $key => $requestedFile) {
 
 			// Get the uploaded filename
 			$filename = $upload->getFileName($requestedFile->format, false);
 			$filepath = $upload->getFileName($requestedFile->format);
+
+			$this->logger->debug('filepath ' . $filepath);
+
 			// Print it only if it is not an array (ie: nothing has been selected by the user)
 			if (!is_array($filename)) {
 				$this->logger->debug('uploaded filename ' . $filename);
@@ -385,10 +395,10 @@ class IntegrationController extends AbstractOGAMController {
 
 			// Check that the file is present
 			if (empty($filename)) {
-				$this->logger->debug('empty');
-				$allFilesUploaded = false;
+				$this->logger->debug('File ' . $requestedFile->format . ' is missing, skipping');
+				unset($requestedFiles[$key]);
 			} else {
-				// Move the file to the upload directory for archive
+				// Move the file to the upload directory on the php server
 				$this->logger->debug('move file : ' . $filename);
 				$targetPath = $uploadDir . DIRECTORY_SEPARATOR . $submission->submissionId . DIRECTORY_SEPARATOR . $requestedFile->fileType;
 				$targetName = $targetPath . DIRECTORY_SEPARATOR . $filename;
@@ -401,26 +411,18 @@ class IntegrationController extends AbstractOGAMController {
 			}
 		}
 
-		// Check that all the files have been uploaded
-		if (!$allFilesUploaded) {
-			$this->view->errorMessage = $this->translator->translate('You must select all files to upload');
-			$this->view->form = $form;
-			return $this->render('show-upload-data');
-		} else {
-
-			// Send the files to the integration server
-			try {
-				$this->integrationServiceModel->uploadData($submission->submissionId, $providerId, $requestedFiles);
-			} catch (Exception $e) {
-				$this->logger->err('Error during upload: ' . $e);
-				$this->view->errorMessage = $e->getMessage();
-				return $this->render('show-data-error');
-			}
-
-			// Redirect the user to the show plot location page
-			// This ensure that the user will not resubmit the data by doing a refresh on the page
-			$this->_redirector->gotoUrl('/integration/show-data-submission-page');
+		// Send the files to the integration server
+		try {
+			$this->integrationServiceModel->uploadData($submission->submissionId, $providerId, $requestedFiles);
+		} catch (Exception $e) {
+			$this->logger->err('Error during upload: ' . $e);
+			$this->view->errorMessage = $e->getMessage();
+			return $this->render('show-data-error');
 		}
+
+		// Redirect the user to the show plot location page
+		// This ensure that the user will not resubmit the data by doing a refresh on the page
+		$this->_redirector->gotoUrl('/integration/show-data-submission-page');
 	}
 
 	/**
