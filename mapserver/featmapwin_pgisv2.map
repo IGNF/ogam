@@ -6,7 +6,7 @@ MAP
 NAME OGAM_MAPSERVER
 STATUS ON
 SIZE 600 400
-SYMBOLSET "/vagrant/ogam/Mapserv/data/fonts/symbols.sym" 
+SYMBOLSET "/vagrant/ogam/mapserver/data/fonts/symbols.sym" 
 
 EXTENT 2460853 1070607 5537352 5031904
 
