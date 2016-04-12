@@ -22,5 +22,13 @@
 <h1>
    <?php echo $this->translate('Data integration module');?> - <?php echo $this->translate('Upload Data');?>
 </h1>
+
+<div class="fileformatdescription">
+<a href="<?php echo $this->baseUrl('pdf/CSVFileDescription');?>">
+	<img src="<?php echo $this->baseUrl('img/icon_pdf.gif');?>">&nbsp;
+	<?php echo $this->translate('File format description');?>
+</a>
+</div>
+
 <?php echo $this->form ?>
 <?php echo $this->errorMessage ?>
