@@ -256,7 +256,7 @@ END
 #
 LAYER
     NAME "result_locations_polygon"
-    GROUP result_locations  
+    # GROUP result_locations  
     TRANSPARENCY 80
     TYPE POLYGON
     STATUS ON

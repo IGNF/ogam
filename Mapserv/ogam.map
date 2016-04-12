@@ -226,11 +226,12 @@ END
 
 
 #
-# Result Vector layer 
+# Result Vector layers 
 #
+# For polygons
 LAYER
     NAME "result_location_polygon"
-    GROUP result_location
+    # GROUP result_location
     TRANSPARENCY 80
     TYPE POLYGON
     STATUS ON
@@ -267,6 +268,8 @@ LAYER
       END
     END
 END 
+
+# For points
 LAYER
     NAME "result_location_point"
     GROUP result_location
