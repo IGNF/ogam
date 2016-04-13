@@ -42,6 +42,27 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	}
 
 	/**
+	 * Read a role object from a result line.
+	 *
+	 * @param Result $row
+	 * @return Application_Object_Website_Role
+	 */
+	private function _readRole($row) {
+		$role = new Application_Object_Website_Role();
+		$role->code = $row['role_code'];
+		$role->label = $row['role_label'];
+		$role->definition = $row['role_definition'];
+
+		// Get its permissions
+		$role->permissionsList = $this->_getRolePermissions($role->code);
+
+		// Get the list of schemas it can access
+		$role->schemasList = $this->_getRoleSchemas($role->code);
+
+		return $role;
+	}
+
+	/**
 	 * Get a user Role.
 	 *
 	 * @param String $roleCode
@@ -63,26 +84,48 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 			$roleCode
 		));
 
-		$result = $query->fetch();
+		$row = $query->fetch();
 
-		if (!empty($result)) {
+		if (!empty($row)) {
 
 			// Create the role object
-			$role = new Application_Object_Website_Role();
-			$role->code = $result['role_code'];
-			$role->label = $result['role_label'];
-			$role->definition = $result['role_definition'];
-
-			// Get its permissions
-			$role->permissionsList = $this->_getRolePermissions($role->code);
-
-			// Get the list of schemas it can access
-			$role->schemasList = $this->_getRoleSchemas($role->code);
+			$role = $this->_readRole($row);
 
 			return $role;
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Get the list of different roles for a user.
+	 *
+	 * @param String $userLogin the user
+	 * @return Array[String => Role]
+	 */
+	public function getUserRolesList($userLogin) {
+		$db = $this->getAdapter();
+
+		$req = " SELECT role_code, COALESCE(t.label, role_label) as role_label, COALESCE(t.definition, role_definition) as role_definition ";
+		$req .= " FROM role ";
+		$req .= " JOIN role_to_user USING (role_code) ";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'ROLE' AND row_pk = role_code) ";
+		$req .= " WHERE user_login = ? ";
+		$req .= " ORDER BY role_code";
+		$this->logger->info('getRolesList : ' . $req);
+
+		$query = $db->prepare($req);
+		$query->execute(array($userLogin));
+
+		$results = $query->fetchAll();
+		$roles = array();
+
+		foreach ($results as $row) {
+			$role = $this->_readRole($row);
+			$roles[$role->code] = $role;
+		}
+
+		return $roles;
 	}
 
 	/**
@@ -105,11 +148,8 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		$results = $query->fetchAll();
 		$roles = array();
 
-		foreach ($results as $result) {
-			$role = new Application_Object_Website_Role();
-			$role->code = $result['role_code'];
-			$role->label = $result['role_label'];
-			$role->definition = $result['role_definition'];
+		foreach ($results as $row) {
+			$role = $this->_readRole($row);
 			$roles[$role->code] = $role;
 		}
 

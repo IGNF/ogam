@@ -59,7 +59,7 @@ class MetadataTest extends ControllerTestCase {
 	 */
 	public function testGetModeLabels() {
 
-		// On récupère la liste des esp^èces
+		// On récupère la liste des espèces
 		$modes = $this->metadataModel->getModeLabels('SPECIES_CODE');
 
 		// On vérifie que l'on a ramené la bonne modalité
@@ -70,7 +70,7 @@ class MetadataTest extends ControllerTestCase {
 
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($modes), 1);
-		$this->assertEquals($modes['999'], 'Other broadleaves');
+		$this->assertEquals($modes['999'], 'Autres feuillus');
 
 		// On filtre sur une liste de codes
 		$modes = $this->metadataModel->getModeLabels('SPECIES_CODE', array(
@@ -80,8 +80,8 @@ class MetadataTest extends ControllerTestCase {
 
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($modes), 2);
-		$this->assertEquals($modes['999'], 'Other broadleaves');
-		$this->assertEquals($modes['998'], 'Other conifers');
+		$this->assertEquals($modes['999'], 'Autres feuillus');
+		$this->assertEquals($modes['998'], 'Autres conifères');
 
 		// On filtre sur un libellé
 		$modes = $this->metadataModel->getModeLabels('SPECIES_CODE', null, 'Acacia');

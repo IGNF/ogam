@@ -729,7 +729,7 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((3697781 2714044,3693936 2709776,3700497 2710164,3697781 2714044))', 3857), 4326)))", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Buffer(ST_Transform(ST_GeomFromText('POLYGON((3697781 2714044,3693936 2709776,3700497 2710164,3697781 2714044))', 3857), 4326), 0)))", trim($where));
 
 		//
 		// Ajout d'un critère sur un liste de valeurs
@@ -744,7 +744,7 @@ class GenericServiceTest extends ControllerTestCase {
 
 		// On vérifie le résultat
 		$this->assertNotNull($where);
-		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((0 0,2 0,2 2,0 0))', 3857), 4326)) OR ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Transform(ST_GeomFromText('POLYGON((0 0,1 0,1 1,0 0))', 3857), 4326)))", trim($where));
+		$this->assertEquals("WHERE (1 = 1) AND (ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Buffer(ST_Transform(ST_GeomFromText('POLYGON((0 0,2 0,2 2,0 0))', 3857), 4326), 0)) OR ST_Intersects(LOCATION_DATA.THE_GEOM, ST_Buffer(ST_Transform(ST_GeomFromText('POLYGON((0 0,1 0,1 1,0 0))', 3857), 4326), 0)))", trim($where));
 	}
 
 	/**

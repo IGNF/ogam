@@ -647,9 +647,8 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$userSession = new Zend_Session_Namespace('user');
 		$params = array();
 		if ($userSession != null && $userSession->user != null) {
-			$role = $userSession->user->role;
-			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
-			$params[] = $role->code;
+			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction JOIN role_to_user USING (role_code) WHERE user_login = ?))';
+			$params[] = $userSession->user->login;
 		}
 
 		$req .= " ORDER BY dataset_id";
@@ -684,9 +683,8 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$userSession = new Zend_Session_Namespace('user');
 		$params = array();
 		if ($userSession != null && $userSession->user != null) {
-			$role = $userSession->user->role;
-			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
-			$params[] = $role->code;
+			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction JOIN role_to_user USING (role_code) WHERE user_login = ?))';
+			$params[] = $userSession->login;
 		}
 
 		$req .= " ORDER BY dataset_id";

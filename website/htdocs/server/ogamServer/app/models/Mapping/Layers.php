@@ -112,10 +112,9 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		if (!empty($userSession) && !empty($userSession->user)) {
-			$role = $userSession->user->role;
-			$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
+			$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction JOIN role_to_user USING (role_code) WHERE user_login = ?))';
 			$req .= " ORDER BY layer_name";
-			$params[] = $role->code;
+			$params[] = $userSession->user->login;
 		}
 
 		Zend_Registry::get("logger")->info('getVectorLayersList : ' . $req);
@@ -190,9 +189,8 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		if (!empty($userSession) && !empty($userSession->user)) {
-			$role = $userSession->user->role;
-			$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-			$params[] = $role->code;
+			$req .= ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction JOIN role_to_user USING (role_code) WHERE user_login = ?))';
+			$params[] = $userSession->user->login;
 		}
 
 		$req .= " ORDER BY position ASC";
@@ -247,9 +245,8 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		// Filtrer on the user restrictions
 		$userSession = new Zend_Session_Namespace('user');
 		if (!empty($userSession) && !empty($userSession->user)) {
-			$role = $userSession->user->role;
-			$req = $req . ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction WHERE role_code = ?))';
-			$params[] = $role->code;
+			$req = $req . ' AND (layer_name NOT IN (SELECT layer_name FROM layer_role_restriction JOIN role_to_user USING (role_code) WHERE user_login = ?))';
+			$params[] = $userSession->user->login;
 		}
 
 		$req = $req . " ORDER BY position";

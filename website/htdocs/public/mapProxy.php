@@ -26,8 +26,6 @@ $mapServiceURL = $configurationSession->configuration['map_service_url'];
 /*
  * echo '<br/>mapServiceURL : '; echo $mapServiceURL;
  * echo '<br/>connected : '; echo $userSession->connected;
- * echo '<br/>role : '; print_r($userSession->user->role);
- * echo '<br/>permissions : '; print_r($userSession->user->role->permissionsList);
  * exit();
 */
 
@@ -37,7 +35,7 @@ if(!$userSession->connected){
     onfailure('/');
 }
 
-if (empty($userSession->user) || !in_array('DATA_QUERY', $userSession->user->role->permissionsList)) {
+if (empty($userSession->user) || !$userSession->user->isAllowed('DATA_QUERY')) {
     onfailure('/');
 }
 
@@ -87,7 +85,7 @@ foreach($queryParamsAllow as $param) {
 if (strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
 	$queriesArg['REQUEST']  = 'GetLegendGraphic';
 } else if (strcasecmp($queriesArg['REQUEST'] , "getmap") == 0) {
-	$queriesArg['REQUEST']  = 'GetMap';	
+	$queriesArg['REQUEST']  = 'GetMap';
 } else {
     $queriesArg['REQUEST']  = 'GetFeature';
 }

@@ -20,6 +20,15 @@ require_once 'AbstractOGAMController.php';
 class UsermanagementController extends AbstractOGAMController {
 
 	/**
+	 * The models.
+	 */
+	protected $roleModel;
+
+	protected $userModel;
+
+	protected $metadataModel;
+
+	/**
 	 * Initialise the controler
 	 */
 	public function init() {
@@ -56,7 +65,7 @@ class UsermanagementController extends AbstractOGAMController {
 
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
-		if (empty($user) || !in_array('MANAGE_USERS', $user->role->permissionsList)) {
+		if (empty($user) || !$user->isAllowed('MANAGE_USERS')) {
 			throw new Zend_Auth_Exception('Permission denied for right : MANAGE_USERS');
 		}
 	}
@@ -137,7 +146,6 @@ class UsermanagementController extends AbstractOGAMController {
 		if ($user != null && $user->provider != null) {
 			$providerIdElem->setValue($user->provider->id);
 		}
-		// $providers = $this->metadataModel->getModeLabels('PROVIDER_ID');
 		$providerModel = new Application_Model_Website_Provider();
 		$providers = $providerModel->getProvidersList();
 
@@ -154,21 +162,25 @@ class UsermanagementController extends AbstractOGAMController {
 		$emailElem->addValidator('EmailAddress');
 
 		//
-		// Add the role element
+		// Add the roles element
 		//
-		$roleCodeElem = $form->createElement('select', 'roleCode');
-		$roleCodeElem->setLabel('Role');
+		$roleCodeElem = $form->createElement('multiCheckbox', 'rolesCodes');
+		$roleCodeElem->setLabel('Roles');
 		$roleCodeElem->setRequired(true);
-		if ($user->role != null) {
-			$roleCodeElem->setValue($user->role->code);
+		$allroles = $this->roleModel->getRolesList();
+		$options = array();
+		foreach ($allroles as $role) {
+			$options[$role->code] = $role->label;
 		}
-		// Add the list of available roles
-		$rolesList = $this->roleModel->getRolesList();
-		$multi = array();
-		foreach ($rolesList as $roleItem) {
-			$multi[$roleItem->code] = $roleItem->label;
+		$roleCodeElem->addMultiOptions($options);
+
+		if ($user != null) {
+			$userRoles = array();
+			foreach ($user->rolesList as $role) {
+				$userRoles[] = $role->code;
+			}
+			$roleCodeElem->setValue($userRoles);
 		}
-		$roleCodeElem->addMultiOptions($multi);
 
 		//
 		// Create the submit button
@@ -436,7 +448,7 @@ class UsermanagementController extends AbstractOGAMController {
 			$userName = $f->filter($values['username']);
 			$providerId = $f->filter($values['providerId']);
 			$email = $f->filter($values['email']);
-			$roleCode = $f->filter($values['roleCode']);
+			$rolesCode = $values['rolesCodes'];
 			if ($mode == 'create') {
 				$password = $f->filter($values['password']);
 				$confirmPassword = $f->filter($values['confirmPassword']);
@@ -466,8 +478,11 @@ class UsermanagementController extends AbstractOGAMController {
 				// Update the user in database
 				$this->userModel->updateUser($user);
 
-				// Update the role of the user
-				$this->userModel->updateUserRole($userLogin, $roleCode);
+				// Update the roles of the user
+				$this->userModel->deleteUserRole($userLogin);
+				foreach ($rolesCode as $roleCode) {
+					$this->userModel->createUserRole($userLogin, $roleCode);
+				}
 			} else {
 				//
 				// CREATE User
@@ -479,7 +494,12 @@ class UsermanagementController extends AbstractOGAMController {
 
 				// Create the user in database
 				$this->userModel->createUser($user);
-				$this->userModel->createUserRole($userLogin, $roleCode);
+
+				// Update the roles of the user
+				$this->userModel->deleteUserRole($userLogin);
+				foreach ($rolesCode as $roleCode) {
+					$this->userModel->createUserRole($userLogin, $roleCode);
+				}
 			}
 
 			// Return to the user list page

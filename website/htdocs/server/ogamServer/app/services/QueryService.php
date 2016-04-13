@@ -432,8 +432,7 @@ class Application_Service_QueryService {
 
 			// Right management : add the provider id of the data
 			$userSession = new Zend_Session_Namespace('user');
-			$role = $userSession->user->role;
-			if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
+			if (!$userSession->user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
 			}
 
@@ -555,8 +554,7 @@ class Application_Service_QueryService {
 
 				// Right management : add the provider id of the data
 				$userSession = new Zend_Session_Namespace('user');
-				$role = $userSession->user->role;
-				if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
+				if (!$userSession->user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 					$json .= ',' . json_encode($line['_provider_id']);
 				}
 

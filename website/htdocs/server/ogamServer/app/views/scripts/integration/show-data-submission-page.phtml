@@ -48,7 +48,7 @@
 
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
-$role = $userSession->user->role;
+$user = $userSession->user;
 
 
 $i = 0;
@@ -74,7 +74,7 @@ foreach ($this->submissions as $submission) {
                 var OgamDesktopIntegration = {};
                 // Display the progress bar
                 display('progressBar<?php echo  $submission->submissionId ?>', '', 0, '<?php echo  $this->baseUrl('img/') ?>');
-                
+
                 // Refresh The status of the submission
                 OgamDesktopIntegration.getStatus_<?= $submission->submissionId ?> =  function (){
                     var url = '<?= $this->baseUrl('Integration/') ?>';
@@ -115,7 +115,7 @@ foreach ($this->submissions as $submission) {
                             } else { // Failure
 
                             }
-                        }                        
+                        }
                     };
                     OgamDesktopIntegration.request.open("GET", url+'?action=status&submissionId='+<?= $submission->submissionId ?>, true);
                     OgamDesktopIntegration.request.send();
@@ -144,12 +144,12 @@ foreach ($this->submissions as $submission) {
                 </td>
                 <td class="line-number"><?php echo  $file->lineNumber ?></td>
                 </tr>
-                
+
             <?php endforeach; ?>
             </table>
         <?php endif; ?>
     </td>
-    
+
     <td>
     <?php
 	if ($submission->step === "INSERTED" && $submission->status === "OK") {
@@ -163,13 +163,13 @@ foreach ($this->submissions as $submission) {
     if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
 ?>
     <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Confirm_submission_warning');?>');"><?php echo $this->translate('Confirm submission');?></a></p>
-    <?php } 
-    if ($submission->step != "VALIDATED" || ($role->isAllowed('CANCEL_VALIDATED_SUBMISSION'))) {
-    	if ($submission->providerId == $userSession->user->provider->id || ($role->isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION'))) {
+    <?php }
+    if ($submission->step != "VALIDATED" || ($user->isAllowed('CANCEL_VALIDATED_SUBMISSION'))) {
+    	if ($submission->providerId == $userSession->user->provider->id || ($user->isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION'))) {
 ?>
     <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Are you sure?');?>');"><?php echo $this->translate('Cancel Submission');?></a></p>
 <?php  }
-    } ?>        
+    } ?>
 </td></tr>
 <?php
 	$i++;

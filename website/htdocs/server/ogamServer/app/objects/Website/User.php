@@ -67,9 +67,9 @@ class Application_Object_Website_User {
 	/**
 	 * The role of the user.
 	 *
-	 * @var Application_Object_Website_Role
+	 * @var Array[Application_Object_Website_Role]
 	 */
-	var $role;
+	var $rolesList = array();
 
 	/**
 	 * Indicate if the user is allowed for a permission.
@@ -79,7 +79,29 @@ class Application_Object_Website_User {
 	 * @return Boolean
 	 */
 	function isAllowed($permissionName) {
-		// The user is allowed it its role is.
-		return (!empty($this->role) && $this->role->isAllowed($permissionName));
+		// The user is allowed if one of its role is.
+		foreach ($this->rolesList as $role) {
+			if ($role->isAllowed($permissionName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Indicate if the user is allowed for a schema.
+	 *
+	 * @param String $schemaName
+	 *        	The schema
+	 * @return Boolean
+	 */
+	function isSchemaAllowed($schemaName) {
+		// The user is allowed if one of its role is.
+		foreach ($this->rolesList as $role) {
+			if (in_array($schemaName, $role->schemasList)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

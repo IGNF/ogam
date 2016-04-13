@@ -553,10 +553,8 @@ class IntegrationController extends AbstractOGAMController {
 	 * @throws Zend_Exception
 	 */
 	public function exportFileModelAction() {
-		// -- Load user for checking permissions
-		// todo : add a permission for this action ?
-		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
+
+		// TODO : add a permission for this action ?
 
 		// -- Get the file
 		$fileFormat = $this->_getParam("fileFormat");

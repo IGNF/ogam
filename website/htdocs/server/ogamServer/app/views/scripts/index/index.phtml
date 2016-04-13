@@ -43,18 +43,14 @@
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
 $user = $userSession->user;
-$role = new Application_Object_Website_Role();
-$schemasList = array();
 $providerId = "";
 if (!empty($user)) {
-	$role = $user->role;
 	$providerId = $user->provider->id;
-	$schemasList = $user->role->schemasList;
 }
 ?>
 <div class="left-column">
 <?php
-if (!empty($role->permissionsList)) {
+if (!empty($user)) {
 ?>
 <div class="moduletable_menu">
 <h3>
@@ -62,34 +58,34 @@ if (!empty($role->permissionsList)) {
 </h3>
 <ul id="appmenu" class="menu">
 
-<?php 
-if ($role->isAllowed('DATA_INTEGRATION')) {	
+<?php
+if ($user->isAllowed('DATA_INTEGRATION')) {
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'integration', 'action'=>'show-data-submission-page'), 'default', true) ?>" class="pagelink" ><?php echo $this->translate('Data Integration');?></a>
 </li>
 <?php
 }
-if ($role->isAllowed('DATA_QUERY')  && in_array("RAW_DATA", $schemasList)) {	
+if ($user->isAllowed('DATA_QUERY') && $user->isSchemaAllowed("RAW_DATA")) {
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/RAW_DATA" class="pagelink" ><?php echo $this->translate('Visualize Raw Data');?></a>
 </li>
 <?php
 }
-if ($role->isAllowed('DATA_EDITION')  && in_array("RAW_DATA", $schemasList)) {	
+if ($user->isAllowed('DATA_EDITION') && $user->isSchemaAllowed("RAW_DATA")) {
 $providerField = new Application_Object_Metadata_TableField();
 $providerField->data = 'PROVIDER_ID';
 $providerField->format = 'LOCATION_DATA';
-$providerField->value = "$providerId";
+$providerField->value = $providerId;
 
 ?>
 <li>
 <a href="odp/index.html<?php //echo $this->generateAddLink('RAW_DATA','LOCATION_DATA',array($providerField)); ?>#edition-add/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/<?php echo $providerId; ?>" class="pagelink" ><?php echo $this->translate('Add a new localisation');?></a>
 </li>
 <?php
-} 
-if ($role->isAllowed('DATA_HARMONIZATION')) {	
+}
+if ($user->isAllowed('DATA_HARMONIZATION')) {
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'harmonization', 'action'=>'show-harmonization-page'), null, true) ?>" class="pagelink" ><?php echo $this->translate('Data Harmonization');?></a>
@@ -97,15 +93,15 @@ if ($role->isAllowed('DATA_HARMONIZATION')) {
 <?php
 }
 
-if ($role->isAllowed('DATA_QUERY')  && in_array("HARMONIZED_DATA", $schemasList)) {
+if ($user->isAllowed('DATA_QUERY') && $user->isSchemaAllowed("HARMONIZED_DATA")) {
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'query', 'action'=>'show-query-form'), null, true) ?>/SCHEMA/HARMONIZED_DATA" class="pagelink" ><?php echo $this->translate('Visualize Harmonized Data');?></a>
 </li>
 <?php
 }
- 
-if ($role->isAllowed('MANAGE_USERS')) {	
+
+if ($user->isAllowed('MANAGE_USERS')) {
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'usermanagement'), null, true) ?>" class="pagelink" ><?php echo $this->translate('User Administration');?></a>
@@ -113,7 +109,7 @@ if ($role->isAllowed('MANAGE_USERS')) {
 <?php
 }
 
-if ($role->isAllowed('CHECK_CONF')) {
+if ($user->isAllowed('CHECK_CONF')) {
 ?>
 <li>
 <a href="<?php echo  $this->url(array('controller'=>'checkconf'), null, true) ?>" class="pagelink" ><?php echo $this->translate('Check Configuration');?></a>
@@ -134,7 +130,7 @@ if($configuration->autoLogin == 1){
 <div class="moduletable_menu">
 <ul id="appmenu2" class="menu">
 <?php
-if (empty($role)) {
+if (empty($user)) {
 ?>
 <li>
 <a href="<?php echo  $this->baseUrl('user/index') ?>"><?php echo $this->translate('Log in');?></a>
