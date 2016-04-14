@@ -43,7 +43,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
     	var defaultRecord;
     	
 		if(successful){
-			defaultRecord = store.findRecord('is_default', '1');
+			defaultRecord = store.findRecord('is_default', true);
 			defaultRecord = defaultRecord ? defaultRecord : store.first(); 
 		}
 		else {
