@@ -36,11 +36,11 @@ insert into application_parameters (name, value, description) values ( 'proxy_se
 insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3857 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 4326 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'srs_harmonized_data' , 3857 , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'usePerProviderCenter' , false , 'if true the system will look in the "bounding_box" table for centering info for each provider');
-insert into application_parameters (name, value, description) values ( 'bbox_x_min' , '-2893330' , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'bbox_y_min' , '3852395' , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'bbox_x_max' , '3086670' , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'bbox_y_max' , '8192395' , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'usePerProviderCenter' , true , 'if true the system will look in the "bounding_box" table for centering info for each provider');
+insert into application_parameters (name, value, description) values ( 'bbox_x_min' , '-2893330' , 'X min coordinate of the bounding box (in the projection of visualisation : 3857)');
+insert into application_parameters (name, value, description) values ( 'bbox_y_min' , '3852395' , 'Y min coordinate of the bounding box (in the projection of visualisation : 3857)');
+insert into application_parameters (name, value, description) values ( 'bbox_x_max' , '3086670' , 'X max coordinate of the bounding box (in the projection of visualisation : 3857)');
+insert into application_parameters (name, value, description) values ( 'bbox_y_max' , '8192395' , 'Y max coordinate of the bounding box (in the projection of visualisation : 3857)');
 insert into application_parameters (name, value, description) values ( 'zoom_level' , '1' , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'mapserver_dpi' , 72 , 'Default number of dots per inch in mapserv');
 insert into application_parameters (name, value, description) values ( 'mapserver_inch_per_kilometer' , 39370.1 , 'Inch to meter conversion factor');
@@ -57,8 +57,9 @@ insert into application_parameters (name, value, description) values ( 'showUplo
 insert into application_parameters (name, value, description) values ( 'showUploadFileModel' , 1 , 'Display on the upload screen a link to a sample CSV file (0 for false, 1 for true)');
 
 -- Create a provider
-INSERT INTO providers(id,label,definition) VALUES ('1', 'Defaut', 'Organisme par défaut');
-ALTER sequence website.provider_id_seq restart with 2;
+INSERT INTO providers(id, label, definition) VALUES ('1', 'Defaut', 'Organisme par défaut');
+INSERT INTO providers(id, label, definition) VALUES ('2', 'Dunkerque SA', 'Organisme de Dunkerque');
+ALTER sequence website.provider_id_seq restart with 3;
 
 -- Create some roles
 INSERT INTO role(role_code, role_label, role_definition) VALUES ('ADMIN','Administrator', 'Manages the web site');
@@ -66,7 +67,7 @@ INSERT INTO role(role_code, role_label, role_definition) VALUES ('VISITOR','Visi
 
 -- Create some users
 INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', '1', null); 
-INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('visitor', '4ed0428505b0b89fe7bc1a01928ef1bd4c77c1be', 'Visitor', '1', '1', null); 
+INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('visitor', '4ed0428505b0b89fe7bc1a01928ef1bd4c77c1be', 'Visitor', '2', '1', null); 
 
 -- Link the users to their roles
 INSERT INTO role_to_user(user_login, role_code) VALUES ('admin', 'ADMIN');
