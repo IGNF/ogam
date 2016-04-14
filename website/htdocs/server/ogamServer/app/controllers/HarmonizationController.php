@@ -171,11 +171,22 @@ class HarmonizationController extends AbstractOGAMController {
 			$status = $this->harmonizationServiceModel->getStatus($datasetId, $providerId, 'HarmonizationServlet');
 
 			// Echo the result as a JSON
-			echo "{status:'" . $status->status . "', taskName:'" . $status->taskName . "', currentCount:'" . $status->currentCount . "', totalCount:'" . $status->totalCount . "'}";
+			if ($status->status === "OK") {
+				echo '{"success":true, "status":"' . $status->status . '"}';
+			} else {
+				echo '{"success":true, "status":"' . $status->status . '", "taskName":"' . $status->taskName . '"';
+				if ($status->currentCount != null) {
+					echo ', "currentCount":' . $status->currentCount;
+				}
+				if ($status->totalCount != null) {
+					echo ', "totalCount":' . $status->totalCount;
+				}
+				echo '}';
+			}
 		} catch (Exception $e) {
 			$this->logger->err('Error during get: ' . $e);
 			$this->view->errorMessage = $e->getMessage();
-			return $this->render('show-data-error');
+			echo '{"success":false, "errorMsg":"' . $e->getMessage() . '"}';
 		}
 
 		// No View, we send directly the javascript

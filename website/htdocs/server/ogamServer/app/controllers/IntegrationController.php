@@ -519,11 +519,22 @@ class IntegrationController extends AbstractOGAMController {
 			$status = $this->integrationServiceModel->getStatus($submissionId, $servletName);
 
 			// Echo the result as a JSON
-			echo '{"success":true, "status":"' . $status->status . '", "taskName":"' . $status->taskName . '", "currentCount":"' . $status->currentCount . '", "totalCount":"' . $status->totalCount . '"}';
+			if ($status->status === "OK") {
+				echo '{"success":true, "status":"' . $status->status . '"}';
+			} else {
+				echo '{"success":true, "status":"' . $status->status . '", "taskName":"' . $status->taskName . '"';
+				if ($status->currentCount != null) {
+					echo ', "currentCount":' . $status->currentCount;
+				}
+				if ($status->totalCount != null) {
+					echo ', "totalCount":' . $status->totalCount;
+				}
+				echo '}';
+			}
 		} catch (Exception $e) {
 			$this->logger->err('Error during get: ' . $e);
 			$this->view->errorMessage = $e->getMessage();
-			echo '{"success":false, "errorMsg":""}';
+			echo '{"success":false, "errorMsg":"' . $e->getMessage() . '"}';
 		}
 
 		// No View, we send directly the javascript
