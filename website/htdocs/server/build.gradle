@@ -50,15 +50,21 @@ task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
   args "--configuration", "./test/phpunit.xml"
 }
 
+// Clean the deploy directory
+task cleanDeploy(type: Delete, description: 'Clean the deploy directory.') {
 
-task cleanDeploy(type: Delete) {
-	delete 'build/deploy'
+	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
+
+	delete "${deployDir}"
 }
 
 
 //for Ant filter
 import org.apache.tools.ant.filters.ReplaceTokens
-task deploy(type: Copy, dependsOn: cleanDeploy) {
+
+
+// Copy the PHP files to the deploy directory
+task deploy(type: Copy, dependsOn: cleanDeploy, description: 'Copy the PHP files to the deploy directory.') {
 
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
 
@@ -70,7 +76,8 @@ task deploy(type: Copy, dependsOn: cleanDeploy) {
     
     exclude 'sessions/*'
     exclude 'tmp/*'
-    exclude 'upload/*'    
+    exclude 'upload/*' 
+    exclude 'app/configs/*'       
     
     eachFile {
 		filter(ReplaceTokens, tokens: ['version_number': project.version, 'build_number': ant.antProject.properties['build.number']])
