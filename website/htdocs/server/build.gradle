@@ -49,3 +49,34 @@ task phpunit(type:Exec, description: 'Launch PHPUnit for unit testing.') {
   }
   args "--configuration", "./test/phpunit.xml"
 }
+
+
+task cleanDeploy(type: Delete) {
+	delete 'build/deploy'
+}
+
+
+//for Ant filter
+import org.apache.tools.ant.filters.ReplaceTokens
+task deploy(type: Copy, dependsOn: cleanDeploy) {
+
+	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
+
+	ant.buildnumber()
+
+    from 'ogamServer' 
+    
+    into "${deployDir}"
+    
+    exclude 'sessions/*'
+    exclude 'tmp/*'
+    exclude 'upload/*'    
+    
+    eachFile {
+		filter(ReplaceTokens, tokens: ['version_number': project.version, 'build_number': ant.antProject.properties['build.number']])
+	}
+        
+    doLast {
+    	println "The server file have been deployed to ${deployDir}"
+    }
+}
