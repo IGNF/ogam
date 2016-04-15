@@ -98,7 +98,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
 		$sql .= " FROM " . $schema->name . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
-		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($data->infoFields);
+		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->code, $data->infoFields);
 
 		$this->logger->info('getDatum : ' . $sql);
 
@@ -184,7 +184,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
 		$sql .= " FROM " . $schema->name . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
-		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere(array_merge($data->infoFields, $data->editableFields));
+		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->code, array_merge($data->infoFields, $data->editableFields));
 
 		$this->logger->info('_getDataList : ' . $sql);
 
@@ -241,7 +241,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 			if ($field->data != "LINE_NUMBER" && $field->isEditable) {
 				// Hardcoded value
-				$sql .= $field->columnName . " = " . $this->genericService->buildSQLValueItem($field);
+				$sql .= $field->columnName . " = " . $this->genericService->buildSQLValueItem($schema, $field);
 				$sql .= ", ";
 			}
 		}
@@ -253,7 +253,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		// Build the WHERE clause with the info from the PK.
 		foreach ($data->infoFields as $primaryKey) {
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-			$sql .= $this->genericService->buildWhereItem($primaryKey, true);
+			$sql .= $this->genericService->buildWhereItem($schema, $primaryKey, true);
 		}
 
 		$this->logger->info('updateData : ' . $sql);
@@ -349,7 +349,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 				// Primary keys that are not set should be serials ...
 				$columns .= $field->columnName . ", ";
-				$values .= $this->genericService->buildSQLValueItem($field);
+				$values .= $this->genericService->buildSQLValueItem($schema, $field);
 				$values .= ", ";
 			} else {
 				$this->logger->info('field ' . $field->columnName . " " . $field->isCalculated);
@@ -370,7 +370,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 				// Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
 					$columns .= $field->columnName . ", ";
-					$values .= $this->genericService->buildSQLValueItem($field);
+					$values .= $this->genericService->buildSQLValueItem($schema, $field);
 					$values .= ", ";
 				}
 			}

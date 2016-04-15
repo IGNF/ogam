@@ -33,9 +33,9 @@ insert into application_parameters (name, value, description) values ( 'tilesize
 insert into application_parameters (name, value, description) values ( 'query_details_layers1' , 'ortho_photos,result_locations,countries,departements,communes', 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'ortho_photos,location_detail,countries,departements', 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'proxy_service_name' , 'Local_Mapserv_WMS_GetMap' , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3857 , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 4326 , 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'srs_harmonized_data' , 3857 , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3857 , 'Projection system for the visualisation');
+insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 4326 , 'Projection system for the raw data database');
+insert into application_parameters (name, value, description) values ( 'srs_harmonized_data' , 3857 , 'Projection system for the harmonized database');
 insert into application_parameters (name, value, description) values ( 'usePerProviderCenter' , true , 'if true the system will look in the "bounding_box" table for centering info for each provider');
 insert into application_parameters (name, value, description) values ( 'bbox_x_min' , '-2893330' , 'X min coordinate of the bounding box (in the projection of visualisation : 3857)');
 insert into application_parameters (name, value, description) values ( 'bbox_y_min' , '3852395' , 'Y min coordinate of the bounding box (in the projection of visualisation : 3857)');

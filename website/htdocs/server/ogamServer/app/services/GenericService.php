@@ -36,7 +36,6 @@ class Application_Service_GenericService {
 	/**
 	 * The projection systems.
 	 */
-	var $databaseSRS;
 	var $visualisationSRS;
 
 	/**
@@ -53,7 +52,6 @@ class Application_Service_GenericService {
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
 		$this->visualisationSRS = $configuration->srs_visualisation;
-		$this->databaseSRS = $configuration->srs_raw_data;
 	}
 
 	/**
@@ -466,17 +464,17 @@ class Application_Service_GenericService {
 	 *        	the query object (list of TableFields)
 	 * @return String a SQL request
 	 */
-	public function generateSQLWhereRequest($schema, $dataObject) {
+	public function generateSQLWhereRequest($schemaCode, $dataObject) {
 		$this->logger->debug('generateSQLWhereRequest');
 
 		// Prepare the list of needed tables
-		$tables = $this->getAllFormats($schema, $dataObject);
+		$tables = $this->getAllFormats($schemaCode, $dataObject);
 
 		// Add the root table;
 		$rootTable = array_shift($tables);
 
 		// Get the root table fields
-		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
+		$rootTableFields = $this->metadataModel->getTableFields($schemaCode, $rootTable->getLogicalName());
 		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
 
 		//
@@ -484,7 +482,7 @@ class Application_Service_GenericService {
 		//
 		$where = " WHERE (1 = 1)";
 		foreach ($dataObject->infoFields as $tableField) {
-			$where .= $this->buildWhereItem($tableField, false);
+			$where .= $this->buildWhereItem($schemaCode, $tableField, false);
 		}
 
 		// Right management
@@ -594,16 +592,18 @@ class Application_Service_GenericService {
 	/**
 	 * Build the WHERE clause corresponding to a list of criterias.
 	 *
+	 * @param String $schemaCode
+	 *        	the schema.
 	 * @param Array[Application_Object_Metadata_TableField] $criterias
 	 *        	the criterias.
 	 * @return String the WHERE part of the SQL query
 	 */
-	public function buildWhere($criterias) {
+	public function buildWhere($schemaCode, $criterias) {
 		$sql = "";
 
 		// Build the WHERE clause with the info from the PK.
 		foreach ($criterias as $tableField) {
-			$sql .= $this->buildWhereItem($tableField, true); // exact match
+			$sql .= $this->buildWhereItem($schemaCode, $tableField, true); // exact match
 		}
 
 		return $sql;
@@ -773,17 +773,27 @@ class Application_Service_GenericService {
 	/**
 	 * Build the WHERE clause corresponding to one criteria.
 	 *
+	 * @param String $schemaCode
+	 *        	the schema.
 	 * @param TableField $tableField
 	 *        	a criteria.
 	 * @param Boolean $exact
 	 *        	if true, will use an exact equal (no like %% and no IN (xxx) for trees).
 	 * @return String the WHERE part of the SQL query (ex : 'AND BASAL_AREA = 6.05')
 	 */
-	public function buildWhereItem($tableField, $exact = false) {
+	public function buildWhereItem($schemaCode, $tableField, $exact = false) {
 		$sql = "";
 
 		$value = $tableField->value;
 		$column = $tableField->format . "." . $tableField->columnName;
+
+		// Set the projection for the geometries in this schema
+		$configuration = Zend_Registry::get("configuration");
+		if ($schemaCode === 'RAW_DATA') {
+			$databaseSRS = $configuration->srs_raw_data;
+		} else {
+			$databaseSRS = $configuration->srs_harmonized_data;
+		}
 
 		if ($value != null && $value != '' && $value != array()) {
 
@@ -974,10 +984,10 @@ class Application_Service_GenericService {
 						foreach ($value as $val) {
 							if ($val != null && $val != '' && is_string($val)) {
 								if ($exact) {
-									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $databaseSRS . "))";
 								} else {
 									// The ST_Buffer(0) is used to correct the "Relate Operation called with a LWGEOMCOLLECTION type" error.
-									$sql .= "ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "), 0))";
+									$sql .= "ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $databaseSRS . "), 0))";
 								}
 								$sql .= " OR ";
 								$oradded = true;
@@ -990,9 +1000,9 @@ class Application_Service_GenericService {
 					} else {
 						if (is_string($value)) {
 							if ($exact) {
-								$sql .= " AND (ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
+								$sql .= " AND (ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . databaseSRS . ")))";
 							} else {
-								$sql .= " AND (ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "), 0)))";
+								$sql .= " AND (ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . "), 0)))";
 							}
 						}
 					}
@@ -1041,15 +1051,25 @@ class Application_Service_GenericService {
 	/**
 	 * Build the update part of a SQL request corresponding to a table field.
 	 *
+	 * @param Schema $schema
+	 *        	the schema.
 	 * @param TableField $tableField
 	 *        	a criteria.
 	 * @return String the update part of the SQL query (ex : BASAL_AREA = 6.05)
 	 */
-	public function buildSQLValueItem($tableField) {
+	public function buildSQLValueItem($schema, $tableField) {
 		$sql = "";
 
 		$value = $tableField->value;
 		$column = $tableField->columnName;
+
+		// Set the projection for the geometries in this schema
+		$configuration = Zend_Registry::get("configuration");
+		if ($schema->code === 'RAW_DATA') {
+			$databaseSRS = $configuration->srs_raw_data;
+		} else {
+			$databaseSRS = $configuration->srs_harmonized_data;
+		}
 
 		switch ($tableField->type) {
 
@@ -1084,7 +1104,7 @@ class Application_Service_GenericService {
 				if ($value == "") {
 					$sql = "NULL";
 				} else {
-					$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")";
+					$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . ")";
 				}
 				break;
 			case "STRING":
