@@ -15,8 +15,10 @@
 /**
  * Represent a node in a tree with his children.
  *
- * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_TreeNode {
 

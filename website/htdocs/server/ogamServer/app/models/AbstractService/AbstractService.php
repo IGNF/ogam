@@ -15,10 +15,16 @@
 /**
  * This is a model allowing to access a java service.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage AbstractService
  */
 class Application_Model_AbstractService_AbstractService {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**

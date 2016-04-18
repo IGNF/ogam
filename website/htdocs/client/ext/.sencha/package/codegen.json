@@ -40,7 +40,7 @@
         "pkgName": "ext",
         "pkgType": "framework",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../touch"
       }
     },
     ".sencha/package/build.properties": {
@@ -51,7 +51,7 @@
         "pkgName": "ext",
         "pkgType": "framework",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../touch"
       }
     },
     "package.json": {
@@ -73,7 +73,7 @@
         "pkgName": "ext",
         "pkgType": "framework",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../touch"
       }
     },
     "sass/example/custom.js": {
@@ -84,7 +84,7 @@
         "pkgName": "ext",
         "pkgType": "framework",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../touch"
       }
     },
     "sass/etc/all.scss": {
@@ -95,7 +95,7 @@
         "pkgName": "ext",
         "pkgType": "framework",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../touch"
       }
     },
     "sass/config.rb": {
@@ -106,7 +106,7 @@
         "pkgName": "ext",
         "pkgType": "framework",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../touch"
       }
     },
     ".sencha/package/sencha.cfg": {
@@ -117,7 +117,7 @@
         "pkgName": "ext",
         "pkgType": "framework",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../touch"
       }
     },
     "sass/example/sass-page.html": {
@@ -139,7 +139,7 @@
         "pkgName": "ext",
         "pkgType": "framework",
         "senchadir": ".sencha",
-        "touchRelPath": "${touch.dir}"
+        "touchRelPath": "../touch"
       }
     }
   }

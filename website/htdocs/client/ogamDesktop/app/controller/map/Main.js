@@ -41,7 +41,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
     onLaunch:function(){
         //clean previous request or result in server side
         Ext.Ajax.request({
-            url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxrestresultlocation',
+            url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxresetresultlocation',
             failure: function(response, opts) {
                 console.warn('server-side failure with status code ' + response.status);
             }

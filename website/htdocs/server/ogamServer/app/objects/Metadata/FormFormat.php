@@ -15,8 +15,10 @@
 /**
  * Represent a Form Format (a logical bloc of the HTML Query page).
  *
- * @package objects
  * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_FormFormat extends Application_Object_Metadata_Format {
 

@@ -17,12 +17,14 @@
  *
  * This service handles transformations between data objects and generate generic SQL requests from the metadata.
  *
- * @package service
+ * @package Application_Service
  */
 class Application_Service_GenericService {
 
 	/**
 	 * The logger.
+	 *
+	 * @var Zend_Log
 	 */
 	var $logger;
 
@@ -34,8 +36,6 @@ class Application_Service_GenericService {
 	/**
 	 * The projection systems.
 	 */
-	var $databaseSRS;
-
 	var $visualisationSRS;
 
 	/**
@@ -52,7 +52,6 @@ class Application_Service_GenericService {
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
 		$this->visualisationSRS = $configuration->srs_visualisation;
-		$this->databaseSRS = $configuration->srs_raw_data;
 	}
 
 	/**
@@ -69,7 +68,7 @@ class Application_Service_GenericService {
 
 		// Get the user rights
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
+		$user = $userSession->user;
 
 		// Get children for the current dataset
 		$this->genericModel = new Application_Model_Generic_Generic();
@@ -96,7 +95,7 @@ class Application_Service_GenericService {
 		$json .= $fields . "]";
 
 		// Add the edit link
-		if ($role->isAllowed('DATA_EDITION')) {
+		if ($user->isAllowed('DATA_EDITION')) {
 			$json .= ',"editURL":' . json_encode($data->getId());
 		} else {
 			$json .= ',"editURL":null';
@@ -110,12 +109,13 @@ class Application_Service_GenericService {
 	/**
 	 * Return a formated array
 	 *
-	 * @param DataObject $data the data object we're looking at.
-	 * @param String $dataset the dataset identifier (optional), limit the children to the current dataset.
+	 * @param DataObject $data
+	 *        	the data object we're looking at.
+	 * @param String $dataset
+	 *        	the dataset identifier (optional), limit the children to the current dataset.
 	 * @return ARRAY
 	 */
 	public function datumToDetailArray($data, $datasetId = null) {
-
 		$this->logger->info('datumToDetailJSON', $data);
 
 		// Get the user rights
@@ -140,7 +140,7 @@ class Application_Service_GenericService {
 		$formFields = $this->getFormFieldsOrdered($data->getFields());
 		foreach ($formFields as $formField) {
 			// Add the corresponding JSON
-			$fields .= $formField->toDetailJSON().",";
+			$fields .= $formField->toDetailJSON() . ",";
 		}
 		// remove last comma
 		if ($fields != '') {
@@ -236,18 +236,20 @@ class Application_Service_GenericService {
 	/**
 	 * Serialize a list of data objects as an array for a display into a Ext.GridPanel.
 	 *
-	 * @param String $id the id for the returned dataset
-	 * @param List[DataObject] $data the data object we're looking at.
+	 * @param String $id
+	 *        	the id for the returned dataset
+	 * @param List[DataObject] $data
+	 *        	the data object we're looking at.
 	 * @return ARRAY
 	 */
 	public function dataToGridDetailArray($id, $data) {
-
 		$this->logger->info('dataToDetailArray');
 
 		if (!empty($data)) {
 
 			// The columns config to setup the grid columnModel
-			$columns = array(array(
+			$columns = array(
+				array(
 
 					'header' => 'Informations',
 					'dataIndex' => 'informations',
@@ -255,11 +257,15 @@ class Application_Service_GenericService {
 					'tooltip' => 'Informations',
 					'width' => 150,
 					'type' => 'STRING'
-			));
+				)
+			);
 			// The columns max length to setup the column width
 			$columnsMaxLength = array();
 			// The fields config to setup the store reader
-			$locationFields = array('id', 'informations');
+			$locationFields = array(
+				'id',
+				'informations'
+			);
 			// The data to full the store
 			$locationsData = array();
 			$firstData = $data[0];
@@ -271,10 +277,10 @@ class Application_Service_GenericService {
 				$locationData[0] = $datum->getId();
 				$locationData[1] = "";
 				foreach ($datum->getInfoFields() as $field) {
-					$locationData[1] .= $field->valueLabel. ', ';
+					$locationData[1] .= $field->valueLabel . ', ';
 				}
 
-				if($locationData[1] != ""){
+				if ($locationData[1] != "") {
 					$locationData[1] = substr($locationData[1], 0, -2);
 				}
 				$formFields = $this->getFormFieldsOrdered($datum->getFields());
@@ -292,16 +298,16 @@ class Application_Service_GenericService {
 			// Add the colums description
 			foreach ($formFields as $field) {
 				// Set the column model and the location fields
-				$dataIndex = $firstData->tableFormat->format.'__'.$field->data;
+				$dataIndex = $firstData->tableFormat->format . '__' . $field->data;
 				// Adds the column header to prevent it from being truncated too
 				array_push($columnsMaxLength[$field->data], strlen($field->label));
 				$column = array(
-						'header' => $field->label,
-						'dataIndex' => $dataIndex,
-						'editable' => false,
-						'tooltip' => $field->definition,
-						'width' => 150, //max($columnsMaxLength[$field->data]) * 7
-						'type' => $field->type
+					'header' => $field->label,
+					'dataIndex' => $dataIndex,
+					'editable' => false,
+					'tooltip' => $field->definition,
+					'width' => 150, // max($columnsMaxLength[$field->data]) * 7
+					'type' => $field->type
 				);
 				array_push($columns, $column);
 				array_push($locationFields, $dataIndex);
@@ -315,7 +321,7 @@ class Application_Service_GenericService {
 			}
 			$out = Array();
 			$out['id'] = $id;
-			$out['title'] = $firstData->tableFormat->label.' ('.count($locationsData).')';
+			$out['title'] = $firstData->tableFormat->label . ' (' . count($locationsData) . ')';
 			$out['hasChild'] = $hasChild;
 			$out['columns'] = array_values($columns);
 			$out['fields'] = array_values($locationFields);
@@ -458,17 +464,17 @@ class Application_Service_GenericService {
 	 *        	the query object (list of TableFields)
 	 * @return String a SQL request
 	 */
-	public function generateSQLWhereRequest($schema, $dataObject) {
+	public function generateSQLWhereRequest($schemaCode, $dataObject) {
 		$this->logger->debug('generateSQLWhereRequest');
 
 		// Prepare the list of needed tables
-		$tables = $this->getAllFormats($schema, $dataObject);
+		$tables = $this->getAllFormats($schemaCode, $dataObject);
 
 		// Add the root table;
 		$rootTable = array_shift($tables);
 
 		// Get the root table fields
-		$rootTableFields = $this->metadataModel->getTableFields($schema, $rootTable->getLogicalName());
+		$rootTableFields = $this->metadataModel->getTableFields($schemaCode, $rootTable->getLogicalName());
 		$hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
 
 		//
@@ -476,7 +482,7 @@ class Application_Service_GenericService {
 		//
 		$where = " WHERE (1 = 1)";
 		foreach ($dataObject->infoFields as $tableField) {
-			$where .= $this->buildWhereItem($tableField, false);
+			$where .= $this->buildWhereItem($schemaCode, $tableField, false);
 		}
 
 		// Right management
@@ -484,8 +490,7 @@ class Application_Service_GenericService {
 		$userSession = new Zend_Session_Namespace('user');
 		if (!empty($userSession->user)) {
 			$providerId = $userSession->user->provider->id;
-			$role = $userSession->user->role;
-			if (!$role->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
+			if (!$userSession->user->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
 				$where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
 			}
 		}
@@ -550,8 +555,7 @@ class Application_Service_GenericService {
 		$userSession = new Zend_Session_Namespace('user');
 		if (!empty($userSession->user)) {
 			$providerId = $userSession->user->provider->id;
-			$role = $userSession->user->role;
-			if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER') && $hasColumnProvider) {
+			if (!$userSession->user->isAllowed('DATA_EDITION_OTHER_PROVIDER') && $hasColumnProvider) {
 				$select .= ", " . $leftTable->getLogicalName() . ".provider_id as _provider_id";
 			}
 		}
@@ -588,16 +592,18 @@ class Application_Service_GenericService {
 	/**
 	 * Build the WHERE clause corresponding to a list of criterias.
 	 *
+	 * @param String $schemaCode
+	 *        	the schema.
 	 * @param Array[Application_Object_Metadata_TableField] $criterias
 	 *        	the criterias.
 	 * @return String the WHERE part of the SQL query
 	 */
-	public function buildWhere($criterias) {
+	public function buildWhere($schemaCode, $criterias) {
 		$sql = "";
 
 		// Build the WHERE clause with the info from the PK.
 		foreach ($criterias as $tableField) {
-			$sql .= $this->buildWhereItem($tableField, true); // exact match
+			$sql .= $this->buildWhereItem($schemaCode, $tableField, true); // exact match
 		}
 
 		return $sql;
@@ -767,17 +773,27 @@ class Application_Service_GenericService {
 	/**
 	 * Build the WHERE clause corresponding to one criteria.
 	 *
+	 * @param String $schemaCode
+	 *        	the schema.
 	 * @param TableField $tableField
 	 *        	a criteria.
 	 * @param Boolean $exact
 	 *        	if true, will use an exact equal (no like %% and no IN (xxx) for trees).
 	 * @return String the WHERE part of the SQL query (ex : 'AND BASAL_AREA = 6.05')
 	 */
-	public function buildWhereItem($tableField, $exact = false) {
+	public function buildWhereItem($schemaCode, $tableField, $exact = false) {
 		$sql = "";
 
 		$value = $tableField->value;
 		$column = $tableField->format . "." . $tableField->columnName;
+
+		// Set the projection for the geometries in this schema
+		$configuration = Zend_Registry::get("configuration");
+		if ($schemaCode === 'RAW_DATA') {
+			$databaseSRS = $configuration->srs_raw_data;
+		} else {
+			$databaseSRS = $configuration->srs_harmonized_data;
+		}
 
 		if ($value != null && $value != '' && $value != array()) {
 
@@ -968,10 +984,10 @@ class Application_Service_GenericService {
 						foreach ($value as $val) {
 							if ($val != null && $val != '' && is_string($val)) {
 								if ($exact) {
-									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "))";
+									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $databaseSRS . "))";
 								} else {
 									// The ST_Buffer(0) is used to correct the "Relate Operation called with a LWGEOMCOLLECTION type" error.
-									$sql .= "ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "), 0))";
+									$sql .= "ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $databaseSRS . "), 0))";
 								}
 								$sql .= " OR ";
 								$oradded = true;
@@ -984,9 +1000,9 @@ class Application_Service_GenericService {
 					} else {
 						if (is_string($value)) {
 							if ($exact) {
-								$sql .= " AND (ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")))";
+								$sql .= " AND (ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . databaseSRS . ")))";
 							} else {
-								$sql .= " AND (ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . "), 0)))";
+								$sql .= " AND (ST_Intersects(" . $column . ", ST_Buffer(ST_Transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . "), 0)))";
 							}
 						}
 					}
@@ -1035,15 +1051,25 @@ class Application_Service_GenericService {
 	/**
 	 * Build the update part of a SQL request corresponding to a table field.
 	 *
+	 * @param Schema $schema
+	 *        	the schema.
 	 * @param TableField $tableField
 	 *        	a criteria.
 	 * @return String the update part of the SQL query (ex : BASAL_AREA = 6.05)
 	 */
-	public function buildSQLValueItem($tableField) {
+	public function buildSQLValueItem($schema, $tableField) {
 		$sql = "";
 
 		$value = $tableField->value;
 		$column = $tableField->columnName;
+
+		// Set the projection for the geometries in this schema
+		$configuration = Zend_Registry::get("configuration");
+		if ($schema->code === 'RAW_DATA') {
+			$databaseSRS = $configuration->srs_raw_data;
+		} else {
+			$databaseSRS = $configuration->srs_harmonized_data;
+		}
 
 		switch ($tableField->type) {
 
@@ -1078,7 +1104,7 @@ class Application_Service_GenericService {
 				if ($value == "") {
 					$sql = "NULL";
 				} else {
-					$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $this->databaseSRS . ")";
+					$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . ")";
 				}
 				break;
 			case "STRING":

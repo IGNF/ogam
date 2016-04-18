@@ -17,8 +17,8 @@
  * @package views
  */
 ?>
-<script type="text/javascript" src="<?= $this->baseUrl('js/integration/progressbar.js') ?>"></script>
-<script type="text/javascript" src="<?= $this->baseUrl('js/integration/later.min.js') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/integration/progressbar.js') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/integration/later.min.js') ?>"></script>
 
 <h1>
    <?php echo $this->translate('Data integration module');?>
@@ -48,7 +48,7 @@
 
 // Get the user permissions
 $userSession = new Zend_Session_Namespace('user');
-$role = $userSession->user->role;
+$user = $userSession->user;
 
 
 $i = 0;
@@ -62,40 +62,40 @@ foreach ($this->submissions as $submission) {
     <td><?php echo  $this->escape($submission->datasetLabel); ?></td>
     <td><?php echo  $this->escape($submission->step); ?></td>
     <td>
-            <?php if ($submission->status === "OK" || $submission->status === "CHECKED") : ?>
+            <?php if ($submission->status === "OK" || $submission->status === "CHECKED") { ?>
             	<?php echo  $this->escape($submission->status); ?>
                 <img src="<?php echo  $this->baseUrl('img/Green_tick.png') ?>" />
-            <?php elseif ($submission->status === "WARNING") : ?>
+            <?php } else if ($submission->status === "WARNING") { ?>
             	<?php echo  $this->escape($submission->status); ?>
                 <img src="<?php echo  $this->baseUrl('img/warning_orange.png') ?>" />
-            <?php elseif ($submission->status === "RUNNING") : ?>
+            <?php } else if ($submission->status === "RUNNING") { ?>
                 <div class="tempStatusDiv" id="tempStatusDiv_<?php echo  $submission->submissionId ?>">
                 <script type="text/javascript">
                 var OgamDesktopIntegration = {};
                 // Display the progress bar
                 display('progressBar<?php echo  $submission->submissionId ?>', '', 0, '<?php echo  $this->baseUrl('img/') ?>');
-                
+
                 // Refresh The status of the submission
-                OgamDesktopIntegration.getStatus_<?= $submission->submissionId ?> =  function (){
-                    var url = '<?= $this->baseUrl('Integration/') ?>';
-                    <?php if ($submission->step === "CHECKED") : ?>
+                OgamDesktopIntegration.getStatus_<?php echo $submission->submissionId ?> =  function (){
+                    var url = '<?php echo $this->baseUrl('Integration/') ?>';
+                    <?php if ($submission->step === "CHECKED") { ?>
                         url += 'get-check-status';
-                    <?php else : ?>
+                    <?php } else { ?>
                         url += 'get-data-status';
-                    <?php endif; ?>
+                    <?php } ?>
                     OgamDesktopIntegration.request = new XMLHttpRequest();
                     OgamDesktopIntegration.request.onreadystatechange = function() {
                         if (OgamDesktopIntegration.request.readyState == 4) { // 4: request finished and response is ready
                             if (OgamDesktopIntegration.request.status == 200) { // Success
                                 var rp = JSON.parse(OgamDesktopIntegration.request.responseText);
-                                var src = '<?= $this->baseUrl('img/') ?>';
+                                var src = '<?php echo $this->baseUrl('img/') ?>';
                                 switch(rp.status){
                                     case 'OK':
                                     case 'WARNING':
                                     case 'ERROR':
                                     case 'CRASH':
-                                        //Ext.TaskMgr.stop(OgamDesktopIntegration.getStatusTask_<?= $submission->submissionId ?>);
-                                        OgamDesktopIntegration.getStatusTask_<?= $submission->submissionId ?>.clear();
+                                        //Ext.TaskMgr.stop(OgamDesktopIntegration.getStatusTask_<?php echo $submission->submissionId ?>);
+                                        OgamDesktopIntegration.getStatusTask_<?php echo $submission->submissionId ?>.clear();
                                         location.reload();
                                         break;
                                     case 'RUNNING':
@@ -115,18 +115,18 @@ foreach ($this->submissions as $submission) {
                             } else { // Failure
 
                             }
-                        }                        
+                        }
                     };
-                    OgamDesktopIntegration.request.open("GET", url+'?action=status&submissionId='+<?= $submission->submissionId ?>, true);
+                    OgamDesktopIntegration.request.open("GET", url+'?action=status&submissionId='+<?php echo $submission->submissionId ?>, true);
                     OgamDesktopIntegration.request.send();
                 }
-                OgamDesktopIntegration.getStatusTask_<?= $submission->submissionId ?> = later.setInterval(OgamDesktopIntegration.getStatus_<?= $submission->submissionId ?>, later.parse.text('every 2 sec'));
+                OgamDesktopIntegration.getStatusTask_<?php echo $submission->submissionId ?> = later.setInterval(OgamDesktopIntegration.getStatus_<?php echo $submission->submissionId ?>, later.parse.text('every 2 sec'));
                 </script>
                 </div>
-            <?php else : //"ERROR" or "CRASH") ?>
+            <?php } else { //"ERROR" or "CRASH") ?>
             	<?php echo $this->escape($submission->status); ?>
                 <img src="<?php echo  $this->baseUrl('img/Red_x.png') ?>" />
-            <?php endif; ?>
+            <?php } ?>
     </td>
     <td colspan=2>
         <?php if ($submission->status !== "DATARUNNING") : ?>
@@ -144,12 +144,12 @@ foreach ($this->submissions as $submission) {
                 </td>
                 <td class="line-number"><?php echo  $file->lineNumber ?></td>
                 </tr>
-                
+
             <?php endforeach; ?>
             </table>
         <?php endif; ?>
     </td>
-    
+
     <td>
     <?php
 	if ($submission->step === "INSERTED" && $submission->status === "OK") {
@@ -163,13 +163,13 @@ foreach ($this->submissions as $submission) {
     if ($submission->step === "CHECKED" && ($submission->status === "OK" || $submission->status === "WARNING")) {
 ?>
     <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'validate-data'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Confirm_submission_warning');?>');"><?php echo $this->translate('Confirm submission');?></a></p>
-    <?php } 
-    if ($submission->step != "VALIDATED" || ($role->isAllowed('CANCEL_VALIDATED_SUBMISSION'))) {
-    	if ($submission->providerId == $userSession->user->provider->id || ($role->isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION'))) {
+    <?php }
+    if ($submission->step != "VALIDATED" || ($user->isAllowed('CANCEL_VALIDATED_SUBMISSION'))) {
+    	if ($submission->providerId == $userSession->user->provider->id || ($user->isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION'))) {
 ?>
     <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'cancel-data-submission'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" onClick="return confirm('<?php echo $this->translate('Are you sure?');?>');"><?php echo $this->translate('Cancel Submission');?></a></p>
 <?php  }
-    } ?>        
+    } ?>
 </td></tr>
 <?php
 	$i++;
@@ -180,5 +180,5 @@ foreach ($this->submissions as $submission) {
 <div class="no-submission"><?=$this->translate('No submission found');?></div>
 <?php } ?>
 <p class="subTableLink">
-    <a href="<?= $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?=$this->translate('Create data submission');?></a>
+    <a href="<?php echo $this->url(array('controller'=>'integration','action'=>'show-create-data-submission'), null, true) ?>"><?=$this->translate('Create data submission');?></a>
 </p>

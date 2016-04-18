@@ -22,7 +22,7 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     	this.getMainView().setActiveItem(this.getPredefReqView());
     },
 
-    onLaunchRequest:function(){
+    onLaunchRequest:function(button,e, eopt){
     	
     	var prModel= this.getPredefReqView().lookupReference('requete');
    	
@@ -40,6 +40,7 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
 	    		});
 			this.getAdvReqView().getViewModel().notify();
 			this.getAdvReqView().lookupReference('advancedRequestSelector').reloadForm();
+			this.getAdvReqView().down('#SubmitButton').click(e);
 			
     		},
     		scope:this

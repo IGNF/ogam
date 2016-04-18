@@ -15,14 +15,19 @@ require_once 'AbstractOGAMController.php';
 /**
  * IntegrationController is the controller that manages the data integration.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class IntegrationController extends AbstractOGAMController {
 
+	/**
+	 * Redirector Helper.
+	 *
+	 * @var Zend_Controller_Action_Helper_Redirector
+	 */
 	protected $_redirector = null;
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -187,8 +192,6 @@ class IntegrationController extends AbstractOGAMController {
 			}
 
 			$fileelement->setDescription($fieldsDesc);
-			// FIXME:Ligne en dessous à supprimer ? Test ?
-			// $fileelement->setValue('toto');
 			$fileelement->setDisableTranslator(true); // disable translation to avoid the file name translation
 			$fileelement->addDecorator('Description', array(
 				'escape' => false
@@ -335,21 +338,29 @@ class IntegrationController extends AbstractOGAMController {
 
 		// Check the validity of the POST
 		if (!$this->getRequest()->isPost()) {
-			$this->logger->debug('form is not a POST');
+			$this->logger->err('form is not a POST');
 			return $this->_forward('index');
 		}
 
 		// Check the validity of the Form
 		$form = $this->_getDataUploadForm();
 		if (!$form->isValid($_POST)) {
-			$this->logger->debug('form is not valid');
+			$this->logger->err('form is not valid');
 			$this->view->form = $form;
 			return $this->render('show-upload-data');
 		}
 
 		// Upload the files on Server
+		$options = array(
+			'ignoreNoFile' => TRUE
+		);
 		$upload = new Zend_File_Transfer_Adapter_Http();
-		$upload->receive();
+		$upload->setOptions($options);
+
+		if (!$upload->receive()) {
+			$messages = $upload->getMessages();
+			$this->logger->err('Download errors : ' . print_r($messages, true));
+		}
 
 		// Get the submission info
 		$dataSession = new Zend_Session_Namespace('submission');
@@ -369,12 +380,14 @@ class IntegrationController extends AbstractOGAMController {
 		$dataSubmission = $this->submissionModel->getSubmission($submission->submissionId);
 		$requestedFiles = $this->metadataModel->getRequestedFiles($dataSubmission->datasetId);
 
-		$allFilesUploaded = true;
-		foreach ($requestedFiles as $requestedFile) {
+		foreach ($requestedFiles as $key => $requestedFile) {
 
 			// Get the uploaded filename
 			$filename = $upload->getFileName($requestedFile->format, false);
 			$filepath = $upload->getFileName($requestedFile->format);
+
+			$this->logger->debug('filepath ' . $filepath);
+
 			// Print it only if it is not an array (ie: nothing has been selected by the user)
 			if (!is_array($filename)) {
 				$this->logger->debug('uploaded filename ' . $filename);
@@ -382,10 +395,10 @@ class IntegrationController extends AbstractOGAMController {
 
 			// Check that the file is present
 			if (empty($filename)) {
-				$this->logger->debug('empty');
-				$allFilesUploaded = false;
+				$this->logger->debug('File ' . $requestedFile->format . ' is missing, skipping');
+				unset($requestedFiles[$key]);
 			} else {
-				// Move the file to the upload directory for archive
+				// Move the file to the upload directory on the php server
 				$this->logger->debug('move file : ' . $filename);
 				$targetPath = $uploadDir . DIRECTORY_SEPARATOR . $submission->submissionId . DIRECTORY_SEPARATOR . $requestedFile->fileType;
 				$targetName = $targetPath . DIRECTORY_SEPARATOR . $filename;
@@ -398,26 +411,18 @@ class IntegrationController extends AbstractOGAMController {
 			}
 		}
 
-		// Check that all the files have been uploaded
-		if (!$allFilesUploaded) {
-			$this->view->errorMessage = $this->translator->translate('You must select all files to upload');
-			$this->view->form = $form;
-			return $this->render('show-upload-data');
-		} else {
-
-			// Send the files to the integration server
-			try {
-				$this->integrationServiceModel->uploadData($submission->submissionId, $providerId, $requestedFiles);
-			} catch (Exception $e) {
-				$this->logger->err('Error during upload: ' . $e);
-				$this->view->errorMessage = $e->getMessage();
-				return $this->render('show-data-error');
-			}
-
-			// Redirect the user to the show plot location page
-			// This ensure that the user will not resubmit the data by doing a refresh on the page
-			$this->_redirector->gotoUrl('/integration/show-data-submission-page');
+		// Send the files to the integration server
+		try {
+			$this->integrationServiceModel->uploadData($submission->submissionId, $providerId, $requestedFiles);
+		} catch (Exception $e) {
+			$this->logger->err('Error during upload: ' . $e);
+			$this->view->errorMessage = $e->getMessage();
+			return $this->render('show-data-error');
 		}
+
+		// Redirect the user to the show plot location page
+		// This ensure that the user will not resubmit the data by doing a refresh on the page
+		$this->_redirector->gotoUrl('/integration/show-data-submission-page');
 	}
 
 	/**
@@ -514,11 +519,22 @@ class IntegrationController extends AbstractOGAMController {
 			$status = $this->integrationServiceModel->getStatus($submissionId, $servletName);
 
 			// Echo the result as a JSON
-			echo '{"success":true, "status":"' . $status->status . '", "taskName":"' . $status->taskName . '", "currentCount":"' . $status->currentCount . '", "totalCount":"' . $status->totalCount . '"}';
+			if ($status->status === "OK") {
+				echo '{"success":true, "status":"' . $status->status . '"}';
+			} else {
+				echo '{"success":true, "status":"' . $status->status . '", "taskName":"' . $status->taskName . '"';
+				if ($status->currentCount != null) {
+					echo ', "currentCount":' . $status->currentCount;
+				}
+				if ($status->totalCount != null) {
+					echo ', "totalCount":' . $status->totalCount;
+				}
+				echo '}';
+			}
 		} catch (Exception $e) {
 			$this->logger->err('Error during get: ' . $e);
 			$this->view->errorMessage = $e->getMessage();
-			echo '{"success":false, "errorMsg":""}';
+			echo '{"success":false, "errorMsg":"' . $e->getMessage() . '"}';
 		}
 
 		// No View, we send directly the javascript
@@ -548,10 +564,8 @@ class IntegrationController extends AbstractOGAMController {
 	 * @throws Zend_Exception
 	 */
 	public function exportFileModelAction() {
-		// -- Load user for checking permissions
-		// todo : add a permission for this action ?
-		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
+
+		// TODO : add a permission for this action ?
 
 		// -- Get the file
 		$fileFormat = $this->_getParam("fileFormat");

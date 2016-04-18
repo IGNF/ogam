@@ -1,6 +1,4 @@
 <?php
-require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
-
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -12,14 +10,21 @@ require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
  * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
+require_once APPLICATION_PATH . '/objects/Metadata/TableField.php';
 
 /**
  * This is the Metadata model.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Metadata
  */
 class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**
@@ -30,7 +35,7 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 	var $useCache = false;
 
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
 
@@ -642,9 +647,8 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$userSession = new Zend_Session_Namespace('user');
 		$params = array();
 		if ($userSession != null && $userSession->user != null) {
-			$role = $userSession->user->role;
-			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
-			$params[] = $role->code;
+			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction JOIN role_to_user USING (role_code) WHERE user_login = ?))';
+			$params[] = $userSession->user->login;
 		}
 
 		$req .= " ORDER BY dataset_id";
@@ -679,9 +683,8 @@ class Application_Model_Metadata_Metadata extends Zend_Db_Table_Abstract {
 		$userSession = new Zend_Session_Namespace('user');
 		$params = array();
 		if ($userSession != null && $userSession->user != null) {
-			$role = $userSession->user->role;
-			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction WHERE role_code = ?))';
-			$params[] = $role->code;
+			$req .= ' WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction JOIN role_to_user USING (role_code) WHERE user_login = ?))';
+			$params[] = $userSession->login;
 		}
 
 		$req .= " ORDER BY dataset_id";

@@ -15,8 +15,10 @@
 /**
  * Represent a dataset file (an input file descriptor).
  *
- * @package objects
  * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_DatasetFile {
 

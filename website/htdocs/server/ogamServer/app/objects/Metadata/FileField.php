@@ -15,8 +15,10 @@
 /**
  * Represent a Field of a File.
  *
- * @package objects
  * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_FileField extends Application_Object_Metadata_Field {
 

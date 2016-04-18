@@ -15,14 +15,20 @@
 /**
  * Model used to access the Metadata tables in order to compare with the real tables.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Database
  */
 class Application_Model_Database_Metadata extends Zend_Db_Table_Abstract {
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger;
 
 	/**
-	 * Initialisation
+	 * Initialisation.
 	 */
 	public function init() {
 

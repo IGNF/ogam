@@ -11,6 +11,7 @@
  */
 package fr.ifn.ogam.integration.business.submissions.datasubmission;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -202,9 +203,16 @@ public class DataService extends AbstractService {
 				// Get the path of the file
 				String filePath = requestParameters.get(fileFormat.getFormat());
 
-				// Insert the data in database with automatic mapping ...
-				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, filePath, fileFormat.getFormat(), fileFormat.getFileType(), requestParameters, this.thread);
+				// Check if the file exists
+				if (filePath != null) {
+					File file = new File(filePath);
+					if (file.exists()) {
 
+						// Insert the data in database with automatic mapping ...
+						isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, filePath, fileFormat.getFormat(), fileFormat.getFileType(),
+								requestParameters, this.thread);
+					}
+				}
 			}
 
 			// Launch post-processing (if not cancelled)

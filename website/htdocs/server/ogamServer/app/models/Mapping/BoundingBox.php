@@ -15,7 +15,8 @@
 /**
  * This is the model for managing countries bounding boxes.
  *
- * @package models
+ * @package Application_Model
+ * @subpackage Mapping
  */
 class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 
@@ -28,9 +29,12 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 	// PK is not auto-incrementes
 	protected $_sequence = false;
 
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	protected $logger;
-
-	protected $lang;
 
 	/**
 	 * Initialisation

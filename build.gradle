@@ -1,4 +1,6 @@
 
+
+
 subprojects {
 
   apply plugin: "java"  // compilation + tests unitaires
@@ -8,9 +10,10 @@ subprojects {
   apply plugin: 'findbugs'  // checks
   apply plugin: "jacoco"  // coverage
   
+  version = '3.0.0'
+  
   targetCompatibility  = 1.6
   sourceCompatibility  = 1.6
-  
  
   // We use Maven repository
   repositories {

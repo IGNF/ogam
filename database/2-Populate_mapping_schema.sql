@@ -66,4 +66,5 @@ INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_
 INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (32, '30', 1, 1, 0, 0, 0, 'scan25', 32, NULL);
 
 -- Configure the bounding box for all data providers
-INSERT INTO bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level) VALUES ('1', 3200000, 2060000, 4220000, 3160000, 0);
+INSERT INTO bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level) VALUES ('1', 96670, 6022395, 96670, 6022395, 1); -- France Entière
+INSERT INTO bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level) VALUES ('2', 260000, 6620000, 260000, 6620000, 6); -- Zoom par défaut sur Dunkerque

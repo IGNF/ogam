@@ -15,7 +15,7 @@ require_once 'AbstractOGAMController.php';
 /**
  * QueryController is the controller that manages the query module.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class QueryController extends AbstractOGAMController {
 
@@ -41,6 +41,13 @@ class QueryController extends AbstractOGAMController {
 	protected $queryService;
 
 	/**
+	 * Local cache for trads.
+	 *
+	 * @var Array
+	 */
+	private $traductions = array();
+
+	/**
 	 * Check if the authorization is valid this controler.
 	 *
 	 * @throws an Exception if the user doesn't have the rights
@@ -58,14 +65,13 @@ class QueryController extends AbstractOGAMController {
 		$schema = $websiteSession->schema;
 
 		// Check if the user has access to the schema
-		$schemas = $user->role->schemasList;
-		if (!in_array($schema, $schemas)) {
+		if (!$user->isSchemaAllowed($schema)) {
 			throw new Zend_Auth_Exception('Permission denied for schema : "' . $schema . '"');
 		}
 	}
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -138,7 +144,7 @@ class QueryController extends AbstractOGAMController {
 			$this->view->defaultTab = 'predefined';
 		}
 
-		//$this->render('show-query-form');
+		// $this->render('show-query-form');
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -274,12 +280,11 @@ class QueryController extends AbstractOGAMController {
 
 		$filters = json_decode($this->getRequest()->getQuery('filter'));
 
-		$datasetId= $requestName =null;
+		$datasetId = $requestName = null;
 
 		if (is_array($filters)) {
-			foreach($filters as $aFilter)
-			{
-				switch($aFilter->property){
+			foreach ($filters as $aFilter) {
+				switch ($aFilter->property) {
 					case 'processId':
 						$datasetId = $aFilter->value;
 						break;
@@ -290,11 +295,9 @@ class QueryController extends AbstractOGAMController {
 						$this->logger->debug('filter unattended : ' . $aFilter->property);
 				}
 			}
-
 		} else {
 			$datasetId = json_decode($this->getRequest()->getQuery('datasetId'));
 			$requestName = $this->getRequest()->getPost('requestName');
-
 		}
 
 		echo $this->queryService->getQueryForm($datasetId, $requestName);
@@ -306,7 +309,7 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the list of available datasets
+	 * AJAX function : Get the list of available datasets.
 	 *
 	 * @return JSON The list of forms
 	 */
@@ -434,7 +437,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('getgridparametersAction');
 
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
+		$user = $userSession->user;
 
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -443,18 +446,18 @@ class QueryController extends AbstractOGAMController {
 		$this->view->hideGridDataEditButton = 'true';
 		$this->view->checkEditionRights = 'true'; // By default, we don't check for rights on the data
 
-		$this->view->userProviderId = $userSession->user->provider->id;
+		$this->view->userProviderId = $user->provider->id;
 
-		if ($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) {
+		if ($schema == 'RAW_DATA' && $user->isAllowed('EXPORT_RAW_DATA')) {
 			$this->view->hideGridCsvExportMenuItem = 'false';
 		}
-		if ($schema == 'HARMONIZED_DATA' && $role->isAllowed('EXPORT_HARMONIZED_DATA')) {
+		if ($schema == 'HARMONIZED_DATA' && $user->isAllowed('EXPORT_HARMONIZED_DATA')) {
 			$this->view->hideGridCsvExportMenuItem = 'false';
 		}
-		if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && $role->isAllowed('DATA_EDITION')) {
+		if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && $user->isAllowed('DATA_EDITION')) {
 			$this->view->hideGridDataEditButton = 'false';
 		}
-		if ($role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
+		if ($user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 			$this->view->checkEditionRights = 'false';
 		}
 
@@ -547,7 +550,6 @@ class QueryController extends AbstractOGAMController {
 			} else {
 				$tmpImgPath2[] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '1-' . $i) . '.png';
 				file_put_contents(end($tmpImgPath2), $content);
-
 			}
 		}
 
@@ -592,7 +594,7 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Return the node children
+	 * Return the node children.
 	 *
 	 * @return JSON representing the detail of the children.
 	 */
@@ -648,8 +650,6 @@ class QueryController extends AbstractOGAMController {
 		return $criterias;
 	}
 
-	private $traductions = array();
-
 	/**
 	 * Get a label from a code, use a local cache mechanism.
 	 *
@@ -686,7 +686,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('gridCsvExportAction');
 
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
+		$user = $userSession->user;
 
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -701,7 +701,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.csv', true);
 
-		if ($role->isAllowed('EXPORT_RAW_DATA')) {
+		if ($user->isAllowed('EXPORT_RAW_DATA')) {
 
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -859,7 +859,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('gridCsvExportAction');
 
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
+		$user = $userSession->user;
 
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -874,7 +874,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.kml', true);
 
-		if (($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) || ($schema == 'HARMONIZED_DATA' && $role->isAllowed('EXPORT_HARMONIZED_DATA'))) {
+		if (($schema == 'RAW_DATA' && $user->isAllowed('EXPORT_RAW_DATA')) || ($schema == 'HARMONIZED_DATA' && $user->isAllowed('EXPORT_HARMONIZED_DATA'))) {
 
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -1023,7 +1023,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('geojsonExportAction');
 
 		$userSession = new Zend_Session_Namespace('user');
-		$role = $userSession->user->role;
+		$user = $userSession->user;
 
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema;
@@ -1038,7 +1038,7 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-Type', 'application/json;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.geojson', true);
 
-		if (($schema == 'RAW_DATA' && $role->isAllowed('EXPORT_RAW_DATA')) || ($schema == 'HARMONIZED_DATA' && $role->isAllowed('EXPORT_HARMONIZED_DATA'))) {
+		if (($schema == 'RAW_DATA' && $user->isAllowed('EXPORT_RAW_DATA')) || ($schema == 'HARMONIZED_DATA' && $user->isAllowed('EXPORT_HARMONIZED_DATA'))) {
 
 			$websiteSession = new Zend_Session_Namespace('website');
 			$select = $websiteSession->SQLSelect;
@@ -1178,7 +1178,7 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Convert and display the UTF-8 encoded string to the configured charset
+	 * Convert and display the UTF-8 encoded string to the configured charset.
 	 *
 	 * @param $output The
 	 *        	string to encode and to display
@@ -1556,7 +1556,11 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 	}
-	public function ajaxrestresultlocationAction() {
+
+	/**
+	 * Clean the result location table.
+	 */
+	public function ajaxresetresultlocationAction() {
 		$sessionId = session_id();
 		$this->resultLocationModel->cleanPreviousResults($sessionId);
 

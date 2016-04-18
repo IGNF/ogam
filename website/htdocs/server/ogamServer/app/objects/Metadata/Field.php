@@ -15,43 +15,59 @@
 /**
  * Represent a Field.
  *
- * @package objects
  * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Metadata
  */
 class Application_Object_Metadata_Field {
 
 	/**
-	 * The field identifier (data)
+	 * The field identifier (data).
+	 *
+	 * @var String
 	 */
 	var $data;
 
 	/**
-	 * The source format
+	 * The code of the source format.
+	 *
+	 * @var String
 	 */
 	var $format;
 
 	/**
-	 * The label of the field
+	 * The label of the field.
+	 *
+	 * @var String
 	 */
 	var $label;
 
 	/**
-	 * The unit of the data
+	 * The unit of the data.
+	 *
+	 * @var String
 	 */
 	var $unit;
 
 	/**
-	 * The type of the unit of the data (BOOLEAN, CODE, ARRAY, COORDINATE, DATE, INTEGER, NUMERIC or STRING)
+	 * The type of the unit of the data.
+	 *
+	 * @var String BOOLEAN, CODE, ARRAY, COORDINATE, DATE, INTEGER, NUMERIC or STRING.
 	 */
 	var $type;
 
 	/**
-	 * The sub-type of the unit of the data (MODE, TREE or DYNAMIC for CODE or ARRAY, RANGE for numeric)
+	 * The sub-type of the unit of the data.
+	 *
+	 * @var String MODE, TREE or DYNAMIC for CODE or ARRAY, RANGE for numeric.
 	 */
 	var $subtype;
 
 	/**
-	 * The definition of the field
+	 * The definition of the field.
+	 *
+	 * @var String
 	 */
 	var $definition;
 
@@ -71,6 +87,8 @@ class Application_Object_Metadata_Field {
 
 	/**
 	 * The label corresponding to value of the field.
+	 *
+	 * @var String
 	 */
 	var $valueLabel;
 

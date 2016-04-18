@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
 // We need for the deserialization of the session objects classes
 require_once APPLICATION_PATH . '/controllers/Plugin/Bootstrap.php';
 require_once APPLICATION_PATH . '/objects/Generic/DataObject.php';
@@ -16,13 +28,17 @@ require_once APPLICATION_PATH . '/objects/Website/Role.php';
 require_once APPLICATION_PATH . '/objects/Website/Provider.php';
 
 /**
- * The bootstrap class
+ * The bootstrap class.
  *
  * @SuppressWarnings protectedFunctionNaming
  */
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
-	// The logger
+	/**
+	 * The logger.
+	 *
+	 * @var Zend_Log
+	 */
 	var $logger = null;
 
 	/**
@@ -38,7 +54,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 * Register the logger into Zend_Registry
+	 * Register the logger into Zend_Registry.
 	 * WARNING : Do not call this function _initLog() !
 	 *
 	 * @throws Zend_Exception
@@ -62,7 +78,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 * Autoloading
+	 * Autoloading.
 	 */
 	protected function _initApplicationAutoloading() {
 		$resourceLoader = $this->getResourceLoader();
@@ -102,7 +118,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 * Init the routing system
+	 * Init the routing system.
 	 *
 	 * @throws Zend_Exception
 	 */
@@ -147,8 +163,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 *
-	 * Initialise the layout
+	 * Initialise the layout.
 	 *
 	 * @return Zend_View The layout view
 	 */
@@ -191,10 +206,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		return $view;
 	}
 
-	// Do not call this function _initTranslate() !
 	/**
+	 * Register the locale and the translation.
 	 *
-	 * Register the locale and the translation
+	 * Do not call this function _initTranslate() !
 	 *
 	 * @throws Zend_Exception
 	 */
@@ -243,10 +258,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
+	 * Add the translation files to the provided Zend_Translate object.
 	 *
-	 * Add the translation files to the provided Zend_Translate object
-	 *
-	 * @param array $dirs
+	 * @param Array $dirs
 	 *        	An array of lang dirs
 	 * @param Zend_Translate $translate
 	 *        	the current translator
@@ -333,8 +347,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 *
-	 * Check the caches
+	 * Check the caches.
 	 *
 	 * @throws Zend_Exception
 	 */
@@ -358,7 +371,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
-	 * Manage the AutoLogin
+	 * Manage the AutoLogin.
 	 */
 	protected function _initAutoLogin() {
 		$this->bootstrap('Db');

@@ -15,49 +15,58 @@
 /**
  * Represent a harmonization process.
  *
- * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Harmonizeddata
  */
 class Application_Object_Harmonizeddata_HarmonizationProcess {
 
 	/**
 	 * The harmonization identifier.
+	 *
 	 * @var Integer
 	 */
 	var $harmonizationId;
 
 	/**
 	 * The provider identifier.
+	 *
 	 * @var String
 	 */
 	var $providerId;
 
 	/**
 	 * The dataset identifier.
+	 *
 	 * @var String
 	 */
 	var $datasetId;
 
 	/**
 	 * The dataset label.
+	 *
 	 * @var String
 	 */
 	var $datasetLabel;
 
 	/**
 	 * The harmonization status.
+	 *
 	 * @var String
 	 */
 	var $status;
 
 	/**
 	 * The date of the process.
+	 *
 	 * @var Date
 	 */
 	var $date;
 
 	/**
 	 * The status of the raw_data.
+	 *
 	 * @var String
 	 */
 	var $submissionStatus;

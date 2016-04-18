@@ -13,9 +13,9 @@
 require_once 'AbstractOGAMController.php';
 
 /**
- * CheckConfController is the controller that checks the environment configuration
+ * CheckConfController is the controller that checks the environment configuration.
  *
- * @package controllers
+ * @package Application_Controller
  */
 class CheckconfController extends AbstractOGAMController {
 
@@ -23,13 +23,11 @@ class CheckconfController extends AbstractOGAMController {
 	 * The models.
 	 */
 	private $postgreSQLModel;
-
 	private $metadataSystemModel;
-
 	private $metadataModel;
 
 	/**
-	 * Initialise the controler
+	 * Initialise the controler.
 	 */
 	public function init() {
 		parent::init();
@@ -73,18 +71,14 @@ class CheckconfController extends AbstractOGAMController {
 	}
 
 	/**
-	 * Checks the php parameters
+	 * Checks the php parameters.
 	 */
 	function checkPhpParameters() {
 		$this->logger->debug('Checking PHP parameters');
 
 		/**
 		 * Note:
-		 * "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .
-		 *
-		 *
-		 *
-		 * htaccess or httpd.conf).
+		 * "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, htaccess or httpd.conf).
 		 * The parameter must be set into the php.ini file because it's not possible in the other files when php is running under the CGI mode.
 		 * So we can only check if it's done.
 		 */

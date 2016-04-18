@@ -14,6 +14,8 @@
 
 /**
  * Setup the translation
+ *
+ * @package Application_Controller_Plugin
  */
 class Application_Controllers_Plugin_Bootstrap extends Zend_Controller_Plugin_Abstract {
 

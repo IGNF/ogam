@@ -15,8 +15,10 @@
 /**
  * Represent a map legend item.
  *
- * @package objects
- *          @SuppressWarnings checkUnusedVariables
+ * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Mapping
  */
 class Application_Object_Mapping_LegendItem {
 

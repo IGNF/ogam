@@ -8,8 +8,7 @@ var Ext = Ext || window['Ext'] || {};
 
 //<editor-fold desc="Microloader">
 /**
- * @class Ext.Microloader
- * @private
+ * @Class Ext.Microloader
  * @singleton
  */
 Ext.Microloader = Ext.Microloader || (function () {
@@ -25,7 +24,6 @@ Ext.Microloader = Ext.Microloader || (function () {
         _privatePrefix = '_ext:' + location.pathname,
 
         /**
-         * @method getStorageKey
          * The Following combination is used to create isolated local storage keys
          * '_ext' is used to scope all the local storage keys that we internally by Ext
          * 'location.pathname' is used to force each assets to cache by an absolute URL (/build/MyApp) (dev vs prod)
@@ -74,7 +72,7 @@ Ext.Microloader = Ext.Microloader || (function () {
                 }
             },
             /**
-             * @private
+             * private
              */
             retrieveAsset: function (key) {
                 try {
@@ -273,7 +271,7 @@ Ext.Microloader = Ext.Microloader || (function () {
 
         /**
          * Microloader
-         * @type {Array}
+         *  @type {Array}
          * @private
          */
         var _listeners = [],
@@ -372,6 +370,7 @@ Ext.Microloader = Ext.Microloader || (function () {
             },
 
             /**
+             *
              * @param {Manifest} manifest
              */
             load: function (manifest) {

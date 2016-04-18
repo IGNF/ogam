@@ -17,12 +17,14 @@
  *
  * This service handles the queries used to feed the query interface with ajax requests.
  *
- * @package service
+ * @package Application_Service
  */
 class Application_Service_QueryService {
 
 	/**
 	 * The logger.
+	 *
+	 * @var Zend_Log
 	 */
 	var $logger;
 
@@ -30,11 +32,8 @@ class Application_Service_QueryService {
 	 * The models.
 	 */
 	var $metadataModel;
-
 	var $genericModel;
-
 	var $resultLocationModel;
-
 	var $predefinedRequestModel;
 
 	/**
@@ -433,8 +432,7 @@ class Application_Service_QueryService {
 
 			// Right management : add the provider id of the data
 			$userSession = new Zend_Session_Namespace('user');
-			$role = $userSession->user->role;
-			if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
+			if (!$userSession->user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
 			}
 
@@ -481,7 +479,7 @@ class Application_Service_QueryService {
 			$pKey = $websiteSession->SQLPkey;
 			$subquery = "SELECT " . $pKey . $from . $where;
 
-			$filter = "";
+			$order = "";
 			if ($sort != "") {
 				// $sort contains the form format and field
 				$split = explode("__", $sort);
@@ -489,21 +487,22 @@ class Application_Service_QueryService {
 				$formField->format = $split[0];
 				$formField->data = $split[1];
 				$tableField = $this->genericService->getFormToTableMapping($this->schema, $formField);
-				$key = $tableField->getName();
-				$filter .= " ORDER BY " . $key . " " . $sortDir;
+				$key = $tableField->format . "." . $tableField->data;
+				$order .= " ORDER BY " . $key . " " . $sortDir;
 			} else {
-				$filter .= " ORDER BY $pKey";
+				$order .= " ORDER BY " . $pKey;
 			}
+
+			$filter = "";
 			if (!empty($length)) {
 				$filter .= " LIMIT " . $length;
 			}
 			if (!empty($start)) {
 				$filter .= " OFFSET " . $start;
 			}
-			$subquery .= $filter;
 
 			// Build complete query
-			$query = $select . $from . " WHERE (" . $pKey . ") IN (" . $subquery . ")";
+			$query = $select . $from . " WHERE (" . $pKey . ") IN (" . $subquery . $order . $filter . ")" . $order;
 
 			// Execute the request
 			$result = $this->genericModel->executeRequest($query);
@@ -555,8 +554,7 @@ class Application_Service_QueryService {
 
 				// Right management : add the provider id of the data
 				$userSession = new Zend_Session_Namespace('user');
-				$role = $userSession->user->role;
-				if (!$role->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
+				if (!$userSession->user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 					$json .= ',' . json_encode($line['_provider_id']);
 				}
 
@@ -594,15 +592,18 @@ class Application_Service_QueryService {
 	}
 
 	/**
-	* Get the details associed with a result line (clic on the "detail button").
-	*
-	* @param String $id The identifier of the line
-	* @param String $detailsLayers The names of the layers used to display the images in the detail panel.
-	* @param String $datasetId The identifier of the dataset (to filter data)
-	* @return JSON representing the detail of the result line.
-	*/
+	 * Get the details associed with a result line (clic on the "detail button").
+	 *
+	 * @param String $id
+	 *        	The identifier of the line
+	 * @param String $detailsLayers
+	 *        	The names of the layers used to display the images in the detail panel.
+	 * @param String $datasetId
+	 *        	The identifier of the dataset (to filter data)
+	 * @return JSON representing the detail of the result line.
+	 */
 	public function getDetails($id, $detailsLayers, $datasetId = null) {
-		$this->logger->debug('getDetails : '.$id);
+		$this->logger->debug('getDetails : ' . $id);
 		return json_encode($this->getFullDetailsData($id, $detailsLayers));
 	}
 
@@ -750,14 +751,18 @@ class Application_Service_QueryService {
 	/**
 	 * Get the full details (with children) associed with a result line (clic on the "detail button").
 	 *
-	 * @param String $id The identifier of the line
-	 * @param String $detailsLayers The names of the layers used to display the images in the detail panel.
-	 * @param String $datasetId The identifier of the dataset (to filter data)
-	 * @param boolean $proxy If true, use the proxy to fetch mapserver
+	 * @param String $id
+	 *        	The identifier of the line
+	 * @param String $detailsLayers
+	 *        	The names of the layers used to display the images in the detail panel.
+	 * @param String $datasetId
+	 *        	The identifier of the dataset (to filter data)
+	 * @param boolean $proxy
+	 *        	If true, use the proxy to fetch mapserver
 	 * @return array Array that represents the details of the result line.
 	 */
 	public function getFullDetailsData($id, $detailsLayers, $datasetId = null, $proxy = true) {
-		$this->logger->debug('getFullDetailsData : '.$id);
+		$this->logger->debug('getFullDetailsData : ' . $id);
 
 		// Transform the identifier in an array
 		$keyMap = $this->_decodeId($id);
@@ -770,7 +775,7 @@ class Application_Service_QueryService {
 			if (!empty($keyMap[$infoField->data])) {
 				$infoField->value = $keyMap[$infoField->data];
 			}
-	}
+		}
 
 		// Get the detailled data
 		$this->genericModel->getDatum($data);
@@ -816,7 +821,7 @@ class Application_Service_QueryService {
 		// Defines the mapsserver parameters.
 		$mapservParams = '';
 		foreach ($locationTable->getInfoFields() as $primaryKey) {
-			$mapservParams .= '&'.$primaryKey->columnName.'='.$primaryKey->value;
+			$mapservParams .= '&' . $primaryKey->columnName . '=' . $primaryKey->value;
 		}
 
 		// Title of the detail message
@@ -846,20 +851,19 @@ class Application_Service_QueryService {
 			$titlePK .= $infoField->value;
 		}
 		$dataInfo = end($dataDetails['formats']);
-		$dataDetails['title'] = $dataInfo['title'].' ('.$titlePK.')';
+		$dataDetails['title'] = $dataInfo['title'] . ' (' . $titlePK . ')';
 
 		// Add the localisation maps
 		if (!empty($detailsLayers)) {
 			if ($detailsLayers[0] != '') {
 				$url = array();
-				$url = explode(";",($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0],
-						$bb, $mapservParams, $proxy)));
+				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams, $proxy)));
 
 				$dataDetails['maps1'] = array(
-						'title' => 'image'
+					'title' => 'image'
 				);
 
-				//complete the array with the urls of maps1
+				// complete the array with the urls of maps1
 				$dataDetails['maps1']['urls'][] = array();
 				$urlCount = count($url);
 				for ($i = 0; $i < $urlCount; $i ++) {
@@ -869,19 +873,17 @@ class Application_Service_QueryService {
 
 			if ($detailsLayers[1] != '') {
 				$url = array();
-				$url = explode(";",($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1],
-						$bb2, $mapservParams, $proxy)));
+				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams, $proxy)));
 				$dataDetails['maps2'] = array(
-						'title' => 'overview'
+					'title' => 'overview'
 				);
 
-				//complete the array with the urls of maps2
+				// complete the array with the urls of maps2
 				$dataDetails['maps2']['urls'][] = array();
-				for ($i=0;$i<count($url);$i++) {
+				for ($i = 0; $i < count($url); $i ++) {
 					$dataDetails['maps2']['urls'][$i]['url'] = $url[$i];
 				}
 			}
-
 		}
 		// Prepare a data object to be filled
 		$data2 = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
@@ -901,7 +903,6 @@ class Application_Service_QueryService {
 			$dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
 			$dataArray != null ? $dataDetails['children'][] = $dataArray : null;
 		}
-
 
 		return $dataDetails;
 	}
@@ -923,7 +924,7 @@ class Application_Service_QueryService {
 
 		// Configure the projection systems
 		$visualisationSRS = $configuration->srs_visualisation;
-	    	$baseUrls = '';
+		$baseUrls = '';
 
 		// Get the base urls for the services
 		if (!$proxy) {
@@ -935,7 +936,7 @@ class Application_Service_QueryService {
 		// Get the server name for the layers
 		$layerNames = explode(",", $detailsLayers);
 		// $serviceLayerNames = "";
-		$versionWMS="";
+		$versionWMS = "";
 
 		foreach ($layerNames as $layerName) {
 

@@ -15,8 +15,10 @@
 /**
  * A Form Query is the list of criterias and result columns composing a request from the use.
  *
- * @package objects
  * @SuppressWarnings checkUnusedVariables
+ *
+ * @package Application_Object
+ * @subpackage Generic
  */
 class Application_Object_Generic_FormQuery {
 
