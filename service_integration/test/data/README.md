@@ -1,1 +1,0 @@
-See also in "/database/Sample Data" for more complete datasets.
