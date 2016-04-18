@@ -955,29 +955,56 @@ class Application_Service_QueryService {
 
 				if ($detailService->serviceName == $detailServiceName) {
 
+					$service = json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
 					$baseUrl = json_decode($detailService->serviceConfig)->{'urls'}[0];
-					$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName;
-					$baseUrls .= '&TRANSPARENT=true';
-					$baseUrls .= '&FORMAT=image%2Fpng';
-					$baseUrls .= '&SERVICE='.json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
-					$baseUrls .= '&VERSION='.json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
-					$baseUrls .= '&REQUEST='.json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'};
-					$baseUrls .= '&STYLES=';
-					$baseUrls .= '&BBOX=' . $bb->xmin . ',' . $bb->ymin . ',' . $bb->xmax . ',' . $bb->ymax;
-					$baseUrls .= '&WIDTH=300';
-					$baseUrls .= '&HEIGHT=300';
-					$baseUrls .= '&map.scalebar=STATUS+embed';
-					$baseUrls .= '&SESSION_ID=' . session_id();
-					$baseUrls .= $mapservParams;
-        				$versionWMS = json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
-					if (substr_compare($versionWMS, '1.3', 0, 3) === 0) {
-						$baseUrls .='&CRS=EPSG%3A'.$visualisationSRS;
-					} elseif (substr_compare($versionWMS, '1.0', 0, 3) === 0 || substr_compare($versionWMS, '1.1', 0, 3) === 0) {
-						$baseUrls .= '&SRS=EPSG%3A'.$visualisationSRS;
+
+					if ($service === 'WMS') {
+
+						$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName;
+						$baseUrls .= '&TRANSPARENT=true';
+						$baseUrls .= '&FORMAT=image%2Fpng';
+						$baseUrls .= '&SERVICE='.json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
+						$baseUrls .= '&VERSION='.json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
+						$baseUrls .= '&REQUEST='.json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'};
+						$baseUrls .= '&STYLES=';
+						$baseUrls .= '&BBOX=' . $bb->xmin . ',' . $bb->ymin . ',' . $bb->xmax . ',' . $bb->ymax;
+						$baseUrls .= '&WIDTH=300';
+						$baseUrls .= '&HEIGHT=300';
+						$baseUrls .= '&map.scalebar=STATUS+embed';
+						$baseUrls .= '&SESSION_ID=' . session_id();
+						$baseUrls .= $mapservParams;
+	        				$versionWMS = json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
+						if (substr_compare($versionWMS, '1.3', 0, 3) === 0) {
+							$baseUrls .='&CRS=EPSG%3A'.$visualisationSRS;
+						} elseif (substr_compare($versionWMS, '1.0', 0, 3) === 0 || substr_compare($versionWMS, '1.1', 0, 3) === 0) {
+							$baseUrls .= '&SRS=EPSG%3A'.$visualisationSRS;
+						} else {
+							$this->logger->err("WMS version unsupported, please change the WMS version for the '$layerName' layer.");
+						}
+						$baseUrls .=';';
+
+					} elseif ($service === 'WMTS') {
+
+						$this->logger->err("WMTS service unsupported, please change the detail service for the '$layerName' layer.");
+
+						// TODO : Gets the tileMatrix, tileCol, tileRow corresponding to the bb
+						/*
+						$baseUrls .= $baseUrl . 'LAYER=' . $serviceLayerName;
+						$baseUrls .= '&SERVICE='.json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
+						$baseUrls .= '&VERSION='.json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
+						$baseUrls .= '&REQUEST='.json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'};
+						$baseUrls .= '&STYLE='.json_decode($detailService->serviceConfig)->{'params'}->{'STYLE'};
+						$baseUrls .= '&FORMAT='.json_decode($detailService->serviceConfig)->{'params'}->{'FORMAT'};
+						$baseUrls .= '&TILEMATRIXSET='.json_decode($detailService->serviceConfig)->{'params'}->{'TILEMATRIXSET'};
+						$baseUrls .= '&TILEMATRIX='.$tileMatrix;
+						$baseUrls .= '&TILECOL='.$tileCol;
+						$baseUrls .= '&TILEROW='.$tileRow;
+						$baseUrls .=';';
+						*/
+
 					} else {
-						$this->logger->debug('WMS Version non supported');
+						$this->logger->err("'$service' service unsupported, please change the detail service for the '$layerName' layer.");
 					}
-					$baseUrls .=';';
 				}
 			}
 		}
