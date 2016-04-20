@@ -80,18 +80,9 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		this.callParent(arguments);
 
 		// Locales
-		Ext.apply(this.lookupReference('cancelButton'), {
-			text : this.locales.buttons.cancel.text,
-			tooltip : this.locales.buttons.cancel.tooltip
-		});
-		Ext.apply(this.lookupReference('resetButton'), {
-			text : this.locales.buttons.reset.text,
-			tooltip : this.locales.buttons.reset.tooltip
-		});
-		Ext.apply(this.lookupReference('submitButton'), {
-			text : this.locales.buttons.submit.text,
-			tooltip : this.locales.buttons.submit.tooltip
-		});
+		Ext.apply(this.lookupReference('cancelButton'), this.locales.buttons.cancel);
+		Ext.apply(this.lookupReference('resetButton'), this.locales.buttons.reset);
+		Ext.apply(this.lookupReference('submitButton'), this.locales.buttons.submit);
 	},
 
 	initItems:function(){
