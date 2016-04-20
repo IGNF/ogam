@@ -34,28 +34,66 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 	 * @default 'Dataset'
 	 */
 	processPanelTitle:'Dataset',
-	/**
-	 * @cfg object buttonsText list of button used
-	 * @default {
-		submit:'search',
-		cancel:'cancel',
-		reset :'reset'
-	}
-	 */
-	buttonsText:{
-		submit:'search',
-		cancel:'cancel',
-		reset :'reset'
+
+	locales:{
+		buttons:{
+			submit:{
+				text : 'Launch',
+				tooltip : 'Launch the request'
+			},
+			cancel:{
+				text : 'Cancel',
+				tooltip : 'Cancel the request'
+			},
+			reset :{
+				text : 'Reset',
+				tooltip : 'Reset the request form'
+			}
+		}
 	},
+
+	bbar:[{ //TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
+		itemId:'CancelButton',
+		reference:'cancelButton',
+		type: 'button'
+  	},'-',{
+  		itemId:'ResetButton',
+  		reference:'resetButton',
+  		type: 'button'
+  	},{
+  		xtype: 'tbspacer',
+  		flex: 1
+  	},{
+  		itemId:'SubmitButton',
+  		reference:'submitButton',
+  		type: 'button',
+  		action: 'submit'
+  	}],
+
 	/**
 	 * @cfg string [processCBEmptyText] the processcomboBox empty text
 	 */
 	processCBEmptyText:'Please select a dataset...',
 	
 	initComponent:function(){
-		this.initBbar();
+
 		this.callParent(arguments);
+
+		// Locales
+		Ext.apply(this.lookupReference('cancelButton'), {
+			text : this.locales.buttons.cancel.text,
+			tooltip : this.locales.buttons.cancel.tooltip
+		});
+		Ext.apply(this.lookupReference('resetButton'), {
+			text : this.locales.buttons.reset.text,
+			tooltip : this.locales.buttons.reset.tooltip
+		});
+		Ext.apply(this.lookupReference('submitButton'), {
+			text : this.locales.buttons.submit.text,
+			tooltip : this.locales.buttons.submit.tooltip
+		});
 	},
+
 	initItems:function(){
 		this.items=[{ // The advanced request selector	
 		xtype:'advanced-request-selector',
@@ -122,28 +160,5 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		}]
 	}];
 		this.callParent(arguments);
-	},
-	// The bottom tools bar
-	initBbar:function(){
-		this.bbar=[{ //TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
-			itemId:'CancelButton',
-			type: 'button',
-			text: this.buttons.cancel.text,
-			tooltip: this.buttons.cancel.tooltip
-	  	},'-',{
-	  		itemId:'ResetButton',
-	  		type: 'button',
-	  		text: this.buttons.reset.text,
-	  		tooltip: this.buttons.reset.tooltip
-	  	},{
-	  		xtype: 'tbspacer',
-	  		flex: 1
-	  	},{
-	  		itemId:'SubmitButton',
-	  		type: 'button',
-	  		action: 'submit',
-	  		text: this.buttons.submit.text,
-	  		tooltip: this.buttons.submit.tooltip
-	  	}];
 	}
 });
