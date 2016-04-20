@@ -113,6 +113,15 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 */
 	hideValidateAndCancelButtons : false,
 
+	/**
+	 * Forces the creation of a unique feature
+	 * Default to 'false'.
+	 *
+	 * @property forceSingleFeature
+	 * @type {Boolean}
+	 */
+	forceSingleFeature : false,
+
 	triggers:  {
 		editMapTrigger: {
 			cls: Ext.baseCSSPrefix + 'form-search-trigger',//'o-ux-form-field-tools-map-addgeomcriteria',

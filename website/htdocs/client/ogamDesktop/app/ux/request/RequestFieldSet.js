@@ -373,6 +373,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				field.hideDrawPolygonButton = false;
 				field.defaultActivatedDrawingButton = 'polygon';
 				field.hideValidateAndCancelButtons = true;
+				field.forceSingleFeature = false;
 				break;
 			case 'TREE':
 				field.xtype = 'treefield';

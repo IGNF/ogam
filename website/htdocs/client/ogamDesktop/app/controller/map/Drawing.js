@@ -48,7 +48,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 			},
 			'mapcomponent': {
 				render: 'onMapComponentRender',
-				drawingLayerFeatureChange: 'updateCurrentEditionFieldValue'
+				drawingLayerFeatureChange: 'onDrawingLayerFeatureChange'
 			},
 			'maptoolbar':{
 				validateFeatureEdition:'onValidateFeatureEdition',
@@ -95,17 +95,76 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 	},
 
 	/**
+	 * Manage the drawing layer feature change event
+	 */
+	onDrawingLayerFeatureChange: function(event) {
+		if (event.type === 'addfeature') {
+			this.removePreviousFeature(event.feature);
+		}
+		this.updateCurrentEditionFieldValue();
+	},
+
+	/**
+	 * Removes the previous feature when forceSingleFeature is set to true
+	 */
+	removePreviousFeature: function(newFeature) {
+		var forceSingleFeature = false;
+		if (this.currentEditionField !== null) {
+			forceSingleFeature = this.currentEditionField.forceSingleFeature;
+		}
+		if (forceSingleFeature) {
+
+			var drawingLayerSource = this.drawingLayer.getSource();
+			var drawingFeaturesClt = drawingLayerSource.getFeaturesCollection();
+			var featuresCount = drawingFeaturesClt.getLength();
+
+			if (featuresCount > 1) {
+
+				/**
+				 * Note about ol v3.15.1:
+				 * We gets the following error with that code:
+				 * Uncaught AssertionError: Assertion failed: featureChangeKeys is an empty object now
+				 */
+				//drawingLayerSource.clear();
+				//drawingLayerSource.addFeature(newFeature);
+
+				/**
+				 * The removeFeature function must be used to refresh correctly the layer.
+				 * Note about ol v3.15.1: 
+				 * The c_array is not updated (contains all the removed features).
+				 */
+		        drawingFeaturesClt.forEach(
+		            function(el, index, c_array){
+		                if (index < c_array.length - 1) {
+			                drawingLayerSource.removeFeature(el);
+			            }
+		            }
+		        );
+
+		        /** 
+		         * The collection must be updated to refresh the c_array
+		         * Note about ol v3.15.1: 
+			     * The ol.Collection.removeAt() function doesn't update the layer source.
+			     */
+				for(var i = 0; i < featuresCount - 1; i++) {
+					drawingFeaturesClt.removeAt(i);
+				}
+			}
+		}
+	},
+
+	/**
 	 * Update the WKT value of the current geometry field
 	 */
 	updateCurrentEditionFieldValue: function() {
 		var wktValue = null;
 		var drawingFeatures = this.drawingLayer.getSource().getFeatures();
-		if (drawingFeatures.length === 1){ // Avoid the GEOMETRYCOLLECTION for only one feature
+		if (drawingFeatures.length === 1) { // Avoid the GEOMETRYCOLLECTION for only one feature
 			wktValue = this.wktFormat.writeFeature(drawingFeatures[0]);
 		} else if (drawingFeatures.length > 1) { // Return a GEOMETRYCOLLECTION
 			wktValue = this.wktFormat.writeFeatures(drawingFeatures);
 		}
-		if (this.currentEditionField !== null){
+		if (this.currentEditionField !== null) {
 			this.currentEditionField.setValue(wktValue);
 		}
 	},

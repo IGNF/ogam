@@ -653,15 +653,38 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				break;
 			case 'GEOM':
 				field.xtype = 'geometryfield';
-				field.hideDrawPointButton = false;
-				field.hideDrawLineButton = false;
-				field.hideDrawPolygonButton = false;
-				field.defaultActivatedDrawingButton = 'point';
 				field.hideValidateAndCancelButtons = false;
 				field.listeners['featureEditionValidated'] = 'onFeatureEditionEnded';
 				field.listeners['featureEditionCancelled'] = 'onFeatureEditionEnded';
 				field.zoomToFeatureOnInit = true;
 				field.mapWindowTitle = this.geoMapWindowTitle;
+				field.forceSingleFeature = true;
+				switch (record.subtype) {
+					case 'POINT':
+						field.hideDrawPointButton = false;
+						field.hideDrawLineButton = true;
+						field.hideDrawPolygonButton = true;
+						field.defaultActivatedDrawingButton = 'point';
+						break;
+					case 'LINESTRING':
+						field.hideDrawPointButton = true;
+						field.hideDrawLineButton = false;
+						field.hideDrawPolygonButton = true;
+						field.defaultActivatedDrawingButton = 'line';
+						break;
+					case 'POLYGON':
+						field.hideDrawPointButton = true;
+						field.hideDrawLineButton = true;
+						field.hideDrawPolygonButton = false;
+						field.defaultActivatedDrawingButton = 'polygon';
+						break;
+					default:
+						field.hideDrawPointButton = false;
+						field.hideDrawLineButton = false;
+						field.hideDrawPolygonButton = false;
+						field.defaultActivatedDrawingButton = 'point';
+						break;
+				}
 				break;
 			case 'TREE':
 				field.xtype = 'treefield';
