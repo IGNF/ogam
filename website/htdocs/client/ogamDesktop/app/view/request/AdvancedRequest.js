@@ -126,14 +126,24 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 	// The bottom tools bar
 	initBbar:function(){
 		this.bbar=[{ //TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
-				itemId:'CancelButton', type: 'button', text: this.buttonsText.cancel
-		  	},'-',{
-		  		itemId:'ResetButton', type: 'button', text: this.buttonsText.reset
-		  	},{
-		  		xtype: 'tbspacer',
-		  		flex: 1
-		  	},{
-		  		itemId:'SubmitButton', type: 'button', action: 'submit', text: this.buttonsText.submit
-		  	}];
+			itemId:'CancelButton',
+			type: 'button',
+			text: this.buttons.cancel.text,
+			tooltip: this.buttons.cancel.tooltip
+	  	},'-',{
+	  		itemId:'ResetButton',
+	  		type: 'button',
+	  		text: this.buttons.reset.text,
+	  		tooltip: this.buttons.reset.tooltip
+	  	},{
+	  		xtype: 'tbspacer',
+	  		flex: 1
+	  	},{
+	  		itemId:'SubmitButton',
+	  		type: 'button',
+	  		action: 'submit',
+	  		text: this.buttons.submit.text,
+	  		tooltip: this.buttons.submit.tooltip
+	  	}];
 	}
 });
