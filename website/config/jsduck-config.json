@@ -1,0 +1,17 @@
+{
+    "--title": "OGAM Desktop API",
+    "--warnings": [
+    	"-all:ext/packages/core",
+        "-nodoc"
+    ],
+    "--ignore-html": [
+        "locale",
+        "debug"
+    ],
+    "--external": [
+    	"Ext.*",
+    	"OpenLayers.*",
+    	"ol.*",
+    ],
+    "--builtin-classes": true
+}
