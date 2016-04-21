@@ -512,16 +512,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			if (record.type === 'ARRAY') {
 				field.xtype = 'tagfield';
 				field.stacked = true;
-				field.hiddenName = field.name= field.name + '[]';//FIXME : needed name with [] to extjs5.0.1  (hiddenName not used in submit ?)?
-				
-				field.allowAddNewData = true;//?? TODO
-				field.forceFormValue = false;//forceSelection ?
+				field.hiddenName = field.name = field.name + '[]';//FIXME : needed name with [] to extjs5.0.1  (hiddenName not used in submit ?)?			
 				field.forceSelection = false;
-				
-				field.hideClearButton = true;//?? TODO
-				
-				field.filterPickList = false; // pb de perf avec
-				// les communes
+				field.filterPickList = false; // pb de perf avec les communes
+				field.triggerOnClick =false;
 			} else {
 				field.xtype = 'combo';
 				field.hiddenName = field.name;
