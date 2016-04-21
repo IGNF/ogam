@@ -69,6 +69,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
     	});
 		button.up('form').getForm().submit({
 			clientValidation: true,
+			submitEmptyText: false,
 			//waitMsg: Ext.view.AbstractView.prototype.loadingText,
 			autoAbort:true,
 			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',

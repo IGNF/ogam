@@ -880,6 +880,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 */
 	editData : function() {
 		this.dataEditForm.getForm().submit({
+			submitEmptyText: false,
 			url : Ext.manifest.OgamDesktop.editionServiceUrl+ 'ajax-validate-edit-data',
 			timeout : 480000,
 			success : this.editSuccess,
