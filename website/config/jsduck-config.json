@@ -1,0 +1,19 @@
+{
+    "--title": "OGAM Desktop API",
+    "--warnings": [
+    	"-all:ext/packages/core"
+    ],
+    "--ignore-html": [
+        "locale",
+        "debug"
+    ],
+    "--external": [
+    	"Ext.*",
+    	"OpenLayers.*",
+    	"ol.*"
+    ],
+    "--images": [
+    	"/vagrant/ogam/website/config/screenshots/"
+    ],
+    "--builtin-classes": true
+}
