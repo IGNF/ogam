@@ -274,6 +274,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				mapping : 'required'
 			}, // is the field required?
 			{
+				name : 'isPK',
+				mapping : 'isPK'
+			}, // is the field is primary key?
+			{
 				name : 'params',
 				mapping : 'params'
 			} // reserved for min/max or list of codes
@@ -497,339 +501,332 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		field.name = record.name;
 		field.listeners = {};
 
-		if ((this.mode === this.editMode && !Ext.isEmpty(record.editable) && record.editable !== "1")
-				|| (this.mode === this.addMode && !Ext.isEmpty(record.insertable) && record.insertable !== "1")) {
-			field.xtype = 'hidden';
-		} else {
+		// Set the CSS for the field
+		field.itemCls = 'trigger-field o-columnLabelColor';
 
-			// Set the CSS for the field
-			field.itemCls = 'trigger-field o-columnLabelColor';
+		// Creates the ext field config
+		switch (record.inputType) {
+		case 'SELECT':
+			// The input type SELECT correspond to a data type CODE or ARRAY
 
-			// Creates the ext field config
-			switch (record.inputType) {
-			case 'SELECT':
-				// The input type SELECT correspond to a data type CODE or ARRAY
-
-				if (record.type === 'ARRAY') {
-					field.xtype = 'tagfield';
-					field.stacked = true;
-					field.hiddenName = field.name= field.name + '[]';//FIXME : needed name with [] to extjs5.0.1  (hiddenName not used in submit ?)?
-					
-					field.allowAddNewData = true;//?? TODO
-					field.forceFormValue = false;//forceSelection ?
-					field.forceSelection = false;
-					
-					field.hideClearButton = true;//?? TODO
-					
-					field.filterPickList = false; // pb de perf avec
-					// les communes
-				} else {
-					field.xtype = 'combo';
-					field.hiddenName = field.name;
-				}
-
-				field.triggerAction = 'all';
-				field.typeAhead = true;
-				field.displayField = 'label';
-				field.valueField = 'code';
-				field.emptyText = OgamDesktop.ux.request.RequestFieldSet.criteriaPanelTbarComboEmptyText;
-				field.queryMode = 'remote';
-
-				// Fill the list of codes / labels for default values
-				var codes = [];
-				if (record.type === 'ARRAY') {
-					if (record.valueLabel) { // to avoid null pointer
-						for ( var i = 0; i < record.valueLabel.length; i++) {
-							codes.push({
-								code : record.value[i],
-								label : record.valueLabel[i]
-							});
-						}
-					}
-				} else {
-					// case of CODE (single value)
-					codes.push({
-						code : record.value,
-						label : record.valueLabel
-					});
-				}
-//				codes : record.value;
+			if (record.type === 'ARRAY') {
+				field.xtype = 'tagfield';
+				field.stacked = true;
+				field.hiddenName = field.name= field.name + '[]';//FIXME : needed name with [] to extjs5.0.1  (hiddenName not used in submit ?)?
 				
+				field.allowAddNewData = true;//?? TODO
+				field.forceFormValue = false;//forceSelection ?
+				field.forceSelection = false;
 				
-				var storeFields = [ {
-					name : 'code',
-					mapping : 'code'
-				}, {
-					name : 'label',
-					mapping : 'label'
-				} ];
-
-				if (record.subtype === 'DYNAMIC') {
-					// Case of a DYNAMODE unit list of codes
-					field.store = new Ext.data.JsonStore({
-	//					fields : storeFields,
-						autoDestroy : true,
-						//autoLoad : true,
-						model:'OgamDesktop.model.request.object.field.Code',
-						proxy:{
-							type: 'ajax',
-							url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetdynamiccodes',
-							extraParams : {
-								'unit' : record.unit
-							},
-							reader: {
-								rootProperty:'codes'
-							}
-						},
-						data : codes
-						
-					});
-				} else {
-					// Case of a MODE unit list of codes (other cases are not
-					// handled)
-					field.store = new Ext.data.JsonStore({
-						autoDestroy : true,
-						//autoLoad : true,
-						model:'OgamDesktop.model.request.object.field.Code',
-						proxy:{
-							type: 'ajax',
-							url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetcodes',
-							extraParams : {
-								'unit' : record.unit
-							},
-							reader: {
-								rootProperty:'codes'
-							}
-						},
-						data : codes
-						
-					});
-				}
-				break;
-			case 'DATE': // The input type DATE correspond generally to a
-				// data
-				// type DATE
-				field.xtype = 'datefield';
-				field.format = OgamDesktop.ux.request.RequestFieldSet.dateFormat;
-				break;
-			case 'NUMERIC': // The input type NUMERIC correspond generally to a
-				// data
-				// type NUMERIC or RANGE
-				field.xtype = 'numberfield';
-				// If RANGE we set the min and max values
-				if (record.subtype === 'RANGE') {
-					if(Ext.isNumeric(record.params.min)){
-						field.minValue = record.params.min;
-					}
-					if(Ext.isNumeric(record.params.max)){
-						field.maxValue = record.params.max;
-					}
-					field.decimalPrecision = (record.params.decimals == null) ? 20 : record.params.decimals;
-				}
-				// IF INTEGER we remove the decimals
-				if (record.subtype === 'INTEGER') {
-					field.allowDecimals = false;
-					field.decimalPrecision = 0;
-				}
-				break;
-			case 'CHECKBOX':
-				Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildCheckboxFieldConfig(record));
-				break;
-			case 'RADIO':
-			case 'TEXT':
-				switch (record.subtype) {
-				// TODO : BOOLEAN, COORDINATE
-				case 'INTEGER':
-					field.xtype = 'numberfield';
-					field.allowDecimals = false;
-					break;
-				case 'NUMERIC':
-					field.xtype = 'numberfield';
-					break;
-				default: // STRING
-					field.xtype = 'textfield';
-					break;
-				}
-				break;
-			case 'GEOM':
-				field.xtype = 'geometryfield';
-				field.hideValidateAndCancelButtons = false;
-				field.listeners['featureEditionValidated'] = 'onFeatureEditionEnded';
-				field.listeners['featureEditionCancelled'] = 'onFeatureEditionEnded';
-				field.zoomToFeatureOnInit = true;
-				field.mapWindowTitle = this.geoMapWindowTitle;
-				field.forceSingleFeature = true;
-				switch (record.subtype) {
-					case 'POINT':
-						field.hideDrawPointButton = false;
-						field.hideDrawLineButton = true;
-						field.hideDrawPolygonButton = true;
-						field.defaultActivatedDrawingButton = 'point';
-						break;
-					case 'LINESTRING':
-						field.hideDrawPointButton = true;
-						field.hideDrawLineButton = false;
-						field.hideDrawPolygonButton = true;
-						field.defaultActivatedDrawingButton = 'line';
-						break;
-					case 'POLYGON':
-						field.hideDrawPointButton = true;
-						field.hideDrawLineButton = true;
-						field.hideDrawPolygonButton = false;
-						field.defaultActivatedDrawingButton = 'polygon';
-						break;
-					default:
-						field.hideDrawPointButton = false;
-						field.hideDrawLineButton = false;
-						field.hideDrawPolygonButton = false;
-						field.defaultActivatedDrawingButton = 'point';
-						break;
-				}
-				break;
-			case 'TREE':
-				field.xtype = 'treefield';
-				var codes=[];
-				if (record.type === 'ARRAY') {
-					field.multiSelect= field.multiple = true;
-					field.name = field.name + '[]';
-					if (record.valueLabel) { // to avoid null pointer
-						for ( var i = 0; i < record.valueLabel.length; i++) {
-							codes.push({
-								code : record.value[i],
-								label : record.valueLabel[i]
-							});
-						}
-					}
-				} else {
-					// case of CODE (single value)
-					codes.push({
-						code : record.value,
-						label : record.valueLabel
-					});
-				}
+				field.hideClearButton = true;//?? TODO
 				
-				//field.valueLabel = record.valueLabel;
-				//field.unit = record.unit;
-				field.store = {
-					xtype : 'jsonstore',
-					autoDestroy : true,
-					//autoLoad : true,
-					remoteSort : true,
-					model:'OgamDesktop.model.request.object.field.Code',
-					proxy:{
-						type:'ajax',
-						url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettreecodes',
-						extraParams:{unit:record.unit},
-						reader:{
-							idProperty : 'code',
-							totalProperty : 'results',
-							rootProperty : 'rows'
-						}
-					},
-					data :  codes
-				};
-				field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
-					autoLoad : true,
-					root :{
-						allowDrag : false,
-						id : '*'
-					},
-					proxy:{
-						extraParams:{unit:record.unit}
-					}});
-				break;
-			case 'TAXREF':
-				field.xtype = 'treefield';
-				var codes=[];
-				if (record.type === 'ARRAY') {
-					field.multiSelect= field.multiple = true;
-					field.name = field.name + '[]';
-					if (record.valueLabel) { // to avoid null pointer
-						for ( var i = 0; i < record.valueLabel.length; i++) {
-							codes.push({
-								code : record.value[i],
-								label : record.valueLabel[i]
-							});
-						}
-					}
-				} else {
-					// case of CODE (single value)
-					codes.push({
-						code : record.value,
-						label : record.valueLabel
-					});
-				}
-				
-				//field.valueLabel = record.valueLabel;
-				//field.unit = record.unit;
-				field.treePickerColumns = {
-				    items: [{
-				    	xtype: 'treecolumn',
-			            text: "name",
-			            dataIndex: "label"
-			        },{
-			            text: "vernacular",
-			            dataIndex: "vernacularName"
-			        },{
-			        	text: "Reference",
-			        	xtype: 'booleancolumn',
-			            dataIndex: "isReference",
-			            flex:0,
-			            witdh:15
-			        }],
-					defaults : {
-						flex : 1
-					}
-				};
-				field.listConfig={
-					itemTpl:  [
-						'<tpl for=".">',
-						'<div>',
-							'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 0"><i>{label}</i></tpl>',
-							'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 1"><b>{label}</b></tpl>',
-							'<br/>',
-							'<tpl if="!Ext.isEmpty(values.vernacularName) && values.vernacularName != null">({vernacularName})</tpl>',
-				        '</div></tpl>'
-				        ]};
-				field.store = {
-					xtype : 'jsonstore',
-					autoDestroy : true,
-					remoteSort : true,
-					model:'OgamDesktop.model.NodeRef',
-					proxy:{
-						type:'ajax',
-						url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettaxrefcodes',
-						extraParams:{unit:record.unit},
-						reader:{
-							idProperty : 'code',
-							totalProperty : 'results',
-							rootProperty : 'rows'
-						}
-					},
-					data:codes
-				};
-				field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
-					model:'OgamDesktop.model.NodeRef',
-					root :{
-						allowDrag : false,
-						id : '*'
-					},
-					proxy:{
-						type:'ajax',
-						url:Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettaxrefnodes',
-						extraParams:{unit:record.unit}
-					}});
-				break;
-			case 'IMAGE':
-				field.xtype = 'imagefield';
-				field.itemId = this.dataId + "/" + record.name;
+				field.filterPickList = false; // pb de perf avec
+				// les communes
+			} else {
+				field.xtype = 'combo';
 				field.hiddenName = field.name;
-				break;
-			default:
-				field.xtype = 'field';
-				break;
 			}
 
+			field.triggerAction = 'all';
+			field.typeAhead = true;
+			field.displayField = 'label';
+			field.valueField = 'code';
+			field.emptyText = OgamDesktop.ux.request.RequestFieldSet.criteriaPanelTbarComboEmptyText;
+			field.queryMode = 'remote';
+
+			// Fill the list of codes / labels for default values
+			var codes = [];
+			if (record.type === 'ARRAY') {
+				if (record.valueLabel) { // to avoid null pointer
+					for ( var i = 0; i < record.valueLabel.length; i++) {
+						codes.push({
+							code : record.value[i],
+							label : record.valueLabel[i]
+						});
+					}
+				}
+			} else {
+				// case of CODE (single value)
+				codes.push({
+					code : record.value,
+					label : record.valueLabel
+				});
+			}
+//				codes : record.value;
+			
+			
+			var storeFields = [ {
+				name : 'code',
+				mapping : 'code'
+			}, {
+				name : 'label',
+				mapping : 'label'
+			} ];
+
+			if (record.subtype === 'DYNAMIC') {
+				// Case of a DYNAMODE unit list of codes
+				field.store = new Ext.data.JsonStore({
+//					fields : storeFields,
+					autoDestroy : true,
+					//autoLoad : true,
+					model:'OgamDesktop.model.request.object.field.Code',
+					proxy:{
+						type: 'ajax',
+						url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetdynamiccodes',
+						extraParams : {
+							'unit' : record.unit
+						},
+						reader: {
+							rootProperty:'codes'
+						}
+					},
+					data : codes
+					
+				});
+			} else {
+				// Case of a MODE unit list of codes (other cases are not
+				// handled)
+				field.store = new Ext.data.JsonStore({
+					autoDestroy : true,
+					//autoLoad : true,
+					model:'OgamDesktop.model.request.object.field.Code',
+					proxy:{
+						type: 'ajax',
+						url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetcodes',
+						extraParams : {
+							'unit' : record.unit
+						},
+						reader: {
+							rootProperty:'codes'
+						}
+					},
+					data : codes
+					
+				});
+			}
+			break;
+		case 'DATE': // The input type DATE correspond generally to a
+			// data
+			// type DATE
+			field.xtype = 'datefield';
+			field.format = OgamDesktop.ux.request.RequestFieldSet.dateFormat;
+			break;
+		case 'NUMERIC': // The input type NUMERIC correspond generally to a
+			// data
+			// type NUMERIC or RANGE
+			field.xtype = 'numberfield';
+			// If RANGE we set the min and max values
+			if (record.subtype === 'RANGE') {
+				if(Ext.isNumeric(record.params.min)){
+					field.minValue = record.params.min;
+				}
+				if(Ext.isNumeric(record.params.max)){
+					field.maxValue = record.params.max;
+				}
+				field.decimalPrecision = (record.params.decimals == null) ? 20 : record.params.decimals;
+			}
+			// IF INTEGER we remove the decimals
+			if (record.subtype === 'INTEGER') {
+				field.allowDecimals = false;
+				field.decimalPrecision = 0;
+			}
+			break;
+		case 'CHECKBOX':
+			Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildCheckboxFieldConfig(record));
+			break;
+		case 'RADIO':
+		case 'TEXT':
+			switch (record.subtype) {
+			// TODO : BOOLEAN, COORDINATE
+			case 'INTEGER':
+				field.xtype = 'numberfield';
+				field.allowDecimals = false;
+				break;
+			case 'NUMERIC':
+				field.xtype = 'numberfield';
+				break;
+			default: // STRING
+				field.xtype = 'textfield';
+				break;
+			}
+			break;
+		case 'GEOM':
+			field.xtype = 'geometryfield';
+			field.hideValidateAndCancelButtons = false;
+			field.listeners['featureEditionValidated'] = 'onFeatureEditionEnded';
+			field.listeners['featureEditionCancelled'] = 'onFeatureEditionEnded';
+			field.zoomToFeatureOnInit = true;
+			field.mapWindowTitle = this.geoMapWindowTitle;
+			field.forceSingleFeature = true;
+			switch (record.subtype) {
+				case 'POINT':
+					field.hideDrawPointButton = false;
+					field.hideDrawLineButton = true;
+					field.hideDrawPolygonButton = true;
+					field.defaultActivatedDrawingButton = 'point';
+					break;
+				case 'LINESTRING':
+					field.hideDrawPointButton = true;
+					field.hideDrawLineButton = false;
+					field.hideDrawPolygonButton = true;
+					field.defaultActivatedDrawingButton = 'line';
+					break;
+				case 'POLYGON':
+					field.hideDrawPointButton = true;
+					field.hideDrawLineButton = true;
+					field.hideDrawPolygonButton = false;
+					field.defaultActivatedDrawingButton = 'polygon';
+					break;
+				default:
+					field.hideDrawPointButton = false;
+					field.hideDrawLineButton = false;
+					field.hideDrawPolygonButton = false;
+					field.defaultActivatedDrawingButton = 'point';
+					break;
+			}
+			break;
+		case 'TREE':
+			field.xtype = 'treefield';
+			var codes=[];
+			if (record.type === 'ARRAY') {
+				field.multiSelect= field.multiple = true;
+				field.name = field.name + '[]';
+				if (record.valueLabel) { // to avoid null pointer
+					for ( var i = 0; i < record.valueLabel.length; i++) {
+						codes.push({
+							code : record.value[i],
+							label : record.valueLabel[i]
+						});
+					}
+				}
+			} else {
+				// case of CODE (single value)
+				codes.push({
+					code : record.value,
+					label : record.valueLabel
+				});
+			}
+			
+			//field.valueLabel = record.valueLabel;
+			//field.unit = record.unit;
+			field.store = {
+				xtype : 'jsonstore',
+				autoDestroy : true,
+				//autoLoad : true,
+				remoteSort : true,
+				model:'OgamDesktop.model.request.object.field.Code',
+				proxy:{
+					type:'ajax',
+					url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettreecodes',
+					extraParams:{unit:record.unit},
+					reader:{
+						idProperty : 'code',
+						totalProperty : 'results',
+						rootProperty : 'rows'
+					}
+				},
+				data :  codes
+			};
+			field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
+				autoLoad : true,
+				root :{
+					allowDrag : false,
+					id : '*'
+				},
+				proxy:{
+					extraParams:{unit:record.unit}
+				}});
+			break;
+		case 'TAXREF':
+			field.xtype = 'treefield';
+			var codes=[];
+			if (record.type === 'ARRAY') {
+				field.multiSelect= field.multiple = true;
+				field.name = field.name + '[]';
+				if (record.valueLabel) { // to avoid null pointer
+					for ( var i = 0; i < record.valueLabel.length; i++) {
+						codes.push({
+							code : record.value[i],
+							label : record.valueLabel[i]
+						});
+					}
+				}
+			} else {
+				// case of CODE (single value)
+				codes.push({
+					code : record.value,
+					label : record.valueLabel
+				});
+			}
+			
+			//field.valueLabel = record.valueLabel;
+			//field.unit = record.unit;
+			field.treePickerColumns = {
+			    items: [{
+			    	xtype: 'treecolumn',
+		            text: "name",
+		            dataIndex: "label"
+		        },{
+		            text: "vernacular",
+		            dataIndex: "vernacularName"
+		        },{
+		        	text: "Reference",
+		        	xtype: 'booleancolumn',
+		            dataIndex: "isReference",
+		            flex:0,
+		            witdh:15
+		        }],
+				defaults : {
+					flex : 1
+				}
+			};
+			field.listConfig={
+				itemTpl:  [
+					'<tpl for=".">',
+					'<div>',
+						'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 0"><i>{label}</i></tpl>',
+						'<tpl if="!Ext.isEmpty(values.isReference) && values.isReference == 1"><b>{label}</b></tpl>',
+						'<br/>',
+						'<tpl if="!Ext.isEmpty(values.vernacularName) && values.vernacularName != null">({vernacularName})</tpl>',
+			        '</div></tpl>'
+			        ]};
+			field.store = {
+				xtype : 'jsonstore',
+				autoDestroy : true,
+				remoteSort : true,
+				model:'OgamDesktop.model.NodeRef',
+				proxy:{
+					type:'ajax',
+					url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettaxrefcodes',
+					extraParams:{unit:record.unit},
+					reader:{
+						idProperty : 'code',
+						totalProperty : 'results',
+						rootProperty : 'rows'
+					}
+				},
+				data:codes
+			};
+			field.treePickerStore = Ext.create('OgamDesktop.store.Tree',{
+				model:'OgamDesktop.model.NodeRef',
+				root :{
+					allowDrag : false,
+					id : '*'
+				},
+				proxy:{
+					type:'ajax',
+					url:Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettaxrefnodes',
+					extraParams:{unit:record.unit}
+				}});
+			break;
+		case 'IMAGE':
+			field.xtype = 'imagefield';
+			field.itemId = this.dataId + "/" + record.name;
+			field.hiddenName = field.name;
+			break;
+		default:
+			field.xtype = 'field';
+			break;
 		}
 
 		// Set the default value
@@ -868,9 +865,18 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// Set the label
 		field.fieldLabel = record.label;
+		record.required === true && (field.fieldLabel += '*');
 		
 		// Set the width
 		field.width = this.fieldWidth;
+
+		if ((this.mode === this.editMode && !Ext.isEmpty(record.editable) && record.editable !== "1")
+				|| (this.mode === this.editMode && !Ext.isEmpty(record.isPK) && record.isPK === "1")
+				|| (this.mode === this.addMode && !Ext.isEmpty(record.insertable) && record.insertable !== "1")) {
+			// Note: Disabled Fields will not be submitted.
+			field.editable = false;
+			field.cls = 'x-item-disabled';
+		}
 
 		return field;
 	},
