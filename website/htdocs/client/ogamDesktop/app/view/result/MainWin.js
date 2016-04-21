@@ -17,7 +17,7 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 
 	locales: {
 		buttons: {
-			export: {
+			exportSplit: {
 				text : 'Export',
 				tooltip: 'Exports the results (CSV format per default)'
 			}
@@ -135,8 +135,8 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 		}
 		if (!this.hideExportButton) {
 			this.exportButton = Ext.create('Ext.button.Split',{
-				text : this.locales.buttons.export.text,
-				tooltip: this.locales.buttons.export.tooltip,
+				text : this.locales.buttons.exportSplit.text,
+				tooltip: this.locales.buttons.exportSplit.tooltip,
 				disabled : true,
 				handler: function() {
 					this.fireEvent('exportresults', 'csv-export');

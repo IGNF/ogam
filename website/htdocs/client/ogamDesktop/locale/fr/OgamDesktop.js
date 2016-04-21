@@ -130,7 +130,7 @@ Ext.define("OgamDesktop.locale.fr.view.result.MainWin", {
 	},
 	locales: {
 		buttons: {
-			export: {
+			exportSplit: {
 				text : 'Export',
 				tooltip: 'Exporte les résultats (format CSV par défaut)'
 			}
