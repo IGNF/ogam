@@ -15,11 +15,15 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 	hideGridKmlExportMenuItem: false,
 	hideGridGeoJSONExportMenuItem: false,
 
-	/**
-	 * @cfg {String} exportButtonText The csv Export Button Text
-	 *      (defaults to <tt>'Export'</tt>)
-	 */
-	exportButtonText : 'Export',
+	locales: {
+		buttons: {
+			export: {
+				text : 'Export',
+				tooltip: 'Exports the results (CSV format per default)'
+			}
+		}
+	},
+
 	/**
 	 * @cfg {String} csvExportMenuItemText The grid Csv Export
 	 *      Menu Item Text (defaults to <tt>'Export CSV'</tt>)
@@ -131,7 +135,8 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 		}
 		if (!this.hideExportButton) {
 			this.exportButton = Ext.create('Ext.button.Split',{
-				text : this.exportButtonText,
+				text : this.locales.buttons.export.text,
+				tooltip: this.locales.buttons.export.tooltip,
 				disabled : true,
 				handler: function() {
 					this.fireEvent('exportresults', 'csv-export');

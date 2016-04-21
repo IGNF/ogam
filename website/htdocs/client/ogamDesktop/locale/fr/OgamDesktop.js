@@ -128,7 +128,14 @@ Ext.define("OgamDesktop.locale.fr.view.result.MainWin", {
 	config: {
 		title : 'Résultats'
 	},
-	exportButtonText : "Export",
+	locales: {
+		buttons: {
+			export: {
+				text : 'Export',
+				tooltip: 'Exporte les résultats (format CSV par défaut)'
+			}
+		}
+	},
 	csvExportMenuItemText: 'Export CSV',
 	kmlExportMenuItemText: 'Export KML',
 	geojsonExportMenuItemText: 'Export GeoJSON',
