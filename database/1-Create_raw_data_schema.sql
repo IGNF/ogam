@@ -148,7 +148,7 @@ CREATE OR REPLACE FUNCTION raw_data.b_departementsfromgeom() RETURNS "trigger" A
 $BODY$
 BEGIN
 
-    NEW.departement = max(dp) FROM "mapping".departements z WHERE st_intersects(z.the_geom, NEW.the_geom);    
+    NEW.departement = max(dp) FROM "mapping".departements z WHERE st_intersects(z.the_geom, ST_Transform(NEW.the_geom, 3857));    
     RETURN NEW;
 END;
 $BODY$
@@ -169,7 +169,7 @@ CREATE OR REPLACE FUNCTION raw_data.c_communesfromgeom() RETURNS "trigger" AS
 $BODY$
 BEGIN
 
-    NEW.communes = (SELECT array_agg(code) FROM (SELECT code FROM "mapping".communes z WHERE st_intersects(z.the_geom, NEW.the_geom) LIMIT 20) as foo);    
+    NEW.communes = (SELECT array_agg(code) FROM (SELECT code FROM "mapping".communes z WHERE st_intersects(z.the_geom, ST_Transform(NEW.the_geom, 3857)) LIMIT 20) as foo);    
     RETURN NEW;
 END;
 $BODY$
