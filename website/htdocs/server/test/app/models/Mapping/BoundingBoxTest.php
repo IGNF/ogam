@@ -22,9 +22,9 @@ class BoundingBoxTest extends ControllerTestCase {
 
 		// On vérifie le résultat attendu
 		$this->assertNotNull($center);
-		$this->assertEquals($center->x, 3710000);
-		$this->assertEquals($center->y, 2610000);
-		$this->assertEquals($center->zoomLevel, 0);
+		$this->assertEquals($center->x, 96670);
+		$this->assertEquals($center->y, 6022395);
+		$this->assertEquals($center->zoomLevel, 1);
 	}
 
 	/**
