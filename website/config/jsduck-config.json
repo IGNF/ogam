@@ -12,5 +12,8 @@
     	"OpenLayers.*",
     	"ol.*"
     ],
+    "--images": [
+    	"/vagrant/ogam/website/config/screenshots/"
+    ],
     "--builtin-classes": true
 }

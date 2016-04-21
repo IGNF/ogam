@@ -1,6 +1,8 @@
 /**
  * This class defines the layers tree view.
  * 
+ * {@img LayersPanel.png Layers Panel}
+ * 
  * TODO: An interface for GeoExt
  */
 Ext.define('OgamDesktop.view.map.LayersPanel', {
