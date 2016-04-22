@@ -337,11 +337,14 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$criteriaList = array();
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
+
+			$this->logger->info('$result : ' . print_r($result, true));
+
 			$field = new Application_Object_Website_PredefinedField();
 			$field->format = $result['format'];
 			$field->data = $result['data'];
 			$field->unit = $result['unit'];
-			$field->fixed = $result['fixed'];
+			$field->fixed = ($result['fixed'] == '1') ? true : false;
 			$field->inputType = $result['input_type'];
 			$field->type = $result['type'];
 			$field->subtype = $result['subtype'];

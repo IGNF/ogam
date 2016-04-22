@@ -182,5 +182,27 @@ class GenericTest extends ControllerTestCase {
 
 		$this->assertNotNull($specie);
 	}
-}
 
+	/**
+	 * Test de la fonction getJoinKeys.
+	 */
+	public function testGetJoinKeys() {
+
+		// On charge le service de manipulation des objets génériques
+		$genericService = new Application_Service_GenericService();
+
+		// On récupère un objet générique correspondant une ligne vide de la table PLOT_DATA
+		$data = $genericService->buildDataObject('RAW_DATA', 'PLOT_DATA');
+
+		$this->assertNotNull($data);
+
+		// On récupère maintenant les clés de jointure entre cette table et sa table parente
+		$joinKeys = $this->genericModel->getJoinKeys($data);
+
+		$this->assertNotNull($joinKeys);
+		$this->assertTrue(is_array($joinKeys));
+
+		$this->assertEquals('PROVIDER_ID', $joinKeys[0]);
+		$this->assertEquals('PLOT_CODE', $joinKeys[1]);
+	}
+}

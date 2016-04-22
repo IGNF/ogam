@@ -41,7 +41,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
      */
     onProcessStoreLoad:function(store, records, successful, options) {
     	var defaultRecord;
-    	
+
 		if(successful){
 			defaultRecord = store.findRecord('is_default', true);
 			defaultRecord = defaultRecord ? defaultRecord : store.first(); 
@@ -49,8 +49,8 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 		else {
 			defaultRecord = undefined;
 		}
-
-    	this.getViewModel().set('currentProcess', defaultRecord);
+		Ext.Function.defer(this.getViewModel().set, 200, this.getViewModel(), ['currentProcess', defaultRecord]);
+    	//this.getViewModel().set('currentProcess', defaultRecord);
     	
     },
 
