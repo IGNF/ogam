@@ -45,6 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   
   #
+  # Middleware installation
   # The following provisions are executed as "root" 
   #
 
@@ -85,16 +86,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   
   config.vm.provision "install_dev_tools", type: "shell" do |s|
-    s.path = "vagrant_config/scripts/install_dev_tools.sh"
+    	s.path = "vagrant_config/scripts/install_dev_tools.sh"
   end
   
+ 
   #
+  # Application deployment
   # The following provisions are executed as "vagrant" 
   #
-    
-  config.vm.provision "install_composer_libraries", privileged: false, type: "shell" do |s|
-    s.path = "vagrant_config/scripts/install_composer_libraries.sh"
-  end
     
   config.vm.provision "install_ogam_services", privileged: false, type: "shell" do |s|
     s.path = "vagrant_config/scripts/install_ogam_services.sh"
@@ -104,5 +103,38 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.path = "vagrant_config/scripts/build_ogam_desktop.sh"
   end
   
+  config.vm.provision "install_composer_libraries", privileged: false, type: "shell" do |s|
+    s.path = "vagrant_config/scripts/install_composer_libraries.sh"
+  end
+  
+  #
+  # The following provisions are only run when called explicitly 
+  #
+    
+  if ARGV.include? '--provision-with'
+    config.vm.provision "build_phpdoc", privileged: false, type: "shell" do |s|
+      s.path = "vagrant_config/scripts/build_phpdoc.sh"
+    end
+  end
+  
+  if ARGV.include? '--provision-with'
+    config.vm.provision "build_jsdoc", privileged: false, type: "shell" do |s|
+      s.path = "vagrant_config/scripts/build_jsdoc.sh"
+    end
+  end
+  
+  if ARGV.include? '--provision-with'
+    config.vm.provision "run_phpunit", privileged: false, type: "shell" do |s|
+      s.path = "vagrant_config/scripts/run_phpunit.sh"
+    end
+  end
+  
+  if ARGV.include? '--provision-with'
+    config.vm.provision "run_phpcheckstyle", privileged: false, type: "shell" do |s|
+      s.path = "vagrant_config/scripts/run_phpcheckstyle.sh"
+    end
+  end
+  
+  # Always restart Apache
   config.vm.provision "shell", inline: "service apache2 restart", run: "always"
 end
