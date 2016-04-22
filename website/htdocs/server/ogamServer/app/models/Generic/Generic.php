@@ -138,7 +138,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 *
 	 * @param Application_Object_Generic_DataObject $data
 	 *        	the shell of the data object.
-	 * @return joinKeys The join keys.
+	 * @return Array[String] The join keys.
 	 */
 	public function getJoinKeys($data) {
 		$db = $this->getAdapter();
