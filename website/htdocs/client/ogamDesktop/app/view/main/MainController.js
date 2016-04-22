@@ -8,12 +8,14 @@
 Ext.define('OgamDesktop.view.main.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.main',
+
     control : {
         '#main' : {
             tabchange : 'onTabChange'
         }
     },
-     listen : {
+
+    listen : {
         controller : {
             '#' : {
                 unmatchedroute : 'onUnmatchedRoute'
@@ -24,25 +26,26 @@ Ext.define('OgamDesktop.view.main.MainController', {
     onUnmatchedRoute : function(hash) {
        console.debug('unmatch route', hash);
     },
+
     routes: {
-	//id-tab routes
-    	'consultation_panel':'onConsulation',
-	'edition_panel':'onEdition',
-	
-	//action routes
-    	'edition-edit:key':{
-    			action:'onEdition',
-    			conditions:{
-    				':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\.\\s,]+))?'
-    			}
+
+    	//id-tab routes
+        'consultation_panel':'onConsulation',
+    	'edition_panel':'onEdition',
+
+    	//action routes
+        'edition-edit:key':{
+    		action:'onEdition',
+    		conditions:{
+    			':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\.\\s,]+))?'
+    		}
     	},
-	'edition-add:key':{
-		action:'onAdd',
-		conditions:{
-			':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\.\\s,]+))?'
-		}
-	}
-	
+    	'edition-add:key':{
+    		action:'onAdd',
+    		conditions:{
+    			':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\.\\s,]+))?'
+    		}
+    	}
     },
     
     onTabChange : function(tabPanel, newItem) {

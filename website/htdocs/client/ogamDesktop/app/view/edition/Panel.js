@@ -378,6 +378,8 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 						if (Ext.isEmpty(cCO['html'])) {
 							cCO['html'] = this.getEditLinks(cCO['childrenLinks']);
 							delete cCO['childrenLinks'];
+						} else {
+							cCO['html'] = '<div style="text-align:center;">' + cCO['html'] + '</div>';
 						}
 
 						// buttons
@@ -1033,7 +1035,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					}
 				}
 				html += '<a href="' + links[i].url + '" ' + 'data-qtitle="<u>' + tipTitle + '</u>" ' + 'data-qwidth="' + this.tipDefaultWidth + '" '
-						+ 'data-qtip="' + tipContent + '" ' + '>' + links[i].text + '</a><br/>';
+						+ 'data-qtip="' + tipContent + '" ' + '>' + links[i].text + '</a>';
 			}
 		}
 		return html;
