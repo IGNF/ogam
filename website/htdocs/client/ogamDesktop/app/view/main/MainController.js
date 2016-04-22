@@ -69,12 +69,20 @@ Ext.define('OgamDesktop.view.main.MainController', {
 
     	if (key !== undefined) {
 	    	var href = Ext.manifest.OgamDesktop.editionServiceUrl + 'show-edit-data/'+key;
-	    	this.getView().down('#edition_panel').getLoader().load({
-	    		removeAll:true,
-	    		renderer:'component',
-	    		loadMask:true,
-	    		url:href
-	    	});
+            var loadEditionPage = true;
+
+            if ( this.getView().down('editionpage') !== null ) {
+                loadEditionPage = this.getView().down('editionpage').isDischargeable();
+            }
+
+            if (loadEditionPage) {
+                this.getView().down('#edition_panel').getLoader().load({
+                    removeAll:true,
+                    renderer:'component',
+                    loadMask:true,
+                    url:href
+                });
+            }
     	}
     	this.getView().setActiveItem('edition_panel');
     	

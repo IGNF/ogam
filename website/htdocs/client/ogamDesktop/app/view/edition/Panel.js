@@ -426,17 +426,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		this.callParent(arguments);
 	},
-	initEvents:function(){
-		console.log('init event');
-		this.callParent();
-		// Detect the closing of the form and check is dirty
-		this.on('beforedestroy', this.onBeforeUnload, this, {
-            normalized:false //we need this for firefox
-        });    
-    
-
-
-	},
 
 	/**
 	 * Add the form items to the field form.
@@ -869,6 +858,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				|| (this.mode === this.addMode && !Ext.isEmpty(record.insertable) && record.insertable !== "1")) {
 			// Note: Disabled Fields will not be submitted.
 			field.editable = false;
+			field.selectOnFocus = false; //If selectOnFocus is enabled the combo must be editable: true
 			field.cls = 'x-item-disabled';
 		}
 
@@ -1054,26 +1044,12 @@ Ext.define('OgamDesktop.view.edition.Panel', {
     /**
 	 * Check if the form is dirty before to close the page and launch an alert.
 	 */
-	onBeforeUnload: function(panel,e){ 
-		console.log('onBeforeUnload');
-        var showMessage = false;
-        var MESSAGE = this.unsavedChangesMessage;
-
+	isDischargeable: function() { 
         if (this.dataEditForm.isDirty()) {
-        	showMessage = true;
-        };
-
-        if (showMessage === true) {
-
-            return confirm(MESSAGE);
+            return confirm(this.unsavedChangesMessage);
+        } else {
+        	return true;
         }
-	},
-	onDestroy:function(){
-		this.callParent(arguments);
-		this.un('beforedestroy', this.onBeforeUnload, this);
-
 	}
-	
-	
 });
 
