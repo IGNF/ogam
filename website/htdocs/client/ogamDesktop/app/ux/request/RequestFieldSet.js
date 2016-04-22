@@ -513,6 +513,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			if (!Ext.isEmpty(record.fixed)) {
 				field.disabled = record.fixed;
 			}
+			field.cls = 'x-form-item-default'; // Sets the opacity to 0.3 when the field is disabled
 			field.fieldLabel = record.label;
 
 			if (Ext.isEmpty(field.listeners)) {
