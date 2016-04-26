@@ -8,6 +8,13 @@ ant.importBuild('ogamDesktop/build.xml') { antTargetName ->
 task jsduck(type:Exec, description: 'Launch JSDuck for documentation generation.') {
   workingDir '.'
   
+  def subdir = new File("./build/docs/")
+  if(!subdir.exists()) {
+  	if (subdir.mkdirs()) {
+  		println("created build dir") 
+  	}
+  }
+  
   if (System.getProperty('os.name').toLowerCase().contains('windows')) {
   	commandLine 'jsduck'
   } else {
