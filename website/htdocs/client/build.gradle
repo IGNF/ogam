@@ -13,8 +13,8 @@ task jsduck(type:Exec, description: 'Launch JSDuck for documentation generation.
   } else {
   	commandLine 'jsduck'
   }
-  //args "./ogamDeskTop/app", "./ext/packages/core", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
-  args "./ogamDeskTop/app", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
+  //args "./ogamDesktop/app", "./ext/packages/core", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
+  args "./ogamDesktop/app", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
 }
 
 
