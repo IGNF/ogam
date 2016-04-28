@@ -7,24 +7,24 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
 
    /**
     * The wkt format.
-    * 
     * @type {ol.format.WKT}
     * @property wktFormat
     */
     wktFormat : new ol.format.WKT(),
 
    /**
-    * @cfg {Boolean} autoZoomOnResultsFeatures True to zoom
-    *      automatically on the results features
+    * @cfg {Boolean} autoZoomOnResultsFeatures True to zoom automatically on the results features
     */
     autoZoomOnResultsFeatures : true,
 
    /**
-    * @cfg {Object} requestLayers 
-    *      A array of ol layers dependents of the request
+    * @cfg {Object} requestLayers A array of ol layers dependents of the request
     */
     requestLayers : [],
 
+    /**
+     * Initializes the controller.
+     */
     init : function() {
         this.map = this.getView().getMap();
         var drawingLayerSource = this.getMapLayer('drawingLayer').getSource();
@@ -42,6 +42,12 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         }, this);
     },
 
+    /**
+     * Checks if the resolution is in the layer resolution range.
+     * @param {ol.layer} lyr The layer
+     * @param {Number} res The resolution
+     * @return {Boolean} True is the resolution is in the layer resolution range
+     */
     isResInLayerRange: function(lyr, res){
         if (res >= lyr.getMinResolution() && res < lyr.getMaxResolution()) { // in range
             return true;
@@ -50,6 +56,13 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         }
     },
 
+    /**
+     * Fires the changevisibilityrange event for each layers having their visibility to change
+     * @private
+     * @param {ol.layer} layerGrp The layer group
+     * @param {Number} resDep The resolution
+     * @param {Number} resDest The resolution
+     */
     retrieveChangedLayers : function(layerGrp, resDep, resDest) {
         layerGrp.getLayers().forEach(function(lyr) {
             if (lyr.isLayerGroup) {
@@ -64,6 +77,11 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         }, this);
     },
 
+    /**
+     * Return the layer corresponding the passed name.
+     * @param {String} layerName The layer name
+     * @return {ol.layer} The matched layer
+     */
     getMapLayer : function (layerName) {
         var me = {"layerName":layerName};
         var lyrGrp;
@@ -89,6 +107,9 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         return me.layer;
     },
 
+    /**
+     * Zooms in on the result features.
+     */
     zoomToResultFeatures : function () {
         // Get wkt geometry corresponding to the result BBOX
         var resultsBBox = this.getView().resultsBBox ? this.getView().resultsBBox : 'POLYGON EMPTY';
@@ -107,12 +128,9 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
     },
 
     /**
-     * Zoom to the passed feature on the map
-     * 
-     * @param {String}
-     *            id The plot id
-     * @param {String}
-     *            wkt The wkt feature
+     * Zoom to the passed feature on the map.
+     * @param {String} id The plot id
+     * @param {String} wkt The wkt feature
      */
     zoomToFeature : function(id, wkt) {
             var feature = this.wktFormat.readFeature(wkt);

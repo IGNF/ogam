@@ -1,6 +1,5 @@
 /**
- * The main controller of results which manages
- * results grid actions. 
+ * The main controller of results which manages results grid actions. 
  */
 Ext.define('OgamDesktop.controller.result.Main',{
 	extend: 'Ext.app.Controller',
@@ -16,7 +15,7 @@ Ext.define('OgamDesktop.controller.result.Main',{
 		},
 		control: {
 			'results-grid': {
-				resultsload: 'disableExportButton'
+				resultsload: 'toggleExportButton'
 			},
 			'result-mainwin': {
 				exportresults: 'exportResults'
@@ -25,14 +24,11 @@ Ext.define('OgamDesktop.controller.result.Main',{
 	},
 
 	/**
-	 * Show the data edit form of the clicked row.
-	 * 
-	 * @param {Object}
-	 *            grid The results grid view.
-	 * @param {integer}
-	 *            rowIndex The index of the clicked data row
+	 * Toggle the export button
+	 * @private
+	 * @param {Boolean} emptyResult True if there are no result
 	 */
-	disableExportButton: function(emptyResult) {
+	toggleExportButton: function(emptyResult) {
 		if (!emptyResult) {
 			this.getResultmainwin().exportButton.enable();
 		} else {
@@ -41,10 +37,8 @@ Ext.define('OgamDesktop.controller.result.Main',{
 	},
 
 	/**
-	 * Export the data as a CSV file
-	 * 
-	 * @param {String}
-	 *            actionName The name of the action to call
+	 * Export the data into a file
+	 * @param {String} actionName The name of the action to call
 	 */
 	exportResults : function(actionName) {
 		var launchCsvExport = function(buttonId, text, opt) {

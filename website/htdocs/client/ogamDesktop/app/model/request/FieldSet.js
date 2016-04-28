@@ -1,4 +1,5 @@
 /**
+ * This class defines the OgamDesktop request fieldset model.
  * @deprecated
  */
 Ext.define('OgamDesktop.model.request.FieldSet', {

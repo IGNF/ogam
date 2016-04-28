@@ -14,6 +14,7 @@ Ext.define('OgamDesktop.view.result.GridTab', {
 	header : false,
 	layout : 'fit',
 	autoScroll : true,
+
 	/**
 	 * @cfg {String} gridViewEmptyText The grid View Empty Text
 	 *      (defaults to <tt>'No result...'</tt>)

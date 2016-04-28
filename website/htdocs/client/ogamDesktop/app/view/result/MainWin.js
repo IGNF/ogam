@@ -1,3 +1,6 @@
+/**
+ * This class defined the result main view. 
+ */
 Ext.define('OgamDesktop.view.result.MainWin', {
 	extend: 'Ext.panel.Panel',
 	requires: [
@@ -6,14 +9,6 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 	xtype: 'result-mainwin',
 	title: 'Results',
 	layout: 'border',
-
-	/**
-	 * @cfg {Boolean} hideExportButton if true hide the
-	 *      export button (defaults to false).
-	 */
-	hideGridCsvExportMenuItem: false,
-	hideGridKmlExportMenuItem: false,
-	hideGridGeoJSONExportMenuItem: false,
 
 	locales: {
 		buttons: {
@@ -25,26 +20,29 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 	},
 
 	/**
-	 * @cfg {String} csvExportMenuItemText The grid Csv Export
-	 *      Menu Item Text (defaults to <tt>'Export CSV'</tt>)
+	 * @cfg {Boolean} hideExportButton if true hide the export button (defaults to false).
+	 */
+	hideGridCsvExportMenuItem: false,
+	hideGridKmlExportMenuItem: false,
+	hideGridGeoJSONExportMenuItem: false,
+
+	/**
+	 * @cfg {String} csvExportMenuItemText The grid Csv Export Menu Item Text (defaults to <tt>'Export CSV'</tt>)
 	 */
 	csvExportMenuItemText: 'Export CSV',
 	kmlExportMenuItemText: 'Export KML',
 	geojsonExportMenuItemText: 'Export GeoJSON',
 	
 	/**
-	 * @cfg {Boolean} hideCsvExportAlert if true hide the csv
-	 *      export alert for IE (defaults to true).
+	 * @cfg {Boolean} hideCsvExportAlert if true hide the csv export alert for IE (defaults to true).
 	 */
 	hideCsvExportAlert : false,
 	/**
-	 * @cfg {String} csvExportAlertTitle The export CSV alert
-	 *      title (defaults to <tt>'CSV exportation on IE'</tt>)
+	 * @cfg {String} csvExportAlertTitle The export CSV alert title (defaults to <tt>'CSV exportation on IE'</tt>)
 	 */
 	csvExportAlertTitle : 'CSV exportation on IE',
 	/**
-	 * @cfg {String} csvExportAlertMsg The export CSV alert
-	 *      message (defaults to
+	 * @cfg {String} csvExportAlertMsg The export CSV alert  message (defaults to
 	 *      <tt>'On IE you have to:<br> - Change the opening of a csv file.<br> - Change the security.'</tt>)
 	 */
 	csvExportAlertMsg : "<div><H2>For your comfort on Internet Explorer you can:</H2> \
@@ -79,6 +77,9 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 		region : 'center'
 	}],
 
+	/**
+	 * Initializes the component.
+	 */
 	initComponent: function() {
 		// Init the Toolbar
 		this.tbar = this.initToolbar();
@@ -87,9 +88,8 @@ Ext.define('OgamDesktop.view.result.MainWin', {
 	},
 
 	/**
-	 * Initialize the results grid toolbar
-	 * 
-	 * @hide
+	 * Initialize the results grid toolbar.
+	 * @private
 	 */
 	initToolbar: function() {
 		// Creation of the toolbar

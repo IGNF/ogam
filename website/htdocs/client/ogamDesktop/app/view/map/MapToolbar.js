@@ -23,6 +23,10 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
     ],
     alias: 'widget.maptoolbar',
     xtype:'maptoolbar',
+
+    /**
+     * Initializes the items.
+     */
     initItems:function(){
 		Ext.Object.merge(this,{items:
 		[{

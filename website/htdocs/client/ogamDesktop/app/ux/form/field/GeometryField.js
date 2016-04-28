@@ -16,14 +16,14 @@
  * @class OgamDesktop.ux.form.field.GeometryField
  * @extends Ext.form.TriggerField
  * @constructor Create a new GeometryField
- * @param {Object}
- *            config
+ * @param {Object} config
  * @xtype geometryfield
  */
 
 Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	extend: 'Ext.form.field.Text',
 	xtype: 'geometryfield',
+
     /**
      * @event featureEditionValidated
      * Fires when the feature edition on the map is validated.
@@ -34,7 +34,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
      * Fires when the feature edition on the map is cancelled.
      */
 
-	/**
+	/*
 	 * Internationalization.
 	 */
 	fieldLabel : 'Location',
@@ -137,6 +137,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	/**
 	 * Function handling the press event
+	 * @private
 	 */
 	onPress : function () {
 		if(!this.isPressed){
@@ -148,6 +149,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	/**
 	 * Function handling the unPress event
+	 * @private
 	 */
 	onUnpress : function () {
 		if(this.isPressed){
@@ -159,6 +161,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	/**
 	 * Initialise the component.
+	 * @private
 	 */
 	initComponent : function() {
 		var geometryFields = Ext.ComponentQuery.query('geometryfield');
@@ -167,6 +170,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	/**
 	 * On destroy of the geometry field, deactivate query tbar buttons
+	 * @private
 	 */
 	onDestroy: function() {
 		this.fireEvent('geomCriteriaDestroy', this);

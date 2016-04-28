@@ -5,11 +5,10 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 	extend: 'Ext.app.Controller',
 
 	/**
-	* The wkt format.
-	* 
-	* @type {ol.format.WKT}
-	* @property wktFormat
-	*/
+	 * The wkt format.
+	 * @property wktFormat
+	 * @type {ol.format.WKT}
+	 */
 	wktFormat : new ol.format.WKT({splitCollection:true}),
 
 	/**
@@ -28,7 +27,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 	 */
 	previousEditionFieldId: null,
 
-	/**
+	/*
 	 * The refs to get the views concerned
 	 * and the control to define the handlers of the
 	 * MapPanel, toolbar and LayersPanel events
@@ -62,6 +61,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Initialize few controller attributes
+	 * @private
 	 */
 	onMapComponentRender: function() {
 		this.drawingLayer = this.getMapcmp().getController().getMapLayer('drawingLayer');
@@ -69,6 +69,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Manage the validateFeatureEdition event
+	 * @private
 	 */
 	onValidateFeatureEdition: function() {
 		this.currentEditionField.fireEvent('featureEditionValidated');
@@ -77,6 +78,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Manage the cancelFeatureEdition event
+	 * @private
 	 */
 	onCancelFeatureEdition: function() {
 		this.currentEditionField.fireEvent('featureEditionCancelled');
@@ -86,6 +88,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Set the features of the drawing layer from a WKT
+	 * @param {String} wkt WKT to draw
 	 */
 	setDrawingLayerFeaturesFromWKT: function(wkt) {
 		this.removeDrawingLayerFeatures();
@@ -96,6 +99,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Manage the drawing layer feature change event
+	 * @private
 	 */
 	onDrawingLayerFeatureChange: function(event) {
 		if (event.type === 'addfeature') {
@@ -106,6 +110,8 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Removes the previous feature when forceSingleFeature is set to true
+	 * @private
+	 * @param {ol.layer} newFeature The last added feature
 	 */
 	removePreviousFeature: function(newFeature) {
 		var forceSingleFeature = false;
@@ -120,7 +126,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 			if (featuresCount > 1) {
 
-				/**
+				/*
 				 * Note about ol v3.15.1:
 				 * We gets the following error with that code:
 				 * Uncaught AssertionError: Assertion failed: featureChangeKeys is an empty object now
@@ -128,7 +134,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 				//drawingLayerSource.clear();
 				//drawingLayerSource.addFeature(newFeature);
 
-				/**
+				/*
 				 * The removeFeature function must be used to refresh correctly the layer.
 				 * Note about ol v3.15.1: 
 				 * The c_array is not updated (contains all the removed features).
@@ -141,7 +147,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 		            }
 		        );
 
-		        /** 
+		        /*
 		         * The collection must be updated to refresh the c_array
 		         * Note about ol v3.15.1: 
 			     * The ol.Collection.removeAt() function doesn't update the layer source.
@@ -155,6 +161,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Update the WKT value of the current geometry field
+	 * @private
 	 */
 	updateCurrentEditionFieldValue: function() {
 		var wktValue = null;
@@ -171,7 +178,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Manage the geometry field press event
-	 * 
+	 * @private
 	 * @param {Ext.form.field.Field} field The pressed field
 	 */
 	onGeomCriteriaPress: function(field) {
@@ -192,7 +199,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Manage the geometry field unpress event
-	 * 
+	 * @private
 	 * @param {Ext.form.field.Field} field The unpressed field
 	 */
 	onGeomCriteriaUnpress: function(field) {
@@ -207,6 +214,7 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Deactivation of the previous edition mode and field on a request launch
+	 * @private
 	 */
 	onSubmitRequest: function() {
 		this.unpressField();
@@ -250,7 +258,6 @@ Ext.define('OgamDesktop.controller.map.Drawing', {
 
 	/**
 	 * Activates / Deactivates drawing tbar
-	 * 
 	 * @param {boolean} enable Enable or disable the drawing toolbar
 	 */
 	toggleDrawingTbar: function(enable) {

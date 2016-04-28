@@ -1,28 +1,42 @@
+/**
+ * This class defined the advanced request selector.
+ */
 Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 	extend: 'Ext.form.FieldSet',
 	xtype: 'advanced-request-selector',
 	mixins: {
 		storeholder: 'Ext.util.StoreHolder'
 	},
-
-	criteriaValues:[],
-
-    destroy: function () {
-        this.mixins.storeholder.destroy.call(this);
-        this.callParent();
-    },
-	
 	requires: [
 		'OgamDesktop.ux.request.AdvancedRequestFieldSet'
     ],
+
+    /**
+	 * @cfg {Array} criteriaValues The criteria values (defaults to <tt>'[]'</tt>)
+	 */
+	criteriaValues:[],
     
-    onBindStore: function(store, initial, propertyName, oldStore){
+	/**
+	 * Fonction called when the store is bound to the current instance.
+	 * @private
+     * @param {Ext.data.AbstractStore} store The store being bound
+     * @param {Boolean} initial True if this store is being bound as initialization of the instance.
+	 */
+    onBindStore: function(store, initial){
     	this.reloadForm();
     },
+
+	/**
+	 * Sets the criteriaValues propertie.
+     * @param {Array/Object} value The new value
+	 */
     setCriteriaValues:function(value){
     	this.criteriaValues = (Ext.isIterable(value) || Ext.isObject(value)) ? value : [];
     },
 	
+	/**
+	 * Reloads the form.
+	 */
     reloadForm: function(){
 		this.removeAll();
 		this.store.getData().each(function(item, idex, length){
@@ -43,5 +57,13 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 			}
 		},this);
 		this.updateLayout();
+    },
+
+	/**
+	 * Destoy the component.
+	 */
+    destroy: function () {
+        this.mixins.storeholder.destroy.call(this);
+        this.callParent();
     }
 });

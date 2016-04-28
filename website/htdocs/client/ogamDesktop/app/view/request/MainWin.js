@@ -1,3 +1,6 @@
+/**
+ * This class defines the request main view.
+ */
 Ext.define('OgamDesktop.view.request.MainWin', {
 	extend: 'Ext.form.Panel',
 	title : 'Query Panel',
