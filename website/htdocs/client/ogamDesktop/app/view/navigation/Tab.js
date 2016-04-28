@@ -24,7 +24,8 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 	xtype: 'navigation-tab',
 	extend: 'Ext.panel.Panel',
 	layout: 'card',
-    /**
+
+    /*
      * Internationalization.
      */ 
     editLinkButtonTitle : 'Edit this data',
@@ -88,6 +89,10 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
      */
     loadingMsg: 'Loading...',
 
+    /**
+     * Initializes the component.
+     * @private
+     */
     initComponent : function() {
     	
         this.title = '<div style="width:'+ this.headerWidth + 'px;">'+this.loadingMsg+'</div>';
@@ -164,14 +169,10 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
     },
 
     /**
-     * Updates the Details panel body
-     * 
+     * Updates the Details panel body.
      * @param {Ext.Panel} panel The details panel
      */
-    
     updateDetails : function(panel) {
-//        this.getUpdater().showLoading();
-        console.log('rowId', this.rowId);
         Ext.Ajax.request({
         	url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetdetails',
 			actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},

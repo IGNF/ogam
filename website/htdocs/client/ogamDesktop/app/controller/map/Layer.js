@@ -5,11 +5,11 @@
 Ext.define('OgamDesktop.controller.map.Layer',{
     extend: 'Ext.app.Controller',
     requires: [
-            'OgamDesktop.view.map.LayersPanel',
-            'OgamDesktop.store.map.Layer',
-            'OgamDesktop.store.map.LayerService',
-            'OgamDesktop.store.map.LayerNode',
-            'Ext.window.MessageBox'
+        'OgamDesktop.view.map.LayersPanel',
+        'OgamDesktop.store.map.Layer',
+        'OgamDesktop.store.map.LayerService',
+        'OgamDesktop.store.map.LayerNode',
+        'Ext.window.MessageBox'
     ],
 
     /**
@@ -37,6 +37,22 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     previousEditionFieldId: null,
 
     /**
+     * A count of events to synchronize
+     * @private
+     * @property
+     * @type Number
+     */
+    eventCounter : 0,
+    
+    /**
+     * The layer tree store
+     * @private
+     * @property
+     * @type Array
+     */
+    treeStores : [],
+
+    /**
      * The refs to get the views concerned
      * and the control to define the handlers of the
      * MapPanel, toolbar and LayersPanel events
@@ -56,9 +72,14 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             }
         }
     },
-    eventCounter : 0,
-    treeStores : [],
 
+    /**
+     * Manages the afterMapMainWinRendered event :
+     *
+     *  - Increments the event counter,
+     *  - Calls the setupMapAndTreeLayers function if the counter is equal at two.
+     * @private
+     */
     afterMapMainWinRendered : function() {
         this.eventCounter += 1;
         if (this.eventCounter === 2) {
@@ -66,6 +87,15 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         }
     },
 
+    /**
+     * Manages the afterLayersPanelStoresLoaded event :
+     *
+     *  - Sets the treeStores,
+     *  - Increments the event counter,
+     *  - Calls the setupMapAndTreeLayers function if the counter is equal at two.
+     * @private
+     * @param {Array} treeStores The layer tree store
+     */
     afterLayersPanelStoresLoaded : function(treeStores) {
         this.treeStores = treeStores;
         this.eventCounter += 1;
@@ -77,7 +107,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
    /**
      * Sets up the map and the tree layers
      * @private
-     * @return void
      */
     setupMapAndTreeLayers : function() {
         var mapCmp = this.getMappanel().child('mapcomponent');
@@ -107,7 +136,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
    /**
      * Build a layers collection
      * @private
-     * @return Ext.util.MixedCollection
+     * @return {Ext.util.MixedCollection} The layers collection
      */
     buildLayersCollection: function() {
         var mapCmp = this.getMappanel().child('mapcomponent');
@@ -178,11 +207,9 @@ Ext.define('OgamDesktop.controller.map.Layer',{
    /**
      * Build a OpenLayers source
      * @private
-     * @param {OgamDesktop.model.map.Layer}
-     *            layer The layer
-     * @param {OgamDesktop.model.map.LayerService}
-     *            service The service used per the layer
-     * @return ol.source...
+     * @param {OgamDesktop.model.map.Layer} layer The layer
+     * @param {OgamDesktop.model.map.LayerService} service The service used per the layer
+     * @return {ol.source} The OpenLayers source
      */
     buildOlSource: function(layer, service) {
         var serviceType = service.get('config').params.SERVICE;
@@ -228,13 +255,10 @@ Ext.define('OgamDesktop.controller.map.Layer',{
    /**
      * Build a OpenLayers layer
      * @private
-     * @param {OgamDesktop.model.map.Layer}
-     *            layer The layer
-     * @param {OgamDesktop.model.map.LayerService}
-     *            service The service used per the layer
-     * @param {number}
-     *            curRes The map current resolution
-     * @return ol.layer.Tile
+     * @param {OgamDesktop.model.map.Layer} layer The layer
+     * @param {OgamDesktop.model.map.LayerService} service The service used per the layer
+     * @param {number} curRes The map current resolution
+     * @return {ol.layer.Tile} The OpenLayers layer
      */
     buildOlLayer: function(layer, service, curRes) {
         var olLayerOpts = {};
@@ -264,7 +288,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
    /**
      * Build a GeoExt tree store
      * @private
-     * @return GeoExt.data.store.LayersTree
+     * @return {GeoExt.data.store.LayersTree} The GeoExt tree store
      */
     buildGeoExtStore: function() {
         var mapCmp = this.getMappanel().child('mapcomponent');

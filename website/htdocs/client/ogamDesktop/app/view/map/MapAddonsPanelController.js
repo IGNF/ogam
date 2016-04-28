@@ -4,7 +4,6 @@
 Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.mapaddonspanel',
-
     listen: {
          controller: {
              'mapcomponent': {
@@ -17,6 +16,10 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
          }
      },
 
+    /**
+     * Initializes the controller.
+     * @private
+     */
     init : function() {
         this.layersPanel = this.getView().child('layers-panel');
         this.layersPanelCtrl = this.layersPanel.getController();
@@ -25,24 +28,19 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
 
     /**
      * Toggle the legend in function of the layer tree node check state
-     * 
-     * @param {GeoExt.data.model.LayerTreeNode}
-     *            node The layer tree node
-     * @param {Boolean}
-     *            checked True if the node is checked
+     * @private
+     * @param {GeoExt.data.model.LayerTreeNode} node The layer tree node
+     * @param {Boolean} checked True if the node is checked
      */
     onLayerCheckChange : function(node, checked) {
         this.legendsPanelCtrl.setLegendsVisible([node.getOlLayer()], checked);
     },
 
     /**
-     * Toggle the layer and legend in function of the zoom
-     * range
-     * 
-     * @param {OpenLayers.Layer}
-     *            layer The layer to check
-     * @param {Boolean}
-     *            enable True to enable the layers and legends
+     * Toggle the layer and legend in function of the zoom range
+     * @private
+     * @param {OpenLayers.Layer} layer The layer to check
+     * @param {Boolean} enable True to enable the layers and legends
      */
     toggleLayersAndLegendsForZoom : function(layer, enable) {
         var node = this.layersPanelCtrl.getLayerNode(layer);
@@ -61,14 +59,10 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
 
     /**
      * Enable and show the layer(s) and show the legend(s)
-     * 
-     * @param {Boolean}
-     *            enable True to enable the layers and legends
-     * @param {Array}
-     *            layers The layers
-     * @param {Boolean}
-     *            toggleNodeCheckbox True to toggle the layerTree node
-     *            checkbox (default to false)
+     * @private
+     * @param {Boolean} enable True to enable the layers and legends
+     * @param {Array} layers The layers
+     * @param {Boolean} toggleNodeCheckbox True to toggle the layerTree node checkbox (default to false)
      */
     toggleLayersAndLegends : function(enable, layers, toggleNodeCheckbox) {
         if (!Ext.isEmpty(enable) && !Ext.isEmpty(layers)) {
@@ -87,7 +81,9 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
     },
 
     /**
-     * Enable and show the request layer(s) and legend(s)
+     * Enable and show the request layer(s) and legend(s).
+     * @private
+     * @param {OgamDesktop.view.map.MapComponentController} mapCmpCtrl The map component controller
      */
     enableRequestLayersAndLegends: function(mapCmpCtrl) {
         this.toggleLayersAndLegends(true, mapCmpCtrl.requestLayers, true);

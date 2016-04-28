@@ -11,7 +11,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestModel', {
 
     // This enables "viewModel: { type: 'advancedrequest' }" in the view:
     alias: 'viewmodel.advancedrequest',
-
     data: {
     	/**
          * @property {OgamDesktop.model.Process} currentProcess The current selected process
@@ -20,8 +19,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestModel', {
     	fieldsets:null,
     	userchoices:[]
     },
-
-
     stores: {
     	/**
          * @property {Ext.data.JsonStore} processStore The process store

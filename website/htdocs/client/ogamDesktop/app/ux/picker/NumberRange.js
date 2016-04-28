@@ -1,7 +1,7 @@
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
- * Â© European Union, 2008-2012
+ * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
@@ -20,14 +20,12 @@
  *            config The config object
  * @xtype numberrangepicker
  */
-
-
 Ext.define('OgamDesktop.ux.picker.NumberRange', {
     extend:'Ext.Panel',//TODO a component with tpl or menu may be lighter ?
     alias: 'widget.numberrangepicker',
 	alternateClassName:['OgamDesktop.ux.picker.NumberRangePicker'],
 	requires:['OgamDesktop.ux.form.field.TwinNumberField'],
-	/**
+	/*
 	 * Internationalization.
 	 */
 	//<locale>
@@ -105,7 +103,7 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 	/**
 	 * Initialise the component.
 	 */
-	initComponent : function() {
+	initComponent: function() {
 
 		// Initialise the fields
 		this.minField = new OgamDesktop.ux.form.field.TwinNumberField({
@@ -131,8 +129,10 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 		this.callParent();
 	},
 
-	//extended
-	initEvents:function() {
+	/**
+	 * Initialise the events
+	 */
+	initEvents: function() {
 		this.callParent();
 		/**
 		 * key nav in the picker
@@ -153,8 +153,13 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 		}, this.keyNavConfig));
 	},
 	
-	// private
-	onOkButtonPress : function(button, state) {
+	/**
+	 * Fonction handling the ok button click event
+	 * @private
+	 * @param {Ext.Button} button The ok button
+	 * @param {Boolean} state True if the button is pressed
+	 */
+	onOkButtonPress: function(button, state) {
 		if (state) {
 			this.fireEvent('select', this, {
 				minValue : this.minField.getValue(),
@@ -163,8 +168,12 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 		}
 	},
 
-	// private
-	onTabButtonPress : function(event) {
+	/**
+	 * Fonction handling the tab key press event
+	 * @private
+	 * @param {Object} event The press event
+	 */
+	onTabButtonPress: function(event) {
 		var cpm = Ext.get(event.target).component;
 		var index = this.items.findIndex('id', cpm.id) + 1;
 
@@ -174,41 +183,53 @@ Ext.define('OgamDesktop.ux.picker.NumberRange', {
 		this.items.getAt(index).focus(true);
 	},
 	
+	/**
+	 * Fonction handling the beforeDestroy event
+	 * @private
+	 */
 	beforeDestroy:function(){
 		this.callParent();
 		Ext.destroy(this.popupkeyNav);
 	 },
 
-    // @private
-    // @inheritdoc
+    /**
+	 * Fonction handling the enable event
+	 * @private
+	 */
     onEnable: function(){
         this.callParent();
         this.syncDisabled(false);
     },
 
-    // @private
-    // @inheritdoc
+    /**
+	 * Fonction handling the show event
+	 * @private
+	 */
     onShow: function(){
         this.callParent();
         this.syncDisabled(false);
 
     },
-    
-    // @private
-    // @inheritdoc
+
+    /**
+	 * Fonction handling the hide event
+	 * @private
+	 */
     onHide: function(){
         this.callParent();
         this.syncDisabled(true);
     },
 
-    // @private
-    // @inheritdoc
+    /**
+	 * Fonction handling the disable event
+	 * @private
+	 */
     onDisable: function(){
         this.callParent();
         this.syncDisabled(true);
     },
-    privates:{
 
+    privates:{
         /**
          * Set the disabled state of various internal components
          * @param {Boolean} disabled

@@ -4,7 +4,6 @@
 Ext.define('OgamDesktop.view.map.LegendsPanelController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.legendspanel',
-
     control: {
         'legends-panel': {
             onReadyToBuildLegend: 'buildLegend'
@@ -13,14 +12,9 @@ Ext.define('OgamDesktop.view.map.LegendsPanelController', {
 
     /**
      * Build a Legend Object from a 'Layer' store record.
-     * @param {Object}
-     *            curRes The map current resolution
-     * @param {OgamDesktop.model.map.Layer}
-     *            layerObject The 'Layer' store record
-     * @param {Object}
-     *            serviceObject The 'LayerService' store record for the legend
-     *            corresponding to the layer
-     * @return OpenLayers.Layer
+     * @param {Object} curRes The map current resolution
+     * @param {OgamDesktop.model.map.Layer} layer The 'Layer' store record
+     * @param {Object} service The 'LayerService' store record for the legend corresponding to the layer
      */
     buildLegend : function(curRes, layer, service) {
         var legend = this.getView()
@@ -59,11 +53,8 @@ Ext.define('OgamDesktop.view.map.LegendsPanelController', {
 
     /**
      * Convenience function to hide or show a legend by boolean.
-     * 
-     * @param {Array}
-     *            layers The layers
-     * @param {Boolean}
-     *            visible True to show, false to hide
+     * @param {Array} layers The layers
+     * @param {Boolean} visible True to show, false to hide
      */
     setLegendsVisible : function(layers, visible) {
 

@@ -5,6 +5,9 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.layerfeatureinfobutton',
 
+    /**
+     * Initializes the controller.
+     */
     init : function() {
         var mapCmp = this.getView().up('#map-panel').child('mapcomponent');
         this.map = mapCmp.getMap();
@@ -24,6 +27,13 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
         this.coordinateExtentDefaultBuffer = OgamDesktop.map.featureinfo_margin ? OgamDesktop.map.featureinfo_margin : 1000;
     },
 
+    /**
+     * Fonction handling the toggle event on the split button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Boolean} pressed
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onLayerFeatureInfoButtonToggle : function (button, pressed, eOpts) {
         if (pressed) {
             var checkedItem = null;
@@ -41,12 +51,21 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
         }
     },
 
+    /**
+     * Removes the map singleclick listener.
+     * @private
+     */
     removeLayerFeatureInfoListener: function () {
         ol.Observable.unByKey(this.layerFeatureInfoListenerKey);
         this.layerFeatureInfoListenerKey = null;
         this.popup.hide();
     },
 
+    /**
+     * Updates and adds the map singleclick listener.
+     * @private
+     * @param {Ext.menu.CheckItem} item The checked/unchecked item
+     */
     updateAndAddLayerFeatureInfoListener: function(item) {
         this.removeLayerFeatureInfoListener();
         var projection = this.map.getView().getProjection().getCode();
@@ -79,6 +98,13 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
         },this);
     },
 
+    /**
+     * Fonction handling the checkchange event on the menu items.
+     * @private
+     * @param {Ext.menu.CheckItem} item The checked/unchecked item
+     * @param {Boolean} checked
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onLayerFeatureInfoButtonMenuItemCheckChange : function(item, checked, eOpts) {
         // Changes the checkbox behaviour to a radio button behaviour
         var menu = item.parentMenu;

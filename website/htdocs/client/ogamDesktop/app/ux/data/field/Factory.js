@@ -20,11 +20,8 @@ Ext.define('OgamDesktop.ux.data.field.Factory', function () {
 
         /**
          * Construct a checkbox field config from a record
-         * 
-         * @param {Object}
-         *            fieldParameters The field parameters returned per the server
+         * @param {Object} fieldParameters The field parameters returned per the server
          * @return {Object} a Ext.data.field.Boolean config object
-         * @hide
          */
         buildCheckboxFieldConfig : function(fieldParameters) {
             var fieldConfig = {};

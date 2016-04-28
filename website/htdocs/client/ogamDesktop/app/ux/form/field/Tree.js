@@ -1,7 +1,7 @@
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
- * Ã‚Â© European Union, 2008-2012
+ * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
@@ -16,29 +16,29 @@
  * @class OgamDesktop.ux.form.field.Tree
  * @extends Ext.form.field.ComboBox
  * @constructor Create a new tree field
- * @param {Object}
- *            config
+ * @param {Object} config
  * @xtype treefield
  */
-
-
 Ext.define('OgamDesktop.ux.form.field.Tree', {
     extend:'Ext.form.field.Tag',
     alias: 'widget.treefield',
 	requires:['OgamDesktop.ux.picker.Tree'],
-
-	/**
-	 * @cfg {Boolean} hideValidationButton if true hide the tree validation
-	 *      button (defaults to true).
-	 */
-	hideValidationButton : false,
-
 	triggers:{
 		'tree':{
 			handler:'onTreeTriggerClick',
 			scope:'this'
 		}
 	},
+	multiSelect:false,
+	triggerAction:'query',
+	queryMode:'remote',
+	pageSize: 25,
+
+	/**
+	 * @cfg {Boolean} hideValidationButton if true hide the tree validation button (defaults to true).
+	 */
+	hideValidationButton : false,
+
 	/**
 	 * Value field in the store
 	 */
@@ -50,28 +50,10 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 	displayField : 'label',
 
 	/**
-	 * @cfg {String} emptyText The default text to place into an empty field
-	 *      (defaults to 'Select...').
-	 */
-	//emptyText : 'Select...', //@see EXTJS-19841., EXTJS-1637
-
-	/**
 	 * Manage multiple values,
 	 */
 	multiple : false,
 
-	multiSelect:false,
-	/**
-	 * @cfg {Ext.grid.column.Column[]/Object} treePickerColumns 
-	 * array of column definition objects which define all columns that appear in this
-     * tree
-	 * @see Ext.tree.Panel.columns
-	 */
-	/**
-	 * @cfg {Ext.data.store/Object} treePickerStore
-	 * the store the tree should useas it data source 
-	 */
-	
 	/**
 	 * The field tree (displayed on a trigger click).
 	 * 
@@ -80,15 +62,28 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 	 */
 	tree : null,
 
-	triggerAction:'query',
-	queryMode:'remote',
-	pageSize: 25,
-
 	/**
 	 * @cfg {bool} hidePickerTrigger Hide the picker trigger on the first render
 	 * default to true
 	 */
 	hidePickerTrigger:true,
+
+	/**
+	 * @cfg {String} emptyText The default text to place into an empty field (defaults to 'Select...').
+	 */
+	//emptyText : 'Select...', //@see EXTJS-19841., EXTJS-1637
+
+	/**
+	 * @cfg {Ext.grid.column.Column[]/Object} treePickerColumns 
+	 * array of column definition objects which define all columns that appear in this
+     * tree
+	 * @see Ext.tree.Panel.columns
+	 */
+
+	/**
+	 * @cfg {Ext.data.store/Object} treePickerStore
+	 * the store the tree should useas it data source 
+	 */
 	
 	/**
 	 * Initialise the component.
@@ -107,9 +102,7 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 	 * The function that handle the trigger's click event. Implements the
 	 * default empty TriggerField.onTriggerClick function to display the
 	 * TreePicker
-	 * 
-	 * @method onTreeTriggerClick
-	 * @hide
+	 * @private
 	 */
 	onTreeTriggerClick : function() {
 		if (this.disabled) {
@@ -137,6 +130,11 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 		}
 	},
 
+    /**
+     * Create the tree picker
+     * @private
+     * @return {OgamDesktop.ux.picker.Tree} The picker
+     */
 	createTreePicker:function(){
 		var storepiker = this.treePickerStore;
 		
@@ -155,7 +153,12 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 		return this.tree;
 	},
 
-	// private
+	/**
+     * Manage the choicemake event
+     * @private
+     * @param {OgamDesktop.ux.picker.Tree} view The tree picker
+     * @param {Array} records The selected nodes
+     */
 	onTreeChoice : function(view, record) {
 		if (this.multiple) {
 			this.addValue(record);
@@ -170,6 +173,10 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 		
 	},
 
+	/**
+	 * Fonction handling the beforeDestroy event
+	 * @private
+	 */
 	beforeDestroy: function(){
 		if(this.tree) {
 			this.tree.hide();
@@ -177,6 +184,10 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 		this.callParent();
 	},
 
+	/**
+	 * Fonction handling the destroy event
+	 * @private
+	 */
 	onDestroy : function() {
 		Ext.destroy(this.tree, this.wrap);
 		this.callParent();

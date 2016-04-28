@@ -1,3 +1,6 @@
+/**
+ * This class defines the OgamDesktop node model.
+ */
 Ext.define('OgamDesktop.model.Node', {
 	extend : 'Ext.data.TreeModel',
 	childType:'request.object.field.Code',

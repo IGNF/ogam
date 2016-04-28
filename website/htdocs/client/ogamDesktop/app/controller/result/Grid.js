@@ -32,11 +32,9 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	},
 
 	/**
-	 * Fill the grid updating binded model and store.
-	 * 
-	 * @param {Array}
-	 *            fields The columns of the grid that the server
-	 *            send as query form is submitted
+	 * Fill the grid by updating binded model and store.
+	 * @private
+	 * @param {Array} fields The grid's colums that the server returns on the query form submission
 	 */
 	setResultsGrid: function(fields) {
 		var resultStore = this.getStore('result.Grid');
@@ -188,15 +186,10 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	
 	/**
 	 * Return the pattern used to format a number.
-	 * 
-	 * @param {String}
-	 *            decimalSeparator the decimal separator
-	 *            (default to',')
-	 * @param {Integer}
-	 *            decimalPrecision the decimal precision
-	 * @param {String}
-	 *            groupingSymbol the grouping separator (absent
-	 *            by default)
+	 * @param {String} decimalSeparator The decimal separator (default to',')
+	 * @param {Integer} decimalPrecision The decimal precision
+	 * @param {String} groupingSymbol The grouping separator (absent by default)
+	 * @return {String} The number format pattern
 	 */
 	numberPattern : function(decimalSeparator, decimalPrecision, groupingSymbol) {
 		// Building the number format pattern for use by ExtJS
@@ -215,7 +208,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		return pattern.join('');
 	}//,
 
-	/**
+	/*
 	 * Render an Icon for the data grid.
 	 * @TODO
 	 */

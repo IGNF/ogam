@@ -16,8 +16,7 @@
  * @class OgamDesktop.ux.picker.DateRange
  * @extends Ext.Panel
  * @constructor Create a new DateRangePicker
- * @param {Object}
- *            config The config object
+ * @param {Object} config The config object
  * @xtype daterangepicker
  */
 
@@ -26,7 +25,7 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
     alias: 'widget.daterangepicker',
 	alternateClassName:['OgamDesktop.ux.picker.DateRangePicker'],
 	requires:['Ext.picker.Date'],
-	/**
+	/*
 	 * Internationalization.
 	 */ 
 	//<locale>
@@ -35,6 +34,7 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 	tbarEndDateButtonText : '... End Date',
 	fbarOkButtonText : 'ok',
 	//</locale>
+
 	/**
 	 * @cfg {String/Object} layout Specify the layout manager class for this
 	 *      container either as an Object or as a String. See
@@ -50,26 +50,20 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 	 *      its children using standard CSS rules.
 	 */
 	cls : 'x-menu-date-range-item',
+
 	/**
 	 * @cfg {String} buttonAlign The alignment of any {@link #buttons} added to
 	 *      this panel. Valid values are 'right', 'left' and 'center' (defaults
 	 *      to 'center').
 	 */
 	buttonAlign : 'center',
+
 	/**
 	 * @cfg {Boolean} hideValidationButton if true hide the menu validation
 	 *      button (defaults to false).
 	 */
 	hideValidationButton : false,
-	/**
-	 * @cfg {Object} startDatePickerConfig config for the start part
-	 * @see #Ext.picker.DatePicker
-	 */
-	/**
-	 * @cfg {Object} endDatePickerConfig config for the end part picker
-	 * @see #Ext.picker.DatePicker
-	 */
-	
+
 	/**
 	 * The selected dates (Default to '{startDate:null, endDate:null}').
 	 * Read-only.
@@ -134,6 +128,16 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 	 * @type Ext.Toolbar
 	 */
 	fbar : null,
+
+	/**
+	 * @cfg {Object} startDatePickerConfig config for the start part
+	 * @see #Ext.picker.DatePicker
+	 */
+
+	/**
+	 * @cfg {Object} endDatePickerConfig config for the end part picker
+	 * @see #Ext.picker.DatePicker
+	 */
 
 	/**
 	 * Initialise the component.
@@ -215,8 +219,10 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 
 		this.callParent();
 	},
-	// @private
-    // @inheritdoc
+
+	/**
+	 * Initialise the events
+	 */
 	initEvents: function(){
 		var me =this;
 		me.callParent();
@@ -229,10 +235,21 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
             });
         }
 	},
+
+	/**
+	 * Keep the tree structure correct for Ext.form.field.Picker input fields which poke a 'pickerField' reference down into their pop-up pickers.
+	 * @return {Ext.form.field.PickerView} The picker field
+	 */
     getRefOwner: function() {
         return this.pickerField || this.callParent();
     },
-	// private
+
+	/**
+	 * Fonction handling the range date button toggle event
+	 * @private
+	 * @param {Ext.Button} button The range date button
+	 * @param {Boolean} state True if the button is pressed
+	 */
 	onRangeDatePress : function(button, state) {
 		if (state) {
 			this.startDatePicker.enable();
@@ -241,7 +258,12 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 		}
 	},
 
-	// private
+	/**
+	 * Fonction handling the start date button toggle event
+	 * @private
+	 * @param {Ext.Button} button The start date button
+	 * @param {Boolean} state True if the button is pressed
+	 */
 	onStartDatePress : function(button, state) {
 		if (state) {
 			this.startDatePicker.enable();
@@ -250,7 +272,12 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 		}
 	},
 
-	// private
+	/**
+	 * Fonction handling the end date button toggle event
+	 * @private
+	 * @param {Ext.Button} button The end date button
+	 * @param {Boolean} state True if the button is pressed
+	 */
 	onEndDatePress : function(button, state) {
 		if (state) {
 			this.startDatePicker.disable();
@@ -259,35 +286,44 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 		}
 	},
 
-	// private
+	/**
+	 * Fonction handling the start date picker select event
+	 * @private
+	 * @param {Ext.picker.Date} startDatePicker The start date picker
+	 * @param {Date} date The selected date
+	 */
 	startDateSelect : function(startDatePicker, date) {
-		console.log('startDateSelect');
-		
 		this.selectedDate.startDate = date;
 		if (this.startDateButton.pressed) {
-			this.returnSelectedDate();
+			this.fireSelectEventAndResetSelectedDate();
 		} else { // rangeDateButton is pressed
 			if (this.selectedDate.endDate !== null) {
-				this.returnSelectedDate();
+				this.fireSelectEventAndResetSelectedDate();
 			}
 		}
 	},
 
-	// private
+	/**
+	 * Fonction handling the end date picker select event
+	 * @private
+	 * @param {Ext.picker.Date} endDatePicker The end date picker
+	 * @param {Date} date The selected date
+	 */
 	endDateSelect : function(endDatePicker, date) {
-		console.log('endDateSelect');
 		this.selectedDate.endDate = date;
 		if (this.endDateButton.pressed) {
-			this.returnSelectedDate();
+			this.fireSelectEventAndResetSelectedDate();
 		} else { // rangeDateButton is pressed
 			if (this.selectedDate.startDate !== null) {
-				this.returnSelectedDate();
+				this.fireSelectEventAndResetSelectedDate();
 			}
 		}
 	},
 
-	// private
-	resetselectedDate : function() {
+	/**
+	 * Resets the selected date
+	 */
+	resetSelectedDate : function() {
 		this.selectedDate = {
 			startDate : null,
 			endDate : null
@@ -295,22 +331,27 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 	},
 
 	/**
-	 * Reset the dates
+	 * Reset the selected date and set the pickers values to defaults
 	 */
 	resetDates : function() {
-		this.resetselectedDate();
+		this.resetSelectedDate();
 		this.startDatePicker.setValue(this.startDatePicker.defaultValue);
 		this.endDatePicker.setValue(this.endDatePicker.defaultValue);
 	},
 
-	// private
-	returnSelectedDate : function() {
+	/**
+	 * Fire a select event and reset the selected date
+	 * @private
+	 */
+	fireSelectEventAndResetSelectedDate : function() {
 		this.fireEvent('select', this, this.selectedDate);
-		this.resetselectedDate();
+		this.resetSelectedDate();
 	},
 
 	/**
 	 * Checks if the date is in the interval [minDate,maxDate] of the picker
+	 * @param {Ext.picker.Date} picker The picker
+	 * @return {Boolean} True if the date is in the interval
 	 */
 	isEnabledDate : function(picker) {
 		if ((picker.activeDate.getTime() - picker.minDate.getTime() >= 0) && (picker.maxDate.getTime() - picker.activeDate.getTime() >= 0)) {
@@ -320,7 +361,12 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 		}
 	},
 
-	// private
+	/**
+	 * Fonction handling the ok button click event
+	 * @private
+	 * @param {Ext.Button} button The ok button
+	 * @param {Boolean} state True if the button is pressed
+	 */
 	onOkButtonPress : function(button, state) {
 		if (state) {
 			if (this.startDateButton.pressed) {
@@ -329,7 +375,7 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 						startDate : this.startDatePicker.activeDate,
 						endDate : null
 					};
-					this.returnSelectedDate();
+					this.fireSelectEventAndResetSelectedDate();
 				}
 			} else if (this.endDateButton.pressed) {
 				if (this.isEnabledDate(this.endDatePicker)) {
@@ -337,7 +383,7 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 						startDate : null,
 						endDate : this.endDatePicker.activeDate
 					};
-					this.returnSelectedDate();
+					this.fireSelectEventAndResetSelectedDate();
 				}
 			} else {
 				if (this.isEnabledDate(this.startDatePicker) && this.isEnabledDate(this.endDatePicker)) {
@@ -345,7 +391,7 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 						startDate : this.startDatePicker.activeDate,
 						endDate : this.endDatePicker.activeDate
 					};
-					this.returnSelectedDate();
+					this.fireSelectEventAndResetSelectedDate();
 				}
 			}
 		}

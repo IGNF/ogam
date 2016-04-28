@@ -5,6 +5,10 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.layerspanel',
 
+    /**
+     * Initializes the controller.
+     * @private
+     */
     init: function() {
         Ext.apply(this.getView().getView(), {
             onCheckChange: Ext.Function.createInterceptor(this.getView().getView().onCheckChange,function(e) {
@@ -16,13 +20,9 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
     },
 
     /**
-     * Toggle the node checkbox
-     * 
-     * @param {Integer}
-     *            node The node
-     * @param {Boolean}
-     *            toggleCheck True to check, false to uncheck the box. If no
-     *            value was passed, toggles the checkbox
+     * Toggle the node checkbox.
+     * @param {Integer} node The node
+     * @param {Boolean} toggleCheck True to check, false to uncheck the box. If no value was passed, toggles the checkbox
      */
     toggleNodeCheckbox : function(node, toggleCheck) {
         // Change check status
@@ -31,10 +31,9 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
     },
 
     /**
-     * Return the layer node
-     * 
-     * @param {OpenLayers.Layer}
-     *            layer The layer
+     * Return the layer node.
+     * @param {OpenLayers.Layer} layer The layer
+     * @return {GeoExt.data.model.LayerTreeNode/Ext.data.NodeInterface} The layer node
      */
     getLayerNode : function(layer) {
         var node;
@@ -48,6 +47,11 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
         return node;
     },
 
+    /**
+     * Enable/Disable the passed layer node.
+     * @param {GeoExt.data.model.LayerTreeNode/Ext.data.NodeInterface} node
+     * @param {Boolean} enable True to enable the node
+     */
     updateLayerNode: function(node, enable) {
         if (enable) {
             node.getOlLayer().set('disabled', false);

@@ -11,9 +11,7 @@ Ext.define('OgamDesktop.ux.grid.column.Factory', function () {
     return {
         requires: [
         ],
-
         singleton: true,
-
         gridColumnTrueText : 'Yes',
         gridColumnFalseText : 'No',
         gridColumnUndefinedText : '&#160;',
@@ -24,9 +22,8 @@ Ext.define('OgamDesktop.ux.grid.column.Factory', function () {
 
         /**
          * Construct a checkbox field config from a record
-         * 
+         * @private
          * @return {Object} a Ext.grid.column.Boolean config object
-         * @hide
          */
         buildBooleanColumnConfig : function() {
             var columnConfig = {};
