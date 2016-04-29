@@ -119,7 +119,9 @@ gradlew text
 *.otf binary
 *.phar binary
 *.doc binary
+*.docx binary
 *.xls binary
+*.xlsx binary
 *.xlf binary
 *.mcd binary
 *.mpd binary
