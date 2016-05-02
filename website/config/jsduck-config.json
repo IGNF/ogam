@@ -13,7 +13,7 @@
     	"ol.*"
     ],
     "--images": [
-    	"/vagrant/ogam/website/config/screenshots/"
+    	"./screenshots/"
     ],
     "--builtin-classes": true
 }
