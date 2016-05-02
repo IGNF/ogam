@@ -18,18 +18,20 @@ class ModelDatabaseMetadataTest extends ControllerTestCase {
 	public function setUp() {
 		parent::setUp();
 
-		echo "SetUp() : " . PHP_EOL;
+		echo "SetUp : " . PHP_EOL;
 
 		// On instancie le service
 		$this->databaseModel = new Application_Model_Database_Metadata();
 
-		echo "databaseModel : " . print_r(databaseModel, true) . PHP_EOL;
+		echo "databaseModel : " . (empty($this->databaseModel) ? "empty" : "ok") . PHP_EOL;
 	}
 
 	/**
 	 * Clean up after the test case.
 	 */
 	public function tearDown() {
+		parent::tearDown();
+
 		echo "tearDown" . PHP_EOL;
 
 		// Ferme les connections

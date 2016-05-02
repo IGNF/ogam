@@ -26,6 +26,7 @@ class ModelDatabasePostgresqlTest extends ControllerTestCase {
 	 * Clean up after the test case.
 	 */
 	public function tearDown() {
+		parent::tearDown();
 
 		// Ferme les connections
 		$db = $this->databaseModel->getAdapter();
