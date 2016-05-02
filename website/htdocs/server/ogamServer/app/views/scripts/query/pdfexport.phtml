@@ -1,0 +1,59 @@
+<?php
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
+/**
+ * Export the detail as a PDF.
+ * @package views
+ */
+?>
+
+<h1 style="text-align: center"><?php echo $this->data['title']; ?></h1>
+<?php 
+foreach ($this->imgPath1 as $imgPath) { ?>
+    <img style="width:350px;display:block; position:absolute; left:10px; top:70px" src="<?php echo $imgPath; ?>" />
+    <?php
+}
+foreach ($this->imgPath2 as $imgPath) { ?>
+    <img style="width:350px;display:block; position:absolute; right:10px; top:70px" src="<?php echo $imgPath; ?>" />
+    <?php
+}?>
+
+<?php foreach ($this->data['formats'] as $format): ?>
+<h2><?php echo $format['title'];?>&nbsp;
+    <?php if($format['children_count'] > 0) :?>
+    <div style="font-size: 12px; padding-top: 8px;">
+        <?php echo ' ('.$format['children_count'].' '.$this->translate('child(ren)').')'; ?>
+    </div>
+    <?php endif; ?>
+</h2>
+<ul style="list-style-type:none;">
+    <?php foreach ($format['fields'] as $field): ?>
+    <li>
+        <?php if ($field['type'] === 'IMAGE' && !empty($field['value'])): ?>
+            <br/><img style="width: 50%" src="<?php echo $this->imgDirPath . $field['value']; ?>" />
+        <?php else: ?>
+            <b><?php echo $field['label']; ?> :</b>
+            <?php if ($field['inputType'] === 'CHECKBOX'): ?>
+                <?php echo $this->convertCheckboxValue($field); ?>
+            <?php elseif (empty($field['value'])): ?>
+                -
+            <?php elseif (is_array($field['value'])): ?>
+                <?php echo implode(', ', $field['value']); ?>
+            <?php else: ?>
+                <?php echo $field['value']; ?>
+            <?php endif; ?>
+        <?php endif; ?>
+    </li>
+    <?php endforeach; ?>
+</ul>
+<?php endforeach; ?>

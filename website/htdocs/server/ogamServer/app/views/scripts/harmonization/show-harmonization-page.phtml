@@ -1,0 +1,145 @@
+<?php
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
+
+/**
+ * View for the harmonization process.
+ * @package views
+ */
+?>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/integration/progressbar.js') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/integration/later.min.js') ?>"></script>
+
+<script type="text/javascript">
+	function confirmLauch() {
+		return confirm("<?php echo $this->translate('Confirm harmonization');?>");
+	}
+	function confirmDeletion() {
+		return confirm("<?php echo $this->translate('Confirm harmonization data deletion');?>");
+	}
+</script>
+
+
+<h1>
+  <?php echo $this->translate('Data harmonization module'); ?>
+</h1>
+
+<?php if(!empty($this->harmonizations)){ ?>
+<table class="sectiontable">
+<tr>
+	<th><?php echo $this->translate('Provider Id');?></th>
+	<th><?php echo $this->translate('Dataset');?></th>
+	<th><?php echo $this->translate('Harmonization Date');?></th>
+	<th><?php echo $this->translate('Status');?></th>
+	<th><?php echo $this->translate('Action');?></th>
+</tr>
+
+<?php
+
+$i = 0;
+foreach ($this->harmonizations as $harmonizationProcess) {
+?>
+<tr class="sectiontableentry<?=$i % 2?>">
+	<td><?php echo $harmonizationProcess->providerId; ?></td>
+	<td><?php echo $harmonizationProcess->datasetLabel; ?></td>
+	<td><?php echo $harmonizationProcess->date; ?></td>
+	<td>
+            <?php if ($harmonizationProcess->submissionStatus === "NOT_VALID") { ?>
+            	<?php echo $harmonizationProcess->status ?>
+                <img src="<?php echo $this->baseUrl('img/warning_orange.png') ?>" title="The submission has not been validated" />
+            <?php } else if ($harmonizationProcess->status === "OK") { ?>
+            	<?php echo $harmonizationProcess->status ?>
+                <img src="<?php echo $this->baseUrl('img/Green_tick.png') ?>" />
+            <?php } else if ($harmonizationProcess->status === "RUNNING") { ?>
+                <div class="tempStatusDiv" id="tempStatusDiv_<?php echo $harmonizationProcess->harmonizationId; ?>">
+                <script type="text/javascript">
+
+                var OgamDesktopIntegration = {};
+
+             	// Display the progress bar
+                display('progressBar<?php echo $harmonizationProcess->harmonizationId;?>', '', 0, '<?php echo $this->baseUrl('img/') ?>');
+
+             	// Refresh The status of the submission
+             	OgamDesktopIntegration.getStatus_<?php echo $harmonizationProcess->harmonizationId; ?> =  function () {
+
+             		var url = '<?php echo $this->baseUrl('Harmonization/get-status'); ?>';
+
+             		OgamDesktopIntegration.request = new XMLHttpRequest();
+             		OgamDesktopIntegration.request.onreadystatechange = function() {
+
+             			if (OgamDesktopIntegration.request.readyState == 4) { // 4: request finished and response is ready
+                            if (OgamDesktopIntegration.request.status == 200) { // Success
+
+	                            var rp = JSON.parse(OgamDesktopIntegration.request.responseText);
+	                            var src = "<?php echo $this->baseUrl('img/') ?>";
+	                            switch(rp.status){
+	                                case 'OK':
+	                                case 'WARNING':
+	                                case 'ERROR':
+	                                case 'CRASH':
+	                                    OgamDesktopIntegration.getStatusTask_<?php echo $harmonizationProcess->harmonizationId; ?>.clear();
+	                                    location.reload();
+	                                    break;
+	                                case 'RUNNING':
+	                                	total = rp.totalCount;
+	                                    if (total == 0) {
+	                                    	percentage = 0;
+	                                    } else {
+	                                    	percentage = rp.currentCount / total;
+	                                    }
+	                                    percentage = (percentage * 100) + 1;
+	                                    setLabel('progressBar<?php echo $harmonizationProcess->harmonizationId ?>', rp.taskName);
+	                                    setProgress('progressBar<?php echo $harmonizationProcess->harmonizationId ?>', percentage);
+	                                    break;
+	                                default:
+	                                    return;
+	                            }
+	                        } else { // Failure
+
+	                        }
+             			}
+             		};
+
+
+                    OgamDesktopIntegration.request.open("POST", url, true);
+                    OgamDesktopIntegration.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    OgamDesktopIntegration.request.send("DATASET_ID=<?php echo $harmonizationProcess->datasetId; ?>&PROVIDER_ID=<?php echo $harmonizationProcess->providerId; ?>&action=status");;
+
+                }
+                OgamDesktopIntegration.getStatusTask_<?php echo $harmonizationProcess->harmonizationId; ?> = later.setInterval(OgamDesktopIntegration.getStatus_<?php echo $harmonizationProcess->harmonizationId; ?>, later.parse.text('every 2 sec'));
+                </script>
+                </div>
+            <?php } else if ($harmonizationProcess->status == "") { ?>
+            <?php } else { //"ERROR" or "CRASH") ?>
+            	<?php echo
+		$harmonizationProcess->status ?>
+                <img src="<?php echo $this->baseUrl('img/Red_x.png') ?>" />
+            <?php } ?></td>
+	<td>
+	<?php if ($harmonizationProcess->submissionStatus !== "NOT_VALID") { ?>
+	    <a onclick="return confirmLauch();" href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?php echo $harmonizationProcess->datasetId;?>&PROVIDER_ID=<?php echo $harmonizationProcess->providerId;?>" ><?php echo $this->translate('Launch Harmonization');?></a>
+	    <br/><a onclick="return confirmDeletion();" href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'remove-harmonization-data'), null, true)?>?DATASET_ID=<?php echo $harmonizationProcess->datasetId;?>&PROVIDER_ID=<?php echo $harmonizationProcess->providerId;?>" ><?php echo $this->translate('Remove Harmonization Data');?></a>
+	<?php } ?>
+	</td>
+</tr>
+<?php
+	$i++;
+}
+?>
+</table>
+<?php } else { ?>
+<div class="no-submission"><?php echo $this->translate('No submission found');?></div>
+<?php } ?>
+<p class="subTableLink">
+    <a href="<?php echo $this->url(array('controller'=>'index'), null, true) ?>"><?php echo $this->translate('Back');?></a>
+</p>

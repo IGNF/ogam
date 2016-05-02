@@ -18,8 +18,8 @@ task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat 
 	copy {
   		from "build/libs"
   		into "${tomcatHome}/webapps"
-  		include "service_harmonization.war"
-  		rename ("service_harmonization.war", "${applicationName}HarmonizationService.war")
+  		include "service_harmonization-${project.version}.war"
+  		rename ("service_harmonization-${project.version}.war", "${applicationName}HarmonizationService.war")
 	}
 	
 	// Copy the config file

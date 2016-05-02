@@ -1,0 +1,28 @@
+// Import tasks from Sencha Cmd ANT file
+ant.importBuild('ogamDesktop/build.xml') { antTargetName ->
+    'sencha_' + antTargetName
+}
+
+
+// Launch JSDuck
+task jsduck(type:Exec, description: 'Launch JSDuck for documentation generation.') {
+  workingDir '.'
+  
+  def subdir = new File("./build/docs/")
+  if(!subdir.exists()) {
+  	if (subdir.mkdirs()) {
+  		println("created build dir") 
+  	}
+  }
+  
+  if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+  	commandLine 'jsduck'
+  } else {
+  	commandLine 'jsduck'
+  }
+  //args "./ogamDesktop/app", "./ext/packages/core", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
+  args "./ogamDesktop/app", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
+}
+
+
+defaultTasks 'clean','build'

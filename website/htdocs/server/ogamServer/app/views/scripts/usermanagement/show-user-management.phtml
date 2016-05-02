@@ -1,0 +1,47 @@
+<?php
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
+
+/**
+ * Default view for the user management module.
+ * @package views
+ */
+?>
+
+<h1>
+   <?php echo $this->translate('User Management Module');?>
+</h1>
+
+<div class="left-column">
+<div class="moduletable_menu">
+<h3>
+    <?php echo $this->translate('Select a menu');?>
+</h3>
+<ul id="appmenu" class="menu">
+
+<li>
+<a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-users'), null, true) ?>"> <?php echo $this->translate('Show the users');?></a>
+</li>
+
+<li>
+<a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-roles'), null, true) ?>"> <?php echo $this->translate('Show the roles');?></a>
+</li>
+
+<li>
+<a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-providers'), null, true) ?>"> <?php echo $this->translate('Show the providers');?></a>
+</li>
+
+</ul>
+
+</div>
+</div>
