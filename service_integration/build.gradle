@@ -17,8 +17,8 @@ task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat 
 	copy {
   		from "build/libs"
   		into "${tomcatHome}/webapps"
-  		include "service_integration.war"
-  		rename ("service_integration.war", "${applicationName}IntegrationService.war")
+  		include "service_integration-${project.version}.war"
+  		rename ("service_integration-${project.version}.war", "${applicationName}IntegrationService.war")
 	}
 	
 	// Copy the config file

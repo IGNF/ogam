@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="service_common/lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="service_common/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="service_common/lib/JRI.jar"/>
+	<classpathentry kind="lib" path="/libs_java/import/com/vividsolutions/jts/jts-1.13.jar"/>
 	<classpathentry kind="output" path="service_integration/classes"/>
 </classpath>

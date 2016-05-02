@@ -1,0 +1,38 @@
+<?php
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
+
+
+/**
+ * Javascript parameters for the map.
+ * @package views
+ */
+?>
+OgamDesktop = {
+	"map" : {
+		"zoomLevel" : <?php echo $this->zoomLevel ?>,
+		"x_center" : <?php echo $this->centerX ?>,
+		"y_center" : <?php echo $this->centerY ?>,
+		"resolutions" : [<?php echo $this->resolutions ?>],
+		"numZoomLevels" : [<?php echo $this->numZoomLevels ?>],
+		"projection" : '<?php echo $this->projection ?>',
+		"tilesize" : <?php echo $this->tilesize ?>,
+		"x_min" : <?php echo $this->bbox_x_min ?>,
+		"y_min" : <?php echo $this->bbox_y_min ?>,
+		"x_max" : <?php echo $this->bbox_x_max ?>,
+		"y_max" : <?php echo $this->bbox_y_max ?>,
+		"featureinfo_margin" : <?php echo $this->featureinfo_margin ?>,
+		"featureinfo_typename" : '<?php echo $this->featureinfo_typename ?>',
+		"featureinfo_maxfeatures" : <?php echo $this->featureinfo_maxfeatures ?>
+	}
+}

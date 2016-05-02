@@ -672,7 +672,7 @@ group by check_id]]></xml-property>
                         <cell id="903">
                             <text id="906">
                                 <property name="contentType">auto</property>
-                                <text-property name="content"><![CDATA[Eforest - Check(s) Report]]></text-property>
+                                <text-property name="content"><![CDATA[Check(s) Report]]></text-property>
                             </text>
                         </cell>
                         <cell id="904">
