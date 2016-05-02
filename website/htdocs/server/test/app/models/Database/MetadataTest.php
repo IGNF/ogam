@@ -18,8 +18,12 @@ class ModelDatabaseMetadataTest extends ControllerTestCase {
 	public function setUp() {
 		parent::setUp();
 
+		echo "SetUp();";
+
 		// On instancie le service
 		$this->databaseModel = new Application_Model_Database_Metadata();
+
+		echo "databaseModel : " . print_r(databaseModel, true);
 	}
 
 	/**
