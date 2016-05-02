@@ -66,13 +66,14 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // Copy the PHP files to the deploy directory
 task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.') {
 
+	// On CI server, $deployDir = /var/www/html
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
 
 	ant.buildnumber()
 
     from 'ogamServer' 
     
-    into "${deployDir}"
+    into "${deployDir}/server/ogamServer"
     
     exclude 'sessions/*'
     exclude 'tmp/*'

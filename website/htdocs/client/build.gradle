@@ -27,11 +27,12 @@ task jsduck(type:Exec, description: 'Launch JSDuck for documentation generation.
 // Copy the JS files to the deploy directory
 task deploy(type: Copy, description: 'Copy the JS files to the deploy directory.') {
 
+	// On CI server, $deployDir = /var/www/html
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
 
-    from '../public/OgemDeskTop' 
+    from '../public/' 
     
-    into "${deployDir}"
+    into "${deployDir}/public"
     
     // exclude 'sessions/*'
         
