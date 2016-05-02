@@ -64,7 +64,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 
 // Copy the PHP files to the deploy directory
-task deploy(type: Copy, dependsOn: cleanDeploy, description: 'Copy the PHP files to the deploy directory.') {
+task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.') {
 
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
 

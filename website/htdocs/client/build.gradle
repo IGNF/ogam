@@ -24,5 +24,21 @@ task jsduck(type:Exec, description: 'Launch JSDuck for documentation generation.
   args "./ogamDesktop/app", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
 }
 
+// Copy the JS files to the deploy directory
+task deploy(type: Copy, description: 'Copy the JS files to the deploy directory.') {
+
+	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
+
+    from '../public/OgemDeskTop' 
+    
+    into "${deployDir}"
+    
+    // exclude 'sessions/*'
+        
+    doLast {
+    	println "The client file have been deployed to ${deployDir}"
+    }
+}
+
 
 defaultTasks 'clean','build'
