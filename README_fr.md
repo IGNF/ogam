@@ -80,8 +80,6 @@ par :
 * Le site Web est sur http://192.168.50.4/, user admin / admin
 
 
-
-
 # Gradle
 
 Gradle est utilisé pour lancer la compilation des composants du projet.
