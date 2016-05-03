@@ -28,12 +28,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	alias:'widget.advancedrequestfieldset',
 	xtype: 'advanced-request-fieldset',
 	requires:['OgamDesktop.ux.request.RequestFieldSet'],
-	/**
-	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
-	 */
-	frame : true,
-	
-//<locale>
+
+	//<locale>
 	/**
 	 * @cfg {String} criteriaPanelTbarLabel The criteria Panel Tbar Label
 	 *      (defaults to <tt>'Criteria'</tt>)
@@ -70,28 +66,39 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 *      <tt>'Remove all the columns'</tt>)
 	 */
 	columnsPanelTbarRemoveAllButtonTooltip : 'Remove all the columns',
-//</locale>	
+    //</locale>
+
+    /**
+	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
+	 */
+	frame : true,
+
 	/**
 	 * @cfg {Integer} criteriaLabelWidth The criteria Label Width (defaults to
 	 *      <tt>120</tt>)
 	 */
 	criteriaLabelWidth : 120,
 
-
-	// private
-	initComponent : function() {
+	/**
+	 * Initialise the component.
+	 * @protected
+	 */
+	initComponent: function() {
 		this.callParent(arguments);
 		this.collapsible = true;
 		this.titleCollapse = true;
 		this.updateLayout();
 	},
 
-	initItems:function(){
+	/**
+	 * Initialise the items.
+	 * @protected
+	 */
+	initItems: function(){
 		/**
 		 * The panel used to show the criteria.
-		 * 
 		 * @property criteriaPanel
-		 * @type Ext.Panel
+		 * @type {Ext.Panel}
 		 */
 		this.criteriaPanel = new Ext.panel.Panel({
 			layout : {
@@ -149,7 +156,6 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 
 		/**
 		 * The panel used to show the columns.
-		 * 
 		 * @property columnsPanel
 		 * @type Ext.Panel
 		 */
@@ -217,14 +223,10 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 
 	/**
 	 * Add the selected criteria to the list of criteria.
-	 * 
-	 * @param {Ext.form.field.ComboBox}
-	 *            combo The criteria combobox
-	 * @param {Ext.data.Model[]}
-	 *            record The criteria combobox record to add
-	 * @param {Object}
-	 *            The options object passed to Ext.util.Observable.addListener.
-	 * @hide
+	 * @private
+	 * @param {Ext.form.field.ComboBox}	combo The criteria combobox
+	 * @param {Ext.data.Model[]} record The criteria combobox record to add
+	 * @param {Object} The options object passed to Ext.util.Observable.addListener.
 	 */
 	addSelectedCriteria : function(combo, records, eOpts) {
 		
@@ -245,11 +247,8 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 
 	/**
 	 * Add the criteria to the list of criteria.
-	 * 
-	 * @param {String}
-	 *            criteriaId The criteria id
-	 * @param {String}
-	 *            value The criteria value
+	 * @param {String} criteriaId The criteria id
+	 * @param {String} value The criteria value
 	 * @return {Object} The criteria object
 	 */
 	addCriteria : function(criteriaId, value) {
@@ -264,14 +263,10 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 
 	/**
 	 * Add the selected column to the column list.
-	 * 
-	 * @param {Ext.form.ComboBox}
-	 *            combo The column combobox
-	 * @param {Ext.data.Record[]}
-	 *            records The column combobox records to add
-	 * @param {Object}
-	 *            The options object passed to Ext.util.Observable.addListener.
-	 * @hide
+	 * @private
+	 * @param {Ext.form.ComboBox}combo The column combobox
+	 * @param {Ext.data.Record[]} records The column combobox records to add
+	 * @param {Object} The options object passed to Ext.util.Observable.addListener.
 	 */
 	addColumn : function(combo, records, eOpts) {
 		
@@ -294,11 +289,10 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	},
 
 	/**
-	 * Construct a column for the record
-	 * 
-	 * @param {Ext.data.Record}
-	 *            record The column combobox record to add
-	 * @hide
+	 * Construct a column for the record.
+	 * @private
+	 * @param {Ext.data.Record} record The column combobox record to add
+	 * @return {Object} The column config object
 	 */
 	getColumnConfig : function(record) {
 		var field = {
@@ -351,8 +345,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	},
 
 	/**
-	 * Construct the default columns
-	 * 
+	 * Construct the default columns.
 	 * @return {Array} An array of the default columns config
 	 */
 	getDefaultColumnsConfig : function() {
@@ -369,18 +362,17 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	},
 
 	/**
-	 * Adds all the columns of a column panel
+	 * Adds all the columns of a column panel.
 	 */
 	addAllColumns : function() {
 
 		if (this.columnsDS) {
 			this.addColumn(null, this.columnsDS.getData().items);
-		}
-		
+		}	
 	},
 
 	/**
-	 * Adds all the columns of a column panel
+	 * Adds all the columns of a column panel.
 	 */
 	removeAllColumns : function() {
 		this.columnsPanel.removeAll();

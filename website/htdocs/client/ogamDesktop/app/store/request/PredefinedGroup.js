@@ -1,3 +1,6 @@
+/**
+ * This class defines the OgamDesktop request predefined group store.
+ */
 Ext.define('OgamDesktop.store.request.PredefinedGroup',{
 	extend: 'Ext.data.Store',
 	model:'OgamDesktop.model.request.PredefinedGroup',

@@ -17,8 +17,7 @@
  * @class OgamDesktop.ux.form.field.ImageField
  * @extends Ext.ux.form.FileUploadField
  * @constructor Create a new ImageField
- * @param {Object}
- *            config
+ * @param {Object} config
  * @xtype imagefield
  */
 
@@ -30,7 +29,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 	'Ext.window.Window'
 	],
 	
-	/**
+	/*
 	 * Internationalization.
 	 */
 	emptyImageUploadFieldTest : 'Select an image',
@@ -46,7 +45,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 	uploadWindow : null,
 
 	/**
-	 * Initialise the component.
+	 * Initializes the component.
 	 */
 	initComponent : function() {
 
@@ -72,6 +71,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 
 	/**
 	 * Select the file
+	 * @private
 	 */
 	selectFile : function() {
 
@@ -124,6 +124,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 
 	/**
 	 * Upload the file
+	 * @private
 	 */
 	uploadFile : function() {
 		// Submit the image
@@ -146,7 +147,8 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 	},
 
 	/**
-	 * Upload success
+	 * Fonction handling the upload success
+	 * @private
 	 */
 	onUploadSuccess : function() {
 		// this.uploadWindow.close();
@@ -154,7 +156,8 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 	},
 
 	/**
-	 * Upload failure
+	 * Fonction handling the upload failure
+	 * @private
 	 */
 	onUploadFailure : function() {
 		// this.uploadWindow.close();
@@ -163,6 +166,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 
 	/**
 	 * Destroy the component
+	 * @private
 	 */
 	onDestroy : function() {
 		console.log('destroy');

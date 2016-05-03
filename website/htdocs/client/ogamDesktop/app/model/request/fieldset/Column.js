@@ -1,4 +1,5 @@
 /**
+ * This class defines the OgamDesktop request fieldset column model.
  * @deprecated
  */
 Ext.define('OgamDesktop.model.request.fieldset.Column', {

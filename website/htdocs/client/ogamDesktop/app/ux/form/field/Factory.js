@@ -20,11 +20,8 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
 
         /**
          * Construct a checkbox field config from a record
-         * 
-         * @param {Ext.data.Record}
-         *            record The field record
-         * @return a checkbox Field
-         * @hide
+         * @param {Ext.data.Record} record The field record
+         * @return {Object} a checkbox Field config
          */
         buildCheckboxFieldConfig : function(record) {
             field = {xtype : 'checkbox'};

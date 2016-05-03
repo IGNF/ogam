@@ -32,8 +32,11 @@ class Application_Service_QueryService {
 	 * The models.
 	 */
 	var $metadataModel;
+
 	var $genericModel;
+
 	var $resultLocationModel;
+
 	var $predefinedRequestModel;
 
 	/**
@@ -964,9 +967,9 @@ class Application_Service_QueryService {
 						$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName;
 						$baseUrls .= '&TRANSPARENT=true';
 						$baseUrls .= '&FORMAT=image%2Fpng';
-						$baseUrls .= '&SERVICE='.json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
-						$baseUrls .= '&VERSION='.json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
-						$baseUrls .= '&REQUEST='.json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'};
+						$baseUrls .= '&SERVICE=' . json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
+						$baseUrls .= '&VERSION=' . json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
+						$baseUrls .= '&REQUEST=' . json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'};
 						$baseUrls .= '&STYLES=';
 						$baseUrls .= '&BBOX=' . $bb->xmin . ',' . $bb->ymin . ',' . $bb->xmax . ',' . $bb->ymax;
 						$baseUrls .= '&WIDTH=300';
@@ -974,35 +977,33 @@ class Application_Service_QueryService {
 						$baseUrls .= '&map.scalebar=STATUS+embed';
 						$baseUrls .= '&SESSION_ID=' . session_id();
 						$baseUrls .= $mapservParams;
-	        				$versionWMS = json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
+						$versionWMS = json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
 						if (substr_compare($versionWMS, '1.3', 0, 3) === 0) {
-							$baseUrls .='&CRS=EPSG%3A'.$visualisationSRS;
+							$baseUrls .= '&CRS=EPSG%3A' . $visualisationSRS;
 						} elseif (substr_compare($versionWMS, '1.0', 0, 3) === 0 || substr_compare($versionWMS, '1.1', 0, 3) === 0) {
-							$baseUrls .= '&SRS=EPSG%3A'.$visualisationSRS;
+							$baseUrls .= '&SRS=EPSG%3A' . $visualisationSRS;
 						} else {
 							$this->logger->err("WMS version unsupported, please change the WMS version for the '$layerName' layer.");
 						}
-						$baseUrls .=';';
-
+						$baseUrls .= ';';
 					} elseif ($service === 'WMTS') {
 
 						$this->logger->err("WMTS service unsupported, please change the detail service for the '$layerName' layer.");
 
 						// TODO : Gets the tileMatrix, tileCol, tileRow corresponding to the bb
 						/*
-						$baseUrls .= $baseUrl . 'LAYER=' . $serviceLayerName;
-						$baseUrls .= '&SERVICE='.json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
-						$baseUrls .= '&VERSION='.json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
-						$baseUrls .= '&REQUEST='.json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'};
-						$baseUrls .= '&STYLE='.json_decode($detailService->serviceConfig)->{'params'}->{'STYLE'};
-						$baseUrls .= '&FORMAT='.json_decode($detailService->serviceConfig)->{'params'}->{'FORMAT'};
-						$baseUrls .= '&TILEMATRIXSET='.json_decode($detailService->serviceConfig)->{'params'}->{'TILEMATRIXSET'};
-						$baseUrls .= '&TILEMATRIX='.$tileMatrix;
-						$baseUrls .= '&TILECOL='.$tileCol;
-						$baseUrls .= '&TILEROW='.$tileRow;
-						$baseUrls .=';';
-						*/
-
+						 * $baseUrls .= $baseUrl . 'LAYER=' . $serviceLayerName;
+						 * $baseUrls .= '&SERVICE='.json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
+						 * $baseUrls .= '&VERSION='.json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
+						 * $baseUrls .= '&REQUEST='.json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'};
+						 * $baseUrls .= '&STYLE='.json_decode($detailService->serviceConfig)->{'params'}->{'STYLE'};
+						 * $baseUrls .= '&FORMAT='.json_decode($detailService->serviceConfig)->{'params'}->{'FORMAT'};
+						 * $baseUrls .= '&TILEMATRIXSET='.json_decode($detailService->serviceConfig)->{'params'}->{'TILEMATRIXSET'};
+						 * $baseUrls .= '&TILEMATRIX='.$tileMatrix;
+						 * $baseUrls .= '&TILECOL='.$tileCol;
+						 * $baseUrls .= '&TILEROW='.$tileRow;
+						 * $baseUrls .=';';
+						 */
 					} else {
 						$this->logger->err("'$service' service unsupported, please change the detail service for the '$layerName' layer.");
 					}
@@ -1014,42 +1015,6 @@ class Application_Service_QueryService {
 		}
 
 		return $baseUrls;
-	}
-
-	/**
-	 * Return the node children
-	 *
-	 * @param String $id
-	 *        	The identifier of the line
-	 * @return JSON representing the detail of the children.
-	 */
-	public function ajaxgetchildren($id) {
-		$keyMap = $this->_decodeId($id);
-
-		// Prepare a data object to be filled
-		$data = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
-
-		// Complete the primary key
-		foreach ($data->infoFields as $infoField) {
-			if (!empty($keyMap[$infoField->data])) {
-				$infoField->value = $keyMap[$infoField->data];
-			}
-		}
-
-		// Get children too
-		$websiteSession = new Zend_Session_Namespace('website');
-		$children = $this->genericModel->getChildren($data, $websiteSession->datasetId);
-
-		// Add the children
-		$json = "";
-		if (!empty($children)) {
-			foreach ($children as $listChild) {
-				$json .= $this->genericService->dataToGridDetailJSON($id, $listChild);
-			}
-		} else {
-			$json .= '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
-		}
-		return $json;
 	}
 
 	/**

@@ -5,6 +5,9 @@ Ext.define('OgamDesktop.view.map.toolbar.SnappingButtonController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.snappingbutton',
 
+    /**
+     * Initializes the controller.
+     */
     init : function() {
         var mapCmp = this.getView().up('#map-panel').child('mapcomponent');
         this.map = mapCmp.getMap();
@@ -16,6 +19,13 @@ Ext.define('OgamDesktop.view.map.toolbar.SnappingButtonController', {
         this.riseSnappingInteractionListenerKey = null;
     },
 
+    /**
+     * Fonction handling the toggle event on the split button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Boolean} pressed
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onSnappingButtonToggle : function (button, pressed, eOpts) {
         if (pressed) {
             this.map.addInteraction(this.drawingLayerSnappingInteraction);
@@ -34,11 +44,19 @@ Ext.define('OgamDesktop.view.map.toolbar.SnappingButtonController', {
         }
     },
 
+    /**
+     * Removes the interaction listener.
+     * @private
+     */
     removeRiseSnappingInteractionListener: function () {
         ol.Observable.unByKey(this.riseSnappingInteractionListenerKey);
         this.riseSnappingInteractionListenerKey = null;
     },
 
+    /**
+     * Updates the interaction listener.
+     * @private
+     */
     updateRiseSnappingInteractionListener: function () {
             // The snap interaction must be added last, as it needs to be the first to handle the pointermove event.
             if (this.riseSnappingInteractionListenerKey !== null){
@@ -56,18 +74,30 @@ Ext.define('OgamDesktop.view.map.toolbar.SnappingButtonController', {
             }, this);
     },
 
+    /**
+     * Destroys and removes the snapping interaction.
+     * @private
+     */
     destroyAndRemoveSnappingInteraction : function(){
         this.map.removeInteraction(this.snappingLayerSnappingInteraction);
         this.snappingLayerSnappingInteraction = null;
         this.updateRiseSnappingInteractionListener();
     },
 
+    /**
+     * Updates the snapping interaction.
+     * @private
+     */
     updateSnappingInteraction : function(){
         this.snappingLayerSnappingInteraction = new ol.interaction.Snap({
             source: this.mapCmpCtrl.getMapLayer('snappingLayer').getSource()
         });
     },
 
+    /**
+     * Updates and add the snapping interaction.
+     * @private
+     */
     updateAndAddSnappingInteraction : function(){
         this.map.removeInteraction(this.snappingLayerSnappingInteraction);
         this.updateSnappingInteraction();
@@ -75,6 +105,13 @@ Ext.define('OgamDesktop.view.map.toolbar.SnappingButtonController', {
         this.updateRiseSnappingInteractionListener();
     },
 
+    /**
+     * Fonction handling the checkchange event on the menu items.
+     * @private
+     * @param {Ext.menu.CheckItem} item The checked/unchecked item
+     * @param {Boolean} checked
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onSnappingButtonMenuItemCheckChange : function(item, checked, eOpts) {
         // Changes the checkbox behaviour to a radio button behaviour
         var menu = item.parentMenu;

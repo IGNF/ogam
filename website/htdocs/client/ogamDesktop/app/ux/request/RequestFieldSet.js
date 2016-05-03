@@ -19,33 +19,32 @@
  * @class OgamDesktop.ux.request.RequestFieldSet
  * @extends Ext.panel.Panel
  * @constructor Create a new RequestFieldSet
- * @param {Object}
- *            config The config object
+ * @param {Object} config The config object
  */
 Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	extend: 'Ext.panel.Panel',
-	requires:['Ext.data.JsonStore','OgamDesktop.store.Tree',
-	      'OgamDesktop.model.request.object.field.Code',
-	      'OgamDesktop.ux.form.field.*'],
+	requires:[
+		'Ext.data.JsonStore','OgamDesktop.store.Tree',
+	    'OgamDesktop.model.request.object.field.Code',
+	    'OgamDesktop.ux.form.field.*'
+	],
+
 	/**
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
 	frame : true,
-	
+
 	/**
 	 * @cfg {Integer} criteriaLabelWidth The criteria Label Width (defaults to
 	 *      <tt>120</tt>)
 	 */
 	criteriaLabelWidth : 120,
-	
-	// private
+
+	/**
+	 * Initializes the component.
+	 */
 	initComponent : function() {
-		/**
-		 * The criteria Data Store.
-		 * 
-		 * @property criteriaDS
-		 * @type Ext.data.JsonStore
-		 */
+
 		/*this.criteriaDS = new Ext.data.JsonStore({
 			idProperty : 'name',
 			fields : [ {
@@ -85,13 +84,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			],
 			data : this.criteria
 		});*/
-		this.criteriaDS = Ext.data.StoreManager.lookup(this.criteriaDS || 'ext-empty-store');
-		/**
-		 * The columns Data Store.
-		 * 
-		 * @property columnsDS
-		 * @type Ext.data.JsonStore
-		 */
+
 		/*this.columnsDS = new Ext.data.JsonStore({
 			idProperty : 'name',
 			fields : [ {
@@ -116,24 +109,33 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			],
 			data : this.columns
 		});*/
+
+		/**
+		 * The columns Data Store.
+		 * @property columnsDS
+		 * @type {Ext.data.JsonStore}
+		 */
+
+		/**
+		 * The criteria Data Store.
+		 * @property criteriaDS
+		 * @type {Ext.data.JsonStore}
+		 */
+		this.criteriaDS = Ext.data.StoreManager.lookup(this.criteriaDS || 'ext-empty-store');
 		this.callParent(arguments);
 
 	},
 
 	/**
 	 * Add the criteria to the list of criteria.
-	 * 
-	 * @param {String}
-	 *            criteriaId The criteria id
-	 * @param {String}
-	 *            value The criteria value
+	 * @param {String} criteriaId The criteria id
+	 * @param {String} value The criteria value
 	 * @return {Object} The criteria object
 	 */
 	addCriteria :Ext.emptyFn,
 
 	/**
-	 * Construct the default criteria
-	 * 
+	 * Construct the default criteria.
 	 * @return {Array} An array of the default criteria config
 	 */
 	getDefaultCriteriaConfig : function() {
@@ -163,8 +165,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	},
 
 	/**
-	 * Construct the filled criteria
-	 * 
+	 * Construct the filled criteria.
 	 * @return {Array} An array of the filled criteria config
 	 */
 	getFilledCriteriaConfig : function() {
@@ -198,16 +199,14 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 
 
 	/**
-	 * Construct a column for the record
-	 * 
-	 * @param {Ext.data.Record}
-	 *            record The column combobox record to add
-	 * @hide
+	 * Builds a column for the record.
+	 * @private
+	 * @param {Ext.data.Record} record The column combobox record to add
 	 */
 	getColumnConfig : Ext.emptyFn,
+
 	/**
-	 * Construct the default columns
-	 * 
+	 * Builds the default columns.
 	 * @return {Array} An array of the default columns config
 	 */
 	getDefaultColumnsConfig : function() {
@@ -223,13 +222,20 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 		return items;
 	},
 
-
-	
+	/**
+	 * Sets the criteria data store.
+	 * @param {Ext.data.Store} store The new store
+	 */
 	setCriteriaDS : function(store) {
 		this.criteriaPanel.removeAll();
 		this.criteriaDS = store;
 		this.criteriaPanel.add(Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig());
 	},
+
+	/**
+	 * Returns the criteria data store.
+	 * @return {Ext.data.Store} The criteria data store
+	 */
 	getCriteriaDS: function() {
 		return this.criteriaDS;
 	},
@@ -249,18 +255,14 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 		dateFormat : 'Y/m/d',
 
 		/**
-		 * Construct a criteria from the record
-		 * 
-		 * @param {Ext.data.Record}
-		 *            record The criteria combobox record to add. A serialized
-		 *            FormField object.
-		 * @hide
+		 * Builds a criteria from the record.
+		 * @private
+		 * @param {Ext.data.Record} record The criteria combobox record to add. A serialized FormField object.
+		 * @return {Object} The criteria config object
 		 */
 		getCriteriaConfig : function(record) {
 			var cls = this.self || OgamDesktop.ux.request.RequestFieldSet;
-//<debug>
-			//console.log(record);
-//</debug>			
+		
 			// If the field have multiple default values, duplicate the criteria
 			if (!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1) {
 				var fields = [];

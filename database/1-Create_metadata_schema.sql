@@ -457,7 +457,7 @@ constraint PK_TABLE_SCHEMA primary key (SCHEMA_CODE)
 );
 
 COMMENT ON COLUMN TABLE_SCHEMA.SCHEMA_CODE IS 'The code of the schema';
-COMMENT ON COLUMN TABLE_SCHEMA.SCHEMA_CODE IS 'The name of the schema (name in the database)';
+COMMENT ON COLUMN TABLE_SCHEMA.SCHEMA_NAME IS 'The name of the schema (name in the database)';
 COMMENT ON COLUMN TABLE_SCHEMA.LABEL IS 'The label of the schema';
 COMMENT ON COLUMN TABLE_SCHEMA.DESCRIPTION IS 'The description of the schema';
 

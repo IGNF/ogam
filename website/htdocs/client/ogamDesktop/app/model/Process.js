@@ -1,3 +1,6 @@
+/**
+ * This class defines the OgamDesktop process model.
+ */
 Ext.define('OgamDesktop.model.Process', {
 	extend: 'Ext.data.Model',
 	idProperty: 'id',
