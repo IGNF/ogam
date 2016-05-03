@@ -338,8 +338,6 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
 
-			$this->logger->info('$result : ' . print_r($result, true));
-
 			$field = new Application_Object_Website_PredefinedField();
 			$field->format = $result['format'];
 			$field->data = $result['data'];
