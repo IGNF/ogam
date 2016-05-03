@@ -21,38 +21,24 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 	layout: 'border',
 	bbar:[{ //TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
 		itemId:'CancelButton',
-		reference:'cancelButton',
-		type: 'button'
+		type: 'button',
+		text : 'Cancel',
+		tooltip : 'Cancel the request'
   	},'-',{
   		itemId:'ResetButton',
-  		reference:'resetButton',
-  		type: 'button'
+  		type: 'button',
+  		text : 'Reset',
+		tooltip : 'Reset the request form'
   	},{
   		xtype: 'tbspacer',
   		flex: 1
   	},{
   		itemId:'SubmitButton',
-  		reference:'submitButton',
   		type: 'button',
-  		action: 'submit'
+  		action: 'submit',
+  		text : 'Launch',
+		tooltip : 'Launch the request'
   	}],
-
-	locales:{
-		buttons:{
-			submit:{
-				text : 'Launch',
-				tooltip : 'Launch the request'
-			},
-			cancel:{
-				text : 'Cancel',
-				tooltip : 'Cancel the request'
-			},
-			reset :{
-				text : 'Reset',
-				tooltip : 'Reset the request form'
-			}
-		}
-	},
 
 	/**
 	 * @cfg String/object [requestSelectTitle] title for the advance request selector
@@ -71,19 +57,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 	 * @cfg string [processCBEmptyText] the processcomboBox empty text
 	 */
 	processCBEmptyText:'Please select a dataset...',
-	
-	/**
-	 * Initializes the component.
-	 */
-	initComponent:function(){
-
-		this.callParent(arguments);
-
-		// Locales
-		Ext.apply(this.lookupReference('cancelButton'), this.locales.buttons.cancel);
-		Ext.apply(this.lookupReference('resetButton'), this.locales.buttons.reset);
-		Ext.apply(this.lookupReference('submitButton'), this.locales.buttons.submit);
-	},
 
 	/**
 	 * Initializes the items.

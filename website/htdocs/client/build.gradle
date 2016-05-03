@@ -20,8 +20,8 @@ task jsduck(type:Exec, description: 'Launch JSDuck for documentation generation.
   } else {
   	commandLine 'jsduck'
   }
-  //args "./ogamDesktop/app", "./ext/packages/core", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
-  args "./ogamDesktop/app", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
+
+  args "--config", "../../config/jsduck-config.json", "--output", "./build/docs/", "./ogamDesktop/app", "./ogamDesktop/overrides", "./packages", "./ext/classic/classic/src", "./ext/packages"
 }
 
 // Copy the JS files to the deploy directory

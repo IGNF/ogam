@@ -14,56 +14,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }
     },
 
-//  /*
-//   * Internationalization.
-//   */
-//  popupTitle : 'Feature information',
-//  tabTip : 'The map with the request\'s results\'s location',
-////  layerPanelTitle : "Layers",
-////  layerPanelTabTip : "The layers's tree",
-////  legendPanelTitle : "Legends",
-////  legendPanelTabTip : "The layers's legends",
-//  panZoomBarControlTitle : "Zoom",
-//  navigationControlTitle : "Drag the map",
-//  zoomToFeaturesControlTitle : "Zoom to the features",
-//  zoomToResultControlTitle : "Zoom to the results",
-//  drawPointControlTitle : "Draw a point",
-//  drawLineControlTitle : "Draw a line",
-//  drawFeatureControlTitle : "Draw a polygon",
-//  modifyFeatureControlTitle : "Update the feature",
-//  tbarDeleteFeatureButtonTooltip : "Delete the feature",
-//  tbarValidateEditionButtonTooltip : "Validate the modification(s)",
-//  tbarCancelEditionButtonTooltip : "Cancel the modification(s)",
-//  tbarPreviousButtonTooltip : "Previous Position",
-//  tbarNextButtonTooltip : "Next Position",
-//  zoomBoxInControlTitle : "Zoom in",
-//  zoomBoxOutControlTitle : "Zoom out",
-//  zoomToMaxExtentControlTitle : "Zoom to max extend",
-//  snappingControlTitle:'Snapping',
-//  locationInfoControlTitle : "Get information about the result location",
-//  LayerSelectorEmptyTextValue: "Select Layer",
-//  selectFeatureControlTitle : "Select a feature from the selected layer",
-//  featureInfoControlTitle : "Get information about the selected layer",
-//  legalMentionsLinkText : "Legal Mentions",
-//  addGeomCriteriaButtonText : "Select an area",
-//  printMapButtonText : 'Print map',
-//  
-//  /*
-//   * @cfg {Boolean} hideLayerSelector if true hide the layer
-//   *      selector. The layer selector is required for the
-//   *      following tools.
-//   */
-//  hideLayerSelector : false,
-//  hideSnappingButton : false,
-//  hideGetFeatureButton : false,
-//  hideFeatureInfoButton : false,
-////  hideGeomCriteriaToolbarButton : true,
-//  /*
-//   * @cfg {Boolean} hidePrintMapButton if true hide the Print
-//   *      Map Button (defaults to false).
-//   */
-//  hidePrintMapButton : false,
-
     /**
      * Initializes the controller.
      * @private
