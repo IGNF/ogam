@@ -18,8 +18,6 @@ class ModelDatabaseMetadataTest extends ControllerTestCase {
 	public function setUp() {
 		parent::setUp();
 
-		echo "SetUp : " . PHP_EOL;
-
 		// On instancie le service
 		$this->databaseModel = new Application_Model_Database_Metadata();
 
@@ -32,8 +30,6 @@ class ModelDatabaseMetadataTest extends ControllerTestCase {
 	public function tearDown() {
 		parent::tearDown();
 
-		echo "tearDown" . PHP_EOL;
-
 		// Ferme les connections
 		$db = $this->databaseModel->getAdapter();
 		$db->closeConnection();
@@ -45,7 +41,6 @@ class ModelDatabaseMetadataTest extends ControllerTestCase {
 	 * Test de la fonction getTables().
 	 */
 	public function testGetTables() {
-		echo "testGetTables" . PHP_EOL;
 
 		// On récupère la liste des tables documentées dans le métamodèles
 		$tables = $this->databaseModel->getTables();
