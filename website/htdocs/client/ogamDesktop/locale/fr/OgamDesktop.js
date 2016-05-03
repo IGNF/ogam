@@ -189,23 +189,26 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 	override:'OgamDesktop.view.request.AdvancedRequest',
 	requestSelectTitle:'<b>Formulaires</b>',
 	processPanelTitle:'Type de données',
-	processCBEmptyText:'Selectionner un type de données...',
-	locales:{
-		buttons:{
-			submit:{
-				text : 'Rechercher',
-				tooltip : 'Lancer la requête'
-			},
-			cancel:{
-				text : 'Annuler',
-				tooltip : 'Annuler la requête'
-			},
-			reset :{
-				text : 'Réinitialiser',
-				tooltip : 'Réinitialiser le formulaire'
-			}
-		}
-	}
+	processCBEmptyText:'Selectionner un type de données...'
+}, function(overriddenClass){
+
+	var bbar = overriddenClass.prototype.bbar;
+
+	// Cancel button
+	Ext.apply(bbar[0], {
+		text : 'Annuler',
+		tooltip : 'Annuler la requête'
+	});
+	// Reset button
+	Ext.apply(bbar[2], {
+		text : 'Réinitialiser',
+		tooltip : 'Réinitialiser le formulaire'
+	});
+	// Submit button
+	Ext.apply(bbar[4], {
+		text : 'Rechercher',
+		tooltip : 'Lancer la requête'
+	});
 });
 
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
