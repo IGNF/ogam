@@ -21,7 +21,6 @@ class ModelDatabaseMetadataTest extends ControllerTestCase {
 		// On instancie le service
 		$this->databaseModel = new Application_Model_Database_Metadata();
 
-		echo "databaseModel : " . (empty($this->databaseModel) ? "empty" : "ok") . PHP_EOL;
 	}
 
 	/**
