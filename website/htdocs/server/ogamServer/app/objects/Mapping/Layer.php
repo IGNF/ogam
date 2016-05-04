@@ -152,13 +152,6 @@ class Application_Object_Mapping_Layer {
 	var $legendServiceName;
 
 	/**
-	 * Indicates the service to call for printing map in pdf.
-	 *
-	 * @var String
-	 */
-	var $printServiceName;
-
-	/**
 	 * Indicates the service to call for detail panel.
 	 *
 	 * @var String

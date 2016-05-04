@@ -930,11 +930,7 @@ class Application_Service_QueryService {
 		$baseUrls = '';
 
 		// Get the base urls for the services
-		if (!$proxy) {
-			$detailServices = $this->servicesModel->getPrintServices();
-		} else {
-			$detailServices = $this->servicesModel->getDetailServices();
-		}
+		$detailServices = $this->servicesModel->getDetailServices();
 
 		// Get the server name for the layers
 		$layerNames = explode(",", $detailsLayers);
@@ -947,13 +943,7 @@ class Application_Service_QueryService {
 			$serviceLayerName = $layer->serviceLayerName;
 
 			// Get the base Url for detail service
-			if (!$proxy) {
-				$detailServiceName = $layer->printServiceName;
-			} else {
-				if ($layer->detailServiceName != '') {
-					$detailServiceName = $layer->detailServiceName;
-				}
-			}
+			$detailServiceName = $layer->detailServiceName;
 
 			foreach ($detailServices as $detailService) {
 

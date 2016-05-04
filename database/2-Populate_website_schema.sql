@@ -19,7 +19,6 @@ insert into application_parameters (name, value, description) values ( 'errorRep
 insert into application_parameters (name, value, description) values ( 'plotErrorReport' , 'PlotErrorReport.rptdesign' , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'simplifiedReport' , 'SimplifiedReport.rptdesign' , 'REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'max_report_generation_time' , 480 , 'REPORT GENERATION SERVICE');
-insert into application_parameters (name, value, description) values ( 'mapReportGenerationService_url' , 'http://localhost:8080/print%2Dservlet%2D2.0%2DSNAPSHOT/pdf' , 'MAPFISH REPORT GENERATION SERVICE');
 insert into application_parameters (name, value, description) values ( 'useCache' , false , 'Cache');
 insert into application_parameters (name, value, description) values ( 'max_execution_time' , 480 , 'Timeout , 0 : no limit');
 insert into application_parameters (name, value, description) values ( 'memory_limit' , '1024M' , 'memory limit');
