@@ -141,7 +141,7 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
     	var me = this,
         picker = me.picker;
         me.maxValue = (typeof dt === "string" ? me.parseDate(dt) : dt);
-        if(me.menu){
+        if(picker){
             picker.startDatePicker.setMaxDate(me.maxValue);
             picker.endDatePicker.setMaxDate(me.maxValue);
         }
@@ -390,10 +390,6 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
 	            minDate : this.minValue,
 	            maxDate : this.maxValue,
 	            defaultValue : this.minDefaultValue,
-/*	            disabledDatesRE : this.disabledDatesRE,
-	            disabledDatesText : this.disabledDatesText,
-	            disabledDays : this.disabledDays,
-	            disabledDaysText : this.disabledDaysText,*/
 	            format : this.format,
 	            showToday : this.showToday,
 	            minText : format(this.minText, this.formatDate(this.minValue)),
@@ -402,11 +398,7 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
 	        endDatePickerConfig: {
 	            minDate : this.minValue,
 	            maxDate : this.maxValue,
-	            defaultValue : this.maxDefaultValue,/*
-	            disabledDatesRE : this.disabledDatesRE,
-	            disabledDatesText : this.disabledDatesText,
-	            disabledDays : this.disabledDays,
-	            disabledDaysText : this.disabledDaysText,*/
+	            defaultValue : this.maxDefaultValue,
 	            format : this.format,
 	            showToday : this.showToday,
 	            minText : format(this.minText, this.formatDate(this.minValue)),
