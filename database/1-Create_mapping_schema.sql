@@ -79,8 +79,6 @@ CREATE TABLE layer
   maxscale				INT,           -- Max scale of apparation
   minscale				INT,           -- Min scale of apparition
   has_legend    		INT, 	   	   -- If value = 1 is the layer has a legend that should be displayed
-  transitionEffect		VARCHAR(50),   -- Transition effect (resize or null)
-  imageFormat			VARCHAR(10),   -- Image format (PNG or JPEG)
   provider_id 		    VARCHAR(36),   -- If empty, the layer can be seen by any country, if not it is limited to one country
   activate_type         VARCHAR(36),   -- Group of event that will activate this layer (NONE, REQUEST)
   view_service_name	    VARCHAR(50),   -- Indicates the service for the map visualisation

@@ -266,9 +266,6 @@ class MapController extends AbstractOGAMController {
 				$out .= ', "transparent": false';
 			}
 
-			// Image Format
-			$out .= ', "format": "image/' . $layer->imageFormat . '"';
-
 			// Hidden
 			if ($layer->treeItem->isHidden) {
 				$out .= ', "isHidden": true';
@@ -306,11 +303,6 @@ class MapController extends AbstractOGAMController {
 			// Node Group
 			if (!empty($layer->treeItem->parentId)) {
 				$out .= ', "nodeGroup": "' . $layer->treeItem->parentId . '"';
-			}
-
-			// Transition effect
-			if (!empty($layer->transitionEffect)) {
-				$out .= ', "transitionEffect": "' . $layer->transitionEffect . '"';
 			}
 
 			// Layer visibility by default
