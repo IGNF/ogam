@@ -496,7 +496,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			if (record.type === 'ARRAY') {
 				field.xtype = 'tagfield';
 				field.stacked = true;
-				field.hiddenName = field.name = field.name + '[]';//FIXME : needed name with [] to extjs5.0.1  (hiddenName not used in submit ?)?			
+				field.hiddenName = field.name = field.name + '[]';// OGAM-582 - FIXME : needed name with [] to extjs5.0.1  (hiddenName not used in submit ?)?			
 				field.forceSelection = false;
 				field.filterPickList = false; // pb de perf avec les communes
 				field.triggerOnClick =false;
