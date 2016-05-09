@@ -130,7 +130,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
      * @param {Number} value The value to check
      * @return {Boolean} True if the number is valide
      */
-    validateValue : function(value){//TODO : override getErrors, recommended since 3.2
+    validateValue : function(value){// OGAM-595 - TODO : override getErrors, recommended since 3.2
     	var format =Ext.String.format;
     	
         if (!this.callParent(arguments)){ //super! not parent, in override case

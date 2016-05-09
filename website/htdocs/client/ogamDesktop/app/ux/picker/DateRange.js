@@ -21,7 +21,7 @@
  */
 
 Ext.define('OgamDesktop.ux.picker.DateRange', {
-    extend:'Ext.Panel',//TODO a component with tpl or menu may be lighter ?
+    extend:'Ext.Panel',// OGAM-597 - TODO a component with tpl or menu may be lighter ?
     alias: 'widget.daterangepicker',
 	alternateClassName:['OgamDesktop.ux.picker.DateRangePicker'],
 	requires:['Ext.picker.Date'],

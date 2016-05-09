@@ -22,7 +22,7 @@
  */
 Ext.define('OgamDesktop.ux.picker.Tree', {
     extend:'Ext.tree.TreePanel',
-    // alias: 'widget.treepicker',// TODO fix or overwrite this xtype (same Ext.ux.TreePicker)
+    // alias: 'widget.treepicker',// OGAM-599 - TODO fix or overwrite this xtype (same Ext.ux.TreePicker)
 	requires:['Ext.selection.TreeModel'],
 	padding : 5,
 	enableDD : false,

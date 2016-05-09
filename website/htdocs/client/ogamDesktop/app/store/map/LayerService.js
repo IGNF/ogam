@@ -1,7 +1,7 @@
 /**
  * This class defines the store for the layers services.
  * 
- * TODO  Server side, send two different jsons for services and layers
+ * OGAM-593 - TODO: Server side, send two different jsons for services and layers
  */
 Ext.define('OgamDesktop.store.map.LayerService',{
 	extend: 'Ext.data.Store',
