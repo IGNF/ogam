@@ -306,7 +306,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		// Parents
 		if (!Ext.isEmpty(this.parentsLinks)) {
 			this.parentsFS = new Ext.form.FieldSet({
-				// title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
+				title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
 				html : this.getEditLinks(this.parentsLinks)
 			});
 			centerPanelItems.push(this.parentsFS);
@@ -394,7 +394,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					}
 				}
 				this.childrenFS = new Ext.form.FieldSet({
-					// title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
+					title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
 					items : childrenItems,
 					cls : 'o-columnLabelColor'
 				});
@@ -530,21 +530,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					label : record.valueLabel
 				});
 			}
-			// codes : record.value;
-			
-			
-			var storeFields = [ {
-				name : 'code',
-				mapping : 'code'
-			}, {
-				name : 'label',
-				mapping : 'label'
-			} ];
 
 			if (record.subtype === 'DYNAMIC') {
 				// Case of a DYNAMODE unit list of codes
 				field.store = new Ext.data.JsonStore({
-					// fields : storeFields,
 					autoDestroy : true,
 					//autoLoad : true,
 					model:'OgamDesktop.model.request.object.field.Code',
@@ -685,8 +674,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				});
 			}
 			
-			//field.valueLabel = record.valueLabel;
-			//field.unit = record.unit;
 			field.store = {
 				xtype : 'jsonstore',
 				autoDestroy : true,
@@ -737,8 +724,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				});
 			}
 			
-			//field.valueLabel = record.valueLabel;
-			//field.unit = record.unit;
 			field.treePickerColumns = {
 			    items: [{
 			    	xtype: 'treecolumn',
@@ -809,13 +794,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// Set the default value
 		if (!Ext.isEmpty(record.value)) {
-			
-			// if (record.value instanceof Array) {
-			//	field.value = record.value.join(',');
-			// } else {
-			//	field.value = record.value;
-			// }
-		
 			field.value = record.value;
 		}
 
@@ -912,7 +890,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		var obj = action.result;
 
 		// Set to NOT DIRTY to avoid a warning when leaving the page
-		//this.dataEditForm.getForm().setNotDirty();
 		form.setValues(form.getValues());
 		
 		// We display the update message
@@ -970,7 +947,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 		
 		// Set to NOT DIRTY to avoid a warning when leaving the page
-		//this.dataEditForm.getForm().setNotDirty();
 		this.dataEditForm.saveState();
 
 		// Return to the index page
