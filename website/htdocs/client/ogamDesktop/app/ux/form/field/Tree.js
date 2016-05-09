@@ -122,7 +122,7 @@ Ext.define('OgamDesktop.ux.form.field.Tree', {
 			if(picker.isVisible()){
 				picker.hide();
 			} else {
-				picker.setSelection(null);//TODO : load node with path ?
+				picker.setSelection(null);// OGAM-596 - TODO : load node with path ?
 			    //picker.selectPath(node.getPath());ensureVisible
 				//picker.getSlectionModel().select(values);
 				picker.showBy(this.el, "tl-bl?");

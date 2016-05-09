@@ -50,7 +50,6 @@ Ext.define('OgamDesktop.Application', {
 	 * Fonction handling the application launch
 	 */
 	launch: function () {
-		// TODO - Launch the application
 		Ext.Loader.loadScript(Ext.manifest.OgamDesktop.requestServiceUrl +'getgridparameters');
 	}
 });

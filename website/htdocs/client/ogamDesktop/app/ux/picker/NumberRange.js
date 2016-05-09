@@ -21,7 +21,7 @@
  * @xtype numberrangepicker
  */
 Ext.define('OgamDesktop.ux.picker.NumberRange', {
-    extend:'Ext.Panel',//TODO a component with tpl or menu may be lighter ?
+    extend:'Ext.Panel',// OGAM-598 - TODO a component with tpl or menu may be lighter ?
     alias: 'widget.numberrangepicker',
 	alternateClassName:['OgamDesktop.ux.picker.NumberRangePicker'],
 	requires:['OgamDesktop.ux.form.field.TwinNumberField'],

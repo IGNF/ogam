@@ -54,21 +54,21 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
     /**
      * @cfg {String} dateFormat The date format for the date fields (defaults to <tt>'Y/m/d'</tt>)
      */
-    // TODO: Merge this param with the dateFormat param of the consultation panel
+    // OGAM-606 - TODO: Merge this param with the dateFormat param of the consultation panel
     dateFormat : 'Y/m/d',
     /**
      * @cfg {Number} tipImageDefaultWidth The tip Image Default Width. (Default to 200)
      */
-    // TODO: Merge this param with the tipImageDefaultWidth param of the consultation panel
+    // OGAM-607 - TODO: Merge this param with the tipImageDefaultWidth param of the consultation panel
     tipImageDefaultWidth : 200,
 	/**
 	 * @cfg {String} openNavigationButtonTitle The open Grid Details Button Title (defaults to <tt>'See the details'</tt>)
 	 */
-	openNavigationButtonTitle : "See the details", // TODO: Merge with the GridTab properties
+	openNavigationButtonTitle : "See the details", // OGAM-608 - TODO: Merge with the GridTab properties
 	/**
 	 * @cfg {String} openNavigationButtonTip The open Grid Details Button Tip (defaults to <tt>'Display the row details into the details panel.'</tt>)
 	 */
-	openNavigationButtonTip : "Display the row details into the details panel.", // TODO: Merge with the GridTab properties
+	openNavigationButtonTip : "Display the row details into the details panel.", // OGAM-609 - TODO: Merge with the GridTab properties
 
     /**
      * Return the pattern used to format a number.
@@ -78,7 +78,7 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
      * @return {String} the number format pattern
      */
     numberPattern : function(decimalSeparator, decimalPrecision, groupingSymbol) {
-        // TODO: Merge this function with the numberPattern fct of the consultation panel
+        // OGAM-610 - TODO: Merge this function with the numberPattern fct of the consultation panel
         // Building the number format pattern for use by ExtJS
         // Ext.util.Format.number
         var pattern = [], i;
@@ -99,7 +99,7 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
      * Render an Icon for the data grid.
      */
     /*renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
-        // TODO: Merge this function with the renderIcon fct of the result panel
+        // OGAM-611 - TODO: Merge this function with the renderIcon fct of the result panel
         if (!Ext.isEmpty(value)) {
             return '<img src="' + Ext.manifest.OgamDesktop.baseUrl + 'images/OgamDesktop/tools/nav/picture.png"'
             + 'ext:qtitle="' + columnLabel + ' :"'
@@ -132,9 +132,9 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
         var i;
         var columns = initConf.columns;
         for(i = 0; i<columns.length; i++){
-            // TODO: Merge this part with the same part of the result panel
+            // OGAM-612 - TODO: Merge this part with the same part of the result panel
             switch (columns[i].type) {
-            // TODO : BOOLEAN, CODE, COORDINATE, ARRAY,
+            // OGAM-613 - TODO : BOOLEAN, CODE, COORDINATE, ARRAY,
             // TREE
             case 'STRING':
             case 'INTEGER':

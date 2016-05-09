@@ -604,7 +604,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		case 'RADIO':
 		case 'TEXT':
 			switch (record.subtype) {
-			// TODO : BOOLEAN, COORDINATE
+			// OGAM-602 - TODO : BOOLEAN, COORDINATE
 			case 'INTEGER':
 				field.xtype = 'numberfield';
 				field.allowDecimals = false;

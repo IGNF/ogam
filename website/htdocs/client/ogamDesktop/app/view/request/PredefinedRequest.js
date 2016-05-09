@@ -1,6 +1,5 @@
 /**
- * TODO: Refactor this code for the next version
- * @deprecated
+ * This class manages the predefined request view.
  */
 Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 	extend: 'OgamDesktop.view.request.MainWin',

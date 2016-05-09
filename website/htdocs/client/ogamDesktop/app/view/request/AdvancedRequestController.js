@@ -1,8 +1,5 @@
 /**
  * This class manages the advanced request view.
- * 
- * TODO: Refactor this code for the next version
- * @deprecated
  */
 Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
     extend: 'Ext.app.ViewController',

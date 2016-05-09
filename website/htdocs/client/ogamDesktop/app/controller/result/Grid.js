@@ -121,10 +121,10 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 					Ext.applyIf(columnConfig, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig());
 					Ext.applyIf(fieldConfig, OgamDesktop.ux.data.field.Factory.buildCheckboxFieldConfig(field));
 					break;
-				// TODO: refactor the code below to have only the switch on the inputType 
+				// OGAM-586 - TODO: refactor the code below to have only the switch on the inputType 
 				default:
 					switch (field.type) {
-						// TODO : CODE, COORDINATE, ARRAY
+						// OGAM-587 - TODO : CODE, COORDINATE, ARRAY
 						case 'STRING':
 							columnConfig.xtype = 'gridcolumn';
 							break;
@@ -145,7 +145,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 							columnConfig.header = '';
 							columnConfig.width = 30;
 							columnConfig.sortable = false;
-							// TODO : createDelegate deprecated : using of Ext.Function.pass instead, not tested...
+							// OGAM-588 - TODO : createDelegate deprecated : using of Ext.Function.pass instead, not tested...
 							//columnConfig.renderer = Ext.Function.pass(this.renderIcon, [Ext.String.htmlEncode(field.label)], this);
 							break;
 						default:
@@ -209,8 +209,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	}//,
 
 	/*
-	 * Render an Icon for the data grid.
-	 * @TODO
+	 * OGAM-589 - TODO: Render an Icon for the data grid.
 	 */
 	/*renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
 		if (!Ext.isEmpty(value)) {

@@ -134,7 +134,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 					'<div class="o-navigation-childfieldset-table">',
 						'<tpl for="data">',
 							'<div class="o-navigation-childfieldset-tablerow">',
-								'<div class="o-navigation-childfieldset-leftcolumn" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{0}\');"></div>',//TODO: Throw an event
+								'<div class="o-navigation-childfieldset-leftcolumn" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{0}\');"></div>',// OGAM-614 - TODO: Throw an event
 								'<div class="o-navigation-childfieldset-rightcolumn">{1}</div>',
 							'</div>',
 //							'<tpl if="type == \'IMAGE\'">', 
