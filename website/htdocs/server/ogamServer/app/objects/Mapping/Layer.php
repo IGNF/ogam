@@ -100,20 +100,6 @@ class Application_Object_Mapping_Layer {
 	var $hasLegend;
 
 	/**
-	 * The transizion effect to use ('resize' or null).
-	 *
-	 * @var String
-	 */
-	var $transitionEffect;
-
-	/**
-	 * The image format (PNG, JPEG).
-	 *
-	 * @var String
-	 */
-	var $imageFormat;
-
-	/**
 	 * If empty, the layer can be seen by any country, if not it is limited to one country.
 	 *
 	 * @var String
