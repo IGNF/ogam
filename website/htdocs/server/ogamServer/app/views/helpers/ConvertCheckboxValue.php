@@ -56,9 +56,9 @@ class Application_Views_Helpers_ConvertCheckboxValue extends Zend_View_Helper_Ab
             case 'CODE':
                 $uncheckedValue = '0';
                 $checkedValue = '1';
-                if (fieldParameters['uncheckedValue'] && fieldParameters['checkedValue']) {
-                    $uncheckedValue = fieldParameters['uncheckedValue'];
-                    $checkedValue = fieldParameters['checkedValue'];
+                if ($fieldParameters['uncheckedValue'] && $fieldParameters['checkedValue']) {
+                    $uncheckedValue = $fieldParameters['uncheckedValue'];
+                    $checkedValue = $fieldParameters['checkedValue'];
                 } else {
                     $this->logger->warn('The uncheckedValue and checkedValue parameters are missing for a checkbox field with a "CODE" type');
                     $this->logger->warn('The checkbox field defaults values are set to "0" and "1"');
@@ -73,7 +73,7 @@ class Application_Views_Helpers_ConvertCheckboxValue extends Zend_View_Helper_Ab
                 break;
             default:
                 $booleanValue = null;
-                $this->logger->warn('The checkbox field value type is not specified for the "' . fieldParameters['type'] . '" type');
+                $this->logger->warn('The checkbox field value type is not specified for the "' . $fieldParameters['type'] . '" type');
         }
         switch (true) {
             case ($booleanValue === false): return $this->translator->translate('No'); break;
