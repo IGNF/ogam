@@ -93,7 +93,7 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
                         this.popup.show();
                     }
                 },
-                ol.nullFunction /* FIXME handle error */
+                ol.nullFunction /* OGAM-583 - FIXME handle error */
             ).call(this);
         },this);
     },

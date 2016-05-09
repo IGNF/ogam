@@ -75,7 +75,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 			store: '{fieldsets}'
 		},
 		region : 'center'
-		/*keys : { //FIXME
+		/*keys : { // OGAM-584 - FIXME
 			key : Ext.EventObject.ENTER,
 			fn : this.submitRequest,
 			scope : this
