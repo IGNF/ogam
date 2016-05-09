@@ -45,14 +45,6 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	hideWKT : false,
 
 	/**
-	 * @cfg {String} triggerClass An additional CSS class used to style the
-	 *      trigger button. The trigger will always get the class
-	 *      'x-form-trigger' by default and triggerClass will be appended if
-	 *      specified. (Default to 'x-form-map-trigger')
-	 */
-	//	triggerWrapCls : 'x-form-map-trigger',
-
-	/**
 	 * @cfg {Boolean} editable false to prevent the user from typing text
 	 *      directly into the field, the field will only respond to a click on
 	 *      the trigger to set the value. (defaults to false).
@@ -124,7 +116,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	triggers:  {
 		editMapTrigger: {
-			cls: Ext.baseCSSPrefix + 'form-search-trigger',//'o-ux-form-field-tools-map-addgeomcriteria',
+			cls: 'o-ux-form-field-tools-map-addgeomcriteria',
 			handler: function(field, trigger, event) {
 				if(field.isPressed){
 					field.onUnpress();
@@ -164,7 +156,6 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 * @private
 	 */
 	initComponent : function() {
-		var geometryFields = Ext.ComponentQuery.query('geometryfield');
 		this.callParent(arguments);
 	},
 
