@@ -64,7 +64,7 @@ jshint {
     tasks.jshint.source = fileTree(dir: './ogamDesktop/app/').matching { include '**/*.js' }
     tasks.jshint.dest = file("./build/reports/jshint.out")
     tasks.jshint.outputToStdOut = false
-    tasks.jshint.reporter = 'jslint'
+    tasks.jshint.reporter = 'checkstyle'
     jshint.options = ["expr": true, "unused": true]
     jshint.predef=["Ext":1]
 }
