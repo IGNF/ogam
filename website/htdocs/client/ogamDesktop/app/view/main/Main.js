@@ -2,12 +2,8 @@
  * This class is the main view for the application. It is specified in app.js as the
  * "autoCreateViewport" property. That setting automatically applies the "viewport"
  * plugin to promote that instance of this class to the body element.
- *
- * TODO - Replace this content of this view to suite the needs of your application.
  */
 Ext.define('OgamDesktop.view.main.Main', {
-	//extend: 'Ext.container.Container',
-
 	xtype: 'app-main',
 	requires:[
 		'Ext.plugin.Viewport'
@@ -21,8 +17,6 @@ Ext.define('OgamDesktop.view.main.Main', {
 	itemId: 'main',
 	controller: 'main',
 	extend: 'Ext.tab.Panel',
-	//width: Ext.getBody().getViewSize().width - 80,
-	//height: Ext.getBody().getViewSize().height - 160,
 	activeTab: 1,
 	homeButtonText: 'Home',
 	homeButtonTooltip: 'Go back to the home page',
@@ -86,6 +80,10 @@ Ext.define('OgamDesktop.view.main.Main', {
 			url:''
 		}
 	}],
+
+	/**
+	 * Initializes the component.
+	 */
 	initComponent : function() {
 		this.getTabBar().add(
 	        [{
@@ -100,10 +98,6 @@ Ext.define('OgamDesktop.view.main.Main', {
 	            }
 	        }]
 		);
-		/*Ext.on('resize',function(){
-			this.setWidth(Ext.getBody().getViewSize().width - 80);
-			this.setHeight(Ext.getBody().getViewSize().height - 160);
-		},this);*/
 		this.callParent(arguments);
 		var resultsgrid = Ext.ComponentQuery.query('results-grid')[0];
 		var nav = Ext.ComponentQuery.query('navigation-mainwin')[0];

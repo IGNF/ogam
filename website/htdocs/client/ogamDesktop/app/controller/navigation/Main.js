@@ -1,6 +1,9 @@
+/**
+ * This class defines a controller with actions related to navigation
+ */
 Ext.define('OgamDesktop.controller.navigation.Main',{
 	extend: 'Ext.app.Controller',
-	/**
+	/*
 	 * The refs to get the views concerned
 	 * and the control to define the handlers
 	 */
@@ -20,16 +23,21 @@ Ext.define('OgamDesktop.controller.navigation.Main',{
 	},
 	
 	/**
-	 *Call the openDetails method of navigation main win
-	 * 
-	 * @param {object}
-	 *            selected data
-	 *
+	 * Manage the 'clickIntoDetailGrid' event.
+	 * Open the detail tab corresponding to the result record.
+	 * @private
+	 * @param {Ext.data.Model} record The result record
 	 */
 	showDetails: function(record) {
 		this.getNavigationMainWin().openDetails(record);
 	},
 
+	/**
+	 * Manage the getLocationInfo event. 
+	 * Open the detail tab corresponding to the intersected location.
+	 * @private
+	 * @param {Ext.data.Model} evt The getLocationInfo event
+	 */
 	showResultDetail: function(evt) {
 		this.getDetailTab().configureDetailGrid(evt.result);
 		this.getDetailTab().expand();

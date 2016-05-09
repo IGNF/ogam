@@ -1,8 +1,5 @@
 /**
- * This class is the ViewModel for the advanced request view.
- * 
- * TODO: Refactor this code for the next version
- * @deprecated
+ * This class is the ViewModel for the map toolbar view.
  */
 Ext.define('OgamDesktop.view.map.MapToolbarModel', {
     extend: 'Ext.app.ViewModel',

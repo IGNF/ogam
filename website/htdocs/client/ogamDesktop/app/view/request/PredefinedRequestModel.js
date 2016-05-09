@@ -1,36 +1,31 @@
 /**
  * This class is the ViewModel for the advanced request view.
- * 
- * TODO: Refactor this code for the next version
- * @deprecated
  */
 Ext.define('OgamDesktop.view.request.PredefinedRequestModel', {
-    extend: 'Ext.app.ViewModel',
-    requires: [
-               'OgamDesktop.model.request.fieldset.Criterion'
-               ],//needed to fieldsets association !
-    alias: 'viewmodel.predefinedrequest',
-    data:{
-    	requete:undefined
-	},
-    formulas:{
-    	criteria: {
-            bind: {
-              bindTo: '{requete.selection}',
-              deep: true
-            },
-            get: function (c) {
-        		return c ? c.criteria().load({
-					type:'ajax',
-					url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetpredefinedrequestcriteria',
-					params:{
-						request_name:c.get('request_name')
-						},
-				 noCache:false
-				}): [];
-            }
-    	} 
-
-    }
-    
+  extend: 'Ext.app.ViewModel',
+  requires: [
+    'OgamDesktop.model.request.fieldset.Criterion'
+  ],//needed to fieldsets association !
+  alias: 'viewmodel.predefinedrequest',
+  data:{
+  	requete:undefined
+  },
+  formulas:{
+  	criteria: {
+      bind: {
+        bindTo: '{requete.selection}',
+        deep: true
+      },
+      get: function (c) {
+    		return c ? c.criteria().load({
+          type:'ajax',
+          url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetpredefinedrequestcriteria',
+          params:{
+            request_name:c.get('request_name')
+				  },
+		      noCache:false
+		    }): [];
+      }
+  	} 
+  }
 });

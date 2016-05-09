@@ -1,7 +1,7 @@
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
- * Â© European Union, 2008-2012
+ * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
@@ -25,7 +25,7 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
     alias:'widget.daterangefield',
     requires:['OgamDesktop.ux.picker.DateRange'],
 	
-	/**
+	/*
 	 * Internationalization.
 	 */ 
 	//<locale>
@@ -141,7 +141,7 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
     	var me = this,
         picker = me.picker;
         me.maxValue = (typeof dt === "string" ? me.parseDate(dt) : dt);
-        if(me.menu){
+        if(picker){
             picker.startDatePicker.setMaxDate(me.maxValue);
             picker.endDatePicker.setMaxDate(me.maxValue);
         }
@@ -224,8 +224,12 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
         return errors;
     },
 
-    // private
-    // return a range date object or null for failed parse operations
+    /**
+     * Return a range date object or null for failed parse operations
+     * @private
+     * @param {String/Date/RangeDate} value The range date to parse
+     * @return {Object} The parsed range date {startDate:{Date}, endDate:{Date}}
+     */
     parseRangeDate : function(value){
         if(!value){
             return null;
@@ -295,7 +299,12 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
         }
     },
 
-    // private
+    /**
+     * Format the passed date
+     * @private
+     * @param {Date/RangeDate} date The date to format
+     * @return {String} The formated date
+     */
     formatDate : function(date){
         if(Ext.isDate(date)){
             return this.callParent(arguments);
@@ -340,9 +349,12 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
     isRangeDate : function(rangeDate){
         return (Ext.isObject(rangeDate) && (Ext.isDate(rangeDate.startDate) || rangeDate.startDate === null) && (Ext.isDate(rangeDate.endDate) || rangeDate.endDate === null));
     },
-    // -------------------
-    /** v5 */
 
+    /**
+     * Create the date range picker
+     * @private
+     * @return {OgamDesktop.ux.picker.DateRange} The picker
+     */
     createPicker: function() {
         var me = this,
             format = Ext.String.format;
@@ -378,10 +390,6 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
 	            minDate : this.minValue,
 	            maxDate : this.maxValue,
 	            defaultValue : this.minDefaultValue,
-/*	            disabledDatesRE : this.disabledDatesRE,
-	            disabledDatesText : this.disabledDatesText,
-	            disabledDays : this.disabledDays,
-	            disabledDaysText : this.disabledDaysText,*/
 	            format : this.format,
 	            showToday : this.showToday,
 	            minText : format(this.minText, this.formatDate(this.minValue)),
@@ -390,11 +398,7 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
 	        endDatePickerConfig: {
 	            minDate : this.minValue,
 	            maxDate : this.maxValue,
-	            defaultValue : this.maxDefaultValue,/*
-	            disabledDatesRE : this.disabledDatesRE,
-	            disabledDatesText : this.disabledDatesText,
-	            disabledDays : this.disabledDays,
-	            disabledDaysText : this.disabledDaysText,*/
+	            defaultValue : this.maxDefaultValue,
 	            format : this.format,
 	            showToday : this.showToday,
 	            minText : format(this.minText, this.formatDate(this.minValue)),
@@ -404,17 +408,22 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
         );
     },
     
-
-    onSelect: function(m, d) {
+    /**
+     * Manage the select event
+     * @private
+     * @param {Ext.form.field.Picker} field This field instance
+     * @param {Object} value The value that was selected
+     */
+    onSelect: function(field, value) {
         var me = this;
-        me.setValue(d);
-        me.fireEvent('select', me, d);
+        me.setValue(value);
+        me.fireEvent('select', me, value);
         me.collapse();
     },
 
     /**
-     * @private
      * Sets the Date picker's value to match the current field value when expanding.
+     * @private
      */
     onExpand: function() {
         var value = this.getValue()
@@ -423,15 +432,31 @@ Ext.define('OgamDesktop.ux.form.field.DateRangeField', {
         this.picker.endDatePicker.setValue(values.endDate);
     },
 
+    /**
+     * Return a range date object or null for failed parse operations
+     * @private
+     * @param {String/Date/RangeDate} rawValue The rawValue to parse
+     * @return {Object/rawValue/null} The parsed range date {startDate:{Date}, endDate:{Date}}
+     */
     rawToValue: function(rawValue) {
         return this.parseRangeDate(rawValue) || rawValue || null;
     },
 
+    /**
+     * Parse and format the passed date
+     * @private
+     * @param {String/Date/RangeDate} value The value to parse
+     * @return {String} The formated date
+     */
     valueToRaw: function(value) {
         return this.formatDate(this.parseRangeDate(value));
     },
 
-    // @private
+    /**
+     * Returns the submit value for the dateRange which can be used when submitting forms.
+     * @private
+     * @return {String} The value to be submitted, or ''.
+     */
     getSubmitValue: function() {
         var value = this.getValue();
 

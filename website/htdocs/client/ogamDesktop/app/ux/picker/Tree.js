@@ -1,7 +1,7 @@
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
- * Â© European Union, 2008-2012
+ * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
@@ -20,31 +20,51 @@
  *            config The config object
  * @xtype treepicker
  */
-
 Ext.define('OgamDesktop.ux.picker.Tree', {
     extend:'Ext.tree.TreePanel',
-   // alias: 'widget.treepicker',// TODO fix or overwrite this xtype (same Ext.ux.TreePicker)
+    // alias: 'widget.treepicker',// OGAM-599 - TODO fix or overwrite this xtype (same Ext.ux.TreePicker)
 	requires:['Ext.selection.TreeModel'],
+	padding : 5,
+	enableDD : false,
+	animate : true,
+	border : true,
+	shadow:false,
+	rootVisible : false,
+	useArrows : true,
+	autoScroll : true,
+	containerScroll : true,
+	frame : true,
+	listeners : {
+		'itemdblclick' : {// Select the node on double click
+			fn : function(panel, node, item, index, event) {
+				this.fireEvent('choicemake',this, [node]);
+			}
+		}
+	},
 
-//<locale>
+	//<locale>
 	okButtonText : "ok",
-//</locale>
+	//</locale>
+
 	/**
 	 * @cfg {Number} height The height of this component in pixels (defaults to
 	 *      300).
 	 */
 	height : 300,
+
 	/**
 	 * @cfg {Number} width The width of this component in pixels (defaults to
 	 *      500).
 	 */
 	width : 500,
+
 	/**
 	 * @cfg {String} buttonAlign The alignment of any {@link #buttons} added to
 	 *      this panel. Valid values are 'right', 'left' and 'center' (defaults
 	 *      to 'center').
 	 */
 	buttonAlign : 'center',
+
 	/**
 	 * @cfg {String} cls An optional extra CSS class that will be added to this
 	 *      component's Element (defaults to 'x-menu-number-range-item'). This
@@ -71,26 +91,8 @@ Ext.define('OgamDesktop.ux.picker.Tree', {
 	 */
 	validationButton : null,
 
-	padding : 5,
-	enableDD : false,
-	animate : true,
-	border : true,
-	shadow:false,
-	rootVisible : false,
-	useArrows : true,
-	autoScroll : true,
-	containerScroll : true,
-	frame : true,
-	listeners : {
-		'itemdblclick' : {// Select the node on double click
-			fn : function(panel, node, item, index, event) {
-				this.fireEvent('choicemake',this, [node]);
-			}
-		}
-	},
-
 	/**
-	 * Initialise the component.
+	 * Initialise the component
 	 */
 	initComponent : function() {
 		/*
@@ -108,7 +110,7 @@ Ext.define('OgamDesktop.ux.picker.Tree', {
 		// Add the validation button
 		if (!this.hideValidationButton) {
 			this.buttons = [ this.validationButton ];
-//			this.height = this.height + 28;
+			// this.height = this.height + 28;
 		}
 
 		// Allow multiple selection in the picker
@@ -120,7 +122,10 @@ Ext.define('OgamDesktop.ux.picker.Tree', {
 	},
 
 	/**
-	 * Launched when the OK button is pressed.
+	 * Fonction handling the ok button click event
+	 * @private
+	 * @param {Ext.Button} button The ok button
+	 * @param {Boolean} state True if the button is pressed
 	 */
 	onOkButtonPress : function(button, state) {
 		if (state) {

@@ -1,19 +1,15 @@
 {
     "--title": "OGAM Desktop API",
-    "--warnings": [
-    	"-all:ext/packages/core"
-    ],
-    "--ignore-html": [
-        "locale",
-        "debug"
-    ],
+    "--ignore-html": "debug,locale",
+    "--warnings": "-extend,-link,-all:ext,-all:GeoExt",
     "--external": [
-    	"Ext.*",
-    	"OpenLayers.*",
-    	"ol.*"
+		// Note: Remove the following comments only for a local quick build
+	    //"Ext.*",
+    	//"OpenLayers.*",
+    	//"ol.*"
     ],
     "--images": [
-    	"/vagrant/ogam/website/config/screenshots/"
+    	"./screenshots/"
     ],
     "--builtin-classes": true
 }

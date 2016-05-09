@@ -1,5 +1,3 @@
-
-
 /**
  * An EditionPanel correspond to the complete page for editing/inserting a table
  * row.
@@ -12,29 +10,40 @@
  * @xtype editionpanel
  */
 Ext.define('OgamDesktop.view.edition.Panel', {
-		
 	extend: 'Ext.Panel',
+	xtype:'editionpage',
 	controller: 'editionpage',
 	requires:[
-	          'Ext.button.Button',
-	          'Ext.LoadMask',
-	          'Ext.form.Panel',
-	          'Ext.data.JsonStore','OgamDesktop.store.Tree',
-	          'OgamDesktop.model.request.object.field.Code'],
+		'Ext.button.Button',
+		'Ext.LoadMask',
+		'Ext.form.Panel',
+		'Ext.data.JsonStore','OgamDesktop.store.Tree',
+		'OgamDesktop.model.request.object.field.Code'],
 	uses:[
-'Ext.form.field.Tag',
-'OgamDesktop.ux.form.field.*',
-'Ext.form.field.*',
-'Ext.window.Toast'
-	      ],
-	xtype:'editionpage',
+		'Ext.form.field.Tag',
+		'OgamDesktop.ux.form.field.*',
+		'Ext.form.field.*',
+		'Ext.window.Toast'
+	],
+	itemId : 'editionPage',
+	padding : 20,
+	autoScroll : true,
+	fieldSetWidth : 700,
+	fieldWidth : 450,
+	layout : 'column',
+
 //<locale>	
-	/**
+	/*
 	 * Internationalization.
 	 */
+	/**
+	 * @cfg {String} geoMapWindowTitle The geo map window title (defaults to 'Draw the localisation').
+	 */
 	geoMapWindowTitle : 'Draw the localisation',
+	/**
+	 * @cfg {String} unsavedChangesMessage The unsaved changes message (defaults to 'You have unsaved changes').
+	 */
 	unsavedChangesMessage : 'You have unsaved changes',
-
 	/**
 	 * @cfg {String} title The title text to be used as innerHTML (html tags are
 	 *      accepted) to display in the panel <code>{@link #header}</code>
@@ -48,27 +57,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 *      will get created.
 	 */
 	title : 'Edition',
-//</locale>	
-
-	/**
-	 * @cfg {String} dataId Unique identifier of the data being edited.
-	 */
-	dataId : '',
-	/**
-	 * @config {string}
-	 * @required
-	 */
-	dataTitle:'',
-
-	/**
-	 */
-	itemId : 'editionPage',
-	padding : 20,
-	autoScroll : true,
-	
-	fieldSetWidth : 700,
-	fieldWidth : 450,
-//<locale>
 	/**
 	 * @cfg {String} parentsFSTitle The parents FieldSet Title (defaults to
 	 *      'Parents Summary').
@@ -150,6 +138,16 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 */
 	tipEditPrefix : 'Edit the',
 //</locale>	
+
+	/**
+	 * @cfg {String} dataId Unique identifier of the data being edited.
+	 */
+	dataId : '',
+	/**
+	 * @config {string}
+	 * @required
+	 */
+	dataTitle:'',
 	/**
 	 * @cfg {Numeric} tipDefaultWidth The tip Default Width (defaults to '350').
 	 */
@@ -163,9 +161,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 *      'EDIT').
 	 */
 	editMode : 'EDIT',
-
-	layout : 'column',
-
 	/**
 	 * @cfg {Ext.FormPanel} the form panel.
 	 */
@@ -182,13 +177,15 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 * @cfg {Ext.Button} the validate button.
 	 */
 	validateButton : null,
-
 	/**
 	 * @cfg {Ext.LoadMask} Loading mask
 	 */
 	loadMask : null,
 
-	// private
+	/**
+	 * Initializes the component.
+	 * @private
+	 */
 	initComponent : function() {
 
 		// Header
@@ -309,7 +306,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		// Parents
 		if (!Ext.isEmpty(this.parentsLinks)) {
 			this.parentsFS = new Ext.form.FieldSet({
-				// title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
+				title : '&nbsp;' + this.parentsFSTitle + '&nbsp;',
 				html : this.getEditLinks(this.parentsLinks)
 			});
 			centerPanelItems.push(this.parentsFS);
@@ -397,7 +394,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					}
 				}
 				this.childrenFS = new Ext.form.FieldSet({
-					// title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
+					title : '&nbsp;' + this.childrenFSTitle + '&nbsp;',
 					items : childrenItems,
 					cls : 'o-columnLabelColor'
 				});
@@ -431,12 +428,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 	/**
 	 * Add the form items to the field form.
-	 * 
-	 * @param {Ext.data.Record}
-	 *            records The records
+	 * @private
+	 * @param {Ext.data.Record} records The records
 	 */
-	buildFieldForm : function(store, records) { console.log('this: ',this)
-		console.log('load','buildFieldForm', arguments );
+	buildFieldForm : function(store, records) {
 		var dataProvider = '';
 
 		// Transform the JSON to an array of Form Field objects
@@ -481,11 +476,9 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 	/**
 	 * Construct a FieldForm from the record
-	 * 
-	 * @param {Ext.data.Record}
-	 *            record The criteria combobox record to add
+	 * @private
+	 * @param {Ext.data.Record} record The criteria combobox record to add
 	 * @return a Form Field
-	 * @hide
 	 */
 	getFieldConfig : function(record) {
 		var field = {};
@@ -503,7 +496,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			if (record.type === 'ARRAY') {
 				field.xtype = 'tagfield';
 				field.stacked = true;
-				field.hiddenName = field.name = field.name + '[]';//FIXME : needed name with [] to extjs5.0.1  (hiddenName not used in submit ?)?			
+				field.hiddenName = field.name = field.name + '[]';// OGAM-582 - FIXME : needed name with [] to extjs5.0.1  (hiddenName not used in submit ?)?			
 				field.forceSelection = false;
 				field.filterPickList = false; // pb de perf avec les communes
 				field.triggerOnClick =false;
@@ -537,21 +530,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					label : record.valueLabel
 				});
 			}
-//				codes : record.value;
-			
-			
-			var storeFields = [ {
-				name : 'code',
-				mapping : 'code'
-			}, {
-				name : 'label',
-				mapping : 'label'
-			} ];
 
 			if (record.subtype === 'DYNAMIC') {
 				// Case of a DYNAMODE unit list of codes
 				field.store = new Ext.data.JsonStore({
-//					fields : storeFields,
 					autoDestroy : true,
 					//autoLoad : true,
 					model:'OgamDesktop.model.request.object.field.Code',
@@ -622,7 +604,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		case 'RADIO':
 		case 'TEXT':
 			switch (record.subtype) {
-			// TODO : BOOLEAN, COORDINATE
+			// OGAM-602 - TODO : BOOLEAN, COORDINATE
 			case 'INTEGER':
 				field.xtype = 'numberfield';
 				field.allowDecimals = false;
@@ -692,8 +674,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				});
 			}
 			
-			//field.valueLabel = record.valueLabel;
-			//field.unit = record.unit;
 			field.store = {
 				xtype : 'jsonstore',
 				autoDestroy : true,
@@ -744,8 +724,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				});
 			}
 			
-			//field.valueLabel = record.valueLabel;
-			//field.unit = record.unit;
 			field.treePickerColumns = {
 			    items: [{
 			    	xtype: 'treecolumn',
@@ -816,15 +794,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// Set the default value
 		if (!Ext.isEmpty(record.value)) {
-			
-//			if (record.value instanceof Array) {
-//				field.value = record.value.join(',');
-//			} else {
-//				field.value = record.value;
-//			}
-		
 			field.value = record.value;
-
 		}
 
 		// Check if the field is mandatory
@@ -908,11 +878,9 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 	/**
 	 * Ajax Edit success.
-	 * 
-	 * @param {Ext.form.BasicForm}
-	 *            form
-	 * @param {Ext.form.Action}
-	 *            action
+	 * @private
+	 * @param {Ext.form.BasicForm} form
+	 * @param {Ext.form.Action} action
 	 */
 	editSuccess : function(form, action) {
 
@@ -922,7 +890,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		var obj = action.result;
 
 		// Set to NOT DIRTY to avoid a warning when leaving the page
-		//this.dataEditForm.getForm().setNotDirty();
 		form.setValues(form.getValues());
 		
 		// We display the update message
@@ -952,11 +919,9 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 	/**
 	 * Ajax Edit failure.
-	 * 
-	 * @param {Ext.form.BasicForm}
-	 *            form
-	 * @param {Ext.form.Action}
-	 *            action
+	 * @private
+	 * @param {Ext.form.BasicForm} form
+	 * @param {Ext.form.Action} action
 	 */
 	editFailure : function(form, action) {
 		var obj = Ext.util.JSON.decode(action.response.responseText);
@@ -970,6 +935,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 	/**
 	 * Ajax success common function
+	 * @private
 	 */
 	deleteSuccess : function(response, opts) {
 
@@ -981,7 +947,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 		
 		// Set to NOT DIRTY to avoid a warning when leaving the page
-		//this.dataEditForm.getForm().setNotDirty();
 		this.dataEditForm.saveState();
 
 		// Return to the index page
@@ -1002,6 +967,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 	/**
 	 * Ajax failure common function
+	 * @private
 	 */
 	deleteFailure : function(response, opts) {
 		console.log(response);
@@ -1016,9 +982,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 	/**
 	 * Generate the html links
-	 * 
-	 * @param {Object}
-	 *            links A links object
+	 * @param {Object} links A links object
 	 * @return {String} The html links
 	 */
 	getEditLinks : function(links) {
@@ -1040,9 +1004,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 		return html;
 	},
-	
-	
-	
+
     /**
 	 * Check if the form is dirty before to close the page and launch an alert.
 	 */

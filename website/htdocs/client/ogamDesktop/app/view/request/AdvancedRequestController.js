@@ -1,14 +1,9 @@
 /**
  * This class manages the advanced request view.
- * 
- * TODO: Refactor this code for the next version
- * @deprecated
  */
 Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
     extend: 'Ext.app.ViewController',
-
     alias: 'controller.advancedrequest', // enable "controller: 'advancedrequest'" in the AdvancedRequest view
-
     config: {
     	listen: {
     		store:{
@@ -32,14 +27,13 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 
     /**
      * Set the default process after the process store load.
-     * 
      * @param {Ext.data.Store} this
      * @param {Ext.data.Model[]} records An array of records
      * @param {Boolean} successful True if the operation was successful.
      * @param {Object} eOpts The options object passed to Ext.util.Observable.addListener.
      * @private
      */
-    onProcessStoreLoad:function(store, records, successful, options) {
+    onProcessStoreLoad: function(store, records, successful, options) {
     	var defaultRecord;
 
 		if(successful){
@@ -57,9 +51,8 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 	/**
 	 * Submit the current request form
 	 * @param button submit boutton
-	 *
 	 */
-    onSubmit:function(button){
+    onSubmit: function(button){
     	button.fireEvent('submitRequest', this);//the form may fire beforeaction
     	
     	Ext.Ajax.on('beforerequest', function(conn, options) {
@@ -93,15 +86,23 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 		});
 	},
 
-	onUpdateDataset:function(sel, value, old){
+	/**
+	 * Fonction handling the select event on the process combobox.
+	 * @param {Ext.form.field.ComboBox} combo This combo box
+     * @param {Ext.data.Model/Ext.data.Model[]} record With {@link #multiSelect}
+     * `false`, the value will be a single record. With {@link #multiSelect} `true`, the 
+     * value will be an array of records.
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}.
+	 */
+	onUpdateDataset:function(combo, record, eOpts){
 		this.getViewModel().set('userchoices',[]);
-		 sel.selection.fieldsets({success:function(records){
+		 combo.selection.fieldsets({success:function(records){
 			this.getViewModel().set('fieldsets',records);
 		 }, scope:this});
 	},
 
 	/**
-	 * Cancel the current ajax request
+	 * Cancels the current ajax request.
 	 */
 	onCancel: function(button) {
 		if (this.requestConn && this.requestConn !== null) {
@@ -110,7 +111,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 	},
 
 	/**
-	 * Reset the current request form
+	 * Resets the current request form.
 	 */
 	onReset : function(button) {
 		this.lookupReference('advancedRequestSelector').reloadForm();

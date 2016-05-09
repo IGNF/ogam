@@ -1,3 +1,6 @@
+/**
+ * This class defines the OgamDesktop tree store.
+ */
 Ext.define('OgamDesktop.store.Tree',{
 	extend:'Ext.data.TreeStore',
 	model:'OgamDesktop.model.Node',

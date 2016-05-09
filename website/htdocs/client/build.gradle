@@ -1,3 +1,21 @@
+plugins {
+  id "com.eriwen.gradle.js" version "2.12.0"
+}
+
+// We use Maven repository
+repositories {
+    mavenCentral()
+}
+
+javascript.source {
+	dev {
+        js {
+            srcDir "./ogamDesktop/app"
+            include "*.min.js"
+        }
+    }
+}
+
 // Import tasks from Sencha Cmd ANT file
 ant.importBuild('ogamDesktop/build.xml') { antTargetName ->
     'sencha_' + antTargetName
@@ -20,8 +38,35 @@ task jsduck(type:Exec, description: 'Launch JSDuck for documentation generation.
   } else {
   	commandLine 'jsduck'
   }
-  //args "./ogamDesktop/app", "./ext/packages/core", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
-  args "./ogamDesktop/app", "--output", "./build/docs/", "--config", "../../config/jsduck-config.json"
+
+  args "--config", "../../config/jsduck-config.json", "--output", "./build/docs/", "./ogamDesktop/app", "./ogamDesktop/overrides", "./packages", "./ext/classic/classic/src", "./ext/packages"
+}
+
+// Copy the JS files to the deploy directory
+task deploy(type: Copy, description: 'Copy the JS files to the deploy directory.') {
+
+	// On CI server, $deployDir = /var/www/html
+	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
+
+    from '../public/' 
+    
+    into "${deployDir}/public"
+    
+    // exclude 'sessions/*'
+        
+    doLast {
+    	println "The client file have been deployed to ${deployDir}"
+    }
+}
+
+
+jshint {
+    tasks.jshint.source = fileTree(dir: './ogamDesktop/app/').matching { include '**/*.js' }
+    tasks.jshint.dest = file("./build/reports/jshint.out")
+    tasks.jshint.outputToStdOut = false
+    tasks.jshint.reporter = 'checkstyle'
+    jshint.options = ["expr": true, "unused": true]
+    jshint.predef=["Ext":1]
 }
 
 

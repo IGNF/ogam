@@ -16,14 +16,14 @@
  * @class OgamDesktop.ux.form.field.GeometryField
  * @extends Ext.form.TriggerField
  * @constructor Create a new GeometryField
- * @param {Object}
- *            config
+ * @param {Object} config
  * @xtype geometryfield
  */
 
 Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	extend: 'Ext.form.field.Text',
 	xtype: 'geometryfield',
+
     /**
      * @event featureEditionValidated
      * Fires when the feature edition on the map is validated.
@@ -34,7 +34,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
      * Fires when the feature edition on the map is cancelled.
      */
 
-	/**
+	/*
 	 * Internationalization.
 	 */
 	fieldLabel : 'Location',
@@ -43,14 +43,6 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 	 * @cfg {Boolean} hideWKT if true hide the WKT value.
 	 */
 	hideWKT : false,
-
-	/**
-	 * @cfg {String} triggerClass An additional CSS class used to style the
-	 *      trigger button. The trigger will always get the class
-	 *      'x-form-trigger' by default and triggerClass will be appended if
-	 *      specified. (Default to 'x-form-map-trigger')
-	 */
-	//	triggerWrapCls : 'x-form-map-trigger',
 
 	/**
 	 * @cfg {Boolean} editable false to prevent the user from typing text
@@ -124,7 +116,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	triggers:  {
 		editMapTrigger: {
-			cls: Ext.baseCSSPrefix + 'form-search-trigger',//'o-ux-form-field-tools-map-addgeomcriteria',
+			cls: 'o-ux-form-field-tools-map-addgeomcriteria',
 			handler: function(field, trigger, event) {
 				if(field.isPressed){
 					field.onUnpress();
@@ -137,6 +129,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	/**
 	 * Function handling the press event
+	 * @private
 	 */
 	onPress : function () {
 		if(!this.isPressed){
@@ -148,6 +141,7 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	/**
 	 * Function handling the unPress event
+	 * @private
 	 */
 	onUnpress : function () {
 		if(this.isPressed){
@@ -159,14 +153,15 @@ Ext.define('OgamDesktop.ux.form.field.GeometryField',{
 
 	/**
 	 * Initialise the component.
+	 * @private
 	 */
 	initComponent : function() {
-		var geometryFields = Ext.ComponentQuery.query('geometryfield');
 		this.callParent(arguments);
 	},
 
 	/**
 	 * On destroy of the geometry field, deactivate query tbar buttons
+	 * @private
 	 */
 	onDestroy: function() {
 		this.fireEvent('geomCriteriaDestroy', this);

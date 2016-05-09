@@ -1,4 +1,5 @@
 /**
+ * This class defines the OgamDesktop request fieldset criterion model.
  * @deprecated
  */
 Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
@@ -23,6 +24,10 @@ Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
     	}
     },
 
+    /**
+     * Return the criteria field config
+     * @return {Object} The criteria field config
+     */
     getCriteriaField: function() {
         return OgamDesktop.ux.request.RequestFieldSet.getCriteriaConfig(this.getData(), true);
     }

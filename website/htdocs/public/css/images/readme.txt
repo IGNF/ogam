@@ -1,1 +1,0 @@
-This directory is necessary only for the edition (remove it after the edition upgrade)

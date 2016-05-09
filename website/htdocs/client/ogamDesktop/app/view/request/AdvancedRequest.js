@@ -8,20 +8,38 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 	extend: 'OgamDesktop.view.request.MainWin',
 	alias: 'widget.advanced-request',
 	xtype: 'advanced-request',
-
 	requires: [
 		'OgamDesktop.view.request.AdvancedRequestController',
 		'OgamDesktop.view.request.AdvancedRequestModel',
 		'Ext.form.field.ComboBox'
 	],
-
 	controller: 'advancedrequest',
 	viewModel: {
 		type: 'advancedrequest'
 	},
 	session: {},
-
 	layout: 'border',
+	bbar:[{ //TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
+		itemId:'CancelButton',
+		type: 'button',
+		text : 'Cancel',
+		tooltip : 'Cancel the request'
+  	},'-',{
+  		itemId:'ResetButton',
+  		type: 'button',
+  		text : 'Reset',
+		tooltip : 'Reset the request form'
+  	},{
+  		xtype: 'tbspacer',
+  		flex: 1
+  	},{
+  		itemId:'SubmitButton',
+  		type: 'button',
+  		action: 'submit',
+  		text : 'Launch',
+		tooltip : 'Launch the request'
+  	}],
+
 	/**
 	 * @cfg String/object [requestSelectTitle] title for the advance request selector
 	 * @see Ext.panael.panel.title
@@ -35,56 +53,14 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 	 */
 	processPanelTitle:'Dataset',
 
-	locales:{
-		buttons:{
-			submit:{
-				text : 'Launch',
-				tooltip : 'Launch the request'
-			},
-			cancel:{
-				text : 'Cancel',
-				tooltip : 'Cancel the request'
-			},
-			reset :{
-				text : 'Reset',
-				tooltip : 'Reset the request form'
-			}
-		}
-	},
-
-	bbar:[{ //TODO: Put this button into the loading popup (create on the submit event a Ext.window.MessageBox with a button for that).
-		itemId:'CancelButton',
-		reference:'cancelButton',
-		type: 'button'
-  	},'-',{
-  		itemId:'ResetButton',
-  		reference:'resetButton',
-  		type: 'button'
-  	},{
-  		xtype: 'tbspacer',
-  		flex: 1
-  	},{
-  		itemId:'SubmitButton',
-  		reference:'submitButton',
-  		type: 'button',
-  		action: 'submit'
-  	}],
-
 	/**
 	 * @cfg string [processCBEmptyText] the processcomboBox empty text
 	 */
 	processCBEmptyText:'Please select a dataset...',
-	
-	initComponent:function(){
 
-		this.callParent(arguments);
-
-		// Locales
-		Ext.apply(this.lookupReference('cancelButton'), this.locales.buttons.cancel);
-		Ext.apply(this.lookupReference('resetButton'), this.locales.buttons.reset);
-		Ext.apply(this.lookupReference('submitButton'), this.locales.buttons.submit);
-	},
-
+	/**
+	 * Initializes the items.
+	 */
 	initItems:function(){
 		this.items=[{ // The advanced request selector	
 		xtype:'advanced-request-selector',
@@ -99,7 +75,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 			store: '{fieldsets}'
 		},
 		region : 'center'
-		/*keys : { //FIXME
+		/*keys : { // OGAM-584 - FIXME
 			key : Ext.EventObject.ENTER,
 			fn : this.submitRequest,
 			scope : this

@@ -63,27 +63,41 @@ task cleanDeploy(type: Delete, description: 'Clean the deploy directory.') {
 import org.apache.tools.ant.filters.ReplaceTokens
 
 
-// Copy the PHP files to the deploy directory
-task deploy(type: Copy, dependsOn: cleanDeploy, description: 'Copy the PHP files to the deploy directory.') {
+// Copy the PHP libraries to the deploy directory
+task deployLibraries(type: Copy, description: 'Copy the PHP libraries files to the deploy directory.') {
 
+    // On CI server, $deployDir = /var/www/html
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
 
+	// recopie des librairies
+    from 'ogamServer/lib'
+	into "${deployDir}/server/ogamServer/lib"
+	
+	doLast {
+    	println "The libraries have been deployed to ${deployDir}/server/ogamServer/lib"
+    }
+
+}
+
+// Copy the PHP application files to the deploy directory
+task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.', dependsOn: 'deployLibraries') {
+
+	// On CI server, $deployDir = /var/www/html
+	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
+
+	// Incrémentation du numéro de build
 	ant.buildnumber()
 
-    from 'ogamServer' 
-    
-    into "${deployDir}"
-    
-    exclude 'sessions/*'
-    exclude 'tmp/*'
-    exclude 'upload/*' 
-    exclude 'app/configs/*'       
+	// recopie de l'application
+    from 'ogamServer/app'     
+    into "${deployDir}/server/ogamServer/app"    
+    exclude 'app/configs/*'    
     
     eachFile {
 		filter(ReplaceTokens, tokens: ['version_number': project.version, 'build_number': ant.antProject.properties['build.number']])
-	}
+	}	
         
     doLast {
-    	println "The server file have been deployed to ${deployDir}"
+    	println "The server file have been deployed to ${deployDir}/server/ogamServer/app"
     }
 }

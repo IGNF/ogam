@@ -1,4 +1,6 @@
-
+/**
+ * This class defined the map component view. 
+ */
 Ext.define("OgamDesktop.view.map.MapComponent",{
     extend: "GeoExt.component.Map",
     xtype: 'mapcomponent',
@@ -10,7 +12,6 @@ Ext.define("OgamDesktop.view.map.MapComponent",{
 
     /**
      * The map object.
-     * 
      * @type {ol.Map}
      * @property map
      */

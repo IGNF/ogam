@@ -10,7 +10,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		'Ext.grid.column.Number'
 	],
 
-	/**
+	/*
 	 * The refs to get the views concerned
 	 * and the control to define the handlers of the
 	 * MapPanel.
@@ -38,6 +38,10 @@ Ext.define('OgamDesktop.controller.map.Main',{
         }
 	},
 
+	/**
+	 * Manage the launch event
+	 * @private
+	 */
     onLaunch:function(){
         //clean previous request or result in server side
         Ext.Ajax.request({
@@ -48,20 +52,27 @@ Ext.define('OgamDesktop.controller.map.Main',{
         });
     },
 
+    /**
+     * Highlights the passed record on the map
+     * @param {Ext.data.Model} record The result record
+     */
 	setResultStateToSelected: function(record) {
 		this.getMappanel().highlightObject(record);
 	},
 
+    /**
+     * Unhighlights the passed record on the map
+     * @param {Ext.data.Model} record The result record
+     */
 	setResultStateToDefault: function(record) {
 		this.getMappanel().showObjectInDefaultStyle(record);
 	},
 
     /**
 	 * Show the map container and zoom on the result BBox.
-	 * 
-	 * @param {Object}
-	 *            feature The feature corresponding to the grid row,
-	 *            contains id and geometry.
+	 * @private
+	 * @param {Object} feature The feature corresponding to the grid row,
+	 * contains id and geometry.
 	 */
 	onSeeOnMapButtonClick: function(feature) {
 		this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
@@ -70,6 +81,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
 
     /**
 	 * Update the map on request success
+	 * @private
 	 */
 	onRequestSuccess: function() {
 		this.getResultsBbox();
@@ -105,7 +117,7 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		// Forces the layer to redraw itself
         var requestLayers = mapCmp.getController().requestLayers;
         requestLayers.forEach(function(element, index, array){
-        	/**
+        	/*
         	 * Note : 
         	 * The ol.source.changed and ol.source.dispatchEvent('change') functions 
         	 * doesn't work with openlayers v3.12.1

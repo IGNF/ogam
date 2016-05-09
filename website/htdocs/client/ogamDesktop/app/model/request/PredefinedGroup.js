@@ -1,3 +1,6 @@
+/**
+ * This class defines the OgamDesktop request predefined group model.
+ */
 Ext.define('OgamDesktop.model.request.PredefinedGroup',{
 	extend: 'Ext.data.Model',
 	requires:['OgamDesktop.model.Process',

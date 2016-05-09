@@ -20,12 +20,14 @@ class ModelDatabaseMetadataTest extends ControllerTestCase {
 
 		// On instancie le service
 		$this->databaseModel = new Application_Model_Database_Metadata();
+
 	}
 
 	/**
 	 * Clean up after the test case.
 	 */
 	public function tearDown() {
+		parent::tearDown();
 
 		// Ferme les connections
 		$db = $this->databaseModel->getAdapter();

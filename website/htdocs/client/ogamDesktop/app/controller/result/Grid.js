@@ -32,11 +32,9 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	},
 
 	/**
-	 * Fill the grid updating binded model and store.
-	 * 
-	 * @param {Array}
-	 *            fields The columns of the grid that the server
-	 *            send as query form is submitted
+	 * Fill the grid by updating binded model and store.
+	 * @private
+	 * @param {Array} fields The grid's colums that the server returns on the query form submission
 	 */
 	setResultsGrid: function(fields) {
 		var resultStore = this.getStore('result.Grid');
@@ -123,10 +121,10 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 					Ext.applyIf(columnConfig, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig());
 					Ext.applyIf(fieldConfig, OgamDesktop.ux.data.field.Factory.buildCheckboxFieldConfig(field));
 					break;
-				// TODO: refactor the code below to have only the switch on the inputType 
+				// OGAM-586 - TODO: refactor the code below to have only the switch on the inputType 
 				default:
 					switch (field.type) {
-						// TODO : CODE, COORDINATE, ARRAY
+						// OGAM-587 - TODO : CODE, COORDINATE, ARRAY
 						case 'STRING':
 							columnConfig.xtype = 'gridcolumn';
 							break;
@@ -147,7 +145,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 							columnConfig.header = '';
 							columnConfig.width = 30;
 							columnConfig.sortable = false;
-							// TODO : createDelegate deprecated : using of Ext.Function.pass instead, not tested...
+							// OGAM-588 - TODO : createDelegate deprecated : using of Ext.Function.pass instead, not tested...
 							//columnConfig.renderer = Ext.Function.pass(this.renderIcon, [Ext.String.htmlEncode(field.label)], this);
 							break;
 						default:
@@ -188,15 +186,10 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	
 	/**
 	 * Return the pattern used to format a number.
-	 * 
-	 * @param {String}
-	 *            decimalSeparator the decimal separator
-	 *            (default to',')
-	 * @param {Integer}
-	 *            decimalPrecision the decimal precision
-	 * @param {String}
-	 *            groupingSymbol the grouping separator (absent
-	 *            by default)
+	 * @param {String} decimalSeparator The decimal separator (default to',')
+	 * @param {Integer} decimalPrecision The decimal precision
+	 * @param {String} groupingSymbol The grouping separator (absent by default)
+	 * @return {String} The number format pattern
 	 */
 	numberPattern : function(decimalSeparator, decimalPrecision, groupingSymbol) {
 		// Building the number format pattern for use by ExtJS
@@ -215,9 +208,8 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		return pattern.join('');
 	}//,
 
-	/**
-	 * Render an Icon for the data grid.
-	 * @TODO
+	/*
+	 * OGAM-589 - TODO: Render an Icon for the data grid.
 	 */
 	/*renderIcon : function(value, metadata, record, rowIndex, colIndex, store, columnLabel) {
 		if (!Ext.isEmpty(value)) {

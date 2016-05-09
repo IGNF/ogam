@@ -39,11 +39,11 @@
             <target name="-after-build"/>
     -->
 	<target name="docs" depends="init" description="Builds docs for Ext JS and sub-packages">
-        <delete dir="${app.dir}/docs"/>
-		<mkdir dir="${app.dir}/docs"/>
+        <delete dir="${app.dir}/../build/docs"/>
+		<mkdir dir="${app.dir}/../build/docs"/>
         <exec executable="jsduck">
-            <arg value="--config=${app.dir}/jsduck.json"/>
-			<arg value="--output=${app.dir}/docs"/>
+            <arg value="--config=${app.dir}/../../../config/jsduck-config.json"/>
+			<arg value="--output=${app.dir}/../build/docs/"/>
 			<arg value="app"/>
 			<arg value="overrides"/>
 			<arg value="${app.dir}/../packages"/>

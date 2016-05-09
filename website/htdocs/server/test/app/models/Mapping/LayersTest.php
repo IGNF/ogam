@@ -35,13 +35,10 @@ class LayersTest extends ControllerTestCase {
 		$this->assertEquals(null, $resultLayer->maxscale);
 		$this->assertEquals(null, $resultLayer->minscale);
 		$this->assertEquals(false, $resultLayer->hasLegend);
-		$this->assertEquals(null, $resultLayer->transitionEffect);
-		$this->assertEquals('PNG', $resultLayer->imageFormat);
 		$this->assertEquals(null, $resultLayer->providerId);
 		$this->assertEquals('REQUEST', $resultLayer->activateType);
 		$this->assertEquals('Local_MapProxy_WMS_GetMap', $resultLayer->viewServiceName);
 		$this->assertEquals('Local_MapProxy_WMS_GetLegendGraphic', $resultLayer->legendServiceName);
-		$this->assertEquals('Local_Mapserv_WMS_GetMap', $resultLayer->printServiceName);
 		$this->assertEquals('Local_MapProxy_WMS_GetMap', $resultLayer->detailServiceName);
 		$this->assertEquals(null, $resultLayer->featureServiceName);
 	}

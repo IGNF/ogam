@@ -5,7 +5,6 @@
  */
 Ext.define('OgamDesktop.Application', {
 	extend: 'Ext.app.Application',
-
 	name: 'OgamDesktop',
 	models: [
 		'map.LayerNode',
@@ -47,8 +46,10 @@ Ext.define('OgamDesktop.Application', {
 	],
 	session: true,
 
+	/**
+	 * Fonction handling the application launch
+	 */
 	launch: function () {
-		// TODO - Launch the application
 		Ext.Loader.loadScript(Ext.manifest.OgamDesktop.requestServiceUrl +'getgridparameters');
 	}
 });

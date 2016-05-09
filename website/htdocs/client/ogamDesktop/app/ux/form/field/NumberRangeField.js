@@ -1,7 +1,7 @@
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
- * Â© European Union, 2008-2012
+ * © European Union, 2008-2012
  *
  * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
  *
@@ -24,7 +24,7 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
     alias: 'widget.numberrangefield',
     requires:['OgamDesktop.ux.picker.NumberRange'],
 
-	/**
+	/*
 	 * Internationalization.
 	 */
     //<locale>  
@@ -127,10 +127,10 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
 
     /**
      * Validate the value.
-     * 
      * @param {Number} value The value to check
+     * @return {Boolean} True if the number is valide
      */
-    validateValue : function(value){//TODO : override getErrors, recommended since 3.2
+    validateValue : function(value){// OGAM-595 - TODO : override getErrors, recommended since 3.2
     	var format =Ext.String.format;
     	
         if (!this.callParent(arguments)){ //super! not parent, in override case
@@ -189,7 +189,6 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
 
     /**
      * Returns the values.
-     * 
      * @return {Object} The field values
      */
     getValues : function(){
@@ -210,7 +209,6 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
     
     /**
      * Format the field.
-     * 
      * @param {Mixed} value The value to set
      * @return {String} The formated string value
      */
@@ -262,8 +260,8 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
 
     /**
      * Round the value to the specified number of decimals.
-     * 
      * @param {Number} value The value to round
+     * @return {Number} Return the rounded number or ''.
      */
     fixPrecision : function(value){
         var nan = isNaN(value);
@@ -273,12 +271,22 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
         return parseFloat(parseFloat(value).toFixed(this.decimalPrecision));
     },
 
-    // private
+    /**
+     * Return the number corresponding to the passed value or null
+     * @private
+     * @param {Number} value The value to parse
+     * @return {Number} Return the number or null.
+     */
     getNumber : function(value){
         return Ext.Number.from(String(value).replace(this.decimalSeparator, "."), null);
     },
 
-    // private
+    /**
+     * Return a range number if the object is valid or null
+     * @private
+     * @param {Object} obj The object to check
+     * @return {Number/null} Return the range number or null.
+     */
     getNumbersObject : function(obj){
         if (!obj || !Ext.isObject(obj)){
             return null;
@@ -294,10 +302,9 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
 
     /**
      * Return an object with the numbers found in the string
-     * 
+     * @private
      * @param {String} value The string value to parse
-     * @return {object}/null an object with min and max values or null for failed match operations
-     * @hide
+     * @return {object/null} An object with min and max values or null for failed match operations
      */
     splitValue : function(value){
         var minv, maxv, minnpIndex, maxnpIndex;
@@ -328,16 +335,23 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
         }
     },
 
-
-    //private
-    onSelect: function(m, d){
-        this.setValue(d);
-        this.fireEvent('select', this, d);
+    /**
+     * Manage the select event
+     * @private
+     * @param {Ext.form.field.Picker} field This field instance
+     * @param {Object} value The value that was selected
+     */
+    onSelect: function(field, value){
+        this.setValue(value);
+        this.fireEvent('select', this, value);
         this.collapse();
     },
-
     
-    //-+-+ picker section -+-+-+
+    /**
+     * Create the number range picker
+     * @private
+     * @return {OgamDesktop.ux.picker.NumberRange} The picker
+     */
     createPicker: function() {
         var me = this,
             format = Ext.String.format;
@@ -382,7 +396,9 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
             }
         });
     },
+
     /**
+     * Sets the range picker's value to match the current field value when expanding.
      * @private
      */
     onExpand: function() {
@@ -398,9 +414,11 @@ Ext.define('OgamDesktop.ux.form.field.NumberRangeField', {
 
         this.picker.minField.focus(true, 60);
     },
+
     /**
+     * Gets the range picker's value to match the current field value when collapsing.
      * @private
-     */ 
+     */
     onCollapse: function() {
         this.focus(false, 60);
         this.setValue({

@@ -4,7 +4,6 @@
 Ext.define('OgamDesktop.view.map.MapToolbarController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.maptoolbar',
-
     config: {
         listen: {
             store:{
@@ -15,56 +14,10 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }
     },
 
-//  /**
-//   * Internationalization.
-//   */
-//  popupTitle : 'Feature information',
-//  tabTip : 'The map with the request\'s results\'s location',
-////  layerPanelTitle : "Layers",
-////  layerPanelTabTip : "The layers's tree",
-////  legendPanelTitle : "Legends",
-////  legendPanelTabTip : "The layers's legends",
-//  panZoomBarControlTitle : "Zoom",
-//  navigationControlTitle : "Drag the map",
-//  zoomToFeaturesControlTitle : "Zoom to the features",
-//  zoomToResultControlTitle : "Zoom to the results",
-//  drawPointControlTitle : "Draw a point",
-//  drawLineControlTitle : "Draw a line",
-//  drawFeatureControlTitle : "Draw a polygon",
-//  modifyFeatureControlTitle : "Update the feature",
-//  tbarDeleteFeatureButtonTooltip : "Delete the feature",
-//  tbarValidateEditionButtonTooltip : "Validate the modification(s)",
-//  tbarCancelEditionButtonTooltip : "Cancel the modification(s)",
-//  tbarPreviousButtonTooltip : "Previous Position",
-//  tbarNextButtonTooltip : "Next Position",
-//  zoomBoxInControlTitle : "Zoom in",
-//  zoomBoxOutControlTitle : "Zoom out",
-//  zoomToMaxExtentControlTitle : "Zoom to max extend",
-//  snappingControlTitle:'Snapping',
-//  locationInfoControlTitle : "Get information about the result location",
-//  LayerSelectorEmptyTextValue: "Select Layer",
-//  selectFeatureControlTitle : "Select a feature from the selected layer",
-//  featureInfoControlTitle : "Get information about the selected layer",
-//  legalMentionsLinkText : "Legal Mentions",
-//  addGeomCriteriaButtonText : "Select an area",
-//  printMapButtonText : 'Print map',
-//  
-//  /**
-//   * @cfg {Boolean} hideLayerSelector if true hide the layer
-//   *      selector. The layer selector is required for the
-//   *      following tools.
-//   */
-//  hideLayerSelector : false,
-//  hideSnappingButton : false,
-//  hideGetFeatureButton : false,
-//  hideFeatureInfoButton : false,
-////  hideGeomCriteriaToolbarButton : true,
-//  /**
-//   * @cfg {Boolean} hidePrintMapButton if true hide the Print
-//   *      Map Button (defaults to false).
-//   */
-//  hidePrintMapButton : false,
-
+    /**
+     * Initializes the controller.
+     * @private
+     */
     init : function() {
         var mapCmp = this.getView().up('panel').child('mapcomponent');
         this.map = mapCmp.getMap();
@@ -74,6 +27,15 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         });
     },
 
+    /**
+     * Fonction handling the load event on the vector layer store.
+     * @private
+     * @param {Ext.data.Store} store The store
+     * @param {Ext.data.Model[]} records An array of records
+     * @param {Boolean} successful True if the operation was successful.
+     * @param {Ext.data.operation.Read} operation The 
+     * {@link Ext.data.operation.Read Operation} object that was used in the data 
+     */
     onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
         var menuItems = [];
         store.each( function(record) {
@@ -96,6 +58,13 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 //                                                                                                           //
 // ********************************************************************************************************* //
 
+    /**
+     * Fonction handling the click event on the zoom to drawing features button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Event} e The click event
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onZoomToDrawingFeaturesButtonPress : function (button, e, eOpts) {
         var extent = this.mapCmpCtrl.getMapLayer('drawingLayer').getSource().getExtent();
         if (ol.extent.isEmpty(extent)) {
@@ -108,6 +77,12 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }
     },
 
+    /**
+     * Fonction handling the click event on the control buttons.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {ol.interaction} interaction The corresponding interaction
+     */
     onControlButtonPress : function (button, interaction) {
         this.map.addInteraction(interaction);
         button.on({
@@ -119,6 +94,13 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         });
     },
 
+    /**
+     * Fonction handling the toggle event on the modify feature button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Boolean} pressed
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onModifyfeatureButtonToggle : function (button, pressed, eOpts) {
         pressed && this.onControlButtonPress(button, new ol.interaction.Modify({
             features: this.mapCmpCtrl.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
@@ -129,11 +111,25 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }));
     },
 
+    /**
+     * Fonction handling the toggle event on the select button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Boolean} pressed
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onSelectButtonToggle : function (button, pressed, eOpts) {
-        // TODO : http://openlayers.org/en/v3.13.0/examples/box-selection.html
+        // OGAM-603 - TODO : http://openlayers.org/en/v3.13.0/examples/box-selection.html
         pressed && this.onControlButtonPress(button, this.selectInteraction);
     },
 
+    /**
+     * Fonction handling the toggle event on the draw buttons.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Boolean} pressed
+     * @param {String} drawType The type of drawing ('Point'/'LineString'/'Polygon')
+     */
     onDrawButtonToggle : function (button, pressed, drawType) {
         pressed && this.onControlButtonPress(button, new ol.interaction.Draw({
             features: this.mapCmpCtrl.getMapLayer('drawingLayer').getSource().getFeaturesCollection(),
@@ -141,18 +137,46 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }));
     },
 
+    /**
+     * Fonction handling the toggle event on the draw point button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Boolean} pressed
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onDrawPointButtonToggle : function (button, pressed, eOpts) {
         this.onDrawButtonToggle(button, pressed, 'Point');
     },
 
+    /**
+     * Fonction handling the toggle event on the draw line button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Boolean} pressed
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onDrawLineButtonToggle : function (button, pressed, eOpts) {
         this.onDrawButtonToggle(button, pressed, 'LineString');
     },
 
+    /**
+     * Fonction handling the toggle event on the draw polygon button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Boolean} pressed
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onDrawPolygonButtonToggle : function (button, pressed, eOpts) {
         this.onDrawButtonToggle(button, pressed, 'Polygon');
     },
 
+    /**
+     * Fonction handling the click event on the delete feature button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Event} e The click event
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onDeleteFeatureButtonPress : function (button, e, eOpts) {
         var drawingLayerSource = this.mapCmpCtrl.getMapLayer('drawingLayer').getSource();
         var featuresCollection = this.selectInteraction.getFeatures();
@@ -166,10 +190,24 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         featuresCollection.clear();
     },
 
+    /**
+     * Fonction handling the click event on the validate edition button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Event} e The click event
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onValidateEditionButtonPress : function (button, e, eOpts) {
         this.getView().fireEvent('validateFeatureEdition');
     },
 
+    /**
+     * Fonction handling the click event on the cancel edition button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Event} e The click event
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onCancelEditionButtonPress : function (button, e, eOpts) {
         this.getView().fireEvent('cancelFeatureEdition');
     },
@@ -181,6 +219,10 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 //                                                                                                           //
 // ********************************************************************************************************* //
 
+    /**
+     * Makes a ajax request to get some information about a location.
+     * @param {ol.MapBrowserEvent} e the map click event
+     */
     getLocationInfo : function(e) {
         var lon = e.coordinate[0], lat=e.coordinate[1];
         var url = Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetlocationinfo?LON='+lon+'&LAT='+lat;
@@ -200,6 +242,13 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         });
     },
     
+    /**
+     * Fonction handling the click event on the result feature info button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Event} e The click event
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onResultFeatureInfoButtonPress : function(button, pressed, eOpts) {
         if (pressed) {
             this.map.on("click", this.getLocationInfo, this);
@@ -208,6 +257,13 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }
     },
 
+    /**
+     * Fonction handling the click event on the zoom in button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Event} e The click event
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onZoomInButtonPress : function (button, pressed, eOpts) {
         dzInter = new ol.interaction.DragZoom({
             condition: ol.events.condition.always,
@@ -224,10 +280,24 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         pressed && this.onControlButtonPress(button, dzInter);
     },
 
+    /**
+     * Fonction handling the click event on the zoom to result features button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Event} e The click event
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onZoomToResultFeaturesButtonPress : function (button, e, eOpts) {
         this.mapCmpCtrl.zoomToResultFeatures();
     },
 
+    /**
+     * Fonction handling the click event on the zoom to max extent button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Event} e The click event
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
     onZoomToMaxExtentButtonPress : function (button, e, eOpts) {
         this.map.getView().fit(
             [
@@ -240,13 +310,11 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         );
     },
 
-    /**
-     * Create and submit a form
-     * 
-     * @param {String}
-     *            url The form url
-     * @param {object}
-     *            params The form params
+    /*
+     * Create and submit a form.
+     * @param {String}  url The form url
+     * @param {object} params The form params
+     * @return {DOM element} The form dom element
      */
     post: function(url, params) {
         var temp = document.createElement("form"), x;
@@ -293,7 +361,10 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         return layersToPrint;
     },
 
-    resizeMap : function() {console.log('args',arguments);
+    /**
+     * Resizes the map.
+     */
+    resizeMap : function() {
         var mapTarget = Ext.get('o-map-print-map-overview');
         var squareCheckbox = Ext.get('o-map-print-options-square-checkbox');
         // Remove the height and width of the style attribute
@@ -312,12 +383,19 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }
     },
     
-    onPrintMapButtonPress : function(button, pressed, eOpts) {
+    /**
+     * Fonction handling the click event on the print map button.
+     * @private
+     * @param {Ext.button.Button} button The button
+     * @param {Event} e The click event
+     * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
+     */
+    onPrintMapButtonPress : function(button, e, eOpts) {
         var mapAddonsPanel = this.getView().up('map-mainwin').child('map-addons-panel');
         var legendsPanel = mapAddonsPanel.child('legends-panel');
 
         // Forces the render of the legends panel items
-        // TODO: Find a workaround
+        // OGAM-604 - TODO: Find a workaround
         if(!legendsPanel.isVisible()){
             var activeTab = mapAddonsPanel.getActiveTab();
             mapAddonsPanel.setActiveTab(legendsPanel);
@@ -326,7 +404,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
         // Gets the activated legends
         // Note: The legend panel body is not fully taken to avoid the ids duplication
-        // TODO: Find a workaround (Use a filtered legends store...)
+        // OGAM-605 - TODO: Find a workaround (Use a filtered legends store...)
         var legendBody = [{
             tag:'div',
             cls:'o-map-print-legends-title',

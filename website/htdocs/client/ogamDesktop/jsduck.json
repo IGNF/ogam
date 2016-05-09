@@ -1,8 +1,0 @@
-{
-    "--title": "Genapp app",
-    "--ignore-html": "debug,locale",
-    "--warnings": "-extend,-link,-all:ext,-all:GeoExt",
-    "--external": [
-    ],
-    "-o": "apidoc"
-}
