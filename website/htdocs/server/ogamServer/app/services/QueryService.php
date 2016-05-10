@@ -971,17 +971,19 @@ class Application_Service_QueryService {
 
 				if ($detailService->serviceName == $detailServiceName) {
 
-					$service = json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
+					$params = json_decode($detailService->serviceConfig)->params;
+					$service = $params->SERVICE;
 					$baseUrl = json_decode($detailService->serviceConfig)->{'urls'}[0];
+
 
 					if ($service === 'WMS') {
 
 						$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName;
 						$baseUrls .= '&TRANSPARENT=true';
 						$baseUrls .= '&FORMAT=image%2Fpng';
-						$baseUrls .= '&SERVICE=' . json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
-						$baseUrls .= '&VERSION=' . json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
-						$baseUrls .= '&REQUEST=' . json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'};
+						$baseUrls .= '&SERVICE=' . $params->SERVICE;
+						$baseUrls .= '&VERSION=' . $params->VERSION;
+						$baseUrls .= '&REQUEST=' . $params->REQUEST;
 						$baseUrls .= '&STYLES=';
 						$baseUrls .= '&BBOX=' . $bb->xmin . ',' . $bb->ymin . ',' . $bb->xmax . ',' . $bb->ymax;
 						$baseUrls .= '&WIDTH=300';
@@ -989,7 +991,7 @@ class Application_Service_QueryService {
 						$baseUrls .= '&map.scalebar=STATUS+embed';
 						$baseUrls .= '&SESSION_ID=' . session_id();
 						$baseUrls .= $mapservParams;
-						$versionWMS = json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
+						$versionWMS = $params->VERSION;
 						if (substr_compare($versionWMS, '1.3', 0, 3) === 0) {
 							$baseUrls .= '&CRS=EPSG%3A' . $visualisationSRS;
 						} elseif (substr_compare($versionWMS, '1.0', 0, 3) === 0 || substr_compare($versionWMS, '1.1', 0, 3) === 0) {
@@ -1017,7 +1019,7 @@ class Application_Service_QueryService {
 						 * $baseUrls .=';';
 						 */
 					} else {
-						$this->logger->err("'$service' service unsupported, please change the detail service for the '" . $layerName . "' layer.");
+						$this->logger->err("'" . $service . "' service unsupported, please change the detail service for the '" . $layerName . "' layer.");
 					}
 				}
 			}
