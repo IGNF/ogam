@@ -137,6 +137,15 @@ Layout Pathway Home;Accueil
 Translate this site fr;Traduire ce site en français
 Translate this site en;Traduire ce site en anglais
 
+##########################
+#	Error				 #
+##########################
+An error occurred;Une erreur est survenue
+Page not found;Ressource introuvable
+Database Error;Accès refusé sur la base de données
+Application error;Un problème a été rencontré. Merci de signaler cet incident ainsi que les actions qui y ont mené afin qu'il puisse être corrigé.
+
+
 ﻿##########################
 #   Index                #
 ##########################

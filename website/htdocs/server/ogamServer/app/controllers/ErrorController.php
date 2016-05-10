@@ -22,6 +22,13 @@
 class ErrorController extends Zend_Controller_Action {
 
 	/**
+	 * Translator.
+	 *
+	 * @var Zend_Translate
+	 */
+	protected $translator;
+
+	/**
 	 * The logger.
 	 *
 	 * @var Zend_Log
@@ -36,6 +43,9 @@ class ErrorController extends Zend_Controller_Action {
 
 		$bootstrap = $this->getInvokeArg('bootstrap');
 		$this->logger = $bootstrap->getResource('log');
+
+		// Get the translator
+		$this->translator = Zend_Registry::get('Zend_Translate');
 	}
 
 	/**
@@ -108,7 +118,7 @@ class ErrorController extends Zend_Controller_Action {
 	private function _noActionException($error) {
 		// 404 error -- controller or action not found
 		$this->getResponse()->setHttpResponseCode(404);
-		$this->view->message = 'Page not found';
+		$this->view->message = $this->translator->translate('Page not found');
 
 		// Go to the error page
 		$this->render('error');
@@ -121,9 +131,9 @@ class ErrorController extends Zend_Controller_Action {
 	 *        	the error
 	 */
 	private function _databaseException($error) {
-		// 404 error -- controller or action not found
+		// 403 error -- forbidden access refused
 		$this->getResponse()->setHttpResponseCode(403);
-		$this->view->message = 'Database Error';
+		$this->view->message = $this->translator->translate('Database Error');
 
 		// Go to the error page
 		$this->render('error');
@@ -161,7 +171,7 @@ class ErrorController extends Zend_Controller_Action {
 	 */
 	private function _defaultException($error) {
 		$this->getResponse()->setHttpResponseCode(500);
-		$this->view->message = 'Application error';
+		$this->view->message = $this->translator->translate('Application error');
 
 		// Go to the error page
 		$this->render('error');
