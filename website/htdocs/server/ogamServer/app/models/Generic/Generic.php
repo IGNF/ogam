@@ -42,11 +42,13 @@ class Application_Model_Generic_Generic {
 	var $genericService;
 
 	/**
-	 * The database connection
+	 * The database connections
 	 *
 	 * @var Zend_Db
 	 */
-	var $db;
+	var $rawdb;
+
+	var $metadatadb;
 
 	/**
 	 * Initialisation
@@ -67,14 +69,16 @@ class Application_Model_Generic_Generic {
 		$this->genericService = new Application_Service_GenericService();
 
 		// The database connection
-		$this->db = Zend_Registry::get('raw_db');
+		$this->rawdb = Zend_Registry::get('raw_db');
+		$this->metadatadb = Zend_Registry::get('metadata_db');
 	}
 
 	/**
 	 * Destuction.
 	 */
 	function __destruct() {
-		$this->db->closeConnection();
+		$this->rawdb->closeConnection();
+		$this->metadatadb->closeConnection();
 	}
 
 	/**
@@ -85,11 +89,11 @@ class Application_Model_Generic_Generic {
 	 * @return Array[]
 	 */
 	public function executeRequest($sql) {
-		$this->db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
+		$this->rawdb->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
 
 		$this->logger->info('executeRequest : ' . $sql);
 
-		$result = $this->db->fetchAll($sql);
+		$result = $this->rawdb->fetchAll($sql);
 
 		return $result;
 	}
@@ -116,7 +120,7 @@ class Application_Model_Generic_Generic {
 
 		$this->logger->info('getDatum : ' . $sql);
 
-		$select = $this->db->prepare($sql);
+		$select = $this->rawdb->prepare($sql);
 		$select->execute();
 		$row = $select->fetch();
 
@@ -162,7 +166,7 @@ class Application_Model_Generic_Generic {
 		$sql .= " WHERE schema_code = '" . $tableFormat->schemaCode . "'";
 		$sql .= " AND child_table = '" . $tableFormat->format . "'";
 
-		$select = $this->db->prepare($sql);
+		$select = $this->metadatadb->prepare($sql);
 		$select->execute();
 		$row = $select->fetch();
 
@@ -198,7 +202,7 @@ class Application_Model_Generic_Generic {
 
 		$this->logger->info('_getDataList : ' . $sql);
 
-		$select = $this->db->prepare($sql);
+		$select = $this->rawdb->prepare($sql);
 		$select->execute();
 		foreach ($select->fetchAll() as $row) {
 
@@ -267,7 +271,7 @@ class Application_Model_Generic_Generic {
 
 		$this->logger->info('updateData : ' . $sql);
 
-		$request = $this->db->prepare($sql);
+		$request = $this->rawdb->prepare($sql);
 
 		try {
 			$request->execute();
@@ -318,7 +322,7 @@ class Application_Model_Generic_Generic {
 
 		$this->logger->info('deleteData : ' . $sql);
 
-		$request = $this->db->prepare($sql);
+		$request = $this->rawdb->prepare($sql);
 
 		try {
 			$request->execute();
@@ -389,7 +393,7 @@ class Application_Model_Generic_Generic {
 
 		$this->logger->info('insertData : ' . $sql);
 
-		$request = $this->db->prepare($sql);
+		$request = $this->rawdb->prepare($sql);
 
 		try {
 			$request->execute();
@@ -437,7 +441,7 @@ class Application_Model_Generic_Generic {
 
 		$this->logger->info('getAncestors : ' . $sql);
 
-		$select = $this->db->prepare($sql);
+		$select = $this->metadatadb->prepare($sql);
 		$select->execute();
 		$row = $select->fetch();
 
@@ -505,7 +509,7 @@ class Application_Model_Generic_Generic {
 
 		$this->logger->info('getChildren : ' . $sql);
 
-		$select = $this->db->prepare($sql);
+		$select = $this->metadatadb->prepare($sql);
 		$select->execute();
 
 		// For each potential child table listed, we search for the actual lines of data available
@@ -555,7 +559,7 @@ class Application_Model_Generic_Generic {
 		$req .= " AND table_schema='raw_data'";
 		$req .= " AND table_name NOT IN ('submission', 'check_error');";
 
-		$select = $this->db->prepare($req);
+		$select = $this->rawdb->prepare($req);
 		$select->execute(array());
 
 		$rawDataCount = array();
@@ -565,7 +569,7 @@ class Application_Model_Generic_Generic {
 			$tableName = $row['table_name'];
 
 			$countReq = "SELECT count(*) FROM " . $tableName . " WHERE provider_id = ?";
-			$count = $this->db->prepare($countReq);
+			$count = $this->rawdb->prepare($countReq);
 			$count->execute(array(
 				$id
 			));

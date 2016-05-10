@@ -346,6 +346,39 @@ class Application_Service_QueryService {
 	}
 
 	/**
+	 * Copy the locations of the result in a temporary table.
+	 *
+	 * @param Application_Object_Generic_DataObject $queryObject
+	 *        	the query
+	 */
+	protected function prepareResultLocations($queryObject) {
+		$this->logger->debug('prepareResultLocations');
+
+		// Configure the projection systems
+		$configuration = Zend_Registry::get("configuration");
+		$visualisationSRS = $configuration->srs_visualisation;
+
+		// Generate the SQL Request
+		$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
+		$from = $this->genericService->generateSQLFromRequest($this->schema, $queryObject);
+		$where = $this->genericService->generateSQLWhereRequest($this->schema, $queryObject);
+		$SQLPkey = $this->genericService->generateSQLPrimaryKey($this->schema, $queryObject);
+
+		// Clean previously stored results
+		$sessionId = session_id();
+		$this->logger->debug('SessionId : ' . $sessionId);
+		$this->resultLocationModel->cleanPreviousResults($sessionId);
+
+		// Identify the field carrying the location information
+		$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
+		$locationField = $this->metadataModel->getGeometryField($this->schema, array_keys($tables));
+		$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
+
+		// Run the request to store a temporary result table (for the web mapping)
+		$this->resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+	}
+
+	/**
 	 * Get the description of the columns of the result of the query.
 	 *
 	 * @param String $datasetId
@@ -361,10 +394,6 @@ class Application_Service_QueryService {
 
 		$json = "";
 
-		// Configure the projection systems
-		$configuration = Zend_Registry::get("configuration");
-		$visualisationSRS = $configuration->srs_visualisation;
-
 		// Transform the form request object into a table data object
 		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
 
@@ -372,33 +401,26 @@ class Application_Service_QueryService {
 			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
 		} else {
 
+			// TODO : OGAM-447 : Call asynchronously
+			$this->prepareResultLocations($queryObject);
+
 			// Generate the SQL Request
 			$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
 			$from = $this->genericService->generateSQLFromRequest($this->schema, $queryObject);
 			$where = $this->genericService->generateSQLWhereRequest($this->schema, $queryObject);
 			$SQLPkey = $this->genericService->generateSQLPrimaryKey($this->schema, $queryObject);
 
-			$this->logger->debug('$select : ' . $select);
-			$this->logger->debug('$from : ' . $from);
-			$this->logger->debug('$where : ' . $where);
-
-			// Clean previously stored results
-			$sessionId = session_id();
-			$this->logger->debug('SessionId : ' . $sessionId);
-			$this->resultLocationModel->cleanPreviousResults($sessionId);
-
 			// Identify the field carrying the location information
 			$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
 			$locationField = $this->metadataModel->getGeometryField($this->schema, array_keys($tables));
 			$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
 
-			// Run the request to store a temporary result table (for the web mapping)
-			$this->resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+			$this->logger->debug('$select : ' . $select);
+			$this->logger->debug('$from : ' . $from);
+			$this->logger->debug('$where : ' . $where);
 
 			// Calculate the number of lines of result
 			$countResult = $this->genericModel->executeRequest("SELECT COUNT(*) as count " . $from . $where);
-
-			// TODO : Move this part somewhere else
 
 			// Get the website session
 			$websiteSession = new Zend_Session_Namespace('website');
