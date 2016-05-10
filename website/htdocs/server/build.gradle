@@ -91,7 +91,7 @@ task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory
 	// recopie de l'application
     from 'ogamServer/app'     
     into "${deployDir}/server/ogamServer/app"    
-    exclude 'app/configs/*'    
+    exclude '**/*.ini'    
     
     eachFile {
 		filter(ReplaceTokens, tokens: ['version_number': project.version, 'build_number': ant.antProject.properties['build.number']])
