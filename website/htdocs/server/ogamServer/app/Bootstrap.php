@@ -142,7 +142,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					$controllerName = strtolower($controllerName);
 					$this->logger->debug("Adding custom controller : " . $controllerName);
 
-					if ($controllerName == 'index') {
+					if ($controllerName === 'index') {
 						$customRoute = new Zend_Controller_Router_Route('', array(
 							'module' => 'custom',
 							'controller' => 'index',
@@ -292,7 +292,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->logger->debug('Init database adapters');
 
 		$resource = $this->getPluginResource('multidb');
-
 
 		Zend_Registry::set('metadata_db', $resource->getDb('metadata_db'));
 		Zend_Registry::set('raw_db', $resource->getDb('raw_db'));

@@ -254,8 +254,6 @@ class IntegrationController extends AbstractOGAMController {
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
 
-		$this->logger->debug('showUploadFileDetail : ' . print_r($configuration->showUploadFileDetail, true));
-
 		if (!isset($configuration->showUploadFileDetail)) {
 			$showDetail = true;
 		} else {

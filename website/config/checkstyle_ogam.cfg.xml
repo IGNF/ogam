@@ -73,9 +73,9 @@
 	<!-- Checks the constuctor naming -->
 	<!-- old = old style (constructor = name of the class) -->
 	<!-- new = "__construct()" -->
-	<test name="constructorNaming">
+	<!--  <test name="constructorNaming">
 		<property name="naming" value="old" />
-	</test>
+	</test>  -->
 
 	<!-- Check Class Naming -->
 	<test name="classNaming" regexp="/^[A-Z][a-zA-Z0-9_]*$/" level="error" />

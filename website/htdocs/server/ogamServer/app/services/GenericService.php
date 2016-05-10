@@ -1324,6 +1324,7 @@ class Application_Service_GenericService {
 	 *        	The string
 	 * @param String $charset
 	 *        	The string charset
+	 * @return The modified string
 	 */
 	public function removeAccents($str, $charset = 'utf-8') {
 		$str = htmlentities($str, ENT_NOQUOTES, $charset);

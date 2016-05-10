@@ -118,6 +118,7 @@ class MapController extends AbstractOGAMController {
 	 *
 	 * @param Array[Integer] $scales
 	 *        	The list of scales
+	 * @return Array[Integer] the resolutions
 	 */
 	protected function getResolutions($scales) {
 
@@ -153,18 +154,16 @@ class MapController extends AbstractOGAMController {
 			$viewService = $this->servicesModel->getService($layer->viewServiceName);
 			$serviceConfig = $viewService->serviceConfig;
 
-			$url_wms = empty($serviceConfig) ? null : json_decode($serviceConfig)->{'urls'}[0];
-
 			$featureService = (($layer->featureServiceName == '') ? null : $this->servicesModel->getService($layer->featureServiceName));
 
 			$json .= '{"serviceLayerName":' . json_encode($layer->serviceLayerName) . ',';
 			$json .= '"layerLabel":' . json_encode($layer->layerLabel) . ',';
 
 			if (!empty($featureService)) {
-				$layer_service = json_decode($featureService->serviceConfig);
-				$layer_service_params = $layer_service->{'params'};
-				$url = rtrim($layer_service->{'urls'}[0], '?') . '?';
-				foreach ($layer_service_params as $pKey => $pValue) {
+				$layerService = json_decode($featureService->serviceConfig);
+				$layerServiceParams = $layerService->{'params'};
+				$url = rtrim($layerService->{'urls'}[0], '?') . '?';
+				foreach ($layerServiceParams as $pKey => $pValue) {
 					$url .= $pKey . '=' . $pValue . '&';
 				}
 				$url = rtrim($url, '&');

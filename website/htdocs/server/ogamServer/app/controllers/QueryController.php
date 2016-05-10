@@ -529,7 +529,8 @@ class QueryController extends AbstractOGAMController {
 
 		// image 1
 		$tmpImgPath1 = Array();
-		for ($i = 0; $i < count($data['maps1']['urls']); $i ++) {
+		$urlCount = count($data['maps1']['urls']);
+		for ($i = 0; $i < $urlCount; $i ++) {
 			$url = $data['maps1']['urls'][$i]['url'];
 			$content = @file_get_contents($url);
 			if ($content === false) {
@@ -542,7 +543,8 @@ class QueryController extends AbstractOGAMController {
 
 		// image 2
 		$tmpImgPath2 = Array();
-		for ($i = 0; $i < count($data['maps2']['urls']); $i ++) {
+		$urlCount = count($data['maps2']['urls']);
+		for ($i = 0; $i < $urlCount; $i ++) {
 			$url = $data['maps2']['urls'][$i]['url'];
 			$content = @file_get_contents($url);
 			if ($content === false) {

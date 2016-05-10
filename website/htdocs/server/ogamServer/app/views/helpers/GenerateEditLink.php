@@ -28,7 +28,10 @@ class Application_Views_Helpers_GenerateEditLink extends Zend_View_Helper_Abstra
 	function generateEditLink($data) {
 
 		// Build the URL to link to the parent items
-		$urlArray = array('controller' => 'index', 'action' => 'index');
+		$urlArray = array(
+			'controller' => 'index',
+			'action' => 'index'
+		);
 
 		// Add the schema
 		$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
@@ -56,7 +59,7 @@ class Application_Views_Helpers_GenerateEditLink extends Zend_View_Helper_Abstra
 		}
 		// output the result
 		return array(
-		    'url' => '#edition-edit' . preg_replace( '/^' . preg_quote('/index/index','/').'/', '', $this->view->url($urlArray, null, true), 1),
+			'url' => '#edition-edit' . preg_replace('/^' . preg_quote('/index/index', '/') . '/', '', $this->view->url($urlArray, null, true), 1),
 			'text' => $this->view->escape($data->tableFormat->label),
 			'fields' => $fields
 		);

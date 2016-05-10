@@ -362,7 +362,6 @@ class Application_Service_QueryService {
 		$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
 		$from = $this->genericService->generateSQLFromRequest($this->schema, $queryObject);
 		$where = $this->genericService->generateSQLWhereRequest($this->schema, $queryObject);
-		$SQLPkey = $this->genericService->generateSQLPrimaryKey($this->schema, $queryObject);
 
 		// Clean previously stored results
 		$sessionId = session_id();
@@ -408,7 +407,7 @@ class Application_Service_QueryService {
 			$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
 			$from = $this->genericService->generateSQLFromRequest($this->schema, $queryObject);
 			$where = $this->genericService->generateSQLWhereRequest($this->schema, $queryObject);
-			$SQLPkey = $this->genericService->generateSQLPrimaryKey($this->schema, $queryObject);
+			$sqlPKey = $this->genericService->generateSQLPrimaryKey($this->schema, $queryObject);
 
 			// Identify the field carrying the location information
 			$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
@@ -431,7 +430,7 @@ class Application_Service_QueryService {
 			$websiteSession->SQLSelect = $select;
 			$websiteSession->SQLFrom = $from;
 			$websiteSession->SQLWhere = $where;
-			$websiteSession->SQLPkey = $SQLPkey;
+			$websiteSession->SQLPkey = $sqlPKey;
 			$websiteSession->queryObject = $queryObject;
 			$websiteSession->count = $countResult[0]['count']; // result count
 			$websiteSession->schema = $this->schema;
@@ -585,7 +584,7 @@ class Application_Service_QueryService {
 
 				$json .= '],';
 			}
-			if (sizeof($result) != 0) {
+			if (count($result) != 0) {
 				$json = substr($json, 0, -1);
 			}
 			$json .= ']}';
@@ -764,7 +763,8 @@ class Application_Service_QueryService {
 
 				// complete the array with the urls of maps2
 				$dataDetails['maps2']['urls'][] = array();
-				for ($i = 0; $i < count($url); $i ++) {
+				$countUrls = count($url);
+				for ($i = 0; $i < $countUrls; $i ++) {
 					$dataDetails['maps2']['urls'][$i]['url'] = $url[$i];
 				}
 			}
@@ -995,12 +995,12 @@ class Application_Service_QueryService {
 						} elseif (substr_compare($versionWMS, '1.0', 0, 3) === 0 || substr_compare($versionWMS, '1.1', 0, 3) === 0) {
 							$baseUrls .= '&SRS=EPSG%3A' . $visualisationSRS;
 						} else {
-							$this->logger->err("WMS version unsupported, please change the WMS version for the '$layerName' layer.");
+							$this->logger->err("WMS version unsupported, please change the WMS version for the '" . $layerName . "' layer.");
 						}
 						$baseUrls .= ';';
 					} elseif ($service === 'WMTS') {
 
-						$this->logger->err("WMTS service unsupported, please change the detail service for the '$layerName' layer.");
+						$this->logger->err("WMTS service unsupported, please change the detail service for the '" . $layerName . "' layer.");
 
 						// TODO : Gets the tileMatrix, tileCol, tileRow corresponding to the bb
 						/*
@@ -1017,7 +1017,7 @@ class Application_Service_QueryService {
 						 * $baseUrls .=';';
 						 */
 					} else {
-						$this->logger->err("'$service' service unsupported, please change the detail service for the '$layerName' layer.");
+						$this->logger->err("'$service' service unsupported, please change the detail service for the '" . $layerName . "' layer.");
 					}
 				}
 			}
