@@ -65,7 +65,7 @@ jshint {
     tasks.jshint.dest = file("./build/reports/jshint.out")
     tasks.jshint.outputToStdOut = false
     tasks.jshint.reporter = 'checkstyle'
-    jshint.options = ["expr": true, "unused": true]
+    jshint.options = ["expr": true, "unused": false]
     jshint.predef=["Ext":1]
 }
 
