@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Database
  */
-class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
+class Application_Model_Database_Postgresql {
 
 	/**
 	 * The logger.
@@ -28,12 +28,29 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		// The database connection
+		$this->db = Zend_Registry::get('raw_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -43,8 +60,6 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	 * @throws an exception if the request is not found
 	 */
 	public function getTables() {
-		$db = $this->getAdapter();
-
 		$tables = array();
 
 		// Get the request
@@ -62,7 +77,7 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getTables : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array());
 
 		$results = $query->fetchAll();
@@ -87,8 +102,6 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	 * @throws an exception if the request is not found
 	 */
 	public function getFields() {
-		$db = $this->getAdapter();
-
 		$fields = array();
 
 		// Get the request
@@ -103,7 +116,7 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getFields : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array());
 
 		$results = $query->fetchAll();
@@ -129,8 +142,6 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	 * @throws an exception if the request is not found
 	 */
 	public function getForeignKeys() {
-		$db = $this->getAdapter();
-
 		$keys = array();
 
 		// Get the request
@@ -145,7 +156,7 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getForeignKeys : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array());
 
 		$results = $query->fetchAll();
@@ -170,8 +181,6 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	 * @throws an exception if the request is not found
 	 */
 	public function getSchemas() {
-		$db = $this->getAdapter();
-
 		$schemas = array();
 
 		// Get the request
@@ -181,7 +190,7 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getSchemas : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array());
 
 		$results = $query->fetchAll();

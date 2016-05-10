@@ -27,35 +27,48 @@ class Application_Object_Mapping_BoundingBox {
 	 *
 	 * @var int
 	 */
-	var $xmin = -899390;
+	var $xmin = 0;
 
 	/**
 	 * Y Min.
 	 *
 	 * @var int
 	 */
-	var $ymin = 6742320;
+	var $ymin = 0;
 
 	/**
 	 * X Max.
 	 *
 	 * @var int
 	 */
-	var $xmax = 1351350;
+	var $xmax = 0;
 
 	/**
 	 * Y Max.
 	 *
 	 * @var int
 	 */
-	var $ymax = 4883370;
+	var $ymax = 0;
 
 	/**
 	 * Zoom Level (optional).
 	 *
 	 * @var int
 	 */
-	var $zoomLevel = 0;
+	var $zoomLevel = 1;
+
+	/**
+	 * Create a new BoundingBox object with default values.
+	 *
+	 * @return Application_Object_Mapping_BoundingBox the BoundingBox
+	 */
+	public static function createDefaultBoundingBox() {
+
+		// Get the parameters from configuration file
+		$configuration = Zend_Registry::get("configuration");
+
+		return Application_Object_Mapping_BoundingBox::createBoundingBox($configuration->bbox_x_min, $configuration->bbox_x_max, $configuration->bbox_y_min, $configuration->bbox_y_max);
+	}
 
 	/**
 	 * Create a new BoundingBox object, making sure that the Box is square.

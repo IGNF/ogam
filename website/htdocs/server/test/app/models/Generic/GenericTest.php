@@ -28,10 +28,6 @@ class GenericTest extends ControllerTestCase {
 	public function tearDown() {
 		parent::tearDown();
 
-		// Ferme les connections
-		$db = $this->genericModel->getAdapter();
-		$db->closeConnection();
-
 		$this->genericModel = null;
 	}
 

@@ -30,10 +30,6 @@ class ProviderTest extends ControllerTestCase {
 	public function tearDown() {
 		parent::tearDown();
 
-		// Ferme les connections
-		$db = $this->providerModel->getAdapter();
-		$db->closeConnection();
-
 		$this->providerModel = null;
 	}
 
@@ -86,27 +82,36 @@ class ProviderTest extends ControllerTestCase {
 	 */
 	public function testCRUDProvider() {
 
-		// On crée un nouveau provider
-		$providerId = $this->providerModel->addProvider("PHPUnitProvider", "Test provider");
+		// Build a new provider with no id
+		$provider = new Application_Object_Website_Provider();
+		$provider->label = "PHPUnitProvider";
+		$provider->definition = "Test provider";
 
-		// On récupère le provider créé
-		$provider = $this->providerModel->getProvider($providerId);
+		// Insert in database and get a new provider id
+		$provider = $this->providerModel->addProvider($provider);
 
 		// On vérifie les valeurs
 		$this->assertEquals("PHPUnitProvider", $provider->label);
 		$this->assertEquals("Test provider", $provider->definition);
+		$this->assertNotNull($provider->id);
 
 		// On modifie le provider
-		$this->providerModel->updateProvider($providerId, "PHPUnitProvider2", "Test provider2");
+		$provider->label = "PHPUnitProvider2";
+		$provider->definition = "Test provider2";
+		$this->providerModel->updateProvider($provider);
 
 		// On récupère le provider modifié
-		$provider = $this->providerModel->getProvider($providerId);
+		$provider2 = $this->providerModel->getProvider($provider->id);
 
 		// On vérifie que la modif a eu lieu
-		$this->assertEquals("PHPUnitProvider2", $provider->label);
-		$this->assertEquals("Test provider2", $provider->definition);
+		$this->assertEquals("PHPUnitProvider2", $provider2->label);
+		$this->assertEquals("Test provider2", $provider2->definition);
+
+		// The provider should be deletable has it is new
+		$isProviderDeletable = $this->providerModel->isProviderDeletable($provider->id);
+		$this->assertTrue($isProviderDeletable);
 
 		// On supprime le provider de test
-		$this->providerModel->deleteProvider($providerId);
+		$this->providerModel->deleteProvider($provider->id);
 	}
 }

@@ -28,10 +28,6 @@ class RoleTest extends ControllerTestCase {
 	public function tearDown() {
 		parent::tearDown();
 
-		// Ferme les connections
-		$db = $this->roleModel->getAdapter();
-		$db->closeConnection();
-
 		$this->roleModel = null;
 	}
 

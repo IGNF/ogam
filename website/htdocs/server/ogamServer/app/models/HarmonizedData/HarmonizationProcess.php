@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage HarmonizedData
  */
-class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Table_Abstract {
+class Application_Model_HarmonizedData_HarmonizationProcess {
 
 	/**
 	 * The logger.
@@ -33,15 +33,32 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 	var $metadataModel;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 
 		// Initialise the metadata model
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
+
+		// The database connection
+		$this->db = Zend_Registry::get('harmonized_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -52,7 +69,6 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 	 * @return HarmonizationProcess The completed process info
 	 */
 	public function getHarmonizationProcessInfo($activeSubmission) {
-		$db = $this->getAdapter();
 		$req = " SELECT * ";
 		$req .= " FROM harmonization_process ";
 		$req .= " LEFT JOIN harmonization_process_submissions USING (harmonization_process_id) ";
@@ -60,7 +76,7 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 		$req .= " AND  dataset_id = ? ";
 		$req .= " ORDER BY harmonization_process_id DESC LIMIT 1";
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute(array(
 			$activeSubmission->providerId,
 			$activeSubmission->datasetId
@@ -85,7 +101,6 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 		$dataset = $this->metadataModel->getDataset($harmonizationProcess->datasetId);
 		$harmonizationProcess->datasetLabel = $dataset->label;
 
-
 		return $harmonizationProcess;
 	}
 
@@ -97,12 +112,11 @@ class Application_Model_HarmonizedData_HarmonizationProcess extends Zend_Db_Tabl
 	 * @return HarmonizationProcess The completed process info
 	 */
 	public function getHarmonizationProcessSources($harmonizationProcess) {
-		$db = $this->getAdapter();
 		$req = " SELECT * ";
 		$req .= " FROM harmonization_process_submissions ";
 		$req .= " WHERE harmonization_process_id = ? ";
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute(array(
 			$harmonizationProcess->harmonizationId
 		));

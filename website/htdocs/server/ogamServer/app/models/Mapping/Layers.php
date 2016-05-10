@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Mapping
  */
-class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
+class Application_Model_Mapping_Layers {
 
 	/**
 	 * The logger.
@@ -28,9 +28,16 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
@@ -39,6 +46,16 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
 
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
+
+		// The database connection
+		$this->db = Zend_Registry::get('mapping_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -98,7 +115,6 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 * @return Array[String] The layer names
 	 */
 	public function getVectorLayersList() {
-		$db = $this->getAdapter();
 		$params = array();
 
 		$req = " SELECT *, COALESCE(t.label, layer.layer_label) as layer_label ";
@@ -116,7 +132,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 		Zend_Registry::get("logger")->info('getVectorLayersList : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute($params);
 
 		$result = array();
@@ -137,15 +153,13 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 * @return Layer
 	 */
 	public function getLayer($layerName) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT *";
 		$req .= " FROM layer ";
 		$req .= " WHERE layer_name = ?";
 
 		Zend_Registry::get("logger")->info('getLayer : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute(array(
 			$layerName
 		));
@@ -166,7 +180,6 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	 * @return Array[Layer]
 	 */
 	public function getLayersList($providerId = null) {
-		$db = $this->getAdapter();
 		$params = array();
 
 		$req = " SELECT * ";
@@ -194,7 +207,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 		Zend_Registry::get("logger")->info('getLayersList : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute($params);
 
 		$result = array();
@@ -221,7 +234,6 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 	public function getLegendItems($parentId, $providerId = null) {
 		Zend_Registry::get("logger")->info('getLegendItems : parentId : ' . $parentId . ' - providerId : ' . $providerId);
 
-		$db = $this->getAdapter();
 		$params = array();
 
 		// Prepare the request
@@ -250,7 +262,7 @@ class Application_Model_Mapping_Layers extends Zend_Db_Table_Abstract {
 
 		Zend_Registry::get("logger")->info('layer_model.getLegendItems() : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute($params);
 
 		$result = array();

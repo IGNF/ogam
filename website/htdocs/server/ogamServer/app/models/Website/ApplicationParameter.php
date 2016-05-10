@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Website
  */
-class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstract {
+class Application_Model_Website_ApplicationParameter {
 
 	/**
 	 * The logger.
@@ -28,15 +28,32 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 
 		$translate = Zend_Registry::get('Zend_Translate');
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
+
+		// The database connection
+		$this->db = Zend_Registry::get('website_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -63,8 +80,6 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 	 * @return Array of Parameters
 	 */
 	public function getParameters() {
-		$db = $this->getAdapter();
-
 		$req = " SELECT name, ";
 		$req .= " value, ";
 		$req .= " description";
@@ -72,7 +87,7 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 
 		$this->logger->info('getAppParameters : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute();
 
 		$results = $query->fetchAll();
@@ -93,15 +108,13 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 	 * @return String map service url
 	 */
 	public function getMapServiceUrl() {
-		$db = $this->getAdapter();
-
 		$req = " SELECT config ";
 		$req .= " FROM website.application_parameters, mapping.layer_service ";
 		$req .= " WHERE name = 'proxy_service_name'";
 		$req .= " AND value = service_name;";
 		$this->logger->info('getMapServiceUrl : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute();
 
 		$result = $query->fetch();

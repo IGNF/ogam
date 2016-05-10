@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Mapping
  */
-class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
+class Application_Model_Mapping_ResultLocation {
 
 	/**
 	 * The logger.
@@ -28,12 +28,29 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		// The database connection
+		$this->db = Zend_Registry::get('mapping_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -51,8 +68,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 *        	the projection system used for visualisation.
 	 */
 	public function fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS) {
-		$db = $this->getAdapter();
-		$db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
+		$this->db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
 
 		if ($sqlWhere != null) {
 			$keys = $locationTable->primaryKeys;
@@ -81,7 +97,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 
 			$this->logger->info('fillLocationResult : ' . $request);
 
-			$query = $db->prepare($request);
+			$query = $this->db->prepare($request);
 			$query->execute();
 		}
 	}
@@ -94,13 +110,11 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 *        	String the user session id.
 	 */
 	public function cleanPreviousResults($sessionId) {
-		$db = $this->getAdapter();
-
 		$req = "DELETE FROM result_location WHERE session_id = ? OR (_creationdt < CURRENT_TIMESTAMP - INTERVAL '2 days')";
 
 		$this->logger->info('cleanPreviousResults request : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$sessionId
 		));
@@ -114,8 +128,6 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 * @return Array[String] the list of plot locations as WKT (well known text)
 	 */
 	public function getPlotLocations($sessionId) {
-		$db = $this->getAdapter();
-
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
 
@@ -124,7 +136,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		$this->logger->info('getPlotLocations session_id : ' . $sessionId);
 		$this->logger->info('getPlotLocations request : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute(array(
 			$sessionId
 		));
@@ -144,8 +156,6 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 * @return String the bounging box as WKT (well known text)
 	 */
 	public function getResultsBBox($sessionId) {
-		$db = $this->getAdapter();
-
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
 
@@ -154,7 +164,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		$this->logger->info('getResultsBBox session_id : ' . $sessionId);
 		$this->logger->info('getResultsBBox request : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute(array(
 			$sessionId
 		));
@@ -171,14 +181,12 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 * @return Integer the number of results
 	 */
 	public function getResultsCount($sessionId) {
-		$db = $this->getAdapter();
-
 		$req = "SELECT count(*) FROM result_location WHERE session_id = ?";
 
 		$this->logger->info('getResultsCount session_id : ' . $sessionId);
 		$this->logger->info('getResultsCount request : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute(array(
 			$sessionId
 		));
@@ -200,8 +208,6 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 	 * @throws Exception
 	 */
 	public function getLocationInfo($sessionId, $lon, $lat) {
-		$db = $this->getAdapter();
-
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
 
@@ -288,7 +294,7 @@ class Application_Model_Mapping_ResultLocation extends Zend_Db_Table_Abstract {
 		$this->logger->info('getLocationInfo lat : ' . $lat);
 		$this->logger->info('getLocationInfo request : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		if ($selectMode === 'buffer') {
 			$select->execute(array(
 				$sessionId,

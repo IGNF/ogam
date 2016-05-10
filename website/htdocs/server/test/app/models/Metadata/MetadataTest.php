@@ -30,10 +30,6 @@ class MetadataTest extends ControllerTestCase {
 	public function tearDown() {
 		parent::tearDown();
 
-		// Ferme les connections
-		$db = $this->metadataModel->getAdapter();
-		$db->closeConnection();
-
 		$this->metadataModel = null;
 	}
 

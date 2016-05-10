@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage RawData
  */
-class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
+class Application_Model_RawData_Submission {
 
 	/**
 	 * The logger.
@@ -28,12 +28,29 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		// The database connection
+		$this->db = Zend_Registry::get('raw_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -65,8 +82,6 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	 * @return Array[Submission]
 	 */
 	public function getActiveSubmissions($providerId = null) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT submission_id, step, status, provider_id, p.label as provider_label, dataset_id, d.label as dataset_label, user_login, file_type, file_name, nb_line, _creationdt ";
 		$req .= " FROM raw_data.submission s";
 		$req .= " LEFT JOIN raw_data.submission_file USING (submission_id)";
@@ -78,7 +93,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		}
 		$req .= " ORDER BY submission_id DESC";
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$params = array();
 		if ($providerId) {
 			$params[] = $providerId;
@@ -118,8 +133,6 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	 * @return Array[Submission]
 	 */
 	public function getSubmissionsForHarmonization() {
-		$db = $this->getAdapter();
-
 		$req = " SELECT provider_id, p.label as provider_label, dataset_id, d.label as dataset_label, max(submission_id) as submission_id, max(step) as step, max(status) as status, max(user_login) as user_login, max( _creationdt) as _creationdt ";
 		$req .= " FROM submission";
 		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
@@ -128,7 +141,7 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 		$req .= " GROUP BY provider_id, provider_label, dataset_id, dataset_label";
 		$req .= " ORDER BY submission_id ";
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute(array());
 
 		Zend_Registry::get("logger")->info('getSubmissionsForHarmonization : ' . $req);
@@ -153,14 +166,13 @@ class Application_Model_RawData_Submission extends Zend_Db_Table_Abstract {
 	public function getSubmission($submissionId) {
 		Zend_Registry::get("logger")->info('getSubmission : ' . $submissionId);
 
-		$db = $this->getAdapter();
 		$req = " SELECT submission.*, p.label as provider_label, d.label as dataset_label";
 		$req .= " FROM submission ";
 		$req .= " LEFT JOIN metadata.dataset d USING (dataset_id)";
 		$req .= " LEFT JOIN website.providers p ON p.id = provider_id";
 		$req .= " WHERE submission_id = ?";
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 
 		$select->execute(array(
 			$submissionId
