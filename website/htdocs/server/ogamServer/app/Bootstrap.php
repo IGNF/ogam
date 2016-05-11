@@ -289,8 +289,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$this->bootstrap('RegisterLogger');
 		$this->bootstrap('multidb');
 
-		$this->logger->debug('Init database adapters');
-
 		$resource = $this->getPluginResource('multidb');
 
 		Zend_Registry::set('metadata_db', $resource->getDb('metadata_db'));
