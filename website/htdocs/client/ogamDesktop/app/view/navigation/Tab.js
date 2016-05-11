@@ -105,7 +105,6 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 
         this.tpl = new Ext.XTemplate(
 			'<legends style="display:block; position:absolute; left:1px; top:621px">',
-//			'<legends style="display:block; position:absolute; left:1px; top:1px">',
 				'<tpl for="formats">',
 					'<fieldset class="o-navigation-fieldset">',
 						'<legend>',
@@ -117,9 +116,13 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 						            '<tpl case="CHECKBOX">',
 						            	'<p><b>{label} :</b> {[this.convertBoolean(values)]}</p>',
 						            '<tpl case="IMAGE">',
-//										'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img title=\"\' + values.label + \'\" src=\"' + window.location.origin + '/img/photos/\' + values.value + \'\">\']}',
+										'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img title=\"\' + values.label + \'\" src=\"' + window.location.origin + '/img/photos/\' + values.value + \'\">\']}',
 						            '<tpl default>',
-						            	'<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isEmpty(values.value.toString().trim()))) ? "-" : values.value.toString()]}</p>',
+						            	'<tpl if="type ==\'STRING\' && subtype==\'LINK\' && value.length &gt; 0">',
+						            		'<a href="{value}" target="_blank">{label}</a>',
+						            	'<tpl else>',
+						            		'<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isEmpty(values.value.toString().trim()))) ? "-" : values.value.toString()]}</p>',
+						            	'</tpl>',
 						        '</tpl>',
 							'</tpl>',
 						'</div>',

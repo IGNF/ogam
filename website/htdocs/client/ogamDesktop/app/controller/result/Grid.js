@@ -127,6 +127,10 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 						// OGAM-587 - TODO : CODE, COORDINATE, ARRAY
 						case 'STRING':
 							columnConfig.xtype = 'gridcolumn';
+							if (field.subtype === 'LINK'){
+							columnConfig.width = 30;
+							columnConfig.renderer= this.renderLink
+							}
 							break;
 						case 'INTEGER':
 							columnConfig.xtype = 'gridcolumn';
@@ -206,8 +210,19 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			}
 		}
 		return pattern.join('');
+	},
+	
+	/**
+	 * Return a link or emptyCellText if url is empty
+	 * @param {String} uri Href of the link to generate
+	 * @return {String} a link or text
+	 */
+	renderLink:function (uri){
+		if (Ext.isEmpty(uri)){
+			return this.emptyCellText;
+		}
+		return Ext.String.format('<a href="{0}" target="_blank">@</a>',uri);
 	}//,
-
 	/*
 	 * OGAM-589 - TODO: Render an Icon for the data grid.
 	 */
