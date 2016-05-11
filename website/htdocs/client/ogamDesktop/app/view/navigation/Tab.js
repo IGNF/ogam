@@ -119,7 +119,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 										'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img title=\"\' + values.label + \'\" src=\"' + window.location.origin + '/img/photos/\' + values.value + \'\">\']}',
 						            '<tpl default>',
 						            	'<tpl if="type ==\'STRING\' && subtype==\'LINK\' && value.length &gt; 0">',
-						            		'<a href="{value}" target="_blank">{label}</a>',
+						            		'<a class="external" href="{value}" target="_blank">{label}</a>',
 						            	'<tpl else>',
 						            		'<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isEmpty(values.value.toString().trim()))) ? "-" : values.value.toString()]}</p>',
 						            	'</tpl>',

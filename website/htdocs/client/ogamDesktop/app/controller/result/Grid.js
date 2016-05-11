@@ -128,8 +128,8 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 						case 'STRING':
 							columnConfig.xtype = 'gridcolumn';
 							if (field.subtype === 'LINK'){
-							columnConfig.width = 30;
-							columnConfig.renderer= this.renderLink
+								columnConfig.width = 30;
+								columnConfig.renderer= this.renderLink
 							}
 							break;
 						case 'INTEGER':
@@ -217,11 +217,11 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	 * @param {String} uri Href of the link to generate
 	 * @return {String} a link or text
 	 */
-	renderLink:function (uri){
+	renderLink:function (uri, metadata){
 		if (Ext.isEmpty(uri)){
 			return this.emptyCellText;
 		}
-		return Ext.String.format('<a href="{0}" target="_blank">@</a>',uri);
+		return Ext.String.format('<a class ="external" href="{0}" target="_blank">&#160;</a>',uri);
 	}//,
 	/*
 	 * OGAM-589 - TODO: Render an Icon for the data grid.
