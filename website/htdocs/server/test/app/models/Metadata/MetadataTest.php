@@ -310,7 +310,7 @@ class MetadataTest extends ControllerTestCase {
 		//
 		$formFields = $this->metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'result');
 
-		$this->assertEquals(count($formFields), 7);
+		$this->assertEquals(count($formFields), 8);
 
 		// Les données attendues sont ordonnées
 		$this->assertEquals($formFields[0]->data, 'PROVIDER_ID');
@@ -319,7 +319,8 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertEquals($formFields[3]->data, 'INV_DATE');
 		$this->assertEquals($formFields[4]->data, 'IS_FOREST_PLOT');
 		$this->assertEquals($formFields[5]->data, 'CORINE_BIOTOPE');
-		$this->assertEquals($formFields[6]->data, 'COMMENT');
+		$this->assertEquals($formFields[6]->data, 'FICHE_PLACETTE');
+		$this->assertEquals($formFields[7]->data, 'COMMENT');
 
 		//
 		// Same thing for the criterias
