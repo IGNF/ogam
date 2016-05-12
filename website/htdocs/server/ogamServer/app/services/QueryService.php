@@ -628,7 +628,7 @@ class Application_Service_QueryService {
 	 */
 	public function getDetails($id, $detailsLayers, $datasetId = null) {
 		$this->logger->debug('getDetails : ' . $id);
-		return json_encode($this->getFullDetailsData($id, $detailsLayers));
+		return json_encode($this->getDetailsData($id, $detailsLayers, null, true));
 	}
 
 	/**
@@ -640,11 +640,13 @@ class Application_Service_QueryService {
 	 *        	The names of the layers used to display the images in the detail panel.
 	 * @param String $datasetId
 	 *        	The identifier of the dataset (to filter data)
+	 * @param boolean $withChildren
+	 *        	If true, get the information about the children of the object
 	 * @param boolean $proxy
 	 *        	If true, use the proxy to fetch mapserver
 	 * @return array Array that represents the details of the result line.
 	 */
-	public function getDetailsData($id, $detailsLayers, $datasetId = null, $proxy = true) {
+	public function getDetailsData($id, $detailsLayers, $datasetId = null, $withChildren = false, $proxy = true) {
 		$this->logger->debug('getDetailsData : ' . $id);
 
 		// Transform the identifier in an array
@@ -770,163 +772,29 @@ class Application_Service_QueryService {
 			}
 		}
 
-		return $dataDetails;
-	}
-
-	/**
-	 * Get the full details (with children) associed with a result line (clic on the "detail button").
-	 *
-	 * @param String $id
-	 *        	The identifier of the line
-	 * @param String $detailsLayers
-	 *        	The names of the layers used to display the images in the detail panel.
-	 * @param String $datasetId
-	 *        	The identifier of the dataset (to filter data)
-	 * @param boolean $proxy
-	 *        	If true, use the proxy to fetch mapserver
-	 * @return array Array that represents the details of the result line.
-	 */
-	public function getFullDetailsData($id, $detailsLayers, $datasetId = null, $proxy = true) {
-		$this->logger->debug('getFullDetailsData : ' . $id);
-
-		// Transform the identifier in an array
-		$keyMap = $this->_decodeId($id);
-
-		// Prepare a data object to be filled
-		$data = $this->genericService->buildDataObject($keyMap['SCHEMA'], $keyMap['FORMAT'], null);
-
-		// Complete the primary key info with the session values
-		foreach ($data->infoFields as $infoField) {
-			if (!empty($keyMap[$infoField->data])) {
-				$infoField->value = $keyMap[$infoField->data];
-			}
-		}
-
-		// Get the detailled data
-		$this->genericModel->getDatum($data);
-
-		// The data ancestors
-		$ancestors = $this->genericModel->getAncestors($data);
-		$ancestors = array_reverse($ancestors);
-
-		// Look for a geometry object in order to calculate a bounding box
-		// Look for the plot location
-		$bb = null;
-		$bb2 = null;
-		$locationTable = null;
-		foreach ($data->getFields() as $field) {
-			if ($field->type === 'GEOM') {
-				// define a bbox around the location
-				$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-
-				// Prepare an overview bbox
-				$bb2 = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 50000);
-
-				$locationTable = $data;
-				break;
-			}
-		}
-		if ($bb == null) {
-			foreach ($ancestors as $ancestor) {
-				foreach ($ancestor->getFields() as $field) {
-					if ($field->type === 'GEOM') {
-						// define a bbox around the location
-						$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
-
-						// Prepare an overview bbox
-						$bb2 = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax, 200000);
-
-						$locationTable = $ancestor;
-						break;
-					}
-				}
-			}
-		}
-
-		// Defines the mapsserver parameters.
-		$mapservParams = '';
-		foreach ($locationTable->getInfoFields() as $primaryKey) {
-			$mapservParams .= '&' . $primaryKey->columnName . '=' . $primaryKey->value;
-		}
-
-		// Title of the detail message
-		$dataDetails = array();
-		$dataDetails['formats'] = array();
-
-		// List all the formats, starting with the ancestors
-		foreach ($ancestors as $ancestor) {
-			$ancestorJSON = $this->genericService->datumToDetailJSON($ancestor, $datasetId);
-			if ($ancestorJSON !== '') {
-				$dataDetails['formats'][] = json_decode($ancestorJSON, true);
-			}
-		}
-
-		// Add the current data
-		$dataJSON = $this->genericService->datumToDetailJSON($data, $datasetId);
-		if ($dataJSON !== '') {
-			$dataDetails['formats'][] = json_decode($dataJSON, true);
-		}
-
-		// Defines the panel title
-		$titlePK = '';
-		foreach ($data->infoFields as $infoField) {
-			if ($titlePK !== '') {
-				$titlePK .= '_';
-			}
-			$titlePK .= $infoField->value;
-		}
-		$dataInfo = end($dataDetails['formats']);
-		$dataDetails['title'] = $dataInfo['title'] . ' (' . $titlePK . ')';
-
-		// Add the localisation maps
-		if (!empty($detailsLayers)) {
-			if ($detailsLayers[0] != '') {
-				$url = array();
-				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams, $proxy)));
-
-				$dataDetails['maps1'] = array(
-					'title' => 'image'
-				);
-
-				// complete the array with the urls of maps1
-				$dataDetails['maps1']['urls'][] = array();
-				$urlCount = count($url);
-				for ($i = 0; $i < $urlCount; $i ++) {
-					$dataDetails['maps1']['urls'][$i]['url'] = $url[$i];
-				}
-			}
-
-			if ($detailsLayers[1] != '') {
-				$url = array();
-				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams, $proxy)));
-				$dataDetails['maps2'] = array(
-					'title' => 'overview'
-				);
-
-				// complete the array with the urls of maps2
-				$dataDetails['maps2']['urls'][] = array();
-				for ($i = 0; $i < count($url); $i ++) {
-					$dataDetails['maps2']['urls'][$i]['url'] = $url[$i];
-				}
-			}
-		}
-		// Prepare a data object to be filled
-		$data2 = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
-
-		// Complete the primary key
-		foreach ($data2->infoFields as $infoField) {
-			if (!empty($keyMap[$infoField->data])) {
-				$infoField->value = $keyMap[$infoField->data];
-			}
-		}
-		// Get children too
-		$websiteSession = new Zend_Session_Namespace('website');
-		$children = $this->genericModel->getChildren($data2, $websiteSession->datasetId);
-
 		// Add the children
-		foreach ($children as $listChild) {
-			$dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
-			$dataArray != null ? $dataDetails['children'][] = $dataArray : null;
+		if ($withChildren) {
+
+			// Prepare a data object to be filled
+			$data2 = $this->genericService->buildDataObject($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
+
+			// Complete the primary key
+			foreach ($data2->infoFields as $infoField) {
+				if (!empty($keyMap[$infoField->data])) {
+					$infoField->value = $keyMap[$infoField->data];
+				}
+			}
+			// Get children too
+			$websiteSession = new Zend_Session_Namespace('website');
+			$children = $this->genericModel->getChildren($data2, $websiteSession->datasetId);
+
+			// Add the children
+			foreach ($children as $listChild) {
+				$dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
+				if ($dataArray != null) {
+					$dataDetails['children'][] = $dataArray;
+				}
+			}
 		}
 
 		return $dataDetails;
