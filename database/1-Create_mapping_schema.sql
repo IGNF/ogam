@@ -100,8 +100,6 @@ COMMENT ON COLUMN layer.isVector IS 'Indicate if the layer is vector-based (1 fo
 COMMENT ON COLUMN layer.maxscale IS 'Max scale of apparation';
 COMMENT ON COLUMN layer.minscale IS 'Min scale of apparition';
 COMMENT ON COLUMN layer.has_legend IS 'If value = 1 is the layer has a legend that should be displayed';
-COMMENT ON COLUMN layer.transitionEffect IS 'Transition effect (resize or null)';
-COMMENT ON COLUMN layer.imageFormat IS 'Image format (PNG or JPEG)';
 COMMENT ON COLUMN layer.provider_id IS 'If empty, the layer can be seen by any provider if not it is limited to one provider';
 COMMENT ON COLUMN layer.activate_type IS 'Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or INTERPOLATION)';
 COMMENT ON COLUMN layer.view_service_name IS 'Indicates the service for the map visualisation';
