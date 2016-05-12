@@ -81,6 +81,7 @@ class Application_Model_Mapping_Layers {
 		$layer->activateType = $row['activate_type'];
 		$layer->viewServiceName = $row['view_service_name'];
 		$layer->legendServiceName = $row['legend_service_name'];
+		$layer->printServiceName = $row['print_service_name'];
 		$layer->detailServiceName = $row['detail_service_name'];
 		$layer->featureServiceName = $row['feature_service_name'];
 

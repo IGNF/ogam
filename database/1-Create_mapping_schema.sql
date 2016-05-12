@@ -83,6 +83,7 @@ CREATE TABLE layer
   activate_type         VARCHAR(36),   -- Group of event that will activate this layer (NONE, REQUEST)
   view_service_name	    VARCHAR(50),   -- Indicates the service for the map visualisation
   legend_service_name	VARCHAR(50),   -- Indicates the service for the legend
+  print_service_name	VARCHAR(50),   -- Indicates the service for the print function
   detail_service_name	VARCHAR(50),   -- Indicates the service for the detail panel display 
   feature_service_name	VARCHAR(50),   -- Indicates the service for the wfs
   PRIMARY KEY  (layer_name)
@@ -104,6 +105,7 @@ COMMENT ON COLUMN layer.provider_id IS 'If empty, the layer can be seen by any p
 COMMENT ON COLUMN layer.activate_type IS 'Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or INTERPOLATION)';
 COMMENT ON COLUMN layer.view_service_name IS 'Indicates the service for the map visualisation';
 COMMENT ON COLUMN layer.legend_service_name IS 'Indicates the service for the legend';
+COMMENT ON COLUMN layer.print_service_name IS 'Indicates the service for the print function (called by the PHP server, not the navigator)';
 COMMENT ON COLUMN layer.detail_service_name IS 'Indicates the service for the detail panel display';
 COMMENT ON COLUMN layer.feature_service_name IS 'Indicates the service for the wfs';
 

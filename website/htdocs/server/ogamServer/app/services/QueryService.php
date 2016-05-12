@@ -952,7 +952,11 @@ class Application_Service_QueryService {
 		$baseUrls = '';
 
 		// Get the base urls for the services
-		$detailServices = $this->servicesModel->getDetailServices();
+		if (!$proxy) {
+			$detailServices = $this->servicesModel->getPrintServices();
+		} else {
+			$detailServices = $this->servicesModel->getDetailServices();
+		}
 
 		// Get the server name for the layers
 		$layerNames = explode(",", $detailsLayers);
@@ -965,7 +969,13 @@ class Application_Service_QueryService {
 			$serviceLayerName = $layer->serviceLayerName;
 
 			// Get the base Url for detail service
-			$detailServiceName = $layer->detailServiceName;
+			if (!$proxy) {
+				$detailServiceName = $layer->printServiceName;
+			} else {
+				if ($layer->detailServiceName != '') {
+					$detailServiceName = $layer->detailServiceName;
+				}
+			}
 
 			foreach ($detailServices as $detailService) {
 
@@ -974,7 +984,6 @@ class Application_Service_QueryService {
 					$params = json_decode($detailService->serviceConfig)->params;
 					$service = $params->SERVICE;
 					$baseUrl = json_decode($detailService->serviceConfig)->{'urls'}[0];
-
 
 					if ($service === 'WMS') {
 
