@@ -525,7 +525,7 @@ class QueryController extends AbstractOGAMController {
 		$datasetId = $websiteSession->datasetId;
 
 		// Get all data linked to the result line
-		$data = $this->queryService->getDetailsData($id, $detailsLayers, $datasetId, false);
+		$data = $this->queryService->getDetailsData($id, $detailsLayers, $datasetId, false, false);
 
 		// image 1
 		$tmpImgPath1 = Array();
@@ -533,6 +533,8 @@ class QueryController extends AbstractOGAMController {
 		for ($i = 0; $i < $urlCount; $i ++) {
 			$url = $data['maps1']['urls'][$i]['url'];
 			$content = @file_get_contents($url);
+			$this->logger->debug('Getting image from : ' . $url);
+
 			if ($content === false) {
 				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
 			} else {
@@ -547,6 +549,8 @@ class QueryController extends AbstractOGAMController {
 		for ($i = 0; $i < $urlCount; $i ++) {
 			$url = $data['maps2']['urls'][$i]['url'];
 			$content = @file_get_contents($url);
+			$this->logger->debug('Getting image from : ' . $url);
+
 			if ($content === false) {
 				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
 			} else {
