@@ -137,4 +137,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # Always restart Apache
   config.vm.provision "shell", inline: "service apache2 restart", run: "always"
+    
 end

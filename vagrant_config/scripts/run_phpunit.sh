@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 
 # ---------------------------------------------------------------
-# This provision should be executed as "vagrant"
+# This provision is executed as "vagrant"
 # ---------------------------------------------------------------
+
+echo "--------------------------------------------------" 
+echo " Run PHPUnit "
+echo "--------------------------------------------------"
+
+# Set environment variables
+source $PWD/vagrant_config/scripts/setenv.sh
 
 #----------------------------------------------------------------
 # Launch PHPUnit

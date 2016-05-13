@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# ---------------------------------------------------------------
+# This provision is executed as "root"
+# ---------------------------------------------------------------
+
+
+echo "--------------------------------------------------" 
+echo " Bootstrap "
+echo "--------------------------------------------------"
+
 ogam_folder='/vagrant/ogam'
 
 # configuration du proxy IGN / dépots apt
@@ -19,7 +28,7 @@ ogam_folder='/vagrant/ogam'
 
 #source /etc/environment
 
-#export https_proxy=proxy.ign.fr:3128
+#export https_proxy=proxy.ign.fr:3128 
 #export http_proxy=proxy.ign.fr:3128
 
 #pour valider le depot postgres

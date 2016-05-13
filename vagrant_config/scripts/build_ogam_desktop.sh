@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 
 # ---------------------------------------------------------------
-# This provision should be executed as "vagrant"
+# This provision is executed as "vagrant"
 # ---------------------------------------------------------------
+
+# Set environment variables
+source $PWD/vagrant_config/scripts/setenv.sh
+
+echo "--------------------------------------------------" 
+echo " Build OGAM Desktop "
+echo "--------------------------------------------------"
 
 #----------------------------------------------------------------
 # Launch Sencha Cmd to compile the JS and CSS

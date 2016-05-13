@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# ---------------------------------------------------------------
+# This provision is executed as "root"
+# ---------------------------------------------------------------
+
+echo "--------------------------------------------------" 
+echo " Install DB "
+echo "--------------------------------------------------"
+
 # Config par défaut :
 database=ogam
 username=postgres
@@ -94,7 +102,7 @@ sudo -n -u $username psql -d $database -c $"UPDATE mapping.layer_service SET con
 
 if [ -f $logfileError  ];
 then
-    echo "Création terminée avec des erreurs voir le fichier $logfileError !"
+    echo "Création terminée avec des erreurs voir le fichier $logfileError !" 1>&2
 else
     echo "Création réussie !"
 fi
