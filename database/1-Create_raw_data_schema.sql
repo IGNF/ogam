@@ -1,6 +1,10 @@
 SET client_encoding TO 'UTF8';
+SET client_min_messages TO WARNING;
+
 CREATE SCHEMA raw_data;
 SET SEARCH_PATH = raw_data, public;
+
+
 
 --
 -- WARNING: The DATASET_ID, PROVIDER_ID and PLOT_CODE columns are used by the system and should keep their names.

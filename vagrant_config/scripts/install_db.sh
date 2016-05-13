@@ -100,7 +100,7 @@ sudo -n -u $username psql -d $database -c "UPDATE website.application_parameters
 sudo -n -u $username psql -d $database -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost/mapserv-ogam?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.1.1\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_mapserver';" 2>> $logfileError >> $logfile
 #sudo -n -u $username psql -d $database -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost:8000/cgi-bin/tilecache.fcgi?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.0.0\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_tilecache';" 2>> $logfileError >> $logfile
 
-if [ -f $logfileError  ];
+if [ -s $logfileError  ];
 then
     echo "Création terminée avec des erreurs voir le fichier $logfileError !" 1>&2
 else
