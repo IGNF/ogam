@@ -23,6 +23,7 @@ require_once APPLICATION_PATH . '/objects/Metadata/Format.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableFormat.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TreeNode.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
+require_once APPLICATION_PATH . '/objects/Website/ApplicationParameter.php';
 require_once APPLICATION_PATH . '/objects/Website/User.php';
 require_once APPLICATION_PATH . '/objects/Website/Role.php';
 require_once APPLICATION_PATH . '/objects/Website/Provider.php';
@@ -332,8 +333,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		// Add the parameters from the database
 		$parameterModel = new Application_Model_Website_ApplicationParameter();
 		$parameters = $parameterModel->getParameters();
-		foreach ($parameters as $k => $v) {
-			$configuration->$k = $v;
+		foreach ($parameters as $name => $param) {
+			$configuration->$name = $param->value;
 		}
 
 		// Adding of the intern map service url into the parameters

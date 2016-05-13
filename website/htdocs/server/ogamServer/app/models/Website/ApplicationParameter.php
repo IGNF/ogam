@@ -57,27 +57,9 @@ class Application_Model_Website_ApplicationParameter {
 	}
 
 	/**
-	 * Converts an array to an object.
-	 * The configuration stored in session should be an object with attributes.
-	 *
-	 * @param Array $array
-	 * @return object
-	 */
-	private function _arrayToObject($array) {
-		if (is_array($array)) {
-			foreach ($array as &$item) {
-				$item = $this->_arrayToObject($item);
-			}
-			return (object) $array;
-		}
-
-		return $array;
-	}
-
-	/**
 	 * Return the list of parameters.
 	 *
-	 * @return Array of Parameters
+	 * @return Array[Application_Object_Website_ApplicationParameter]
 	 */
 	public function getParameters() {
 		$req = " SELECT name, ";
@@ -94,10 +76,13 @@ class Application_Model_Website_ApplicationParameter {
 		$parameters = array();
 
 		foreach ($results as $result) {
-			$parameters[$result['name']] = $result['value'];
-		}
+			$param = new Application_Object_Website_ApplicationParameter();
+			$param->name = $result['name'];
+			$param->value = $result['value'];
+			$param->description = $result['description'];
 
-		$parameters = $this->_arrayToObject($parameters);
+			$parameters[$param->name] = $param;
+		}
 
 		return $parameters;
 	}
