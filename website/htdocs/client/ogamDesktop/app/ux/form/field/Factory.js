@@ -24,7 +24,7 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
          * @return {Object} a checkbox Field config
          */
         buildCheckboxFieldConfig : function(record) {
-            field = {xtype : 'checkbox'};
+            var field = {xtype : 'checkbox'};
             switch (record.type) {
                 case 'BOOLEAN': // We assume that the field is a boolean with two possible values: true and false
                     field.uncheckedValue = false;
@@ -91,6 +91,44 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
                     console.warn('The checkbox field value type is not specified for the "' + record.type + '" type');
                     console.warn('The checkbox field value default type is set to Boolean');
                     break;
+            }
+            return field;
+        },
+        /**
+         * Construct a radioa field config from a record
+         * @param {Ext.data.Record} record The field record
+         * @return {Object} a radio Field config
+         */
+        buildRadioFieldConfig : function(record) {
+            var field = {xtype : 'radiobuttonfield'};
+            console.log(record);
+            switch (record.type) {
+            case 'CODE':
+                field.store = new Ext.data.JsonStore({
+                    type:'json',
+                    autoDestroy : true,
+                    autoLoad : true,
+                    model:'OgamDesktop.model.request.object.field.Code',
+                    proxy:{
+                        type: 'ajax',
+                        useCache:true,
+                        url : (
+                            (record.subtype === 'DYNAMIC') ? //if
+                                Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetdynamiccodes'
+                                : //else
+                                Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetcodes'),
+                        extraParams : {
+                            'unit' : record.unit
+                        },
+                        reader: {
+                            rootProperty:'codes'
+                        }
+                    }
+                });
+                break;
+            default: 
+                console.error('The radio field value type is not specified for the "' + record.type + '" type');
+                break;
             }
             return field;
         }

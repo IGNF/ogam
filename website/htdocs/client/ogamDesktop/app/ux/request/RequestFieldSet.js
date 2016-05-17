@@ -286,6 +286,8 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildCheckboxFieldConfig(record));
 				break;
 			case 'RADIO':
+				Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildRadioFieldConfig(record));
+				break;
 			case 'TEXT':
 				switch (record.subtype) {
 				// OGAM-601 - TODO : BOOLEAN, COORDINATE
