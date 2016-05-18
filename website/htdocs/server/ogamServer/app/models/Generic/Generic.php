@@ -42,6 +42,13 @@ class Application_Model_Generic_Generic {
 	var $genericService;
 
 	/**
+	 * The metadata Model.
+	 *
+	 * @var Application_Model_Metadata_Metadata
+	 */
+	var $metadataModel;
+
+	/**
 	 * The database connections
 	 *
 	 * @var Zend_Db

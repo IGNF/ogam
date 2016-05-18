@@ -92,7 +92,7 @@ class Application_Model_Metadata_Metadata {
 
 		$req = "SELECT code, COALESCE(t.label, m.label) as label ";
 		$req .= " FROM mode m";
-		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'MODE' AND row_pk = m.unit || ',' || m.code)";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'METADATA_MODE' AND row_pk = m.unit || ',' || m.code)";
 		$req .= " WHERE unit = ? ";
 		if (!empty($query)) {
 			$req .= " AND COALESCE(t.label, m.label) ilike '" . $query . "%'";
@@ -207,7 +207,7 @@ class Application_Model_Metadata_Metadata {
 
 			$req = "SELECT code, COALESCE(t.label, m.label) as label";
 			$req .= " FROM mode m";
-			$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'MODE' AND row_pk = m.unit || ',' || m.code) ";
+			$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'METADATA_MODE' AND row_pk = m.unit || ',' || m.code) ";
 			$req .= " WHERE unit = ? AND code = ? ORDER BY position, code";
 
 			$this->logger->info('getMode : ' . $req);
@@ -1803,6 +1803,57 @@ class Application_Model_Metadata_Metadata {
 			if ($this->useCache) {
 				$this->cache->save($result, $key);
 			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
+	}
+
+	/**
+	 * Get the translation of a data in a langage.
+	 *
+	 * @param String $format
+	 *        	The name of the table
+	 * @param String $pk
+	 *        	The primary key of the item in the table
+	 * @return String
+	 */
+	public function getTranslation($format, $pk) {
+		$key = $this->_formatCacheKey('getTranslation' . $format . '_' . $pk . '_' . $this->lang);
+
+		$this->logger->debug($key);
+
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+
+		if (empty($cachedResult)) {
+
+			$req = "SELECT * ";
+			$req .= " FROM translation ";
+			$req .= " WHERE table_format = ?";
+			$req .= " AND row_pk = ?";
+			$req .= " AND lang = ?";
+
+			$this->logger->info('getTranslation : ' . $req);
+
+			$select = $this->db->prepare($req);
+			$select->execute(array(
+				$format,
+				$pk,
+				$this->lang
+			));
+
+			$row = $select->fetch();
+			if ($row) {
+				$result = $row['label'];
+				if ($this->useCache) {
+					$this->cache->save($result, $key);
+				}
+			} else {
+				$result = null;
+			}
+
 			return $result;
 		} else {
 			return $cachedResult;

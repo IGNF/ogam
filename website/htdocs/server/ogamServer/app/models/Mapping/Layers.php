@@ -35,6 +35,13 @@ class Application_Model_Mapping_Layers {
 	var $db;
 
 	/**
+	 * The metadata Model.
+	 *
+	 * @var Application_Model_Metadata_Metadata
+	 */
+	var $metadataModel;
+
+	/**
 	 * Initialisation.
 	 */
 	public function __construct() {
@@ -131,7 +138,7 @@ class Application_Model_Mapping_Layers {
 			$params[] = $userSession->user->login;
 		}
 
-		Zend_Registry::get("logger")->info('getVectorLayersList : ' . $req);
+		$this->logger->info('getVectorLayersList : ' . $req);
 
 		$select = $this->db->prepare($req);
 		$select->execute($params);
@@ -158,7 +165,7 @@ class Application_Model_Mapping_Layers {
 		$req .= " FROM layer ";
 		$req .= " WHERE layer_name = ?";
 
-		Zend_Registry::get("logger")->info('getLayer : ' . $req);
+		$this->logger->info('getLayer : ' . $req);
 
 		$select = $this->db->prepare($req);
 		$select->execute(array(
@@ -168,6 +175,12 @@ class Application_Model_Mapping_Layers {
 		$row = $select->fetch();
 
 		$layer = $this->_readLayer($row);
+
+		// Translation
+		$layerNameTrad = $this->metadataModel->getTranslation('MAPPING_LAYER', 'layer_name,' . $layer->layerName);
+		if ($layerNameTrad !== null) {
+			$layer->layerLabel = $layerNameTrad;
+		}
 
 		return $layer;
 	}
@@ -206,7 +219,7 @@ class Application_Model_Mapping_Layers {
 
 		$req .= " ORDER BY position ASC";
 
-		Zend_Registry::get("logger")->info('getLayersList : ' . $req);
+		$this->logger->info('getLayersList : ' . $req);
 
 		$select = $this->db->prepare($req);
 		$select->execute($params);
@@ -217,6 +230,12 @@ class Application_Model_Mapping_Layers {
 			$layer = $this->_readLayer($row);
 
 			$layer->treeItem = $this->_readTreeItem($row);
+
+			// Translation
+			$layerNameTrad = $this->metadataModel->getTranslation('MAPPING_LAYER', 'layer_name,' . $layer->layerName);
+			if ($layerNameTrad !== null) {
+				$layer->layerLabel = $layerNameTrad;
+			}
 
 			$result[$layer->layerName] = $layer;
 		}
@@ -233,15 +252,14 @@ class Application_Model_Mapping_Layers {
 	 * @return Array[Application_Object_Mapping_LegendItem]
 	 */
 	public function getLegendItems($parentId, $providerId = null) {
-		Zend_Registry::get("logger")->info('getLegendItems : parentId : ' . $parentId . ' - providerId : ' . $providerId);
+		$this->logger->info('getLegendItems : parentId : ' . $parentId . ' - providerId : ' . $providerId);
 
 		$params = array();
 
 		// Prepare the request
-		$req = " SELECT layer_tree.*, COALESCE(t.label, layer.layer_label) as layer_label ";
+		$req = " SELECT * ";
 		$req .= " FROM layer_tree ";
 		$req .= " LEFT OUTER JOIN layer ON (layer_tree.name = layer.layer_name) ";
-		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'LAYER' AND row_pk = layer.layer_name) ";
 		$req .= " WHERE parent_id = '" . $parentId . "'";
 
 		// Check the provider id
@@ -261,7 +279,7 @@ class Application_Model_Mapping_Layers {
 
 		$req = $req . " ORDER BY position";
 
-		Zend_Registry::get("logger")->info('layer_model.getLegendItems() : ' . $req);
+		$this->logger->info('layer_model.getLegendItems() : ' . $req);
 
 		$select = $this->db->prepare($req);
 		$select->execute($params);
@@ -270,6 +288,12 @@ class Application_Model_Mapping_Layers {
 		foreach ($select->fetchAll() as $row) {
 			$legendItem = $this->_readTreeItem($row);
 			$result[$legendItem->itemId] = $legendItem;
+
+			// Translation
+			$layerNameTrad = $this->metadataModel->getTranslation('MAPPING_LAYER', 'layer_name,' . $legendItem->layerName);
+			if ($layerNameTrad !== null) {
+				$legendItem->label = $layerNameTrad;
+			}
 		}
 		return $result;
 	}

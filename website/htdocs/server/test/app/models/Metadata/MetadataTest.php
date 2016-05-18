@@ -575,4 +575,31 @@ class MetadataTest extends ControllerTestCase {
 
 		$this->assertEquals(20, $count);
 	}
+
+
+	/**
+	 * Test la fonction getTranslation.
+	 */
+	public function testGetTranslation() {
+
+		// Set the langage in French
+		$this->metadataModel->lang = 'FR';
+
+		// get the trad
+		$trad = $this->metadataModel->getTranslation('MAPPING_LAYER', 'layer_name,result_locations');
+
+		// On vérifie que l'on a ramené la bonne modalité
+		$this->assertEquals($trad, 'Résultats');
+
+
+		// Set the langage in French
+		$this->metadataModel->lang = 'EN';
+
+		// get the trad
+		$trad = $this->metadataModel->getTranslation('MAPPING_LAYER', 'layer_name,result_locations');
+
+		// On vérifie que l'on a ramené la bonne modalité
+		$this->assertEquals($trad, 'Results');
+	}
+
 }
