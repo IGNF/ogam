@@ -273,7 +273,7 @@ Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SnappingButton', {
 
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SelectWFSFeatureButton', {
 	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
-	tooltip: "Selectionner un contour de sur la couche sélectionnée"
+	tooltip: "Selectionner un contour sur la couche sélectionnée"
 });
 
 Ext.define('OgamDesktop.locale.fr.view.map.MapAddonsPanel', {
@@ -303,7 +303,7 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.MainWin', {
 	override: 'OgamDesktop.view.navigation.MainWin',
 	config: {
 		title: 'Détails',
-		exportAsPdfButtonText: "Exporter en pdf"
+		exportAsPdfButtonText: "Exporter en PDF"
 	}
 });
 
