@@ -8,6 +8,8 @@ StartTest(function(t) {
 	t.chain(
 			{ action : 'click', target : '>> [Requête prédéfinie]' },
 			{ action : 'click', target : '>> [Distribution par espèce]' }
+			//{ action : 'click', target : '>> [name=datasetId]' }
+			
 	);
 	
 	t.ok(OgamDesktop.PredefinedRequestPanel, 'OK');
