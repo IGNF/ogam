@@ -87,7 +87,7 @@ class Application_Service_GenericService {
 			$fields .= $formField->toDetailJSON() . ",";
 		}
 		// remove last comma
-		if ($fields != '') {
+		if ($fields !== '') {
 			$fields = substr($fields, 0, -1);
 		} else {
 			return '';
@@ -143,7 +143,7 @@ class Application_Service_GenericService {
 			$fields .= $formField->toDetailJSON() . ",";
 		}
 		// remove last comma
-		if ($fields != '') {
+		if ($fields !== '') {
 			$fields = substr($fields, 0, -1);
 		} else {
 			return '';
@@ -280,7 +280,7 @@ class Application_Service_GenericService {
 					$locationData[1] .= $field->valueLabel . ', ';
 				}
 
-				if ($locationData[1] != "") {
+				if ($locationData[1] !== "") {
 					$locationData[1] = substr($locationData[1], 0, -2);
 				}
 				$formFields = $this->getFormFieldsOrdered($datum->getFields());
@@ -344,7 +344,7 @@ class Application_Service_GenericService {
 		foreach ($tableFields as $tableField) {
 			// Get the form field corresponding to the table field
 			$formField = $this->getTableToFormMapping($tableField, true);
-			if ($formField != null && $formField->isResult) {
+			if ($formField !== null && $formField->isResult) {
 				$fieldsOrdered[] = $formField;
 			}
 		}
@@ -366,12 +366,12 @@ class Application_Service_GenericService {
 		$formField = $this->metadataModel->getTableToFormMapping($tableField);
 
 		// Clone the object to avoid modifying existing object
-		if ($formField != null) {
+		if ($formField !== null) {
 			$formField = clone $formField;
 		}
 
 		// Copy the values
-		if ($copyValues == true && $formField != null && $tableField->value != null) {
+		if ($copyValues === true && $formField !== null && $tableField->value !== null) {
 
 			// Copy the value and label
 			$formField->value = $tableField->value;
@@ -398,12 +398,12 @@ class Application_Service_GenericService {
 		$tableField = $this->metadataModel->getFormToTableMapping($schema, $formField);
 
 		// Clone the object to avoid modifying existing object
-		if ($tableField != null) {
+		if ($tableField !== null) {
 			$tableField = clone $tableField;
 		}
 
 		// Copy the values
-		if ($copyValues == true && $tableField != null && $formField->value != null) {
+		if ($copyValues === true && $tableField !== null && $formField->value !== null) {
 
 			// Copy the value
 			$tableField->value = $formField->value;
@@ -639,7 +639,7 @@ class Application_Service_GenericService {
 				$sql2 .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue;
 			}
 			if (($maxValue !== null) && ($maxValue !== '')) {
-				if ($sql2 != "") {
+				if ($sql2 !== '') {
 					$sql2 .= ' AND ';
 				}
 				$sql2 .= $tableField->format . "." . $tableField->columnName . " <= " . $maxValue;
@@ -735,25 +735,25 @@ class Application_Service_GenericService {
 		$column = $tableField->format . "." . $tableField->columnName;
 
 		if (!empty($value)) {
-			if (strlen($value) == 10) {
+			if (strlen($value) === 10) {
 				// Case "YYYY/MM/DD"
 				if (Zend_Date::isDate($value, 'YYYY/MM/DD')) {
 					// One value, we make an equality comparison
 					$sql .= "(" . $column . " = to_date('" . $value . "', 'YYYY/MM/DD'))";
 				}
-			} else if (strlen($value) == 13 && substr($value, 0, 2) == '>=') {
+			} else if (strlen($value) === 13 && substr($value, 0, 2) === '>=') {
 				// Case ">= YYYY/MM/DD"
 				$beginDate = substr($value, 3, 10);
 				if (Zend_Date::isDate($beginDate, 'YYYY/MM/DD')) {
 					$sql .= "(" . $column . " >= to_date('" . $beginDate . "', 'YYYY/MM/DD'))";
 				}
-			} else if (strlen($value) == 13 && substr($value, 0, 2) == '<=') {
+			} else if (strlen($value) === 13 && substr($value, 0, 2) === '<=') {
 				// Case "<= YYYY/MM/DD"
 				$endDate = substr($value, 3, 10);
 				if (Zend_Date::isDate($endDate, 'YYYY/MM/DD')) {
 					$sql .= "(" . $column . " <= to_date('" . $endDate . "', 'YYYY/MM/DD'))";
 				}
-			} else if (strlen($value) == 23) {
+			} else if (strlen($value) === 23) {
 				// Case "YYYY/MM/DD - YYYY/MM/DD"
 				$beginDate = substr($value, 0, 10);
 				$endDate = substr($value, 13, 10);
@@ -763,7 +763,7 @@ class Application_Service_GenericService {
 			}
 		}
 
-		if ($sql == "") {
+		if ($sql === "") {
 			throw new Exception("Invalid data format");
 		}
 
@@ -795,7 +795,7 @@ class Application_Service_GenericService {
 			$databaseSRS = $configuration->srs_harmonized_data;
 		}
 
-		if ($value != null && $value != '' && $value != array()) {
+		if ($value !== null && $value !== '' && $value !== array()) {
 
 			switch ($tableField->type) {
 
@@ -821,7 +821,7 @@ class Application_Service_GenericService {
 								$sql2 .= $this->_buildDateWhereItem($tableField, $val) . " OR ";
 							}
 						}
-						if ($sql2 != '') {
+						if ($sql2 !== '') {
 							$sql2 = substr($sql2, 0, -4); // remove the last OR
 							$sql .= " AND (" . $sql2 . ")";
 						}
@@ -840,11 +840,11 @@ class Application_Service_GenericService {
 						// Case of a list of values
 						$sql2 = '';
 						foreach ($value as $val) {
-							if ($val != null && $val != '') {
+							if ($val !== null && $val !== '') {
 								$sql2 .= $this->_buildNumericWhereItem($tableField, $val) . " OR ";
 							}
 						}
-						if ($sql2 != '') {
+						if ($sql2 !== '') {
 							$sql2 = substr($sql2, 0, -4); // remove the last OR
 						}
 						$sql .= " AND (" . $sql2 . ")";
@@ -962,11 +962,11 @@ class Application_Service_GenericService {
 							// Case of a list of values
 							$values = '';
 							foreach ($value as $val) {
-								if ($val != null && $val != '' && is_string($val)) {
+								if ($val !== null && $val !== '' && is_string($val)) {
 									$values .= "'" . $val . "', ";
 								}
 							}
-							if ($values != '') {
+							if ($values !== '') {
 								$values = substr($values, 0, -2); // remove the last comma
 								$sql .= " AND " . $column . " IN (" . $values . ")";
 							}
@@ -982,7 +982,7 @@ class Application_Service_GenericService {
 						$sql .= " AND (";
 						$oradded = false;
 						foreach ($value as $val) {
-							if ($val != null && $val != '' && is_string($val)) {
+							if ($val !== null && $val !== '' && is_string($val)) {
 								if ($exact) {
 									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $databaseSRS . "))";
 								} else {
@@ -1015,7 +1015,7 @@ class Application_Service_GenericService {
 						$sql .= " AND (";
 						$oradded = false;
 						foreach ($value as $val) {
-							if ($val != null && $val != '' && is_string($val)) {
+							if ($val !== null && $val !== '' && is_string($val)) {
 								if ($exact) {
 									$sql .= $column . " = '" . $val . "'";
 								} else {
@@ -1078,7 +1078,7 @@ class Application_Service_GenericService {
 				$sql = ($value == true ? '1' : '0');
 				break;
 			case "DATE":
-				if ($value == "") {
+				if ($value === "") {
 					$sql = "NULL";
 				} else {
 					$sql = " to_date('" . $value . "', 'YYYY/MM/DD')";
@@ -1087,7 +1087,7 @@ class Application_Service_GenericService {
 			case "INTEGER":
 			case "NUMERIC":
 			case "RANGE":
-				if ($value == "") {
+				if ($value === "") {
 					$sql = "NULL";
 				} else {
 					$value = str_replace(",", ".", $value);
@@ -1101,7 +1101,7 @@ class Application_Service_GenericService {
 				$sql = "'" . $value . "'";
 				break;
 			case "GEOM":
-				if ($value == "") {
+				if ($value === "") {
 					$sql = "NULL";
 				} else {
 					$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . ")";
