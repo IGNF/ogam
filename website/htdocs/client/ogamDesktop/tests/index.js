@@ -10,6 +10,9 @@ harness.configure({
 
 
 harness.start(
+	//
+	// Sanity tests
+	// 
 	{
 		// Test d'initialisation correcte de ExtJS et OgamDeskTop
 		group : 'Sanity Tests',
@@ -17,12 +20,28 @@ harness.start(
 		items : [ '010_sanity.t.js' ]
 	},
 	
+	
+	//
+	// Unit test.
+	// Test single components
+	//
+	{    	
+		// Test de la page de login du site
+		group       : 'Unit Tests - Login',
+		pageUrl : '../index.html?unittest',
+	    items       : [
+	        'unit-tests/model/map/layers.t.js'
+	    ]
+	},
+	
+	
+	//
+	// Application tests.
+	// Test directly on the web site that some actions produce the expacted results.
+	//
 	{    	
 		// Test de la page de login du site
 		group       : 'Application Tests - Login',
-		preload : [
-		           // ExtJS n'est pas chargé par cette page
-		           ],
 	    pageUrl     : '../../../user',
 	    items       : [
 	        'application-tests/login/login.js'
@@ -32,7 +51,7 @@ harness.start(
 	
 	{    	
     	group       : 'Application Tests - Query',
-    	pageUrl : '../index.html?unittest',
+    	pageUrl : '../index.html',
     	items       : [
             'application-tests/query/query.js'
         ]
