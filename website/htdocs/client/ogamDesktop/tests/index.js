@@ -28,7 +28,7 @@ harness.start(
 	{    	
 		// Test de la page de login du site
 		group       : 'Unit Tests - Login',
-		pageUrl : '../index.html?unittest',
+		pageUrl : '../index.html?unittest',  // le paramètre unittest demande à ExtJS de ne pas initialiser les vues 
 	    items       : [
 	        'unit-tests/model/map/layers.t.js'
 	    ]
