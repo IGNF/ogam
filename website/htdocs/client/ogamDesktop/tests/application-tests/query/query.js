@@ -6,7 +6,7 @@ StartTest(function(t) {
 	// Initialiser la fenêtre "predefined request"
 	
 	t.chain(
-			{ action : 'click', target : '>> [Requête prédéfinie]' },
+			{ action : 'click', target : '>> [name=predefined-request]' },
 			{ action : 'click', target : '>> [Distribution par espèce]' }
 			//{ action : 'click', target : '>> [name=datasetId]' }
 			

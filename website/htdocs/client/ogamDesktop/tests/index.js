@@ -40,7 +40,7 @@ harness.start(
 	//
 	{    	
 		// Test de la page de login du site
-		group       : 'Unit Tests - Login',
+		group       : 'Unit Tests - Layers',
 		pageUrl : '../odp/index.html?unittest',  // le paramètre unittest demande à ExtJS de ne pas initialiser les vues 
 		sandbox : false, // Il faut être loggué pour que ces pages fonctionnent
 	    items       : [
