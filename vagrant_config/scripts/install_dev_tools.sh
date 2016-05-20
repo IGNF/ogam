@@ -4,6 +4,14 @@
 # This provision is executed as "root"
 # ---------------------------------------------------------------
 
+#
+# Set environment variables
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/setenv.sh
+
+
+
 echo "--------------------------------------------------" 
 echo " Install Dev Tools "
 echo "--------------------------------------------------"

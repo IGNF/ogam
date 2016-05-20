@@ -4,11 +4,15 @@
 # This provision is executed as "vagrant"
 # ---------------------------------------------------------------
 
+#
 # Set environment variables
-source $PWD/vagrant_config/scripts/setenv.sh
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/setenv.sh
+
 
 echo "--------------------------------------------------" 
-echo " Build PHPDoc "
+echo " Run PHPDoc "
 echo "--------------------------------------------------"
 
 #----------------------------------------------------------------
