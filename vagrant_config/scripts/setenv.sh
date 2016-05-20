@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-# Get environment-specific variables from config.
+#
+# Get environment-specific variables from config files.
+# Load the local_config.sh if exists, default_config.sh otherwise
+#
 
 if [[ -f "/vagrant/ogam/vagrant_config/local_config.sh" ]]; then
     source "/vagrant/ogam/vagrant_config/local_config.sh"   

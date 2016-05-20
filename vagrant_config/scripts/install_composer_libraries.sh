@@ -4,12 +4,16 @@
 # This provision is executed as "vagrant"
 # ---------------------------------------------------------------
 
+#
+# Set environment variables
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/setenv.sh
+
+
 echo "--------------------------------------------------" 
 echo " Install Composer Libraries "
 echo "--------------------------------------------------"
-
-# Set environment variables
-source $PWD/vagrant_config/scripts/setenv.sh
 
 cd /vagrant/ogam/website/htdocs/server
 
