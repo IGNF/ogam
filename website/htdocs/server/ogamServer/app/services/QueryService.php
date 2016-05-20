@@ -90,7 +90,7 @@ class Application_Service_QueryService {
 			foreach ($form->criteriaList as $field) {
 				$json .= '{' . $field->toCriteriaJSON();
 				// For the RANGE field, get the min and max values
-				if ($field->type == "NUMERIC" && $field->subtype == "RANGE") {
+				if ($field->type === "NUMERIC" && $field->subtype === "RANGE") {
 					$range = $this->metadataModel->getRange($field->unit);
 					$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 				}
@@ -167,17 +167,17 @@ class Application_Service_QueryService {
 		$json = "{";
 
 		// Set the default value
-		if ($formField->value == null) {
-			if ($formField->defaultValue == '%LOGIN%') {
+		if ($formField->value === null) {
+			if ($formField->defaultValue === '%LOGIN%') {
 
 				// Set the currently loggued user
 				$userSession = new Zend_Session_Namespace('user');
 				$user = $userSession->user;
 				$formField->value = $user->login;
-			} else if ($formField->defaultValue == '%TODAY%') {
+			} else if ($formField->defaultValue === '%TODAY%') {
 
 				// Set the current date
-				if ($formField->mask != null) {
+				if ($formField->mask !== null) {
 					$formField->value = date($this->_convertDateFormat($formField->mask));
 				} else {
 					$formField->value = date($this->_convertDateFormat('yyyy-MM-dd'));
@@ -190,7 +190,7 @@ class Application_Service_QueryService {
 		$json .= $formField->toEditJSON();
 
 		// For the RANGE field, get the min and max values
-		if ($formField->type == "NUMERIC" && $formField->subtype == "RANGE") {
+		if ($formField->type === "NUMERIC" && $formField->subtype === "RANGE") {
 			$range = $this->metadataModel->getRange($formField->unit);
 			$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 		}
@@ -522,7 +522,7 @@ class Application_Service_QueryService {
 			$subquery = "SELECT " . $pKey . $from . $where;
 
 			$order = "";
-			if ($sort != "") {
+			if (!empty($sort)) {
 				// $sort contains the form format and field
 				$split = explode("__", $sort);
 				$formField = new Application_Object_Metadata_FormField();
@@ -568,7 +568,7 @@ class Application_Service_QueryService {
 					// Manage code traduction
 					if ($tableField->type === "CODE" && $value != "") {
 						$label = $this->genericService->getValueLabel($tableField, $value);
-						$json .= json_encode($label == null ? '' : $label) . ',';
+						$json .= json_encode($label === null ? '' : $label) . ',';
 					} else if ($tableField->type === "ARRAY" && $value != "") {
 						// Split the array items
 						$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
@@ -577,12 +577,12 @@ class Application_Service_QueryService {
 							$label .= $this->genericService->getValueLabel($tableField, $arrayValue);
 							$label .= ',';
 						}
-						if ($label != '') {
+						if ($label !== '') {
 							$label = substr($label, 0, -1);
 						}
 						$label = '[' . $label . ']';
 
-						$json .= json_encode($label == null ? '' : $label) . ',';
+						$json .= json_encode($label === null ? '' : $label) . ',';
 					} else {
 						$json .= json_encode($value) . ',';
 					}
@@ -602,7 +602,7 @@ class Application_Service_QueryService {
 
 				$json .= '],';
 			}
-			if (count($result) != 0) {
+			if (count($result) !== 0) {
 				$json = substr($json, 0, -1);
 			}
 			$json .= ']}';
@@ -704,7 +704,7 @@ class Application_Service_QueryService {
 				break;
 			}
 		}
-		if ($bb == null) {
+		if ($bb === null) {
 			foreach ($ancestors as $ancestor) {
 				foreach ($ancestor->getFields() as $field) {
 					if ($field->type === 'GEOM') {
@@ -758,7 +758,7 @@ class Application_Service_QueryService {
 
 		// Add the localisation maps
 		if (!empty($detailsLayers)) {
-			if ($detailsLayers[0] != '') {
+			if ($detailsLayers[0] !== '') {
 				$url = array();
 				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams, $proxy)));
 
@@ -774,7 +774,7 @@ class Application_Service_QueryService {
 				}
 			}
 
-			if ($detailsLayers[1] != '') {
+			if ($detailsLayers[1] !== '') {
 				$url = array();
 				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams, $proxy)));
 				$dataDetails['maps2'] = array(
@@ -809,7 +809,7 @@ class Application_Service_QueryService {
 			// Add the children
 			foreach ($children as $listChild) {
 				$dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
-				if ($dataArray != null) {
+				if ($dataArray !== null) {
 					$dataDetails['children'][] = $dataArray;
 				}
 			}
@@ -858,18 +858,18 @@ class Application_Service_QueryService {
 			if (!$proxy) {
 				$detailServiceName = $layer->printServiceName;
 			} else {
-				if ($layer->detailServiceName != '') {
+				if ($layer->detailServiceName !== '') {
 					$detailServiceName = $layer->detailServiceName;
 				}
 			}
 
 			foreach ($detailServices as $detailService) {
 
-				if ($detailService->serviceName == $detailServiceName) {
+				if ($detailService->serviceName === $detailServiceName) {
 
 					$params = json_decode($detailService->serviceConfig)->params;
 					$service = $params->SERVICE;
-					$baseUrl = json_decode($detailService->serviceConfig)->{'urls'}[0];
+					$baseUrl = json_decode($detailService->serviceConfig)->urls[0];
 
 					if ($service === 'WMS') {
 
@@ -919,7 +919,7 @@ class Application_Service_QueryService {
 				}
 			}
 		}
-		if ($baseUrls != "") {
+		if ($baseUrls !== "") {
 			$baseUrls = substr($baseUrls, 0, -1); // remove last semicolon
 		}
 
@@ -985,7 +985,7 @@ class Application_Service_QueryService {
 				$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 			}
 
-			else if ($criteria->type === "CODE" && ($criteria->subtype === "TAXREF" || $criteria->type == "TREE")) {
+			if ($criteria->type === "CODE" && ($criteria->subtype === "TAXREF" || $criteria->type === "TREE")) {
 				// For the TAXREF and TREE field, get the default value (because the datastore is not initialised)
 				$labels = $this->metadataModel->getTaxrefLabels($criteria->unit, $criteria->defaultValue);
 				$label = $labels[$criteria->defaultValue];
@@ -1005,7 +1005,7 @@ class Application_Service_QueryService {
 			$json .= '},';
 		}
 
-		if ($total != 0) {
+		if ($total !== 0) {
 			$json = substr($json, 0, -1);
 		}
 
