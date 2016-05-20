@@ -105,7 +105,7 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
             case 'CODE':
             	var radios = [],
             	len = record.options ? record.options.length : 0;
-            	for(let mode in record.options) {
+            	for(var mode in record.options) {
             		radios.push({
             				xtype:'radio',
             				inputValue: mode,

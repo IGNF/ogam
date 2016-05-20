@@ -28,7 +28,6 @@ Ext.define('OgamDesktop.ux.form.field.RadioButton', {
      */
     local:true,
     
-    
     /**
      * set the current value
      * allow single value
@@ -44,7 +43,6 @@ Ext.define('OgamDesktop.ux.form.field.RadioButton', {
             val = value;
         }
         return this.callParent([val]);
-    },
-    
+    }
 
 });
