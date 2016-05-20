@@ -287,6 +287,9 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				break;
 			case 'RADIO':
 				Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildRadioFieldConfig(record));
+				
+				//for a group radio, if we want multi group (and each may be submit) they must not have the same name !
+				field.name ='criteria__' + record.name+'['+Ext.id()+']';
 				break;
 			case 'TEXT':
 				switch (record.subtype) {

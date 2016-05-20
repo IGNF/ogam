@@ -101,30 +101,19 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
          */
         buildRadioFieldConfig : function(record) {
             var field = {xtype : 'radiobuttonfield'};
-            console.log(record);
             switch (record.type) {
             case 'CODE':
-                field.store = new Ext.data.JsonStore({
-                    type:'json',
-                    autoDestroy : true,
-                    autoLoad : true,
-                    model:'OgamDesktop.model.request.object.field.Code',
-                    proxy:{
-                        type: 'ajax',
-                        useCache:true,
-                        url : (
-                            (record.subtype === 'DYNAMIC') ? //if
-                                Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetdynamiccodes'
-                                : //else
-                                Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetcodes'),
-                        extraParams : {
-                            'unit' : record.unit
-                        },
-                        reader: {
-                            rootProperty:'codes'
-                        }
-                    }
-                });
+            	var radios = [],
+            	len = record.options ? record.options.length : 0;
+            	for(let mode in record.options) {
+            		radios.push({
+            				xtype:'radio',
+            				inputValue: mode,
+            				boxLabel:record.options[mode],
+            				checked:mode === record.value
+            		})
+            	}
+            	field.items=radios;
                 break;
             default: 
                 console.error('The radio field value type is not specified for the "' + record.type + '" type');

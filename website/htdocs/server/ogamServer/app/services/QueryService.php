@@ -94,6 +94,15 @@ class Application_Service_QueryService {
 					$range = $this->metadataModel->getRange($field->unit);
 					$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 				}
+				
+				if ($field->inputType === 'RADIO' && $field->type === 'CODE'){
+					if($field->subtype === 'DYNAMIC') {
+						$opts = $this->metadataModel->getDynamodeLabels($field->unit);
+					} else {//MODE -code
+						$opts = $this->metadataModel->getModeLabels($field->unit);
+					}
+					$json .= ',"options":'.json_encode($opts);
+				}
 				$json .= '},';
 			}
 			if (count($form->criteriaList) > 0) {
@@ -184,6 +193,15 @@ class Application_Service_QueryService {
 		if ($formField->type == "NUMERIC" && $formField->subtype == "RANGE") {
 			$range = $this->metadataModel->getRange($formField->unit);
 			$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
+		}
+		
+		if ($formField->inputType === 'RADIO' && $formField->type === 'CODE'){
+			if($formField->subtype === 'DYNAMIC') {
+				$opts = $this->metadataModel->getDynamodeLabels($formField->unit);
+			} else {//MODE -code
+				$opts = $this->metadataModel->getModeLabels($formField->unit);
+			}
+			$json .= ',"options":'.json_encode($opts);
 		}
 		$json .= "},";
 
@@ -961,18 +979,27 @@ class Application_Service_QueryService {
 			$json .= $criteria->toCriteriaJSON();
 
 			// add some specific options
-			if ($criteria->type == "NUMERIC" && $criteria->subtype == "RANGE") {
+			if ($criteria->type === "NUMERIC" && $criteria->subtype === "RANGE") {
 				// For the RANGE field, get the min and max values
 				$range = $this->metadataModel->getRange($criteria->unit);
 				$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 			}
 
-			if ($criteria->type == "CODE" && ($criteria->subtype == "TAXREF" || $criteria->type == "TREE")) {
+			else if ($criteria->type === "CODE" && ($criteria->subtype === "TAXREF" || $criteria->type == "TREE")) {
 				// For the TAXREF and TREE field, get the default value (because the datastore is not initialised)
 				$labels = $this->metadataModel->getTaxrefLabels($criteria->unit, $criteria->defaultValue);
 				$label = $labels[$criteria->defaultValue];
 
 				$json .= ',"params":{"valueLabel":"' . $label . '"}';
+			}
+			
+			if ($criteria->inputType === 'RADIO' && $criteria->type === 'CODE'){
+				if($criteria->subtype === 'DYNAMIC') {
+					$opts = $this->metadataModel->getDynamodeLabels($criteria->unit);
+				} else {//MODE -code
+						$opts = $this->metadataModel->getModeLabels($criteria->unit);
+				}
+				$json .= ',"options":'.json_encode($opts);
 			}
 
 			$json .= '},';

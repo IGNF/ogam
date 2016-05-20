@@ -22,67 +22,13 @@
 Ext.define('OgamDesktop.ux.form.field.RadioButton', {
     extend:'Ext.form.RadioGroup',
     alias: 'widget.radiobuttonfield',
-    mixins: [
-         'Ext.util.StoreHolder'
-    ],
-    
-    initComponent: function() {
-        var me = this,
-            store = me.store;
-
-        me.callParent();
-        me.bindStore(store, true, 'store');
-    },
-    
-    getStoreListeners:function(store){
-        if (!store.isEmptyStore) {
-            var me = this,
-                result = {
-                    load: me.onLoad
-                };
-
-            return result;
-        }
-    },
-
-    onLoad:function(store, records, successful, operation, eOpts ){
-        var me = this;
-        store.getData().each(function (record){
-            me.add({
-                inputValue:record.get('code'),
-                boxLabel:record.get('label')
-            });
-        });
-        me.resetOriginalValue();
-    },
-    
     /**
-     * @private
+     * @cfg {Boolean} [local=true]
+     * override the {@link Ext.form.RadioGroup RadioGroup} in order to use multiple safer
      */
-    setValueOnData: function() {
-        var me = this;
-        me.setValue(me.value);
-
-    },
+    local:true,
     
-    onBindStore: function(store, initial){
-        var me = this,
-        loadCallback = function(){
-            me.setValueOnData();
-        } ;
-
-        if (!initial){
-            this.removeAll();
-        }
-        if (store && !store.isLoaded()){
-            store.load({callback:loadCallback});
-            return;
-        }
-        this.onLoad(store, store.getData(), true);
-        
-        me.setValueOnData();
-
-    },
+    
     /**
      * set the current value
      * allow single value
@@ -100,11 +46,5 @@ Ext.define('OgamDesktop.ux.form.field.RadioButton', {
         return this.callParent([val]);
     },
     
-    /**
-     * Destoy the component.
-     */
-    destroy: function () {
-        this.mixins.storeholder.destroy.call(this);
-        this.callParent();
-    }
+
 });
