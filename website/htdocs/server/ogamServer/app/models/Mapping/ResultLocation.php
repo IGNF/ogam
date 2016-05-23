@@ -202,13 +202,13 @@ class Application_Model_Mapping_ResultLocation {
 			$query = $rawdb->prepare($select);
 			$query->execute();
 
+			$insert = " INSERT INTO result_location (session_id, format, pk, the_geom ) ";
+			$insert .= " VALUES (?, ?, ?, ?)";
+			
+			$queryIns = $this->db->prepare($insert);
+
 			foreach ($query->fetchAll() as $row) {
-
-				$insert = " INSERT INTO result_location (session_id, format, pk, the_geom ) ";
-				$insert .= " VALUES (?, ?, ?, ?)";
-
-				$query = $this->db->prepare($insert);
-				$query->execute(array(
+				$queryIns->execute(array(
 					$sessionId,
 					$row['format'],
 					$row['pk'],
