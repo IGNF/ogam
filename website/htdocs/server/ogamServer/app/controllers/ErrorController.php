@@ -46,6 +46,15 @@ class ErrorController extends Zend_Controller_Action {
 
 		// Get the translator
 		$this->translator = Zend_Registry::get('Zend_Translate');
+		
+		//add a context for adpated render/depending request
+		$ajaxContext = $this->_helper->getHelper('AjaxContext');
+		$ajaxContext->addActionContext('error', 'json')->setAutoJsonSerialization(false);
+		$currentContext = $ajaxContext->getCurrentContext();
+		if (empty($currentContext)) {
+			//default context for httrequest 
+			$ajaxContext->initContext('json');
+		}
 	}
 
 	/**
@@ -62,10 +71,6 @@ class ErrorController extends Zend_Controller_Action {
 	 * @return void
 	 */
 	public function errorAction() {
-
-		// Ensure the default view suffix is used so we always return good
-		// content
-		$this->_helper->viewRenderer->setViewSuffix('phtml');
 
 		// Grab the error object from the request
 		$error = $this->_getParam('error_handler');
@@ -107,6 +112,7 @@ class ErrorController extends Zend_Controller_Action {
 						break;
 				}
 		}
+
 	}
 
 	/**
@@ -119,18 +125,7 @@ class ErrorController extends Zend_Controller_Action {
 		// 404 error -- controller or action not found
 		$this->getResponse()->setHttpResponseCode(404);
 		
-		if ($this->getRequest()->isXmlHttpRequest()) {
-			$this->_helper->json(
-					array(
-							'success' => false,
-							'errorMessage' =>  $this->translator->translate('Page not found')
-					));
-		} else {
-			$this->view->message = $this->translator->translate('Page not found');
-
-			// Go to the error page
-			$this->render('error');
-		}
+		$this->view->message = $this->translator->translate('Page not found');
 	}
 
 	/**
@@ -142,19 +137,7 @@ class ErrorController extends Zend_Controller_Action {
 	private function _databaseException($error) {
 		// 403 error -- forbidden access refused
 		$this->getResponse()->setHttpResponseCode(403);
-		if ($this->getRequest()->isXmlHttpRequest()) {
-			// We come from a AJAX request
-			$this->_helper->json(
-					array(
-							'success' => false,
-							'errorMessage' => $this->translator->translate('Database Error')
-					));
-		} else {
-			$this->view->message = $this->translator->translate('Database Error');
-	
-			// Go to the error page
-			$this->render('error');
-		}
+		$this->view->message = $this->translator->translate('Database Error');
 	}
 
 	/**
@@ -166,18 +149,9 @@ class ErrorController extends Zend_Controller_Action {
 	private function _authException($error) {
 		$this->logger->err('_authException');
 		$this->getResponse()->setHttpResponseCode(403);
-		if ($this->getRequest()->isXmlHttpRequest()) {
-			// We come from a AJAX request
-			$this->_helper->json(
-				array(
-					'success' => false,
-					'errorMessage' => $error->exception->getMessage()
-			));
-		} else {
-			// We come from a HTML page
-			$this->view->message = $error->exception->getMessage();
-			$this->render('error');
-		}
+
+		// We come from a HTML page
+		$this->view->message = $error->exception->getMessage();
 	}
 
 	/**
@@ -188,17 +162,7 @@ class ErrorController extends Zend_Controller_Action {
 	 */
 	private function _defaultException($error) {
 		$this->getResponse()->setHttpResponseCode(500);
-		if ($this->getRequest()->isXmlHttpRequest()) {
-			$this->_helper->json(
-				array(
-					'success' => false,
-					'errorMessage' => $this->translator->translate('Application error')
-			));
-		} else {
-			$this->view->message = $this->translator->translate('Application error');
-	
-			// Go to the error page
-			$this->render('error');
-		}
+
+		$this->view->message = $this->translator->translate('Application error');
 	}
 }
