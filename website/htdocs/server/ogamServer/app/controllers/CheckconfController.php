@@ -23,7 +23,9 @@ class CheckconfController extends AbstractOGAMController {
 	 * The models.
 	 */
 	private $postgreSQLModel;
+
 	private $metadataSystemModel;
+
 	private $metadataModel;
 
 	/**

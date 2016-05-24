@@ -96,7 +96,7 @@ GRANT SELECT ON TABLE metadata.form_field TO ogam;
 GRANT SELECT ON TABLE metadata.form_format TO ogam;
 GRANT SELECT ON TABLE metadata.format TO ogam;
 GRANT SELECT ON TABLE metadata.group_mode TO ogam;
-GRANT SELECT ON TABLE metadata."mode" TO ogam;
+GRANT ALL ON TABLE metadata."mode" TO ogam;
 GRANT SELECT ON TABLE metadata.mode_taxref TO ogam;
 GRANT SELECT ON TABLE metadata.mode_tree TO ogam;
 GRANT SELECT ON TABLE metadata.process TO ogam;
@@ -107,6 +107,9 @@ GRANT SELECT ON TABLE metadata.table_schema TO ogam;
 GRANT SELECT ON TABLE metadata.table_tree TO ogam;
 GRANT SELECT ON TABLE metadata.unit TO ogam;
 GRANT SELECT ON TABLE metadata.translation TO ogam;
+
+-- ogam must be owner of the table to be able to see the foreign keys (for configuration checking)
+ALTER TABLE metadata."mode" OWNER TO ogam;
 
 -- mapping
 GRANT ALL ON SCHEMA "mapping" TO ogam;
