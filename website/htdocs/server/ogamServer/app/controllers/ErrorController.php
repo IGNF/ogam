@@ -118,10 +118,19 @@ class ErrorController extends Zend_Controller_Action {
 	private function _noActionException($error) {
 		// 404 error -- controller or action not found
 		$this->getResponse()->setHttpResponseCode(404);
-		$this->view->message = $this->translator->translate('Page not found');
+		
+		if ($this->getRequest()->isXmlHttpRequest()) {
+			$this->_helper->json(
+					array(
+							'success' => false,
+							'errorMessage' =>  $this->translator->translate('Page not found')
+					));
+		} else {
+			$this->view->message = $this->translator->translate('Page not found');
 
-		// Go to the error page
-		$this->render('error');
+			// Go to the error page
+			$this->render('error');
+		}
 	}
 
 	/**
@@ -133,10 +142,19 @@ class ErrorController extends Zend_Controller_Action {
 	private function _databaseException($error) {
 		// 403 error -- forbidden access refused
 		$this->getResponse()->setHttpResponseCode(403);
-		$this->view->message = $this->translator->translate('Database Error');
-
-		// Go to the error page
-		$this->render('error');
+		if ($this->getRequest()->isXmlHttpRequest()) {
+			// We come from a AJAX request
+			$this->_helper->json(
+					array(
+							'success' => false,
+							'errorMessage' => $this->translator->translate('Database Error')
+					));
+		} else {
+			$this->view->message = $this->translator->translate('Database Error');
+	
+			// Go to the error page
+			$this->render('error');
+		}
 	}
 
 	/**
@@ -147,15 +165,14 @@ class ErrorController extends Zend_Controller_Action {
 	 */
 	private function _authException($error) {
 		$this->logger->err('_authException');
-
+		$this->getResponse()->setHttpResponseCode(403);
 		if ($this->getRequest()->isXmlHttpRequest()) {
 			// We come from a AJAX request
-			echo '{"success":false,"errorMessage":' . json_encode($error->exception->getMessage()) . '}';
-
-			// No View, we send directly the JSON
-			$this->_helper->layout()->disableLayout();
-			$this->_helper->viewRenderer->setNoRender();
-			$this->getResponse()->setHeader('Content-type', 'application/json');
+			$this->_helper->json(
+				array(
+					'success' => false,
+					'errorMessage' => $error->exception->getMessage()
+			));
 		} else {
 			// We come from a HTML page
 			$this->view->message = $error->exception->getMessage();
@@ -171,9 +188,17 @@ class ErrorController extends Zend_Controller_Action {
 	 */
 	private function _defaultException($error) {
 		$this->getResponse()->setHttpResponseCode(500);
-		$this->view->message = $this->translator->translate('Application error');
-
-		// Go to the error page
-		$this->render('error');
+		if ($this->getRequest()->isXmlHttpRequest()) {
+			$this->_helper->json(
+				array(
+					'success' => false,
+					'errorMessage' => $this->translator->translate('Application error')
+			));
+		} else {
+			$this->view->message = $this->translator->translate('Application error');
+	
+			// Go to the error page
+			$this->render('error');
+		}
 	}
 }
