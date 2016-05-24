@@ -68,6 +68,8 @@ class Application_Model_Mapping_ResultLocation {
 	 *        	the projection system used for visualisation.
 	 */
 	public function fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS) {
+		//$time_start = microtime(true);
+
 		if ($this->_isLocalDB()) {
 			// We can use INSERT ... SELECT statement only if we are exactly on the same server
 			$this->_fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
@@ -75,6 +77,9 @@ class Application_Model_Mapping_ResultLocation {
 			// The "remote" method is 2x or 3x more time consuming
 			$this->_fillLocationResultRemote($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
 		}
+
+		//$time_end = microtime(true);
+		//$this->logger->info('Durée : ' . ($time_end - $time_start) . " secondes");
 	}
 
 	/**
@@ -94,9 +99,6 @@ class Application_Model_Mapping_ResultLocation {
 		$isLocal = $isLocal && ($mappingConfig['port'] === $rawConfig['port']);
 		$isLocal = $isLocal && ($mappingConfig['dbname'] === $rawConfig['dbname']);
 		$isLocal = $isLocal && ($mappingConfig['username'] === $rawConfig['username']);
-
-		$this->logger->info('mappingConfig[dbname] : ' . $mappingConfig['dbname']);
-		$this->logger->info('rawConfig[dbname] : ' . $rawConfig['dbname']);
 
 		$this->logger->info('isLocal : ' . ($isLocal ? "yes" : "no"));
 
@@ -204,7 +206,7 @@ class Application_Model_Mapping_ResultLocation {
 
 			$insert = " INSERT INTO result_location (session_id, format, pk, the_geom ) ";
 			$insert .= " VALUES (?, ?, ?, ?)";
-			
+
 			$queryIns = $this->db->prepare($insert);
 
 			foreach ($query->fetchAll() as $row) {
