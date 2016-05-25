@@ -290,7 +290,6 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				break;
 			case 'TEXT':
 				switch (record.subtype) {
-				// OGAM-601 - TODO : BOOLEAN, COORDINATE
 				case 'INTEGER':
 					field.xtype = 'numberfield';
 					field.allowDecimals = false;

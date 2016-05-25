@@ -64,7 +64,7 @@ Ext.define('OgamDesktop.view.navigation.GridDetailsPanel', {
 	/**
 	 * @cfg {String} openNavigationButtonTitle The open Grid Details Button Title (defaults to <tt>'See the details'</tt>)
 	 */
-	openNavigationButtonTitle : "See the details", // OGAM-608 - TODO: Merge with the GridTab properties
+	openNavigationButtonTitle : "See the details",
 	/**
 	 * @cfg {String} openNavigationButtonTip The open Grid Details Button Tip (defaults to <tt>'Display the row details into the details panel.'</tt>)
 	 */
