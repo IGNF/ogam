@@ -1,3 +1,14 @@
+Ext.define("OgamDesktop.locale.fr.Application", {
+    override: "OgamDesktop.Application",
+    toastTitle_401: 'Erreur 401 : utilisateur non authentifié.',
+    toastHtml_401: 'Veuillez vous reconnecter <a href="/user" target="_blank">ici</a>.',
+    toastTitle_404: 'Erreur 404 : page non trouvée.',
+    toastHtml_404: 'La ressource est introuvable.',
+    toastTitle_500: 'Erreur 500 : erreur serveur.',
+    toastHtml_500: 'Une erreur interne au serveur ne permet pas de répondre à la demande.',
+    toastTitle_default: 'Erreur',
+    toastHtml_default: 'Voir la <a href="https://fr.wikipedia.org/wiki/Liste_des_codes_HTTP" target="_blank">liste des codes de statut</a> pour plus d\'information.'
+});
 Ext.define("OgamDesktop.locale.fr.view.main.Main", {
     override: "OgamDesktop.view.main.Main",
 	homeButtonText: 'Accueil',

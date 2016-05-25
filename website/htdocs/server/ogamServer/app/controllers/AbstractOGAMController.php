@@ -58,7 +58,12 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 			$this->logger->debug("preDispatch user logged : " . $user->username);
 		} else {
 			$this->logger->debug('preDispatch user not logged (redirect to the user controller), session_id=' . session_id());
-			$this->_redirect('user');
+
+			if($this->_request->isXmlHttpRequest()){
+				$this->getResponse()->setHttpResponseCode(401);
+			} else {
+				$this->_redirect('user');
+			}
 		}
 	}
 }
