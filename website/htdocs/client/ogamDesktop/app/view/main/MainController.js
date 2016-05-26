@@ -15,6 +15,14 @@ Ext.define('OgamDesktop.view.main.MainController', {
         controller : {
             '#' : {
                 unmatchedroute : 'onUnmatchedRoute'
+            },
+            'advancedrequest': {
+                requestSuccess: 'onRequestSuccess'
+            }
+        },
+        component:{
+            '#SubmitButton': {
+                click:'onRequestSubmit'
             }
         }
     },
@@ -37,6 +45,30 @@ Ext.define('OgamDesktop.view.main.MainController', {
                 ':key':'(?:(?:\/){1}([%a-zA-Z0-9\/\\-\\_\\.\\s,]+))?'
             }
         }
+    },
+
+    //<locale>
+    /**
+     * @cfg {String} requestLoadingMessage
+     * The request loading message (defaults to <tt>'Please wait, the request is being processed...'</tt>)
+     */
+    requestLoadingMessage: 'Please wait, the request is being processed...',
+    //</locale>
+
+    /**
+     * Fonction handling the request submit button click event
+     * @private
+     */
+    onRequestSubmit: function() {
+        this.lookupReference('middleTabPanel').mask(this.requestLoadingMessage);
+    },
+
+    /**
+     * Fonction handling the requestSuccess event
+     * @private
+     */
+    onRequestSuccess: function() {
+        this.lookupReference('middleTabPanel').unmask();
     },
 
     /**

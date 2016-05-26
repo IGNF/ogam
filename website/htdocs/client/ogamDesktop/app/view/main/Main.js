@@ -43,6 +43,7 @@ Ext.define('OgamDesktop.view.main.Main', {
 				layout: 'border',
 				items: [{
 					xtype: 'tabpanel',
+					reference: 'middleTabPanel',
 					region: 'center',
 					layout: 'card',
 					defaults: {
