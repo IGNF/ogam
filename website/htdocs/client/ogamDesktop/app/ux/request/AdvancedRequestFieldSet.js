@@ -80,6 +80,12 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	criteriaLabelWidth : 120,
 
 	/**
+	 * @cfg {Integer} comboPageSize The criteria and column combobox page size (defaults to
+	 *      <tt>10</tt>)
+	 */
+	comboPageSize : 10,
+
+	/**
 	 * Initialise the component.
 	 * @protected
 	 */
@@ -142,11 +148,13 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				emptyText : this.criteriaPanelTbarComboEmptyText,
 				loadingText : this.criteriaPanelTbarComboLoadingText,
 				listeners : {
-					scope : this,
-					'select' : {
-						fn : this.addSelectedCriteria,
-						scope : this
-					}
+					'select' : this.addSelectedCriteria,
+					'beforerender' : function(combo, eOpts) {
+						if (combo.getStore().getTotalCount() > this.comboPageSize) {
+							combo.pageSize = this.comboPageSize;
+						}
+					},
+					scope : this
 				}
 			}, {
 				// A spacer
@@ -204,11 +212,13 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				emptyText : this.columnsPanelTbarComboEmptyText,
 				loadingText : this.columnsPanelTbarComboLoadingText,
 				listeners : {
-					scope : this,
-					'select' : {
-						fn : this.addColumn,
-						scope : this
-					}
+					'select' : this.addColumn,
+					'beforerender' : function(combo, eOpts) {
+						if (combo.getStore().getTotalCount() > this.comboPageSize) {
+							combo.pageSize = this.comboPageSize;
+						}
+					},
+					scope : this
 				}
 			}, {
 				xtype : 'tbspacer'
