@@ -314,7 +314,9 @@ class QueryController extends AbstractOGAMController {
 	 * @return JSON The list of forms
 	 */
 	public function ajaxgetdatasetsAction() {
-		echo $this->queryService->getDatasets();
+		echo '{"success":true, "data":',
+		 $this->queryService->getDatasets(),
+		'}';
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -491,7 +493,7 @@ class QueryController extends AbstractOGAMController {
 			$id = $this->getRequest()->getPost('id');
 		}
 
-		echo $this->queryService->getDetails($id, $detailsLayers, $datasetId);
+		echo '{"success":true',$this->queryService->getDetails($id, $detailsLayers, $datasetId);
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -1212,7 +1214,7 @@ class QueryController extends AbstractOGAMController {
 			$json .= '"resultsbbox":\'' . $resultsbbox . '\'}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			$json = "{success:false,errorMessage:'" . json_encode($e->getMessage()) . "'}";
+			$json = '{"success":false,"errorMessage":"' . json_encode($e->getMessage()) . '"}';
 		}
 		echo $json;
 
@@ -1237,12 +1239,11 @@ class QueryController extends AbstractOGAMController {
 		$tree = $this->metadataModel->getTreeChildren($unit, $code, $depth);
 
 		// Send the result as a JSON String
-		// TODO : $json = '{"success":true';
-		$json = '';
-		$json .= '[' . $tree->toJSON() . ']';
-
+	 	$json = '{"success":true,';
+		$json .= '"data":[' . $tree->toJSON() . ']';
+		$json.='}';
 		echo $json;
-
+		
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -1264,9 +1265,9 @@ class QueryController extends AbstractOGAMController {
 		$tree = $this->metadataModel->getTaxrefChildren($unit, $code, $depth);
 
 		// Send the result as a JSON String
-		// TODO : $json = '{"success":true';
-		$json = '';
-		$json .= '[' . $tree->toJSON() . ']';
+		$json = '{"success":true,'
+			. '"data":[' . $tree->toJSON() . ']'.
+		'}';
 
 		echo $json;
 
