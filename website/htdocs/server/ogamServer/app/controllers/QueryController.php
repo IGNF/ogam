@@ -493,7 +493,7 @@ class QueryController extends AbstractOGAMController {
 			$id = $this->getRequest()->getPost('id');
 		}
 
-		echo '{"success":true',$this->queryService->getDetails($id, $detailsLayers, $datasetId);
+		echo $this->queryService->getDetails($id, $detailsLayers, $datasetId);
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
