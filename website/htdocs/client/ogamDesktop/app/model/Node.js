@@ -3,8 +3,8 @@
  */
 Ext.define('OgamDesktop.model.Node', {
 	extend : 'Ext.data.TreeModel',
-	childType:'request.object.field.Code',
-
+	//childType:'OgamDesktop.model.request.object.field.Code',
+	defaultRootProperty:'children',
 	proxy : {
 		actionMethods : {
 			create : 'POST',
@@ -14,8 +14,13 @@ Ext.define('OgamDesktop.model.Node', {
 		},
 		url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettreenodes',
 		type : 'ajax',
-		// reader: 'json',
-		rootProperty : '',
+		reader: {
+			type:'json',
+	        rootProperty: function(data){
+	            // Extract child nodes from the items or children property in the dataset
+	            return data.data || data.children;
+	        }
+		},
 		extraParams : {
 			depth : '1'
 		}

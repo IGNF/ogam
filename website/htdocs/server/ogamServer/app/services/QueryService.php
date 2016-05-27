@@ -646,7 +646,8 @@ class Application_Service_QueryService {
 	 */
 	public function getDetails($id, $detailsLayers, $datasetId = null) {
 		$this->logger->debug('getDetails : ' . $id);
-		return json_encode($this->getDetailsData($id, $detailsLayers, null, true));
+		//add a success flag (default true) and encode
+		return json_encode(array_merge(array('success'=>true), $this->getDetailsData($id, $detailsLayers, null, true)));
 	}
 
 	/**
