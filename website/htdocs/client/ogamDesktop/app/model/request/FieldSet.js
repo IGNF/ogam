@@ -30,8 +30,8 @@ Ext.define('OgamDesktop.model.request.FieldSet', {
 		type: 'ajax',
 		url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryform',
         reader:{
-        	type:'json',
-        	  rootProperty: 'data'
+            type:'json',
+            rootProperty: 'data'
         },
 	noCache:true
     }

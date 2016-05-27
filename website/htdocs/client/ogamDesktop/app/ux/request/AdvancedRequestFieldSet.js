@@ -136,21 +136,27 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available criterias
 				xtype : 'combo',
 				hiddenName : 'Criteria',
-				store : this.criteriaDS,
+				store : {
+					data:this.criteriaDS.getData().items,
+					proxy: {
+						type: 'memory',
+						enablePaging: true
+					},
+					pageSize: this.comboPageSize
+				},
+				storeTotalCount : this.criteriaDS.count(),
 				editable : false,
 				displayField : 'label',
 				valueField : 'name',
 				queryMode : 'local',
-				lastQuery: '',
 				width : 220,
 				maxHeight : 100,
-				triggerAction : 'all',
 				emptyText : this.criteriaPanelTbarComboEmptyText,
 				loadingText : this.criteriaPanelTbarComboLoadingText,
 				listeners : {
 					'select' : this.addSelectedCriteria,
 					'beforerender' : function(combo, eOpts) {
-						if (combo.getStore().getTotalCount() > this.comboPageSize) {
+						if (combo.storeTotalCount > this.comboPageSize) {
 							combo.pageSize = this.comboPageSize;
 						}
 					},
@@ -200,7 +206,15 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available columns
 				xtype : 'combo',
 				hiddenName : 'Columns',
-				store : this.columnsDS,
+				store : {
+					data:this.columnsDS.getData().items,
+					proxy: {
+						type: 'memory',
+						enablePaging: true
+					},
+					pageSize: this.comboPageSize
+				},
+				storeTotalCount : this.columnsDS.count(),
 				editable : false,
 				displayField : 'label',
 				valueField : 'name',
@@ -214,7 +228,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				listeners : {
 					'select' : this.addColumn,
 					'beforerender' : function(combo, eOpts) {
-						if (combo.getStore().getTotalCount() > this.comboPageSize) {
+						if (combo.storeTotalCount > this.comboPageSize) {
 							combo.pageSize = this.comboPageSize;
 						}
 					},
