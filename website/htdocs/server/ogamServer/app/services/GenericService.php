@@ -1019,28 +1019,28 @@ class Application_Service_GenericService {
 
 		$fieldName = $field->format . "." . $field->columnName;
 
-		if ($field->type == "DATE") {
-			if ($field->unit == "DateTime") {
-				$sql .= "to_char($fieldName, '" . $options['datetime_format'] . "') as " . $field->getName();
+		if ($field->type === "DATE") {
+			if ($field->unit === "DateTime") {
+				$sql .= "to_char(" . $fieldName . ", '" . $options['datetime_format'] . "') as " . $field->getName();
 			} else {
-				$sql .= "to_char($fieldName, '" . $options['date_format'] . "') as " . $field->getName();
+				$sql .= "to_char(" . $fieldName . ", '" . $options['date_format'] . "') as " . $field->getName();
 			}
 		} else if ($field->type === "GEOM") {
 			// Location is used for visualisation - don't change it
-			$sql .= "st_asText(st_transform($fieldName," . $this->visualisationSRS . ")) as location, ";
+			$sql .= "st_asText(st_transform(" . $fieldName . "," . $this->visualisationSRS . ")) as location, ";
 			// Special case for THE_GEOM
 			switch ($options['geometry_format']) {
 				case "gml":
-					$sql .= "st_asGML(st_transform($fieldName," . $options['geometry_srs'] . ")) as " . $field->getName() . ", ";
+					$sql .= "st_asGML(st_transform(" . $fieldName . "," . $options['geometry_srs'] . ")) as " . $field->getName() . ", ";
 					break;
 				case "wkt":
 				default:
-					$sql .= "st_asText(st_transform($fieldName," . $options['geometry_srs'] . ")) as " . $field->getName() . ", ";
+					$sql .= "st_asText(st_transform(" . $fieldName . "," . $options['geometry_srs'] . ")) as " . $field->getName() . ", ";
 			}
-			$sql .= "st_ymin(box2d(st_transform($fieldName," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_min, ';
-			$sql .= "st_ymax(box2d(st_transform($fieldName," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_max, ';
-			$sql .= "st_xmin(box2d(st_transform($fieldName," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_min, ';
-			$sql .= "st_xmax(box2d(st_transform($fieldName," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_max ';
+			$sql .= "st_ymin(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_min, ';
+			$sql .= "st_ymax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_max, ';
+			$sql .= "st_xmin(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_min, ';
+			$sql .= "st_xmax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_max ';
 		} else {
 			$sql .= $fieldName . " as " . $field->getName();
 		}
