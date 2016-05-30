@@ -351,6 +351,54 @@ class Application_Service_QueryService {
 	}
 
 	/**
+	 * Get the list of available criterias for the dataset form.
+	 *
+	 * @param String $datasetId
+	 *        	the id of the dataset
+	 * @param String $formFormat
+	 *        	the name of the form format
+	 * @param String $query
+	 *        	the filter text entered by the user (optional)
+	 * @param Integer $start
+	 *        	the number of the first row to return (optional)
+	 * @param Integer $limit
+	 *        	the max number of row to return (optional)
+	 * @return String
+	 */
+	public function getQueryFormCriteria($datasetId, $formFormat, $query, $start, $limit) {
+		$this->logger->debug('getQueryFormCriteria');
+
+		$criteriaList = $this->metadataModel->getFormFields($datasetId, $formFormat, $this->schema, 'criteria', $query, $start, $limit);
+		$criteriaCount = $this->metadataModel->getFormFieldsCount($datasetId, $formFormat, $this->schema, 'criteria', $query);
+
+		return '{"total":' . $criteriaCount . ', "root":' . json_encode($criteriaList) . '}';
+	}
+
+	/**
+	 * Get the list of available columns for the dataset form.
+	 *
+	 * @param String $datasetId
+	 *        	the id of the dataset
+	 * @param String $formFormat
+	 *        	the name of the form format
+	 * @param String $query
+	 *        	the filter text entered by the user (optional)
+	 * @param Integer $start
+	 *        	the number of the first row to return (optional)
+	 * @param Integer $limit
+	 *        	the max number of row to return (optional)
+	 * @return String
+	 */
+	public function getQueryFormColumns($datasetId, $formFormat, $query, $start, $limit) {
+		$this->logger->debug('getQueryFormColumns');
+
+		$columnsList = $this->metadataModel->getFormFields($datasetId, $formFormat, $this->schema, 'result', $query, $start, $limit);
+		$columnsCount = $this->metadataModel->getFormFieldsCount($datasetId, $formFormat, $this->schema, 'result', $query);
+
+		return '{"total":' . $columnsCount . ', "root":' . json_encode($columnsList) . '}';
+	}
+
+	/**
 	 * Get the form fields for a data to edit.
 	 *
 	 * @param Application_Object_Generic_DataObject $data

@@ -101,6 +101,39 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 * @protected
 	 */
 	initItems: function(){
+
+		/**
+		 * The criteria data store.
+		 * @property criteriaDS
+		 * @type {Ext.data.JsonStore}
+		 */
+		this.criteriaDS = new Ext.data.JsonStore({
+			model:'OgamDesktop.model.request.fieldset.Criterion',
+			proxy: {
+				type: 'ajax',
+				url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformcriteria',
+				reader: {
+				    type : 'json',
+				    rootProperty : 'root',
+				    totalProperty  : 'total',
+				    successProperty: 'success',
+				    messageProperty: 'errorMessage'
+				}
+		    },
+		    filters:[{
+		    	"property":"processId",
+		    	"value": this.currentProcessId,
+		    	"exactMatch":true
+		    },{
+		    	"property":"form",
+		    	"value": this.id,
+		    	"exactMatch":true
+		    }],
+			remoteFilter:true,
+			pageSize: this.comboPageSize,
+			autoLoad: true
+		});
+
 		/**
 		 * The panel used to show the criteria.
 		 * @property criteriaPanel
@@ -136,36 +169,57 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available criterias
 				xtype : 'combo',
 				hiddenName : 'Criteria',
-				store : {
-					data:this.criteriaDS.getData().items,
-					proxy: {
-						type: 'memory',
-						enablePaging: true
-					},
-					pageSize: this.comboPageSize
-				},
-				storeTotalCount : this.criteriaDS.count(),
-				editable : false,
+				store: this.criteriaDS,
+				pageSize : this.comboPageSize,
+				editable : true,
+				autoLoadOnValue: true,
 				displayField : 'label',
 				valueField : 'name',
-				queryMode : 'local',
+				queryMode : 'remote',
 				width : 220,
 				maxHeight : 100,
 				emptyText : this.criteriaPanelTbarComboEmptyText,
 				loadingText : this.criteriaPanelTbarComboLoadingText,
 				listeners : {
 					'select' : this.addSelectedCriteria,
-					'beforerender' : function(combo, eOpts) {
-						if (combo.storeTotalCount > this.comboPageSize) {
-							combo.pageSize = this.comboPageSize;
-						}
-					},
 					scope : this
 				}
 			}, {
 				// A spacer
 				xtype : 'tbspacer'
 			} ]
+		});
+
+		/**
+		 * The columns data store.
+		 * @property columnsDS
+		 * @type {Ext.data.JsonStore}
+		 */
+		this.columnsDS = new Ext.data.JsonStore({
+			model:'OgamDesktop.model.request.fieldset.Column',
+			proxy: {
+				type: 'ajax',
+				url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformcolumns',
+				reader: {
+				    type : 'json',
+				    rootProperty : 'root',
+				    totalProperty  : 'total',
+				    successProperty: 'success',
+				    messageProperty: 'errorMessage'
+				}
+		    },
+		    filters:[{
+		    	"property":"processId",
+		    	"value": this.currentProcessId,
+		    	"exactMatch":true
+		    },{
+		    	"property":"form",
+		    	"value": this.id,
+		    	"exactMatch":true
+		    }],
+			remoteFilter:true,
+			pageSize: this.comboPageSize,
+			autoLoad: true
 		});
 
 		/**
@@ -206,32 +260,19 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available columns
 				xtype : 'combo',
 				hiddenName : 'Columns',
-				store : {
-					data:this.columnsDS.getData().items,
-					proxy: {
-						type: 'memory',
-						enablePaging: true
-					},
-					pageSize: this.comboPageSize
-				},
-				storeTotalCount : this.columnsDS.count(),
-				editable : false,
+				store: this.columnsDS,
+				pageSize : this.comboPageSize,
+				editable : true,
+				autoLoadOnValue: true,
 				displayField : 'label',
 				valueField : 'name',
-				queryMode : 'local',
-				lastQuery: '',
+				queryMode : 'remote',
 				width : 220,
 				maxHeight : 100,
-				triggerAction : 'all',
 				emptyText : this.columnsPanelTbarComboEmptyText,
 				loadingText : this.columnsPanelTbarComboLoadingText,
 				listeners : {
 					'select' : this.addColumn,
-					'beforerender' : function(combo, eOpts) {
-						if (combo.storeTotalCount > this.comboPageSize) {
-							combo.pageSize = this.comboPageSize;
-						}
-					},
 					scope : this
 				}
 			}, {

@@ -33,6 +33,14 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
     setCriteriaValues:function(value){
     	this.criteriaValues = (Ext.isIterable(value) || Ext.isObject(value)) ? value : [];
     },
+
+    /**
+	 * Sets the currentProcess propertie.
+     * @param {Object} currentProcess The currentProcess
+	 */
+    setCurrentProcess:function(currentProcess){
+    	this.currentProcess = currentProcess;
+    },
 	
 	/**
 	 * Reloads the form.
@@ -41,20 +49,14 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 		this.removeAll();
 		this.store.getData().each(function(item, idex, length){
 
-			var criteria = item.criteria();
-			var columns =  item.columns();
+			this.add({
+				xtype:'advanced-request-fieldset',
+				title : item.get('label'),
+				id : item.get('id'),
+				currentProcessId : this.currentProcess.id,
+				criteriaValues : this.criteriaValues
+			});
 
-			if (!(Ext.isEmpty(criteria) && Ext.isEmpty(columns))) {
-				var formId = item.get('id');
-				this.add({
-					xtype:'advanced-request-fieldset',
-					title : item.get('label'),
-					id : formId,
-					criteriaDS : criteria,
-					criteriaValues : this.criteriaValues,
-					columnsDS : columns
-				});
-			}
 		},this);
 		this.updateLayout();
     },
