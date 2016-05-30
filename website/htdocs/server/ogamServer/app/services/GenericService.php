@@ -1002,10 +1002,10 @@ class Application_Service_GenericService {
 	 *        	"geometry_format" => "wkt" / "gml" (default "wkt")
 	 *        	"geometry_srs" => output SRS for geometry fields (default 4326)
 	 *        	"date_format" => SQL date format for date fields (default 'YYYY/MM/DD')
-	 *        	"datetime_timezone_format" => SQL date format for datetime field (default ISO 8601 : 'YYYY-MM-DD"T"HH24:MI:SSTZ')
+	 *        	"datetime_format" => SQL date format for datetime field (default like date_format; to use ISO 8601 : 'YYYY-MM-DD"T"HH24:MI:SSTZ')
 	 * @return String the SELECT part corresponding to the field.
 	 */
-	public function buildSelectItem($field) {
+	public function buildSelectItem($field, $options = array()) {
 		$sql = "";
 
 		// Merge $options with defaults
@@ -1013,18 +1013,20 @@ class Application_Service_GenericService {
 			"geometry_format" => "wkt",
 			"geometry_srs" => $this->visualisationSRS,
 			"date_format" => 'YYYY/MM/DD',
-			"datetime_format" => 'YYYY-MM-DD"T"HH24:MI:SSTZ'
+			"datetime_format" => 'YYYY/MM/DD'
 		);
 		$options = array_replace($defaults, $options);
 
 		$fieldName = $field->format . "." . $field->columnName;
 
-		if ($field->type == "DATE" && $field->unit == "Date") {
-			$sql .= "to_char($fieldName, '" . $options['date_format'] . "') as " . $field->getName();
-		} else if ($field->type === "DATE" && $field->unit == "DateTime") {
-			$sql .= "to_char($fieldName, '" . $options['datetime_format'] . "') as " . $field->getName();
-		} else if ($field->unit === "GEOM") {
-			// Location is used for visualisation - don'tchange it
+		if ($field->type == "DATE") {
+			if ($field->unit == "DateTime") {
+				$sql .= "to_char($fieldName, '" . $options['datetime_format'] . "') as " . $field->getName();
+			} else {
+				$sql .= "to_char($fieldName, '" . $options['date_format'] . "') as " . $field->getName();
+			}
+		} else if ($field->type === "GEOM") {
+			// Location is used for visualisation - don't change it
 			$sql .= "st_asText(st_transform($fieldName," . $this->visualisationSRS . ")) as location, ";
 			// Special case for THE_GEOM
 			switch ($options['geometry_format']) {
