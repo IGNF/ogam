@@ -111,7 +111,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			model:'OgamDesktop.model.request.fieldset.Criterion',
 			proxy: {
 				type: 'ajax',
-				url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformcriteria',
+				url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformfields',
 				reader: {
 				    type : 'json',
 				    rootProperty : 'root',
@@ -122,12 +122,13 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		    },
 		    filters:[{
 		    	"property":"processId",
-		    	"value": this.currentProcessId,
-		    	"exactMatch":true
+		    	"value": this.currentProcessId
 		    },{
 		    	"property":"form",
-		    	"value": this.id,
-		    	"exactMatch":true
+		    	"value": this.id
+		    },{
+		    	"property":"fieldsType",
+		    	"value": "criteria"
 		    }],
 			remoteFilter:true,
 			pageSize: this.comboPageSize,
@@ -199,7 +200,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			model:'OgamDesktop.model.request.fieldset.Column',
 			proxy: {
 				type: 'ajax',
-				url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformcolumns',
+				url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformfields',
 				reader: {
 				    type : 'json',
 				    rootProperty : 'root',
@@ -210,12 +211,13 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		    },
 		    filters:[{
 		    	"property":"processId",
-		    	"value": this.currentProcessId,
-		    	"exactMatch":true
+		    	"value": this.currentProcessId
 		    },{
 		    	"property":"form",
-		    	"value": this.id,
-		    	"exactMatch":true
+		    	"value": this.id
+		    },{
+		    	"property":"fieldsType",
+		    	"value": "result"
 		    }],
 			remoteFilter:true,
 			pageSize: this.comboPageSize,
