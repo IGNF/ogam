@@ -1078,7 +1078,7 @@ class Application_Model_Metadata_Metadata {
 	}
 
 	/**
-	 * Get the fields for a given Form that can be used as a result.
+	 * Get the fields for a given form.
 	 *
 	 * @param String $dataset
 	 *        	the name of the dataset
@@ -1088,12 +1088,18 @@ class Application_Model_Metadata_Metadata {
 	 *        	the name of the database schema
 	 * @param String $mode
 	 *        	if 'criteria' we're looking for a criteria, if 'result' we're looking for a result.
+	 * @param String $query
+	 *        	the filter text entered by the user (optional)
+	 * @param Integer $start
+	 *        	the number of the first row to return (optional)
+	 * @param Integer $limit
+	 *        	the max number of row to return (optional)
 	 * @return Array[Application_Object_Metadata_FormField]
 	 */
-	public function getFormFields($dataset, $formFormat, $schema, $mode) {
-		$this->logger->info('getFormFields : ' . $dataset . ' ' . $formFormat . ' ' . $schema . '_' . $this->lang);
+	public function getFormFields($dataset, $formFormat, $schema, $mode, $query = null, $start = null, $limit = null) {
+		$this->logger->info('getFormFields : ' . $dataset . ' ' . $formFormat . ' ' . $schema . '_' . $this->lang . '_' . $query . '_' . $start . '_' . $limit);
 
-		$key = $this->_formatCacheKey('getFormFields_' . $mode . '_' . $dataset . '_' . $formFormat . '_' . $schema . '_' . $this->lang);
+		$key = $this->_formatCacheKey('getFormFields_' . $mode . '_' . $dataset . '_' . $formFormat . '_' . $schema . '_' . $this->lang . '_' . $query. '_' . $start . '_' . $limit);
 		if ($this->useCache) {
 			$cachedResult = $this->cache->load($key);
 		}
@@ -1110,6 +1116,9 @@ class Application_Model_Metadata_Metadata {
 
 			// Check the field format
 			$req .= " WHERE format = ?";
+			if ($query != null) {
+				$req .= " AND unaccent(COALESCE(t.label, data.label)) ilike unaccent('%" . $query . "%')";
+			}
 			$param[] = $formFormat;
 
 			// Check the field type (result or criteria)
@@ -1136,6 +1145,10 @@ class Application_Model_Metadata_Metadata {
 
 			$req .= " ORDER BY form_field.position";
 
+			if ($start !== null && $limit !== null) {
+				$req .= " LIMIT " . $limit . " OFFSET " . $start;
+			}
+
 			$this->logger->info('getFormFields : ' . $req);
 
 			$select = $this->db->prepare($req);
@@ -1147,6 +1160,84 @@ class Application_Model_Metadata_Metadata {
 
 				$result[] = $formField;
 			}
+
+			if ($this->useCache) {
+				$this->cache->save($result, $key);
+			}
+			return $result;
+		} else {
+			return $cachedResult;
+		}
+	}
+
+	/**
+	 * Get the fields count for a given form.
+	 *
+	 * @param String $dataset
+	 *        	the name of the dataset
+	 * @param String $formFormat
+	 *        	the name of the form format
+	 * @param String $schema
+	 *        	the name of the database schema
+	 * @param String $mode
+	 *        	if 'criteria' we're looking for a criteria, if 'result' we're looking for a result.
+	 * @param String $query
+	 *        	the filter text entered by the user (optional)
+	 * @return Integer
+	 */
+	public function getFormFieldsCount($dataset, $formFormat, $schema, $mode, $query = null) {
+		$this->logger->info('getFormFieldsCount : ' . $dataset . ' ' . $formFormat . ' ' . $schema . '_' . $this->lang . '_' . $query);
+
+		$key = $this->_formatCacheKey('getFormFieldsCount' . $mode . '_' . $dataset . '_' . $formFormat . '_' . $schema . '_' . $this->lang . '_' . $query);
+		if ($this->useCache) {
+			$cachedResult = $this->cache->load($key);
+		}
+		if (empty($cachedResult)) {
+
+			$param = array();
+
+			// Select the list of available fields for the table (excepted the FK)
+			$req = " SELECT count(data) ";
+			$req .= " FROM form_field ";
+			$req .= " LEFT JOIN data using (data) ";
+			$req .= " LEFT JOIN unit using (unit) ";
+			$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATA' AND row_pk = data.data) ";
+
+			// Check the field format
+			$req .= " WHERE format = ?";
+			if ($query != null) {
+				$req .= " AND unaccent(COALESCE(t.label, data.label)) ilike unaccent('%" . $query . "%')";
+			}
+			$param[] = $formFormat;
+
+			// Check the field type (result or criteria)
+			if ($mode == "result") {
+				$req .= " AND is_result = '1'";
+			} else {
+				$req .= " AND is_criteria = '1'";
+			}
+
+			// If a dataset has been selected, filter the available options
+			if (!empty($dataset)) {
+				$req .= " AND (data IN ( ";
+				$req .= " SELECT data ";
+				$req .= " FROM dataset_fields ";
+				$req .= " LEFT JOIN field_mapping on (dataset_fields.format = field_mapping.dst_format AND dataset_fields.data = field_mapping.dst_data AND mapping_type='FORM') ";
+				$req .= " WHERE dataset_id = ? ";
+				$req .= " AND schema_code = ? ";
+				$req .= " AND src_format = ? ";
+				$req .= " ) )";
+				$param[] = $dataset;
+				$param[] = $schema;
+				$param[] = $formFormat;
+			}
+
+			$this->logger->info('getFormFieldsCount : ' . $req);
+
+			$select = $this->db->prepare($req);
+			$select->execute($param);
+
+			$result = $select->fetchColumn(0);
 
 			if ($this->useCache) {
 				$this->cache->save($result, $key);

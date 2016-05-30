@@ -16,6 +16,7 @@ Ext.define('OgamDesktop.model.request.FieldSet', {
         { name: 'requestName', reference: {type:'OgamDesktop.model.request.PredefinedGroup', inverse:'reqfieldsets'}}
         
     ],
+    /* Note: Keep this working example
     hasMany: [{// See Ext.data.reader.Reader documentation for example
         model: 'OgamDesktop.model.request.fieldset.Criterion',
         name:'criteria',
@@ -24,7 +25,7 @@ Ext.define('OgamDesktop.model.request.FieldSet', {
         model: 'OgamDesktop.model.request.fieldset.Column',
         name:'columns',
         associationKey: 'columns'
-    }],
+    }],*/
 
 	proxy: {
 		type: 'ajax',

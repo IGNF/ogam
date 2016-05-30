@@ -309,6 +309,80 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
+	 * AJAX function : Get the list of available form criteria for the dataset/request.
+	 */
+	public function ajaxgetqueryformcriteriaAction(){
+		$this->logger->debug('ajaxgetqueryformcriteriaAction');
+
+		$filters = json_decode($this->getRequest()->getQuery('filter'));
+
+		$datasetId = $form = null;
+
+		if (is_array($filters)) {
+			foreach ($filters as $aFilter) {
+				switch ($aFilter->property) {
+					case 'processId':
+						$datasetId = $aFilter->value;
+						break;
+					case 'form':
+						$formFormat = $aFilter->value;
+						break;
+					default:
+						$this->logger->debug('filter unattended : ' . $aFilter->property);
+				}
+			}
+		}
+
+		$query = $this->getRequest()->getQuery('query');
+		$start = $this->getRequest()->getQuery('start');
+		$limit = $this->getRequest()->getQuery('limit');
+
+		echo $this->queryService->getQueryFormCriteria($datasetId, $formFormat, $query, $start, $limit);
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * AJAX function : Get the list of available form columns for the dataset/request.
+	 */
+	public function ajaxgetqueryformcolumnsAction(){
+		$this->logger->debug('ajaxgetqueryformcolumnsAction');
+
+		$filters = json_decode($this->getRequest()->getQuery('filter'));
+
+		$datasetId = $form = null;
+
+		if (is_array($filters)) {
+			foreach ($filters as $aFilter) {
+				switch ($aFilter->property) {
+					case 'processId':
+						$datasetId = $aFilter->value;
+						break;
+					case 'form':
+						$formFormat = $aFilter->value;
+						break;
+					default:
+						$this->logger->debug('filter unattended : ' . $aFilter->property);
+				}
+			}
+		}
+
+		$query = $this->getRequest()->getQuery('query');
+		$start = $this->getRequest()->getQuery('start');
+		$limit = $this->getRequest()->getQuery('limit');
+
+		echo $this->queryService->getQueryFormColumns($datasetId, $formFormat, $query, $start, $limit);
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
 	 * AJAX function : Get the list of available datasets.
 	 *
 	 * @return JSON The list of forms
