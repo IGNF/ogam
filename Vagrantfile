@@ -69,7 +69,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "build_ogam_services", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/build_ogam_services.sh"
   
   config.vm.provision "build_ogam_desktop", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/build_ogam_desktop.sh"
-  
+
+  config.vm.provision "build_ogam_server", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/build_ogam_server.sh"
+   
   #
   # Documentation & Code quality
   # The following provisions are executed as "vagrant" and are only run when called explicitly 
