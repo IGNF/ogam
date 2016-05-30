@@ -379,9 +379,11 @@ class Application_Service_GenericService {
 	 *        	the schema
 	 * @param Application_Object_Generic_DataObject $dataObject
 	 *        	the query object (list of TableFields)
+	 * @param Array $options
+	 *        	formatting options for the returned fields (see buildSelectItem)
 	 * @return String a SQL request
 	 */
-	public function generateSQLSelectRequest($schema, $dataObject) {
+	public function generateSQLSelectRequest($schema, $dataObject, $options = array()) {
 		$this->logger->debug('generateSQLSelectRequest');
 
 		//
@@ -389,7 +391,7 @@ class Application_Service_GenericService {
 		//
 		$select = "SELECT DISTINCT "; // distinct for the case where we have some criterias but no result columns selected o the last table
 		foreach ($dataObject->editableFields as $tableField) {
-			$select .= $this->buildSelectItem($tableField) . ", ";
+			$select .= $this->buildSelectItem($tableField, $options) . ", ";
 		}
 		$select = substr($select, 0, -2);
 
@@ -995,23 +997,50 @@ class Application_Service_GenericService {
 	 *
 	 * @param TableField $field
 	 *        	a table field descriptor.
+	 * @param Array $options
+	 *        	options about formatting
+	 *        	"geometry_format" => "wkt" / "gml" (default "wkt")
+	 *        	"geometry_srs" => output SRS for geometry fields (default 4326)
+	 *        	"date_format" => SQL date format for date fields (default 'YYYY/MM/DD')
+	 *        	"datetime_timezone_format" => SQL date format for datetime field (default ISO 8601 : 'YYYY-MM-DD"T"HH24:MI:SSTZ')
 	 * @return String the SELECT part corresponding to the field.
 	 */
 	public function buildSelectItem($field) {
 		$sql = "";
 
-		if ($field->type === "DATE") {
-			$sql .= "to_char(" . $field->format . "." . $field->columnName . ", 'YYYY/MM/DD') as " . $field->getName();
-		} else if ($field->type === "GEOM") {
+		// Merge $options with defaults
+		$defaults = array(
+			"geometry_format" => "wkt",
+			"geometry_srs" => $this->visualisationSRS,
+			"date_format" => 'YYYY/MM/DD',
+			"datetime_format" => 'YYYY-MM-DD"T"HH24:MI:SSTZ'
+		);
+		$options = array_replace($defaults, $options);
+
+		$fieldName = $field->format . "." . $field->columnName;
+
+		if ($field->type == "DATE" && $field->unit == "Date") {
+			$sql .= "to_char($fieldName, '" . $options['date_format'] . "') as " . $field->getName();
+		} else if ($field->type === "DATE" && $field->unit == "DateTime") {
+			$sql .= "to_char($fieldName, '" . $options['datetime_format'] . "') as " . $field->getName();
+		} else if ($field->unit === "GEOM") {
+			// Location is used for visualisation - don'tchange it
+			$sql .= "st_asText(st_transform($fieldName," . $this->visualisationSRS . ")) as location, ";
 			// Special case for THE_GEOM
-			$sql .= "st_asText(st_transform(" . $field->format . "." . $field->columnName . "," . $this->visualisationSRS . ")) as location, ";
-			$sql .= "st_asText(st_transform(" . $field->format . "." . $field->columnName . "," . $this->visualisationSRS . ")) as " . $field->getName() . ", ";
-			$sql .= 'st_ymin(box2d(st_transform(' . $field->format . "." . $field->columnName . ',' . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_min, ';
-			$sql .= 'st_ymax(box2d(st_transform(' . $field->format . "." . $field->columnName . ',' . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_max, ';
-			$sql .= 'st_xmin(box2d(st_transform(' . $field->format . "." . $field->columnName . ',' . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_min, ';
-			$sql .= 'st_xmax(box2d(st_transform(' . $field->format . "." . $field->columnName . ',' . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_max ';
+			switch ($options['geometry_format']) {
+				case "gml":
+					$sql .= "st_asGML(st_transform($fieldName," . $options['geometry_srs'] . ")) as " . $field->getName() . ", ";
+					break;
+				case "wkt":
+				default:
+					$sql .= "st_asText(st_transform($fieldName," . $options['geometry_srs'] . ")) as " . $field->getName() . ", ";
+			}
+			$sql .= "st_ymin(box2d(st_transform($fieldName," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_min, ';
+			$sql .= "st_ymax(box2d(st_transform($fieldName," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_max, ';
+			$sql .= "st_xmin(box2d(st_transform($fieldName," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_min, ';
+			$sql .= "st_xmax(box2d(st_transform($fieldName," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_max ';
 		} else {
-			$sql .= $field->format . "." . $field->columnName . " as " . $field->getName();
+			$sql .= $fieldName . " as " . $field->getName();
 		}
 
 		return $sql;
