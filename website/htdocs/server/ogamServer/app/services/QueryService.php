@@ -373,7 +373,7 @@ class Application_Service_QueryService {
 		$list = $this->metadataModel->getFormFields($datasetId, $formFormat, $this->schema, $fieldsType, $query, $start, $limit);
 		$count = $this->metadataModel->getFormFieldsCount($datasetId, $formFormat, $this->schema, $fieldsType, $query);
 
-		return '{"total":' . $count . ', "root":' . json_encode($list) . '}';
+		return '{"success": true, "total":' . $count . ', "root":' . json_encode($list) . '}';
 	}
 
 	/**
