@@ -374,7 +374,7 @@ class MapController extends AbstractOGAMController {
 
 		$item = $this->_getLegendItems(-1, $providerId);
 
-		echo "[" . $item . "]";
+		echo '{"success": true, "layers":[' . $item . ']}';
 
 		// No View, we send directly the javascript
 		$this->_helper->layout()->disableLayout();
