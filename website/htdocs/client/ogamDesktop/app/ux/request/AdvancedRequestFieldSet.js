@@ -103,11 +103,11 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	initItems: function(){
 
 		/**
-		 * The criteria data store.
+		 * The criteria data store (We get better performances with a remote store).
 		 * @property criteriaDS
 		 * @type {Ext.data.JsonStore}
 		 */
-		this.criteriaDS = new Ext.data.JsonStore({
+		this.remoteCriteriaDS = new Ext.data.JsonStore({
 			model:'OgamDesktop.model.request.fieldset.Criterion',
 			proxy: {
 				type: 'ajax',
@@ -170,7 +170,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available criterias
 				xtype : 'combo',
 				hiddenName : 'Criteria',
-				store: this.criteriaDS,
+				store: this.remoteCriteriaDS,
 				pageSize : this.comboPageSize,
 				editable : true,
 				autoLoadOnValue: true,
@@ -192,11 +192,11 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		});
 
 		/**
-		 * The columns data store.
+		 * The columns data store (We get better performances with a remote store).
 		 * @property columnsDS
 		 * @type {Ext.data.JsonStore}
 		 */
-		this.columnsDS = new Ext.data.JsonStore({
+		this.remoteColumnsDS = new Ext.data.JsonStore({
 			model:'OgamDesktop.model.request.fieldset.Column',
 			proxy: {
 				type: 'ajax',
@@ -262,7 +262,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available columns
 				xtype : 'combo',
 				hiddenName : 'Columns',
-				store: this.columnsDS,
+				store: this.remoteColumnsDS,
 				pageSize : this.comboPageSize,
 				editable : true,
 				autoLoadOnValue: true,

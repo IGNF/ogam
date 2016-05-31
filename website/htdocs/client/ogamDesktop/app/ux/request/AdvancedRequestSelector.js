@@ -49,14 +49,20 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 		this.removeAll();
 		this.store.getData().each(function(item, idex, length){
 
-			this.add({
-				xtype:'advanced-request-fieldset',
-				title : item.get('label'),
-				id : item.get('id'),
-				currentProcessId : this.currentProcess.id,
-				criteriaValues : this.criteriaValues
-			});
+			var criteria = item.criteria(); 
+			var columns =  item.columns();
 
+			if (!(Ext.isEmpty(criteria) && Ext.isEmpty(columns))) {
+				this.add({
+					xtype:'advanced-request-fieldset',
+					title : item.get('label'),
+					id : item.get('id'),
+					currentProcessId : this.currentProcess.id,
+					criteriaValues : this.criteriaValues,
+					criteriaDS : criteria,
+					columnsDS : columns
+				});
+			}
 		},this);
 		this.updateLayout();
     },
