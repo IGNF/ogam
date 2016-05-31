@@ -103,12 +103,11 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	initItems: function(){
 
 		// Prepares the parameters for the local or the remote mode
-		var comboCriteriaInLocalMode = true;
 		if (this.criteriaDS.count() > this.comboPageSize) {
 			var comboCriteriaInLocalMode = false;
 			/**
-			 * The criteria data store (We get better performances with a remote store).
-			 * @property criteriaDS
+			 * A remote criteria data store (We get better performances with a remote store).
+			 * @property remoteCriteriaDS
 			 * @type {Ext.data.JsonStore}
 			 */
 			this.remoteCriteriaDS = new Ext.data.JsonStore({
@@ -125,18 +124,28 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 					}
 			    },
 			    filters:[{
-			    	"property":"processId",
+			    	"property": "processId",
 			    	"value": this.currentProcessId
 			    },{
-			    	"property":"form",
+			    	"property": "form",
 			    	"value": this.id
 			    },{
-			    	"property":"fieldsType",
+			    	"property": "fieldsType",
 			    	"value": "criteria"
 			    }],
-				remoteFilter:true,
-				pageSize: this.comboPageSize,
-				autoLoad: true
+				remoteFilter: true,
+				pageSize: this.comboPageSize
+			});
+		} else {
+			var comboCriteriaInLocalMode = true;
+			/**
+			 * A local criteria data store (Reset the bad default criteriaDS config (No edit filter, remoteSort set to true...)).
+			 * @property localCriteriaDS
+			 * @type {Ext.data.JsonStore}
+			 */
+			this.localCriteriaDS = Ext.create('Ext.data.Store', {
+				model:'OgamDesktop.model.request.fieldset.Criterion',
+				data:this.criteriaDS.getData().items
 			});
 		}
 
@@ -175,7 +184,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available criterias
 				xtype : 'combo',
 				hiddenName : 'Criteria',
-				store: comboCriteriaInLocalMode ? this.criteriaDS : this.remoteCriteriaDS,
+				store: comboCriteriaInLocalMode ? this.localCriteriaDS : this.remoteCriteriaDS,
 				queryMode : comboCriteriaInLocalMode ? 'local' : 'remote',
 				pageSize : comboCriteriaInLocalMode ? 0 : this.comboPageSize,
 				editable : true,
@@ -197,12 +206,11 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		});
 
 		// Prepares the parameters for the local or the remote mode
-		var comboColumnsInLocalMode = true;
 		if (this.columnsDS.count() > this.comboPageSize) {
 			var comboColumnsInLocalMode = false;
 			/**
-			 * The columns data store (We get better performances with a remote store).
-			 * @property columnsDS
+			 * A remote columns data store (We get better performances with a remote store).
+			 * @property remoteColumnsDS
 			 * @type {Ext.data.JsonStore}
 			 */
 			this.remoteColumnsDS = new Ext.data.JsonStore({
@@ -219,18 +227,28 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 					}
 			    },
 			    filters:[{
-			    	"property":"processId",
+			    	"property": "processId",
 			    	"value": this.currentProcessId
 			    },{
-			    	"property":"form",
+			    	"property": "form",
 			    	"value": this.id
 			    },{
-			    	"property":"fieldsType",
+			    	"property": "fieldsType",
 			    	"value": "result"
 			    }],
-				remoteFilter:true,
-				pageSize: this.comboPageSize,
-				autoLoad: true
+				remoteFilter: true,
+				pageSize: this.comboPageSize
+			});
+		} else {
+			var comboColumnsInLocalMode = true;
+			/**
+			 * A local columns data store (Reset the bad default criteriaDS config (No edit filter, remoteSort set to true...)).
+			 * @property localColumnsDS
+			 * @type {Ext.data.JsonStore}
+			 */
+			this.localColumnsDS = Ext.create('Ext.data.Store', {
+				model:'OgamDesktop.model.request.fieldset.Column',
+				data:this.columnsDS.getData().items
 			});
 		}
 
@@ -272,7 +290,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available columns
 				xtype : 'combo',
 				hiddenName : 'Columns',
-				store: comboColumnsInLocalMode ? this.columnsDS : this.remoteColumnsDS,
+				store: comboColumnsInLocalMode ? this.localColumnsDS : this.remoteColumnsDS,
 				queryMode : comboColumnsInLocalMode ? 'local' : 'remote',
 				pageSize : comboColumnsInLocalMode ? 0 : this.comboPageSize,
 				editable : true,
