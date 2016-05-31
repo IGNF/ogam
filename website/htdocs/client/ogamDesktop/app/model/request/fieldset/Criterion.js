@@ -17,7 +17,12 @@ Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
         { name: 'type', type: 'string' },
         { name: 'unit', type: 'string' }
     ],
-
+    proxy: {
+		reader:{
+			type:'json',
+			rootProperty:'criteria'
+		}
+    },
     /**
      * Return the criteria field config
      * @return {Object} The criteria field config
