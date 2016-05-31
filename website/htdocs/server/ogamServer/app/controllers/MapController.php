@@ -207,7 +207,7 @@ class MapController extends AbstractOGAMController {
 		// Build the base URL for tiles
 		$sessionId = session_id();
 
-		$out = '{"services":[';
+		$out = '{"success":true , "services":[';
 		foreach ($services as $service) {
 			$out .= '{"name":"' . $service->serviceName . '"';
 			$out .= ', "config":' . $service->serviceConfig . '},';
