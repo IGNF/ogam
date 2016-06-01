@@ -132,8 +132,7 @@ class Application_Service_GenericService {
 					'type' => 'STRING'
 				)
 			);
-			// The columns max length to setup the column width
-			$columnsMaxLength = array();
+
 			// The fields config to setup the store reader
 			$locationFields = array(
 				'id',
@@ -160,10 +159,6 @@ class Application_Service_GenericService {
 				foreach ($formFields as $formField) {
 					// We keep only the result fields (The columns availables)
 					array_push($locationData, $formField->getValueLabel());
-					if (empty($columnsMaxLength[$formField->data])) {
-						$columnsMaxLength[$formField->data] = array();
-					}
-					array_push($columnsMaxLength[$formField->data], strlen($formField->getValueLabel()));
 				}
 				array_push($locationsData, $locationData);
 			}
@@ -172,14 +167,13 @@ class Application_Service_GenericService {
 			foreach ($formFields as $field) {
 				// Set the column model and the location fields
 				$dataIndex = $firstData->tableFormat->format . '__' . $field->data;
-				// Adds the column header to prevent it from being truncated too
-				array_push($columnsMaxLength[$field->data], strlen($field->label));
+
 				$column = array(
 					'header' => $field->label,
 					'dataIndex' => $dataIndex,
 					'editable' => false,
 					'tooltip' => $field->definition,
-					'width' => 150, // max($columnsMaxLength[$field->data]) * 7
+					'width' => 150,
 					'type' => $field->type
 				);
 				array_push($columns, $column);
