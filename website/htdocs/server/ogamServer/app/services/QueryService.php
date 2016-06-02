@@ -249,14 +249,14 @@ class Application_Service_QueryService {
 			$range = $this->metadataModel->getRange($formField->unit);
 			$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 		}
-		
-		if ($formField->inputType === 'RADIO' && $formField->type === 'CODE'){
-			if($formField->subtype === 'DYNAMIC') {
+
+		if ($formField->inputType === 'RADIO' && $formField->type === 'CODE') {
+			if ($formField->subtype === 'DYNAMIC') {
 				$opts = $this->metadataModel->getDynamodeLabels($formField->unit);
-			} else {//MODE -code
+			} else { // MODE -code
 				$opts = $this->metadataModel->getModeLabels($formField->unit);
 			}
-			$json .= ',"options":'.json_encode($opts);
+			$json .= ',"options":' . json_encode($opts);
 		}
 		$json .= "},";
 
@@ -719,8 +719,10 @@ class Application_Service_QueryService {
 	 */
 	public function getDetails($id, $detailsLayers, $datasetId = null) {
 		$this->logger->debug('getDetails : ' . $id);
-		//add a success flag (default true) and encode
-		return json_encode(array_merge(array('success'=>true), $this->getDetailsData($id, $detailsLayers, null, true)));
+		// add a success flag (default true) and encode
+		return json_encode(array_merge(array(
+			'success' => true
+		), $this->getDetailsData($id, $detailsLayers, null, true)));
 	}
 
 	/**
@@ -1066,14 +1068,14 @@ class Application_Service_QueryService {
 
 				$json .= ',"params":{"valueLabel":"' . $label . '"}';
 			}
-			
-			if ($criteria->inputType === 'RADIO' && $criteria->type === 'CODE'){
-				if($criteria->subtype === 'DYNAMIC') {
+
+			if ($criteria->inputType === 'RADIO' && $criteria->type === 'CODE') {
+				if ($criteria->subtype === 'DYNAMIC') {
 					$opts = $this->metadataModel->getDynamodeLabels($criteria->unit);
-				} else {//MODE -code
-						$opts = $this->metadataModel->getModeLabels($criteria->unit);
+				} else { // MODE -code
+					$opts = $this->metadataModel->getModeLabels($criteria->unit);
 				}
-				$json .= ',"options":'.json_encode($opts);
+				$json .= ',"options":' . json_encode($opts);
 			}
 
 			$json .= '},';
