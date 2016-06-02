@@ -65,7 +65,7 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 		var id = (typeof record == 'string') ? record : record.id;
 		if (!Ext.isEmpty(id)) {
 			this.expand();
-			var tab = Ext.getCmp(id);
+			var tab = this.items.getByKey(id);
 			if (Ext.isEmpty(tab)) {
 				tab = this.add(Ext.create('OgamDesktop.view.navigation.Tab',{
 					rowId : id
