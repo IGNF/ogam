@@ -87,7 +87,7 @@ class Application_Service_GenericService {
 			$fields .= $formField->toDetailJSON() . ",";
 		}
 		// remove last comma
-		if ($fields != '') {
+		if ($fields !== '') {
 			$fields = substr($fields, 0, -1);
 		} else {
 			return '';
@@ -104,133 +104,6 @@ class Application_Service_GenericService {
 		$json .= '}';
 
 		return $json;
-	}
-
-	/**
-	 * Return a formated array
-	 *
-	 * @param DataObject $data
-	 *        	the data object we're looking at.
-	 * @param String $dataset
-	 *        	the dataset identifier (optional), limit the children to the current dataset.
-	 * @return ARRAY
-	 */
-	public function datumToDetailArray($data, $datasetId = null) {
-		$this->logger->info('datumToDetailJSON', $data);
-
-		// Get the user rights
-		$userSession = new Zend_Session_Namespace('user');
-		$permissions = $userSession->permissions;
-
-		// Get children for the current dataset
-		$this->genericModel = new Genapp_Model_Generic_Generic();
-		$children = $this->genericModel->getChildren($data, $datasetId);
-
-		$childrenCount = 0;
-		if (!empty($children)) {
-			$childrenCount = count(current($children));
-		}
-		$out = Array();
-		$out['title'] = json_encode($data->tableFormat->label, JSON_HEX_APOS);
-		$out['children_count'] = $childrenCount;
-		$out['id'] = $data->getId();
-
-		$fields = '';
-		// Get the form field corresponding to the table field
-		$formFields = $this->getFormFieldsOrdered($data->getFields());
-		foreach ($formFields as $formField) {
-			// Add the corresponding JSON
-			$fields .= $formField->toDetailJSON() . ",";
-		}
-		// remove last comma
-		if ($fields != '') {
-			$fields = substr($fields, 0, -1);
-		} else {
-			return '';
-		}
-		$out['fields'] = $fields;
-
-		// Add the edit link
-		if (!empty($permissions) && array_key_exists('DATA_EDITION', $permissions)) {
-			$out['editURL'] = json_encode($data->getId());
-		} else {
-			$out['editURL'] = null;
-		}
-
-		return $out;
-	}
-
-	/**
-	 * Serialize a list of data objects as a JSON array for a display into a Ext.GridPanel.
-	 *
-	 * @param String $id
-	 *        	the id for the returned dataset
-	 * @param List[Application_Object_Generic_DataObject] $data
-	 *        	the data object we're looking at.
-	 * @return JSON
-	 */
-	public function dataToGridDetailJSON($id, $data) {
-		$this->logger->info('dataToDetailJSON');
-
-		if (!empty($data)) {
-
-			// The columns config to setup the grid columnModel
-			$columns = array();
-			// The columns max length to setup the column width
-			$columnsMaxLength = array();
-			// The fields config to setup the store reader
-			$locationFields = array(
-				'id'
-			);
-			// The data to full the store
-			$locationsData = array();
-			$firstData = $data[0];
-
-			// Dump each row values
-			foreach ($data as $datum) {
-				$locationData = array();
-				// Addition of the row id
-				$locationData[0] = $datum->getId();
-				$formFields = $this->getFormFieldsOrdered($datum->getFields());
-				foreach ($formFields as $formField) {
-					// We keep only the result fields (The columns availables)
-					array_push($locationData, $formField->getValueLabel());
-					if (empty($columnsMaxLength[$formField->data])) {
-						$columnsMaxLength[$formField->data] = array();
-					}
-					array_push($columnsMaxLength[$formField->data], strlen($formField->getValueLabel()));
-				}
-				array_push($locationsData, $locationData);
-			}
-
-			// Add the colums description
-			foreach ($formFields as $field) {
-				// Set the column model and the location fields
-				$dataIndex = $firstData->tableFormat->format . '__' . $field->data;
-				// Adds the column header to prevent it from being truncated too
-				array_push($columnsMaxLength[$field->data], strlen($field->label));
-				$column = array(
-					'header' => $field->label,
-					'dataIndex' => $dataIndex,
-					'editable' => false,
-					'tooltip' => $field->definition,
-					'width' => 150, // max($columnsMaxLength[$field->data]) * 7
-					'type' => $field->type
-				);
-				array_push($columns, $column);
-				array_push($locationFields, $dataIndex);
-			}
-
-			// Check if the table has a child table
-			$hasChild = false;
-			$children = $this->metadataModel->getChildrenTableLabels($firstData->tableFormat);
-			if (!empty($children)) {
-				$hasChild = true;
-			}
-			return '{' . 'success:true' . ', id:' . json_encode($id) . ', title:' . json_encode($firstData->tableFormat->label . ' (' . count($locationsData) . ')') . ', hasChild:' . json_encode($hasChild) . ', columns:' . json_encode(array_values($columns)) . ', fields:' . json_encode(array_values($locationFields)) . ', data:' . json_encode(array_values($locationsData)) . '}';
-		} else {
-			return '{success:true, id:null, title:null, hasChild:false, columns:[], fields:[], data:[]}';
-		}
 	}
 
 	/**
@@ -259,8 +132,7 @@ class Application_Service_GenericService {
 					'type' => 'STRING'
 				)
 			);
-			// The columns max length to setup the column width
-			$columnsMaxLength = array();
+
 			// The fields config to setup the store reader
 			$locationFields = array(
 				'id',
@@ -280,17 +152,13 @@ class Application_Service_GenericService {
 					$locationData[1] .= $field->valueLabel . ', ';
 				}
 
-				if ($locationData[1] != "") {
+				if ($locationData[1] !== "") {
 					$locationData[1] = substr($locationData[1], 0, -2);
 				}
 				$formFields = $this->getFormFieldsOrdered($datum->getFields());
 				foreach ($formFields as $formField) {
 					// We keep only the result fields (The columns availables)
 					array_push($locationData, $formField->getValueLabel());
-					if (empty($columnsMaxLength[$formField->data])) {
-						$columnsMaxLength[$formField->data] = array();
-					}
-					array_push($columnsMaxLength[$formField->data], strlen($formField->getValueLabel()));
 				}
 				array_push($locationsData, $locationData);
 			}
@@ -299,14 +167,13 @@ class Application_Service_GenericService {
 			foreach ($formFields as $field) {
 				// Set the column model and the location fields
 				$dataIndex = $firstData->tableFormat->format . '__' . $field->data;
-				// Adds the column header to prevent it from being truncated too
-				array_push($columnsMaxLength[$field->data], strlen($field->label));
+
 				$column = array(
 					'header' => $field->label,
 					'dataIndex' => $dataIndex,
 					'editable' => false,
 					'tooltip' => $field->definition,
-					'width' => 150, // max($columnsMaxLength[$field->data]) * 7
+					'width' => 150,
 					'type' => $field->type
 				);
 				array_push($columns, $column);
@@ -344,7 +211,7 @@ class Application_Service_GenericService {
 		foreach ($tableFields as $tableField) {
 			// Get the form field corresponding to the table field
 			$formField = $this->getTableToFormMapping($tableField, true);
-			if ($formField != null && $formField->isResult) {
+			if ($formField !== null && $formField->isResult) {
 				$fieldsOrdered[] = $formField;
 			}
 		}
@@ -366,12 +233,12 @@ class Application_Service_GenericService {
 		$formField = $this->metadataModel->getTableToFormMapping($tableField);
 
 		// Clone the object to avoid modifying existing object
-		if ($formField != null) {
+		if ($formField !== null) {
 			$formField = clone $formField;
 		}
 
 		// Copy the values
-		if ($copyValues == true && $formField != null && $tableField->value != null) {
+		if ($copyValues === true && $formField !== null && $tableField->value !== null) {
 
 			// Copy the value and label
 			$formField->value = $tableField->value;
@@ -398,12 +265,12 @@ class Application_Service_GenericService {
 		$tableField = $this->metadataModel->getFormToTableMapping($schema, $formField);
 
 		// Clone the object to avoid modifying existing object
-		if ($tableField != null) {
+		if ($tableField !== null) {
 			$tableField = clone $tableField;
 		}
 
 		// Copy the values
-		if ($copyValues == true && $tableField != null && $formField->value != null) {
+		if ($copyValues === true && $tableField !== null && $formField->value !== null) {
 
 			// Copy the value
 			$tableField->value = $formField->value;
@@ -506,9 +373,11 @@ class Application_Service_GenericService {
 	 *        	the schema
 	 * @param Application_Object_Generic_DataObject $dataObject
 	 *        	the query object (list of TableFields)
+	 * @param Array $options
+	 *        	formatting options for the returned fields (see buildSelectItem)
 	 * @return String a SQL request
 	 */
-	public function generateSQLSelectRequest($schema, $dataObject) {
+	public function generateSQLSelectRequest($schema, $dataObject, $options = array()) {
 		$this->logger->debug('generateSQLSelectRequest');
 
 		//
@@ -516,7 +385,7 @@ class Application_Service_GenericService {
 		//
 		$select = "SELECT DISTINCT "; // distinct for the case where we have some criterias but no result columns selected o the last table
 		foreach ($dataObject->editableFields as $tableField) {
-			$select .= $this->buildSelectItem($tableField) . ", ";
+			$select .= $this->buildSelectItem($tableField, $options) . ", ";
 		}
 		$select = substr($select, 0, -2);
 
@@ -639,7 +508,7 @@ class Application_Service_GenericService {
 				$sql2 .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue;
 			}
 			if (($maxValue !== null) && ($maxValue !== '')) {
-				if ($sql2 != "") {
+				if ($sql2 !== '') {
 					$sql2 .= ' AND ';
 				}
 				$sql2 .= $tableField->format . "." . $tableField->columnName . " <= " . $maxValue;
@@ -735,25 +604,25 @@ class Application_Service_GenericService {
 		$column = $tableField->format . "." . $tableField->columnName;
 
 		if (!empty($value)) {
-			if (strlen($value) == 10) {
+			if (strlen($value) === 10) {
 				// Case "YYYY/MM/DD"
 				if (Zend_Date::isDate($value, 'YYYY/MM/DD')) {
 					// One value, we make an equality comparison
 					$sql .= "(" . $column . " = to_date('" . $value . "', 'YYYY/MM/DD'))";
 				}
-			} else if (strlen($value) == 13 && substr($value, 0, 2) == '>=') {
+			} else if (strlen($value) === 13 && substr($value, 0, 2) === '>=') {
 				// Case ">= YYYY/MM/DD"
 				$beginDate = substr($value, 3, 10);
 				if (Zend_Date::isDate($beginDate, 'YYYY/MM/DD')) {
 					$sql .= "(" . $column . " >= to_date('" . $beginDate . "', 'YYYY/MM/DD'))";
 				}
-			} else if (strlen($value) == 13 && substr($value, 0, 2) == '<=') {
+			} else if (strlen($value) === 13 && substr($value, 0, 2) === '<=') {
 				// Case "<= YYYY/MM/DD"
 				$endDate = substr($value, 3, 10);
 				if (Zend_Date::isDate($endDate, 'YYYY/MM/DD')) {
 					$sql .= "(" . $column . " <= to_date('" . $endDate . "', 'YYYY/MM/DD'))";
 				}
-			} else if (strlen($value) == 23) {
+			} else if (strlen($value) === 23) {
 				// Case "YYYY/MM/DD - YYYY/MM/DD"
 				$beginDate = substr($value, 0, 10);
 				$endDate = substr($value, 13, 10);
@@ -763,7 +632,7 @@ class Application_Service_GenericService {
 			}
 		}
 
-		if ($sql == "") {
+		if ($sql === "") {
 			throw new Exception("Invalid data format");
 		}
 
@@ -795,7 +664,7 @@ class Application_Service_GenericService {
 			$databaseSRS = $configuration->srs_harmonized_data;
 		}
 
-		if ($value != null && $value != '' && $value != array()) {
+		if ($value !== null && $value !== '' && $value !== array()) {
 
 			switch ($tableField->type) {
 
@@ -821,7 +690,7 @@ class Application_Service_GenericService {
 								$sql2 .= $this->_buildDateWhereItem($tableField, $val) . " OR ";
 							}
 						}
-						if ($sql2 != '') {
+						if ($sql2 !== '') {
 							$sql2 = substr($sql2, 0, -4); // remove the last OR
 							$sql .= " AND (" . $sql2 . ")";
 						}
@@ -840,11 +709,11 @@ class Application_Service_GenericService {
 						// Case of a list of values
 						$sql2 = '';
 						foreach ($value as $val) {
-							if ($val != null && $val != '') {
+							if ($val !== null && $val !== '') {
 								$sql2 .= $this->_buildNumericWhereItem($tableField, $val) . " OR ";
 							}
 						}
-						if ($sql2 != '') {
+						if ($sql2 !== '') {
 							$sql2 = substr($sql2, 0, -4); // remove the last OR
 						}
 						$sql .= " AND (" . $sql2 . ")";
@@ -962,11 +831,11 @@ class Application_Service_GenericService {
 							// Case of a list of values
 							$values = '';
 							foreach ($value as $val) {
-								if ($val != null && $val != '' && is_string($val)) {
+								if ($val !== null && $val !== '' && is_string($val)) {
 									$values .= "'" . $val . "', ";
 								}
 							}
-							if ($values != '') {
+							if ($values !== '') {
 								$values = substr($values, 0, -2); // remove the last comma
 								$sql .= " AND " . $column . " IN (" . $values . ")";
 							}
@@ -982,7 +851,7 @@ class Application_Service_GenericService {
 						$sql .= " AND (";
 						$oradded = false;
 						foreach ($value as $val) {
-							if ($val != null && $val != '' && is_string($val)) {
+							if ($val !== null && $val !== '' && is_string($val)) {
 								if ($exact) {
 									$sql .= "ST_Equals(" . $column . ", ST_Transform(ST_GeomFromText('" . $val . "', " . $this->visualisationSRS . "), " . $databaseSRS . "))";
 								} else {
@@ -1015,7 +884,7 @@ class Application_Service_GenericService {
 						$sql .= " AND (";
 						$oradded = false;
 						foreach ($value as $val) {
-							if ($val != null && $val != '' && is_string($val)) {
+							if ($val !== null && $val !== '' && is_string($val)) {
 								if ($exact) {
 									$sql .= $column . " = '" . $val . "'";
 								} else {
@@ -1078,7 +947,7 @@ class Application_Service_GenericService {
 				$sql = ($value == true ? '1' : '0');
 				break;
 			case "DATE":
-				if ($value == "") {
+				if ($value === "") {
 					$sql = "NULL";
 				} else {
 					$sql = " to_date('" . $value . "', 'YYYY/MM/DD')";
@@ -1087,7 +956,7 @@ class Application_Service_GenericService {
 			case "INTEGER":
 			case "NUMERIC":
 			case "RANGE":
-				if ($value == "") {
+				if ($value === "") {
 					$sql = "NULL";
 				} else {
 					$value = str_replace(",", ".", $value);
@@ -1101,7 +970,7 @@ class Application_Service_GenericService {
 				$sql = "'" . $value . "'";
 				break;
 			case "GEOM":
-				if ($value == "") {
+				if ($value === "") {
 					$sql = "NULL";
 				} else {
 					$sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . ")";
@@ -1122,23 +991,52 @@ class Application_Service_GenericService {
 	 *
 	 * @param TableField $field
 	 *        	a table field descriptor.
+	 * @param Array $options
+	 *        	options about formatting
+	 *        	"geometry_format" => "wkt" / "gml" (default "wkt")
+	 *        	"geometry_srs" => output SRS for geometry fields (default 4326)
+	 *        	"date_format" => SQL date format for date fields (default 'YYYY/MM/DD')
+	 *        	"datetime_format" => SQL date format for datetime field (default like date_format; to use ISO 8601 : 'YYYY-MM-DD"T"HH24:MI:SSTZ')
 	 * @return String the SELECT part corresponding to the field.
 	 */
-	public function buildSelectItem($field) {
+	public function buildSelectItem($field, $options = array()) {
 		$sql = "";
 
+		// Merge $options with defaults
+		$defaults = array(
+			"geometry_format" => "wkt",
+			"geometry_srs" => $this->visualisationSRS,
+			"date_format" => 'YYYY/MM/DD',
+			"datetime_format" => 'YYYY/MM/DD'
+		);
+		$options = array_replace($defaults, $options);
+
+		$fieldName = $field->format . "." . $field->columnName;
+
 		if ($field->type === "DATE") {
-			$sql .= "to_char(" . $field->format . "." . $field->columnName . ", 'YYYY/MM/DD') as " . $field->getName();
+			if ($field->unit === "DateTime") {
+				$sql .= "to_char(" . $fieldName . ", '" . $options['datetime_format'] . "') as " . $field->getName();
+			} else {
+				$sql .= "to_char(" . $fieldName . ", '" . $options['date_format'] . "') as " . $field->getName();
+			}
 		} else if ($field->type === "GEOM") {
+			// Location is used for visualisation - don't change it
+			$sql .= "st_asText(st_transform(" . $fieldName . "," . $this->visualisationSRS . ")) as location, ";
 			// Special case for THE_GEOM
-			$sql .= "st_asText(st_transform(" . $field->format . "." . $field->columnName . "," . $this->visualisationSRS . ")) as location, ";
-			$sql .= "st_asText(st_transform(" . $field->format . "." . $field->columnName . "," . $this->visualisationSRS . ")) as " . $field->getName() . ", ";
-			$sql .= 'st_ymin(box2d(st_transform(' . $field->format . "." . $field->columnName . ',' . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_min, ';
-			$sql .= 'st_ymax(box2d(st_transform(' . $field->format . "." . $field->columnName . ',' . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_max, ';
-			$sql .= 'st_xmin(box2d(st_transform(' . $field->format . "." . $field->columnName . ',' . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_min, ';
-			$sql .= 'st_xmax(box2d(st_transform(' . $field->format . "." . $field->columnName . ',' . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_max ';
+			switch ($options['geometry_format']) {
+				case "gml":
+					$sql .= "st_asGML(st_transform(" . $fieldName . "," . $options['geometry_srs'] . ")) as " . $field->getName() . ", ";
+					break;
+				case "wkt":
+				default:
+					$sql .= "st_asText(st_transform(" . $fieldName . "," . $options['geometry_srs'] . ")) as " . $field->getName() . ", ";
+			}
+			$sql .= "st_ymin(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_min, ';
+			$sql .= "st_ymax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_max, ';
+			$sql .= "st_xmin(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_min, ';
+			$sql .= "st_xmax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_max ';
 		} else {
-			$sql .= $field->format . "." . $field->columnName . " as " . $field->getName();
+			$sql .= $fieldName . " as " . $field->getName();
 		}
 
 		return $sql;
@@ -1324,6 +1222,7 @@ class Application_Service_GenericService {
 	 *        	The string
 	 * @param String $charset
 	 *        	The string charset
+	 * @return The modified string
 	 */
 	public function removeAccents($str, $charset = 'utf-8') {
 		$str = htmlentities($str, ENT_NOQUOTES, $charset);

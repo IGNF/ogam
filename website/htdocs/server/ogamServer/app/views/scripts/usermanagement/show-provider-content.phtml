@@ -22,7 +22,7 @@
  */
 ?>
 <h1>
-   <?php echo $this->translate('Users and content for provider:') . ' ' . $this->escape($this->provider['label']); ?>
+   <?php echo $this->translate('Users and content for provider:') . ' ' . $this->escape($this->provider->label); ?>
 </h1>
 
 <h2>
@@ -41,8 +41,8 @@
 	foreach($this->users as $user) {
 	?>
 	<tr class="sectiontableentry<?php echo $i % 2?>">
-		<td><?php echo  $this->escape($user->user_login); ?></td>
-		<td><?php echo  $this->escape($user->user_name); ?></td>
+		<td><?php echo  $this->escape($user->login); ?></td>
+		<td><?php echo  $this->escape($user->username); ?></td>
 		<td><?php echo  $this->escape($user->email); ?></td>
 	</tr>
 	<?php

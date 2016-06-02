@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Website
  */
-class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract {
+class Application_Model_Website_PredefinedRequest {
 
 	/**
 	 * The logger.
@@ -28,15 +28,32 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 
 		$translate = Zend_Registry::get('Zend_Translate');
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
+
+		// The database connection
+		$this->db = Zend_Registry::get('website_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -48,14 +65,12 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 *        	The result field
 	 */
 	private function _savePredefinedRequestResult($requestName, $resultColumn) {
-		$db = $this->getAdapter();
-
 		$req = " INSERT INTO predefined_request_result (request_name, format, data )";
 		$req .= " VALUES (?, ?, ?)";
 
 		$this->logger->info('_savePredefinedRequestResult : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$requestName,
 			$resultColumn->format,
@@ -72,14 +87,12 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 *        	The criteria field
 	 */
 	private function _savePredefinedRequestCriteria($requestName, $criteriaColumn) {
-		$db = $this->getAdapter();
-
 		$req = " INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed )";
 		$req .= " VALUES (?, ?, ?, ?, ?)";
 
 		$this->logger->info('_savePredefinedRequestCriteria : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$requestName,
 			$criteriaColumn->format,
@@ -96,7 +109,6 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 *        	the predefined request
 	 */
 	public function savePredefinedRequest($predefinedRequest) {
-		$db = $this->getAdapter();
 
 		// Save the request
 		$req = " INSERT INTO predefined_request (request_name, schema_code, dataset_id, definition, label)";
@@ -104,7 +116,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		$this->logger->info('savePredefinedRequest : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$predefinedRequest->requestName,
 			$predefinedRequest->schemaCode,
@@ -134,7 +146,6 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @return PredefinedRequest the request
 	 */
 	public function getPredefinedRequest($requestName) {
-		$db = $this->getAdapter();
 
 		// Get the request
 		$req = " SELECT pr.request_name, ";
@@ -157,7 +168,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		$this->logger->info('getPredefinedRequest : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
@@ -202,7 +213,6 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @return Array[PredefinedRequest] the list of requests
 	 */
 	public function getPredefinedRequestList($schema = 'RAW_DATA', $dir = 'ASC', $sort = 'request_name') {
-		$db = $this->getAdapter();
 
 		// Prevent the sql injections
 		$columnNames = array(
@@ -250,7 +260,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		$this->logger->info('getPredefinedRequestList : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute();
 
 		$requestList = array();
@@ -283,14 +293,13 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @return Array[PredefinedField] The list of request criterias
 	 */
 	public function getPredefinedRequestResults($requestName) {
-		$db = $this->getAdapter();
 
 		// Get the request result columns
 		$req = " SELECT * ";
 		$req .= " FROM predefined_request_result ";
 		$req .= " WHERE request_name = ?";
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
@@ -316,7 +325,6 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 * @return Array[PredefinedField] The list of request criterias
 	 */
 	public function getPredefinedRequestCriteria($requestName) {
-		$db = $this->getAdapter();
 
 		// Get the request
 		$req = " SELECT format, data, value, fixed, type, subtype, data.unit, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, form_field.*";
@@ -329,7 +337,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		$this->logger->info('getPredefinedRequestCriteria : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
@@ -370,14 +378,13 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 	 *        	the name of the predefined request to delete
 	 */
 	public function deletePredefinedRequest($requestName) {
-		$db = $this->getAdapter();
 
 		// delete the request criterias
 		$req = " DELETE FROM predefined_request_criteria WHERE request_name = ?";
 
 		$this->logger->info('deletePredefinedRequest : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
@@ -387,7 +394,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		$this->logger->info('deletePredefinedRequest : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));
@@ -397,7 +404,7 @@ class Application_Model_Website_PredefinedRequest extends Zend_Db_Table_Abstract
 
 		$this->logger->info('deletePredefinedRequest : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$requestName
 		));

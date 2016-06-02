@@ -1,6 +1,10 @@
 SET client_encoding TO 'UTF8';
+SET client_min_messages TO WARNING;
+
 CREATE SCHEMA harmonized_data;
 SET SEARCH_PATH = harmonized_data, public;
+
+SET client_min_messages TO WARNING;
 
  
 /*==============================================================*/

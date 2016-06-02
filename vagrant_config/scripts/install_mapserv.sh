@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+# ---------------------------------------------------------------
+# This provision is executed as "root"
+# ---------------------------------------------------------------
+
+#
+# Set environment variables
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/setenv.sh
+
+
+
+echo "--------------------------------------------------" 
+echo " Install Mapserver "
+echo "--------------------------------------------------"
 
 #----------------------------------------------------------------
 # Installation des paquets pour Mapserv
@@ -20,6 +35,6 @@ sudo a2enmod fcgid
 
 
 #----------------------------------------------------------------
-# Redémarrage Apache
+# Redï¿½marrage Apache
 #----------------------------------------------------------------
 service apache2 restart

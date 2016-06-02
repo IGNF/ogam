@@ -65,7 +65,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 			submitEmptyText: false,
 			//waitMsg: Ext.view.AbstractView.prototype.loadingText,
 			autoAbort:true,
-			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',
+			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxbuildrequest',
 			success: function(form, action) {
 				this.requestConn = null;
 				this.fireEvent('requestSuccess', action.result.columns);
@@ -75,11 +75,6 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 					case Ext.form.action.Action.CLIENT_INVALID:
 						Ext.Msg.alert('Failure', 'Form fields may not be submitted with invalid values');
 						break;
-					case Ext.form.action.Action.CONNECT_FAILURE:
-						Ext.Msg.alert('Failure', 'Ajax communication failed');
-						break;
-					case Ext.form.action.Action.SERVER_INVALID:
-						Ext.Msg.alert('Failure', action.result.errorMessage);
 				}
 			},
 			scope: this

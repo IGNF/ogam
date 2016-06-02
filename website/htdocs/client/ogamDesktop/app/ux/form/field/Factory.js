@@ -24,7 +24,7 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
          * @return {Object} a checkbox Field config
          */
         buildCheckboxFieldConfig : function(record) {
-            field = {xtype : 'checkbox'};
+            var field = {xtype : 'checkbox'};
             switch (record.type) {
                 case 'BOOLEAN': // We assume that the field is a boolean with two possible values: true and false
                     field.uncheckedValue = false;
@@ -91,6 +91,33 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
                     console.warn('The checkbox field value type is not specified for the "' + record.type + '" type');
                     console.warn('The checkbox field value default type is set to Boolean');
                     break;
+            }
+            return field;
+        },
+        /**
+         * Construct a radioa field config from a record
+         * @param {Ext.data.Record} record The field record
+         * @return {Object} a radio Field config
+         */
+        buildRadioFieldConfig : function(record) {
+            var field = {xtype : 'radiobuttonfield'};
+            switch (record.type) {
+            case 'CODE':
+            	var radios = [],
+            	len = record.options ? record.options.length : 0;
+            	for(var mode in record.options) {
+            		radios.push({
+            				xtype:'radio',
+            				inputValue: mode,
+            				boxLabel:record.options[mode],
+            				checked:mode === record.value
+            		})
+            	}
+            	field.items=radios;
+                break;
+            default: 
+                console.error('The radio field value type is not specified for the "' + record.type + '" type');
+                break;
             }
             return field;
         }

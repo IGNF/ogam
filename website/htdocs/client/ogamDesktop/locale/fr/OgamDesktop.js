@@ -1,7 +1,26 @@
+Ext.define("OgamDesktop.locale.fr.Application", {
+    override: "OgamDesktop.Application",
+    toastTitle_401: 'Erreur 401 : utilisateur non authentifié.',
+    toastHtml_401: 'Veuillez vous reconnecter <a href="/user" target="_blank">ici</a>.',
+    toastTitle_404: 'Erreur 404 : page non trouvée.',
+    toastHtml_404: 'La ressource est introuvable.',
+    toastTitle_500: 'Erreur 500 : erreur serveur.',
+    toastHtml_500: 'Une erreur interne au serveur ne permet pas de répondre à la demande.',
+    toastTitle_default: 'Erreur',
+    toastHtml_default: 'Voir la <a href="https://fr.wikipedia.org/wiki/Liste_des_codes_HTTP" target="_blank">liste des codes de statut</a> pour plus d\'information.'
+});
 Ext.define("OgamDesktop.locale.fr.view.main.Main", {
     override: "OgamDesktop.view.main.Main",
 	homeButtonText: 'Accueil',
 	homeButtonTooltip: "Retourner à la page d'acceuil"
+});
+Ext.define("OgamDesktop.locale.fr.controller.result.Grid", {
+    override: "OgamDesktop.controller.result.Grid",
+	requestLoadingMessage: 'Veuillez patienter, pendant le chargement des résultats...'
+});
+Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
+    override: "OgamDesktop.controller.map.Main",
+	requestLoadingMessage: 'Veuillez patienter, pendant le chargement de la carte...'
 });
 Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",
@@ -273,7 +292,7 @@ Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SnappingButton', {
 
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SelectWFSFeatureButton', {
 	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
-	tooltip: "Selectionner un contour de sur la couche sélectionnée"
+	tooltip: "Selectionner un contour sur la couche sélectionnée"
 });
 
 Ext.define('OgamDesktop.locale.fr.view.map.MapAddonsPanel', {
@@ -303,7 +322,7 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.MainWin', {
 	override: 'OgamDesktop.view.navigation.MainWin',
 	config: {
 		title: 'Détails',
-		exportAsPdfButtonText: "Exporter en pdf"
+		exportAsPdfButtonText: "Exporter en PDF"
 	}
 });
 

@@ -1,4 +1,7 @@
--- Création d'un schéma pour les référentiels
+-- Crï¿½ation d'un schï¿½ma pour les rï¿½fï¿½rentiels
 SET client_encoding TO 'UTF8';
+SET client_min_messages TO WARNING;
+
 CREATE SCHEMA referentiels;
 set search_path = referentiels;
+

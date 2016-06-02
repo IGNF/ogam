@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
  *
@@ -21,20 +22,26 @@ class Application_Views_Helpers_GenerateAddLink extends Zend_View_Helper_Abstrac
 	/**
 	 * Generate a link corresponding to a data object
 	 *
-	 * @param String $schema The schema
-	 * @param String $format The format
-	 * @param Array[Application_Object_Metadata_TableField] $infoFields The primary keys
+	 * @param String $schema
+	 *        	The schema
+	 * @param String $format
+	 *        	The format
+	 * @param Array[Application_Object_Metadata_TableField] $infoFields
+	 *        	The primary keys
 	 * @return String the URL for the link
 	 */
 	function generateAddLink($schema, $format, $infoFields) {
 
 		// Build the URL to link to the parent items
-		$urlArray = array('controller' => 'dataedition', 'action' => 'show-add-data');
+		$urlArray = array(
+			'controller' => 'dataedition',
+			'action' => 'show-add-data'
+		);
 
 		// Add the schema
 		$urlArray['SCHEMA'] = $schema;
 
-		// Add the format		
+		// Add the format
 		$urlArray['FORMAT'] = $format;
 
 		// Add the PK elements
@@ -43,7 +50,6 @@ class Application_Views_Helpers_GenerateAddLink extends Zend_View_Helper_Abstrac
 		}
 
 		// output the result
-		return '#edition-add' . preg_replace( '/^' . preg_quote('/dataedition/show-add-data','/').'/', '', $this->view->url($urlArray, null, true), 1);
+		return '#edition-add' . preg_replace('/^' . preg_quote('/dataedition/show-add-data', '/') . '/', '', $this->view->url($urlArray, null, true), 1);
 	}
-
 }

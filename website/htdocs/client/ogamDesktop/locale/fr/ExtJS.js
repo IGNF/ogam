@@ -4,5 +4,6 @@
 Ext.define("Ext.locale.fr.panel.Panel", {
 	override:'Ext.panel.Panel',
 	collapseToolText : 'Réduire',
-	expandToolText:'Agrandir'
+	expandToolText:'Agrandir',
+	closeToolText: 'Fermer l\'onglet'
 });

@@ -23,7 +23,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 		type:'predefinedrequest'
 	},
 	labelColumnHeader : "Label",
-//<loacle>		
+//<locale>		
     /**
      * @cfg {String} resetButtonText
      * The reset Button Text (defaults to <tt>'Reset'</tt>)
@@ -64,7 +64,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
      * The group Text Tpl (defaults to <tt>'{name} ({children.length:plural("Requete")})'</tt>)
      */
     groupTextTpl:"{name} ({children.length:plural('Request')})",
-//</loacle>
+//</locale>
 
     /**
      * Initializes the component.

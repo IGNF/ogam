@@ -30,6 +30,7 @@ class DataEditionController extends AbstractOGAMController {
 	 * The models.
 	 */
 	protected $metadataModel;
+
 	protected $genericModel;
 
 	/**
@@ -128,7 +129,7 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param Boolean $isKey
 	 *        	is the field a primary key ?
 	 */
-	protected function _getFormElement($form, $tableField, $formField, $isKey = false) {
+	protected function getFormElement($form, $tableField, $formField, $isKey = false) {
 
 		// Warning : $formField can be null if no mapping is defined with $tableField
 		switch ($tableField->type) {
@@ -245,8 +246,8 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param Boolean $complete
 	 *        	indicate if the function must generate all the list of codes
 	 */
-	protected function _getEditDataForm($data, $mode) {
-		$this->logger->debug('_getEditDataForm :  mode = ' . $mode);
+	protected function getEditDataForm($data, $mode) {
+		$this->logger->debug('getEditDataForm :  mode = ' . $mode);
 
 		$form = new Application_Form_OGAMForm();
 		if ($mode === 'ADD') {
@@ -268,7 +269,7 @@ class DataEditionController extends AbstractOGAMController {
 
 			$formField = $this->genericService->getTableToFormMapping($tablefield);
 
-			$elem = $this->_getFormElement($form, $tablefield, $formField, true);
+			$elem = $this->getFormElement($form, $tablefield, $formField, true);
 			$elem->class = 'dataedit_key';
 			$form->addElement($elem);
 		}
@@ -281,7 +282,7 @@ class DataEditionController extends AbstractOGAMController {
 			// Hardcoded value : We don't edit the line number (it's a technical element)
 			if ($tablefield->data !== "LINE_NUMBER") {
 				$formField = $this->genericService->getTableToFormMapping($tablefield);
-				$elem = $this->_getFormElement($form, $tablefield, $formField, false);
+				$elem = $this->getFormElement($form, $tablefield, $formField, false);
 				$elem->class = 'dataedit_field';
 				$form->addElement($elem);
 			}
@@ -306,7 +307,7 @@ class DataEditionController extends AbstractOGAMController {
 	 *        	The request object.
 	 * @return Application_Object_Generic_DataObject the data object
 	 */
-	protected function _getDataFromRequest($request) {
+	protected function getDataFromRequest($request) {
 		$params = $request->getUserParams();
 
 		$schema = $params["SCHEMA"];
@@ -353,7 +354,7 @@ class DataEditionController extends AbstractOGAMController {
 			// Get the parameters from the URL
 			$request = $this->getRequest();
 
-			$data = $this->_getDataFromRequest($request);
+			$data = $this->getDataFromRequest($request);
 			$data = $this->genericModel->getDatum($data);
 		}
 
@@ -401,7 +402,7 @@ class DataEditionController extends AbstractOGAMController {
 		// Get the parameters from the URL
 		$request = $this->getRequest();
 
-		$data = $this->_getDataFromRequest($request);
+		$data = $this->getDataFromRequest($request);
 
 		// Complete the data object with the existing values from the database.
 		$data = $this->genericModel->getDatum($data);
@@ -428,7 +429,7 @@ class DataEditionController extends AbstractOGAMController {
 				if ($field->type === "IMAGE" && $field->value !== "") {
 					$uploadDir = $this->configuration->image_upload_dir;
 					$dir = $uploadDir . "/" . $data->getId() . "/" . $field->getName();
-					$this->_deleteDirectory($dir);
+					$this->deleteDirectory($dir);
 				}
 			}
 
@@ -447,10 +448,8 @@ class DataEditionController extends AbstractOGAMController {
 			if (!empty($ancestors)) {
 				$parent = $ancestors[0];
 				$redirectURL = $this->view->generateEditLink($parent)['url'];
-				$result .= ', "redirectLink":'.json_encode($redirectURL);
+				$result .= ', "redirectLink":' . json_encode($redirectURL);
 			}
-
-
 
 			$result .= ', "message":' . json_encode($this->translator->translate("Data deleted")) . '}';
 		}
@@ -479,7 +478,7 @@ class DataEditionController extends AbstractOGAMController {
 		$mode = $this->_getParam('MODE');
 
 		// Validate the form
-		$form = $this->_getEditDataForm($data, $mode);
+		$form = $this->getEditDataForm($data, $mode);
 		if (!$form->isValidPartial($_POST)) {
 
 			// On réaffiche le formulaire avec les messages d'erreur
@@ -535,14 +534,14 @@ class DataEditionController extends AbstractOGAMController {
 					$ancestors = $this->genericModel->getAncestors($data);
 					if (!empty($ancestors)) {
 						$ancestor = $ancestors[0];
-						$redirectURL = '#edition-edit/'.$ancestor->getId();
+						$redirectURL = '#edition-edit/' . $ancestor->getId();
 					} else {
-						$redirectURL = '#edition-edit/'.$data->getId();
+						$redirectURL = '#edition-edit/' . $data->getId();
 					}
 					echo '"redirectLink":' . json_encode($redirectURL) . ',';
 				} else {
 					// We redirect to the newly created or edited item
-					$redirectURL = '#edition-edit/'.$data->getId();
+					$redirectURL = '#edition-edit/' . $data->getId();
 					echo '"redirectLink":' . json_encode($redirectURL) . ',';
 				}
 
@@ -590,7 +589,7 @@ class DataEditionController extends AbstractOGAMController {
 			// Get the parameters from the URL
 			$request = $this->getRequest();
 
-			$data = $this->_getDataFromRequest($request);
+			$data = $this->getDataFromRequest($request);
 		}
 
 		// If the objet is not existing then we are in create mode instead of edit mode
@@ -630,7 +629,7 @@ class DataEditionController extends AbstractOGAMController {
 
 		// Get the parameters from the URL
 		$request = $this->getRequest();
-		$data = $this->_getDataFromRequest($request);
+		$data = $this->getDataFromRequest($request);
 
 		// Complete the data object with the existing values from the database.
 		$data = $this->genericModel->getDatum($data);
@@ -656,7 +655,7 @@ class DataEditionController extends AbstractOGAMController {
 
 		// Get the parameters from the URL
 		$request = $this->getRequest();
-		$data = $this->_getDataFromRequest($request);
+		$data = $this->getDataFromRequest($request);
 
 		// The service used to manage the query module
 		$this->queryService = new Application_Service_QueryService($data->tableFormat->schemaCode);
@@ -713,9 +712,9 @@ class DataEditionController extends AbstractOGAMController {
 		$destination = $uploadDir . '/' . $id;
 
 		// Create the directory and set the rights
-		$this->_deleteDirectory($destination);
-		if(false === mkdir($destination, $this->configuration->image_dir_rights, true)){
-			$this->logger->err('failed make dir '.$destination);
+		$this->deleteDirectory($destination);
+		if (false === mkdir($destination, $this->configuration->image_dir_rights, true)) {
+			$this->logger->err('failed make dir ' . $destination);
 		}
 
 		// Filter the file extensions
@@ -747,7 +746,7 @@ class DataEditionController extends AbstractOGAMController {
 	 * @param String $dir
 	 * @return boolean @suppressWarning checkProhibitedFunctions unlink
 	 */
-	protected function _deleteDirectory($dir) {
+	protected function deleteDirectory($dir) {
 		$this->logger->debug('deleteDirectory ' . $dir);
 
 		if (!file_exists($dir)) {
@@ -760,9 +759,9 @@ class DataEditionController extends AbstractOGAMController {
 			if ($item === '.' || $item === '..') {
 				continue;
 			}
-			if (!$this->_deleteDirectory($dir . "/" . $item)) {
+			if (!$this->deleteDirectory($dir . "/" . $item)) {
 				chmod($dir . "/" . $item, $this->configuration->image_dir_rights);
-				if (!$this->_deleteDirectory($dir . "/" . $item)) {
+				if (!$this->deleteDirectory($dir . "/" . $item)) {
 					return false;
 				}
 			}

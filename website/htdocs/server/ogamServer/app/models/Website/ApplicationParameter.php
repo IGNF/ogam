@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Website
  */
-class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstract {
+class Application_Model_Website_ApplicationParameter {
 
 	/**
 	 * The logger.
@@ -28,43 +28,40 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
 
 		$translate = Zend_Registry::get('Zend_Translate');
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
+
+		// The database connection
+		$this->db = Zend_Registry::get('website_db');
 	}
 
 	/**
-	 * Converts an array to an object.
-	 * The configuration stored in session should be an object with attributes.
-	 *
-	 * @param Array $array
-	 * @return object
+	 * Destuction.
 	 */
-	private function _arrayToObject($array) {
-		if (is_array($array)) {
-			foreach ($array as &$item) {
-				$item = $this->_arrayToObject($item);
-			}
-			return (object) $array;
-		}
-
-		return $array;
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
 	 * Return the list of parameters.
 	 *
-	 * @return Array of Parameters
+	 * @return Array[Application_Object_Website_ApplicationParameter]
 	 */
 	public function getParameters() {
-		$db = $this->getAdapter();
-
 		$req = " SELECT name, ";
 		$req .= " value, ";
 		$req .= " description";
@@ -72,17 +69,20 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 
 		$this->logger->info('getAppParameters : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute();
 
 		$results = $query->fetchAll();
 		$parameters = array();
 
 		foreach ($results as $result) {
-			$parameters[$result['name']] = $result['value'];
-		}
+			$param = new Application_Object_Website_ApplicationParameter();
+			$param->name = $result['name'];
+			$param->value = $result['value'];
+			$param->description = $result['description'];
 
-		$parameters = $this->_arrayToObject($parameters);
+			$parameters[$param->name] = $param;
+		}
 
 		return $parameters;
 	}
@@ -93,15 +93,13 @@ class Application_Model_Website_ApplicationParameter extends Zend_Db_Table_Abstr
 	 * @return String map service url
 	 */
 	public function getMapServiceUrl() {
-		$db = $this->getAdapter();
-
 		$req = " SELECT config ";
 		$req .= " FROM website.application_parameters, mapping.layer_service ";
 		$req .= " WHERE name = 'proxy_service_name'";
 		$req .= " AND value = service_name;";
 		$this->logger->info('getMapServiceUrl : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute();
 
 		$result = $query->fetch();

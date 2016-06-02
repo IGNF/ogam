@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Database
  */
-class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
+class Application_Model_Database_Postgresql {
 
 	/**
 	 * The logger.
@@ -28,12 +28,29 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		// The database connection
+		$this->db = Zend_Registry::get('raw_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -43,8 +60,6 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	 * @throws an exception if the request is not found
 	 */
 	public function getTables() {
-		$db = $this->getAdapter();
-
 		$tables = array();
 
 		// Get the request
@@ -56,13 +71,13 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN information_schema.table_constraints USING (table_catalog, table_schema, table_name) ";
 		$req .= " LEFT JOIN information_schema.constraint_column_usage AS c USING (table_catalog, table_schema, table_name, constraint_name)  ";
 		$req .= " WHERE table_type = 'BASE TABLE' ";
-		$req .= " AND table_schema NOT IN ('pg_catalog', 'information_schema', 'metadata') ";
+		$req .= " AND table_schema NOT IN ('pg_catalog', 'information_schema') ";
 		$req .= " AND constraint_type = 'PRIMARY KEY' ";
 		$req .= " GROUP BY table_name, table_schema, constraint_name ";
 
 		$this->logger->info('getTables : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array());
 
 		$results = $query->fetchAll();
@@ -87,8 +102,6 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	 * @throws an exception if the request is not found
 	 */
 	public function getFields() {
-		$db = $this->getAdapter();
-
 		$fields = array();
 
 		// Get the request
@@ -99,11 +112,11 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 		$req .= " FROM information_schema.columns ";
 		$req .= " INNER JOIN information_schema.tables USING (table_catalog, table_schema, table_name) ";
 		$req .= " WHERE table_type = 'BASE TABLE' ";
-		$req .= " AND table_schema NOT IN ('pg_catalog', 'information_schema', 'metadata') ";
+		$req .= " AND table_schema NOT IN ('pg_catalog', 'information_schema') ";
 
 		$this->logger->info('getFields : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array());
 
 		$results = $query->fetchAll();
@@ -129,8 +142,6 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	 * @throws an exception if the request is not found
 	 */
 	public function getForeignKeys() {
-		$db = $this->getAdapter();
-
 		$keys = array();
 
 		// Get the request
@@ -140,12 +151,12 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 		$req .= " LEFT JOIN information_schema.referential_constraints rc USING (constraint_catalog, constraint_schema, constraint_name) ";
 		$req .= " LEFT JOIN information_schema.constraint_column_usage ccu USING (constraint_catalog, constraint_schema, constraint_name, column_name) ";
 		$req .= " WHERE constraint_type = 'FOREIGN KEY' ";
-		$req .= " AND tc.table_schema NOT IN ('pg_catalog', 'information_schema', 'metadata', 'website') ";
+		$req .= " AND tc.table_schema NOT IN ('pg_catalog', 'information_schema') ";
 		$req .= " GROUP BY tc.table_name, ccu.table_name ";
 
 		$this->logger->info('getForeignKeys : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array());
 
 		$results = $query->fetchAll();
@@ -170,8 +181,6 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 	 * @throws an exception if the request is not found
 	 */
 	public function getSchemas() {
-		$db = $this->getAdapter();
-
 		$schemas = array();
 
 		// Get the request
@@ -181,7 +190,7 @@ class Application_Model_Database_Postgresql extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getSchemas : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array());
 
 		$results = $query->fetchAll();

@@ -112,7 +112,7 @@ class Application_Model_IntegrationService_IntegrationService extends Applicatio
 	 * @throws Exception if a problem occured on the server side
 	 */
 	public function uploadData($submissionId, $providerId, $dataFiles) {
-		$this->logger->debug("uploadData : " . $submissionId . " - " . $providerId . " - " . $dataFiles);
+		$this->logger->debug("uploadData : " . $submissionId . " - " . $providerId);
 
 		$client = new Zend_Http_Client();
 		$client->setUri($this->serviceUrl . "DataServlet?action=UploadData");

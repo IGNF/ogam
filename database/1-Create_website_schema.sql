@@ -1,6 +1,9 @@
 SET client_encoding TO 'UTF8';
+SET client_min_messages TO WARNING;
+
 CREATE SCHEMA website;
 SET SEARCH_PATH = website, public;
+
 
 /*==============================================================*/
 /* Table : APPLICATION_PARAMETERS                               */

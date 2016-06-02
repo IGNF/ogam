@@ -12,6 +12,11 @@ Ext.define('OgamDesktop.model.Process', {
     ],
 	proxy: {
 		type: 'ajax',
-        url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetdatasets'
+        url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetdatasets',
+        reader : {
+            type            : 'json',
+            rootProperty    : 'data',
+            messageProperty : 'errorMessage'
+        }
     }
 });

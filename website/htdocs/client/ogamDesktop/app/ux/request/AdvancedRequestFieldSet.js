@@ -80,6 +80,12 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	criteriaLabelWidth : 120,
 
 	/**
+	 * @cfg {Integer} comboPageSize The criteria and column combobox page size (defaults to
+	 *      <tt>10</tt>)
+	 */
+	comboPageSize : 10,
+
+	/**
 	 * Initialise the component.
 	 * @protected
 	 */
@@ -95,6 +101,54 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 * @protected
 	 */
 	initItems: function(){
+
+		// Prepares the parameters for the local or the remote mode
+		if (this.criteriaDS.count() > this.comboPageSize) {
+			var comboCriteriaInLocalMode = false;
+			/**
+			 * A remote criteria data store (We get better performances with a remote store).
+			 * @property remoteCriteriaDS
+			 * @type {Ext.data.JsonStore}
+			 */
+			this.remoteCriteriaDS = new Ext.data.JsonStore({
+				model:'OgamDesktop.model.request.fieldset.Criterion',
+				proxy: {
+					type: 'ajax',
+					url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformfields',
+					reader: {
+					    type : 'json',
+					    rootProperty : 'root',
+					    totalProperty  : 'total',
+					    successProperty: 'success',
+					    messageProperty: 'errorMessage'
+					}
+			    },
+			    filters:[{
+			    	"property": "processId",
+			    	"value": this.currentProcessId
+			    },{
+			    	"property": "form",
+			    	"value": this.id
+			    },{
+			    	"property": "fieldsType",
+			    	"value": "criteria"
+			    }],
+				remoteFilter: true,
+				pageSize: this.comboPageSize
+			});
+		} else {
+			var comboCriteriaInLocalMode = true;
+			/**
+			 * A local criteria data store (Reset the bad default criteriaDS config (No edit filter, remoteSort set to true...)).
+			 * @property localCriteriaDS
+			 * @type {Ext.data.JsonStore}
+			 */
+			this.localCriteriaDS = Ext.create('Ext.data.Store', {
+				model:'OgamDesktop.model.request.fieldset.Criterion',
+				data:this.criteriaDS.getData().items
+			});
+		}
+
 		/**
 		 * The panel used to show the criteria.
 		 * @property criteriaPanel
@@ -130,29 +184,73 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available criterias
 				xtype : 'combo',
 				hiddenName : 'Criteria',
-				store : this.criteriaDS,
-				editable : false,
+				store: comboCriteriaInLocalMode ? this.localCriteriaDS : this.remoteCriteriaDS,
+				queryMode : comboCriteriaInLocalMode ? 'local' : 'remote',
+				pageSize : comboCriteriaInLocalMode ? 0 : this.comboPageSize,
+				editable : true,
+				autoLoadOnValue: true,
 				displayField : 'label',
 				valueField : 'name',
-				queryMode : 'local',
-				lastQuery: '',
 				width : 220,
 				maxHeight : 100,
-				triggerAction : 'all',
 				emptyText : this.criteriaPanelTbarComboEmptyText,
 				loadingText : this.criteriaPanelTbarComboLoadingText,
 				listeners : {
-					scope : this,
-					'select' : {
-						fn : this.addSelectedCriteria,
-						scope : this
-					}
+					'select' : this.addSelectedCriteria,
+					scope : this
 				}
 			}, {
 				// A spacer
 				xtype : 'tbspacer'
 			} ]
 		});
+
+		// Prepares the parameters for the local or the remote mode
+		if (this.columnsDS.count() > this.comboPageSize) {
+			var comboColumnsInLocalMode = false;
+			/**
+			 * A remote columns data store (We get better performances with a remote store).
+			 * @property remoteColumnsDS
+			 * @type {Ext.data.JsonStore}
+			 */
+			this.remoteColumnsDS = new Ext.data.JsonStore({
+				model:'OgamDesktop.model.request.fieldset.Column',
+				proxy: {
+					type: 'ajax',
+					url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformfields',
+					reader: {
+					    type : 'json',
+					    rootProperty : 'root',
+					    totalProperty  : 'total',
+					    successProperty: 'success',
+					    messageProperty: 'errorMessage'
+					}
+			    },
+			    filters:[{
+			    	"property": "processId",
+			    	"value": this.currentProcessId
+			    },{
+			    	"property": "form",
+			    	"value": this.id
+			    },{
+			    	"property": "fieldsType",
+			    	"value": "result"
+			    }],
+				remoteFilter: true,
+				pageSize: this.comboPageSize
+			});
+		} else {
+			var comboColumnsInLocalMode = true;
+			/**
+			 * A local columns data store (Reset the bad default criteriaDS config (No edit filter, remoteSort set to true...)).
+			 * @property localColumnsDS
+			 * @type {Ext.data.JsonStore}
+			 */
+			this.localColumnsDS = Ext.create('Ext.data.Store', {
+				model:'OgamDesktop.model.request.fieldset.Column',
+				data:this.columnsDS.getData().items
+			});
+		}
 
 		/**
 		 * The panel used to show the columns.
@@ -192,23 +290,20 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 				// The combobox with the list of available columns
 				xtype : 'combo',
 				hiddenName : 'Columns',
-				store : this.columnsDS,
-				editable : false,
+				store: comboColumnsInLocalMode ? this.localColumnsDS : this.remoteColumnsDS,
+				queryMode : comboColumnsInLocalMode ? 'local' : 'remote',
+				pageSize : comboColumnsInLocalMode ? 0 : this.comboPageSize,
+				editable : true,
+				autoLoadOnValue: true,
 				displayField : 'label',
 				valueField : 'name',
-				queryMode : 'local',
-				lastQuery: '',
 				width : 220,
 				maxHeight : 100,
-				triggerAction : 'all',
 				emptyText : this.columnsPanelTbarComboEmptyText,
 				loadingText : this.columnsPanelTbarComboLoadingText,
 				listeners : {
-					scope : this,
-					'select' : {
-						fn : this.addColumn,
-						scope : this
-					}
+					'select' : this.addColumn,
+					scope : this
 				}
 			}, {
 				xtype : 'tbspacer'

@@ -1,7 +1,5 @@
 /**
  * This class defines the store for the vector layers.
- * 
- * OGAM-594 - TODO: Merge this file with the layer store
  */
 Ext.define('OgamDesktop.store.map.VectorLayer', {
 	extend: 'Ext.data.Store',

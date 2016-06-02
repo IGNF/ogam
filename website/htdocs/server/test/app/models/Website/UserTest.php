@@ -28,10 +28,6 @@ class UserTest extends ControllerTestCase {
 	public function tearDown() {
 		parent::tearDown();
 
-		// Ferme les connections
-		$db = $this->userModel->getAdapter();
-		$db->closeConnection();
-
 		$this->userModel = null;
 	}
 

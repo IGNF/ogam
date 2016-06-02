@@ -98,7 +98,7 @@
 	             ?>
 	             <a href="<?php echo $this->url(array('controller'=>'user', 'action'=>'show-change-password'), 'default', true) ?>" ><?php echo $this->translate('Change Password');?></a>
 	             &nbsp;
-	             <a href="<?php echo $this->url(array('controller'=>'user', 'action'=>'logout'), 'default', true) ?>" ><?php echo $this->translate('Log out');?></a>
+	             <a id="logoutLink" href="<?php echo $this->url(array('controller'=>'user', 'action'=>'logout'), 'default', true) ?>" ><?php echo $this->translate('Log out');?></a>
 	<?php
 	         } else {
 	            ?><a href="<?php echo $this->url(array('controller'=>'user', 'action'=>'index'), 'default', true) ?>" ><?php echo $this->translate('Log in');?></a>

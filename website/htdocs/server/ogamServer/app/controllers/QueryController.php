@@ -260,10 +260,10 @@ class QueryController extends AbstractOGAMController {
 			// Save the request
 			$this->predefinedRequestModel->savePredefinedRequest($predefinedRequest);
 
-			return "{success:true}";
+			return '{success:true}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			return "{success:false,errorMessage:'" . json_encode($e->getMessage()) . "'}";
+			return '{"success":false, "errorMessage":' . json_encode($e->getMessage()) . '}';
 		}
 
 		// No View, we send directly the JSON
@@ -309,12 +309,54 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
+	 * AJAX function : Get the list of criteria or columns available for a process form.
+	 */
+	public function ajaxgetqueryformfieldsAction(){
+		$this->logger->debug('ajaxgetqueryformfieldsAction');
+
+		$filters = json_decode($this->getRequest()->getQuery('filter'));
+
+		$datasetId = $form = null;
+
+		if (is_array($filters)) {
+			foreach ($filters as $aFilter) {
+				switch ($aFilter->property) {
+					case 'processId':
+						$datasetId = $aFilter->value;
+						break;
+					case 'form':
+						$formFormat = $aFilter->value;
+						break;
+					case 'fieldsType':
+						$fieldsType = $aFilter->value;
+						break;
+					default:
+						$this->logger->debug('filter unattended : ' . $aFilter->property);
+				}
+			}
+		}
+
+		$query = $this->getRequest()->getQuery('query');
+		$start = $this->getRequest()->getQuery('start');
+		$limit = $this->getRequest()->getQuery('limit');
+
+		echo $this->queryService->getQueryFormFields($datasetId, $formFormat, $fieldsType, $query, $start, $limit);
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
 	 * AJAX function : Get the list of available datasets.
 	 *
 	 * @return JSON The list of forms
 	 */
 	public function ajaxgetdatasetsAction() {
-		echo $this->queryService->getDatasets();
+		echo '{"success":true, "data":',
+		 $this->queryService->getDatasets(),
+		'}';
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -344,22 +386,12 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the description of the columns of the result of the query.
+	 * AJAX function : Builds the query.
 	 *
-	 * @param Boolean $withSQL
-	 *        	indicate that we want the server to return the generated SQL
 	 * @return JSON
 	 */
-	public function ajaxgetresultcolumnsAction($withSQL = false) {
-		$this->logger->debug('ajaxgetresultcolumns');
-
-		// withSQL flag value
-		if ($withSQL == null) {
-			$withSQL = $this->getRequest()->getPost('withSQL');
-		}
-
-		$configuration = Zend_Registry::get("configuration");
-		ini_set("max_execution_time", $configuration->max_execution_time);
+	public function ajaxbuildrequestAction() {
+		$this->logger->debug('ajaxbuildrequestAction');
 
 		// Check the validity of the POST
 		if (!$this->getRequest()->isPost()) {
@@ -392,15 +424,76 @@ class QueryController extends AbstractOGAMController {
 			$websiteSession = new Zend_Session_Namespace('website');
 			$websiteSession->formQuery = $formQuery;
 
+			// Activate the result layer
+			$this->mappingSession->activatedLayers[] = 'result_locations';
+
+			echo '{"success":true}';
+		} catch (Exception $e) {
+			$this->logger->err('Error while getting result : ' . $e);
+			echo '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';
+		}
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * AJAX function : Return the results features bounding box in order to zoom on the features.
+	 *
+	 * @return JSON.
+	 */
+	public function ajaxgetresultsbboxAction() {
+		$this->logger->debug('ajaxgetresultsbboxAction');
+
+		$configuration = Zend_Registry::get("configuration");
+		ini_set("max_execution_time", $configuration->max_execution_time);
+
+		try {
+
+			// Store the request parameters in session
+			$websiteSession = new Zend_Session_Namespace('website');
+			$formQuery = $websiteSession->formQuery;
+
 			// Call the service to get the definition of the columns
-			echo $this->queryService->getResultColumns($datasetId, $formQuery, $withSQL);
+			$this->queryService->prepareResultLocations($formQuery);
+
+			// Execute the request
+			$resultsbbox = $this->resultLocationModel->getResultsBBox(session_id());
+
+			// Send the result as a JSON String
+			echo '{"success":true, "resultsbbox":' . json_encode($resultsbbox) . '}';
+		} catch (Exception $e) {
+			$this->logger->err('Error while getting result : ' . $e);
+			echo '{"success":false, "errorMessage":' . json_encode($e->getMessage()) . '}';
+		}
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * AJAX function : Get the description of the columns of the result of the query.
+	 *
+	 * @return JSON
+	 */
+	public function ajaxgetresultcolumnsAction($withSQL = false) {
+		$this->logger->debug('ajaxgetresultcolumns');
+
+		try {
+			// Store the request parameters in session
+			$websiteSession = new Zend_Session_Namespace('website');
+			$formQuery = $websiteSession->formQuery;
+
+			// Call the service to get the definition of the columns
+			echo $this->queryService->getResultColumns($formQuery->datasetId , $formQuery);
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
 			echo '{"success":false,errorMessage:' . json_encode($e->getMessage()) . '}';
 		}
-
-		// Activate the result layer
-		$this->mappingSession->activatedLayers[] = 'result_locations';
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -525,13 +618,16 @@ class QueryController extends AbstractOGAMController {
 		$datasetId = $websiteSession->datasetId;
 
 		// Get all data linked to the result line
-		$data = $this->queryService->getDetailsData($id, $detailsLayers, $datasetId, false);
+		$data = $this->queryService->getDetailsData($id, $detailsLayers, $datasetId, false, false);
 
 		// image 1
 		$tmpImgPath1 = Array();
-		for ($i = 0; $i < count($data['maps1']['urls']); $i ++) {
+		$urlCount = count($data['maps1']['urls']);
+		for ($i = 0; $i < $urlCount; $i ++) {
 			$url = $data['maps1']['urls'][$i]['url'];
 			$content = @file_get_contents($url);
+			$this->logger->debug('Getting image from : ' . $url);
+
 			if ($content === false) {
 				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
 			} else {
@@ -542,9 +638,12 @@ class QueryController extends AbstractOGAMController {
 
 		// image 2
 		$tmpImgPath2 = Array();
-		for ($i = 0; $i < count($data['maps2']['urls']); $i ++) {
+		$urlCount = count($data['maps2']['urls']);
+		for ($i = 0; $i < $urlCount; $i ++) {
 			$url = $data['maps2']['urls'][$i]['url'];
 			$content = @file_get_contents($url);
+			$this->logger->debug('Getting image from : ' . $url);
+
 			if ($content === false) {
 				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
 			} else {
@@ -1189,34 +1288,6 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Return the results features bounding box in order to zoom on the features.
-	 *
-	 * @return JSON.
-	 */
-	public function ajaxgetresultsbboxAction() {
-		$this->logger->debug('ajaxgetresultsbboxAction');
-		$json = "";
-
-		try {
-			// Execute the request
-			$resultsbbox = $this->resultLocationModel->getResultsBBox(session_id());
-
-			// Send the result as a JSON String
-			$json = '{"success":true,';
-			$json .= '"resultsbbox":\'' . $resultsbbox . '\'}';
-		} catch (Exception $e) {
-			$this->logger->err('Error while getting result : ' . $e);
-			$json = "{success:false,errorMessage:'" . json_encode($e->getMessage()) . "'}";
-		}
-		echo $json;
-
-		// No View, we send directly the JSON
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
-		$this->getResponse()->setHeader('Content-type', 'application/json');
-	}
-
-	/**
 	 * AJAX function : Nodes of a tree under a given node and for a given unit.
 	 *
 	 * @return JSON.
@@ -1231,12 +1302,11 @@ class QueryController extends AbstractOGAMController {
 		$tree = $this->metadataModel->getTreeChildren($unit, $code, $depth);
 
 		// Send the result as a JSON String
-		// TODO : $json = '{"success":true';
-		$json = '';
-		$json .= '[' . $tree->toJSON() . ']';
-
+	 	$json = '{"success":true,';
+		$json .= '"data":[' . $tree->toJSON() . ']';
+		$json.='}';
 		echo $json;
-
+		
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
@@ -1258,9 +1328,9 @@ class QueryController extends AbstractOGAMController {
 		$tree = $this->metadataModel->getTaxrefChildren($unit, $code, $depth);
 
 		// Send the result as a JSON String
-		// TODO : $json = '{"success":true';
-		$json = '';
-		$json .= '[' . $tree->toJSON() . ']';
+		$json = '{"success":true,'
+			. '"data":[' . $tree->toJSON() . ']'.
+		'}';
 
 		echo $json;
 

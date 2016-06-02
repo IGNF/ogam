@@ -22,7 +22,8 @@ Ext.define('OgamDesktop.view.main.Main', {
 	homeButtonTooltip: 'Go back to the home page',
 	items: [{
 		id:'predefined_request',
-		xtype: 'predefined-request'
+		xtype: 'predefined-request',
+		name: 'predefined-request'
 	},{
 		xtype: 'panel',
 		layout: 'border',
@@ -47,6 +48,7 @@ Ext.define('OgamDesktop.view.main.Main', {
 					defaults: {
 						closable: false
 					},
+					deferredRender : false,
 					items: [
 					        {
 						xtype: 'map-mainwin'

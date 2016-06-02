@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Website
  */
-class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
+class Application_Model_Website_Role {
 
 	/**
 	 * The logger.
@@ -28,9 +28,16 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
@@ -39,6 +46,16 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		$this->lang = strtoupper($translate->getAdapter()->getLocale());
 
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
+
+		// The database connection
+		$this->db = Zend_Registry::get('website_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -70,15 +87,13 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @return a Role
 	 */
 	public function getRole($roleCode) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT role_code, COALESCE(t.label, role_label) as role_label, COALESCE(t.definition, role_definition) as role_definition ";
 		$req .= " FROM role ";
 		$req .= " LEFT JOIN translation t ON (lang = ? AND table_format = 'ROLE' AND row_pk = role_code) ";
 		$req .= " WHERE role_code = ? ";
 		$this->logger->info('getRole : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$this->lang,
 			$roleCode
@@ -100,12 +115,11 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	/**
 	 * Get the list of different roles for a user.
 	 *
-	 * @param String $userLogin the user
+	 * @param String $userLogin
+	 *        	the user
 	 * @return Array[String => Role]
 	 */
 	public function getUserRolesList($userLogin) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT role_code, COALESCE(t.label, role_label) as role_label, COALESCE(t.definition, role_definition) as role_definition ";
 		$req .= " FROM role ";
 		$req .= " JOIN role_to_user USING (role_code) ";
@@ -114,8 +128,10 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		$req .= " ORDER BY role_code";
 		$this->logger->info('getRolesList : ' . $req);
 
-		$query = $db->prepare($req);
-		$query->execute(array($userLogin));
+		$query = $this->db->prepare($req);
+		$query->execute(array(
+			$userLogin
+		));
 
 		$results = $query->fetchAll();
 		$roles = array();
@@ -134,15 +150,13 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @return Array[String => Role]
 	 */
 	public function getRolesList() {
-		$db = $this->getAdapter();
-
 		$req = " SELECT role_code, COALESCE(t.label, role_label) as role_label, COALESCE(t.definition, role_definition) as role_definition ";
 		$req .= " FROM role ";
 		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'ROLE' AND row_pk = role_code) ";
 		$req .= " ORDER BY role_code";
 		$this->logger->info('getRolesList : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array());
 
 		$results = $query->fetchAll();
@@ -164,8 +178,6 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @return Array[permissionCode => permission_label]
 	 */
 	private function _getRolePermissions($roleCode) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT permission_code, COALESCE(t.label, permission_label) as permission_label ";
 		$req .= " FROM permission_per_role ";
 		$req .= " LEFT JOIN permission using (permission_code) ";
@@ -173,7 +185,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		$req .= " WHERE role_code = ?";
 		$this->logger->info('getRolePermissions : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$roleCode
 		));
@@ -195,14 +207,12 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @return Array[String] The schemas list
 	 */
 	private function _getRoleSchemas($roleCode) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT schema_code ";
 		$req .= " FROM role_to_schema ";
 		$req .= " WHERE role_code = ?";
 		$this->logger->info('getRoleSchemas : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$roleCode
 		));
@@ -222,15 +232,13 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @return Array[permissionCode => permissionLabel]
 	 */
 	public function getAllPermissions() {
-		$db = $this->getAdapter();
-
 		$req = " SELECT permission_code, COALESCE(t.label, permission_label) as permission_label ";
 		$req .= " FROM permission ";
 		$req .= " LEFT JOIN translation t ON lang = '" . $this->lang . "' AND table_format = 'PERMISSION' AND row_pk = permission_code";
 
 		$this->logger->info('getAllPermissions : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute();
 
 		$results = $query->fetchAll();
@@ -248,13 +256,11 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @param Role $role
 	 */
 	public function updateRole($role) {
-		$db = $this->getAdapter();
-
 		$req = "UPDATE role SET role_label=?, role_definition=? WHERE role_code = ?";
 
 		$this->logger->info('updateRole : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$role->label,
 			$role->definition,
@@ -274,7 +280,6 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @param Role $role
 	 */
 	private function _updateRolePermissions($role) {
-		$db = $this->getAdapter();
 
 		// Clean the previous permissions
 		$req = "DELETE FROM permission_per_role";
@@ -282,7 +287,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('updateRolePermissions : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$role->code
 		));
@@ -295,7 +300,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 
 				$this->logger->info('updateRolePermissions : ' . $req);
 
-				$query = $db->prepare($req);
+				$query = $this->db->prepare($req);
 				$query->execute(array(
 					$role->code,
 					$permission
@@ -310,7 +315,6 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @param Role $role
 	 */
 	private function _updateRoleSchemas($role) {
-		$db = $this->getAdapter();
 
 		// Clean the previous schemas
 		$req = "DELETE FROM role_to_schema";
@@ -318,7 +322,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('deleteRoleSchemas : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$role->code
 		));
@@ -330,7 +334,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 
 				$this->logger->info('updateRoleSchemas : ' . $req);
 
-				$query = $db->prepare($req);
+				$query = $this->db->prepare($req);
 				$query->execute(array(
 					$role->code,
 					$schema
@@ -345,14 +349,12 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 * @param Role $role
 	 */
 	public function createRole($role) {
-		$db = $this->getAdapter();
-
 		$req = " INSERT INTO role (role_code, role_label, role_definition )";
 		$req .= " VALUES (?, ?, ?)";
 
 		$this->logger->info('createRole : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$role->code,
 			$role->label,
@@ -373,12 +375,11 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	 *        	the role code
 	 */
 	public function deleteRole($roleCode) {
-		$db = $this->getAdapter();
 
 		// Delete the schemas linked to the role
 		$req = " DELETE FROM role_to_schema WHERE role_code = ?";
 		$this->logger->info('deleteRoleSchemas : ' . $req);
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$roleCode
 		));
@@ -386,7 +387,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		// Delete the permissions linked to the role
 		$req = " DELETE FROM permission_per_role WHERE role_code = ?";
 		$this->logger->info('deleteRolePermissions : ' . $req);
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$roleCode
 		));
@@ -394,7 +395,7 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 		// Delete the role
 		$req = " DELETE FROM role WHERE role_code = ?";
 		$this->logger->info('deleteRole : ' . $req);
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$roleCode
 		));
@@ -410,14 +411,13 @@ class Application_Model_Website_Role extends Zend_Db_Table_Abstract {
 	public function isRoleDeletable($roleCode) {
 
 		// Check is there is a user using this role
-		$db = $this->getAdapter();
 		$req = " SELECT count(*) as nbusers";
 		$req .= " FROM role_to_user ";
 		$req .= " WHERE role_code = ? ";
 
 		$this->logger->info('isRoleDeletable : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$roleCode
 		));

@@ -1,3 +1,9 @@
+
+
+--
+-- Application parameters
+--
+
 SET SEARCH_PATH = website;
 
 DELETE FROM application_parameters;
@@ -55,6 +61,24 @@ insert into application_parameters (name, value, description) values ( 'language
 insert into application_parameters (name, value, description) values ( 'showUploadFileDetail' , 1 , 'Display on the upload screen the columns for each file (0 for false, 1 for true)');
 insert into application_parameters (name, value, description) values ( 'showUploadFileModel' , 1 , 'Display on the upload screen a link to a sample CSV file (0 for false, 1 for true)');
 
+
+--
+-- Users
+--
+
+
+SET SEARCH_PATH = website;
+
+DELETE FROM dataset_role_restriction;
+DELETE FROM layer_role_restriction;
+DELETE FROM role_to_schema;
+DELETE FROM role_to_user;
+DELETE FROM permission_per_role;
+DELETE FROM permission;
+DELETE FROM users;
+DELETE FROM role;
+DELETE FROM providers;
+
 -- Create a provider
 INSERT INTO providers(id, label, definition) VALUES ('1', 'Defaut', 'Organisme par défaut');
 INSERT INTO providers(id, label, definition) VALUES ('2', 'Dunkerque SA', 'Organisme de Dunkerque');
@@ -73,12 +97,9 @@ INSERT INTO role_to_user(user_login, role_code) VALUES ('admin', 'ADMIN');
 INSERT INTO role_to_user(user_login, role_code) VALUES ('visitor', 'VISITOR');
 
 -- Link the schemas to their roles
-INSERT INTO ROLE_TO_SCHEMA(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'RAW_DATA');
-INSERT INTO ROLE_TO_SCHEMA(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'HARMONIZED_DATA');
-INSERT INTO ROLE_TO_SCHEMA(ROLE_CODE, SCHEMA_CODE) VALUES ('VISITOR', 'RAW_DATA');
-
-DELETE FROM permission_per_role;
-DELETE FROM permission;
+INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'RAW_DATA');
+INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'HARMONIZED_DATA');
+INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('VISITOR', 'RAW_DATA');
 
 -- List the permissions of the web site
 INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_USERS', 'Manage users');
@@ -112,14 +133,14 @@ INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', '
 --
 -- Restriction d'accès aux dataset
 --
---INSERT INTO DATASET_ROLE_RESTRICTION (ROLE_CODE, DATASET_ID) VALUES ('ADMIN', 'SPECIES');
+--INSERT INTO dataset_role_restriction (ROLE_CODE, DATASET_ID) VALUES ('ADMIN', 'SPECIES');
 
 --INSERT INTO layer_role_restriction (layer_name, role_code) VALUES ('all_harmonized_locations', 'ADMIN');
 
 
 
 --
--- Définition des requêtes prédéfinies
+-- Predefined requests
 --
 
 set search_path = website;

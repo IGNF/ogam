@@ -44,6 +44,24 @@ class BoundingBoxTest extends ControllerTestCase {
 	}
 
 	/**
+	 * Test "getBoundingBox".
+	 * Cas d'erreur.
+	 */
+	public function testGetBoundingBoxNull() {
+
+		// On charge le modèle
+		$bbModel = new Application_Model_Mapping_BoundingBox();
+
+		// On récupère la bbox pour le fournisseur "TOTO"
+		try {
+			$bbox = $bbModel->getBoundingBox('TOTO');
+			$this->assertTrue('on ne devrait pas passer dans ce code', false);
+		} catch (Exception $e) {
+			$this->assertTrue(true);
+		}
+	}
+
+	/**
 	 * Test Create / Read / Update / Delete.
 	 */
 	public function testCRUD() {

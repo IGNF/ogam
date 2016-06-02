@@ -40,7 +40,7 @@ foreach($this->providers as $provider) {
 	<td><?php echo  $this->escape($provider->label); ?></td>
 	<td><?php echo  $this->escape($provider->definition); ?></td>
 	<td class="view-cell"><a title="<?php echo $this->translate('View related users and content');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-provider-content'), null, true)?>?id=<?php echo $this->escape($provider->id);?>">&nbsp;</a></td>
-	<td class="edit-cell"><a title="<?php echo $this->translate('Edit');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'edit-provider'), null, true)?>?id=<?php echo $this->escape($provider->id);?>">&nbsp;</a></td>
+	<td class="edit-cell"><a title="<?php echo $this->translate('Edit');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-edit-provider'), null, true)?>?id=<?php echo $this->escape($provider->id);?>">&nbsp;</a></td>
 	<?php if ($this->isDeletable[$provider->id]) { ?>
 		<td class="delete-cell">
 			<a title="<?php echo $this->translate('Delete');?>" href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'delete-provider'), null, true)?>?id=<?php echo $this->escape($provider->id);?>" onClick="return confirm('<?php echo $this->translate('Are you sure?')?>');">&nbsp;</a>
@@ -56,9 +56,8 @@ $i++;
 }
 ?>
 </table>
- 
+
 <p class="subTableLink">
-    <a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'add-provider'), null, true) ?>"><?php echo $this->translate('Create Provider');?></a>
+    <a href="<?php echo  $this->url(array('controller'=>'usermanagement','action'=>'show-create-provider'), null, true) ?>"><?php echo $this->translate('Create Provider');?></a>
 <p/>
 
- 

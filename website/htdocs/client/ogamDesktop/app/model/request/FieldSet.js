@@ -17,17 +17,21 @@ Ext.define('OgamDesktop.model.request.FieldSet', {
         
     ],
     hasMany: [{// See Ext.data.reader.Reader documentation for example
-        model: 'OgamDesktop.model.request.fieldset.Criterion', name:'criteria', associationKey: 'criteria'
+        model: 'OgamDesktop.model.request.fieldset.Criterion',
+        name:'criteria',
+        associationKey: 'criteria'
     },{
-        model: 'OgamDesktop.model.request.fieldset.Column', name:'columns', associationKey: 'columns'
+        model: 'OgamDesktop.model.request.fieldset.Column',
+        name:'columns',
+        associationKey: 'columns'
     }],
 
 	proxy: {
 		type: 'ajax',
 		url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryform',
         reader:{
-        	type:'json',
-        	  rootProperty: 'data'
+            type:'json',
+            rootProperty: 'data'
         },
 	noCache:true
     }

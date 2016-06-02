@@ -7,6 +7,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	requires: [
 		'OgamDesktop.view.result.GridTab',
 		'OgamDesktop.store.result.Grid',
+		'OgamDesktop.model.result.GridColumn',
 		'OgamDesktop.ux.data.field.Factory',
 		'OgamDesktop.ux.grid.column.Factory',
 		'Ext.window.MessageBox',
@@ -20,15 +21,52 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 	],
 	config: {
 		refs: {
-			resultsgrid: 'results-grid'
+			resultsgrid: 'results-grid',
+			resultmainwin: 'result-mainwin'
 		},
 		listen: {
         	controller: {
             	'advancedrequest': {
-            		requestSuccess: 'setResultsGrid'
+            		requestSuccess: 'getGridColumns'
             	}
             }
         }
+	},
+
+	//<locale>
+    /**
+     * @cfg {String} requestLoadingMessage
+     * The request loading message (defaults to <tt>'Please wait, while loading the results...'</tt>)
+     */
+    requestLoadingMessage: 'Please wait, while loading the results...',
+    //</locale>
+
+    /**
+     * Gets the grid columns configuration
+     * @private
+     */
+	getGridColumns: function() {
+
+		this.getResultmainwin().mask(this.requestLoadingMessage);
+
+		var columnsStore = Ext.create('Ext.data.Store', {
+		    model: 'OgamDesktop.model.result.GridColumn',
+		    proxy: {
+		        type: 'ajax',
+		        url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',
+				reader: {
+				    type : 'json',
+				    rootProperty : 'root',
+				    successProperty: 'success',
+				    messageProperty: 'errorMessage'
+				}
+		    }
+		});
+
+		columnsStore.load({
+		    callback: this.setResultsGrid,
+		    scope: this
+		});
 	},
 
 	/**
@@ -102,9 +140,9 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			});
 		}
 
-		// Build the result fields for the model and the column
+        // Build the result fields for the model and the column
 		for (i in fields) {
-			var field = fields[i];
+			var field = fields[i].data;
 			var fieldConfig = {
 				name: field.name,
 				type: field.type ? field.type.toLowerCase() : 'auto',
@@ -127,6 +165,10 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 						// OGAM-587 - TODO : CODE, COORDINATE, ARRAY
 						case 'STRING':
 							columnConfig.xtype = 'gridcolumn';
+							if (field.subtype === 'LINK'){
+								columnConfig.width = 30;
+								columnConfig.renderer= this.renderLink
+							}
 							break;
 						case 'INTEGER':
 							columnConfig.xtype = 'gridcolumn';
@@ -158,7 +200,6 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			gridModelCfg.push(Ext.create('Ext.data.field.Field', fieldConfig));
 		}
 
-		
 
 		// Update the grid model
 		gridModel.replaceFields(gridModelCfg, true);
@@ -182,6 +223,8 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		
 		// Update the grid adding the columns and the data rows.
 		gridTab.reconfigure(resultStore, gridColumnCfg);
+
+		this.getResultmainwin().unmask();
 	},
 	
 	/**
@@ -206,8 +249,19 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 			}
 		}
 		return pattern.join('');
+	},
+	
+	/**
+	 * Return a link or emptyCellText if url is empty
+	 * @param {String} uri Href of the link to generate
+	 * @return {String} a link or text
+	 */
+	renderLink:function (uri, metadata){
+		if (Ext.isEmpty(uri)){
+			return this.emptyCellText;
+		}
+		return Ext.String.format('<a class ="external" href="{0}" target="_blank">&#160;</a>',uri);
 	}//,
-
 	/*
 	 * OGAM-589 - TODO: Render an Icon for the data grid.
 	 */

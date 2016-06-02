@@ -1,6 +1,10 @@
 SET client_encoding TO 'UTF8';
+SET client_min_messages TO WARNING;
+
 CREATE SCHEMA raw_data;
 SET SEARCH_PATH = raw_data, public;
+
+
 
 --
 -- WARNING: The DATASET_ID, PROVIDER_ID and PLOT_CODE columns are used by the system and should keep their names.
@@ -215,6 +219,7 @@ CYCLE	             VARCHAR(36)          not null,
 INV_DATE             DATE                 null,
 IS_FOREST_PLOT		 CHAR(1)	          null,
 CORINE_BIOTOPE 		 character varying(36)[]     null,
+FICHE_PLACETTE       VARCHAR(1000)        null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
 constraint PK_PLOT_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE),
@@ -229,6 +234,7 @@ COMMENT ON COLUMN PLOT_DATA.CYCLE IS 'The cycle of inventory';
 COMMENT ON COLUMN PLOT_DATA.INV_DATE IS 'The date of inventory';
 COMMENT ON COLUMN PLOT_DATA.IS_FOREST_PLOT IS 'Is the plot a forest plot ?';
 COMMENT ON COLUMN PLOT_DATA.CORINE_BIOTOPE IS 'The biotope of the plot';
+COMMENT ON COLUMN PLOT_DATA.FICHE_PLACETTE IS 'URL to a PDF document';
 COMMENT ON COLUMN PLOT_DATA.COMMENT IS 'A comment about the plot';
 COMMENT ON COLUMN PLOT_DATA.LINE_NUMBER IS 'The position of the line of data in the original CSV file';
 

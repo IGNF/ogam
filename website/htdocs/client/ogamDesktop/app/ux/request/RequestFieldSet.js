@@ -215,7 +215,6 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			case 'SELECT': // The input type SELECT correspond generally to a data
 				// type CODE
 				field.xtype = 'combo';
-				field.formItemCls = 'trigger-field'; // For IE7 layout // OGAM-600 - TODO needed ?
 				field.hiddenName = field.name;
 				field.triggerAction = 'all';
 				field.typeAhead = true;
@@ -263,13 +262,11 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			case 'DATE': // The input type DATE correspond generally to a data
 				// type DATE
 				field.xtype = 'daterangefield';
-				field.formItemCls = 'trigger-field'; // For IE7 layout
 				field.format = cls.dateFormat;
 				break;
 			case 'NUMERIC': // The input type NUMERIC correspond generally to a data
 				// type NUMERIC or RANGE
 				field.xtype = 'numberrangefield';
-				field.formItemCls = 'trigger-field'; // For IE7 layout
 				// If RANGE we set the min and max values
 				if (record.subtype === 'RANGE') {
 					field.minValue = record.params.min;
@@ -286,9 +283,13 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildCheckboxFieldConfig(record));
 				break;
 			case 'RADIO':
+				Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildRadioFieldConfig(record));
+				
+				//for a group radio, if we want multi group (and each may be submit) they must not have the same name !
+				field.name ='criteria__' + record.name+'['+Ext.id()+']';
+				break;
 			case 'TEXT':
 				switch (record.subtype) {
-				// OGAM-601 - TODO : BOOLEAN, COORDINATE
 				case 'INTEGER':
 					field.xtype = 'numberfield';
 					field.allowDecimals = false;
@@ -303,7 +304,6 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				break;
 			case 'GEOM':
 				field.xtype = 'geometryfield';
-				field.formItemCls = 'trigger-field'; // For IE7 layout
 				field.hideDrawPointButton = true;
 				field.hideDrawLineButton = true;
 				field.hideDrawPolygonButton = false;

@@ -71,6 +71,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequest', {
 		margin : '5 0 5 0',
 		title : this.requestSelectTitle,
 		bind: {
+			currentProcess:'{currentProcess}',
 			criteriaValues:'{userchoices}',
 			store: '{fieldsets}'
 		},

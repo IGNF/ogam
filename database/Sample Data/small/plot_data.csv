@@ -1,3 +1,3 @@
-//" PLOT_CODE";"INV_DATE";"CYCLE";"IS_FOREST_PLOT";"CORINE_BIOTOPE";"COMMENT"
-"01575-14060-4-0TD";"2015-01-18";"5";"1";"41";"test data plot"
-"01575-14080-3-8TD";"2007-01-18";"5";"1";"41";"test data plot"
+//;PLOT_CODE;INV_DATE;CYCLE;IS_FOREST_PLOT;CORINE_BIOTOPE;FICHE_PLACETTE;COMMENT
+01575-14060-4-0TD;2015-01-18;5;1;41;"http://inventaire-forestier.ign.fr/spip/IMG/pdf/EVOL_1014-2.pdf";"test data plot"
+01575-14080-3-8TD;2007-01-18;5;1;41;"http://inventaire-forestier.ign.fr/spip/IMG/pdf/EVOL_1014-2.pdf";"test data plot"

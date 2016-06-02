@@ -18,16 +18,7 @@
  * @package Application_Model
  * @subpackage Website
  */
-class Application_Model_Website_User extends Zend_Db_Table_Abstract {
-
-	// == Properties defined in Zend_Db_Table_Abstract
-
-	// Db table name
-	protected $_name = 'website.users';
-	// Primary key column
-	protected $_primary = 'user_login';
-	// Pk is not auto-generated
-	protected $_sequence = false;
+class Application_Model_Website_User {
 
 	/**
 	 * The logger.
@@ -40,12 +31,20 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 * The other models.
 	 */
 	protected $roleModel;
+
 	protected $metadataModel;
+
+	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
 
 	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
@@ -55,16 +54,24 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
 		$this->roleModel = new Application_Model_Website_Role();
+
+		// The database connection
+		$this->db = Zend_Registry::get('website_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
 	 * Return the list of users.
 	 *
-	 * @return Array fo Users
+	 * @return Array[Application_Object_Website_User]
 	 */
 	public function getUsersList() {
-		$db = $this->getAdapter();
-
 		$req = " SELECT user_login as login, ";
 		$req .= " user_name as username, ";
 		$req .= " provider_id, ";
@@ -78,7 +85,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$req .= " ORDER BY user_login";
 		$this->logger->info('getUsersList : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute();
 
 		$results = $query->fetchAll();
@@ -111,11 +118,9 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 *
 	 * @param String $userLogin
 	 *        	The userLogin
-	 * @return a User
+	 * @return Application_Object_Website_User
 	 */
 	public function getUser($userLogin) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT users.user_login as login, ";
 		$req .= " user_password as password, ";
 		$req .= " user_name as username, ";
@@ -129,7 +134,7 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$req .= " WHERE user_login = ? ";
 		$this->logger->info('getUser : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$userLogin
 		));
@@ -167,15 +172,13 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 * @return the user password
 	 */
 	public function getPassword($login) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT user_password ";
 		$req .= " FROM users ";
 		$req .= " WHERE user_login = ? ";
 
 		$this->logger->info('getPassword : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$login
 		));
@@ -198,13 +201,11 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 *        	The user password
 	 */
 	public function updatePassword($login, $password) {
-		$db = $this->getAdapter();
-
 		$req = " UPDATE users SET user_password = ? WHERE user_login = ?";
 
 		$this->logger->info('updatePassword : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$password,
 			$login
@@ -217,15 +218,13 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 * @param User $user
 	 */
 	public function updateUser($user) {
-		$db = $this->getAdapter();
-
 		$req = " UPDATE users ";
 		$req .= " SET user_name = ?, provider_id = ?, email = ?";
 		$req .= " WHERE user_login = ?";
 
 		$this->logger->info('updateUser : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$user->username,
 			$user->provider->id,
@@ -240,14 +239,12 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 * @param User $user
 	 */
 	public function createUser($user) {
-		$db = $this->getAdapter();
-
 		$req = " INSERT INTO users (user_login, user_password, user_name, provider_id, email, active )";
 		$req .= " VALUES (?, ?, ?, ?, ?, ?)";
 
 		$this->logger->info('createUser : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$user->login,
 			$user->password,
@@ -267,13 +264,11 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 *        	the role code
 	 */
 	public function createUserRole($userLogin, $roleCode) {
-		$db = $this->getAdapter();
-
 		$req = " INSERT INTO role_to_user (role_code, user_login) VALUES (?, ?)";
 
 		$this->logger->info('createUserRole : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$roleCode,
 			$userLogin
@@ -287,13 +282,11 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 	 *        	the user login
 	 */
 	public function deleteUserRole($userLogin) {
-		$db = $this->getAdapter();
-
 		$req = " DELETE FROM role_to_user WHERE user_login = ?";
 
 		$this->logger->info('deleteUserRole : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$userLogin
 		));
@@ -311,28 +304,50 @@ class Application_Model_Website_User extends Zend_Db_Table_Abstract {
 		$this->deleteUserRole($userLogin);
 
 		// Suppression de l'utilisateur
-		$db = $this->getAdapter();
 
 		$req = " DELETE FROM users WHERE user_login = ?";
 
 		$this->logger->info('deleteUser : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$userLogin
 		));
 	}
 
 	/**
-	 * Get all users for a given provider
+	 * Get all users for a given provider.
 	 *
-	 * @param
-	 *        	$id
-	 * @return Zend_Db_Table_Rowset_Abstract
+	 * @param Integer $id
+	 *        	The identifier of the provider
+	 * @return Array[Application_Object_Website_User]
 	 */
-	public function findByProviderId($id) {
-		$where = $this->getAdapter()->quoteInto("provider_id = '?'", intval($id));
-		$users = $this->fetchAll($where, 'user_login');
+	public function getUsersByProvider($id) {
+		$req = " SELECT * ";
+		$req .= " FROM users ";
+		$req .= " WHERE provider_id = ? ";
+		$req .= " ORDER BY user_login";
+		$this->logger->info('getUsersByProvider : ' . $req);
+
+		$query = $this->db->prepare($req);
+		$query->execute(array(
+			$id
+		));
+
+		$rows = $query->fetchAll();
+		$users = array();
+		foreach ($rows as $row) {
+
+			$user = new Application_Object_Website_User();
+
+			$user->login = $row['user_login'];
+			$user->username = $row['user_name'];
+			$user->active = ($row['active'] === 1);
+			$user->email = $row['email'];
+
+			$users[$user->login] = $user;
+		}
+
 		return $users;
 	}
 }

@@ -28,10 +28,6 @@ class PredefinedRequestTest extends ControllerTestCase {
 	public function tearDown() {
 		parent::tearDown();
 
-		// Ferme les connections
-		$db = $this->requestModel->getAdapter();
-		$db->closeConnection();
-
 		$this->requestModel = null;
 	}
 

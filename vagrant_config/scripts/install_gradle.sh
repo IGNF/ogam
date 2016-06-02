@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 
 # ---------------------------------------------------------------
+# This provision is executed as "root"
+# ---------------------------------------------------------------
+
+#
+# Set environment variables
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/setenv.sh
+
+
+
+echo "--------------------------------------------------" 
+echo " Install Gradle "
+echo "--------------------------------------------------"
+
+# ---------------------------------------------------------------
 # Change the install directory
 # ---------------------------------------------------------------
 export GRADLE_USER_HOME=/vagrant/ogam/gradle

@@ -18,16 +18,7 @@
  * @package Application_Model
  * @subpackage Mapping
  */
-class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
-
-	// == Properties defined in Zend_Db_Table_Abstract
-
-	// Db table name
-	protected $_name = 'mapping.bounding_box';
-	// Primary key column
-	protected $_primary = 'provider_id';
-	// PK is not auto-incrementes
-	protected $_sequence = false;
+class Application_Model_Mapping_BoundingBox {
 
 	/**
 	 * The logger.
@@ -37,12 +28,29 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 	protected $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		// The database connection
+		$this->db = Zend_Registry::get('mapping_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -70,15 +78,13 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 	 * @throws Exception
 	 */
 	public function getBoundingBox($providerId) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT *";
 		$req .= " FROM mapping.bounding_box ";
 		$req .= " WHERE provider_id = ?";
 
 		Zend_Registry::get("logger")->info('getBoundingBox : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute(array(
 			$providerId
 		));
@@ -102,14 +108,12 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 	 *        	the bounding box
 	 */
 	public function addBoundingBox($providerId, $boundingBox) {
-		$db = $this->getAdapter();
-
 		$req = " INSERT INTO mapping.bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level)";
 		$req .= " VALUES (?, ?, ?, ?, ?, ?)";
 
 		$this->logger->info('addBoundingBox : ' . $req);
 
-		$query = $db->prepare($req);
+		$query = $this->db->prepare($req);
 		$query->execute(array(
 			$providerId,
 			$boundingBox->xmin,
@@ -127,7 +131,15 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 	 *        	the provider id
 	 */
 	public function deleteBoundingBox($providerId) {
-		$this->delete("provider_id = '" . $providerId . "'");
+		$req = " DELETE FROM mapping.bounding_box ";
+		$req .= " WHERE provider_id = ?";
+
+		$this->logger->info('deleteBoundingBox : ' . $req);
+
+		$query = $this->db->prepare($req);
+		$query->execute(array(
+			$providerId
+		));
 	}
 
 	/**
@@ -138,15 +150,13 @@ class Application_Model_Mapping_BoundingBox extends Zend_Db_Table_Abstract {
 	 * @return Center the center
 	 */
 	public function getCenter($providerId) {
-		$db = $this->getAdapter();
-
 		$req = " SELECT (bb_xmin + bb_xmax) / 2 as x_center, (bb_ymin + bb_ymax) / 2 as y_center, zoom_level ";
 		$req .= " FROM bounding_box ";
 		$req .= " WHERE provider_id = ?";
 
 		Zend_Registry::get("logger")->info('getCenter : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute(array(
 			$providerId
 		));

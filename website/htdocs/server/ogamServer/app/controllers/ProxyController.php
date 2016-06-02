@@ -53,7 +53,7 @@ class ProxyController extends AbstractOGAMController {
 	 *        	the substring to locate
 	 * @return String the part of the string located after the substring
 	 */
-	protected function _extractAfter($string, $substring) {
+	protected function extractAfter($string, $substring) {
 		return substr($string, strpos($string, $substring) + strlen($substring));
 	}
 
@@ -69,7 +69,7 @@ class ProxyController extends AbstractOGAMController {
 	 * @return String the value of the parameter
 	 */
 	protected function _extractParam($url, $param) {
-		$end = $this->_extractAfter($url, $param . "=");
+		$end = $this->extractAfter($url, $param . "=");
 		$endpos = strpos($end, "&");
 		if ($endpos === false) {
 			$endpos = strlen($end);
@@ -87,7 +87,7 @@ class ProxyController extends AbstractOGAMController {
 	 * @param String $sub
 	 * @return a boolean
 	 */
-	protected function _endsWith($str, $sub) {
+	protected function endsWith($str, $sub) {
 		return (substr($str, strlen($str) - strlen($sub)) === $sub);
 	}
 
@@ -102,11 +102,11 @@ class ProxyController extends AbstractOGAMController {
 		$mapServiceURL = $configuration->map_service_url;
 		$mapServiceURL = $mapServiceURL . "&";
 
-		$uri = $mapServiceURL . $this->_extractAfter($uri, "proxy/gettile?");
+		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/gettile?");
 
 		// Check the image type
 		$imagetype = $this->_extractParam($uri, "FORMAT");
-		if ($this->_endsWith($imagetype, "JPG") || $this->_endsWith($imagetype, "JPEG")) {
+		if ($this->endsWith($imagetype, "JPG") || $this->endsWith($imagetype, "JPEG")) {
 			header("Content-Type: image/jpg");
 		} else {
 			header("Content-Type: image/png");
@@ -120,9 +120,9 @@ class ProxyController extends AbstractOGAMController {
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method === 'GET') {
-			$result = $this->_sendGET($uri);
+			$result = $this->sendGET($uri);
 		} else {
-			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
+			$result = $this->sendPOST($uri, $this->_request->getRawBody());
 		}
 
 		echo $result;
@@ -146,13 +146,13 @@ class ProxyController extends AbstractOGAMController {
 		$mapServiceURL = $configuration->map_service_url;
 		$mapServiceURL = $mapServiceURL . "&";
 
-		$uri = $mapServiceURL . $this->_extractAfter($uri, "proxy/getwfs?");
+		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/getwfs?");
 		$this->logger->debug('redirect getwfs : ' . $uri);
 
 		if ($method === 'GET') {
-			$result = $this->_sendGET($uri);
+			$result = $this->sendGET($uri);
 		} else {
-			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
+			$result = $this->sendPOST($uri, $this->_request->getRawBody());
 		}
 
 		echo $result;
@@ -169,9 +169,10 @@ class ProxyController extends AbstractOGAMController {
 	 *
 	 * @param String $url
 	 *        	the url to call
+	 * @return The content of the response
 	 * @throws Exception
 	 */
-	protected function _sendGET($url) {
+	protected function sendGET($url) {
 		$result = "";
 		$handle = fopen($url, "rb");
 		$result = stream_get_contents($handle);
@@ -189,10 +190,11 @@ class ProxyController extends AbstractOGAMController {
 	 *        	the url to call
 	 * @param Array $data
 	 *        	the post data
+	 * @return The content of the response
 	 * @throws Exception
 	 */
-	protected function _sendPOST($url, $data) {
-		$this->logger->debug('_sendPOST : ' . $url . " data : " . $data);
+	protected function sendPOST($url, $data) {
+		$this->logger->debug('sendPOST : ' . $url . " data : " . $data);
 
 		$contentType = "application/xml";
 
@@ -242,9 +244,9 @@ class ProxyController extends AbstractOGAMController {
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method === 'GET') {
-			$result = $this->_sendGET($uri);
+			$result = $this->sendGET($uri);
 		} else {
-			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
+			$result = $this->sendPOST($uri, $this->_request->getRawBody());
 		}
 
 		echo $result;
@@ -264,11 +266,11 @@ class ProxyController extends AbstractOGAMController {
 		$mapServiceURL = $configuration->map_service_url;
 		$mapServiceURL = $mapServiceURL . "&";
 
-		$uri = $mapServiceURL . $this->_extractAfter($uri, "proxy/getlegendimage?");
+		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/getlegendimage?");
 
 		// Check the image type
 		$imagetype = $this->_extractParam($uri, "FORMAT");
-		if ($this->_endsWith($imagetype, "JPG") || $this->_endsWith($imagetype, "JPEG")) {
+		if ($this->endsWith($imagetype, "JPG") || $this->endsWith($imagetype, "JPEG")) {
 			header("Content-Type: image/jpg");
 		} else {
 			header("Content-Type: image/png");
@@ -281,9 +283,9 @@ class ProxyController extends AbstractOGAMController {
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method === 'GET') {
-			$result = $this->_sendGET($uri);
+			$result = $this->sendGET($uri);
 		} else {
-			$result = $this->_sendPOST($uri, $this->_request->getRawBody());
+			$result = $this->sendPOST($uri, $this->_request->getRawBody());
 		}
 
 		echo $result;
@@ -314,9 +316,8 @@ class ProxyController extends AbstractOGAMController {
 
 		$websiteSession = new Zend_Session_Namespace('website');
 		$schema = $websiteSession->schema; // the schema used
-		$queryObject = $websiteSession->queryObject; // the last query done
 
-		$uri = $this->_extractAfter($uri, "proxy/getfeatureinfo?");
+		$uri = $this->extractAfter($uri, "proxy/getfeatureinfo?");
 
 		// On effecture une requête mapserver "GetFeature" pour chaque layer
 		$uri = $mapServiceURL . $uri . "&SESSION_ID=" . $sessionId;
@@ -324,9 +325,9 @@ class ProxyController extends AbstractOGAMController {
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method === 'GET') {
-			$gml = $this->_sendGET($uri);
+			$gml = $this->sendGET($uri);
 		} else {
-			$gml = $this->_sendPOST($uri, $this->_request->getRawBody());
+			$gml = $this->sendPOST($uri, $this->_request->getRawBody());
 		}
 
 		// Get the infos to display
@@ -383,9 +384,9 @@ class ProxyController extends AbstractOGAMController {
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method == 'GET') {
-			$result = $this->_sendGET($reportURL);
+			$result = $this->sendGET($reportURL);
 		} else {
-			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
+			$result = $this->sendPOST($reportURL, $this->_request->getRawBody());
 		}
 
 		echo $result;
@@ -416,9 +417,9 @@ class ProxyController extends AbstractOGAMController {
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method === 'GET') {
-			$result = $this->_sendGET($reportURL);
+			$result = $this->sendGET($reportURL);
 		} else {
-			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
+			$result = $this->sendPOST($reportURL, $this->_request->getRawBody());
 		}
 
 		echo $result;
@@ -449,9 +450,9 @@ class ProxyController extends AbstractOGAMController {
 
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 		if ($method === 'GET') {
-			$result = $this->_sendGET($reportURL);
+			$result = $this->sendGET($reportURL);
 		} else {
-			$result = $this->_sendPOST($reportURL, $this->_request->getRawBody());
+			$result = $this->sendPOST($reportURL, $this->_request->getRawBody());
 		}
 
 		echo $result;

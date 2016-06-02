@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+# ---------------------------------------------------------------
+# This provision is executed as "root"
+# ---------------------------------------------------------------
+
+#
+# Set environment variables
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/setenv.sh
+
+
+
+echo "--------------------------------------------------" 
+echo " Install Sencha Command "
+echo "--------------------------------------------------"
 
 #----------------------------------------------------------------
 # Download the Sencha Cmd archive
@@ -9,7 +24,7 @@ sudo -n apt-get install -y unzip
 #export http_proxy=proxy.ign.fr:3128
 
 if [ ! -f "./SenchaCmd-6.0.2.14-linux-amd64.sh.zip" ]; then
-	wget http://cdn.sencha.com/cmd/6.0.2.14/no-jre/SenchaCmd-6.0.2.14-linux-amd64.sh.zip
+	wget http://cdn.sencha.com/cmd/6.0.2.14/no-jre/SenchaCmd-6.0.2.14-linux-amd64.sh.zip 2>&1
 	unzip ./SenchaCmd-6.0.2.14-linux-amd64.sh.zip
 fi
 

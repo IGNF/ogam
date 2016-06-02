@@ -13,8 +13,13 @@ Ext.define('OgamDesktop.store.Tree',{
 		},
 		url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettreenodes',
 		type : 'ajax',
-		// reader: 'json',
-		rootProperty : '',
+		reader: {
+			type:'json',
+	        rootProperty: function(data){
+	            // Extract child nodes from the items or children property in the dataset
+	            return data.data || data.children;
+	        }
+		},
 		extraParams : {
 			depth : '1'
 		}

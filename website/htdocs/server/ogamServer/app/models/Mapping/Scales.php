@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Mapping
  */
-class Application_Model_Mapping_Scales extends Zend_Db_Table_Abstract {
+class Application_Model_Mapping_Scales {
 
 	/**
 	 * The logger.
@@ -28,12 +28,29 @@ class Application_Model_Mapping_Scales extends Zend_Db_Table_Abstract {
 	var $logger;
 
 	/**
+	 * The database connection
+	 *
+	 * @var Zend_Db
+	 */
+	var $db;
+
+	/**
 	 * Initialisation.
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
+
+		// The database connection
+		$this->db = Zend_Registry::get('mapping_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->db->closeConnection();
 	}
 
 	/**
@@ -42,13 +59,11 @@ class Application_Model_Mapping_Scales extends Zend_Db_Table_Abstract {
 	 * @return Array[String]
 	 */
 	public function getScales() {
-		$db = $this->getAdapter();
-
 		$req = "SELECT scale FROM scales ORDER BY scale DESC";
 
 		Zend_Registry::get("logger")->info('getScales : ' . $req);
 
-		$select = $db->prepare($req);
+		$select = $this->db->prepare($req);
 		$select->execute();
 
 		$result = array();

@@ -137,6 +137,14 @@ Layout Pathway Home;Home
 Translate this site fr;Translate this site in french
 Translate this site en;Translate this site in english
 
+##########################
+#	Error				 #
+##########################
+An error occurred;An error occurred
+Page not found;Page not found
+Database Error;Database Error
+Application error;Application error
+
 ﻿##########################
 #   Index                #
 ##########################

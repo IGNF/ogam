@@ -23,6 +23,7 @@ require_once APPLICATION_PATH . '/objects/Metadata/Format.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableFormat.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TreeNode.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
+require_once APPLICATION_PATH . '/objects/Website/ApplicationParameter.php';
 require_once APPLICATION_PATH . '/objects/Website/User.php';
 require_once APPLICATION_PATH . '/objects/Website/Role.php';
 require_once APPLICATION_PATH . '/objects/Website/Provider.php';
@@ -142,7 +143,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 					$controllerName = strtolower($controllerName);
 					$this->logger->debug("Adding custom controller : " . $controllerName);
 
-					if ($controllerName == 'index') {
+					if ($controllerName === 'index') {
 						$customRoute = new Zend_Controller_Router_Route('', array(
 							'module' => 'custom',
 							'controller' => 'index',
@@ -283,6 +284,22 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 
 	/**
+	 * Initialise the Db adapters
+	 */
+	protected function _initDbAdapters() {
+		$this->bootstrap('RegisterLogger');
+		$this->bootstrap('multidb');
+
+		$resource = $this->getPluginResource('multidb');
+
+		Zend_Registry::set('metadata_db', $resource->getDb('metadata_db'));
+		Zend_Registry::set('raw_db', $resource->getDb('raw_db'));
+		Zend_Registry::set('mapping_db', $resource->getDb('mapping_db'));
+		Zend_Registry::set('website_db', $resource->getDb('website_db'));
+		Zend_Registry::set('harmonized_db', $resource->getDb('harmonized_db'));
+	}
+
+	/**
 	 * Register the configuration.
 	 *
 	 * Take by default the files in ogam/application/config
@@ -308,16 +325,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			));
 		}
 
-		// get db param
-		$this->bootstrap('Db');
+		// get params
+		$this->bootstrap('DbAdapters');
 		$this->bootstrap('Session');
 		$this->bootstrap('RegisterLogger');
 
 		// Add the parameters from the database
 		$parameterModel = new Application_Model_Website_ApplicationParameter();
 		$parameters = $parameterModel->getParameters();
-		foreach ($parameters as $k => $v) {
-			$configuration->$k = $v;
+		foreach ($parameters as $name => $param) {
+			$configuration->$name = $param->value;
 		}
 
 		// Adding of the intern map service url into the parameters
@@ -364,6 +381,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		if (empty($dbCache)) {
 			throw new Zend_Exception('DB cache object is empty.');
 		}
+		Zend_Registry::set('databaseCache', $dbCache);
+
 		$languageCache = $cachemanager->getCache('language');
 		if (empty($languageCache)) {
 			throw new Zend_Exception('Language cache object is empty.');
@@ -374,7 +393,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * Manage the AutoLogin.
 	 */
 	protected function _initAutoLogin() {
-		$this->bootstrap('Db');
+		$this->bootstrap('DbAdapters');
 		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('AppConfSession');
 		$this->bootstrap('Session');

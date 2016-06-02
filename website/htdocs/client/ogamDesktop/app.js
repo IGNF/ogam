@@ -16,7 +16,8 @@ Ext.application({
     // will gain a "viewport" plugin if it does not extend Ext.Viewport. With the
     // modern toolkit, the main view will be added to the Viewport.
     //
-    mainView: 'OgamDesktop.view.main.Main'
+    // If called by unittest page, don't start the application, just load the files.
+    mainView: location.search.match('unittest') ? null : 'OgamDesktop.view.main.Main'
 	
     //-------------------------------------------------------------------------
     // Most customizations should be made to OgamDesktop.Application. If you need to

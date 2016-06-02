@@ -18,7 +18,7 @@
  * @package Application_Model
  * @subpackage Generic
  */
-class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
+class Application_Model_Generic_Generic {
 
 	/**
 	 * The system of projection for the visualisation.
@@ -42,9 +42,25 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	var $genericService;
 
 	/**
+	 * The metadata Model.
+	 *
+	 * @var Application_Model_Metadata_Metadata
+	 */
+	var $metadataModel;
+
+	/**
+	 * The database connections
+	 *
+	 * @var Zend_Db
+	 */
+	var $rawdb;
+
+	var $metadatadb;
+
+	/**
 	 * Initialisation
 	 */
-	public function init() {
+	public function __construct() {
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");
@@ -58,6 +74,18 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		// Initialise the generic service
 		$this->genericService = new Application_Service_GenericService();
+
+		// The database connection
+		$this->rawdb = Zend_Registry::get('raw_db');
+		$this->metadatadb = Zend_Registry::get('metadata_db');
+	}
+
+	/**
+	 * Destuction.
+	 */
+	function __destruct() {
+		$this->rawdb->closeConnection();
+		$this->metadatadb->closeConnection();
 	}
 
 	/**
@@ -68,12 +96,11 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * @return Array[]
 	 */
 	public function executeRequest($sql) {
-		$db = $this->getAdapter();
-		$db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
+		$this->rawdb->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
 
 		$this->logger->info('executeRequest : ' . $sql);
 
-		$result = $db->fetchAll($sql);
+		$result = $this->rawdb->fetchAll($sql);
 
 		return $result;
 	}
@@ -87,8 +114,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * @return Application_Object_Generic_DataObject The complete data object.
 	 */
 	public function getDatum($data) {
-		$db = $this->getAdapter();
-
 		$tableFormat = $data->tableFormat;
 
 		$this->logger->info('getDatum : ' . $tableFormat->format);
@@ -102,7 +127,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getDatum : ' . $sql);
 
-		$select = $db->prepare($sql);
+		$select = $this->rawdb->prepare($sql);
 		$select->execute();
 		$row = $select->fetch();
 
@@ -141,8 +166,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * @return Array[String] The join keys.
 	 */
 	public function getJoinKeys($data) {
-		$db = $this->getAdapter();
-
 		$tableFormat = $data->tableFormat;
 
 		$sql = "SELECT join_key";
@@ -150,7 +173,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		$sql .= " WHERE schema_code = '" . $tableFormat->schemaCode . "'";
 		$sql .= " AND child_table = '" . $tableFormat->format . "'";
 
-		$select = $db->prepare($sql);
+		$select = $this->metadatadb->prepare($sql);
 		$select->execute();
 		$row = $select->fetch();
 
@@ -170,8 +193,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * @return Array[Application_Object_Generic_DataObject] The complete data objects.
 	 */
 	private function _getDataList($data) {
-		$db = $this->getAdapter();
-
 		$this->logger->info('_getDataList');
 
 		$result = array();
@@ -188,7 +209,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('_getDataList : ' . $sql);
 
-		$select = $db->prepare($sql);
+		$select = $this->rawdb->prepare($sql);
 		$select->execute();
 		foreach ($select->fetchAll() as $row) {
 
@@ -223,7 +244,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * @throws an exception if an error occur during update
 	 */
 	public function updateData($data) {
-		$db = $this->getAdapter();
 
 		/* @var $data Application_Object_Generic_DataObject */
 		$tableFormat = $data->tableFormat;
@@ -258,7 +278,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('updateData : ' . $sql);
 
-		$request = $db->prepare($sql);
+		$request = $this->rawdb->prepare($sql);
 
 		try {
 			$request->execute();
@@ -276,7 +296,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * @throws an exception if an error occur during delete
 	 */
 	public function deleteData($data) {
-		$db = $this->getAdapter();
 
 		/* @var $data Application_Object_Generic_DataObject */
 		$tableFormat = $data->tableFormat;
@@ -310,7 +329,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('deleteData : ' . $sql);
 
-		$request = $db->prepare($sql);
+		$request = $this->rawdb->prepare($sql);
 
 		try {
 			$request->execute();
@@ -329,8 +348,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * @throws an exception if an error occur during insert
 	 */
 	public function insertData($data) {
-		$db = $this->getAdapter();
-
 		$this->logger->info('insertData');
 
 		$tableFormat = $data->tableFormat;
@@ -383,7 +400,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('insertData : ' . $sql);
 
-		$request = $db->prepare($sql);
+		$request = $this->rawdb->prepare($sql);
 
 		try {
 			$request->execute();
@@ -415,8 +432,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * @return List[Application_Object_Generic_DataObject] The line of data in the parent tables.
 	 */
 	public function getAncestors($data) {
-		$db = $this->getAdapter();
-
 		$ancestors = array();
 
 		/* @var $data Application_Object_Generic_DataObject */
@@ -433,7 +448,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getAncestors : ' . $sql);
 
-		$select = $db->prepare($sql);
+		$select = $this->metadatadb->prepare($sql);
 		$select->execute();
 		$row = $select->fetch();
 
@@ -478,8 +493,6 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 	 * @return Array[Format => List[Application_Object_Generic_DataObject]] The lines of data in the children tables, indexed by format.
 	 */
 	public function getChildren($data, $datasetId = null) {
-		$db = $this->getAdapter();
-
 		$children = array();
 
 		/* @var $data Application_Object_Generic_DataObject */
@@ -503,7 +516,7 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 
 		$this->logger->info('getChildren : ' . $sql);
 
-		$select = $db->prepare($sql);
+		$select = $this->metadatadb->prepare($sql);
 		$select->execute();
 
 		// For each potential child table listed, we search for the actual lines of data available
@@ -535,5 +548,43 @@ class Application_Model_Generic_Generic extends Zend_Db_Table_Abstract {
 		}
 
 		return $children;
+	}
+
+	/**
+	 * Get the number of lines of data linked to a provider.
+	 *
+	 * @param String $id
+	 *        	the identifier of the provider
+	 * @return Array[String => Integer] The count for each table name
+	 */
+	public function getProviderNbOfRawDatasByTable($id) {
+
+		// Get all tables in raw_data, with a provider_id column, except technical tables :
+		$req = "SELECT table_name ";
+		$req .= " FROM information_schema.columns ";
+		$req .= " WHERE column_name = 'provider_id' ";
+		$req .= " AND table_schema='raw_data'";
+		$req .= " AND table_name NOT IN ('submission', 'check_error');";
+
+		$select = $this->rawdb->prepare($req);
+		$select->execute(array());
+
+		$rawDataCount = array();
+
+		// For each table, count number of lines
+		foreach ($select->fetchAll() as $row) {
+			$tableName = $row['table_name'];
+
+			$countReq = "SELECT count(*) FROM " . $tableName . " WHERE provider_id = ?";
+			$count = $this->rawdb->prepare($countReq);
+			$count->execute(array(
+				$id
+			));
+
+			$nbLines = $count->fetchColumn();
+			$rawDataCount[$tableName] = $nbLines;
+		}
+
+		return $rawDataCount;
 	}
 }

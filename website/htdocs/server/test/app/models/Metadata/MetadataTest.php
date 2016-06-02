@@ -30,10 +30,6 @@ class MetadataTest extends ControllerTestCase {
 	public function tearDown() {
 		parent::tearDown();
 
-		// Ferme les connections
-		$db = $this->metadataModel->getAdapter();
-		$db->closeConnection();
-
 		$this->metadataModel = null;
 	}
 
@@ -314,7 +310,7 @@ class MetadataTest extends ControllerTestCase {
 		//
 		$formFields = $this->metadataModel->getFormFields('SPECIES', 'PLOT_FORM', 'RAW_DATA', 'result');
 
-		$this->assertEquals(count($formFields), 7);
+		$this->assertEquals(count($formFields), 8);
 
 		// Les données attendues sont ordonnées
 		$this->assertEquals($formFields[0]->data, 'PROVIDER_ID');
@@ -323,7 +319,8 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertEquals($formFields[3]->data, 'INV_DATE');
 		$this->assertEquals($formFields[4]->data, 'IS_FOREST_PLOT');
 		$this->assertEquals($formFields[5]->data, 'CORINE_BIOTOPE');
-		$this->assertEquals($formFields[6]->data, 'COMMENT');
+		$this->assertEquals($formFields[6]->data, 'FICHE_PLACETTE');
+		$this->assertEquals($formFields[7]->data, 'COMMENT');
 
 		//
 		// Same thing for the criterias
@@ -578,4 +575,31 @@ class MetadataTest extends ControllerTestCase {
 
 		$this->assertEquals(20, $count);
 	}
+
+
+	/**
+	 * Test la fonction getTranslation.
+	 */
+	public function testGetTranslation() {
+
+		// Set the langage in French
+		$this->metadataModel->lang = 'FR';
+
+		// get the trad
+		$trad = $this->metadataModel->getTranslation('MAPPING_LAYER', 'layer_name,result_locations');
+
+		// On vérifie que l'on a ramené la bonne modalité
+		$this->assertEquals($trad, 'Résultats');
+
+
+		// Set the langage in French
+		$this->metadataModel->lang = 'EN';
+
+		// get the trad
+		$trad = $this->metadataModel->getTranslation('MAPPING_LAYER', 'layer_name,result_locations');
+
+		// On vérifie que l'on a ramené la bonne modalité
+		$this->assertEquals($trad, 'Results');
+	}
+
 }

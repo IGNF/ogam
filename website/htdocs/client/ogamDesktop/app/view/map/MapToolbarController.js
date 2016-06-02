@@ -119,7 +119,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
      * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}
      */
     onSelectButtonToggle : function (button, pressed, eOpts) {
-        // OGAM-603 - TODO : http://openlayers.org/en/v3.13.0/examples/box-selection.html
+        // OGAM-603 - TODO : Permettre la sélection des géométries via une fenêtre
         pressed && this.onControlButtonPress(button, this.selectInteraction);
     },
 
@@ -395,7 +395,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         var legendsPanel = mapAddonsPanel.child('legends-panel');
 
         // Forces the render of the legends panel items
-        // OGAM-604 - TODO: Find a workaround
         if(!legendsPanel.isVisible()){
             var activeTab = mapAddonsPanel.getActiveTab();
             mapAddonsPanel.setActiveTab(legendsPanel);
@@ -404,7 +403,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
 
         // Gets the activated legends
         // Note: The legend panel body is not fully taken to avoid the ids duplication
-        // OGAM-605 - TODO: Find a workaround (Use a filtered legends store...)
         var legendBody = [{
             tag:'div',
             cls:'o-map-print-legends-title',
