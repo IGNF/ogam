@@ -38,6 +38,14 @@ Ext.define('OgamDesktop.controller.map.Main',{
         }
 	},
 
+	//<locale>
+    /**
+     * @cfg {String} requestLoadingMessage
+     * The request loading message (defaults to <tt>'Please wait, while loading the map...'</tt>)
+     */
+    requestLoadingMessage: 'Please wait, while loading the map...',
+    //</locale>
+
 	/**
 	 * Manage the launch event
 	 * @private
@@ -84,29 +92,30 @@ Ext.define('OgamDesktop.controller.map.Main',{
 	 * @private
 	 */
 	onRequestSuccess: function() {
-		this.getResultsBbox();
-		this.updateRequestLayers();
+		this.getMapmainwin().mask(this.requestLoadingMessage);
+        Ext.Ajax.request({
+            url : Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetresultsbbox',
+            success : function(response, options) {
+                this.setResultsBbox(response);
+				this.updateRequestLayers();
+				//this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
+            },
+            scope: this
+        });
 	},
 
     /**
 	 * Update the map results bounding box
 	 */
-	getResultsBbox: function() {
-        this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
-        Ext.Ajax.request({
-            url : Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetresultsbbox',
-            success : function(rpse, options) {
-                var response = Ext.decode(rpse.responseText);
-                var mapCmp = this.getMappanel().child('mapcomponent');
-                var mapCmpCtrl = mapCmp.getController();
-                mapCmp.resultsBBox = response.resultsbbox;
-                if (mapCmpCtrl.autoZoomOnResultsFeatures === true) {
-                    mapCmp.fireEvent('resultswithautozoom');
-                }
-                mapCmpCtrl.fireEvent('resultsBBoxChanged', mapCmpCtrl, mapCmp.resultsBBox);
-            },
-            scope: this
-        });
+	setResultsBbox: function(response) {
+        var response = Ext.decode(response.responseText);
+        var mapCmp = this.getMappanel().child('mapcomponent');
+        var mapCmpCtrl = mapCmp.getController();
+        mapCmp.resultsBBox = response.resultsbbox;
+        if (mapCmpCtrl.autoZoomOnResultsFeatures === true) {
+            mapCmp.fireEvent('resultswithautozoom');
+        }
+        mapCmpCtrl.fireEvent('resultsBBoxChanged', mapCmpCtrl, mapCmp.resultsBBox);
     },
 
     /**
@@ -116,13 +125,24 @@ Ext.define('OgamDesktop.controller.map.Main',{
 		var mapCmp = this.getMappanel().child('mapcomponent');
 		// Forces the layer to redraw itself
         var requestLayers = mapCmp.getController().requestLayers;
+        this.unmaskMapMainWinCounter = requestLayers.length;
         requestLayers.forEach(function(element, index, array){
+        	var src = element.getSource();
+        	src.once('change', this.unmaskMapMainWin, this);
         	/*
         	 * Note : 
         	 * The ol.source.changed and ol.source.dispatchEvent('change') functions 
         	 * doesn't work with openlayers v3.12.1
         	 */
-        	element.getSource().updateParams({"_dc": Date.now()});
-        });
+        	src.updateParams({"_dc": Date.now()});
+        },this);
+	},
+
+	/**
+	 * Unmasks the map main win when all the layer are up-to-date.
+	 * @private
+	 */
+	unmaskMapMainWin: function() {
+		--this.unmaskMapMainWinCounter === 0 && this.getMapmainwin().unmask();
 	}
 });

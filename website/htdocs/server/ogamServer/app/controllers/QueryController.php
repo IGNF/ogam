@@ -386,22 +386,12 @@ class QueryController extends AbstractOGAMController {
 	}
 
 	/**
-	 * AJAX function : Get the description of the columns of the result of the query.
+	 * AJAX function : Builds the query.
 	 *
-	 * @param Boolean $withSQL
-	 *        	indicate that we want the server to return the generated SQL
 	 * @return JSON
 	 */
-	public function ajaxgetresultcolumnsAction($withSQL = false) {
-		$this->logger->debug('ajaxgetresultcolumns');
-
-		// withSQL flag value
-		if ($withSQL == null) {
-			$withSQL = $this->getRequest()->getPost('withSQL');
-		}
-
-		$configuration = Zend_Registry::get("configuration");
-		ini_set("max_execution_time", $configuration->max_execution_time);
+	public function ajaxbuildrequestAction() {
+		$this->logger->debug('ajaxbuildrequestAction');
 
 		// Check the validity of the POST
 		if (!$this->getRequest()->isPost()) {
@@ -434,15 +424,76 @@ class QueryController extends AbstractOGAMController {
 			$websiteSession = new Zend_Session_Namespace('website');
 			$websiteSession->formQuery = $formQuery;
 
-			// Call the service to get the definition of the columns
-			echo $this->queryService->getResultColumns($datasetId, $formQuery, $withSQL);
+			// Activate the result layer
+			$this->mappingSession->activatedLayers[] = 'result_locations';
+
+			echo '{"success":true}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
 			echo '{"success":false,errorMessage:' . json_encode($e->getMessage()) . '}';
 		}
 
-		// Activate the result layer
-		$this->mappingSession->activatedLayers[] = 'result_locations';
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * AJAX function : Return the results features bounding box in order to zoom on the features.
+	 *
+	 * @return JSON.
+	 */
+	public function ajaxgetresultsbboxAction() {
+		$this->logger->debug('ajaxgetresultsbboxAction');
+
+		$configuration = Zend_Registry::get("configuration");
+		ini_set("max_execution_time", $configuration->max_execution_time);
+
+		try {
+
+			// Store the request parameters in session
+			$websiteSession = new Zend_Session_Namespace('website');
+			$formQuery = $websiteSession->formQuery;
+
+			// Call the service to get the definition of the columns
+			$this->queryService->prepareResultLocations($formQuery);
+
+			// Execute the request
+			$resultsbbox = $this->resultLocationModel->getResultsBBox(session_id());
+
+			// Send the result as a JSON String
+			echo '{"success":true, "resultsbbox":\'' . $resultsbbox . '\'}';
+		} catch (Exception $e) {
+			$this->logger->err('Error while getting result : ' . $e);
+			echo '{"success":false,"errorMessage":"' . json_encode($e->getMessage()) . '"}';
+		}
+
+		// No View, we send directly the JSON
+		$this->_helper->layout()->disableLayout();
+		$this->_helper->viewRenderer->setNoRender();
+		$this->getResponse()->setHeader('Content-type', 'application/json');
+	}
+
+	/**
+	 * AJAX function : Get the description of the columns of the result of the query.
+	 *
+	 * @return JSON
+	 */
+	public function ajaxgetresultcolumnsAction($withSQL = false) {
+		$this->logger->debug('ajaxgetresultcolumns');
+
+		try {
+			// Store the request parameters in session
+			$websiteSession = new Zend_Session_Namespace('website');
+			$formQuery = $websiteSession->formQuery;
+
+			// Call the service to get the definition of the columns
+			echo $this->queryService->getResultColumns($formQuery->datasetId , $formQuery);
+		} catch (Exception $e) {
+			$this->logger->err('Error while getting result : ' . $e);
+			echo '{"success":false,errorMessage:' . json_encode($e->getMessage()) . '}';
+		}
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -1234,34 +1285,6 @@ class QueryController extends AbstractOGAMController {
 	private function _print($output) {
 		$configuration = Zend_Registry::get("configuration");
 		echo iconv("UTF-8", $configuration->csvExportCharset, $output);
-	}
-
-	/**
-	 * AJAX function : Return the results features bounding box in order to zoom on the features.
-	 *
-	 * @return JSON.
-	 */
-	public function ajaxgetresultsbboxAction() {
-		$this->logger->debug('ajaxgetresultsbboxAction');
-		$json = "";
-
-		try {
-			// Execute the request
-			$resultsbbox = $this->resultLocationModel->getResultsBBox(session_id());
-
-			// Send the result as a JSON String
-			$json = '{"success":true,';
-			$json .= '"resultsbbox":\'' . $resultsbbox . '\'}';
-		} catch (Exception $e) {
-			$this->logger->err('Error while getting result : ' . $e);
-			$json = '{"success":false,"errorMessage":"' . json_encode($e->getMessage()) . '"}';
-		}
-		echo $json;
-
-		// No View, we send directly the JSON
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
-		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 
 	/**

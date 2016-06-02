@@ -14,9 +14,13 @@ Ext.define("OgamDesktop.locale.fr.view.main.Main", {
 	homeButtonText: 'Accueil',
 	homeButtonTooltip: "Retourner à la page d'acceuil"
 });
-Ext.define("OgamDesktop.locale.fr.view.main.MainController", {
-    override: "OgamDesktop.view.main.MainController",
-	requestLoadingMessage: 'Veuillez patienter, la requête est en cours...'
+Ext.define("OgamDesktop.locale.fr.controller.result.Grid", {
+    override: "OgamDesktop.controller.result.Grid",
+	requestLoadingMessage: 'Veuillez patienter, pendant le chargement des résultats...'
+});
+Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
+    override: "OgamDesktop.controller.map.Main",
+	requestLoadingMessage: 'Veuillez patienter, pendant le chargement de la carte...'
 });
 Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",

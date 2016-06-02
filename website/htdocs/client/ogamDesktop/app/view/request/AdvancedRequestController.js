@@ -65,7 +65,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 			submitEmptyText: false,
 			//waitMsg: Ext.view.AbstractView.prototype.loadingText,
 			autoAbort:true,
-			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetresultcolumns',
+			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxbuildrequest',
 			success: function(form, action) {
 				this.requestConn = null;
 				this.fireEvent('requestSuccess', action.result.columns);

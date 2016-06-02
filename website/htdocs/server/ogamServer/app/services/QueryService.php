@@ -392,11 +392,14 @@ class Application_Service_QueryService {
 	/**
 	 * Copy the locations of the result in a temporary table.
 	 *
-	 * @param Application_Object_Generic_DataObject $queryObject
-	 *        	the query
+	 * @param FormQuery $formQuery
+	 *        	the form request object
 	 */
-	protected function prepareResultLocations($queryObject) {
+	public function prepareResultLocations($formQuery) {
 		$this->logger->debug('prepareResultLocations');
+
+		// Transform the form request object into a table data object
+		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
 
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
@@ -428,11 +431,9 @@ class Application_Service_QueryService {
 	 *        	the dataset identifier
 	 * @param FormQuery $formQuery
 	 *        	the form request object
-	 * @param Boolean $withSQL
-	 *        	indicate that we want the server to return the genetared SQL
 	 * @return JSON
 	 */
-	public function getResultColumns($datasetId, $formQuery, $withSQL = false) {
+	public function getResultColumns($datasetId, $formQuery) {
 		$this->logger->debug('getResultColumns');
 
 		$json = "";
@@ -443,9 +444,6 @@ class Application_Service_QueryService {
 		if (count($formQuery->results) === 0) {
 			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
 		} else {
-
-			// TODO : OGAM-447 : Call asynchronously
-			$this->prepareResultLocations($queryObject);
 
 			// Generate the SQL Request
 			$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
@@ -483,7 +481,7 @@ class Application_Service_QueryService {
 			$json = '{"success":true,';
 
 			// Metadata
-			$json .= '"columns":[';
+			$json .= '"root":[';
 			// Get the titles of the columns
 			foreach ($formQuery->results as $formField) {
 
@@ -503,13 +501,7 @@ class Application_Service_QueryService {
 			if (!$userSession->user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
 				$json .= ',{"name":"_provider_id","label":"Provider","inputType":"TEXT","definition":"The provider", "hidden":true}';
 			}
-
-			$json .= ']';
-
-			if ($withSQL) {
-				$json .= ', "SQL":' . json_encode($select . $from . $where);
-			}
-			$json .= '}';
+			$json .= ']}';
 		}
 
 		return $json;
