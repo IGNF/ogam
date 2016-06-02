@@ -13,7 +13,7 @@ Ext.define('OgamDesktop.store.map.LayerNode',{
         actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
         reader: {
             type: 'json',
-            rootProperty: ''
+            rootProperty: 'layers'
         }
     }
 });

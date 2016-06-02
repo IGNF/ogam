@@ -260,10 +260,10 @@ class QueryController extends AbstractOGAMController {
 			// Save the request
 			$this->predefinedRequestModel->savePredefinedRequest($predefinedRequest);
 
-			return "{success:true}";
+			return '{success:true}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			return "{success:false,errorMessage:'" . json_encode($e->getMessage()) . "'}";
+			return '{"success":false, "errorMessage":' . json_encode($e->getMessage()) . '}';
 		}
 
 		// No View, we send directly the JSON
@@ -430,7 +430,7 @@ class QueryController extends AbstractOGAMController {
 			echo '{"success":true}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			echo '{"success":false,errorMessage:' . json_encode($e->getMessage()) . '}';
+			echo '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';
 		}
 
 		// No View, we send directly the JSON
@@ -463,10 +463,10 @@ class QueryController extends AbstractOGAMController {
 			$resultsbbox = $this->resultLocationModel->getResultsBBox(session_id());
 
 			// Send the result as a JSON String
-			echo '{"success":true, "resultsbbox":\'' . $resultsbbox . '\'}';
+			echo '{"success":true, "resultsbbox":' . json_encode($resultsbbox) . '}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			echo '{"success":false,"errorMessage":"' . json_encode($e->getMessage()) . '"}';
+			echo '{"success":false, "errorMessage":' . json_encode($e->getMessage()) . '}';
 		}
 
 		// No View, we send directly the JSON
