@@ -76,7 +76,7 @@ class Application_Service_QueryService {
 	}
 
 	/**
-	 * Generate the JSON structure corresponding to a list of result and criteria columns.
+	 * Generate the JSON structure corresponding to a list of criteria and columns.
 	 *
 	 * @param Array[FormFormat] $forms
 	 *        	the list of FormFormat elements
@@ -87,41 +87,96 @@ class Application_Service_QueryService {
 		foreach ($forms as $form) {
 			// Add the criteria
 			$json .= '{' . $form->toJSON() . ',"criteria":[';
-			foreach ($form->criteriaList as $field) {
-				$json .= '{' . $field->toCriteriaJSON();
-				// For the RANGE field, get the min and max values
-				if ($field->type === "NUMERIC" && $field->subtype === "RANGE") {
-					$range = $this->metadataModel->getRange($field->unit);
-					$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
-				}
-				
-				if ($field->inputType === 'RADIO' && $field->type === 'CODE'){
-					if($field->subtype === 'DYNAMIC') {
-						$opts = $this->metadataModel->getDynamodeLabels($field->unit);
-					} else {//MODE -code
-						$opts = $this->metadataModel->getModeLabels($field->unit);
-					}
-					$json .= ',"options":'.json_encode($opts);
-				}
-				$json .= '},';
-			}
-			if (count($form->criteriaList) > 0) {
-				$json = substr($json, 0, -1);
-			}
+			$json .= $this->_generateQueryFormCriteriaJSON($form->criteriaList);
 			// Add the columns
 			$json .= '],"columns":[';
-			foreach ($form->resultsList as $field) {
-				$json .= '{' . $field->toResultJSON() . '},';
-			}
-			if (count($form->resultsList) > 0) {
-				$json = substr($json, 0, -1);
-			}
+			$json .= $this->_generateQueryFormColumnsJSON($form->resultsList);
 			$json .= ']},';
 		}
 		if (count($forms) > 0) {
 			$json = substr($json, 0, -1);
 		}
 		$json = $json . ']}';
+
+		return $json;
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of criteria or columns.
+	 *
+	 * @param Array[Application_Object_Metadata_FormField] $list
+	 *        	the list of fields
+	 * @param String $fieldsType
+	 *        	the fields type ('criteria' or 'result')
+	 * @param Integer $count
+	 *        	the fields count
+	 */
+	private function _generateQueryFormFieldsJSON($list, $fieldsType, $count) {
+		$json = '{"success":true, "total":' . $count . ', "root":[';
+
+		switch ($fieldsType) {
+			case 'criteria' :
+				$json .= $this->_generateQueryFormCriteriaJSON($list);
+				break;
+			case 'result' :
+				$json .= $this->_generateQueryFormColumnsJSON($list);
+				break;
+		}
+
+		$json .= ']}';
+
+		return $json;
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of criteria.
+	 *
+	 * @param Array[Application_Object_Metadata_FormField] $list
+	 *        	the list of criteria
+	 */
+	private function _generateQueryFormCriteriaJSON($list) {
+		$json = '';
+
+		foreach ($list as $field) {
+			$json .= '{' . $field->toCriteriaJSON();
+			// For the RANGE field, get the min and max values
+			if ($field->type === "NUMERIC" && $field->subtype === "RANGE") {
+				$range = $this->metadataModel->getRange($field->unit);
+				$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
+			}
+			
+			if ($field->inputType === 'RADIO' && $field->type === 'CODE'){
+				if($field->subtype === 'DYNAMIC') {
+					$opts = $this->metadataModel->getDynamodeLabels($field->unit);
+				} else {//MODE -code
+					$opts = $this->metadataModel->getModeLabels($field->unit);
+				}
+				$json .= ',"options":'.json_encode($opts);
+			}
+			$json .= '},';
+		}
+		if (count($list) > 0) {
+			$json = substr($json, 0, -1);
+		}
+
+		return $json;
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of columns.
+	 *
+	 * @param Array[Application_Object_Metadata_FormField] $list
+	 *        	the list of columns
+	 */
+	private function _generateQueryFormColumnsJSON($list) {
+		$json = '';
+
+		foreach ($list as $field) {
+			$json .= '{' . $field->toResultJSON() . '},';
+		}
+		if (count($list) > 0) {
+			$json = substr($json, 0, -1);
+		}
 
 		return $json;
 	}
@@ -373,7 +428,7 @@ class Application_Service_QueryService {
 		$list = $this->metadataModel->getFormFields($datasetId, $formFormat, $this->schema, $fieldsType, $query, $start, $limit);
 		$count = $this->metadataModel->getFormFieldsCount($datasetId, $formFormat, $this->schema, $fieldsType, $query);
 
-		return '{"success": true, "total":' . $count . ', "root":' . json_encode($list) . '}';
+		return $this->_generateQueryFormFieldsJSON($list, $fieldsType, $count);
 	}
 
 	/**
