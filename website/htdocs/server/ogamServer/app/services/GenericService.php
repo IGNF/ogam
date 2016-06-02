@@ -70,15 +70,7 @@ class Application_Service_GenericService {
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
 
-		// Get children for the current dataset
-		$this->genericModel = new Application_Model_Generic_Generic();
-		$children = $this->genericModel->getChildren($data, $datasetId);
-
-		$childrenCount = 0;
-		if (!empty($children)) {
-			$childrenCount = count(current($children));
-		}
-		$json = '{"title":' . json_encode($data->tableFormat->label, JSON_HEX_APOS) . ', "children_count":' . $childrenCount . ', "id":"' . $data->getId() . '", "fields":[';
+		$json = '{"title":' . json_encode($data->tableFormat->label, JSON_HEX_APOS) . ', "id":"' . $data->getId() . '", "fields":[';
 		$fields = '';
 		// Get the form field corresponding to the table field
 		$formFields = $this->getFormFieldsOrdered($data->getFields());
