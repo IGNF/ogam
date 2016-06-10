@@ -998,6 +998,11 @@ class Application_Service_GenericService {
 		$defaults = array(
 			"geometry_format" => "wkt",
 			"geometry_srs" => $this->visualisationSRS,
+			"gml_version" => 3,
+			"gml_precision" => 15,
+			"gml_options" => 0,
+			"gml_prefix" => 'null',
+			"gml_id" => 'null',
 			"date_format" => 'YYYY/MM/DD',
 			"datetime_format" => 'YYYY/MM/DD'
 		);
@@ -1017,7 +1022,12 @@ class Application_Service_GenericService {
 			// Special case for THE_GEOM
 			switch ($options['geometry_format']) {
 				case "gml":
-					$sql .= "st_asGML(st_transform(" . $fieldName . "," . $options['geometry_srs'] . ")) as " . $field->getName() . ", ";
+					$sql .= "st_asGML(" . $options['gml_version'] .
+						", st_transform($fieldName," . $options['geometry_srs'] . ")" .
+						", " . $options['gml_precision'] .
+						", " . $options['gml_options'] .
+						", " . $options['gml_prefix'] .
+						", " . $options['gml_id'] . ") as " . $field->getName() . ", ";
 					break;
 				case "wkt":
 				default:
