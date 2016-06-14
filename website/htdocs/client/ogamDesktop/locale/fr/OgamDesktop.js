@@ -349,4 +349,4 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
     //dateFormat : 'Y/m/d',
     openNavigationButtonTitle : 'Afficher les détails',
     openNavigationButtonTip : 'Affiche la fiche détaillée dans l\'onglet des fiches détaillées.'
-}); 
+});

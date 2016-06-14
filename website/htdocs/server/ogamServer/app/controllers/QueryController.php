@@ -149,7 +149,7 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
-		$redirector->gotoUrl($this->view->baseUrl('/odp/index.html'));
+		$redirector->gotoUrl($this->view->baseUrl('/odp/index.html?locale='.$this->view->locale));
 	}
 
 	/**
