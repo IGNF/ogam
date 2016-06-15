@@ -1061,7 +1061,7 @@ class Application_Service_QueryService {
 				$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 			}
 
-			if ($criteria->type === "CODE" && ($criteria->subtype === "TAXREF" || $criteria->type === "TREE")) {
+			if ($criteria->type === "CODE" && ($criteria->subtype === "TAXREF")) {
 				// For the TAXREF and TREE field, get the default value (because the datastore is not initialised)
 				$labels = $this->metadataModel->getTaxrefLabels($criteria->unit, $criteria->defaultValue);
 				$label = $labels[$criteria->defaultValue];

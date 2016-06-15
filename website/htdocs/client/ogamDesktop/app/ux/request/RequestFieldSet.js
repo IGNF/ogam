@@ -209,6 +209,14 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			}
 			var field = {};
 			field.name = 'criteria__' + record.name+'[]';
+			
+			//the default value make values (and valueLabel)
+			if (!Ext.isEmpty(record.default_value) && Ext.isEmpty(record.value) && record.inputType !== 'CHECKBOX') { // For a checkbox, the default_value must be applied to the "checked" field parameter not to the "value" field parameter
+				record.value = record.default_value;
+				if( Ext.isDefined(record.params) && Ext.isEmpty(record.valueLabel)){
+					record.valueLabel = record.params.valueLabel;
+				}
+			}
 
 			// Creates the ext field config
 			switch (record.inputType) {
