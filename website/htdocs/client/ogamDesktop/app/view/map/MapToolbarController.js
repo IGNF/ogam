@@ -394,6 +394,12 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         var mapAddonsPanel = this.getView().up('map-mainwin').child('map-addons-panel');
         var legendsPanel = mapAddonsPanel.child('legends-panel');
 
+        // Deactivates all the consultation toolbar buttons controls
+        var consultationButtons = this.getView().items.filter('toggleGroup', 'consultation');
+        consultationButtons.each(function(item){
+            item.toggle(false);
+        });
+
         // Forces the render of the legends panel items
         if(!legendsPanel.isVisible()){
             var activeTab = mapAddonsPanel.getActiveTab();
