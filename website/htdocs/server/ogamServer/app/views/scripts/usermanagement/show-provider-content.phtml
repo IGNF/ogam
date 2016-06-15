@@ -1,0 +1,159 @@
+<?php
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
+
+/**
+ * Show everything related to a proviser :
+ * - Users
+ * - Submissions
+ * - Nb of raw data non related to a submission
+ *
+ * @package views
+ */
+?>
+<h1>
+   <?php echo $this->translate('Users and content for provider:') . ' ' . $this->escape($this->provider->label); ?>
+</h1>
+
+<h2>
+	<?php echo $this->translate('Users');?>
+</h2>
+
+<?php if (count($this->users) > 0) { ?>
+	<table class="sectiontable">
+	<tr>
+		<th><?php echo $this->translate('User Login');?></th>
+		<th><?php echo $this->translate('User Name');?></th>
+		<th><?php echo $this->translate('Email');?></th>
+	</tr>
+	<?php
+	$i = 0;
+	foreach($this->users as $user) {
+	?>
+	<tr class="sectiontableentry<?php echo $i % 2?>">
+		<td><?php echo  $this->escape($user->login); ?></td>
+		<td><?php echo  $this->escape($user->username); ?></td>
+		<td><?php echo  $this->escape($user->email); ?></td>
+	</tr>
+	<?php
+	$i++;
+	}
+	?>
+	</table>
+<?php } else { ?>
+	<p class="subTableLink"><?php echo  $this->translate('This provider doesn\'t have any users.'); ?></p>
+<?php } ?>
+
+
+<h2>
+	<?php echo $this->translate('Submissions');?>
+</h2>
+
+<?php if (count($this->submissions) > 0) { ?>
+	<table class="sectiontable">
+		<tr>
+			<th style="text-align:center"><?php echo $this->translate('Submission ID');?></th>
+			<th style="text-align:center"><?php echo $this->translate('Date');?></th>
+			<th style="text-align:center"><?php echo $this->translate('Dataset');?></th>
+			<th style="text-align:center"><?php echo $this->translate('Step');?></th>
+			<th style="text-align:center"><?php echo $this->translate('Status');?></th>
+			<th style="text-align:center"><?php echo $this->translate('File');?></th>
+			<th style="text-align:right"><?php echo $this->translate('Lines');?>&nbsp;</th>
+			<th></th>
+		</tr>
+		<?php
+
+		$i = 0;
+		foreach ($this->submissions as $submission) {
+			?>
+			<tr class="sectiontableentry<?php echo $i % 2?>">
+				<td><?php echo  $this->escape($submission->submissionId); ?></td>
+				<td><?php echo  $this->escape($submission->date); ?></td>
+				<td><?php echo  $this->escape($submission->datasetId); ?></td>
+				<td><?php echo  $this->escape($submission->step); ?></td>
+				<td>
+					<?php if ($submission->status === "OK" || $submission->status === "CHECKED") : ?>
+						<?php echo  $this->escape($submission->status); ?>
+						<img src="<?php echo  $this->baseUrl('img/Green_tick.png') ?>" />
+					<?php elseif ($submission->status === "WARNING") : ?>
+						<?php echo  $this->escape($submission->status); ?>
+						<img src="<?php echo  $this->baseUrl('img/warning_orange.png') ?>" />
+					<?php elseif ($submission->status === "RUNNING") : ?>
+						<?php echo  $this->escape($submission->status); ?>
+					<?php else : //"ERROR" or "CRASH") ?>
+						<?php echo $this->escape($submission->status); ?>
+						<img src="<?php echo  $this->baseUrl('img/Red_x.png') ?>" />
+					<?php endif; ?>
+				</td>
+				<td colspan=2>
+					<?php if ($submission->status !== "DATARUNNING") : ?>
+						<table width="100%">
+							<?php foreach ($submission->files as $file) : ?>
+								<tr>
+									<td class="file-name">
+										<span title="<?php echo  $file->fileType ?>">
+										<?php
+										$fileName = $file->fileName;
+										$fileName = strtr($fileName,'\\','/');
+										$fileName = substr($fileName, strrpos($fileName,'/') + 1);
+										echo $fileName;
+										?>
+										</span>
+									</td>
+									<td class="line-number"><?php echo  $file->lineNumber ?></td>
+								</tr>
+
+							<?php endforeach; ?>
+						</table>
+					<?php endif; ?>
+				</td>
+			</tr>
+			<?php
+			$i++;
+		}
+		?>
+	</table>
+<?php } else { ?>
+	<div class="no-submission"><?php echo $this->translate('No submission found');?></div>
+<?php } ?>
+
+<h2>
+	<?php echo $this->translate('Datas');?>
+</h2>
+
+<?php
+	if (array_sum($this->rawDataCount) > 0) {
+		?>
+		<table class="sectiontable">
+			<tr>
+				<th><?php echo $this->translate('Table'); ?></th>
+				<th><?php echo $this->translate('Nb of datas'); ?></th>
+			</tr>
+			<?php
+			$i = 0;
+			foreach ($this->rawDataCount as $table => $lines) {
+				if ($lines > 0) { ?>
+					<tr class="sectiontableentry<?php echo $i % 2 ?>">
+						<td><?php echo $this->escape($table); ?></td>
+						<td><?php echo $this->escape($lines); ?></td>
+					</tr>
+					<?php
+					$i++;
+				}
+			}
+			?>
+		</table>
+		<?php
+	} else { ?>
+		<p class="subTableLink"><?php echo  $this->translate('This provider doesn\'t have any raw datas.'); ?></p>
+	<?php } ?>

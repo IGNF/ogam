@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+# ---------------------------------------------------------------
+# This provision is executed as "root"
+# ---------------------------------------------------------------
+
+#
+# Set environment variables
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/setenv.sh
+
+
+echo "--------------------------------------------------" 
+echo " Install Tilecache "
+echo "--------------------------------------------------"
 
 # ---------------------------------------------------------------
 # Installation des paquets pour tilecache
@@ -17,7 +31,7 @@ apt-get install -y tilecache python-flup python-paste python-imaging
 cp -b /vagrant/ogam/vagrant_config/conf/tilecache/tilecache.cfg /etc/tilecache.cfg
 
 # ---------------------------------------------------------------
-# Création du répertoire pour stocker le cache
+# Cr�ation du r�pertoire pour stocker le cache
 # ---------------------------------------------------------------
 
 mkdir /var/www/tilecache
@@ -28,7 +42,7 @@ chmod 775 -R cache/
 
 
 # ---------------------------------------------------------------
-# Correction d'un bug dans la version par défaut de tilecache
+# Correction d'un bug dans la version par d�faut de tilecache
 # ---------------------------------------------------------------
 
 # the file tilecache/Layer.py revision2.11 have a buggus in getCell function (since 2.1 ?). this failed get tile in some corner situation.
@@ -43,4 +57,3 @@ if [ -f $tilecacheLayer ] ; then
 else
    echo "tilecache Layer.py not found, fix manualy..."
 fi
-

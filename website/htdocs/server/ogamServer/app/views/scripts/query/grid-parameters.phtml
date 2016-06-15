@@ -1,0 +1,34 @@
+<?php
+/**
+ * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
+ *
+ * © European Union, 2008-2012
+ *
+ * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
+ *
+ * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
+ * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
+ * Reuse is not applicable to documents subject to intellectual property rights of third parties.
+ */
+
+
+
+/**
+ * Parameters for the result grid.
+ * @package views
+ */
+?>
+
+//Ext.define("instance.ogam.view.result.GridTab", {
+//    override: "OgamDesktop.vew.result.GridTab",
+OgamDesktop.view.result.GridTab.override({
+        hideGridDataEditButton : <?=$this->hideGridDataEditButton?>,
+        checkEditionRights : <?=$this->checkEditionRights?>       
+    });    
+//Ext.define("instance.ogam.view.result.MainView", {
+//		override:"OgamDesktop.view.result.MainWin",
+OgamDesktop.view.result.MainWin.override({		
+		hideGridCsvExportMenuItem : <?=$this->hideGridCsvExportMenuItem?>
+});
+// User info
+OgamDesktop.userProviderId = '<?=$this->userProviderId?>';

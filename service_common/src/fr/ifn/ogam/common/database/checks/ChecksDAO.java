@@ -48,7 +48,7 @@ public class ChecksDAO {
 	private static final String GET_CHECKS_STMT = "SELECT check_id, step, name, label, description, statement, importance " + //
 			"FROM checks_per_provider " + //
 			"LEFT JOIN checks USING (check_id) " + //
-			"WHERE dataset_id = ? " + //
+			"WHERE (dataset_id = ? OR dataset_id = '*') " + //
 			"AND (provider_id = ? OR provider_id = '*')";
 
 	/**

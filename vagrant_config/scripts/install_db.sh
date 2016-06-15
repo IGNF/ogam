@@ -1,70 +1,113 @@
 #!/usr/bin/env bash
 
-port=5432
-host=localhost
-user=admin
-password=secret
-db=sinp
+# ---------------------------------------------------------------
+# This provision is executed as "root"
+# ---------------------------------------------------------------
 
-log='/vagrant/install_db.log'
 
-if [ -f $log ]; then
-   rm $log
+#
+# Set environment variables
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/setenv.sh
+
+
+echo "--------------------------------------------------" 
+echo " Install DB "
+echo "--------------------------------------------------"
+
+echo "Création de la base de donnée par défaut d'OGAM avec la configuration suivante :"
+echo "User name : $USERNAME"
+echo "Database : $DATABASE"
+database_path="/vagrant/ogam/database"
+
+cd "${database_path}"
+
+logfile=GENERATE_DB.log
+if [ -f $logfile  ]; then
+   rm $logfile
+fi
+logfileError=GENERATE_DB_err.log
+if [ -f $logfileError  ]; then
+   rm $logfileError
 fi
 
+echo "****** Drop the old database if exist after an user validation ******"
+# Kills the connections for dropdb
+service postgresql restart 
+sudo -n -u postgres dropdb --if-exists $DATABASE
 
-database_path='/vagrant/ogam/database/'
-ogam_sql_path=${database_path}scripts/
-ref_path="/vagrant/ogam/database/referentiels/"
-pg_path="/usr/share/postgresql/9.1/"
-pg_contrib=${pg_path}contrib/
-postgis_path=${pg_contrib}postgis-1.5/
+echo "****** UTF8 Database creation ******"
+sudo -n -u postgres createdb -O $USERNAME -E UTF8 $DATABASE
+
+echo "****** Addition of postgis ******"
+sudo -n -u $USERNAME psql -c "CREATE EXTENSION postgis;" -d $DATABASE 2>> $logfileError >> $logfile
+#sudo -n -u $USERNAME psql -f Legacy/legacy_gist_v2.1.sql -d $DATABASE 2>> $logfileError >> $logfile
+#sudo -n -u $USERNAME psql -f Legacy/legacy_minimal_v2.1.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Create harmonized data schema ******"
+sudo -n -u $USERNAME psql -f 1-Create_harmonized_data_schema.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Create mapping schema ******"
+sudo -n -u $USERNAME psql -f 1-Create_mapping_schema.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Create metadata schema ******"
+sudo -n -u $USERNAME psql -f 1-Create_metadata_schema.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Create raw data schema ******"
+sudo -n -u $USERNAME psql -f 1-Create_raw_data_schema.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Create referentiels schema ******"
+sudo -n -u $USERNAME psql -f 1-Create_referentiels_schema.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Create website schema ******"
+sudo -n -u $USERNAME psql -f 1-Create_website_schema.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Import ModTaxRef v8.0 ******"
+sudo -n -u $USERNAME psql -f 2-Import_ModTaxRef-v8.0.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+#echo "****** Populate mapping schema ******"
+sudo -n -u $USERNAME psql -f 2-Populate_mapping_schema.sql  -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Populate mapping schema (communes) ******"
+sudo -n -u $USERNAME psql -f Referentiels/communes.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Populate mapping schema (departements) ******"
+sudo -n -u $USERNAME psql -f Referentiels/departements.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Populate mapping schema (pays) ******"
+sudo -n -u $USERNAME psql -f Referentiels/nuts_0.sql -d $DATABASE 2>> $logfileError >> $logfile
+
+echo "****** Populate metadata schema ******"
+sudo -n -u $USERNAME psql -f 2-Import_Metadata.sql -d $DATABASE 2>> $logfileError >> $logfile
 
 
-#Set local environment variable so we don't pass it in 'psql' and it will not ask for password
-export PGDATABASE=${db}
-export PGUSER=${user}
-export PGHOST=${localhost}
-export PGPORT=${port}
-export PGPASSWORD=${password}
+echo "****** Populate website schema ******"
+sudo -n -u $USERNAME psql -f 2-Populate_website_schema.sql -d $DATABASE 2>> $logfileError >> $logfile
 
-> "$log"
+echo "****** Checks ******"
+sudo -n -u $USERNAME psql -f 3-Checks.sql -d $DATABASE 2>> $logfileError >> $logfile
 
-createdb  $db
+echo "****** Processing ******"
+sudo -n -u $USERNAME psql -f 4-Processing.sql -d $DATABASE 2>> $logfileError >> $logfile
 
-files=(
-${postgis_path}"postgis"
-${postgis_path}"spatial_ref_sys"
-${pg_contrib}"postgis_comments"
-${ogam_sql_path}"0-Create_user"
-${ogam_sql_path}"1-1-Create_metadata_schema"
-${ogam_sql_path}"1-2-Create_mapping_schema"
-${ogam_sql_path}"1-3-Create_website_schema"
-${ogam_sql_path}"1-4-Create_raw_data_schema"
-${ogam_sql_path}"1-5-Create_FLORE_IGN_DATA_TABLE"
-${ogam_sql_path}"1-6-Create_OBSERVATION_table"
-${ogam_sql_path}"1-7-Create_harmonized_data_schema"
-${ogam_sql_path}"3-0-Create_referentiels_schema"
-"$ref_path""communes"
-"$ref_path""regions"
-"$ref_path""departements"
-"$ref_path""grille"
-"$ref_path""EN_INPN_v20141203"
-${ogam_sql_path}"2-Ogam_permissions"
-${ogam_sql_path}"3-Init_roles"
-${ogam_sql_path}"2-Set_search_path"
-)
 
-for ((i=0; i < ${#files[@]}; i++))
-do
- echo "Run script : ${files[$i]}.sql" >> "$log"
- echo "\n" >> "$log"
- psql -d $db -f ${files[$i]}.sql >> "$log"
- echo "\n" >> "$log"
-done
+echo "****** Create user ******"
+sudo -n -u $USERNAME psql -f 5-Create_user.sql -d $DATABASE 2>> $logfileError >> $logfile
 
-ant -f ${database_path}build.xml UpdateApplicationParameters
-ant -f ${database_path}build.xml UpdateMapping
-ant -f ${database_path}build.xml UpdatePredefinedRequests
-ant -f ${database_path}build.xml UpdateMetadata
-ant -f ${database_path}build.xml ImportTaxRef8
+echo "****** Overriding defaut config values ******"
+sudo -n -u $USERNAME psql -d $DATABASE -c "UPDATE website.application_parameters SET value = '/var/tmp/ogam_upload' WHERE name = 'UploadDirectory';" 2>> $logfileError >> $logfile
+sudo -n -u $USERNAME psql -d $DATABASE -c "UPDATE website.application_parameters SET value = '/vagrant/ogam/website/htdocs/server/ogamServer/upload' WHERE name = 'uploadDir';" 2>> $logfileError >> $logfile
+sudo -n -u $USERNAME psql -d $DATABASE -c "UPDATE website.application_parameters SET value = '/vagrant/ogam/website/htdocs/server/ogamServer/upload/images/' WHERE name = 'image_upload_dir';" 2>> $logfileError >> $logfile
+
+#sudo -n -u $USERNAME psql -d $DATABASE -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost:8000/mapProxy.php?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.1.1\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_mapProxy';" 2>> $logfileError >> $logfile
+sudo -n -u $USERNAME psql -d $DATABASE -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost/mapserv-ogam?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.1.1\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_mapserver';" 2>> $logfileError >> $logfile
+#sudo -n -u $USERNAME psql -d $DATABASE -c $"UPDATE mapping.layer_service SET config = '{\"urls\":[\"http://localhost:8000/cgi-bin/tilecache.fcgi?\"],\"params\":{\"SERVICE\":\"WMS\",\"VERSION\":\"1.0.0\",\"REQUEST\":\"GetMap\"}}' WHERE service_name = 'local_tilecache';" 2>> $logfileError >> $logfile
+
+if [ -s $logfileError  ];
+then
+    echo "Création terminée avec des erreurs voir le fichier $logfileError !" 1>&2
+else
+    echo "Création réussie !"
+fi
+exit

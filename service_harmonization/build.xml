@@ -2,11 +2,6 @@
 
 <project name="OGAMHarmonizationService" default="deploy" basedir=".">
 
-    <!-- Properties are immutable: 
-    whoever sets a property first freezes it for the rest of the build;
-    they are most definitely not variables. -->
-    <property file="../services_configs/service_harmonization/build.ppts"/>
-
 	<!-- Définition des properties -->
 	<property name="application.name" value="OGAM" />
 	<property name="workspace.dir" value="${basedir}/../.." />
@@ -117,8 +112,8 @@
 		</copy>
 
 		<!-- Copie du fichier de config tomcat -->
-	    <copy file="./config/${deploy.name}.xml" todir="${deploy.dir}/../conf/Catalina/localhost" failonerror="false" />
-	    <copy file="../services_configs/service_harmonization/${deploy.name}.xml" todir="${deploy.dir}/../conf/Catalina/localhost" failonerror="false" />
+		<copy file="./config/${deploy.name}.xml" todir="${deploy.dir}/../conf/Catalina/localhost" failonerror="false" />
+		<copy file="../services_configs/service_harmonization/${deploy.name}.xml" todir="${deploy.dir}/../conf/Catalina/localhost" failonerror="false" />
 	</target>
 
 

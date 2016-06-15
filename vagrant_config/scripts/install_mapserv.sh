@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+# ---------------------------------------------------------------
+# This provision is executed as "root"
+# ---------------------------------------------------------------
+
+#
+# Set environment variables
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/setenv.sh
+
+
+
+echo "--------------------------------------------------" 
+echo " Install Mapserver "
+echo "--------------------------------------------------"
 
 #----------------------------------------------------------------
 # Installation des paquets pour Mapserv
@@ -8,7 +23,7 @@
 # Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get install -y cgi-mapserver mapserver-bin mapserver-doc php5-mapscript libapache2-mod-fcgid
+apt-get install -y cgi-mapserver mapserver-bin gdal-bin mapserver-doc php5-mapscript libapache2-mod-fcgid
 
 #----------------------------------------------------------------
 # Activation du mod FCGI
@@ -20,8 +35,6 @@ sudo a2enmod fcgid
 
 
 #----------------------------------------------------------------
-# Redémarrage Apache
+# Red�marrage Apache
 #----------------------------------------------------------------
-sudo /etc/init.d/apache2 restart
-
-
+service apache2 restart

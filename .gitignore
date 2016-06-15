@@ -1,4 +1,26 @@
-.gradle
-.vagrant
-
-
+/.externalToolBuilders
+/.settings
+/.vagrant
+/.gradle
+/database/GENERATE_DB.log
+/documentation/2 - Conception/metadata/v4/*.csv
+/documentation/2 - Conception/Schémas relationnels/md ogam.sms.bak
+/website/htdocs/public/OgamDesktop/*
+/website/htdocs/client/build
+/website/htdocs/client/ogamDesktop/bootstrap.json
+/website/htdocs/client/ogamDesktop/bootstrap.css
+/website/htdocs/client/ogamDesktop/bootstrap.js
+/website/htdocs/client/ogamDesktop/sass/example/example.css
+/website/htdocs/client/ogamDesktop/sass/example/bootstrap.js
+/website/htdocs/client/ogamDesktop/sass/example/bootstrap.json
+/website/htdocs/client/packages/ogamDesktop-locale-fr/build
+/website/htdocs/server/ogamServer/sessions/sess_*
+/website/htdocs/server/ogamServer/tmp/database/zend_cache---*
+/website/htdocs/server/ogamServer/tmp/language/zend_cache---*
+/website/htdocs/server/ogamServer/upload/*/
+/HTML5Application/nbproject/private/
+/website/htdocs/nbproject/private/
+/website/htdocs/client/ogamDesktop/classic.json
+/website/htdocs/client/ogamDesktop/docs
+/website/htdocs/client/ext/packages/legacy/sass/example/bootstrap.json
+/website/htdocs/client/ext/build

@@ -30,6 +30,10 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+
 import fr.ifn.ogam.common.util.SqlStateSQL99;
 import fr.ifn.ogam.common.business.checks.CheckException;
 import fr.ifn.ogam.common.database.mapping.GeometryDAO;
@@ -110,6 +114,10 @@ public class GenericDAO {
 						} else {
 							// We suppose that the SRID is the one expected in the table
 							TableFieldData tableData = tableColumns.get(sourceData);
+
+							// The the WKT
+							checkGeomValidity(colData.getValue().toString(), tableData.getSubtype());
+
 							Integer srid = geometryDAO.getSRID(tableData.getTableName(), tableData.getColumnName());
 							if (colData.getValue().getClass().getName().equals("org.postgresql.util.PGobject")) {
 								colValues.append("'" + colData.getValue().toString() + "'");
@@ -254,6 +262,32 @@ public class GenericDAO {
 				logger.error("Error while closing statement : " + e.getMessage());
 			}
 		}
+	}
+
+	/**
+	 * Check that the string correspond to a valid geometry. And that the geometry type is the one expected in the database.
+	 * 
+	 * @param wkt
+	 *            the geometry string
+	 * @param geometryType
+	 *            the expected geometry type (POINT, LINESTRING or POLYGON)
+	 */
+	private void checkGeomValidity(String wkt, String geometryType) throws CheckException {
+		try {
+			WKTReader wktReader = new WKTReader();
+			Geometry geometry = wktReader.read(wkt);
+
+			if (geometryType != null) {
+				if (!geometry.getGeometryType().equalsIgnoreCase(geometryType)) {
+					throw new CheckException(WRONG_GEOMETRY_TYPE,
+							"Geometry type " + geometry.getGeometryType() + " does not correspond to expected geometry " + geometryType);
+				}
+			}
+
+		} catch (ParseException pe) {
+			throw new CheckException(INVALID_GEOMETRY);
+		}
+
 	}
 
 	/**

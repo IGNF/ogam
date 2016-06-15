@@ -1,0 +1,131 @@
+# Set the default behavior for files detected as text, convert in LF.
+* text eol=lf
+
+#
+# To get all file extensions in the project
+# find . -type f | perl -ne 'print $1 if m/\.([^.\/]+)$/' | sort -u
+#
+
+#
+# These files are text and should be normalized (Convert crlf => lf)
+#
+
+# source code
+*.php text
+*.c text
+*.css text
+*.sass text
+*.scss text
+*.less text
+*.styl text
+*.js text
+*.ts text
+*.coffee text
+*.json text
+*.htm text
+*.html text
+*.phtml text
+*.xml text
+*.py text
+*.svg text
+*.txt text
+*.TXT text
+*.ini text
+*.inc text
+*.pl text
+*.rb text
+*.py text
+*.scm text
+*.sql text
+*.df text
+*.java text
+*.js text
+*.json text
+*.jsp text
+*.jspf text
+*.svg text
+*.tld text
+*.txt text
+*.xml text
+*.kml text
+
+
+# server config
+.htaccess text
+
+# git config
+.gitattributes text
+.gitignore text
+.gitconfig text
+
+
+# mapserv config
+*.map text
+
+# misc config
+*.cfg text
+*.conf text
+*.yaml text
+*.yml text
+*.list text
+*.properties text
+*.setting text
+
+# Documentation
+*.md text
+
+
+# Data
+*.csv text
+*.CSV text
+
+# Scripts
+# Pas de convertion en LF pour les scripts shell Windows
+Vagrantfile text
+gradlew text
+*.gradle text
+*.sh text
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+
+#
+# These files are binary and should be left untouched
+#
+
+# (binary is a macro for -text -diff)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.swf binary
+*.svg binary
+*.gz binary
+*.zip binary
+*.7z binary
+*.ttf binary
+*.pdf binary
+*.class binary
+*.dll binary
+*.eps binary
+*.exe binary
+*.exec binary
+*.ear binary
+*.jar binary
+*.so binary
+*.war binary
+*.ods binary
+*.otf binary
+*.phar binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.xlf binary
+*.mcd binary
+*.mpd binary
+*.ppt binary
+*.cgi binary
+*.rptconfig binary
+*.rptdesign binary

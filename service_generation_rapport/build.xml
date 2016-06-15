@@ -2,11 +2,6 @@
 
 <project name="OGAM Generation rapport Web App" default="deploy" basedir=".">
 
-    <!-- Properties are immutable: 
-    whoever sets a property first freezes it for the rest of the build;
-    they are most definitely not variables. -->
-    <property file="../services_configs/service_generation_rapport/build.ppts"/>
-
 	<!-- Définition des properties -->
 	<property name="application.name" value="OGAM" />
 	<property name="workspace.dir" value="${basedir}/../.." />

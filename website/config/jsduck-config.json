@@ -1,0 +1,15 @@
+{
+    "--title": "OGAM Desktop API",
+    "--ignore-html": "debug,locale",
+    "--warnings": "-extend,-link,-all:ext,-all:GeoExt",
+    "--external": [
+		// Note: Remove the following comments only for a local quick build
+	    //"Ext.*",
+    	//"OpenLayers.*",
+    	//"ol.*"
+    ],
+    "--images": [
+    	"./screenshots/"
+    ],
+    "--builtin-classes": true
+}
