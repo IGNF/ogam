@@ -467,22 +467,12 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			}
 			field.listeners.render = function(cmp) {
 				if (cmp.xtype != 'hidden') {
-
-					// Add the tooltip
-					var binCt = cmp.getEl().parent();
-
 					var labelDiv = cmp.getEl().child('.x-form-item-label');
 					Ext.QuickTips.register({
 						target : labelDiv,
 						title : record.label,
 						text : record.definition,
 						width : 200
-					});
-
-					labelDiv.parent().first().on('click', function(event, el, options) {
-						cmp.ownerCt.remove(cmp);
-					}, this, {
-						single : true
 					});
 				}
 			};
