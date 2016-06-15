@@ -134,7 +134,7 @@ Ext.define('OgamDesktop.view.map.toolbar.SnappingButtonController', {
                 },
                 crossOrigin: 'anonymous',
                 strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
-                    maxZoom: 3
+                    maxZoom: OgamDesktop.map.resolutions.length - 1
                 }))
             });
             // Update the snapping layer and the snapping interaction
