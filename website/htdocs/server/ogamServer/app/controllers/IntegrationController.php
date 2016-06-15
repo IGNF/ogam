@@ -267,6 +267,14 @@ class IntegrationController extends AbstractOGAMController {
 
 		$this->logger->debug('$showDetail : ' . $showDetail);
 
+		// Get the submission object from the database, and the dataset id and name
+		$dataSession = new Zend_Session_Namespace('submission');
+		$submissionId = $dataSession->data->submissionId;
+		$submission = $this->submissionModel->getSubmission($submissionId);
+		$dataset = $this->metadataModel->getDataset($submission->datasetId);
+
+		$this->view->dataset = $dataset;
+
 		$this->view->form = $this->_getDataUploadForm($showDetail, $showModel);
 
 		$this->render('show-upload-data');
