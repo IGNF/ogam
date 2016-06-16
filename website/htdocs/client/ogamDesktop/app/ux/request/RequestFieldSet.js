@@ -465,7 +465,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					// scope : this
 				};
 			}
-			field.listeners.render = function(cmp) {
+			field.listeners.afterrender = function(cmp) {
 				if (cmp.xtype != 'hidden') {
 					var labelDiv = cmp.getEl().child('.x-form-item-label');
 					Ext.QuickTips.register({
