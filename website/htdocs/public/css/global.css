@@ -362,10 +362,10 @@ td.view-meta-cell {
 	padding: 1px 8px;
 }
 
-td.edit-cell {
-	background: url(../img/page_white_edit.png) 5px 5px no-repeat;
-	width: 21px;
-}
+td.edit-cell { 
+    background: rgba(0, 0, 0, 0) url("../img/page_white_edit.png") no-repeat scroll 5px center; 
+    width: 21px; 
+} 
 
 .edit-cell a {
 	padding: 1px 8px;
