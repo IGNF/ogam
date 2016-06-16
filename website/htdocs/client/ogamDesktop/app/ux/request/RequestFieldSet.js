@@ -369,10 +369,13 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				break;
 			case 'TAXREF':
 				field.xtype = 'treefield';
-				var codes=[];
+				field.autoLoadOnValue=true; 
+				field.valueParam='query';
+				var codes;
 				if (record.type === 'ARRAY') {
 					field.multiSelect= field.multiple = true;
 					if (record.valueLabel) { // to avoid null pointer
+						codes=[];
 						for ( var i = 0; i < record.valueLabel.length; i++) {
 							codes.push({
 								code : record.value[i],
@@ -382,10 +385,13 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					}
 				} else {
 					// case of CODE (single value)
-					codes.push({
-						code : record.value,
-						label : record.valueLabel
-					});
+					if (!Ext.isEmpty(record.value) && !Ext.isEmpty(record.valueLabel)){
+						codes=[];
+						codes.push({
+							code : record.value,
+							label : record.valueLabel
+						});
+					}
 				}
 
 				//field.unit = record.unit;
