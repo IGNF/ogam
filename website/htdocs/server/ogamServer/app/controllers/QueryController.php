@@ -492,7 +492,7 @@ class QueryController extends AbstractOGAMController {
 			echo $this->queryService->getResultColumns($formQuery->datasetId , $formQuery);
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			echo '{"success":false,errorMessage:' . json_encode($e->getMessage()) . '}';
+			echo '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';
 		}
 
 		// No View, we send directly the JSON
