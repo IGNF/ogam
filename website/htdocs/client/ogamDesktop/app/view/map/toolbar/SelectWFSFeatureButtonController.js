@@ -61,7 +61,7 @@ Ext.define('OgamDesktop.view.map.toolbar.SelectWFSFeatureButtonController', {
             var url = item.config.data.featureServiceUrl +
                 '&outputFormat=geojsonogr' +
                 '&srsname=' + projection +
-                '&typename=' + item.itemId +
+                '&typename=' + item.config.data.serviceLayerName +
                 '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',' + projection;
             ol.featureloader.xhr(
                 url,
