@@ -115,10 +115,10 @@ class Application_Service_QueryService {
 		$json = '{"success":true, "total":' . $count . ', "root":[';
 
 		switch ($fieldsType) {
-			case 'criteria' :
+			case 'criteria':
 				$json .= $this->_generateQueryFormCriteriaJSON($list);
 				break;
-			case 'result' :
+			case 'result':
 				$json .= $this->_generateQueryFormColumnsJSON($list);
 				break;
 		}
@@ -144,14 +144,14 @@ class Application_Service_QueryService {
 				$range = $this->metadataModel->getRange($field->unit);
 				$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 			}
-			
-			if ($field->inputType === 'RADIO' && $field->type === 'CODE'){
-				if($field->subtype === 'DYNAMIC') {
+
+			if ($field->inputType === 'RADIO' && $field->type === 'CODE') {
+				if ($field->subtype === 'DYNAMIC') {
 					$opts = $this->metadataModel->getDynamodeLabels($field->unit);
-				} else {//MODE -code
+				} else { // MODE -code
 					$opts = $this->metadataModel->getModeLabels($field->unit);
 				}
-				$json .= ',"options":'.json_encode($opts);
+				$json .= ',"options":' . json_encode($opts);
 			}
 			$json .= '},';
 		}
@@ -456,27 +456,34 @@ class Application_Service_QueryService {
 		// Transform the form request object into a table data object
 		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
 
-		// Configure the projection systems
-		$configuration = Zend_Registry::get("configuration");
-		$visualisationSRS = $configuration->srs_visualisation;
+		$this->logger->debug('resultats : ' . print_r($formQuery->results, true));
 
-		// Generate the SQL Request
-		$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
-		$from = $this->genericService->generateSQLFromRequest($this->schema, $queryObject);
-		$where = $this->genericService->generateSQLWhereRequest($this->schema, $queryObject);
+		if (count($formQuery->results) === 0) {
+			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
+		} else {
 
-		// Clean previously stored results
-		$sessionId = session_id();
-		$this->logger->debug('SessionId : ' . $sessionId);
-		$this->resultLocationModel->cleanPreviousResults($sessionId);
+			// Configure the projection systems
+			$configuration = Zend_Registry::get("configuration");
+			$visualisationSRS = $configuration->srs_visualisation;
 
-		// Identify the field carrying the location information
-		$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
-		$locationField = $this->metadataModel->getGeometryField($this->schema, array_keys($tables));
-		$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
+			// Generate the SQL Request
+			$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
+			$from = $this->genericService->generateSQLFromRequest($this->schema, $queryObject);
+			$where = $this->genericService->generateSQLWhereRequest($this->schema, $queryObject);
 
-		// Run the request to store a temporary result table (for the web mapping)
-		$this->resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+			// Clean previously stored results
+			$sessionId = session_id();
+			$this->logger->debug('SessionId : ' . $sessionId);
+			$this->resultLocationModel->cleanPreviousResults($sessionId);
+
+			// Identify the field carrying the location information
+			$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
+			$locationField = $this->metadataModel->getGeometryField($this->schema, array_keys($tables));
+			$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
+
+			// Run the request to store a temporary result table (for the web mapping)
+			$this->resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+		}
 	}
 
 	/**
