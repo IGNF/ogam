@@ -165,24 +165,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 			defaults : {
 				labelStyle : 'padding: 0;',
 				beforeLabelTpl : '<div class="o-ux-adrfs-filterBin">&nbsp;&nbsp;&nbsp;</div>',
-				labelClsExtra : 'o-columnLabelColor o-ux-adrfs-labelNextBin',
-				listeners:{
-					'render': function(cmp) {
-						if (cmp.xtype !== 'hidden') {
-
-							// Add the tooltip
-							var binCt = cmp.getEl().parent();
-
-							var labelDiv = cmp.getEl().child('.x-form-item-label');
-
-							labelDiv.parent().first().on('click', function(event, el, options) {
-								cmp.ownerCt.remove(cmp);
-							}, this, {
-								single : true
-							});
-						}
-					}
-				}
+				labelClsExtra : 'o-columnLabelColor o-ux-adrfs-labelNextBin'
 				//width : 180 not used in a form layout (Table-row display)
 			},
 			items :( Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig()),
@@ -488,5 +471,31 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 	 */
 	removeAllColumns : function() {
 		this.columnsPanel.removeAll();
+	},
+	statics : {
+		getCriteriaConfig : function(record) {
+			var cls = this.self || OgamDesktop.ux.request.AdvancedRequestFieldSet,
+			field = cls.callParent(arguments),
+			fieldExtend={};
+
+			fieldExtend.listeners={
+				render:function(cmp) {
+					if (cmp.xtype !== 'hidden') {
+						// Add the tooltip
+						var binCt = cmp.getEl().parent();
+
+						var labelDiv = cmp.getEl().child('.x-form-item-label');
+
+						labelDiv.parent().first().on('click', function(event, el, options) {
+							cmp.ownerCt.remove(cmp);
+						}, this, {
+							single : true
+						});
+					}
+				}
+			};
+			Ext.apply(field.listeners, fieldExtend.listeners);
+			return field;
+		}
 	}
 });

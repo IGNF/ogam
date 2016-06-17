@@ -1634,7 +1634,7 @@ class QueryController extends AbstractOGAMController {
 		$sessionId = session_id();
 		$this->resultLocationModel->cleanPreviousResults($sessionId);
 
-		echo '{success:true}';
+		echo '{"success":true}';
 
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
