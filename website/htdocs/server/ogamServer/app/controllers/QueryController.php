@@ -1641,4 +1641,3 @@ class QueryController extends AbstractOGAMController {
 		$this->getResponse()->setHeader('Content-type', 'application/json');
 	}
 }
-

@@ -129,7 +129,7 @@ Ext.define('OgamDesktop.view.map.toolbar.SnappingButtonController', {
                     return item.config.data.featureServiceUrl +
                         '&outputFormat=geojsonogr' +
                         '&srsname=' + projection +
-                        '&typename=' + item.itemId +
+                        '&typename=' + item.config.data.serviceLayerName +
                         '&bbox=' + extent.join(',') + ',' + projection;
                 },
                 crossOrigin: 'anonymous',

@@ -5,6 +5,10 @@
 Ext.define('OgamDesktop.view.map.MainWin', {
 	extend: 'Ext.panel.Panel',
 	xtype: 'map-mainwin',
+	controller: 'mapmainwin',
+	requires:[
+		'OgamDesktop.view.map.MainWinController'
+	],
 	layout: 'border',
 	title: 'Map',
 	items: [{

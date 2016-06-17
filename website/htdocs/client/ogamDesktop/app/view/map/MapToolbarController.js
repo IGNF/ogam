@@ -38,18 +38,57 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
      */
     onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
         var menuItems = [];
+        var curRes = this.map.getView().getResolution();
         store.each( function(record) {
+            var isDisabled = false, resolutions = record.get('resolutions');
+            if (resolutions !== undefined 
+                && (curRes < resolutions[resolutions.length - 1] || curRes >= resolutions[0])) {
+                isDisabled = true;
+            }
             menuItems.push({
+                itemId : record.get('layerName'),
                 text : record.get('layerLabel'),
-                itemId : record.get('serviceLayerName'),
+                disabled : isDisabled,
                 data : {
-                    featureServiceUrl : record.get('featureServiceUrl')
+                    featureServiceUrl : record.get('featureServiceUrl'),
+                    serviceLayerName : record.get('serviceLayerName')
                 }
             });
         });
         this.lookupReference('snappingButton').getMenu().add(menuItems);
         this.lookupReference('selectWFSFeatureButton').getMenu().add(menuItems);
         this.lookupReference('layerFeatureInfoButton').getMenu().add(menuItems);
+    },
+
+    /**
+     * Enable and show the menus items
+     * @private
+     * @param {Boolean} enable True to enable the menus items
+     * @param {Array} layers The layers
+     */
+    toggleMenusItems : function(enable, layers) {
+        var layerNamesArray = layers.map(function(layer){
+            return layer.get('name');
+        });
+        this.toggleMenuItems(this.lookupReference('snappingButton').getMenu(), enable, layerNamesArray);
+        this.toggleMenuItems(this.lookupReference('selectWFSFeatureButton').getMenu(), enable, layerNamesArray);
+        this.toggleMenuItems(this.lookupReference('layerFeatureInfoButton').getMenu(), enable, layerNamesArray);
+    },
+
+    /**
+     * Enable and show the menu items
+     * @private
+     * @param {Ext.menu.Menu} menu The menu
+     * @param {Boolean} enable True to enable the menu items
+     * @param {Array} layersNames The layers names
+     */
+    toggleMenuItems : function(menu, enable, layersNames) {
+        menu.items.each(function(item, index, len){
+            if(layersNames.indexOf(item.itemId) !== -1) {
+                !enable && item.setChecked(false);
+                item.setDisabled(!enable);
+            }
+        });
     },
 
 // ********************************************************************************************************* //

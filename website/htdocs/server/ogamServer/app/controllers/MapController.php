@@ -146,9 +146,13 @@ class MapController extends AbstractOGAMController {
 
 		// Get the available layers
 		$vectorlayers = $this->layersModel->getVectorLayersList();
+		// Get the available scales
+		$scales = $this->scalesModel->getScales();
+		// Transform the available scales into resolutions
+		$resolutions = $this->getResolutions($scales);
 
 		$json = '{"success":true';
-		$json .= ', "layerNames" : [';
+		$json .= ', "layers" : [';
 		foreach ($vectorlayers as $layerName => $layer) {
 
 			$viewService = $this->servicesModel->getService($layer->viewServiceName);
@@ -156,8 +160,25 @@ class MapController extends AbstractOGAMController {
 
 			$featureService = (($layer->featureServiceName == '') ? null : $this->servicesModel->getService($layer->featureServiceName));
 
-			$json .= '{"serviceLayerName":' . json_encode($layer->serviceLayerName) . ',';
+			$json .= '{"layerName":' . json_encode($layer->layerName) . ',';
 			$json .= '"layerLabel":' . json_encode($layer->layerLabel) . ',';
+			$json .= '"serviceLayerName":' . json_encode($layer->serviceLayerName) . ',';
+
+			// Scale min/max management
+			if ($layer->maxscale != "" || $layer->minscale != "") {
+				$json .= '"resolutions": [';
+
+				$restable = "";
+				foreach ($scales as $scale) {
+					if (($layer->minscale == "" || $scale >= $layer->minscale) && ($layer->maxscale == "" || $scale <= $layer->maxscale)) {
+						$restable .= $resolutions[$scale] . ", ";
+					}
+				}
+				$restable = substr($restable, 0, -2);
+				$json .= $restable;
+
+				$json .= "],";
+			}
 
 			if (!empty($featureService)) {
 				$layerService = json_decode($featureService->serviceConfig);
