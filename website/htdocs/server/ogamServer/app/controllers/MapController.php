@@ -164,22 +164,19 @@ class MapController extends AbstractOGAMController {
 			$json .= '"layerLabel":' . json_encode($layer->layerLabel) . ',';
 			$json .= '"serviceLayerName":' . json_encode($layer->serviceLayerName);
 
-			// Scale min/max management
-			if ($layer->maxscale != "" || $layer->minscale != "") {
-				$json .= ', "resolutions": [';
-
-				$restable = "";
-				foreach ($scales as $scale) {
-					if (($layer->minscale == "" || $scale >= $layer->minscale) && ($layer->maxscale == "" || $scale <= $layer->maxscale)) {
-						$restable .= $resolutions[$scale] . ", ";
-					}
+			// Resolutions
+			$json .= ', "resolutions": [';
+			$restable = "";
+			foreach ($scales as $scale) {
+				if (($layer->minscale == "" || $scale >= $layer->minscale) && ($layer->maxscale == "" || $scale <= $layer->maxscale)) {
+					$restable .= $resolutions[$scale] . ", ";
 				}
-				$restable = substr($restable, 0, -2);
-				$json .= $restable;
-
-				$json .= "]";
 			}
+			$restable = substr($restable, 0, -2);
+			$json .= $restable;
+			$json .= "]";
 
+			// Feature Service Url
 			if (!empty($featureService)) {
 				$layerService = json_decode($featureService->serviceConfig);
 				$layerServiceParams = $layerService->{'params'};
