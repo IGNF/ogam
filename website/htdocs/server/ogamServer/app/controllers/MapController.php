@@ -151,8 +151,7 @@ class MapController extends AbstractOGAMController {
 		// Transform the available scales into resolutions
 		$resolutions = $this->getResolutions($scales);
 
-		$json = '{"success":true';
-		$json .= ', "layers" : [';
+		$json = '{"success":true, "layers" : [';
 		foreach ($vectorlayers as $layerName => $layer) {
 
 			$viewService = $this->servicesModel->getService($layer->viewServiceName);
@@ -160,13 +159,14 @@ class MapController extends AbstractOGAMController {
 
 			$featureService = (($layer->featureServiceName == '') ? null : $this->servicesModel->getService($layer->featureServiceName));
 
-			$json .= '{"layerName":' . json_encode($layer->layerName) . ',';
+			$json .= '{';
+			$json .= '"layerName":' . json_encode($layer->layerName) . ',';
 			$json .= '"layerLabel":' . json_encode($layer->layerLabel) . ',';
-			$json .= '"serviceLayerName":' . json_encode($layer->serviceLayerName) . ',';
+			$json .= '"serviceLayerName":' . json_encode($layer->serviceLayerName);
 
 			// Scale min/max management
 			if ($layer->maxscale != "" || $layer->minscale != "") {
-				$json .= '"resolutions": [';
+				$json .= ', "resolutions": [';
 
 				$restable = "";
 				foreach ($scales as $scale) {
@@ -177,7 +177,7 @@ class MapController extends AbstractOGAMController {
 				$restable = substr($restable, 0, -2);
 				$json .= $restable;
 
-				$json .= "],";
+				$json .= "]";
 			}
 
 			if (!empty($featureService)) {
@@ -188,14 +188,14 @@ class MapController extends AbstractOGAMController {
 					$url .= $pKey . '=' . $pValue . '&';
 				}
 				$url = rtrim($url, '&');
-				$json .= '"featureServiceUrl":' . json_encode($url) . '},';
+				$json .= ', "featureServiceUrl":' . json_encode($url);
 			}
+			$json .= '},';
 		}
 		if (!empty($layerNames)) {
 			$json = substr($json, 0, -1);
 		}
-		$json .= ']';
-		$json .= '}';
+		$json .= ']}';
 
 		echo $json;
 
