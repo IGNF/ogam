@@ -562,7 +562,7 @@ class MetadataTest extends ControllerTestCase {
 		$this->assertNotNull($modes);
 
 		$this->assertTrue(is_array($modes));
-		$this->assertEquals(20, count($modes));
+		$this->assertEquals(50, count($modes));
 	}
 
 	/**
@@ -573,7 +573,7 @@ class MetadataTest extends ControllerTestCase {
 		// On cherche les enfants au rang 2 de 'Plantae'
 		$count = $this->metadataModel->getTaxrefModesCount('ID_TAXON', 'Planta');
 
-		$this->assertEquals(20, $count);
+		$this->assertEquals(603, $count);
 	}
 
 

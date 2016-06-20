@@ -1571,6 +1571,7 @@ class Application_Model_Metadata_Metadata {
 		$key = str_replace('-', '_', $key);
 		$key = str_replace('.', '_', $key);
 		$key = str_replace('$', '_', $key);
+		$key = str_replace(',', '_', $key);
 
 		return $key;
 	}
