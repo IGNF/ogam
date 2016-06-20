@@ -688,7 +688,7 @@ class Application_Service_QueryService {
 			$json .= ']}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			$json = '{"success":false,"errorMessage":"' . json_encode($e->getMessage()) . '"}';
+			$json = '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';
 		}
 
 		return $json;
