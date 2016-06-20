@@ -1,7 +1,42 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.2.3'
+    }
+}
+
 dependencies {
 	compile project(':service_common')
 	runtime project(':service_common')
 }
+
+apply plugin: 'com.bmuschko.cargo'
+
+// New version : Use cargo to automatically deploy the war
+cargo {
+    def tomcatHome = project.hasProperty('tomcatHome') ? project.getProperty('tomcatHome') : 'C:/Apache/tomcat-7'
+    def applicationName = project.hasProperty('applicationName') ? project.getProperty('applicationName') : 'OGAM'
+    
+    containerId = 'tomcat7x'
+    port = 8080
+   
+   
+    deployable {
+        file = file("build/libs/service_harmonization-${project.version}.war")
+        context = "${applicationName}HarmonizationService"
+    }
+    
+    remote {
+        hostname = 'localhost'
+        username = 'admin'
+        password = 'admin'
+    }
+}
+
+
 
 // Define a new task to deploy the war
 task deploy(dependsOn: war, description: 'Deploy the war file to a local Tomcat server.') << {

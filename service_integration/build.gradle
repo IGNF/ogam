@@ -34,8 +34,6 @@ cargo {
         username = 'admin'
         password = 'admin'
     }
-    
-
 }
 
 // Old version : Manually build the war file
