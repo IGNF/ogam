@@ -786,7 +786,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			break;
 		case 'IMAGE':
 			field.xtype = 'imagefield';
-			field.itemId = this.dataId + "/" + record.name;
+			field.uploadId = this.dataId;
 			field.hiddenName = field.name;
 			break;
 		default:
