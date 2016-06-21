@@ -31,7 +31,7 @@ insert into application_parameters (name, value, description) values ( 'memory_l
 insert into application_parameters (name, value, description) values ( 'post_max_size' , '100M' , 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
 insert into application_parameters (name, value, description) values ( 'upload_max_filesize' , '100M' , 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
 insert into application_parameters (name, value, description) values ( 'image_upload_dir' , '/var/www/html/upload/images' , 'Images Upload');
-insert into application_parameters (name, value, description) values ( 'image_dir_rights' , 0666 , 'File Upload');
+insert into application_parameters (name, value, description) values ( 'image_dir_rights' , '0662' , 'File Upload');
 insert into application_parameters (name, value, description) values ( 'image_extensions' , 'jpg,png,jpeg,gif' , 'File Upload');
 insert into application_parameters (name, value, description) values ( 'image_max_size' , 1000000, 'image max size in bytes');
 insert into application_parameters (name, value, description) values ( 'tilesize' , 256 , 'WEB MAPPING ');
