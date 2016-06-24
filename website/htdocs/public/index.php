@@ -1,5 +1,5 @@
 <?php
-include_once('setup.php');
+include_once('includes/setup.php');
 
 /** Zend_Application */
 require_once 'Zend/Application.php';

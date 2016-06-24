@@ -1,44 +1,6 @@
 <?php
-include_once('setup.php');
 
-function onfailure($url){
-    header('Location: '.$url);
-}
-
-require_once APPLICATION_PATH . '/objects/Website/Role.php';
-require_once APPLICATION_PATH . '/objects/Website/User.php';
-
-/*
-require_once APPLICATION_PATH . '/../library/Zend/Exception.php';
-require_once APPLICATION_PATH . '/../library/Zend/Session/Exception.php';
-require_once APPLICATION_PATH . '/../library/Zend/Session/Abstract.php';
-require_once APPLICATION_PATH . '/../library/Zend/Session/Namespace.php';
-require_once APPLICATION_PATH . '/../library/Zend/Session/SaveHandler/Interface.php';*/
-require_once APPLICATION_PATH . '/../lib/Zend/Session.php';
-require_once APPLICATION_PATH . '/../lib/Zend/Registry.php';
-
-Zend_Session::setOptions($ApplicationConf->resources->session->toArray());
-
-$userSession = new Zend_Session_Namespace('user');
-$configurationSession = new Zend_Session_Namespace('configuration');
-
-/*
- * echo '<br/>connected : '; echo $userSession->connected;
- * exit();
-*/
-
-if(!$userSession->connected){
-    error_log('User not connected on '.$_SERVER["HTTP_HOST"]);
-    error_log('Request: '.$_SERVER["QUERY_STRING"]);
-    onfailure('/');
-}
-
-if (empty($userSession->user) || !$userSession->user->isAllowed('DATA_QUERY')) {
-    onfailure('/');
-}
-
-//Zend_Session::stop(); // Doesn't work well
-session_write_close();//libere le cookie/session
+include_once('includes/authentication.php');
 
 parse_str(ltrim($_SERVER["QUERY_STRING"],'?'), $query); //recupere la requete envoyée partie (GET params)...
 $query = array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
@@ -56,7 +18,6 @@ $queryParamsAllow = array(//paramNom => requis
     'TRANSPARENT' ,
     'VERSION' ,
     'STYLES' ,
-	'REQUEST' ,
 	'QUERY_LAYERS' ,
 	'X' ,
 	'Y' ,
@@ -64,13 +25,11 @@ $queryParamsAllow = array(//paramNom => requis
 	'HASSLD' ,
 	'SERVICE' ,
 	'REQUEST' ,
-	'FORMAT' ,
 	'LAYER' ,
 	'MAP.SCALEBAR',
     'OUTPUTFORMAT',
     'TYPENAME',
-    'SRSNAME',
-    'USECACHE' // Is not a map parameter. Used to switch between a mapserver and a tilecache.
+    'SRSNAME'
 );
 
 // Vérifie que les paramètres sont dans la liste des ceux autorisés

@@ -1,7 +1,7 @@
 <?php
 
 // Define path to application directory
-defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__FILE__).'/../server/ogamServer/app'));
+defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__FILE__).'/../../server/ogamServer/app'));
 
 // Define application environment
 defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
@@ -10,8 +10,8 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV
 define('DATE_STAMP', date('Y-m-d'));
 
 // Define path to  ogam custom application directory
-if (file_exists(realpath(dirname(__FILE__).'/../custom'))) {
-	define('CUSTOM_APPLICATION_PATH', realpath(dirname(__FILE__).'/../custom/server/ogamServer/app'));
+if (file_exists(realpath(dirname(__FILE__).'/../../custom'))) {
+	define('CUSTOM_APPLICATION_PATH', realpath(dirname(__FILE__).'/../../custom/server/ogamServer/app'));
 }
 
 // Ensure libraries is on include_path
