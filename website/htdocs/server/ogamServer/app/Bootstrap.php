@@ -337,10 +337,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			$configuration->$name = $param->value;
 		}
 
-		// Adding of the intern map service url into the parameters
-		$serviceConfig = $parameterModel->getMapServiceUrl();
-		if (!empty($serviceConfig)) {
-			$configuration->map_service_url = json_decode($serviceConfig['config'])->{'urls'}[0];
+		// Adding of the map privates urls into the parameters
+		$mapserverPrivateUrl = $parameterModel->getMapserverPrivateUrl();
+		if (!empty($mapserverPrivateUrl)) {
+			$configuration->mapserver_private_url = $mapserverPrivateUrl;
+		}
+		$tilecachePrivateUrl = $parameterModel->getTilecachePrivateUrl();
+		if (!empty($tilecachePrivateUrl)) {
+			$configuration->tilecache_private_url = $tilecachePrivateUrl;
 		}
 
 		Zend_Registry::set('configuration', $configuration);
@@ -359,7 +363,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$configurationSession = new Zend_Session_Namespace('configuration');
 
 		$configurationSession->configuration = array(
-			"map_service_url" => $configuration->map_service_url
+			"mapserver_private_url" => $configuration->mapserver_private_url,
+			"tilecache_private_url" => $configuration->tilecache_private_url
 		); // Needed into mapProxy.php file to improve performances (avoiding a db connection).
 	}
 

@@ -47,6 +47,10 @@ class Application_Model_Website_ApplicationParameter {
 
 		// The database connection
 		$this->db = Zend_Registry::get('website_db');
+
+		// Initialise the privates urls
+		$this->getMapServiceUrls();
+
 	}
 
 	/**
@@ -88,22 +92,49 @@ class Application_Model_Website_ApplicationParameter {
 	}
 
 	/**
-	 * Return the intern map service url
-	 *
-	 * @return String map service url
+	 * Initialise the privates Urls
 	 */
-	public function getMapServiceUrl() {
-		$req = " SELECT config ";
-		$req .= " FROM website.application_parameters, mapping.layer_service ";
-		$req .= " WHERE name = 'proxy_service_name'";
-		$req .= " AND value = service_name;";
-		$this->logger->info('getMapServiceUrl : ' . $req);
+	public function getMapServiceUrls() {
+		$req = " SELECT name, config::json->'urls'->>0 as url";
+		$req .= " FROM website.application_parameters ";
+		$req .= " LEFT JOIN mapping.layer_service ON service_name = value ";
+		$req .= " WHERE name = 'mapserver_private_service_name' ";
+		$req .= " OR name ='tilecache_private_service_name';";
+
+		$this->logger->info('getMapServiceUrls : ' . $req);
 
 		$query = $this->db->prepare($req);
 		$query->execute();
 
-		$result = $query->fetch();
+		$results = $query->fetchAll();
 
-		return $result;
+		foreach ($results as $result) {
+			switch ($result['name']) {
+				case 'mapserver_private_service_name':
+					$this->mapserverPrivateUrl = $result['url'];
+					break;
+				case 'tilecache_private_service_name':
+					$this->tilecachePrivateUrl = $result['url'];
+					break;
+			}
+		}
+	}
+
+    /**
+	 * Return the mapserver private url
+	 *
+	 * @return String mapserver private url
+	 */
+	public function getMapserverPrivateUrl() {
+		return $this->mapserverPrivateUrl;
+	}
+
+	/**
+	 * Return the tilecache private url
+	 *
+	 * @return String tilecache private url
+	 */
+	public function getTilecachePrivateUrl() {
+		return $this->tilecachePrivateUrl;
 	}
 }

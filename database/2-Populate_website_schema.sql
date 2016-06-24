@@ -37,7 +37,8 @@ insert into application_parameters (name, value, description) values ( 'image_ma
 insert into application_parameters (name, value, description) values ( 'tilesize' , 256 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'query_details_layers1' , 'ortho_photos,result_locations,countries,departements,communes', 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'ortho_photos,location_detail,countries,departements', 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'proxy_service_name' , 'Local_Mapserv_WMS_GetMap' , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'mapserver_private_service_name' , 'Private_Mapserv_WMS_GetMap' , 'The private service used by MapProxy to request a map server.');
+insert into application_parameters (name, value, description) values ( 'tilecache_private_service_name' , 'Private_Tilecache_WMS_GetMap' , 'The private service used by MapProxy to request a tile cache.');
 insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3857 , 'Projection system for the visualisation');
 insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 4326 , 'Projection system for the raw data database');
 insert into application_parameters (name, value, description) values ( 'srs_harmonized_data' , 3857 , 'Projection system for the harmonized database');

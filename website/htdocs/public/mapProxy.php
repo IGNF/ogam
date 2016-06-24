@@ -21,10 +21,8 @@ Zend_Session::setOptions($ApplicationConf->resources->session->toArray());
 
 $userSession = new Zend_Session_Namespace('user');
 $configurationSession = new Zend_Session_Namespace('configuration');
-$mapServiceURL = $configurationSession->configuration['map_service_url'];
 
 /*
- * echo '<br/>mapServiceURL : '; echo $mapServiceURL;
  * echo '<br/>connected : '; echo $userSession->connected;
  * exit();
 */
@@ -71,7 +69,8 @@ $queryParamsAllow = array(//paramNom => requis
 	'MAP.SCALEBAR',
     'OUTPUTFORMAT',
     'TYPENAME',
-    'SRSNAME'
+    'SRSNAME',
+    'USECACHE' // Is not a map parameter. Used to switch between a mapserver and a tilecache.
 );
 
 // Vérifie que les paramètres sont dans la liste des ceux autorisés
@@ -95,14 +94,21 @@ $geoJSONOFRequired = false;
 if (strcasecmp($queriesArg['SERVICE'] , "WFS") !== 0) {
     header('Content-Type: image/png');
     $queriesArg['SERVICE']  = 'WMS';
-} elseif (strcasecmp($queriesArg['OUTPUTFORMAT'] , "geojsonogr") == 0 || strcasecmp($queriesArg['OUTPUTFORMAT'] , "geojsontpl") == 0) {
+} elseif (strcasecmp($queriesArg['OUTPUTFORMAT'] , "geojsonogr") === 0 || strcasecmp($queriesArg['OUTPUTFORMAT'] , "geojsontpl") === 0) {
     $geoJSONOFRequired = true;
     header('Content-Type: application/json,subtype=geojson,charset=utf-8');
 }
 
 header('Access-Control-Allow-Origin: *');
 
-$uri = rtrim($mapServiceURL,'?').'?'.http_build_query($queriesArg);
+// Set the url
+$url = $configurationSession->configuration['mapserver_private_url'];
+if (isset($queriesArg['USECACHE']) && strcasecmp($queriesArg['USECACHE'], 'true') === 0) {
+    $url = $configurationSession->configuration['tilecache_private_url'];
+}
+
+// Set the uri (url + urn)
+$uri = rtrim($url,'?').'?'.http_build_query($queriesArg);
 //echo $uri;exit;
 //error_log($uri);
 

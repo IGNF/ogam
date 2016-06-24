@@ -217,14 +217,24 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         case 'WMS':
             // Sets the WMS layer source
             var sourceWMSOpts = {};
-            sourceWMSOpts['params'] = {
+            sourceWMSOpts['params'] = Ext.apply({
                 'layers': layer.get('params').layers,
-                'REQUEST': service.get('config').params.REQUEST,
-                'VERSION': service.get('config').params.VERSION,
                 'session_id': layer.get('params').session_id
-            };
+            }, service.get('config').params);
             sourceWMSOpts['urls'] = service.get('config').urls;
             sourceWMSOpts['crossOrigin'] = 'anonymous';
+            sourceWMSOpts['projection'] = OgamDesktop.map.projection;
+            sourceWMSOpts['tileGrid'] = new ol.tilegrid.TileGrid({
+                extent : [
+                    OgamDesktop.map.x_min,
+                    OgamDesktop.map.y_min,
+                    OgamDesktop.map.x_max,
+                    OgamDesktop.map.y_max
+                ],
+                resolutions: OgamDesktop.map.resolutions,
+                tileSize: [256, 256],
+                origin:[OgamDesktop.map.x_min, OgamDesktop.map.y_min]
+            });
             return new ol.source.TileWMS(sourceWMSOpts);
         case 'WMTS':
             // Sets the WMTS layer source

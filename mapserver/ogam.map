@@ -8,7 +8,8 @@ STATUS ON
 SIZE 600 400
 SYMBOLSET "/vagrant/ogam/mapserver/data/fonts/symbols.sym" 
 
-EXTENT 2460853 1070607 5537352 5031904
+# EXTENT [xmin] [ymin] [xmax] [ymax]
+EXTENT -2893330 3852395 3086670 8192395
 
 UNITS meters
 SHAPEPATH "/vagrant/ogam/mapserver/data/"
@@ -30,14 +31,14 @@ WEB
         WFS_SRS                         "EPSG:3857"
         WFS_ABSTRACT                    "OGAM Data"  
         #WFS_MAXFEATURES                 "30000"
-        WFS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
+        WFS_ONLINERESOURCE              "http://localhost/mapserv-ogam"
 	WFS_GETFEATURE_FORMATLIST		"geojsonogr,geojsontpl"
 	WFS_ENCODING "UTF-8"
 
 	WMS_TITLE 						"OGAM MapServer" 
 	WMS_ABSTRACT 					"OGAM Mapserver"
 	WMS_ACCESSCONSTRAINTS 			"none"
-        WMS_ONLINERESOURCE              "http://localhost/mapserv-ogam?map=/vagrant/vagrant_config/ogam/Mapserv/ogam.map&"
+        WMS_ONLINERESOURCE              "http://localhost/mapserv-ogam"
         WMS_SRS                         "EPSG:3857"
         "ows_enable_request"            "*"
         "wms_enable_request"            "*"

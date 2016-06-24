@@ -99,7 +99,7 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $_SERVER['REQUEST_URI'];
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $configuration->mapserver_private_url;
 		$mapServiceURL = $mapServiceURL . "&";
 
 		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/gettile?");
@@ -143,7 +143,7 @@ class ProxyController extends AbstractOGAMController {
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $configuration->mapserver_private_url;
 		$mapServiceURL = $mapServiceURL . "&";
 
 		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/getwfs?");
@@ -263,7 +263,7 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $_SERVER["REQUEST_URI"];
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $configuration->mapserver_private_url;
 		$mapServiceURL = $mapServiceURL . "&";
 
 		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/getlegendimage?");
@@ -310,7 +310,7 @@ class ProxyController extends AbstractOGAMController {
 		$this->logger->debug('nom du typename du WFS : ' . $layerName);
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapServiceURL = $configuration->map_service_url;
+		$mapServiceURL = $configuration->mapserver_private_url;
 		$mapServiceURL = $mapServiceURL . "&";
 		$sessionId = session_id();
 
