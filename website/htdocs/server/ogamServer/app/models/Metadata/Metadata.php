@@ -923,23 +923,25 @@ class Application_Model_Metadata_Metadata {
 	public function getGeometryField($schema, $tables) {
 		$this->logger->debug('getGeometryField : ' . $schema);
 
+		// Get the fields specified by the format
+		$req = "SELECT DISTINCT table_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type, unit.subtype, COALESCE(t.definition, data.definition) as definition ";
+		$req .= " FROM table_field ";
+		$req .= " LEFT JOIN table_format on (table_field.format = table_format.format) ";
+		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
+		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
+		$req .= " LEFT JOIN translation t ON (t.lang = '" . $this->lang . "' AND t.table_format = table_field.format AND t.row_pk = data.data)";
+		$req .= " WHERE table_field.format = ? ";
+		$req .= " AND table_format.schema_code = ? ";
+		$req .= " AND unit.type = 'GEOM' ";
+		
+		$this->logger->info('getGeometryField : ' . $req);
+		$select = $this->db->prepare($req);
+
 		// We do the seach table by table in the inverse order
 		foreach (array_reverse($tables) as $tableName) {
 
-			// Get the fields specified by the format
-			$req = "SELECT DISTINCT table_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type, unit.subtype, COALESCE(t.definition, data.definition) as definition ";
-			$req .= " FROM table_field ";
-			$req .= " LEFT JOIN table_format on (table_field.format = table_format.format) ";
-			$req .= " LEFT JOIN data on (table_field.data = data.data) ";
-			$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
-			$req .= " LEFT JOIN translation t ON (t.lang = '" . $this->lang . "' AND t.table_format = table_field.format AND t.row_pk = data.data)";
-			$req .= " WHERE table_field.format = ? ";
-			$req .= " AND table_format.schema_code = ? ";
-			$req .= " AND unit.type = 'GEOM' ";
+			$this->logger->info('getGeometryField table ' . $tableName);
 
-			$this->logger->info('getTableFields : ' . $req);
-
-			$select = $this->db->prepare($req);
 			$select->execute(array(
 				$tableName,
 				$schema

@@ -786,7 +786,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			break;
 		case 'IMAGE':
 			field.xtype = 'imagefield';
-			field.itemId = this.dataId + "/" + record.name;
+			field.uploadId = this.dataId;
 			field.hiddenName = field.name;
 			break;
 		default:
@@ -831,8 +831,12 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				|| (this.mode === this.editMode && !Ext.isEmpty(record.isPK) && record.isPK === "1")
 				|| (this.mode === this.addMode && !Ext.isEmpty(record.insertable) && record.insertable !== "1")) {
 			// Note: Disabled Fields will not be submitted.
-			field.editable = false;
-			field.selectOnFocus = false; //If selectOnFocus is enabled the combo must be editable: true
+			field.readOnly = true;
+			//field.editable = false;
+			if (Ext.Array.contains(['combo','tag','treefield'], field.xtype)){
+				field.selectOnFocus = false; //If selectOnFocus is enabled the combo must be editable: true
+				field.typeAhead= false
+			}
 			field.cls = 'x-item-disabled';
 		}
 

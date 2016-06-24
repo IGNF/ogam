@@ -68,8 +68,7 @@ class Application_Model_Mapping_ResultLocation {
 	 *        	the projection system used for visualisation.
 	 */
 	public function fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS) {
-		//$time_start = microtime(true);
-
+		// $time_start = microtime(true);
 		if ($this->_isLocalDB()) {
 			// We can use INSERT ... SELECT statement only if we are exactly on the same server
 			$this->_fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
@@ -78,8 +77,8 @@ class Application_Model_Mapping_ResultLocation {
 			$this->_fillLocationResultRemote($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
 		}
 
-		//$time_end = microtime(true);
-		//$this->logger->info('Durée : ' . ($time_end - $time_start) . " secondes");
+		// $time_end = microtime(true);
+		// $this->logger->info('Durée : ' . ($time_end - $time_start) . " secondes");
 	}
 
 	/**
@@ -329,8 +328,17 @@ class Application_Model_Mapping_ResultLocation {
 		$configuration = Zend_Registry::get("configuration");
 		$projection = $configuration->srs_visualisation;
 
-		$selectMode = $configuration->featureinfo_selectmode;
-		$margin = $configuration->featureinfo_margin;
+		if (isset($configuration->featureinfo_selectmode)) {
+			$selectMode = $configuration->featureinfo_selectmode;
+		} else {
+			$selectMode = 'buffer';
+		}
+
+		if (isset($configuration->featureinfo_margin)) {
+			$margin = $configuration->featureinfo_margin;
+		} else {
+			$margin = '1000';
+		}
 
 		$translate = Zend_Registry::get('Zend_Translate');
 		$lang = strtoupper($translate->getAdapter()->getLocale());

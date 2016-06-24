@@ -33,7 +33,10 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 	 * Internationalization.
 	 */
 	emptyImageUploadFieldTest : 'Select an image',
-
+	/**
+	 * Identifier submited
+	 */
+	uploadId:null,
 	/**
 	 * A hidden form used to submit the file
 	 */
@@ -65,7 +68,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 		this.callParent(arguments);
 
 		// Upload the file as soon as it is selected
-		this.on('fileselected', this.selectFile, this);
+		this.on('change', this.selectFile, this);
 
 	},
 
@@ -73,7 +76,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 	 * Select the file
 	 * @private
 	 */
-	selectFile : function() {
+	selectFile : function(field, file) {
 
 		// Lazy initialisation of a form used to submit the image
 		if (this.imageForm == null) {
@@ -97,7 +100,7 @@ Ext.define('OgamDesktop.ux.form.field.ImageField',{
 				}, {
 					xtype : 'hidden',
 					name : 'id',
-					value : this.id
+					value : this.uploadId
 				}, this // ugly but works OK
 				// {
 				// xtype : 'fileuploadfield',
