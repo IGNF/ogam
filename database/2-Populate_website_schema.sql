@@ -52,7 +52,7 @@ insert into application_parameters (name, value, description) values ( 'mapserve
 insert into application_parameters (name, value, description) values ( 'featureinfo_margin' , 1000 , 'bounding box margin around the user click (in the unit of the map)');
 insert into application_parameters (name, value, description) values ( 'featureinfo_typename' , 'result_locations' , 'Layer that is queried');
 insert into application_parameters (name, value, description) values ( 'featureinfo_maxfeatures' , 20 , 'Max number of features returned by a click on the map. If 0 then there is no limit; If 1 the direct access to the detail');
-INSERT INTO application_parameters (name, value, description) values ( 'featureinfo_selectmode', 'buffer', 'Method to return closest features : "distance" or "buffer"');
+insert into application_parameters (name, value, description) values ( 'featureinfo_selectmode', 'buffer', 'Method to return closest features : "distance" or "buffer"');
 insert into application_parameters (name, value, description) values ( 'contactEmailPrefix' , 'ogam' , 'Email');
 insert into application_parameters (name, value, description) values ( 'contactEmailSufix' , 'ign.fr' , 'Email');
 insert into application_parameters (name, value, description) values ( 'csvExportCharset' , 'UTF-8' , 'Csv Export');
