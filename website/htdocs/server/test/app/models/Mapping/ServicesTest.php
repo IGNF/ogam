@@ -16,10 +16,10 @@ class ServicesTest extends ControllerTestCase {
 		// On charge le modèle
 		$servicesModel = new Application_Model_Mapping_Services();
 
-		$serviceLocal = $servicesModel->getService('Local_MapProxy_WMS_GetMap');
+		$serviceLocal = $servicesModel->getService('Local_MapProxy_Mapserv_WMS_GetMap');
 
 		// On vérifie le résultat attendu
 		$this->assertNotNull($serviceLocal);
-		$this->assertEquals('Local_MapProxy_WMS_GetMap', $serviceLocal->serviceName);
+		$this->assertEquals('Local_MapProxy_Mapserv_WMS_GetMap', $serviceLocal->serviceName);
 	}
 }
