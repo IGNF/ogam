@@ -226,7 +226,7 @@ class ProxyController extends AbstractOGAMController {
 	 */
 	function getcachedtileAction() {
 		$configuration = Zend_Registry::get("configuration");
-		$tilecacheURL = $configuration->tilecache_url;
+		$tilecacheURL = $configuration->tilecache_private_url;
 		$ur = new HttpQueryString(false, $_SERVER["QUERY_STRING"]); // recupere la requete envoyé partie ?...
 
 		$queriesArg = array();
