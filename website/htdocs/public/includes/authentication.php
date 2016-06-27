@@ -38,5 +38,4 @@ if (empty($userSession->user) || !$userSession->user->isAllowed('DATA_QUERY')) {
     onfailure('/');
 }
 
-//Zend_Session::stop(); // Doesn't work well
 session_write_close();//libere le cookie/session

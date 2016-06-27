@@ -171,7 +171,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initView() {
 		$this->bootstrap('frontController');
 		$this->bootstrap('RegisterTranslate');
-		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('AppConfSession');
 		$configuration = Zend_Registry::get('configuration');
 		$baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
@@ -217,7 +216,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initRegisterTranslate() {
 		$this->bootstrap('Locale');
 		$this->bootstrap('Translate');
-		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('AppConfSession');
 
 		if (!$this->hasPluginResource('Translate')) {
@@ -306,7 +304,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * If present overrides with custom/application/config.
 	 * If present overrides with the content from the "application_parameters" table.
 	 */
-	protected function _initAppConfRegistry() {
+	protected function _initAppConfSession() {
 		$configuration = new stdClass();
 
 		// Get the parameters from the OGAM default configuration files
@@ -337,20 +335,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			$configuration->$name = $param->value;
 		}
 
+		// Store the complete configuration in the Zend Register
 		Zend_Registry::set('configuration', $configuration);
-	}
 
-	/**
-	 * Initialise the application configuration and set it in session.
-	 */
-	protected function _initAppConfSession() {
-		$this->bootstrap('Session');
-		$this->bootstrap('AppConfRegistry');
-		$this->bootstrap('RegisterLogger');
-
-		$configuration = Zend_Registry::get('configuration');
-		$configurationSession = new Zend_Session_Namespace('user');
+		// Store some specific parameters in the session
+		// this will be used by the "mapserverProxy" and "tilecacheProxy" classes to avoid a complete bootstrap
 		$configurationSession = new Zend_Session_Namespace('configuration');
+		$configurationSession->configuration = array(
+			"mapserver_private_url" => $configuration->mapserver_private_url,
+			"tilecache_private_url" => $configuration->tilecache_private_url
+		);
 	}
 
 	/**
@@ -384,7 +378,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 */
 	protected function _initAutoLogin() {
 		$this->bootstrap('DbAdapters');
-		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('AppConfSession');
 		$this->bootstrap('Session');
 		$configuration = Zend_Registry::get('configuration');
