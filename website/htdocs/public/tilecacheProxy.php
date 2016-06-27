@@ -47,6 +47,10 @@ $url = $configurationSession->configuration['tilecache_private_url'];
 // Sets the uri (url + urn)
 $uri = rtrim($url,'?').'?'.http_build_query($queriesArg);
 
+
+//echo $uri;exit;
+//error_log($uri);
+
 // Returns the result
 $content = file_get_contents($uri);
 if ($content !== FALSE) {

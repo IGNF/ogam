@@ -16,7 +16,7 @@ define('APPLICATION_LOG_PATH', './logs');
 // ------------------------------------------ //
 // Include the original application bootstrap //
 // ------------------------------------------ //
-include APPLICATION_PATH . '../../../public/setup.php';
+include APPLICATION_PATH . '../../../public/includes/setup.php';
 
 require_once 'Zend/Application.php';
 
