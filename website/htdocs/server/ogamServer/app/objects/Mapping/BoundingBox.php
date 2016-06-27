@@ -67,7 +67,12 @@ class Application_Object_Mapping_BoundingBox {
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
 
-		return Application_Object_Mapping_BoundingBox::createBoundingBox($configuration->bbox_x_min, $configuration->bbox_x_max, $configuration->bbox_y_min, $configuration->bbox_y_max);
+		$xMin = $configuration->getConfig('bbox_x_min');
+		$xMax = $configuration->getConfig('bbox_x_max');
+		$yMin = $configuration->getConfig('bbox_y_min');
+		$yMax = $configuration->getConfig('bbox_y_max');
+
+		return Application_Object_Mapping_BoundingBox::createBoundingBox($xMin, $xMax, $yMin, $yMax);
 	}
 
 	/**

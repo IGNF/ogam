@@ -427,7 +427,7 @@ class DataEditionController extends AbstractOGAMController {
 			// Delete the images linked to the data if present
 			foreach ($data->getFields() as $field) {
 				if ($field->type === "IMAGE" && $field->value !== "") {
-					$uploadDir = $this->configuration->image_upload_dir;
+					$uploadDir = $this->configuration->getConfig('image_upload_dir', '/var/www/html/upload/images');
 					$dir = $uploadDir . "/" . $data->getId() . "/" . $field->getName();
 					$this->deleteDirectory($dir);
 				}
@@ -701,7 +701,7 @@ class DataEditionController extends AbstractOGAMController {
 		$adapter = new Zend_File_Transfer_Adapter_Http();
 
 		// Get upload directory from the config
-		$uploadDir = $this->configuration->image_upload_dir;
+		$uploadDir = $this->configuration->getConfig('image_upload_dir', '/var/www/html/upload/images');
 
 		$formData = $this->_request->getPost();
 
@@ -713,17 +713,14 @@ class DataEditionController extends AbstractOGAMController {
 
 		// Create the directory and set the rights
 		$this->deleteDirectory($destination);
-		if (false === mkdir($destination, $this->configuration->image_dir_rights, true)) {
+		$dirRights = $this->configuration->getConfig('image_dir_rights', '0662');
+		if (false === mkdir($destination, $dirRights, true)) {
 			$this->logger->err('failed make dir ' . $destination);
 		}
 
 		// Filter the file extensions
-		if ($this->configuration->image_extensions !== null) {
-			$adapter->addValidator('Extension', false, $this->configuration->image_extensions);
-		}
-		if ($this->configuration->image_max_size !== null) {
-			$adapter->addValidator('FilesSize', false, $this->configuration->image_max_size);
-		}
+		$adapter->addValidator('Extension', false, $this->configuration->getConfig('image_extensions', 'jpg,png,jpeg,gif'));
+		$adapter->addValidator('FilesSize', false, $this->configuration->getConfig('image_max_size', '1000000'));
 
 		// Receive the file
 		$adapter->setDestination($destination);
@@ -760,7 +757,8 @@ class DataEditionController extends AbstractOGAMController {
 				continue;
 			}
 			if (!$this->deleteDirectory($dir . "/" . $item)) {
-				chmod($dir . "/" . $item, $this->configuration->image_dir_rights);
+				$dirRights = $this->configuration->getConfig('image_dir_rights', '0662');
+				chmod($dir . "/" . $item, $dirRights);
 				if (!$this->deleteDirectory($dir . "/" . $item)) {
 					return false;
 				}

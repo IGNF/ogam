@@ -246,7 +246,7 @@ class Application_Model_Mapping_ResultLocation {
 	 */
 	public function getPlotLocations($sessionId) {
 		$configuration = Zend_Registry::get("configuration");
-		$projection = $configuration->srs_visualisation;
+		$projection = $configuration->getConfig('srs_visualisation', 3857);
 
 		$req = "SELECT st_astext(st_transform(the_geom," . $projection . ")) as position FROM result_location WHERE session_id = ?";
 
@@ -274,7 +274,7 @@ class Application_Model_Mapping_ResultLocation {
 	 */
 	public function getResultsBBox($sessionId) {
 		$configuration = Zend_Registry::get("configuration");
-		$projection = $configuration->srs_visualisation;
+		$projection = $configuration->getConfig('srs_visualisation', 3857);
 
 		$req = "SELECT st_astext(st_extent(st_transform(the_geom," . $projection . "))) as wkt FROM result_location WHERE session_id = ?";
 
@@ -326,19 +326,9 @@ class Application_Model_Mapping_ResultLocation {
 	 */
 	public function getLocationInfo($sessionId, $lon, $lat) {
 		$configuration = Zend_Registry::get("configuration");
-		$projection = $configuration->srs_visualisation;
-
-		if (isset($configuration->featureinfo_selectmode)) {
-			$selectMode = $configuration->featureinfo_selectmode;
-		} else {
-			$selectMode = 'buffer';
-		}
-
-		if (isset($configuration->featureinfo_margin)) {
-			$margin = $configuration->featureinfo_margin;
-		} else {
-			$margin = '1000';
-		}
+		$projection = $configuration->getConfig('srs_visualisation', 3857);
+		$selectMode = $configuration->getConfig('featureinfo_selectmode', 'buffer');
+		$margin = $configuration->getConfig('featureinfo_margin', '1000');
 
 		$translate = Zend_Registry::get('Zend_Translate');
 		$lang = strtoupper($translate->getAdapter()->getLocale());

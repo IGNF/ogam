@@ -81,8 +81,8 @@
         <div id="header-login" class="header-login" style="float: right">
 <?php
         $configuration = Zend_Registry::get("configuration");
-        $language_flags[] = $configuration->language_flags1;
-        $language_flags[] = $configuration->language_flags2;
+        $language_flags[] = $configuration->getConfig('language_flags1', 'fr');
+        $language_flags[] = $configuration->getConfig('language_flags2', 'en');
 
         if (!empty($language_flags)) {
             foreach($language_flags as $flag){
@@ -91,7 +91,9 @@
                 }
             }
         }
-        if ($configuration->autoLogin != 1) {
+
+        $autoLogin = $configuration->getConfig('autoLogin', false) == 1;
+        if (!$autoLogin) {
 	        $userSession = new Zend_Session_Namespace('user');
 	        $user = $userSession->user;
 	        if (!empty($user)) {

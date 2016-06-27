@@ -125,7 +125,8 @@ if ($user->isAllowed('CHECK_CONF')) {
 ?>
 <?php
 $configuration = Zend_Registry::get("configuration");
-if($configuration->autoLogin == 1){
+$autoLogin = $configuration->getConfig('autoLogin', false);
+if ($autoLogin == 1) {
 ?>
 <div class="moduletable_menu">
 <ul id="appmenu2" class="menu">

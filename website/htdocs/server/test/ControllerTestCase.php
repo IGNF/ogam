@@ -20,17 +20,13 @@ abstract class ControllerTestCase extends Zend_Test_PHPUnit_ControllerTestCase {
 		if ($this->application == null) {
 			$this->application = new Zend_Application(APPLICATION_ENV, APPLICATION_PATH . '/configs/application.ini');
 			$this->application->bootstrap();
-			
+
 			$bootstrap = $this->application->getBootstrap();
 			$front = $bootstrap->getResource('FrontController');
 			$front->setParam('bootstrap', $bootstrap);
 			$front->getRouter()->addDefaultRoutes();
 		}
-		
+
 		$this->logger = Zend_Registry::get("logger");
-		
-		// Force the cache usage to false
-		$configuration = Zend_Registry::get("configuration");
-		$configuration->useCache = false;
 	}
 }

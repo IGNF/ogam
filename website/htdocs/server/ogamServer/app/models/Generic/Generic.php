@@ -67,7 +67,7 @@ class Application_Model_Generic_Generic {
 
 		// Initialise the projection system
 		$configuration = Zend_Registry::get("configuration");
-		$this->visualisationSRS = $configuration->srs_visualisation;
+		$this->visualisationSRS = $configuration->getConfig('srs_visualisation', 3857);
 
 		// Initialise the metadata model
 		$this->metadataModel = new Application_Model_Metadata_Metadata();
