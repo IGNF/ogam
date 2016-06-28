@@ -819,7 +819,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$form = $this->getProviderForm('edit', $provider);
 		$this->view->form = $form;
 
-		$this->render('edit-provider');
+		$this->render('show-edit-provider');
 	}
 
 	/**
@@ -920,7 +920,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$form = $this->getProviderForm('create');
 		$this->view->form = $form;
 
-		$this->render('add-provider');
+		$this->render('show-create-provider');
 	}
 
 	/**
