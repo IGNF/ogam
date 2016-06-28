@@ -36,8 +36,7 @@ abstract class AbstractOGAMController extends Zend_Controller_Action {
 	 */
 	public function init() {
 		// Initialise the logger
-		$bootstrap = $this->getInvokeArg('bootstrap');
-		$this->logger = $bootstrap->getResource('log');
+		$this->logger = Zend_Registry::get("logger");
 		$this->_redirector = $this->_helper->getHelper('Redirector');
 
 		// Get the translator
