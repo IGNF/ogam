@@ -14,6 +14,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	xtype:'editionpage',
 	controller: 'editionpage',
 	requires:[
+		'Ext.layout.container.Center',
 		'Ext.button.Button',
 		'Ext.LoadMask',
 		'Ext.form.Panel',
@@ -27,10 +28,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	],
 	itemId : 'editionPage',
 	padding : 20,
-	autoScroll : true,
+	scrollable : true,
 	fieldSetWidth : 700,
 	fieldWidth : 450,
-	layout : 'column',
+	layout : 'center',
 
 //<locale>	
 	/*
@@ -402,24 +403,14 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			}
 		}
 
-		this.items = [ {
-			xtype : 'box',
-			html : '&nbsp;',
-			columnWidth : 0.5,
-			border : false
-		}, {
+		this.items = [{
 			items : centerPanelItems,
 			width : this.fieldSetWidth,
 			border : false,
 			defaults : {
 				width : this.fieldSetWidth
 			}
-		}, {
-			xtype : 'box',
-			html : '&nbsp;',
-			columnWidth : 0.5,
-			border : false
-		} ];
+		}];
 		
 		
 
