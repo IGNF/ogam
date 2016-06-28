@@ -412,7 +412,7 @@ class UsermanagementController extends AbstractOGAMController {
 
 		// Add the definition element:
 		$definition = $form->createElement('text', 'definition');
-		$definition->setLabel('definition');
+		$definition->setLabel('Definition');
 		$label->addValidator('alnum', false, array(
 			'allowWhiteSpace' => true
 		));
