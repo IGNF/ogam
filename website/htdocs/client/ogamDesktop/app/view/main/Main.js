@@ -76,6 +76,11 @@ Ext.define('OgamDesktop.view.main.Main', {
 	},{
 		id:'edition_panel',
 		title:'Edition',
+		layout:{
+			type:'vbox',
+			align:'stretch'
+		},
+		scrollable:true,
 		loader:{
 			removeAll: true,
 			renderer:'component',

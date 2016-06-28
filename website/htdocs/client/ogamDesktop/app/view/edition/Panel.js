@@ -31,7 +31,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	scrollable : true,
 	fieldSetWidth : 700,
 	fieldWidth : 450,
-	layout : 'center',
+	layout : 'fit',
 
 //<locale>	
 	/*
@@ -404,6 +404,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 
 		this.items = [{
+			layout: {
+				type: 'vbox',
+				align:'middle'
+			},
 			items : centerPanelItems,
 			width : this.fieldSetWidth,
 			border : false,
