@@ -331,3 +331,29 @@ Data deleted;Data deleted
 ##########################
 Data Export;Data Export
 Request Criterias;Request Criterias
+
+################################
+#  Fil d'ariane (Breadcrumb)   #
+################################
+Breadcrumb Home;Home
+Breadcrumb Integration;Data integration
+Breadcrumb Integration New;Create data submission
+Breadcrumb Visualization;Visualize data
+Breadcrumb Harmonization;Harmonize data
+Breadcrumb Edition;Data edition
+Breadcrumb Edit Data;Edit observation
+Breadcrumb Add Data;Add observation
+Breadcrumb User;My account
+Breadcrumb Check Configuration;Check the configuration
+Breadcrumb Users Administration;Users Administration
+Breadcrumb Users;Users
+Breadcrumb Add User;Add user
+Breadcrumb Edit User;Edit user
+Breadcrumb Change Password;Change password
+Breadcrumb Roles;Roles
+Breadcrumb Edit Role;Edit role
+Breadcrumb Add Role;Add role
+Breadcrumb Providers;Providers
+Breadcrumb Providers Details;Details and data
+Breadcrumb Edit Provider;Edit provider
+Breadcrumb Add Provider;Add provider

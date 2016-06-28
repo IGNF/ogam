@@ -203,8 +203,25 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('ViewRenderer');
 		$viewRenderer->setView($view);
 
+		$navigation = $this->_getNavigation();
+		if ($navigation) {
+			$view->navigation($navigation);
+		}
+
 		// Retourner la vue pour qu'elle puisse être stockée par le bootstrap
 		return $view;
+	}
+
+	/**
+	 * Init and return a navigation object if the conf file exists
+	 */
+	private function _getNavigation() {
+		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/configs/navigation.yml')) {
+			$navigationConf = new Zend_Config_Yaml(CUSTOM_APPLICATION_PATH . '/configs/navigation.yml', 'nav');
+		} else if (file_exists(APPLICATION_PATH . '/configs/navigation.yml')) {
+			$navigationConf = new Zend_Config_Yaml(APPLICATION_PATH . '/configs/navigation.yml', 'nav');
+		}
+		return (isset($navigationConf)) ? new Zend_Navigation($navigationConf) : null;
 	}
 
 	/**
