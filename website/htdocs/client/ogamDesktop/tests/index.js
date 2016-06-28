@@ -47,6 +47,13 @@ harness.start(
 	        'unit-tests/model/map/layers.t.js'
 	    ]
 	},
+	{
+		group       : 'Unit Tests - form field',
+		pageUrl : '../odp/index.html?unittest',  // le paramètre unittest demande à ExtJS de ne pas initialiser les vues 
+		items       : [
+	           'unit-tests/ux/form/field/Factory.t.js'
+	   ]
+	},
 	
 	
 	//
