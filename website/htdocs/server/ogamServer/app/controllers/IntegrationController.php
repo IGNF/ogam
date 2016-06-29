@@ -582,10 +582,10 @@ class IntegrationController extends AbstractOGAMController {
 
 		// -- Export results to a CSV file
 
+		$configuration = Zend_Registry::get("configuration");
 		$charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
 
 		// Define the header of the response
-		$configuration = Zend_Registry::get("configuration");
 		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $charset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=CSV_Model_' . $datasetFile->label . '_' . date('dmy_Hi') . '.csv', true);
 
