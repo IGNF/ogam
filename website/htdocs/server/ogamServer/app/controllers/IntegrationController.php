@@ -77,7 +77,7 @@ class IntegrationController extends AbstractOGAMController {
 	/**
 	 * Build and return the data submission form.
 	 */
-	private function _getDataSubmissionForm() {
+	protected function _getDataSubmissionForm() {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => ' data-submission-form',
@@ -125,7 +125,7 @@ class IntegrationController extends AbstractOGAMController {
 	 * @return Application_Form_OGAMForm
 	 * @throws Zend_Form_Exception
 	 */
-	private function _getDataUploadForm($showDetail = false, $model = false) {
+	protected function _getDataUploadForm($showDetail = false, $model = false) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'data-upload-form',
@@ -506,7 +506,7 @@ class IntegrationController extends AbstractOGAMController {
 	 *        	the name of the servlet
 	 * @return JSON the status of the process
 	 */
-	private function _getStatus($servletName) {
+	protected function _getStatus($servletName) {
 		$this->logger->debug('getStatusAction');
 
 		// Send the cancel request to the integration server
