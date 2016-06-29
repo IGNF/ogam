@@ -400,7 +400,7 @@ class UsermanagementController extends AbstractOGAMController {
 		));
 		$label->addValidator('stringLength', false, array(
 			1,
-			20
+			100
 		));
 		$label->setRequired(true);
 		if ($provider != null) {
@@ -411,7 +411,7 @@ class UsermanagementController extends AbstractOGAMController {
 		// $label->addValidator(new Application_Validator_ProviderNotExist());
 
 		// Add the definition element:
-		$definition = $form->createElement('text', 'definition');
+		$definition = $form->createElement('textarea', 'definition');
 		$definition->setLabel('Definition');
 		$label->addValidator('alnum', false, array(
 			'allowWhiteSpace' => true

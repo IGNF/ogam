@@ -452,6 +452,11 @@ td.delete-cell {
 	margin-top: 6px;
 }
 
+.zend_form textarea{
+	height:100px;
+    width:350px;
+}
+
 .zend_form input {
 	width: 200px;
 	position: absolute;
