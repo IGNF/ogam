@@ -99,7 +99,7 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $_SERVER['REQUEST_URI'];
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapServiceURL = $configuration->mapserver_private_url;
+		$mapServiceURL = $configuration->getConfig('mapserver_private_url');
 		$mapServiceURL = $mapServiceURL . "&";
 
 		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/gettile?");
@@ -143,7 +143,7 @@ class ProxyController extends AbstractOGAMController {
 		$method = $_SERVER['REQUEST_METHOD']; // GET or POST
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapServiceURL = $configuration->mapserver_private_url;
+		$mapServiceURL = $configuration->getConfig('mapserver_private_url');
 		$mapServiceURL = $mapServiceURL . "&";
 
 		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/getwfs?");
@@ -226,7 +226,7 @@ class ProxyController extends AbstractOGAMController {
 	 */
 	function getcachedtileAction() {
 		$configuration = Zend_Registry::get("configuration");
-		$tilecacheURL = $configuration->tilecache_private_url;
+		$tilecacheURL = $configuration->getConfig('tilecache_private_url');
 		$ur = new HttpQueryString(false, $_SERVER["QUERY_STRING"]); // recupere la requete envoyé partie ?...
 
 		$queriesArg = array();
@@ -263,7 +263,7 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $_SERVER["REQUEST_URI"];
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapServiceURL = $configuration->mapserver_private_url;
+		$mapServiceURL = $configuration->getConfig('mapserver_private_url');
 		$mapServiceURL = $mapServiceURL . "&";
 
 		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/getlegendimage?");
@@ -310,7 +310,7 @@ class ProxyController extends AbstractOGAMController {
 		$this->logger->debug('nom du typename du WFS : ' . $layerName);
 
 		$configuration = Zend_Registry::get("configuration");
-		$mapServiceURL = $configuration->mapserver_private_url;
+		$mapServiceURL = $configuration->getConfig('mapserver_private_url');
 		$mapServiceURL = $mapServiceURL . "&";
 		$sessionId = session_id();
 
@@ -368,8 +368,8 @@ class ProxyController extends AbstractOGAMController {
 	 */
 	function showreportAction() {
 		$configuration = Zend_Registry::get("configuration");
-		$reportServiceURL = $configuration->reportGenerationService_url;
-		$errorReport = $configuration->errorReport;
+		$reportServiceURL = $configuration->getConfig('reportGenerationService_url', 'http://localhost:8080/OGAMRG/');
+		$errorReport = $configuration->getConfig('errorReport', 'ErrorReport.rptdesign');
 		$submissionId = $this->_getParam("submissionId");
 
 		$reportURL = $reportServiceURL . "/run?__format=pdf&__report=report/" . $errorReport . "&submissionid=" . $submissionId;
@@ -401,8 +401,8 @@ class ProxyController extends AbstractOGAMController {
 	 */
 	function showsimplifiedreportAction() {
 		$configuration = Zend_Registry::get("configuration");
-		$reportServiceURL = $configuration->reportGenerationService_url;
-		$errorReport = $configuration->simplifiedReport;
+		$reportServiceURL = $configuration->getConfig('reportGenerationService_url', 'http://localhost:8080/OGAMRG/');
+		$errorReport = $configuration->getConfig('simplifiedReport', 'SimplifiedReport.rptdesign');
 		$submissionId = $this->_getParam("submissionId");
 
 		$reportURL = $reportServiceURL . "/run?__format=pdf&__report=report/" . $errorReport . "&submissionid=" . $submissionId;
@@ -434,8 +434,8 @@ class ProxyController extends AbstractOGAMController {
 	 */
 	function showplotreportAction() {
 		$configuration = Zend_Registry::get("configuration");
-		$reportServiceURL = $configuration->reportGenerationService_url;
-		$plotErrorReport = $configuration->plotErrorReport;
+		$reportServiceURL = $configuration->getConfig('reportGenerationService_url', 'http://localhost:8080/OGAMRG/');
+		$plotErrorReport = $configuration->getConfig('plotErrorReport', 'PlotErrorReport.rptdesign');
 		$submissionId = $this->_getParam("submissionId");
 
 		$reportURL = $reportServiceURL . "/run?__format=pdf&__report=report/" . $plotErrorReport . "&submissionid=" . $submissionId;

@@ -456,15 +456,13 @@ class Application_Service_QueryService {
 		// Transform the form request object into a table data object
 		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
 
-		$this->logger->debug('resultats : ' . print_r($formQuery->results, true));
-
 		if (count($formQuery->results) === 0) {
 			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
 		} else {
 
 			// Configure the projection systems
 			$configuration = Zend_Registry::get("configuration");
-			$visualisationSRS = $configuration->srs_visualisation;
+			$visualisationSRS = $configuration->getConfig('srs_visualisation', '3857');
 
 			// Generate the SQL Request
 			$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
@@ -917,7 +915,7 @@ class Application_Service_QueryService {
 		$configuration = Zend_Registry::get('configuration');
 
 		// Configure the projection systems
-		$visualisationSRS = $configuration->srs_visualisation;
+		$visualisationSRS = $configuration->getConfig('srs_visualisation', '3857');
 		$baseUrls = '';
 
 		// Get the base urls for the services

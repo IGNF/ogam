@@ -2,6 +2,8 @@
 
 include_once('includes/authentication.php');
 
+$configurationSession = new Zend_Session_Namespace('configuration');
+
 parse_str(ltrim($_SERVER["QUERY_STRING"],'?'), $query); //recupere la requete envoyée partie (GET params)...
 $query = array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
 $queryParamsAllow = array(//paramNom => requis
@@ -68,6 +70,7 @@ if (isset($queriesArg['USECACHE']) && strcasecmp($queriesArg['USECACHE'], 'true'
 
 // Set the uri (url + urn)
 $uri = rtrim($url,'?').'?'.http_build_query($queriesArg);
+
 //echo $uri;exit;
 //error_log($uri);
 

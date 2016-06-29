@@ -61,12 +61,12 @@ class MapController extends AbstractOGAMController {
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
 
-		$this->view->bbox_x_min = $configuration->bbox_x_min; // x min of Bounding box
-		$this->view->bbox_y_min = $configuration->bbox_y_min; // y min of Bounding box
-		$this->view->bbox_x_max = $configuration->bbox_x_max; // x max of Bounding box
-		$this->view->bbox_y_max = $configuration->bbox_y_max; // y max of Bounding box
-		$this->view->tilesize = $configuration->tilesize; // Tile size
-		$this->view->projection = "EPSG:" . $configuration->srs_visualisation; // Projection
+		$this->view->bbox_x_min = $configuration->getConfig('bbox_x_min'); // x min of Bounding box
+		$this->view->bbox_y_min = $configuration->getConfig('bbox_y_min'); // y min of Bounding box
+		$this->view->bbox_x_max = $configuration->getConfig('bbox_x_max'); // x max of Bounding box
+		$this->view->bbox_y_max = $configuration->getConfig('bbox_y_max'); // y max of Bounding box
+		$this->view->tilesize = $configuration->getConfig('tilesize', 256); // Tile size
+		$this->view->projection = "EPSG:" . $configuration->getConfig('srs_visualisation'); // Projection
 
 		// Get the available scales
 		$scales = $this->scalesModel->getScales();
@@ -77,9 +77,9 @@ class MapController extends AbstractOGAMController {
 		$this->view->resolutions = $resolString;
 		$this->view->numZoomLevels = count($resolutions);
 
-		$this->logger->debug('$configuration->usePerProviderCenter : ' . $configuration->usePerProviderCenter);
+		$userPerProviderCenter = ($configuration->getConfig('usePerProviderCenter', true) === '1');
 
-		if ($configuration->usePerProviderCenter === '1' || (strtolower($configuration->usePerProviderCenter) === 'true')) {
+		if ($userPerProviderCenter) {
 			// Center the map on the provider location
 			$center = $this->boundingBoxModel->getCenter($providerId);
 			$this->view->zoomLevel = $center->zoomLevel;
@@ -87,24 +87,15 @@ class MapController extends AbstractOGAMController {
 			$this->view->centerY = $center->y;
 		} else {
 			// Use default settings
-			$this->view->zoomLevel = $configuration->zoom_level;
-			$this->view->centerX = ($configuration->bbox_x_min + $configuration->bbox_x_max) / 2;
-			$this->view->centerY = ($configuration->bbox_y_min + $configuration->bbox_y_max) / 2;
+			$this->view->zoomLevel = $configuration->getConfig('zoom_level', '1');
+			$this->view->centerX = ($this->view->bbox_x_min + $this->view->bbox_x_max) / 2;
+			$this->view->centerY = ($this->view->bbox_y_min + $this->view->bbox_y_max) / 2;
 		}
 
 		// Feature parameters
-		if (empty($configuration->featureinfo_margin)) {
-			$configuration->featureinfo_margin = "5000";
-		}
-		$this->view->featureinfo_margin = $configuration->featureinfo_margin;
-		if (empty($configuration->featureinfo_typename)) {
-			$configuration->featureinfo_typename = "result_locations";
-		}
-		$this->view->featureinfo_typename = $configuration->featureinfo_typename;
-		if (empty($configuration->featureinfo_maxfeatures)) {
-			$configuration->featureinfo_maxfeatures = 0;
-		}
-		$this->view->featureinfo_maxfeatures = $configuration->featureinfo_maxfeatures;
+		$this->view->featureinfo_margin = $configuration->getConfig('featureinfo_margin', '1000');
+		$this->view->featureinfo_typename = $configuration->getConfig('featureinfo_typename', "result_locations");
+		$this->view->featureinfo_maxfeatures = $configuration->getConfig('featureinfo_maxfeatures', 20);
 
 		$this->_helper->layout()->disableLayout();
 		$this->getResponse()->setHeader('Content-type', 'application/javascript');
@@ -124,9 +115,9 @@ class MapController extends AbstractOGAMController {
 
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
-		$tilesize = $configuration->tilesize; // Tile size in pixels
-		$dpi = $configuration->mapserver_dpi; // Default number of dots per inch in mapserv
-		$factor = $configuration->mapserver_inch_per_kilometer; // Inch to meter conversion factor
+		$tilesize = $configuration->getConfig('tilesize', 256); // Tile size in pixels
+		$dpi = $configuration->getConfig('mapserver_dpi', 72); // Default number of dots per inch in mapserv
+		$factor = $configuration->getConfig('mapserver_inch_per_kilometer', 39370.1); // Inch to meter conversion factor
 
 		// WARNING : Bounding box must match the tilecache configuration and tile size
 

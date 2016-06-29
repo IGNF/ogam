@@ -89,7 +89,7 @@ class CheckconfController extends AbstractOGAMController {
 		$phpParameters = array();
 
 		// Checks the post_max_size php parameters
-		$postMaxSizeMin = $configuration->post_max_size;
+		$postMaxSizeMin = $configuration->getConfig('post_max_size', '100M');
 		$postMaxSizeMinInt = substr($postMaxSizeMin, 0, -1);
 		$postMaxSize = ini_get("post_max_size");
 		$postMaxSizeInt = substr($postMaxSize, 0, -1);
@@ -104,7 +104,7 @@ class CheckconfController extends AbstractOGAMController {
 		array_push($phpParameters, $postMaxSizeMsg);
 
 		// Checks the upload_max_filesize php parameters
-		$uploadMaxFilesizeMin = $configuration->upload_max_filesize;
+		$uploadMaxFilesizeMin = $configuration->getConfig('upload_max_filesize', '100M');
 		$uploadMaxFilesizeMinInt = substr($uploadMaxFilesizeMin, 0, -1);
 		$uploadMaxFilesize = ini_get("upload_max_filesize");
 		$uploadMaxFilesizeInt = substr($uploadMaxFilesize, 0, -1);

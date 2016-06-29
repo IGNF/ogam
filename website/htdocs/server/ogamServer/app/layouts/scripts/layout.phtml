@@ -62,27 +62,49 @@
 
         <div id="top" class="top">
 
-        <div id="header-beadcrumb" class="header-beadcrumb" style="float:left">
-            <span class="pathway">
-            <a href="<?php echo $this->url(array('controller'=>'index'), 'default', true) ?>" ><b><?php echo $this->translate('Layout Pathway Home') ?></b></a>
-            <?php
-                $website_session = new Zend_Session_Namespace('website');
-                $moduleName = $website_session->module;
-                $moduleLabel = $website_session->moduleLabel;
-                $moduleURL = $website_session->moduleURL;
-                if (!empty($moduleName)) {
-                    echo '<img src="'.$this->baseUrl('/img/arrow.png').'"/>';
-                    echo '<a href="'. $this->url(array('controller'=>$moduleURL), 'default', true) .'" ><b>'.$this->translate($moduleLabel).'</b></a>';
-                }
-            ?>
-            </span>
-        </div>
+	        <div id="header-beadcrumb" class="header-beadcrumb" style="float: left">
+			   <?php
+			   $request = Zend_Controller_Front::getInstance()->getRequest();
+			   $controllerName = $request->getControllerName();
+			   $actionName = $request->getActionName();
+			   $moduleName = $request->getModuleName();
+
+			   $breadcrumb = $this->navigation()
+			         ->breadcrumbs()
+			         ->setLinkLast(false)
+			         ->setMinDepth(0)
+			         ->setSeparator('<img src="/img/arrow.png">')
+			         ->render();
+			   if ($breadcrumb) {
+			      echo $breadcrumb;
+			   } else {
+
+			      $topControllerPage = $this->navigation()->findOneBy('controller', $controllerName);
+			      if ($topControllerPage) {
+			         $currentPage = Zend_Navigation_Page::factory(array(
+			               'label' => 'Page',
+			               'action' => $actionName,
+			               'controller' => $controllerName,
+			               'module' => $moduleName,
+			         ));
+			         $topControllerPage->addPage($currentPage);
+			         echo $this->navigation()
+			               ->breadcrumbs()
+			               ->setMinDepth(0)
+			               ->setMaxDepth(1)// Don't show current page link (we don(t know its name)
+			               ->setLinkLast(true)// and then lats link is top controller page, clickable
+			               ->setSeparator('<img src="/img/arrow.png">')
+			               ->render();
+			      }
+			   }
+			   ?>
+	        </div>
 
         <div id="header-login" class="header-login" style="float: right">
 <?php
         $configuration = Zend_Registry::get("configuration");
-        $language_flags[] = $configuration->language_flags1;
-        $language_flags[] = $configuration->language_flags2;
+        $language_flags[] = $configuration->getConfig('language_flags1', 'fr');
+        $language_flags[] = $configuration->getConfig('language_flags2', 'en');
 
         if (!empty($language_flags)) {
             foreach($language_flags as $flag){
@@ -91,7 +113,9 @@
                 }
             }
         }
-        if ($configuration->autoLogin != 1) {
+
+        $autoLogin = $configuration->getConfig('autoLogin', false) == 1;
+        if (!$autoLogin) {
 	        $userSession = new Zend_Session_Namespace('user');
 	        $user = $userSession->user;
 	        if (!empty($user)) {

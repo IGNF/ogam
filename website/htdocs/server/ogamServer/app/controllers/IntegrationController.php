@@ -47,7 +47,7 @@ class IntegrationController extends AbstractOGAMController {
 		$this->submissionModel = new Application_Model_RawData_Submission();
 
 		$configuration = Zend_Registry::get("configuration");
-		$this->fileMaxSize = $configuration->fileMaxSize;
+		$this->fileMaxSize = $configuration->getConfig('fileMaxSize', '100');
 	}
 
 	/**
@@ -254,16 +254,8 @@ class IntegrationController extends AbstractOGAMController {
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
 
-		if (!isset($configuration->showUploadFileDetail)) {
-			$showDetail = true;
-		} else {
-			$showDetail = ($configuration->showUploadFileDetail == 1);
-		}
-		if (!isset($configuration->showUploadFileModel)) {
-			$showModel = true;
-		} else {
-			$showModel = ($configuration->showUploadFileModel == 1);
-		}
+		$showDetail = ($configuration->getConfig('showUploadFileDetail', true) == 1);
+		$showModel = ($configuration->getConfig('showUploadFileModel', true) == 1);
 
 		$this->logger->debug('$showDetail : ' . $showDetail);
 
@@ -378,7 +370,7 @@ class IntegrationController extends AbstractOGAMController {
 
 		// Get the configuration info
 		$configuration = Zend_Registry::get("configuration");
-		$uploadDir = $configuration->uploadDir;
+		$uploadDir = $configuration->getConfig('uploadDir', '/var/www/html/upload/');
 
 		//
 		// For each requested file
@@ -590,13 +582,15 @@ class IntegrationController extends AbstractOGAMController {
 
 		// -- Export results to a CSV file
 
+		$charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
+
 		// Define the header of the response
 		$configuration = Zend_Registry::get("configuration");
-		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $charset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=CSV_Model_' . $datasetFile->label . '_' . date('dmy_Hi') . '.csv', true);
 
 		// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
-		if ($configuration->csvExportCharset == 'UTF-8') {
+		if ($charset == 'UTF-8') {
 			echo (chr(0xEF));
 			echo (chr(0xBB));
 			echo (chr(0xBF));

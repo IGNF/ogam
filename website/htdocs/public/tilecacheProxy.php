@@ -2,6 +2,8 @@
 
 include_once('includes/authentication.php');
 
+$configurationSession = new Zend_Session_Namespace('configuration');
+
 // Gets the query parameters
 parse_str(ltrim($_SERVER["QUERY_STRING"],'?'), $query);
 

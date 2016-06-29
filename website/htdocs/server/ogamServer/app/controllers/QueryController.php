@@ -448,7 +448,7 @@ class QueryController extends AbstractOGAMController {
 		$this->logger->debug('ajaxgetresultsbboxAction');
 
 		$configuration = Zend_Registry::get("configuration");
-		ini_set("max_execution_time", $configuration->max_execution_time);
+		ini_set("max_execution_time", $configuration->getConfig('max_execution_time', 480));
 
 		try {
 
@@ -572,8 +572,8 @@ class QueryController extends AbstractOGAMController {
 		// Get the names of the layers to display in the details panel
 		$configuration = Zend_Registry::get('configuration');
 
-		$detailsLayers[] = $configuration->query_details_layers1;
-		$detailsLayers[] = $configuration->query_details_layers2;
+		$detailsLayers[] = $configuration->getConfig('query_details_layers1');
+		$detailsLayers[] = $configuration->getConfig('query_details_layers2');
 
 		// Get the current dataset to filter the results
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -610,8 +610,8 @@ class QueryController extends AbstractOGAMController {
 		// Get the names of the layers to display in the details panel
 		$configuration = Zend_Registry::get('configuration');
 
-		$detailsLayers[] = $configuration->query_details_layers1;
-		$detailsLayers[] = $configuration->query_details_layers2;
+		$detailsLayers[] = $configuration->getConfig('query_details_layers1');
+		$detailsLayers[] = $configuration->getConfig('query_details_layers2');
 
 		// Get the current dataset to filter the results
 		$websiteSession = new Zend_Session_Namespace('website');
@@ -792,12 +792,13 @@ class QueryController extends AbstractOGAMController {
 
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
-		ini_set("memory_limit", $configuration->memory_limit);
-		ini_set("max_execution_time", $configuration->max_execution_time);
+		ini_set("memory_limit", $configuration->getConfig('memory_limit', '1024M'));
+		ini_set("max_execution_time", $configuration->getConfig('max_execution_time', '480'));
 		$maxLines = 5000;
 
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
+		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $charset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.csv', true);
 
 		if ($user->isAllowed('EXPORT_RAW_DATA')) {
@@ -819,7 +820,7 @@ class QueryController extends AbstractOGAMController {
 			} else {
 
 				// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
-				if ($configuration->csvExportCharset == 'UTF-8') {
+				if ($charset === 'UTF-8') {
 					echo (chr(0xEF));
 					echo (chr(0xBB));
 					echo (chr(0xBF));
@@ -965,12 +966,13 @@ class QueryController extends AbstractOGAMController {
 
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
-		ini_set("memory_limit", $configuration->memory_limit);
-		ini_set("max_execution_time", $configuration->max_execution_time);
+		ini_set("memory_limit", $configuration->getConfig('memory_limit', '1024M'));
+		ini_set("max_execution_time", $configuration->getConfig('max_execution_time', '480'));
 		$maxLines = 5000;
 
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
+		$this->getResponse()->setHeader('Content-Type', 'application/vnd.google-earth.kml+xml;charset=' . $charset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.kml', true);
 
 		if (($schema == 'RAW_DATA' && $user->isAllowed('EXPORT_RAW_DATA')) || ($schema == 'HARMONIZED_DATA' && $user->isAllowed('EXPORT_HARMONIZED_DATA'))) {
@@ -1129,12 +1131,13 @@ class QueryController extends AbstractOGAMController {
 
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration = Zend_Registry::get("configuration");
-		ini_set("memory_limit", $configuration->memory_limit);
-		ini_set("max_execution_time", $configuration->max_execution_time);
+		ini_set("memory_limit", $configuration->getConfig('memory_limit', '1024M'));
+		ini_set("max_execution_time", $configuration->getConfig('max_execution_time', '480'));
 		$maxLines = 5000;
 
 		// Define the header of the response
-		$this->getResponse()->setHeader('Content-Type', 'application/json;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
+		$this->getResponse()->setHeader('Content-Type', 'application/json;charset=' . $charset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.geojson', true);
 
 		if (($schema == 'RAW_DATA' && $user->isAllowed('EXPORT_RAW_DATA')) || ($schema == 'HARMONIZED_DATA' && $user->isAllowed('EXPORT_HARMONIZED_DATA'))) {
@@ -1284,7 +1287,8 @@ class QueryController extends AbstractOGAMController {
 	 */
 	private function _print($output) {
 		$configuration = Zend_Registry::get("configuration");
-		echo iconv("UTF-8", $configuration->csvExportCharset, $output);
+		$charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
+		echo iconv("UTF-8", $charset, $output);
 	}
 
 	/**
@@ -1306,7 +1310,7 @@ class QueryController extends AbstractOGAMController {
 		$json .= '"data":[' . $tree->toJSON() . ']';
 		$json.='}';
 		echo $json;
-		
+
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();

@@ -51,9 +51,9 @@ class Application_Model_Metadata_Metadata {
 
 		// Get the useCache flag
 		$configuration = Zend_Registry::get("configuration");
-		$uc = $configuration->useCache;
-		if (!empty($uc)) {
-			if ((strtolower($uc) == 'true') || ($uc == '1') || ($uc == 1)) {
+		$useCache = $configuration->getConfig('useCache', false);
+		if (!empty($useCache)) {
+			if ((strtolower($useCache) == 'true') || ($useCache == '1') || ($useCache == 1)) {
 				$this->useCache = true;
 			}
 		}
@@ -933,7 +933,7 @@ class Application_Model_Metadata_Metadata {
 		$req .= " WHERE table_field.format = ? ";
 		$req .= " AND table_format.schema_code = ? ";
 		$req .= " AND unit.type = 'GEOM' ";
-		
+
 		$this->logger->info('getGeometryField : ' . $req);
 		$select = $this->db->prepare($req);
 

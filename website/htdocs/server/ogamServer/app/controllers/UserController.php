@@ -251,7 +251,8 @@ class UserController extends Zend_Controller_Action {
 
 				// Redirect to the main page
 				$configuration = Zend_Registry::get("configuration");
-				if ($configuration->autoLogin == 1) {
+				$autoLogin = $configuration->getConfig('autoLogin', false) == 1;
+				if ($autoLogin) {
 					$this->_redirect('/index');
 				} else {
 					$this->_redirect('/');

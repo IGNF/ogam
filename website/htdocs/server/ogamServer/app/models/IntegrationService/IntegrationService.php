@@ -41,7 +41,7 @@ class Application_Model_IntegrationService_IntegrationService extends Applicatio
 
 		// Initialise the service URL
 		$configuration = Zend_Registry::get("configuration");
-		$this->serviceUrl = $configuration->integrationService_url;
+		$this->serviceUrl = $configuration->getConfig('integrationService_url', 'http://localhost:8080/OGAMIntegrationService/');
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");

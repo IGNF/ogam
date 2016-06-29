@@ -51,7 +51,7 @@ class Application_Service_GenericService {
 
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
-		$this->visualisationSRS = $configuration->srs_visualisation;
+		$this->visualisationSRS = $configuration->getConfig('srs_visualisation', '3857');
 	}
 
 	/**
@@ -651,9 +651,9 @@ class Application_Service_GenericService {
 		// Set the projection for the geometries in this schema
 		$configuration = Zend_Registry::get("configuration");
 		if ($schemaCode === 'RAW_DATA') {
-			$databaseSRS = $configuration->srs_raw_data;
+			$databaseSRS = $configuration->getConfig('srs_raw_data', '4326');
 		} else {
-			$databaseSRS = $configuration->srs_harmonized_data;
+			$databaseSRS = $configuration->getConfig('srs_harmonized_data', '3857');
 		}
 
 		if ($value !== null && $value !== '' && $value !== array()) {
@@ -926,10 +926,10 @@ class Application_Service_GenericService {
 
 		// Set the projection for the geometries in this schema
 		$configuration = Zend_Registry::get("configuration");
-		if ($schema->code === 'RAW_DATA') {
-			$databaseSRS = $configuration->srs_raw_data;
+		if ($schema === 'RAW_DATA') {
+			$databaseSRS = $configuration->getConfig('srs_raw_data', '4326');
 		} else {
-			$databaseSRS = $configuration->srs_harmonized_data;
+			$databaseSRS = $configuration->getConfig('srs_harmonized_data', '3857');
 		}
 
 		switch ($tableField->type) {
@@ -1022,12 +1022,7 @@ class Application_Service_GenericService {
 			// Special case for THE_GEOM
 			switch ($options['geometry_format']) {
 				case "gml":
-					$sql .= "st_asGML(" . $options['gml_version'] .
-						", st_transform($fieldName," . $options['geometry_srs'] . ")" .
-						", " . $options['gml_precision'] .
-						", " . $options['gml_options'] .
-						", " . $options['gml_prefix'] .
-						", " . $options['gml_id'] . ") as " . $field->getName() . ", ";
+					$sql .= "st_asGML(" . $options['gml_version'] . ", st_transform($fieldName," . $options['geometry_srs'] . ")" . ", " . $options['gml_precision'] . ", " . $options['gml_options'] . ", " . $options['gml_prefix'] . ", " . $options['gml_id'] . ") as " . $field->getName() . ", ";
 					break;
 				case "wkt":
 				default:
