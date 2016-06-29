@@ -283,7 +283,7 @@ Ext.define('OgamDesktop.locale.en.view.navigation.MainWin', {
 	override: 'OgamDesktop.view.navigation.MainWin',
 	config: {
 		title: 'Details',
-		exportAsPdfButtonText: "Export as PDF"
+		printButtonText: "Print"
 	}
 });
 
@@ -297,6 +297,7 @@ Ext.define('OgamDesktop.locale.en.view.navigation.Tab', {
 	seeChildrenButtonTip : 'Show the children in the detail panel.',
     editLinkButtonTitle : 'Edit data',
     editLinkButtonTip : 'Open the data edition view.',
+    linkFieldDefaultText : 'Consult',
     //TODO  tpl
     loadingMsg : "Loading..."
 });

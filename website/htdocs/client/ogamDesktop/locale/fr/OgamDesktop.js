@@ -322,7 +322,7 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.MainWin', {
 	override: 'OgamDesktop.view.navigation.MainWin',
 	config: {
 		title: 'Détails',
-		exportAsPdfButtonText: "Exporter en PDF"
+		printButtonText: "Imprimer"
 	}
 });
 
@@ -336,6 +336,7 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
 	seeChildrenButtonTip : 'Afficher les enfants dans le tableau des détails.',
     editLinkButtonTitle : 'Editer les données',
     editLinkButtonTip : 'Ouvre la page d\'édition pour éditer les données.',
+    linkFieldDefaultText : 'Consulter',
     //TODO  tpl
     loadingMsg : "Cgmt..."
 });

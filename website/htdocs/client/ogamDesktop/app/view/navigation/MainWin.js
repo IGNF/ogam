@@ -3,7 +3,11 @@
  */
 Ext.define('OgamDesktop.view.navigation.MainWin', {
 	extend: 'Ext.tab.Panel',
-	requires: ['Ext.ux.DataView.LabelEditor'],
+	requires: [
+		'OgamDesktop.view.navigation.MainWinController',
+		'Ext.ux.DataView.LabelEditor'
+	],
+	controller: 'navigationmainwin',
 	xtype: 'navigation-mainwin',
 	itemId:'nav',
 	title: 'Details',
@@ -25,9 +29,9 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
     pdfUrl: 'pdfexport',
     //<locale>
     /**
-     * @cfg string [exportAsPdfButtonText] button text of the toolbar, export pdf action
+     * @cfg string [printButtonText] the toolbar print button text, default to 'Print'.
      */
-    exportAsPdfButtonText: "Exporter en pdf",
+    printButtonText: "Print",
     //</locale>
 
 	/**
@@ -46,13 +50,9 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 	createToolbar :function(){
 		return [{
 	   		xtype: 'button',
-	   		text: this.exportAsPdfButtonText,
-	   		iconCls: 'o-navigation-tools-doc-pdfexport',
-	   		listeners: {
-	   			'click' : function(button){
-	   				button.ownerCt.ownerCt.exportAsPDF();
-	   			}
-	   		}
+	   		text: this.printButtonText,
+	   		iconCls: 'o-navigation-print-tool',
+	   		handler: 'onPrintButtonPress'
 		}];
 	},
 
@@ -73,12 +73,5 @@ Ext.define('OgamDesktop.view.navigation.MainWin', {
 			}
 			this.setActiveTab(tab);
 		}
-	},
-
-    /**
-     * Export the details panel as PDF
-     */
-    exportAsPDF : function(){
-        document.location.href =  Ext.manifest.OgamDesktop.requestServiceUrl + this.pdfUrl + '?id=' + this.getActiveTab().rowId;
-    }
+	}
 });

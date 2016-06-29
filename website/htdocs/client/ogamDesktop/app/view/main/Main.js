@@ -59,7 +59,7 @@ Ext.define('OgamDesktop.view.main.Main', {
 				},{
 					xtype: 'navigation-mainwin',
 					region: 'east',
-					width: 320,
+					width: 340,
 					collapsible: true,
 					collapsed: true,
 					collapseDirection: 'right'
