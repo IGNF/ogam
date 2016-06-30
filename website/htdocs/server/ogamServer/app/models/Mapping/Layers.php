@@ -80,7 +80,6 @@ class Application_Model_Mapping_Layers {
 		$layer->defaultOpacity = $row['default_opacity'];
 		$layer->isBaseLayer = ($row['isbaselayer'] === 1);
 		$layer->isUntiled = ($row['isuntiled'] === 1);
-		$layer->isVector = ($row['isvector'] === 1);
 		$layer->maxscale = $row['maxscale'];
 		$layer->minscale = $row['minscale'];
 		$layer->hasLegend = ($row['has_legend'] === 1);

@@ -31,7 +31,6 @@ class LayersTest extends ControllerTestCase {
 		$this->assertEquals(100, $resultLayer->defaultOpacity);
 		$this->assertEquals(false, $resultLayer->isBaseLayer);
 		$this->assertEquals(true, $resultLayer->isUntiled);
-		$this->assertEquals(true, $resultLayer->isVector);
 		$this->assertEquals(null, $resultLayer->maxscale);
 		$this->assertEquals(null, $resultLayer->minscale);
 		$this->assertEquals(false, $resultLayer->hasLegend);
