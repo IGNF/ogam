@@ -149,7 +149,7 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
-		$redirector->gotoUrl($this->view->baseUrl('/odp/index.html?locale='.$this->view->locale));
+		$redirector->gotoUrl($this->view->baseUrl('/odp/index.html?locale=' . $this->view->locale));
 	}
 
 	/**
@@ -311,7 +311,7 @@ class QueryController extends AbstractOGAMController {
 	/**
 	 * AJAX function : Get the list of criteria or columns available for a process form.
 	 */
-	public function ajaxgetqueryformfieldsAction(){
+	public function ajaxgetqueryformfieldsAction() {
 		$this->logger->debug('ajaxgetqueryformfieldsAction');
 
 		$filters = json_decode($this->getRequest()->getQuery('filter'));
@@ -354,9 +354,7 @@ class QueryController extends AbstractOGAMController {
 	 * @return JSON The list of forms
 	 */
 	public function ajaxgetdatasetsAction() {
-		echo '{"success":true, "data":',
-		 $this->queryService->getDatasets(),
-		'}';
+		echo '{"success":true, "data":', $this->queryService->getDatasets(), '}';
 
 		// No View, we send directly the JSON
 		$this->_helper->layout()->disableLayout();
@@ -489,7 +487,7 @@ class QueryController extends AbstractOGAMController {
 			$formQuery = $websiteSession->formQuery;
 
 			// Call the service to get the definition of the columns
-			echo $this->queryService->getResultColumns($formQuery->datasetId , $formQuery);
+			echo $this->queryService->getResultColumns($formQuery->datasetId, $formQuery);
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
 			echo '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';
@@ -590,106 +588,6 @@ class QueryController extends AbstractOGAMController {
 		$this->_helper->layout()->disableLayout();
 		$this->_helper->viewRenderer->setNoRender();
 		$this->getResponse()->setHeader('Content-type', 'application/json');
-	}
-
-	/**
-	 * Export the details as PDF.
-	 *
-	 * @throws Exception
-	 */
-	public function pdfexportAction() {
-		$this->_helper->layout()->disableLayout();
-		$this->_helper->viewRenderer->setNoRender();
-
-		$id = $this->getRequest()->getParam('id');
-		if (empty($id)) {
-			throw new Exeption(__METHOD__ . ' : identifiant inconnu.');
-		}
-		$this->logger->debug('pdfExportAction : id=' . $id);
-
-		// Get the names of the layers to display in the details panel
-		$configuration = Zend_Registry::get('configuration');
-
-		$detailsLayers[] = $configuration->getConfig('query_details_layers1');
-		$detailsLayers[] = $configuration->getConfig('query_details_layers2');
-
-		// Get the current dataset to filter the results
-		$websiteSession = new Zend_Session_Namespace('website');
-		$datasetId = $websiteSession->datasetId;
-
-		// Get all data linked to the result line
-		$data = $this->queryService->getDetailsData($id, $detailsLayers, $datasetId, false, false);
-
-		// image 1
-		$tmpImgPath1 = Array();
-		$urlCount = count($data['maps1']['urls']);
-		for ($i = 0; $i < $urlCount; $i ++) {
-			$url = $data['maps1']['urls'][$i]['url'];
-			$content = @file_get_contents($url);
-			$this->logger->debug('Getting image from : ' . $url);
-
-			if ($content === false) {
-				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
-			} else {
-				$tmpImgPath1[] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '0-' . $i) . '.png';
-				file_put_contents(end($tmpImgPath1), $content);
-			}
-		}
-
-		// image 2
-		$tmpImgPath2 = Array();
-		$urlCount = count($data['maps2']['urls']);
-		for ($i = 0; $i < $urlCount; $i ++) {
-			$url = $data['maps2']['urls'][$i]['url'];
-			$content = @file_get_contents($url);
-			$this->logger->debug('Getting image from : ' . $url);
-
-			if ($content === false) {
-				$this->logger->warn('file_get_contents failed to open stream: ' . $url);
-			} else {
-				$tmpImgPath2[] = APPLICATION_PATH . '/../tmp/images/' . md5($id . session_id() . '1-' . $i) . '.png';
-				file_put_contents(end($tmpImgPath2), $content);
-			}
-		}
-
-		require_once ('html2pdf/html2pdf.class.php');
-		$pdf = new HTML2PDF();
-		// $pdf->setModeDebug();
-
-		$pdfExportArray = array(
-			'data' => $data
-		);
-		if (defined('CUSTOM_APPLICATION_PATH')) {
-			$pdfExportArray['imgDirPath'] = CUSTOM_APPLICATION_PATH . '/../public/img/photos/';
-		} else {
-			$pdfExportArray['imgDirPath'] = APPLICATION_PATH . '/../public/img/photos/';
-		}
-
-		foreach ($tmpImgPath1 as $img) {
-			$pdfExportArray['imgPath1'][] = strval($img);
-		}
-
-		foreach ($tmpImgPath2 as $img) {
-			$pdfExportArray['imgPath2'][] = strval($img);
-		}
-
-		try {
-			$pdf->writeHTML($this->view->partial('query/pdfexport.phtml', $pdfExportArray));
-			$pdf->Output($this->genericService->removeAccents($data['title']) . '.pdf', 'D');
-		}
-
-		catch (HTML2PDF_exception $e) {
-			$this->logger->debug($e);
-			echo '<div style="margin: 20;">' . $this->translator->translate('An error occured during the pdf creation.') . '</div>';
-		}
-
-		foreach ($tmpImgPath1 as $img) {
-			unlink($img);
-		}
-
-		foreach ($tmpImgPath2 as $img) {
-			unlink($img);
-		}
 	}
 
 	/**
@@ -1306,9 +1204,9 @@ class QueryController extends AbstractOGAMController {
 		$tree = $this->metadataModel->getTreeChildren($unit, $code, $depth);
 
 		// Send the result as a JSON String
-	 	$json = '{"success":true,';
+		$json = '{"success":true,';
 		$json .= '"data":[' . $tree->toJSON() . ']';
-		$json.='}';
+		$json .= '}';
 		echo $json;
 
 		// No View, we send directly the JSON
@@ -1332,9 +1230,7 @@ class QueryController extends AbstractOGAMController {
 		$tree = $this->metadataModel->getTaxrefChildren($unit, $code, $depth);
 
 		// Send the result as a JSON String
-		$json = '{"success":true,'
-			. '"data":[' . $tree->toJSON() . ']'.
-		'}';
+		$json = '{"success":true,' . '"data":[' . $tree->toJSON() . ']' . '}';
 
 		echo $json;
 
