@@ -369,7 +369,7 @@ class QueryController extends AbstractOGAMController {
 	 * @param Undef $criteria
 	 * @return true if empty
 	 */
-	protected function _isEmptyCriteria($criteria) {
+	protected function isEmptyCriteria($criteria) {
 		if (is_array($criteria)) {
 			$emptyArray = true;
 			foreach ($criteria as $value) {
@@ -405,7 +405,7 @@ class QueryController extends AbstractOGAMController {
 			$formQuery = new Application_Object_Generic_FormQuery();
 			$formQuery->datasetId = $datasetId;
 			foreach ($_POST as $inputName => $inputValue) {
-				if (strpos($inputName, "criteria__") === 0 && !$this->_isEmptyCriteria($inputValue)) {
+				if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
 					$this->logger->debug('POST var added');
 					$criteriaName = substr($inputName, strlen("criteria__"));
 					$split = explode("__", $criteriaName);
@@ -612,7 +612,7 @@ class QueryController extends AbstractOGAMController {
 	 *
 	 * @return String the criterias
 	 */
-	private function _csvExportCriterias() {
+	protected function csvExportCriterias() {
 		$criterias = "";
 
 		$criterias .= '// ' . $this->translator->translate('Request Criterias') . "\n";
@@ -655,7 +655,7 @@ class QueryController extends AbstractOGAMController {
 	 * @param String $value
 	 *        	the code to translate
 	 */
-	private function _getLabelCache($tableField, $value) {
+	protected function getLabelCache($tableField, $value) {
 		$label = '';
 		$key = strtolower($tableField->getName());
 
@@ -712,9 +712,9 @@ class QueryController extends AbstractOGAMController {
 			$this->logger->debug('Expected lines : ' . $total);
 
 			if ($sql == null) {
-				$this->_print('// No Data');
+				$this->print('// No Data');
 			} else if ($total > 65535) {
-				$this->_print('// Too many result lines');
+				$this->print('// Too many result lines');
 			} else {
 
 				// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
@@ -738,20 +738,20 @@ class QueryController extends AbstractOGAMController {
 				}
 
 				// Display the default message
-				$this->_print('// *************************************************' . "\n");
-				$this->_print('// ' . $this->translator->translate('Data Export') . "\n");
-				$this->_print('// *************************************************' . "\n\n");
+				$this->print('// *************************************************' . "\n");
+				$this->print('// ' . $this->translator->translate('Data Export') . "\n");
+				$this->print('// *************************************************' . "\n\n");
 
 				// Request criterias
-				$this->_print($this->_csvExportCriterias());
-				$this->_print("\n");
+				$this->print($this->csvExportCriterias());
+				$this->print("\n");
 
 				// Export the column names
-				$this->_print('// ');
+				$this->print('// ');
 				foreach ($resultColumns as $tableField) {
-					$this->_print($tableField->label . ';');
+					$this->print($tableField->label . ';');
 				}
-				$this->_print("\n");
+				$this->print("\n");
 
 				// Get the order parameters
 				$sort = $this->getRequest()->getPost('sort');
@@ -797,40 +797,40 @@ class QueryController extends AbstractOGAMController {
 							$formField = $formFields[$key];
 
 							if ($value == null) {
-								$this->_print(';');
+								$this->print(';');
 							} else {
 								if ($tableField->type === "CODE") {
 
-									$label = $this->_getLabelCache($tableField, $value);
+									$label = $this->getLabelCache($tableField, $value);
 
-									$this->_print('"' . $label . '";');
+									$this->print('"' . $label . '";');
 								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$label = '';
 									foreach ($arrayValues as $arrayValue) {
 
-										$label .= $this->_getLabelCache($tableField, $arrayValue);
+										$label .= $this->getLabelCache($tableField, $arrayValue);
 										$label .= ',';
 									}
 									if ($label != '') {
 										$label = substr($label, 0, -1);
 									}
 									$label = '[' . $label . ']';
-									$this->_print('"' . $label . '";');
+									$this->print('"' . $label . '";');
 								} else if ($formField->inputType === "NUMERIC") {
 									// Numeric value
 									if ($formField->decimals !== null && $formField->decimals !== "") {
 										$value = number_format($value, $formField->decimals, ',', '');
 									}
-									$this->_print($value . ';');
+									$this->print($value . ';');
 								} else {
 									// Default case : String value
-									$this->_print('"' . $value . '";');
+									$this->print('"' . $value . '";');
 								}
 							}
 						}
-						$this->_print("\n");
+						$this->print("\n");
 						$count ++;
 					}
 
@@ -843,7 +843,7 @@ class QueryController extends AbstractOGAMController {
 				}
 			}
 		} else {
-			$this->_print('// No Permissions');
+			$this->print('// No Permissions');
 		}
 
 		$this->_helper->layout()->disableLayout();
@@ -888,9 +888,9 @@ class QueryController extends AbstractOGAMController {
 			$this->logger->debug('Expected lines : ' . $total);
 
 			if ($sql == null) {
-				$this->_print('// No Data');
+				$this->print('// No Data');
 			} else if ($total > 65535) {
-				$this->_print('// Too many result lines');
+				$this->print('// Too many result lines');
 			} else {
 
 				// Retrive the session-stored info
@@ -907,9 +907,9 @@ class QueryController extends AbstractOGAMController {
 				}
 
 				// Display the default message
-				$this->_print('<?xml version="1.0" encoding="UTF-8"?>' . "\n");
-				$this->_print('<kml xmlns="http://www.opengis.net/kml/2.2">' . "\n");
-				$this->_print('<Document>' . "\n");
+				$this->print('<?xml version="1.0" encoding="UTF-8"?>' . "\n");
+				$this->print('<kml xmlns="http://www.opengis.net/kml/2.2">' . "\n");
+				$this->print('<Document>' . "\n");
 
 				// Get the order parameters
 				$sort = $this->getRequest()->getPost('sort');
@@ -948,11 +948,11 @@ class QueryController extends AbstractOGAMController {
 					// Export the lines of data
 					foreach ($result as $line) {
 
-						$this->_print("<Placemark>");
+						$this->print("<Placemark>");
 
-						$this->_print($line['kml']);
+						$this->print($line['kml']);
 
-						$this->_print("<ExtendedData>");
+						$this->print("<ExtendedData>");
 						foreach ($resultColumns as $tableField) {
 
 							$key = strtolower($tableField->getName());
@@ -963,13 +963,13 @@ class QueryController extends AbstractOGAMController {
 							if ($value !== null) {
 								if ($tableField->type === "CODE") {
 									// Manage code traduction
-									$label = $this->_getLabelCache($tableField, $value);
+									$label = $this->getLabelCache($tableField, $value);
 								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$label = '';
 									foreach ($arrayValues as $arrayValue) {
-										$label .= $this->_getLabelCache($tableField, $arrayValue);
+										$label .= $this->getLabelCache($tableField, $arrayValue);
 										$label .= ',';
 									}
 									if ($label != '') {
@@ -984,15 +984,15 @@ class QueryController extends AbstractOGAMController {
 								}
 							}
 
-							$this->_print('<Data name="' . $formField->label . '">');
-							$this->_print('<value>' . $label . '</value>');
-							$this->_print('</Data>');
+							$this->print('<Data name="' . $formField->label . '">');
+							$this->print('<value>' . $label . '</value>');
+							$this->print('</Data>');
 						}
-						$this->_print("</ExtendedData>");
+						$this->print("</ExtendedData>");
 
-						$this->_print("</Placemark>");
+						$this->print("</Placemark>");
 
-						$this->_print("\n");
+						$this->print("\n");
 						$count ++;
 					}
 
@@ -1004,11 +1004,11 @@ class QueryController extends AbstractOGAMController {
 					$page ++;
 				}
 
-				$this->_print('</Document>' . "\n");
-				$this->_print('</kml>' . "\n");
+				$this->print('</Document>' . "\n");
+				$this->print('</kml>' . "\n");
 			}
 		} else {
-			$this->_print('// No Permissions');
+			$this->print('// No Permissions');
 		}
 
 		$this->_helper->layout()->disableLayout();
@@ -1053,9 +1053,9 @@ class QueryController extends AbstractOGAMController {
 			$this->logger->debug('Expected lines : ' . $total);
 
 			if ($sql == null) {
-				$this->_print('// No Data');
+				$this->print('// No Data');
 			} else if ($total > 65535) {
-				$this->_print('// Too many result lines');
+				$this->print('// Too many result lines');
 			} else {
 
 				// Retrive the session-stored info
@@ -1072,8 +1072,8 @@ class QueryController extends AbstractOGAMController {
 				}
 
 				// Display the default message
-				$this->_print('{ "type": "FeatureCollection",' . "\n");
-				$this->_print(' "features": [' . "\n");
+				$this->print('{ "type": "FeatureCollection",' . "\n");
+				$this->print(' "features": [' . "\n");
 
 				// Get the order parameters
 				$sort = $this->getRequest()->getPost('sort');
@@ -1112,9 +1112,9 @@ class QueryController extends AbstractOGAMController {
 					// Export the lines of data
 					foreach ($result as $line) {
 
-						$this->_print('{"type": "Feature", ');
-						$this->_print('"geometry": ' . $line['geojson'] . ', ');
-						$this->_print('"properties": {');
+						$this->print('{"type": "Feature", ');
+						$this->print('"geometry": ' . $line['geojson'] . ', ');
+						$this->print('"properties": {');
 						foreach ($resultColumns as $tableField) {
 
 							$key = strtolower($tableField->getName());
@@ -1126,14 +1126,14 @@ class QueryController extends AbstractOGAMController {
 							if ($value !== null) {
 								if ($tableField->type === "CODE") {
 									// Manage code traduction
-									$label = $this->_getLabelCache($tableField, $value);
+									$label = $this->getLabelCache($tableField, $value);
 								} else if ($tableField->type === "ARRAY") {
 									// Split the array items
 									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
 									$label = '';
 									foreach ($arrayValues as $arrayValue) {
 
-										$label .= $this->_getLabelCache($tableField, $arrayValue);
+										$label .= $this->getLabelCache($tableField, $arrayValue);
 										$label .= ',';
 									}
 									if ($label != '') {
@@ -1148,13 +1148,13 @@ class QueryController extends AbstractOGAMController {
 								}
 							}
 
-							$this->_print('"' . $formField->label . '": "' . $label . '", ');
+							$this->print('"' . $formField->label . '": "' . $label . '", ');
 						}
-						$this->_print("}");
+						$this->print("}");
 
-						$this->_print("},");
+						$this->print("},");
 
-						$this->_print("\n");
+						$this->print("\n");
 						$count ++;
 					}
 
@@ -1166,11 +1166,11 @@ class QueryController extends AbstractOGAMController {
 					$page ++;
 				}
 
-				$this->_print(']' . "\n");
-				$this->_print('}' . "\n");
+				$this->print(']' . "\n");
+				$this->print('}' . "\n");
 			}
 		} else {
-			$this->_print('// No Permissions');
+			$this->print('// No Permissions');
 		}
 
 		$this->_helper->layout()->disableLayout();
@@ -1183,7 +1183,7 @@ class QueryController extends AbstractOGAMController {
 	 * @param $output The
 	 *        	string to encode and to display
 	 */
-	private function _print($output) {
+	protected function print($output) {
 		$configuration = Zend_Registry::get("configuration");
 		$charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
 		echo iconv("UTF-8", $charset, $output);

@@ -77,7 +77,7 @@ class IntegrationController extends AbstractOGAMController {
 	/**
 	 * Build and return the data submission form.
 	 */
-	protected function _getDataSubmissionForm() {
+	protected function getDataSubmissionForm() {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => ' data-submission-form',
@@ -125,7 +125,7 @@ class IntegrationController extends AbstractOGAMController {
 	 * @return Application_Form_OGAMForm
 	 * @throws Zend_Form_Exception
 	 */
-	protected function _getDataUploadForm($showDetail = false, $model = false) {
+	protected function getDataUploadForm($showDetail = false, $model = false) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'data-upload-form',
@@ -238,7 +238,7 @@ class IntegrationController extends AbstractOGAMController {
 	public function showCreateDataSubmissionAction() {
 		$this->logger->debug('showCreateDataSubmissionAction');
 
-		$this->view->form = $this->_getDataSubmissionForm();
+		$this->view->form = $this->getDataSubmissionForm();
 
 		$this->render('show-create-data-submission');
 	}
@@ -267,7 +267,7 @@ class IntegrationController extends AbstractOGAMController {
 
 		$this->view->dataset = $dataset;
 
-		$this->view->form = $this->_getDataUploadForm($showDetail, $showModel);
+		$this->view->form = $this->getDataUploadForm($showDetail, $showModel);
 
 		$this->render('show-upload-data');
 	}
@@ -287,7 +287,7 @@ class IntegrationController extends AbstractOGAMController {
 		}
 
 		// Check the validity of the Form
-		$form = $this->_getDataSubmissionForm();
+		$form = $this->getDataSubmissionForm();
 		if (!$form->isValid($_POST)) {
 			$this->logger->debug('form is not valid');
 			$this->view->form = $form;
@@ -341,7 +341,7 @@ class IntegrationController extends AbstractOGAMController {
 		}
 
 		// Check the validity of the Form
-		$form = $this->_getDataUploadForm();
+		$form = $this->getDataUploadForm();
 		if (!$form->isValid($_POST)) {
 			$this->logger->err('form is not valid');
 			$this->view->form = $form;
@@ -506,7 +506,7 @@ class IntegrationController extends AbstractOGAMController {
 	 *        	the name of the servlet
 	 * @return JSON the status of the process
 	 */
-	protected function _getStatus($servletName) {
+	protected function getStatus($servletName) {
 		$this->logger->debug('getStatusAction');
 
 		// Send the cancel request to the integration server
@@ -544,14 +544,14 @@ class IntegrationController extends AbstractOGAMController {
 	 * Gets the data integration status.
 	 */
 	public function getDataStatusAction() {
-		$this->_getStatus('DataServlet');
+		$this->getStatus('DataServlet');
 	}
 
 	/**
 	 * Gets the check status.
 	 */
 	public function getCheckStatusAction() {
-		$this->_getStatus('CheckServlet');
+		$this->getStatus('CheckServlet');
 	}
 
 	/**

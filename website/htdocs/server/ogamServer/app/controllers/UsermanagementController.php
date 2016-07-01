@@ -230,7 +230,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 * @param String $login
 	 *        	the login
 	 */
-	private function _getChangePasswordForm($login = null) {
+	protected function getChangePasswordForm($login = null) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'change-user-password-form',
@@ -238,7 +238,7 @@ class UsermanagementController extends AbstractOGAMController {
 			)
 		));
 
-		$this->logger->debug('_getChangePasswordForm login : ' . $login);
+		$this->logger->debug('getChangePasswordForm login : ' . $login);
 
 		// Add the user login as an input type text
 		$loginElem = $form->createElement('hidden', 'login');
@@ -556,7 +556,7 @@ class UsermanagementController extends AbstractOGAMController {
 		}
 
 		// Check the validity of the form
-		$form = $this->_getChangePasswordForm();
+		$form = $this->getChangePasswordForm();
 
 		if (!$form->isValid($_POST)) {
 			// Failed validation, redisplay form
@@ -901,7 +901,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->view->username = $user->username;
 
 		// Generate the form
-		$form = $this->_getChangePasswordForm($userLogin);
+		$form = $this->getChangePasswordForm($userLogin);
 		$this->view->form = $form;
 
 		// Eventually add an error message

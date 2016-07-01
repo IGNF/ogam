@@ -383,7 +383,7 @@ class MapController extends AbstractOGAMController {
 		$providerId = $userSession->user->provider->id;
 		$this->logger->debug('providerId : ' . $providerId);
 
-		$item = $this->_getLegendItems(-1, $providerId);
+		$item = $this->getLegendItems(-1, $providerId);
 
 		echo '{"success": true, "layers":[' . $item . ']}';
 
@@ -402,8 +402,8 @@ class MapController extends AbstractOGAMController {
 	 *        	The identifier of the provider
 	 * @return String
 	 */
-	private function _getLegendItems($parentId, $providerId) {
-		$this->logger->debug('_getLegendItems : ' . $parentId . " " . $providerId);
+	protected function getLegendItems($parentId, $providerId) {
+		$this->logger->debug('getLegendItems : ' . $parentId . " " . $providerId);
 
 		// Get the list of items corresponding to the asked level
 		$legendItems = $this->layersModel->getLegendItems($parentId, $providerId);

@@ -68,7 +68,7 @@ class ProxyController extends AbstractOGAMController {
 	 *        	the parameter name
 	 * @return String the value of the parameter
 	 */
-	protected function _extractParam($url, $param) {
+	protected function extractParam($url, $param) {
 		$end = $this->extractAfter($url, $param . "=");
 		$endpos = strpos($end, "&");
 		if ($endpos === false) {
@@ -105,7 +105,7 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/gettile?");
 
 		// Check the image type
-		$imagetype = $this->_extractParam($uri, "FORMAT");
+		$imagetype = $this->extractParam($uri, "FORMAT");
 		if ($this->endsWith($imagetype, "JPG") || $this->endsWith($imagetype, "JPEG")) {
 			header("Content-Type: image/jpg");
 		} else {
@@ -269,7 +269,7 @@ class ProxyController extends AbstractOGAMController {
 		$uri = $mapServiceURL . $this->extractAfter($uri, "proxy/getlegendimage?");
 
 		// Check the image type
-		$imagetype = $this->_extractParam($uri, "FORMAT");
+		$imagetype = $this->extractParam($uri, "FORMAT");
 		if ($this->endsWith($imagetype, "JPG") || $this->endsWith($imagetype, "JPEG")) {
 			header("Content-Type: image/jpg");
 		} else {
@@ -306,7 +306,7 @@ class ProxyController extends AbstractOGAMController {
 
 		$uri = $_SERVER["REQUEST_URI"];
 
-		$layerName = $this->_extractParam($uri, 'typename');
+		$layerName = $this->extractParam($uri, 'typename');
 		$this->logger->debug('nom du typename du WFS : ' . $layerName);
 
 		$configuration = Zend_Registry::get("configuration");
