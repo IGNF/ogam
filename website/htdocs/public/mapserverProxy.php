@@ -68,6 +68,12 @@ if (isset($queriesArg['USECACHE']) && strcasecmp($queriesArg['USECACHE'], 'true'
     $url = $configurationSession->configuration['tilecache_private_url'];
 }
 
+if (empty($url)) {
+	error_log("URL not set, check the configuration of the mapserver_private_url parameter and the bootstrap");
+	echo "URL not set, check the configuration of the mapserver_private_url parameter and the bootstrap";
+	exit;
+}
+
 // Set the uri (url + urn)
 $uri = rtrim($url,'?').'?'.http_build_query($queriesArg);
 
