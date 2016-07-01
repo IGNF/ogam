@@ -1,7 +1,7 @@
 /.externalToolBuilders
 /.settings
 /.vagrant
-/.gradle
+.gradle
 /database/GENERATE_DB.log
 /documentation/2 - Conception/metadata/v4/*.csv
 /documentation/2 - Conception/Schémas relationnels/md ogam.sms.bak
@@ -24,3 +24,6 @@
 /website/htdocs/client/ogamDesktop/docs
 /website/htdocs/client/ext/packages/legacy/sass/example/bootstrap.json
 /website/htdocs/client/ext/build
+tmp
+upload
+.idea
