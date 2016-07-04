@@ -218,7 +218,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		logger.debug(fields);
 
-		assertEquals("The PLOT_DATA table should contain 10 fields", 10, fields.size());
+		assertEquals("The PLOT_DATA table should contain 10 fields", 11, fields.size());
 
 	}
 

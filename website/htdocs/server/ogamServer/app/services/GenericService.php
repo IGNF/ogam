@@ -661,7 +661,7 @@ class Application_Service_GenericService {
 				// Case ">= HH:mm:ss"
 				$beginDate = substr($value, - strlen($timeFormat));
 				if (Zend_Date::isDate($beginDate, 'HH:mm:ss')) {
-					$sql .= "(" . $column . " >=  TIME '" . $beginDate . "')";
+					$sql .= "(" . $column . " >= TIME '" . $beginDate . "')";
 				}
 			} else if (strlen($value) === strlen("$ltOperator $timeFormat") && strpos($value, $ltOperator) === 0) {
 				// Case "<= HH:mm:ss"
