@@ -27,6 +27,13 @@ Ext.define("OgamDesktop.locale.en.ux.picker.NumberRange", {
 		okButtonText : "ok"
 });
 
+Ext.define("OgamDesktop.loacle.en.ux.picker.TimeRange", {
+	override: "OgamDesktop.ux.picker.TimeRange",
+	minFieldLabel : "Min",
+	maxFieldLabel : "Max",
+	okButtonText : "ok"
+});
+
 Ext.define("OgamDesktop.locale.en.ux.picker.DateRange", {
 	override: "OgamDesktop.ux.picker.DateRange",
 	tbarStartDateButtonText : "Start date...",
@@ -78,6 +85,17 @@ Ext.define("OgamDesktop.locale.en.ux.form.field.GeometryField", {
 	mapWindowValidateButtonText : "Validate",
 	mapWindowValidateAndSearchButtonText : "Validate and Search",
 	mapWindowCancelButtonText : "Cancel"
+});
+
+Ext.define("OgamDesktop.loacle.en.ux.form.field.TimeRangeField", {
+	override: "OgamDesktop.ux.form.field.TimeRangeField",
+    minText: "The times in this field must be equal to or after {0}}",
+    maxText: "The times in this field must be equal to or before {0}",
+    reverseText: "The end times must be posterior to the start date",
+    notEqualText: "The end times can't be equal to the start date",
+    dateSeparator: ' - ',
+    maxFieldPrefix: '<= ',
+    minFieldPrefix: '>= '
 });
 
 Ext.define("OgamDesktop.locale.en.ux.grid.column.Factory", {
