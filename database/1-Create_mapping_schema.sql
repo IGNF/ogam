@@ -76,7 +76,6 @@ CREATE TABLE layer
   default_opacity       INT,           -- Default value of the layer opacity : 0 to 100
   isBaseLayer	 		INT,		   -- Indicate if the layer is a base layer (or an overlay)
   isUntiled			 	INT,           -- Force OpenLayer to request one image each time
-  isVector			 	INT,           -- Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster)
   maxscale				INT,           -- Max scale of apparation
   minscale				INT,           -- Min scale of apparition
   has_legend    		INT, 	   	   -- If value = 1 is the layer has a legend that should be displayed
@@ -84,7 +83,6 @@ CREATE TABLE layer
   activate_type         VARCHAR(36),   -- Group of event that will activate this layer (NONE, REQUEST)
   view_service_name	    VARCHAR(50),   -- Indicates the service for the map visualisation
   legend_service_name	VARCHAR(50),   -- Indicates the service for the legend
-  print_service_name	VARCHAR(50),   -- Indicates the service for the print function
   detail_service_name	VARCHAR(50),   -- Indicates the service for the detail panel display 
   feature_service_name	VARCHAR(50),   -- Indicates the service for the wfs
   PRIMARY KEY  (layer_name)
@@ -98,7 +96,6 @@ COMMENT ON COLUMN layer.default_opacity IS 'Default value of the layer opacity :
 COMMENT ON COLUMN layer.isTransparent IS 'Indicate if the layer is transparent';
 COMMENT ON COLUMN layer.isBaseLayer IS 'Indicate if the layer is a base layer (or an overlay)';
 COMMENT ON COLUMN layer.isUntiled IS 'Force OpenLayer to request one image each time';
-COMMENT ON COLUMN layer.isVector IS 'Indicate if the layer is vector-based (1 for an layer with geometry, 0 for a raster)';
 COMMENT ON COLUMN layer.maxscale IS 'Max scale of apparation';
 COMMENT ON COLUMN layer.minscale IS 'Min scale of apparition';
 COMMENT ON COLUMN layer.has_legend IS 'If value = 1 is the layer has a legend that should be displayed';
@@ -106,7 +103,6 @@ COMMENT ON COLUMN layer.provider_id IS 'If empty, the layer can be seen by any p
 COMMENT ON COLUMN layer.activate_type IS 'Group of event that will activate this layer (NONE, REQUEST, AGGREGATION or INTERPOLATION)';
 COMMENT ON COLUMN layer.view_service_name IS 'Indicates the service for the map visualisation';
 COMMENT ON COLUMN layer.legend_service_name IS 'Indicates the service for the legend';
-COMMENT ON COLUMN layer.print_service_name IS 'Indicates the service for the print function (called by the PHP server, not the navigator)';
 COMMENT ON COLUMN layer.detail_service_name IS 'Indicates the service for the detail panel display';
 COMMENT ON COLUMN layer.feature_service_name IS 'Indicates the service for the wfs';
 

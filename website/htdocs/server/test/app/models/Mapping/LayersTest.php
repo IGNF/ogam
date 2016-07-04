@@ -31,7 +31,6 @@ class LayersTest extends ControllerTestCase {
 		$this->assertEquals(100, $resultLayer->defaultOpacity);
 		$this->assertEquals(false, $resultLayer->isBaseLayer);
 		$this->assertEquals(true, $resultLayer->isUntiled);
-		$this->assertEquals(true, $resultLayer->isVector);
 		$this->assertEquals(null, $resultLayer->maxscale);
 		$this->assertEquals(null, $resultLayer->minscale);
 		$this->assertEquals(false, $resultLayer->hasLegend);
@@ -39,7 +38,6 @@ class LayersTest extends ControllerTestCase {
 		$this->assertEquals('REQUEST', $resultLayer->activateType);
 		$this->assertEquals('Local_MapProxy_Mapserv_WMS_GetMap', $resultLayer->viewServiceName);
 		$this->assertEquals('Local_MapProxy_WMS_GetLegendGraphic', $resultLayer->legendServiceName);
-		$this->assertEquals('Private_Mapserv_WMS_GetMap', $resultLayer->printServiceName);
 		$this->assertEquals('Local_MapProxy_Mapserv_WMS_GetMap', $resultLayer->detailServiceName);
 		$this->assertEquals(null, $resultLayer->featureServiceName);
 	}

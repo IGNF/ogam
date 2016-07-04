@@ -46,10 +46,11 @@ class Application_Object_Website_Configuration {
 	 *
 	 * @param String $name
 	 * @param String $defaultValue
+	 * @param Boolean $silent (if true, doesn't generate a warning for default value)
 	 * @return String the parameter value
 	 * @throws An exception if the parameter cannot be found and no default value is set
 	 */
-	function getConfig($name, $defaultValue = null) {
+	function getConfig($name, $defaultValue = null, $silent = false) {
 		if (isset($this->parameters[$name])) {
 			$parameter = $this->parameters[$name];
 		}
@@ -60,8 +61,10 @@ class Application_Object_Website_Configuration {
 		} else if ($defaultValue !== null) {
 
 			// If not available but a default is specified, return the default
-			$logger = Zend_Registry::get("logger");
-			$logger->warn('Configuration parameter ' . $name . ' not found, using default value : ' . $defaultValue);
+			if (!$silent) {
+				$logger = Zend_Registry::get("logger");
+				$logger->warn('Configuration parameter ' . $name . ' not found, using default value : ' . $defaultValue);
+			}
 
 			return $defaultValue;
 		} else {

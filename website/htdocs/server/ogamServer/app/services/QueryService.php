@@ -727,7 +727,7 @@ class Application_Service_QueryService {
 		// add a success flag (default true) and encode
 		return json_encode(array_merge(array(
 			'success' => true
-		), $this->getDetailsData($id, $detailsLayers, null, true)));
+		), $this->getDetailsData($id, $detailsLayers, null)));
 	}
 
 	/**
@@ -741,11 +741,9 @@ class Application_Service_QueryService {
 	 *        	The identifier of the dataset (to filter data)
 	 * @param boolean $withChildren
 	 *        	If true, get the information about the children of the object
-	 * @param boolean $proxy
-	 *        	If true, use the proxy to fetch mapserver
 	 * @return array Array that represents the details of the result line.
 	 */
-	public function getDetailsData($id, $detailsLayers, $datasetId = null, $withChildren = false, $proxy = true) {
+	public function getDetailsData($id, $detailsLayers, $datasetId = null, $withChildren = false) {
 		$this->logger->debug('getDetailsData : ' . $id);
 
 		// Transform the identifier in an array
@@ -841,7 +839,7 @@ class Application_Service_QueryService {
 		if (!empty($detailsLayers)) {
 			if ($detailsLayers[0] !== '') {
 				$url = array();
-				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams, $proxy)));
+				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams)));
 
 				$dataDetails['maps1'] = array(
 					'title' => 'image'
@@ -857,7 +855,7 @@ class Application_Service_QueryService {
 
 			if ($detailsLayers[1] !== '') {
 				$url = array();
-				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams, $proxy)));
+				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams)));
 				$dataDetails['maps2'] = array(
 					'title' => 'overview'
 				);
@@ -908,10 +906,9 @@ class Application_Service_QueryService {
 	 *        	bounding box
 	 * @param Array $mapservParams
 	 *        	Parameters for mapserver
-	 * @param Boolean $proxy
 	 * @return String
 	 */
-	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
+	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams) {
 		$configuration = Zend_Registry::get('configuration');
 
 		// Configure the projection systems
@@ -919,11 +916,7 @@ class Application_Service_QueryService {
 		$baseUrls = '';
 
 		// Get the base urls for the services
-		if (!$proxy) {
-			$detailServices = $this->servicesModel->getPrintServices();
-		} else {
-			$detailServices = $this->servicesModel->getDetailServices();
-		}
+		$detailServices = $this->servicesModel->getDetailServices();
 
 		// Get the server name for the layers
 		$layerNames = explode(",", $detailsLayers);
@@ -936,12 +929,8 @@ class Application_Service_QueryService {
 			$serviceLayerName = $layer->serviceLayerName;
 
 			// Get the base Url for detail service
-			if (!$proxy) {
-				$detailServiceName = $layer->printServiceName;
-			} else {
-				if ($layer->detailServiceName !== '') {
-					$detailServiceName = $layer->detailServiceName;
-				}
+			if ($layer->detailServiceName !== '') {
+				$detailServiceName = $layer->detailServiceName;
 			}
 
 			foreach ($detailServices as $detailService) {

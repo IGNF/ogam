@@ -358,8 +358,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		// this will be used by the "mapserverProxy" and "tilecacheProxy" classes to avoid a complete bootstrap
 		$configurationSession = new Zend_Session_Namespace('configuration');
 		$configurationSession->configuration = array(
-			"mapserver_private_url" => $configuration->getConfig('mapserver_private_url', 'http://localhost/mapserv-ogam?'),
-			"tilecache_private_url" => $configuration->getConfig('tilecache_private_url', 'http://localhost/tilecache-ogam?')
+			"mapserver_private_url" => $configuration->getConfig('mapserver_private_url', 'http://localhost/mapserv-ogam?', true),
+			"tilecache_private_url" => $configuration->getConfig('tilecache_private_url', 'http://localhost/tilecache-ogam?', true)
 		);
 	}
 

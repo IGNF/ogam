@@ -801,7 +801,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 
 		// Check if the field is mandatory
-		field.allowBlank = !(record.required === true);
+		field.allowBlank = !(record.required == true);
 
 		// Add a tooltip
 		if (!Ext.isEmpty(record.definition)) {
@@ -823,7 +823,9 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// Set the label
 		field.fieldLabel = record.label;
-		record.required === true && (field.fieldLabel += '*');
+		if (record.required == true) {
+		 	field.fieldLabel += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">*</span> ';
+		}
 		
 		// Set the width
 		field.width = this.fieldWidth;

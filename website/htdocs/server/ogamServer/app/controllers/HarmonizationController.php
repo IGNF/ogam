@@ -114,7 +114,7 @@ class HarmonizationController extends AbstractOGAMController {
 	public function launchHarmonizationAction() {
 		$this->logger->debug('launchHarmonizationAction');
 
-		$this->_launchHarmonization(false);
+		$this->launchHarmonization(false);
 	}
 
 	/**
@@ -125,7 +125,7 @@ class HarmonizationController extends AbstractOGAMController {
 	public function removeHarmonizationDataAction() {
 		$this->logger->debug('removeHarmonizationDataAction');
 
-		$this->_launchHarmonization(true);
+		$this->launchHarmonization(true);
 	}
 
 	/**
@@ -135,7 +135,7 @@ class HarmonizationController extends AbstractOGAMController {
 	 *        	If true then we remove the old data without copying new data.
 	 * @return a View
 	 */
-	private function _launchHarmonization($removeOnly = false) {
+	protected function launchHarmonization($removeOnly = false) {
 
 		// Get the submission Id
 		$providerId = $this->_getParam("PROVIDER_ID");
