@@ -573,6 +573,12 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			field.xtype = 'datefield';
 			field.format = OgamDesktop.ux.request.RequestFieldSet.dateFormat;
 			break;
+		case 'TIME': // The input type DATE correspond generally to a
+			// data
+			// type DATE
+			field.xtype = 'timefield';
+			field.format = OgamDesktop.ux.request.RequestFieldSet.timeFormat;
+			break;
 		case 'NUMERIC': // The input type NUMERIC correspond generally to a
 			// data
 			// type NUMERIC or RANGE

@@ -187,7 +187,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 		 *      <tt>'Y/m/d'</tt>)
 		 */
 		dateFormat : 'Y/m/d',
-
+		timeFormat : 'H:i:s',
 		/**
 		 * Builds a criteria from the record.
 		 * @private
@@ -271,6 +271,11 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				// type DATE
 				field.xtype = 'daterangefield';
 				field.format = cls.dateFormat;
+				break;
+			case 'TIME': // The input type TIME correspond generally to a data
+				// type TIME
+				field.xtype = 'timerangefield';
+				field.format = cls.timeFormat;
 				break;
 			case 'NUMERIC': // The input type NUMERIC correspond generally to a data
 				// type NUMERIC or RANGE
