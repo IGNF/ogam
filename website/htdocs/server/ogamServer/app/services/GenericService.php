@@ -1065,6 +1065,7 @@ class Application_Service_GenericService {
 	 *        	"geometry_srs" => output SRS for geometry fields (default 4326)
 	 *        	"date_format" => SQL date format for date fields (default 'YYYY/MM/DD')
 	 *        	"datetime_format" => SQL date format for datetime field (default like date_format; to use ISO 8601 : 'YYYY-MM-DD"T"HH24:MI:SSTZ')
+	 *        	"time_format"=>'HH24:mi:ss'
 	 * @return String the SELECT part corresponding to the field.
 	 */
 	public function buildSelectItem($field, $options = array()) {
@@ -1081,7 +1082,7 @@ class Application_Service_GenericService {
 			"gml_id" => 'null',
 			"date_format" => 'YYYY/MM/DD',
 			"datetime_format" => 'YYYY/MM/DD',
-			"time_format"=>'HH:mi:ss',
+			"time_format"=>'HH24:mi:ss',
 		);
 		$options = array_replace($defaults, $options);
 
