@@ -215,7 +215,7 @@ public class IntegrationService extends GenericMapper {
 						FileFieldData sourceFieldDescriptor = sourceFieldDescriptors.get(col);
 
 						// Check the mask if available and the variable is not a date (date format is tested with a date format)
-						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE)) {
+						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE) && !sourceFieldDescriptor.getType().equalsIgnoreCase(TIME)) {
 							try {
 								checkMask(sourceFieldDescriptor.getMask(), value);
 							} catch (CheckException e) {

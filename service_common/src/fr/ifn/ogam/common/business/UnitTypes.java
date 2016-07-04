@@ -40,7 +40,11 @@ public interface UnitTypes {
 	 * A date (mapped to java type Date).
 	 */
 	String DATE = "DATE";
-
+	
+	/**
+	 * A time (mapped to java type Date)
+	 */
+	String TIME= "TIME";
 	/**
 	 * A boolean (mapped to java type Boolean).
 	 */

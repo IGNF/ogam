@@ -173,6 +173,13 @@ public class GenericDAO {
 							Date date = (Date) colData.getValue();
 							ps.setTimestamp(count, new java.sql.Timestamp(date.getTime()));
 						}
+					} else if (colData.getType().equalsIgnoreCase(TIME)) {
+						if (colData.getValue() == null) {
+							ps.setNull(count, java.sql.Types.TIME);
+						} else {
+							Date date = (Date) colData.getValue();
+							ps.setTime(count, new java.sql.Time(date.getTime()));
+						}
 					} else if (colData.getType().equalsIgnoreCase(BOOLEAN)) {
 						if (colData.getValue() == null) {
 							ps.setNull(count, java.sql.Types.BOOLEAN);
