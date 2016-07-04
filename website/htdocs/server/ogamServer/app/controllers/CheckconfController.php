@@ -232,6 +232,11 @@ class CheckconfController extends AbstractOGAMController {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
+					case "TIME":
+							if ($foundField->type !== 'TIME' && $foundField->type !== 'TIME WITHOUT TIME ZONE') {
+								$fieldTypeMsg[] = $msg;
+							}
+							break;
 					case "CODE":
 						if ($foundField->type !== 'CHARACTER VARYING' && $foundField->type !== 'CHARACTER' && $foundField->type !== 'TEXT') {
 							$fieldTypeMsg[] = $msg;

@@ -197,7 +197,26 @@ class DataEditionController extends AbstractOGAMController {
 				$elem->addValidator($validator);
 				$elem->setValue($tableField->value);
 				break;
-
+			case 'TIME':
+				
+					// The field is a date
+					$elem = $form->createElement('text', $tableField->data);
+					// validate the date format
+					if ($formField !== null && $formField->mask !== null) {
+						$validator = new Zend_Validate_Date(array(
+								'format' => $formField->mask,
+								'locale' => 'en_EN'
+						));
+					} else {
+						$validator = new Zend_Validate_Date(array(
+								'format' => 'hh:mm',
+								'locale' => 'en_EN'
+						));
+					}
+					$elem->addValidator($validator);
+					$elem->setValue($tableField->value);
+					break;
+				
 			case "CODE":
 
 				$elem = $form->createElement('select', $tableField->data);

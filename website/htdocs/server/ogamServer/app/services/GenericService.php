@@ -630,6 +630,61 @@ class Application_Service_GenericService {
 
 		return $sql;
 	}
+	/**
+	 * Build a WHERE criteria for a single time value.
+	 *
+	 * @param TableField $tableField a criteria field.
+	 * @param String $value a time criterium.
+	 *
+	 * @tutorial examples of values :
+	 *        	HH:mm:ss : for equality
+	 *        	>= HH:mm:ss : for the superior value
+	 *        	<= HH:mm:ss : for the inferior value
+	 *        	HH:mm:ss - HH:mm:ss : for the interval
+	 */
+	private function _buildTimeWhereItem($tableField, $value) {
+		$sql = "";
+		$timeFormat= 'HH:mm:ss';
+		$gtOperator= '>=';
+		$ltOperator = '<=';
+		$value = trim($value);
+		$column = $tableField->format . "." . $tableField->columnName;
+	
+		if (!empty($value)) {
+			if (strlen($value) === strlen($timeFormat)) {
+				// Case "HH:mm:ss"
+				if (Zend_Date::isDate($value, 'HH:mm:ss')) {
+					// One value, we make an equality comparison
+					$sql .= "(" . $column . " = TIME '" . $value . "')";
+				}
+			} else if (strlen($value) === strlen("$gtOperator $timeFormat") && strpos($value, $gtOperator) === 0) {
+				// Case ">= HH:mm:ss"
+				$beginDate = substr($value, - strlen($timeFormat));
+				if (Zend_Date::isDate($beginDate, 'HH:mm:ss')) {
+					$sql .= "(" . $column . " >=  TIME '" . $beginDate . "')";
+				}
+			} else if (strlen($value) === strlen("$ltOperator $timeFormat") && strpos($value, $ltOperator) === 0) {
+				// Case "<= HH:mm:ss"
+				$endDate = substr($value, - strlen($timeFormat));
+				if (Zend_Date::isDate($endDate, '$timeFormat')) {
+					$sql .= "(" . $column . " <= TIME '" . $endDate . "')";
+				}
+			} else if (strlen($value) === strlen("$timeFormat - $timeFormat")) {
+				// Case "HH:mm:ss - HH:mm:ss"
+				$beginDate = substr($value, 0, strlen($timeFormat));
+				$endDate = substr($value, -strlen($timeFormat));
+				if (Zend_Date::isDate($beginDate, '$timeFormat') && Zend_Date::isDate($endDate, '$timeFormat')) {
+					$sql .= "(" . $column . " >= TIME '" . $beginDate . "' AND " . $column . " <= TIME '" . $endDate . "')";
+				}
+			}
+		}
+	
+		if ($sql === "") {
+			throw new Exception("Invalid data format");
+		}
+	
+		return $sql;
+	}
 
 	/**
 	 * Build the WHERE clause corresponding to one criteria.
@@ -693,6 +748,27 @@ class Application_Service_GenericService {
 						}
 					}
 					break;
+				case "TIME":
+						// time values
+						if (is_array($value)) {
+							// Case of a list of values
+							$sql2 = '';
+							foreach ($value as $val) {
+								if (!empty($val)) {
+									$sql2 .= $this->_buildTimeWhereItem($tableField, $val) . " OR ";
+								}
+							}
+							if ($sql2 !== '') {
+								$sql2 = substr($sql2, 0, -4); // remove the last OR
+								$sql .= " AND (" . $sql2 . ")";
+							}
+						} else {
+							// Single value
+							if (!empty($value)) {
+								$sql .= " AND " . $this->_buildTimeWhereItem($tableField, $value);
+							}
+						}
+						break;
 				case "INTEGER":
 				case "NUMERIC":
 					// Numeric values
@@ -1004,7 +1080,8 @@ class Application_Service_GenericService {
 			"gml_prefix" => 'null',
 			"gml_id" => 'null',
 			"date_format" => 'YYYY/MM/DD',
-			"datetime_format" => 'YYYY/MM/DD'
+			"datetime_format" => 'YYYY/MM/DD',
+			"time_format"=>'HH:mi:ss',
 		);
 		$options = array_replace($defaults, $options);
 
@@ -1032,6 +1109,8 @@ class Application_Service_GenericService {
 			$sql .= "st_ymax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_max, ';
 			$sql .= "st_xmin(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_min, ';
 			$sql .= "st_xmax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_max ';
+		} else if ($field->type === 'TIME') {
+			$sql .= "to_char(" . $fieldName . ", '" . $options['time_format'] . "') as " . $field->getName();
 		} else {
 			$sql .= $fieldName . " as " . $field->getName();
 		}
