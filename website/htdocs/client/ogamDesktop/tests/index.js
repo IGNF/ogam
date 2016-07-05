@@ -51,7 +51,8 @@ harness.start(
 		group       : 'Unit Tests - form field',
 		pageUrl : '../odp/index.html?unittest',  // le paramètre unittest demande à ExtJS de ne pas initialiser les vues 
 		items       : [
-	           'unit-tests/ux/form/field/Factory.t.js'
+	           'unit-tests/ux/form/field/Factory.t.js',
+	           'unit-tests/ux/form/field/RadioButton.t.js'
 	   ]
 	},
 	
