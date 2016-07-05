@@ -31,7 +31,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
 	 * Internationalization.
 	 */ 
 	//<locale>
-    minText: "The times in this field must be equal to or after {0}}",
+    minText: "The times in this field must be equal to or after {0}",
     maxText: "The times in this field must be equal to or before {0}",
     reverseText: "The end times must be posterior to the start date",
     notEqualText: "The end times can't be equal to the start date",
