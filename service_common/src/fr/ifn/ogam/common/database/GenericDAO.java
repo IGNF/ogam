@@ -416,7 +416,7 @@ public class GenericDAO {
 						data.setValue(rs.getBigDecimal(columnName));
 					} else if (field.getType().equalsIgnoreCase(INTEGER)) {
 						data.setValue(rs.getInt(columnName));
-					} else if (field.getType().equalsIgnoreCase(DATE)) {
+					} else if (field.getType().equalsIgnoreCase(DATE) || field.getType().equalsIgnoreCase(TIME)) {
 						String val = rs.getString(columnName);
 						if (val == null) {
 							data.setValue(null);
