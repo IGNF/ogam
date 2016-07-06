@@ -23,7 +23,10 @@
 Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
     extend:'Ext.form.field.Picker',
     alias:'widget.timerangefield',
-    requires:['OgamDesktop.ux.picker.TimeRange'],
+    requires:[
+              'OgamDesktop.ux.picker.TimeRange',
+              'Ext.form.field.Date'
+              ],
     mixins:{
     	mxTime:'Ext.form.field.Time'
     },
@@ -31,6 +34,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
 	 * Internationalization.
 	 */ 
 	//<locale>
+    formatText: 'Expected time format: HH:MM',
     minText: "The times in this field must be equal to or after {0}",
     maxText: "The times in this field must be equal to or before {0}",
     reverseText: "The end times must be posterior to the start date",
@@ -38,7 +42,16 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
     dateSeparator: ' - ',
     maxFieldPrefix: '<= ',
     minFieldPrefix: '>= ',
+    /**
+     * @cfg {String} [format=undefined]
+     * The default time format string which can be overridden for localization support. 
+     * The format must be valid according to {@link Ext.Date#parse}.
+     *
+     * Defaults to `'h:i'`, e.g., `'17:15'`..
+     */
+    format : "H:i",
     //</locale>
+    
     /**
      * @cfg {Boolean} usePrefix if true, maxFieldPrefix and minFieldPrefix are used (defaults to true).
      * Otherwise minValue and maxValue are used.
@@ -69,16 +82,17 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
     /**
      * @cfg {String} minValue
      * The minimum allowed time.
-     * defaults to '00:00:00').
+     * defaults to '00:00').
      */
-    minValue : '00:00:00',
+    minValue : '00:00',
     /**
      * @cfg {String} maxValue
      * The maximum allowed time. match with format
-     *(defaults to '23:59:59').
+     *(defaults to '23:59').
      */
-    maxValue : '23:59:59'
+    maxValue : '23:59'
     },
+
     /**
      * Replaces any existing <tt>{@link #minValue}</tt> with the new value and refreshes the DateRangePicker.
      * @param {Date} value The minimum date that can be selected
@@ -242,33 +256,35 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
      * Format the passed date
      * @private
      * @param {Date/RangeDate} date The date to format
+     * @pram {String} format default {@link #format}.
      * @return {String} The formated date
      */
-    formatDate : function(date){
-    	var callFormat =this.mixins.mxTime.formatDate;
+    formatDate : function(date, format){
+    	format = format || this.format;
+    	var callFormat =Ext.form.field.Date.prototype.formatDate;
         if(Ext.isDate(date)){
-            return this.mixins.mxTime.formatDate.call(this,date);
+            return Ext.form.field.Date.prototype.formatDate.call(this, date, format);//this.mixins.mxTime.formatDate.call(this,date);
         }
         if(this.isRangeDate(date)){
             if(date.startTime === null && date.endTime !== null){
                 if(this.usePrefix){
-                    return this.maxFieldPrefix + callFormat.call(this,date.endTime);
+                    return this.maxFieldPrefix + this.formatDate(date.endTime, format);
                 }else{
-                    return callFormat.call(this,this.minValue) + this.dateSeparator + callFormat.call(this,date.endTime);
+                    return this.formatDate(this.minValue) + this.dateSeparator + this.formatDate(date.endTime, format);
                 }
             }else if(date.startTime !== null && date.endTime === null){
                 if(this.usePrefix){
-                    return this.minFieldPrefix + callFormat.call(this,date.startTime);
+                    return this.minFieldPrefix + callFormat.call(this,date.startTime, format);
                 }else{
-                    return this.formatDate(date.startTime, this.format) + this.dateSeparator + this.formatDate(this.maxValue, this.format);
+                    return this.formatDate(date.startTime, format) + this.dateSeparator + this.formatDate(this.maxValue, format);
                 }
             }else if(date.minField !== null && date.maxField !== null){
                 if(this.mergeEqualValues && Ext.Date.getElapsed(date.startTime, date.endTime) === 0){
-                    return callFormat.call(this,date.startTime);
+                    return this.formatDate(date.startTime, format);
                 }else if(this.autoReverse && date.endTime.getTime() - date.startTime.getTime() < 0){
-                    return callFormat.call(this,date.endTime) + this.dateSeparator + callFormat.call(this,date.startTime);
+                    return this.formatDate(date.endTime, format) + this.dateSeparator + this.formatDate(date.startTime, format);
                 }else{
-                    return callFormat.call(this,date.startTime) + this.dateSeparator + callFormat.call(this,date.endTime);
+                    return this.formatDate(date.startTime, format) + this.dateSeparator + this.formatDate(date.endTime, format);
                 }
             }else{
                 return '';
@@ -315,8 +331,6 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
             
             hideValidationButton: me.hideValidationButton,
 
-            showToday : me.showToday,
-
             listeners: {
                 scope: me,
                 select: me.onSelect
@@ -325,22 +339,23 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
                 esc: function() {
                     me.collapse();
                 }
-            }
-            ,minField: {
-	            minDate : this.minValue,
-	            maxDate : this.maxValue,
-	            value : this.minDefaultValue,
-	            format : this.format,
-	            minText : format(this.minText, this.formatDate(this.minValue)),
-	            maxText : format(this.maxText, this.formatDate(this.maxValue))
+            },
+            format:me.format,
+            minField: {
+	            minValue : me.minValue,
+	            maxValue : me.maxValue,
+	            value : me.minDefaultValue,
+	            format : me.format,
+	            minText : format(me.minText, me.formatDate(me.minValue)),
+	            maxText : format(me.maxText, me.formatDate(me.maxValue))
             },
             maxField: {
-	            minDate : this.minValue,
-	            maxDate : this.maxValue,
-	            value : this.maxDefaultValue,
-	            format : this.format,
-	            minText : format(this.minText, this.formatDate(this.minValue)),
-	            maxText : format(this.maxText, this.formatDate(this.maxValue))
+	            minValue : me.minValue,
+	            maxValue : me.maxValue,
+	            value : me.maxDefaultValue,
+	            format : me.format,
+	            minText : format(me.minText, me.formatDate(me.minValue)),
+	            maxText : format(me.maxText, me.formatDate(me.maxValue))
 	        }
         }
         );
@@ -374,10 +389,10 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
      * Return a range date object or null for failed parse operations
      * @private
      * @param {String/Date/RangeDate} rawValue The rawValue to parse
-     * @return {Object/rawValue/null} The parsed range date {minField:{Date}, maxField:{Date}}
+     * @return {Object/null} The parsed range date {minField:{Date}, maxField:{Date}}
      */
     rawToValue: function(rawValue) {
-        return this.parseRangeDate(rawValue) || rawValue || null;
+        return this.parseRangeDate(rawValue) || null;
     },
 
     /**
@@ -392,12 +407,12 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
     /**
      * Returns the submit value for the dateRange which can be used when submitting forms.
      * @private
-     * @return {String} The value to be submitted, or ''.
+     * @return {String} The value to be submitted, or null.
      */
     getSubmitValue: function() {
         var value = this.getValue();
 
-        return value ? this.formatDate(this.parseRangeDate(value)) : '';
+        return value ? this.formatDate(this.parseRangeDate(value), this.submitFormat || this.format) : null;
     },
     getValue: function () {
         return this.rawToValue(this.callParent(arguments));

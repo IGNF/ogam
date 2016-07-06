@@ -109,6 +109,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.GeometryField", {
 
 Ext.define("OgamDesktop.loacle.fr.ux.form.field.TimeRangeField", {
 	override: "OgamDesktop.ux.form.field.TimeRangeField",
+	formatText: 'Le format attendu est: HH:MM',
 	minText : "Les heures contenues dans ce champ doivent être égales ou postérieures au {0}",
 	maxText : "Les heures contenues dans ce champ doivent être égales ou antérieures au {0}",
 	reverseText : "L'heure de fin doit être postérieure à la date de début",

@@ -97,9 +97,9 @@ Ext.define('OgamDesktop.ux.picker.TimeRange', {
      * The default time format string which can be overriden for localization support.
      * The format must be valid according to Ext.Date#parse.
      * @cfg {String} format
-     * defaults HH:i:ss
+     * defaults H:i
      */
-    format:'H:i:s',
+    format:'H:i',
     
     /**
      * @cfg {Object} keyNavConfig
@@ -114,14 +114,15 @@ Ext.define('OgamDesktop.ux.picker.TimeRange', {
     initComponent: function() {
 
         // Initialise the fields
-        this.minField = new Ext.form.field.Time({
+    	
+        this.minField = new Ext.form.field.Time(Ext.apply({},this.minField,{
             fieldLabel : this.minFieldLabel,
             format:this.format
-        });
-        this.maxField = new Ext.form.field.Time({
+        }));
+        this.maxField = new Ext.form.field.Time(Ext.apply({},this.maxField,{
             fieldLabel : this.maxFieldLabel,
             format:this.format
-        });
+        }));
 
         Ext.apply(this, {
             items : [ this.minField, this.maxField ]
