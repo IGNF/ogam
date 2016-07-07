@@ -11,7 +11,6 @@
  */
 package fr.ifn.ogam.integration.business.submissions.datasubmission;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,8 +25,12 @@ import fr.ifn.ogam.common.database.metadata.FileFormatData;
 import fr.ifn.ogam.common.database.metadata.MetadataDAO;
 import fr.ifn.ogam.common.database.metadata.TableFormatData;
 import fr.ifn.ogam.common.database.GenericDAO;
+import fr.ifn.ogam.common.database.mapping.GeometryDAO;
 import fr.ifn.ogam.common.database.rawdata.SubmissionDAO;
 import fr.ifn.ogam.common.database.rawdata.SubmissionData;
+import fr.ifn.ogam.common.database.referentiels.CommuneDAO;
+import fr.ifn.ogam.common.database.referentiels.DepartementDAO;
+import fr.ifn.ogam.common.database.referentiels.MailleDAO;
 import fr.ifn.ogam.integration.business.IntegrationService;
 import fr.ifn.ogam.common.business.processing.ProcessingService;
 import fr.ifn.ogam.common.business.processing.ProcessingStep;
@@ -52,6 +55,10 @@ public class DataService extends AbstractService {
 	private SubmissionDAO submissionDAO = new SubmissionDAO();
 	private MetadataDAO metadataDAO = new MetadataDAO();
 	private GenericDAO genericDAO = new GenericDAO();
+	private GeometryDAO geometryDAO = new GeometryDAO();
+	private CommuneDAO communeDAO = new CommuneDAO();
+	private DepartementDAO departementDAO = new DepartementDAO();
+	private MailleDAO mailleDAO = new MailleDAO();
 
 	/**
 	 * The integration service.
@@ -161,6 +168,10 @@ public class DataService extends AbstractService {
 			String tableFormat = tableIter.next();
 			TableFormatData tableFormatData = metadataDAO.getTableFormat(tableFormat);
 			genericDAO.deleteRawData(tableFormatData.getTableName(), submissionId);
+			geometryDAO.deleteGeometriesFromFormat(tableFormatData.getFormat());
+			communeDAO.deleteCommunesFromFormat(tableFormatData.getFormat());
+			departementDAO.deleteDepartmentsFromFormat(tableFormatData.getFormat());
+			mailleDAO.deleteMaillesFromFormat(tableFormatData.getFormat());
 		}
 
 		// Update the status of the submission
@@ -203,16 +214,10 @@ public class DataService extends AbstractService {
 				// Get the path of the file
 				String filePath = requestParameters.get(fileFormat.getFormat());
 
-				// Check if the file exists
-				if (filePath != null) {
-					File file = new File(filePath);
-					if (file.exists()) {
+				// Insert the data in database with automatic mapping ...
+				isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, filePath, fileFormat.getFormat(), fileFormat.getFileType(),
+						requestParameters, this.thread);
 
-						// Insert the data in database with automatic mapping ...
-						isSubmitValid = isSubmitValid && integrationService.insertData(submissionId, filePath, fileFormat.getFormat(), fileFormat.getFileType(),
-								requestParameters, this.thread);
-					}
-				}
 			}
 
 			// Launch post-processing (if not cancelled)
