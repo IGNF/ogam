@@ -12,8 +12,9 @@ subprojects {
 	  
 	version = '3.0.0'
 	  
-	targetCompatibility  = 1.6
-	sourceCompatibility  = 1.6
+	targetCompatibility  = 1.7
+	sourceCompatibility  = 1.7
+
  
 	// We use Maven repository
 	repositories {
