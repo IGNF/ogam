@@ -338,4 +338,210 @@ public class CommuneDAO {
 		}
 	}
 
+	/**
+	 * 
+	 * Populates the field "codeCommuneCalcule", depending on the value of natureObjetGeo and getting the information from table "observation_commune".
+	 * 
+	 * @param format
+	 *            the table format
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param parameters
+	 *            values including : ogam_id, provider_id, natureobjetgeo
+	 * @throws Exception
+	 */
+	public void setCodeCommuneCalcule(String format, String tableName, Map<String, Object> parameters) throws Exception {
+		logger.debug("setCodeCommuneCalcule");
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			con = getConnection();
+
+			StringBuffer stmt = null;
+
+			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
+			String natureObjetGeo = (String) parameters.get(DSRConstants.NATURE_OBJET_GEO);
+
+			// Get the list of the mailles
+			stmt = new StringBuffer();
+			stmt.append("SELECT id_commune ");
+			stmt.append("FROM mapping.observation_commune ");
+			stmt.append("WHERE id_observation = '" + ogamId + "' ");
+			stmt.append("AND id_provider = '" + providerId + "' ");
+			stmt.append("AND table_format = '" + format + "' ");
+
+			if ("In".equals(natureObjetGeo)) {
+				stmt.append("ORDER BY percentage DESC LIMIT 1");
+			} else if ("St".equals(natureObjetGeo)) {
+				stmt.append("ORDER BY percentage DESC");
+			}
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			rs = ps.executeQuery();
+
+			// Create a list of code communes found
+			List<String> codesCommunes = new ArrayList<String>();
+			while (rs.next()) {
+				codesCommunes.add(rs.getString("id_commune"));
+			}
+
+			StringBuffer codeCommuneCalcule = new StringBuffer("{");
+
+			for (String codeCommune : codesCommunes) {
+				codeCommuneCalcule.append(codeCommune);
+				codeCommuneCalcule.append(",");
+			}
+
+			if (!codesCommunes.isEmpty()) {
+				codeCommuneCalcule.delete(codeCommuneCalcule.length() - 1, codeCommuneCalcule.length());
+				codeCommuneCalcule.append("}");
+			} else {
+				codeCommuneCalcule.append("\"\"}");
+			}
+
+			stmt = new StringBuffer();
+			stmt.append("UPDATE raw_data." + tableName + " ");
+			stmt.append("SET " + DSRConstants.CODE_COMMUNE_CALC + " = '" + codeCommuneCalcule.toString() + "' ");
+			stmt.append("WHERE provider_id = '" + providerId + "' ");
+			stmt.append("AND ogam_id_" + format + " = '" + ogamId + "' ");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			ps.executeUpdate();
+
+		} finally
+
+		{
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+
+	}
+
+	/**
+	 * 
+	 * Populates the field "nomCommuneCalcule", depending on the value of natureObjetGeo and getting the information from table "observation_commune".
+	 * 
+	 * @param format
+	 *            the table format
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param parameters
+	 *            values including : ogam_id, provider_id, natureobjetgeo
+	 * @throws Exception
+	 */
+	public void setNomCommuneCalcule(String format, String tableName, Map<String, Object> parameters) throws Exception {
+		logger.debug("setNomCommuneCalcule");
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			con = getConnection();
+
+			StringBuffer stmt = null;
+
+			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
+			String natureObjetGeo = (String) parameters.get(DSRConstants.NATURE_OBJET_GEO);
+
+			// Get the list of the mailles
+			stmt = new StringBuffer();
+			stmt.append("SELECT id_commune ");
+			stmt.append("FROM mapping.observation_commune ");
+			stmt.append("WHERE id_observation = '" + ogamId + "' ");
+			stmt.append("AND id_provider = '" + providerId + "' ");
+			stmt.append("AND table_format = '" + format + "' ");
+
+			if ("In".equals(natureObjetGeo)) {
+				stmt.append("ORDER BY percentage DESC LIMIT 1");
+			} else if ("St".equals(natureObjetGeo)) {
+				stmt.append("ORDER BY percentage DESC");
+			}
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			rs = ps.executeQuery();
+
+			// Create a list of code communes found
+			List<String> codesCommunes = new ArrayList<String>();
+			while (rs.next()) {
+				codesCommunes.add(rs.getString("id_commune"));
+			}
+
+			// For each code commune, find the name of the commune
+			StringBuffer nomCommuneCalcule = new StringBuffer("{");
+
+			for (String codeCommune : codesCommunes) {
+				stmt = new StringBuffer();
+				stmt.append("SELECT nom_com ");
+				stmt.append("FROM referentiels.geofla_commune ");
+				stmt.append("WHERE insee_com = '" + codeCommune + "' ");
+
+				ps = con.prepareStatement(stmt.toString());
+				logger.trace(stmt.toString());
+				rs = ps.executeQuery();
+				rs.next();
+				nomCommuneCalcule.append(rs.getString("nom_com"));
+				nomCommuneCalcule.append(",");
+			}
+
+			if (!codesCommunes.isEmpty()) {
+				nomCommuneCalcule.delete(nomCommuneCalcule.length() - 1, nomCommuneCalcule.length());
+				nomCommuneCalcule.append("}");
+			} else {
+				nomCommuneCalcule.append("\"\"}");
+			}
+
+			stmt = new StringBuffer();
+			stmt.append("UPDATE raw_data." + tableName + " ");
+			stmt.append("SET " + DSRConstants.NOM_COMMUNE_CALC + " = '" + nomCommuneCalcule.toString() + "' ");
+			stmt.append("WHERE provider_id = '" + providerId + "' ");
+			stmt.append("AND ogam_id_" + format + " = '" + ogamId + "' ");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			ps.executeUpdate();
+
+		} finally
+
+		{
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+
+	}
+
 }

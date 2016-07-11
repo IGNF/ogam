@@ -67,7 +67,6 @@ public class ComputeGeoAssociationService {
 		String[] codesCommunes = (String[]) values.get(DSRConstants.CODE_COMMUNE).getValue();
 		String[] codesMailles = (String[]) values.get(DSRConstants.CODE_MAILLE).getValue();
 		String[] codesDepartements = (String[]) values.get(DSRConstants.CODE_DEPARTEMENT).getValue();
-		GenericData natureObjetGeoGD = values.get(DSRConstants.NATURE_OBJET_GEO);
 
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put(DSRConstants.GEOMETRIE, (String) values.get(DSRConstants.GEOMETRIE).getValue());
@@ -86,9 +85,9 @@ public class ComputeGeoAssociationService {
 		boolean hasCodesDepartements = !codesDepartements[0].isEmpty();
 
 		try {
+
 			if (geometry != null && !geometry.isEmpty()) {
-				// Get the type of the geometry and its nature
-				parameters.put("natureobjetgeo", (String) natureObjetGeoGD.getValue());
+
 				logger.debug(geometry);
 				String geometryType = geometryDAO.getGeometryType(geometry);
 				geometryDAO.createGeometryLinksFromGeometry(format, tableName, parameters);
@@ -116,12 +115,19 @@ public class ComputeGeoAssociationService {
 				mailleDAO.createMaillesLinksFromDepartements(format, parameters);
 				departementDAO.createDepartmentsLinksFromDepartements(format, parameters);
 			}
-		} catch (Exception e) {
+
+			communeDAO.setCodeCommuneCalcule(format, tableName, parameters);
+			communeDAO.setNomCommuneCalcule(format, tableName, parameters);
+			mailleDAO.setCodeMailleCalcule(format, tableName, parameters);
+			departementDAO.setCodeDepartementCalcule(format, tableName, parameters);
+
+		} catch (
+
+		Exception e) {
 			// TODO: handle exception
 			throw e;
 		}
 
-		// TODO Champs à remplir : codeMailleCalcule, codeCommuneCalcule, nomCommuneCalcule, codeDepartementCalcule
 		return false;
 	}
 

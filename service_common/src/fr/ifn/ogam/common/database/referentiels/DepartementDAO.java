@@ -473,4 +473,96 @@ public class DepartementDAO {
 
 	}
 
+	/**
+	 * 
+	 * Populates the field "codeDepartementCalcule", depending on the value of natureObjetGeo and getting the information from table "observation_departement".
+	 * 
+	 * @param format
+	 *            the table format
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param parameters
+	 *            values including : ogam_id, provider_id, natureobjetgeo
+	 * @throws Exception
+	 */
+	public void setCodeDepartementCalcule(String format, String tableName, Map<String, Object> parameters) throws Exception {
+		logger.debug("setCodeDepartementCalcule");
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			con = getConnection();
+
+			StringBuffer stmt = null;
+
+			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
+			String natureObjetGeo = (String) parameters.get(DSRConstants.NATURE_OBJET_GEO);
+
+			// Get the list of the mailles
+			stmt = new StringBuffer();
+			stmt.append("SELECT id_departement ");
+			stmt.append("FROM mapping.observation_departement ");
+			stmt.append("WHERE id_observation = '" + ogamId + "' ");
+			stmt.append("AND id_provider = '" + providerId + "' ");
+			stmt.append("AND table_format = '" + format + "' ");
+
+			if ("In".equals(natureObjetGeo)) {
+				stmt.append("ORDER BY percentage DESC LIMIT 1");
+			} else if ("St".equals(natureObjetGeo)) {
+				stmt.append("ORDER BY percentage DESC");
+			}
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			rs = ps.executeQuery();
+
+			// Create a list of code departements found
+			List<String> codesDepartements = new ArrayList<String>();
+			while (rs.next()) {
+				codesDepartements.add(rs.getString("id_departement"));
+			}
+
+			StringBuffer codeDepartementCalcule = new StringBuffer("{");
+
+			for (String codeDepartement : codesDepartements) {
+				codeDepartementCalcule.append(codeDepartement);
+				codeDepartementCalcule.append(",");
+			}
+
+			codeDepartementCalcule.delete(codeDepartementCalcule.length() - 1, codeDepartementCalcule.length());
+			codeDepartementCalcule.append("}");
+
+			stmt = new StringBuffer();
+			stmt.append("UPDATE raw_data." + tableName + " ");
+			stmt.append("SET " + DSRConstants.CODE_DEPARTEMENT_CALC + " = '" + codeDepartementCalcule.toString() + "' ");
+			stmt.append("WHERE provider_id = '" + providerId + "' ");
+			stmt.append("AND ogam_id_" + format + " = '" + ogamId + "' ");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			ps.executeUpdate();
+
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+
+	}
+
 }

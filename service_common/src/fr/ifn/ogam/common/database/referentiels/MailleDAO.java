@@ -83,7 +83,7 @@ public class MailleDAO {
 			logger.trace(stmt.toString());
 			rs = ps.executeQuery();
 
-			// Count the number of departements found
+			// Count the number of mailles found
 			int numberOfMailles = 0;
 			List<String> codesMailles = new ArrayList<String>();
 			while (rs.next()) {
@@ -471,6 +471,99 @@ public class MailleDAO {
 
 			ps = con.prepareStatement(stmt.toString());
 			logger.debug(stmt.toString());
+			ps.executeUpdate();
+
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (SQLException e) {
+				logger.error("Error while closing statement : " + e.getMessage());
+			}
+		}
+
+	}
+
+	/**
+	 * 
+	 * Populates the field "codeMailleCalcule", depending on the value of natureObjetGeo and getting the information from table "observation_maille".
+	 * 
+	 * @param format
+	 *            the table format
+	 * @param tableName
+	 *            the tablename in raw_data schema
+	 * @param parameters
+	 *            values including : ogam_id, provider_id, natureobjetgeo
+	 * @throws Exception
+	 */
+	public void setCodeMailleCalcule(String format, String tableName, Map<String, Object> parameters) throws Exception {
+		logger.debug("setCodeMailleCalcule");
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			con = getConnection();
+
+			StringBuffer stmt = null;
+
+			String providerId = (String) parameters.get(DSRConstants.PROVIDER_ID);
+			String ogamId = (String) parameters.get(DSRConstants.OGAM_ID);
+			String natureObjetGeo = (String) parameters.get(DSRConstants.NATURE_OBJET_GEO);
+
+			// Get the list of the mailles
+			stmt = new StringBuffer();
+			stmt.append("SELECT id_maille ");
+			stmt.append("FROM mapping.observation_maille as om ");
+			stmt.append("WHERE om.id_observation = '" + ogamId + "' ");
+			stmt.append("AND om.id_provider = '" + providerId + "' ");
+			stmt.append("AND om.table_format = '" + format + "' ");
+
+			if ("In".equals(natureObjetGeo)) {
+				stmt.append("ORDER BY percentage DESC LIMIT 1");
+			} else if ("St".equals(natureObjetGeo)) {
+				stmt.append("ORDER BY percentage DESC");
+			}
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
+			rs = ps.executeQuery();
+
+			// Create a list of code mailles found
+			List<String> codesMailles = new ArrayList<String>();
+
+			while (rs.next()) {
+				codesMailles.add(rs.getString("id_maille"));
+			}
+
+			StringBuffer codeMailleCalcule = new StringBuffer("{");
+
+			for (String codeMaille : codesMailles) {
+				codeMailleCalcule.append(codeMaille);
+				codeMailleCalcule.append(",");
+			}
+
+			codeMailleCalcule.delete(codeMailleCalcule.length() - 1, codeMailleCalcule.length());
+			codeMailleCalcule.append("}");
+
+			stmt = new StringBuffer();
+			stmt.append("UPDATE raw_data." + tableName + " ");
+			stmt.append("SET " + DSRConstants.CODE_MAILLE_CALC + " = '" + codeMailleCalcule.toString() + "' ");
+			stmt.append("WHERE provider_id = '" + providerId + "' ");
+			stmt.append("AND ogam_id_" + format + " = '" + ogamId + "' ");
+
+			ps = con.prepareStatement(stmt.toString());
+			logger.trace(stmt.toString());
 			ps.executeUpdate();
 
 		} finally {

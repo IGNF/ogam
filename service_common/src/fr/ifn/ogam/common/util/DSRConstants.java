@@ -14,5 +14,10 @@ public class DSRConstants {
 	public final static String CODE_MAILLE = "codemaille";
 	public final static String CODE_DEPARTEMENT = "codedepartement";
 	public final static String NATURE_OBJET_GEO = "natureobjetgeo";
+	public final static String TYPE_INFO_GEO = "typeinfogeo";
+	public final static String CODE_COMMUNE_CALC = "codecommunecalcule";
+	public final static String NOM_COMMUNE_CALC = "nomcommunecalcule";
+	public final static String CODE_MAILLE_CALC = "codemaillecalcule";
+	public final static String CODE_DEPARTEMENT_CALC = "codedepartementcalcule";
 
 }
