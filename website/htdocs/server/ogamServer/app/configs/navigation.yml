@@ -32,6 +32,14 @@ nav:
             controller: integration
             action: validate-create-data-submission
             module: default
+            
+      harmonization:
+        label: Breadcrumb Harmonization
+        controller: harmonization
+        action: index
+        module: default
+        help: /import/index.html
+        helpLabel: Aide pour l'harmonization
 
       visualisation:
         label: Breadcrumb Visualization
