@@ -11,8 +11,11 @@
  */
 package fr.ifn.ogam.integration.business;
 
-import static fr.ifn.ogam.common.business.UnitTypes.*;
-import static fr.ifn.ogam.common.business.checks.CheckCodes.*;
+import static fr.ifn.ogam.common.business.UnitTypes.DATE;
+import static fr.ifn.ogam.common.business.UnitTypes.TIME;
+import static fr.ifn.ogam.common.business.checks.CheckCodes.NO_MAPPING;
+import static fr.ifn.ogam.common.business.checks.CheckCodes.UNEXPECTED_SQL_ERROR;
+import static fr.ifn.ogam.common.business.checks.CheckCodes.WRONG_FIELD_NUMBER;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,8 +26,6 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import fr.ifn.ogam.common.util.InconsistentNumberOfColumns;
-import fr.ifn.ogam.common.util.CSVFile;
 import fr.ifn.ogam.common.business.AbstractThread;
 import fr.ifn.ogam.common.business.Data;
 import fr.ifn.ogam.common.business.GenericMapper;
@@ -39,6 +40,8 @@ import fr.ifn.ogam.common.database.metadata.MetadataDAO;
 import fr.ifn.ogam.common.database.metadata.TableFieldData;
 import fr.ifn.ogam.common.database.metadata.TableFormatData;
 import fr.ifn.ogam.common.database.rawdata.SubmissionDAO;
+import fr.ifn.ogam.common.util.CSVFile;
+import fr.ifn.ogam.common.util.InconsistentNumberOfColumns;
 import fr.ifn.ogam.integration.database.rawdata.CheckErrorDAO;
 
 /**
@@ -76,12 +79,18 @@ public class IntegrationService extends GenericMapper {
 	 *            the thread that is running the process (optionnal, this is too keep it informed of the progress)
 	 * @return the status of the update
 	 */
-	public boolean insertData(Integer submissionId, String filePath, String sourceFormat, String fileType, Map<String, String> requestParameters, AbstractThread thread)
-			throws Exception {
+	public boolean insertData(Integer submissionId, String filePath, String sourceFormat, String fileType, Map<String, String> requestParameters,
+			AbstractThread thread) throws Exception {
 
 		logger.debug("insertData");
 		boolean isInsertValid = true;
 		CSVFile csvFile = null;
+
+		ComputeGeoAssociationService cgas = null;
+		if ("true".equals(requestParameters.get("COMPUTE_GEO_ATTACHMENT"))) {
+			cgas = new ComputeGeoAssociationService();
+		}
+
 		try {
 
 			// First get the description of the content of the CSV file
@@ -193,7 +202,7 @@ public class IntegrationService extends GenericMapper {
 
 					if (thread != null) {
 						thread.updateInfo("Inserting " + sourceFormat + " data", row, csvFile.getRowsCount());
-						
+
 						if (thread.isCancelled()) {
 							return false; // don't finish the job
 						}
@@ -215,7 +224,7 @@ public class IntegrationService extends GenericMapper {
 						FileFieldData sourceFieldDescriptor = sourceFieldDescriptors.get(col);
 
 						// Check the mask if available and the variable is not a date (date format is tested with a date format)
-						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE) && !sourceFieldDescriptor.getType().equalsIgnoreCase(TIME)) {
+						if (sourceFieldDescriptor.getMask() != null && !sourceFieldDescriptor.getType().equalsIgnoreCase(DATE) && !sourceFieldDescriptor.getType().equalsIgnoreCase(TIME)) {							
 							try {
 								checkMask(sourceFieldDescriptor.getMask(), value);
 							} catch (CheckException e) {
@@ -245,6 +254,8 @@ public class IntegrationService extends GenericMapper {
 							e.setSubmissionId(submissionId);
 							throw e;
 						}
+
+						// Compute the administrative attachment
 
 						// Get the mapped column destination
 						TableFieldData mappedFieldDescriptor = mappedFieldDescriptors.get(sourceFieldDescriptor.getData());
@@ -294,6 +305,9 @@ public class IntegrationService extends GenericMapper {
 
 							// Insert a list of values in the destination table
 							genericDAO.insertData(Schemas.RAW_DATA, tableName, tableFieldsMap.get(format), commonFieldsMap);
+							if (cgas != null) {
+								cgas.insertAdministrativeAssociations(format, tableName, commonFieldsMap);
+							}
 						} catch (CheckException e) {
 							// Complete the description of the problem
 							e.setSourceFormat(sourceFormat);

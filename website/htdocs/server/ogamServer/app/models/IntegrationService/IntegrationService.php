@@ -15,8 +15,7 @@
 /**
  * This is a model allowing to access the integration service via HTTP calls.
  *
- * @package Application_Model
- * @subpackage IntegrationService
+ * @package models
  */
 class Application_Model_IntegrationService_IntegrationService extends Application_Model_AbstractService_AbstractService {
 
@@ -102,17 +101,19 @@ class Application_Model_IntegrationService_IntegrationService extends Applicatio
 	/**
 	 * Upload one or more data file.
 	 *
-	 * @param
-	 *        	String the identifier of the submission
-	 * @param
-	 *        	String the identifier of the data provider
-	 * @param
-	 *        	Array[DatasetFile] the list of files to upload
+     * @param $submissionId String
+     *        	the identifier of the submission
+     * @param $providerId String
+     *        	the identifier of the data provider
+     * @param $dataFiles Array[DatasetFile]
+     *        	the list of files to upload
+     * @param $computeGeoAttachment
+     *        	if true, compute the attachments to geo-administrative references (specific to GINCO)
 	 * @return true if the upload was OK
 	 * @throws Exception if a problem occured on the server side
 	 */
-	public function uploadData($submissionId, $providerId, $dataFiles) {
-		$this->logger->debug("uploadData : " . $submissionId . " - " . $providerId);
+    public function uploadData($submissionId, $providerId, $dataFiles, $computeGeoAttachment) {
+        $this->logger->debug("uploadData : " . $submissionId . " - " . $providerId . " - " . $dataFiles);
 
 		$client = new Zend_Http_Client();
 		$client->setUri($this->serviceUrl . "DataServlet?action=UploadData");
@@ -128,6 +129,11 @@ class Application_Model_IntegrationService_IntegrationService extends Applicatio
 			$this->logger->debug("adding file : " . $dataFile->filePath);
 			$client->setFileUpload($dataFile->filePath, $dataFile->format);
 		}
+
+        // Specific to GINCO
+        if($computeGeoAttachment){
+            $client->setParameterPost('COMPUTE_GEO_ATTACHMENT', 'true');
+        }
 
 		$this->logger->debug("HTTP REQUEST : " . $this->serviceUrl . "DataServlet?action=UploadData");
 
