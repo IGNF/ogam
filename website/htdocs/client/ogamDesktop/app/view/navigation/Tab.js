@@ -144,7 +144,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 							'</tpl>',
 					'</div>',
 				'</tpl>',
-				'<tpl if="children.length != 0">',
+				'<tpl if="this.hasChildren(values)">',
     				'<tpl for="children">',
                         '<div class="o-navigation-fieldset">',
                         '<div  class="o-navigation-fieldset-title">{title}</div>',
@@ -172,6 +172,9 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 						case true: return OgamDesktop.ux.grid.column.Factory.gridColumnTrueText;
 						default: return OgamDesktop.ux.grid.column.Factory.gridColumnUndefinedText;
                 	}
+                },
+                hasChildren: function(values){
+                    return !Ext.isEmpty(values.children) && values.children.length != 0;
                 }
             }
         );
