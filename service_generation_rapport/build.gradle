@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.2.3'
+    }
+}
 
 dependencies {
 	compile project(':service_common')
@@ -25,6 +34,7 @@ task addReports(type: Zip, dependsOn: war, description: 'Add reports to birt war
 	def applicationName = project.hasProperty('applicationName') ? project.getProperty('applicationName') : 'OGAM'
 
 	baseName = "${applicationName}RG"
+	archiveName = "${applicationName}RG.war"
 
 	from zipTree("build/libs/birt.war")
 
@@ -38,7 +48,7 @@ task addReports(type: Zip, dependsOn: war, description: 'Add reports to birt war
 }
 
 
-// Define a new task to deploy the war
+// // Old version : Manually build the war file
 task deploy(dependsOn: addReports, description: 'Deploy the war file to a local Tomcat server.') << {
 
 	def tomcatHome = project.hasProperty('tomcatHome') ? project.getProperty('tomcatHome') : 'C:/Apache/tomcat-7'
@@ -61,6 +71,32 @@ task deploy(dependsOn: addReports, description: 'Deploy the war file to a local 
 		include "${applicationName}RG.xml"
 	}
 }
+
+
+apply plugin: 'com.bmuschko.cargo'
+
+// New version : Use cargo to automatically deploy the war
+// Usage : gradle cargoRedeployRemote -PtomcatHome='/var/lib/tomcat7' -PapplicationName='OGAM'
+cargo {
+    def tomcatHome = project.hasProperty('tomcatHome') ? project.getProperty('tomcatHome') : 'C:/Apache/tomcat-7'
+    def applicationName = project.hasProperty('applicationName') ? project.getProperty('applicationName') : 'OGAM'
+    
+    containerId = 'tomcat7x'
+    port = 8080
+   
+   
+    deployable {
+        file = file("build/libs/${applicationName}RG.war")
+        context = "${applicationName}RG"
+    }
+    
+    remote {
+        hostname = 'localhost'
+        username = 'admin'
+        password = 'admin'
+    }
+}
+
 
 // Import the ANT tasks and rename them
 //ant.importBuild('build.xml') { antTargetName ->

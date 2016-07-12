@@ -39,4 +39,5 @@
 <role rolename="manager-jmx"/>
 <role rolename="manager-status"/>
 <user username="tomcat" password="s3cret" roles="manager-jmx,manager-status,admin-gui,manager-gui"/>
+<user username="admin" password="admin" roles="manager-gui,manager-script,manager-jmx,manager-status,admin-gui,admin-script,probeuser"/>
 </tomcat-users>
