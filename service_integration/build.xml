@@ -64,12 +64,12 @@
 
 	<!-- Compile les sources -->
 	<target name="compile" description="Compile the sources" depends="cleanest, init">
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" source="1.6" target="1.6" encoding="UTF-8" classpath="${classpath}">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" source="1.7" target="1.7" encoding="UTF-8" classpath="${classpath}" includeantruntime="false">
 			<compilerarg value="-Xlint" />
 		</javac>
 
 		<!-- Compile aussi les classes de test au passage -->
-		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" source="1.6" target="1.6" classpath="${classpath}">
+		<javac srcdir="${basedir}/test" destdir="${classes.dir}" debug="on" source="1.7" target="1.7" classpath="${classpath}" includeantruntime="false">
 			<compilerarg value="-Xlint" />
 		</javac>
 	</target>

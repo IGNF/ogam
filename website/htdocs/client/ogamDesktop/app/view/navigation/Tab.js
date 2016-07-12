@@ -122,7 +122,12 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
                 '</div>',
 				'<tpl for="formats">',
 					'<div class="o-navigation-fieldset">',
-						'<div class="o-navigation-fieldset-title">{title}</div>',
+						'<div class="o-navigation-fieldset-title">',
+                            '<tpl if="xindex &lt; xcount">',
+                                '<div class="o-navigation-fieldset-title-link" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{editURL}\');"></div>',
+                            '</tpl>',
+                            '<span>{title}</span>',
+                        '</div>',
 							'<tpl for="fields">',
 						        '<tpl switch="inputType">',
 						            '<tpl case="CHECKBOX">',
@@ -139,14 +144,14 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 							'</tpl>',
 					'</div>',
 				'</tpl>',
-				'<tpl if="children.length != 0">',
+				'<tpl if="this.hasChildren(values)">',
     				'<tpl for="children">',
                         '<div class="o-navigation-fieldset">',
-                        '<div  class="o-navigation-fieldset-title">Children : {title}</div>',
-    					'<div class="o-navigation-childfieldset-table">',
+                        '<div  class="o-navigation-fieldset-title">{title}</div>',
+    					'<div>',
     						'<tpl for="data">',
-    							'<div class="o-navigation-childfieldset-tablerow">',
-    								'<div class="o-navigation-childfieldset-leftcolumn" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{0}\');"></div>',// OGAM-614 - TODO: Throw an event
+    							'<div class="o-navigation-childfieldset-row">',
+    								'<div class="o-navigation-childfieldset-leftcolumn" data-qtip="{1}" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{0}\');"></div>',// OGAM-614 - TODO: Throw an event
     								'<div class="o-navigation-childfieldset-rightcolumn">{1}</div>',
     							'</div>',
     //							'<tpl if="type == \'IMAGE\'">', 
@@ -167,6 +172,9 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 						case true: return OgamDesktop.ux.grid.column.Factory.gridColumnTrueText;
 						default: return OgamDesktop.ux.grid.column.Factory.gridColumnUndefinedText;
                 	}
+                },
+                hasChildren: function(values){
+                    return !Ext.isEmpty(values.children) && values.children.length != 0;
                 }
             }
         );
