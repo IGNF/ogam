@@ -49,9 +49,9 @@ Ext.define('OgamDesktop.Application', {
 	//<locale>
     /**
      * @cfg {String} toastTitle_401
-     * The toast title used for the 401 status code error (defaults to <tt>'Erreur 401 : unauthenticated user.'</tt>)
+     * The toast title used for the 401 status code error (defaults to <tt>'Error 401 : unauthenticated user.'</tt>)
      */
-	toastTitle_401: 'Erreur 401 : unauthenticated user.',
+	toastTitle_401: 'Error 401 : unauthenticated user.',
 
 	/**
      * @cfg {String} toastHtml_401
@@ -61,9 +61,9 @@ Ext.define('OgamDesktop.Application', {
 
 	/**
      * @cfg {String} toastTitle_404
-     * The toast title used for the 404 status code error (defaults to <tt>'Erreur 404 : page not found.'</tt>)
+     * The toast title used for the 404 status code error (defaults to <tt>'Error 404 : page not found.'</tt>)
      */
-	toastTitle_404: 'Erreur 404 : page not found.',
+	toastTitle_404: 'Error 404 : page not found.',
 
 	/**
      * @cfg {String} toastHtml_404
@@ -73,9 +73,9 @@ Ext.define('OgamDesktop.Application', {
 
 	/**
      * @cfg {String} toastTitle_500
-     * The toast title used for the 500 status code error (defaults to <tt>'Erreur 500 : server error.'</tt>)
+     * The toast title used for the 500 status code error (defaults to <tt>'Error 500 : server error.'</tt>)
      */
-	toastTitle_500: 'Erreur 500 : server error.',
+	toastTitle_500: 'Error 500 : server error.',
 
 	/**
      * @cfg {String} toastHtml_500

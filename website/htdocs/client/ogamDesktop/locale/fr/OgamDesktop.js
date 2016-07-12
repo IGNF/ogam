@@ -249,6 +249,12 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 	});
 });
 
+Ext.define('OgamDesktop.locale.fr.view.request.AdvancedRequestController', {
+	override:'OgamDesktop.view.request.AdvancedRequestController',
+	toastHtml_noColumn: 'Veuillez sélectionner une colonne.',
+	toastTitle_noColumn: 'Erreur : aucune colonne trouvée.'
+});
+
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
 	override:'OgamDesktop.view.request.PredefinedRequest',
 	config:{

@@ -1,3 +1,14 @@
+Ext.define("OgamDesktop.locale.en.Application", {
+    override: "OgamDesktop.Application",
+	toastTitle_401: 'Error 401 : unauthenticated user.',
+	toastHtml_401: 'Please log in again <a href="/user" target="_blank">here</a>.',
+	toastTitle_404: 'Error 404 : page not found.',
+	toastHtml_404: 'The resource was not found.',
+	toastTitle_500: 'Error 500 : server error.',
+	toastHtml_500: 'An internal server error does not allow to  meet the demand.',
+	toastTitle_default: 'Error',
+	toastHtml_default: 'See the <a href="http://www.w3schools.com/tags/ref_httpmessages.asp" target="_blank">status codes list</a> for more information.',
+});
 Ext.define("OgamDesktop.locale.en.view.main.Main", {
     override: "OgamDesktop.view.main.Main",
 	homeButtonText: 'Homepage',
@@ -208,6 +219,12 @@ Ext.define("OgamDesktop.locale.en.view.request.AdvancedRequest", {
 		text : 'Search',
 		tooltip : 'Launch the search request'
 	});
+});
+
+Ext.define('OgamDesktop.locale.en.view.request.AdvancedRequestController', {
+	override:'OgamDesktop.view.request.AdvancedRequestController',
+	toastHtml_noColumn: 'Please select a column.',
+	toastTitle_noColumn: 'Error : no column found.'
 });
 
 Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
