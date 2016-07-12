@@ -727,7 +727,7 @@ class Application_Service_QueryService {
 		// add a success flag (default true) and encode
 		return json_encode(array_merge(array(
 			'success' => true
-		), $this->getDetailsData($id, $detailsLayers, null)));
+		), $this->getDetailsData($id, $detailsLayers, null, true)));
 	}
 
 	/**
