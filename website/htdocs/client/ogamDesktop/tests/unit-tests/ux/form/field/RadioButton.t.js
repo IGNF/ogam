@@ -13,7 +13,14 @@ describe('ogam field RadioButton Test', function(t){
         Ext.destroy(group);
         group = null;
     });
-    t.describe("contructor", function(t){
+    
+    t.it("should be registered with xtype 'radiobuttonfield'", function(t) {
+        component = Ext.create("OgamDesktop.ux.form.field.RadioButton", {name: 'test'});
+        t.expect(component instanceof OgamDesktop.ux.form.field.RadioButton).toBe(true);
+        t.expect(Ext.getClass(component).xtype).toBe("radiobuttonfield");
+    });
+    
+    t.describe("initialization", function(t){
     	t.it("should make group with item name", function(t) {
             makeGroup([{
                 name: 'foo',
