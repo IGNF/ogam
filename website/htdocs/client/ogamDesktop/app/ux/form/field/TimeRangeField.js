@@ -14,8 +14,9 @@
  * Provides a date range input field with a {@link OgamDesktop.ux.picker.TimeRange} dropdown and automatic date validation.
  *  
  * @class OgamDesktop.ux.form.field.TimeRangeField
- * @extends Ext.form.TimeField
- * @constructor Create a new TimeeRangeField
+ * @extends Ext.form.field.Picker
+ * @mixins Ext.form.TimeField
+ * @constructor Create a new TimeRangeField
  * @param {Object} config
  * @xtype timerangefield
  */
@@ -37,8 +38,8 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
     formatText: 'Expected time format: HH:MM',
     minText: "The times in this field must be equal to or after {0}",
     maxText: "The times in this field must be equal to or before {0}",
-    reverseText: "The end times must be posterior to the start date",
-    notEqualText: "The end times can't be equal to the start date",
+    reverseText: "The end time must be posterior to the start time",
+    notEqualText: "The end time can't be equal to the start time",
     dateSeparator: ' - ',
     maxFieldPrefix: '<= ',
     minFieldPrefix: '>= ',
@@ -94,7 +95,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
     },
 
     /**
-     * Replaces any existing <tt>{@link #minValue}</tt> with the new value and refreshes the DateRangePicker.
+     * Replaces any existing <tt>{@link #minValue}</tt> with the new value and refreshes the TimeRangePicker.
      * @param {Date} value The minimum date that can be selected
      */
     setMinValue : function(dt){
@@ -108,7 +109,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
     },
 
     /**
-     * Replaces any existing <tt>{@link #maxValue}</tt> with the new value and refreshes the DateRangePicker.
+     * Replaces any existing <tt>{@link #maxValue}</tt> with the new value and refreshes the TimeRangePicker.
      * @param {Date} value The maximum date that can be selected
      */
     setMaxValue : function(dt){
@@ -127,7 +128,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
      */
     getErrors: function(value) {
         value = arguments.length > 0 ? value : this.formatDate(this.processRawValue(this.getRawValue()));
-        var errors = this.callSuper([value]);
+        var errors = this.callParent([value]);
         format = Ext.String.format;
         
         if (value.length < 1){ // if it's blank and textfield didn't flag it then it's valid
@@ -144,7 +145,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
                 errors.push(format(this.invalidText, value, this.format));
                 return errors;
             }
-            var scErrors = this.callSuper([value]);//picker getError
+            var scErrors = this.callParent([value]);//picker getError
             if (!Ext.isEmpty(scErrors)){
                 errors.push(format(this.invalidText, value, this.format));
                 return errors;
@@ -154,7 +155,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
                 errors.push(format(this.invalidText, value, this.format+this.dateSeparator+this.format));
                 return errors;
             }
-            var scErrors = this.callSuper([value]);//picker getError
+            var scErrors = this.callParent([value]);//picker getError
             if (!Ext.isEmpty(scErrors)){
                 errors.push(format(this.invalidText, value, this.format+this.dateSeparator+this.format));
                 return errors;
@@ -170,22 +171,22 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
         }
         //Checks if the start date is in the interval [minDate,maxDate]
         if (rangeDate.startTime !== null){
-            if (rangeDate.startTime.getTime() - this.minValue.getTime() < 0){
+            if (this.minValue && (rangeDate.startTime.getTime() - this.minValue.getTime() < 0)){
                 errors.push(format(this.minText, this.formatDate(this.minValue)));
                 return errors;
             }
-            if (this.maxValue.getTime() - rangeDate.startTime.getTime() < 0){
+            if (this.maxValue && (this.maxValue.getTime() - rangeDate.startTime.getTime() < 0)){
                 errors.push(format(this.maxText, this.formatDate(this.maxValue)));
                 return errors;
             }
         }
         //Checks if the end date is in the interval [minDate,maxDate]
         if (rangeDate.endTime !== null){
-            if (rangeDate.endTime.getTime() - this.minValue.getTime() < 0){
+            if (this.minValue && (rangeDate.endTime.getTime() - this.minValue.getTime() < 0)){
                 errors.push(format(this.minText, this.formatDate(this.minValue)));
                 return errors;
             }
-            if (this.maxValue.getTime() - rangeDate.endTime.getTime() < 0){
+            if (this.maxValue && (this.maxValue.getTime() - rangeDate.endTime.getTime() < 0)){
                 errors.push(format(this.maxText, this.formatDate(this.maxValue)));
                 return errors;
             }
@@ -389,7 +390,7 @@ Ext.define('OgamDesktop.ux.form.field.TimeRangeField', {
      * Return a range date object or null for failed parse operations
      * @private
      * @param {String/Date/RangeDate} rawValue The rawValue to parse
-     * @return {Object/null} The parsed range date {minField:{Date}, maxField:{Date}}
+     * @return {Object/null} The parsed range time {startTime:{Date}, endTime:{Date}}
      */
     rawToValue: function(rawValue) {
         return this.parseRangeDate(rawValue) || null;

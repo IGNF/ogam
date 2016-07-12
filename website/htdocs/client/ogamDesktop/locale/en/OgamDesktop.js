@@ -92,8 +92,8 @@ Ext.define("OgamDesktop.loacle.en.ux.form.field.TimeRangeField", {
 	formatText: 'Expected time format: HH:MM',
     minText: "The times in this field must be equal to or after {0}",
     maxText: "The times in this field must be equal to or before {0}",
-    reverseText: "The end times must be posterior to the start date",
-    notEqualText: "The end times can't be equal to the start date",
+    reverseText: "The end time must be posterior to the start time",
+    notEqualText: "The end time can't be equal to the start time",
     dateSeparator: ' - ',
     maxFieldPrefix: '<= ',
     minFieldPrefix: '>= '
