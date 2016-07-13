@@ -436,42 +436,34 @@ td.delete-cell {
 	margin: 20px auto;
 	padding: 22px 40px;
 }
-
 .form-ct {
 	margin: 0 auto;
 	width: 350px;
 }
-
 .zend_form .element, .zend_form .button {
 	position: relative;
 }
-
 .zend_form .multiCheckbox label {
 	margin-left: 30px;
 }
-
 .zend_form .multiCheckbox label.title {
 	display: block;
 	font-weight: bold;
 	margin: 10px 0;
 }
-
 .zend_form .multiCheckbox input {
 	width: auto;
 	margin-top: 6px;
 }
-
 .zend_form textarea{
 	height:100px;
     width:350px;
 }
-
 .zend_form input {
 	width: 200px;
 	position: absolute;
 	right: 0;
 }
-
 .zend_form input:-moz-read-only { /* For Firefox */
     background-color: lightgray;
 }
@@ -479,29 +471,20 @@ td.delete-cell {
 .zend_form input:read-only { 
     background-color: lightgray;
 }
-
 .zend_form select {
 	width: 204px;
 	position: absolute;
 	right: 0;
 }
-
 .zend_form .button {
 	margin-top: 20px;
 	height: 25px;
 }
-
 .zend_form .button input {
 	width: 100px;
 }
-
 .zend_form .hint-title {
 	font-weight: bold;
-}
-
-.zend_form .file .hint {
-	background-color: #F0F0F0;
-	margin: 10px 0;
 }
 .zend_form .file {
 	padding: 10px;
@@ -514,6 +497,10 @@ td.delete-cell {
 	width: 100%;
 	position: static;
 	background-color: #f5f5f5;
+}
+.zend_form .model {
+    line-height: 1em;
+    margin-top: 5px;
 }
 .zend_form .show-model-text {
 	font-weight: bold;
@@ -600,8 +587,7 @@ td.delete-cell {
 }
 
 .data-upload-form .zend_form .file .hint {
-	width: 1000px;
-	margin-left: -275px;
+	width: 100%;
 }
 
 .data-upload-form .zend_form label {

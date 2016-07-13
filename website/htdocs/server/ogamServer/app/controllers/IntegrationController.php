@@ -159,7 +159,7 @@ class IntegrationController extends AbstractOGAMController {
 			if ($model) {
 				$link = $this->_helper->url('export-file-model', 'integration', '') . '?fileFormat=' . $requestedFile->format;
 				$anchor = $this->translator->translate('Download a file model for') . ' "' . $requestedFile->label . '"';
-				$fieldsDesc .= "<div class='align_images'>";
+				$fieldsDesc .= "<div class='model'>";
 				$fieldsDesc .= '<span class="show-model-text">' . $anchor . ': </span>';
 				$fieldsDesc .= '<div class="show-model-tool" onclick="window.location=\''.$link.'\';"></div>';
 				$fieldsDesc .= '</div>';
