@@ -210,12 +210,7 @@ Ext.define('OgamDesktop.controller.result.Grid',{
 		resultStore.setModel(gridModel);
 
 		// Load the grid results store
-		resultStore.load({
-			params: {
-				// specify params for the first page because using paging.
-				start: 0,
-				limit: gridTab.gridPageSize
-			},
+		resultStore.loadPage(1, {
 			callback: function(records) {
 				gridTab.fireEvent('resultsload', Ext.isEmpty(records));
 			}
