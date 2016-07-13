@@ -8,7 +8,7 @@ html {
 }
 
 h1, h2, h3 {
-	color: #135CAE;
+	color: #777777;
 }
 
 h3 {
@@ -111,7 +111,7 @@ body {
 
 .banner {
 	color: #CCCCCC;
-	/*margin:10px 0;*/
+	height: 80px;
 	width: 100%;
 	text-align: center;
 	overflow: hidden;
@@ -153,6 +153,7 @@ body {
 
 a {
 	text-decoration: none;
+	color: #606060;
 }
 
 a:hover {
@@ -162,7 +163,7 @@ a:hover {
 
 a:visited {
 	text-decoration: none;
-	color: #135CAE;
+	color: #777777;
 }
 
 .left-column {
