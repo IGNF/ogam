@@ -112,7 +112,7 @@ Ext.define("OgamDesktop.loacle.fr.ux.form.field.TimeRangeField", {
 	formatText: 'Le format attendu est: HH:MM',
 	minText : "Les heures contenues dans ce champ doivent être égales ou postérieures au {0}",
 	maxText : "Les heures contenues dans ce champ doivent être égales ou antérieures au {0}",
-	reverseText : "L'heure de fin doit être postérieure à la date de début",
+	reverseText : "L'heure de fin doit être postérieure à l'heure de début",
 	notEqualText : "Les heures de début et de fin ne peuvent être égales",
     dateSeparator: ' - ',
     maxFieldPrefix: '<= ',
@@ -249,10 +249,16 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 	});
 });
 
+Ext.define('OgamDesktop.locale.fr.view.request.AdvancedRequestController', {
+	override:'OgamDesktop.view.request.AdvancedRequestController',
+	toastHtml_noColumn: 'Veuillez sélectionner une colonne.',
+	toastTitle_noColumn: 'Erreur : aucune colonne trouvée.'
+});
+
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
 	override:'OgamDesktop.view.request.PredefinedRequest',
 	config:{
-		title: 'Requête prédéfinie'
+		title: 'Requêtes prédéfinies'
 	},
 	labelColumnHeader : "Libellé",
 	resetButtonText:"Annuler",
