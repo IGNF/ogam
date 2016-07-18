@@ -96,14 +96,7 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 				scope: this
 			});
 		} else {
-			Ext.toast({
-				closable: true,
-				width: 300,
-				align: 't',
-				autoCloseDelay: 8000,
-				title: this.toastTitle_noColumn,
-				html: this.toastHtml_noColumn
-	        });
+			OgamDesktop.toast(this.toastHtml_noColumn, this.toastTitle_noColumn);
 		}
 	},
 

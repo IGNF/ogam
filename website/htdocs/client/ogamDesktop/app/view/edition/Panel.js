@@ -963,7 +963,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			this.lookupController().redirectTo(obj.redirectLink, true)
 		} else if (obj.success) {
 			this.close();
-			Ext.toast(obj.message);
+			OgamDesktop.toast(obj.message);
 		}
 
 		if (!Ext.isEmpty(obj.errorMessage)) {
