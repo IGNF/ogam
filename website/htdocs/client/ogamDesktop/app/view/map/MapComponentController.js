@@ -17,6 +17,17 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
     */
     autoZoomOnResultsFeatures : true,
 
+//<locale>
+    /**
+     * @cfg {String} noFeatureErrorTitle The no feature error title (default to <tt>'Zoom to result features:'</tt>)
+     */
+    noFeatureErrorTitle : 'Zoom to result features:',
+    /*
+     * @cfg {String} noFeatureErrorMessage The no feature error message (default to <tt>'The results layer contains no feature on which to zoom.'</tt>)
+     */
+    noFeatureErrorMessage : 'The results layer contains no feature on which to zoom.',
+//</locale>
+
    /**
     * @cfg {Object} requestLayers A array of ol layers dependents of the request
     */
@@ -115,9 +126,8 @@ Ext.define('OgamDesktop.view.map.MapComponentController', {
         var resultsBBox = this.getView().resultsBBox ? this.getView().resultsBBox : 'POLYGON EMPTY';
         var wktGeom = this.wktFormat.readGeometry(resultsBBox);
         var extent = wktGeom.getExtent();
-        /*var extent = this.getMapLayer('results').getSource().getExtent();*/
         if (ol.extent.isEmpty(extent)) {
-            Ext.Msg.alert('Zoom to result features :', 'The results layer contains no feature on which to zoom.');
+            OgamDesktop.toast(this.noFeatureErrorMessage, this.noFeatureErrorTitle);
         } else {
             this.map.getView().fit(
                 extent, 

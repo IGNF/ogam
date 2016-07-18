@@ -7,7 +7,7 @@ Ext.define("OgamDesktop.locale.en.Application", {
 	toastTitle_500: 'Error 500 : server error.',
 	toastHtml_500: 'An internal server error does not allow to  meet the demand.',
 	toastTitle_default: 'Error',
-	toastHtml_default: 'See the <a href="http://www.w3schools.com/tags/ref_httpmessages.asp" target="_blank">status codes list</a> for more information.',
+	toastHtml_default: 'See the <a href="http://www.w3schools.com/tags/ref_httpmessages.asp" target="_blank">status codes list</a> for more information.'
 });
 Ext.define("OgamDesktop.locale.en.view.main.Main", {
     override: "OgamDesktop.view.main.Main",
@@ -256,6 +256,12 @@ Ext.define('OgamDesktop.locale.en.view.map.MainWin', {//TODO fix override warnin
 	config: {
 		title : 'Map'
 	}
+});
+
+Ext.define('OgamDesktop.locale.fr.view.map.MapComponentController', {
+	override: 'OgamDesktop.view.map.MapComponentController',
+	noFeatureErrorTitle : 'Zoom to result features:',
+    noFeatureErrorMessage : 'The results layer contains no feature on which to zoom.'
 });
 
 Ext.define('OgamDesktop.locale.en.view.map.MapToolbar', {

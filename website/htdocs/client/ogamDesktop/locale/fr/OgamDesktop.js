@@ -286,6 +286,12 @@ Ext.define('OgamDesktop.locale.fr.view.map.MainWin', {//TODO fix override warnin
 	}
 });
 
+Ext.define('OgamDesktop.locale.fr.view.map.MapComponentController', {
+	override: 'OgamDesktop.view.map.MapComponentController',
+	noFeatureErrorTitle : 'Zoom sur les résultat :',
+    noFeatureErrorMessage : 'La couche des résultats ne contient aucune géométrie sur laquelle zoomer.'
+});
+
 Ext.define('OgamDesktop.locale.fr.view.map.MapToolbar', {
 	override: 'OgamDesktop.view.map.MapToolbar',
 	zoomToDrawingFeaturesButtonTooltip: "Zoomer sur la sélection",
