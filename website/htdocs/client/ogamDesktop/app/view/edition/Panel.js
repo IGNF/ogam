@@ -75,10 +75,15 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 */
 	dataEditFSDeleteButtonTooltip : 'Delete the data',
 	/**
-	 * @cfg {String} dataEditFSDeleteButtonConfirm The data Edit FieldSet Delete
-	 *      Button Confirmation message.
+	 * @cfg {String} dataEditFSDeleteButtonConfirmTitle The data edit fieldSet delete
+	 *      button confirmation title.
 	 */
-	dataEditFSDeleteButtonConfirm : 'Do you really want to delete this data ?',
+	dataEditFSDeleteButtonConfirmTitle: 'Confirm deletion:',
+	/**
+	 * @cfg {String} dataEditFSDeleteButtonConfirmMessage The data edit fieldSet delete
+	 *      button confirmation message.
+	 */
+	dataEditFSDeleteButtonConfirmMessage : 'Do you really want to delete this data ?',
 	/**
 	 * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete
 	 *      Button Tooltip (defaults to 'Delete the data (Disabled if exist
@@ -866,7 +871,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 * Ask for deletion of the data
 	 */
 	askDataDeletion : function() {
-		Ext.Msg.confirm('Confirm Deletion', this.dataEditFSDeleteButtonConfirm, function(btn, text) {
+		Ext.Msg.confirm(this.dataEditFSDeleteButtonConfirmTitle, this.dataEditFSDeleteButtonConfirmMessage, function(btn, text) {
 			if (btn == 'yes') {
 				this.deleteData(this.dataId);
 			}

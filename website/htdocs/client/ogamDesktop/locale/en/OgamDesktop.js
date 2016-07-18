@@ -134,7 +134,8 @@ Ext.define('OgamDesktop.locale.en.view.edition.Panel',{
 	parentsFSTitle : 'Parents',
 	dataEditFSDeleteButtonText :'Delete',
 	dataEditFSDeleteButtonTooltip : 'Delete the data',
-	dataEditFSDeleteButtonConfirm :'Do you really want to delete this data ?',
+	dataEditFSDeleteButtonConfirmTitle: 'Confirm deletion:',
+	dataEditFSDeleteButtonConfirmMessage :'Do you really want to delete this data ?',
 	dataEditFSDeleteButtonDisabledTooltip : 'This data cannot be deleted (some children exist)',
 	dataEditFSValidateButtonText :  'Validate',
 	dataEditFSValidateButtonTooltip :  'Save changes',
@@ -223,8 +224,10 @@ Ext.define("OgamDesktop.locale.en.view.request.AdvancedRequest", {
 
 Ext.define('OgamDesktop.locale.en.view.request.AdvancedRequestController', {
 	override:'OgamDesktop.view.request.AdvancedRequestController',
-	toastHtml_noColumn: 'Please select a column.',
-	toastTitle_noColumn: 'Error : no column found.'
+	toastTitle_noColumn: 'Form submission:',
+	toastHtml_noColumn: 'It seems that no column has been selected. Please select at least one column.',
+	invalidValueSubmittedErrorTitle: 'Form submission:',
+	invalidValueSubmittedErrorMessage: 'A field appears to contain an error. Please check your filter criteria.'
 });
 
 Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
@@ -282,10 +285,22 @@ Ext.define('OgamDesktop.locale.en.view.map.MapToolbar', {
 	printMapButtonTooltip:'Print map'
 });
 
+Ext.define('OgamDesktop.locale.fr.view.map.MapToolbarController', {
+	override: 'OgamDesktop.view.map.MapToolbarController',
+	noDrawingFeatureErrorTitle : 'Zoom to drawing features:',
+    noDrawingFeatureErrorMessage : 'The drawing layer contains no feature on which to zoom.'
+});
+
 Ext.define('OgamDesktop.locale.en.view.map.toolbar.LayerFeatureInfoButton', {
 	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButton',
 	tooltip: 'Display data about the selected layer',
 	popupTitleText: 'Layer information'
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.LayerFeatureInfoButtonController', {
+	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController',
+	layerFeatureInfoButtonErrorTitle : 'Layer information:',
+    layerFeatureInfoButtonErrorMessage : 'Please select a layer into the menu.'
 });
 
 Ext.define('OgamDesktop.locale.en.view.map.toolbar.SnappingButton', {
@@ -295,7 +310,13 @@ Ext.define('OgamDesktop.locale.en.view.map.toolbar.SnappingButton', {
 
 Ext.define('OgamDesktop.locale.en.view.map.toolbar.SelectWFSFeatureButton', {
 	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
-	tooltip: "Import a geometry from the selected layer"
+	tooltip: "Import a feature from the selected layer"
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.SelectWFSFeatureButtonController', {
+	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButtonController',
+	selectWFSFeatureButtonErrorTitle : 'Feature import:',
+    selectWFSFeatureButtonErrorMessage : 'Please select a layer into the menu.'
 });
 
 Ext.define('OgamDesktop.locale.en.view.map.MapAddonsPanel', {

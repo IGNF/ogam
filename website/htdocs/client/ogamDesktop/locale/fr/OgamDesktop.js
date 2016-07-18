@@ -143,7 +143,8 @@ Ext.define('OgamDesktop.locale.fr.view.edition.Panel',{
 	parentsFSTitle : 'Parents',
 	dataEditFSDeleteButtonText :'Supprimer',
 	dataEditFSDeleteButtonTooltip : 'Supprimer la donnée',
-	dataEditFSDeleteButtonConfirm :'Voulez-vous vraiment effacer cette donnée ?',
+	dataEditFSDeleteButtonConfirmTitle: 'Confirmer la suppression :',
+	dataEditFSDeleteButtonConfirmMessage :'Voulez-vous vraiment effacer cette donnée ?',
 	dataEditFSDeleteButtonDisabledTooltip : 'La donnée ne peut pas être supprimée (des enfants existent)',
 	dataEditFSValidateButtonText :  'Valider',
 	dataEditFSValidateButtonTooltip :  'Sauvegarder les modifications',
@@ -251,8 +252,10 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 
 Ext.define('OgamDesktop.locale.fr.view.request.AdvancedRequestController', {
 	override:'OgamDesktop.view.request.AdvancedRequestController',
-	toastHtml_noColumn: 'Veuillez sélectionner une colonne.',
-	toastTitle_noColumn: 'Erreur : aucune colonne trouvée.'
+	toastTitle_noColumn: 'Soumission du formulaire :',
+	toastHtml_noColumn: "Il semblerait qu'aucune colonne n'ait été sélectionnées. Veuillez sélectionner au moins une colonne.",
+	invalidValueSubmittedErrorTitle: 'Soumission du formulaire :',
+	invalidValueSubmittedErrorMessage: 'Un champ semble contenir une erreur. Veuillez vérifier vos critères de filtrage.'
 });
 
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
@@ -310,10 +313,22 @@ Ext.define('OgamDesktop.locale.fr.view.map.MapToolbar', {
 	printMapButtonTooltip:'Imprimer la carte'
 });
 
+Ext.define('OgamDesktop.locale.fr.view.map.MapToolbarController', {
+	override: 'OgamDesktop.view.map.MapToolbarController',
+	noDrawingFeatureErrorTitle : 'Zoom sur les tracés :',
+    noDrawingFeatureErrorMessage : 'La couche des tracés ne contient aucune géométrie sur laquelle zoomer.'
+});
+
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.LayerFeatureInfoButton', {
 	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButton',
 	tooltip: 'Voir les informations sur la couche sélectionnée',
-	popupTitleText: 'Information(s) sur la géométrie'
+	popupTitleText: 'Information(s) sur la couche'
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.LayerFeatureInfoButtonController', {
+	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController',
+	layerFeatureInfoButtonErrorTitle : "Information(s) sur la couche :",
+    layerFeatureInfoButtonErrorMessage : 'Veuillez sélectionner une couche dans le menu.'
 });
 
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SnappingButton', {
@@ -324,6 +339,12 @@ Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SnappingButton', {
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SelectWFSFeatureButton', {
 	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
 	tooltip: "Selectionner un contour sur la couche sélectionnée"
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.SelectWFSFeatureButtonController', {
+	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButtonController',
+	selectWFSFeatureButtonErrorTitle : "Importation d'une géométrie :",
+    selectWFSFeatureButtonErrorMessage : 'Veuillez sélectionner une couche dans le menu.'
 });
 
 Ext.define('OgamDesktop.locale.fr.view.map.MapAddonsPanel', {

@@ -44,7 +44,7 @@
  * Lorentsen.
  */
 Ext.define('OgamDesktop.ux.window.Toast', {
-    extend: 'Ext.window.Toast',
+    extend: 'Ext.window.Toast'
 },
 function (Toast) {
 	OgamDesktop.toast = function (message, title, align, iconCls) {

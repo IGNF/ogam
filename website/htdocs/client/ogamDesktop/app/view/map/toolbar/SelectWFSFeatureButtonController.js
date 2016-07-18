@@ -5,6 +5,17 @@ Ext.define('OgamDesktop.view.map.toolbar.SelectWFSFeatureButtonController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.selectwfsfeaturebutton',
 
+//<locale>
+    /**
+     * @cfg {String} selectWFSFeatureButtonErrorTitle The select WFS feature button error title (default to <tt>'Feature import:'</tt>)
+     */
+    selectWFSFeatureButtonErrorTitle : 'Feature import:',
+    /*
+     * @cfg {String} layerFeatureInfoButtonErrorMessage The select WFS feature button error message (default to <tt>'Please select a layer into the menu.'</tt>)
+     */
+    selectWFSFeatureButtonErrorMessage : 'Please select a layer into the menu.',
+//</locale>
+
     /**
      * Initializes the controller.
      */
@@ -32,7 +43,7 @@ Ext.define('OgamDesktop.view.map.toolbar.SelectWFSFeatureButtonController', {
             if (checkedItem !== null) {
                 this.updateAndAddSelectWFSFeatureListener(checkedItem);
             } else {
-                Ext.Msg.alert('Select feature(s) :', 'Please select a layer.');
+                OgamDesktop.toast(this.selectWFSFeatureButtonErrorMessage, this.selectWFSFeatureButtonErrorTitle);
                 button.toggle(false);
             }
         } else {
