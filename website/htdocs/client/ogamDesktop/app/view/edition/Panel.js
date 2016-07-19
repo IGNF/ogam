@@ -509,7 +509,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			field.typeAhead = true;
 			field.displayField = 'label';
 			field.valueField = 'code';
-			field.emptyText = OgamDesktop.ux.request.RequestFieldSet.criteriaComboEmptyText;
+			field.emptyText = OgamDesktop.ux.request.RequestFieldSet.prototype.criteriaComboEmptyText;
 			field.queryMode = 'remote';
 
 			// Fill the list of codes / labels for default values
@@ -735,18 +735,17 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			field.treePickerColumns = {
 			    items: [{
 			    	xtype: 'treecolumn',
-		            text: "name",
+		            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefLatinNameColumnTitle,
 		            dataIndex: "label"
 		        },{
-		            text: "vernacular",
+		            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefVernacularNameColumnTitle,
 		            dataIndex: "vernacularName"
-		        },{
-		        	text: "Reference",
-		        	xtype: 'booleancolumn',
-		            dataIndex: "isReference",
-		            flex:0,
-		            witdh:15
-		        }],
+		        },Ext.applyIf({
+			            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefReferentColumnTitle,
+			            dataIndex: "isReference",
+			            flex:0,
+			            witdh:15
+			        }, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
 				defaults : {
 					flex : 1
 				}
