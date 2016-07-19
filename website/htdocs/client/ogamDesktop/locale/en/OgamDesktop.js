@@ -14,9 +14,16 @@ Ext.define("OgamDesktop.locale.en.view.main.Main", {
 	homeButtonText: 'Homepage',
 	homeButtonTooltip: "Return to the homepage"
 });
+Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
+    override: "OgamDesktop.ux.request.RequestFieldSet",
+	criteriaComboEmptyText : "Select...",
+	taxrefLatinNameColumnTitle : 'Latin name',
+	taxrefVernacularNameColumnTitle : 'Vernacular name',
+	taxrefReferentColumnTitle : 'Referent'
+});
 Ext.define("OgamDesktop.locale.en.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",
-	criteriaPanelTbarLabel : "Criterias",
+	criteriaPanelTbarLabel : "Criteria",
 	criteriaPanelTbarComboEmptyText : "Select...",
 	criteriaPanelTbarComboLoadingText : "Searching...",
 	columnsPanelTbarLabel : "Results",

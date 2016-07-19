@@ -29,6 +29,26 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	    'OgamDesktop.ux.form.field.*'
 	],
 
+//<locale>
+	/**
+	 * @cfg {String} criteriaComboEmptyText The criteria
+	 *      combo empty text (defaults to <tt>'Select...'</tt>)
+	 */
+	criteriaComboEmptyText : 'Select...',
+	/**
+	 * @cfg {String} taxrefLatinNameColumnTitle The taxref latin name column title (defaults to <tt>'Latin name'</tt>)
+	 */
+	taxrefLatinNameColumnTitle : 'Latin name',
+	/**
+	 * @cfg {String} taxrefVernacularColumnTitle The taxref vernacular name column title (defaults to <tt>'Vernacular name'</tt>)
+	 */
+	taxrefVernacularNameColumnTitle : 'Vernacular name',
+	/**
+	 * @cfg {String} taxrefReferentColumnTitle The taxref referent column title (defaults to <tt>'Referent'</tt>)
+	 */
+	taxrefReferentColumnTitle : 'Referent',
+//</locale>
+
 	/**
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
@@ -175,13 +195,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	},
 
 	inheritableStatics : {
-//<locale>		
-		/**
-		 * @cfg {String} criteriaPanelTbarComboEmptyText The criteria Panel Tbar
-		 *      Combo Empty Text (defaults to <tt>'Select...'</tt>)
-		 */
-		criteriaPanelTbarComboEmptyText : 'Select...',
-//</locale>
+
 		/**
 		 * @cfg {String} dateFormat The date format for the date fields (defaults to
 		 *      <tt>'Y/m/d'</tt>)
@@ -196,7 +210,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 		 */
 		getCriteriaConfig : function(record) {
 			var cls = this.self || OgamDesktop.ux.request.RequestFieldSet;
-		
+
 			// If the field have multiple default values, duplicate the criteria
 			if (!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1) {
 				var fields = [];
@@ -228,7 +242,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				field.typeAhead = true;
 				field.displayField = 'label';
 				field.valueField = 'code';
-				field.emptyText = cls.criteriaPanelTbarComboEmptyText;
+				field.emptyText = cls.prototype.criteriaComboEmptyText;
 				if (record.subtype === 'DYNAMIC') {
 					field.queryMode = 'remote';
 					field.store = new Ext.data.JsonStore({
@@ -402,19 +416,18 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				//field.unit = record.unit;
 				field.treePickerColumns = {
 				    items: [{
-				    	xtype: 'treecolumn',
-			            text: "name",
+				        xtype: 'treecolumn',
+			            text: cls.prototype.taxrefLatinNameColumnTitle,
 			            dataIndex: "label"
 			        },{
-			            text: "vernacular",
+			            text: cls.prototype.taxrefVernacularNameColumnTitle,
 			            dataIndex: "vernacularName"
-			        },{
-			        	text: "Reference",
-			        	xtype: 'booleancolumn',
+			        },Ext.applyIf({
+			            text: cls.prototype.taxrefReferentColumnTitle,
 			            dataIndex: "isReference",
 			            flex:0,
 			            witdh:15
-			        }],
+			        }, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
 					defaults : {
 						flex : 1
 					}

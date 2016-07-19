@@ -509,7 +509,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			field.typeAhead = true;
 			field.displayField = 'label';
 			field.valueField = 'code';
-			field.emptyText = OgamDesktop.ux.request.RequestFieldSet.criteriaPanelTbarComboEmptyText;
+			field.emptyText = OgamDesktop.ux.request.RequestFieldSet.criteriaComboEmptyText;
 			field.queryMode = 'remote';
 
 			// Fill the list of codes / labels for default values

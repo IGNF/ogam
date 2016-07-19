@@ -22,6 +22,13 @@ Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
     override: "OgamDesktop.controller.map.Main",
 	requestLoadingMessage: 'Veuillez patienter, pendant le chargement de la carte...'
 });
+Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
+    override: "OgamDesktop.ux.request.RequestFieldSet",
+	criteriaComboEmptyText : "Sélectionner...",
+	taxrefLatinNameColumnTitle : 'Nom latin',
+	taxrefVernacularNameColumnTitle : 'Nom vernaculaire',
+	taxrefReferentColumnTitle : 'Référent'
+});
 Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",
 	criteriaPanelTbarLabel : "Critères",
