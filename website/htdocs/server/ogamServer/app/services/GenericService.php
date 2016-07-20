@@ -707,8 +707,10 @@ class Application_Service_GenericService {
 		$configuration = Zend_Registry::get("configuration");
 		if ($schemaCode === 'RAW_DATA') {
 			$databaseSRS = $configuration->getConfig('srs_raw_data', '4326');
-		} else {
+		} else if ($schemaCode === 'HARMONIZED_DATA') {
 			$databaseSRS = $configuration->getConfig('srs_harmonized_data', '3857');
+		} else {
+			throw new Exception('Invalid schema code.');
 		}
 
 		if ($value !== null && $value !== '' && $value !== array()) {
@@ -1004,8 +1006,10 @@ class Application_Service_GenericService {
 		$configuration = Zend_Registry::get("configuration");
 		if ($schema === 'RAW_DATA') {
 			$databaseSRS = $configuration->getConfig('srs_raw_data', '4326');
-		} else {
+		} else if ($schema === 'HARMONIZED_DATA') {
 			$databaseSRS = $configuration->getConfig('srs_harmonized_data', '3857');
+		} else {
+			throw new Exception('Invalid schema code.');
 		}
 
 		switch ($tableField->type) {

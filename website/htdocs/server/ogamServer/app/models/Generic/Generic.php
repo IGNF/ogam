@@ -261,7 +261,7 @@ class Application_Model_Generic_Generic {
 
 			if ($field->data != "LINE_NUMBER" && $field->isEditable) {
 				// Hardcoded value
-				$sql .= $field->columnName . " = " . $this->genericService->buildSQLValueItem($schema, $field);
+				$sql .= $field->columnName . " = " . $this->genericService->buildSQLValueItem($schema->code, $field);
 				$sql .= ", ";
 			}
 		}
@@ -273,7 +273,7 @@ class Application_Model_Generic_Generic {
 		// Build the WHERE clause with the info from the PK.
 		foreach ($data->infoFields as $primaryKey) {
 			// Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-			$sql .= $this->genericService->buildWhereItem($schema, $primaryKey, true);
+			$sql .= $this->genericService->buildWhereItem($schema->code, $primaryKey, true);
 		}
 
 		$this->logger->info('updateData : ' . $sql);
@@ -366,7 +366,7 @@ class Application_Model_Generic_Generic {
 
 				// Primary keys that are not set should be serials ...
 				$columns .= $field->columnName . ", ";
-				$values .= $this->genericService->buildSQLValueItem($schema, $field);
+				$values .= $this->genericService->buildSQLValueItem($schema->code, $field);
 				$values .= ", ";
 			} else {
 				$this->logger->info('field ' . $field->columnName . " " . $field->isCalculated);
@@ -387,7 +387,7 @@ class Application_Model_Generic_Generic {
 				// Primary keys that are not set should be serials ...
 				if ($field->data != "LINE_NUMBER") {
 					$columns .= $field->columnName . ", ";
-					$values .= $this->genericService->buildSQLValueItem($schema, $field);
+					$values .= $this->genericService->buildSQLValueItem($schema->code, $field);
 					$values .= ", ";
 				}
 			}
