@@ -109,7 +109,20 @@
         if (!empty($language_flags)) {
             foreach($language_flags as $flag){
                 if(!empty($flag) && ($flag !== $this->locale)) {
-                    echo '<a href="?lang='.$flag.'" ><div class="'.$flag.'-flag" title="'.$this->translate('Translate this site '.$flag).'">&nbsp;</div></a>';
+                  // Building of the uri
+                  $uri = $this->url().'?lang='.$flag;
+                  $params = $this->userAgent()->getServerValue('query_string');
+                  // Deletion of the previous lang parameter if present
+                  $paramsArray = explode('&',$params);
+                  foreach ($paramsArray as $key => $value) {
+                    $param = explode('=',$value);
+                    if($param[0] === 'lang')  unset($paramsArray[$key]);
+                  }
+                  $params = implode("&", $paramsArray);
+                  // Addition of the page current parameters
+                  if(!empty($params)) $uri .= '&'.$params;
+                  // Creation of the html link
+                  echo '<a href="'.$uri.'" ><div class="'.$flag.'-flag" title="'.$this->translate('Translate this site '.$flag).'">&nbsp;</div></a>';
                 }
             }
         }
