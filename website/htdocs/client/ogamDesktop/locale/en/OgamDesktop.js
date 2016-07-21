@@ -164,7 +164,9 @@ Ext.define('OgamDesktop.locale.en.view.edition.Panel',{
 	childrenFSAddNewChildButtonTooltip : 'Add a new child',
 	contentTitleAddPrefix : 'Add a',
 	contentTitleEditPrefix : 'Edit a',
-	tipEditPrefix :'Edit'
+	tipEditPrefix :'Edit',
+	editToastTitle : 'Form submission:',
+	deleteToastTitle : 'Removal operation:'
 });
 
 /*
