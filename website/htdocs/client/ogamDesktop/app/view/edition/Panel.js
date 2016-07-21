@@ -829,6 +829,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		field.fieldLabel = record.label;
 		if (record.required == true) {
 		 	field.fieldLabel += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">*</span> ';
+			field.cls = ' required';
+		}
+		else {
+			field.cls = ' not-required';
 		}
 		
 		// Set the width
@@ -844,7 +848,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				field.selectOnFocus = false; //If selectOnFocus is enabled the combo must be editable: true
 				field.typeAhead= false
 			}
-			field.cls = 'x-item-disabled';
+			field.cls += ' x-item-disabled';
 		}
 
 		return field;
