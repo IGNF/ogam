@@ -186,7 +186,7 @@ Ext.define("OgamDesktop.locale.en.view.result.MainWin", {
 	csvExportMenuItemText: 'Export CSV',
 	kmlExportMenuItemText: 'Export KML',
 	geojsonExportMenuItemText: 'Export GeoJSON',
-	csvExportAlertTitle : "Export a a CSV file",
+	csvExportAlertTitle : "Export as a CSV file",
 	csvExportAlertMsg : "<div>For your confort, use Chrome or FireFox</div>",
 	maskMsg : "Loading..."
 });
@@ -391,4 +391,4 @@ Ext.define('OgamDesktop.locale.en.view.navigation.Tab', {
     //dateFormat : 'Y/m/d',
     openNavigationButtonTitle : 'Display details',
     openNavigationButtonTip : 'Display the details in the detail view.'
-}); 
+});

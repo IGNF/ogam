@@ -90,8 +90,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.TwinNumberField", {
 });
 
 Ext.define("OgamDesktop.locale.fr.ux.form.field.Tree", {
-	override: "OgamDesktop.ux.form.field.Tree"/*,
-	emptyText : "Sélectionner..."*/
+	override: "OgamDesktop.ux.form.field.Tree"
 });
 
 Ext.define("OgamDesktop.locale.fr.ux.form.field.NumberRangeField", {
@@ -188,26 +187,7 @@ Ext.define("OgamDesktop.locale.fr.view.result.MainWin", {
 	kmlExportMenuItemText: 'Export KML',
 	geojsonExportMenuItemText: 'Export GeoJSON',
 	csvExportAlertTitle : "Exportation d'un fichier CSV avec Internet Explorer",
-	csvExportAlertMsg : "<div><H2>Pour votre confort sur Internet Explorer vous pouvez: </H2> \
-    <H3>Désactiver la confirmation pour les téléchargements de fichiers.</H3> \
-    <ul> \
-    <li>Dans IE, dérouler le menu 'Outils'</li> \
-    <li>Cliquer sur 'Options Internet'</li> \
-    <li>Cliquer sur l'onglet 'Sécurité'</li> \
-    <li>Cliquer sur le bouton 'Personnaliser le niveau'</li> \
-    <li>Descendre jusqu'à la partie 'Téléchargements'</li> \
-    <li>Activé la demande de confirmation pour les téléchargements de fichiers</li> \
-    </ul> \
-    <H3>Désactiver l'ouverture du fichier dans la fenêtre courante.</H3> \
-    <ul> \
-    <li>Ouvrir le poste de travail</li> \
-    <li>Dérouler le menu 'Outils'</li> \
-    <li>Cliquer sur 'Options des dossiers...'</li> \
-    <li>Cliquer sur l'onglet 'Types de fichiers'</li> \
-    <li>Sélectionner l'extension XLS</li> \
-    <li>Cliquer sur le bouton 'Avancé'</li> \
-    <li>Décocher 'Parcourir dans une même fenêtre'</li> \
-    </ul></div>",
+	csvExportAlertMsg : "<div>Pour votre confort, utilisez Chrome ou FireFox</div>",
 	maskMsg : "Chargement..."
 });
 
