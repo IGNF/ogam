@@ -16,11 +16,13 @@ Ext.define("OgamDesktop.locale.fr.view.main.Main", {
 });
 Ext.define("OgamDesktop.locale.fr.controller.result.Grid", {
     override: "OgamDesktop.controller.result.Grid",
-	requestLoadingMessage: 'Veuillez patienter, pendant le chargement des résultats...'
+	requestLoadingMessage: 'Veuillez patienter, pendant le chargement des résultats...',
+	getGridColumnsErrorTitle: 'Chargement des colonnes de la grille échoué :'
 });
 Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
     override: "OgamDesktop.controller.map.Main",
-	requestLoadingMessage: 'Veuillez patienter, pendant le chargement de la carte...'
+	requestLoadingMessage: 'Veuillez patienter, pendant le chargement de la carte...',
+	getresultsbboxErrorTitle: "Chargement de l'emprise échoué :"
 });
 Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
     override: "OgamDesktop.ux.request.RequestFieldSet",

@@ -102,6 +102,9 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 						case Ext.form.action.Action.CLIENT_INVALID:
 							OgamDesktop.toast(this.invalidValueSubmittedErrorMessage, this.invalidValueSubmittedErrorTitle);
 							break;
+						case Ext.form.action.Action.SERVER_INVALID:
+							OgamDesktop.toast(action.result.errorMessage, this.invalidValueSubmittedErrorTitle);
+							break;
 					}
 				},
 				scope: this

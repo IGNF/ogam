@@ -418,14 +418,20 @@ class QueryController extends AbstractOGAMController {
 				}
 			}
 
-			// Store the request parameters in session
-			$websiteSession = new Zend_Session_Namespace('website');
-			$websiteSession->formQuery = $formQuery;
+			if ($formQuery->isValid()) {
+				// Store the request parameters in session
+				$websiteSession = new Zend_Session_Namespace('website');
+				$websiteSession->formQuery = $formQuery;
 
-			// Activate the result layer
-			$this->mappingSession->activatedLayers[] = 'result_locations';
+				// Activate the result layer
+				$this->mappingSession->activatedLayers[] = 'result_locations';
 
-			echo '{"success":true}';
+				echo '{"success":true}';
+			} else {
+				$this->logger->err('Invalid request.');
+				echo '{"success":false,"errorMessage":"Invalid request."}';
+			}
+
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
 			echo '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';

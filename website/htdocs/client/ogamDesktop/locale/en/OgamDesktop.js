@@ -14,6 +14,16 @@ Ext.define("OgamDesktop.locale.en.view.main.Main", {
 	homeButtonText: 'Homepage',
 	homeButtonTooltip: "Return to the homepage"
 });
+Ext.define("OgamDesktop.locale.fr.controller.result.Grid", {
+    override: "OgamDesktop.controller.result.Grid",
+    requestLoadingMessage: 'Please wait, while loading the results...',
+    getGridColumnsErrorTitle: 'Loading of columns in the grid failed:'
+});
+Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
+    override: "OgamDesktop.controller.map.Main",
+	requestLoadingMessage: 'Please wait, while loading the map...',
+	getresultsbboxErrorTitle: 'Loading of bounding box failed:'
+});
 Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
     override: "OgamDesktop.ux.request.RequestFieldSet",
 	criteriaComboEmptyText : "Select...",

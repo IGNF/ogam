@@ -99,4 +99,13 @@ class Application_Object_Generic_FormQuery {
 	public function getResults() {
 		return $this->results;
 	}
+
+	/**
+	 * Get the request validity.
+	 *
+	 * @return Boolean True if the request is valid.
+	 */
+	public function isValid() {
+		return !empty($this->getResults());
+	}
 }
