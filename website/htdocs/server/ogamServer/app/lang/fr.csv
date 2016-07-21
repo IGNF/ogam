@@ -118,9 +118,13 @@ Unknown country within the IBAN '%value%';Pays inconnu pour l'IBAN '%value%'
 Unknown error while uploading file '%value%';Erreur inconnue lors de l'envoi du fichier '%value%'
 Value is required and can't be empty;Cette valeur est obligatoire et ne peut être vide
 notMatch;Le mot de passe n'est pas confirmé
-userNotExist;Cet utilisateur n'existe pas
 userExist;Cet utilisateur existe déjà
-Incorrect password;Mot de passe incorrect
+### User friendly ###
+# userNotExist;Cet utilisateur n'existe pas
+# Incorrect password;Mot de passe incorrect
+### Security ###
+userNotExist;Utilisateur ou mot de passe incorrect
+Incorrect password;Utilisateur ou mot de passe incorrect
 
 ##########################
 #   Layout               #
