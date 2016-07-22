@@ -12,6 +12,9 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('OGAMBundle:Default:index.html.twig');
+
+    	$users = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User')->findAll();
+
+        return $this->render('OGAMBundle:Default:index.html.twig', array('users' => $users));
     }
 }
