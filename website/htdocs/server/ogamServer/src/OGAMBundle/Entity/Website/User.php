@@ -3,6 +3,7 @@ namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
 use OGAMBundle\Entity\Website\Role as Role;
+use OGAMBundle\Entity\Website\Provider as Provider;
 
 /**
  * User.
@@ -37,9 +38,11 @@ class User {
 	/**
 	 *
 	 * @var string
-	 * @ORM\Column(name="provider_id", type="string", length=36, nullable=true)
+	 * @ORM\ManyToOne(targetEntity="Provider")
+	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
 	 */
-	private $providerId;
+	private $provider;
+
 
 	/**
 	 *
@@ -269,5 +272,29 @@ class User {
     public function getRoles()
     {
         return $this->roles;
+    }
+
+    /**
+     * Set provider
+     *
+     * @param \OGAMBundle\Entity\Website\Provider $provider
+     *
+     * @return User
+     */
+    public function setProvider(\OGAMBundle\Entity\Website\Provider $provider = null)
+    {
+        $this->provider = $provider;
+
+        return $this;
+    }
+
+    /**
+     * Get provider
+     *
+     * @return \OGAMBundle\Entity\Website\Provider
+     */
+    public function getProvider()
+    {
+        return $this->provider;
     }
 }

@@ -2,7 +2,3 @@ ogam:
     resource: "@OGAMBundle/Controller/"
     type:     annotation
     prefix:   /
-
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation

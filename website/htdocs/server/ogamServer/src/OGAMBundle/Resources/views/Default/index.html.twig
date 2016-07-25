@@ -1,10 +1,15 @@
-Bienvenue dans OGAM Server
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<h1>Bienvenue dans OGAM Server</h1>
 
 <br/>
 
-{% dump(users) %}
+<h2>Users</h2>
 
-<h1>Users</h1>
+{#dump(users) #}
+
 
 {% for user in users %}
     <p>
@@ -13,6 +18,11 @@ Bienvenue dans OGAM Server
     Rôles :
     {% for role in user.roles %}
     	{{ role.label }}
-    {% endfor %}
+    {% endfor %}<br/>
+    Provider : {{ user.provider.label }}
     </p>
 {% endfor %}
+
+
+
+{% endblock %}

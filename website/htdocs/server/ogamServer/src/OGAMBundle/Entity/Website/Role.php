@@ -13,20 +13,23 @@ class Role {
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="role_code", type="string", length=36, unique=true)
-	 *      @ORM\Id
+	 * @var string
+	 * @ORM\Column(name="role_code", type="string", length=36, unique=true)
+	 * @ORM\Id
 	 */
 	private $code;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="role_label", type="string", length=100, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="role_label", type="string", length=100, nullable=true)
 	 */
 	private $label;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="role_definition", type="string", length=255, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="role_definition", type="string", length=255, nullable=true)
 	 */
 	private $definition;
 

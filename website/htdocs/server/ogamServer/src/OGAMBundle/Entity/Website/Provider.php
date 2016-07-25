@@ -6,28 +6,31 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Provider
  *
- * @ORM\Table(name="website.provider")
+ * @ORM\Table(name="website.providers")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\ProviderRepository")
  */
 class Provider {
 
 	/**
 	 *
-	 * @var int @ORM\Column(name="id", type="integer")
-	 *      @ORM\Id
-	 *      @ORM\GeneratedValue(strategy="AUTO")
+	 * @var int
+	 * @ORM\Column(name="id", type="integer")
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
 	 */
 	private $id;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="label", type="string", nullable=true)
+	 * @var string
+	 * @ORM\Column(name="label", type="string", nullable=true)
 	 */
 	private $label;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="definition", type="string", nullable=true)
+	 * @var string
+	 * @ORM\Column(name="definition", type="string", nullable=true)
 	 */
 	private $definition;
 
