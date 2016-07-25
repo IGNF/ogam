@@ -2,6 +2,7 @@
 namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
+use OGAMBundle\Entity\Website\Role as Role;
 
 /**
  * User.
@@ -13,40 +14,62 @@ class User {
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="user_login", type="string", length=50, nullable=false, unique=true)
-	 *      @ORM\Id
+	 * @var string
+	 * @ORM\Column(name="user_login", type="string", length=50, nullable=false, unique=true)
+	 * @ORM\Id
 	 */
 	private $login;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="user_name", type="string", length=50, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="user_name", type="string", length=50, nullable=true)
 	 */
 	private $username;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="user_password", type="string", length=50, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="user_password", type="string", length=50, nullable=true)
 	 */
 	private $password;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="provider_id", type="string", length=36, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="provider_id", type="string", length=36, nullable=true)
 	 */
 	private $providerId;
 
 	/**
 	 *
-	 * @var bool @ORM\Column(name="active", type="boolean", nullable=true)
+	 * @var bool
+	 * @ORM\Column(name="active", type="boolean", nullable=true)
 	 */
 	private $active;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="email", type="string", length=255, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="email", type="string", length=255, nullable=true)
 	 */
 	private $email;
+
+	/**
+	 * @ORM\ManyToMany(targetEntity="Role")
+	 * @ORM\JoinTable(name="role_to_user",
+	 * joinColumns={@ORM\JoinColumn(name="user_login", referencedColumnName="user_login")},
+	 * inverseJoinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")}
+	 * )
+	 */
+	private $roles = array();
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+	}
 
 	/**
 	 * Set login
@@ -179,5 +202,72 @@ class User {
 	public function getEmail() {
 		return $this->email;
 	}
-}
 
+	/**
+	 * Indicate if the user is allowed for a permission.
+	 *
+	 * @param String $permissionName
+	 *        	The permission
+	 * @return Boolean
+	 */
+	function isAllowed($permissionName) {
+		// The user is allowed if one of its role is.
+		foreach ($this->roles as $role) {
+			if ($role->isAllowed($permissionName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Indicate if the user is allowed for a schema.
+	 *
+	 * @param String $schemaName
+	 *        	The schema
+	 * @return Boolean
+	 */
+	function isSchemaAllowed($schemaName) {
+		// The user is allowed if one of its role is.
+		foreach ($this->roles as $role) {
+			if (in_array($schemaName, $role->schemasList)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+    /**
+     * Add role
+     *
+     * @param \OGAMBundle\Entity\Website\Role $role
+     *
+     * @return User
+     */
+    public function addRole(\OGAMBundle\Entity\Website\Role $role)
+    {
+        $this->roles[] = $role;
+
+        return $this;
+    }
+
+    /**
+     * Remove role
+     *
+     * @param \OGAMBundle\Entity\Website\Role $role
+     */
+    public function removeRole(\OGAMBundle\Entity\Website\Role $role)
+    {
+        $this->roles->removeElement($role);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+}

@@ -1,7 +1,18 @@
-Hello World!
+Bienvenue dans OGAM Server
 
 <br/>
 
+{% dump(users) %}
+
+<h1>Users</h1>
+
 {% for user in users %}
-    <p>{{ user.login }} : {{ user.username }}</p>
+    <p>
+    User :{{ user.login }}<br/> 
+    Name : : {{ user.username }}<br/>
+    Rôles :
+    {% for role in user.roles %}
+    	{{ role.label }}
+    {% endfor %}
+    </p>
 {% endfor %}
