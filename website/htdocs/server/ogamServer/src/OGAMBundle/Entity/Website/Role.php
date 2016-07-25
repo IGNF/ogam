@@ -40,7 +40,16 @@ class Role {
 	 *
 	 * @var Array[String]
 	 */
-	var $permissionsList = array();
+	private $permissionsList = array();
+
+	/**
+	 * The database schemas the role can access.
+	 *
+	 * A list of schemas names.
+	 *
+	 * @var Array[String]
+	 */
+	private $schemasList = array();
 
 	/**
 	 * Set code
@@ -107,15 +116,6 @@ class Role {
 	public function getDefinition() {
 		return $this->definition;
 	}
-
-	/**
-	 * The database schemas the role can access.
-	 *
-	 * A list of schemas names.
-	 *
-	 * @var Array[String]
-	 */
-	var $schemasList = array();
 
 	/**
 	 * Indicate if the role is allowed for a permission.
