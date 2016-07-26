@@ -253,7 +253,7 @@ END
 
 
 #
-# Result Vector layer 
+# Result Vector layers
 #
 LAYER
     NAME "result_locations_polygon"
@@ -264,9 +264,7 @@ LAYER
     METADATA
     	WFS_TITLE		   "Results"
     	GML_FEATUREID      "oid" 
-    	GML_INCLUDE_ITEMS  "all"    
-    	"gml_groups"        	"display"
-	"gml_display_group" 	"provider_id,plot_code" 	 	
+    	GML_INCLUDE_ITEMS  "all"	
   	END
   	DUMP TRUE 
   	
@@ -278,9 +276,10 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
-            SELECT the_geom, format, pk, oid FROM result_location
+            SELECT the_geom, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POLYGON'
               AND session_id = '%SESSION_ID%'
+              AND (format = 'LOCATION_DATA' OR format = 'HARMONIZED_LOCATION_DATA')
         ) as foo USING UNIQUE oid USING srid=3857"
     
     SYMBOLSCALEDENOM 3000000
@@ -293,6 +292,7 @@ LAYER
       END
     END
 END 
+
 LAYER
     NAME "result_locations_point"
     GROUP result_locations  
@@ -302,9 +302,7 @@ LAYER
     METADATA
     	WFS_TITLE		   "Results"
     	GML_FEATUREID      "oid" 
-    	GML_INCLUDE_ITEMS  "all"    
-    	"gml_groups"        	"display"
-	"gml_display_group" 	"provider_id,plot_code" 	 	
+    	GML_INCLUDE_ITEMS  "all"
   	END
   	DUMP TRUE 
   	
@@ -316,9 +314,10 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER" 
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
-            SELECT the_geom, format, pk, oid FROM result_location
+            SELECT the_geom, oid FROM result_location
             WHERE GeometryType(the_geom) = 'POINT'
               AND session_id = '%SESSION_ID%'
+              AND (format = 'LOCATION_DATA' OR format = 'HARMONIZED_LOCATION_DATA')
         ) as foo USING UNIQUE oid USING srid=3857
     "
     
@@ -333,10 +332,49 @@ LAYER
         SYMBOL "circle"
       END
     END
+END
+
+LAYER
+    NAME "result_trees"
+    TRANSPARENCY 80
+    TYPE POINT
+    STATUS ON
+    METADATA
+      WFS_TITLE      "Results"
+      GML_FEATUREID      "oid" 
+      GML_INCLUDE_ITEMS  "all"
+    END
+    DUMP TRUE 
+    
+    VALIDATION
+    'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
+  END
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT the_geom, oid FROM result_location
+            WHERE session_id = '%SESSION_ID%'
+            AND (format = 'TREE_DATA' OR format = 'HARMONIZED_TREE_DATA')
+        ) as foo USING UNIQUE oid USING srid=3857
+    "
+    
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Result tree'
+      STYLE
+        MINSIZE 3
+        MAXSIZE 7
+        COLOR 153 238 0
+        OUTLINECOLOR 153 238 0
+        SYMBOL "circle"
+      END
+    END
 END 
 
 #
-# Vector layer for all locations for all countries
+# Vector layer for all locations
 #
 LAYER
     NAME "all_locations"
@@ -345,12 +383,12 @@ LAYER
     STATUS ON
     
     METADATA
-    	WFS_TITLE		   "All Plots"
-    	GML_FEATUREID      "oid" 
-    	GML_INCLUDE_ITEMS  "plot_code,lat,long"
+      WFS_TITLE      "All Plots"
+      GML_FEATUREID      "oid" 
+      GML_INCLUDE_ITEMS  "plot_code,lat,long"
       GML_PLOT_CODE_ALIAS  "Code"
       GML_LAT_ALIAS  "Latitude"
-      GML_LONG_ALIAS  "Longitude"  	
+      GML_LONG_ALIAS  "Longitude"
   	END
   	DUMP TRUE 
     
@@ -374,6 +412,44 @@ LAYER
     END
 END 
 
+#
+# Vector layer for all trees
+#
+LAYER
+    NAME "all_trees"
+    TRANSPARENCY 80
+    TYPE POINT
+    STATUS ON
+    
+    METADATA
+      WFS_TITLE      "All Trees"
+      GML_FEATUREID      "oid" 
+      GML_INCLUDE_ITEMS  "plot_code, cycle, tree_id"
+      GML_PLOT_CODE_ALIAS  "Code"
+      GML_CYCLE_ALIAS  "Cycle"
+      GML_TREE_ID_ALIAS  "Tree"
+    END
+    DUMP TRUE 
+    
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER" 
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT st_transform(the_geom, 3857) as the_geom, plot_code, cycle, tree_id, plot_code || cycle || tree_id as oid
+            FROM tree_data
+        ) as foo USING UNIQUE oid USING srid=3857"
+    
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Trees'
+      STYLE
+        MINSIZE 3
+        COLOR 0 0 0
+        OUTLINECOLOR 0 0 0
+        SYMBOL "circle"
+      END
+    END
+END 
 
 LAYER
     NAME "plot_location_detail"
