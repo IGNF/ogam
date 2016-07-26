@@ -46,6 +46,17 @@ class Dataset
      */
     private $definition;
 
+    /**
+     * The list of files linked to this dataset.
+     *
+     * @ORM\ManyToMany(targetEntity="FileFormat")
+     * @ORM\JoinTable(name="dataset_files",
+     *      joinColumns={@ORM\JoinColumn(name="dataset_id", referencedColumnName="dataset_id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="format", referencedColumnName="format")}
+     *      )
+     */
+    private $files;
+
 
     /**
      * Get id

@@ -23,30 +23,30 @@ class BoundingBox
     private $providerId;
 
     /**
-     * @var string
+     * @var float
      *
-     * @ORM\Column(name="bb_xmin", type="decimal", precision=10, scale=0)
+     * @ORM\Column(name="bb_xmin", type="float", nullable=true)
      */
     private $xmin = 0;
 
     /**
-     * @var string
+     * @var float
      *
-     * @ORM\Column(name="bb_ymin", type="decimal", precision=10, scale=0)
+     * @ORM\Column(name="bb_ymin", type="float", nullable=true)
      */
     private $ymin = 0;
 
     /**
-     * @var string
+     * @var float
      *
-     * @ORM\Column(name="bb_xmax", type="decimal", precision=10, scale=0)
+     * @ORM\Column(name="bb_xmax", type="float", nullable=true)
      */
     private $xmax = 0;
 
     /**
-     * @var string
+     * @var float
      *
-     * @ORM\Column(name="bb_ymax", type="decimal", precision=10, scale=0)
+     * @ORM\Column(name="bb_ymax", type="float", nullable=true)
      */
     private $ymax = 0;
 

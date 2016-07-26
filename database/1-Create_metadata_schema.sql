@@ -164,11 +164,12 @@ create table MODE_TAXREF (
 UNIT                 VARCHAR(36)          not null,
 CODE                 VARCHAR(36)          not null,
 PARENT_CODE          VARCHAR(36)          null,
-NAME                 VARCHAR(500)         null,
+LABEL                VARCHAR(500)         null,
 COMPLETE_NAME        VARCHAR(500)         null,
 VERNACULAR_NAME      VARCHAR(1000)         null,
 IS_LEAF			     CHAR(1)              null,
 IS_REFERENCE	     CHAR(1)              null,
+POSITION		     INTEGER              null,
 constraint PK_MODE_TAXREF primary key (UNIT, CODE)
 );
 
@@ -176,11 +177,12 @@ constraint PK_MODE_TAXREF primary key (UNIT, CODE)
 COMMENT ON COLUMN MODE_TAXREF.UNIT IS 'The unit';
 COMMENT ON COLUMN MODE_TAXREF.CODE IS 'The code of the mode';
 COMMENT ON COLUMN MODE_TAXREF.PARENT_CODE IS 'The parent code';
-COMMENT ON COLUMN MODE_TAXREF.NAME IS 'The short name of the taxon';
+COMMENT ON COLUMN MODE_TAXREF.LABEL IS 'The short name of the taxon';
 COMMENT ON COLUMN MODE_TAXREF.COMPLETE_NAME IS 'The complete name of the taxon (name and author)';
 COMMENT ON COLUMN MODE_TAXREF.VERNACULAR_NAME IS 'The vernacular name';
 COMMENT ON COLUMN MODE_TAXREF.IS_LEAF IS 'Indicate if the node is a taxon (1 for true)';
 COMMENT ON COLUMN MODE_TAXREF.IS_REFERENCE IS 'Indicate if the taxon is a reference (1) or a synonym (0)';
+COMMENT ON COLUMN MODE_TAXREF.POSITION IS 'The position of the mode';
 
 
 CREATE INDEX mode_taxref_parent_code_idx

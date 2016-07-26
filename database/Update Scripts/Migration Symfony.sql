@@ -8,3 +8,9 @@
 --Il faudra essayer de les corriger.
 
 --Le champ "position" dans les fields et les formats pourrait être remonté au niveau de la classe parente.
+
+-- Ajout du champ "position" dans la table "mode_taxref"
+ALTER TABLE metadata.mode_taxref ADD column "position" integer;
+
+-- Renommage de "name" en "label" dans la table "mode_taxref"
+ALTER TABLE metadata.mode_taxref RENAME name  TO label;
