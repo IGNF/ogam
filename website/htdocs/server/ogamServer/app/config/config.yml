@@ -111,15 +111,24 @@ doctrine:
         entity_managers:
             website:
                  connection: website
-                 auto_mapping: true
+                 mappings:
+                     OGAMBundle: ~
             mapping:
                  connection: mapping
+                 mappings:
+                     OGAMBundle: ~
             metadata:
                  connection: metadata
+                 mappings:
+                     OGAMBundle: ~
             raw_data:
                  connection: raw_data
+                 mappings:
+                     OGAMBundle: ~
             harmonized_data:
                  connection: harmonized_data
+                 mappings:
+                     OGAMBundle: ~
 
 
 

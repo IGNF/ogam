@@ -16,9 +16,17 @@ class DefaultController extends Controller {
 		$appRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\ApplicationParameter', 'website');
 		$applicationParameters = $appRepo->findAll();
 
+		$modeRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Metadata\Mode', 'metadata');
+		$mode = $modeRepo->find(array('unit' => 'PROVIDER_ID', 'code' => '1'));
+
+		$tableFieldRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Metadata\TableField', 'metadata');
+		$tableField = $tableFieldRepo->find(array('format' => 'PLOT_DATA', 'data' => 'COMMENT'));
+
 		return $this->render('OGAMBundle:Default:index.html.twig', array(
 			'users' => $users,
-			'applicationParameters' => $applicationParameters
+			'applicationParameters' => $applicationParameters,
+			'tableField' => $tableField,
+			'mode' => $mode
 		));
 	}
 }
