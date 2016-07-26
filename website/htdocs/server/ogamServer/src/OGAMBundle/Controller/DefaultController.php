@@ -22,11 +22,15 @@ class DefaultController extends Controller {
 		$tableFieldRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Metadata\TableField', 'metadata');
 		$tableField = $tableFieldRepo->find(array('format' => 'PLOT_DATA', 'data' => 'COMMENT'));
 
+		$layersRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Mapping\Layer', 'mapping');
+		$layers = $layersRepo->findAll();
+
 		return $this->render('OGAMBundle:Default:index.html.twig', array(
 			'users' => $users,
 			'applicationParameters' => $applicationParameters,
 			'tableField' => $tableField,
-			'mode' => $mode
+			'mode' => $mode,
+			'layers' => $layers
 		));
 	}
 }

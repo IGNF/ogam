@@ -44,4 +44,19 @@
 {{ tableField.format }} /  {{ tableField.data }} : {{ tableField.columnName }} 
 
 
+
+<h2>Layers</h2>
+
+<table>
+
+{% for layer in layers %}
+	<tr>
+	<td>{{ layer.layerName }}</td>
+	<td>{{ layer.layerLabel }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+
+
 {% endblock %}
