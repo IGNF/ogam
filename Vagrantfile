@@ -98,5 +98,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   
   config.vm.provision "shell", inline: "service apache2 restart", run: "always"
+  
+  config.vm.provision "shell", inline: "echo 'Le site est pret a etre utilise sur 192.168.50.4'", run: "always"
     
 end

@@ -16,11 +16,20 @@ Ext.define("OgamDesktop.locale.fr.view.main.Main", {
 });
 Ext.define("OgamDesktop.locale.fr.controller.result.Grid", {
     override: "OgamDesktop.controller.result.Grid",
-	requestLoadingMessage: 'Veuillez patienter, pendant le chargement des résultats...'
+	requestLoadingMessage: 'Veuillez patienter, pendant le chargement des résultats...',
+	getGridColumnsErrorTitle: 'Chargement des colonnes de la grille échoué :'
 });
 Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
     override: "OgamDesktop.controller.map.Main",
-	requestLoadingMessage: 'Veuillez patienter, pendant le chargement de la carte...'
+	requestLoadingMessage: 'Veuillez patienter, pendant le chargement de la carte...',
+	getresultsbboxErrorTitle: "Chargement de l'emprise échoué :"
+});
+Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
+    override: "OgamDesktop.ux.request.RequestFieldSet",
+	criteriaComboEmptyText : "Sélectionner...",
+	taxrefLatinNameColumnTitle : 'Nom latin',
+	taxrefVernacularNameColumnTitle : 'Nom vernaculaire',
+	taxrefReferentColumnTitle : 'Référent'
 });
 Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",
@@ -44,6 +53,13 @@ Ext.define("OgamDesktop.locale.fr.ux.picker.NumberRange", {
 		minFieldLabel : "Min",
 		maxFieldLabel : "Max",
 		okButtonText : "ok"
+});
+
+Ext.define("OgamDesktop.loacle.fr.ux.picker.TimeRange", {
+	override: "OgamDesktop.ux.picker.TimeRange",
+	minFieldLabel : "Min",
+	maxFieldLabel : "Max",
+	okButtonText : "ok"
 });
 
 Ext.define("OgamDesktop.locale.fr.ux.picker.DateRange", {
@@ -74,8 +90,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.TwinNumberField", {
 });
 
 Ext.define("OgamDesktop.locale.fr.ux.form.field.Tree", {
-	override: "OgamDesktop.ux.form.field.Tree"/*,
-	emptyText : "Sélectionner..."*/
+	override: "OgamDesktop.ux.form.field.Tree"
 });
 
 Ext.define("OgamDesktop.locale.fr.ux.form.field.NumberRangeField", {
@@ -98,6 +113,18 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.GeometryField", {
 	mapWindowValidateButtonText : "Valider",
 	mapWindowValidateAndSearchButtonText : "Valider et rechercher",
 	mapWindowCancelButtonText : "Annuler"
+});
+
+Ext.define("OgamDesktop.loacle.fr.ux.form.field.TimeRangeField", {
+	override: "OgamDesktop.ux.form.field.TimeRangeField",
+	formatText: 'Le format attendu est: HH:MM',
+	minText : "Les heures contenues dans ce champ doivent être égales ou postérieures au {0}",
+	maxText : "Les heures contenues dans ce champ doivent être égales ou antérieures au {0}",
+	reverseText : "L'heure de fin doit être postérieure à l'heure de début",
+	notEqualText : "Les heures de début et de fin ne peuvent être égales",
+    dateSeparator: ' - ',
+    maxFieldPrefix: '<= ',
+    minFieldPrefix: '>= '
 });
 
 Ext.define("OgamDesktop.locale.fr.ux.grid.column.Factory", {
@@ -124,7 +151,8 @@ Ext.define('OgamDesktop.locale.fr.view.edition.Panel',{
 	parentsFSTitle : 'Parents',
 	dataEditFSDeleteButtonText :'Supprimer',
 	dataEditFSDeleteButtonTooltip : 'Supprimer la donnée',
-	dataEditFSDeleteButtonConfirm :'Voulez-vous vraiment effacer cette donnée ?',
+	dataEditFSDeleteButtonConfirmTitle: 'Confirmer la suppression :',
+	dataEditFSDeleteButtonConfirmMessage :'Voulez-vous vraiment effacer cette donnée ?',
 	dataEditFSDeleteButtonDisabledTooltip : 'La donnée ne peut pas être supprimée (des enfants existent)',
 	dataEditFSValidateButtonText :  'Valider',
 	dataEditFSValidateButtonTooltip :  'Sauvegarder les modifications',
@@ -136,7 +164,9 @@ Ext.define('OgamDesktop.locale.fr.view.edition.Panel',{
 	childrenFSAddNewChildButtonTooltip : 'Ajouter un nouvel enfant',
 	contentTitleAddPrefix : 'Ajout d\'un(e)',
 	contentTitleEditPrefix : 'Edition d\'un(e)',
-	tipEditPrefix :'Editer le/la/l\''
+	tipEditPrefix :'Editer le/la/l\'',
+	editToastTitle : 'Soumission du formulaire :',
+	deleteToastTitle : 'Opération de suppression :'
 });
 
 /*
@@ -159,26 +189,7 @@ Ext.define("OgamDesktop.locale.fr.view.result.MainWin", {
 	kmlExportMenuItemText: 'Export KML',
 	geojsonExportMenuItemText: 'Export GeoJSON',
 	csvExportAlertTitle : "Exportation d'un fichier CSV avec Internet Explorer",
-	csvExportAlertMsg : "<div><H2>Pour votre confort sur Internet Explorer vous pouvez: </H2> \
-    <H3>Désactiver la confirmation pour les téléchargements de fichiers.</H3> \
-    <ul> \
-    <li>Dans IE, dérouler le menu 'Outils'</li> \
-    <li>Cliquer sur 'Options Internet'</li> \
-    <li>Cliquer sur l'onglet 'Sécurité'</li> \
-    <li>Cliquer sur le bouton 'Personnaliser le niveau'</li> \
-    <li>Descendre jusqu'à la partie 'Téléchargements'</li> \
-    <li>Activé la demande de confirmation pour les téléchargements de fichiers</li> \
-    </ul> \
-    <H3>Désactiver l'ouverture du fichier dans la fenêtre courante.</H3> \
-    <ul> \
-    <li>Ouvrir le poste de travail</li> \
-    <li>Dérouler le menu 'Outils'</li> \
-    <li>Cliquer sur 'Options des dossiers...'</li> \
-    <li>Cliquer sur l'onglet 'Types de fichiers'</li> \
-    <li>Sélectionner l'extension XLS</li> \
-    <li>Cliquer sur le bouton 'Avancé'</li> \
-    <li>Décocher 'Parcourir dans une même fenêtre'</li> \
-    </ul></div>",
+	csvExportAlertMsg : "<div>Pour votre confort, utilisez Chrome ou FireFox</div>",
 	maskMsg : "Chargement..."
 });
 
@@ -230,10 +241,18 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 	});
 });
 
+Ext.define('OgamDesktop.locale.fr.view.request.AdvancedRequestController', {
+	override:'OgamDesktop.view.request.AdvancedRequestController',
+	toastTitle_noColumn: 'Soumission du formulaire :',
+	toastHtml_noColumn: "Il semblerait qu'aucune colonne n'ait été sélectionnées. Veuillez sélectionner au moins une colonne.",
+	invalidValueSubmittedErrorTitle: 'Soumission du formulaire :',
+	invalidValueSubmittedErrorMessage: 'Un champ semble contenir une erreur. Veuillez vérifier vos critères de filtrage.'
+});
+
 Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
 	override:'OgamDesktop.view.request.PredefinedRequest',
 	config:{
-		title: 'Requête prédéfinie'
+		title: 'Requêtes prédéfinies'
 	},
 	labelColumnHeader : "Libellé",
 	resetButtonText:"Annuler",
@@ -261,6 +280,12 @@ Ext.define('OgamDesktop.locale.fr.view.map.MainWin', {//TODO fix override warnin
 	}
 });
 
+Ext.define('OgamDesktop.locale.fr.view.map.MapComponentController', {
+	override: 'OgamDesktop.view.map.MapComponentController',
+	noFeatureErrorTitle : 'Zoom sur les résultat :',
+    noFeatureErrorMessage : 'La couche des résultats ne contient aucune géométrie sur laquelle zoomer.'
+});
+
 Ext.define('OgamDesktop.locale.fr.view.map.MapToolbar', {
 	override: 'OgamDesktop.view.map.MapToolbar',
 	zoomToDrawingFeaturesButtonTooltip: "Zoomer sur la sélection",
@@ -279,10 +304,22 @@ Ext.define('OgamDesktop.locale.fr.view.map.MapToolbar', {
 	printMapButtonTooltip:'Imprimer la carte'
 });
 
+Ext.define('OgamDesktop.locale.fr.view.map.MapToolbarController', {
+	override: 'OgamDesktop.view.map.MapToolbarController',
+	noDrawingFeatureErrorTitle : 'Zoom sur les tracés :',
+    noDrawingFeatureErrorMessage : 'La couche des tracés ne contient aucune géométrie sur laquelle zoomer.'
+});
+
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.LayerFeatureInfoButton', {
 	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButton',
 	tooltip: 'Voir les informations sur la couche sélectionnée',
-	popupTitleText: 'Information(s) sur la géométrie'
+	popupTitleText: 'Information(s) sur la couche'
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.LayerFeatureInfoButtonController', {
+	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController',
+	layerFeatureInfoButtonErrorTitle : "Information(s) sur la couche :",
+    layerFeatureInfoButtonErrorMessage : 'Veuillez sélectionner une couche dans le menu.'
 });
 
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SnappingButton', {
@@ -293,6 +330,12 @@ Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SnappingButton', {
 Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SelectWFSFeatureButton', {
 	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
 	tooltip: "Selectionner un contour sur la couche sélectionnée"
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.SelectWFSFeatureButtonController', {
+	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButtonController',
+	selectWFSFeatureButtonErrorTitle : "Importation d'une géométrie :",
+    selectWFSFeatureButtonErrorMessage : 'Veuillez sélectionner une couche dans le menu.'
 });
 
 Ext.define('OgamDesktop.locale.fr.view.map.MapAddonsPanel', {
@@ -322,7 +365,7 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.MainWin', {
 	override: 'OgamDesktop.view.navigation.MainWin',
 	config: {
 		title: 'Détails',
-		exportAsPdfButtonText: "Exporter en PDF"
+		printButtonText: "Imprimer"
 	}
 });
 
@@ -336,6 +379,7 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
 	seeChildrenButtonTip : 'Afficher les enfants dans le tableau des détails.',
     editLinkButtonTitle : 'Editer les données',
     editLinkButtonTip : 'Ouvre la page d\'édition pour éditer les données.',
+    linkFieldDefaultText : 'Consulter',
     //TODO  tpl
     loadingMsg : "Cgmt..."
 });

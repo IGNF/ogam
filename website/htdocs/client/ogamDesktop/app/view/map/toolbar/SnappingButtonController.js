@@ -129,12 +129,12 @@ Ext.define('OgamDesktop.view.map.toolbar.SnappingButtonController', {
                     return item.config.data.featureServiceUrl +
                         '&outputFormat=geojsonogr' +
                         '&srsname=' + projection +
-                        '&typename=' + item.itemId +
+                        '&typename=' + item.config.data.serviceLayerName +
                         '&bbox=' + extent.join(',') + ',' + projection;
                 },
                 crossOrigin: 'anonymous',
                 strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
-                    maxZoom: 3
+                    maxZoom: OgamDesktop.map.resolutions.length - 1
                 }))
             });
             // Update the snapping layer and the snapping interaction

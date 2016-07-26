@@ -270,11 +270,14 @@ public class GenericMapper {
 				}
 			}
 
-			if (type.equalsIgnoreCase(DATE)) {
+			if (type.equalsIgnoreCase(DATE) || type.equalsIgnoreCase(TIME)) {
 				if (fieldValue == null || fieldValue.equalsIgnoreCase("")) {
 					result = null;
 				} else {
 					String mask = "yyyy-MM-dd";
+					if( type.equalsIgnoreCase(TIME)){
+						mask = "HH:mm:ss";
+					}
 					try {
 						String fieldMask = fieldDescriptor.getMask();
 						if (fieldMask != null && !fieldMask.equalsIgnoreCase("")) {

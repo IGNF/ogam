@@ -86,24 +86,4 @@ class Application_Model_Website_ApplicationParameter {
 
 		return $parameters;
 	}
-
-	/**
-	 * Return the intern map service url
-	 *
-	 * @return String map service url
-	 */
-	public function getMapServiceUrl() {
-		$req = " SELECT config ";
-		$req .= " FROM website.application_parameters, mapping.layer_service ";
-		$req .= " WHERE name = 'proxy_service_name'";
-		$req .= " AND value = service_name;";
-		$this->logger->info('getMapServiceUrl : ' . $req);
-
-		$query = $this->db->prepare($req);
-		$query->execute();
-
-		$result = $query->fetch();
-
-		return $result;
-	}
 }

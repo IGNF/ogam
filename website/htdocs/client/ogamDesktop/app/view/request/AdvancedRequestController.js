@@ -25,6 +25,29 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
         }
     },
 
+//<locale>
+	/**
+     * @cfg {String} toastTitle_noColumn
+     * The toast title used for the no column error (defaults to <tt>'Form submission:'</tt>)
+     */
+	toastTitle_noColumn: 'Form submission:',
+	/**
+     * @cfg {String} toastHtml_noColumn
+     * The toast html used for the no column error (defaults to <tt>'It seems that no column has been selected. Please select at least one column.'</tt>)
+     */
+	toastHtml_noColumn: 'It seems that no column has been selected. Please select at least one column.',
+	/**
+     * @cfg {String} invalidValueSubmittedErrorTitle
+     * The invalid value submitted error title (defaults to <tt>'Form submission:'</tt>)
+     */
+	invalidValueSubmittedErrorTitle: 'Form submission:',
+	/**
+     * @cfg {String} invalidValueSubmittedErrorMessage
+     * The invalid value submitted error message (defaults to <tt>'A field appears to contain an error. Please check your filter criteria.'</tt>)
+     */
+	invalidValueSubmittedErrorMessage: 'A field appears to contain an error. Please check your filter criteria.',
+//</locale>
+
     /**
      * Set the default process after the process store load.
      * @param {Ext.data.Store} this
@@ -53,32 +76,42 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 	 * @param button submit boutton
 	 */
     onSubmit: function(button){
-    	button.fireEvent('submitRequest', this);//the form may fire beforeaction
-    	
-    	Ext.Ajax.on('beforerequest', function(conn, options) {
-    		this.requestConn = conn;
-    	}, this, {
-    		single : true
-    	});
-		button.up('form').getForm().submit({
-			clientValidation: true,
-			submitEmptyText: false,
-			//waitMsg: Ext.view.AbstractView.prototype.loadingText,
-			autoAbort:true,
-			url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxbuildrequest',
-			success: function(form, action) {
-				this.requestConn = null;
-				this.fireEvent('requestSuccess', action.result.columns);
-			},
-			failure: function(form, action) {
-				switch (action.failureType) {
-					case Ext.form.action.Action.CLIENT_INVALID:
-						Ext.Msg.alert('Failure', 'Form fields may not be submitted with invalid values');
-						break;
-				}
-			},
-			scope: this
-		});
+    	var form = button.up('form').getForm();
+
+    	// Checks the presence of minimum of one column
+    	if (form.getFields().filter('name', 'column__').getCount() > 0) {
+	    	button.fireEvent('submitRequest', this);//the form may fire beforeaction
+
+	    	Ext.Ajax.on('beforerequest', function(conn, options) {
+	    		this.requestConn = conn;
+	    	}, this, {
+	    		single : true
+	    	});
+			form.submit({
+				clientValidation: true,
+				submitEmptyText: false,
+				//waitMsg: Ext.view.AbstractView.prototype.loadingText,
+				autoAbort:true,
+				url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxbuildrequest',
+				success: function(form, action) {
+					this.requestConn = null;
+					this.fireEvent('requestSuccess', action.result.columns);
+				},
+				failure: function(form, action) {
+					switch (action.failureType) {
+						case Ext.form.action.Action.CLIENT_INVALID:
+							OgamDesktop.toast(this.invalidValueSubmittedErrorMessage, this.invalidValueSubmittedErrorTitle);
+							break;
+						case Ext.form.action.Action.SERVER_INVALID:
+							OgamDesktop.toast(action.result.errorMessage, this.invalidValueSubmittedErrorTitle);
+							break;
+					}
+				},
+				scope: this
+			});
+		} else {
+			OgamDesktop.toast(this.toastHtml_noColumn, this.toastTitle_noColumn);
+		}
 	},
 
 	/**

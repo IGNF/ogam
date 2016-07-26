@@ -118,9 +118,13 @@ Unknown country within the IBAN '%value%';Pays inconnu pour l'IBAN '%value%'
 Unknown error while uploading file '%value%';Erreur inconnue lors de l'envoi du fichier '%value%'
 Value is required and can't be empty;Cette valeur est obligatoire et ne peut être vide
 notMatch;Le mot de passe n'est pas confirmé
-userNotExist;Cet utilisateur n'existe pas
 userExist;Cet utilisateur existe déjà
-Incorrect password;Mot de passe incorrect
+### User friendly ###
+# userNotExist;Cet utilisateur n'existe pas
+# Incorrect password;Mot de passe incorrect
+### Security ###
+userNotExist;Utilisateur ou mot de passe incorrect
+Incorrect password;Utilisateur ou mot de passe incorrect
 
 ##########################
 #   Layout               #
@@ -201,7 +205,7 @@ Confirm submission;Confirmer la soumission
 Confirm_submission_warning;Une fois validées, les données seront disponibles pour la suite des traitements. Voulez-vous confirmer ?
 Submit;Valider
 Error;Erreur
-The expected fields are:;Les champs attendus sont : 
+The expected fields are:;Les champs attendus sont: 
 Are you sure?;Etes-vous sûr ?
 No submission found;Aucune soumission trouvée.
 Download a file model for;Télécharger un modèle de fichier pour
@@ -334,3 +338,29 @@ Error inserting data duplicate key;Erreur lors de l'insertion - la donnée exist
 ##########################
 Data Export;Export des données
 Request Criterias;Critères de requête
+
+################################
+#  Fil d'ariane (Breadcrumb)   #
+################################
+Breadcrumb Home;Accueil
+Breadcrumb Integration;Intégrer des données
+Breadcrumb Integration New;Nouvelle soumission
+Breadcrumb Visualization;Visualiser les données
+Breadcrumb Harmonization;Harmoniser les données
+Breadcrumb Edition;Editer les données
+Breadcrumb Edit Data;Editer une observation
+Breadcrumb Add Data;Ajouter une observation
+Breadcrumb User;Mon compte
+Breadcrumb Check Configuration;Vérifier la configuration technique
+Breadcrumb Users Administration;Administrer les utilisateurs
+Breadcrumb Users;Utilisateurs
+Breadcrumb Add User;Ajouter
+Breadcrumb Edit User;Modifier
+Breadcrumb Change Password;Mot de passe
+Breadcrumb Roles;Roles
+Breadcrumb Edit Role;Modifier
+Breadcrumb Add Role;Ajouter
+Breadcrumb Providers;Organismes
+Breadcrumb Providers Details;Détails et données
+Breadcrumb Edit Provider;Modifier
+Breadcrumb Add Provider;Ajouter

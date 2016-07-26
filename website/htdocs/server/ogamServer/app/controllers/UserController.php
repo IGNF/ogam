@@ -59,7 +59,7 @@ class UserController extends Zend_Controller_Action {
 	 * @param String $salt
 	 *        	The hidden salt for authentication
 	 */
-	private function _getLoginForm($salt) {
+	protected function getLoginForm($salt) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'login-form',
@@ -127,7 +127,7 @@ class UserController extends Zend_Controller_Action {
 		// $this->logger->debug('generated salt : ' . $salt);
 
 		// Get the login form
-		$this->view->form = $this->_getLoginForm($salt);
+		$this->view->form = $this->getLoginForm($salt);
 
 		// Eventually add an error message
 		if (!empty($errorMessage)) {
@@ -140,7 +140,7 @@ class UserController extends Zend_Controller_Action {
 	/**
 	 * Build and return the change password form.
 	 */
-	private function _getChangePasswordForm() {
+	protected function getChangePasswordForm() {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'change-current-user-password-form',
@@ -185,7 +185,7 @@ class UserController extends Zend_Controller_Action {
 		$this->logger->debug('$errorMessage : ' . $errorMessage);
 
 		// Get the login form
-		$this->view->form = $this->_getChangePasswordForm();
+		$this->view->form = $this->getChangePasswordForm();
 
 		// Eventually add an error message
 		if (!empty($errorMessage)) {
@@ -217,7 +217,7 @@ class UserController extends Zend_Controller_Action {
 			unset($authenticationSession->salt);
 
 			// Check the validity of the form
-			$form = $this->_getLoginForm($salt);
+			$form = $this->getLoginForm($salt);
 			if (!$form->isValid($_POST)) {
 				// Failed validation; redisplay form
 				$this->logger->debug('form is not valid');
@@ -251,7 +251,8 @@ class UserController extends Zend_Controller_Action {
 
 				// Redirect to the main page
 				$configuration = Zend_Registry::get("configuration");
-				if ($configuration->autoLogin == 1) {
+				$autoLogin = $configuration->getConfig('autoLogin', false) == 1;
+				if ($autoLogin) {
 					$this->_redirect('/index');
 				} else {
 					$this->_redirect('/');
@@ -282,7 +283,7 @@ class UserController extends Zend_Controller_Action {
 		}
 
 		// Check the validity of the form
-		$form = $this->_getChangePasswordForm();
+		$form = $this->getChangePasswordForm();
 
 		if (!$form->isValid($_POST)) {
 			// Failed validation, redisplay form

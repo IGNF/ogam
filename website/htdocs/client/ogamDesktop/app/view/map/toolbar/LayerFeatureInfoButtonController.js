@@ -5,6 +5,17 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.layerfeatureinfobutton',
 
+//<locale>
+    /**
+     * @cfg {String} layerFeatureInfoButtonErrorTitle The layer feature info button error title (default to <tt>'Layer information:'</tt>)
+     */
+    layerFeatureInfoButtonErrorTitle : 'Layer information:',
+    /*
+     * @cfg {String} layerFeatureInfoButtonErrorMessage The layer feature info button error message (default to <tt>'Please select a layer into the menu.'</tt>)
+     */
+    layerFeatureInfoButtonErrorMessage : 'Please select a layer into the menu.',
+//</locale>
+
     /**
      * Initializes the controller.
      */
@@ -43,7 +54,7 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
             if (checkedItem !== null) {
                 this.updateAndAddLayerFeatureInfoListener(checkedItem);
             } else {
-                Ext.Msg.alert('Select feature(s) :', 'Please select a layer.');
+                OgamDesktop.toast(this.layerFeatureInfoButtonErrorMessage,this.layerFeatureInfoButtonErrorTitle);
                 button.toggle(false);
             }
         } else {
@@ -73,7 +84,7 @@ Ext.define('OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController', {
             var url = item.config.data.featureServiceUrl +
                 '&outputFormat=geojsonogr' +
                 '&srsname=' + projection +
-                '&typename=' + item.itemId +
+                '&typename=' + item.config.data.serviceLayerName +
                 '&bbox=' + ol.extent.buffer(ol.extent.boundingExtent([evt.coordinate]), this.coordinateExtentDefaultBuffer).join(',') + ',' + projection;
             ol.featureloader.loadFeaturesXhr(
                 url,

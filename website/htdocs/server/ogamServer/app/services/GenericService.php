@@ -51,7 +51,7 @@ class Application_Service_GenericService {
 
 		// Configure the projection systems
 		$configuration = Zend_Registry::get("configuration");
-		$this->visualisationSRS = $configuration->srs_visualisation;
+		$this->visualisationSRS = $configuration->getConfig('srs_visualisation', '3857');
 	}
 
 	/**
@@ -630,6 +630,61 @@ class Application_Service_GenericService {
 
 		return $sql;
 	}
+	/**
+	 * Build a WHERE criteria for a single time value.
+	 *
+	 * @param TableField $tableField a criteria field.
+	 * @param String $value a time criterium.
+	 *
+	 * @tutorial examples of values :
+	 *        	HH:mm:ss : for equality
+	 *        	>= HH:mm:ss : for the superior value
+	 *        	<= HH:mm:ss : for the inferior value
+	 *        	HH:mm:ss - HH:mm:ss : for the interval
+	 */
+	private function _buildTimeWhereItem($tableField, $value) {
+		$sql = "";
+		$timeFormat= 'HH:mm:ss';
+		$gtOperator= '>=';
+		$ltOperator = '<=';
+		$value = trim($value);
+		$column = $tableField->format . "." . $tableField->columnName;
+	
+		if (!empty($value)) {
+			if (strlen($value) === strlen($timeFormat)) {
+				// Case "HH:mm:ss"
+				if (Zend_Date::isDate($value, 'HH:mm:ss')) {
+					// One value, we make an equality comparison
+					$sql .= "(" . $column . " = TIME '" . $value . "')";
+				}
+			} else if (strlen($value) === strlen("$gtOperator $timeFormat") && strpos($value, $gtOperator) === 0) {
+				// Case ">= HH:mm:ss"
+				$beginDate = substr($value, - strlen($timeFormat));
+				if (Zend_Date::isDate($beginDate, 'HH:mm:ss')) {
+					$sql .= "(" . $column . " >= TIME '" . $beginDate . "')";
+				}
+			} else if (strlen($value) === strlen("$ltOperator $timeFormat") && strpos($value, $ltOperator) === 0) {
+				// Case "<= HH:mm:ss"
+				$endDate = substr($value, - strlen($timeFormat));
+				if (Zend_Date::isDate($endDate, '$timeFormat')) {
+					$sql .= "(" . $column . " <= TIME '" . $endDate . "')";
+				}
+			} else if (strlen($value) === strlen("$timeFormat - $timeFormat")) {
+				// Case "HH:mm:ss - HH:mm:ss"
+				$beginDate = substr($value, 0, strlen($timeFormat));
+				$endDate = substr($value, -strlen($timeFormat));
+				if (Zend_Date::isDate($beginDate, '$timeFormat') && Zend_Date::isDate($endDate, '$timeFormat')) {
+					$sql .= "(" . $column . " >= TIME '" . $beginDate . "' AND " . $column . " <= TIME '" . $endDate . "')";
+				}
+			}
+		}
+	
+		if ($sql === "") {
+			throw new Exception("Invalid data format");
+		}
+	
+		return $sql;
+	}
 
 	/**
 	 * Build the WHERE clause corresponding to one criteria.
@@ -651,9 +706,11 @@ class Application_Service_GenericService {
 		// Set the projection for the geometries in this schema
 		$configuration = Zend_Registry::get("configuration");
 		if ($schemaCode === 'RAW_DATA') {
-			$databaseSRS = $configuration->srs_raw_data;
+			$databaseSRS = $configuration->getConfig('srs_raw_data', '4326');
+		} else if ($schemaCode === 'HARMONIZED_DATA') {
+			$databaseSRS = $configuration->getConfig('srs_harmonized_data', '3857');
 		} else {
-			$databaseSRS = $configuration->srs_harmonized_data;
+			throw new Exception('Invalid schema code.');
 		}
 
 		if ($value !== null && $value !== '' && $value !== array()) {
@@ -693,6 +750,27 @@ class Application_Service_GenericService {
 						}
 					}
 					break;
+				case "TIME":
+						// time values
+						if (is_array($value)) {
+							// Case of a list of values
+							$sql2 = '';
+							foreach ($value as $val) {
+								if (!empty($val)) {
+									$sql2 .= $this->_buildTimeWhereItem($tableField, $val) . " OR ";
+								}
+							}
+							if ($sql2 !== '') {
+								$sql2 = substr($sql2, 0, -4); // remove the last OR
+								$sql .= " AND (" . $sql2 . ")";
+							}
+						} else {
+							// Single value
+							if (!empty($value)) {
+								$sql .= " AND " . $this->_buildTimeWhereItem($tableField, $value);
+							}
+						}
+						break;
 				case "INTEGER":
 				case "NUMERIC":
 					// Numeric values
@@ -926,10 +1004,12 @@ class Application_Service_GenericService {
 
 		// Set the projection for the geometries in this schema
 		$configuration = Zend_Registry::get("configuration");
-		if ($schema->code === 'RAW_DATA') {
-			$databaseSRS = $configuration->srs_raw_data;
+		if ($schema === 'RAW_DATA') {
+			$databaseSRS = $configuration->getConfig('srs_raw_data', '4326');
+		} else if ($schema === 'HARMONIZED_DATA') {
+			$databaseSRS = $configuration->getConfig('srs_harmonized_data', '3857');
 		} else {
-			$databaseSRS = $configuration->srs_harmonized_data;
+			throw new Exception('Invalid schema code.');
 		}
 
 		switch ($tableField->type) {
@@ -989,6 +1069,7 @@ class Application_Service_GenericService {
 	 *        	"geometry_srs" => output SRS for geometry fields (default 4326)
 	 *        	"date_format" => SQL date format for date fields (default 'YYYY/MM/DD')
 	 *        	"datetime_format" => SQL date format for datetime field (default like date_format; to use ISO 8601 : 'YYYY-MM-DD"T"HH24:MI:SSTZ')
+	 *        	"time_format"=>'HH24:mi:ss'
 	 * @return String the SELECT part corresponding to the field.
 	 */
 	public function buildSelectItem($field, $options = array()) {
@@ -1004,7 +1085,8 @@ class Application_Service_GenericService {
 			"gml_prefix" => 'null',
 			"gml_id" => 'null',
 			"date_format" => 'YYYY/MM/DD',
-			"datetime_format" => 'YYYY/MM/DD'
+			"datetime_format" => 'YYYY/MM/DD',
+			"time_format"=>'HH24:mi:ss',
 		);
 		$options = array_replace($defaults, $options);
 
@@ -1022,12 +1104,7 @@ class Application_Service_GenericService {
 			// Special case for THE_GEOM
 			switch ($options['geometry_format']) {
 				case "gml":
-					$sql .= "st_asGML(" . $options['gml_version'] .
-						", st_transform($fieldName," . $options['geometry_srs'] . ")" .
-						", " . $options['gml_precision'] .
-						", " . $options['gml_options'] .
-						", " . $options['gml_prefix'] .
-						", " . $options['gml_id'] . ") as " . $field->getName() . ", ";
+					$sql .= "st_asGML(" . $options['gml_version'] . ", st_transform($fieldName," . $options['geometry_srs'] . ")" . ", " . $options['gml_precision'] . ", " . $options['gml_options'] . ", " . $options['gml_prefix'] . ", " . $options['gml_id'] . ") as " . $field->getName() . ", ";
 					break;
 				case "wkt":
 				default:
@@ -1037,6 +1114,8 @@ class Application_Service_GenericService {
 			$sql .= "st_ymax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_max, ';
 			$sql .= "st_xmin(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_min, ';
 			$sql .= "st_xmax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_max ';
+		} else if ($field->type === 'TIME') {
+			$sql .= "to_char(" . $fieldName . ", '" . $options['time_format'] . "') as " . $field->getName();
 		} else {
 			$sql .= $fieldName . " as " . $field->getName();
 		}

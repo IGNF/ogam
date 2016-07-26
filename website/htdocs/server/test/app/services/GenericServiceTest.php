@@ -894,5 +894,90 @@ class GenericServiceTest extends ControllerTestCase {
 		$this->assertNotNull($where);
 		$this->assertEquals("WHERE (1 = 1) AND SPECIES_DATA.ID_TAXON && '{\"669477\",\"442048\",\"526292\",\"670322\"}'", trim($where));
 	}
-
+	
+	/**
+	 * Test de la fonction generateSQLWhereRequest().
+	 */
+	public function testGenerateSQLWhereTimeRequest() {
+	
+		// On récupère un descripteur d'objet pour le format "SPECIES"
+		$data = $this->genericService->buildDataObject('RAW_DATA', 'SPECIES_DATA', 'SPECIES');
+	
+		//
+		// Ajout d'un critère time simple
+		// HH:MI
+		//
+		$field = new Application_Object_Metadata_TableField();
+		$field->data = 'INV_TIME';
+		$field->columnName = 'INV_TIME';
+		$field->format = "PLOT_DATA";
+		$field->unit = 'TIME';
+		$field->type = 'TIME';
+		$field->subtype = null;
+		$field->value = '10:50:00';
+		$data->addInfoField($field);
+	
+			// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+	
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.INV_TIME = TIME '10:50:00')", trim($where));
+	
+		//
+		// Ajout plusieurs dates simples
+		// YYYY/MM/DD
+		//
+		$field->value = array(
+		'10:50:00',
+		'11:50:00'
+				);
+	
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+	
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND ((PLOT_DATA.INV_TIME = TIME '10:50:00') OR (PLOT_DATA.INV_TIME = TIME '11:50:00'))", trim($where));
+	
+		//
+				// Critère "Min"
+		// >= YYYY/MM/DD
+		//
+		$field->value = '>= 11:50:00';
+	
+		// On récupère le where correspondant
+		$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+	
+		// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.INV_TIME >= TIME '11:50:00')", trim($where));
+	
+		//
+		// Critère "Max"
+			// >= YYYY/MM/DD
+			//
+			$field->value = '<= 11:50:00';
+	
+			// On récupère le where correspondant
+			$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+	
+			// On vérifie le résultat
+		$this->assertNotNull($where);
+		$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.INV_TIME <= TIME '11:50:00')", trim($where));
+	
+		//
+		// Critère "Range"
+			// YYYY/MM/DD - YYYY/MM/DD
+			//
+			$field->value = '10:50:00 - 11:50:00';
+	
+			// On récupère le where correspondant
+			$where = $this->genericService->generateSQLWhereRequest('RAW_DATA', $data);
+	
+			// On vérifie le résultat
+			$this->assertNotNull($where);
+			$this->assertEquals("WHERE (1 = 1) AND (PLOT_DATA.INV_TIME >= TIME '10:50:00' AND PLOT_DATA.INV_TIME <= TIME '11:50:00')", trim($where));
+	}
+	
 }

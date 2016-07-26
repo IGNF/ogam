@@ -14,6 +14,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	xtype:'editionpage',
 	controller: 'editionpage',
 	requires:[
+		'Ext.layout.container.Center',
 		'Ext.button.Button',
 		'Ext.LoadMask',
 		'Ext.form.Panel',
@@ -27,10 +28,10 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	],
 	itemId : 'editionPage',
 	padding : 20,
-	autoScroll : true,
+	scrollable : true,
 	fieldSetWidth : 700,
 	fieldWidth : 450,
-	layout : 'column',
+	layout : 'fit',
 
 //<locale>	
 	/*
@@ -74,10 +75,15 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 */
 	dataEditFSDeleteButtonTooltip : 'Delete the data',
 	/**
-	 * @cfg {String} dataEditFSDeleteButtonConfirm The data Edit FieldSet Delete
-	 *      Button Confirmation message.
+	 * @cfg {String} dataEditFSDeleteButtonConfirmTitle The data edit fieldSet delete
+	 *      button confirmation title.
 	 */
-	dataEditFSDeleteButtonConfirm : 'Do you really want to delete this data ?',
+	dataEditFSDeleteButtonConfirmTitle: 'Confirm deletion:',
+	/**
+	 * @cfg {String} dataEditFSDeleteButtonConfirmMessage The data edit fieldSet delete
+	 *      button confirmation message.
+	 */
+	dataEditFSDeleteButtonConfirmMessage : 'Do you really want to delete this data ?',
 	/**
 	 * @cfg {String} dataEditFSDeleteButtonTooltip The data Edit FieldSet Delete
 	 *      Button Tooltip (defaults to 'Delete the data (Disabled if exist
@@ -137,6 +143,16 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 *      'Edit the').
 	 */
 	tipEditPrefix : 'Edit the',
+	/**
+	 * @cfg {String} editToastTitle The edit toast title (defaults to
+	 *      'Form submission:').
+	 */
+	editToastTitle : 'Form submission:',
+	/**
+	 * @cfg {String} deleteToastTitle The delete toast title (defaults to
+	 *      'Removal operation:').
+	 */
+	deleteToastTitle : 'Removal operation:',
 //</locale>	
 
 	/**
@@ -295,14 +311,6 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		});
 		centerPanelItems.push(this.headerPanel);
 
-		// Message
-		this.messagePanel = Ext.create({
-			xtype:'box',
-			html : this.message,
-			cls : 'message'
-		});
-		centerPanelItems.push(this.messagePanel);
-
 		// Parents
 		if (!Ext.isEmpty(this.parentsLinks)) {
 			this.parentsFS = new Ext.form.FieldSet({
@@ -402,24 +410,18 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			}
 		}
 
-		this.items = [ {
-			xtype : 'box',
-			html : '&nbsp;',
-			columnWidth : 0.5,
-			border : false
-		}, {
+		this.items = [{
+			layout: {
+				type: 'vbox',
+				align:'middle'
+			},
 			items : centerPanelItems,
 			width : this.fieldSetWidth,
 			border : false,
 			defaults : {
 				width : this.fieldSetWidth
 			}
-		}, {
-			xtype : 'box',
-			html : '&nbsp;',
-			columnWidth : 0.5,
-			border : false
-		} ];
+		}];
 		
 		
 
@@ -509,7 +511,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			field.typeAhead = true;
 			field.displayField = 'label';
 			field.valueField = 'code';
-			field.emptyText = OgamDesktop.ux.request.RequestFieldSet.criteriaPanelTbarComboEmptyText;
+			field.emptyText = OgamDesktop.ux.request.RequestFieldSet.prototype.criteriaComboEmptyText;
 			field.queryMode = 'remote';
 
 			// Fill the list of codes / labels for default values
@@ -577,6 +579,12 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			// type DATE
 			field.xtype = 'datefield';
 			field.format = OgamDesktop.ux.request.RequestFieldSet.dateFormat;
+			break;
+		case 'TIME': // The input type DATE correspond generally to a
+			// data
+			// type DATE
+			field.xtype = 'timefield';
+			field.format = OgamDesktop.ux.request.RequestFieldSet.timeFormat;
 			break;
 		case 'NUMERIC': // The input type NUMERIC correspond generally to a
 			// data
@@ -729,18 +737,17 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			field.treePickerColumns = {
 			    items: [{
 			    	xtype: 'treecolumn',
-		            text: "name",
+		            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefLatinNameColumnTitle,
 		            dataIndex: "label"
 		        },{
-		            text: "vernacular",
+		            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefVernacularNameColumnTitle,
 		            dataIndex: "vernacularName"
-		        },{
-		        	text: "Reference",
-		        	xtype: 'booleancolumn',
-		            dataIndex: "isReference",
-		            flex:0,
-		            witdh:15
-		        }],
+		        },Ext.applyIf({
+			            text: OgamDesktop.ux.request.RequestFieldSet.prototype.taxrefReferentColumnTitle,
+			            dataIndex: "isReference",
+			            flex:0,
+			            witdh:15
+			        }, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
 				defaults : {
 					flex : 1
 				}
@@ -786,7 +793,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			break;
 		case 'IMAGE':
 			field.xtype = 'imagefield';
-			field.itemId = this.dataId + "/" + record.name;
+			field.uploadId = this.dataId;
 			field.hiddenName = field.name;
 			break;
 		default:
@@ -800,7 +807,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 
 		// Check if the field is mandatory
-		field.allowBlank = !(record.required === true);
+		field.allowBlank = !(record.required == true);
 
 		// Add a tooltip
 		if (!Ext.isEmpty(record.definition)) {
@@ -822,7 +829,13 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 		// Set the label
 		field.fieldLabel = record.label;
-		record.required === true && (field.fieldLabel += '*');
+		if (record.required == true) {
+		 	field.fieldLabel += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">*</span> ';
+			field.cls = ' required';
+		}
+		else {
+			field.cls = ' not-required';
+		}
 		
 		// Set the width
 		field.width = this.fieldWidth;
@@ -831,9 +844,13 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				|| (this.mode === this.editMode && !Ext.isEmpty(record.isPK) && record.isPK === "1")
 				|| (this.mode === this.addMode && !Ext.isEmpty(record.insertable) && record.insertable !== "1")) {
 			// Note: Disabled Fields will not be submitted.
-			field.editable = false;
-			field.selectOnFocus = false; //If selectOnFocus is enabled the combo must be editable: true
-			field.cls = 'x-item-disabled';
+			field.readOnly = true;
+			//field.editable = false;
+			if (Ext.Array.contains(['combo','tag','treefield'], field.xtype)){
+				field.selectOnFocus = false; //If selectOnFocus is enabled the combo must be editable: true
+				field.typeAhead= false
+			}
+			field.cls += ' x-item-disabled';
 		}
 
 		return field;
@@ -859,7 +876,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 * Ask for deletion of the data
 	 */
 	askDataDeletion : function() {
-		Ext.Msg.confirm('Confirm Deletion', this.dataEditFSDeleteButtonConfirm, function(btn, text) {
+		Ext.Msg.confirm(this.dataEditFSDeleteButtonConfirmTitle, this.dataEditFSDeleteButtonConfirmMessage, function(btn, text) {
 			if (btn == 'yes') {
 				this.deleteData(this.dataId);
 			}
@@ -896,8 +913,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		
 		// We display the update message
 		if (!Ext.isEmpty(obj.message)) {
-			this.messagePanel.update(obj.message);
-			this.messagePanel.getEl().setStyle('color', '#00ff00');
+			OgamDesktop.toast(obj.message, this.editToastTitle);
 		}
 
 		// We redirect
@@ -912,8 +928,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 
 		if (!Ext.isEmpty(obj.errorMessage)) {
-			this.messagePanel.update(obj.errorMessage);
-			this.messagePanel.getEl().setStyle('color', '#ff0000');
+			OgamDesktop.toast(obj.errorMessage, this.editToastTitle);
 			console.log('Server-side failure with status code : ' + action.response.status);
 			console.log('errorMessage : ' + action.response.errorMessage);
 		}
@@ -928,8 +943,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	editFailure : function(form, action) {
 		var obj = Ext.util.JSON.decode(action.response.responseText);
 		if (!Ext.isEmpty(obj.errorMessage)) {
-			this.messagePanel.update(obj.errorMessage);
-			this.messagePanel.getEl().setStyle('color', '#ff0000');
+			OgamDesktop.toast(obj.errorMessage, this.editToastTitle);
 		}
 		console.log('Server-side failure with status code : ' + action.response.status);
 		console.log('errorMessage : ' + action.response.errorMessage);
@@ -944,8 +958,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		// Display a confirmation of the deletion
 		var obj = Ext.decode(response.responseText);
 		if (!Ext.isEmpty(obj.message)) {
-			this.messagePanel.update(obj.message);
-			this.messagePanel.getEl().setStyle('color', '#00ff00');
+			OgamDesktop.toast(obj.message, this.deleteToastTitle);
 		}
 		
 		// Set to NOT DIRTY to avoid a warning when leaving the page
@@ -956,12 +969,11 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			this.lookupController().redirectTo(obj.redirectLink, true)
 		} else if (obj.success) {
 			this.close();
-			Ext.toast(obj.message);
+			OgamDesktop.toast(obj.message, this.deleteToastTitle);
 		}
 
 		if (!Ext.isEmpty(obj.errorMessage)) {
-			this.messagePanel.update(obj.errorMessage);
-			this.messagePanel.getEl().setStyle('color', '#ff0000');
+			OgamDesktop.toast(obj.errorMessage, this.deleteToastTitle);
 			console.log('Server-side failure with status code : ' + response.status);
 			console.log('errorMessage : ' + response.errorMessage);
 		}
@@ -975,8 +987,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		console.log(response);
 		var obj = Ext.decode(response.responseText);
 		if (!Ext.isEmpty(obj.errorMessage)) {
-			this.messagePanel.update(obj.errorMessage);
-			this.messagePanel.getEl().setStyle('color', '#ff0000');
+			OgamDesktop.toast(obj.errorMessage, this.deleteToastTitle);
 		}
 		console.log('Server-side failure with status code : ' + response.status);
 		console.log('errorMessage : ' + response.errorMessage);

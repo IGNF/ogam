@@ -31,13 +31,14 @@ insert into application_parameters (name, value, description) values ( 'memory_l
 insert into application_parameters (name, value, description) values ( 'post_max_size' , '100M' , 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
 insert into application_parameters (name, value, description) values ( 'upload_max_filesize' , '100M' , 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
 insert into application_parameters (name, value, description) values ( 'image_upload_dir' , '/var/www/html/upload/images' , 'Images Upload');
-insert into application_parameters (name, value, description) values ( 'image_dir_rights' , 0666 , 'File Upload');
+insert into application_parameters (name, value, description) values ( 'image_dir_rights' , '0662' , 'File Upload');
 insert into application_parameters (name, value, description) values ( 'image_extensions' , 'jpg,png,jpeg,gif' , 'File Upload');
 insert into application_parameters (name, value, description) values ( 'image_max_size' , 1000000, 'image max size in bytes');
 insert into application_parameters (name, value, description) values ( 'tilesize' , 256 , 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'query_details_layers1' , 'ortho_photos,result_locations,countries,departements,communes', 'WEB MAPPING ');
 insert into application_parameters (name, value, description) values ( 'query_details_layers2' , 'ortho_photos,location_detail,countries,departements', 'WEB MAPPING ');
-insert into application_parameters (name, value, description) values ( 'proxy_service_name' , 'Local_Mapserv_WMS_GetMap' , 'WEB MAPPING ');
+insert into application_parameters (name, value, description) values ( 'mapserver_private_url' , 'http://localhost/mapserv-ogam?' , 'The private URL used by mapserverProxy to request a map server.');
+insert into application_parameters (name, value, description) values ( 'tilecache_private_url' , 'http://localhost/tilecache-ogam?' , 'The private URL used by tilecacheProxy to request a tile cache.');
 insert into application_parameters (name, value, description) values ( 'srs_visualisation' , 3857 , 'Projection system for the visualisation');
 insert into application_parameters (name, value, description) values ( 'srs_raw_data' , 4326 , 'Projection system for the raw data database');
 insert into application_parameters (name, value, description) values ( 'srs_harmonized_data' , 3857 , 'Projection system for the harmonized database');
@@ -52,7 +53,7 @@ insert into application_parameters (name, value, description) values ( 'mapserve
 insert into application_parameters (name, value, description) values ( 'featureinfo_margin' , 1000 , 'bounding box margin around the user click (in the unit of the map)');
 insert into application_parameters (name, value, description) values ( 'featureinfo_typename' , 'result_locations' , 'Layer that is queried');
 insert into application_parameters (name, value, description) values ( 'featureinfo_maxfeatures' , 20 , 'Max number of features returned by a click on the map. If 0 then there is no limit; If 1 the direct access to the detail');
-INSERT INTO application_parameters (name, value, description) values ( 'featureinfo_selectmode', 'buffer', 'Method to return closest features : "distance" or "buffer"');
+insert into application_parameters (name, value, description) values ( 'featureinfo_selectmode', 'buffer', 'Method to return closest features : "distance" or "buffer"');
 insert into application_parameters (name, value, description) values ( 'contactEmailPrefix' , 'ogam' , 'Email');
 insert into application_parameters (name, value, description) values ( 'contactEmailSufix' , 'ign.fr' , 'Email');
 insert into application_parameters (name, value, description) values ( 'csvExportCharset' , 'UTF-8' , 'Csv Export');

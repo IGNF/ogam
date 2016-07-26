@@ -44,6 +44,11 @@ Ext.define('OgamDesktop.controller.map.Main',{
      * The request loading message (defaults to <tt>'Please wait, while loading the map...'</tt>)
      */
     requestLoadingMessage: 'Please wait, while loading the map...',
+    /**
+     * @cfg {String} getresultsbboxErrorTitle
+     * The error title when the bounding box loading fails (defaults to <tt>'Loading of bounding box failed:'</tt>)
+     */
+    getresultsbboxErrorTitle: 'Loading of bounding box failed:',
     //</locale>
 
 	/**
@@ -96,9 +101,15 @@ Ext.define('OgamDesktop.controller.map.Main',{
         Ext.Ajax.request({
             url : Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetresultsbbox',
             success : function(response, options) {
-                this.setResultsBbox(response);
-				this.updateRequestLayers();
-				//this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
+            	var result = Ext.decode(response.responseText);
+            	if (result.success) {
+	                this.setResultsBbox(result.resultsbbox);
+					this.updateRequestLayers();
+					//this.getMapmainwin().ownerCt.setActiveItem(this.getMapmainwin());
+				} else {
+					OgamDesktop.toast(result.errorMessage, this.getresultsbboxErrorTitle);
+					this.getMapmainwin().unmask();
+				}
             },
             scope: this
         });
@@ -107,11 +118,10 @@ Ext.define('OgamDesktop.controller.map.Main',{
     /**
 	 * Update the map results bounding box
 	 */
-	setResultsBbox: function(response) {
-        var response = Ext.decode(response.responseText);
+	setResultsBbox: function(resultsbbox) {
         var mapCmp = this.getMappanel().child('mapcomponent');
         var mapCmpCtrl = mapCmp.getController();
-        mapCmp.resultsBBox = response.resultsbbox;
+        mapCmp.resultsBBox = resultsbbox;
         if (mapCmpCtrl.autoZoomOnResultsFeatures === true) {
             mapCmp.fireEvent('resultswithautozoom');
         }

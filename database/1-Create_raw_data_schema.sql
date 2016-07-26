@@ -222,6 +222,7 @@ CORINE_BIOTOPE 		 character varying(36)[]     null,
 FICHE_PLACETTE       VARCHAR(1000)        null,
 COMMENT              VARCHAR(1000)        null,
 LINE_NUMBER			 INTEGER			  null,
+INV_TIME             TIME                 null,
 constraint PK_PLOT_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE),
 constraint FK_PLOT_DATA_ASSOCIATE_LOCATION foreign key (PROVIDER_ID, PLOT_CODE) references LOCATION (PROVIDER_ID, PLOT_CODE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE)
@@ -232,6 +233,7 @@ COMMENT ON COLUMN PLOT_DATA.PROVIDER_ID IS 'The identifier of the data provider'
 COMMENT ON COLUMN PLOT_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN PLOT_DATA.CYCLE IS 'The cycle of inventory';
 COMMENT ON COLUMN PLOT_DATA.INV_DATE IS 'The date of inventory';
+COMMENT ON COLUMN PLOT_DATA.INV_TIME IS 'The Time of inventory';
 COMMENT ON COLUMN PLOT_DATA.IS_FOREST_PLOT IS 'Is the plot a forest plot ?';
 COMMENT ON COLUMN PLOT_DATA.CORINE_BIOTOPE IS 'The biotope of the plot';
 COMMENT ON COLUMN PLOT_DATA.FICHE_PLACETTE IS 'URL to a PDF document';

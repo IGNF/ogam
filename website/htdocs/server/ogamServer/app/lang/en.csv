@@ -118,9 +118,13 @@ Unknown country within the IBAN '%value%';Unknown country within the IBAN '%valu
 Unknown error while uploading file '%value%';Unknown error while uploading file '%value%'
 Value is required and can't be empty;Value is required and can't be empty
 notMatch;Password confirmation does not match
-userNotExist;This login doesn't exist
 userExist;This login already exist
-Incorrect password;Incorrect password
+### User friendly ###
+# userNotExist;This login doesn't exist
+# Incorrect password;Incorrect password
+### Security ###
+userNotExist;Incorrect user or password
+Incorrect password;Incorrect user or password
 
 ##########################
 #   Layout               #
@@ -331,3 +335,29 @@ Data deleted;Data deleted
 ##########################
 Data Export;Data Export
 Request Criterias;Request Criterias
+
+################################
+#  Fil d'ariane (Breadcrumb)   #
+################################
+Breadcrumb Home;Home
+Breadcrumb Integration;Data integration
+Breadcrumb Integration New;Create data submission
+Breadcrumb Visualization;Visualize data
+Breadcrumb Harmonization;Harmonize data
+Breadcrumb Edition;Data edition
+Breadcrumb Edit Data;Edit observation
+Breadcrumb Add Data;Add observation
+Breadcrumb User;My account
+Breadcrumb Check Configuration;Check the configuration
+Breadcrumb Users Administration;Users Administration
+Breadcrumb Users;Users
+Breadcrumb Add User;Add user
+Breadcrumb Edit User;Edit user
+Breadcrumb Change Password;Change password
+Breadcrumb Roles;Roles
+Breadcrumb Edit Role;Edit role
+Breadcrumb Add Role;Add role
+Breadcrumb Providers;Providers
+Breadcrumb Providers Details;Details and data
+Breadcrumb Edit Provider;Edit provider
+Breadcrumb Add Provider;Add provider

@@ -29,6 +29,26 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	    'OgamDesktop.ux.form.field.*'
 	],
 
+//<locale>
+	/**
+	 * @cfg {String} criteriaComboEmptyText The criteria
+	 *      combo empty text (defaults to <tt>'Select...'</tt>)
+	 */
+	criteriaComboEmptyText : 'Select...',
+	/**
+	 * @cfg {String} taxrefLatinNameColumnTitle The taxref latin name column title (defaults to <tt>'Latin name'</tt>)
+	 */
+	taxrefLatinNameColumnTitle : 'Latin name',
+	/**
+	 * @cfg {String} taxrefVernacularColumnTitle The taxref vernacular name column title (defaults to <tt>'Vernacular name'</tt>)
+	 */
+	taxrefVernacularNameColumnTitle : 'Vernacular name',
+	/**
+	 * @cfg {String} taxrefReferentColumnTitle The taxref referent column title (defaults to <tt>'Referent'</tt>)
+	 */
+	taxrefReferentColumnTitle : 'Referent',
+//</locale>
+
 	/**
 	 * @cfg {Boolean} frame See {@link Ext.Panel#frame}. Default to true.
 	 */
@@ -175,19 +195,13 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	},
 
 	inheritableStatics : {
-//<locale>		
-		/**
-		 * @cfg {String} criteriaPanelTbarComboEmptyText The criteria Panel Tbar
-		 *      Combo Empty Text (defaults to <tt>'Select...'</tt>)
-		 */
-		criteriaPanelTbarComboEmptyText : 'Select...',
-//</locale>
+
 		/**
 		 * @cfg {String} dateFormat The date format for the date fields (defaults to
 		 *      <tt>'Y/m/d'</tt>)
 		 */
 		dateFormat : 'Y/m/d',
-
+		timeFormat : 'H:i:s',
 		/**
 		 * Builds a criteria from the record.
 		 * @private
@@ -196,7 +210,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 		 */
 		getCriteriaConfig : function(record) {
 			var cls = this.self || OgamDesktop.ux.request.RequestFieldSet;
-		
+
 			// If the field have multiple default values, duplicate the criteria
 			if (!Ext.isEmpty(record.default_value) && Ext.isString(record.default_value) && record.default_value.indexOf(';') !== -1) {
 				var fields = [];
@@ -209,6 +223,14 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			}
 			var field = {};
 			field.name = 'criteria__' + record.name+'[]';
+			
+			//the default value make values (and valueLabel)
+			if (!Ext.isEmpty(record.default_value) && Ext.isEmpty(record.value) && record.inputType !== 'CHECKBOX') { // For a checkbox, the default_value must be applied to the "checked" field parameter not to the "value" field parameter
+				record.value = record.default_value;
+				if( Ext.isDefined(record.params) && Ext.isEmpty(record.valueLabel)){
+					record.valueLabel = record.params.valueLabel;
+				}
+			}
 
 			// Creates the ext field config
 			switch (record.inputType) {
@@ -220,7 +242,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				field.typeAhead = true;
 				field.displayField = 'label';
 				field.valueField = 'code';
-				field.emptyText = cls.criteriaPanelTbarComboEmptyText;
+				field.emptyText = cls.prototype.criteriaComboEmptyText;
 				if (record.subtype === 'DYNAMIC') {
 					field.queryMode = 'remote';
 					field.store = new Ext.data.JsonStore({
@@ -263,6 +285,11 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				// type DATE
 				field.xtype = 'daterangefield';
 				field.format = cls.dateFormat;
+				break;
+			case 'TIME': // The input type TIME correspond generally to a data
+				// type TIME
+				field.xtype = 'timerangefield';
+				field.format = cls.timeFormat;
 				break;
 			case 'NUMERIC': // The input type NUMERIC correspond generally to a data
 				// type NUMERIC or RANGE
@@ -361,10 +388,13 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				break;
 			case 'TAXREF':
 				field.xtype = 'treefield';
-				var codes=[];
+				field.autoLoadOnValue=true; 
+				field.valueParam='query';
+				var codes;
 				if (record.type === 'ARRAY') {
 					field.multiSelect= field.multiple = true;
 					if (record.valueLabel) { // to avoid null pointer
+						codes=[];
 						for ( var i = 0; i < record.valueLabel.length; i++) {
 							codes.push({
 								code : record.value[i],
@@ -374,28 +404,30 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					}
 				} else {
 					// case of CODE (single value)
-					codes.push({
-						code : record.value,
-						label : record.valueLabel
-					});
+					if (!Ext.isEmpty(record.value) && !Ext.isEmpty(record.valueLabel)){
+						codes=[];
+						codes.push({
+							code : record.value,
+							label : record.valueLabel
+						});
+					}
 				}
 
 				//field.unit = record.unit;
 				field.treePickerColumns = {
 				    items: [{
-				    	xtype: 'treecolumn',
-			            text: "name",
+				        xtype: 'treecolumn',
+			            text: cls.prototype.taxrefLatinNameColumnTitle,
 			            dataIndex: "label"
 			        },{
-			            text: "vernacular",
+			            text: cls.prototype.taxrefVernacularNameColumnTitle,
 			            dataIndex: "vernacularName"
-			        },{
-			        	text: "Reference",
-			        	xtype: 'booleancolumn',
+			        },Ext.applyIf({
+			            text: cls.prototype.taxrefReferentColumnTitle,
 			            dataIndex: "isReference",
 			            flex:0,
 			            witdh:15
-			        }],
+			        }, OgamDesktop.ux.grid.column.Factory.buildBooleanColumnConfig())],
 					defaults : {
 						flex : 1
 					}
@@ -447,7 +479,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				field.value = record.default_value;
 			}
 			if (!Ext.isEmpty(record.fixed)) {
-				field.disabled = record.fixed;
+				field.readOnly = record.fixed;
 			}
 			field.cls = 'x-form-item-default'; // Sets the opacity to 0.3 when the field is disabled
 			field.fieldLabel = record.label;
@@ -457,24 +489,14 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					// scope : this
 				};
 			}
-			field.listeners.render = function(cmp) {
+			field.listeners.afterrender = function(cmp) {
 				if (cmp.xtype != 'hidden') {
-
-					// Add the tooltip
-					var binCt = cmp.getEl().parent();
-
 					var labelDiv = cmp.getEl().child('.x-form-item-label');
 					Ext.QuickTips.register({
 						target : labelDiv,
 						title : record.label,
 						text : record.definition,
 						width : 200
-					});
-
-					labelDiv.parent().first().on('click', function(event, el, options) {
-						cmp.ownerCt.remove(cmp);
-					}, this, {
-						single : true
 					});
 				}
 			};

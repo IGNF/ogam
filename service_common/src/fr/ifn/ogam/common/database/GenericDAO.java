@@ -115,13 +115,12 @@ public class GenericDAO {
 							// We suppose that the SRID is the one expected in the table
 							TableFieldData tableData = tableColumns.get(sourceData);
 
-							// The the WKT
-							checkGeomValidity(colData.getValue().toString(), tableData.getSubtype());
-
 							Integer srid = geometryDAO.getSRID(tableData.getTableName(), tableData.getColumnName());
 							if (colData.getValue().getClass().getName().equals("org.postgresql.util.PGobject")) {
 								colValues.append("'" + colData.getValue().toString() + "'");
 							} else {
+								// Checks the WKT
+								checkGeomValidity(colData.getValue().toString(), tableData.getSubtype());
 								colValues.append("ST_GeomFromText('" + colData.getValue() + "', " + srid + ")");
 							}
 						}
@@ -172,6 +171,13 @@ public class GenericDAO {
 						} else {
 							Date date = (Date) colData.getValue();
 							ps.setTimestamp(count, new java.sql.Timestamp(date.getTime()));
+						}
+					} else if (colData.getType().equalsIgnoreCase(TIME)) {
+						if (colData.getValue() == null) {
+							ps.setNull(count, java.sql.Types.TIME);
+						} else {
+							Date date = (Date) colData.getValue();
+							ps.setTime(count, new java.sql.Time(date.getTime()));
 						}
 					} else if (colData.getType().equalsIgnoreCase(BOOLEAN)) {
 						if (colData.getValue() == null) {
@@ -409,7 +415,7 @@ public class GenericDAO {
 						data.setValue(rs.getBigDecimal(columnName));
 					} else if (field.getType().equalsIgnoreCase(INTEGER)) {
 						data.setValue(rs.getInt(columnName));
-					} else if (field.getType().equalsIgnoreCase(DATE)) {
+					} else if (field.getType().equalsIgnoreCase(DATE) || field.getType().equalsIgnoreCase(TIME)) {
 						String val = rs.getString(columnName);
 						if (val == null) {
 							data.setValue(null);
