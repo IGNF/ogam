@@ -14,6 +14,17 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }
     },
 
+//<locale>
+    /**
+     * @cfg {String} noDrawingFeatureErrorTitle The no drawing feature error title (default to <tt>'Zoom to drawing features:'</tt>)
+     */
+    noDrawingFeatureErrorTitle : 'Zoom to drawing features:',
+    /*
+     * @cfg {String} noDrawingFeatureErrorMessage The no drawing feature error message (default to <tt>'The drawing layer contains no feature on which to zoom.'</tt>)
+     */
+    noDrawingFeatureErrorMessage : 'The drawing layer contains no feature on which to zoom.',
+//</locale>
+
     /**
      * Initializes the controller.
      * @private
@@ -107,7 +118,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     onZoomToDrawingFeaturesButtonPress : function (button, e, eOpts) {
         var extent = this.mapCmpCtrl.getMapLayer('drawingLayer').getSource().getExtent();
         if (ol.extent.isEmpty(extent)) {
-            Ext.Msg.alert('Zoom to drawing features :', 'The drawing layer contains no feature on which to zoom.');
+            OgamDesktop.toast(this.noDrawingFeatureErrorMessage, this.noDrawingFeatureErrorTitle);
         } else {
             this.map.getView().fit(
                 extent, 
@@ -273,9 +284,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
             success : function(rpse, options) {
                 var result = Ext.decode(rpse.responseText);
                 this.getView().up('panel').fireEvent('getLocationInfo', {'result': result});
-            },
-            failure : function(rpse, options) {
-                Ext.Msg.alert('Erreur', 'Sorry, bad request...');
             },
             scope: this
         });

@@ -4,9 +4,9 @@ include_once('includes/authentication.php');
 
 $configurationSession = new Zend_Session_Namespace('configuration');
 
-parse_str(ltrim($_SERVER["QUERY_STRING"],'?'), $query); //recupere la requete envoyée partie (GET params)...
-$query = array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
-$queryParamsAllow = array(//paramNom => requis
+parse_str(ltrim($_SERVER["QUERY_STRING"],'?'), $query); // Get the query parameters
+$query = array_change_key_case($query, CASE_UPPER); // Capitalize the parameters
+$queryParamsAllow = array(
     'BBOX' ,
     'LAYERS' ,
     'EXCEPTIONS' ,
@@ -16,7 +16,10 @@ $queryParamsAllow = array(//paramNom => requis
     'WIDTH' ,
     'HEIGHT' ,
     'SESSION_ID' ,
-    'PLOT_CODE' ,// TODO: use the query parameter
+    'PROVIDER_ID' , // TODO: use the query parameter
+    'PLOT_CODE' , // TODO: use the query parameter
+    'CYCLE' , // TODO: use the query parameter
+    'TREE_ID' , // TODO: use the query parameter
     'TRANSPARENT' ,
     'VERSION' ,
     'STYLES' ,
@@ -34,14 +37,15 @@ $queryParamsAllow = array(//paramNom => requis
     'SRSNAME'
 );
 
-// Vérifie que les paramètres sont dans la liste des ceux autorisés
+// Check that the settings are in the list of those allowed
 $queriesArg = array();
 foreach($queryParamsAllow as $param) {
     if (isset($query[$param])){
         $queriesArg[$param] = $query[$param];
     }
 }
-// force la valeur de REQUEST
+
+// Force the REQUEST parameter
 if (strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
 	$queriesArg['REQUEST']  = 'GetLegendGraphic';
 } else if (strcasecmp($queriesArg['REQUEST'] , "getmap") == 0) {
@@ -50,7 +54,7 @@ if (strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
     $queriesArg['REQUEST']  = 'GetFeature';
 }
 
-// force la valeur de SERVICE
+// Force the SERVICE parameter
 $geoJSONOFRequired = false;
 if (strcasecmp($queriesArg['SERVICE'] , "WFS") !== 0) {
     header('Content-Type: image/png');
@@ -59,6 +63,9 @@ if (strcasecmp($queriesArg['SERVICE'] , "WFS") !== 0) {
     $geoJSONOFRequired = true;
     header('Content-Type: application/json,subtype=geojson,charset=utf-8');
 }
+
+// Force the EXCEPTIONS parameter
+$queriesArg['EXCEPTIONS'] = 'BLANK';
 
 header('Access-Control-Allow-Origin: *');
 
@@ -77,8 +84,14 @@ if (empty($url)) {
 // Set the uri (url + urn)
 $uri = rtrim($url,'?').'?'.http_build_query($queriesArg);
 
-//echo $uri;exit;
-//error_log($uri);
+/**
+ * Note for the debug:
+ * - Uncomment the line below,
+ * - Comment the header to see the uri on your page,
+ * - Set the EXCEPTIONS parameter to XML,
+ * - Check into the apache configuration (httpd_ogam.conf) your access right for the '/usr/lib/cgi-bin' directory.
+ */
+// echo $uri; exit;
 
 $content = file_get_contents($uri);
 if ($content !== FALSE) {

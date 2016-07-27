@@ -115,13 +115,12 @@ public class GenericDAO {
 							// We suppose that the SRID is the one expected in the table
 							TableFieldData tableData = tableColumns.get(sourceData);
 
-							// The the WKT
-							checkGeomValidity(colData.getValue().toString(), tableData.getSubtype());
-
 							Integer srid = geometryDAO.getSRID(tableData.getTableName(), tableData.getColumnName());
 							if (colData.getValue().getClass().getName().equals("org.postgresql.util.PGobject")) {
 								colValues.append("'" + colData.getValue().toString() + "'");
 							} else {
+								// Checks the WKT
+								checkGeomValidity(colData.getValue().toString(), tableData.getSubtype());
 								colValues.append("ST_GeomFromText('" + colData.getValue() + "', " + srid + ")");
 							}
 						}

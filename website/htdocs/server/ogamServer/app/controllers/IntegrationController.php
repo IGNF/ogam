@@ -158,37 +158,41 @@ class IntegrationController extends AbstractOGAMController {
 			// Show a link to dowload a model CSV file (header line with the names of the fields)
 			if ($model) {
 				$link = $this->_helper->url('export-file-model', 'integration', '') . '?fileFormat=' . $requestedFile->format;
-				$icon = "<img src='/img/icon-csv.png'>";
-				$anchor = $this->translator->translate('Download a file model for') . ' ' . $requestedFile->label;
-				$fieldsDesc .= "<p class='align_images'>" . $icon . "<a href='" . $link . "'>" . $anchor . "</a></p>";
+				$anchor = $this->translator->translate('Download a file model for') . ' "' . $requestedFile->label . '"';
+				$fieldsDesc .= "<div class='model'>";
+				$fieldsDesc .= '<span class="show-model-text">' . $anchor . ': </span>';
+				$fieldsDesc .= '<div class="show-model-tool" onclick="window.location=\''.$link.'\';"></div>';
+				$fieldsDesc .= '</div>';
 			}
 
 			if ($showDetail) {
 				// Get some more informations in the metadata base
 				$fields = $this->metadataModel->getFileFields($requestedFile->format);
-				$fieldsDesc .= '<span class="hint-title">';
-				$fieldsDesc .= $this->translator->translate('The expected fields are:<br/>');
-				$fieldsDesc .= '</span>';
+				$fieldsDesc .= '<div id="'.$requestedFile->format.'_FIELDS"><div class="hint-title">';
+				$fieldsDesc .= '<span>' . $this->translator->translate('The expected fields are:') . '</span>';
+				$fieldsDesc .= '<div onclick="document.getElementById(\''.$requestedFile->format.'_FIELDS\').className=\'expanded\';" class="expand_tool"></div>';
+				$fieldsDesc .= '<div onclick="document.getElementById(\''.$requestedFile->format.'_FIELDS\').className=\'\';" class="collapse_tool"></div>';
+				$fieldsDesc .= '</div><div class="fields">';
 				foreach ($fields as $field) {
-					$fieldsDesc .= '<span title="';
-					$fieldsDesc .= $field->definition; // the tooltip
-					if (!empty($field->mask)) {
-						$fieldsDesc .= ' : format = ' . $field->mask;
-					}
-					$fieldsDesc .= '"';
+					$fieldsDesc .= '<div class="field-row"><div class="field-label';
 					if ($field->isMandatory == 1) {
-						$fieldsDesc .= ' class="mandatory_field"';
+						$fieldsDesc .= ' mandatory_field';
 					}
-					$fieldsDesc .= '>';
+					$fieldsDesc .= '" title="'.$field->label.'">';
 					$fieldsDesc .= $field->label;
-					if ($field->isMandatory == 1) {
-						$fieldsDesc .= ' *';
-					}
 
-					$fieldsDesc .= '</span>';
-					$fieldsDesc .= ';&nbsp;<br/>';
+					if ($field->isMandatory == 1) {
+						$fieldsDesc .= '*';
+					}
+					$fieldsDesc .= ': ';
+					$fieldsDesc .= '</div><div class="field-definition" title="'.$field->definition.'">';
+					$fieldsDesc .= $field->definition;
+					if (!empty($field->mask)) {
+						$fieldsDesc .= '<br/><b>Format:</b> ' . $field->mask;
+					}
+					$fieldsDesc .= '</div></div>';
 				}
-				$fieldsDesc = substr($fieldsDesc, 0, -12); // remove last comma
+				$fieldsDesc .= '</div></div>';
 			}
 
 			$fileelement->setDescription($fieldsDesc);

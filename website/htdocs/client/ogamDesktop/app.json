@@ -179,7 +179,8 @@
          */
         "src": [
             "sass/src",
-            "${toolkit.name}/sass/src"
+            "${toolkit.name}/sass/src",
+            "${app.dir}/../custom/sass/src"
         ]
     },
 

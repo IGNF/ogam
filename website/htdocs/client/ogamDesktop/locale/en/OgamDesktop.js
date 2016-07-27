@@ -7,16 +7,33 @@ Ext.define("OgamDesktop.locale.en.Application", {
 	toastTitle_500: 'Error 500 : server error.',
 	toastHtml_500: 'An internal server error does not allow to  meet the demand.',
 	toastTitle_default: 'Error',
-	toastHtml_default: 'See the <a href="http://www.w3schools.com/tags/ref_httpmessages.asp" target="_blank">status codes list</a> for more information.',
+	toastHtml_default: 'See the <a href="http://www.w3schools.com/tags/ref_httpmessages.asp" target="_blank">status codes list</a> for more information.'
 });
 Ext.define("OgamDesktop.locale.en.view.main.Main", {
     override: "OgamDesktop.view.main.Main",
 	homeButtonText: 'Homepage',
 	homeButtonTooltip: "Return to the homepage"
 });
+Ext.define("OgamDesktop.locale.fr.controller.result.Grid", {
+    override: "OgamDesktop.controller.result.Grid",
+    requestLoadingMessage: 'Please wait, while loading the results...',
+    getGridColumnsErrorTitle: 'Loading of columns in the grid failed:'
+});
+Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
+    override: "OgamDesktop.controller.map.Main",
+	requestLoadingMessage: 'Please wait, while loading the map...',
+	getresultsbboxErrorTitle: 'Loading of bounding box failed:'
+});
+Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
+    override: "OgamDesktop.ux.request.RequestFieldSet",
+	criteriaComboEmptyText : "Select...",
+	taxrefLatinNameColumnTitle : 'Latin name',
+	taxrefVernacularNameColumnTitle : 'Vernacular name',
+	taxrefReferentColumnTitle : 'Referent'
+});
 Ext.define("OgamDesktop.locale.en.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",
-	criteriaPanelTbarLabel : "Criterias",
+	criteriaPanelTbarLabel : "Criteria",
 	criteriaPanelTbarComboEmptyText : "Select...",
 	criteriaPanelTbarComboLoadingText : "Searching...",
 	columnsPanelTbarLabel : "Results",
@@ -134,7 +151,8 @@ Ext.define('OgamDesktop.locale.en.view.edition.Panel',{
 	parentsFSTitle : 'Parents',
 	dataEditFSDeleteButtonText :'Delete',
 	dataEditFSDeleteButtonTooltip : 'Delete the data',
-	dataEditFSDeleteButtonConfirm :'Do you really want to delete this data ?',
+	dataEditFSDeleteButtonConfirmTitle: 'Confirm deletion:',
+	dataEditFSDeleteButtonConfirmMessage :'Do you really want to delete this data ?',
 	dataEditFSDeleteButtonDisabledTooltip : 'This data cannot be deleted (some children exist)',
 	dataEditFSValidateButtonText :  'Validate',
 	dataEditFSValidateButtonTooltip :  'Save changes',
@@ -146,7 +164,9 @@ Ext.define('OgamDesktop.locale.en.view.edition.Panel',{
 	childrenFSAddNewChildButtonTooltip : 'Add a new child',
 	contentTitleAddPrefix : 'Add a',
 	contentTitleEditPrefix : 'Edit a',
-	tipEditPrefix :'Edit'
+	tipEditPrefix :'Edit',
+	editToastTitle : 'Form submission:',
+	deleteToastTitle : 'Removal operation:'
 });
 
 /*
@@ -168,7 +188,7 @@ Ext.define("OgamDesktop.locale.en.view.result.MainWin", {
 	csvExportMenuItemText: 'Export CSV',
 	kmlExportMenuItemText: 'Export KML',
 	geojsonExportMenuItemText: 'Export GeoJSON',
-	csvExportAlertTitle : "Export a a CSV file",
+	csvExportAlertTitle : "Export as a CSV file",
 	csvExportAlertMsg : "<div>For your confort, use Chrome or FireFox</div>",
 	maskMsg : "Loading..."
 });
@@ -223,8 +243,10 @@ Ext.define("OgamDesktop.locale.en.view.request.AdvancedRequest", {
 
 Ext.define('OgamDesktop.locale.en.view.request.AdvancedRequestController', {
 	override:'OgamDesktop.view.request.AdvancedRequestController',
-	toastHtml_noColumn: 'Please select a column.',
-	toastTitle_noColumn: 'Error : no column found.'
+	toastTitle_noColumn: 'Form submission:',
+	toastHtml_noColumn: 'It seems that no column has been selected. Please select at least one column.',
+	invalidValueSubmittedErrorTitle: 'Form submission:',
+	invalidValueSubmittedErrorMessage: 'A field appears to contain an error. Please check your filter criteria.'
 });
 
 Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
@@ -258,6 +280,12 @@ Ext.define('OgamDesktop.locale.en.view.map.MainWin', {//TODO fix override warnin
 	}
 });
 
+Ext.define('OgamDesktop.locale.fr.view.map.MapComponentController', {
+	override: 'OgamDesktop.view.map.MapComponentController',
+	noFeatureErrorTitle : 'Zoom to result features:',
+    noFeatureErrorMessage : 'The results layer contains no feature on which to zoom.'
+});
+
 Ext.define('OgamDesktop.locale.en.view.map.MapToolbar', {
 	override: 'OgamDesktop.view.map.MapToolbar',
 	zoomToDrawingFeaturesButtonTooltip: "Zoom on selection",
@@ -276,10 +304,22 @@ Ext.define('OgamDesktop.locale.en.view.map.MapToolbar', {
 	printMapButtonTooltip:'Print map'
 });
 
+Ext.define('OgamDesktop.locale.fr.view.map.MapToolbarController', {
+	override: 'OgamDesktop.view.map.MapToolbarController',
+	noDrawingFeatureErrorTitle : 'Zoom to drawing features:',
+    noDrawingFeatureErrorMessage : 'The drawing layer contains no feature on which to zoom.'
+});
+
 Ext.define('OgamDesktop.locale.en.view.map.toolbar.LayerFeatureInfoButton', {
 	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButton',
 	tooltip: 'Display data about the selected layer',
 	popupTitleText: 'Layer information'
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.LayerFeatureInfoButtonController', {
+	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController',
+	layerFeatureInfoButtonErrorTitle : 'Layer information:',
+    layerFeatureInfoButtonErrorMessage : 'Please select a layer into the menu.'
 });
 
 Ext.define('OgamDesktop.locale.en.view.map.toolbar.SnappingButton', {
@@ -289,7 +329,13 @@ Ext.define('OgamDesktop.locale.en.view.map.toolbar.SnappingButton', {
 
 Ext.define('OgamDesktop.locale.en.view.map.toolbar.SelectWFSFeatureButton', {
 	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
-	tooltip: "Import a geometry from the selected layer"
+	tooltip: "Import a feature from the selected layer"
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.SelectWFSFeatureButtonController', {
+	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButtonController',
+	selectWFSFeatureButtonErrorTitle : 'Feature import:',
+    selectWFSFeatureButtonErrorMessage : 'Please select a layer into the menu.'
 });
 
 Ext.define('OgamDesktop.locale.en.view.map.MapAddonsPanel', {
@@ -347,4 +393,4 @@ Ext.define('OgamDesktop.locale.en.view.navigation.Tab', {
     //dateFormat : 'Y/m/d',
     openNavigationButtonTitle : 'Display details',
     openNavigationButtonTip : 'Display the details in the detail view.'
-}); 
+});

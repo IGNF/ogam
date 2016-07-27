@@ -25,17 +25,28 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
         }
     },
 
-	/**
-     * @cfg {String} toastHtml_noColumn
-     * The toast html used for the no column error (defaults to <tt>'Please select a column.'</tt>)
-     */
-	toastHtml_noColumn: 'Please select a column.',
-
+//<locale>
 	/**
      * @cfg {String} toastTitle_noColumn
-     * The toast title used for the no column error (defaults to <tt>'Error : no column found.'</tt>)
+     * The toast title used for the no column error (defaults to <tt>'Form submission:'</tt>)
      */
-	toastTitle_noColumn: 'Error : no column found.',
+	toastTitle_noColumn: 'Form submission:',
+	/**
+     * @cfg {String} toastHtml_noColumn
+     * The toast html used for the no column error (defaults to <tt>'It seems that no column has been selected. Please select at least one column.'</tt>)
+     */
+	toastHtml_noColumn: 'It seems that no column has been selected. Please select at least one column.',
+	/**
+     * @cfg {String} invalidValueSubmittedErrorTitle
+     * The invalid value submitted error title (defaults to <tt>'Form submission:'</tt>)
+     */
+	invalidValueSubmittedErrorTitle: 'Form submission:',
+	/**
+     * @cfg {String} invalidValueSubmittedErrorMessage
+     * The invalid value submitted error message (defaults to <tt>'A field appears to contain an error. Please check your filter criteria.'</tt>)
+     */
+	invalidValueSubmittedErrorMessage: 'A field appears to contain an error. Please check your filter criteria.',
+//</locale>
 
     /**
      * Set the default process after the process store load.
@@ -89,21 +100,17 @@ Ext.define('OgamDesktop.view.request.AdvancedRequestController', {
 				failure: function(form, action) {
 					switch (action.failureType) {
 						case Ext.form.action.Action.CLIENT_INVALID:
-							Ext.Msg.alert('Failure', 'Form fields may not be submitted with invalid values');
+							OgamDesktop.toast(this.invalidValueSubmittedErrorMessage, this.invalidValueSubmittedErrorTitle);
+							break;
+						case Ext.form.action.Action.SERVER_INVALID:
+							OgamDesktop.toast(action.result.errorMessage, this.invalidValueSubmittedErrorTitle);
 							break;
 					}
 				},
 				scope: this
 			});
 		} else {
-			Ext.toast({
-				closable: true,
-				width: 300,
-				align: 't',
-				autoCloseDelay: 8000,
-				title: this.toastTitle_noColumn,
-				html: this.toastHtml_noColumn
-	        });
+			OgamDesktop.toast(this.toastHtml_noColumn, this.toastTitle_noColumn);
 		}
 	},
 

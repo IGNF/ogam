@@ -6,6 +6,9 @@
 Ext.define('OgamDesktop.Application', {
 	extend: 'Ext.app.Application',
 	name: 'OgamDesktop',
+	requires: [
+		'OgamDesktop.ux.window.Toast'
+	],
 	models: [
 		'map.LayerNode',
 		'map.Layer',
@@ -109,15 +112,10 @@ Ext.define('OgamDesktop.Application', {
      * @template
      */
 	init: function (application) {
+
 	    // Manages the ajax request exceptions
 	    Ext.Ajax.on('requestexception', function(conn, response, options, e) {
 	        var statusCode = response.status,
-	        toastConfig = {
-				closable: true,
-				width: 300,
-				align: 't',
-				autoCloseDelay: 8000
-	        },
 	        toastHtml = null,
 	        toastTitle = null;
 
@@ -150,7 +148,7 @@ Ext.define('OgamDesktop.Application', {
 	        }
 
 	        // Displays the error message
-	        Ext.toast(Ext.apply(toastConfig, {title: toastTitle, html: toastHtml}));
+	        OgamDesktop.toast(toastHtml, toastTitle);
 	    });
 	},
 

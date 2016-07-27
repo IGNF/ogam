@@ -946,6 +946,7 @@ class Application_Service_QueryService {
 						$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName;
 						$baseUrls .= '&TRANSPARENT=true';
 						$baseUrls .= '&FORMAT=image%2Fpng';
+						$baseUrls .= '&EXCEPTIONS=BLANK';
 						$baseUrls .= '&SERVICE=' . $params->SERVICE;
 						$baseUrls .= '&VERSION=' . $params->VERSION;
 						$baseUrls .= '&REQUEST=' . $params->REQUEST;
