@@ -476,11 +476,14 @@ class Application_Service_QueryService {
 
 			// Identify the field carrying the location information
 			$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
-			$locationField = $this->metadataModel->getGeometryField($this->schema, array_keys($tables));
-			$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
 
-			// Run the request to store a temporary result table (for the web mapping)
-			$this->resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+			$locationFields = $this->metadataModel->getGeometryFields($this->schema, array_keys($tables));
+			foreach ($locationFields as $key => $locationField) {
+				$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
+
+				// Run the request to store a temporary result table (for the web mapping)
+				$this->resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+			}
 		}
 	}
 
