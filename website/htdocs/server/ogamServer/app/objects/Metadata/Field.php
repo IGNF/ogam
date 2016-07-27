@@ -127,4 +127,13 @@ class Application_Object_Metadata_Field {
 			return $this->value;
 		}
 	}
+
+	/**
+	 * Check if the field has a value
+	 *
+	 * @return Boolean True is the field is empty.
+	 */
+	function isEmpty() {
+		return empty($this->value);
+	}
 }

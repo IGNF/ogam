@@ -772,7 +772,7 @@ class Application_Service_QueryService {
 		$bb2 = null;
 		$locationTable = null;
 		foreach ($data->getFields() as $field) {
-			if ($field->type === 'GEOM') {
+			if ($field->type === 'GEOM' && !$field->isEmpty()) {
 				// define a bbox around the location
 				$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 
@@ -786,7 +786,7 @@ class Application_Service_QueryService {
 		if ($bb === null) {
 			foreach ($ancestors as $ancestor) {
 				foreach ($ancestor->getFields() as $field) {
-					if ($field->type === 'GEOM') {
+					if ($field->type === 'GEOM' && !$field->isEmpty()) {
 						// define a bbox around the location
 						$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 
@@ -836,7 +836,7 @@ class Application_Service_QueryService {
 		$dataDetails['title'] = $dataInfo['title'] . ' (' . $titlePK . ')';
 
 		// Add the localisation maps
-		if (!empty($detailsLayers)) {
+		if (!empty($detailsLayers) && $bb !== null) {
 			if ($detailsLayers[0] !== '') {
 				$url = array();
 				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams)));
