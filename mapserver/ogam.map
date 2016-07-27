@@ -58,8 +58,14 @@ WEB
 	VALIDATION
         # %SESSION_ID% must be 40 letters or digits
         'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
+        #%PROVIDER_ID% must be 2 digits
+        'PROVIDER_ID'      '^[0-9]{1,2}$'
         #%PLOT_CODE% must be 16 letters or digits or dot or dash
         'PLOT_CODE'      '^[a-zA-Z0-9\.\-]{0,17}$'
+        #%CYCLE% must be 1 digits
+        'CYCLE'      '^[0-9]$'
+        #%TREE_ID% must be of type integer
+        'TREE_ID'      '^[0-9]+$'
     END
 END
 
@@ -255,43 +261,6 @@ END
 #
 # Result Vector layers
 #
-LAYER
-    NAME "result_locations_polygon"
-    # GROUP result_locations  
-    TRANSPARENCY 80
-    TYPE POLYGON
-    STATUS ON
-    METADATA
-    	WFS_TITLE		   "Results"
-    	GML_FEATUREID      "oid" 
-    	GML_INCLUDE_ITEMS  "all"	
-  	END
-  	DUMP TRUE 
-  	
-  	VALIDATION
- 		'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
-	END
-    
-    CONNECTIONTYPE postgis
-    PROCESSING "CLOSE_CONNECTION=DEFER" 
-    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
-    DATA "the_geom FROM (
-            SELECT the_geom, oid FROM result_location
-            WHERE GeometryType(the_geom) = 'POLYGON'
-              AND session_id = '%SESSION_ID%'
-              AND (format = 'LOCATION_DATA' OR format = 'HARMONIZED_LOCATION_DATA')
-        ) as foo USING UNIQUE oid USING srid=3857"
-    
-    SYMBOLSCALEDENOM 3000000
-    CLASS
-      NAME 'Result location'
-      STYLE
-      	MINSIZE 3
-        COLOR 238 153 0
-        OUTLINECOLOR 238 153 0
-      END
-    END
-END 
 
 LAYER
     NAME "result_locations_point"
@@ -334,6 +303,47 @@ LAYER
     END
 END
 
+#
+# Example of a layer configuration to display polygons
+#
+# LAYER
+#     NAME "result_locations_polygon"
+#     GROUP result_locations  
+#     TRANSPARENCY 80
+#     TYPE POLYGON
+#     STATUS ON
+#     METADATA
+#       WFS_TITLE      "Results"
+#       GML_FEATUREID      "oid" 
+#       GML_INCLUDE_ITEMS  "all"  
+#     END
+#     DUMP TRUE 
+#     
+#     VALIDATION
+#     'SESSION_ID'     '^[a-zA-Z0-9\-]+$'
+#   END
+#     
+#     CONNECTIONTYPE postgis
+#     PROCESSING "CLOSE_CONNECTION=DEFER" 
+#     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+#     DATA "the_geom FROM (
+#             SELECT the_geom, oid FROM result_location
+#             WHERE GeometryType(the_geom) = 'POLYGON'
+#               AND session_id = '%SESSION_ID%'
+#               AND (format = 'LOCATION_DATA' OR format = 'HARMONIZED_LOCATION_DATA')
+#         ) as foo USING UNIQUE oid USING srid=3857"
+#     
+#     SYMBOLSCALEDENOM 3000000
+#     CLASS
+#       NAME 'Result location'
+#       STYLE
+#         MINSIZE 3
+#         COLOR 238 153 0
+#         OUTLINECOLOR 238 153 0
+#       END
+#     END
+# END
+
 LAYER
     NAME "result_trees"
     TRANSPARENCY 80
@@ -374,10 +384,12 @@ LAYER
 END 
 
 #
-# Vector layer for all locations
+# Vector layer for all features
 #
+
 LAYER
-    NAME "all_locations"
+    NAME "all_locations_point"
+    GROUP all_locations
     TRANSPARENCY 80
     TYPE POINT
     STATUS ON
@@ -410,11 +422,8 @@ LAYER
         SYMBOL "circle"
       END
     END
-END 
+END
 
-#
-# Vector layer for all trees
-#
 LAYER
     NAME "all_trees"
     TRANSPARENCY 80
@@ -451,8 +460,13 @@ LAYER
     END
 END 
 
+#
+# Vector layer for the details panel zoom in image
+#
+
 LAYER
-    NAME "plot_location_detail"
+    NAME "location_detail_zoom_in_point"
+    GROUP location_detail_zoom_in
     TRANSPARENCY 100
     DEBUG 5
     STATUS ON
@@ -462,12 +476,78 @@ LAYER
     PROCESSING "CLOSE_CONNECTION=DEFER"
     CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
     DATA "the_geom FROM (
-            SELECT st_transform(the_geom, 3857) as the_geom, provider_id || '_' || plot_code as oid, plot_code
+            SELECT st_transform(the_geom, 3857) as the_geom, provider_id || '_' || plot_code as oid, provider_id, plot_code
             FROM location
 
         ) as foo USING UNIQUE oid USING srid=3857"
 
-    FILTER "plot_code = '%PLOT_CODE%'"
+    FILTER "provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%'"
+
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Location'
+      STYLE
+        MINSIZE 3
+        MAXSIZE 7
+        COLOR 238 153 0
+        OUTLINECOLOR 238 153 0
+        SYMBOL "circle"
+      END
+    END
+END
+
+LAYER
+    NAME "tree_detail_zoom_in"
+    TRANSPARENCY 100
+    DEBUG 5
+    STATUS ON
+    TYPE POINT
+  
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT st_transform(the_geom, 3857) as the_geom, provider_id || plot_code || cycle || tree_id as oid, provider_id, plot_code, cycle, tree_id
+            FROM tree_data
+        ) as foo USING UNIQUE oid USING srid=3857"
+
+    FILTER "provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%' and cycle = '%CYCLE%' and tree_id = '%TREE_ID%'"
+
+    SYMBOLSCALEDENOM 3000000
+    CLASS
+      NAME 'Tree'
+      STYLE
+        MINSIZE 3
+        MAXSIZE 7
+        COLOR 153 238 0
+        OUTLINECOLOR 153 238 0
+        SYMBOL "circle"
+      END
+    END
+END
+
+#
+# Vector layer for the details panel zoom out image
+#
+
+LAYER
+    NAME "location_detail_zoom_out_point"
+    GROUP location_detail_zoom_out
+    TRANSPARENCY 100
+    DEBUG 5
+    STATUS ON
+    TYPE POINT
+  
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT st_transform(the_geom, 3857) as the_geom, provider_id || '_' || plot_code as oid, provider_id, plot_code
+            FROM location
+
+        ) as foo USING UNIQUE oid USING srid=3857"
+
+    FILTER "provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%'"
 
     CLASS
       STYLE
@@ -475,9 +555,38 @@ LAYER
         WIDTH 2
         MAXSIZE 30
         MINSIZE 30
-        OUTLINECOLOR 255 0 0
+        OUTLINECOLOR 238 153 0
         SYMBOL "square"
       END 
     END
-END 
+END
+
+LAYER
+    NAME "tree_detail_zoom_out"
+    TRANSPARENCY 100
+    DEBUG 5
+    STATUS ON
+    TYPE POINT
+  
+    CONNECTIONTYPE postgis
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    CONNECTION "user=ogam password=ogam dbname=ogam host=localhost port=5432"
+    DATA "the_geom FROM (
+            SELECT st_transform(the_geom, 3857) as the_geom, provider_id || plot_code || cycle || tree_id as oid, provider_id, plot_code, cycle, tree_id
+            FROM tree_data
+        ) as foo USING UNIQUE oid USING srid=3857"
+
+    FILTER "provider_id = '%PROVIDER_ID%' and plot_code = '%PLOT_CODE%' and cycle = '%CYCLE%' and tree_id = '%TREE_ID%'"
+
+    CLASS
+      STYLE
+        SIZE 30
+        WIDTH 2
+        MAXSIZE 30
+        MINSIZE 30
+        OUTLINECOLOR 153 238 0
+        SYMBOL "square"
+      END 
+    END
+END
 END # Map File
