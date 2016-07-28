@@ -9,6 +9,7 @@ SET SEARCH_PATH = website;
 DELETE FROM application_parameters;
 
 -- TEST DATABASE Parameters
+<<<<<<< HEAD
 INSERT INTO application_parameters (name, value, description) values ('UploadDirectory','/var/tmp/ogam_upload','Directory where the CSV files are uploaded');
 INSERT INTO application_parameters (name, value, description) values ('Test','OK','For test purposes');
 INSERT INTO application_parameters (name, value, description) values ('fromMail','OGAM@ign.fr','The application email');
@@ -62,6 +63,59 @@ insert into application_parameters (name, value, description) values ( 'language
 insert into application_parameters (name, value, description) values ( 'showUploadFileDetail' , 1 , 'Display on the upload screen the columns for each file (0 for false, 1 for true)');
 insert into application_parameters (name, value, description) values ( 'showUploadFileModel' , 1 , 'Display on the upload screen a link to a sample CSV file (0 for false, 1 for true)');
 
+=======
+INSERT INTO application_parameters (name, value, description) VALUES ('Test', 'OK', 'For test purposes');
+INSERT INTO application_parameters (name, value, description) VALUES ('fromMail', 'OGAM@ign.fr', 'The application email');
+INSERT INTO application_parameters (name, value, description) VALUES ('toMail', 'benoit.pesty@ign.fr', 'The destination email');
+INSERT INTO application_parameters (name, value, description) VALUES ('autoLogin', '0', 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
+INSERT INTO application_parameters (name, value, description) VALUES ('defaultUser', 'visitor', 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
+INSERT INTO application_parameters (name, value, description) VALUES ('fileMaxSize', '100', 'UPLOAD');
+INSERT INTO application_parameters (name, value, description) VALUES ('integrationService_url', 'http://localhost:8080/OGAMIntegrationService/', 'INTEGRATION SERVICE');
+INSERT INTO application_parameters (name, value, description) VALUES ('harmonizationService_url', 'http://localhost:8080/OGAMHarmonizationService/', 'HARMONIZATION SERVICE');
+INSERT INTO application_parameters (name, value, description) VALUES ('reportGenerationService_url', 'http://localhost:8080/OGAMRG/', 'REPORT GENERATION SERVICE');
+INSERT INTO application_parameters (name, value, description) VALUES ('errorReport', 'ErrorReport.rptdesign', 'REPORT GENERATION SERVICE');
+INSERT INTO application_parameters (name, value, description) VALUES ('plotErrorReport', 'PlotErrorReport.rptdesign', 'REPORT GENERATION SERVICE');
+INSERT INTO application_parameters (name, value, description) VALUES ('simplifiedReport', 'SimplifiedReport.rptdesign', 'REPORT GENERATION SERVICE');
+INSERT INTO application_parameters (name, value, description) VALUES ('max_report_generation_time', '480', 'REPORT GENERATION SERVICE');
+INSERT INTO application_parameters (name, value, description) VALUES ('useCache', 'false', 'Cache');
+INSERT INTO application_parameters (name, value, description) VALUES ('max_execution_time', '480', 'Timeout , 0 : no limit');
+INSERT INTO application_parameters (name, value, description) VALUES ('memory_limit', '1024M', 'memory limit');
+INSERT INTO application_parameters (name, value, description) VALUES ('post_max_size', '100M', 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
+INSERT INTO application_parameters (name, value, description) VALUES ('upload_max_filesize', '100M', 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
+INSERT INTO application_parameters (name, value, description) VALUES ('image_dir_rights', '0662', 'File Upload');
+INSERT INTO application_parameters (name, value, description) VALUES ('image_extensions', 'jpg,png,jpeg,gif', 'File Upload');
+INSERT INTO application_parameters (name, value, description) VALUES ('image_max_size', '1000000', 'image max size in bytes');
+INSERT INTO application_parameters (name, value, description) VALUES ('tilesize', '256', 'WEB MAPPING ');
+INSERT INTO application_parameters (name, value, description) VALUES ('mapserver_private_url', 'http://localhost/mapserv-ogam?', 'The private URL used by mapserverProxy to request a map server.');
+INSERT INTO application_parameters (name, value, description) VALUES ('tilecache_private_url', 'http://localhost/tilecache-ogam?', 'The private URL used by tilecacheProxy to request a tile cache.');
+INSERT INTO application_parameters (name, value, description) VALUES ('srs_visualisation', '3857', 'Projection system for the visualisation');
+INSERT INTO application_parameters (name, value, description) VALUES ('srs_raw_data', '4326', 'Projection system for the raw data database');
+INSERT INTO application_parameters (name, value, description) VALUES ('srs_harmonized_data', '3857', 'Projection system for the harmonized database');
+INSERT INTO application_parameters (name, value, description) VALUES ('usePerProviderCenter', 'true', 'if true the system will look in the "bounding_box" table for centering info for each provider');
+INSERT INTO application_parameters (name, value, description) VALUES ('bbox_x_min', '-2893330', 'X min coordinate of the bounding box (in the projection of visualisation : 3857)');
+INSERT INTO application_parameters (name, value, description) VALUES ('bbox_y_min', '3852395', 'Y min coordinate of the bounding box (in the projection of visualisation : 3857)');
+INSERT INTO application_parameters (name, value, description) VALUES ('bbox_x_max', '3086670', 'X max coordinate of the bounding box (in the projection of visualisation : 3857)');
+INSERT INTO application_parameters (name, value, description) VALUES ('bbox_y_max', '8192395', 'Y max coordinate of the bounding box (in the projection of visualisation : 3857)');
+INSERT INTO application_parameters (name, value, description) VALUES ('zoom_level', '1', 'WEB MAPPING ');
+INSERT INTO application_parameters (name, value, description) VALUES ('mapserver_dpi', '72', 'Default number of dots per inch in mapserv');
+INSERT INTO application_parameters (name, value, description) VALUES ('mapserver_inch_per_kilometer', '39370.1', 'Inch to meter conversion factor');
+INSERT INTO application_parameters (name, value, description) VALUES ('featureinfo_margin', '1000', 'bounding box margin around the user click (in the unit of the map)');
+INSERT INTO application_parameters (name, value, description) VALUES ('featureinfo_typename', 'result_locations', 'Layer that is queried');
+INSERT INTO application_parameters (name, value, description) VALUES ('featureinfo_maxfeatures', '20', 'Max number of features returned by a click on the map. If 0 then there is no limit; If 1 the direct access to the detail');
+INSERT INTO application_parameters (name, value, description) VALUES ('featureinfo_selectmode', 'buffer', 'Method to return closest features : "distance" or "buffer"');
+INSERT INTO application_parameters (name, value, description) VALUES ('contactEmailPrefix', 'ogam', 'Email');
+INSERT INTO application_parameters (name, value, description) VALUES ('contactEmailSufix', 'ign.fr', 'Email');
+INSERT INTO application_parameters (name, value, description) VALUES ('csvExportCharset', 'UTF-8', 'Csv Export');
+INSERT INTO application_parameters (name, value, description) VALUES ('language_flags1', 'fr', 'Language');
+INSERT INTO application_parameters (name, value, description) VALUES ('language_flags2', 'en', 'Language');
+INSERT INTO application_parameters (name, value, description) VALUES ('showUploadFileDetail', '1', 'Display on the upload screen the columns for each file (0 for false, 1 for true)');
+INSERT INTO application_parameters (name, value, description) VALUES ('showUploadFileModel', '1', 'Display on the upload screen a link to a sample CSV file (0 for false, 1 for true)');
+INSERT INTO application_parameters (name, value, description) VALUES ('UploadDirectory', '/var/tmp/ogam_upload', 'Directory where the CSV files are uploaded');
+INSERT INTO application_parameters (name, value, description) VALUES ('uploadDir', '/vagrant/ogam/website/htdocs/server/ogamServer/upload', 'Directory where the PHP server depose the files for the INTEGRATION SERVICE');
+INSERT INTO application_parameters (name, value, description) VALUES ('image_upload_dir', '/vagrant/ogam/website/htdocs/server/ogamServer/upload/images/', 'Images Upload');
+INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers1', 'ortho_photos,countries,departements,communes,location_detail_zoom_in,tree_detail_zoom_in', 'The layers used for the details zoom in map image. Note: order is important');
+INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers2', 'ortho_photos,countries,departements,location_detail_zoom_out,tree_detail_zoom_out', 'The layers used for the details zoom out map image. Note: order is important');
+>>>>>>> 1a23f7c... OGAM-731 Ajout de libellé en dessous des géométries dans les fiches détaillées
 
 --
 -- Users
