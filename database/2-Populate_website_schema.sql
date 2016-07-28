@@ -58,8 +58,8 @@ INSERT INTO application_parameters (name, value, description) VALUES ('showUploa
 INSERT INTO application_parameters (name, value, description) VALUES ('UploadDirectory', '/var/tmp/ogam_upload', 'Directory where the CSV files are uploaded');
 INSERT INTO application_parameters (name, value, description) VALUES ('uploadDir', '/vagrant/ogam/website/htdocs/server/ogamServer/upload', 'Directory where the PHP server depose the files for the INTEGRATION SERVICE');
 INSERT INTO application_parameters (name, value, description) VALUES ('image_upload_dir', '/vagrant/ogam/website/htdocs/server/ogamServer/upload/images/', 'Images Upload');
-INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers2', 'ortho_photos,location_detail_zoom_out,tree_detail_zoom_out,countries,departements', 'WEB MAPPING ');
-INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers1', 'ortho_photos,location_detail_zoom_in,tree_detail_zoom_in,countries,departements,communes', 'WEB MAPPING ');
+INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers1', 'ortho_photos,countries,departements,communes,location_detail_zoom_in,tree_detail_zoom_in', 'The layers used for the details zoom in map image. Note: order is important');
+INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers2', 'ortho_photos,countries,departements,location_detail_zoom_out,tree_detail_zoom_out', 'The layers used for the details zoom out map image. Note: order is important');
 
 --
 -- Users
