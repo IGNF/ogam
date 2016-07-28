@@ -219,6 +219,8 @@ Harmonize Data;Recopier les données
 Back;Retour
 Launch Harmonization;Lancer la copie
 Remove Harmonization Data;Supprimer les données recopiées
+Validate the submission;Valider la soumission
+The submission has not been validated;La soumission n'a pas été validée
 Harmonization Date;Date de recopie
 Confirm harmonization;Attention, les données de ce fournisseur vont être supprimées et recréées
 Confirm harmonization data deletion;Attention, les données de ce fournisseur vont être supprimées
