@@ -129,7 +129,7 @@ foreach ($this->submissions as $submission) {
             <?php } ?>
     </td>
     <td colspan=2>
-        <?php if ($submission->status !== "DATARUNNING") : ?>
+        <?php if ($submission->status !== "RUNNING") : ?>
             <table width="100%">
             <?php foreach ($submission->files as $file) : ?>
                 <tr><td class="file-name">
@@ -156,7 +156,7 @@ foreach ($this->submissions as $submission) {
 ?>
     <p><a href="<?php echo  $this->url(array('controller'=>'integration','action'=>'check-submission'), null, true)?>?submissionId=<?php echo $submission->submissionId;?>" ><?php echo $this->translate('Check data');?></a></p>
     <?php }
-	if ($submission->step !== "INIT" && $submission->status !== "DATARUNNING") {
+	if ($submission->step !== "INIT" && $submission->status !== "RUNNING") {
 ?>
     <p><a href="<?php echo  $this->url(array('controller'=>'proxy','action'=>'showreport'), 'default', true)?>?submissionId=<?php echo $submission->submissionId;?>" ><?php echo $this->translate('Show report');?></a></p>
     <?php }
