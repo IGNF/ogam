@@ -168,10 +168,10 @@ public class DataService extends AbstractService {
 			String tableFormat = tableIter.next();
 			TableFormatData tableFormatData = metadataDAO.getTableFormat(tableFormat);
 			genericDAO.deleteRawData(tableFormatData.getTableName(), submissionId);
-			geometryDAO.deleteGeometriesFromFormat(tableFormatData.getFormat());
+			/*geometryDAO.deleteGeometriesFromFormat(tableFormatData.getFormat());
 			communeDAO.deleteCommunesFromFormat(tableFormatData.getFormat());
 			departementDAO.deleteDepartmentsFromFormat(tableFormatData.getFormat());
-			mailleDAO.deleteMaillesFromFormat(tableFormatData.getFormat());
+			mailleDAO.deleteMaillesFromFormat(tableFormatData.getFormat());*/
 		}
 
 		// Update the status of the submission
