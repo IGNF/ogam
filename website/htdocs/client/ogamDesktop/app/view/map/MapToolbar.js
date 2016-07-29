@@ -128,6 +128,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
     },{
         xtype:'layerfeatureinfobutton'
     },{
+    	reference: 'resultFeatureInfoButton',
         iconCls : 'o-map-tools-map-resultfeatureinfo',
         tooltip: this.resultFeatureInfoButtonTooltip,
         toggleGroup : "consultation",
@@ -135,6 +136,7 @@ Ext.define('OgamDesktop.view.map.MapToolbar', {
             toggle: 'onResultFeatureInfoButtonPress'
         }
     },'-',{
+        reference: 'zoomInButton',
         iconCls : 'o-map-tools-map-zoomin',
         tooltip: this.zoomInButtonTooltip,
         toggleGroup : "consultation",
