@@ -1,11 +1,39 @@
-Ext.define("OgamDesktop.locale.fr.view.main.Main", {
+Ext.define("OgamDesktop.locale.en.Application", {
+    override: "OgamDesktop.Application",
+	toastTitle_401: 'Error 401 : unauthenticated user.',
+	toastHtml_401: 'Please log in again <a href="/user" target="_blank">here</a>.',
+	toastTitle_404: 'Error 404 : page not found.',
+	toastHtml_404: 'The resource was not found.',
+	toastTitle_500: 'Error 500 : server error.',
+	toastHtml_500: 'An internal server error does not allow to  meet the demand.',
+	toastTitle_default: 'Error',
+	toastHtml_default: 'See the <a href="http://www.w3schools.com/tags/ref_httpmessages.asp" target="_blank">status codes list</a> for more information.'
+});
+Ext.define("OgamDesktop.locale.en.view.main.Main", {
     override: "OgamDesktop.view.main.Main",
 	homeButtonText: 'Homepage',
 	homeButtonTooltip: "Return to the homepage"
 });
-Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
+Ext.define("OgamDesktop.locale.fr.controller.result.Grid", {
+    override: "OgamDesktop.controller.result.Grid",
+    requestLoadingMessage: 'Please wait, while loading the results...',
+    getGridColumnsErrorTitle: 'Loading of columns in the grid failed:'
+});
+Ext.define("OgamDesktop.locale.fr.controller.map.Main", {
+    override: "OgamDesktop.controller.map.Main",
+	requestLoadingMessage: 'Please wait, while loading the map...',
+	getresultsbboxErrorTitle: 'Loading of bounding box failed:'
+});
+Ext.define("OgamDesktop.locale.fr.ux.request.RequestFieldSet", {
+    override: "OgamDesktop.ux.request.RequestFieldSet",
+	criteriaComboEmptyText : "Select...",
+	taxrefLatinNameColumnTitle : 'Latin name',
+	taxrefVernacularNameColumnTitle : 'Vernacular name',
+	taxrefReferentColumnTitle : 'Referent'
+});
+Ext.define("OgamDesktop.locale.en.ux.request.AdvancedRequestFieldSet", {
     override: "OgamDesktop.ux.request.AdvancedRequestFieldSet",
-	criteriaPanelTbarLabel : "Criterias",
+	criteriaPanelTbarLabel : "Criteria",
 	criteriaPanelTbarComboEmptyText : "Select...",
 	criteriaPanelTbarComboLoadingText : "Searching...",
 	columnsPanelTbarLabel : "Results",
@@ -15,19 +43,26 @@ Ext.define("OgamDesktop.locale.fr.ux.request.AdvancedRequestFieldSet", {
 	columnsPanelTbarRemoveAllButtonTooltip : "Remove all"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.picker.Tree", {
+Ext.define("OgamDesktop.locale.en.ux.picker.Tree", {
 	override: "OgamDesktop.ux.picker.Tree",
 	okButtonText : "ok"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.picker.NumberRange", {
+Ext.define("OgamDesktop.locale.en.ux.picker.NumberRange", {
 		override: "OgamDesktop.ux.picker.NumberRange",
 		minFieldLabel : "Min",
 		maxFieldLabel : "Max",
 		okButtonText : "ok"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.picker.DateRange", {
+Ext.define("OgamDesktop.loacle.en.ux.picker.TimeRange", {
+	override: "OgamDesktop.ux.picker.TimeRange",
+	minFieldLabel : "Min",
+	maxFieldLabel : "Max",
+	okButtonText : "ok"
+});
+
+Ext.define("OgamDesktop.locale.en.ux.picker.DateRange", {
 	override: "OgamDesktop.ux.picker.DateRange",
 	tbarStartDateButtonText : "Start date...",
 	tbarRangeDateButtonText : "Interval",
@@ -35,7 +70,7 @@ Ext.define("OgamDesktop.locale.fr.ux.picker.DateRange", {
 	fbarOkButtonText : "ok"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.form.field.DateRangeField", {
+Ext.define("OgamDesktop.locale.en.ux.form.field.DateRangeField", {
 	override: "OgamDesktop.ux.form.field.DateRangeField",
 	minText : "The dates in this field must be superior or equal to {0}",
 	maxText : "The dates in this field must be inferior or equal to {0}",
@@ -46,7 +81,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.DateRangeField", {
     startDatePrefix: '>= '
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.form.field.TwinNumberField", {
+Ext.define("OgamDesktop.locale.en.ux.form.field.TwinNumberField", {
 	override: "OgamDesktop.ux.form.field.TwinNumberField",
 	decimalSeparator : ".",
 	minText : "The min value for this field is {0}",
@@ -54,11 +89,11 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.TwinNumberField", {
 	nanText : "'{0}' is not a valid number"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.form.field.Tree", {
+Ext.define("OgamDesktop.locale.en.ux.form.field.Tree", {
 	override: "OgamDesktop.ux.form.field.Tree"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.form.field.NumberRangeField", {
+Ext.define("OgamDesktop.locale.en.ux.form.field.NumberRangeField", {
 	override: "OgamDesktop.ux.form.field.NumberRangeField",
 	numberSeparator: ' - ',
 	decimalSeparator : ".",
@@ -71,7 +106,7 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.NumberRangeField", {
 	nanText : "'{0}' is not a valid number"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.form.field.GeometryField", {
+Ext.define("OgamDesktop.locale.en.ux.form.field.GeometryField", {
 	override: "OgamDesktop.ux.form.field.GeometryField",
 	fieldLabel : "Localisation",
 	mapWindowTitle : "Draw the search area on the map :",
@@ -80,7 +115,19 @@ Ext.define("OgamDesktop.locale.fr.ux.form.field.GeometryField", {
 	mapWindowCancelButtonText : "Cancel"
 });
 
-Ext.define("OgamDesktop.locale.fr.ux.grid.column.Factory", {
+Ext.define("OgamDesktop.loacle.en.ux.form.field.TimeRangeField", {
+	override: "OgamDesktop.ux.form.field.TimeRangeField",
+	formatText: 'Expected time format: HH:MM',
+    minText: "The times in this field must be equal to or after {0}",
+    maxText: "The times in this field must be equal to or before {0}",
+    reverseText: "The end time must be posterior to the start time",
+    notEqualText: "The end time can't be equal to the start time",
+    dateSeparator: ' - ',
+    maxFieldPrefix: '<= ',
+    minFieldPrefix: '>= '
+});
+
+Ext.define("OgamDesktop.locale.en.ux.grid.column.Factory", {
 	override: "OgamDesktop.ux.grid.column.Factory",
 	gridColumnTrueText : 'Yes',
 	gridColumnFalseText : 'No',
@@ -94,7 +141,7 @@ Ext.define("OgamDesktop.locale.fr.ux.grid.column.Factory", {
 /*
  * view edition
  */
-Ext.define('OgamDesktop.locale.fr.view.edition.Panel',{
+Ext.define('OgamDesktop.locale.en.view.edition.Panel',{
 	override:'OgamDesktop.view.edition.Panel',
 	geoMapWindowTitle :'Draw the localisation',
 	unsavedChangesMessage :'You have unsaved changes',
@@ -104,7 +151,8 @@ Ext.define('OgamDesktop.locale.fr.view.edition.Panel',{
 	parentsFSTitle : 'Parents',
 	dataEditFSDeleteButtonText :'Delete',
 	dataEditFSDeleteButtonTooltip : 'Delete the data',
-	dataEditFSDeleteButtonConfirm :'Do you really want to delete this data ?',
+	dataEditFSDeleteButtonConfirmTitle: 'Confirm deletion:',
+	dataEditFSDeleteButtonConfirmMessage :'Do you really want to delete this data ?',
 	dataEditFSDeleteButtonDisabledTooltip : 'This data cannot be deleted (some children exist)',
 	dataEditFSValidateButtonText :  'Validate',
 	dataEditFSValidateButtonTooltip :  'Save changes',
@@ -116,13 +164,15 @@ Ext.define('OgamDesktop.locale.fr.view.edition.Panel',{
 	childrenFSAddNewChildButtonTooltip : 'Add a new child',
 	contentTitleAddPrefix : 'Add a',
 	contentTitleEditPrefix : 'Edit a',
-	tipEditPrefix :'Edit'
+	tipEditPrefix :'Edit',
+	editToastTitle : 'Form submission:',
+	deleteToastTitle : 'Removal operation:'
 });
 
 /*
  * view result
  */
-Ext.define("OgamDesktop.locale.fr.view.result.MainWin", {
+Ext.define("OgamDesktop.locale.en.view.result.MainWin", {
 	override: 'OgamDesktop.view.result.MainWin',
 	config: {
 		title : 'Results'
@@ -138,12 +188,12 @@ Ext.define("OgamDesktop.locale.fr.view.result.MainWin", {
 	csvExportMenuItemText: 'Export CSV',
 	kmlExportMenuItemText: 'Export KML',
 	geojsonExportMenuItemText: 'Export GeoJSON',
-	csvExportAlertTitle : "Export a a CSV file",
+	csvExportAlertTitle : "Export as a CSV file",
 	csvExportAlertMsg : "<div>For your confort, use Chrome or FireFox</div>",
 	maskMsg : "Loading..."
 });
 
-Ext.define("OgamDesktop.locale.fr.view.result.GridTab", {
+Ext.define("OgamDesktop.locale.en.view.result.GridTab", {
 	override: 'OgamDesktop.view.result.GridTab',
 	emptyText : "No result...",
 	openNavigationButtonTitle : "Display details",
@@ -158,14 +208,14 @@ Ext.define("OgamDesktop.locale.fr.view.result.GridTab", {
 /*
  * view request
  */
-Ext.define("OgamDesktop.locale.fr.view.request.MainWin", {
+Ext.define("OgamDesktop.locale.en.view.request.MainWin", {
 	override: 'OgamDesktop.view.request.MainWin',
 	config: {
 		title : 'Request'
 	}
 });
 
-Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
+Ext.define("OgamDesktop.locale.en.view.request.AdvancedRequest", {
 	override:'OgamDesktop.view.request.AdvancedRequest',
 	requestSelectTitle:'<b>Datasets</b>',
 	processPanelTitle:'Data types',
@@ -191,7 +241,15 @@ Ext.define("OgamDesktop.locale.fr.view.request.AdvancedRequest", {
 	});
 });
 
-Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
+Ext.define('OgamDesktop.locale.en.view.request.AdvancedRequestController', {
+	override:'OgamDesktop.view.request.AdvancedRequestController',
+	toastTitle_noColumn: 'Form submission:',
+	toastHtml_noColumn: 'It seems that no column has been selected. Please select at least one column.',
+	invalidValueSubmittedErrorTitle: 'Form submission:',
+	invalidValueSubmittedErrorMessage: 'A field appears to contain an error. Please check your filter criteria.'
+});
+
+Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequest', {
 	override:'OgamDesktop.view.request.PredefinedRequest',
 	config:{
 		title: 'Predefined requests'
@@ -207,7 +265,7 @@ Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequest', {
 	groupTextTpl:"{name} ({children.length:plural('Requete')})"
 });
 
-Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequestSelector', {
+Ext.define('OgamDesktop.locale.en.view.request.PredefinedRequestSelector', {
 	override:'OgamDesktop.view.request.PredefinedRequestSelector',
 	defaultCardPanelText : 'Please select a request...'
 });
@@ -215,14 +273,20 @@ Ext.define('OgamDesktop.locale.fr.view.request.PredefinedRequestSelector', {
 /*
  * view map
  */
-Ext.define('OgamDesktop.locale.fr.view.map.MainWin', {//TODO fix override warning
+Ext.define('OgamDesktop.locale.en.view.map.MainWin', {//TODO fix override warning
 	override: 'OgamDesktop.view.map.MainWin',
 	config: {
 		title : 'Map'
 	}
 });
 
-Ext.define('OgamDesktop.locale.fr.view.map.MapToolbar', {
+Ext.define('OgamDesktop.locale.fr.view.map.MapComponentController', {
+	override: 'OgamDesktop.view.map.MapComponentController',
+	noFeatureErrorTitle : 'Zoom to result features:',
+    noFeatureErrorMessage : 'The results layer contains no feature on which to zoom.'
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.MapToolbar', {
 	override: 'OgamDesktop.view.map.MapToolbar',
 	zoomToDrawingFeaturesButtonTooltip: "Zoom on selection",
 	modifyfeatureButtonTooltip:"Edit geometry",
@@ -240,37 +304,55 @@ Ext.define('OgamDesktop.locale.fr.view.map.MapToolbar', {
 	printMapButtonTooltip:'Print map'
 });
 
-Ext.define('OgamDesktop.locale.fr.view.map.toolbar.LayerFeatureInfoButton', {
+Ext.define('OgamDesktop.locale.fr.view.map.MapToolbarController', {
+	override: 'OgamDesktop.view.map.MapToolbarController',
+	noDrawingFeatureErrorTitle : 'Zoom to drawing features:',
+    noDrawingFeatureErrorMessage : 'The drawing layer contains no feature on which to zoom.'
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.LayerFeatureInfoButton', {
 	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButton',
 	tooltip: 'Display data about the selected layer',
 	popupTitleText: 'Layer information'
 });
 
-Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SnappingButton', {
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.LayerFeatureInfoButtonController', {
+	override:'OgamDesktop.view.map.toolbar.LayerFeatureInfoButtonController',
+	layerFeatureInfoButtonErrorTitle : 'Layer information:',
+    layerFeatureInfoButtonErrorMessage : 'Please select a layer into the menu.'
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.SnappingButton', {
 	override:'OgamDesktop.view.map.toolbar.SnappingButton',
 	tooltip: 'Snapping'
 });
 
-Ext.define('OgamDesktop.locale.fr.view.map.toolbar.SelectWFSFeatureButton', {
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.SelectWFSFeatureButton', {
 	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
-	tooltip: "Import a geometry from the selected layer"
+	tooltip: "Import a feature from the selected layer"
 });
 
-Ext.define('OgamDesktop.locale.fr.view.map.MapAddonsPanel', {
+Ext.define('OgamDesktop.locale.en.view.map.toolbar.SelectWFSFeatureButtonController', {
+	override:'OgamDesktop.view.map.toolbar.SelectWFSFeatureButtonController',
+	selectWFSFeatureButtonErrorTitle : 'Feature import:',
+    selectWFSFeatureButtonErrorMessage : 'Please select a layer into the menu.'
+});
+
+Ext.define('OgamDesktop.locale.en.view.map.MapAddonsPanel', {
 	override: 'OgamDesktop.view.map.MapAddonsPanel',
 	config: {
 		title: 'Layers & Legends'
 	}
 });
 
-Ext.define('OgamDesktop.locale.fr.view.map.LegendsPanel', {
+Ext.define('OgamDesktop.locale.en.view.map.LegendsPanel', {
 	override: 'OgamDesktop.view.map.LegendsPanel',
 	config: {
 		title:'Legends'
 	}
 });
 
-Ext.define('OgamDesktop.locale.fr.view.map.LayersPanel', {
+Ext.define('OgamDesktop.locale.en.view.map.LayersPanel', {
 	override: 'OgamDesktop.view.map.LayersPanel',
 	config: {
 		title:'Layers'
@@ -279,15 +361,15 @@ Ext.define('OgamDesktop.locale.fr.view.map.LayersPanel', {
 /*
 * view navigation
 */
-Ext.define('OgamDesktop.locale.fr.view.navigation.MainWin', {
+Ext.define('OgamDesktop.locale.en.view.navigation.MainWin', {
 	override: 'OgamDesktop.view.navigation.MainWin',
 	config: {
 		title: 'Details',
-		exportAsPdfButtonText: "Export as PDF"
+		printButtonText: "Print"
 	}
 });
 
-Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
+Ext.define('OgamDesktop.locale.en.view.navigation.Tab', {
 	override: 'OgamDesktop.view.navigation.Tab',
 	config: {
 		title: 'Details'
@@ -297,11 +379,12 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
 	seeChildrenButtonTip : 'Show the children in the detail panel.',
     editLinkButtonTitle : 'Edit data',
     editLinkButtonTip : 'Open the data edition view.',
+    linkFieldDefaultText : 'Consult',
     //TODO  tpl
     loadingMsg : "Loading..."
 });
 
-Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
+Ext.define('OgamDesktop.locale.en.view.navigation.Tab', {
 	override: 'OgamDesktop.view.navigation.GridDetailsPanel',
 	config:{
 		title: "Detailed results"
@@ -310,4 +393,4 @@ Ext.define('OgamDesktop.locale.fr.view.navigation.Tab', {
     //dateFormat : 'Y/m/d',
     openNavigationButtonTitle : 'Display details',
     openNavigationButtonTip : 'Display the details in the detail view.'
-}); 
+});

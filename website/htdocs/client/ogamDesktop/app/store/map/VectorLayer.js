@@ -16,7 +16,7 @@ Ext.define('OgamDesktop.store.map.VectorLayer', {
 		reader: {
 			type: 'json',
 			// To get only layers into the response
-			rootProperty: 'layerNames'
+			rootProperty: 'layers'
 		}
 	}
 });

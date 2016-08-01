@@ -55,10 +55,10 @@ foreach ($this->harmonizations as $harmonizationProcess) {
 	<td><?php echo $harmonizationProcess->date; ?></td>
 	<td>
             <?php if ($harmonizationProcess->submissionStatus === "NOT_VALID") { ?>
-            	<?php echo $harmonizationProcess->status ?>
-                <img src="<?php echo $this->baseUrl('img/warning_orange.png') ?>" title="The submission has not been validated" />
+            	<?php echo $this->translate($harmonizationProcess->status) ?>
+                <img src="<?php echo $this->baseUrl('img/warning_orange.png') ?>" title="<?php echo $this->translate('The submission has not been validated'); ?>" />
             <?php } else if ($harmonizationProcess->status === "OK") { ?>
-            	<?php echo $harmonizationProcess->status ?>
+            	<?php echo $this->translate($harmonizationProcess->status) ?>
                 <img src="<?php echo $this->baseUrl('img/Green_tick.png') ?>" />
             <?php } else if ($harmonizationProcess->status === "RUNNING") { ?>
                 <div class="tempStatusDiv" id="tempStatusDiv_<?php echo $harmonizationProcess->harmonizationId; ?>">
@@ -121,15 +121,20 @@ foreach ($this->harmonizations as $harmonizationProcess) {
                 </div>
             <?php } else if ($harmonizationProcess->status == "") { ?>
             <?php } else { //"ERROR" or "CRASH") ?>
-            	<?php echo
-		$harmonizationProcess->status ?>
+            	<?php echo $this->translate($harmonizationProcess->status) ?>
                 <img src="<?php echo $this->baseUrl('img/Red_x.png') ?>" />
             <?php } ?></td>
 	<td>
-	<?php if ($harmonizationProcess->submissionStatus !== "NOT_VALID") { ?>
+	<?php if ($harmonizationProcess->submissionStatus !== "NOT_VALID" && $harmonizationProcess->status !== "RUNNING") { ?>
+		<?php if ($harmonizationProcess->status !== "OK") { ?>
 	    <a onclick="return confirmLauch();" href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'launch-harmonization'), null, true)?>?DATASET_ID=<?php echo $harmonizationProcess->datasetId;?>&PROVIDER_ID=<?php echo $harmonizationProcess->providerId;?>" ><?php echo $this->translate('Launch Harmonization');?></a>
-	    <br/><a onclick="return confirmDeletion();" href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'remove-harmonization-data'), null, true)?>?DATASET_ID=<?php echo $harmonizationProcess->datasetId;?>&PROVIDER_ID=<?php echo $harmonizationProcess->providerId;?>" ><?php echo $this->translate('Remove Harmonization Data');?></a>
-	<?php } ?>
+	    <br/>
+	    <?php } if ($harmonizationProcess->status !== "UNDONE" && $harmonizationProcess->status !== "INIT") { ?>
+	    <a onclick="return confirmDeletion();" href="<?php echo $this->url(array('controller'=>'harmonization','action'=>'remove-harmonization-data'), null, true)?>?DATASET_ID=<?php echo $harmonizationProcess->datasetId;?>&PROVIDER_ID=<?php echo $harmonizationProcess->providerId;?>" ><?php echo $this->translate('Remove Harmonization Data');?></a>
+	    <?php } ?>
+	<?php } elseif ($harmonizationProcess->status === "UNDONE") { ?>
+	    <a href="<?php echo $this->url(array('controller'=>'integration','action'=>'show-data-submission-page'), null, true);?>"><?php echo $this->translate('Validate the submission');?></a>
+    <?php } ?>
 	</td>
 </tr>
 <?php

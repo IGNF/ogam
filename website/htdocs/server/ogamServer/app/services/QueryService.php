@@ -76,7 +76,7 @@ class Application_Service_QueryService {
 	}
 
 	/**
-	 * Generate the JSON structure corresponding to a list of result and criteria columns.
+	 * Generate the JSON structure corresponding to a list of criteria and columns.
 	 *
 	 * @param Array[FormFormat] $forms
 	 *        	the list of FormFormat elements
@@ -87,41 +87,96 @@ class Application_Service_QueryService {
 		foreach ($forms as $form) {
 			// Add the criteria
 			$json .= '{' . $form->toJSON() . ',"criteria":[';
-			foreach ($form->criteriaList as $field) {
-				$json .= '{' . $field->toCriteriaJSON();
-				// For the RANGE field, get the min and max values
-				if ($field->type === "NUMERIC" && $field->subtype === "RANGE") {
-					$range = $this->metadataModel->getRange($field->unit);
-					$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
-				}
-				
-				if ($field->inputType === 'RADIO' && $field->type === 'CODE'){
-					if($field->subtype === 'DYNAMIC') {
-						$opts = $this->metadataModel->getDynamodeLabels($field->unit);
-					} else {//MODE -code
-						$opts = $this->metadataModel->getModeLabels($field->unit);
-					}
-					$json .= ',"options":'.json_encode($opts);
-				}
-				$json .= '},';
-			}
-			if (count($form->criteriaList) > 0) {
-				$json = substr($json, 0, -1);
-			}
+			$json .= $this->_generateQueryFormCriteriaJSON($form->criteriaList);
 			// Add the columns
 			$json .= '],"columns":[';
-			foreach ($form->resultsList as $field) {
-				$json .= '{' . $field->toResultJSON() . '},';
-			}
-			if (count($form->resultsList) > 0) {
-				$json = substr($json, 0, -1);
-			}
+			$json .= $this->_generateQueryFormColumnsJSON($form->resultsList);
 			$json .= ']},';
 		}
 		if (count($forms) > 0) {
 			$json = substr($json, 0, -1);
 		}
 		$json = $json . ']}';
+
+		return $json;
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of criteria or columns.
+	 *
+	 * @param Array[Application_Object_Metadata_FormField] $list
+	 *        	the list of fields
+	 * @param String $fieldsType
+	 *        	the fields type ('criteria' or 'result')
+	 * @param Integer $count
+	 *        	the fields count
+	 */
+	private function _generateQueryFormFieldsJSON($list, $fieldsType, $count) {
+		$json = '{"success":true, "total":' . $count . ', "root":[';
+
+		switch ($fieldsType) {
+			case 'criteria':
+				$json .= $this->_generateQueryFormCriteriaJSON($list);
+				break;
+			case 'result':
+				$json .= $this->_generateQueryFormColumnsJSON($list);
+				break;
+		}
+
+		$json .= ']}';
+
+		return $json;
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of criteria.
+	 *
+	 * @param Array[Application_Object_Metadata_FormField] $list
+	 *        	the list of criteria
+	 */
+	private function _generateQueryFormCriteriaJSON($list) {
+		$json = '';
+
+		foreach ($list as $field) {
+			$json .= '{' . $field->toCriteriaJSON();
+			// For the RANGE field, get the min and max values
+			if ($field->type === "NUMERIC" && $field->subtype === "RANGE") {
+				$range = $this->metadataModel->getRange($field->unit);
+				$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
+			}
+
+			if ($field->inputType === 'RADIO' && $field->type === 'CODE') {
+				if ($field->subtype === 'DYNAMIC') {
+					$opts = $this->metadataModel->getDynamodeLabels($field->unit);
+				} else { // MODE -code
+					$opts = $this->metadataModel->getModeLabels($field->unit);
+				}
+				$json .= ',"options":' . json_encode($opts);
+			}
+			$json .= '},';
+		}
+		if (count($list) > 0) {
+			$json = substr($json, 0, -1);
+		}
+
+		return $json;
+	}
+
+	/**
+	 * Generate the JSON structure corresponding to a list of columns.
+	 *
+	 * @param Array[Application_Object_Metadata_FormField] $list
+	 *        	the list of columns
+	 */
+	private function _generateQueryFormColumnsJSON($list) {
+		$json = '';
+
+		foreach ($list as $field) {
+			$json .= '{' . $field->toResultJSON() . '},';
+		}
+		if (count($list) > 0) {
+			$json = substr($json, 0, -1);
+		}
 
 		return $json;
 	}
@@ -194,14 +249,14 @@ class Application_Service_QueryService {
 			$range = $this->metadataModel->getRange($formField->unit);
 			$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 		}
-		
-		if ($formField->inputType === 'RADIO' && $formField->type === 'CODE'){
-			if($formField->subtype === 'DYNAMIC') {
+
+		if ($formField->inputType === 'RADIO' && $formField->type === 'CODE') {
+			if ($formField->subtype === 'DYNAMIC') {
 				$opts = $this->metadataModel->getDynamodeLabels($formField->unit);
-			} else {//MODE -code
+			} else { // MODE -code
 				$opts = $this->metadataModel->getModeLabels($formField->unit);
 			}
-			$json .= ',"options":'.json_encode($opts);
+			$json .= ',"options":' . json_encode($opts);
 		}
 		$json .= "},";
 
@@ -373,7 +428,7 @@ class Application_Service_QueryService {
 		$list = $this->metadataModel->getFormFields($datasetId, $formFormat, $this->schema, $fieldsType, $query, $start, $limit);
 		$count = $this->metadataModel->getFormFieldsCount($datasetId, $formFormat, $this->schema, $fieldsType, $query);
 
-		return '{"success": true, "total":' . $count . ', "root":' . json_encode($list) . '}';
+		return $this->_generateQueryFormFieldsJSON($list, $fieldsType, $count);
 	}
 
 	/**
@@ -401,27 +456,35 @@ class Application_Service_QueryService {
 		// Transform the form request object into a table data object
 		$queryObject = $this->genericService->getFormQueryToTableData($this->schema, $formQuery);
 
-		// Configure the projection systems
-		$configuration = Zend_Registry::get("configuration");
-		$visualisationSRS = $configuration->srs_visualisation;
+		if (count($formQuery->results) === 0) {
+			$json = '{"success": false, "errorMessage": "At least one result column should be selected"}';
+		} else {
 
-		// Generate the SQL Request
-		$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
-		$from = $this->genericService->generateSQLFromRequest($this->schema, $queryObject);
-		$where = $this->genericService->generateSQLWhereRequest($this->schema, $queryObject);
+			// Configure the projection systems
+			$configuration = Zend_Registry::get("configuration");
+			$visualisationSRS = $configuration->getConfig('srs_visualisation', '3857');
 
-		// Clean previously stored results
-		$sessionId = session_id();
-		$this->logger->debug('SessionId : ' . $sessionId);
-		$this->resultLocationModel->cleanPreviousResults($sessionId);
+			// Generate the SQL Request
+			$select = $this->genericService->generateSQLSelectRequest($this->schema, $queryObject);
+			$from = $this->genericService->generateSQLFromRequest($this->schema, $queryObject);
+			$where = $this->genericService->generateSQLWhereRequest($this->schema, $queryObject);
 
-		// Identify the field carrying the location information
-		$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
-		$locationField = $this->metadataModel->getGeometryField($this->schema, array_keys($tables));
-		$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
+			// Clean previously stored results
+			$sessionId = session_id();
+			$this->logger->debug('SessionId : ' . $sessionId);
+			$this->resultLocationModel->cleanPreviousResults($sessionId);
 
-		// Run the request to store a temporary result table (for the web mapping)
-		$this->resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+			// Identify the field carrying the location information
+			$tables = $this->genericService->getAllFormats($this->schema, $queryObject);
+
+			$locationFields = $this->metadataModel->getGeometryFields($this->schema, array_keys($tables));
+			foreach ($locationFields as $key => $locationField) {
+				$locationTableInfo = $this->metadataModel->getTableFormat($this->schema, $locationField->format);
+
+				// Run the request to store a temporary result table (for the web mapping)
+				$this->resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+			}
+		}
 	}
 
 	/**
@@ -626,7 +689,7 @@ class Application_Service_QueryService {
 			$json .= ']}';
 		} catch (Exception $e) {
 			$this->logger->err('Error while getting result : ' . $e);
-			$json = '{"success":false,"errorMessage":"' . json_encode($e->getMessage()) . '"}';
+			$json = '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';
 		}
 
 		return $json;
@@ -664,8 +727,10 @@ class Application_Service_QueryService {
 	 */
 	public function getDetails($id, $detailsLayers, $datasetId = null) {
 		$this->logger->debug('getDetails : ' . $id);
-		//add a success flag (default true) and encode
-		return json_encode(array_merge(array('success'=>true), $this->getDetailsData($id, $detailsLayers, null, true)));
+		// add a success flag (default true) and encode
+		return json_encode(array_merge(array(
+			'success' => true
+		), $this->getDetailsData($id, $detailsLayers, null, true)));
 	}
 
 	/**
@@ -679,11 +744,9 @@ class Application_Service_QueryService {
 	 *        	The identifier of the dataset (to filter data)
 	 * @param boolean $withChildren
 	 *        	If true, get the information about the children of the object
-	 * @param boolean $proxy
-	 *        	If true, use the proxy to fetch mapserver
 	 * @return array Array that represents the details of the result line.
 	 */
-	public function getDetailsData($id, $detailsLayers, $datasetId = null, $withChildren = false, $proxy = true) {
+	public function getDetailsData($id, $detailsLayers, $datasetId = null, $withChildren = false) {
 		$this->logger->debug('getDetailsData : ' . $id);
 
 		// Transform the identifier in an array
@@ -712,7 +775,7 @@ class Application_Service_QueryService {
 		$bb2 = null;
 		$locationTable = null;
 		foreach ($data->getFields() as $field) {
-			if ($field->type === 'GEOM') {
+			if ($field->type === 'GEOM' && !$field->isEmpty()) {
 				// define a bbox around the location
 				$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 
@@ -726,7 +789,7 @@ class Application_Service_QueryService {
 		if ($bb === null) {
 			foreach ($ancestors as $ancestor) {
 				foreach ($ancestor->getFields() as $field) {
-					if ($field->type === 'GEOM') {
+					if ($field->type === 'GEOM' && !$field->isEmpty()) {
 						// define a bbox around the location
 						$bb = Application_Object_Mapping_BoundingBox::createBoundingBox($field->xmin, $field->xmax, $field->ymin, $field->ymax);
 
@@ -776,10 +839,10 @@ class Application_Service_QueryService {
 		$dataDetails['title'] = $dataInfo['title'] . ' (' . $titlePK . ')';
 
 		// Add the localisation maps
-		if (!empty($detailsLayers)) {
+		if (!empty($detailsLayers) && $bb !== null) {
 			if ($detailsLayers[0] !== '') {
 				$url = array();
-				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams, $proxy)));
+				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams)));
 
 				$dataDetails['maps1'] = array(
 					'title' => 'image'
@@ -795,7 +858,7 @@ class Application_Service_QueryService {
 
 			if ($detailsLayers[1] !== '') {
 				$url = array();
-				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams, $proxy)));
+				$url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams)));
 				$dataDetails['maps2'] = array(
 					'title' => 'overview'
 				);
@@ -846,22 +909,17 @@ class Application_Service_QueryService {
 	 *        	bounding box
 	 * @param Array $mapservParams
 	 *        	Parameters for mapserver
-	 * @param Boolean $proxy
 	 * @return String
 	 */
-	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams, $proxy = true) {
+	protected function getDetailsMapUrl($detailsLayers, $bb, $mapservParams) {
 		$configuration = Zend_Registry::get('configuration');
 
 		// Configure the projection systems
-		$visualisationSRS = $configuration->srs_visualisation;
+		$visualisationSRS = $configuration->getConfig('srs_visualisation', '3857');
 		$baseUrls = '';
 
 		// Get the base urls for the services
-		if (!$proxy) {
-			$detailServices = $this->servicesModel->getPrintServices();
-		} else {
-			$detailServices = $this->servicesModel->getDetailServices();
-		}
+		$detailServices = $this->servicesModel->getDetailServices();
 
 		// Get the server name for the layers
 		$layerNames = explode(",", $detailsLayers);
@@ -874,12 +932,8 @@ class Application_Service_QueryService {
 			$serviceLayerName = $layer->serviceLayerName;
 
 			// Get the base Url for detail service
-			if (!$proxy) {
-				$detailServiceName = $layer->printServiceName;
-			} else {
-				if ($layer->detailServiceName !== '') {
-					$detailServiceName = $layer->detailServiceName;
-				}
+			if ($layer->detailServiceName !== '') {
+				$detailServiceName = $layer->detailServiceName;
 			}
 
 			foreach ($detailServices as $detailService) {
@@ -895,6 +949,7 @@ class Application_Service_QueryService {
 						$baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName;
 						$baseUrls .= '&TRANSPARENT=true';
 						$baseUrls .= '&FORMAT=image%2Fpng';
+						$baseUrls .= '&EXCEPTIONS=BLANK';
 						$baseUrls .= '&SERVICE=' . $params->SERVICE;
 						$baseUrls .= '&VERSION=' . $params->VERSION;
 						$baseUrls .= '&REQUEST=' . $params->REQUEST;
@@ -1004,21 +1059,21 @@ class Application_Service_QueryService {
 				$json .= ',"params":{"min":' . $range->min . ',"max":' . $range->max . '}';
 			}
 
-			if ($criteria->type === "CODE" && ($criteria->subtype === "TAXREF" || $criteria->type === "TREE")) {
+			if ($criteria->type === "CODE" && ($criteria->subtype === "TAXREF")) {
 				// For the TAXREF and TREE field, get the default value (because the datastore is not initialised)
 				$labels = $this->metadataModel->getTaxrefLabels($criteria->unit, $criteria->defaultValue);
 				$label = $labels[$criteria->defaultValue];
 
 				$json .= ',"params":{"valueLabel":"' . $label . '"}';
 			}
-			
-			if ($criteria->inputType === 'RADIO' && $criteria->type === 'CODE'){
-				if($criteria->subtype === 'DYNAMIC') {
+
+			if ($criteria->inputType === 'RADIO' && $criteria->type === 'CODE') {
+				if ($criteria->subtype === 'DYNAMIC') {
 					$opts = $this->metadataModel->getDynamodeLabels($criteria->unit);
-				} else {//MODE -code
-						$opts = $this->metadataModel->getModeLabels($criteria->unit);
+				} else { // MODE -code
+					$opts = $this->metadataModel->getModeLabels($criteria->unit);
 				}
-				$json .= ',"options":'.json_encode($opts);
+				$json .= ',"options":' . json_encode($opts);
 			}
 
 			$json .= '},';

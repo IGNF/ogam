@@ -68,8 +68,7 @@ class Application_Model_Mapping_ResultLocation {
 	 *        	the projection system used for visualisation.
 	 */
 	public function fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS) {
-		//$time_start = microtime(true);
-
+		// $time_start = microtime(true);
 		if ($this->_isLocalDB()) {
 			// We can use INSERT ... SELECT statement only if we are exactly on the same server
 			$this->_fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
@@ -78,8 +77,8 @@ class Application_Model_Mapping_ResultLocation {
 			$this->_fillLocationResultRemote($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
 		}
 
-		//$time_end = microtime(true);
-		//$this->logger->info('Durée : ' . ($time_end - $time_start) . " secondes");
+		// $time_end = microtime(true);
+		// $this->logger->info('Durée : ' . ($time_end - $time_start) . " secondes");
 	}
 
 	/**
@@ -247,7 +246,7 @@ class Application_Model_Mapping_ResultLocation {
 	 */
 	public function getPlotLocations($sessionId) {
 		$configuration = Zend_Registry::get("configuration");
-		$projection = $configuration->srs_visualisation;
+		$projection = $configuration->getConfig('srs_visualisation', 3857);
 
 		$req = "SELECT st_astext(st_transform(the_geom," . $projection . ")) as position FROM result_location WHERE session_id = ?";
 
@@ -275,7 +274,7 @@ class Application_Model_Mapping_ResultLocation {
 	 */
 	public function getResultsBBox($sessionId) {
 		$configuration = Zend_Registry::get("configuration");
-		$projection = $configuration->srs_visualisation;
+		$projection = $configuration->getConfig('srs_visualisation', 3857);
 
 		$req = "SELECT st_astext(st_extent(st_transform(the_geom," . $projection . "))) as wkt FROM result_location WHERE session_id = ?";
 
@@ -327,10 +326,9 @@ class Application_Model_Mapping_ResultLocation {
 	 */
 	public function getLocationInfo($sessionId, $lon, $lat) {
 		$configuration = Zend_Registry::get("configuration");
-		$projection = $configuration->srs_visualisation;
-
-		$selectMode = $configuration->featureinfo_selectmode;
-		$margin = $configuration->featureinfo_margin;
+		$projection = $configuration->getConfig('srs_visualisation', 3857);
+		$selectMode = $configuration->getConfig('featureinfo_selectmode', 'buffer');
+		$margin = $configuration->getConfig('featureinfo_margin', '1000');
 
 		$translate = Zend_Registry::get('Zend_Translate');
 		$lang = strtoupper($translate->getAdapter()->getLocale());

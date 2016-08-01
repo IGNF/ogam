@@ -87,11 +87,20 @@ class HarmonizationController extends AbstractOGAMController {
 			$process = $this->harmonizationModel->getHarmonizationProcessSources($process);
 
 			// Get the current status of the source data
-			$submissionStatus = $this->translator->translate('VALIDATED');
-			foreach ($process->submissionIDs as $submissionID) {
-				$submission = $this->submissionModel->getSubmission($submissionID);
-				if ($submission->step !== "VALIDATED") {
+			if($process->status === 'UNDONE'){
+				$submission = $this->submissionModel->getSubmission($activeSubmission->submissionId);
+				if ($submission->step === "VALIDATED") {
+					$submissionStatus = "VALIDATED";
+				} else {
 					$submissionStatus = "NOT_VALID";
+				}
+			} else {
+				$submissionStatus = 'VALIDATED';
+				foreach ($process->submissionIDs as $submissionID) {
+					$submission = $this->submissionModel->getSubmission($submissionID);
+					if ($submission->step !== "VALIDATED") {
+						$submissionStatus = "NOT_VALID";
+					}
 				}
 			}
 
@@ -114,7 +123,7 @@ class HarmonizationController extends AbstractOGAMController {
 	public function launchHarmonizationAction() {
 		$this->logger->debug('launchHarmonizationAction');
 
-		$this->_launchHarmonization(false);
+		$this->launchHarmonization(false);
 	}
 
 	/**
@@ -125,7 +134,7 @@ class HarmonizationController extends AbstractOGAMController {
 	public function removeHarmonizationDataAction() {
 		$this->logger->debug('removeHarmonizationDataAction');
 
-		$this->_launchHarmonization(true);
+		$this->launchHarmonization(true);
 	}
 
 	/**
@@ -135,7 +144,7 @@ class HarmonizationController extends AbstractOGAMController {
 	 *        	If true then we remove the old data without copying new data.
 	 * @return a View
 	 */
-	private function _launchHarmonization($removeOnly = false) {
+	protected function launchHarmonization($removeOnly = false) {
 
 		// Get the submission Id
 		$providerId = $this->_getParam("PROVIDER_ID");

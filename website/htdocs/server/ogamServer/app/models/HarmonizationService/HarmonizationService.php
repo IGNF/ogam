@@ -41,7 +41,7 @@ class Application_Model_HarmonizationService_HarmonizationService extends Applic
 
 		// Initialise the service URL
 		$configuration = Zend_Registry::get("configuration");
-		$this->serviceUrl = $configuration->harmonizationService_url;
+		$this->serviceUrl = $configuration->getConfig('harmonizationService_url', 'http://localhost:8080/OGAMHarmonizationService/');
 
 		// Initialise the logger
 		$this->logger = Zend_Registry::get("logger");

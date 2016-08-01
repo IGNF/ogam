@@ -35,6 +35,14 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 	fbarOkButtonText : 'ok',
 	//</locale>
 
+    /**
+     * @cfg {String/Boolean} shadow
+     * Specifies whether the floating component should be given a shadow. Set to true to automatically create an
+     * {@link Ext.Shadow}, or a string indicating the shadow's display {@link Ext.Shadow#mode}. Set to false to
+     * disable the shadow.
+     */
+    shadow: false,
+
 	/**
 	 * @cfg {String/Object} layout Specify the layout manager class for this
 	 *      container either as an Object or as a String. See
@@ -174,7 +182,6 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 		// Initialise the buttons
 		this.startDateButton = new Ext.Button({
 			text : this.tbarStartDateButtonText,
-			cls : 'x-menu-date-range-item-start-date-button',
 			enableToggle : true,
 			allowDepress : false,
 			toggleGroup : 'DateButtonsGroup',
@@ -183,7 +190,6 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 
 		this.rangeDateButton = new Ext.Button({
 			text : this.tbarRangeDateButtonText,
-			cls : 'x-menu-date-range-item-range-date-button',
 			pressed : true,
 			enableToggle : true,
 			allowDepress : false,
@@ -193,7 +199,6 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 
 		this.endDateButton = new Ext.Button({
 			text : this.tbarEndDateButtonText,
-			cls : 'x-menu-date-range-item-end-date-button',
 			enableToggle : true,
 			allowDepress : false,
 			toggleGroup : 'DateButtonsGroup',
@@ -202,18 +207,18 @@ Ext.define('OgamDesktop.ux.picker.DateRange', {
 
 		// Initialise the toolbar
 		this.tbar = new Ext.toolbar.Toolbar({
-			items : [ this.startDateButton, this.rangeDateButton, '->', this.endDateButton ]
+			items : [ this.startDateButton, '->', this.rangeDateButton, '->', this.endDateButton ]
 		});
 
 		if (!this.hideValidationButton) {
 			this.fbar = new Ext.toolbar.Toolbar({
-				cls : 'x-date-bottom',
-				items : [ {
+				cls : 'o-date-range-picker-footer-toolbar',
+				items : [ '->', {
 					xtype : 'button',
 					text : this.fbarOkButtonText,
 					width : 'auto',
 					handler : this.onOkButtonPress.bind(this)
-				} ]
+				}, '->' ]
 			});
 		}
 

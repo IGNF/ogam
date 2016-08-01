@@ -7,6 +7,21 @@
 
     <title>OgamDesktop</title>
 
+	<script type="text/javascript">
+	    var Ext = Ext || {};
+	    Ext.beforeLoad = function (tags) {
+	    	if (!location.href.match(/client/)) {
+		        var theme = location.href.match(/theme=([\w-]+)/),
+		            locale = location.href.match(/locale=([\w-]+)/);
+
+		        theme  = (theme && theme[1]) || 'theme-gray';
+		        locale = (locale && locale[1]) || 'fr';
+
+		        Ext.manifest = 'app-' + theme + '-' + locale;
+		    }
+	    };
+	</script>
+
     <script type="text/javascript" src="/map/get-map-parameters"></script>
 
     <!-- The line below must be kept intact for Sencha Cmd to build your application -->

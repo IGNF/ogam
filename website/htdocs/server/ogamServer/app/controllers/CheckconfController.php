@@ -89,7 +89,7 @@ class CheckconfController extends AbstractOGAMController {
 		$phpParameters = array();
 
 		// Checks the post_max_size php parameters
-		$postMaxSizeMin = $configuration->post_max_size;
+		$postMaxSizeMin = $configuration->getConfig('post_max_size', '100M');
 		$postMaxSizeMinInt = substr($postMaxSizeMin, 0, -1);
 		$postMaxSize = ini_get("post_max_size");
 		$postMaxSizeInt = substr($postMaxSize, 0, -1);
@@ -104,7 +104,7 @@ class CheckconfController extends AbstractOGAMController {
 		array_push($phpParameters, $postMaxSizeMsg);
 
 		// Checks the upload_max_filesize php parameters
-		$uploadMaxFilesizeMin = $configuration->upload_max_filesize;
+		$uploadMaxFilesizeMin = $configuration->getConfig('upload_max_filesize', '100M');
 		$uploadMaxFilesizeMinInt = substr($uploadMaxFilesizeMin, 0, -1);
 		$uploadMaxFilesize = ini_get("upload_max_filesize");
 		$uploadMaxFilesizeInt = substr($uploadMaxFilesize, 0, -1);
@@ -128,22 +128,22 @@ class CheckconfController extends AbstractOGAMController {
 		$this->logger->debug('Checking database');
 
 		// Check the schemas
-		$this->_checkSchemas();
+		$this->checkSchemas();
 
 		// Check if the expected tables are found
-		$this->_checkTables();
+		$this->checkTables();
 
 		// Check if the expected fields are found
-		$this->_checkFields();
+		$this->checkFields();
 
 		// Checks the foreign keys
-		$this->_checkForeignKeys();
+		$this->checkForeignKeys();
 	}
 
 	/**
 	 * Checks the schemas.
 	 */
-	private function _checkSchemas() {
+	protected function checkSchemas() {
 
 		// Get the list of expected schema objects
 		$expectedSchemas = $this->metadataModel->getSchemas();
@@ -163,7 +163,7 @@ class CheckconfController extends AbstractOGAMController {
 	/**
 	 * Checks the foreign keys.
 	 */
-	private function _checkForeignKeys() {
+	protected function checkForeignKeys() {
 		$expectedFKs = $this->metadataSystemModel->getForeignKeys();
 
 		$existingFKs = $this->postgreSQLModel->getForeignKeys();
@@ -193,7 +193,7 @@ class CheckconfController extends AbstractOGAMController {
 	/**
 	 * Check if the expected fields are found.
 	 */
-	private function _checkFields() {
+	protected function checkFields() {
 		$expectedFields = $this->metadataSystemModel->getFields();
 
 		$existingFields = $this->postgreSQLModel->getFields();
@@ -232,6 +232,11 @@ class CheckconfController extends AbstractOGAMController {
 							$fieldTypeMsg[] = $msg;
 						}
 						break;
+					case "TIME":
+							if ($foundField->type !== 'TIME' && $foundField->type !== 'TIME WITHOUT TIME ZONE') {
+								$fieldTypeMsg[] = $msg;
+							}
+							break;
 					case "CODE":
 						if ($foundField->type !== 'CHARACTER VARYING' && $foundField->type !== 'CHARACTER' && $foundField->type !== 'TEXT') {
 							$fieldTypeMsg[] = $msg;
@@ -269,7 +274,7 @@ class CheckconfController extends AbstractOGAMController {
 	/**
 	 * Check if the expected tables are found.
 	 */
-	private function _checkTables() {
+	protected function checkTables() {
 		$expectedTables = $this->metadataSystemModel->getTables();
 
 		$existingTables = $this->postgreSQLModel->getTables();

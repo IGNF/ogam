@@ -80,7 +80,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
      *  - Calls the setupMapAndTreeLayers function if the counter is equal at two.
      * @private
      */
-    afterMapMainWinRendered : function() {
+    afterMapMainWinRendered: function() {
         this.eventCounter += 1;
         if (this.eventCounter === 2) {
             this.setupMapAndTreeLayers();
@@ -96,7 +96,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
      * @private
      * @param {Array} treeStores The layer tree store
      */
-    afterLayersPanelStoresLoaded : function(treeStores) {
+    afterLayersPanelStoresLoaded: function(treeStores) {
         this.treeStores = treeStores;
         this.eventCounter += 1;
         if (this.eventCounter === 2) {
@@ -108,20 +108,14 @@ Ext.define('OgamDesktop.controller.map.Layer',{
      * Sets up the map and the tree layers
      * @private
      */
-    setupMapAndTreeLayers : function() {
+    setupMapAndTreeLayers: function() {
         var mapCmp = this.getMappanel().child('mapcomponent');
 
         // Creation of the layers collection
         var layersCollection = this.buildLayersCollection();
 
         // Identifies the request layers
-        var filterOnRequestActivateType = new Ext.util.Filter({
-            filterFn : function(item) {
-                return item.get('activateType') === 'request';
-            }
-        });
-        var requestLayersCollection = layersCollection.filter(filterOnRequestActivateType);
-        mapCmp.getController().requestLayers = requestLayersCollection.getRange();
+        mapCmp.getController().requestLayers = this.getRequestLayers(layersCollection);
 
         // Adds the layers to the map
         var map = mapCmp.getMap();
@@ -131,6 +125,29 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 
         // Adds the store to the layers tree
         this.getLayerspanel().setConfig('store', this.buildGeoExtStore());
+    },
+
+   /**
+     * Return an array containing the request layers
+     * @private
+     * @param {Ext.util.Collection} layersCollection The full map layers collection
+     * @return {Array} The request layers
+     */
+    getRequestLayers: function(layersCollection) {
+        var requestLayers = [];
+        var addRequestLayerFn = function(item, index, len){
+            if(item instanceof ol.layer.Group){
+                item.getLayers().forEach(function(el, index, layers){
+                    addRequestLayerFn(el, index, layers.length);
+                });
+            } else {
+                if (item.get('activateType') === 'request') {
+                    requestLayers.push(item);
+                }
+            }
+        };
+        layersCollection.each(addRequestLayerFn);
+        return requestLayers;
     },
 
    /**
@@ -217,14 +234,24 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         case 'WMS':
             // Sets the WMS layer source
             var sourceWMSOpts = {};
-            sourceWMSOpts['params'] = {
+            sourceWMSOpts['params'] = Ext.apply({
                 'layers': layer.get('params').layers,
-                'REQUEST': service.get('config').params.REQUEST,
-                'VERSION': service.get('config').params.VERSION,
                 'session_id': layer.get('params').session_id
-            };
+            }, service.get('config').params);
             sourceWMSOpts['urls'] = service.get('config').urls;
             sourceWMSOpts['crossOrigin'] = 'anonymous';
+            sourceWMSOpts['projection'] = OgamDesktop.map.projection;
+            sourceWMSOpts['tileGrid'] = new ol.tilegrid.TileGrid({
+                extent : [
+                    OgamDesktop.map.x_min,
+                    OgamDesktop.map.y_min,
+                    OgamDesktop.map.x_max,
+                    OgamDesktop.map.y_max
+                ],
+                resolutions: OgamDesktop.map.resolutions,
+                tileSize: [256, 256],
+                origin:[OgamDesktop.map.x_min, OgamDesktop.map.y_min]
+            });
             return new ol.source.TileWMS(sourceWMSOpts);
         case 'WMTS':
             // Sets the WMTS layer source

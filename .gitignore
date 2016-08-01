@@ -24,3 +24,7 @@
 /website/htdocs/client/ogamDesktop/docs
 /website/htdocs/client/ext/packages/legacy/sass/example/bootstrap.json
 /website/htdocs/client/ext/build
+tmp
+upload
+.idea
+.gradle

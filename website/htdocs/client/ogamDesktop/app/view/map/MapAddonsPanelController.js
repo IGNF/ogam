@@ -7,7 +7,6 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
     listen: {
          controller: {
              'mapcomponent': {
-                 changevisibilityrange: 'toggleLayersAndLegendsForZoom',
                  resultsBBoxChanged: 'enableRequestLayersAndLegends'
              },
              'layerspanel':{
@@ -33,28 +32,16 @@ Ext.define('OgamDesktop.view.map.MapAddonsPanelController', {
      * @param {Boolean} checked True if the node is checked
      */
     onLayerCheckChange : function(node, checked) {
-        this.legendsPanelCtrl.setLegendsVisible([node.getOlLayer()], checked);
-    },
-
-    /**
-     * Toggle the layer and legend in function of the zoom range
-     * @private
-     * @param {OpenLayers.Layer} layer The layer to check
-     * @param {Boolean} enable True to enable the layers and legends
-     */
-    toggleLayersAndLegendsForZoom : function(layer, enable) {
-        var node = this.layersPanelCtrl.getLayerNode(layer);
-        if (!Ext.isEmpty(node) && !node.hidden) {
-            if (!enable) {
-                // Disable Layers And Legends
-                this.toggleLayersAndLegends(false, [ layer ], false);
+        var setLegendVisibleFn = function(layer, checked){
+            if (layer instanceof ol.layer.Group) {
+                layer.getLayers().forEach(function(el, index, layers){
+                    setLegendVisibleFn.call(this, el, checked);
+                }, this);
             } else {
-                if (node.forceDisable !== true) {
-                    // Enable Layers And Legends
-                    this.toggleLayersAndLegends(true, [ layer ], false);
-                }
+                this.legendsPanelCtrl.setLegendsVisible([layer], checked);
             }
-        }
+        };
+        setLegendVisibleFn.call(this, node.getOlLayer(), checked);
     },
 
     /**

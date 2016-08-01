@@ -158,6 +158,9 @@ constraint FK_HARMONIZED_TREE_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_
 unique (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID)   
 );
 
+-- Ajout de la colonne point PostGIS
+SELECT AddGeometryColumn('harmonized_data','harmonized_tree_data','the_geom',4326,'POINT',2);
+
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.PLOT_CODE IS 'The identifier of the plot';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.CYCLE IS 'The cycle of inventory';
@@ -167,5 +170,7 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.DBH IS 'The diameter at breast height (in
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.HEIGHT IS 'The tree height (in m)';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.PHOTO IS 'A picture of the tree';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.the_geom IS 'geometry of the tree location';
 
-
+-- Spatial Index on the_geom 
+CREATE INDEX IX_HARMONIZED_TREE_DATA_SPATIAL_INDEX ON harmonized_data.harmonized_tree_data USING GIST ( the_geom );

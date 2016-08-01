@@ -30,6 +30,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
      */ 
     editLinkButtonTitle : 'Edit this data',
     editLinkButtonTip : 'Edit this data in the edition page.',
+    linkFieldDefaultText : 'Consult',
     /**
      * @cfg {Number} headerWidth
      * The tab header width. (Default to 60)
@@ -74,11 +75,6 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
      */
     seeChildrenButtonTitlePlural: 'See the children',
     /**
-     * @cfg {Number} tipDefaultWidth
-     * The tip Default Width. (Default to 300)
-     */
-    tipDefaultWidth: 300,
-    /**
      * @cfg {Number} titleCharsMaxLength
      * The title Chars Max Length. (Default to 8)
      */
@@ -98,65 +94,77 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
         this.title = '<div style="width:'+ this.headerWidth + 'px;">'+this.loadingMsg+'</div>';
         this.on('render', this.updateDetails, this);
         this.itemId = this.rowId;
+
         /**
          * @cfg {Ext.XTemplate} tpl
          * A {@link Ext.XTemplate} used to setup the details panel body.
          */
 
         this.tpl = new Ext.XTemplate(
-			'<legends style="display:block; position:absolute; left:1px; top:621px">',
+            '<div>', // Required by the print function
+                '<h2 class="o-navigation-title">{title}</h2>',
+                '<div class="o-navigation-map-table">',
+                    '<div class="o-navigation-map-left-col">',
+                        '<div class="o-navigation-map-img">',
+                            '<tpl for="maps1.urls">',
+                                '<img src="{url}">',
+                            '</tpl>',
+                        '</div>',
+                    '</div>',
+                    '<div class="o-navigation-map-intercol"></div>',
+                    '<div class="o-navigation-map-right-col">',
+                        '<div class="o-navigation-map-img">',
+                            '<tpl for="maps2.urls">',
+                                '<img src="{url}">',
+                            '</tpl>',
+                        '</div>',
+                    '</div>',
+                '</div>',
 				'<tpl for="formats">',
-					'<fieldset class="o-navigation-fieldset">',
-						'<legend>',
-							'<div>{title}</div>',
-						'</legend>',
-						'<div>',
+					'<div class="o-navigation-fieldset">',
+						'<div class="o-navigation-fieldset-title">',
+                            '<tpl if="xindex &lt; xcount">',
+                                '<div class="o-navigation-fieldset-title-link" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{editURL}\');"></div>',
+                            '</tpl>',
+                            '<span>{title}</span>',
+                        '</div>',
 							'<tpl for="fields">',
 						        '<tpl switch="inputType">',
 						            '<tpl case="CHECKBOX">',
-						            	'<p><b>{label} :</b> {[this.convertBoolean(values)]}</p>',
+						            	'<span><b>{label} :</b> {[this.convertBoolean(values)]}</span>',
 						            '<tpl case="IMAGE">',
 										'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img title=\"\' + values.label + \'\" src=\"' + window.location.origin + '/img/photos/\' + values.value + \'\">\']}',
 						            '<tpl default>',
 						            	'<tpl if="type ==\'STRING\' && subtype==\'LINK\' && value.length &gt; 0">',
-						            		'<a class="external" href="{value}" target="_blank">{label}</a>',
+						            		'<span><b>{label} :</b> <a class="external" href="{value}" target="_blank"><span>' + this.linkFieldDefaultText + '</span></a></span>',
 						            	'<tpl else>',
-						            		'<p><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isEmpty(values.value.toString().trim()))) ? "-" : values.value.toString()]}</p>',
+						            		'<span><b>{label} :</b> {[(Ext.isEmpty(values.value) || (Ext.isEmpty(values.value.toString().trim()))) ? "-" : values.value.toString()]}</span>',
 						            	'</tpl>',
 						        '</tpl>',
 							'</tpl>',
-						'</div>',
-					'</fieldset>',
-				'</tpl>',
-				'<tpl if="children.length != 0">',
-				'<tpl for="children">',
-					'<fieldset class="o-navigation-fieldset">',
-					'<legend>',
-						'<div>Children : {title}</div>',
-					'</legend>',
-					'<div class="o-navigation-childfieldset-table">',
-						'<tpl for="data">',
-							'<div class="o-navigation-childfieldset-tablerow">',
-								'<div class="o-navigation-childfieldset-leftcolumn" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{0}\');"></div>',// OGAM-614 - TODO: Throw an event
-								'<div class="o-navigation-childfieldset-rightcolumn">{1}</div>',
-							'</div>',
-//							'<tpl if="type == \'IMAGE\'">', 
-//								'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img title=\"\' + values.label + \'\" src=\"' + window.location.origin + '/img/photos/\' + values.value + \'\">\']}',
-//							'</tpl>',
-						'</tpl>',
 					'</div>',
-				'</fieldset>',
 				'</tpl>',
+				'<tpl if="this.hasChildren(values)">',
+    				'<tpl for="children">',
+                        '<div class="o-navigation-fieldset">',
+                        '<div  class="o-navigation-fieldset-title">{title}</div>',
+    					'<div>',
+    						'<tpl for="data">',
+    							'<div class="o-navigation-childfieldset-row">',
+    								'<div class="o-navigation-childfieldset-leftcolumn" data-qtip="{1}" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{0}\');"></div>',// OGAM-614 - TODO: Throw an event
+    								'<div class="o-navigation-childfieldset-rightcolumn">{1}</div>',
+    							'</div>',
+    //							'<tpl if="type == \'IMAGE\'">', 
+    //								'{[(Ext.isEmpty(values.value) || (Ext.isString(values.value) && Ext.isEmpty(values.value.trim()))) ? \'\' : \'<img title=\"\' + values.label + \'\" src=\"' + window.location.origin + '/img/photos/\' + values.value + \'\">\']}',
+    //							'</tpl>',
+    						'</tpl>',
+    					'</div>',
+    				'</div>',
+    				'</tpl>',
 				'</tpl>',
-            '</legends>',
-          '<tpl style="display:block" for="maps1.urls">',
-        	'<img style="display:block; position:absolute; left:1px; top:1px" title="title" src="{url}">',
-        '</tpl>',
-        '<tpl for="maps2.urls">',
-        	'<img style="display:block; position:absolute; left:1px; top:311px" title="title" src="{url}">',
-        '</tpl>',
+            '</div>',
             {
-                compiled: true,      // compile immediately
+                compiled: true, // compile immediately
                 disableFormats: true, // reduce apply time since no formatting
                 convertBoolean: function(values){
                 	switch(OgamDesktop.ux.data.field.Factory.buildCheckboxFieldConfig(values).convert(values.value)){
@@ -164,6 +172,9 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 						case true: return OgamDesktop.ux.grid.column.Factory.gridColumnTrueText;
 						default: return OgamDesktop.ux.grid.column.Factory.gridColumnUndefinedText;
                 	}
+                },
+                hasChildren: function(values){
+                    return !Ext.isEmpty(values.children) && values.children.length != 0;
                 }
             }
         );
@@ -173,23 +184,21 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 
     /**
      * Updates the Details panel body.
-     * @param {Ext.Panel} panel The details panel
      */
-    updateDetails : function(panel) {
+    updateDetails : function() {
         Ext.Ajax.request({
         	url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetdetails',
 			actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
             success :function(response, options){
-                var details = Ext.decode(response.responseText);
-                console.log('details : ', details);
-                var title = details.title;
-                if(details.title.length > this.titleCharsMaxLength){
-                    title = details.title.substring(0,this.titleCharsMaxLength) + '...';
+                var data = Ext.decode(response.responseText);
+                var title = data.title;
+                if(data.title.length > this.titleCharsMaxLength){
+                    title = data.title.substring(0,this.titleCharsMaxLength) + '...';
                 }
                 this.setTitle('<div style="width:'+ this.headerWidth + 'px;"'
-                    +' ext:qtip="' + details.title + '"'
+                    +' ext:qtip="' + data.title + '"'
                     +'>'+title+'</div>');
-                this.tpl.overwrite(this.body, details);
+                this.tpl.overwrite(this.body, data);
             },
             method: 'POST',
             params : {id : this.rowId},

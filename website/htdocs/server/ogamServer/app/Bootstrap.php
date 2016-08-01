@@ -23,6 +23,7 @@ require_once APPLICATION_PATH . '/objects/Metadata/Format.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TableFormat.php';
 require_once APPLICATION_PATH . '/objects/Metadata/TreeNode.php';
 require_once APPLICATION_PATH . '/objects/RawData/Submission.php';
+require_once APPLICATION_PATH . '/objects/Website/Configuration.php';
 require_once APPLICATION_PATH . '/objects/Website/ApplicationParameter.php';
 require_once APPLICATION_PATH . '/objects/Website/User.php';
 require_once APPLICATION_PATH . '/objects/Website/Role.php';
@@ -171,7 +172,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initView() {
 		$this->bootstrap('frontController');
 		$this->bootstrap('RegisterTranslate');
-		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('AppConfSession');
 		$configuration = Zend_Registry::get('configuration');
 		$baseUrl = Zend_Controller_Front::getInstance()->getBaseUrl();
@@ -187,8 +187,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$view->headMeta()->appendName('keywords', $view->translate('Layout Head Meta Keywords'));
 		$view->headMeta()->appendName('description', $view->translate('Layout Head Meta Description'));
 		$view->headLink()->appendStylesheet($baseUrl . 'css/global.css');
-		$view->contactEmailPrefix = $configuration->contactEmailPrefix;
-		$view->contactEmailSufix = $configuration->contactEmailSufix;
+		$view->contactEmailPrefix = $configuration->getConfig('contactEmailPrefix', 'ogam');
+		$view->contactEmailSufix = $configuration->getConfig('contactEmailSufix', 'ign.fr');
 
 		// Si le répertoire custom existe alors on le prend en priorité
 		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/views/')) {
@@ -203,8 +203,25 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('ViewRenderer');
 		$viewRenderer->setView($view);
 
+		$navigation = $this->_getNavigation();
+		if ($navigation) {
+			$view->navigation($navigation);
+		}
+
 		// Retourner la vue pour qu'elle puisse être stockée par le bootstrap
 		return $view;
+	}
+
+	/**
+	 * Init and return a navigation object if the conf file exists
+	 */
+	private function _getNavigation() {
+		if (defined('CUSTOM_APPLICATION_PATH') && file_exists(CUSTOM_APPLICATION_PATH . '/configs/navigation.yml')) {
+			$navigationConf = new Zend_Config_Yaml(CUSTOM_APPLICATION_PATH . '/configs/navigation.yml', 'nav');
+		} else if (file_exists(APPLICATION_PATH . '/configs/navigation.yml')) {
+			$navigationConf = new Zend_Config_Yaml(APPLICATION_PATH . '/configs/navigation.yml', 'nav');
+		}
+		return (isset($navigationConf)) ? new Zend_Navigation($navigationConf) : null;
 	}
 
 	/**
@@ -217,7 +234,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initRegisterTranslate() {
 		$this->bootstrap('Locale');
 		$this->bootstrap('Translate');
-		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('AppConfSession');
 
 		if (!$this->hasPluginResource('Translate')) {
@@ -228,7 +244,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			throw new Zend_Exception('Translate object is empty.');
 		}
 		$configuration = Zend_Registry::get('configuration');
-		if ($configuration->useCache == false) {
+		$useCache = $configuration->getConfig('useCache', false);
+		if ($useCache == false) {
 			$translate->clearCache(); // Remove the default cache done during the translate bootstrap
 			$translate->removeCache();
 		}
@@ -306,8 +323,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 * If present overrides with custom/application/config.
 	 * If present overrides with the content from the "application_parameters" table.
 	 */
-	protected function _initAppConfRegistry() {
-		$configuration = new stdClass();
+	protected function _initAppConfSession() {
+		$configuration = new Application_Object_Website_Configuration();
 
 		// Get the parameters from the OGAM default configuration files
 		$appIniFilePath = APPLICATION_PATH . '/configs/app.ini';
@@ -332,35 +349,18 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 
 		// Add the parameters from the database
 		$parameterModel = new Application_Model_Website_ApplicationParameter();
-		$parameters = $parameterModel->getParameters();
-		foreach ($parameters as $name => $param) {
-			$configuration->$name = $param->value;
-		}
+		$configuration->setParameters($parameterModel->getParameters());
 
-		// Adding of the intern map service url into the parameters
-		$serviceConfig = $parameterModel->getMapServiceUrl();
-		if (!empty($serviceConfig)) {
-			$configuration->map_service_url = json_decode($serviceConfig['config'])->{'urls'}[0];
-		}
-
+		// Store the complete configuration in the Zend Register
 		Zend_Registry::set('configuration', $configuration);
-	}
 
-	/**
-	 * Initialise the application configuration and set it in session.
-	 */
-	protected function _initAppConfSession() {
-		$this->bootstrap('Session');
-		$this->bootstrap('AppConfRegistry');
-		$this->bootstrap('RegisterLogger');
-
-		$configuration = Zend_Registry::get('configuration');
-		$configurationSession = new Zend_Session_Namespace('user');
+		// Store some specific parameters in the session
+		// this will be used by the "mapserverProxy" and "tilecacheProxy" classes to avoid a complete bootstrap
 		$configurationSession = new Zend_Session_Namespace('configuration');
-
 		$configurationSession->configuration = array(
-			"map_service_url" => $configuration->map_service_url
-		); // Needed into mapProxy.php file to improve performances (avoiding a db connection).
+			"mapserver_private_url" => $configuration->getConfig('mapserver_private_url', 'http://localhost/mapserv-ogam?', true),
+			"tilecache_private_url" => $configuration->getConfig('tilecache_private_url', 'http://localhost/tilecache-ogam?', true)
+		);
 	}
 
 	/**
@@ -394,12 +394,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	 */
 	protected function _initAutoLogin() {
 		$this->bootstrap('DbAdapters');
-		$this->bootstrap('AppConfRegistry');
 		$this->bootstrap('AppConfSession');
 		$this->bootstrap('Session');
 		$configuration = Zend_Registry::get('configuration');
 		// USER - autologin for public access
-		if ($configuration->autoLogin) {
+		$autoLogin = $configuration->getConfig('autoLogin', false);
+		if ($autoLogin) {
 			$userSession = new Zend_Session_Namespace('user');
 			$user = $userSession->user;
 
@@ -407,7 +407,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 				$userModel = new Application_Model_Website_User();
 
 				// Get the user informations
-				$user = $userModel->getUser($configuration->defaultUser);
+				$user = $userModel->getUser($configuration->getConfig('defaultUser', 'visitor'));
 
 				$this->logger->debug('Autologin default user : ' . $user->login);
 

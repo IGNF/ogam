@@ -3,55 +3,54 @@
 
 subprojects {
 
-  apply plugin: "java"  // compilation + tests unitaires
-  apply plugin: "war"  // war construction
-  apply plugin: 'pmd'  // checks
-  apply plugin: 'checkstyle' // checks
-  apply plugin: 'findbugs'  // checks
-  apply plugin: "jacoco"  // coverage
-  
-  version = '3.0.0'
-  
-  targetCompatibility  = 1.6
-  sourceCompatibility  = 1.6
- 
-  // We use Maven repository
-  repositories {
-    mavenCentral()
-  }
+	apply plugin: "java"  // compilation + tests unitaires
+	apply plugin: "war"  // war construction
+	apply plugin: 'pmd'  // checks
+	apply plugin: 'checkstyle' // checks
+	apply plugin: 'findbugs'  // checks
+	apply plugin: "jacoco"  // coverage
+	  
+	version = '3.0.0'
+	  
+	targetCompatibility  = 1.7
+	sourceCompatibility  = 1.7
 
-  // Define the dependencies
-  dependencies {
-  
-  	
-  	// For the tests only
-    testCompile 'junit:junit:4.5'	
-	testCompile 'org.dbunit:dbunit:2.5.0'
-	
-	// For compilation only (not deployed to Tomcat)		
-	providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
-	providedCompile 'com.sun.mail:javax.mail:1.5.4'
-	providedCompile 'postgresql:postgresql:9.1-901-1.jdbc4'
-	
-	// For compilation and deployement
-	compile 'log4j:log4j:1.2.14'
-	compile 'commons-fileupload:commons-fileupload:1.2.1'
-	compile 'commons-io:commons-io:1.4'
-	compile 'com.vividsolutions:jts:1.13'
-  }
-  
-  // Set the source directories for each subproject
-  sourceSets {
-	    main {
-	        java {
-	            srcDir 'src'
-	        }
-	    }
-	     test {
-	        java {
-	            srcDir 'test'
-	        }
-	    }
+ 
+	// We use Maven repository
+	repositories {
+		mavenCentral()
+	}
+
+	// Define the dependencies
+	dependencies {
+		// For the tests only
+		testCompile 'junit:junit:4.5'
+		testCompile 'org.dbunit:dbunit:2.5.0'
+
+		// For compilation only (not deployed to Tomcat)
+		providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
+		providedCompile 'com.sun.mail:javax.mail:1.5.4'
+		providedCompile 'postgresql:postgresql:9.1-901-1.jdbc4'
+
+		// For compilation and deployement
+		compile 'log4j:log4j:1.2.14'
+		compile 'commons-fileupload:commons-fileupload:1.2.1'
+		compile 'commons-io:commons-io:1.4'
+		compile 'com.vividsolutions:jts:1.13'
+	}
+
+	// Set the source directories for each subproject
+	sourceSets {
+		main {
+			java {
+				srcDir 'src'
+			}
+		}
+		test {
+			java {
+				srcDir 'test'
+			}
+		}
 	}
 	
 
@@ -61,15 +60,15 @@ subprojects {
 	// Configuration for the war task
 	war {
 		// adds a file-set to the WEB-INF dir.
-    	webInf { 
-    		from ('config') {
-    			include 'log4j.properties'
-    			into ('classes/')
-    		} 
-    	} 
-    	
-    	// copies a file to WEB-INF/web.xml
-    	webXml = file('config/web.xml') 
+		webInf { 
+			from ('config') {
+				include 'log4j.properties'
+				into ('classes/')
+			} 
+		} 
+		
+		// copies a file to WEB-INF/web.xml
+		webXml = file('config/web.xml') 
 	}
 	
 	
@@ -95,10 +94,10 @@ subprojects {
 	}
 	
 	jacocoTestReport {
-	    reports {
-	        xml.enabled = true
-	        html.enabled = true
-	    }
+		reports {
+			xml.enabled = true
+			html.enabled = true
+		}
 	}
 	
 	

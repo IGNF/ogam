@@ -14,6 +14,17 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
         }
     },
 
+//<locale>
+    /**
+     * @cfg {String} noDrawingFeatureErrorTitle The no drawing feature error title (default to <tt>'Zoom to drawing features:'</tt>)
+     */
+    noDrawingFeatureErrorTitle : 'Zoom to drawing features:',
+    /*
+     * @cfg {String} noDrawingFeatureErrorMessage The no drawing feature error message (default to <tt>'The drawing layer contains no feature on which to zoom.'</tt>)
+     */
+    noDrawingFeatureErrorMessage : 'The drawing layer contains no feature on which to zoom.',
+//</locale>
+
     /**
      * Initializes the controller.
      * @private
@@ -38,18 +49,57 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
      */
     onVectorLayerStoreLoad : function(store, records, successful, eOpts) {
         var menuItems = [];
+        var curRes = this.map.getView().getResolution();
         store.each( function(record) {
+            var isDisabled = false, resolutions = record.get('resolutions');
+            if (resolutions !== undefined 
+                && (curRes < resolutions[resolutions.length - 1] || curRes >= resolutions[0])) {
+                isDisabled = true;
+            }
             menuItems.push({
+                itemId : record.get('layerName'),
                 text : record.get('layerLabel'),
-                itemId : record.get('serviceLayerName'),
+                disabled : isDisabled,
                 data : {
-                    featureServiceUrl : record.get('featureServiceUrl')
+                    featureServiceUrl : record.get('featureServiceUrl'),
+                    serviceLayerName : record.get('serviceLayerName')
                 }
             });
         });
         this.lookupReference('snappingButton').getMenu().add(menuItems);
         this.lookupReference('selectWFSFeatureButton').getMenu().add(menuItems);
         this.lookupReference('layerFeatureInfoButton').getMenu().add(menuItems);
+    },
+
+    /**
+     * Enable and show the menus items
+     * @private
+     * @param {Boolean} enable True to enable the menus items
+     * @param {Array} layers The layers
+     */
+    toggleMenusItems : function(enable, layers) {
+        var layerNamesArray = layers.map(function(layer){
+            return layer.get('name');
+        });
+        this.toggleMenuItems(this.lookupReference('snappingButton').getMenu(), enable, layerNamesArray);
+        this.toggleMenuItems(this.lookupReference('selectWFSFeatureButton').getMenu(), enable, layerNamesArray);
+        this.toggleMenuItems(this.lookupReference('layerFeatureInfoButton').getMenu(), enable, layerNamesArray);
+    },
+
+    /**
+     * Enable and show the menu items
+     * @private
+     * @param {Ext.menu.Menu} menu The menu
+     * @param {Boolean} enable True to enable the menu items
+     * @param {Array} layersNames The layers names
+     */
+    toggleMenuItems : function(menu, enable, layersNames) {
+        menu.items.each(function(item, index, len){
+            if(layersNames.indexOf(item.itemId) !== -1) {
+                !enable && item.setChecked(false);
+                item.setDisabled(!enable);
+            }
+        });
     },
 
 // ********************************************************************************************************* //
@@ -68,7 +118,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     onZoomToDrawingFeaturesButtonPress : function (button, e, eOpts) {
         var extent = this.mapCmpCtrl.getMapLayer('drawingLayer').getSource().getExtent();
         if (ol.extent.isEmpty(extent)) {
-            Ext.Msg.alert('Zoom to drawing features :', 'The drawing layer contains no feature on which to zoom.');
+            OgamDesktop.toast(this.noDrawingFeatureErrorMessage, this.noDrawingFeatureErrorTitle);
         } else {
             this.map.getView().fit(
                 extent, 
@@ -235,9 +285,6 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 var result = Ext.decode(rpse.responseText);
                 this.getView().up('panel').fireEvent('getLocationInfo', {'result': result});
             },
-            failure : function(rpse, options) {
-                Ext.Msg.alert('Erreur', 'Sorry, bad request...');
-            },
             scope: this
         });
     },
@@ -393,6 +440,12 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
     onPrintMapButtonPress : function(button, e, eOpts) {
         var mapAddonsPanel = this.getView().up('map-mainwin').child('map-addons-panel');
         var legendsPanel = mapAddonsPanel.child('legends-panel');
+
+        // Deactivates all the consultation toolbar buttons controls
+        var consultationButtons = this.getView().items.filter('toggleGroup', 'consultation');
+        consultationButtons.each(function(item){
+            item.toggle(false);
+        });
 
         // Forces the render of the legends panel items
         if(!legendsPanel.isVisible()){

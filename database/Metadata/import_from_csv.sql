@@ -254,12 +254,12 @@ UNION
 -- the INPUT_TYPE is not in the list
 SELECT format||'_'||data, 'The INPUT_TYPE type is not in the list'
 FROM form_field 
-WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE', 'TAXREF', 'IMAGE')
+WHERE input_type NOT IN ('TEXT', 'SELECT', 'DATE', 'TIME', 'GEOM', 'NUMERIC', 'CHECKBOX', 'MULTIPLE', 'TREE', 'TAXREF', 'IMAGE')
 UNION
 -- the UNIT type is not in the list
 SELECT unit||'_'||type, 'The UNIT type is not in the list'
 FROM unit 
-WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'DATE', 'INTEGER', 'NUMERIC', 'STRING', 'GEOM', 'IMAGE')
+WHERE type NOT IN ('BOOLEAN', 'CODE', 'ARRAY', 'DATE', 'TIME', 'INTEGER', 'NUMERIC', 'STRING', 'GEOM', 'IMAGE')
 UNION
 -- the subtype is not consistent with the type
 SELECT unit||'_'||type, 'The UNIT subtype is not consistent with the type'
@@ -277,6 +277,7 @@ LEFT JOIN data using (data)
 LEFT JOIN unit using (unit)
 WHERE (input_type = 'NUMERIC' AND type NOT IN ('NUMERIC', 'INTEGER'))
 OR (input_type = 'DATE' AND type <> 'DATE')
+OR (input_type = 'TIME' AND type <> 'TIME')
 OR (input_type = 'SELECT' AND NOT (type = 'ARRAY' or TYPE = 'CODE') AND (subtype = 'CODE' OR subtype = 'DYNAMIC'))
 OR (input_type = 'TEXT' AND type <> 'STRING')
 OR (input_type = 'CHECKBOX' AND type <> 'BOOLEAN')

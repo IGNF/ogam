@@ -2,3 +2,4 @@ build
 vendor
 .sencha
 *gradle
+ogamDesktop/sencha-error-*.log

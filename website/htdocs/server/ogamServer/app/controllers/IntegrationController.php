@@ -47,7 +47,7 @@ class IntegrationController extends AbstractOGAMController {
 		$this->submissionModel = new Application_Model_RawData_Submission();
 
 		$configuration = Zend_Registry::get("configuration");
-		$this->fileMaxSize = $configuration->fileMaxSize;
+		$this->fileMaxSize = $configuration->getConfig('fileMaxSize', '100');
 	}
 
 	/**
@@ -77,7 +77,7 @@ class IntegrationController extends AbstractOGAMController {
 	/**
 	 * Build and return the data submission form.
 	 */
-	private function _getDataSubmissionForm() {
+	protected function getDataSubmissionForm() {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => ' data-submission-form',
@@ -125,7 +125,7 @@ class IntegrationController extends AbstractOGAMController {
 	 * @return Application_Form_OGAMForm
 	 * @throws Zend_Form_Exception
 	 */
-	private function _getDataUploadForm($showDetail = false, $model = false) {
+	protected function getDataUploadForm($showDetail = false, $model = false) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'data-upload-form',
@@ -158,37 +158,41 @@ class IntegrationController extends AbstractOGAMController {
 			// Show a link to dowload a model CSV file (header line with the names of the fields)
 			if ($model) {
 				$link = $this->_helper->url('export-file-model', 'integration', '') . '?fileFormat=' . $requestedFile->format;
-				$icon = "<img src='/img/icon-csv.png'>";
-				$anchor = $this->translator->translate('Download a file model for') . ' ' . $requestedFile->label;
-				$fieldsDesc .= "<p class='align_images'>" . $icon . "<a href='" . $link . "'>" . $anchor . "</a></p>";
+				$anchor = $this->translator->translate('Download a file model for') . ' "' . $requestedFile->label . '"';
+				$fieldsDesc .= "<div class='model'>";
+				$fieldsDesc .= '<span class="show-model-text">' . $anchor . ': </span>';
+				$fieldsDesc .= '<div class="show-model-tool" onclick="window.location=\''.$link.'\';"></div>';
+				$fieldsDesc .= '</div>';
 			}
 
 			if ($showDetail) {
 				// Get some more informations in the metadata base
 				$fields = $this->metadataModel->getFileFields($requestedFile->format);
-				$fieldsDesc .= '<span class="hint-title">';
-				$fieldsDesc .= $this->translator->translate('The expected fields are:<br/>');
-				$fieldsDesc .= '</span>';
+				$fieldsDesc .= '<div id="'.$requestedFile->format.'_FIELDS"><div class="hint-title">';
+				$fieldsDesc .= '<span>' . $this->translator->translate('The expected fields are:') . '</span>';
+				$fieldsDesc .= '<div onclick="document.getElementById(\''.$requestedFile->format.'_FIELDS\').className=\'expanded\';" class="expand_tool"></div>';
+				$fieldsDesc .= '<div onclick="document.getElementById(\''.$requestedFile->format.'_FIELDS\').className=\'\';" class="collapse_tool"></div>';
+				$fieldsDesc .= '</div><div class="fields">';
 				foreach ($fields as $field) {
-					$fieldsDesc .= '<span title="';
-					$fieldsDesc .= $field->definition; // the tooltip
-					if (!empty($field->mask)) {
-						$fieldsDesc .= ' : format = ' . $field->mask;
-					}
-					$fieldsDesc .= '"';
+					$fieldsDesc .= '<div class="field-row"><div class="field-label';
 					if ($field->isMandatory == 1) {
-						$fieldsDesc .= ' class="mandatory_field"';
+						$fieldsDesc .= ' mandatory_field';
 					}
-					$fieldsDesc .= '>';
+					$fieldsDesc .= '" title="'.$field->label.'">';
 					$fieldsDesc .= $field->label;
-					if ($field->isMandatory == 1) {
-						$fieldsDesc .= ' *';
-					}
 
-					$fieldsDesc .= '</span>';
-					$fieldsDesc .= ';&nbsp;<br/>';
+					if ($field->isMandatory == 1) {
+						$fieldsDesc .= '*';
+					}
+					$fieldsDesc .= ': ';
+					$fieldsDesc .= '</div><div class="field-definition" title="'.$field->definition.'">';
+					$fieldsDesc .= $field->definition;
+					if (!empty($field->mask)) {
+						$fieldsDesc .= '<br/><b>Format:</b> ' . $field->mask;
+					}
+					$fieldsDesc .= '</div></div>';
 				}
-				$fieldsDesc = substr($fieldsDesc, 0, -12); // remove last comma
+				$fieldsDesc .= '</div></div>';
 			}
 
 			$fileelement->setDescription($fieldsDesc);
@@ -238,7 +242,7 @@ class IntegrationController extends AbstractOGAMController {
 	public function showCreateDataSubmissionAction() {
 		$this->logger->debug('showCreateDataSubmissionAction');
 
-		$this->view->form = $this->_getDataSubmissionForm();
+		$this->view->form = $this->getDataSubmissionForm();
 
 		$this->render('show-create-data-submission');
 	}
@@ -254,20 +258,20 @@ class IntegrationController extends AbstractOGAMController {
 		// Get the parameters from configuration file
 		$configuration = Zend_Registry::get("configuration");
 
-		if (!isset($configuration->showUploadFileDetail)) {
-			$showDetail = true;
-		} else {
-			$showDetail = ($configuration->showUploadFileDetail == 1);
-		}
-		if (!isset($configuration->showUploadFileModel)) {
-			$showModel = true;
-		} else {
-			$showModel = ($configuration->showUploadFileModel == 1);
-		}
+		$showDetail = ($configuration->getConfig('showUploadFileDetail', true) == 1);
+		$showModel = ($configuration->getConfig('showUploadFileModel', true) == 1);
 
 		$this->logger->debug('$showDetail : ' . $showDetail);
 
-		$this->view->form = $this->_getDataUploadForm($showDetail, $showModel);
+		// Get the submission object from the database, and the dataset id and name
+		$dataSession = new Zend_Session_Namespace('submission');
+		$submissionId = $dataSession->data->submissionId;
+		$submission = $this->submissionModel->getSubmission($submissionId);
+		$dataset = $this->metadataModel->getDataset($submission->datasetId);
+
+		$this->view->dataset = $dataset;
+
+		$this->view->form = $this->getDataUploadForm($showDetail, $showModel);
 
 		$this->render('show-upload-data');
 	}
@@ -287,7 +291,7 @@ class IntegrationController extends AbstractOGAMController {
 		}
 
 		// Check the validity of the Form
-		$form = $this->_getDataSubmissionForm();
+		$form = $this->getDataSubmissionForm();
 		if (!$form->isValid($_POST)) {
 			$this->logger->debug('form is not valid');
 			$this->view->form = $form;
@@ -341,7 +345,7 @@ class IntegrationController extends AbstractOGAMController {
 		}
 
 		// Check the validity of the Form
-		$form = $this->_getDataUploadForm();
+		$form = $this->getDataUploadForm();
 		if (!$form->isValid($_POST)) {
 			$this->logger->err('form is not valid');
 			$this->view->form = $form;
@@ -370,7 +374,7 @@ class IntegrationController extends AbstractOGAMController {
 
 		// Get the configuration info
 		$configuration = Zend_Registry::get("configuration");
-		$uploadDir = $configuration->uploadDir;
+		$uploadDir = $configuration->getConfig('uploadDir', '/var/www/html/upload/');
 
 		//
 		// For each requested file
@@ -506,7 +510,7 @@ class IntegrationController extends AbstractOGAMController {
 	 *        	the name of the servlet
 	 * @return JSON the status of the process
 	 */
-	private function _getStatus($servletName) {
+	protected function getStatus($servletName) {
 		$this->logger->debug('getStatusAction');
 
 		// Send the cancel request to the integration server
@@ -544,14 +548,14 @@ class IntegrationController extends AbstractOGAMController {
 	 * Gets the data integration status.
 	 */
 	public function getDataStatusAction() {
-		$this->_getStatus('DataServlet');
+		$this->getStatus('DataServlet');
 	}
 
 	/**
 	 * Gets the check status.
 	 */
 	public function getCheckStatusAction() {
-		$this->_getStatus('CheckServlet');
+		$this->getStatus('CheckServlet');
 	}
 
 	/**
@@ -582,13 +586,15 @@ class IntegrationController extends AbstractOGAMController {
 
 		// -- Export results to a CSV file
 
-		// Define the header of the response
 		$configuration = Zend_Registry::get("configuration");
-		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $configuration->csvExportCharset . ';application/force-download;', true);
+		$charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
+
+		// Define the header of the response
+		$this->getResponse()->setHeader('Content-Type', 'text/csv;charset=' . $charset . ';application/force-download;', true);
 		$this->getResponse()->setHeader('Content-disposition', 'attachment; filename=CSV_Model_' . $datasetFile->label . '_' . date('dmy_Hi') . '.csv', true);
 
 		// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
-		if ($configuration->csvExportCharset == 'UTF-8') {
+		if ($charset == 'UTF-8') {
 			echo (chr(0xEF));
 			echo (chr(0xBB));
 			echo (chr(0xBF));

@@ -15,7 +15,7 @@ Ext.define('OgamDesktop.view.map.toolbar.SelectWFSFeatureButton', {
     reference: 'selectWFSFeatureButton',
     itemId: 'selectWFSFeatureButton',
     iconCls: 'o-map-tools-map-selectWFSFeature',
-    tooltip: this.selectWFSFeatureButtonTooltip,
+    tooltip: 'Import a feature from the selected layer',
     toggleGroup : "editing",
     listeners: {
         toggle: 'onSelectWFSFeatureButtonToggle'

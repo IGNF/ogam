@@ -80,7 +80,6 @@ class Application_Model_Mapping_Layers {
 		$layer->defaultOpacity = $row['default_opacity'];
 		$layer->isBaseLayer = ($row['isbaselayer'] === 1);
 		$layer->isUntiled = ($row['isuntiled'] === 1);
-		$layer->isVector = ($row['isvector'] === 1);
 		$layer->maxscale = $row['maxscale'];
 		$layer->minscale = $row['minscale'];
 		$layer->hasLegend = ($row['has_legend'] === 1);
@@ -88,7 +87,6 @@ class Application_Model_Mapping_Layers {
 		$layer->activateType = $row['activate_type'];
 		$layer->viewServiceName = $row['view_service_name'];
 		$layer->legendServiceName = $row['legend_service_name'];
-		$layer->printServiceName = $row['print_service_name'];
 		$layer->detailServiceName = $row['detail_service_name'];
 		$layer->featureServiceName = $row['feature_service_name'];
 

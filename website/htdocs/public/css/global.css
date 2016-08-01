@@ -8,7 +8,7 @@ html {
 }
 
 h1, h2, h3 {
-	color: #135CAE;
+	color: #777777;
 }
 
 h3 {
@@ -85,7 +85,7 @@ body {
 }
 
 .header-beadcrumb {
-	width: 400px;
+	width: 420px;
 }
 
 .header-login {
@@ -111,7 +111,7 @@ body {
 
 .banner {
 	color: #CCCCCC;
-	/*margin:10px 0;*/
+	height: 80px;
 	width: 100%;
 	text-align: center;
 	overflow: hidden;
@@ -153,6 +153,7 @@ body {
 
 a {
 	text-decoration: none;
+	color: #606060;
 }
 
 a:hover {
@@ -162,7 +163,15 @@ a:hover {
 
 a:visited {
 	text-decoration: none;
-	color: #135CAE;
+	color: #777777;
+}
+
+a.external{
+	padding-top: 2px;
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-image: linear-gradient(transparent,transparent),url(data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%20standalone%3D%22no%22%3F%3E%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%2306c%22%20d%3D%22M1.5%204.518h5.982V10.5H1.5z%22%2F%3E%3Cpath%20d%3D%22M5.765%201H11v5.39L9.427%207.937l-1.31-1.31L5.393%209.35l-2.69-2.688%202.81-2.808L4.2%202.544z%22%20fill%3D%22%2306f%22%2F%3E%3Cpath%20d%3D%22M9.995%202.004l.022%204.885L8.2%205.07%205.32%207.95%204.09%206.723l2.882-2.88-1.85-1.852z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E);
+    padding-right: 15px;
 }
 
 .left-column {
@@ -362,10 +371,10 @@ td.view-meta-cell {
 	padding: 1px 8px;
 }
 
-td.edit-cell {
-	background: url(../img/page_white_edit.png) 5px 5px no-repeat;
-	width: 21px;
-}
+td.edit-cell { 
+    background: rgba(0, 0, 0, 0) url("../img/page_white_edit.png") no-repeat scroll 5px center; 
+    width: 21px; 
+} 
 
 .edit-cell a {
 	padding: 1px 8px;
@@ -427,37 +436,34 @@ td.delete-cell {
 	margin: 20px auto;
 	padding: 22px 40px;
 }
-
 .form-ct {
 	margin: 0 auto;
 	width: 350px;
 }
-
 .zend_form .element, .zend_form .button {
 	position: relative;
 }
-
 .zend_form .multiCheckbox label {
 	margin-left: 30px;
 }
-
 .zend_form .multiCheckbox label.title {
 	display: block;
 	font-weight: bold;
 	margin: 10px 0;
 }
-
 .zend_form .multiCheckbox input {
 	width: auto;
 	margin-top: 6px;
 }
-
+.zend_form textarea{
+	height:100px;
+    width:350px;
+}
 .zend_form input {
 	width: 200px;
 	position: absolute;
 	right: 0;
 }
-
 .zend_form input:-moz-read-only { /* For Firefox */
     background-color: lightgray;
 }
@@ -465,35 +471,99 @@ td.delete-cell {
 .zend_form input:read-only { 
     background-color: lightgray;
 }
-
 .zend_form select {
 	width: 204px;
 	position: absolute;
 	right: 0;
 }
-
-.zend_form .file input {
-	width: auto;
-}
-
 .zend_form .button {
 	margin-top: 20px;
 	height: 25px;
 }
-
 .zend_form .button input {
 	width: 100px;
 }
-
 .zend_form .hint-title {
 	font-weight: bold;
 }
-
-.zend_form .file .hint {
-	background-color: #F0F0F0;
-	margin: 10px 0;
+.zend_form .file {
+	padding: 10px;
+	background-color: #fff;
+	border: 1px solid transparent;
+    border-radius: 4px;
+    border-color: #ccc;  
 }
-
+.zend_form .file input {
+	width: 100%;
+	position: static;
+	background-color: #f5f5f5;
+}
+.zend_form .model {
+    line-height: 1em;
+    margin-top: 5px;
+}
+.zend_form .show-model-text {
+	font-weight: bold;
+}
+.zend_form .show-model-tool {
+    position: relative;
+    display: inline-block;
+    width: 22px;
+    height: 20px;
+    bottom: -1px;
+    left: 3px;
+    cursor: pointer;
+    background-image: url(../img/icon-csv.png);
+}
+.zend_form .expand_tool, .zend_form .collapse_tool {
+	position: relative;
+	top: 3px;
+	left: 3px;
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+}
+.zend_form .expand_tool {
+	display: inline-block;
+	background-image: url(../img/application_put.png);
+}
+.zend_form .expanded .expand_tool {
+	display: none;
+}
+.zend_form .collapse_tool {
+	display: none;
+	background-image: url(../img/application_get.png);
+}
+.zend_form .expanded .collapse_tool {
+	display: inline-block;
+}
+.zend_form .fields {
+	display: none;
+	padding: 10px;
+}
+.zend_form .expanded .fields {
+	display: block;
+}
+.zend_form .field-row {
+	line-height: 1.3em;
+}
+.zend_form .field-label {
+	display: inline-block;
+	vertical-align:top;
+	width:150px;
+	font-weight:bold;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.zend_form .field-definition {
+	display: inline-block;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 10px;
+    width: 598px;
+}
 /**************************************/
 /**      Zend Form CSS               **/
 /**           Special cases          **/
@@ -513,12 +583,11 @@ td.delete-cell {
 
 /** data-upload-form **/
 .data-upload-form .form-ct {
-	width: 450px;
+	width: 800px;
 }
 
 .data-upload-form .zend_form .file .hint {
-	width: 1000px;
-	margin-left: -275px;
+	width: 100%;
 }
 
 .data-upload-form .zend_form label {
@@ -526,7 +595,7 @@ td.delete-cell {
 }
 
 .file.element {
-	margin-bottom: 30px;
+	margin-bottom: 20px;
 }
 
 .mandatory_field {
@@ -534,8 +603,9 @@ td.delete-cell {
 }
 
 .fileformatdescription {
-	margin-left: 20px;
-	margin-top: 10px;
+	text-align: center;
+    margin-top: 25px;
+    margin-bottom: -15px;
 }
 
 /**************************************/

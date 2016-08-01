@@ -230,7 +230,7 @@ class UsermanagementController extends AbstractOGAMController {
 	 * @param String $login
 	 *        	the login
 	 */
-	private function _getChangePasswordForm($login = null) {
+	protected function getChangePasswordForm($login = null) {
 		$form = new Application_Form_OGAMForm(array(
 			'attribs' => array(
 				'name' => 'change-user-password-form',
@@ -238,7 +238,7 @@ class UsermanagementController extends AbstractOGAMController {
 			)
 		));
 
-		$this->logger->debug('_getChangePasswordForm login : ' . $login);
+		$this->logger->debug('getChangePasswordForm login : ' . $login);
 
 		// Add the user login as an input type text
 		$loginElem = $form->createElement('hidden', 'login');
@@ -400,7 +400,7 @@ class UsermanagementController extends AbstractOGAMController {
 		));
 		$label->addValidator('stringLength', false, array(
 			1,
-			20
+			100
 		));
 		$label->setRequired(true);
 		if ($provider != null) {
@@ -411,8 +411,8 @@ class UsermanagementController extends AbstractOGAMController {
 		// $label->addValidator(new Application_Validator_ProviderNotExist());
 
 		// Add the definition element:
-		$definition = $form->createElement('text', 'definition');
-		$definition->setLabel('definition');
+		$definition = $form->createElement('textarea', 'definition');
+		$definition->setLabel('Definition');
 		$label->addValidator('alnum', false, array(
 			'allowWhiteSpace' => true
 		));
@@ -556,7 +556,7 @@ class UsermanagementController extends AbstractOGAMController {
 		}
 
 		// Check the validity of the form
-		$form = $this->_getChangePasswordForm();
+		$form = $this->getChangePasswordForm();
 
 		if (!$form->isValid($_POST)) {
 			// Failed validation, redisplay form
@@ -819,7 +819,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$form = $this->getProviderForm('edit', $provider);
 		$this->view->form = $form;
 
-		$this->render('edit-provider');
+		$this->render('show-edit-provider');
 	}
 
 	/**
@@ -901,7 +901,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$this->view->username = $user->username;
 
 		// Generate the form
-		$form = $this->_getChangePasswordForm($userLogin);
+		$form = $this->getChangePasswordForm($userLogin);
 		$this->view->form = $form;
 
 		// Eventually add an error message
@@ -920,7 +920,7 @@ class UsermanagementController extends AbstractOGAMController {
 		$form = $this->getProviderForm('create');
 		$this->view->form = $form;
 
-		$this->render('add-provider');
+		$this->render('show-create-provider');
 	}
 
 	/**
