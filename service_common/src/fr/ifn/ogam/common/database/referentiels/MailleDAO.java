@@ -21,7 +21,9 @@ import org.apache.log4j.Logger;
 import fr.ifn.ogam.common.util.DSRConstants;
 
 /**
- * @author gautam
+ * DAO for methods involving mailles georeferencing
+ * 
+ * @author gpastakia
  *
  */
 public class MailleDAO {
@@ -74,7 +76,7 @@ public class MailleDAO {
 
 			StringBuffer stmt = new StringBuffer();
 			stmt.append("SELECT DISTINCT ref.code_10km ");
-			stmt.append("FROM referentiels.grille_10km AS ref, raw_data." + tableName + " AS m ");
+			stmt.append("FROM referentiels.codemaillevalue AS ref, raw_data." + tableName + " AS m ");
 			stmt.append("WHERE st_distance(ref.geom, m.geometrie) < 0.00001 ");
 			stmt.append("AND m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "'");
 			stmt.append("AND m.provider_id = '" + parameters.get(DSRConstants.PROVIDER_ID) + "'");
@@ -149,7 +151,7 @@ public class MailleDAO {
 			stmt.append("INSERT INTO mapping.observation_maille ");
 			stmt.append("SELECT m.ogam_id_" + format + ",  m.provider_id, '" + format + "', ref.code_10km, ");
 			stmt.append("round(cast(St_Length(St_Intersection(m.geometrie, ref.geom))/St_Length(m.geometrie) AS numeric(4,3)), 3)");
-			stmt.append("FROM referentiels.grille_10km AS ref, raw_data." + tableName + " AS m ");
+			stmt.append("FROM referentiels.codemaillevalue AS ref, raw_data." + tableName + " AS m ");
 			stmt.append("WHERE st_intersects(m.geometrie, ref.geom) = true ");
 			stmt.append("AND St_Length(m.geometrie) > 0 ");
 			stmt.append("AND m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "' ");
@@ -208,7 +210,7 @@ public class MailleDAO {
 			stmt.append("INSERT INTO mapping.observation_maille ");
 			stmt.append("SELECT m.ogam_id_" + format + ",  m.provider_id, '" + format + "', ref.code_10km, ");
 			stmt.append("round(cast(st_area(st_intersection(m.geometrie, ref.geom))/st_area(m.geometrie) AS numeric(4,3)), 3) AS pct ");
-			stmt.append("FROM referentiels.grille_10km AS ref, raw_data." + tableName + " AS m ");
+			stmt.append("FROM referentiels.codemaillevalue AS ref, raw_data." + tableName + " AS m ");
 			stmt.append("WHERE st_intersects(m.geometrie, ref.geom) = true ");
 			stmt.append("AND st_area(m.geometrie) > 0 ");
 			stmt.append("AND m.ogam_id_" + format + " = '" + parameters.get(DSRConstants.OGAM_ID) + "' ");
@@ -249,6 +251,7 @@ public class MailleDAO {
 	 *            values including : ogam_id, provider_id, codecommune
 	 * @throws Exception
 	 */
+	@SuppressWarnings("resource")
 	public void createMaillesLinksFromCommunes(String format, Map<String, Object> parameters) throws Exception {
 		logger.debug("createMaillesLinksFromCommunes");
 
@@ -286,7 +289,7 @@ public class MailleDAO {
 			stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', grille.code_10km, ");
 			stmt.append("round(cast(st_area(st_intersection(" + communesUnion + ", grille.geom))/st_area(" + communesUnion + ") ");
 			stmt.append("AS numeric(4,3)), 3) AS pct ");
-			stmt.append("FROM referentiels.grille_10km AS grille ");
+			stmt.append("FROM referentiels.codemaillevalue AS grille ");
 			stmt.append("WHERE st_intersects(" + communesUnion + ", grille.geom) = true ");
 
 			ps = con.prepareStatement(stmt.toString());
@@ -314,8 +317,8 @@ public class MailleDAO {
 	}
 
 	/**
-	 * Populates the table "observation_maille" by getting the mailles from a list of mailles codes. If the code 10km exists in the "grille_10km" referentiel,
-	 * it is added to the table.
+	 * Populates the table "observation_maille" by getting the mailles from a list of mailles codes. If the code 10km exists in the "codemaillevalue"
+	 * referentiel, it is added to the table.
 	 * 
 	 * @param format
 	 *            the table_format of the table
@@ -344,7 +347,7 @@ public class MailleDAO {
 				stmt = new StringBuffer();
 				stmt.append("INSERT INTO mapping.observation_maille ");
 				stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', ref.code_10km, '1' ");
-				stmt.append("FROM referentiels.grille_10km AS ref ");
+				stmt.append("FROM referentiels.codemaillevalue AS ref ");
 				stmt.append("WHERE ref.code_10km = '" + codeMaille + "' ");
 
 				ps = con.prepareStatement(stmt.toString());
@@ -385,6 +388,7 @@ public class MailleDAO {
 	 *            values including : ogam_id, provider_id, codedepartement
 	 * @throws Exception
 	 */
+	@SuppressWarnings("resource")
 	public void createMaillesLinksFromDepartements(String format, Map<String, Object> parameters) throws Exception {
 		logger.debug("createMaillesLinksFromDepartements");
 
@@ -422,7 +426,7 @@ public class MailleDAO {
 			stmt.append("SELECT '" + ogamId + "', '" + providerId + "', '" + format + "', grille.code_10km, ");
 			stmt.append("round(cast(st_area(st_intersection(" + departementsUnion + ", grille.geom))/st_area(" + departementsUnion + ") ");
 			stmt.append("AS numeric(4,3)), 3) AS pct ");
-			stmt.append("FROM referentiels.grille_10km AS grille ");
+			stmt.append("FROM referentiels.codemaillevalue AS grille ");
 			stmt.append("WHERE st_intersects(" + departementsUnion + ", grille.geom) = true ");
 
 			ps = con.prepareStatement(stmt.toString());
@@ -448,7 +452,7 @@ public class MailleDAO {
 	}
 
 	/**
-	 * Deletes from tables "observation_maille" all the associations linked to the format.
+	 * Deletes from tables "observation_maille" all the associations linked to the format. Code is executed only if table above exists.
 	 * 
 	 * @param format
 	 *            the table format
@@ -459,19 +463,35 @@ public class MailleDAO {
 
 		Connection con = null;
 		PreparedStatement ps = null;
+		ResultSet rs = null;
 
 		try {
 
 			con = getConnection();
 
 			StringBuffer stmt = new StringBuffer();
-			stmt.append("DELETE FROM mapping.observation_maille ");
-			stmt.append("USING metadata.table_format as tf ");
-			stmt.append("WHERE tf.format = format");
 
+			stmt.append("SELECT to_regclass('mapping.observation_maille') as om_reg");
 			ps = con.prepareStatement(stmt.toString());
 			logger.debug(stmt.toString());
-			ps.executeUpdate();
+			rs = ps.executeQuery();
+
+			String omReg;
+
+			if (rs.next()) {
+				omReg = rs.getString("om_reg");
+				if (omReg != null) {
+					stmt = new StringBuffer();
+					stmt.append("DELETE FROM mapping.observation_maille ");
+					stmt.append("USING metadata.table_format as tf ");
+					stmt.append("WHERE tf.format = format");
+
+					ps = con.prepareStatement(stmt.toString());
+					logger.debug(stmt.toString());
+					ps.executeUpdate();
+
+				}
+			}
 
 		} finally {
 			try {
@@ -504,6 +524,7 @@ public class MailleDAO {
 	 *            values including : ogam_id, provider_id, natureobjetgeo
 	 * @throws Exception
 	 */
+	@SuppressWarnings("resource")
 	public void setCodeMailleCalcule(String format, String tableName, Map<String, Object> parameters) throws Exception {
 		logger.debug("setCodeMailleCalcule");
 

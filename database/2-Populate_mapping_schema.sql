@@ -1,192 +1,77 @@
-
-
---
--- Application parameters
---
-
-SET SEARCH_PATH = website;
-
-DELETE FROM application_parameters;
-
--- TEST DATABASE Parameters
-INSERT INTO application_parameters (name, value, description) VALUES ('Test', 'OK', 'For test purposes');
-INSERT INTO application_parameters (name, value, description) VALUES ('fromMail', 'OGAM@ign.fr', 'The application email');
-INSERT INTO application_parameters (name, value, description) VALUES ('toMail', 'benoit.pesty@ign.fr', 'The destination email');
-INSERT INTO application_parameters (name, value, description) VALUES ('autoLogin', '0', 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
-INSERT INTO application_parameters (name, value, description) VALUES ('defaultUser', 'visitor', 'DEFAULT LOGIN AND PAGE FOR PUBLIC ACCESS');
-INSERT INTO application_parameters (name, value, description) VALUES ('fileMaxSize', '100', 'UPLOAD');
-INSERT INTO application_parameters (name, value, description) VALUES ('integrationService_url', 'http://localhost:8080/OGAMIntegrationService/', 'INTEGRATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('harmonizationService_url', 'http://localhost:8080/OGAMHarmonizationService/', 'HARMONIZATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('reportGenerationService_url', 'http://localhost:8080/OGAMRG/', 'REPORT GENERATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('errorReport', 'ErrorReport.rptdesign', 'REPORT GENERATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('plotErrorReport', 'PlotErrorReport.rptdesign', 'REPORT GENERATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('simplifiedReport', 'SimplifiedReport.rptdesign', 'REPORT GENERATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('max_report_generation_time', '480', 'REPORT GENERATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('useCache', 'false', 'Cache');
-INSERT INTO application_parameters (name, value, description) VALUES ('max_execution_time', '480', 'Timeout , 0 : no limit');
-INSERT INTO application_parameters (name, value, description) VALUES ('memory_limit', '1024M', 'memory limit');
-INSERT INTO application_parameters (name, value, description) VALUES ('post_max_size', '100M', 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
-INSERT INTO application_parameters (name, value, description) VALUES ('upload_max_filesize', '100M', 'Note : "post_max_size" and "upload_max_filesize" are under the PHP_INI_PERDIR mode (php.ini, .htaccess or httpd.conf).The parameter must be set into the php.ini file because it s not possible in the other files when php is running under the CGI mode. So we can only check if it s done.');
-INSERT INTO application_parameters (name, value, description) VALUES ('image_dir_rights', '0662', 'File Upload');
-INSERT INTO application_parameters (name, value, description) VALUES ('image_extensions', 'jpg,png,jpeg,gif', 'File Upload');
-INSERT INTO application_parameters (name, value, description) VALUES ('image_max_size', '1000000', 'image max size in bytes');
-INSERT INTO application_parameters (name, value, description) VALUES ('tilesize', '256', 'WEB MAPPING ');
-INSERT INTO application_parameters (name, value, description) VALUES ('mapserver_private_url', 'http://localhost/mapserv-ogam?', 'The private URL used by mapserverProxy to request a map server.');
-INSERT INTO application_parameters (name, value, description) VALUES ('tilecache_private_url', 'http://localhost/tilecache-ogam?', 'The private URL used by tilecacheProxy to request a tile cache.');
-INSERT INTO application_parameters (name, value, description) VALUES ('srs_visualisation', '3857', 'Projection system for the visualisation');
-INSERT INTO application_parameters (name, value, description) VALUES ('srs_raw_data', '4326', 'Projection system for the raw data database');
-INSERT INTO application_parameters (name, value, description) VALUES ('srs_harmonized_data', '3857', 'Projection system for the harmonized database');
-INSERT INTO application_parameters (name, value, description) VALUES ('usePerProviderCenter', 'true', 'if true the system will look in the "bounding_box" table for centering info for each provider');
-INSERT INTO application_parameters (name, value, description) VALUES ('bbox_x_min', '-2893330', 'X min coordinate of the bounding box (in the projection of visualisation : 3857)');
-INSERT INTO application_parameters (name, value, description) VALUES ('bbox_y_min', '3852395', 'Y min coordinate of the bounding box (in the projection of visualisation : 3857)');
-INSERT INTO application_parameters (name, value, description) VALUES ('bbox_x_max', '3086670', 'X max coordinate of the bounding box (in the projection of visualisation : 3857)');
-INSERT INTO application_parameters (name, value, description) VALUES ('bbox_y_max', '8192395', 'Y max coordinate of the bounding box (in the projection of visualisation : 3857)');
-INSERT INTO application_parameters (name, value, description) VALUES ('zoom_level', '1', 'WEB MAPPING ');
-INSERT INTO application_parameters (name, value, description) VALUES ('mapserver_dpi', '72', 'Default number of dots per inch in mapserv');
-INSERT INTO application_parameters (name, value, description) VALUES ('mapserver_inch_per_kilometer', '39370.1', 'Inch to meter conversion factor');
-INSERT INTO application_parameters (name, value, description) VALUES ('featureinfo_margin', '1000', 'bounding box margin around the user click (in the unit of the map)');
-INSERT INTO application_parameters (name, value, description) VALUES ('featureinfo_typename', 'result_locations', 'Layer that is queried');
-INSERT INTO application_parameters (name, value, description) VALUES ('featureinfo_maxfeatures', '20', 'Max number of features returned by a click on the map. If 0 then there is no limit; If 1 the direct access to the detail');
-INSERT INTO application_parameters (name, value, description) VALUES ('featureinfo_selectmode', 'buffer', 'Method to return closest features : "distance" or "buffer"');
-INSERT INTO application_parameters (name, value, description) VALUES ('contactEmailPrefix', 'ogam', 'Email');
-INSERT INTO application_parameters (name, value, description) VALUES ('contactEmailSufix', 'ign.fr', 'Email');
-INSERT INTO application_parameters (name, value, description) VALUES ('csvExportCharset', 'UTF-8', 'Csv Export');
-INSERT INTO application_parameters (name, value, description) VALUES ('language_flags1', 'fr', 'Language');
-INSERT INTO application_parameters (name, value, description) VALUES ('language_flags2', 'en', 'Language');
-INSERT INTO application_parameters (name, value, description) VALUES ('showUploadFileDetail', '1', 'Display on the upload screen the columns for each file (0 for false, 1 for true)');
-INSERT INTO application_parameters (name, value, description) VALUES ('showUploadFileModel', '1', 'Display on the upload screen a link to a sample CSV file (0 for false, 1 for true)');
-INSERT INTO application_parameters (name, value, description) VALUES ('UploadDirectory', '/var/tmp/ogam_upload', 'Directory where the CSV files are uploaded');
-INSERT INTO application_parameters (name, value, description) VALUES ('uploadDir', '/vagrant/ogam/website/htdocs/server/ogamServer/upload', 'Directory where the PHP server depose the files for the INTEGRATION SERVICE');
-INSERT INTO application_parameters (name, value, description) VALUES ('image_upload_dir', '/vagrant/ogam/website/htdocs/server/ogamServer/upload/images/', 'Images Upload');
-INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers1', 'ortho_photos,countries,departements,communes,location_detail_zoom_in,tree_detail_zoom_in', 'The layers used for the details zoom in map image. Note: order is important');
-INSERT INTO application_parameters (name, value, description) VALUES ('query_details_layers2', 'ortho_photos,countries,departements,location_detail_zoom_out,tree_detail_zoom_out', 'The layers used for the details zoom out map image. Note: order is important');
+SET SEARCH_PATH = mapping, public;
 
 --
--- Users
+-- Add the available map scales
 --
-
-
-SET SEARCH_PATH = website;
-
-DELETE FROM dataset_role_restriction;
-DELETE FROM layer_role_restriction;
-DELETE FROM role_to_schema;
-DELETE FROM role_to_user;
-DELETE FROM permission_per_role;
-DELETE FROM permission;
-DELETE FROM users;
-DELETE FROM role;
-DELETE FROM providers;
-
--- Create a provider
-INSERT INTO providers(id, label, definition) VALUES ('1', 'Defaut', 'Organisme par défaut');
-INSERT INTO providers(id, label, definition) VALUES ('2', 'Dunkerque SA', 'Organisme de Dunkerque');
-ALTER sequence website.provider_id_seq restart with 3;
-
--- Create some roles
-INSERT INTO role(role_code, role_label, role_definition) VALUES ('ADMIN','Administrator', 'Manages the web site');
-INSERT INTO role(role_code, role_label, role_definition) VALUES ('VISITOR','Visitor', 'Visites the website');
-
--- Create some users
-INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', '1', null); 
-INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('visitor', '4ed0428505b0b89fe7bc1a01928ef1bd4c77c1be', 'Visitor', '2', '1', null); 
-
--- Link the users to their roles
-INSERT INTO role_to_user(user_login, role_code) VALUES ('admin', 'ADMIN');
-INSERT INTO role_to_user(user_login, role_code) VALUES ('visitor', 'VISITOR');
-
--- Link the schemas to their roles
-INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'RAW_DATA');
-INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'HARMONIZED_DATA');
-INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('VISITOR', 'RAW_DATA');
-
--- List the permissions of the web site
-INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_USERS', 'Manage users');
-INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_INTEGRATION', 'Provide data');
-INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_QUERY', 'Visualise data');
-INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_QUERY_OTHER_PROVIDER', 'Visualise data from other provider');
-INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_HARMONIZATION', 'Launch the harmonization process');
-INSERT INTO permission(permission_code, permission_label) VALUES ('EXPORT_RAW_DATA', 'Export the raw data as a CSV file');
-INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_EDITION', 'Add / Update / Delete data');
-INSERT INTO permission(permission_code, permission_label) VALUES ('DATA_EDITION_OTHER_PROVIDER', 'Add / Update / Delete data from another provider');
-INSERT INTO permission(permission_code, permission_label) VALUES ('CHECK_CONF', 'Check the configuration');
-INSERT INTO permission(permission_code, permission_label) VALUES ('CANCEL_VALIDATED_SUBMISSION', 'Cancel validated submission');
-INSERT INTO permission(permission_code, permission_label) VALUES ('CANCEL_OTHER_PROVIDER_SUBMISSION', 'Cancel other provider submission');
-
--- Add the permissions per role
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'MANAGE_USERS');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_INTEGRATION');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_QUERY');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_QUERY_OTHER_PROVIDER');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_HARMONIZATION');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'EXPORT_RAW_DATA');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_EDITION');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'DATA_EDITION_OTHER_PROVIDER');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CHECK_CONF');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_VALIDATED_SUBMISSION');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('ADMIN', 'CANCEL_OTHER_PROVIDER_SUBMISSION');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY');
-INSERT INTO permission_per_role(role_code, permission_code) VALUES ('VISITOR', 'DATA_QUERY_OTHER_PROVIDER');
-
+DELETE FROM scales;
+INSERT INTO scales(scale) VALUES (25000000); -- 25 M
+INSERT INTO scales(scale) VALUES (10000000); -- 10 M
+INSERT INTO scales(scale) VALUES (5000000);  --  5 M	
+INSERT INTO scales(scale) VALUES (2500000);  --  2,5 M
+INSERT INTO scales(scale) VALUES (1000000);  --  1 M
+INSERT INTO scales(scale) VALUES (500000);   --  500 K
+INSERT INTO scales(scale) VALUES (250000);   --  250 K
+INSERT INTO scales(scale) VALUES (100000);   --  100 K
 
 --
--- Restriction d'accès aux dataset
+-- Configure the layers
 --
---INSERT INTO dataset_role_restriction (ROLE_CODE, DATASET_ID) VALUES ('ADMIN', 'SPECIES');
-
---INSERT INTO layer_role_restriction (layer_name, role_code) VALUES ('all_harmonized_locations', 'ADMIN');
-
-
-
---
--- Predefined requests
---
-
-set search_path = website;
-
-DELETE FROM predefined_request_group_asso;
-DELETE FROM predefined_request_group;
-DELETE FROM predefined_request_criteria;
-DELETE FROM predefined_request_result;
-DELETE FROM predefined_request;
-
--- Création d'un thème (groupe de requêtes)
-INSERT INTO predefined_request_group(group_name, label, definition, position) VALUES ('SPECIES', 'Distribution par espèce', 'Distribution par espèce', 1);
-
--- Création d'une requête prédéfinie
-INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('SPECIES', 'RAW_DATA', 'TREES', 'Distribution par espèce', 'Distribution par espèce en forêt', now());
-INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('TAXREF', 'RAW_DATA', 'SPECIES', 'Recherche par taxon', 'Recherche par taxon', now());
-INSERT INTO predefined_request (request_name, schema_code, dataset_id, label, definition, date) VALUES ('DEP', 'RAW_DATA', 'SPECIES', 'Espèces par département', 'Espèces par département', now());
+DELETE FROM layer_tree;
+DELETE FROM layer;
+DELETE FROM layer_service;
 
 
--- Configuration des requêtes prédéfinies
-INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed) VALUES ('SPECIES', 'TREE_FORM', 'SPECIES_CODE', '026.001.006', NULL);
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'PLOT_CODE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'CYCLE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'INV_DATE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'IS_FOREST_PLOT');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('SPECIES', 'SPECIES_FORM', 'SPECIES_CODE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('SPECIES', 'SPECIES_FORM', 'BASAL_AREA');
-
-INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed) VALUES ('DEP', 'LOCATION_FORM', 'DEPARTEMENT', '45', NULL);
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'PLOT_CODE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'CYCLE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'INV_DATE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'IS_FOREST_PLOT');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'SPECIES_FORM', 'SPECIES_CODE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('DEP', 'SPECIES_FORM', 'BASAL_AREA');
-
-INSERT INTO predefined_request_criteria (request_name, format, data, value, fixed) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON', '196709', NULL);
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'PLOT_CODE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'CYCLE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'INV_DATE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'IS_FOREST_PLOT');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'SPECIES_CODE');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON');
-INSERT INTO predefined_request_result (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'BASAL_AREA');
+-- Define the services
+INSERT INTO layer_service (service_name, config) VALUES ('Private_Mapserv_WMS_GetMap', '{"urls":["http://localhost/mapserv-ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Private_Tilecache_WMS_GetMap', '{"urls":["http://localhost/tilecache-ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_Proxy_WFS_GetFeature', '{"urls":["http://192.168.50.4/proxy/getwfs?"],"params":{"SERVICE":"WFS","VERSION":"1.0.0","REQUEST":"GetFeature"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WMS_GetLegendGraphic', '{"urls":["http://192.168.50.4/mapserverProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_Mapserv_WMS_GetMap', '{"urls":["http://192.168.50.4/mapserverProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_Tilecache_WMS_GetMap', '{"urls":["http://192.168.50.4/tilecacheProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Local_MapProxy_WFS_GetFeature', '{"urls":["http://192.168.50.4/mapserverProxy.php?"],"params":{"SERVICE":"WFS","VERSION":"1.1.0","REQUEST":"GetFeature"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Geoportal_WMS_GetMap', '{"urls":["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/r/wms?"],"params":{"SERVICE":"WMS","VERSION":"1.3.0","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Geoportal_WMTS_GetTile', '{"urls":["http://wxs-i.ign.fr/7gr31kqe5xttprd2g7zbkqgo/geoportail/wmts?"],"params":{"SERVICE":"WMTS","VERSION":"1.0.0","REQUEST":"getTile","style":"normal","matrixSet":"PM","requestEncoding":"KVP","maxExtent":[-20037508, -20037508, 20037508, 20037508],"serverResolutions":[156543.033928,78271.516964,39135.758482,19567.879241,9783.939621,4891.969810,2445.984905,1222.992453,611.496226,305.748113,152.874057,76.437028,38.218514,19.109257,9.554629,4.777302,2.388657,1.194329,0.597164,0.298582,0.149291,0.074646],"tileOrigin":[-20037508,20037508]}}');
+-- Integration config
+INSERT INTO layer_service (service_name, config) VALUES ('Integration_Mapserv_WMS_GetMap', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/mapserv.ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Integration_Mapserv_WMS_GetLegendGraphic', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/mapserv.ogam?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetLegendGraphic"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Integration_TileCache_WMS_GetMap', '{"urls":["http://ogam-integration.ign.fr/cgi-bin/tilecache?"],"params":{"SERVICE":"WMS","VERSION":"1.0.0","REQUEST":"GetMap"}}');
+INSERT INTO layer_service (service_name, config) VALUES ('Integration_MapProxy_WMS_GetMap', '{"urls":["http://ogam-integration.ign.fr/mapProxy.php?"],"params":{"SERVICE":"WMS","VERSION":"1.1.1","REQUEST":"GetMap"}}');
 
 
--- Rattachement de la requête prédéfinies au thème
-INSERT INTO website.predefined_request_group_asso(group_name, request_name, position) VALUES ('SPECIES', 'SPECIES', 1);
-INSERT INTO website.predefined_request_group_asso(group_name, request_name, position) VALUES ('SPECIES', 'DEP', 2);
-INSERT INTO website.predefined_request_group_asso(group_name, request_name, position) VALUES ('SPECIES', 'TAXREF', 3);
+-- Define the layers
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('all_locations', 'Localisations', 'all_locations_point', 1, 100, 0, 1, NULL, NULL, 1, NULL, 'NONE', 'Local_MapProxy_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_MapProxy_Mapserv_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('boundaries', 'Limites administratives', NULL, 0, 0, 0, 0, 0, 0, 1, NULL, 'NONE', NULL, NULL, NULL, NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('countries', 'Pays', 'nuts_0', 1, 100, 0, 0, NULL, 500000, 1, NULL, 'NONE', 'Local_MapProxy_Tilecache_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_MapProxy_Mapserv_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('departements', 'Départements', 'departements', 1, 100, 0, 0, 5000000, 1, 1, NULL, 'NONE', 'Local_MapProxy_Tilecache_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_MapProxy_Mapserv_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('communes', 'Communes', 'communes', 1, 100, 0, 0, 500000, 1, 1, NULL, 'NONE', 'Local_MapProxy_Tilecache_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_MapProxy_Mapserv_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('background', 'Fonds', NULL, 0, 0, 0, 0, 0, 0, 1, NULL, 'NONE', NULL, NULL, NULL, NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('ortho_photos', 'Photos aériennes', 'ORTHOIMAGERY.ORTHOPHOTOS', 0, 50, 0, 0, 0, 0, 0, NULL, 'NONE', 'Geoportal_WMTS_GetTile', NULL, 'Geoportal_WMS_GetMap', NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('scan25', 'Carte topographique', 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN25TOUR', 0, 50, 0, 0, 25000000, 0, 0, NULL, 'NONE', 'Geoportal_WMTS_GetTile', NULL, 'Geoportal_WMS_GetMap', NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('all_features', 'Tous les tracés', NULL, 0, 0, 0, 0, 0, 0, 1, NULL, 'NONE', NULL, NULL, NULL, NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('result_trees', 'Arbres', 'result_trees', 1, 100, 0, 1, NULL, NULL, 0, NULL, 'REQUEST', 'Local_MapProxy_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_MapProxy_Mapserv_WMS_GetMap', NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('all_trees', 'Arbres', 'all_trees', 1, 100, 0, 1, NULL, NULL, 1, NULL, 'NONE', 'Local_MapProxy_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_MapProxy_Mapserv_WMS_GetMap', 'Local_MapProxy_WFS_GetFeature');
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('result_locations', 'Localisations', 'result_locations', 1, 100, 0, 1, NULL, NULL, 0, NULL, 'REQUEST', 'Local_MapProxy_Mapserv_WMS_GetMap', 'Local_MapProxy_WMS_GetLegendGraphic', 'Local_MapProxy_Mapserv_WMS_GetMap', NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('results', 'Résultats', NULL, 0, 0, 0, 0, 0, 0, 1, NULL, 'NONE', NULL, NULL, NULL, NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('tree_detail_zoom_out', 'Détail', 'tree_detail_zoom_out', 1, 100, 0, 0, NULL, NULL, 0, NULL, 'NONE', NULL, NULL, 'Local_MapProxy_Mapserv_WMS_GetMap', NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('location_detail_zoom_out', 'Détail', 'location_detail_zoom_out', 1, 100, 0, 0, NULL, NULL, 0, NULL, 'NONE', NULL, NULL, 'Local_MapProxy_Mapserv_WMS_GetMap', NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('tree_detail_zoom_in', 'Détail', 'tree_detail_zoom_in', 1, 100, 0, 0, NULL, NULL, 0, NULL, 'NONE', NULL, NULL, 'Local_MapProxy_Mapserv_WMS_GetMap', NULL);
+INSERT INTO layer (layer_name, layer_label, service_layer_name, istransparent, default_opacity, isbaselayer, isuntiled, maxscale, minscale, has_legend, provider_id, activate_type, view_service_name, legend_service_name, detail_service_name, feature_service_name) VALUES ('location_detail_zoom_in', 'Détail', 'location_detail_zoom_in', 1, 100, 0, 0, NULL, NULL, 0, NULL, 'NONE', NULL, NULL, 'Local_MapProxy_Mapserv_WMS_GetMap', NULL);
+
+-- Define the layers tree
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (1, '-1', 0, 0, 0, 0, 1, 'results', 1, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (41, '40', 1, 0, 0, 0, 0, 'ortho_photos', 41, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (42, '40', 1, 1, 0, 0, 0, 'scan25', 42, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (40, '-1', 0, 0, 0, 0, 1, 'background', 40, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (30, '-1', 0, 0, 0, 0, 1, 'boundaries', 30, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (31, '30', 1, 1, 0, 0, 0, 'countries', 31, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (33, '30', 1, 0, 0, 0, 0, 'communes', 33, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (32, '30', 1, 0, 0, 0, 0, 'departements', 32, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (2, '-1', 0, 0, 0, 0, 1, 'all_features', 2, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (11, '1', 1, 0, 0, 1, 0, 'result_trees', 11, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (12, '1', 1, 0, 0, 1, 0, 'result_locations', 12, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (21, '2', 1, 0, 0, 0, 0, 'all_trees', 21, NULL);
+INSERT INTO layer_tree (item_id, parent_id, is_layer, is_checked, is_hidden, is_disabled, is_expended, name, "position", checked_group) VALUES (22, '2', 1, 0, 0, 0, 0, 'all_locations', 22, NULL);
+
+-- Configure the bounding box for all data providers
+INSERT INTO bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level) VALUES ('1', 96670, 6022395, 96670, 6022395, 1); -- France Entière
+INSERT INTO bounding_box (provider_id, bb_xmin, bb_ymin, bb_xmax, bb_ymax, zoom_level) VALUES ('2', 260000, 6620000, 260000, 6620000, 6); -- Zoom par défaut sur Dunkerque

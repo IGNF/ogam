@@ -2,12 +2,70 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        <meta name="robots" content="index, follow" />
+		<meta name="keywords" content="ogam" />
+		<meta name="description" content="open-source generic application base on metadata" />
+        <title>{% block title %}OGAM{% endblock %}</title>
+        {% block stylesheets %}
+        	<link rel="stylesheet" href="{{ asset('css/global.css') }}" />
+        {% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+    
+    	<div id="wrapper" class="wrapper">
+
+            <div id="main-body-bg" class="main-body-bg"></div>
+            <div id="main-body" class="main-body">
+            
+                <!-- HEADER -->
+                <div class="header" id="header">
+            
+                    <div id="banner" class="banner">
+                        <img border="0" alt="Banner" src="/img/banner.jpg"/>
+                    </div>
+            
+                    <div id="top" class="top">
+            
+            			<div id="header-beadcrumb" class="header-beadcrumb" style="float: left">
+            				<!-- TODO : Breadcrumb -->
+            			</div>
+            			
+            			<div id="header-login" class="header-login" style="float: right">
+            				<!-- TODO : welcome message  -->            
+            				<!-- TODO : login / logout / change password  -->
+                  			<!-- TODO : Drapeaux pour changer la langue  -->
+                  		</div>
+                  	</div>
+            
+            	<!-- Fin du header -->
+            	</div>
+    
+                <!-- CONTENT -->
+                <div class="content" id="content">
+                     {% block body %}{% endblock %}
+                </div>
+    
+            
+        <!-- Fin du main-body -->
+        </div>
+
+    <!-- Utilisé pour maintenir le bas de page en bas -->
+    <div id="push" class="push"></div>
+
+    <!-- Fin du wrapper -->
+    </div>
+    
+    <div class="footer"  id="footer">
+        <div id="footer-ct" class="footer-ct">
+        	<span title="Build @build_number@">Version @version_number@&nbsp;-&nbsp;</span>
+            Layout Copyright &nbsp;
+            <a id="lkContact" onclick="sendMail();" href="#">Contact Us</a>
+        </div>
+    </div>
+            
+            
     </body>
+    
+  {% block javascripts %}{% endblock %}
 </html>

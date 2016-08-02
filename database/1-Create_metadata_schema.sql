@@ -189,7 +189,7 @@ CREATE INDEX mode_taxref_parent_code_idx
   ON metadata.mode_taxref USING btree (parent_code);
   
 CREATE INDEX mode_taxref_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent(NAME));
+  ON metadata.mode_taxref USING btree (unaccent(LABEL));
   
 CREATE INDEX mode_taxref_COMPLETE_NAME_idx
   ON metadata.mode_taxref USING btree (unaccent(COMPLETE_NAME));
