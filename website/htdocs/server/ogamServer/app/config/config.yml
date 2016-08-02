@@ -112,23 +112,28 @@ doctrine:
             website:
                  connection: website
                  mappings:
-                     OGAMBundle: ~
+                     OGAMBundle: 
+                        dir: Entity/Website
             mapping:
                  connection: mapping
                  mappings:
-                     OGAMBundle: ~
+                    OGAMBundle:
+                        dir: Entity/Mapping
             metadata:
                  connection: metadata
                  mappings:
-                     OGAMBundle: ~
+                    OGAMBundle:
+                     dir: Entity/Metadata
             raw_data:
                  connection: raw_data
                  mappings:
-                     OGAMBundle: ~
+                     OGAMBundle:
+                        dir: Entity/RawData
             harmonized_data:
                  connection: harmonized_data
                  mappings:
-                     OGAMBundle: ~
+                     OGAMBundle:
+                        dir: Entity/HarmonizedData
 
 
 
