@@ -4,6 +4,7 @@ namespace OGAMBundle\Entity\Website;
 use Doctrine\ORM\Mapping as ORM;
 use OGAMBundle\Entity\Website\Role as Role;
 use OGAMBundle\Entity\Website\Provider as Provider;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User.
@@ -11,50 +12,43 @@ use OGAMBundle\Entity\Website\Provider as Provider;
  * @ORM\Table(name="users", schema="website")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\UserRepository")
  */
-class User {
+class User implements UserInterface, \Serializable {
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\Column(name="user_login", type="string", length=50, nullable=false, unique=true)
-	 * @ORM\Id
+	 * @var string @ORM\Column(name="user_login", type="string", length=50, nullable=false, unique=true)
+	 *      @ORM\Id
 	 */
 	private $login;
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\Column(name="user_name", type="string", length=50, nullable=true)
+	 * @var string @ORM\Column(name="user_name", type="string", length=50, nullable=true)
 	 */
 	private $username;
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\Column(name="user_password", type="string", length=50, nullable=true)
+	 * @var string @ORM\Column(name="user_password", type="string", length=50, nullable=true)
 	 */
 	private $password;
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\ManyToOne(targetEntity="Provider")
-	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
+	 * @var string @ORM\ManyToOne(targetEntity="Provider")
+	 *      @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
 	 */
 	private $provider;
 
-
 	/**
 	 *
-	 * @var bool
-	 * @ORM\Column(name="active", type="boolean", nullable=true)
+	 * @var bool @ORM\Column(name="active", type="boolean", nullable=true)
 	 */
 	private $active;
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\Column(name="email", type="string", length=255, nullable=true)
+	 * @var string @ORM\Column(name="email", type="string", length=255, nullable=true)
 	 */
 	private $email;
 
@@ -110,15 +104,6 @@ class User {
 	}
 
 	/**
-	 * Get username
-	 *
-	 * @return string
-	 */
-	public function getUsername() {
-		return $this->username;
-	}
-
-	/**
 	 * Set password
 	 *
 	 * @param string $password
@@ -129,15 +114,6 @@ class User {
 		$this->password = $password;
 
 		return $this;
-	}
-
-	/**
-	 * Get password
-	 *
-	 * @return string
-	 */
-	public function getPassword() {
-		return $this->password;
 	}
 
 	/**
@@ -240,61 +216,105 @@ class User {
 		return false;
 	}
 
-    /**
-     * Add role
-     *
-     * @param \OGAMBundle\Entity\Website\Role $role
-     *
-     * @return User
-     */
-    public function addRole(\OGAMBundle\Entity\Website\Role $role)
-    {
-        $this->roles[] = $role;
+	/**
+	 * Add role
+	 *
+	 * @param \OGAMBundle\Entity\Website\Role $role
+	 *
+	 * @return User
+	 */
+	public function addRole(\OGAMBundle\Entity\Website\Role $role) {
+		$this->roles[] = $role;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove role
-     *
-     * @param \OGAMBundle\Entity\Website\Role $role
-     */
-    public function removeRole(\OGAMBundle\Entity\Website\Role $role)
-    {
-        $this->roles->removeElement($role);
-    }
+	/**
+	 * Remove role
+	 *
+	 * @param \OGAMBundle\Entity\Website\Role $role
+	 */
+	public function removeRole(\OGAMBundle\Entity\Website\Role $role) {
+		$this->roles->removeElement($role);
+	}
 
-    /**
-     * Get roles
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRoles()
-    {
-        return $this->roles;
-    }
+	/**
+	 * Set provider
+	 *
+	 * @param \OGAMBundle\Entity\Website\Provider $provider
+	 *
+	 * @return User
+	 */
+	public function setProvider(\OGAMBundle\Entity\Website\Provider $provider = null) {
+		$this->provider = $provider;
 
-    /**
-     * Set provider
-     *
-     * @param \OGAMBundle\Entity\Website\Provider $provider
-     *
-     * @return User
-     */
-    public function setProvider(\OGAMBundle\Entity\Website\Provider $provider = null)
-    {
-        $this->provider = $provider;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get provider
+	 *
+	 * @return \OGAMBundle\Entity\Website\Provider
+	 */
+	public function getProvider() {
+		return $this->provider;
+	}
 
-    /**
-     * Get provider
-     *
-     * @return \OGAMBundle\Entity\Website\Provider
-     */
-    public function getProvider()
-    {
-        return $this->provider;
-    }
+	/**
+	 * Get roles.
+	 * Méthode à implémenter pour respecter @UserInterface.
+	 *
+	 * @return \Doctrine\Common\Collections\Collection
+	 */
+	public function getRoles() {
+		return $this->roles;
+	}
+
+	/**
+	 * Get password.
+	 * Méthode à implémenter pour respecter @UserInterface.
+	 *
+	 * @return string
+	 */
+	public function getPassword() {
+		return $this->password;
+	}
+
+	/**
+	 * Get username
+	 * Méthode à implémenter pour respecter @UserInterface.
+	 *
+	 * @return string
+	 */
+	public function getUsername() {
+		return $this->username;
+	}
+
+	/**
+	 * Méthode à implémenter pour respecter @UserInterface.
+	 */
+	public function getSalt() {}
+
+	/**
+	 * Méthode à implémenter pour respecter @UserInterface.
+	 */
+	public function eraseCredentials() {}
+
+	/** @see \Serializable::serialize() */
+	public function serialize()
+	{
+		return serialize(array(
+			$this->login,
+			$this->email
+		));
+	}
+
+	/** @see \Serializable::unserialize() */
+	public function unserialize($serialized)
+	{
+		list (
+			$this->login,
+			$this->email
+			) = unserialize($serialized);
+	}
 }

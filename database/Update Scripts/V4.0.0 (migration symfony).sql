@@ -21,3 +21,8 @@ ALTER TABLE metadata.mode_taxref RENAME name  TO label;
 -- On avait des objets "TreeNode" et "TaxrefNode" qui représentairent un noeud d'un arbre avec ses enfants (attribut children).
 -- Alors qu'en base on a la vision inverse, on a une entité "ModeTree" avec un lien vers son parent.
 -- La conversion était faite dans le modèle par un appel récursif de fonction.
+
+
+-- TODO : Renommer la table "mapping.layer_tree" (l'entité s'appelle LegendItem)
+-- TODO : Changer le type de "mapping.layer_tree.parent_id" en integer (l'id du parent est de type varchar et on référence un integer)   
+
