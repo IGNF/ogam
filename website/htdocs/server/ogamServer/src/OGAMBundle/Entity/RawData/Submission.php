@@ -78,7 +78,7 @@ class Submission
 
     /**
      * The files of the submission.
-     * @ORM\OneToMany(targetEntity="SubmissionFile", mappedBy="submission_id")
+     * @ORM\OneToMany(targetEntity="SubmissionFile", mappedBy="submission")
      */
     private $files;
 
@@ -86,7 +86,7 @@ class Submission
      * Constructor.
      */
     public function __construct() {
-    	$this->files = new ArrayCollection();
+    	$this->files = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
 

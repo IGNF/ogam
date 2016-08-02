@@ -14,7 +14,7 @@ class SubmissionFile
 {
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="Submission", inversedBy="submission_id")
+	 * @ORM\ManyToOne(targetEntity="Submission", inversedBy="files")
 	 * @ORM\JoinColumn(name="submission_id", referencedColumnName="submission_id")
 	 * @ORM\Id
 	 */
