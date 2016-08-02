@@ -21,6 +21,8 @@ import org.apache.log4j.Logger;
 import fr.ifn.ogam.common.util.DSRConstants;
 
 /**
+ * DAO for methods involving departements georeferencing.
+ * 
  * @author gautam
  *
  */
@@ -249,8 +251,8 @@ public class DepartementDAO {
 	 *            values including : ogam_id, provider_id, codedepartement
 	 * @throws Exception
 	 */
-	public void createDepartmentsLinksFromCommune(String format, Map<String, Object> parameters) throws Exception {
-		logger.debug("createDepartmentsLinksFromCommune");
+	public void createDepartmentsLinksFromCommunes(String format, Map<String, Object> parameters) throws Exception {
+		logger.debug("createDepartmentsLinksFromCommunes");
 
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -308,6 +310,7 @@ public class DepartementDAO {
 	 *            values including : ogam_id, provider_id, codemaille
 	 * @throws Exception
 	 */
+	@SuppressWarnings("resource")
 	public void createDepartmentsLinksFromMailles(String format, Map<String, Object> parameters) throws Exception {
 		logger.debug("createDepartmentsLinksFromMailles");
 
@@ -328,7 +331,7 @@ public class DepartementDAO {
 			// Récupérer l'union des géométries
 			stmt = new StringBuffer();
 			stmt.append("SELECT St_AsText(St_union(grille.geom)) as union ");
-			stmt.append("FROM referentiels.grille_10km as grille ");
+			stmt.append("FROM referentiels.codemaillevalue as grille ");
 			stmt.append("WHERE grille.code_10km = '" + codesMailles[0] + "' ");
 			for (int i = 1; i < codesMailles.length; ++i) {
 				stmt.append("OR grille.code_10km  = '" + codesMailles[i] + "' ");
@@ -429,7 +432,7 @@ public class DepartementDAO {
 	}
 
 	/**
-	 * Deletes from tables "observation_departement" all the associations linked to the format.
+	 * Deletes from tables "observation_departement" all the associations linked to the format. Code is executed only if table above exists.
 	 * 
 	 * @param format
 	 *            the table format
@@ -440,19 +443,35 @@ public class DepartementDAO {
 
 		Connection con = null;
 		PreparedStatement ps = null;
+		ResultSet rs = null;
 
 		try {
 
 			con = getConnection();
 
 			StringBuffer stmt = new StringBuffer();
-			stmt.append("DELETE FROM mapping.observation_departement ");
-			stmt.append("USING metadata.table_format as tf ");
-			stmt.append("WHERE tf.format = format");
 
+			stmt.append("SELECT to_regclass('mapping.observation_departement') as od_reg");
 			ps = con.prepareStatement(stmt.toString());
 			logger.debug(stmt.toString());
-			ps.executeUpdate();
+			rs = ps.executeQuery();
+
+			String odReg;
+
+			if (rs.next()) {
+				odReg = rs.getString("od_reg");
+				if (odReg != null) {
+					stmt = new StringBuffer();
+					stmt.append("DELETE FROM mapping.observation_departement ");
+					stmt.append("USING metadata.table_format as tf ");
+					stmt.append("WHERE tf.format = format");
+
+					ps = con.prepareStatement(stmt.toString());
+					logger.debug(stmt.toString());
+					ps.executeUpdate();
+
+				}
+			}
 
 		} finally {
 			try {
@@ -485,6 +504,7 @@ public class DepartementDAO {
 	 *            values including : ogam_id, provider_id, natureobjetgeo
 	 * @throws Exception
 	 */
+	@SuppressWarnings("resource")
 	public void setCodeDepartementCalcule(String format, String tableName, Map<String, Object> parameters) throws Exception {
 		logger.debug("setCodeDepartementCalcule");
 
