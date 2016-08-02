@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Service
  *
- * @ORM\Table(name="mapping.service")
+ * @ORM\Table(name="mapping.layer_service")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Mapping\ServiceRepository")
  */
 class Service
@@ -27,7 +27,7 @@ class Service
      * The configuration with base url and parameters of the service.
      * @var string
      *
-     * @ORM\Column(name="serviceConfig", type="string", length=1000, nullable=true)
+     * @ORM\Column(name="config", type="string", length=1000, nullable=true)
      */
     private $serviceConfig;
 
