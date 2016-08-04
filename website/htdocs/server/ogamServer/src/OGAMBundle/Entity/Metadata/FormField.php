@@ -293,5 +293,18 @@ class FormField extends Field
     {
         return $this->mask;
     }
-}
 
+    /**
+     * Set mask
+     *
+     * @param string $mask
+     *
+     * @return FormField
+     */
+    public function setMask($mask)
+    {
+        $this->mask = $mask;
+
+        return $this;
+    }
+}

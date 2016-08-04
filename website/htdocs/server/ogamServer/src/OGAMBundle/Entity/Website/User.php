@@ -36,7 +36,7 @@ class User implements UserInterface, \Serializable {
 	/**
 	 *
 	 * @var string @ORM\ManyToOne(targetEntity="Provider")
-	 *      @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
+	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
 	 */
 	private $provider;
 
@@ -114,28 +114,6 @@ class User implements UserInterface, \Serializable {
 		$this->password = $password;
 
 		return $this;
-	}
-
-	/**
-	 * Set providerId
-	 *
-	 * @param integer $providerId
-	 *
-	 * @return User
-	 */
-	public function setProviderId($providerId) {
-		$this->providerId = $providerId;
-
-		return $this;
-	}
-
-	/**
-	 * Get providerId
-	 *
-	 * @return int
-	 */
-	public function getProviderId() {
-		return $this->providerId;
 	}
 
 	/**

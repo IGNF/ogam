@@ -12,6 +12,16 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Submission
 {
+	const STEP_INIT = 'INIT';
+	const STEP_INSERTED = 'INSERTED';
+	const STEP_CHECKED = 'CHECKED';
+	const STEP_VALIDATED = 'VALIDATED';
+	const STEP_CANCELLED = 'CANCELLED';
+	const STATUS_OK= 'OK';
+	const STATUS_WARNING = 'WARNING';
+	const STATUS_ERROR = 'ERROR';
+	const STATUS_CRASH = 'CRASH';
+	
     /**
      * The submission identifier.
      * @var int
@@ -39,28 +49,28 @@ class Submission
     private $status;
 
     /**
-     * The provider (country, organisation) identifier.
-     * @var string
+     * The provider (country, organisation).
      *
-     * @ORM\Column(name="provider_id", type="string", length=36, nullable=true)
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\Provider")
+     * @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
      */
-    private $providerId;
+    private $provider;
 
     /**
-     * The dataset identifier.
-     * @var string
+     * The dataset
      *
-     * @ORM\Column(name="dataset_id", type="string", length=36, nullable=true)
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Dataset")
+     * @ORM\JoinColumn(name="dataset_id", referencedColumnName="dataset_id")
      */
-    private $datasetId;
+    private $dataset;
 
     /**
      * The login of the user who has done the submission.
-     * @var string
      *
-     * @ORM\Column(name="user_login", type="string", length=50, nullable=true)
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\User")
+     * @ORM\JoinColumn(name="user_login", referencedColumnName="user_login")
      */
-    private $userLogin;
+    private $user;
 
     /**
      * @var \DateTime
@@ -149,78 +159,6 @@ class Submission
     }
 
     /**
-     * Set providerId
-     *
-     * @param string $providerId
-     *
-     * @return Submission
-     */
-    public function setProviderId($providerId)
-    {
-        $this->providerId = $providerId;
-
-        return $this;
-    }
-
-    /**
-     * Get providerId
-     *
-     * @return string
-     */
-    public function getProviderId()
-    {
-        return $this->providerId;
-    }
-
-    /**
-     * Set datasetId
-     *
-     * @param string $datasetId
-     *
-     * @return Submission
-     */
-    public function setDatasetId($datasetId)
-    {
-        $this->datasetId = $datasetId;
-
-        return $this;
-    }
-
-    /**
-     * Get datasetId
-     *
-     * @return string
-     */
-    public function getDatasetId()
-    {
-        return $this->datasetId;
-    }
-
-    /**
-     * Set userLogin
-     *
-     * @param string $userLogin
-     *
-     * @return Submission
-     */
-    public function setUserLogin($userLogin)
-    {
-        $this->userLogin = $userLogin;
-
-        return $this;
-    }
-
-    /**
-     * Get userLogin
-     *
-     * @return string
-     */
-    public function getUserLogin()
-    {
-        return $this->userLogin;
-    }
-
-    /**
      * Set creationDate
      *
      * @param \DateTime $creationDate
@@ -267,5 +205,110 @@ class Submission
     {
         return $this->validationDate;
     }
-}
 
+    /**
+     * Set provider
+     *
+     * @param \OGAMBundle\Entity\Website\Provider $provider
+     *
+     * @return Submission
+     */
+    public function setProvider(\OGAMBundle\Entity\Website\Provider $provider = null)
+    {
+        $this->provider = $provider;
+
+        return $this;
+    }
+
+    /**
+     * Get provider
+     *
+     * @return \OGAMBundle\Entity\Website\Provider
+     */
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    /**
+     * Set dataset
+     *
+     * @param \OGAMBundle\Entity\Metadata\Dataset $dataset
+     *
+     * @return Submission
+     */
+    public function setDataset(\OGAMBundle\Entity\Metadata\Dataset $dataset = null)
+    {
+        $this->dataset = $dataset;
+
+        return $this;
+    }
+
+    /**
+     * Get dataset
+     *
+     * @return \OGAMBundle\Entity\Metadata\Dataset
+     */
+    public function getDataset()
+    {
+        return $this->dataset;
+    }
+
+    /**
+     * Add file
+     *
+     * @param \OGAMBundle\Entity\RawData\SubmissionFile $file
+     *
+     * @return Submission
+     */
+    public function addFile(\OGAMBundle\Entity\RawData\SubmissionFile $file)
+    {
+        $this->files[] = $file;
+
+        return $this;
+    }
+
+    /**
+     * Remove file
+     *
+     * @param \OGAMBundle\Entity\RawData\SubmissionFile $file
+     */
+    public function removeFile(\OGAMBundle\Entity\RawData\SubmissionFile $file)
+    {
+        $this->files->removeElement($file);
+    }
+
+    /**
+     * Get files
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \OGAMBundle\Entity\Website\User $user
+     *
+     * @return Submission
+     */
+    public function setUser(\OGAMBundle\Entity\Website\User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \OGAMBundle\Entity\Website\User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+}

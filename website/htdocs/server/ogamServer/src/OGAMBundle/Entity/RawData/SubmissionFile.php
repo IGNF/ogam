@@ -118,5 +118,28 @@ class SubmissionFile
     {
         return $this->nbLines;
     }
-}
 
+    /**
+     * Set submission
+     *
+     * @param \OGAMBundle\Entity\RawData\Submission $submission
+     *
+     * @return SubmissionFile
+     */
+    public function setSubmission(\OGAMBundle\Entity\RawData\Submission $submission)
+    {
+        $this->submission = $submission;
+
+        return $this;
+    }
+
+    /**
+     * Get submission
+     *
+     * @return \OGAMBundle\Entity\RawData\Submission
+     */
+    public function getSubmission()
+    {
+        return $this->submission;
+    }
+}

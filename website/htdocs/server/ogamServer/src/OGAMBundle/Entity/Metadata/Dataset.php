@@ -14,9 +14,9 @@ class Dataset
 {
     /**
      * The identifier of the dataset.
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="dataset_id", type="integer")
+     * @ORM\Column(name="dataset_id", type="string", length=36)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -34,7 +34,7 @@ class Dataset
      * Indicate if the dataset is displayed by default.
      * @var bool
      *
-     * @ORM\Column(name="isDefault", type="boolean", nullable=true)
+     * @ORM\Column(name="is_default", type="boolean", nullable=true)
      */
     private $isDefault;
 
@@ -61,7 +61,7 @@ class Dataset
     /**
      * Get id
      *
-     * @return int
+     * @return string
      */
     public function getId()
     {
@@ -153,5 +153,45 @@ class Dataset
 
     	return $json;
     }
-}
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->files = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
+    /**
+     * Add file
+     *
+     * @param \OGAMBundle\Entity\Metadata\FileFormat $file
+     *
+     * @return Dataset
+     */
+    public function addFile(\OGAMBundle\Entity\Metadata\FileFormat $file)
+    {
+        $this->files[] = $file;
+
+        return $this;
+    }
+
+    /**
+     * Remove file
+     *
+     * @param \OGAMBundle\Entity\Metadata\FileFormat $file
+     */
+    public function removeFile(\OGAMBundle\Entity\Metadata\FileFormat $file)
+    {
+        $this->files->removeElement($file);
+    }
+
+    /**
+     * Get files
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+}
