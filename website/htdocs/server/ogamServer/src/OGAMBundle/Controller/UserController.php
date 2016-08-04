@@ -58,12 +58,16 @@ class UserController extends Controller
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
+        // TODO : générer un salt
+        $login_salt = "90caf35ece5a987d60c7469415cd3855";
+
         return $this->render(
         	'OGAMBundle:User:show_login_form.html.twig',
         	array(
         		// last username entered by the user
         		'last_username' => $lastUsername,
         		'error'         => $error,
+        		'login_salt'	=> $login_salt
         	)
         	);
     }
