@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Role\RoleInterface;
 class Role implements RoleInterface {
 
 	/**
+	 * The code.
 	 *
 	 * @var string
 	 * @ORM\Column(name="role_code", type="string", length=36, unique=true)
@@ -21,6 +22,7 @@ class Role implements RoleInterface {
 	private $code;
 
 	/**
+	 * The label.
 	 *
 	 * @var string
 	 * @ORM\Column(name="role_label", type="string", length=100, nullable=true)
@@ -40,8 +42,13 @@ class Role implements RoleInterface {
 	 * A list of codes corresponding to authorised actions.
 	 *
 	 * @var Array[String]
-	 */
-	private $permissionsList = array();
+	 * @ORM\ManyToMany(targetEntity="Permission")
+     * @ORM\JoinTable(name="permission_per_role",
+     *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="permission_code", referencedColumnName="permission_code")}
+     *      )
+     */
+	private $permissions = array();
 
 	/**
 	 * The database schemas the role can access.
@@ -50,7 +57,7 @@ class Role implements RoleInterface {
 	 *
 	 * @var Array[String]
 	 */
-	private $schemasList = array();
+	private $schemas = array();
 
 	/**
 	 * Set code
@@ -119,6 +126,27 @@ class Role implements RoleInterface {
 	}
 
 	/**
+	 * Get permissions.
+	 *
+	 * @return \Doctrine\Common\Collections\Collection
+	 */
+	public function getPermissions() {
+
+		return $this->permissions;
+	}
+
+	/**
+	 * Get the schemas.
+	 *
+	 * @return \Doctrine\Common\Collections\Collection
+	 */
+	public function getSchemas() {
+
+		return $this->schemas;
+	}
+
+
+	/**
 	 * Indicate if the role is allowed for a permission.
 	 *
 	 * @param String $permissionName
@@ -126,7 +154,25 @@ class Role implements RoleInterface {
 	 * @return Boolean
 	 */
 	function isAllowed($permissionName) {
-		return (!empty($this->permissionsList) && in_array($permissionName, $this->permissionsList));
+
+		global $kernel;
+		if ('AppCache' == get_class($kernel)) {
+			$kernel = $kernel->getKernel();
+		}
+		$logger = $kernel->getContainer()->get('logger');
+		$logger->info('role isAllowed ' . $permissionName);
+
+		$logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
+
+		foreach ($this->getPermissions() as $permission) {
+
+			if ($permission->getCode() == $permissionName) {
+				return true;
+			}
+		}
+
+		return false;
+
 	}
 
 

@@ -2,7 +2,76 @@
 
 
 {% block body %}
-<h1>Bienvenue dans OGAM Server</h1>
+<h1> Bienvenue sur le site web OGAM !</h1>
+
+
+
+<div class="left-column">
+<div class="moduletable_menu">
+<h3>
+Selectionnez un menu</h3>
+<ul id="appmenu" class="menu">
+
+
+{% if (app.user and app.user.isAllowed('DATA_INTEGRATION')) %}
+<li>
+	<a href="{{ path('integration_home') }}" class="pagelink" >Intégration de données</a>
+</li>
+{% endif %}
+
+{% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('RAW_DATA')) %}
+<li>
+<a href="#/SCHEMA/RAW_DATA" class="pagelink" >Visualize Raw Data</a>
+</li>
+{% endif %}
+
+
+{% if (app.user and app.user.isAllowed('DATA_EDITION') and app.user.isSchemaAllowed('RAW_DATA')) %}
+<li>
+<a href="#/SCHEMA/RAW_DATA" class="pagelink" >Edition</a>
+</li>
+{% endif %}
+
+
+{% if (app.user and app.user.isAllowed('DATA_HARMONIZATION')) %}
+<li>
+<a href="#" class="pagelink" >Visualize Harmonized Data</a>
+</li>
+{% endif %}
+
+
+{% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('HARMONIZED_DATA')) %}
+<li>
+<a href="#/SCHEMA/HARMONIZED_DATA" class="pagelink" >Visualize Harmonized Data</a>
+</li>
+{% endif %}
+
+
+{% if (app.user and app.user.isAllowed('MANAGE_USERS')) %}
+<li>
+<a href="#" class="pagelink" >User Administration</a>
+</li>
+{% endif %}
+
+{% if (app.user and app.user.isAllowed('CHECK_CONF')) %}
+<li>
+<a href="#" class="pagelink" >Check Configuration</a>
+</li>
+{% endif %}
+
+
+</ul>
+</div>
+</div>  
+
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+----------------------------------------------------------------
 
 
 <h2>Application Parameters</h2>
