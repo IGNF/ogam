@@ -2,6 +2,7 @@
 namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\Role\RoleInterface;
 
 /**
  * Role
@@ -9,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="website.role")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\RoleRepository")
  */
-class Role {
+class Role implements RoleInterface {
 
 	/**
 	 *
@@ -126,5 +127,16 @@ class Role {
 	 */
 	function isAllowed($permissionName) {
 		return (!empty($this->permissionsList) && in_array($permissionName, $this->permissionsList));
+	}
+
+
+	/**
+	 * Required to implement RoleInterface.
+	 * {@inheritDoc}
+	 * @see \Symfony\Component\Security\Core\Role\RoleInterface::getRole()
+	 */
+	public function getRole()
+	{
+		return $this->getCode();
 	}
 }

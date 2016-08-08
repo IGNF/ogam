@@ -245,7 +245,8 @@ class User implements UserInterface, \Serializable {
 	 * @return \Doctrine\Common\Collections\Collection
 	 */
 	public function getRoles() {
-		return $this->roles;
+
+		return $this->roles->toArray();
 	}
 
 	/**

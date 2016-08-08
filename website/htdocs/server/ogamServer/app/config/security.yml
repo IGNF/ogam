@@ -9,6 +9,10 @@ security:
                 class: OGAMBundle\Entity\Website\User
                 property: login
                 manager_name: website
+                
+    encoders:
+        OGAMBundle\Entity\Website\User: 
+            id: ogam.challengeresponseencoder
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs

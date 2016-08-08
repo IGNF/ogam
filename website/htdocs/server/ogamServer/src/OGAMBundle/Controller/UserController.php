@@ -4,6 +4,7 @@ namespace OGAMBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 class UserController extends Controller
 {
@@ -12,10 +13,10 @@ class UserController extends Controller
      *
      * @Route("user/")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
     	// Display the login form by default
-        return $this->showLoginFormAction();
+        return $this->showLoginFormAction($request);
     }
 
     /**
@@ -47,7 +48,7 @@ class UserController extends Controller
      *
      *  @Route("user/login")
      */
-    public function showLoginFormAction()
+    public function showLoginFormAction(Request $request)
     {
 
         $authenticationUtils = $this->get('security.authentication_utils');
@@ -58,18 +59,28 @@ class UserController extends Controller
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        // TODO : générer un salt
-        $login_salt = "90caf35ece5a987d60c7469415cd3855";
+        // generate a new challenge
+        $encoder = $this->get('ogam.challengeresponseencoder');
+        $challenge = $encoder->generateChallenge();
 
-        return $this->render(
-        	'OGAMBundle:User:show_login_form.html.twig',
+        // Store the challenge in session
+        $session = $request->getSession();
+        $session->set('challenge', $challenge);
+
+        $logger = $this->get('logger');
+        $logger->info('Challenge : ' . $challenge);
+        $logger->info('lastUsername : ' . $lastUsername);
+        $logger->info('error : ' . $error);
+
+        // Display the login form
+        return $this->render('OGAMBundle:User:show_login_form.html.twig',
         	array(
         		// last username entered by the user
         		'last_username' => $lastUsername,
         		'error'         => $error,
-        		'login_salt'	=> $login_salt
+        		'challenge'	=> $challenge
         	)
-        	);
+        );
     }
 
     /**

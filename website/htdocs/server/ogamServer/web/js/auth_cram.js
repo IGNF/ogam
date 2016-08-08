@@ -1,14 +1,14 @@
 function cram()
 {	
     // Overrite the password with the SHA1 Hash
-    document.getElementById('password').value = sha1Hash(document.getElementById('login_salt').value+sha1Hash(document.getElementById('password').value));
+    document.getElementById('password').value = sha1Hash(document.getElementById('challenge').value+sha1Hash(document.getElementById('password').value));
 	//console.log("password : " + document.getElementById('password').value);
 	//console.log("SHA1 password : " + sha1Hash(document.getElementById('password').value));
-	//console.log("Salt : " + document.getElementById('login_salt').value);
-	//console.log("Hash : " + sha1Hash(document.getElementById('login_salt').value+sha1Hash(document.getElementById('password').value)));
+	//console.log("Salt : " + document.getElementById('challenge').value);
+	//console.log("Hash : " + sha1Hash(document.getElementById('challenge').value+sha1Hash(document.getElementById('password').value)));
     
     // Clean the salt value
-    document.getElementById('login_salt').value = "" ;
+    document.getElementById('challenge').value = "" ;
 }
 
 

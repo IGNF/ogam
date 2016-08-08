@@ -29,11 +29,21 @@
             
             			<div id="header-beadcrumb" class="header-beadcrumb" style="float: left">
             				<!-- TODO : Breadcrumb -->
+            				
             			</div>
             			
             			<div id="header-login" class="header-login" style="float: right">
-            				<!-- TODO : welcome message  -->            
-            				<!-- TODO : login / logout / change password  -->
+            				<!-- TODO : welcome message  -->
+            				{% if app.user %}
+            					Welcome {{ app.user.username  }}
+            					&nbsp;
+            					<a href="{{ path('ogam_user_showchangepassword') }}">Change Password</a>
+            					&nbsp;
+            					<a href="{{ path('ogam_user_logout') }}">Logout</a>
+            			    {% else %}
+            			    <a href="{{ path('ogam_user_showloginform') }}">Login</a>
+            			    
+            			    {% endif %}        
                   			<!-- TODO : Drapeaux pour changer la langue  -->
                   		</div>
                   	</div>
