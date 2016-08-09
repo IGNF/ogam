@@ -8,15 +8,28 @@ services:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
 
-    ogam.challengeresponseencoder:
+    ogam.challenge_response_encoder:
         class: OGAMBundle\Services\ChallengeResponseEncoder
         arguments: 
             session: "@session"
             logger: "@logger"
             
-    ogam.configurationmanager:
+    ogam.configuration_manager:
         class: OGAMBundle\Services\ConfigurationManager
         arguments:
             em: "@doctrine.orm.entity_manager"
             logger: "@logger"
-                       
+            
+    # Repositories not linked to a specific entity
+    ogam.generic_repository:
+        abstract: true
+        class: OGAMBundle\Repository\GenericRepository
+        arguments: ["@doctrine.orm.entity_manager"]
+        
+    ogam.repository.database.metadata:
+        parent: ogam.generic_repository
+        class: OGAMBundle\Repository\Database\MetadataRepository
+
+    ogam.repository.database.postgresql:
+        parent: ogam.generic_repository
+        class: OGAMBundle\Repository\Database\PostgresqlRepository                      

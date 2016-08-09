@@ -12,7 +12,7 @@ security:
                 
     encoders:
         OGAMBundle\Entity\Website\User: 
-            id: ogam.challengeresponseencoder
+            id: ogam.challenge_response_encoder
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs

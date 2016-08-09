@@ -60,7 +60,7 @@ class UserController extends Controller
         $lastUsername = $authenticationUtils->getLastUsername();
 
         // generate a new challenge
-        $encoder = $this->get('ogam.challengeresponseencoder');
+        $encoder = $this->get('ogam.challenge_response_encoder');
         $challenge = $encoder->generateChallenge();
 
         // Store the challenge in session

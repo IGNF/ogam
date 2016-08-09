@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CheckconfController extends Controller {
 
+
 	/**
 	 * Default action.
 	 *
@@ -27,13 +28,31 @@ class CheckconfController extends Controller {
 		// Check the PHP config
 		$phpParameters = $this->checkPhpParameters();
 
-		// Check the database
-		// $this->checkDatabase();
+		// Check the schemas
+		$missingSchemasMsg = $this->checkSchemas();
+
+		// Checks the tables
+		$resultTable = $this->checkTables();
+		$missingTablesMsg = $resultTable[0];
+		$primaryKeysMsg = $resultTable[1];
+
+		// Check the fields
+		$resultField = $this->checkFields();
+		$missingFieldsMsg = $resultField[0];
+		$fieldTypeMsg = $resultField[1];
+
+		// check the FKs
+		$missingFKsMsg = $this->checkForeignKeys();
 
 		return $this->render('OGAMBundle:Checkconf:show_checkconf.html.twig', array(
-				'phpParameters' => $phpParameters
-			)
-		);
+			'phpParameters' => $phpParameters,
+			'missingSchemasMsg' => $missingSchemasMsg,
+			'missingTablesMsg' => $missingTablesMsg,
+			'primaryKeysMsg' => $primaryKeysMsg,
+			'missingFieldsMsg' => $missingFieldsMsg,
+			'fieldTypeMsg' => $fieldTypeMsg,
+			'missingFKsMsg' => $missingFKsMsg
+		));
 	}
 
 	/**
@@ -44,7 +63,7 @@ class CheckconfController extends Controller {
 		$logger->debug('Checking PHP parameters');
 
 		// Get the configuration manager service
-		$configManager = $this->get('ogam.configurationmanager');
+		$configManager = $this->get('ogam.configuration_manager');
 
 		// Get the translator service
 		$translator = $this->get('translator');
@@ -91,93 +110,99 @@ class CheckconfController extends Controller {
 	}
 
 	/**
-	 * Checks the database access.
-	 */
-	function checkDatabase() {
-		$logger = $this->get('logger');
-		$logger->debug('Checking database');
-
-		// Check the schemas
-		$this->checkSchemas();
-
-		// Check if the expected tables are found
-		$this->checkTables();
-
-		// Check if the expected fields are found
-		$this->checkFields();
-
-		// Checks the foreign keys
-		$this->checkForeignKeys();
-	}
-
-	/**
 	 * Checks the schemas.
+	 *
+	 * @return Array[String] Unlisted schemas
 	 */
 	protected function checkSchemas() {
 
 		// Get the translator service
 		$translator = $this->get('translator');
 
-		// Get the list of expected schema objects
-		$expectedSchemas = $this->metadataModel->getSchemas();
+		$schemaRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Metadata\Schema', 'metadata');
 
-		$existingSchemas = $this->postgreSQLModel->getSchemas();
+		$postgreSQLRepo = $this->get('ogam.repository.database.postgresql');
+
+
+		// Get the list of expected schema objects
+
+		$expectedSchemas = $schemaRepo->findAll();
+
+		$existingSchemas = $postgreSQLRepo->getSchemas();
 
 		$missingSchemasMsg = array();
 		foreach ($expectedSchemas as $expectedSchema) {
 
-			if (!in_array(strtoupper($expectedSchema->name), $existingSchemas)) {
-				$missingSchemasMsg[] = sprintf($translator->trans("The schema '%s' described in the metadata doesn't exist in the system."), $expectedSchema->label);
+			if (!in_array(strtoupper($expectedSchema->getName()), $existingSchemas)) {
+				$missingSchemasMsg[] = sprintf($translator->trans("The schema '%s' described in the metadata doesn't exist in the system."), $expectedSchema->getLabel());
 			}
 		}
-		$this->view->missingSchemasMsg = $missingSchemasMsg;
+		return $missingSchemasMsg;
 	}
 
 	/**
-	 * Checks the foreign keys.
+	 * Check if the expected tables are found.
+	 *
+	 * @return Array[Array, Array] Missing tables and incompatible primary keys
 	 */
-	protected function checkForeignKeys() {
+	protected function checkTables() {
 
 		// Get the translator service
 		$translator = $this->get('translator');
 
-		$expectedFKs = $this->metadataSystemModel->getForeignKeys();
+		$logger = $this->get('logger');
 
-		$existingFKs = $this->postgreSQLModel->getForeignKeys();
+		$metadataRepo = $this->get('ogam.repository.database.metadata');
+		$postgreSQLRepo = $this->get('ogam.repository.database.postgresql');
 
-		$missingFKsMsg = array();
-		foreach ($expectedFKs as $foreignKey) {
+		$expectedTables = $metadataRepo->getTables();
 
-			$id = $foreignKey->table . '__' . $foreignKey->sourceTable;
 
-			if (!array_key_exists($id, $existingFKs)) {
-				$missingFKsMsg[] = sprintf($translator->trans("The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system."), $foreignKey->table, $foreignKey->sourceTable);
+		$logger->info('expectedTables : ' . print_r($expectedTables, true));
+
+		$existingTables = $postgreSQLRepo->getTables();
+
+		$logger->info('existingTables : ' . print_r($existingTables, true));
+
+		$missingTablesMsg = array();
+		$primaryKeysMsg = array();
+		foreach ($expectedTables as $key => $table) {
+			if (!array_key_exists($key, $existingTables)) {
+				$missingTablesMsg[] = sprintf($translator->trans("The expected table '%s' of the schema '%s' is not found."), $table->tableName, $table->schemaName);
 			} else {
-				$foundFK = $existingFKs[$id];
+				$foundTable = $existingTables[$key];
 
 				//
 				// Check the primary keys
 				//
-				$diff = array_diff($foundFK->foreignKeys, $foreignKey->foreignKeys);
+				$diff = array_diff($foundTable->primaryKeys, $table->primaryKeys);
 				if (!empty($diff)) {
-					$missingFKsMsg[] = sprintf($translator->trans("The foreign key '%s' between the table '%s' and the table '%s' does not match the metadata definition: '%s'."), $foundFK->foreignKeys, $foreignKey->table, $foreignKey->sourceTable, $foreignKey->foreignKeys);
+					$primaryKeysMsg[] = sprintf($translator->trans("The PK (%s) of the table '%s' is not compatible with the metadata PK (%s)."), implode(",", $foundTable->primaryKeys), $table->tableName, implode(",", $table->primaryKeys));
 				}
 			}
 		}
-		$this->view->missingFKsMsg = $missingFKsMsg;
+		return array(
+			$missingTablesMsg,
+			$primaryKeysMsg
+		);
 	}
 
 	/**
 	 * Check if the expected fields are found.
+	 *
+	 * @return Array[Array, Array] Missing fields and incompatible field types
 	 */
 	protected function checkFields() {
 
 		// Get the translator service
 		$translator = $this->get('translator');
 
-		$expectedFields = $this->metadataSystemModel->getFields();
+		$metadataRepo = $this->get('ogam.repository.database.metadata');
+		$postgreSQLRepo = $this->get('ogam.repository.database.postgresql');
 
-		$existingFields = $this->postgreSQLModel->getFields();
+		$expectedFields = $metadataRepo->getFields();
+
+		$existingFields = $postgreSQLRepo->getFields();
 
 		$missingFieldsMsg = array();
 		$fieldTypeMsg = array();
@@ -248,40 +273,48 @@ class CheckconfController extends Controller {
 				}
 			}
 		}
-		$this->view->fieldTypeMsg = $fieldTypeMsg;
-		$this->view->missingFieldsMsg = $missingFieldsMsg;
+		return array(
+			$missingFieldsMsg,
+			$fieldTypeMsg
+		);
 	}
 
 	/**
-	 * Check if the expected tables are found.
+	 * Checks the foreign keys.
+	 *
+	 * @return Array[String] the missing FKs
 	 */
-	protected function checkTables() {
+	protected function checkForeignKeys() {
 
 		// Get the translator service
 		$translator = $this->get('translator');
 
-		$expectedTables = $this->metadataSystemModel->getTables();
+		$metadataRepo = $this->get('ogam.repository.database.metadata');
+		$postgreSQLRepo = $this->get('ogam.repository.database.postgresql');
 
-		$existingTables = $this->postgreSQLModel->getTables();
+		$expectedFKs = $metadataRepo->getForeignKeys();
 
-		$missingTablesMsg = array();
-		$primaryKeysMsg = array();
-		foreach ($expectedTables as $key => $table) {
-			if (!array_key_exists($key, $existingTables)) {
-				$missingTablesMsg[] = sprintf($translator->trans("The expected table '%s' of the schema '%s' is not found."), $table->tableName, $table->schemaName);
+		$existingFKs = $postgreSQLRepo->getForeignKeys();
+
+		$missingFKsMsg = array();
+		foreach ($expectedFKs as $foreignKey) {
+
+			$id = $foreignKey->table . '__' . $foreignKey->sourceTable;
+
+			if (!array_key_exists($id, $existingFKs)) {
+				$missingFKsMsg[] = sprintf($translator->trans("The foreign key between the table '%s' and the table '%s' described in the metadata doesn't exist in the system."), $foreignKey->table, $foreignKey->sourceTable);
 			} else {
-				$foundTable = $existingTables[$key];
+				$foundFK = $existingFKs[$id];
 
 				//
 				// Check the primary keys
 				//
-				$diff = array_diff($foundTable->primaryKeys, $table->primaryKeys);
+				$diff = array_diff($foundFK->foreignKeys, $foreignKey->foreignKeys);
 				if (!empty($diff)) {
-					$primaryKeysMsg[] = sprintf($translator->trans("The PK (%s) of the table '%s' is not compatible with the metadata PK (%s)."), implode(",", $foundTable->primaryKeys), $table->tableName, implode(",", $table->primaryKeys));
+					$missingFKsMsg[] = sprintf($translator->trans("The foreign key '%s' between the table '%s' and the table '%s' does not match the metadata definition: '%s'."), $foundFK->foreignKeys, $foreignKey->table, $foreignKey->sourceTable, $foreignKey->foreignKeys);
 				}
 			}
 		}
-		$this->view->missingTablesMsg = $missingTablesMsg;
-		$this->view->primaryKeysMsg = $primaryKeysMsg;
+		return $missingFKsMsg;
 	}
 }
