@@ -4,7 +4,7 @@
 {% block body %}
 <h1> Bienvenue sur le site web OGAM !</h1>
 
-
+{% if (app.user) %}
 
 <div class="left-column">
 <div class="moduletable_menu">
@@ -64,7 +64,7 @@ Selectionnez un menu</h3>
 </div>
 </div>  
 
-
+{% endif %}
 
 <br/>
 <br/>
