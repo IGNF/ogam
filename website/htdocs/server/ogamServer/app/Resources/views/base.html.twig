@@ -33,18 +33,14 @@
             			</div>
             			
             			<div id="header-login" class="header-login" style="float: right">
-            				<!-- TODO : welcome message  -->
+            				<!-- TODO : Drapeaux pour changer la langue  -->
             				{% if app.user %}
-            					Welcome {{ app.user.username  }}
+            					<a href="{{ path('user_showchangepassword') }}">{% trans %}Change Password{% endtrans %}</a>
             					&nbsp;
-            					<a href="{{ path('user_showchangepassword') }}">Change Password</a>
-            					&nbsp;
-            					<a href="{{ path('user_logout') }}">Logout</a>
+            					<a href="{{ path('user_logout') }}">{% trans %}Log out{% endtrans %}</a>
             			    {% else %}
-            			    <a href="{{ path('user_login') }}">Login</a>
-            			    
-            			    {% endif %}        
-                  			<!-- TODO : Drapeaux pour changer la langue  -->
+            			    	<a href="{{ path('user_login') }}">{% trans %}Log in{% endtrans %}</a>            			    
+            			    {% endif %}                          			
                   		</div>
                   	</div>
             
