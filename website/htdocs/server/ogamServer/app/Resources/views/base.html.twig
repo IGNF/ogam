@@ -65,7 +65,7 @@
     <div class="footer"  id="footer">
         <div id="footer-ct" class="footer-ct">
         	<span title="Build @build_number@">Version @version_number@&nbsp;-&nbsp;</span>
-            Layout Copyright &nbsp;
+            Copyright &nbsp;
             <a id="lkContact" onclick="sendMail();" href="#">Contact Us</a>
         </div>
     </div>
@@ -73,5 +73,16 @@
             
     </body>
     
-  {% block javascripts %}{% endblock %}
+  {% block javascripts %}
+  
+    <script type="text/javascript">
+      //Defines the base URL for the scripts
+     function sendMail(){
+        pre='{{ configurationManager.getConfig('contactEmailPrefix') }}';
+        suf='{{ configurationManager.getConfig('contactEmailSufix') }}';
+        document.getElementById('lkContact').href="mailto:" + pre + "@" + suf;
+      }
+ 	 </script>
+  
+  {% endblock %}
 </html>

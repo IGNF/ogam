@@ -10,4 +10,16 @@ namespace OGAMBundle\Repository\Website;
  */
 class ApplicationParameterRepository extends \Doctrine\ORM\EntityRepository
 {
+
+	/**
+	 * On redéfini le findAll pour renvoyer un tableau indexé par le nom.
+	 */
+	public function findAllIndexedByName()
+	{
+		return $this->getEntityManager()
+		->createQuery(
+			'SELECT a FROM OGAMBundle\Entity\Website\ApplicationParameter a INDEX BY a.name ORDER BY a.name ASC'
+			)
+			->getResult();
+	}
 }

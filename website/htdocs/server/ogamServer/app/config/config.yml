@@ -37,6 +37,8 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+    globals: 
+      configurationManager : '@ogam.configuration_manager'
 
 # Doctrine Configuration
 doctrine:

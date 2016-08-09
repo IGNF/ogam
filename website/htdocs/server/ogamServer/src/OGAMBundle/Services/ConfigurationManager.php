@@ -3,6 +3,7 @@ namespace OGAMBundle\Services;
 
 use Monolog\Logger;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
  * Implement a password encoder to use with the challenge-response authentification.
@@ -30,6 +31,8 @@ class ConfigurationManager {
 		$this->em = $em;
 		$this->logger = $logger;
 
+		$this->logger->debug("ConfigurationManager constructor");
+
 		$this->readConfiguration();
 	}
 
@@ -38,9 +41,13 @@ class ConfigurationManager {
 	 */
 	private function readConfiguration() {
 
+		$this->logger->debug("ConfigurationManager readConfiguration");
+
 		// Get application parameters
 		$appRepo = $this->em->getRepository('OGAMBundle\Entity\Website\ApplicationParameter', 'website');
-		$this->parameters = $appRepo->findAll();
+		$this->parameters = $appRepo->findAllIndexedByName();
+
+		$this->logger->debug("parameters : " . print_r($this->parameters, true));
 	}
 
 	/**
@@ -54,13 +61,16 @@ class ConfigurationManager {
 	 * @throws An exception if the parameter cannot be found and no default value is set
 	 */
 	public function getConfig($name, $defaultValue = null, $silent = false) {
+
+		$this->logger->debug("getConfig : " . $name);
+
 		if (isset($this->parameters[$name])) {
 			$parameter = $this->parameters[$name];
 		}
 
 		// Get the parameter value from the config
 		if (!empty($parameter)) {
-			return $parameter->value;
+			return $parameter->getValue();
 		} else if ($defaultValue !== null) {
 
 			// If not available but a default is specified, return the default
