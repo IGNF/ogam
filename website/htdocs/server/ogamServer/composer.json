@@ -22,9 +22,9 @@
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "^2.0",
-        "phpcheckstyle/phpcheckstyle": ">0.14",
-        "phpdocumentor/phpdocumentor": "2.*",
-        "phpunit/phpunit": "4.*"
+        "zendframework/zend-http": "^2.5",
+        "phpunit/phpunit": "^4.8",
+        "phpcheckstyle/phpcheckstyle": "^0.14.3"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
