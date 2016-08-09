@@ -5,13 +5,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
+
+/**
+ * @Route("/checkconf")
+ */
 class CheckconfController extends Controller {
 
 
 	/**
 	 * Default action.
 	 *
-	 * @Route("checkconf/", name="checkconf_home")
+	 * @Route("/", name="checkconf_home")
 	 */
 	public function indexAction(Request $request) {
 		// Display the default
@@ -21,7 +25,7 @@ class CheckconfController extends Controller {
 	/**
 	 * Show the config.
 	 *
-	 * @Route("checkconf/showCheckConf")
+	 * @Route("/showCheckConf", name="checkconf_showconfig")
 	 */
 	public function showCheckConfAction(Request $request) {
 

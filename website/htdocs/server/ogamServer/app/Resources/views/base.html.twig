@@ -37,11 +37,11 @@
             				{% if app.user %}
             					Welcome {{ app.user.username  }}
             					&nbsp;
-            					<a href="{{ path('ogam_user_showchangepassword') }}">Change Password</a>
+            					<a href="{{ path('user_showchangepassword') }}">Change Password</a>
             					&nbsp;
-            					<a href="{{ path('ogam_user_logout') }}">Logout</a>
+            					<a href="{{ path('user_logout') }}">Logout</a>
             			    {% else %}
-            			    <a href="{{ path('ogam_user_showloginform') }}">Login</a>
+            			    <a href="{{ path('user_login') }}">Login</a>
             			    
             			    {% endif %}        
                   			<!-- TODO : Drapeaux pour changer la langue  -->

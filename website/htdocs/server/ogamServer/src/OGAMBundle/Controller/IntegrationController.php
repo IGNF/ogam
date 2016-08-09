@@ -17,16 +17,27 @@ class IntegrationController extends Controller
 	function getEntityManger(){
 		return $this->get('doctrine.orm.raw_data_entity_manager');
 	}
+
+	/**
+	 * Default action.
+	 *
+     * @Route("/", name = "integration_home")
+	 */
+	public function indexAction() {
+		// Display the default
+		return $this->showDataSubmissionPageAction();
+	}
+
+
     /**
      * Show the data submission page.
-     * 
-     * @Route("/", name = "integration_home")
+     *
      * @Route("/show-data-submission-page")
      */
     public function showDataSubmissionPageAction()
     {
     	$submissions = $this->getEntityManger()->getRepository('OGAMBundle:RawData\Submission')->getAciveSubmissions();
-    	
+
         return $this->render('OGAMBundle:Integration:show_data_submission_page.html.twig', array(
             // ...
             'submissions'=>$submissions
@@ -35,7 +46,7 @@ class IntegrationController extends Controller
 
     /**
      * Show the create data submission page.
-     * 
+     *
      * @Route("/show-create-data-submission", name="integration_creation")
      */
     public function showCreateDataSubmissionAction()
@@ -47,7 +58,7 @@ class IntegrationController extends Controller
 
     /**
      * Show the upload data page.
-     * 
+     *
      * @Route("/show-upload-data")
      */
     public function showUploadDataAction()
