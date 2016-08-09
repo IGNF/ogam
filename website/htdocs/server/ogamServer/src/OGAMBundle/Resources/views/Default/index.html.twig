@@ -49,7 +49,7 @@ Selectionnez un menu</h3>
 
 {% if (app.user and app.user.isAllowed('MANAGE_USERS')) %}
 <li>
-<a href="#" class="pagelink" >User Administration</a>
+<a href="{{ path('usermanagement_home') }}" class="pagelink" >User Administration</a>
 </li>
 {% endif %}
 

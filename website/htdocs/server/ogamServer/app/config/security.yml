@@ -23,10 +23,10 @@ security:
         main:
             anonymous: ~
             form_login:
-                login_path: /user/login
-                check_path: /user/login
+                login_path: user_login
+                check_path: user_validatelogin
             logout:
-                path:   /user/logout
+                path:   user_logout
                 target: /
             
     access_control:

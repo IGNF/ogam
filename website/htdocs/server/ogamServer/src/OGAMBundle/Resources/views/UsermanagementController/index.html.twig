@@ -1,0 +1,35 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}OGAMBundle:UsermanagementController:index{% endblock %}
+
+{% block body %}
+
+
+<h1>Administration des utilisateurs</h1>
+
+<div class="left-column">
+<div class="moduletable_menu">
+
+<h3>Selectionnez un menu</h3>
+
+<ul id="appmenu" class="menu">
+
+<li>
+<a href="{{ path('usermanagement_showUsers') }}"> Afficher les utilisateurs</a>
+</li>
+
+<li>
+<a href="{{ path('usermanagement_showRoles') }}"> Afficher les rôles</a>
+</li>
+
+<li>
+<a href="{{ path('usermanagement_showProviders') }}"> Afficher les organismes</a>
+</li>
+
+</ul>
+
+</div>
+</div>
+
+
+{% endblock %}

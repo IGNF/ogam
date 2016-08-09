@@ -4,6 +4,7 @@ namespace OGAMBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/user")
@@ -94,8 +95,8 @@ class UserController extends Controller {
 	 * @Route("/validateLogin", name = "user_validatelogin")
 	 */
 	public function validateLoginAction() {
-		return $this->render('OGAMBundle:User:validate_login.html.twig', array()
-		// ...
-		);
+		// Nothing to do, the security module redirects automatically to the homepage (cf security.yml)
+
+		return new Response();
 	}
 }
