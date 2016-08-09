@@ -10,19 +10,19 @@ class CheckconfController extends Controller {
 	/**
 	 * Default action.
 	 *
-	 * @Route("checkconf/")
+	 * @Route("checkconf/", name="checkconf_home")
 	 */
 	public function indexAction(Request $request) {
 		// Display the default
-		return $this->showCheckConfiguration($request);
+		return $this->showCheckConfAction($request);
 	}
 
 	/**
-	 * Logout.
+	 * Show the config.
 	 *
 	 * @Route("checkconf/showCheckConf")
 	 */
-	public function showCheckConfAction() {
+	public function showCheckConfAction(Request $request) {
 
 		// Check the PHP config
 		$phpParameters = $this->checkPhpParameters();

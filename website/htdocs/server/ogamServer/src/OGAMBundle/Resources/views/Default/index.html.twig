@@ -55,7 +55,7 @@ Selectionnez un menu</h3>
 
 {% if (app.user and app.user.isAllowed('CHECK_CONF')) %}
 <li>
-<a href="#" class="pagelink" >Check Configuration</a>
+<a href="{{ path('checkconf_home') }}" class="pagelink" >Check Configuration</a>
 </li>
 {% endif %}
 

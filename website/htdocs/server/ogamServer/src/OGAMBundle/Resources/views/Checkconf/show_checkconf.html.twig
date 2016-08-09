@@ -1,0 +1,124 @@
+{% extends "::base.html.twig" %}
+
+
+
+
+{% block title %}Checkconf{% endblock %}
+
+{% block body %}
+
+<h1>{% trans %}Check result{% endtrans %}</h1>
+<div class="checkconf-page">
+<h2>{% trans %}PHP Parameters{% endtrans %}</h2>
+<ul>
+{% for param in phpParameters %} 
+
+    <li>
+    	<b>{{ param.name }}&nbsp;:</b>&nbsp;{% trans %}Expected value{% endtrans %}&nbsp;{{ param.value}}
+    	{% if (param.error is defined) %}
+        	<span class="red">&nbsp;-&nbsp;'.{{ param.error }}</span><br/>
+    	{% else %}
+        	<span class="green">&nbsp;-&nbsp;ok</span><br/></li>
+    	{%  endif %}
+    </li>
+{%  endfor %}
+</ul>
+
+
+<h2>{% trans %}Database{% endtrans %}</h2>
+<span class="note">
+    {% trans %}Note: The database user must have administration rights to perform these tests.{% endtrans %}   
+</span>
+
+
+<h4>{% trans %}Checking for missing schemas:{% endtrans %}</h4>
+
+{{ dump(phpParameters) }}
+<!-- 
+<?php 
+if (count($this->missingSchemasMsg)==0) {
+	echo '<ul><li><span class="green">ok</span></li></ul>';
+} else {
+	echo '<ul>';
+	foreach ($this->missingSchemasMsg as $msg) {
+		echo '<li><span class="red">'.$msg.'</span></li>';
+	}
+	echo '</ul>';
+}
+?>
+
+
+<h4><?php echo $this->translate('Checking for missing tables:');?></h4>
+<?php 
+if (count($this->missingTablesMsg)==0) {
+	echo '<ul><li><span class="green">ok</span></li></ul>';
+} else {
+	echo '<ul>';
+	foreach ($this->missingTablesMsg as $msg) {
+		echo '<li><span class="red">'.$msg.'</span></li>';
+	}
+	echo '</ul>';
+}
+?>
+
+<h4><?php echo $this->translate('Checking for primary keys:');?></h4>
+<?php 
+if (count($this->primaryKeysMsg)==0) {
+	echo '<ul><li><span class="green">ok</span></li></ul>';
+} else {
+	echo '<ul>';
+	foreach ($this->primaryKeysMsg as $msg) {
+		echo '<li><span class="red">'.$msg.'</span></li>';
+	}
+	echo '</ul>';
+}
+?>
+
+
+<h4><?php echo $this->translate('Checking for missing fields:');?></h4>
+<?php 
+if (count($this->missingFieldsMsg)==0) {
+	echo '<ul><li><span class="green">ok</span></li></ul>';
+} else {
+	echo '<ul>';
+	foreach ($this->missingFieldsMsg as $msg) {
+		echo '<li><span class="red">'.$msg.'</span></li>';
+	}
+	echo '</ul>';
+}
+?>
+
+
+<h4><?php echo $this->translate('Checking field types:');?></h4>
+<?php 
+if (count($this->fieldTypeMsg)==0) {
+	echo '<ul><li><span class="green">ok</span></li></ul>';
+} else {
+	echo '<ul>';
+	foreach ($this->fieldTypeMsg as $msg) {
+		echo '<li><span class="red">'.$msg.'</span></li>';
+	}
+	echo '</ul>';
+}
+?>
+
+<h4><?php echo $this->translate('Checking foreign keys:');?></h4>
+<?php 
+if (count($this->missingFKsMsg)==0) {
+	echo '<ul><li><span class="green">ok</span></li></ul>';
+} else {
+	echo '<ul>';
+	foreach ($this->missingFKsMsg as $msg) {
+		echo '<li><span class="red">'.$msg.'</span></li>';
+	}
+	echo '</ul>';
+}
+?>
+</div>
+ -->
+
+
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
