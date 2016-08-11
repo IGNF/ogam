@@ -98,7 +98,7 @@ class IntegrationController extends Controller
      */
     public function showUploadDataAction(Request $request, Submission $submission)
     {
-    	$configuration =  $this->get('ogam.configurationmanager');
+    	$configuration =  $this->get('ogam.configuration_manager');
     
     	$showDetail = $configuration->getConfig('showUploadFileDetail', true) == 1;
     	$showModel	= $configuration->getConfig('showUploadFileModel', true) == 1;
@@ -161,7 +161,7 @@ class IntegrationController extends Controller
      * @throws Exception
      */
     protected function getDataUploadForm(Submission $submission, $showDetail = false, $model = false) {
-    	$fileMaxSize = intval($this->get('ogam.configurationmanager')->getConfig('fileMaxSize', '40')); // MBi
+    	$fileMaxSize = intval($this->get('ogam.configuration_manager')->getConfig('fileMaxSize', '40')); // MBi
     	
     	$formBuilder = $this
 		->get('form.factory')
@@ -216,7 +216,7 @@ class IntegrationController extends Controller
     	}
 
     	// Get the configuration info
-    	$configuration = $this->get('ogam.configurationmanager');
+    	$configuration = $this->get('ogam.configuration_manager');
     	$uploadDir = $configuration->getConfig('uploadDir', '/var/www/html/upload');
     	
     	//
