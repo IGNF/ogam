@@ -3,8 +3,6 @@ namespace OGAMBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller {
 
@@ -12,6 +10,10 @@ class DefaultController extends Controller {
 	 * @Route("/", name="homepage")
 	 */
 	public function indexAction() {
+
+		$logger = $this->get('logger');
+		$logger->info('indexAction');
+
 		$userRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
 		$users = $userRepo->findAll();
 
