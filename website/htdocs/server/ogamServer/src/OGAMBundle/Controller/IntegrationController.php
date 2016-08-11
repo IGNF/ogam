@@ -2,17 +2,16 @@
 
 namespace OGAMBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\ORM\EntityManager;
-use OGAMBundle\Entity\RawData\Submission;
-use Symfony\Component\HttpFoundation\Request;
 use OGAMBundle\Entity\Metadata\Dataset;
+use OGAMBundle\Entity\RawData\Submission;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use OGAMBundle\Services\ConfigurationManager;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\File;
 
 /**
@@ -139,9 +138,8 @@ class IntegrationController extends Controller
     	$values = $form->getNormData();
     	$dataset = $values['DATASET_ID'];
     	
-    	//TODO : remove bouchon
-    	$userLogin = 'admin';//$this->getUser()->getLogin();
-    	$providerId = 1;// $this->getUser()->getProvider();
+    	$userLogin  = $this->getUser()->getLogin();
+    	$providerId = $this->getUser()->getProvider()->getId();
     	
     	$this->get('logger')->debug('userLogin : ' . $userLogin);
     	$this->get('logger')->debug('providerId : ' . $providerId);
@@ -256,7 +254,7 @@ class IntegrationController extends Controller
     	
     	// Send the files to the integration server
     	try {
-    		$providerId = 1;//TODO : $this->getUser()->getProvider()->getId();
+    		$providerId = $this->getUser()->getProvider()->getId();
     		$this->get('ogam.integration_service')->uploadData($submission->getId(), $providerId , $requestedFiles);
     	} catch (Exception $e) {
     		$this->get('logger')->err('Error during upload: ' . $e);

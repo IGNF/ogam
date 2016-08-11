@@ -26,14 +26,10 @@
     <th style="text-align:center">{{ 'Actions'|trans }}</th>
     <th></th>
 </tr>
-{# 
-<?php
+{%  
+set user = app.user
 
-// Get the user permissions
-$userSession = new Zend_Session_Namespace('user');
-$user = $userSession->user;
-
-#}
+%}
 {% for submission in submissions %}
 
 <tr class="sectiontableentry{{ loop.index0 % 2 }}">
@@ -138,11 +134,11 @@ $user = $userSession->user;
 
     <p><a href="{{ path('integration_validate',{'submissionId': submission.id}) }}" onClick="return confirm('{{ 'Confirm_submission_warning'|trans }}');">{{ 'Confirm submission'|trans }}</a></p>
     {% endif %}
-{#    {%  if (submission.step != "VALIDATED" or user.isAllowed('CANCEL_VALIDATED_SUBMISSION'))
-        and (submission.provider.id is sameas(app.user.provider.id) or app.user.isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION')) %}
-        #}
+    {%  if (submission.step != "VALIDATED" or user.isAllowed('CANCEL_VALIDATED_SUBMISSION'))
+        and (submission.provider.id is sameas(user.provider.id) or user.isAllowed('CANCEL_OTHER_PROVIDER_SUBMISSION')) %}
+        
     <p><a href="{{ path('integration_cancel', {'submissionId': submission.id}) }}" onClick="return confirm('{{ 'Are you sure?'|trans }}');">{{ 'Cancel Submission'|trans }}</a></p>
-{#         {% endif %} #}
+    {% endif %} 
 </td></tr>
 {% endfor %}
 </table>
