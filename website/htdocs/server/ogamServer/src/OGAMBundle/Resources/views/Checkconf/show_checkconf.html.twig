@@ -1,10 +1,5 @@
 {% extends "::base.html.twig" %}
 
-
-
-
-{% block title %}Checkconf{% endblock %}
-
 {% block body %}
 
 <h1>{% trans %}Check result{% endtrans %}</h1>
@@ -18,7 +13,7 @@
     	{% if (param.error is defined) %}
         	<span class="red">&nbsp;-&nbsp;'.{{ param.error }}</span><br/>
     	{% else %}
-        	<span class="green">&nbsp;-&nbsp;ok</span><br/></li>
+        	<span class="green">&nbsp;-&nbsp;ok</span><br/>
     	{%  endif %}
     </li>
 {%  endfor %}
@@ -32,91 +27,70 @@
 
 
 <h4>{% trans %}Checking for missing schemas:{% endtrans %}</h4>
-
-{{ dump(phpParameters) }}
-<!-- 
-<?php 
-if (count($this->missingSchemasMsg)==0) {
-	echo '<ul><li><span class="green">ok</span></li></ul>';
-} else {
-	echo '<ul>';
-	foreach ($this->missingSchemasMsg as $msg) {
-		echo '<li><span class="red">'.$msg.'</span></li>';
-	}
-	echo '</ul>';
-}
-?>
+<ul>
+{% for msg in missingSchemasMsg %} 
+	<li><span class="red">{{ msg }}</span></li>
+{%  else %}
+	<li><span class="green">ok</span></li>
+{%  endfor %}
+</ul>
 
 
-<h4><?php echo $this->translate('Checking for missing tables:');?></h4>
-<?php 
-if (count($this->missingTablesMsg)==0) {
-	echo '<ul><li><span class="green">ok</span></li></ul>';
-} else {
-	echo '<ul>';
-	foreach ($this->missingTablesMsg as $msg) {
-		echo '<li><span class="red">'.$msg.'</span></li>';
-	}
-	echo '</ul>';
-}
-?>
-
-<h4><?php echo $this->translate('Checking for primary keys:');?></h4>
-<?php 
-if (count($this->primaryKeysMsg)==0) {
-	echo '<ul><li><span class="green">ok</span></li></ul>';
-} else {
-	echo '<ul>';
-	foreach ($this->primaryKeysMsg as $msg) {
-		echo '<li><span class="red">'.$msg.'</span></li>';
-	}
-	echo '</ul>';
-}
-?>
+<h4>{% trans %}Checking for missing tables:{% endtrans %}</h4>
+<ul>
+{% for msg in missingTablesMsg %} 
+	<li><span class="red">{{ msg }}</span></li>
+{%  else %}
+	<li><span class="green">ok</span></li>
+{%  endfor %}
+</ul>
 
 
-<h4><?php echo $this->translate('Checking for missing fields:');?></h4>
-<?php 
-if (count($this->missingFieldsMsg)==0) {
-	echo '<ul><li><span class="green">ok</span></li></ul>';
-} else {
-	echo '<ul>';
-	foreach ($this->missingFieldsMsg as $msg) {
-		echo '<li><span class="red">'.$msg.'</span></li>';
-	}
-	echo '</ul>';
-}
-?>
+
+<h4>{% trans %}Checking for primary keys:{% endtrans %}</h4>
+<ul>
+{% for msg in primaryKeysMsg %} 
+	<li><span class="red">{{ msg }}</span></li>
+{%  else %}
+	<li><span class="green">ok</span></li>
+{%  endfor %}
+</ul>
 
 
-<h4><?php echo $this->translate('Checking field types:');?></h4>
-<?php 
-if (count($this->fieldTypeMsg)==0) {
-	echo '<ul><li><span class="green">ok</span></li></ul>';
-} else {
-	echo '<ul>';
-	foreach ($this->fieldTypeMsg as $msg) {
-		echo '<li><span class="red">'.$msg.'</span></li>';
-	}
-	echo '</ul>';
-}
-?>
+<h4>{% trans %}Checking for missing fields:{% endtrans %}</h4>
+<ul>
+{% for msg in missingFieldsMsg %} 
+	<li><span class="red">{{ msg }}</span></li>
+{%  else %}
+	<li><span class="green">ok</span></li>
+{%  endfor %}
+</ul>
 
-<h4><?php echo $this->translate('Checking foreign keys:');?></h4>
-<?php 
-if (count($this->missingFKsMsg)==0) {
-	echo '<ul><li><span class="green">ok</span></li></ul>';
-} else {
-	echo '<ul>';
-	foreach ($this->missingFKsMsg as $msg) {
-		echo '<li><span class="red">'.$msg.'</span></li>';
-	}
-	echo '</ul>';
-}
-?>
+
+<h4>{% trans %}Checking field types:{% endtrans %}</h4>
+<ul>
+{% for msg in fieldTypeMsg %} 
+	<li><span class="red">{{ msg }}</span></li>
+{%  else %}
+	<li><span class="green">ok</span></li>
+{%  endfor %}
+</ul>
+
+
+
+<h4>{% trans %}Checking foreign keys:{% endtrans %}</h4>
+<ul>
+{% for msg in missingFKsMsg %} 
+	<li><span class="red">{{ msg }}</span></li>
+{%  else %}
+	<li><span class="green">ok</span></li>
+{%  endfor %}
+</ul>
+
+
+
+
 </div>
- -->
-
 
 {% endblock %}
 

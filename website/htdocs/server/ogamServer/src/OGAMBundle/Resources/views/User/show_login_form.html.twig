@@ -1,10 +1,5 @@
 {% extends "::base.html.twig" %}
 
-
-
-
-{% block title %}OGAMBundle:User:showLoginForm{% endblock %}
-
 {% block body %}
 
 {% if error %}
@@ -15,7 +10,7 @@
 
 <div class="login-form"><div class="form-super-ct"><div class="form-ct">
 
-    <form action="{{ path('ogam_user_showloginform') }}" method="post" onSubmit="cram()">
+    <form action="{{ path('user_validatelogin') }}" method="post" onSubmit="cram()">
         
         <div class="text element" id="login-element">
         	<label for="username" class="required">Username:</label>

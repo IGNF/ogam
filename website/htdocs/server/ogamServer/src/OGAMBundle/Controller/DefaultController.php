@@ -35,15 +35,4 @@ class DefaultController extends Controller {
 			'layers' => $layers
 		));
 	}
-
-
-	/**
-	 * Test d'une route "admin".
-	 *
-	 * @Route("/admin/")
-	 */
-	public function adminAction()
-	{
-		return new Response('<html><body>Admin page!</body></html>');
-	}
 }

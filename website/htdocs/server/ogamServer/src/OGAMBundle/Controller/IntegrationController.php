@@ -31,10 +31,20 @@ class IntegrationController extends Controller
 	function getLogger(){
 		return $this->get('logger');
 	}
+
+	/**
+	 * Default action.
+	 *
+     * @Route("/", name = "integration_home")
+	 */
+	public function indexAction() {
+		// Display the default
+		return $this->showDataSubmissionPageAction();
+	}
+
     /**
      * Show the data submission page.
      *
-     * @Route("/", name = "integration_home")
      * @Route("/show-data-submission-page")
      */
     public function showDataSubmissionPageAction()
