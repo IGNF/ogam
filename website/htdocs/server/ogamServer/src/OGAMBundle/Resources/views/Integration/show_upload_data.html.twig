@@ -1,7 +1,63 @@
 {% extends "::base.html.twig" %}
-
+{% form_theme form 'form.html.twig' %}
 {% block title %}OGAMBundle:Integration:showUploadData{% endblock %}
 
 {% block body %}
-<h1>Welcome to the Integration:showUploadData page</h1>
+<h1>
+   {{ 'Data integration module'|trans }} - {{ 'Upload Data'|trans }}
+</h1>
+
+<h2>
+  {{ 'Dataset'|trans }} :{{ dataset.label }}
+</h2>
+
+<div class="fileformatdescription">
+<a class="external" href="{{ asset('pdf/CSVFileDescription.pdf') }}" target="_blank">
+    {{ 'File format description'|trans }}
+</a>
+</div>
+
+{{ form(form) }}
+
+{% endblock %}
+
+{% block _file_widget %}
+    {{ showModel ? block('filemodel') }}
+    {{ showDetail ? block('showdetail') }}
+    {{ form_widget(form) }}
+{% endblock %}
+
+{% block filemodel %}
+    <div class='model'>
+        <span class="show-model-text">{{ 'Download a file model for'|trans ~ file.label}}</span>
+        <div class="show-model-tool" onclick="window.location='{{ path('integration_exportfilemodel') ~ '?fileFormat=' ~ file.format }}';"></div>
+    </div>
+{% endblock %}
+
+{% block showdetail %}
+{#
+                // Get some more informations in the metadata base
+                $fields = $this->metadataModel->getFileFields($requestedFile.format);
+    <div id="{{ requestedFile.format }}_FIELDS">
+        <div class="hint-title">
+            <span>{{ 'The expected fields are:'|trans }}</span>;
+            <div onclick="document.getElementById('{{ requestedFile.format }}_FIELDS').className='expanded';" class="expand_tool"></div>';
+            <div onclick="document.getElementById('{{ requestedFile.format }}_FIELDS').className='';" class="collapse_tool"></div>';
+        </div>
+        <div class="fields">
+        {% for field in requestedFile.form.fields %}
+            <div class="field-row">
+                <div class="field-label {{ field.isMandatory ? 'mandatory_field' }}" title="{{ field.label }}">
+                 {{ $field.label ~ ( field.isMandatory ? '*') }} :
+                </div>
+                <div class="field-definition" title="'{{ field.definition }}'">
+                {{ field.definition }}
+                    <br/><b>Format:</b> {{ field.mask }}
+                {{ endif }}
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+ #}
 {% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'form_div_layout.html.twig'  %}
+{% block form %}
+<div class="{{ name }}">
+    <div class="form-super-ct">
+        <div class="form-ct">
+            {{- parent() -}}
+         </div>
+     </div>
+</div>
+{% endblock %}
+
+{%- block form_start -%}
+<div class="zend_form">
+    {{- parent() -}}
+{%- endblock form_start -%}
+
+{%- block form_end -%}
+    {{- parent() -}}
+</div>
+{%- endblock form_end -%}
+
+{%- block form_row -%}
+<div id="{{ id }}-element" class="{{ type ?? '' }} element">
+        {{- form_label(form) -}}
+        {{- form_errors(form) -}}
+        {{- form_widget(form) -}}
+</div>
+{%- endblock form_row-%}
+
+{%- block button_row -%}
+    <div class="button">
+        {{- form_widget(form) -}}
+    </div>
+{%- endblock button_row -%}
+
+{%- block choice_widget_collapsed -%}
+
+	{{- parent() -}}
+
+{%- endblock choice_widget_collapsed -%}

@@ -18,6 +18,7 @@ class Submission
 	const STEP_VALIDATED = 'VALIDATED';
 	const STEP_CANCELLED = 'CANCELLED';
 	const STATUS_OK= 'OK';
+	const STATUS_RUNNING= 'RUNNING';
 	const STATUS_WARNING = 'WARNING';
 	const STATUS_ERROR = 'ERROR';
 	const STATUS_CRASH = 'CRASH';
