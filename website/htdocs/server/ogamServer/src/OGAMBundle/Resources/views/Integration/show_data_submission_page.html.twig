@@ -2,12 +2,9 @@
 
 {% block title %}OGAMBundle:Integration:ShowDataSubmissionPage{% endblock %}
 
-{% block javascripts %}
+{% block body %}
 <script type="text/javascript" src="{{ asset('js/integration/progressbar.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/integration/later.min.js') }}"></script>
-{% endblock %}
-
-{% block body %}
 <h1>{% trans %}Data integration module{% endtrans %}</h1>
 <p class="onTableLink">
     <a href="{{ path("integration_creation") }}">{% trans %}Create data submission{% endtrans %}</a>
@@ -58,15 +55,14 @@ $user = $userSession->user;
                 <script type="text/javascript">
                 var OgamDesktopIntegration = {};
                 // Display the progress bar
-                display('progressBar{{ submission.id }}', '', 0, '{{ absolute_url('/img/') }}');
+                display('progressBar{{- submission.id -}}', '', 0, '{{ absolute_url('/img/') }}');
 
                 // Refresh The status of the submission
-                OgamDesktopIntegration.getStatus_{{ submission.id }} =  function (){
-                    var url = '{{ url('integration')|e(js) }}';
-                    {% if sumissonn.step is same as('CHECKED') %}
-                        url += 'get-check-status';
+                OgamDesktopIntegration.getStatus_{{- submission.id -}} = function (){
+                    {% if submission.step is same as('CHECKED') %}
+                    var url = '{{ url('integration_checkstatus') }}';
                     {% else %}
-                        url += 'get-data-status';
+                      var  url = '{{ url('integration_status') }}';
                     {% endif %}
                     OgamDesktopIntegration.request = new XMLHttpRequest();
                     OgamDesktopIntegration.request.onreadystatechange = function() {
@@ -79,8 +75,8 @@ $user = $userSession->user;
                                     case 'WARNING':
                                     case 'ERROR':
                                     case 'CRASH':
-                                        //Ext.TaskMgr.stop(OgamDesktopIntegration.getStatusTask_{{ submission.id }};
-                                        OgamDesktopIntegration.getStatusTask_{{ submission.id }}.clear();
+                                        //Ext.TaskMgr.stop(OgamDesktopIntegration.getStatusTask_{{- submission.id -}};
+                                        OgamDesktopIntegration.getStatusTask_{{- submission.id -}}.clear();
                                         location.reload();
                                         break;
                                     case 'RUNNING':
@@ -91,8 +87,8 @@ $user = $userSession->user;
                                             percentage = rp.currentCount / total;
                                         }
                                         percentage = (percentage * 100);
-                                    setLabel('progressBar{{ submission.id }}', rp.taskName);
-                                    setProgress('progressBar{{ submission.id }}', percentage);
+                                    setLabel('progressBar{{- submission.id -}}', rp.taskName);
+                                    setProgress('progressBar{{- submission.id -}}', percentage);
                                         break;
                                     default:
                                         return;
@@ -105,7 +101,7 @@ $user = $userSession->user;
                     OgamDesktopIntegration.request.open("GET", url+'?action=status&submissionId='+{{ submission.id }}, true);
                     OgamDesktopIntegration.request.send();
                 }
-                OgamDesktopIntegration.getStatusTask_{{ submission.id }} = later.setInterval(OgamDesktopIntegration.getStatus_{{ submission.id }}, later.parse.text('every 2 sec'));
+                OgamDesktopIntegration.getStatusTask_{{ submission.id }} = later.setInterval(OgamDesktopIntegration.getStatus_{{- submission.id -}}, later.parse.text('every 2 sec'));
                 </script>
                 </div>
             {% else %}
@@ -122,7 +118,7 @@ $user = $userSession->user;
                     {{ file.fileName|replace({'\\':'/'})|split('/')|last }}
                     </span>
                 </td>
-                <td class="line-number">{{ file.lineNumber }}</td>
+                <td class="line-number">{{ file.nbLines }}</td>
                 </tr>
             {% endfor %}
             </table>
@@ -136,7 +132,7 @@ $user = $userSession->user;
     {% endif %}
     {% if submission.step is not constant('STEP_INIT', submission) and submission.status is not constant('STATUS_RUNNING', submission) %}
 
-    <p><a href="{{ path('integration_report', {'submissionId': submission.id}) }}" >{{ 'Show report'|trans }})</a></p>
+    <p><a href="{{ absolute_url("proxy/showreport?submissionId=#{submission.id}") }}" >{{ 'Show report'|trans }}</a></p>
     {% endif %}
     {%  if (submission.step is same as('CHECKED') and (submission.status is same as("OK") or submission.status is same as('WARNING'))) %}
 

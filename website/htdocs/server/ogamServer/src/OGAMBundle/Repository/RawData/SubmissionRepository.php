@@ -13,11 +13,11 @@ class SubmissionRepository extends \Doctrine\ORM\EntityRepository
 	function getAciveSubmissions(){
 		 $dql = "SELECT s "
              . "FROM OGAMBundle\Entity\RawData\Submission s "
-             . "LEFT JOIN OGAMBundle\Entity\RawData\SubmissionFile f "
              . "WHERE s.step NOT IN ('CANCELLED', 'INIT')";
 
         $query = $this->getEntityManager()->createQuery($dql);
 
         return $query->getResult();
 	}
+	
 }

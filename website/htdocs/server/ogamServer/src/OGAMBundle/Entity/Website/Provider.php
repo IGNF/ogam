@@ -13,8 +13,8 @@ class Provider {
 
 	/**
 	 *
-	 * @var int
-	 * @ORM\Column(name="id", type="integer")
+	 * @var string
+	 * @ORM\Column(name="id", type="string")
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
 	 */
@@ -37,7 +37,7 @@ class Provider {
 	/**
 	 * Get id
 	 *
-	 * @return int
+	 * @return string
 	 */
 	public function getId() {
 		return $this->id;

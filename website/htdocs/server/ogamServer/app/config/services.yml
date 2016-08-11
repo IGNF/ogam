@@ -2,8 +2,13 @@
 # http://symfony.com/doc/current/book/service_container.html
 parameters:
 #    parameter_name: value
-
+    service_integration_url: "http://localhost:8080/OGAMIntegrationService/"
 services:
+    ogam.integration_service:
+        class: OGAMBundle\Services\Integration
+        arguments: ["%service_integration_url%"]
+        calls:
+          - [setLogger, ['@logger']]
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
