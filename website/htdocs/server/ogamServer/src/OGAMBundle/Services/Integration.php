@@ -52,35 +52,35 @@ class Integration extends AbstractService {
 	 */
 	public function newDataSubmission($providerId, $datasetId, $userLogin) {
 		$this->logger->debug("newDataSubmission : " . $providerId . " " . $datasetId);
-	
+
 		$client = new Client();
 		$client->setUri($this->serviceUrl . "DataServlet?action=NewDataSubmission");
 		$client->setOptions(array(
 				'maxredirects' => 0,
 				'timeout' => 30
 		));
-	
+
 		$client->setParameterPost(array(
 				'PROVIDER_ID' => $providerId,
 				'DATASET_ID'  => $datasetId,
 				'USER_LOGIN'  => $userLogin
 		));
-	
+
 		$this->logger->debug("HTTP REQUEST : " . $this->serviceUrl . "DataServlet?action=NewDataSubmission");
-	
+
 		$client->setMethod('POST');
 		$response = $client->send();
-	
+
 		// Check the result status
 		if (!$response->isSuccess()) {
-			$this->logger->debug("Error while creating new data submission : " . $response->getMessage());
-			throw new \Exception("Error while creating new data submission : " . $response->getMessage());
+			$this->logger->debug("Error while creating new data submission : " . $response->getReasonPhrase());
+			throw new \Exception("Error while creating new data submission : " . $response->getReasonPhrase());
 		}
-	
+
 		// Extract the response body
 		$body = $response->getBody();
 		$this->logger->debug("HTTP RESPONSE : " . $body);
-	
+
 		// Check the response status
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
@@ -92,7 +92,7 @@ class Integration extends AbstractService {
 			return $value;
 		}
 	}
-	
+
 	/**
 	 * Upload one or more data file.
 	 *
@@ -109,7 +109,7 @@ class Integration extends AbstractService {
 	 */
 	public function uploadData($submissionId, $providerId, $dataFiles, $computeGeoAttachment=false) {
 		//$this->logger->debug("uploadData : " . $submissionId . " - " . $providerId . " - " . $dataFiles);
-	
+
 		$client = new Client();
 		$client->setUri($this->serviceUrl . "DataServlet?action=UploadData");
 		$client->setEncType('multipart/form-data');
@@ -120,33 +120,33 @@ class Integration extends AbstractService {
 		$postParam = array(
 				'SUBMISSION_ID' => $submissionId,
 				'PROVIDER_ID'   => $providerId);
-		
+
 		// Specific to GINCO
 		if($computeGeoAttachment){
 			$postParam['COMPUTE_GEO_ATTACHMENT']= 'true';
 		}
-		
+
 		$client->setParameterPost($postParam);
-		
+
 		foreach ($dataFiles as $dataFile) {
 			$this->logger->debug("adding file : " . $dataFile->filePath);
 			$client->setFileUpload($dataFile->filePath, $dataFile->getFormat());
 		}
-	
+
 		$this->logger->debug("HTTP REQUEST : " . $this->serviceUrl . "DataServlet?action=UploadData");
-	
+
 		$response = $client->setMethod('POST')->send();
-	
+
 		// Check the result status
 		if (!$response->isOk()) {
-			$this->logger->debug("Error while creating new data submission : " . $response->getMessage());
-			throw new \Exception("Error while creating new data submission : " . $response->getMessage());
+			$this->logger->debug("Error while creating new data submission : " . $response->getReasonPhrase());
+			throw new \Exception("Error while creating new data submission : " . $response->getReasonPhrase());
 		}
-	
+
 		// Extract the response body
 		$body = $response->getBody();
 		$this->logger->debug("HTTP RESPONSE : " . $body);
-	
+
 		// Check the response status
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
@@ -156,7 +156,7 @@ class Integration extends AbstractService {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Cancel a data submission.
 	 *
@@ -167,30 +167,30 @@ class Integration extends AbstractService {
 	 */
 	public function cancelDataSubmission($submissionId) {
 		$this->logger->debug("cancelDataSubmission : " . $submissionId);
-	
+
 		$client = new Client();
 		$client->setUri($this->serviceUrl . "DataServlet?action=CancelDataSubmission");
 		$client->setOptions(array(
 				'maxredirects' => 0,
 				'timeout' => 300
 		));
-	
+
 		$client->setParameterPost(array('SUBMISSION_ID' => $submissionId));
-	
+
 		$this->logger->debug("HTTP REQUEST : " . $this->serviceUrl . "DataServlet?action=CancelDataSubmission");
-	
+
 		$response = $client->setMethod('POST')->send();
-	
+
 		// Check the result status
 		if (!$response->isSuccess()) {
-			$this->logger->debug("Error while cancelling the data submission : " . $response->getMessage());
-			throw new \Exception("Error while cancelling the data submission : " . $response->getMessage());
+			$this->logger->debug("Error while cancelling the data submission : " . $response->getReasonPhrase());
+			throw new \Exception("Error while cancelling the data submission : " . $response->getReasonPhrase());
 		}
-	
+
 		// Extract the response body
 		$body = $response->getBody();
 		$this->logger->debug("HTTP RESPONSE : " . $body);
-	
+
 		// Check the response status
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
@@ -200,7 +200,7 @@ class Integration extends AbstractService {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Validate a data submission.
 	 *
@@ -211,32 +211,32 @@ class Integration extends AbstractService {
 	 */
 	public function validateDataSubmission($submissionId) {
 		$this->logger->debug("validateDataSubmission : " . $submissionId);
-	
+
 		$client = new Client();
 		$client->setUri($this->serviceUrl . "DataServlet?action=ValidateDataSubmission");
 		$client->setOptions(array(
 				'maxredirects' => 0,
 				'timeout' => 30
 		));
-	
+
 		$client->setParameterPost(array(
 				'SUBMISSION_ID' => $submissionId
 		));
-	
+
 		$this->logger->debug("HTTP REQUEST : " . $this->serviceUrl . "DataServlet?action=ValidateDataSubmission");
-	
+
 		$response = $client->setMethod('POST')->send();
-	
+
 		// Check the result status
 		if (!$response->isSuccess()) {
-			$this->logger->debug("Error while validating the data submission : " . $response->getMessage());
-			throw new \Exception("Error while validating the data submission : " . $response->getMessage());
+			$this->logger->debug("Error while validating the data submission : " . $response->getReasonPhrase());
+			throw new \Exception("Error while validating the data submission : " . $response->getReasonPhrase());
 		}
-	
+
 		// Extract the response body
 		$body = $response->getBody();
 		$this->logger->debug("HTTP RESPONSE : " . $body);
-	
+
 		// Check the response status
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
@@ -246,7 +246,7 @@ class Integration extends AbstractService {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Check the data of a submission.
 	 *
@@ -257,30 +257,30 @@ class Integration extends AbstractService {
 	 */
 	public function checkDataSubmission($submissionId) {
 		$this->logger->debug("checkDataSubmission : " . $submissionId);
-	
+
 		$client = new Client();
 		$client->setUri($this->serviceUrl . "CheckServlet?action=check");
 		$client->setOptions(array(
 				'maxredirects' => 0,
 				'timeout' => 30
 		));
-	
+
 		$client->setParameterPost(array('SUBMISSION_ID' => $submissionId));
-	
+
 		$this->logger->debug("HTTP REQUEST : " . $this->serviceUrl . "CheckServlet?action=check");
-	
+
 		$response = $client->setMethod('POST')->send();
-	
+
 		// Check the result status
 		if (!$response->isSuccess()) {
-			$this->logger->debug("Error while checking the data submission : " . $response->getMessage());
-			throw new \Exception("Error while checking the data submission : " . $response->getMessage());
+			$this->logger->debug("Error while checking the data submission : " . $response->getReasonPhrase());
+			throw new \Exception("Error while checking the data submission : " . $response->getReasonPhrase());
 		}
-	
+
 		// Extract the response body
 		$body = $response->getBody();
 		$this->logger->debug("HTTP RESPONSE : " . $body);
-	
+
 		// Check the response status
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message
@@ -290,7 +290,7 @@ class Integration extends AbstractService {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Launch the get status process.
 	 *
@@ -305,30 +305,30 @@ class Integration extends AbstractService {
 	 */
 	public function getStatus($submissionId, $servletName, $actionName = "status") {
 		$this->logger->debug("getStatus : " . $submissionId);
-	
+
 		$client = new Client();
 		$client->setUri($this->serviceUrl . $servletName . "?action=" . $actionName . "&");
 		$client->setOptions(array(
 				'maxredirects' => 0,
 				'timeout' => 30
 		));
-	
+
 		$client->setParameterPost(array('SUBMISSION_ID' => $submissionId));
-	
+
 		$this->logger->debug("HTTP REQUEST : " . $this->serviceUrl . $servletName . "?action=" . $actionName);
-	
+
 		$response = $client->setMethod('POST')->send();
-	
+
 		// Check the result status
 		if (!$response->isSuccess()) {
-			$this->logger->debug("Error while getting the status : " . $response->getMessage());
-			throw new \Exception("Error while getting the status : " . $response->getMessage());
+			$this->logger->debug("Error while getting the status : " . $response->getReasonPhrase());
+			throw new \Exception("Error while getting the status : " . $response->getReasonPhrase());
 		}
-	
+
 		// Extract the response body
 		$body = $response->getBody();
 		$this->logger->debug("HTTP RESPONSE : " . $body);
-	
+
 		// Check the response status
 		if (strpos($body, "<Status>OK</Status>") === FALSE) {
 			// Parse an error message

@@ -49,9 +49,9 @@
 		</tr>
 		{% for submission in submissions %}
 			<tr class="sectiontableentry{{ cycle(['0', '1'], loop.index0) }}">
-				<td>{{ submission.submissionId }}</td>
-				<td>{{ submission.date }}</td>
-				<td>{{ submission.datasetId }}</td>
+				<td>{{ submission.id }}</td>
+				<td>{{ submission.creationDate|date("Y/m/d") }}</td>
+				<td>{{ submission.dataset.id }}</td>
 				<td>{{ submission.step }}</td>
 				<td>
 					{{ submission.status }}
@@ -72,12 +72,12 @@
 							{% for file in submission.files %}
 								<tr>
 									<td class="file-name">
-										<span title="{{ file.fileType }}">{{ fileName }}</span>
+										<span title="{{ file.fileType }}">{{ file.fileName|split('/')|last }}</span>
 									</td>
-									<td class="line-number">{{ file.lineNumber }}</td>
+									<td class="line-number">{{ file.nbLines }}</td>
 								</tr>
-
 							{% endfor %}
+						</table>
 					{% endif %}
 				</td>
 			</tr>

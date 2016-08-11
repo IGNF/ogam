@@ -107,7 +107,7 @@ public class ComputeGeoAssociationService {
 			} else if (hasCodesCommunes) {
 				communeDAO.createCommunesLinksFromCommunes(format, parameters);
 				mailleDAO.createMaillesLinksFromCommunes(format, parameters);
-				departementDAO.createDepartmentsLinksFromCommune(format, parameters);
+				departementDAO.createDepartmentsLinksFromCommunes(format, parameters);
 			} else if (hasCodesMailles) {
 				mailleDAO.createMaillesLinksFromMailles(format, parameters);
 				departementDAO.createDepartmentsLinksFromMailles(format, parameters);
