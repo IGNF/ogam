@@ -31,7 +31,6 @@ class DatasetRepository extends \Doctrine\ORM\EntityRepository
 				. "FROM OGAMBundle\Entity\Metadata\Dataset d "
 				. "WHERE SIZE(d.files) > 0 ORDER BY d.id";
 		
-						$query = $this->getEntityManager()->createQuery($dql);
 		$query = $this->getEntityManager()->createQuery($dql);
 		
 		return $query->getResult();
