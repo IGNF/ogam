@@ -2,6 +2,10 @@
 
 namespace OGAMBundle\Repository\RawData;
 
+
+
+use Doctrine\Common\Collections\Criteria;
+
 /**
  * SubmissionRepository
  *
@@ -19,5 +23,17 @@ class SubmissionRepository extends \Doctrine\ORM\EntityRepository
 
         return $query->getResult();
 	}
-	
+	/**
+	 * Get submissions for Harmonization.
+	 *
+	 * @return Array[Submission]
+	 */
+	public function getSubmissionsForHarmonization($orderBy = array('id'=>'ASC')) {
+
+		return $this->matching(Criteria::create()
+				->where(Criteria::expr()
+						->notIn('step', array('CANCELLED', 'INIT')))
+				->orderBy($orderBy));
+
+	}
 }

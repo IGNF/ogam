@@ -17,7 +17,7 @@ class HarmonizationProcess
     /**
      * @var int
      *
-     * @ORM\Column(name="harmonizationId", type="integer", unique=true)
+     * @ORM\Column(name="harmonization_process_id", type="integer", unique=true)
      * @ORM\Id
      */
     private $harmonizationId;

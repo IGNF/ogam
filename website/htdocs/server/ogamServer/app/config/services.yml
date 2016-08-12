@@ -3,9 +3,15 @@
 parameters:
 #    parameter_name: value
     service_integration_url: "http://localhost:8080/OGAMIntegrationService/"
+    service_integration_url: "http://localhost:8080/OGAMHarmonizationService/"
 services:
     ogam.integration_service:
         class: OGAMBundle\Services\Integration
+        arguments: ["%service_integration_url%"]
+        calls:
+          - [setLogger, ['@logger']]
+    ogam.harmonization_service:
+        class: OGAMBundle\Services\Harmonization
         arguments: ["%service_integration_url%"]
         calls:
           - [setLogger, ['@logger']]
