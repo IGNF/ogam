@@ -543,6 +543,7 @@ td.delete-cell {
 	position: absolute;
 	right: 0;
 }
+
 .zend_form input:-moz-read-only { /* For Firefox */
     background-color: lightgray;
 }
@@ -559,8 +560,11 @@ td.delete-cell {
 	margin-top: 20px;
 	height: 25px;
 }
-.zend_form .button input {
+
+button#form_submit {
 	width: 100px;
+    position: absolute;
+    right: 0;
 }
 .zend_form .hint-title {
 	font-weight: bold;

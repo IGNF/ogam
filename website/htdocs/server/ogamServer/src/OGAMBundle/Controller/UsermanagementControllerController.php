@@ -6,8 +6,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use OGAMBundle\Entity\Website\Provider;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 /**
  * @Route("/usermanagement")
@@ -31,10 +31,10 @@ class UsermanagementControllerController extends Controller {
 	protected function getProviderForm($provider = null) {
 		$formBuilder = $this->createFormBuilder($provider);
 
-		$formBuilder->add('label', TextType::class);
-		$formBuilder->add('definition', DateType::class);
-		$formBuilder->add('save', SubmitType::class, array(
-			'label' => 'Validate'
+		$formBuilder->add('label', TextType::class, array('label' => 'Label'));
+		$formBuilder->add('definition', TextareaType::class, array('label' => 'Definition'));
+		$formBuilder->add('submit', SubmitType::class, array(
+			'label' => 'Submit'
 		));
 
 		return $formBuilder->getForm();
