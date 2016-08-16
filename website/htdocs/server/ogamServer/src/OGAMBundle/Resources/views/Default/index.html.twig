@@ -37,7 +37,7 @@
 
 {% if (app.user and app.user.isAllowed('DATA_HARMONIZATION')) %}
 <li>
-<a href="#" class="pagelink" >{% trans %}Data Harmonization{% endtrans %}</a>
+<a href="{{ path('harmonization_home') }}" class="pagelink" >{% trans %}Data Harmonization{% endtrans %}</a>
 </li>
 {% endif %}
 

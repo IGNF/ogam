@@ -31,8 +31,6 @@ class ConfigurationManager {
 		$this->em = $em;
 		$this->logger = $logger;
 
-		$this->logger->debug("ConfigurationManager constructor");
-
 		$this->readConfiguration();
 	}
 
@@ -40,14 +38,9 @@ class ConfigurationManager {
 	 * Read the configuration.
 	 */
 	private function readConfiguration() {
-
-		$this->logger->debug("ConfigurationManager readConfiguration");
-
 		// Get application parameters
 		$appRepo = $this->em->getRepository('OGAMBundle\Entity\Website\ApplicationParameter', 'website');
 		$this->parameters = $appRepo->findAllIndexedByName();
-
-		$this->logger->debug("parameters : " . print_r($this->parameters, true));
 	}
 
 	/**
