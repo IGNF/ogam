@@ -4,130 +4,69 @@
 {% block body %}
 <h1>{% trans %}Welcome{% endtrans %}</h1>
 
-{% if (app.user) %}
-
-<div class="left-column">
-<div class="moduletable_menu">
-
-<h3>{% trans %}Select a menu{% endtrans %}</h3>
-
-
-<ul id="appmenu" class="menu">
-
-
-{% if (app.user and app.user.isAllowed('DATA_INTEGRATION')) %}
-<li>
-	<a href="{{ path('integration_home') }}" class="pagelink" >{% trans %}Data Integration{% endtrans %}</a>
-</li>
-{% endif %}
-
-{% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('RAW_DATA')) %}
-<li>
-<a href="#/SCHEMA/RAW_DATA" class="pagelink" >{% trans %}Visualize Raw Data{% endtrans %}</a>
-</li>
-{% endif %}
-
-
-{% if (app.user and app.user.isAllowed('DATA_EDITION') and app.user.isSchemaAllowed('RAW_DATA')) %}
-<li>
-<a href="#/SCHEMA/RAW_DATA" class="pagelink" >{% trans %}Add a new localisation{% endtrans %}</a>
-</li>
-{% endif %}
-
-
-{% if (app.user and app.user.isAllowed('DATA_HARMONIZATION')) %}
-<li>
-<a href="{{ path('harmonization_home') }}" class="pagelink" >{% trans %}Data Harmonization{% endtrans %}</a>
-</li>
-{% endif %}
-
-
-{% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('HARMONIZED_DATA')) %}
-<li>
-<a href="#/SCHEMA/HARMONIZED_DATA" class="pagelink" >{% trans %}Visualize Harmonized Data{% endtrans %}</a>
-</li>
-{% endif %}
-
-
-{% if (app.user and app.user.isAllowed('MANAGE_USERS')) %}
-<li>
-<a href="{{ path('usermanagement_home') }}" class="pagelink" >{% trans %}User Administration{% endtrans %}</a>
-</li>
-{% endif %}
-
-{% if (app.user and app.user.isAllowed('CHECK_CONF')) %}
-<li>
-<a href="{{ path('checkconf_home') }}" class="pagelink" >{% trans %}Check Configuration{% endtrans %}</a>
-</li>
-{% endif %}
-
-
-</ul>
-</div>
-</div>  
-
-{% endif %}
-
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-----------------------------------------------------------------
-
-
-<h2>Application Parameters</h2>
-
-<table>
-
-{% for applicationParameter in applicationParameters %}
-	<tr>
-	<td>{{ applicationParameter.name }}</td>
-	<td>{{ applicationParameter.value }}</td>
-    </tr>
-{% endfor %}
-</table>
-
-<h2>Users</h2>
-
-{#dump(users) #}
-
-
-{% for user in users %}
-    <p>
-    User :{{ user.login }}<br/> 
-    Name : {{ user.username }}<br/>
-    Rôles :
-    {% for role in user.roles %}
-    	{{ role.label }}
-    {% endfor %}<br/>
-    Provider : {{ user.provider.label }}
-    </p>
-{% endfor %}
-
-<h2>Mode</h2>
-
-{{ mode.unit }} / {{ mode.code }} : {{ mode.label }}
-
-
-<h2>Table Field</h2>
-
-{{ tableField.format }} /  {{ tableField.data }} : {{ tableField.columnName }} 
-
-
-
-<h2>Layers</h2>
-
-<table>
-
-{% for layer in layers %}
-	<tr>
-	<td>{{ layer.layerName }}</td>
-	<td>{{ layer.layerLabel }}</td>
-    </tr>
-{% endfor %}
-</table>
-
+    {% if (app.user) %}
+    
+    <div class="left-column">
+    <div class="moduletable_menu">
+    
+    <h3>{% trans %}Select a menu{% endtrans %}</h3>
+    
+    
+    <ul id="appmenu" class="menu">
+    
+    
+        {% if (app.user and app.user.isAllowed('DATA_INTEGRATION')) %}
+        <li>
+        	<a href="{{ path('integration_home') }}" class="pagelink" >{% trans %}Data Integration{% endtrans %}</a>
+        </li>
+        {% endif %}
+        
+        {% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('RAW_DATA')) %}
+        <li>
+        <a href="#/SCHEMA/RAW_DATA" class="pagelink" >{% trans %}Visualize Raw Data{% endtrans %}</a>
+        </li>
+        {% endif %}
+        
+        
+        {% if (app.user and app.user.isAllowed('DATA_EDITION') and app.user.isSchemaAllowed('RAW_DATA')) %}
+        <li>
+        <a href="#/SCHEMA/RAW_DATA" class="pagelink" >{% trans %}Add a new localisation{% endtrans %}</a>
+        </li>
+        {% endif %}
+        
+        
+        {% if (app.user and app.user.isAllowed('DATA_HARMONIZATION')) %}
+        <li>
+        <a href="{{ path('harmonization_home') }}" class="pagelink" >{% trans %}Data Harmonization{% endtrans %}</a>
+        </li>
+        {% endif %}
+        
+        
+        {% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('HARMONIZED_DATA')) %}
+        <li>
+        <a href="#/SCHEMA/HARMONIZED_DATA" class="pagelink" >{% trans %}Visualize Harmonized Data{% endtrans %}</a>
+        </li>
+        {% endif %}
+        
+        
+        {% if (app.user and app.user.isAllowed('MANAGE_USERS')) %}
+        <li>
+        <a href="{{ path('usermanagement_home') }}" class="pagelink" >{% trans %}User Administration{% endtrans %}</a>
+        </li>
+        {% endif %}
+        
+        {% if (app.user and app.user.isAllowed('CHECK_CONF')) %}
+        <li>
+        <a href="{{ path('checkconf_home') }}" class="pagelink" >{% trans %}Check Configuration{% endtrans %}</a>
+        </li>
+        {% endif %}
+    
+    
+    </ul>
+    </div>
+    </div>  
+    
+    {% endif %}
 
 
 {% endblock %}

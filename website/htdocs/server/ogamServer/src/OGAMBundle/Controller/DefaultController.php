@@ -14,6 +14,7 @@ class DefaultController extends Controller {
 		$logger = $this->get('logger');
 		$logger->info('indexAction');
 
+		/*
 		$userRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
 		$users = $userRepo->findAll();
 
@@ -28,13 +29,8 @@ class DefaultController extends Controller {
 
 		$layersRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Mapping\Layer', 'mapping');
 		$layers = $layersRepo->findAll();
+		*/
 
-		return $this->render('OGAMBundle:Default:index.html.twig', array(
-			'users' => $users,
-			'applicationParameters' => $applicationParameters,
-			'tableField' => $tableField,
-			'mode' => $mode,
-			'layers' => $layers
-		));
+		return $this->render('OGAMBundle:Default:index.html.twig', array());
 	}
 }
