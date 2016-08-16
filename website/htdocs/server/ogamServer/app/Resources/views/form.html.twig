@@ -22,8 +22,8 @@
 {%- block form_row -%}
 <div id="{{ id }}-element" class="{{ type ?? '' }} element">
         {{- form_label(form) -}}
-        {{- form_errors(form) -}}
         {{- form_widget(form) -}}
+        {{- form_errors(form) -}}
 </div>
 {%- endblock form_row-%}
 
@@ -38,3 +38,15 @@
 	{{- parent() -}}
 
 {%- endblock choice_widget_collapsed -%}
+
+{% block form_errors %}
+    {% spaceless %}
+        {% if errors|length > 0 %}
+        <ul>
+            {% for error in errors %}
+                <li class="error">{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endspaceless %}
+{% endblock form_errors %}

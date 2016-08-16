@@ -536,6 +536,13 @@ td.delete-cell {
 	margin: 0 auto;
 	width: 350px;
 }
+
+.zend_form li.error{
+	color: red;
+	font-weight: bold;
+	list-style-type: none;
+}
+
 .zend_form .element, .zend_form .button {
 	position: relative;
 }
