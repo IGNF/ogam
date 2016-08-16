@@ -49,7 +49,11 @@
     
                 <!-- CONTENT -->
                 <div class="content" id="content">
-                     {% block body %}{% endblock %}
+                
+                    <!--  Flash messages -->
+                    {% include ('::flash-messages.html.twig') %}
+                                
+                	{% block body %}{% endblock %}
                 </div>
     
             

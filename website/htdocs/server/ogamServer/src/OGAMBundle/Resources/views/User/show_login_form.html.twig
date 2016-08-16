@@ -6,19 +6,19 @@
     <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
 {% endif %}
 
-<h1>Authentification</h1>
+<h1>{% trans %}Authentication{% endtrans %}</h1>
 
 <div class="login-form"><div class="form-super-ct"><div class="form-ct">
 
     <form action="{{ path('user_validatelogin') }}" method="post" onSubmit="cram()">
         
         <div class="text element" id="login-element">
-        	<label for="username" class="required">Username:</label>
+        	<label for="username" class="required">{% trans %}Username{% endtrans %}:</label>
         	<input type="text" id="username" name="_username" value="{{ last_username }}" />
         </div>
         
     	<div class="password element" id="password-element">
-        	<label for="password" class="required">Password:</label>
+        	<label for="password" class="required">{% trans %}Password{% endtrans %}:</label>
         	<input type="password" id="password" name="_password" />
         </div>
     
@@ -31,7 +31,7 @@
         #}
     
     	<div class="button">
-        	<input type="submit" name="submit" id="submit" value="Connexion"/>
+        	<input type="submit" name="submit" id="submit" value="{% trans %}Log in{% endtrans %}"/>
         </div>
     </form>
 

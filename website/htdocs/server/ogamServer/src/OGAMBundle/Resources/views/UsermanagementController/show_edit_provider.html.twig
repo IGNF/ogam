@@ -1,5 +1,10 @@
 {% extends "::base.html.twig" %}
 
 {% block body %}
-<h1>Welcome to the UsermanagementController:showCreateProvider page</h1>
+<h1>{% trans %}Create Role{% endtrans %}</h1>
+
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+
 {% endblock %}

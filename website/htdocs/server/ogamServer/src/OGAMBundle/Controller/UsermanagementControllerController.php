@@ -4,6 +4,10 @@ namespace OGAMBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use OGAMBundle\Entity\Website\Provider;
 
 /**
  * @Route("/usermanagement")
@@ -15,6 +19,25 @@ class UsermanagementControllerController extends Controller {
 	 */
 	public function indexAction() {
 		return $this->render('OGAMBundle:UsermanagementController:index.html.twig', array());
+	}
+
+	/**
+	 * Build and return the provider form.
+	 *
+	 * @param Provider $provider
+	 *        	a provider
+	 * @return a Form
+	 */
+	protected function getProviderForm($provider = null) {
+		$formBuilder = $this->createFormBuilder($provider);
+
+		$formBuilder->add('label', TextType::class);
+		$formBuilder->add('definition', DateType::class);
+		$formBuilder->add('save', SubmitType::class, array(
+			'label' => 'Validate'
+		));
+
+		return $formBuilder->getForm();
 	}
 
 	/**
@@ -52,9 +75,40 @@ class UsermanagementControllerController extends Controller {
 	/**
 	 * @Route("/showEditProvider", name="usermanagement_showEditProvider")
 	 */
-	public function showCreateEditAction() {
-		return $this->render('OGAMBundle:UsermanagementController:show_edit_provider.html.twig', array());
-		// ...
+	public function showEditProviderAction(Request $request) {
+		$provider = new Provider();
+
+		$logger = $this->get('logger');
+		$logger->debug('showEditProviderAction');
+
+		// Get the provider form
+		$form = $this->getProviderForm();
+
+		$logger->debug('form : ' . \Doctrine\Common\Util\Debug::dump($form, 3, true, false));
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			// $form->getData() holds the submitted values
+			// but, the original `$provider` variable has also been updated
+			$provider = $form->getData();
+
+			$logger->debug('provider : ' . \Doctrine\Common\Util\Debug::dump($provider, 3, true, false));
+
+			// ... perform some action, such as saving the task to the database
+			// for example, if Task is a Doctrine entity, save it!
+			// $em = $this->getDoctrine()->getManager();
+			// $em->persist($task);
+			// $em->flush();
+
+			$this->addFlash('success', 'The provider information has been saved.');
+
+			return $this->redirectToRoute('usermanagement_home');
+		}
+
+		return $this->render('OGAMBundle:UsermanagementController:show_edit_provider.html.twig', array(
+			'form' => $form->createView()
+		));
 	}
 
 	/**
