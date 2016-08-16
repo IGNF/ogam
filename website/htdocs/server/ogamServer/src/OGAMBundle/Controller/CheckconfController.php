@@ -29,6 +29,10 @@ class CheckconfController extends Controller {
 	 */
 	public function showCheckConfAction(Request $request) {
 
+		$breadcrumbs = $this->get("white_october_breadcrumbs");
+		$breadcrumbs->addItem("Home", $this->get("router")->generate("homepage"));
+		$breadcrumbs->addItem("Checkconf", $this->get("router")->generate("checkconf_home"));
+
 		// Check the PHP config
 		$phpParameters = $this->checkPhpParameters();
 

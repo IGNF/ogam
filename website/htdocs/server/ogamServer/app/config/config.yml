@@ -146,3 +146,7 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+    
+# breadcrumb configuration
+white_october_breadcrumbs: ~

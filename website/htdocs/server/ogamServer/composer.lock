@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3312d58debcade62ec295ff30c624d81",
-    "content-hash": "7d1c12c192690aa5c1d21cce966afc65",
+    "hash": "858f911e69f8386f0950e58ac168f274",
+    "content-hash": "dda8e4ae2cd507bc10608465ac45c556",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -3003,6 +3003,49 @@
                 "validate"
             ],
             "time": "2015-08-24 13:29:44"
+        },
+        {
+            "name": "whiteoctober/breadcrumbs-bundle",
+            "version": "1.2.2",
+            "target-dir": "WhiteOctober/BreadcrumbsBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/whiteoctober/BreadcrumbsBundle.git",
+                "reference": "52b748c0fce0b3500891a0501c4f796085d318de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/whiteoctober/BreadcrumbsBundle/zipball/52b748c0fce0b3500891a0501c4f796085d318de",
+                "reference": "52b748c0fce0b3500891a0501c4f796085d318de",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "symfony/framework-bundle": "~2.0|~3.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "WhiteOctober\\BreadcrumbsBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rich Sage",
+                    "email": "rich.sage@gmail.com"
+                }
+            ],
+            "description": "A small breadcrumbs bundle for Symfony2",
+            "homepage": "https://github.com/whiteoctober/BreadcrumbsBundle",
+            "keywords": [
+                "breadcrumbs",
+                "symfony"
+            ],
+            "time": "2016-02-05 10:46:40"
         },
         {
             "name": "zendframework/zend-escaper",

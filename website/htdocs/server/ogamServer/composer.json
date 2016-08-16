@@ -24,7 +24,8 @@
         "incenteev/composer-parameter-handler": "^2.0",
         "zendframework/zend-http": "^2.5",
         "phpunit/phpunit": "^4.8",
-        "phpcheckstyle/phpcheckstyle": "^0.14.3"
+        "phpcheckstyle/phpcheckstyle": "^0.14.3",
+        "whiteoctober/breadcrumbs-bundle": "^1.2"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

@@ -506,6 +506,23 @@ td.delete-cell {
 }
 
 /**************************************/
+/**      breadcrumbs                 **/
+/**************************************/
+
+.header-beadcrumb ol {
+	list-style-type: none;
+}
+
+.header-beadcrumb li {
+	display: inline;
+}
+
+.header-beadcrumb .separator {
+	margin-left : 5px;
+	margin-right : 5px;
+}
+
+/**************************************/
 /**      Zend Form CSS               **/
 /**************************************/
 .form-super-ct {

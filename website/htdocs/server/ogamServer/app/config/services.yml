@@ -41,6 +41,14 @@ services:
         tags:
             - { name: kernel.event_subscriber }
             
+    # Listener for the breadcrumb
+    ogam.breadcumb_listener:
+        class: OGAMBundle\EventListener\BreadcrumbListener
+        arguments: ["@white_october_breadcrumbs"]
+        tags:
+            - { name: kernel.event_subscriber }            
+            
+            
     # Repositories not linked to a specific entity
     ogam.generic_repository:
         abstract: true
