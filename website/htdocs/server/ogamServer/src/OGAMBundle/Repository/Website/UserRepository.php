@@ -9,4 +9,8 @@ namespace OGAMBundle\Repository\Website;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository {
 
+
+
+
+
 }

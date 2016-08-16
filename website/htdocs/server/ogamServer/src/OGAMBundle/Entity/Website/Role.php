@@ -3,6 +3,7 @@ namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\RoleInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Role
@@ -16,7 +17,9 @@ class Role implements RoleInterface {
 	 * The code.
 	 *
 	 * @var string
-	 * @ORM\Column(name="role_code", type="string", length=36, unique=true)
+	 * @Assert\Length(max=36)
+	 * @Assert\NotBlank()
+	 * @ORM\Column(name="role_code", type="string", length=36, nullable=false, unique=true)
 	 * @ORM\Id
 	 */
 	private $code;
@@ -25,13 +28,16 @@ class Role implements RoleInterface {
 	 * The label.
 	 *
 	 * @var string
+	 * @Assert\Length(max=100)
 	 * @ORM\Column(name="role_label", type="string", length=100, nullable=true)
 	 */
 	private $label;
 
 	/**
+	 * The definition.
 	 *
 	 * @var string
+	 * @Assert\Length(max=255)
 	 * @ORM\Column(name="role_definition", type="string", length=255, nullable=true)
 	 */
 	private $definition;

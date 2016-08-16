@@ -19,7 +19,7 @@
 	<th></th>
 </tr>
 {% for provider in providers %}
-<tr class="sectiontableentry<?php echo $i % 2?>">
+<tr class="sectiontableentry{{ loop.index0 % 2 }}">
 	<td>{{ provider.id }}</td>
 	<td>{{ provider.label }}</td>
 	<td>{{ provider.definition }}</td>
@@ -29,8 +29,7 @@
 		<td class="delete-cell">
 			<a title="{% trans %}Delete{% endtrans %}" href="{{ path('usermanagement_deleteProvider', {'id' : provider.id}) }}" onClick="return confirm('{% trans %}Are you sure?{% endtrans %}');">&nbsp;</a>
 		</td>
-	{% else %}
-	 
+	{% else %}	 
 		<td class="delete-cell desaturate">
 			<a title="{% trans %}Delete{% endtrans %}" href="#" onClick="alert('{% trans %}Impossible to delete this provider{% endtrans %}');">&nbsp;</a>
 		</td>

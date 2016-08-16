@@ -2,6 +2,7 @@
 namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use OGAMBundle\Entity\Website\Role as Role;
 use OGAMBundle\Entity\Website\Provider as Provider;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -15,25 +16,34 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface, \Serializable {
 
 	/**
+	 * The login.
 	 *
-	 * @var string @ORM\Column(name="user_login", type="string", length=50, nullable=false, unique=true)
-	 *      @ORM\Id
+	 * @var string
+	 * @Assert\Length(max=50)
+	 * @Assert\NotBlank()
+	 * @ORM\Column(name="user_login", type="string", length=50, nullable=false, unique=true)
+	 * @ORM\Id
 	 */
 	private $login;
 
 	/**
+	 * The user name.
 	 *
 	 * @var string @ORM\Column(name="user_name", type="string", length=50, nullable=true)
+	 * @Assert\Length(max=50)
 	 */
 	private $username;
 
 	/**
+	 * The password.
 	 *
 	 * @var string @ORM\Column(name="user_password", type="string", length=50, nullable=true)
+	 * @Assert\Length(max=50)
 	 */
 	private $password;
 
 	/**
+	 * The provider.
 	 *
 	 * @var string @ORM\ManyToOne(targetEntity="Provider")
 	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
@@ -47,8 +57,10 @@ class User implements UserInterface, \Serializable {
 	private $active;
 
 	/**
+	 * The email.
 	 *
 	 * @var string @ORM\Column(name="email", type="string", length=255, nullable=true)
+	 * @Assert\Length(max=50)
 	 */
 	private $email;
 

@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use OGAMBundle\Entity\Website\Provider;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use OGAMBundle\Entity\Website\Role;
 
 /**
  * @Route("/usermanagement")
@@ -48,7 +49,35 @@ class UsermanagementController extends Controller {
 	}
 
 	/**
-	 * Delete a provider
+	 * Build and return the role form.
+	 *
+	 * @param Role $role
+	 *        	a role
+	 * @return a Form
+	 */
+	protected function getRoleForm($role = null) {
+		$formBuilder = $this->createFormBuilder($role);
+
+		$formBuilder->add('code', TextType::class, array(
+			'label' => 'Code'
+		));
+
+		$formBuilder->add('label', TextType::class, array(
+			'label' => 'Label'
+		));
+		$formBuilder->add('definition', TextType::class, array(
+			'label' => 'Definition',
+			'required' => false
+		));
+		$formBuilder->add('submit', SubmitType::class, array(
+			'label' => 'Submit'
+		));
+
+		return $formBuilder->getForm();
+	}
+
+	/**
+	 * Delete a provider.
 	 *
 	 * @Route("/deleteProvider/{id}", name="usermanagement_deleteProvider", requirements={"id": "[1-9][0-9]*"})
 	 */
@@ -71,11 +100,26 @@ class UsermanagementController extends Controller {
 	}
 
 	/**
-	 * @Route("/deleteRole")
+	 * Delete a role.
+	 *
+	 * @Route("/deleteRole/{code}", name="usermanagement_deleteRole")
 	 */
-	public function deleteRoleAction() {
-		return $this->render('OGAMBundle:UsermanagementController:delete_role.html.twig', array());
-		// ...
+	public function deleteRoleAction($code) {
+		$roleRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Role', 'website');
+		$role = $roleRepo->find($code);
+
+		if ($role == null) {
+			$this->addFlash('error', 'The role does not exist.');
+			return $this->redirectToRoute('usermanagement_showRoles');
+		}
+
+		$em = $this->getDoctrine()->getManager();
+		$em->remove($role);
+		$em->flush();
+
+		$this->addFlash('success', 'The role has been deleted.');
+
+		return $this->redirectToRoute('usermanagement_showRoles');
 	}
 
 	/**
@@ -103,7 +147,7 @@ class UsermanagementController extends Controller {
 		$provider = new Provider();
 
 		$logger = $this->get('logger');
-		$logger->debug('showEditProviderAction');
+		$logger->debug('editProviderAction');
 
 		if ($id != null) {
 			$providerRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Provider', 'website');
@@ -112,8 +156,6 @@ class UsermanagementController extends Controller {
 
 		// Get the provider form
 		$form = $this->getProviderForm($provider);
-
-		$logger->debug('form : ' . \Doctrine\Common\Util\Debug::dump($form, 3, true, false));
 
 		$form->handleRequest($request);
 
@@ -140,11 +182,46 @@ class UsermanagementController extends Controller {
 	}
 
 	/**
-	 * @Route("/showCreateRole")
+	 * Edit a role.
+	 *
+	 * @Route("/editRole/{code}", name="usermanagement_editRole")
 	 */
-	public function showCreateRoleAction() {
-		return $this->render('OGAMBundle:UsermanagementController:show_create_role.html.twig', array());
-		// ...
+	public function editRoleAction(Request $request, $code = null) {
+		$role = new Role();
+
+		$logger = $this->get('logger');
+		$logger->debug('editRoleAction');
+
+		if ($code != null) {
+			$roleRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Role', 'website');
+			$role = $roleRepo->find($code);
+		}
+
+		// Get the role form
+		$form = $this->getRoleForm($role);
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			// $form->getData() holds the submitted values
+			// but, the original `$provider` variable has also been updated
+			$role = $form->getData();
+
+			$logger->debug('provider : ' . \Doctrine\Common\Util\Debug::dump($role, 3, true, false));
+
+			// Save the provider
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($role);
+			$em->flush();
+
+			$this->addFlash('success', 'The role information has been saved.');
+
+			return $this->redirectToRoute('usermanagement_showRoles');
+		}
+
+		return $this->render('OGAMBundle:UsermanagementController:show_edit_role.html.twig', array(
+			'form' => $form->createView()
+		));
 	}
 
 	/**
@@ -168,7 +245,7 @@ class UsermanagementController extends Controller {
 		$providersRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Provider', 'website');
 		$providers = $providersRepo->findAll();
 
-		// Calculate if teach provider can be deleted or not
+		// Calculate if each provider can be deleted or not
 		$isDeletableProvider = array();
 		foreach ($providers as $provider) {
 
@@ -237,8 +314,33 @@ class UsermanagementController extends Controller {
 	 * @Route("/showRoles", name="usermanagement_showRoles")
 	 */
 	public function showRolesAction() {
-		return $this->render('OGAMBundle:UsermanagementController:show_roles.html.twig', array());
-		// ...
+		$logger = $this->get('logger');
+		$logger->info('showRolesAction');
+
+		// Get the list of roles
+		$rolesRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Role', 'website');
+		$roles = $rolesRepo->findAll();
+
+		// Calculate if each role can be deleted or not
+		$isDeletableRole = array();
+		foreach ($roles as $role) {
+
+			$isDeletable = true;
+
+			// If a user is using this role then we cannot delete
+			$roleRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Role', 'website');
+			$nbUsers = $roleRepo->userCount($role->getCode());
+			if ($nbUsers > 0) {
+				$isDeletable = false;
+			}
+
+			$isDeletableRole[$role->getCode()] = $isDeletable;
+		}
+
+		return $this->render('OGAMBundle:UsermanagementController:show_roles.html.twig', array(
+			'roles' => $roles,
+			'isDeletableRole' => $isDeletableRole
+		));
 	}
 
 	/**

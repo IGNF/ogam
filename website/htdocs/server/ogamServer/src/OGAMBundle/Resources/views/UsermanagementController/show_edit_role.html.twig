@@ -1,5 +1,11 @@
 {% extends "::base.html.twig" %}
+{% form_theme form 'form.html.twig' %}
 
 {% block body %}
-<h1>Welcome to the UsermanagementController:showCreateRole page</h1>
+
+<h1>{% trans %}Edit Role{% endtrans %}</h1>
+
+{{ form(form) }}
+
+
 {% endblock %}
