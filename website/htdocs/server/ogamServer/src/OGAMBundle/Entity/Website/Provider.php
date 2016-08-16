@@ -2,6 +2,7 @@
 namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Provider
@@ -17,12 +18,14 @@ class Provider {
 	 * @ORM\Column(name="id", type="string")
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
+	 * @ORM\SequenceGenerator(sequenceName="website.provider_id_seq")
 	 */
 	private $id;
 
 	/**
 	 *
 	 * @var string
+	 * @Assert\NotBlank()
 	 * @ORM\Column(name="label", type="string", nullable=true)
 	 */
 	private $label;

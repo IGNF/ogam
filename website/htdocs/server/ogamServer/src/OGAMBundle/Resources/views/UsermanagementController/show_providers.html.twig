@@ -23,11 +23,11 @@
 	<td>{{ provider.id }}</td>
 	<td>{{ provider.label }}</td>
 	<td>{{ provider.definition }}</td>
-	<td class="view-cell"><a title="{% trans %}View related users and content{% endtrans %}" href="{{ path('usermanagement_showProviderContent') }}?id={{ provider.id }}">&nbsp;</a></td>
-	<td class="edit-cell"><a title="{% trans %}Edit{% endtrans %}" href="{{ path('usermanagement_showEditProvider') }}?id={{ provider.id }}">&nbsp;</a></td>
+	<td class="view-cell"><a title="{% trans %}View related users and content{% endtrans %}" href="{{ path('usermanagement_showProviderContent', {'id' : provider.id}) }}">&nbsp;</a></td>
+	<td class="edit-cell"><a title="{% trans %}Edit{% endtrans %}" href="{{ path('usermanagement_editProvider', {'id' : provider.id}) }}">&nbsp;</a></td>
 	{% if isDeletableProvider[provider.id] %}
 		<td class="delete-cell">
-			<a title="{% trans %}Delete{% endtrans %}" href="{{ path('usermanagement_deleteProvider') }}?id={{ provider.id }}" onClick="return confirm('{% trans %}Are you sure?{% endtrans %}');">&nbsp;</a>
+			<a title="{% trans %}Delete{% endtrans %}" href="{{ path('usermanagement_deleteProvider', {'id' : provider.id}) }}" onClick="return confirm('{% trans %}Are you sure?{% endtrans %}');">&nbsp;</a>
 		</td>
 	{% else %}
 	 
@@ -40,7 +40,7 @@
 </table>
 
 <p class="subTableLink">
-    <a href="{{ path('usermanagement_showEditProvider') }}">{% trans %}Create Provider{% endtrans %}</a>
+    <a href="{{ path('usermanagement_editProvider') }}">{% trans %}Create Provider{% endtrans %}</a>
 <p/>
 
 

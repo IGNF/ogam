@@ -8,11 +8,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use OGAMBundle\Entity\Website\Provider;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 /**
  * @Route("/usermanagement")
  */
-class UsermanagementControllerController extends Controller {
+class UsermanagementController extends Controller {
 
 	/**
 	 * @Route("/", name = "usermanagement_home")
@@ -31,8 +32,14 @@ class UsermanagementControllerController extends Controller {
 	protected function getProviderForm($provider = null) {
 		$formBuilder = $this->createFormBuilder($provider);
 
-		$formBuilder->add('label', TextType::class, array('label' => 'Label'));
-		$formBuilder->add('definition', TextareaType::class, array('label' => 'Definition'));
+		$formBuilder->add('id', HiddenType::class);
+		$formBuilder->add('label', TextType::class, array(
+			'label' => 'Label'
+		));
+		$formBuilder->add('definition', TextareaType::class, array(
+			'label' => 'Definition',
+			'required' => false
+		));
 		$formBuilder->add('submit', SubmitType::class, array(
 			'label' => 'Submit'
 		));
@@ -41,11 +48,26 @@ class UsermanagementControllerController extends Controller {
 	}
 
 	/**
-	 * @Route("/deleteProvider", name="usermanagement_deleteProvider")
+	 * Delete a provider
+	 *
+	 * @Route("/deleteProvider/{id}", name="usermanagement_deleteProvider", requirements={"id": "[1-9][0-9]*"})
 	 */
-	public function deleteProviderAction() {
-		return $this->render('OGAMBundle:UsermanagementController:delete_provider.html.twig', array());
-		// ...
+	public function deleteProviderAction($id) {
+		$providerRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Provider', 'website');
+		$provider = $providerRepo->find($id);
+
+		if ($provider == null) {
+			$this->addFlash('error', 'The provider does not exist.');
+			return $this->redirectToRoute('usermanagement_showProviders');
+		}
+
+		$em = $this->getDoctrine()->getManager();
+		$em->remove($provider);
+		$em->flush();
+
+		$this->addFlash('success', 'The provider has been deleted.');
+
+		return $this->redirectToRoute('usermanagement_showProviders');
 	}
 
 	/**
@@ -73,16 +95,23 @@ class UsermanagementControllerController extends Controller {
 	}
 
 	/**
-	 * @Route("/showEditProvider", name="usermanagement_showEditProvider")
+	 * Edit a provider.
+	 *
+	 * @Route("/editProvider/{id}", name="usermanagement_editProvider", requirements={"id": "[1-9][0-9]*"})
 	 */
-	public function showEditProviderAction(Request $request) {
+	public function editProviderAction(Request $request, $id = null) {
 		$provider = new Provider();
 
 		$logger = $this->get('logger');
 		$logger->debug('showEditProviderAction');
 
+		if ($id != null) {
+			$providerRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Provider', 'website');
+			$provider = $providerRepo->find($id);
+		}
+
 		// Get the provider form
-		$form = $this->getProviderForm();
+		$form = $this->getProviderForm($provider);
 
 		$logger->debug('form : ' . \Doctrine\Common\Util\Debug::dump($form, 3, true, false));
 
@@ -95,15 +124,14 @@ class UsermanagementControllerController extends Controller {
 
 			$logger->debug('provider : ' . \Doctrine\Common\Util\Debug::dump($provider, 3, true, false));
 
-			// ... perform some action, such as saving the task to the database
-			// for example, if Task is a Doctrine entity, save it!
-			// $em = $this->getDoctrine()->getManager();
-			// $em->persist($task);
-			// $em->flush();
+			// Save the provider
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($provider);
+			$em->flush();
 
 			$this->addFlash('success', 'The provider information has been saved.');
 
-			return $this->redirectToRoute('usermanagement_home');
+			return $this->redirectToRoute('usermanagement_showProviders');
 		}
 
 		return $this->render('OGAMBundle:UsermanagementController:show_edit_provider.html.twig', array(
@@ -128,6 +156,8 @@ class UsermanagementControllerController extends Controller {
 	}
 
 	/**
+	 * Show the list of providers.
+	 *
 	 * @Route("/showProviders", name="usermanagement_showProviders")
 	 */
 	public function showProvidersAction() {
@@ -165,13 +195,16 @@ class UsermanagementControllerController extends Controller {
 	}
 
 	/**
-	 * @Route("/showProviderContent", name="usermanagement_showProviderContent")
+	 * Show the detail of a provider.
+	 *
+	 * @Route("/showProviderContent/{id}", name="usermanagement_showProviderContent")
+	 *
+	 * @param Integer $id
+	 *        	the id of a provider
 	 */
-	public function showProviderContentAction(Request $request) {
+	public function showProviderContentAction($id) {
 		$logger = $this->get('logger');
 		$logger->info('showProviderContentAction');
-
-		$id = (int) $request->query->get('id');
 
 		$logger->info('id : ' . $id);
 
