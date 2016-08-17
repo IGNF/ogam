@@ -1,16 +1,21 @@
 <?php
 namespace OGAMBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use OGAMBundle\Entity\Website\Provider;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use OGAMBundle\Entity\Website\Role;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use OGAMBundle\Entity\Website\User;
+use OGAMBundle\Entity\Website\Role;
+use OGAMBundle\Entity\Website\Provider;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use OGAMBundle\Form\Website\UserForm;
 
 /**
  * @Route("/usermanagement")
@@ -42,6 +47,64 @@ class UsermanagementController extends Controller {
 			'label' => 'Definition',
 			'required' => false
 		));
+		$formBuilder->add('submit', SubmitType::class, array(
+			'label' => 'Submit'
+		));
+
+		return $formBuilder->getForm();
+	}
+
+	/**
+	 * Build and return the user form.
+	 *
+	 * @param User $user
+	 *        	a provider
+	 * @return a Form
+	 */
+	protected function getUserForm($user = null) {
+		$formBuilder = $this->createFormBuilder($user, array(
+			'data_class' => 'OGAMBundle\Entity\Website\User'
+		));
+
+		$formBuilder->add('login', TextType::class, array(
+			'label' => 'Login'
+		));
+
+// 		$formBuilder->add('password', RepeatedType::class, array(
+// 			'type' => PasswordType::class,
+// 			'first_options' => array(
+// 				'label' => 'Password'
+// 			),
+// 			'second_options' => array(
+// 				'label' => 'Confirm Password'
+// 			)
+// 		));
+
+// 		$formBuilder->add('username', TextType::class, array(
+// 			'label' => 'User Name'
+// 		));
+
+// 		// Provider
+// 		$formBuilder->add('provider', EntityType::class, array(
+// 			'label' => 'Provider',
+// 			'class' => 'OGAMBundle\Entity\Website\Provider',
+// 			'choice_label' => 'label',
+// 			'multiple' => false
+// 		));
+
+// 		$formBuilder->add('email', EmailType::class, array(
+// 			'label' => 'Email'
+// 		));
+
+// 		// Roles
+// 		$formBuilder->add('roles', EntityType::class, array(
+// 			'label' => 'Roles',
+// 			'class' => 'OGAMBundle\Entity\Website\Role',
+// 			'choice_label' => 'label',
+// 			'multiple' => true,
+// 			'expanded' => true
+// 		));
+
 		$formBuilder->add('submit', SubmitType::class, array(
 			'label' => 'Submit'
 		));
@@ -133,17 +196,17 @@ class UsermanagementController extends Controller {
 	}
 
 	/**
-	 * @Route("/deleteUser")
+	 * @Route("/deleteUser/{login}", name="usermanagement_deleteUser")
 	 */
-	public function deleteUserAction() {
+	public function deleteUserAction($login) {
 		return $this->render('OGAMBundle:UsermanagementController:delete_user.html.twig', array());
 		// ...
 	}
 
 	/**
-	 * @Route("/showChangePassword")
+	 * @Route("/changePassword/{login}", name="usermanagement_changePassword")
 	 */
-	public function showChangePasswordAction() {
+	public function changePasswordAction($login) {
 		return $this->render('OGAMBundle:UsermanagementController:show_change_password.html.twig', array());
 		// ...
 	}
@@ -186,7 +249,7 @@ class UsermanagementController extends Controller {
 			return $this->redirectToRoute('usermanagement_showProviders');
 		}
 
-		return $this->render('OGAMBundle:UsermanagementController:show_edit_provider.html.twig', array(
+		return $this->render('OGAMBundle:UsermanagementController:edit_provider.html.twig', array(
 			'form' => $form->createView()
 		));
 	}
@@ -229,17 +292,53 @@ class UsermanagementController extends Controller {
 			return $this->redirectToRoute('usermanagement_showRoles');
 		}
 
-		return $this->render('OGAMBundle:UsermanagementController:show_edit_role.html.twig', array(
+		return $this->render('OGAMBundle:UsermanagementController:edit_role.html.twig', array(
 			'form' => $form->createView()
 		));
 	}
 
 	/**
-	 * @Route("/showCreateUser")
+	 * Edit a user.
+	 *
+	 * @Route("/editUser/{login}", name="usermanagement_editUser")
 	 */
-	public function showCreateUserAction() {
-		return $this->render('OGAMBundle:UsermanagementController:show_create_user.html.twig', array());
-		// ...
+	public function editUserAction(Request $request, $login = null) {
+		$user = new User();
+
+		$logger = $this->get('logger');
+		$logger->debug('editUserAction');
+
+		if ($login != null) {
+			$userRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+			$user = $userRepo->find($login);
+		}
+
+		// Get the provider form
+		$form = $this->createForm(UserForm::class, $user);
+		//$form = $this->getUserForm($user);
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			// $form->getData() holds the submitted values
+			// but, the original `$user` variable has also been updated
+			$user = $form->getData();
+
+			$logger->debug('user : ' . \Doctrine\Common\Util\Debug::dump($user, 3, true, false));
+
+			// Save the provider
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($user);
+			$em->flush();
+
+			$this->addFlash('success', 'The user information has been saved.');
+
+			return $this->redirectToRoute('usermanagement_showUsers');
+		}
+
+		return $this->render('OGAMBundle:UsermanagementController:edit_user.html.twig', array(
+			'form' => $form->createView()
+		));
 	}
 
 	/**
@@ -321,6 +420,8 @@ class UsermanagementController extends Controller {
 	}
 
 	/**
+	 * Show the list of roles.
+	 *
 	 * @Route("/showRoles", name="usermanagement_showRoles")
 	 */
 	public function showRolesAction() {
@@ -354,10 +455,20 @@ class UsermanagementController extends Controller {
 	}
 
 	/**
+	 * Show the list of users.
+	 *
 	 * @Route("/showUsers", name="usermanagement_showUsers")
 	 */
 	public function showUsersAction() {
-		return $this->render('OGAMBundle:UsermanagementController:show_users.html.twig', array());
-		// ...
+		$logger = $this->get('logger');
+		$logger->info('showUsersAction');
+
+		// Get the list of roles
+		$usersRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+		$users = $usersRepo->findAll();
+
+		return $this->render('OGAMBundle:UsermanagementController:show_users.html.twig', array(
+			'users' => $users
+		));
 	}
 }

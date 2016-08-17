@@ -6,23 +6,25 @@ use Symfony\Component\Validator\Constraints as Assert;
 use OGAMBundle\Entity\Website\Role as Role;
 use OGAMBundle\Entity\Website\Provider as Provider;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * User.
  *
  * @ORM\Table(name="users", schema="website")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\UserRepository")
+ * @UniqueEntity(fields="login", message="Login already taken")
+ * @UniqueEntity(fields="email", message="Email already taken")
  */
 class User implements UserInterface, \Serializable {
 
 	/**
 	 * The login.
 	 *
-	 * @var string
-	 * @Assert\Length(max=50)
-	 * @Assert\NotBlank()
-	 * @ORM\Column(name="user_login", type="string", length=50, nullable=false, unique=true)
-	 * @ORM\Id
+	 * @var string @Assert\Length(max=50)
+	 *      @Assert\NotBlank()
+	 *      @ORM\Column(name="user_login", type="string", length=50, nullable=false, unique=true)
+	 *      @ORM\Id
 	 */
 	private $login;
 
@@ -30,7 +32,7 @@ class User implements UserInterface, \Serializable {
 	 * The user name.
 	 *
 	 * @var string @ORM\Column(name="user_name", type="string", length=50, nullable=true)
-	 * @Assert\Length(max=50)
+	 *      @Assert\Length(max=50)
 	 */
 	private $username;
 
@@ -38,7 +40,7 @@ class User implements UserInterface, \Serializable {
 	 * The password.
 	 *
 	 * @var string @ORM\Column(name="user_password", type="string", length=50, nullable=true)
-	 * @Assert\Length(max=50)
+	 *      @Assert\Length(max=50)
 	 */
 	private $password;
 
@@ -46,7 +48,7 @@ class User implements UserInterface, \Serializable {
 	 * The provider.
 	 *
 	 * @var string @ORM\ManyToOne(targetEntity="Provider")
-	 * @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
+	 *      @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
 	 */
 	private $provider;
 
@@ -60,7 +62,8 @@ class User implements UserInterface, \Serializable {
 	 * The email.
 	 *
 	 * @var string @ORM\Column(name="email", type="string", length=255, nullable=true)
-	 * @Assert\Length(max=50)
+	 *      @Assert\Length(max=50)
+	 *      @Assert\Email()
 	 */
 	private $email;
 
@@ -180,7 +183,6 @@ class User implements UserInterface, \Serializable {
 	 * @return Boolean
 	 */
 	function isAllowed($permissionName) {
-
 		global $kernel;
 		if ('AppCache' == get_class($kernel)) {
 			$kernel = $kernel->getKernel();
@@ -266,7 +268,6 @@ class User implements UserInterface, \Serializable {
 	 * @return \Doctrine\Common\Collections\Collection
 	 */
 	public function getRoles() {
-
 		return $this->roles->toArray();
 	}
 
@@ -293,16 +294,22 @@ class User implements UserInterface, \Serializable {
 	/**
 	 * Méthode à implémenter pour respecter @UserInterface.
 	 */
-	public function getSalt() {}
+	public function getSalt() {
+		// The algorithm doesn't require a separate salt.
+		// You *may* need a real salt if you choose a different encoder.
+		return null;
+	}
 
 	/**
 	 * Méthode à implémenter pour respecter @UserInterface.
 	 */
 	public function eraseCredentials() {}
 
-	/** @see \Serializable::serialize() */
-	public function serialize()
-	{
+	/**
+	 *
+	 * @see \Serializable::serialize()
+	 */
+	public function serialize() {
 		return serialize(array(
 			$this->login,
 			$this->email,
@@ -311,16 +318,11 @@ class User implements UserInterface, \Serializable {
 		));
 	}
 
-	/** @see \Serializable::unserialize() */
-	public function unserialize($serialized)
-	{
-		list (
-			$this->login,
-			$this->email,
-			$this->username,
-			$this->password
-			) = unserialize($serialized);
+	/**
+	 *
+	 * @see \Serializable::unserialize()
+	 */
+	public function unserialize($serialized) {
+		list ($this->login, $this->email, $this->username, $this->password) = unserialize($serialized);
 	}
-
-
 }
