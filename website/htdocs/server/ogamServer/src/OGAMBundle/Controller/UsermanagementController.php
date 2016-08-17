@@ -10,6 +10,7 @@ use OGAMBundle\Entity\Website\Provider;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use OGAMBundle\Entity\Website\Role;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
  * @Route("/usermanagement")
@@ -69,6 +70,15 @@ class UsermanagementController extends Controller {
 			'label' => 'Definition',
 			'required' => false
 		));
+
+		$formBuilder->add('permissions', EntityType::class, array(
+			'label' => 'Permissions',
+			'class' => 'OGAMBundle\Entity\Website\Permission',
+			'choice_label' => 'label',
+			'multiple' => true,
+			'expanded' => true
+		));
+
 		$formBuilder->add('submit', SubmitType::class, array(
 			'label' => 'Submit'
 		));

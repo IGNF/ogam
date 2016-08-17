@@ -39,6 +39,7 @@
 
 {%- endblock choice_widget_collapsed -%}
 
+{# Redefine the error block to add a class #}
 {% block form_errors %}
     {% spaceless %}
         {% if errors|length > 0 %}
@@ -50,3 +51,24 @@
         {% endif %}
     {% endspaceless %}
 {% endblock form_errors %}
+
+{# Add a star to requiered fields #}
+{% block form_label %}
+    {{ parent() }}
+
+    {% if required %}
+        <span class="required" title="This field is required">*</span>
+    {% endif %}
+{% endblock %}
+
+
+{# Add a <br> to choices #}
+{%- block choice_widget_expanded -%}
+    <div class="multiCheckbox element" {{ block('widget_container_attributes') }}>
+    {%- for child in form %}
+        {{- form_widget(child) -}}
+        {{- form_label(child, null, {translation_domain: choice_translation_domain}) -}}
+        <br/>
+    {% endfor -%}
+    </div>
+{%- endblock choice_widget_expanded -%}
