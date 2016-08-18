@@ -263,7 +263,7 @@ class User implements UserInterface, \Serializable {
 
 	/**
 	 * Get roles.
-	 * Méthode à implémenter pour respecter @UserInterface.
+	 * Méthode à implémenter pour respecter UserInterface.
 	 *
 	 * @return \Doctrine\Common\Collections\Collection
 	 */
@@ -273,7 +273,7 @@ class User implements UserInterface, \Serializable {
 
 	/**
 	 * Get password.
-	 * Méthode à implémenter pour respecter @UserInterface.
+	 * Méthode à implémenter pour respecter UserInterface.
 	 *
 	 * @return string
 	 */
@@ -283,7 +283,7 @@ class User implements UserInterface, \Serializable {
 
 	/**
 	 * Get username
-	 * Méthode à implémenter pour respecter @UserInterface.
+	 * Méthode à implémenter pour respecter UserInterface.
 	 *
 	 * @return string
 	 */
@@ -292,7 +292,7 @@ class User implements UserInterface, \Serializable {
 	}
 
 	/**
-	 * Méthode à implémenter pour respecter @UserInterface.
+	 * Méthode à implémenter pour respecter UserInterface.
 	 */
 	public function getSalt() {
 		// The algorithm doesn't require a separate salt.
@@ -301,7 +301,7 @@ class User implements UserInterface, \Serializable {
 	}
 
 	/**
-	 * Méthode à implémenter pour respecter @UserInterface.
+	 * Méthode à implémenter pour respecter UserInterface.
 	 */
 	public function eraseCredentials() {}
 

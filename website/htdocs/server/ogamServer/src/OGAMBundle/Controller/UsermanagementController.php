@@ -70,40 +70,40 @@ class UsermanagementController extends Controller {
 			'label' => 'Login'
 		));
 
-// 		$formBuilder->add('password', RepeatedType::class, array(
-// 			'type' => PasswordType::class,
-// 			'first_options' => array(
-// 				'label' => 'Password'
-// 			),
-// 			'second_options' => array(
-// 				'label' => 'Confirm Password'
-// 			)
-// 		));
+		$formBuilder->add('password', RepeatedType::class, array(
+			'type' => PasswordType::class,
+			'first_options' => array(
+				'label' => 'Password'
+			),
+			'second_options' => array(
+				'label' => 'Confirm Password'
+			)
+		));
 
-// 		$formBuilder->add('username', TextType::class, array(
-// 			'label' => 'User Name'
-// 		));
+		$formBuilder->add('username', TextType::class, array(
+			'label' => 'User Name'
+		));
 
-// 		// Provider
-// 		$formBuilder->add('provider', EntityType::class, array(
-// 			'label' => 'Provider',
-// 			'class' => 'OGAMBundle\Entity\Website\Provider',
-// 			'choice_label' => 'label',
-// 			'multiple' => false
-// 		));
+		// Provider
+		$formBuilder->add('provider', EntityType::class, array(
+			'label' => 'Provider',
+			'class' => 'OGAMBundle\Entity\Website\Provider',
+			'choice_label' => 'label',
+			'multiple' => false
+		));
 
-// 		$formBuilder->add('email', EmailType::class, array(
-// 			'label' => 'Email'
-// 		));
+		$formBuilder->add('email', EmailType::class, array(
+			'label' => 'Email'
+		));
 
-// 		// Roles
-// 		$formBuilder->add('roles', EntityType::class, array(
-// 			'label' => 'Roles',
-// 			'class' => 'OGAMBundle\Entity\Website\Role',
-// 			'choice_label' => 'label',
-// 			'multiple' => true,
-// 			'expanded' => true
-// 		));
+		// Roles
+		$formBuilder->add('roles', EntityType::class, array(
+			'label' => 'Roles',
+			'class' => 'OGAMBundle\Entity\Website\Role',
+			'choice_label' => 'label',
+			'multiple' => true,
+			'expanded' => true
+		));
 
 		$formBuilder->add('submit', SubmitType::class, array(
 			'label' => 'Submit'
@@ -314,8 +314,7 @@ class UsermanagementController extends Controller {
 		}
 
 		// Get the provider form
-		$form = $this->createForm(UserForm::class, $user);
-		//$form = $this->getUserForm($user);
+		$form = $this->getUserForm($user);
 
 		$form->handleRequest($request);
 
