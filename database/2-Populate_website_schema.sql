@@ -88,8 +88,8 @@ INSERT INTO role(role_code, role_label, role_definition) VALUES ('ADMIN','Admini
 INSERT INTO role(role_code, role_label, role_definition) VALUES ('VISITOR','Visitor', 'Visites the website');
 
 -- Create some users
-INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', '1', null); 
-INSERT INTO users(user_login, user_password, user_name, provider_id, active, email) VALUES ('visitor', '4ed0428505b0b89fe7bc1a01928ef1bd4c77c1be', 'Visitor', '2', '1', null); 
+INSERT INTO users(user_login, user_password, user_name, provider_id, email) VALUES ('admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'admin user', '1', null); 
+INSERT INTO users(user_login, user_password, user_name, provider_id, email) VALUES ('visitor', '4ed0428505b0b89fe7bc1a01928ef1bd4c77c1be', 'Visitor', '2', null); 
 
 -- Link the users to their roles
 INSERT INTO role_to_user(user_login, role_code) VALUES ('admin', 'ADMIN');

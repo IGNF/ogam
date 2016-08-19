@@ -37,10 +37,17 @@ class User implements UserInterface, \Serializable {
 	private $username;
 
 	/**
-	 * The password.
+	 * The plain password, used only for the user creation form.
+	 * Not mapped with the database.
+	 *
+	 * @Assert\Length(max=50)
+	 */
+	private $plainPassword;
+
+	/**
+	 * The encrypted password, stored in database.
 	 *
 	 * @var string @ORM\Column(name="user_password", type="string", length=50, nullable=true)
-	 *      @Assert\Length(max=50)
 	 */
 	private $password;
 
@@ -51,12 +58,6 @@ class User implements UserInterface, \Serializable {
 	 *      @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
 	 */
 	private $provider;
-
-	/**
-	 *
-	 * @var bool @ORM\Column(name="active", type="boolean", nullable=true)
-	 */
-	private $active;
 
 	/**
 	 * The email.
@@ -131,26 +132,14 @@ class User implements UserInterface, \Serializable {
 		return $this;
 	}
 
-	/**
-	 * Set active
-	 *
-	 * @param boolean $active
-	 *
-	 * @return User
-	 */
-	public function setActive($active) {
-		$this->active = $active;
-
-		return $this;
+	public function getPlainPassword() {
+		return $this->plainPassword;
 	}
 
-	/**
-	 * Get active
-	 *
-	 * @return bool
-	 */
-	public function getActive() {
-		return $this->active;
+	public function setPlainPassword($password) {
+		$this->plainPassword = $password;
+
+		return $this;
 	}
 
 	/**

@@ -70,15 +70,18 @@ class UsermanagementController extends Controller {
 			'label' => 'Login'
 		));
 
-		$formBuilder->add('password', RepeatedType::class, array(
-			'type' => PasswordType::class,
-			'first_options' => array(
-				'label' => 'Password'
-			),
-			'second_options' => array(
-				'label' => 'Confirm Password'
-			)
-		));
+		// add the password fields in creation mode only
+		if ($user == null || $user->getLogin() == null) {
+			$formBuilder->add('plainPassword', RepeatedType::class, array(
+				'type' => PasswordType::class,
+				'first_options' => array(
+					'label' => 'Password'
+				),
+				'second_options' => array(
+					'label' => 'Confirm Password'
+				)
+			));
+		}
 
 		$formBuilder->add('username', TextType::class, array(
 			'label' => 'User Name'
@@ -199,8 +202,23 @@ class UsermanagementController extends Controller {
 	 * @Route("/deleteUser/{login}", name="usermanagement_deleteUser")
 	 */
 	public function deleteUserAction($login) {
-		return $this->render('OGAMBundle:UsermanagementController:delete_user.html.twig', array());
-		// ...
+
+		$userRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+		$user = $userRepo->find($login);
+
+		if ($user == null) {
+			$this->addFlash('error', 'The user does not exist.');
+			return $this->redirectToRoute('usermanagement_showUsers');
+		}
+
+		$em = $this->getDoctrine()->getManager();
+		$em->remove($user);
+		$em->flush();
+
+		$this->addFlash('success', 'The user has been deleted.');
+
+		return $this->redirectToRoute('usermanagement_showUsers');
+
 	}
 
 	/**
@@ -325,7 +343,13 @@ class UsermanagementController extends Controller {
 
 			$logger->debug('user : ' . \Doctrine\Common\Util\Debug::dump($user, 3, true, false));
 
-			// Save the provider
+			// Encrypt the password if in creation mode
+			if (!empty($user->getPlainPassword())) {
+				$password = $this->get('ogam.challenge_response_encoder')->encodePassword($user->getPlainPassword(), '');
+				$user->setPassword($password);
+			}
+
+			// Save the user
 			$em = $this->getDoctrine()->getManager();
 			$em->persist($user);
 			$em->flush();

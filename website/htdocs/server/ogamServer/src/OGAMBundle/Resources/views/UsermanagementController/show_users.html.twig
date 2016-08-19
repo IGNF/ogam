@@ -30,7 +30,7 @@
 		    {{ role.label }}<br/>
         {% endfor %}	
 	</td>
-	<td class="delete-cell"><a title="{% trans %}Delete{% endtrans %}" href="{{ path('usermanagement_deleteUser', {'login' : user.login}) }}">&nbsp;</a></td>
+	<td class="delete-cell"><a title="{% trans %}Delete{% endtrans %}" href="{{ path('usermanagement_deleteUser', {'login' : user.login}) }}" onClick="return confirm('{% trans %}Are you sure?{% endtrans %}');">&nbsp;</a></td>
 </tr>
 {% endfor %}
 </table>

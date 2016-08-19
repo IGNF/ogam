@@ -26,3 +26,5 @@ ALTER TABLE metadata.mode_taxref RENAME name  TO label;
 -- TODO : Renommer la table "mapping.layer_tree" (l'entité s'appelle LegendItem)
 -- TODO : Changer le type de "mapping.layer_tree.parent_id" en integer (l'id du parent est de type varchar et on référence un integer)   
 
+-- Cette colonne n'a jamais servi
+ALTER TABLE website.users DROP COLUMN active;

@@ -386,7 +386,7 @@ td.edit-cell {
 }
 
 td.change-password-cell {
-	background: url(../img/key.png) 5px 5px no-repeat;
+	background: url(../img/key.png) 5px center no-repeat;
 	width: 21px;
 }
 
@@ -395,7 +395,7 @@ td.change-password-cell {
 }
 
 td.delete-cell {
-	background: url(../img/delete.png) 5px 5px no-repeat;
+	background: url(../img/delete.png) 5px center no-repeat;
 	width: 21px;
 }
 

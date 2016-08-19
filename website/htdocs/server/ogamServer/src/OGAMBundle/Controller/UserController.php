@@ -55,11 +55,6 @@ class UserController extends Controller {
 		$session = $request->getSession();
 		$session->set('challenge', $challenge);
 
-		$logger = $this->get('logger');
-		$logger->info('Challenge : ' . $challenge);
-		$logger->info('lastUsername : ' . $lastUsername);
-		$logger->info('error : ' . $error);
-
 		// Display the login form
 		return $this->render('OGAMBundle:User:show_login_form.html.twig', array(
 			// last username entered by the user
