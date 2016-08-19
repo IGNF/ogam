@@ -15,7 +15,6 @@ use OGAMBundle\Entity\Website\User;
 use OGAMBundle\Entity\Website\Role;
 use OGAMBundle\Entity\Website\Provider;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use OGAMBundle\Form\Website\UserForm;
 
 /**
  * @Route("/usermanagement")
@@ -116,6 +115,36 @@ class UsermanagementController extends Controller {
 	}
 
 	/**
+	 * Build and return the user change password form.
+	 *
+	 * @param User $user
+	 *        	a provider
+	 * @return a Form
+	 */
+	protected function getChangeUserPasswordForm($user = null) {
+		$formBuilder = $this->createFormBuilder($user, array(
+			'data_class' => 'OGAMBundle\Entity\Website\User'
+		));
+
+		// add the password fields
+		$formBuilder->add('plainPassword', RepeatedType::class, array(
+			'type' => PasswordType::class,
+			'first_options' => array(
+				'label' => 'Password'
+			),
+			'second_options' => array(
+				'label' => 'Confirm Password'
+			)
+		));
+
+		$formBuilder->add('submit', SubmitType::class, array(
+			'label' => 'Submit'
+		));
+
+		return $formBuilder->getForm();
+	}
+
+	/**
 	 * Build and return the role form.
 	 *
 	 * @param Role $role
@@ -202,7 +231,6 @@ class UsermanagementController extends Controller {
 	 * @Route("/deleteUser/{login}", name="usermanagement_deleteUser")
 	 */
 	public function deleteUserAction($login) {
-
 		$userRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
 		$user = $userRepo->find($login);
 
@@ -218,15 +246,50 @@ class UsermanagementController extends Controller {
 		$this->addFlash('success', 'The user has been deleted.');
 
 		return $this->redirectToRoute('usermanagement_showUsers');
-
 	}
 
 	/**
 	 * @Route("/changePassword/{login}", name="usermanagement_changePassword")
 	 */
-	public function changePasswordAction($login) {
-		return $this->render('OGAMBundle:UsermanagementController:show_change_password.html.twig', array());
-		// ...
+	public function changePasswordAction(Request $request, $login) {
+		$logger = $this->get('logger');
+		$logger->debug('changePasswordAction');
+
+		// Load the user
+		$userRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+		$user = $userRepo->find($login);
+
+		// Get the change password form
+		$form = $this->getChangeUserPasswordForm($user);
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			// $form->getData() holds the submitted values
+			// but, the original `$user` variable has also been updated
+			$user = $form->getData();
+
+			// Encrypt the password if in creation mode
+			if (!empty($user->getPlainPassword())) {
+				$encoder =  $this->get('ogam.challenge_response_encoder');
+				$password = $encoder->encodePassword($user->getPlainPassword(), '');
+				$user->setPassword($password);
+			}
+
+			// Save the user
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($user);
+			$em->flush();
+
+			$this->addFlash('success', 'The user password information has been saved.');
+
+			return $this->redirectToRoute('usermanagement_showUsers');
+		}
+
+		return $this->render('OGAMBundle:UsermanagementController:change_password.html.twig', array(
+			'form' => $form->createView(),
+			'user' => $user
+		));
 	}
 
 	/**

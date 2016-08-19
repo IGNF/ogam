@@ -5,6 +5,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * @Route("/user")
@@ -22,15 +25,95 @@ class UserController extends Controller {
 	}
 
 	/**
+	 * Build and return the user change password form.
+	 *
+	 * @param User $user
+	 *        	a provider
+	 * @return a Form
+	 */
+	protected function getChangePasswordForm($user = null) {
+		$formBuilder = $this->createFormBuilder($user, array(
+			'data_class' => 'OGAMBundle\Entity\Website\User'
+		));
+
+		// non-mapped field for the old password
+		$formBuilder->add('oldpassword', PasswordType::class, array(
+			'label' => 'Old Password',
+			'mapped' => false
+		));
+
+		// the password fields
+		$formBuilder->add('plainPassword', RepeatedType::class, array(
+			'type' => PasswordType::class,
+			'first_options' => array(
+				'label' => 'New Password'
+			),
+			'second_options' => array(
+				'label' => 'Confirm Password'
+			)
+		));
+
+		// submit button
+		$formBuilder->add('submit', SubmitType::class, array(
+			'label' => 'Submit'
+		));
+
+		return $formBuilder->getForm();
+	}
+
+	/**
 	 * Show the change password form.
 	 *
-	 * @Route("/showChangePassword", name = "user_showchangepassword")
+	 * @Route("/changePassword", name = "user_changepassword")
 	 */
-	public function showChangePasswordAction() {
-		// TODO
-		return $this->render('OGAMBundle:User:show_change_password.html.twig', array()
-		// ...
-		);
+	public function changePasswordAction(Request $request) {
+
+		$logger = $this->get('logger');
+		$logger->debug('changePasswordAction');
+
+		// Get the current user
+		$user = $this->getUser();
+
+		// Get the change password form
+		$form = $this->getChangePasswordForm($user);
+
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			// $form->getData() holds the submitted values
+			// but, the original `$user` variable has also been updated
+			$user = $form->getData();
+
+			// Check that the old password is correct
+			$encoder = $this->get('ogam.challenge_response_encoder');
+			$oldPassword = $form->get('oldpassword')->getData();
+			$cryptedOldPassword = $encoder->encodePassword($oldPassword, '');
+
+			if ($user->getPassword() !== $cryptedOldPassword) {
+				$this->addFlash('error',"Old password is not correct");
+				return $this->redirectToRoute('homepage');
+			}
+
+
+			// Encrypt the password if in creation mode
+			if (!empty($user->getPlainPassword())) {
+				$password = $encoder->encodePassword($user->getPlainPassword(), '');
+				$user->setPassword($password);
+			}
+
+			// Save the user
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($user);
+			$em->flush();
+
+			$this->addFlash('success', 'Your password has been changed.');
+
+			return $this->redirectToRoute('homepage');
+		}
+
+		return $this->render('OGAMBundle:User:change_password.html.twig', array(
+			'form' => $form->createView()
+		));
 	}
 
 	/**
@@ -56,7 +139,7 @@ class UserController extends Controller {
 		$session->set('challenge', $challenge);
 
 		// Display the login form
-		return $this->render('OGAMBundle:User:show_login_form.html.twig', array(
+		return $this->render('OGAMBundle:User:login_form.html.twig', array(
 			// last username entered by the user
 			'last_username' => $lastUsername,
 			'error' => $error,
@@ -74,24 +157,12 @@ class UserController extends Controller {
 	}
 
 	/**
-	 * Validate the password change.
-	 *
-	 * @Route("/changePassword", name = "user_validatechangepassword")
-	 */
-	public function validateChangePasswordAction() {
-		return $this->render('OGAMBundle:User:validate_change_password.html.twig', array()
-		// ...
-		);
-	}
-
-	/**
 	 * Validate the login.
 	 *
 	 * @Route("/validateLogin", name = "user_validatelogin")
 	 */
 	public function validateLoginAction() {
 		// Nothing to do, the security module redirects automatically to the homepage (cf security.yml)
-
 		return new Response();
 	}
 }

@@ -34,7 +34,7 @@
             			<div id="header-login" class="header-login" style="float: right">
             				<!-- TODO : Drapeaux pour changer la langue  -->
             				{% if app.user %}
-            					<a href="{{ path('user_showchangepassword') }}">{% trans %}Change Password{% endtrans %}</a>
+            					<a href="{{ path('user_changepassword') }}">{% trans %}Change Password{% endtrans %}</a>
             					&nbsp;
             					<a href="{{ path('user_logout') }}">{% trans %}Log out{% endtrans %}</a>
             			    {% else %}
