@@ -1,0 +1,136 @@
+# Fichier de conf de la navigation : breadcrumb, menus, aide...
+# Définit les labels affichés dans les menus.
+# On pourrait ajouter des titres de page.
+home:
+    label: Home
+    controller: default
+    action: index
+    module: default
+    pages:
+    
+        integration:
+            label: Integration
+            controller: integration
+            action: index
+            module: default
+            pages:
+            
+                newintegration:
+                    label: Integration New
+                    controller: integration
+                    action: showCreateDataSubmission
+                    module: default
+                newintegration2:
+                    label: Integration New
+                    controller: integration
+                    action: validateCreateDataSubmission
+                    module: default
+            
+        harmonization:
+            label: Harmonization
+            controller: harmonization
+            action: index
+            module: default
+
+        visualisation:
+            label: Visualization
+            controller: query
+            action: index
+            module: default
+
+        edition:
+            label: Edition
+            controller: dataedition
+            action: index
+            module: default
+            pages:
+            
+                editionedit:
+                    label: Edit Data
+                    controller: dataedition
+                    action: show-edit-data
+                    module: default
+                editionadd:
+                    label: Add Data
+                    controller: dataedition
+                    action: show-add-data
+                    module: default
+
+        checkconf:
+            label: Check Configuration
+            controller: checkconf
+            action: index
+            module: default
+
+        user:
+            label: User
+            controller: user
+            action: index
+            module: default
+
+        usermanagement:
+            label: Users Administration
+            controller: usermanagement
+            action: index
+            module: default
+            pages:
+
+              users:
+                label: Users
+                controller: usermanagement
+                action: showUsers
+                module: default
+                pages:
+
+                  edituser:
+                    label: Edit User
+                    controller: usermanagement
+                    action: editUser
+                    module: default
+
+                  passworduser:
+                    label: Change Password
+                    controller: usermanagement
+                    action: changePassword
+                    module: default
+
+
+              roles:
+                label: Roles
+                controller: usermanagement
+                action: showRoles
+                module: default
+                pages:
+
+                  editrole:
+                    label: Edit Role
+                    controller: usermanagement
+                    action: editRole
+                    module: default
+
+
+
+              providers:
+                label: Providers
+                controller: usermanagement
+                action: showProviders
+                module: default
+                pages:
+
+                  providerdetails:
+                    label: Providers Details
+                    controller: usermanagement
+                    action: showprovidercontent
+                    module: default
+
+                  editprovider:
+                    label: Edit Provider
+                    controller: usermanagement
+                    action: editprovider
+                    module: default
+
+                  addprovider:
+                    label: Add Provider
+                    controller: usermanagement
+                    action: addprovider
+                    module: default
