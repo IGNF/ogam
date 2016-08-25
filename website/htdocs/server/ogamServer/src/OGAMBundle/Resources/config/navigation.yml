@@ -2,62 +2,57 @@
 # Définit les labels affichés dans les menus.
 # On pourrait ajouter des titres de page.
 home:
-    label: Home
+    label: Breadcrumb_Home
     controller: default
     action: index
     module: default
     pages:
     
         integration:
-            label: Integration
+            label: Breadcrumb_Integration
             controller: integration
             action: index
             module: default
             pages:
             
                 newintegration:
-                    label: Integration New
+                    label: Breadcrumb_Integration_New
                     controller: integration
                     action: showCreateDataSubmission
                     module: default
-                newintegration2:
-                    label: Integration New
-                    controller: integration
-                    action: validateCreateDataSubmission
-                    module: default
             
         harmonization:
-            label: Harmonization
+            label: Breadcrumb_Harmonization
             controller: harmonization
             action: index
             module: default
 
         visualisation:
-            label: Visualization
+            label: Breadcrumb_Visualization
             controller: query
             action: index
             module: default
 
         edition:
-            label: Edition
+            label: Breadcrumb_Edition
             controller: dataedition
             action: index
             module: default
             pages:
             
                 editionedit:
-                    label: Edit Data
+                    label: Breadcrumb_Edit_Data
                     controller: dataedition
                     action: show-edit-data
                     module: default
                 editionadd:
-                    label: Add Data
+                    label: Breadcrumb_Add_Data
                     controller: dataedition
                     action: show-add-data
                     module: default
 
         checkconf:
-            label: Check Configuration
+            label: Breadcrumb_Check_Configuration
             controller: checkconf
             action: index
             module: default
@@ -69,41 +64,41 @@ home:
             module: default
 
         usermanagement:
-            label: Users Administration
+            label: Breadcrumb_Users_Administration
             controller: usermanagement
             action: index
             module: default
             pages:
 
               users:
-                label: Users
+                label: Breadcrumb_Users
                 controller: usermanagement
                 action: showUsers
                 module: default
                 pages:
 
                   edituser:
-                    label: Edit User
+                    label: Breadcrumb_Edit_User
                     controller: usermanagement
                     action: editUser
                     module: default
 
                   passworduser:
-                    label: Change Password
+                    label: Breadcrumb_Change_Password
                     controller: usermanagement
                     action: changePassword
                     module: default
 
 
               roles:
-                label: Roles
+                label: Breadcrumb_Roles
                 controller: usermanagement
                 action: showRoles
                 module: default
                 pages:
 
                   editrole:
-                    label: Edit Role
+                    label: Breadcrumb_Edit_Role
                     controller: usermanagement
                     action: editRole
                     module: default
@@ -111,26 +106,21 @@ home:
 
 
               providers:
-                label: Providers
+                label: Breadcrumb_Providers
                 controller: usermanagement
                 action: showProviders
                 module: default
                 pages:
 
                   providerdetails:
-                    label: Providers Details
+                    label: Breadcrumb_Providers_Details
                     controller: usermanagement
                     action: showprovidercontent
                     module: default
 
                   editprovider:
-                    label: Edit Provider
+                    label: Breadcrumb_Edit_Provider
                     controller: usermanagement
                     action: editprovider
                     module: default
 
-                  addprovider:
-                    label: Add Provider
-                    controller: usermanagement
-                    action: addprovider
-                    module: default

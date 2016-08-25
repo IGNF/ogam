@@ -47,16 +47,16 @@ class BreadcrumbsConfigService {
 	public function getURL($item) {
 
 		// Root
-		$url = "";
+		$url = "/";
 
 		// Controller
 		if (isset($item['controller']) && (strtolower($item['controller']) != "default")) {
-			$url .= "/" . strtolower($item['controller']);
+			$url .= strtolower($item['controller']) . "/";
 		}
 
 		// Action
 		if (isset($item['action']) && ($item['action'] != "index")) {
-			$url .= "/" . $item['action'];
+			$url .= $item['action'];
 		}
 
 		return $url;
