@@ -8,11 +8,21 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BreadcrumbListener implements EventSubscriberInterface {
 
-	// The breadcrumbs service
+	// The white october breadcrumbs service
 	private $breadcrumbs;
 
-	public function __construct($breadcrumbs) {
+	// The breadcrumbs config service
+	private $breadcrumbsConfig;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param unknown $breadcrumbs
+	 * @param unknown $breadcrumbsConfig
+	 */
+	public function __construct($breadcrumbs, $breadcrumbsConfig) {
 		$this->breadcrumbs = $breadcrumbs;
+		$this->breadcrumbsConfig = $breadcrumbsConfig;
 	}
 
 	public function onKernelRequest(GetResponseEvent $event) {
@@ -21,15 +31,17 @@ class BreadcrumbListener implements EventSubscriberInterface {
 		$controllerName = $this->getControllerName($request);
 		$actionName = $this->getActionName($request);
 
-		$this->breadcrumbs->addItem("Home", "/");
+		//var_dump("controllerName : " . $controllerName);
+		// var_dump("actionName : " . $actionName);
 
-		if (!empty($controllerName) && ($controllerName != "Default")) {
-			$this->breadcrumbs->addItem($controllerName, "/" . strtolower($controllerName));
-		}
-		if (!empty($actionName) && ($actionName != "index")) {
-			$this->breadcrumbs->addItem($actionName, strtolower($actionName));
+		$pathItems = $this->breadcrumbsConfig->getPath($controllerName, $actionName);
 
-			// $this->breadcrumbs->addItem($actionName, $this->get("router")->generate("$actionName"));
+		if ($pathItems) {
+
+			foreach ($pathItems as $path) {
+
+				$this->breadcrumbs->addItem($path['label'], $this->breadcrumbsConfig->getURL($path));
+			}
 		}
 	}
 

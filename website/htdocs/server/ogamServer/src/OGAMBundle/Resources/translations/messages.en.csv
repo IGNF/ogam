@@ -341,25 +341,22 @@ Request Criterias;Request Criterias
 ################################
 #  Fil d'ariane (Breadcrumb)   #
 ################################
-Breadcrumb Home;Home
-Breadcrumb Integration;Data integration
-Breadcrumb Integration New;Create data submission
-Breadcrumb Visualization;Visualize data
-Breadcrumb Harmonization;Harmonize data
-Breadcrumb Edition;Data edition
-Breadcrumb Edit Data;Edit observation
-Breadcrumb Add Data;Add observation
-Breadcrumb User;My account
-Breadcrumb Check Configuration;Check the configuration
-Breadcrumb Users Administration;Users Administration
-Breadcrumb Users;Users
-Breadcrumb Add User;Add user
-Breadcrumb Edit User;Edit user
-Breadcrumb Change Password;Change password
-Breadcrumb Roles;Roles
-Breadcrumb Edit Role;Edit role
-Breadcrumb Add Role;Add role
-Breadcrumb Providers;Providers
-Breadcrumb Providers Details;Details and data
-Breadcrumb Edit Provider;Edit provider
-Breadcrumb Add Provider;Add provider
+Breadcrumb_Home;Home
+Breadcrumb_Integration;Data integration
+Breadcrumb_Integration_New;Create data submission
+Breadcrumb_Visualization;Visualize data
+Breadcrumb_Harmonization;Harmonize data
+Breadcrumb_Edition;Data edition
+Breadcrumb_Edit_Data;Edit observation
+Breadcrumb_Add_Data;Add observation
+Breadcrumb_User;My account
+Breadcrumb_Check_Configuration;Check the configuration
+Breadcrumb_Users_Administration;Users Administration
+Breadcrumb_Users;Users
+Breadcrumb_Edit_User;Edit user
+Breadcrumb_Change_Password;Change password
+Breadcrumb_Roles;Roles
+Breadcrumb_Edit_Role;Edit role
+Breadcrumb_Providers;Providers
+Breadcrumb_Providers_Details;Details and data
+Breadcrumb_Edit_Provider;Edit provider

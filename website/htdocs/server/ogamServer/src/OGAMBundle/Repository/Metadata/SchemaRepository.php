@@ -10,4 +10,13 @@ namespace OGAMBundle\Repository\Metadata;
  */
 class SchemaRepository extends \Doctrine\ORM\EntityRepository
 {
+
+	public function findAll()
+	{
+		return $this->getEntityManager()
+		->createQuery(
+			'SELECT s FROM OGAMBundle\Entity\Metadata\Schema s INDEX BY s.code ORDER BY s.code ASC'
+			)
+			->getResult();
+	}
 }

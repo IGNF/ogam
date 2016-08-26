@@ -48,7 +48,7 @@ class IntegrationController extends Controller
      */
     public function showDataSubmissionPageAction()
     {
-    	$submissions = $this->getEntityManger()->getRepository('OGAMBundle:RawData\Submission')->getAciveSubmissions();
+    	$submissions = $this->getEntityManger()->getRepository('OGAMBundle:RawData\Submission')->getActiveSubmissions();
 
         return $this->render('OGAMBundle:Integration:show_data_submission_page.html.twig', array(
             // ...

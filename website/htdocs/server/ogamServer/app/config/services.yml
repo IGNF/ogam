@@ -34,6 +34,10 @@ services:
             em: "@doctrine.orm.entity_manager"
             logger: "@logger"
             
+    # Service used to read the breadcrumbs config
+    ogam.breadcrumb_config_service:
+        class: OGAMBundle\Services\BreadcrumbsConfigService
+            
     # Listener for the user locale
     ogam.locale_listener:
         class: OGAMBundle\EventListener\LocaleListener
@@ -44,7 +48,7 @@ services:
     # Listener for the breadcrumb
     ogam.breadcumb_listener:
         class: OGAMBundle\EventListener\BreadcrumbListener
-        arguments: ["@white_october_breadcrumbs"]
+        arguments: ["@white_october_breadcrumbs", "@ogam.breadcrumb_config_service"]
         tags:
             - { name: kernel.event_subscriber }            
             

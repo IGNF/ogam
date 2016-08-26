@@ -26,7 +26,7 @@ class CheckconfController extends Controller {
 	 * Show the config.
 	 *
 	 * @Route("/showCheckConf", name="checkconf_showconfig")
-	 */
+ 	 */
 	public function showCheckConfAction(Request $request) {
 
 		// Check the PHP config

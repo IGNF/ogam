@@ -40,7 +40,7 @@ class ConfigurationManager {
 	private function readConfiguration() {
 		// Get application parameters
 		$appRepo = $this->em->getRepository('OGAMBundle\Entity\Website\ApplicationParameter', 'website');
-		$this->parameters = $appRepo->findAllIndexedByName();
+		$this->parameters = $appRepo->findAll();
 	}
 
 	/**

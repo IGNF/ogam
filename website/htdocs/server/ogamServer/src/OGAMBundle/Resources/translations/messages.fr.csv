@@ -344,25 +344,22 @@ Request Criterias;Critères de requête
 ################################
 #  Fil d'ariane (Breadcrumb)   #
 ################################
-Breadcrumb Home;Accueil
-Breadcrumb Integration;Intégrer des données
-Breadcrumb Integration New;Nouvelle soumission
-Breadcrumb Visualization;Visualiser les données
-Breadcrumb Harmonization;Harmoniser les données
-Breadcrumb Edition;Editer les données
-Breadcrumb Edit Data;Editer une observation
-Breadcrumb Add Data;Ajouter une observation
-Breadcrumb User;Mon compte
-Breadcrumb Check Configuration;Vérifier la configuration technique
-Breadcrumb Users Administration;Administrer les utilisateurs
-Breadcrumb Users;Utilisateurs
-Breadcrumb Add User;Ajouter
-Breadcrumb Edit User;Modifier
-Breadcrumb Change Password;Mot de passe
-Breadcrumb Roles;Roles
-Breadcrumb Edit Role;Modifier
-Breadcrumb Add Role;Ajouter
-Breadcrumb Providers;Organismes
-Breadcrumb Providers Details;Détails et données
-Breadcrumb Edit Provider;Modifier
-Breadcrumb Add Provider;Ajouter
+Breadcrumb_Home;Accueil
+Breadcrumb_Integration;Intégrer des données
+Breadcrumb_Integration_New;Nouvelle soumission
+Breadcrumb_Visualization;Visualiser les données
+Breadcrumb_Harmonization;Harmoniser les données
+Breadcrumb_Edition;Editer les données
+Breadcrumb_Edit_Data;Editer une observation
+Breadcrumb_Add_Data;Ajouter une observation
+Breadcrumb_User;Mon compte
+Breadcrumb_Check_Configuration;Vérifier la configuration technique
+Breadcrumb_Users_Administration;Administrer les utilisateurs
+Breadcrumb_Users;Utilisateurs
+Breadcrumb_Edit_User;Modifier
+Breadcrumb_Change_Password;Mot de passe
+Breadcrumb_Roles;Roles
+Breadcrumb_Edit_Role;Modifier
+Breadcrumb_Providers;Organismes
+Breadcrumb_Providers_Details;Détails et données
+Breadcrumb_Edit_Provider;Modifier
