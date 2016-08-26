@@ -34,7 +34,7 @@ class HarmonizationController extends Controller
     		$harmonisationProcess = $HarmoRepo->findOneBy(array('providerId'=>$activeSubmission->getProvider()->getId(), 'dataset'=>$activeSubmission->getDataset()), array('harmonizationId'=> 'DESC'));
     		if (empty($harmonisationProcess)) {
     			$harmonisationProcess = new HarmonizationProcess();
-    			$harmonisationProcess->setProviderId($activeSubmission->getProvider()->getId())->setDataset($activeSubmission->getDataset());
+    			$harmonisationProcess->setProviderId($activeSubmission->getProvider()->getId())->setDataset($activeSubmission->getDataset())->addSubmission($activeSubmission);
     		}
     		$harmonisationProcesses[] = $harmonisationProcess;
     	}

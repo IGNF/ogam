@@ -4,6 +4,7 @@ namespace OGAMBundle\Entity\HarmonizedData;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
+use OGAMBundle\Entity\RawData\Submission;
 
 /**
  * HarmonizationProcess
@@ -56,7 +57,7 @@ class HarmonizationProcess
 	 * @var Collection
 	 * 
 	 * @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\RawData\Submission")
-     * @ORM\JoinTable(name="harmonization_process_submissions",
+     * @ORM\JoinTable(name="harmonized_data.harmonization_process_submissions",
      *  joinColumns={@ORM\JoinColumn(name="harmonization_process_id", referencedColumnName="harmonization_process_id")},
      *  inverseJoinColumns={@ORM\JoinColumn(name="raw_data_submission_id", referencedColumnName="submission_id")})
      */
@@ -212,9 +213,18 @@ class HarmonizationProcess
 
         return $this;
     }
-    //TODO
-    public function submissionStatus(){
-    	return '';
+
+    public function getSubmissionStatus()
+    {
+    	$submissionValid = function($key, $object){
+    		return $object->getStep() === Submission::STEP_VALIDATED;
+    	};
+    	
+    	if ($this->getSubmissions()->forAll($submissionValid)) {
+    		return 'VALIDATED';
+    	}
+    	return 'NOT_VALID';
+    	
     }
 
     /**
