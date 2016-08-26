@@ -4,8 +4,7 @@ namespace OGAMBundle\Repository\RawData;
 
 
 
-use Doctrine\Common\Collections\Criteria;
-
+use Doctrine\Common\Collections\Collection;
 /**
  * SubmissionRepository
  *
@@ -14,26 +13,50 @@ use Doctrine\Common\Collections\Criteria;
  */
 class SubmissionRepository extends \Doctrine\ORM\EntityRepository
 {
-	function getAciveSubmissions(){
+	/**
+	 * Get some information about the active submissions.
+	 *
+	 * @param String $providerId
+	 *        	provider to get the submissions from (null for all providers)
+	 * @return Array[Submission]
+	 */
+	public function getAciveSubmissions($providerId = null){
 		 $dql = "SELECT s "
              . "FROM OGAMBundle\Entity\RawData\Submission s "
              . "WHERE s.step NOT IN ('CANCELLED', 'INIT')";
+         if ($providerId !== null) {
+             $dql.=" AND s.provider_id = :provider";
+         }
+
+         $dql .= " ORDER BY s.id DESC";
 
         $query = $this->getEntityManager()->createQuery($dql);
+        if ($providerId !== null) {
+        	$query->setParameter('provider', $providerId);
+        }
 
         return $query->getResult();
 	}
+	
 	/**
 	 * Get submissions for Harmonization.
-	 *
-	 * @return Array[Submission]
+	 * (lastest submissions per Providerdataset)
+	 * @return Collection<Submission>
 	 */
-	public function getSubmissionsForHarmonization($orderBy = array('id'=>'ASC')) {
-
-		return $this->matching(Criteria::create()
-				->where(Criteria::expr()
-						->notIn('step', array('CANCELLED', 'INIT')))
-				->orderBy($orderBy));
-
+	public function getSubmissionsForHarmonization() {
+		$dql = "SELECT s
+FROM $this->_entityName s
+WHERE s.id in
+(
+SELECT  max(s2.id) FROM $this->_entityName s2
+WHERE s2.step NOT IN ('CANCELLED', 'INIT') 
+GROUP BY s2.dataset, s2.provider
+)
+ORDER BY s.id";
+		
+		$query = $this->getEntityManager()->createQuery($dql);
+		
+		return  $query->getResult();
+	
 	}
 }

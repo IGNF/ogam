@@ -92,7 +92,7 @@ class Harmonization extends AbstractService {
 	 * @return ProcessStatus the status of the process.
 	 * @throws Exception if a problem occured on the server side
 	 */
-	public function getStatus($datasetId, $providerId, $servletName) {
+	public function getStatus($datasetId, $providerId, $servletName= 'HarmonizationServlet') {
 		$this->logger->debug("getStatus : " . $datasetId);
 	
 		$client = new Client();

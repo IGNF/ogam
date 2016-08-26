@@ -33,89 +33,89 @@
 {% for harmonizationProcess in harmonizations %}
 <tr class="sectiontableentry{{ loop.index0 % 2 }}">
     <td>{{ harmonizationProcess.providerId }}</td>
-    <td>{{ harmonizationProcess.datasetLabel }}</td>
+    <td>{{ harmonizationProcess.dataset.label }}</td>
     <td>{{ harmonizationProcess.date|date("Y-m-d") }}</td>
     <td>
-            {% if harmonizationProcess.submissionStatus is sameas("NOT_VALID") %}
-                {{ (harmonizationProcess.status)|trans }}
-                <img src="{{ asset('img/warning_orange.png') }}" title="{{ 'The submission has not been validated'|trans }}" />
-            {% elseif harmonizationProcess.status == "OK" %} 
-                {{ harmonizationProcess.status|trans }}
-                <img src="{{ asset('img/Green_tick.png') }}" />
-            {% elseif harmonizationProcess.status == "RUNNING" %}
-                <div class="tempStatusDiv" id="tempStatusDiv_{{ harmonizationProcess.harmonizationId }}">
-                <script type="text/javascript">
+        {% if harmonizationProcess.submissionStatus is same as("NOT_VALID") %}
+            {{ (harmonizationProcess.status)|trans }}
+            <img src="{{ asset('img/warning_orange.png') }}" title="{{ 'The submission has not been validated'|trans }}" />
+        {% elseif harmonizationProcess.status == "OK" %} 
+            {{ harmonizationProcess.status|trans }}
+            <img src="{{ asset('img/Green_tick.png') }}" />
+        {% elseif harmonizationProcess.status == "RUNNING" %}
+            <div class="tempStatusDiv" id="tempStatusDiv_{{ harmonizationProcess.harmonizationId }}">
+            <script type="text/javascript">
 
-                var OgamDesktopIntegration = {};
+            var OgamDesktopIntegration = {};
 
-                // Display the progress bar
-                display('progressBar<?php echo $harmonizationProcess->harmonizationId;?>', '', 0, '{{ absolute_url('/img/') }}');
+            // Display the progress bar
+            display('{{"progressBar#{harmonizationProcess.harmonizationId}"}}', '', 0, '{{ absolute_url('/img/') }}');
 
-                // Refresh The status of the submission
-                OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}} =  function () {
+            // Refresh The status of the submission
+            OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}} =  function () {
 
-                    var url = '{{ url('harmonization_getstatus') }}';
+                var url = '{{ url('harmonization_getstatus') }}';
 
-                    OgamDesktopIntegration.request = new XMLHttpRequest();
-                    OgamDesktopIntegration.request.onreadystatechange = function() {
+                OgamDesktopIntegration.request = new XMLHttpRequest();
+                OgamDesktopIntegration.request.onreadystatechange = function() {
 
-                        if (OgamDesktopIntegration.request.readyState == 4) { // 4: request finished and response is ready
-                            if (OgamDesktopIntegration.request.status == 200) { // Success
+                    if (OgamDesktopIntegration.request.readyState == 4) { // 4: request finished and response is ready
+                        if (OgamDesktopIntegration.request.status == 200) { // Success
 
-                                var rp = JSON.parse(OgamDesktopIntegration.request.responseText);
-                                var src = "{{ absolute_url('/img') }}";
-                                switch(rp.status){
-                                    case 'OK':
-                                    case 'WARNING':
-                                    case 'ERROR':
-                                    case 'CRASH':
-                                        OgamDesktopIntegration.getStatusTask_{{- harmonizationProcess.harmonizationId -}}.clear();
-                                        location.reload();
-                                        break;
-                                    case 'RUNNING':
-                                        total = rp.totalCount;
-                                        if (total == 0) {
-                                            percentage = 0;
-                                        } else {
-                                            percentage = rp.currentCount / total;
-                                        }
-                                        percentage = (percentage * 100) + 1;
-                                        setLabel('{{ "progressBar#{harmonizationProcess.harmonizationId}"}}', rp.taskName);
-                                        setProgress('{{- 'progressBar' ~ (harmonizationProcess.harmonizationId) -}}', percentage);
-                                        break;
-                                    default:
-                                        return;
-                                }
-                            } else { // Failure
-
+                            var rp = JSON.parse(OgamDesktopIntegration.request.responseText);
+                            var src = '{{ absolute_url('/img/') }}';
+                            switch(rp.status){
+                                case 'OK':
+                                case 'WARNING':
+                                case 'ERROR':
+                                case 'CRASH':
+                                    OgamDesktopIntegration.getStatusTask_{{- harmonizationProcess.harmonizationId -}}.clear();
+                                    location.reload();
+                                    break;
+                                case 'RUNNING':
+                                    total = rp.totalCount;
+                                    if (total == 0) {
+                                        percentage = 0;
+                                    } else {
+                                        percentage = rp.currentCount / total;
+                                    }
+                                    percentage = (percentage * 100) + 1;
+                                    setLabel('{{ "progressBar#{harmonizationProcess.harmonizationId}"}}', rp.taskName);
+                                    setProgress('{{- 'progressBar' ~ (harmonizationProcess.harmonizationId) -}}', percentage);
+                                    break;
+                                default:
+                                    return;
                             }
+                        } else { // Failure
+
                         }
-                    };
+                    }
+                };
 
 
-                    OgamDesktopIntegration.request.open("POST", url, true);
-                    OgamDesktopIntegration.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                    OgamDesktopIntegration.request.send("DATASET_ID={{- harmonizationProcess.datasetId -}}&PROVIDER_ID={{- HarmonizationProcess.providerId -}}&action=status");
+                OgamDesktopIntegration.request.open("POST", url, true);
+                OgamDesktopIntegration.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                OgamDesktopIntegration.request.send("DATASET_ID={{- harmonizationProcess.dataset.id -}}&PROVIDER_ID={{- harmonizationProcess.providerId -}}&action=status");
 
-                }
-                OgamDesktopIntegration.getStatusTask_{{- harmonizationProcess.harmonizationId -}} = later.setInterval(OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}}, later.parse.text('every 2 sec'));
-                </script>
-                </div>
-            {% elseif harmonizationProcess.status == '' %}
-            {% else %}{# "ERROR" or "CRASH") #}
-                {{ harmonizationProcess.status|trans }}
-                <img src="{{ asset('img/Red_x.png') }}" />
-            {% endif %}</td>
+            }
+            OgamDesktopIntegration.getStatusTask_{{- harmonizationProcess.harmonizationId -}} = later.setInterval(OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}}, later.parse.text('every 2 sec'));
+            </script>
+            </div>
+        {% elseif harmonizationProcess.status == '' %}
+        {% else %}{# "ERROR" or "CRASH") #}
+            {{ harmonizationProcess.status|trans }}
+            <img src="{{ asset('img/Red_x.png') }}" />
+        {% endif %}</td>
     <td>
-    {% if harmonizationProcess.submissionStatus is not sameas("NOT_VALID") and harmonizationProcess.status is not sameas("RUNNING") %}
-        {% if harmonizationProcess.status is not sameas("OK") %}
-        <a onclick="return confirmLauch();" href="{{ path('harmonization_launch',{'DATASET_ID':harmonizationProcess.datasetId, 'PROVIDER_ID':harmonizationProcess.providerId}) }}" >{{ 'Launch Harmonization'|trans }}</a>
+    {% if harmonizationProcess.submissionStatus is not same as("NOT_VALID") and harmonizationProcess.status is not same as("RUNNING") %}
+        {% if harmonizationProcess.status is not same as("OK") %}
+        <a onclick="return confirmLauch();" href="{{ path('harmonization_launch',{'DATASET_ID':harmonizationProcess.dataset.id, 'PROVIDER_ID':harmonizationProcess.providerId}) }}" >{{ 'Launch Harmonization'|trans }}</a>
         <br/>
         {% endif %}
-        {% if harmonizationProcess.status is not sameas("UNDONE") and harmonizationProcess.status is not sameas("INIT") %}
-        <a onclick="return confirmDeletion();" href="{{ path('harmonization_removeharmonizationdata',{'DATASET_ID':harmonizationProcess.datasetId, 'PROVIDER_ID':harmonizationProcess.providerId}) }}" >{{ 'Remove Harmonization Data'|trans }}</a>
+        {% if harmonizationProcess.status is not same as("UNDONE") and harmonizationProcess.status is not same as("INIT") %}
+        <a onclick="return confirmDeletion();" href="{{ path('harmonization_removeharmonizationdata',{'DATASET_ID':harmonizationProcess.dataset.id, 'PROVIDER_ID':harmonizationProcess.providerId}) }}" >{{ 'Remove Harmonization Data'|trans }}</a>
         {% endif %}
-    {% elseif harmonizationProcess.status is not sameas("UNDONE") %}
+    {% elseif harmonizationProcess.status is not same as("UNDONE") %}
         <a href="{{ path('integration_home') }}">{{ 'Validate the submission'|trans }}</a>
     {% endif %}
     </td>

@@ -3,6 +3,7 @@
 namespace OGAMBundle\Entity\HarmonizedData;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * HarmonizationProcess
@@ -12,13 +13,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class HarmonizationProcess
 {
-
-
     /**
      * @var int
      *
-     * @ORM\Column(name="harmonization_process_id", type="integer", unique=true)
      * @ORM\Id
+     * @ORM\Column(name="harmonization_process_id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $harmonizationId;
 
@@ -30,11 +30,12 @@ class HarmonizationProcess
     private $providerId;
 
     /**
-     * @var string
+     * The dataset
      *
-     * @ORM\Column(name="dataset_id", type="string", length=36)
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Dataset")
+     * @ORM\JoinColumn(name="dataset_id", referencedColumnName="dataset_id")
      */
-    private $datasetId;
+    private $dataset;
 
     /**
      * @var string
@@ -50,7 +51,16 @@ class HarmonizationProcess
      */
     private $date;
 
-
+	/**
+	 * 
+	 * @var Collection
+	 * 
+	 * @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\RawData\Submission")
+     * @ORM\JoinTable(name="harmonization_process_submissions",
+     *  joinColumns={@ORM\JoinColumn(name="harmonization_process_id", referencedColumnName="harmonization_process_id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="raw_data_submission_id", referencedColumnName="submission_id")})
+     */
+	private $submissions;
 
     /**
      * Set harmonizationId
@@ -101,30 +111,6 @@ class HarmonizationProcess
     }
 
     /**
-     * Set datasetId
-     *
-     * @param string $datasetId
-     *
-     * @return HarmonizationProcess
-     */
-    public function setDatasetId($datasetId)
-    {
-        $this->datasetId = $datasetId;
-
-        return $this;
-    }
-
-    /**
-     * Get datasetId
-     *
-     * @return string
-     */
-    public function getDatasetId()
-    {
-        return $this->datasetId;
-    }
-
-    /**
      * Set status
      *
      * @param string $status
@@ -169,7 +155,75 @@ class HarmonizationProcess
      */
     public function getDate()
     {
-        return $this->data;
+        return $this->date;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->submissions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add submission
+     *
+     * @param \OGAMBundle\Entity\RawData\Submission $submission
+     *
+     * @return HarmonizationProcess
+     */
+    public function addSubmission(\OGAMBundle\Entity\RawData\Submission $submission)
+    {
+        $this->submissions[] = $submission;
+
+        return $this;
+    }
+
+    /**
+     * Remove submission
+     *
+     * @param \OGAMBundle\Entity\RawData\Submission $submission
+     */
+    public function removeSubmission(\OGAMBundle\Entity\RawData\Submission $submission)
+    {
+        $this->submissions->removeElement($submission);
+    }
+
+    /**
+     * Get submissions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSubmissions()
+    {
+        return $this->submissions;
+    }
+
+    /**
+     * Set dataset
+     *
+     * @param \OGAMBundle\Entity\Metadata\Dataset $dataset
+     *
+     * @return HarmonizationProcess
+     */
+    public function setDataset(\OGAMBundle\Entity\Metadata\Dataset $dataset = null)
+    {
+        $this->dataset = $dataset;
+
+        return $this;
+    }
+    //TODO
+    public function submissionStatus(){
+    	return '';
+    }
+
+    /**
+     * Get dataset
+     *
+     * @return \OGAMBundle\Entity\Metadata\Dataset
+     */
+    public function getDataset()
+    {
+        return $this->dataset;
     }
 }
-
