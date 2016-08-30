@@ -1,3 +1,4 @@
+{% autoescape false %}
 OgamDesktop = {
     "map" : {
         "zoomLevel" : {{ zoomLevel }},
@@ -5,14 +6,15 @@ OgamDesktop = {
         "y_center" : {{- centerY -}},
         "resolutions" : [{{- resolutions -}}],
         "numZoomLevels" : [{{- numZoomLevels -}}],
-        "projection" : '{{- projection -}}',
+        "projection" : '{{- "#{projection}"|e('js') -}}',
         "tilesize" : {{ tilesize  }},
-        "x_min" : {{- bbox_x_min -}},
+        "x_min" : {{ bbox_x_min }},
         "y_min" : {{- bbox_y_min -}},
         "x_max" : {{- bbox_x_max -}},
         "y_max" : {{- bbox_y_max -}},
         "featureinfo_margin" : {{- featureinfo_margin -}},
-        "featureinfo_typename" : '{{- featureinfo_typename -}}',
+        "featureinfo_typename" : '{{- featureinfo_typename|e('js') -}}',
         "featureinfo_maxfeatures" : {{- featureinfo_maxfeatures -}}
     }
 }
+{% endautoescape %}
