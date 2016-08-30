@@ -12,12 +12,10 @@ class ChallengeResponseEncoder implements PasswordEncoderInterface {
 
 
 	private $session;
-	private $logger;
 
-	public function __construct(Session $session, Logger $logger)
+	public function __construct(Session $session)
 	{
 		$this->session = $session;
-		$this->logger = $logger;
 	}
 
 	/**
@@ -61,10 +59,6 @@ class ChallengeResponseEncoder implements PasswordEncoderInterface {
 		// $raw = sha1($challenge  + sha1 ($password))
 
 		$challenge = $this->session->get('challenge');
-
-		$this->logger->info('Challenge : ' . $challenge);
-		$this->logger->info('raw : ' . $raw);
-		$this->logger->info('sha1($challenge . $encoded) : ' . sha1($challenge . $encoded));
 
 		// Check that the response match the challenge
 		return sha1($challenge . $encoded) === $raw;

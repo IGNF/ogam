@@ -25,7 +25,6 @@ services:
         class: OGAMBundle\Services\ChallengeResponseEncoder
         arguments: 
             session: "@session"
-            logger: "@logger"
             
     # Service used to read the application parameters from the database
     ogam.configuration_manager:
