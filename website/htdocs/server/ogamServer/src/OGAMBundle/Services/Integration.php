@@ -34,9 +34,6 @@ class Integration extends AbstractService {
 
 		// Initialise the service URL
 		$this->serviceUrl = $url;
-
-		// Initialise the logger
-		//$this->logger = Zend_Registry::get("logger");
 	}
 	/**
 	 * Create a new data submission.

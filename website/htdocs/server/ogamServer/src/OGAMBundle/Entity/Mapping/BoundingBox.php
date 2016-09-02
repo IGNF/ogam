@@ -278,5 +278,16 @@ class BoundingBox
 
     	return $bb;
     }
+    
+    /**
+     * Get the center and defaut zoom level
+     * @return Center the center
+     */
+    function getCenter() {
+    	$center= new Center();
+    	$center->x = ($this->getXmin() + $this->getXmax()) / 2;
+    	$center->y =($this->getYmin() + $this->getYmax()) / 2;
+    	$center->zoomLevel = $this->getZoomLevel();
+    }
 }
 
