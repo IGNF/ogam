@@ -146,26 +146,26 @@ class GenericManager {
 		$this->logger->info('getAncestors');
 	
 		// Get the parent of the current table
-		$sql = "SELECT *";
+		$sql = "SELECT parent_table";
 		$sql .= " FROM TABLE_TREE ";
-		$sql .= " WHERE SCHEMA_CODE = '" . $tableFormat->schemaCode . "'";
-		$sql .= " AND child_table = '" . $tableFormat->format . "'";
+		$sql .= " WHERE SCHEMA_CODE = '" . $tableFormat->getSchemaCode() . "'";
+		$sql .= " AND child_table = '" . $tableFormat->getFormat() . "'";
 	
 		$this->logger->info('getAncestors : ' . $sql);
 	
 		$select = $this->metadatadb->prepare($sql);
 		$select->execute();
-		$parentTable = $select->fetchColumn('parent_table');
+		$parentTable = $select->fetchColumn(0);
 	
 		// Check if we are not the root table
 		if ($parentTable != "*") {
 	
 			// Build an empty parent object
-			$parent = $this->genericService->buildDataObject($tableFormat->schemaCode, $parentTable, null);
+			$parent = $this->genericService->buildDataObject($tableFormat->getSchemaCode(), $parentTable, null);
 	
 			// Fill the PK values (we hope that the child contain the fields of the parent pk)
 			foreach ($parent->infoFields as $key) {
-				$fieldName = $data->tableFormat->format . '__' . $key->data;
+				$fieldName = $data->tableFormat->getFormat() . '__' . $key->getData();
 				$fields = $data->getFields();
 				if (array_key_exists($fieldName, $fields)) {
 					$keyField = $fields[$fieldName];

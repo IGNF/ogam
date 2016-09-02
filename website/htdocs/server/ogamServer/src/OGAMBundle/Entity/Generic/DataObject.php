@@ -13,6 +13,8 @@
  */
 namespace OGAMBundle\Entity\Generic;
 
+use OGAMBundle\Entity\Metadata\TableField;
+
 /**
  * A data object is used to store a values of a line of data (from any table of a database).
  *
@@ -96,7 +98,7 @@ class DataObject {
 	/**
 	 * Add a field element.
 	 *
-	 * @param Application_Object_Metadata_TableField $field
+	 * @param TableField $field
 	 *        	a field
 	 */
 	public function addEditableField($field) {
@@ -153,9 +155,9 @@ class DataObject {
 	 * @return String the datum identifier
 	 */
 	public function getId() {
-		$datumId = 'SCHEMA/' . $this->tableFormat->schemaCode . '/FORMAT/' . $this->tableFormat->format;
+		$datumId = 'SCHEMA/' . $this->tableFormat->getSchemaCode() . '/FORMAT/' . $this->tableFormat->getFormat();
 		foreach ($this->getInfoFields() as $field) {
-			$datumId .= '/' . $field->data . '/' . $field->value;
+			$datumId .= '/' . $field->getData() . '/' . $field->value;
 		}
 		return $datumId;
 	}

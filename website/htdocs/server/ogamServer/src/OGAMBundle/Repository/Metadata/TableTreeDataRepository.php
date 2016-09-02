@@ -2,6 +2,8 @@
 
 namespace OGAMBundle\Repository\Metadata;
 
+use OGAMBundle\Entity\Metadata\TableFormat;
+
 /**
  * TableTreeDataRepository
  *
@@ -10,4 +12,40 @@ namespace OGAMBundle\Repository\Metadata;
  */
 class TableTreeDataRepository extends \Doctrine\ORM\EntityRepository
 {
+	/**
+	 * Get the labels of the children tables of a line of data.
+	 *
+	 * @param TableFormat $tableFormat
+	 *        	the table format we're looking at.
+	 * @return Array[String => String] The labels for each table format.
+	 */
+	function getChildrenTableLabels(TableFormat $tableFormat){
+		$childrenLabels = array();
+/*
+		// Get the children of the current table
+		$sql = "SELECT TABLE_TREE.child_table as format, COALESCE(t.label, TABLE_FORMAT.label) as label ";
+		$sql .= " FROM TABLE_TREE ";
+		$sql .= " LEFT JOIN TABLE_FORMAT on (TABLE_TREE.child_table = TABLE_FORMAT.format) ";
+		$sql .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'TABLE_FORMAT' AND row_pk = TABLE_FORMAT.format) ";
+		$sql .= " WHERE TABLE_TREE.SCHEMA_CODE = :schema";
+		$sql .= " AND parent_table = :format";
+*/		
+		$parameters = array(
+				'schema' => $tableFormat->getSchemaCode(),
+				'format'=> $tableFormat->getFormat());
+/*		$select = $this->_em->getConnection()->prepare($sql);
+		$select->execute($parameters);
+		
+		foreach ($select->fetchAll() as $row) {
+			$format = $row['format'];
+			$label = $row['label'];
+		
+			// Add to the result
+			$childrenLabels[$format] = $label;
+		}*/
+		$dql = "SELECT ct.format AS format, ct.label AS label FROM $this->_entityName t JOIN t.tableFormat ct WHERE t.parentTableFormat = :format AND t.schema = :schema";
+		$childrenLabels = $this->_em->createQuery($dql)->setParameters($parameters)->getScalarResult();
+		
+		return array_column($childrenLabels, 'label','format');
+	}
 }

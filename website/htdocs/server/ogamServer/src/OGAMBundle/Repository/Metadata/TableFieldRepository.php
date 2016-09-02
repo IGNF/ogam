@@ -2,6 +2,9 @@
 
 namespace OGAMBundle\Repository\Metadata;
 
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+use Doctrine\ORM\Query\Expr\Join;
+
 /**
  * TableFieldRepository
  *
@@ -10,4 +13,58 @@ namespace OGAMBundle\Repository\Metadata;
  */
 class TableFieldRepository extends \Doctrine\ORM\EntityRepository
 {
+	
+	/**
+	 * Get the list of table fields for a given table format.
+	 * If the dataset is specified, we filter on the fields of the dataset.
+	 *
+	 * @param String $schema
+	 *        	the schema identifier
+	 * @param String $format
+	 *        	the format
+	 * @param String $datasetID
+	 *        	the dataset identifier (optional)
+	 * @return Array[TableField]
+	 */
+	public function getTableFields($schema, $format, $datasetID = null) {
+/*
+			// Get the fields specified by the format
+		$req = "SELECT DISTINCT table_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type, unit.subtype, COALESCE(t.definition, data.definition) as definition ";
+		$req .= " FROM table_field ";
+		if ($datasetID != null) {
+			$req .= " LEFT JOIN dataset_fields on (table_field.format = dataset_fields.format AND table_field.data = dataset_fields.data) ";
+		}
+		$req .= " LEFT JOIN table_format on (table_format.format = table_field.format) ";
+		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
+		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATA' AND row_pk = data.data) ";
+		$req .= " WHERE (1=1)";
+		if ($datasetID != null) {
+			$req .= " AND dataset_fields.dataset_id = ? ";
+		}
+		$req .= " AND table_format.schema_code = ? ";
+		$req .= " AND table_field.format = ? ";
+		$req .= " ORDER BY table_field.position ";
+		
+		$this->logger->info('getTableFields : ' . $req);
+		
+		$select = $this->db->prepare($req);
+*/
+		//$dql = "SELECT f FROM $this->_entityName f ";
+		$query = $this->createQueryBuilder('t', 't.data');
+		$query->leftJoin('OGAMBundle:Metadata\TableFormat', 'tf', Join::WITH, 'tf.format = t.format');
+		$query->where('t.format = :format')->andWhere('tf.schemaCode = :schema');
+		
+		$query->setParameters(array('schema'=>$schema,'format'=>$format));
+		
+		if ($datasetID != null) {
+			$query->leftJoin('DatasetField', 'df', Join::WITH, 'f.format = df.format AND f.format = df.format');
+			$query->andWhere('df.id = :dataset');
+			$query->setParameter('dataset', $datasetID);
+		}
+		
+		
+
+		return $query->getQuery()->getResult();
+	}
 }

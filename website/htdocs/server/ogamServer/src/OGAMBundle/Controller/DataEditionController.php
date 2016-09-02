@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use OGAMBundle\Entity\Generic\DataObject;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 /**
  * 
  * @Route ("/dataedition")
@@ -47,6 +48,35 @@ class DataEditionController extends Controller
     protected function getDataFromRequest($request) {
 		//bouchon 
 		$data = new DataObject();
+		$params = array();
+		$id = $request->attributes->get('id');
+		if (is_string($id)){
+			$list = explode('/', $id);// will be like key1/value1/key2/value2
+			if(count($list) % 2){//is an key+value list  so odd is error
+				$this->createNotFoundException('DataObject not found');
+			}
+			$params = array_column(array_chunk($list, 2), 1, 0);//make array key =>value
+		}
+		
+		$schema = $params["SCHEMA"];
+		$format = $params["FORMAT"];
+		
+		$data = $this->get('ogam.generic_service')->buildDataObject($schema, $format);
+		
+		// Complete the primary key info with the session values
+		foreach ($data->infoFields as $infoField) {
+			if (!empty($params[$infoField->getData()])) {
+				$infoField->value = $params[$infoField->getData()];
+			}
+		}
+		
+		// Complete the other fields with the session values (particulary join_keys)
+		foreach ($data->editableFields as $editableField) {
+			if (!empty($params[$editableField->getData()])) {
+				$editableField->value = $params[$editableField->getData()];
+			}
+		}
+		
     	return $data;
     }
     
@@ -101,9 +131,10 @@ class DataEditionController extends Controller
      * @param String $message
      *        	A confirmation/warning message to display
      * @return the HTML view
-     * @Route("/show-add-data")
+     * @Route("/show-add-data/{id}", requirements={"id"= ".*"})
+     * @Template(engine="php")
      */
-    public function showAddDataAction(Request $request, $data = null, $message = '') {
+    public function showAddDataAction(Request $request, DataObject $data = null, $message = '') {
     	$mode = 'ADD';
     	
     	// If data is set then we don't need to read from database
@@ -114,12 +145,14 @@ class DataEditionController extends Controller
     	// If the objet is not existing then we are in create mode instead of edit mode
     	
     	// Get the ancestors of the data objet from the database (to generate a summary)
-    	$ancestors = $this->getDoctrine()->getRepository('OGAMBundle:GenericRepository')->getAncestors($data);
+    	$ancestors = $this->get('ogam.manager.generic')->getAncestors($data);
     	
     	// Get the labels linked to the children table (to display the links)
-    	$childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getChildrenTableLabels($data->tableFormat);
+    	$childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTreeData')->getChildrenTableLabels($data->tableFormat);
     	 
-    	return $this->render('OGAMBundle:DataEdition:show_add_data.html.twig', array(
+    	return 
+    	//$this->render('OGAMBundle:DataEdition:show_add_data.html.twig', array(
+    	$this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
     		'dataId' => $data->getId(),
 			'tableFormat' => $data->tableFormat,
 			'ancestors' => $ancestors,

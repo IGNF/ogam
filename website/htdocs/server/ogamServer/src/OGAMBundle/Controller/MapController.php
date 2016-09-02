@@ -46,7 +46,7 @@ class MapController extends Controller
 
 		if ($userPerProviderCenter) {
 			// Center the map on the provider location
-			$center = $this->getDoctrine()->getEntityManagerForClass('OGAMBundle\Entity\Mapping\BoundingBox')->find('OGAMBundle\Entity\Mapping\BoundingBox', $providerId)->getCenter();
+			$center = $this->getDoctrine()->getManagerForClass('OGAMBundle\Entity\Mapping\BoundingBox')->find('OGAMBundle\Entity\Mapping\BoundingBox', $providerId)->getCenter();
 			$view->zoomLevel = $center->zoomLevel;
 			$view->centerX = $center->x;
 			$view->centerY = $center->y;
@@ -98,6 +98,12 @@ class MapController extends Controller
      */
     public function ajaxgetvectorlayersAction(Request $request)
     {
+    	$vectorlayers = $this->layersModel->getVectorLayersList();
+    	// Get the available scales
+    	$scales = $this->get('ogam.repository.mapping.scale')->getScales();
+    	// Transform the available scales into resolutions
+    	$resolutions = $this->getResolutions($scales);
+    	
         return $this->render('OGAMBundle:Map:ajaxgetvectorlayers.json.twig', array(
             // ...
         ));

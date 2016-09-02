@@ -79,7 +79,7 @@ class GenericService {
 	
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
-			if (in_array($tableField->data, $data->tableFormat->primaryKeys)) {
+			if (in_array($tableField->getData(), $data->tableFormat->getPrimaryKeys())) {
 				// Primary keys are displayed as info fields
 				$data->addInfoField($tableField);
 			} else {
