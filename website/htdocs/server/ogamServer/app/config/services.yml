@@ -50,7 +50,7 @@ services:
         class: OGAMBundle\EventListener\BreadcrumbListener
         arguments: ["@white_october_breadcrumbs", "@ogam.breadcrumb_config_service"]
         tags:
-            - { name: kernel.event_subscriber }            
+            - { name: kernel.event_subscriber }
             
             
     # Repositories not linked to a specific entity
@@ -70,4 +70,13 @@ services:
     ogam.repository.mapping.scale:
         class: OGAMBundle\Repository\Mapping\ScaleRepository
         arguments: ["@doctrine.dbal.mapping_connection"]
-        
+    
+    ogam.manager.generic:
+        class: OGAMBundle\Manager\GenericManager
+        arguments: ["@doctrine.orm.metadata_entity_manager","@doctrine.orm.raw_data_entity_manager","@ogam.generic_service","@ogam.configuration_manager"]
+        calls:
+          - [setLogger, ['@logger']]
+
+    ogam.generic_service:
+        class: OGAMBundle\Services\GenericService
+        arguments: ["@doctrine.orm.metadata_entity_manager","@ogam.configuration_manager", "@logger"]
