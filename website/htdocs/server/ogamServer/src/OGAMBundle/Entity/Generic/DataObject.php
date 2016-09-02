@@ -33,13 +33,13 @@ class DataObject {
 
 	/**
 	 * The elements of the primary key.
-	 * Array[Application_Object_Metadata_TableField].
+	 * Array[TableField].
 	 */
 	var $infoFields = array();
 
 	/**
 	 * The other values.
-	 * Array[Application_Object_Metadata_TableField].
+	 * Array[TableField].
 	 */
 	var $editableFields = array();
 
@@ -138,7 +138,7 @@ class DataObject {
 		$hasGeom = false;
 
 		foreach ($this->getFields() as $field) {
-			if ($field->type == 'GEOM') {
+			if ($field->type === 'GEOM') {
 				$hasGeom = true;
 				break;
 			}

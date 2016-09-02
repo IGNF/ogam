@@ -18,7 +18,7 @@ class Layer
      * @var string
      *
      * @ORM\Id
-     * @ORM\Column(name="layer_name", type="string", length=50, unique=true)
+     * @ORM\Column(name="layer_name", type="string", length=50, unique=true, options={"comment"="Logical name of the layer"})
      */
     private $layerName;
 
@@ -26,7 +26,7 @@ class Layer
 	 * The label of the layer.
 	 * @var string
      *
-     * @ORM\Column(name="layer_label", type="string", length=100, nullable=true)
+     * @ORM\Column(name="layer_label", type="string", length=100, nullable=true, options={"comment"="Label of the layer"})
      */
     private $layerLabel;
 
@@ -529,4 +529,3 @@ class Layer
         return $this->featureServiceName;
     }
 }
-

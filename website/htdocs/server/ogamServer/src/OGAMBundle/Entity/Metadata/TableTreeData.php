@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TableTreeData
  *
  * @ORM\Table(name="metadata.table_tree")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\tableTreeDataRepository")
+ * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableTreeDataRepository")
  */
 class TableTreeData
 {
@@ -106,7 +106,7 @@ class TableTreeData
     /**
      * Get joinKeys
      *
-     * @return string
+     * @return array
      */
     public function getJoinKeys()
     {

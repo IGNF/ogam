@@ -17,7 +17,7 @@ class TableFormat extends Format
      * The real name of the table.
      * @var string
      *
-     * @ORM\Column(name="tableName", type="string", length=36)
+     * @ORM\Column(name="table_name", type="string", length=36)
      */
     private $tableName;
 
@@ -25,7 +25,7 @@ class TableFormat extends Format
      * The schema identifier.
      * @var string
      *
-     * @ORM\Column(name="schemaCode", type="string", length=36, nullable=true)
+     * @ORM\Column(name="schema_code", type="string", length=36, nullable=true)
      */
     private $schemaCode;
 
@@ -35,7 +35,7 @@ class TableFormat extends Format
      *
      * @var string
      *
-     * @ORM\Column(name="primaryKeys", type="string", length=255, nullable=true)
+     * @ORM\Column(name="primary_key", type="string", length=255, nullable=true)
      */
     private $primaryKeys;
 
