@@ -16,132 +16,136 @@
  * View for the creation of a new data.
  * @package views
  */
-$generateAddLink = function ($schema, $format, $infoFields) use ($view) {
+$generateAddLink = function ($schema, $format, $infoFields) {
 
-		// Build the URL to link to the parent items
-		$urlArray = array(
-//			'controller' => 'dataedition',
-//			'action' => 'show-add-data'
-		);
+	// Build the URL to link to the parent items
+	$urlArray = array(
+//		'controller' => 'dataedition',
+//		'action' => 'show-add-data'
+	);
 
-		// Add the schema
-		$urlArray['SCHEMA'] = $schema;
+	// Add the schema
+	$urlArray['SCHEMA'] = $schema;
 
-		// Add the format
-		$urlArray['FORMAT'] = $format;
+	// Add the format
+	$urlArray['FORMAT'] = $format;
 
-		// Add the PK elements
-		foreach ($infoFields as $infoField) {
-			$urlArray[$infoField->getData()] = $infoField->value;
-		}
-
-		// output the result
-		return '#edition-add/' .implode('/', $urlArray);
-	};
+	// Add the PK elements
+	foreach ($infoFields as $infoField) {
+		$urlArray[$infoField->getData()] = $infoField->value;
+	}
 	
-	$generateEditLink=function ($data) {
+	$uri='';
+	foreach(array_filter($urlArray) as $key=>$val){
+		$uri .= "/$key/$val";
+	}
+	// output the result
+	return '#edition-add' .$uri;
+};
+	
+$generateEditLink=function ($data) use ($view) {
 
-		// Build the URL to link to the parent items
-		$urlArray = array(
-			'controller' => 'index',
-			'action' => 'index'
-		);
+	// Build the URL to link to the parent items
+	$urlArray = array(
+		'controller' => 'index',
+		'action' => 'index'
+	);
 
-		// Add the schema
-		$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
+	// Add the schema
+	$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
 
-		// Add the format
-		$urlArray['FORMAT'] = $data->tableFormat->format;
+	// Add the format
+	$urlArray['FORMAT'] = $data->tableFormat->format;
 
-		// Add the PK elements
-		foreach ($data->infoFields as $infoField) {
-			$urlArray[$infoField->data] = $infoField->value;
-		}
+	// Add the PK elements
+	foreach ($data->infoFields as $infoField) {
+		$urlArray[$infoField->data] = $infoField->value;
+	}
 
-		// Add the fields to generate the tooltip
-		$fields = array();
-		foreach ($data->getFields() as $field) {
-			if (is_array($field->valueLabel)) {
-				$val = "";
-				foreach ($field->valueLabel as $value) {
-					$val .= $view->escape($value) . ", ";
-				}
-				$fields[$field->label] = substr($val, 0, -2);
-			} else {
-				$fields[$field->label] = $view->escape($field->valueLabel);
+	// Add the fields to generate the tooltip
+	$fields = array();
+	foreach ($data->getFields() as $field) {
+		if (is_array($field->valueLabel)) {
+			$val = "";
+			foreach ($field->valueLabel as $value) {
+				$val .= $view->escape($value) . ", ";
 			}
+			$fields[$field->label] = substr($val, 0, -2);
+		} else {
+			$fields[$field->label] = $view->escape($field->valueLabel);
 		}
-		// output the result
-		return array(
-			'url' => '#edition-edit'.$data->getId(),
-			'text' => $view->escape($data->tableFormat->label),
-			'fields' => $fields
-		);
-	};
+	}
+	// output the result
+	return array(
+		'url' => '#edition-edit'.$data->getId(),
+		'text' => $view->escape($data->tableFormat->label),
+		'fields' => $fields
+	);
+};
 ?>
 [
 <?php
-                    $patch = array(
-                    		'xclass' => 'OgamDesktop.view.edition.Panel'
-                    );
+$patch = array(
+    'xclass' => 'OgamDesktop.view.edition.Panel'
+);
 
-                    // Unique identifier of the data
-                    $patch['dataId'] = $dataId;
-                    // mode
-                    $patch['mode'] = $mode;
+// Unique identifier of the data
+$patch['dataId'] = $dataId;
+// mode
+$patch['mode'] = $mode;
 
-                    // message
-                    if (!empty($message)) {
-                        $patch['message'] = $message;
-                    }
+// message
+if (! empty($message)) {
+    $patch['message'] = $message;
+}
 
-                    // parentsLinks
-                    if (!empty($ancestors)){
-	                    $parentsLinks = array();
-	                    foreach (array_reverse($ancestors) as $ancestor) {
-	                        $parentsLinks[] = $generateEditLink($ancestor);
-	                    }
-	                    $patch['parentsLinks'] = $parentsLinks;
-                    }
+// parentsLinks
+if (! empty($ancestors)) {
+    $parentsLinks = array();
+    foreach (array_reverse($ancestors) as $ancestor) {
+        $parentsLinks[] = $generateEditLink($ancestor);
+    }
+    $patch['parentsLinks'] = $parentsLinks;
+}
 
-                    // dataTitle
-                    $patch['dataTitle'] =  $view->escape($tableFormat->getLabel());
+// dataTitle
+$patch['dataTitle'] = $view->escape($tableFormat->getLabel());
 
-                    // disableDeleteButton
-                    $childCount = 0;
-                    foreach ($children as $childTable) {
-                    	$childCount += count($childTable);
-                    }
-                    
-                    $patch['disableDeleteButton'] =  ($childCount > 0);
+// disableDeleteButton
+$childCount = 0;
+foreach ($children as $childTable) {
+    $childCount += count($childTable);
+}
 
-                    // childrenConfigOptions
-                    $childrenConfigOptions = array();
-                    foreach ($childrenTableLabels as $childFormat => $childTableLabel) {
-                        $configOptions = array();
-                       // $configOptions['buttonAlign'] = 'center';
-                        $configOptions['title'] = $view->escape($childTableLabel);
+$patch['disableDeleteButton'] = ($childCount > 0);
 
-                        // Add the edit links for each child of the current item
-                        $childrenLinks = array();
-                        if(!empty($children)){
-                            foreach ($children[$childFormat] as $child) {
-                                $childrenLinks[] = $generateEditLink($child);
-                            }
-                            $configOptions['childrenLinks'] = $childrenLinks;
-                        }
-                        if (empty($childrenLinks)) {
-                            $content = $view['translator']->trans('No %value% found.');
-                            $configOptions['html'] = str_replace('%value%', strtolower($view->escape($childTableLabel)), $content);
-                        }
+// childrenConfigOptions
+$childrenConfigOptions = array();
+foreach ($childrenTableLabels as $childFormat => $childTableLabel) {
+    $configOptions = array();
+    // $configOptions['buttonAlign'] = 'center';
+    $configOptions['title'] = $view->escape($childTableLabel);
+    
+    // Add the edit links for each child of the current item
+    $childrenLinks = array();
+    if (! empty($children)) {
+        foreach ($children[$childFormat] as $child) {
+            $childrenLinks[] = $generateEditLink($child);
+        }
+        $configOptions['childrenLinks'] = $childrenLinks;
+    }
+    if (empty($childrenLinks)) {
+        $content = $view['translator']->trans('No %value% found.');
+        $configOptions['html'] = str_replace('%value%', strtolower($view->escape($childTableLabel)), $content);
+    }
+    
+    // Add link to a new child
+    $configOptions['AddChildURL'] = $generateAddLink($data->tableFormat->getSchemaCode(), $childFormat, $data->getInfoFields());
+    
+    array_push($childrenConfigOptions, $configOptions);
+}
+$patch['childrenConfigOptions'] = $childrenConfigOptions;
 
-                        // Add link to a new child
-                        $configOptions['AddChildURL'] = $generateAddLink($data->tableFormat->getSchemaCode(), $childFormat, $data->getInfoFields());
-
-                        array_push($childrenConfigOptions, $configOptions);
-                    }
-                    $patch['childrenConfigOptions'] = $childrenConfigOptions;
-
-                    echo json_encode($patch);
-                ?>
-                ]  
+echo json_encode($patch);
+?>
+ ]
