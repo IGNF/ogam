@@ -23,11 +23,12 @@ class TableFormat extends Format
 
     /**
      * The schema identifier.
-     * @var string
+     * @var Schema
      *
-     * @ORM\Column(name="schema_code", type="string", length=36, nullable=true)
+     * @ORM\ManyToOne(targetEntity="Schema")
+     * @ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")
      */
-    private $schemaCode;
+    private $schema;
 
     /**
      * The primary key.
@@ -72,20 +73,24 @@ class TableFormat extends Format
     {
         return $this->tableName;
     }
-
     /**
-     * Set schemaCode
-     *
-     * @param string $schemaCode
-     *
-     * @return TableFormat
+     * Get schema
+     * @return Schema
      */
-    public function setSchemaCode($schemaCode)
-    {
-        $this->schemaCode = $schemaCode;
-
-        return $this;
+    public function getSchema(){
+        return $this->schema;
     }
+    
+    /**
+     * set schema
+     * @param unknown $schema
+     * @return \OGAMBundle\Entity\Metadata\TableFormat
+     */
+    public function setSchema($schema){
+         $this->schema = $schema;
+         return $this;
+    }
+
 
     /**
      * Get schemaCode
@@ -94,7 +99,7 @@ class TableFormat extends Format
      */
     public function getSchemaCode()
     {
-        return $this->schemaCode;
+        return $this->getSchema()->getCode();
     }
 
 

@@ -53,7 +53,7 @@ class TableFieldRepository extends \Doctrine\ORM\EntityRepository
 		//$dql = "SELECT f FROM $this->_entityName f ";
 		$query = $this->createQueryBuilder('t', 't.data');
 		$query->leftJoin('OGAMBundle:Metadata\TableFormat', 'tf', Join::WITH, 'tf.format = t.format');
-		$query->where('t.format = :format')->andWhere('tf.schemaCode = :schema');
+		$query->where('t.format = :format')->andWhere('tf.schema = :schema');
 		
 		$query->setParameters(array('schema'=>$schema,'format'=>$format));
 		
