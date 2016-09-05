@@ -174,7 +174,7 @@ Manage Users;Administration des utilisateurs
 ##########################
 User Module;Module utilisateur
 Authentication;Authentification
-Login;Identifiant
+Username;Identifiant
 Password;Mot de passe
 
 ﻿##########################
