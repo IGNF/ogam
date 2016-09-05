@@ -62,6 +62,11 @@ class Role implements RoleInterface {
 	 * A list of schemas names.
 	 *
 	 * @var Array[String]
+	 * @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\Metadata\Schema")
+     * @ORM\JoinTable(name="role_to_schema",
+     *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")}
+     *      )
 	 */
 	private $schemas = array();
 
@@ -181,6 +186,34 @@ class Role implements RoleInterface {
 
 	}
 
+	/**
+	 * Indicate if the role is allowed for a schema.
+	 *
+	 * @param String $schemaCode
+	 *        	The schema code
+	 * @return Boolean
+	 */
+	function isSchemaAllowed($schemaCode) {
+
+		global $kernel;
+		if ('AppCache' == get_class($kernel)) {
+			$kernel = $kernel->getKernel();
+		}
+		$logger = $kernel->getContainer()->get('logger');
+		$logger->info('role isSchemaAllowed ' . $schemaCode);
+
+		$logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
+
+		foreach ($this->getSchemas() as $schema) {
+
+			if ($schema->getCode() == $schemaCode) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
 
 	/**
 	 * Required to implement RoleInterface.
