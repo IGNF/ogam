@@ -192,14 +192,23 @@ class User implements UserInterface, \Serializable {
 	/**
 	 * Indicate if the user is allowed for a schema.
 	 *
-	 * @param String $schemaName
+	 * @param String $schemaCode
 	 *        	The schema
 	 * @return Boolean
 	 */
-	function isSchemaAllowed($schemaName) {
+	function isSchemaAllowed($schemaCode) {
 		// The user is allowed if one of its role is.
-		foreach ($this->getRoles() as $role) {
-			if (in_array($schemaName, $role->getSchemas())) {
+		global $kernel;
+		if ('AppCache' == get_class($kernel)) {
+			$kernel = $kernel->getKernel();
+		}
+		$logger = $kernel->getContainer()->get('logger');
+		$logger->info('isSchemaAllowed ' . $schemaCode);
+
+		// The user is allowed if one of its role is.
+		foreach ($this->roles as $role) {
+
+			if ($role->isSchemaAllowed($schemaCode)) {
 				return true;
 			}
 		}
