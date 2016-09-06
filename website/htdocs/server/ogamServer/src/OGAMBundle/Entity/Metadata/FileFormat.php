@@ -3,6 +3,7 @@
 namespace OGAMBundle\Entity\Metadata;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * FileFormat.
@@ -39,6 +40,8 @@ class FileFormat extends Format
      * @var string
      *
      * @ORM\Column(name="label", type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="fileFormat.label.notBlank")
+	 * @Assert\Length(max="36", maxMessage="fileFormat.label.maxLength")
      */
     private $label;
 

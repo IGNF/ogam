@@ -79,7 +79,7 @@ abstract class Field
     {
         return $this->format;
     }
-    
+
 
 	/**
 	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).

@@ -7,12 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
  * TableTreeData
  *
  * @ORM\Table(name="metadata.table_tree")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableTreeDataRepository")
+ * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableTreeRepository")
  */
-class TableTreeData {
+class TableTree {
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="Schema")
+	 * @ORM\ManyToOne(targetEntity="TableSchema")
 	 * @ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")
 	 * @ORM\Id
 	 */

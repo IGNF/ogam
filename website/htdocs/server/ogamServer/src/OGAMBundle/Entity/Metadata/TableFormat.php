@@ -25,7 +25,7 @@ class TableFormat extends Format
      * The schema identifier.
      * @var Schema
      *
-     * @ORM\ManyToOne(targetEntity="Schema")
+     * @ORM\ManyToOne(targetEntity="TableSchema")
      * @ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")
      */
     private $schema;
@@ -75,15 +75,15 @@ class TableFormat extends Format
     }
     /**
      * Get schema
-     * @return Schema
+     * @return TableSchema
      */
     public function getSchema(){
         return $this->schema;
     }
-    
+
     /**
      * set schema
-     * @param unknown $schema
+     * @param TableSchema $schema
      * @return \OGAMBundle\Entity\Metadata\TableFormat
      */
     public function setSchema($schema){

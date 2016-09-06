@@ -43,7 +43,7 @@ class SchemaTest extends KernelTestCase {
 	public function testGetSchemas() {
 
 		// Récupère la liste des schémas
-		$schemas = $this->em->getRepository('OGAMBundle\Entity\Metadata\Schema', 'metadata')->findAll();
+		$schemas = $this->em->getRepository('OGAMBundle\Entity\Metadata\TableSchema', 'metadata')->findAll();
 
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($schemas), 5);
