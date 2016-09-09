@@ -4,6 +4,7 @@ namespace OGAMBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * 
@@ -17,17 +18,32 @@ class QueryController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('OGAMBundle:Query:show_query_form.html.twig');
+        return $this->redirectToRoute('query_show-query-form');
     }
 
     /**
-     * @Route("/show-query-form")
+     * Show the main query page.
+     *
+     * @Route("/show-query-form", name = "query_show-query-form")
      */
-    public function showQueryFormAction()
+    public function showQueryFormAction(Request $request)
     {
-        return $this->render('OGAMBundle:Query:show_query_form.html.twig', array(
-            // ...
-        ));
+        $logger = $this->get('logger');
+        $logger->debug('showQueryFormAction');
+
+        // Clean previous results
+        $this->getDoctrine()
+        ->getRepository('OGAMBundle\Entity\Mapping\ResultLocation', 'mapping')
+        ->cleanPreviousResults(session_id());
+
+        // Check if the parameter of the default page is set
+        if ($request->query->get('default') === "predefined") {
+            $logger->debug('defaultTab predefined');
+            //$this->view->defaultTab = 'predefined'; //TODO: Regarder avec flo le fonctionnement avec zend...
+         }
+
+        // Forward the user to the next step
+        return $this->redirect('/odp/index.html?locale='.$request->getLocale());
     }
 
     /**
