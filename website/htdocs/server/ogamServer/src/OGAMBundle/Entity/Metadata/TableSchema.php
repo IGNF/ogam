@@ -8,9 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Schema
  *
  * @ORM\Table(name="metadata.table_schema")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\SchemaRepository")
+ * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableSchemaRepository")
  */
-class Schema
+class TableSchema
 {
 
     /**

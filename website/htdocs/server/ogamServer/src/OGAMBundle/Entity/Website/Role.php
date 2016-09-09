@@ -62,7 +62,7 @@ class Role implements RoleInterface {
 	 * A list of schemas names.
 	 *
 	 * @var Array[String]
-	 * @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\Metadata\Schema")
+	 * @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\Metadata\TableSchema")
      * @ORM\JoinTable(name="role_to_schema",
      *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")}

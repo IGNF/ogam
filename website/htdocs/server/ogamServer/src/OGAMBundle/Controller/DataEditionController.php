@@ -8,7 +8,7 @@ use OGAMBundle\Entity\Generic\DataObject;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 /**
- * 
+ *
  * @Route ("/dataedition")
  *
  */
@@ -37,16 +37,16 @@ class DataEditionController extends Controller
             // ...
         ));
     }
-    
+
     /**
      * Parse request parameters and build the corresponding data object.
      *
      * @param Request $request
      *        	The request object.
-     * @return Application_Object_Generic_DataObject the data object
+     * @return DataObject the data object
      */
     protected function getDataFromRequest($request) {
-		//bouchon 
+		//bouchon
 		$data = new DataObject();
 		$params = array();
 		$id = $request->attributes->get('id');
@@ -57,29 +57,29 @@ class DataEditionController extends Controller
 			}
 			$params = array_column(array_chunk($list, 2), 1, 0);//make array key =>value
 		}
-		
+
 		$schema = $params["SCHEMA"];
 		$format = $params["FORMAT"];
-		
+
 		$data = $this->get('ogam.generic_service')->buildDataObject($schema, $format);
-		
+
 		// Complete the primary key info with the session values
 		foreach ($data->infoFields as $infoField) {
 			if (!empty($params[$infoField->getData()])) {
 				$infoField->value = $params[$infoField->getData()];
 			}
 		}
-		
+
 		// Complete the other fields with the session values (particulary join_keys)
 		foreach ($data->editableFields as $editableField) {
 			if (!empty($params[$editableField->getData()])) {
 				$editableField->value = $params[$editableField->getData()];
 			}
 		}
-		
+
     	return $data;
     }
-    
+
     /**
      * Edit a data.
 	 *
@@ -88,12 +88,39 @@ class DataEditionController extends Controller
 	 * @param DataObject $data The data to display (optional)
 	 * @param String $message a confirmation/warning message to display (optional)
 	 * @return the view
-     * @Route("/show-edit-data")
+     * @Route("/show-edit-data/{id}", requirements={"id"= ".*"})
      */
-    public function showEditDataAction($data = null, $message = '')
+    public function showEditDataAction(Request $request, $data = null, $message = '')
     {
-    	return $this->render('OGAMBundle:DataEdition:edit_data.json.twig', array(
-    			// ...
+        $genericModel = $this->get('ogam.manager.generic');
+        $mode = 'EDIT';
+    	// If data is set then we don't need to read from database
+    	if ($data === null) {
+    		$data = $this->getDataFromRequest($request);
+    		$genericModel->getDatum($data);
+    	}
+
+    	// If the objet is not existing then we are in create mode instead of edit mode
+
+    	// Get the ancestors of the data objet from the database (to generate a summary)
+    	$ancestors = $genericModel->getAncestors($data);
+
+    	// Get the childs of the data objet from the database (to generate links)
+    	$children = $genericModel->getChildren($data);
+
+    	// Get the labels linked to the children table (to display the links)
+    	$childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->tableFormat);
+
+    	return
+    	$this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
+    		'dataId' => $data->getId(),
+			'tableFormat' => $data->tableFormat,
+			'ancestors' => $ancestors,
+			'data' => $data,
+			'children' => $children,
+			'childrenTableLabels'=> $childrenTableLabels,
+			'mode' => $mode,
+			'message' => $message,
     	));
     }
 
@@ -136,21 +163,21 @@ class DataEditionController extends Controller
      */
     public function showAddDataAction(Request $request, DataObject $data = null, $message = '') {
     	$mode = 'ADD';
-    	
+
     	// If data is set then we don't need to read from database
     	if ($data === null) {
     		$data = $this->getDataFromRequest($request);
     	}
-    	
+
     	// If the objet is not existing then we are in create mode instead of edit mode
-    	
+
     	// Get the ancestors of the data objet from the database (to generate a summary)
     	$ancestors = $this->get('ogam.manager.generic')->getAncestors($data);
-    	
+
     	// Get the labels linked to the children table (to display the links)
-    	$childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTreeData')->getChildrenTableLabels($data->tableFormat);
-    	 
-    	return 
+    	$childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->tableFormat);
+
+    	return
     	//$this->render('OGAMBundle:DataEdition:show_add_data.html.twig', array(
     	$this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
     		'dataId' => $data->getId(),
@@ -168,9 +195,10 @@ class DataEditionController extends Controller
      * AJAX function : Get the AJAX structure corresponding to the edition form.
      *
      * @return JSON The list of forms
-     * @Route("/ajax-get-edit-form")
+     * @Route("/ajax-get-edit-form/{id}", requirements={"id"= ".*"})
      */
-    public function ajaxGetEditFormAction() {
+    public function ajaxGetEditFormAction(Request $request, $id=null) {
+        $data = $this->getDataFromRequest($request);
     	return $this->json(array());
     }
 
@@ -178,9 +206,10 @@ class DataEditionController extends Controller
      * AJAX function : Get the AJAX structure corresponding to the add form.
      *
      * @return JSON The list of forms
-     * @Route("/ajax-get-add-form")
+     * @Route("/ajax-get-add-form/{id}", requirements={"id"= ".*"})
      */
-    public function ajaxGetAddFormAction() {
+    public function ajaxGetAddFormAction(Request $request, $id=null) {
+        $data = $this->getDataFromRequest($request);
     	return $this->json(array());
     }
 

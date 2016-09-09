@@ -72,7 +72,7 @@ class GenericService {
 		$data->datasetId = $datasetId;
 	
 		// Get the description of the table
-		$data->tableFormat = $this->metadataModel->getRepository(TableFormat::class)->findOneBy(array('schemaCode'=> $schema,'format'=> $format));
+		$data->tableFormat = $this->metadataModel->getRepository(TableFormat::class)->findOneBy(array('schema'=> $schema,'format'=> $format));
 	
 		// Get all the description of the Table Fields corresponding to the format
 		$tableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $format, $datasetId);
@@ -144,9 +144,9 @@ class GenericService {
 		);
 		$options = array_replace($defaults, $options);
 	
-		$fieldName = $field->format . "." . $field->columnName;
+		$fieldName = $field->getformat() . "." . $field->getColumnName();
 	
-		if ($field->type === "DATE") {
+		if ($field->getData()->getUnit()->getType() === "DATE") {
 			if ($field->unit === "DateTime") {
 				$sql .= "to_char(" . $fieldName . ", '" . $options['datetime_format'] . "') as " . $field->getName();
 			} else {
@@ -212,7 +212,7 @@ class GenericService {
 		$sql = "";
 	
 		$value = $tableField->value;
-		$column = $tableField->format . "." . $tableField->columnName;
+		$column = $tableField->getFormat() . "." . $tableField->getColumnName();
 	
 		// Set the projection for the geometries in this schema
 		$configuration = $this->configation;
@@ -669,5 +669,58 @@ class GenericService {
 		}
 	
 		return $sql;
+	}
+	
+	/**
+	 * Fill a line of data with the values a table, given its primary key.
+	 * Only one object is expected in return.
+	 *
+	 * @param DataObject $data
+	 *        	the shell of the data object with the values for the primary key.
+	 * @return DataObject The complete data object.
+	 */
+	public function getDatum($data) {
+	    $tableFormat = $data->tableFormat;
+	
+	    $this->logger->info('getDatum : ' . $tableFormat->format);
+	
+	    $schema = $tableFormat->getSchema();
+	
+	    // Get the values from the data table
+	    $sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
+	    $sql .= " FROM " . $schema->getName() . "." . $tableFormat->getTableName() . " AS " . $tableFormat->getFormat();
+	    $sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->getCode(), $data->infoFields);
+	
+	    $this->logger->info('getDatum : ' . $sql);
+	
+	    $select = $this->rawdb->prepare($sql);
+	    $select->execute();
+	    $row = $select->fetch();
+	
+	    // Fill the values with data from the table
+	    foreach ($data->editableFields as $field) {
+	        $key = strtolower($field->getName());
+	        $field->value = $row[$key];
+	
+	        // Store additional info for geometry type
+	        if ($field->type === "GEOM") {
+	            $field->xmin = $row[strtolower($key) . '_x_min'];
+	            $field->xmax = $row[strtolower($key) . '_x_max'];
+	            $field->ymin = $row[strtolower($key) . '_y_min'];
+	            $field->ymax = $row[strtolower($key) . '_y_max'];
+	        } else if ($field->type === "ARRAY") {
+	            // For array field we transform the value in a array object
+	            $field->value = $this->genericService->stringToArray($field->value);
+	        }
+	    }
+	
+	    // Fill the values with data from the table
+	    foreach ($data->getFields() as $field) {
+	
+	        // Fill the value labels for the field
+	        $field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+	    }
+	
+	    return $data;
 	}
 }
