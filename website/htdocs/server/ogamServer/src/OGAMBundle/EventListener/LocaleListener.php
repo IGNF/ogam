@@ -9,6 +9,8 @@ class LocaleListener implements EventSubscriberInterface {
 
 	private $defaultLocale;
 
+	protected $locale;
+
 	public function __construct($defaultLocale = 'en') {
 		$this->defaultLocale = $defaultLocale;
 	}
@@ -33,6 +35,8 @@ class LocaleListener implements EventSubscriberInterface {
 			$request->setLocale($request->getSession()
 				->get('_locale', $this->defaultLocale));
 		}
+
+		$this->locale = $request->getLocale ();
 	}
 
 	public static function getSubscribedEvents() {
@@ -45,5 +49,10 @@ class LocaleListener implements EventSubscriberInterface {
 				)
 			)
 		);
+	}
+	
+	public function getLocale()
+	{
+		return $this->locale;
 	}
 }

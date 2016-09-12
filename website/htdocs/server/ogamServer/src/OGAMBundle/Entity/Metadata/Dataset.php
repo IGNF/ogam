@@ -11,7 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Table(name="metadata.dataset")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\DatasetRepository")
  */
-class Dataset {
+class Dataset implements \JsonSerializable {
 
 	/**
 	 * The identifier of the dataset.
@@ -139,13 +139,13 @@ class Dataset {
 	 *
 	 * @return a JSON string
 	 */
-	public function toJSON() {
-		$json = '"id":' . json_encode($this->id);
-		$json .= ',"label":' . json_encode($this->label);
-		$json .= ',"definition":' . json_encode($this->definition);
-		$json .= ',"is_default":' . json_encode($this->isDefault);
-
-		return $json;
+	public function jsonSerialize() {
+		return [
+			'id' => $this->id,
+			'label' => $this->label,
+			'definition' => $this->definition,
+			'is_default' => $this->isDefault
+		];
 	}
 
 	/**

@@ -26,39 +26,38 @@ services:
         arguments: 
             session: "@session"
             logger: "@logger"
-            
+
     # Service used to read the application parameters from the database
     ogam.configuration_manager:
         class: OGAMBundle\Services\ConfigurationManager
         arguments:
             em: "@doctrine.orm.entity_manager"
             logger: "@logger"
-            
+
     # Service used to read the breadcrumbs config
     ogam.breadcrumb_config_service:
         class: OGAMBundle\Services\BreadcrumbsConfigService
-            
+
     # Listener for the user locale
     ogam.locale_listener:
         class: OGAMBundle\EventListener\LocaleListener
         arguments: ['%kernel.default_locale%']
         tags:
             - { name: kernel.event_subscriber }
-            
+
     # Listener for the breadcrumb
     ogam.breadcumb_listener:
         class: OGAMBundle\EventListener\BreadcrumbListener
         arguments: ["@white_october_breadcrumbs", "@ogam.breadcrumb_config_service"]
         tags:
             - { name: kernel.event_subscriber }
-            
-            
+
     # Repositories not linked to a specific entity
     ogam.generic_repository:
         abstract: true
         class: OGAMBundle\Repository\GenericRepository
         arguments: ["@doctrine.orm.entity_manager"]
-        
+
     ogam.repository.database.metadata:
         parent: ogam.generic_repository
         class: OGAMBundle\Repository\Database\MetadataRepository
@@ -70,13 +69,25 @@ services:
     ogam.repository.mapping.scale:
         class: OGAMBundle\Repository\Mapping\ScaleRepository
         arguments: ["@doctrine.dbal.mapping_connection"]
-    
+
+    # Managers
     ogam.manager.generic:
         class: OGAMBundle\Manager\GenericManager
         arguments: ["@doctrine.orm.metadata_entity_manager","@doctrine.orm.raw_data_entity_manager","@ogam.generic_service","@ogam.configuration_manager"]
         calls:
           - [setLogger, ['@logger']]
+    
+    ogam.manager.query:
+        class: OGAMBundle\Manager\QueryManager
+        arguments: ["@doctrine.orm.metadata_entity_manager","@doctrine.orm.raw_data_entity_manager","@ogam.query_service","@ogam.configuration_manager"]
+        calls:
+          - [setLogger, ['@logger']]
 
+    # Services
     ogam.generic_service:
         class: OGAMBundle\Services\GenericService
         arguments: ["@doctrine.orm.metadata_entity_manager","@ogam.configuration_manager", "@logger"]
+
+    ogam.query_service:
+        class: OGAMBundle\Services\QueryService
+        arguments: ["@doctrine.orm.metadata_entity_manager","@ogam.configuration_manager", "@logger", "@=service('ogam.locale_listener').getLocale()", "@=service('security.token_storage').getToken().getUser()"]
