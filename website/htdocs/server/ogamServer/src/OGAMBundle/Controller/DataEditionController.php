@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use OGAMBundle\Entity\Generic\DataObject;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 /**
  *
  * @Route ("/dataedition")
@@ -210,6 +211,7 @@ class DataEditionController extends Controller
      */
     public function ajaxGetAddFormAction(Request $request, $id=null) {
         $data = $this->getDataFromRequest($request);
+        $this->getQueryService()->getEditForm($data);
     	return $this->json(array());
     }
 
@@ -233,5 +235,31 @@ class DataEditionController extends Controller
      */
     public function ajaximageuploadAction() {
     	return $this->json(array('succes' => TRUE));
+    }
+    
+    protected function getQueryService() {
+        return $this->get('ogam.query_service');
+    }
+    
+    /**
+     * Returns a JsonResponse that uses the serializer component if enabled, or json_encode.
+     *
+     * @param mixed $data    The response data
+     * @param int   $status  The status code to use for the Response
+     * @param array $headers Array of extra headers to add
+     * @param array $context Context to pass to serializer when using serializer component
+     *
+     * @return JsonResponse
+     * //import from symfony 3.1
+     */
+    protected function json($data, $status = 200, $headers = array(), $context = array())
+    {
+        if ($this->container->has('serializer')) {
+            $json = $this->container->get('serializer')->serialize($data, 'json', array_merge(array(
+                'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+            ), $context));
+            return new JsonResponse($json, $status, $headers, true);
+        }
+        return new JsonResponse($data, $status, $headers);
     }
 }

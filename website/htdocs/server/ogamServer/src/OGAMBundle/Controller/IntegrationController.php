@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * @Route("/integration")
@@ -85,7 +86,8 @@ class IntegrationController extends Controller
 			'required' =>true,
 		    'choice_value' => 'id',
 			'choice_label' => 'label',
-            'choices' => $this->getDoctrine()->getRepository('OGAMBundle:Metadata\Dataset','metadata')->getDatasetsForUpload()
+            'choices' => $this->getDoctrine()->getRepository('OGAMBundle:Metadata\Dataset','metadata')->getDatasetsForUpload(),
+		    'choices_as_values' => true,
 				))
 		->add('submit', SubmitType::class)
 		->getForm();
@@ -423,6 +425,28 @@ class IntegrationController extends Controller
         return $this->render('OGAMBundle:Integration:export_file_model.html.twig', array(
             // ...
         ));
+    }
+    /**
+     * Returns a JsonResponse that uses the serializer component if enabled, or json_encode.
+     *
+     * @param mixed $data    The response data
+     * @param int   $status  The status code to use for the Response
+     * @param array $headers Array of extra headers to add
+     * @param array $context Context to pass to serializer when using serializer component
+     *
+     * @return JsonResponse
+     * //import from symfony 3.1
+     */
+    protected function json($data, $status = 200, $headers = array(), $context = array())
+    {
+        /*cannot set jsoncontent on v2.8 only object..
+        if ($this->has('serializer')) {
+            $json = $this->get('serializer')->serialize($data, 'json', array_merge(array(
+                'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+            ), $context));
+            return new JsonResponse($json, $status, $headers, true);
+        }*/
+        return new JsonResponse($data, $status, $headers);
     }
 
 }
