@@ -25,7 +25,8 @@ class SchemaListener implements EventSubscriberInterface
         $schema = $request->query->get('SCHEMA');
         if (! empty($schema)) {
             // Set the detected "SCHEMA" parameter
-            $this->schema = $request->getSession()->set('_schema', $schema);
+            $request->getSession()->set('_schema', $schema);
+            $this->schema = $schema;
         } else {
             // If no explicit schema has been set on this request
             if ($request->hasPreviousSession()) {

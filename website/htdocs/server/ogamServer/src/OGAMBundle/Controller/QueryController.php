@@ -42,6 +42,46 @@ class QueryController extends Controller {
 	}
 	
 	/**
+	 * @Route("/ajaxgetdatasets")
+	 */
+	public function ajaxgetdatasetsAction(Request $request) {
+		$this->get ( 'logger' )->debug ( 'ajaxgetdatasetsAction' );
+		return new JsonResponse($this->get('ogam.manager.query')->getDatasets());
+	}
+	
+	/**
+	 * @Route("/ajaxgetqueryform")
+	 */
+	public function ajaxgetqueryformAction(Request $request) {
+		$logger = $this->get ( 'logger' );
+		$logger->debug ( 'ajaxgetqueryformAction' );
+		
+		$filters = json_decode($request->query->get('filter'));
+		
+		$datasetId = null;
+		$requestName = null;
+		
+		if (is_array($filters)) {
+			foreach ($filters as $aFilter) {
+				switch ($aFilter->property) {
+					case 'processId':
+						$datasetId = $aFilter->value;
+						break;
+					case 'requestName':
+						$requestName = $aFilter->value;
+						break;
+					default:
+						$logger->debug('filter unattended : ' . $aFilter->property);
+				}
+			}
+		} else {
+			$datasetId = json_decode($request->query->get('datasetId'));
+			$requestName = $request->request->get('requestName');
+		}
+		return new JsonResponse($this->get('ogam.manager.query')->getQueryForms($datasetId, $requestName));
+	}
+	
+	/**
 	 * @Route("/ajaxgetpredefinedrequestlist")
 	 */
 	public function ajaxgetpredefinedrequestlistAction() {
@@ -69,28 +109,12 @@ class QueryController extends Controller {
 	}
 	
 	/**
-	 * @Route("/ajaxgetqueryform")
-	 */
-	public function ajaxgetqueryformAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetqueryform.html.twig', array ()
-		// ...
-		 );
-	}
-	
-	/**
 	 * @Route("/ajaxgetqueryformfields")
 	 */
 	public function ajaxgetqueryformfieldsAction() {
 		return $this->render ( 'OGAMBundle:Query:ajaxgetqueryformfields.html.twig', array ()
 		// ...
 		 );
-	}
-	
-	/**
-	 * @Route("/ajaxgetdatasets")
-	 */
-	public function ajaxgetdatasetsAction(Request $request) {
-		return new JsonResponse($this->get('ogam.manager.query')->getDatasets());
 	}
 
 	/**

@@ -55,7 +55,6 @@ services:
     # Listener for the schema
     ogam.schema_listener:
         class: OGAMBundle\EventListener\SchemaListener
-        arguments: ['%kernel.default_locale%']
         tags:
             - { name: kernel.event_subscriber }
 
