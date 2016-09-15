@@ -3,17 +3,14 @@
 namespace OGAMBundle\Entity\Metadata;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Represent an abstract Format.
  *
- * @ORM\Table(name="metadata.format")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\FormatRepository")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"FILE" = "FileFormat", "TABLE" = "TableFormat", "FORM" = "FormFormat"})
+ * @ORM\MappedSuperclass
  */
-abstract class Format
+class Format
 {
 
     /**
@@ -24,6 +21,15 @@ abstract class Format
      * @ORM\Column(name="format", type="string", length=36, unique=true)
      */
     private $format;
+    
+    protected $fields;
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->fields = new ArrayCollection();
+    }
 
     /**
      * Set format
@@ -48,5 +54,26 @@ abstract class Format
     {
         return $this->format;
     }
+
+    /**
+     *
+     * @return the unknown_type
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     *
+     * @param unknown_type $fields            
+     */
+    public function setFields($fields)
+    {
+        $this->fields = $fields;
+        return $this;
+    }
+ 
+    
 }
 

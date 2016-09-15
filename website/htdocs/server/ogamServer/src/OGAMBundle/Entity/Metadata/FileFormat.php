@@ -11,8 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="metadata.file_format")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\FileFormatRepository")
  */
-class FileFormat extends Format
-{
+class FileFormat extends  Format {
 
 
     /**

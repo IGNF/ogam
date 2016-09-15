@@ -11,63 +11,20 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Table(name="metadata.form_format")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\FormFormatRepository")
  */
-class FormFormat implements \JsonSerializable
+class FormFormat extends Format implements \JsonSerializable
 {
-
-    /** FORMAT ****************************************************************/
-
-    /**
-     * The format identifier.
-     * 
-     * @var string @ORM\Id
-     *      @ORM\Column(name="format", type="string", length=36, unique=true)
-     */
-    private $format;
 
     /**
      * @ORM\OneToMany(targetEntity="FormField", mappedBy="format")
      */
-    private $fields;
-
+    //protected $fields;
+    
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->fields = new ArrayCollection();
-    }
-
-    /**
-     * Set format
-     *
-     * @param string $format
-     *
-     * @return Format
-     */
-    public function setFormat($format)
-    {
-        $this->format = $format;
-        
-        return $this;
-    }
-
-    /**
-     * Get format
-     *
-     * @return string
-     */
-    public function getFormat()
-    {
-        return $this->format;
-    }
-
-    /**
-     *
-     * @return the unknown_type
-     */
-    public function getFields()
-    {
-        return $this->fields;
     }
 
     /**
@@ -252,7 +209,7 @@ class FormFormat implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->format,
+            'id' => $this->getFormat(),
             'label' => $this->label,
             'definition' => $this->definition,
             'position' => $this->position,

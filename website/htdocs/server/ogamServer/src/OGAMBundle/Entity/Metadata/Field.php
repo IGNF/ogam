@@ -7,35 +7,32 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Field
  *
- * @ORM\Table(name="metadata.field")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\FieldRepository")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"FILE" = "FileField", "TABLE" = "TableField", "FORM" = "FormField"})
+ * @ORM\MappedSuperclass(repositoryClass="OGAMBundle\Repository\Metadata\FieldRepository")
  */
-abstract class Field
+class Field
 {
     /**
-     * @var string
+     * @var Data
      *
-     * @ORM\Id
-	 * @ORM\Column(name="data", type="string", length=36)
+     * @ORM\Id 
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
+     * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
      */
     protected $data;
 
     /**
-     * @var string
+     * @var Format
      *
      * @ORM\Id
-	 * @ORM\Column(name="format", type="string", length=36)
+	 * @ORM\ManyToOne(targetEntity="Format")
+	 * @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
      */
     protected $format;
-
 
     /**
      * Set data
      *
-     * @param string $data
+     * @param Data $data
      *
      * @return field
      */
@@ -49,7 +46,7 @@ abstract class Field
     /**
      * Get data
      *
-     * @return string
+     * @return Data
      */
     public function getData()
     {
@@ -59,7 +56,7 @@ abstract class Field
     /**
      * Set format
      *
-     * @param string $format
+     * @param Format $format
      *
      * @return field
      */
@@ -73,7 +70,7 @@ abstract class Field
     /**
      * Get format
      *
-     * @return string
+     * @return Format
      */
     public function getFormat()
     {
