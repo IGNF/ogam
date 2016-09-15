@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="metadata.unit")
  * @ORM\Entity
  */
-class Unit {
+class Unit implements \JsonSerializable {
 
 	/**
 	 *
@@ -154,5 +154,20 @@ class Unit {
 	 */
 	public function __toString() {
 		return ($this->label) ? $this->name . ': ' . $this->label : $this->name;
+	}
+
+	/**
+	 * Serialize the object as a JSON string
+	 *
+	 * @return a JSON string
+	 */
+	public function jsonSerialize() {
+	    return [
+	        'name' => $this->name,
+	        'type' => $this->type,
+	        'subtype' => $this->subtype,
+	        'label' => $this->label,
+	        'definition' => $this->definition
+	    ];
 	}
 }

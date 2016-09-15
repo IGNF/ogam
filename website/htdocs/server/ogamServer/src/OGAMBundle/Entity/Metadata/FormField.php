@@ -18,7 +18,8 @@ class FormField implements \JsonSerializable
      * @var string
      *
      * @ORM\Id
-     * @ORM\Column(name="data", type="string", length=36)
+     * @ORM\ManyToOne(targetEntity="Data", inversedBy="formFields")
+     * @ORM\JoinColumn(name="data", referencedColumnName="data")
      */
     protected $data;
     
@@ -30,7 +31,6 @@ class FormField implements \JsonSerializable
      * @ORM\JoinColumn(name="format", referencedColumnName="format")
      */
     protected $format;
-    
     
     /**
      * Set data
