@@ -2,17 +2,16 @@
 # http://symfony.com/doc/current/book/service_container.html
 parameters:
 #    parameter_name: value
-    service_integration_url: "http://localhost:8080/OGAMIntegrationService/"
-    service_harmonization_url: "http://localhost:8080/OGAMHarmonizationService/"
+
 services:
     ogam.integration_service:
         class: OGAMBundle\Services\Integration
-        arguments: ["%service_integration_url%"]
+        arguments: ["@=service('ogam.configuration_manager').getConfig('integrationService_url', 'http://localhost:8080/OGAMIntegrationService/')"]
         calls:
           - [setLogger, ['@logger']]
     ogam.harmonization_service:
         class: OGAMBundle\Services\Harmonization
-        arguments: ["%service_harmonization_url%"]
+        arguments: ["@=service('ogam.configuration_manager').getConfig('harmonizationService_url', 'http://localhost:8080/OGAMHarmonizationService/')"]
         calls:
           - [setLogger, ['@logger']]
 #    service_name:
