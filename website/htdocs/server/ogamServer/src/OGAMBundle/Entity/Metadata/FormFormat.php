@@ -253,6 +253,7 @@ class FormFormat implements \JsonSerializable
     {
         return [
             'id' => $this->format,
+            'format' => $this->format,
             'label' => $this->label,
             'definition' => $this->definition,
             'position' => $this->position,

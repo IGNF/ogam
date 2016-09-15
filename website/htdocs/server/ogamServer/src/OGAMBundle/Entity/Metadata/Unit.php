@@ -163,6 +163,7 @@ class Unit implements \JsonSerializable {
 	 */
 	public function jsonSerialize() {
 	    return [
+	        'id' => $this->unit,
 	        'unit' => $this->unit,
 	        'type' => $this->type,
 	        'subtype' => $this->subtype,

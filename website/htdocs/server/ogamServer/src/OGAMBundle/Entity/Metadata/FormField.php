@@ -442,6 +442,7 @@ class FormField implements \JsonSerializable
      */
     public function jsonSerialize() {
         return [
+            'id' => $this->format->getFormat() . '__' . $this->data->getData(),
             'data' => $this->data,
             'format' => $this->format->getFormat(),
             'is_criteria' => $this->isCriteria,

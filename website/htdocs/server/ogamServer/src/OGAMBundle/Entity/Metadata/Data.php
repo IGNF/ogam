@@ -177,6 +177,7 @@ class Data implements \JsonSerializable {
 	 */
 	public function jsonSerialize() {
 	    return [
+	        'id' => $this->data,
 	        'data' => $this->data,
 	        'unit' => $this->unit,
 	        'label' => $this->label,
