@@ -16,7 +16,7 @@ class Unit implements \JsonSerializable {
 	 * @var string @ORM\Column(name="unit", type="string", length=36, nullable=false)
 	 *      @ORM\Id
 	 */
-	private $name;
+	private $unit;
 
 	/**
 	 *
@@ -47,18 +47,18 @@ class Unit implements \JsonSerializable {
 	 *
 	 * @return string
 	 */
-	public function getName() {
-		return $this->name;
+	public function getUnit() {
+		return $this->unit;
 	}
 
 	/**
-	 * Set name
+	 * Set unit
 	 *
-	 * @param string $name
+	 * @param string $unit
 	 * @return Unit
 	 */
-	public function setName($name) {
-		$this->name = $name;
+	public function setUnit($unit) {
+		$this->unit = $unit;
 
 		return $this;
 	}
@@ -163,7 +163,7 @@ class Unit implements \JsonSerializable {
 	 */
 	public function jsonSerialize() {
 	    return [
-	        'name' => $this->name,
+	        'unit' => $this->unit,
 	        'type' => $this->type,
 	        'subtype' => $this->subtype,
 	        'label' => $this->label,
