@@ -11,7 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Table(name="metadata.data")
  * @ORM\Entity
  */
-class Data {
+class Data implements \JsonSerializable {
 
 	/**
 	 *
@@ -22,7 +22,7 @@ class Data {
 	 *      @Assert\Length(max="174", maxMessage="data.name.maxLength")
 	 *      @Assert\Regex(pattern="/^[a-z][a-z0-9_]*$/", match=true, message="data.name.regex")
 	 */
-	private $name;
+	private $data;
 
 	/**
 	 *
@@ -59,7 +59,7 @@ class Data {
 	private $comment;
 
 
-	private $fields = array();
+	private $fields;
 
 	/**
 	 * Constructor
@@ -74,8 +74,8 @@ class Data {
 	 * @param string $data
 	 * @return Data
 	 */
-	public function setName($data) {
-		$this->name = $data;
+	public function setData($data) {
+		$this->data = $data;
 
 		return $this;
 	}
@@ -85,8 +85,8 @@ class Data {
 	 *
 	 * @return string
 	 */
-	public function getName() {
-		return $this->name;
+	public function getData() {
+		return $this->data;
 	}
 
 	/**
@@ -171,5 +171,19 @@ class Data {
 	 */
 	public function getUnit() {
 		return $this->unit;
+	}
+
+	/**
+	 * Serialize the object as a JSON string
+	 *
+	 * @return a JSON string
+	 */
+	public function jsonSerialize() {
+	    return [
+	        'data' => $this->data,
+	        'unit' => $this->unit,
+	        'label' => $this->label,
+	        'definition' => $this->definition
+	    ];
 	}
 }

@@ -315,8 +315,8 @@ class FormField extends Field implements \JsonSerializable
      */
     public function jsonSerialize() {
         return [
-            'data' => $this->getData()->getName(),
-            'format' => $this->getFormat()->getFormat(),
+            'data' => $this->data,
+            'format' => $this->format->getFormat(),
             'is_criteria' => $this->isCriteria,
             'is_result' => $this->isResult,
             'input_type' => $this->inputType,
