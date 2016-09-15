@@ -10,8 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="metadata.table_field")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableFieldRepository")
  */
-class TableField extends Field
-{
+class TableField extends Field { 
 
     /**
      * @var string

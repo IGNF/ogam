@@ -15,7 +15,8 @@ class Data implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="data", type="string", length=174, nullable=false)
+	 * @var string 
+	 * @ORM\Column(name="data", type="string", length=174, nullable=false)
 	 *      @ORM\Id
 	 *      @Assert\NotBlank(message="data.name.notBlank")
 	 *      @Assert\Length(max="174", maxMessage="data.name.maxLength")
@@ -25,7 +26,8 @@ class Data implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var string @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=false)
+	 * @var string
+	 * @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=false)
 	 *      @ORM\ManyToOne(targetEntity="Unit")
 	 *      @Assert\NotNull(message="data.unit.notNull")
 	 */
@@ -33,7 +35,8 @@ class Data implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="label", type="string", length=60, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="label", type="string", length=60, nullable=true)
 	 *      @Assert\NotBlank(message="data.label.notBlank")
 	 *      @Assert\Length(max="60", maxMessage="data.label.maxLength")
 	 */
@@ -41,22 +44,22 @@ class Data implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="definition", type="string", length=255, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="definition", type="string", length=255, nullable=true)
 	 *      @Assert\Length(max="255", maxMessage="data.definition.maxLength")
 	 */
 	private $definition;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="comment", type="string", length=255, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="comment", type="string", length=255, nullable=true)
 	 *      @Assert\Length(max="255", maxMessage="data.definition.maxLength")
 	 */
 	private $comment;
-	
-	/**
-	 * @ORM\OneToMany(targetEntity="FormField", mappedBy="data")
-	 */
-	private $formFields;
+
+
+	private $fields;
 
 	/**
 	 * Constructor

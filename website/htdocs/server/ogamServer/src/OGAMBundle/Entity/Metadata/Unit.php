@@ -13,32 +13,37 @@ class Unit implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="unit", type="string", length=36, nullable=false)
-	 *      @ORM\Id
+	 * @var string
+	 * @ORM\Column(name="unit", type="string", length=36, nullable=false)
+	 * @ORM\Id
 	 */
 	private $unit;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="type", type="string", length=36, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="type", type="string", length=36, nullable=true)
 	 */
 	private $type;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="subtype", type="string", length=36, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="subtype", type="string", length=36, nullable=true)
 	 */
 	private $subtype;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="label", type="string", length=60, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="label", type="string", length=60, nullable=true)
 	 */
 	private $label;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="definition", type="string", length=255, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="definition", type="string", length=255, nullable=true)
 	 */
 	private $definition;
 

@@ -26,8 +26,9 @@ class TableFieldRepository extends \Doctrine\ORM\EntityRepository
 	 *        	the dataset identifier (optional)
 	 * @return Array[TableField]
 	 */
-	public function getTableFields($schema, $format, $datasetID = null) {
-/*
+	public function getTableFields($schema, $format, $datasetID = null, $lang='fr') {
+        $binds = array('schema' => $schema, 'format' => $format);
+        
 			// Get the fields specified by the format
 		$req = "SELECT DISTINCT table_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type, unit.subtype, COALESCE(t.definition, data.definition) as definition ";
 		$req .= " FROM table_field ";
@@ -37,34 +38,35 @@ class TableFieldRepository extends \Doctrine\ORM\EntityRepository
 		$req .= " LEFT JOIN table_format on (table_format.format = table_field.format) ";
 		$req .= " LEFT JOIN data on (table_field.data = data.data) ";
 		$req .= " LEFT JOIN unit on (data.unit = unit.unit) ";
-		$req .= " LEFT JOIN translation t ON (lang = '" . $this->lang . "' AND table_format = 'DATA' AND row_pk = data.data) ";
+		$req .= " LEFT JOIN translation t ON (lang = '" . $lang . "' AND table_format = 'DATA' AND row_pk = data.data) ";
 		$req .= " WHERE (1=1)";
 		if ($datasetID != null) {
-			$req .= " AND dataset_fields.dataset_id = ? ";
+			$req .= " AND dataset_fields.dataset_id = :dataset ";
+			$binds['dataset'] = $datasetID;
 		}
-		$req .= " AND table_format.schema_code = ? ";
-		$req .= " AND table_field.format = ? ";
+		$req .= " AND table_format.schema_code = :schema";
+		$req .= " AND table_field.format = :format";
 		$req .= " ORDER BY table_field.position ";
 		
-		$this->logger->info('getTableFields : ' . $req);
+		$rsm = $this->createResultSetMappingBuilder('t');
 		
-		$select = $this->db->prepare($req);
-*/
+		$query = $this->_em->createNativeQuery($req, $rsm->addIndexBy('t', 'data'));
+/*
 		//$dql = "SELECT f FROM $this->_entityName f ";
-		$query = $this->createQueryBuilder('t', 't.data');
-		$query->leftJoin('OGAMBundle:Metadata\TableFormat', 'tf', Join::WITH, 'tf.format = t.format');
+		$query = $this->createQueryBuilder('t', 't.data.id');
+		$query->leftJoin('t.format', 'tf', Join::WITH, 'tf.is_primary = 1');
 		$query->where('t.format = :format')->andWhere('tf.schema = :schema');
 		
-		$query->setParameters(array('schema'=>$schema,'format'=>$format));
+		$query->setParameters(array('schema' => $schema, 'format' => $format));
 		
 		if ($datasetID != null) {
 			$query->leftJoin('DatasetField', 'df', Join::WITH, 'f.format = df.format AND f.format = df.format');
 			$query->andWhere('df.id = :dataset');
 			$query->setParameter('dataset', $datasetID);
 		}
+		*/
 		
-		
-
-		return $query->getQuery()->getResult();
+		$query->setParameters($binds);
+		return $query->getResult();
 	}
 }

@@ -16,7 +16,8 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * The identifier of the dataset.
 	 *
-	 * @var string @ORM\Column(name="dataset_id", type="string", length=36, nullable=false)
+	 * @var string
+	 * @ORM\Column(name="dataset_id", type="string", length=36, nullable=false)
 	 *      @ORM\Id
 	 *      @ORM\GeneratedValue(strategy="AUTO")
 	 */
@@ -43,7 +44,8 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * The definition.
 	 *
-	 * @var string @ORM\Column(name="definition", type="string", length=512, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="definition", type="string", length=512, nullable=true)
 	 */
 	private $definition;
 
@@ -58,6 +60,8 @@ class Dataset implements \JsonSerializable {
 	 * )
 	 */
 	private $files;
+
+	//privates $fields; //DatasetFields
 
 	/**
 	 * Get id

@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="metadata.table_format")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableFormatRepository")
  */
-class TableFormat extends Format
-{
-
+class TableFormat extends Format{
     /**
      * The real name of the table.
      * @var string
