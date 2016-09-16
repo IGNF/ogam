@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="metadata.range")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\RangeRepository")
  */
-class Range
+class Range implements \JsonSerializable 
 {
 
     /**
@@ -106,6 +106,20 @@ class Range
     public function getMax()
     {
         return $this->max;
+    }
+
+    /**
+     * Serialize the object as a JSON string
+     *
+     * @return a JSON string
+     */
+    public function jsonSerialize() {
+        return [
+            'id' => $this->unit,
+            'unit' => $this->unit,
+            'min' => $this->min,
+            'max' => $this->max
+        ];
     }
 }
 

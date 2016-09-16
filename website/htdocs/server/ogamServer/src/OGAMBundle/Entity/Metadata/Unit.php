@@ -2,6 +2,7 @@
 namespace OGAMBundle\Entity\Metadata;
 
 use Doctrine\ORM\Mapping as ORM;
+use OGAMBundle\OGAMBundle;
 
 /**
  * Metadata.unit
@@ -46,6 +47,13 @@ class Unit implements \JsonSerializable {
 	 * @ORM\Column(name="definition", type="string", length=255, nullable=true)
 	 */
 	private $definition;
+
+	/**
+	 * @var OGAMBundle\Entity\Metadata\Range
+	 * @ORM\OneToOne(targetEntity="Range", fetch="EAGER")
+	 * @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=true)
+	 */
+	private $range;
 
 	/**
 	 * Get unit
@@ -162,6 +170,27 @@ class Unit implements \JsonSerializable {
 	}
 
 	/**
+	 * Get the range
+	 *
+	 * @return the Range
+	 */
+	public function getRange()
+	{
+	    return $this->range;
+	}
+
+	/**
+	 * Set the range
+	 *
+	 * @param OGAMBundle\Entity\Metadata\Range
+	 */
+	public function setRange($range)
+	{
+	    $this->range = $range;
+	    return $this;
+	}
+
+	/**
 	 * Serialize the object as a JSON string
 	 *
 	 * @return a JSON string
@@ -173,7 +202,10 @@ class Unit implements \JsonSerializable {
 	        'type' => $this->type,
 	        'subtype' => $this->subtype,
 	        'label' => $this->label,
-	        'definition' => $this->definition
+	        'definition' => $this->definition,
+	        'optional' => [
+	            'range' => $this->getRange()
+	        ]
 	    ];
-	}
+	} 
 }
