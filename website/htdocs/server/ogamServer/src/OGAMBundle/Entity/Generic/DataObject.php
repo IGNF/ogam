@@ -48,8 +48,7 @@ class DataObject {
 	/**
 	 * Add a key element.
 	 *
-	 * @param Application_Object_Metadata_TableField $field
-	 *        	a field
+	 * @param TableField $field a field
 	 */
 	public function addInfoField($field) {
 		$this->infoFields[$field->getName()] = $field;
@@ -58,9 +57,8 @@ class DataObject {
 	/**
 	 * Get a table field from the primary key.
 	 *
-	 * @param String $key
-	 *        	a data
-	 * @return Application_Object_Metadata_TableField the table field
+	 * @param String $key a data
+	 * @return TableField the table field
 	 */
 	public function getInfoField($key) {
 		return $this->infoFields[trim($key)];
@@ -69,7 +67,7 @@ class DataObject {
 	/**
 	 * Return the infoFields array.
 	 *
-	 * @return Application_Object_Metadata_TableField the infoFields array
+	 * @return TableField the infoFields array
 	 */
 	public function getInfoFields() {
 		return $this->infoFields;
@@ -78,7 +76,7 @@ class DataObject {
 	/**
 	 * Return the editableFields array.
 	 *
-	 * @return Application_Object_Metadata_TableField the editableFields array
+	 * @return TableField the editableFields array
 	 */
 	public function getEditableFields() {
 		return $this->editableFields;
@@ -89,7 +87,7 @@ class DataObject {
 	 *
 	 * @param String $key
 	 *        	a data
-	 * @return Application_Object_Metadata_TableField the editableFields array
+	 * @return TableField the editableFields array
 	 */
 	public function getEditableField($key) {
 		return $this->editableFields[trim($key)];
@@ -108,7 +106,7 @@ class DataObject {
 	/**
 	 * Get all table fields.
 	 *
-	 * @return Array[Application_Object_Metadata_TableField] the table fields
+	 * @return Array[TableField] the table fields
 	 */
 	public function getFields() {
 		return array_merge($this->infoFields, $this->editableFields);

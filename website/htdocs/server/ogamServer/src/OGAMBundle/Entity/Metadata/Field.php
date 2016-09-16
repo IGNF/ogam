@@ -105,7 +105,7 @@ class Field
 	 * @return String the identifier of the field
 	 */
 	function getName() {
-		return $this->format . '__' . $this->data;
+		return $this->getFormat()->getFormat() . '__' . $this->getData()->getData();
 	}
 
 	/**

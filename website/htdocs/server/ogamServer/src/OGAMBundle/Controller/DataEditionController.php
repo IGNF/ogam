@@ -66,15 +66,15 @@ class DataEditionController extends Controller
 
 		// Complete the primary key info with the session values
 		foreach ($data->infoFields as $infoField) {
-			if (!empty($params[$infoField->getData()])) {
-				$infoField->value = $params[$infoField->getData()];
+			if (!empty($params[$infoField->getData()->getData()])) {
+				$infoField->value = $params[$infoField->getData()->getData()];
 			}
 		}
 
 		// Complete the other fields with the session values (particulary join_keys)
 		foreach ($data->editableFields as $editableField) {
-			if (!empty($params[$editableField->getData()])) {
-				$editableField->value = $params[$editableField->getData()];
+			if (!empty($params[$editableField->getData()->getData()])) {
+				$editableField->value = $params[$editableField->getData()->getData()];
 			}
 		}
 
@@ -211,8 +211,8 @@ class DataEditionController extends Controller
      */
     public function ajaxGetAddFormAction(Request $request, $id=null) {
         $data = $this->getDataFromRequest($request);
-        $this->getQueryService()->getEditForm($data);
-    	return $this->json(array());
+        //$this->getQueryService()->getEditForm($data);
+    	return $this->json($data);
     }
 
     /**
