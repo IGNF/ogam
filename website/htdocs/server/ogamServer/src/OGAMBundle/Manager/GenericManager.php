@@ -132,14 +132,12 @@ class GenericManager {
 	 * Get the information about the ancestors of a line of data.
 	 * The key elements in the parent tables must have an existing value in the child.
 	 *
-	 * @param DataObject $data
-	 *        	the data object we're looking at.
+	 * @param DataObject $data the data object we're looking at.
 	 * @return DataObject[] The line of data in the parent tables.
 	 */
 	public function getAncestors(DataObject $data) {
 		$ancestors = array();
 	
-		/* @var $data Application_Object_Generic_DataObject */
 		$tableFormat = $data->tableFormat;
 		/* @var $tableFormat TableFormat */
 	
@@ -198,7 +196,7 @@ class GenericManager {
 	public function getChildren($data, $datasetId = null) {
 	    $children = array();
 	
-	    /* @var $data Application_Object_Generic_DataObject */
+	    /* @var $data DataObject */
 	    $tableFormat = $data->tableFormat;
 	    /* @var $tableFormat TableFormat */
 	
@@ -257,8 +255,7 @@ class GenericManager {
 	 * Get a list of data objects from a table, given an incomplete primary key.
 	 * A list of data objects is expected in return.
 	 *
-	 * @param Application_Object_Generic_DataObject $data
-	 *        	the shell of the data object with the values for the primary key.
+	 * @param DataObject $data the shell of the data object with the values for the primary key.
 	 * @return Array[DataObject] The complete data objects.
 	 */
 	private function _getDataList($data) {

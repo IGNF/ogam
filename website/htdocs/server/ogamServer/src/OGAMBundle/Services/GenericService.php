@@ -9,8 +9,10 @@ use OGAMBundle\Entity\Metadata\TableField;
 
 /**
  *
- * @author FBourcier
- *        
+ * The Generic Service.
+ *
+ * This service handles transformations between data objects and generate generic SQL requests from the metadata.
+ *
  */
 class GenericService {
 	/**
@@ -672,55 +674,32 @@ class GenericService {
 	}
 	
 	/**
-	 * Fill a line of data with the values a table, given its primary key.
-	 * Only one object is expected in return.
+	 * Get the form field corresponding to the table field.
 	 *
-	 * @param DataObject $data
-	 *        	the shell of the data object with the values for the primary key.
-	 * @return DataObject The complete data object.
+	 * @param Application_Object_Metadata_TableField $tableField
+	 *        	the table field
+	 * @param Boolean $copyValues
+	 *        	is true the values will be copied
+	 * @return FormField
 	 */
-	public function getDatum($data) {
-	    $tableFormat = $data->tableFormat;
+	public function getTableToFormMapping($tableField, $copyValues = false) {
 	
-	    $this->logger->info('getDatum : ' . $tableFormat->format);
+	    // Get the description of the form field
+	    $formField = $this->metadataModel->getTableToFormMapping($tableField);
 	
-	    $schema = $tableFormat->getSchema();
-	
-	    // Get the values from the data table
-	    $sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
-	    $sql .= " FROM " . $schema->getName() . "." . $tableFormat->getTableName() . " AS " . $tableFormat->getFormat();
-	    $sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->getCode(), $data->infoFields);
-	
-	    $this->logger->info('getDatum : ' . $sql);
-	
-	    $select = $this->rawdb->prepare($sql);
-	    $select->execute();
-	    $row = $select->fetch();
-	
-	    // Fill the values with data from the table
-	    foreach ($data->editableFields as $field) {
-	        $key = strtolower($field->getName());
-	        $field->value = $row[$key];
-	
-	        // Store additional info for geometry type
-	        if ($field->type === "GEOM") {
-	            $field->xmin = $row[strtolower($key) . '_x_min'];
-	            $field->xmax = $row[strtolower($key) . '_x_max'];
-	            $field->ymin = $row[strtolower($key) . '_y_min'];
-	            $field->ymax = $row[strtolower($key) . '_y_max'];
-	        } else if ($field->type === "ARRAY") {
-	            // For array field we transform the value in a array object
-	            $field->value = $this->genericService->stringToArray($field->value);
-	        }
+	    // Clone the object to avoid modifying existing object
+	    if ($formField !== null) {
+	        $formField = clone $formField;
 	    }
 	
-	    // Fill the values with data from the table
-	    foreach ($data->getFields() as $field) {
+	    // Copy the values
+	    if ($copyValues === true && $formField !== null && $tableField->value !== null) {
 	
-	        // Fill the value labels for the field
-	        $field->valueLabel = $this->genericService->getValueLabel($field, $field->value);
+	        // Copy the value and label
+	        $formField->value = $tableField->value;
+	        $formField->valueLabel = $tableField->valueLabel;
 	    }
 	
-	    return $data;
+	    return $formField;
 	}
 }

@@ -4,6 +4,7 @@ namespace OGAMBundle\Repository\Metadata;
 
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
  * TableFieldRepository
@@ -48,7 +49,9 @@ class TableFieldRepository extends \Doctrine\ORM\EntityRepository
 		$req .= " AND table_field.format = :format";
 		$req .= " ORDER BY table_field.position ";
 		
-		$rsm = $this->createResultSetMappingBuilder('t');
+		$rsm = new ResultSetMappingBuilder($this->_em);
+		$rsm->addRootEntityFromClassMetadata($this->_entityName, 't');
+		
 		
 		$query = $this->_em->createNativeQuery($req, $rsm->addIndexBy('t', 'data'));
 /*
