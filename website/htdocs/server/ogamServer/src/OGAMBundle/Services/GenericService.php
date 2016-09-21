@@ -6,6 +6,7 @@ use OGAMBundle\Entity\Generic\DataObject;
 use Doctrine\ORM\EntityManager;
 use OGAMBundle\Entity\Metadata\TableFormat;
 use OGAMBundle\Entity\Metadata\TableField;
+use OGAMBundle\Entity\Metadata\FormField;
 
 /**
  *
@@ -81,7 +82,7 @@ class GenericService {
 	
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
-			if (in_array($tableField->getData(), $data->tableFormat->getPrimaryKeys())) {
+			if (in_array($tableField->getData()->getData(), $data->tableFormat->getPrimaryKeys())) {
 				// Primary keys are displayed as info fields
 				$data->addInfoField($tableField);
 			} else {
@@ -676,16 +677,18 @@ class GenericService {
 	/**
 	 * Get the form field corresponding to the table field.
 	 *
-	 * @param Application_Object_Metadata_TableField $tableField
-	 *        	the table field
-	 * @param Boolean $copyValues
-	 *        	is true the values will be copied
+	 * @param TableField $tableField the table field
+	 * @param Boolean $copyValues is true the values will be copied
 	 * @return FormField
 	 */
 	public function getTableToFormMapping($tableField, $copyValues = false) {
 	
 	    // Get the description of the form field
-	    $formField = $this->metadataModel->getTableToFormMapping($tableField);
+	    $req = "SELECT ff 
+FROM OGAMBundle\Entity\Metadata\FormField ff
+JOIN OGAMBundle\Entity\Metadata\FieldMapping fm 
+WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.format and fm.dstFormat = :format and fm.dstData = :data";
+	    $formField = $this->metadataModel->createQuery($req)->setParameters(array('format'=>$tableField->getFormat()->getFormat(), 'data'=>$tableField->getData()->getData()))->getOneOrNullResult();
 	
 	    // Clone the object to avoid modifying existing object
 	    if ($formField !== null) {

@@ -48,6 +48,29 @@ class TableField extends Field {
     private $isMandatory;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="position", type="integer", nullable=true)
+     */
+    private $position;
+    
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="comment", type="text", nullable=true)
+     */
+    private $comment;
+    
+    /**
+     * @var Format
+     *
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="TableFormat")
+     * @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
+     */
+    protected $format;
+    
+    /**
      * Set columnName
      *
      * @param string $columnName
@@ -166,5 +189,44 @@ class TableField extends Field {
     {
         return $this->isMandatory;
     }
+
+    /**
+     *
+     * @return the integer
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     *
+     * @param integer $position
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
+        return $this;
+    }
+
+    /**
+     *
+     * @return the integer
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     *
+     * @param string $comment
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+        return $this;
+    }
+ 
 }
 
