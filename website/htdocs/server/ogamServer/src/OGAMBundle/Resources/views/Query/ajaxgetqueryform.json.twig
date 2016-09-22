@@ -30,11 +30,12 @@
 {% endblock %}
 
 {% block response_data %}
-{% autoescape false %}
 [
     {% for form in forms %}
         {{ block('form_format') }}
+        {%- if not loop.last -%}
+            ,
+        {% endif %}
     {% endfor %}
 ]
-{% endautoescape %}
 {% endblock %}

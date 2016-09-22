@@ -2,6 +2,7 @@
 
 {# ****************************************** FORMAT ************************************************ #}
 {%- block form_format -%}
+{% autoescape false %}
 {
 "id": "{{ form.format }}",
 "format": "{{ form.format }}",
@@ -21,10 +22,12 @@
 ]
 {% endblock %}
 }
+{% endautoescape %}
 {%- endblock -%}
 
 {# ****************************************** FIELD ************************************************ #}
 {%- block form_field -%}
+{% autoescape false %}
 {
 "id" : "{{ field.id }}",
 "format": "{{ field.format.format }}",
@@ -40,10 +43,12 @@
 {% set data = field.data %}
 "data": {% block form_field_data %}{{ block('data') }}{% endblock %}
 }
+{% endautoescape %}
 {%- endblock -%}
 
 {# ****************************************** DATA ************************************************ #}
 {%- block data -%}
+{% autoescape false %}
 {
 "id" : "{{ data.data }}",
 "data": "{{ data.data }}",
@@ -52,10 +57,12 @@
 {% set unit = data.unit %}
 "unit": {% block data_unit %}{{ block('unit') }}{% endblock %}
 }
+{% endautoescape %}
 {%- endblock -%}
 
 {# ****************************************** UNIT ************************************************ #}
 {%- block unit -%}
+{% autoescape false %}
 {
 "id" : "{{ unit.unit }}",
 "unit": "{{ unit.unit }}",
@@ -80,10 +87,12 @@
 ]
 {% endif %}
 }
+{% endautoescape %}
 {%- endblock -%}
 
 {# ****************************************** CODE ************************************************ #}
 {%- block code -%}
+{% autoescape false %}
 {
 "id" : "{{ code.id }}",
 "unit": "{{ code.unit }}",
@@ -92,4 +101,5 @@
 "label": "{{ code.label }}",
 "definition": "{{ code.definition }}"
 }
+{% endautoescape %}
 {%- endblock -%}
