@@ -184,9 +184,7 @@ class FormFormat extends Format implements \JsonSerializable
             'label' => $this->label,
             'definition' => $this->definition,
             'position' => $this->position,
-            'is_opened' => $this->isOpened,
-            'criteria' => $this->getCriteria()->getValues(),
-            'columns' => $this->getColumns()->getValues()
+            'is_opened' => $this->isOpened
         ];
     }
 }

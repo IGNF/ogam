@@ -296,9 +296,9 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				field.xtype = 'numberrangefield';
 				// If RANGE we set the min and max values
 				if (record.subtype === 'RANGE') {
-					field.minValue = record.params.min;
-					field.maxValue = record.params.max;
-					field.decimalPrecision = (record.params.decimals === null) ? 20 : record.params.decimals;
+					field.minValue = record.min_value;
+					field.maxValue = record.max_value;
+					field.decimalPrecision = (record.decimals === null) ? 20 : record.decimals;
 				}
 				// IF INTEGER we remove the decimals
 				if (record.subtype === 'INTEGER') {

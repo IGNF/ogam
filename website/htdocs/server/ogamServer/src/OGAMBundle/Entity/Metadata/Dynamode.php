@@ -7,20 +7,23 @@ use Doctrine\ORM\Mapping as ORM;
  * Metadata.dynamode
  *
  * @ORM\Table(name="metadata.dynamode")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\DynamodeRepository")
  */
 class Dynamode {
 
 	/**
+	 * @var string
 	 *
-	 * @var string @ORM\Column(name="unit", type="string", length=36, nullable=false)
 	 * @ORM\Id
+	 * @ORM\Column(name="unit", type="string", length=36, unique=false)
 	 */
 	private $unit;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="sql", type="text", nullable=false)
+	 * @var string 
+	 * 
+	 * @ORM\Column(name="sql", type="text", nullable=false)
 	 */
 	private $sql;
 

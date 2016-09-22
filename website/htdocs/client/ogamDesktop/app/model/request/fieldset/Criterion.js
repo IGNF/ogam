@@ -6,6 +6,7 @@ Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
 	extend: 'Ext.data.Model',
 	idProperty: 'id',
     fields: [
+        // Form Field
         { name: 'id', type: 'auto' },
         { name: 'name', mapping: 'id', type: 'string' },
         { name: 'data' },
@@ -20,7 +21,12 @@ Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
         // Unit
         { name: 'unit', type: 'string', calculate: function (field) { return field.data.unit.unit; } },
         { name: 'type', type: 'string', calculate: function (field) { return field.data.unit.type; } },
-        { name: 'subtype', type: 'string', calculate: function (field) { return field.data.unit.subtype; } }
+        { name: 'subtype', type: 'string', calculate: function (field) { return field.data.unit.subtype; } },
+        // Range
+        { name: 'min_value', type: 'auto', calculate: function (field) { return field.data.unit.range ? field.data.unit.range.min : null; } },
+        { name: 'max_value', type: 'auto', calculate: function (field) { return field.data.unit.range ? field.data.unit.range.max : null; } },
+        // Code
+        { name: 'codes', calculate: function (field) { return field.data.unit.codes ? field.data.unit.codes : null; } }
     ],
     proxy: {
 		reader:{

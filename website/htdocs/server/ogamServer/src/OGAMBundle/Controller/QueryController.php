@@ -78,7 +78,12 @@ class QueryController extends Controller {
 			$datasetId = json_decode($request->query->get('datasetId'));
 			$requestName = $request->request->get('requestName');
 		}
-		return new JsonResponse($this->get('ogam.manager.query')->getQueryForms($datasetId, $requestName));
+
+		$response = new Response();
+		$response->headers->set('Content-Type', 'application/json');
+		return $this->render ( 'OGAMBundle:Query:ajaxgetqueryform.json.twig', array (
+		    'forms' => $this->get('ogam.manager.query')->getQueryForms($datasetId, $requestName)
+		),$response);
 	}
 	
 	/**

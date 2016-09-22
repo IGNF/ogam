@@ -77,9 +77,6 @@ class QueryManager
 
     public function getQueryForms($datasetId, $requestName)
     {
-        return array(
-            'success' => true,
-            'data' => $this->queryService->getQueryForms($datasetId, $requestName)
-        );
+        return $this->queryService->getQueryForms($datasetId, $requestName);
     }
 }

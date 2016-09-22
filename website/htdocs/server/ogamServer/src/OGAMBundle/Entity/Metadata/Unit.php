@@ -8,204 +8,265 @@ use OGAMBundle\OGAMBundle;
  * Metadata.unit
  *
  * @ORM\Table(name="metadata.unit")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\UnitRepository")
  */
-class Unit implements \JsonSerializable {
+class Unit implements \JsonSerializable
+{
 
-	/**
-	 *
-	 * @var string
-	 * @ORM\Column(name="unit", type="string", length=36, nullable=false)
-	 * @ORM\Id
-	 */
-	private $unit;
+    /**
+     *
+     * @var string @ORM\Column(name="unit", type="string", length=36, nullable=false)
+     *      @ORM\Id
+     */
+    private $unit;
 
-	/**
-	 *
-	 * @var string
-	 * @ORM\Column(name="type", type="string", length=36, nullable=true)
-	 */
-	private $type;
+    /**
+     *
+     * @var string @ORM\Column(name="type", type="string", length=36, nullable=true)
+     */
+    private $type;
 
-	/**
-	 *
-	 * @var string
-	 * @ORM\Column(name="subtype", type="string", length=36, nullable=true)
-	 */
-	private $subtype;
+    /**
+     *
+     * @var string @ORM\Column(name="subtype", type="string", length=36, nullable=true)
+     */
+    private $subtype;
 
-	/**
-	 *
-	 * @var string
-	 * @ORM\Column(name="label", type="string", length=60, nullable=true)
-	 */
-	private $label;
+    /**
+     *
+     * @var string @ORM\Column(name="label", type="string", length=60, nullable=true)
+     */
+    private $label;
 
-	/**
-	 *
-	 * @var string
-	 * @ORM\Column(name="definition", type="string", length=255, nullable=true)
-	 */
-	private $definition;
+    /**
+     *
+     * @var string @ORM\Column(name="definition", type="string", length=255, nullable=true)
+     */
+    private $definition;
 
-	/**
-	 * @var OGAMBundle\Entity\Metadata\Range
-	 * @ORM\OneToOne(targetEntity="Range", fetch="EAGER")
-	 * @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=true)
-	 */
-	private $range;
+    /**
+     *
+     * @var OGAMBundle\Entity\Metadata\Range @ORM\OneToOne(targetEntity="Range", fetch="EAGER")
+     *      @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=true)
+     */
+    private $range;
 
-	/**
-	 * Get unit
-	 *
-	 * @return string
-	 */
-	public function getUnit() {
-		return $this->unit;
-	}
+    /**
+     *
+     * @var OGAMBundle\Entity\Metadata\Dynamode @ORM\OneToOne(targetEntity="Dynamode", fetch="EAGER")
+     *      @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=true)
+     */
+    private $dynamode;
 
-	/**
-	 * Set unit
-	 *
-	 * @param string $unit
-	 * @return Unit
-	 */
-	public function setUnit($unit) {
-		$this->unit = $unit;
+    /**
+     *
+     * @var [OGAMBundle\Entity\Metadata\Mode]
+     */
+    private $modes = null;
 
-		return $this;
-	}
+    /**
+     * Get unit
+     *
+     * @return string
+     */
+    public function getUnit()
+    {
+        return $this->unit;
+    }
 
-	/**
-	 * Get type
-	 *
-	 * @return string
-	 */
-	public function getType() {
-		return $this->type;
-	}
+    /**
+     * Set unit
+     *
+     * @param string $unit            
+     * @return Unit
+     */
+    public function setUnit($unit)
+    {
+        $this->unit = $unit;
+        
+        return $this;
+    }
 
-	/**
-	 * Set subtype
-	 *
-	 * @param string $subtype
-	 * @return Unit
-	 */
-	public function setSubtype($subtype) {
-		$this->subtype = $subtype;
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 
-		return $this;
-	}
+    /**
+     * Set subtype
+     *
+     * @param string $subtype            
+     * @return Unit
+     */
+    public function setSubtype($subtype)
+    {
+        $this->subtype = $subtype;
+        
+        return $this;
+    }
 
-	/**
-	 * Get subtype
-	 *
-	 * @return string
-	 */
-	public function getSubtype() {
-		return $this->subtype;
-	}
+    /**
+     * Get subtype
+     *
+     * @return string
+     */
+    public function getSubtype()
+    {
+        return $this->subtype;
+    }
 
-	/**
-	 * Set label
-	 *
-	 * @param string $label
-	 * @return Unit
-	 */
-	public function setLabel($label) {
-		$this->label = $label;
+    /**
+     * Set label
+     *
+     * @param string $label            
+     * @return Unit
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+        
+        return $this;
+    }
 
-		return $this;
-	}
+    /**
+     * Get label
+     *
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
 
-	/**
-	 * Get label
-	 *
-	 * @return string
-	 */
-	public function getLabel() {
-		return $this->label;
-	}
+    /**
+     * Set definition
+     *
+     * @param string $definition            
+     * @return Unit
+     */
+    public function setDefinition($definition)
+    {
+        $this->definition = $definition;
+        
+        return $this;
+    }
 
-	/**
-	 * Set definition
-	 *
-	 * @param string $definition
-	 * @return Unit
-	 */
-	public function setDefinition($definition) {
-		$this->definition = $definition;
+    /**
+     * Get definition
+     *
+     * @return string
+     */
+    public function getDefinition()
+    {
+        return $this->definition;
+    }
 
-		return $this;
-	}
+    /**
+     * Set type
+     *
+     * @param string $type            
+     * @return Unit
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+        
+        return $this;
+    }
 
-	/**
-	 * Get definition
-	 *
-	 * @return string
-	 */
-	public function getDefinition() {
-		return $this->definition;
-	}
+    /**
+     * Return concatenation of name and label
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return ($this->label) ? $this->name . ': ' . $this->label : $this->name;
+    }
 
-	/**
-	 * Set type
-	 *
-	 * @param string $type
-	 * @return Unit
-	 */
-	public function setType($type) {
-		$this->type = $type;
+    /**
+     * Get the range
+     *
+     * @return the Range
+     */
+    public function getRange()
+    {
+        return $this->range;
+    }
 
-		return $this;
-	}
+    /**
+     * Set the range
+     *
+     * @param
+     *            OGAMBundle\Entity\Metadata\Range
+     */
+    public function setRange($range)
+    {
+        $this->range = $range;
+        return $this;
+    }
 
-	/**
-	 * Return concatenation of name and label
-	 *
-	 * @return string
-	 */
-	public function __toString() {
-		return ($this->label) ? $this->name . ': ' . $this->label : $this->name;
-	}
+    /**
+     * Get the modes
+     *
+     * @return the Modes
+     */
+    public function getModes()
+    {
+        return $this->modes;
+    }
 
-	/**
-	 * Get the range
-	 *
-	 * @return the Range
-	 */
-	public function getRange()
-	{
-	    return $this->range;
-	}
+    /**
+     * Set the modes
+     *
+     * @param
+     *            [OGAMBundle\Entity\Metadata\Mode]
+     */
+    public function setModes($modes)
+    {
+        $this->modes = $modes;
+        return $this;
+    }
 
-	/**
-	 * Set the range
-	 *
-	 * @param OGAMBundle\Entity\Metadata\Range
-	 */
-	public function setRange($range)
-	{
-	    $this->range = $range;
-	    return $this;
-	}
+    /**
+     *
+     * @return the Dynamode
+     */
+    public function getDynamode()
+    {
+        return $this->dynamode;
+    }
 
-	/**
-	 * Serialize the object as a JSON string
-	 *
-	 * @return a JSON string
-	 */
-	public function jsonSerialize() {
-	    return [
-	        'id' => $this->unit,
-	        'unit' => $this->unit,
-	        'type' => $this->type,
-	        'subtype' => $this->subtype,
-	        'label' => $this->label,
-	        'definition' => $this->definition,
-	        'optional' => [
-	            'range' => $this->getRange()
-	        ]
-	    ];
-	} 
+    /**
+     *
+     * @param OGAMBundle\Entity\Metadata\Dynamode $dynamode
+     */
+    public function setDynamode(Dynamode $dynamode)
+    {
+        $this->dynamode = $dynamode;
+        return $this;
+    }
+
+    /**
+     * Serialize the object as a JSON string
+     *
+     * @return a JSON string
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->unit,
+            'unit' => $this->unit,
+            'type' => $this->type,
+            'subtype' => $this->subtype,
+            'label' => $this->label,
+            'definition' => $this->definition,
+            'range' => $this->getRange()
+        ];
+    }
 }

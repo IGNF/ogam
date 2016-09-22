@@ -307,7 +307,16 @@ class FormField extends Field implements \JsonSerializable
 
         return $this;
     }
-    
+
+    /**
+     * Get id
+     *
+     * @return string
+     */
+    public function getId(){
+        return $this->format->getFormat() . '__' . $this->data->getData();
+    }
+
     /**
      * Serialize the object as a JSON string
      *
@@ -315,8 +324,8 @@ class FormField extends Field implements \JsonSerializable
      */
     public function jsonSerialize() {
         return [
-            'id' => $this->format->getFormat() . '__' . $this->data->getData(),
-            'data' => $this->data,
+            'id' => $this->getId(),
+            'data' => $this->data->getData(),
             'format' => $this->format->getFormat(),
             'is_criteria' => $this->isCriteria,
             'is_result' => $this->isResult,

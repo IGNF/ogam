@@ -3,6 +3,7 @@
 namespace OGAMBundle\Repository\Metadata;
 
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use OGAMBundle\Entity\Metadata\Unit;
 
 /**
  * FormFieldRepository
@@ -78,6 +79,16 @@ class FormFieldRepository extends \Doctrine\ORM\EntityRepository {
 		$query = $this->_em->createNativeQuery ( $sql, $rsm );
 		$query->setParameters ( $param );
 		
-		return $query->getResult ();
+		$formFields = $query->getResult();
+
+		foreach($formFields as $field){
+		    // Get the mandatory codes to display the field (RADIO)
+		    if($field->getInputType() === 'RADIO'){
+		        $unit = $field->getData()->getUnit();
+		        $unit->setModes($this->_em->getRepository(Unit::class)->getModes($unit));
+		    }
+		}
+
+		return $formFields;
 	}
 }

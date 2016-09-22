@@ -50,6 +50,10 @@ class Mode
      */
     private $definition;
 
+    
+    public function getId() {
+        return $this->getUnit() . '__' . $this->getCode();
+    }
 
     /**
      * Set unit
