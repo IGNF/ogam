@@ -72,7 +72,7 @@ class Application_Object_Metadata_Field {
 	var $definition;
 
 	/**
-	 * The value of the field (this is not defined in the metadata databae, it's the raw value of the data).
+	 * The value of the field (this is not defined in the metadata database, it's the raw value of the data).
 	 * Can be an array in case of a select multiple (will generate a OR clause).
 	 *
 	 * @var mixed Examples of valid values :

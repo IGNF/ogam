@@ -1,24 +1,11 @@
 <?php
 
-/**
- * Licensed under EUPL v1.1 (see http://ec.europa.eu/idabc/eupl).
- *
- * © European Union, 2008-2012
- *
- * Reuse is authorised, provided the source is acknowledged. The reuse policy of the European Commission is implemented by a Decision of 12 December 2011.
- *
- * The general principle of reuse can be subject to conditions which may be specified in individual copyright notices.
- * Therefore users are advised to refer to the copyright notices of the individual websites maintained under Europa and of the individual documents.
- * Reuse is not applicable to documents subject to intellectual property rights of third parties.
- */
-namespace OGAMBundle\Entity\Generic;
+namespace OGAMBundle\Entity\Generic\Query;
 
 /**
- * A Form Query is the list of criterias and result columns composing a request from the use.
- *
- * @SuppressWarnings checkUnusedVariables
+ * A Form Query is the list of criterias and result columns
  */
-class FormQuery {
+class Form {
 
 	/**
 	 * The dataset identifier.
@@ -28,13 +15,13 @@ class FormQuery {
 
 	/**
 	 * The criterias.
-	 * Array[FormField].
+	 * Array[OGAMBundle\Entity\Generic\Query\Field]
 	 */
 	var $criterias = array();
 
 	/**
 	 * The asked results.
-	 * Array[FormField].
+	 * Array[OGAMBundle\Entity\Generic\Query\Field]
 	 */
 	var $results = array();
 
@@ -49,10 +36,10 @@ class FormQuery {
 	 *        	the criteria value
 	 */
 	public function addCriteria($format, $data, $value) {
-		$field = new Application_Object_Metadata_FormField();
-		$field->format = $format;
-		$field->data = $data;
-		$field->value = $value;
+		$field = new CriteriaField();
+		$field->setFormat($format);
+		$field->setData($data);
+		$field->setValue($value);
 		$this->criterias[] = $field;
 	}
 
@@ -65,9 +52,9 @@ class FormQuery {
 	 *        	the result form data
 	 */
 	public function addResult($format, $data) {
-		$field = new Application_Object_Metadata_FormField();
-		$field->format = $format;
-		$field->data = $data;
+		$field = new Field();
+		$field->setFormat($format);
+		$field->setData($data);
 		$this->results[] = $field;
 	}
 

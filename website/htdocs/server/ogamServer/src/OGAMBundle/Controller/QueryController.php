@@ -7,6 +7,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use OGAMBundle\Entity\Generic;
+use OGAMBundle\Entity\Generic\Query;
+use OGAMBundle\Entity\Generic\Query\Form;
 
 /**
  * @Route("/query")
@@ -87,6 +90,83 @@ class QueryController extends Controller {
 	}
 	
 	/**
+	 * AJAX function : Builds the query.
+	 * 
+	 * @Route("/ajaxbuildrequest")
+	 */
+	public function ajaxbuildrequestAction(Request $request) {
+	    $logger = $this->get ( 'logger' );
+		$logger->debug ( 'ajaxbuildrequestAction' );
+		
+        // Check the validity of the POST
+        if (!$request->isMethod('POST')) {
+            $logger->debug('form is not a POST');
+            return $this->redirectToRoute ( 'homepage' );
+        }
+    
+        $datasetId = $request->request->getAlnum('datasetId');
+    
+        try {
+    
+            // Parse the input parameters and create a request object
+            $formQuery = new Form();
+            $formQuery->datasetId = $datasetId;
+            foreach ($_POST as $inputName => $inputValue) {
+                if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
+                    $logger->debug('POST var added');
+                    $criteriaName = substr($inputName, strlen("criteria__"));
+                    $split = explode("__", $criteriaName);
+                    $formQuery->addCriteria($split[0], $split[1], $inputValue);
+                }
+                if (strpos($inputName, "column__") === 0) {
+                    $columnName = substr($inputName, strlen("column__"));
+                    $split = explode("__", $columnName);
+                    $formQuery->addResult($split[0], $split[1]);
+                }
+            }
+    
+            if ($formQuery->isValid()) {
+                // Store the request parameters in session
+                $request->getSession()->set('formQuery', $formQuery);
+    
+                // Activate the result layer
+                // TODO: Check if still mandatory
+                //$this->mappingSession->activatedLayers[] = 'result_locations';
+    
+                return new JsonResponse(['success' => true]);
+            } else {
+                $logger->error('Invalid request.');
+                return new JsonResponse(['success' => false, 'errorMessage' => 'Invalid request.']);
+            }
+    
+        } catch (Exception $e) {
+            $this->logger->error('Error while getting result : ' . $e);
+            return new JsonResponse(['success' => false, 'errorMessage' => json_encode($e->getMessage())]);
+        }
+	}
+
+	/**
+	 * Check if a criteria is empty.
+	 * (not private as this function is extended in custom directory of derivated applications)
+	 *
+	 * @param Undef $criteria
+	 * @return true if empty
+	 */
+	protected function isEmptyCriteria($criteria) {
+	    if (is_array($criteria)) {
+	        $emptyArray = true;
+	        foreach ($criteria as $value) {
+	            if ($value != "") {
+	                $emptyArray = false;
+	            }
+	        }
+	        return $emptyArray;
+	    } else {
+	        return ($criteria == "");
+	    }
+	}
+	
+	/**
 	 * @Route("/ajaxgetpredefinedrequestlist")
 	 */
 	public function ajaxgetpredefinedrequestlistAction() {
@@ -118,15 +198,6 @@ class QueryController extends Controller {
 	 */
 	public function ajaxgetqueryformfieldsAction() {
 		return $this->render ( 'OGAMBundle:Query:ajaxgetqueryformfields.html.twig', array ()
-		// ...
-		 );
-	}
-
-	/**
-	 * @Route("/ajaxbuildrequest")
-	 */
-	public function ajaxbuildrequestAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxbuildrequest.html.twig', array ()
 		// ...
 		 );
 	}
