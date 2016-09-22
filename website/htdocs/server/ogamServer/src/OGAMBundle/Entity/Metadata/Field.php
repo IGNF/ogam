@@ -3,6 +3,7 @@
 namespace OGAMBundle\Entity\Metadata;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Field
@@ -29,6 +30,7 @@ class Field
      */
     protected $format;
 
+    
     /**
      * Set data
      *
@@ -114,10 +116,10 @@ class Field
 	 * @return String the label
 	 */
 	function getLabel() {
-		if ($this->label != null) {
+		if (isset($this->label) ) {
 			return $this->label;
 		} else {
-			return $this->data;
+			return $this->getData()->getLabel();
 		}
 	}
 
@@ -134,5 +136,7 @@ class Field
 			return $this->value;
 		}
 	}
+
+
 
 }

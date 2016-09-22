@@ -32,7 +32,7 @@ $generateAddLink = function ($schema, $format, $infoFields) {
 
 	// Add the PK elements
 	foreach ($infoFields as $infoField) {
-		$urlArray[$infoField->getData()] = $infoField->value;
+		$urlArray[$infoField->getData()->getData()] = $infoField->value;
 	}
 	
 	$uri='';

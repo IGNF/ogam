@@ -85,8 +85,7 @@ class DataObject {
 	/**
 	 * Return the editableFields array.
 	 *
-	 * @param String $key
-	 *        	a data
+	 * @param String $key a data
 	 * @return TableField the editableFields array
 	 */
 	public function getEditableField($key) {
@@ -96,8 +95,7 @@ class DataObject {
 	/**
 	 * Add a field element.
 	 *
-	 * @param TableField $field
-	 *        	a field
+	 * @param TableField $field a field
 	 */
 	public function addEditableField($field) {
 		$this->editableFields[$field->getName()] = $field;
@@ -155,7 +153,7 @@ class DataObject {
 	public function getId() {
 		$datumId = 'SCHEMA/' . $this->tableFormat->getSchemaCode() . '/FORMAT/' . $this->tableFormat->getFormat();
 		foreach ($this->getInfoFields() as $field) {
-			$datumId .= '/' . $field->getData() . '/' . $field->value;
+			$datumId .= '/' . $field->getData()->getData() . '/' . $field->value;
 		}
 		return $datumId;
 	}
