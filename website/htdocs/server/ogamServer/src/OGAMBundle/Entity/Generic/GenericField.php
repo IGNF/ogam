@@ -1,23 +1,41 @@
 <?php
-
-namespace OGAMBundle\Entity\Generic\Query;
+namespace OGAMBundle\Entity\Generic;
 
 /**
  * A query field
  */
-class Field {
+class GenericField
+{
 
     /**
      * The format of the field
+     *
      * @var string
      */
-	private $format;
-	
-	/**
+    private $format;
+
+    /**
      * The data of the field
+     *
      * @var string
      */
-	private $data;
+    private $data;
+
+    /**
+     * The value of the field
+     *
+     * @var string
+     */
+    private $value;
+
+    /**
+     *
+     * @return the string
+     */
+    public function getId()
+    {
+        return $this->format . '__' . $this->data;
+    }
 
     /**
      *
@@ -56,6 +74,26 @@ class Field {
     public function setData($data)
     {
         $this->data = $data;
+        return $this;
+    }
+
+    /**
+     *
+     * @return the string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     *
+     * @param
+     *            $value
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
         return $this;
     }
 }

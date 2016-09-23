@@ -1,11 +1,11 @@
 <?php
 
-namespace OGAMBundle\Entity\Generic\Query;
+namespace OGAMBundle\Entity\Generic;
 
 /**
  * A Form Query is the list of criterias and result columns
  */
-class Form {
+class QueryForm {
 
 	/**
 	 * The dataset identifier.
@@ -15,13 +15,13 @@ class Form {
 
 	/**
 	 * The criterias.
-	 * Array[OGAMBundle\Entity\Generic\Query\Field]
+	 * Array[OGAMBundle\Entity\Generic\Field]
 	 */
 	var $criterias = array();
 
 	/**
 	 * The asked results.
-	 * Array[OGAMBundle\Entity\Generic\Query\Field]
+	 * Array[OGAMBundle\Entity\Generic\Field]
 	 */
 	var $results = array();
 
@@ -36,7 +36,7 @@ class Form {
 	 *        	the criteria value
 	 */
 	public function addCriteria($format, $data, $value) {
-		$field = new CriteriaField();
+		$field = new GenericField();
 		$field->setFormat($format);
 		$field->setData($data);
 		$field->setValue($value);
@@ -52,7 +52,7 @@ class Form {
 	 *        	the result form data
 	 */
 	public function addResult($format, $data) {
-		$field = new Field();
+		$field = new GenericField();
 		$field->setFormat($format);
 		$field->setData($data);
 		$this->results[] = $field;
@@ -61,7 +61,7 @@ class Form {
 	/**
 	 * Get all table fields.
 	 *
-	 * @return Array[FormField] the form fields
+	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
 	 */
 	public function getFields() {
 		return array_merge($this->criterias, $this->results);
@@ -70,7 +70,7 @@ class Form {
 	/**
 	 * Get the criterias.
 	 *
-	 * @return Array[FormField] the form fields
+	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
 	 */
 	public function getCriterias() {
 		return $this->criterias;
@@ -79,7 +79,7 @@ class Form {
 	/**
 	 * Get the result columns.
 	 *
-	 * @return Array[FormField] the form fields
+	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
 	 */
 	public function getResults() {
 		return $this->results;
@@ -92,5 +92,40 @@ class Form {
 	 */
 	public function isValid() {
 		return !empty($this->getResults());
+	}
+	
+	/**
+	 * Get all table formats.
+	 *
+	 * @return Array[String] the table formats
+	 */
+	public function getFormats() {
+	    $formats = array();
+	
+	    foreach ($this->getFields() as $field) {
+	        if (!in_array($field->format, $formats)) {
+	            $formats[] = $field->format;
+	        }
+	    }
+	
+	    return $formats;
+	}
+	
+	/**
+	 * Tell if the data object contains at least one geometry field.
+	 *
+	 * @return Boolean true is one geomtry field is present
+	 */
+	public function hasGeometry() {
+	    $hasGeom = false;
+	
+	    foreach ($this->getFields() as $field) {
+	        if ($field->type === 'GEOM') {
+	            $hasGeom = true;
+	            break;
+	        }
+	    }
+	
+	    return $hasGeom;
 	}
 }
