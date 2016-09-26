@@ -28,25 +28,12 @@ class GenericFieldMapping {
      */
     private $dstField;
 
-    /**
-     *
-     * @return the GenericField
-     */
-    public function getSchema()
-    {
-        return $this->schema;
-    }
-
-    /**
-     *
-     * @param string $schema
-     */
-    public function setSchema($schema)
-    {
+    function __construct($srcField, $dstField, $schema) {
+        $this->srcField = $srcField;
+        $this->dstField = $dstField;
         $this->schema = $schema;
-        return $this;
     }
-
+    
     /**
      *
      * @return the GenericField
@@ -54,16 +41,6 @@ class GenericFieldMapping {
     public function getSrcField()
     {
         return $this->srcField;
-    }
-
-    /**
-     *
-     * @param OGAMBundle\Entity\Generic\GenericField $srcField
-     */
-    public function setSrcField(GenericField $srcField)
-    {
-        $this->srcField = $srcField;
-        return $this;
     }
 
     /**
@@ -77,11 +54,10 @@ class GenericFieldMapping {
 
     /**
      *
-     * @param OGAMBundle\Entity\Generic\GenericField $dstField
+     * @return the GenericField
      */
-    public function setDstField(GenericField $dstField)
+    public function getSchema()
     {
-        $this->dstField = $dstField;
-        return $this;
+        return $this->schema;
     }
 }

@@ -69,33 +69,11 @@ class GenericField
 
     /**
      *
-     * @param
-     *            $format
-     */
-    public function setFormat($format)
-    {
-        $this->format = $format;
-        return $this;
-    }
-
-    /**
-     *
      * @return the string
      */
     public function getData()
     {
         return $this->data;
-    }
-
-    /**
-     *
-     * @param
-     *            $data
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-        return $this;
     }
 
     /**

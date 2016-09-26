@@ -37,33 +37,11 @@ class GenericFieldMappingSet {
 
     /**
      *
-     * @param
-     *            $schema
-     */
-    public function setSchema($schema)
-    {
-        $this->schema = $schema;
-        return $this;
-    }
-
-    /**
-     *
      * @return the field mapping set
      */
     public function getFieldMappingSet()
     {
         return $this->fieldMappingSet;
-    }
-
-    /**
-     *
-     * @param
-     *            $fieldMappingSet
-     */
-    public function setFieldMappingSet($fieldMappingSet)
-    {
-        $this->fieldMappingSet = $fieldMappingSet;
-        return $this;
     }
     
     public function getFieldMapping($srcField){
