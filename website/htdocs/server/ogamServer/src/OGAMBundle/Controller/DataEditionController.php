@@ -515,8 +515,22 @@ class DataEditionController extends Controller
      * @Route("/ajax-get-edit-form/{id}", requirements={"id"= ".*"})
      */
     public function ajaxGetEditFormAction(Request $request, $id=null) {
+
         $data = $this->getDataFromRequest($request);
-    	return $this->json(array());
+        
+        // Complete the data object with the existing values from the database.
+        $genericModel = $this->get('ogam.manager.generic');
+        $data = $genericModel->getDatum($data);
+        
+        // The service used to manage the query module
+        $res = $this->getQueryService()->getEditForm($data);
+        
+        $bag = $request->getSession();
+        json_encode($data);
+        $ser = new Serializer(array(new ObjectNormalizer()));
+        $ser->normalize($data);// FIXME : treewalker force loading proxy element ...
+        $bag->set('data', $data);
+        return $this->json($res);
     }
 
     /**

@@ -9,6 +9,7 @@ use OGAMBundle\Entity\Metadata\TableField;
 use OGAMBundle\Entity\Metadata\FormField;
 use OGAMBundle\Repository\Metadata\DynamodeRepository;
 use OGAMBundle\Entity\Metadata\Mode;
+use OGAMBundle\Entity\Metadata\Dynamode;
 
 /**
  *
@@ -133,12 +134,12 @@ class GenericService {
 	    $valueLabel = $value;
 	
 	    // For the CODE and ARRAY fields, we get the labels in the metadata
-	    $unit = $tableField->getUnit();
+	    $unit = $tableField->getData()->getUnit();
 	    if ($unit->getType() === "CODE" || $unit->getType() === "ARRAY") {
 	
 	        // Get the modes => Label
 	        if ($unit->getSubtype() === "DYNAMIC") {
-	            $modes = $this->metadataModel->getRepository(DynamodeRepository::class)->findBy(array('unit'=>$unit, 'mode'=>$value));
+	            $modes = $this->metadataModel->getRepository(Dynamode::class)->getModes($unit, $value);
 	        } else if ($unit->getSubtype() === "TREE") {
 	            $modes = $this->metadataModel->getTreeLabels($tableField->unit, $value);
 	        } else if ($unit->getSubtype() === "TAXREF") {
@@ -146,6 +147,7 @@ class GenericService {
 	        } else {
 	            $modes =  $this->metadataModel->getRepository(Mode::class)->findBy(array('unit'=>$unit, 'mode'=>$value));
 	        }
+	        $modes = array_column($modes, 'label','code');
 	
 	        // Populate the labels of the currently selected values
 	        if (is_array($value)) {

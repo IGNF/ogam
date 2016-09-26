@@ -93,8 +93,8 @@ class GenericManager {
 	
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
-		$sql .= " FROM " . $schema->name . "." . $tableFormat->getTableName() . " AS " . $tableFormat->getFormat();
-		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->code, $data->infoFields);
+		$sql .= " FROM " . $schema->getName() . "." . $tableFormat->getTableName() . " AS " . $tableFormat->getFormat();
+		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->getCode(), $data->infoFields);
 	
 		$this->logger->info('getDatum : ' . $sql);
 	
@@ -106,14 +106,14 @@ class GenericManager {
 		foreach ($data->editableFields as $field) {
 			$key = strtolower($field->getName());
 			$field->value = $row[$key];
-	
+	       $unit =$field->getData()->getUnit();
 			// Store additional info for geometry type
-			if ($field->type === "GEOM") {
+			if ($unit->getType() === "GEOM") {
 				$field->xmin = $row[strtolower($key) . '_x_min'];
 				$field->xmax = $row[strtolower($key) . '_x_max'];
 				$field->ymin = $row[strtolower($key) . '_y_min'];
 				$field->ymax = $row[strtolower($key) . '_y_max'];
-			} else if ($field->type === "ARRAY") {
+			} else if ($unit->getType() === "ARRAY") {
 				// For array field we transform the value in a array object
 				$field->value = $this->genericService->stringToArray($field->value);
 			}
