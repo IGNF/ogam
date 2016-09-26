@@ -91,7 +91,7 @@ services:
     # Services
     ogam.generic_service:
         class: OGAMBundle\Services\GenericService
-        arguments: ["@doctrine.orm.metadata_entity_manager","@ogam.configuration_manager", "@logger"]
+        arguments: ["@doctrine.orm.metadata_entity_manager","@ogam.configuration_manager", "@logger", "@=service('ogam.locale_listener').getLocale()"]
 
     ogam.query_service:
         class: OGAMBundle\Services\QueryService
