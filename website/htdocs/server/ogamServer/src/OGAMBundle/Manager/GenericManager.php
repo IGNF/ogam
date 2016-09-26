@@ -405,6 +405,58 @@ class GenericManager {
 	
 	    return $data;
 	}
+
+	/**
+	 * Update a line of data from a table.
+	 *
+	 * @param DataObject $data the shell of the data object with the values for the primary key.
+	 * @throws an exception if an error occur during update
+	 */
+	public function updateData($data) {
+	
+	    /* @var $data _DataObject */
+	    $tableFormat = $data->tableFormat;
+	    /* @var $tableFormat TableFormat */
+	
+	    $schema = $tableFormat->getSchema();
+	
+	    // Get the values from the data table
+	    $sql = "UPDATE " . $schema->getName() . "." . $tableFormat->getTableName() . " " . $tableFormat->getFormat();
+	    $sql .= " SET ";
+	
+	    // updates of the data.
+	    foreach ($data->editableFields as $field) {
+	        /* @var $field TableField */
+	
+	        if ($field->getData()->getData() != "LINE_NUMBER" && $field->getIsEditable()) {
+	            // Hardcoded value
+	            $sql .= $field->getColumnName() . " = " . $this->genericService->buildSQLValueItem($schema->getCode(), $field);
+	            $sql .= ", ";
+	        }
+	    }
+	    // remove last comma
+	    $sql = substr($sql, 0, -2);
+	
+	    $sql .= " WHERE (1 = 1)";
+	
+	    // Build the WHERE clause with the info from the PK.
+	    foreach ($data->infoFields as $primaryKey) {
+	        // Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
+	        $sql .= $this->genericService->buildWhereItem($schema->getCode(), $primaryKey, true);
+	    }
+	
+	    $this->logger->info('updateData : ' . $sql);
+	
+	    $request = $this->rawdb->prepare($sql);
+	
+	    try {
+	        $request->execute();
+	    } catch (Exception $e) {
+	        $this->logger->err('Error while updating data  : ' . $e->getMessage());
+	        throw new \Exception("Error while updating data  : " . $e->getMessage());
+	    }
+	}
+	
 	
 	public function setLogger($logger){
 		$this->logger = $logger;
