@@ -6,6 +6,7 @@ use OGAMBundle\Entity\Generic\DataObject;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use OGAMBundle\Services\GenericService;
+use OGAMBundle\Entity\Metadata\TableTree;
 
 /**
  * Class allowing generic access to the RAW_DATA tables.
@@ -88,12 +89,12 @@ class GenericManager {
 	
 		$this->logger->info('getDatum : ' . $tableFormat->getFormat());
 	
-		$schema = $this->metadataModel->find('OGAMBundle:Metadata\Schema', $tableFormat->getSchemaCode());
+		$schema = $this->metadataModel->find('OGAMBundle:Metadata\TableSchema', $tableFormat->getSchemaCode());
 	
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
-		$sql .= " FROM " . $schema->name . "." . $tableFormat->getTableName() . " AS " . $tableFormat->getFormat();
-		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->code, $data->infoFields);
+		$sql .= " FROM " . $schema->getName() . "." . $tableFormat->getTableName() . " AS " . $tableFormat->getFormat();
+		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->getCode(), $data->infoFields);
 	
 		$this->logger->info('getDatum : ' . $sql);
 	
@@ -105,14 +106,14 @@ class GenericManager {
 		foreach ($data->editableFields as $field) {
 			$key = strtolower($field->getName());
 			$field->value = $row[$key];
-	
+	       $unit =$field->getData()->getUnit();
 			// Store additional info for geometry type
-			if ($field->type === "GEOM") {
+			if ($unit->getType() === "GEOM") {
 				$field->xmin = $row[strtolower($key) . '_x_min'];
 				$field->xmax = $row[strtolower($key) . '_x_max'];
 				$field->ymin = $row[strtolower($key) . '_y_min'];
 				$field->ymax = $row[strtolower($key) . '_y_max'];
-			} else if ($field->type === "ARRAY") {
+			} else if ($unit->getType() === "ARRAY") {
 				// For array field we transform the value in a array object
 				$field->value = $this->genericService->stringToArray($field->value);
 			}
@@ -163,7 +164,7 @@ class GenericManager {
 	
 			// Fill the PK values (we hope that the child contain the fields of the parent pk)
 			foreach ($parent->infoFields as $key) {
-				$fieldName = $data->tableFormat->getFormat() . '__' . $key->getData();
+				$fieldName = $data->tableFormat->getFormat() . '__' . $key->getData()->getData();
 				$fields = $data->getFields();
 				if (array_key_exists($fieldName, $fields)) {
 					$keyField = $fields[$fieldName];
@@ -230,12 +231,12 @@ class GenericManager {
 	        // Fill the known primary keys (we hope the child contain the keys of the parent)
 	        foreach ($data->infoFields as $dataKey) {
 	            foreach ($child->infoFields as $childKey) {
-	                if ($dataKey->data == $childKey->data) {
+	                if ($dataKey->getData() == $childKey->getData()) {
 	                    $childKey->value = $dataKey->value;
 	                }
 	            }
 	            foreach ($child->editableFields as $childKey) {
-	                if ($dataKey->data == $childKey->data) {
+	                if ($dataKey->getData() == $childKey->getData()) {
 	                    $childKey->value = $dataKey->value;
 	                }
 	            }
@@ -266,12 +267,12 @@ class GenericManager {
 	    // The table format descriptor
 	    $tableFormat = $data->tableFormat;
 	
-	    $schema = $this->metadataModel->getSchema($tableFormat->schemaCode);
+	    $schema = $tableFormat->getSchema();
 	
 	    // Get the values from the data table
 	    $sql = "SELECT " . $this->genericService->buildSelect($data->getFields());
-	    $sql .= " FROM " . $schema->name . "." . $tableFormat->tableName . " AS " . $tableFormat->format;
-	    $sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->code, array_merge($data->infoFields, $data->editableFields));
+	    $sql .= " FROM " . $schema->getName() . "." . $tableFormat->getTableName() . " AS " . $tableFormat->getFormat();
+	    $sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->getCode(), array_merge($data->infoFields, $data->editableFields));
 	
 	    $this->logger->info('_getDataList : ' . $sql);
 	
@@ -280,14 +281,14 @@ class GenericManager {
 	    foreach ($select->fetchAll() as $row) {
 	
 	        // Build an new empty data object
-	        $child = $this->genericService->buildDataObject($tableFormat->schemaCode, $data->tableFormat->format);
+	        $child = $this->genericService->buildDataObject($schema->getCode(), $data->tableFormat->getFormat());
 	
 	        // Fill the values with data from the table
 	        foreach ($child->getFields() as $field) {
 	
 	            $field->value = $row[strtolower($field->getName())];
 	
-	            if ($field->type === "ARRAY") {
+	            if ($field->getData()->getUnit()->getType() === "ARRAY") {
 	                // For array field we transform the value in a array object
 	                $field->value = $this->genericService->stringToArray($field->value);
 	            }
@@ -301,6 +302,161 @@ class GenericManager {
 	
 	    return $result;
 	}
+	
+	/**
+	 * Get the join keys
+	 *
+	 * @param DataObject $data the shell of the data object.
+	 * @return Array[String] The join keys.
+	 */
+	public function getJoinKeys($data) {
+	    $tableFormat = $data->tableFormat;
+/*	
+	    $sql = "SELECT join_key";
+	    $sql .= " FROM TABLE_TREE";
+	    $sql .= " WHERE schema_code = '" . $tableFormat->schemaCode . "'";
+	    $sql .= " AND child_table = '" . $tableFormat->format . "'";
+	*/
+	    $joinKeys = $this->metadataModel->find(TableTree::class, array('schema' => $tableFormat->getSchema()->getCode(), 'tableFormat'=>$tableFormat->getFormat()))->getJoinKeys();
+	
+	    return $joinKeys;
+	}
+	
+
+	/**
+	 * Insert a line of data from a table.
+	 *
+	 * @param DataObject $data the shell of the data object to insert.
+	 * @return DataObject $data the eventually edited data object.
+	 * @throws an exception if an error occur during insert
+	 */
+	public function insertData($data) {
+	    $this->logger->info('insertData');
+	
+	    $tableFormat = $data->tableFormat;
+	
+	    $schema = $tableFormat->getSchema();
+	
+	    // Get the values from the data table
+	    $sql = "INSERT INTO " . $schema->getName() . "." . $tableFormat->getTableName();
+	    $columns = "";
+	    $values = "";
+	    $return = "";
+	
+	    // updates of the data.
+	    foreach ($data->getInfoFields() as $field) {
+	        if ($field->value !== null) {
+	
+	            // Primary keys that are not set should be serials ...
+	            $columns .= $field->getColumnName() . ", ";
+	            $values .= $this->genericService->buildSQLValueItem($schema->getCode(), $field);
+	            $values .= ", ";
+	        } else {
+	            $this->logger->info('field ' . $field->getColumnName() . " " . $field->getIsCalculated());
+	
+	            // Case of a calculated PK (for example a serial)
+	            if ($field->getIsCalculated()) {
+	                if ($return == "") {
+	                    $return .= " RETURNING ";
+	                } else {
+	                    $return .= ", ";
+	                }
+	                $return .= $field->columnName;
+	            }
+	        }
+	    }
+	    foreach ($data->getEditableFields() as $field) {
+	        if ($field->value != null) {
+	            // Primary keys that are not set should be serials ...
+	            if ($field->getData()->getData() !== "LINE_NUMBER") {
+	                $columns .= $field->getColumnName() . ", ";
+	                $values .= $this->genericService->buildSQLValueItem($schema->getCode(), $field);
+	                $values .= ", ";
+	            }
+	        }
+	    }
+	    // remove last commas
+	    $columns = substr($columns, 0, -2);
+	    $values = substr($values, 0, -2);
+	
+	    $sql .= "(" . $columns . ") VALUES (" . $values . ")" . $return;
+	
+	    $this->logger->info('insertData : ' . $sql);
+	
+	    $request = $this->rawdb->prepare($sql);
+	
+	    try {
+	        $request->execute();
+	    } catch (Exception $e) {
+	        $this->logger->err('Error while inserting data  : ' . $e->getMessage());
+	        throw new \Exception("Error while inserting data  : " . $e->getMessage());
+	    }
+	
+	    if ($return !== "") {
+	
+	        foreach ($request->fetchAll() as $row) {
+	            foreach ($data->getInfoFields() as $field) {
+	                if ($field->getIsCalculated()) {
+	                    $field->value = $row[strtolower($field->getColumnName())];
+	                }
+	            }
+	        }
+	    }
+	
+	    return $data;
+	}
+
+	/**
+	 * Update a line of data from a table.
+	 *
+	 * @param DataObject $data the shell of the data object with the values for the primary key.
+	 * @throws an exception if an error occur during update
+	 */
+	public function updateData($data) {
+	
+	    /* @var $data _DataObject */
+	    $tableFormat = $data->tableFormat;
+	    /* @var $tableFormat TableFormat */
+	
+	    $schema = $tableFormat->getSchema();
+	
+	    // Get the values from the data table
+	    $sql = "UPDATE " . $schema->getName() . "." . $tableFormat->getTableName() . " " . $tableFormat->getFormat();
+	    $sql .= " SET ";
+	
+	    // updates of the data.
+	    foreach ($data->editableFields as $field) {
+	        /* @var $field TableField */
+	
+	        if ($field->getData()->getData() != "LINE_NUMBER" && $field->getIsEditable()) {
+	            // Hardcoded value
+	            $sql .= $field->getColumnName() . " = " . $this->genericService->buildSQLValueItem($schema->getCode(), $field);
+	            $sql .= ", ";
+	        }
+	    }
+	    // remove last comma
+	    $sql = substr($sql, 0, -2);
+	
+	    $sql .= " WHERE (1 = 1)";
+	
+	    // Build the WHERE clause with the info from the PK.
+	    foreach ($data->infoFields as $primaryKey) {
+	        // Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
+	        $sql .= $this->genericService->buildWhereItem($schema->getCode(), $primaryKey, true);
+	    }
+	
+	    $this->logger->info('updateData : ' . $sql);
+	
+	    $request = $this->rawdb->prepare($sql);
+	
+	    try {
+	        $request->execute();
+	    } catch (Exception $e) {
+	        $this->logger->err('Error while updating data  : ' . $e->getMessage());
+	        throw new \Exception("Error while updating data  : " . $e->getMessage());
+	    }
+	}
+	
 	
 	public function setLogger($logger){
 		$this->logger = $logger;

@@ -170,6 +170,7 @@ class QueryService {
 	 * Generate the JSON structure corresponding to a list of edit fields.
 	 *
 	 * @param DataObject $data the data object to edit
+	 * @return array normalize value
 	 */
 	private function _generateEditForm($data) {
 	    $return = new \ArrayObject();
@@ -228,14 +229,19 @@ class QueryService {
 	    $field->inputType = $formField->getInputType();
 	    $field->decimals = $formField->getDecimals();
 	    $field->defaultValue = $formField->getDefaultValue();
-	    $field->name = $formField->getName();
-	    $field->label = $formField->getLabel();
+
 	    $field->unit = $formField->getData()->getUnit()->getUnit();
 	    $field->type = $formField->getData()->getUnit()->getType();
 	    $field->subtype = $formField->getData()->getUnit()->getSubType();
 	    
+	    $field->name = $tableField->getName();
+	    $field->label = $tableField->getLabel();
 	    
 	    $field->isPK = in_array($tableField->getData()->getData(), $tableField->getFormat()->getPrimaryKeys(), true) ? '1' : '0';
+	    if($tableField->getData()->getUnit() === $formField->getData()->getUnit()) {
+	        $this->logger->info('query_service :: table field and form field has not the same unit ?!');
+	    }
+	    
 	    $field->value = $tableField->value;
 	    $field->valueLabel = $tableField->getValueLabel();
 	    $field->editable = $tableField->getIsEditable() ? '1':'0';
@@ -264,7 +270,7 @@ class QueryService {
 	    
 	    // For the RANGE field, get the min and max values
 	    if ($field->type === "NUMERIC" && $field->subtype === "RANGE") {
-	        $range = $field->getData()->getUnit()->getRange();
+	        $range = $tableField->getData()->getUnit()->getRange();
 	        $field->params = ["min"=>$range->getMin(), "max"=>  $range->getMax()];
 	    }
 	    

@@ -52,14 +52,14 @@ $generateEditLink=function ($data) use ($view) {
 	);
 
 	// Add the schema
-	$urlArray['SCHEMA'] = $data->tableFormat->schemaCode;
+	$urlArray['SCHEMA'] = $data->tableFormat->getSchemaCode();
 
 	// Add the format
-	$urlArray['FORMAT'] = $data->tableFormat->format;
+	$urlArray['FORMAT'] = $data->tableFormat->getFormat();
 
 	// Add the PK elements
 	foreach ($data->infoFields as $infoField) {
-		$urlArray[$infoField->data] = $infoField->value;
+		$urlArray[$infoField->getData()->getData()] = $infoField->value;
 	}
 
 	// Add the fields to generate the tooltip
@@ -70,15 +70,15 @@ $generateEditLink=function ($data) use ($view) {
 			foreach ($field->valueLabel as $value) {
 				$val .= $view->escape($value) . ", ";
 			}
-			$fields[$field->label] = substr($val, 0, -2);
+			$fields[$field->getLabel()] = substr($val, 0, -2);
 		} else {
-			$fields[$field->label] = $view->escape($field->valueLabel);
+			$fields[$field->getLabel()] = $view->escape($field->valueLabel);
 		}
 	}
 	// output the result
 	return array(
 		'url' => '#edition-edit'.$data->getId(),
-		'text' => $view->escape($data->tableFormat->label),
+		'text' => $view->escape($data->tableFormat->getLabel()),
 		'fields' => $fields
 	);
 };

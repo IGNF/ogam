@@ -155,7 +155,7 @@ class Data implements \JsonSerializable {
 	/**
 	 * Set unit
 	 *
-	 * @param \Ign\Bundle\ConfigurateurBundle\Entity\Unit $unit
+	 * @param Unit $unit
 	 * @return Data
 	 */
 	public function setUnit(Unit $unit = null) {
@@ -167,7 +167,7 @@ class Data implements \JsonSerializable {
 	/**
 	 * Get unit
 	 *
-	 * @return \Ign\Bundle\ConfigurateurBundle\Entity\Unit
+	 * @return Unit
 	 */
 	public function getUnit() {
 		return $this->unit;
