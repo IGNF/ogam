@@ -1,6 +1,8 @@
 <?php
 namespace OGAMBundle\Entity\Generic;
 
+use OGAMBundle\Entity\Metadata\Field;
+
 /**
  * A query field
  */
@@ -28,6 +30,25 @@ class GenericField
      */
     private $value;
 
+    /**
+     * The metadata locale
+     *
+     * @var string
+     */
+    private $locale;
+
+    /**
+     * The field metadata
+     *
+     * @var OGAMBundle\Entity\Metadata\Field
+     */
+    private $metadata;
+    
+    function __construct($format, $data) {
+        $this->format = $format;
+        $this->data = $data;
+    }
+    
     /**
      *
      * @return the string
@@ -95,5 +116,30 @@ class GenericField
     {
         $this->value = $value;
         return $this;
+    }
+
+    /**
+     *
+     * @return the string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
+     *
+     * @return the Field
+     */
+    public function getMetadata()
+    {
+        return $this->metadata;
+    }
+    
+
+    public function setMetadata(Field $metadata, $locale)
+    {
+        $this->locale = $locale;
+        $this->metadata = $metadata;
     }
 }

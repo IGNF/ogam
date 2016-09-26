@@ -3,7 +3,7 @@
 namespace OGAMBundle\Entity\Generic;
 
 /**
- * A Form Query is the list of criterias and result columns
+ * A Form Query is the list of criterias and columns
  */
 class QueryForm {
 
@@ -11,19 +11,38 @@ class QueryForm {
 	 * The dataset identifier.
 	 * String.
 	 */
-	var $datasetId;
+	private $datasetId;
 
 	/**
-	 * The criterias.
+	 * The asked criterias.
 	 * Array[OGAMBundle\Entity\Generic\Field]
 	 */
-	var $criterias = array();
+	private $criterias = array();
 
 	/**
-	 * The asked results.
+	 * The asked columns.
 	 * Array[OGAMBundle\Entity\Generic\Field]
 	 */
-	var $results = array();
+	private $columns = array();
+
+	/**
+	 *
+	 * @return the datasetId
+	 */
+	public function getDatasetId()
+	{
+	    return $this->datasetId;
+	}
+	
+	/**
+	 * Set the datasetId
+	 * @param string $datasetId
+	 */
+	public function setDatasetId($datasetId)
+	{
+	    $this->datasetId = $datasetId;
+	    return $this;
+	}
 
 	/**
 	 * Add a new criteria.
@@ -36,26 +55,26 @@ class QueryForm {
 	 *        	the criteria value
 	 */
 	public function addCriteria($format, $data, $value) {
-		$field = new GenericField();
-		$field->setFormat($format);
-		$field->setData($data);
-		$field->setValue($value);
-		$this->criterias[] = $field;
+		$formField = new GenericField($format, $data);
+		$formField->setFormat($format);
+		$formField->setData($data);
+		$formField->setValue($value);
+		$this->criterias[] = $formField;
 	}
 
 	/**
-	 * Add a new result.
+	 * Add a new column.
 	 *
 	 * @param String $format
-	 *        	the result form format
+	 *        	the column form format
 	 * @param String $data
-	 *        	the result form data
+	 *        	the column form data
 	 */
-	public function addResult($format, $data) {
-		$field = new GenericField();
-		$field->setFormat($format);
-		$field->setData($data);
-		$this->results[] = $field;
+	public function addColumn($format, $data) {
+		$formField = new GenericField($format, $data);
+		$formField->setFormat($format);
+		$formField->setData($data);
+		$this->columns[] = $formField;
 	}
 
 	/**
@@ -64,7 +83,7 @@ class QueryForm {
 	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
 	 */
 	public function getFields() {
-		return array_merge($this->criterias, $this->results);
+		return array_merge($this->criterias, $this->columns);
 	}
 
 	/**
@@ -77,12 +96,12 @@ class QueryForm {
 	}
 
 	/**
-	 * Get the result columns.
+	 * Get the columns.
 	 *
 	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
 	 */
-	public function getResults() {
-		return $this->results;
+	public function getColumns() {
+		return $this->columns;
 	}
 
 	/**
@@ -91,31 +110,31 @@ class QueryForm {
 	 * @return Boolean True if the request is valid.
 	 */
 	public function isValid() {
-		return !empty($this->getResults());
+		return !empty($this->getColumns());
 	}
 	
 	/**
-	 * Get all table formats.
+	 * TODO: Get all table formats.
 	 *
 	 * @return Array[String] the table formats
-	 */
+	 *
 	public function getFormats() {
 	    $formats = array();
 	
-	    foreach ($this->getFields() as $field) {
-	        if (!in_array($field->format, $formats)) {
-	            $formats[] = $field->format;
+	    foreach ($this->getFields() as $formField) {
+	        if (!in_array($formField->format, $formats)) {
+	            $formats[] = $formField->format;
 	        }
 	    }
 	
 	    return $formats;
-	}
+	}*/
 	
 	/**
-	 * Tell if the data object contains at least one geometry field.
+	 * TODO: Tell if the data object contains at least one geometry field.
 	 *
 	 * @return Boolean true is one geomtry field is present
-	 */
+	 *
 	public function hasGeometry() {
 	    $hasGeom = false;
 	
@@ -127,5 +146,5 @@ class QueryForm {
 	    }
 	
 	    return $hasGeom;
-	}
+	}*/
 }
