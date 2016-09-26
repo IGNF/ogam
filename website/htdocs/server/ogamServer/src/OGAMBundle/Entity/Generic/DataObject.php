@@ -119,8 +119,8 @@ class DataObject {
 		$formats = array();
 
 		foreach ($this->getFields() as $field) {
-			if (!in_array($field->format, $formats)) {
-				$formats[] = $field->format;
+			if (!in_array($field->getFormat()->getFormat(), $formats)) {
+				$formats[] = $field->getFormat()->getFormat();
 			}
 		}
 
@@ -136,7 +136,7 @@ class DataObject {
 		$hasGeom = false;
 
 		foreach ($this->getFields() as $field) {
-			if ($field->type === 'GEOM') {
+			if ($field->getData()->getUnit()->getType() === 'GEOM') {
 				$hasGeom = true;
 				break;
 			}

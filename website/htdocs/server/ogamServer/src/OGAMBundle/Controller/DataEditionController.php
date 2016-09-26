@@ -15,7 +15,12 @@ use OGAMBundle\Entity\Metadata\TableField;
 use OGAMBundle\Entity\Metadata\FormField;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type as FType;
-
+use Symfony\Component\Validator\Constraints as Assert;
+use Zend\Validator\Date;
+use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use OGAMBundle\Form\AjaxType;
 
 /**
  *
@@ -152,113 +157,115 @@ class DataEditionController extends Controller
      *
      * @param FormBuilder $form the form(element) builder
      * @param TableField $tableField the table descriptor of the data
-     * @param FormField $formField the form descriptor of the data
+     * @param FormField|null $formField the form descriptor of the data
      * @param Boolean $isKey is the field a primary key ?
      * @return FormBuilderInterface the element (builder)
      * @todo make all fields within OGAMBundle:FormTypes\..  
      */
-    protected function getFormElement($form, TableField $tableField, FormField $formField, $isKey = false) {
-    
+    protected function getFormElement($form, TableField $tableField,  $formField, $isKey = false) {
+        if (null === $formField){
+            throw new \InvalidArgumentException('tableField is required, not null');
+        }
         
         $option = array();
-        $option['label']=$tableField->getLabel();
+        $option['label'] = $tableField->getLabel();
+        $unit = $formField->getData()->getUnit();
+        
         // Warning : $formField can be null if no mapping is defined with $tableField
-        switch ($tableField->getType()) {
+        switch ($unit->getType()) {
     
             case "STRING":
-    
-                // The field is a text field
-                $elem = $form->create($tableField->getData()->getData(), FType\TextType::class);
-    
                 // Add a regexp validator if a mask is present
-                if ($formField !== null && $formField->mask !== null) {
-                    $validator = new Zend_Validate_Regex(array(
-                        'pattern' => $formField->mask
+                if ($formField !== null && $formField->getMask() !== null) {
+                    $validator = new Assert\Regex(array(
+                        'pattern' => $formField->getMask()
                     ));
-                    $elem->addValidator($validator);
+                    $option['constraints'][] = $validator;
                 }
-                $elem->setValue($tableField->value);
+                
+                // The field is a text field
+                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);
+    
+                $elem->setData($tableField->value);
                 break;
     
             case "INTEGER":
-    
+
+                $option['constraints'] = new Assert\Type('int');//digit ?
                 // The field is an integer
-                $elem = $form->create($tableField->getData()->getData(), FType\TextType::class);
-                $elem->addValidator(new Zend_Validate_Int());
-                $elem->setValue($tableField->value);
+                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);
+
+                $elem->setData($tableField->value);
                 break;
     
             case "NUMERIC":
-    
+                $option['constraints'] = [new Assert\Type('numeric')];
                 // The field is a numeric
-                $elem = $form->create($tableField->getData()->getData(), FType\TextType::class);
-                $elem->addValidator(new Zend_Validate_Float(array(
-                    'locale' => 'en_EN'
-                ))); // The locale should correspond to the database config
-                $elem->setValue($tableField->value);
-    
-                if ($tableField->subtype === "RANGE") {
+                if ($unit->getSubType() === "RANGE") {
     
                     // Check min and max
-                    $range = $this->metadataModel->getRange($tableField->unit);
-                    $elem->addValidator(new Zend_Validate_LessThan(array(
-                        'max' => $range->max
-                    )));
-                    $elem->addValidator(new Zend_Validate_GreaterThan(array(
-                        'min' => $range->min
-                    )));
+                    $range = $unit->getRange();
+                    $option['constraints'][]= new Assert\Range(array('min'=> $range->getMin(), 'max'=>$range->getMax()));
                 }
+                
+                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);
+
+                $elem->setData($tableField->value);
                 break;
     
             case "DATE":
     
                 // The field is a date
-                $elem = $form->create($tableField->getData()->getData(), FType\DateType::class);
+               
                 // validate the date format
-                if ($formField !== null && $formField->mask !== null) {
-                    $validator = new Zend_Validate_Date(array(
-                        'format' => $formField->mask,
-                        'locale' => 'en_EN'
+                if ($formField !== null && $formField->getMask() !== null) {
+                    $validator = new Assert\DateTime(array(//@version 3.1 symfony
+                        'format' => $formField->getMask(),
                     ));
+                    $option['format'] = $formField->getMask();
                 } else {
-                    $validator = new Zend_Validate_Date(array(
-                        'locale' => 'en_EN'
-                    ));
+                    $validator = $validator = new Assert\Date();
                 }
-                $elem->addValidator($validator);
-                $elem->setValue($tableField->value);
+                
+                $option['constraints'] = $validator;
+                
+                $elem = $form->create($tableField->getName(), FType\DateType::class, $option);
+                $elem->setData($tableField->value);
                 break;
             case 'TIME':
 
                 // validate the date format
-                if ($formField !== null && $formField->mask !== null) {
-                    $option['format'] = $formField->mask;
+                if ($formField !== null && $formField->getMask() !== null) {
+                    $option['format'] = $formField->getMask();
                 } else {
                    $option['format']='HH:mm';
                 }
                 // The field is a date
-                $elem = $form->create($tableField->getData()->getData(), FType\TimeType::class, $option);
+                $elem = $form->create($tableField->getName(), FType\TimeType::class, $option);
 
                 $elem->setData($tableField->value);
                 break;
     
             case "CODE":
-    
-                $elem = $form->create($tableField->getData()->getData(), FType\ChoiceType::class);
+                
+                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);//TODO choicetype depending the subtype, modes ....
                 $elem->setData($tableField->value);
                 break;
     
             case "BOOLEAN":
     
                 // The field is a boolean
-                $elem = $form->create($tableField->getData()->getData(), FType\CheckboxType::class);
+                $elem = $form->create($tableField->getData()->getName(), FType\CheckboxType::class, $option);
                 $elem->setData($tableField->value);
                 break;
     
             case "ARRAY":
     
-                // Build a multiple select box
-                $elem = $form->create($tableField->getData()->getData(), FType\ChoiceType::class, array('multiple'=>true));
+                // 
+                $option['entry_type'] = FType\TextType::class;
+                $option['prototype_name']='';
+                $option['allow_add']=true;
+                $elem = $form->create($tableField->getName(), FType\CollectionType::class, $option);
                 $elem->setData($tableField->value);
                 break;
     
@@ -266,7 +273,7 @@ class DataEditionController extends Controller
             default:
     
                 // Default
-                $elem = $form->create($tableField->getData()->getData(), FType\TextType::class);
+                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);
                 $elem->setData($tableField->value);
         }
     
@@ -274,35 +281,40 @@ class DataEditionController extends Controller
        // $elem->setDescription($tableField->definition);
     
         if ($isKey) {
-           $elem->setDisabled(true);
+           $elem->setAttribute('readonly', 'readonly');
         }
     
         return $elem;
     }
-    
+    /**
+     * Build and return the data form.
+     * @param DataObject $data The descriptor of the expected data.
+     * @param String $mode ('ADD' or 'EDIT')
+     * @return \Symfony\Component\Form\FormInterface
+     */
     protected function getEditDataForm($data, $mode) {
         $formBuilder = $this
 		->get('form.factory')
-  		->createNamedBuilder('edit_data_form', FormType::class);
+  		->createNamedBuilder('edit_data_form', AjaxType::class);//use in ajax often 
         
   		//FIXME : action needed ?
-		$formBuilder->setAction($this->generateUrl('ajax-validate-edit-data', array('MODE'=>$mode)));
+		$formBuilder->setAction($this->generateUrl('dataedition_validate_edit_data', array('MODE'=>$mode)));
 		
-		$formBuilder->setMethod('POST')->setAttribute('class', 'editform');
+		$formBuilder->setAttribute('class', 'editform');
 		
 
 		// Dynamically build the form
-		
 		//
 		// The key elements as labels
 		//
 		foreach ($data->infoFields as $tablefield) {
 		
 		    $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
-		
-		    $elem = $this->getFormElement($formBuilder, $tablefield, $formField, true);
-		    $elem->class = 'dataedit_key';
-		    $formBuilder->add($elem);
+		    if (null !== $formField){
+    		    $elem = $this->getFormElement($formBuilder, $tablefield, $formField, true);
+    		    $elem->setAttribute('class', 'dataedit_key');
+    		    $formBuilder->add($elem);
+		    }
 		}
 		
 		//
@@ -311,112 +323,135 @@ class DataEditionController extends Controller
 		foreach ($data->editableFields as $tablefield) {
 		
 		    // Hardcoded value : We don't edit the line number (it's a technical element)
-		    if ($tablefield->data !== "LINE_NUMBER") {
-		        $formField = $this->genericService->getTableToFormMapping($tablefield);
-		        $elem = $this->getFormElement($formField, $tablefield, $formField, false);
-		        $elem->class = 'dataedit_field';
-		        $formBuilder->add($elem);
+		    if ($tablefield->getData()->getData() !== "LINE_NUMBER") {
+
+		        $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
+		        if (null !== $formField){
+    		        $elem = $this->getFormElement($formBuilder, $tablefield, $formField, false);
+    		        $elem->setAttribute('class', 'dataedit_field');
+    		        $formBuilder->add($elem);
+		        }
 		    }
 		}
 		
 		//
 		// Add the submit element
 		//
-		 $formBuilder->add('submit', FType\SubmitType::class, array('label' => 'Submit'));
+		$formBuilder->add('submit', FType\SubmitType::class, array('label' => 'Submit'));
 
-    
+        return $formBuilder->getForm();
     }
     
     /**
      * Save the edited data in database.
      *
      * @return the HTML view
-     * @Route("/ajax-validate-edit-data")
+     * @Route("/ajax-validate-edit-data", name="dataedition_validate_edit_data")
      */
     public function ajaxValidateEditDataAction(Request $request) {
         // Get the mode
         $mode = $request->request->getAlpha('MODE');
         
+        // Get back info from the session
+        $websiteSession = $request->getSession()/*->getBag('website')*/;
+        $data = $websiteSession->get('data');
+
         // Validate the form
         $form = $this->getEditDataForm($data, $mode);
-        if (!$form->isValidPartial($_POST)) {
         
+        //$form->handleRequest($request);
+        //$form->submit($request->request->all(), false);
+        foreach($form->all() as $field) {
+            $value = $request->request->get($form->getName(),null);
+            if (null !== $value){
+                $field->submit($value);
+            }
+        }
+        $form->submit(null,true);
+        
+        if (!$form->isSubmitted()){
+            return $this->json(['success' => false, 'errorMessage'=>'not submit']);
+        }
+        
+        if (!$form->isValid()) {
+        /*
             // On réaffiche le formulaire avec les messages d'erreur
-            $this->view->form = $form;
-            $this->view->ancestors = $websiteSession->ancestors;
-            $this->view->tableFormat = $data->tableFormat;
-            $this->view->data = $data;
-            $this->view->children = $websiteSession->children;
-            $this->view->message = '';
-            $this->view->mode = $mode;
-        
-            echo '{"success":false,"errorMessage":' . json_encode($this->translator->translate("Invalid form")) . '}';
+            $view->form = $form;
+            $view->ancestors = $websiteSession->get('ancestors');
+            $view->tableFormat = $data->tableFormat;
+            $view->data = $data;
+            $view->children = $websiteSession->get('children');
+            $view->message = '';
+            $view->mode = $mode;
+        */
+
+            return $this->json(['success' => false, 'errorMessage'=> $this->get('translator')->trans("Invalid form"), 'errors'=> $form->getErrors(true,true)]);
         } else {
         
             try {
-        
+                $genericModel =$this->get('ogam.manager.generic');
                 if ($mode === 'ADD') {
                     // Insert the data
-        
+                    $values = $form->getData();
                     // join_keys values must not be erased
-                    $joinKeys = $this->genericModel->getJoinKeys($data);
-        
+                    $joinKeys = $genericModel->getJoinKeys($data);
+
                     foreach ($data->getFields() as $field) {
-                        $isNotJoinKey = !in_array($field->columnName, $joinKeys);
-        
+                        $isNotJoinKey = !in_array($field->getColumnName(), $joinKeys);
+
                         if ($isNotJoinKey) {
                             // Update the data descriptor with the values submitted
-                            $field->value = $this->_getParam($field->getName());
+                            $field->value = $request->request->get($field->getName(),null);
                         }
                     }
         
-                    $data = $this->genericModel->insertData($data);
+                    $data = $genericModel->insertData($data);
                 } else {
                     // Edit the data
-        
+                    $values = $form->getData();
                     // Update the data descriptor with the values submitted (for editable fields only)
                     foreach ($data->getEditableFields() as $field) {
-                        $field->value = $this->_getParam($field->getName());
+                        $field->value = $request->request->get($field->getName(),null);
                     }
         
-                    $this->genericModel->updateData($data);
+                    $genericModel->updateData($data);
                 }
-                echo '{"success":true, ';
-        
+                
+                $view = ['success'=>true];
+
                 // Manage redirections
-        
+
                 // Check the number of children
-                $children = $this->genericModel->getChildren($data);
-        
+                $children = $genericModel->getChildren($data);
+
                 // After a creation if no more children possible
                 if (count($children) === 0 && $mode === 'ADD') {
                     // We redirect to the parent
-                    $ancestors = $this->genericModel->getAncestors($data);
+                    $ancestors = $genericModel->getAncestors($data);
                     if (!empty($ancestors)) {
                         $ancestor = $ancestors[0];
                         $redirectURL = '#edition-edit/' . $ancestor->getId();
                     } else {
                         $redirectURL = '#edition-edit/' . $data->getId();
                     }
-                    echo '"redirectLink":' . json_encode($redirectURL) . ',';
+                    $view['redirectLink'] = $redirectURL;
                 } else {
                     // We redirect to the newly created or edited item
-                    $redirectURL = '#edition-edit/' . $data->getId();
-                    echo '"redirectLink":' . json_encode($redirectURL) . ',';
+                    $view['redirectLink'] = '#edition-edit/' . $data->getId();
                 }
-        
+
                 // Add a message
-                echo '"message":' . json_encode($this->translator->translate("Data saved"));
-                echo '}';
+                $view['message'] = $this->get('translator')->trans("Data saved");
+                return $this->json($view);
             } catch (Exception $e) {
                 $this->logger->err($e->getMessage());
         
                 if (stripos($e->getMessage(), 'SQLSTATE[23505]') !== false) {
                     // Traitement du cas d'un doublon pour PostgreSQL
-                    echo '{"success":false,"errorMessage":' . json_encode($this->translator->translate('Error inserting data duplicate key')) . '}';
+                    return $this->json(['success'=>false, 'errorMessage'=>$this->get('translator')->trans('Error inserting data duplicate key')]);
                 } else {
                     // Cas général
-                    echo '{"success":false,"errorMessage":' . json_encode($e->getMessage()) . '}';
+                    return $this->json(['success' => false, 'errorMessage' => $e->getMessage()]);
                 }
             }
         }
@@ -453,10 +488,10 @@ class DataEditionController extends Controller
 
     	// Get the labels linked to the children table (to display the links)
     	$childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->tableFormat);
-
-    	return
-    	//$this->render('OGAMBundle:DataEdition:show_add_data.html.twig', array(
-    	$this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
+    	//$bag = new NamespacedAttributeBag('website','/');
+    	//$bag->set('data',)
+    	$bag = $request->getSession();
+        $response = $this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
     		'dataId' => $data->getId(),
 			'tableFormat' => $data->tableFormat,
 			'ancestors' => $ancestors,
@@ -466,6 +501,11 @@ class DataEditionController extends Controller
 			'mode' => $mode,
 			'message' => $message,
     	));
+    	$bag->replace(array('data' => $data, 'ancestors' => $ancestors));
+
+    	return $response;
+    	//$this->render('OGAMBundle:DataEdition:show_add_data.html.twig', array(
+    	
     }
 
     /**
@@ -489,7 +529,11 @@ class DataEditionController extends Controller
         $data = $this->getDataFromRequest($request);
        
         $res = $this->getQueryService()->getEditForm($data);
-        
+        $bag = $request->getSession();
+        json_encode($data);
+        $ser = new Serializer(array(new ObjectNormalizer()));
+        $ser->normalize($data);// FIXME : treewalker force loading proxy element ...
+        $bag->set('data', $data);
     	return $this->json($res);
     }
 
@@ -532,11 +576,14 @@ class DataEditionController extends Controller
      */
     protected function json($data, $status = 200, $headers = array(), $context = array())
     {
-        if ($this->container->has('serializer')) {
-            $json = $this->container->get('serializer')->serialize($data, 'json', array_merge(array(
-                'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+        
+        if ($this->has('serializer')) {
+            //symfony 3.1 proprerty
+            $json = $this->get('serializer')->serialize($data, 'json', array_merge(array(
+                'json_encode_options' => 15 /* JsonResponse::DEFAULT_ENCODING_OPTIONS */,//symfony 3.1 proprerty
             ), $context));
-            return new JsonResponse($json, $status, $headers, true);
+            return (new JsonResponse($json, $status, $headers, true))
+            ->setContent($json);// to prior 3.1...
         }
         return new JsonResponse($data, $status, $headers);
     }

@@ -7,6 +7,8 @@ use Doctrine\ORM\EntityManager;
 use OGAMBundle\Entity\Metadata\TableFormat;
 use OGAMBundle\Entity\Metadata\TableField;
 use OGAMBundle\Entity\Metadata\FormField;
+use OGAMBundle\Repository\Metadata\DynamodeRepository;
+use OGAMBundle\Entity\Metadata\Mode;
 
 /**
  *
@@ -36,9 +38,9 @@ class GenericService {
 	private $visualisationSRS;
 	
 	/**
-	 * 
+	 * @var ConfigurationManager
 	 */
-	private $configation;
+	private $configuration;
 	/**
 	 * 
 	 */
@@ -59,13 +61,10 @@ class GenericService {
 	/**
 	 * Build an empty data object.
 	 *
-	 * @param String $schema
-	 *        	the name of the schema
-	 * @param String $format
-	 *        	the name of the format
-	 * @param String $datasetId
-	 *        	the dataset identifier
-	 * @return Application_Object_Generic_DataObject the DataObject structure (with no values set)
+	 * @param String $schema the name of the schema
+	 * @param String $format the name of the format
+	 * @param String $datasetId the dataset identifier
+	 * @return DataObject the DataObject structure (with no values set)
 	 */
 	public function buildDataObject($schema, $format, $datasetId = null) {
 	
@@ -76,7 +75,7 @@ class GenericService {
 	
 		// Get the description of the table
 		$data->tableFormat = $this->metadataModel->getRepository(TableFormat::class)->findOneBy(array('schema'=> $schema,'format'=> $format));
-	
+
 		// Get all the description of the Table Fields corresponding to the format
 		$tableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $format, $datasetId);
 	
@@ -92,6 +91,81 @@ class GenericService {
 		}
 	
 		return $data;
+	}
+	
+	/**
+	 * Return an Array object corresponding to a SQL string.
+	 *
+	 * Example : {"Boynes", "Ascoux"} => Array ( [0] => Boynes, [1] => Ascoux )
+	 *
+	 * @param String $value
+	 *        	an array of values.
+	 * @return the String representation of the array
+	 */
+	public function stringToArray($value) {
+	    $values = str_replace("{", "", $value);
+	    $values = str_replace("}", "", $values);
+	    $values = str_replace('"', "", $values);
+	    $values = trim($values);
+	    $valuesArray = explode(",", $values);
+	
+	    foreach ($valuesArray as $v) {
+	        $v = trim($v);
+	    }
+	
+	    return $valuesArray;
+	}
+	/**
+	 * Find the labels corresponding to the code value.
+	 *
+	 * @param Field $tableField a table field descriptor
+	 * @param [String|Array] $value a value
+	 * @return String or Array The labels
+	 */
+	public function getValueLabel($tableField, $value) {
+	
+	    // If empty, no label
+	    if ($value === null || $value === '') {
+	        return "";
+	    }
+	
+	    // By default we keep the value as a label
+	    $valueLabel = $value;
+	
+	    // For the CODE and ARRAY fields, we get the labels in the metadata
+	    $unit = $tableField->getUnit();
+	    if ($unit->getType() === "CODE" || $unit->getType() === "ARRAY") {
+	
+	        // Get the modes => Label
+	        if ($unit->getSubtype() === "DYNAMIC") {
+	            $modes = $this->metadataModel->getRepository(DynamodeRepository::class)->findBy(array('unit'=>$unit, 'mode'=>$value));
+	        } else if ($unit->getSubtype() === "TREE") {
+	            $modes = $this->metadataModel->getTreeLabels($tableField->unit, $value);
+	        } else if ($unit->getSubtype() === "TAXREF") {
+	            $modes = $this->metadataModel->getTaxrefLabels($tableField->unit, $value);
+	        } else {
+	            $modes =  $this->metadataModel->getRepository(Mode::class)->findBy(array('unit'=>$unit, 'mode'=>$value));
+	        }
+	
+	        // Populate the labels of the currently selected values
+	        if (is_array($value)) {
+	            $labels = array();
+	            if (isset($value)) {
+	                foreach ($value as $mode) {
+	                    if (isset($modes[$mode])) {
+	                        $labels[] = $modes[$mode];
+	                    }
+	                }
+	                $valueLabel = $labels;
+	            }
+	        } else {
+	            if (isset($modes[$value])) {
+	                $valueLabel = $modes[$value];
+	            }
+	        }
+	    }
+	
+	    return $valueLabel;
 	}
 	
 	/**
@@ -147,15 +221,15 @@ class GenericService {
 		);
 		$options = array_replace($defaults, $options);
 	
-		$fieldName = $field->getformat() . "." . $field->getColumnName();
-	
-		if ($field->getData()->getUnit()->getType() === "DATE") {
-			if ($field->unit === "DateTime") {
+		$fieldName = $field->getFormat()->getFormat() . '.' . $field->getColumnName();
+	    $unit =$field->getData()->getUnit();
+		if ($unit->getType() === "DATE") {
+			if ($unit->getUnit() === "DateTime") {
 				$sql .= "to_char(" . $fieldName . ", '" . $options['datetime_format'] . "') as " . $field->getName();
 			} else {
 				$sql .= "to_char(" . $fieldName . ", '" . $options['date_format'] . "') as " . $field->getName();
 			}
-		} else if ($field->type === "GEOM") {
+		} else if ($unit->getType() === "GEOM") {
 			// Location is used for visualisation - don't change it
 			$sql .= "st_asText(st_transform(" . $fieldName . "," . $this->visualisationSRS . ")) as location, ";
 			// Special case for THE_GEOM
@@ -171,7 +245,7 @@ class GenericService {
 			$sql .= "st_ymax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_y_max, ';
 			$sql .= "st_xmin(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_min, ';
 			$sql .= "st_xmax(box2d(st_transform(" . $fieldName . "," . $this->visualisationSRS . '))) as ' . $field->getName() . '_x_max ';
-		} else if ($field->type === 'TIME') {
+		} else if ($unit->getType() === 'TIME') {
 			$sql .= "to_char(" . $fieldName . ", '" . $options['time_format'] . "') as " . $field->getName();
 		} else {
 			$sql .= $fieldName . " as " . $field->getName();
@@ -215,10 +289,10 @@ class GenericService {
 		$sql = "";
 	
 		$value = $tableField->value;
-		$column = $tableField->getFormat() . "." . $tableField->getColumnName();
+		$column = $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName();
 	
 		// Set the projection for the geometries in this schema
-		$configuration = $this->configation;
+		$configuration = $this->configuration;
 		if ($schemaCode === 'RAW_DATA') {
 			$databaseSRS = $configuration->getConfig('srs_raw_data', '4326');
 		} else if ($schemaCode === 'HARMONIZED_DATA') {
@@ -228,10 +302,10 @@ class GenericService {
 		}
 		//TODO use or implement queryBuilder ?
 		//$builder = $this->metadataModel->getConnection()->getExpressionBuilder();
-
+        $unit = $tableField->getData()->getUnit();
 		if ($value !== null && $value !== '' && $value !== array()) {
 	
-			switch ($tableField->type) {
+			switch ($unit->getType()) {
 	
 				case "BOOLEAN":
 					// Value is 1 or 0, stored in database as a char(1)
@@ -313,7 +387,7 @@ class GenericService {
 				case "ARRAY":
 	
 					// Case of a code in a generic TREE
-					if ($tableField->subtype === 'TREE') {
+					if ($unit->getSubtype() === 'TREE') {
 	
 						if (is_array($value)) {
 							$value = $value[0];
@@ -323,13 +397,13 @@ class GenericService {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
-							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
+							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($unit, $value, 0);
 	
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeCodes);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
-					} else if ($tableField->subtype === 'TAXREF') {
+					} else if ($unit->getSubtype() === 'TAXREF') {
 						// Case of a code in a Taxonomic referential
 						if (is_array($value)) {
 							$value = $value[0];
@@ -339,7 +413,7 @@ class GenericService {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected taxon
-							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($tableField->unit, $value, 0);
+							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($unit, $value, 0);
 	
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeCodes);
@@ -369,7 +443,7 @@ class GenericService {
 				case "CODE":
 	
 					// Case of a code in a generic TREE
-					if ($tableField->subtype === 'TREE') {
+					if ($unit->getSubtype() === 'TREE') {
 	
 						if (is_array($value)) {
 							$value = $value[0];
@@ -379,7 +453,7 @@ class GenericService {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
-							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($tableField->unit, $value, 0);
+							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($unit, $value, 0);
 	
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
@@ -389,7 +463,7 @@ class GenericService {
 	
 							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
 						}
-					} else if ($tableField->subtype === 'TAXREF') {
+					} else if ($unit->getSubtype() === 'TAXREF') {
 						// Case of a code in a Taxonomic referential
 						if (is_array($value)) {
 							$value = $value[0];
@@ -400,7 +474,7 @@ class GenericService {
 						} else {
 	
 							// Get all the children of a selected taxon
-							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($tableField->unit, $value, 0);
+							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($unit, $value, 0);
 	
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
@@ -672,6 +746,103 @@ class GenericService {
 		}
 	
 		return $sql;
+	}
+	
+	/**
+	 * Return the SQL String representation of an array.
+	 *
+	 * Example : Array ( [0] => Boynes, [1] => Ascoux ) => {"Boynes", "Ascoux"}
+	 *
+	 * @param Array[String] $value
+	 *        	an array of values.
+	 * @return the String representation of the array
+	 */
+	private function _arrayToSQLString($arrayValues) {
+	    $string = "'{";
+	
+	    if (is_array($arrayValues)) {
+	        foreach ($arrayValues as $value) {
+	            $string .= '"' . $value . '",';
+	        }
+	        if (!empty($arrayValues)) {
+	            $string = substr($string, 0, -1); // Remove last comma
+	        }
+	    } else {
+	        $string .= $arrayValues;
+	    }
+	    $string .= "}'";
+	
+	    return $string;
+	}
+	
+
+	/**
+	 * Build the update part of a SQL request corresponding to a table field.
+	 *
+	 * @param string $schema the schema.
+	 * @param TableField $tableField a criteria.
+	 * @return String the update part of the SQL query (ex : BASAL_AREA = 6.05)
+	 */
+	public function buildSQLValueItem($schema, $tableField) {
+	    $sql = "";
+	
+	    $value = $tableField->value;
+	    //$column = $tableField->getColumnName();
+	
+	    // Set the projection for the geometries in this schema
+	    $configuration = $this->configuration;
+	    if ($schema === 'RAW_DATA') {
+	        $databaseSRS = $configuration->getConfig('srs_raw_data', '4326');
+	    } else if ($schema === 'HARMONIZED_DATA') {
+	        $databaseSRS = $configuration->getConfig('srs_harmonized_data', '3857');
+	    } else {
+	        throw new \InvalidArgumentException('Invalid schema code.');
+	    }
+	
+	    switch ($tableField->getData()->getUnit()->getType()) {
+	
+	        case "BOOLEAN":
+	            // Value is 1 or 0, stored in database as a char(1)
+	            $sql = ($value == true ? '1' : '0');
+	            break;
+	        case "DATE":
+	            if ($value === "") {
+	                $sql = "NULL";
+	            } else {
+	                $sql = " to_date('" . $value . "', 'YYYY/MM/DD')";
+	            }
+	            break;
+	        case "INTEGER":
+	        case "NUMERIC":
+	        case "RANGE":
+	            if ($value === "") {
+	                $sql = "NULL";
+	            } else {
+	                $value = str_replace(",", ".", $value);
+	                $sql = $value;
+	            }
+	            break;
+	        case "ARRAY":
+	            $sql = $this->_arrayToSQLString($value);
+	            break;
+	        case "CODE":
+	            $sql = "'" . $value . "'";
+	            break;
+	        case "GEOM":
+	            if ($value === "") {
+	                $sql = "NULL";
+	            } else {
+	                $sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . ")";
+	            }
+	            break;
+	        case "STRING":
+	        default:
+	            // Single value
+	            $sql = "'" . $value . "'";
+	            break;
+	    }
+	
+	    return $sql;
 	}
 	
 	/**
