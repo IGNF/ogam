@@ -141,12 +141,63 @@ class DataEditionController extends Controller
      * Delete a data.
      *
      * @return the view.
-     * @Route("/ajax-delete-data")
+     * @Route("/ajax-delete-data/{id}", requirements={"id"= ".*"})
      */
-    public function ajaxDeleteDataAction() {
-    	return $this->render('OGAMBundle:DataEdition:ajax_delete_data.json.twig', array(
-    			// ...
-    	));
+    public function ajaxDeleteDataAction(Request $request) {
+        
+        $data = $this->getDataFromRequest($request);
+        $genericModel = $this->get('ogam.manager.generic');
+        
+        // Complete the data object with the existing values from the database.
+        $data = $genericModel->getDatum($data);
+        
+        // Check if the data has children
+        $children = $genericModel->getChildren($data);
+        
+        // Count the number of existing children (not only the table definitions)
+        $childrenCount = 0;
+        foreach ($children as $child) {
+            $childrenCount += count($child);
+        }
+        
+        // Get the ancestors
+        $ancestors = $genericModel->getAncestors($data);
+        
+        if ($childrenCount > 0) {
+            // Redirect to the index page
+            $result = ['success'=>false, 'errorMessage'=> $this->get('translator')->trans('Item cannot be deleted because it has children')];
+        } else {
+        
+            // Delete the images linked to the data if present
+            foreach ($data->getFields() as $field) {
+                if ($field->getData()->getUnit()->getType() === "IMAGE" && $field->value !== "") {
+                    $uploadDir = $this->get('ogam.configuration_manager')->getConfig('image_upload_dir', '/var/www/html/upload/images');
+                    $dir = $uploadDir . "/" . $data->getId() . "/" . $field->getName();
+                    $this->deleteDirectory($dir);
+                }
+            }
+        
+            // Delete the data
+        
+            try {
+                $genericModel->deleteData($data);
+            } catch (\Exception $e) {
+                $this->logger->err($e->getMessage());
+                $result = ['success'=>false, 'errorMessage'=> $this->get('translator')->trans('Error while deleting data')];
+            }
+        
+            $result = ['success' =>true];
+        
+            // If the data has an ancestor, we redirect to this ancestor
+            if (!empty($ancestors)) {
+                $parent = $ancestors[0];
+                $redirectURL = $this->get('ogam.helper.editlink')->generateEditLink($parent)['url'];
+                $result['redirectLink'] = $redirectURL;
+            }
+        
+            $result['message'] = $this->get('translator')->trans('Data deleted');
+        }
+    	return $this->json($result);
     }
     
     /**
