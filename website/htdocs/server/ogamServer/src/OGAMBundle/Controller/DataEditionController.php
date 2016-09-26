@@ -219,9 +219,9 @@ class DataEditionController extends Controller
                
                 // validate the date format
                 if ($formField !== null && $formField->getMask() !== null) {
-                    $validator = new Assert\DateTime(array(//@version 3.1 symfony
+                    $validator = new Assert\DateTime(/*array(//@version 3.1 symfony
                         'format' => $formField->getMask(),
-                    ));
+                    )*/);
                     $option['format'] = $formField->getMask();
                 } else {
                     $validator = $validator = new Assert\Date();
@@ -236,9 +236,9 @@ class DataEditionController extends Controller
 
                 // validate the date format
                 if ($formField !== null && $formField->getMask() !== null) {
-                    $option['format'] = $formField->getMask();
+                //    $option['format'] = $formField->getMask();//TODO: mask ? symfony3.1 ?
                 } else {
-                   $option['format']='HH:mm';
+              //     $option['format']='HH:mm';
                 }
                 // The field is a date
                 $elem = $form->create($tableField->getName(), FType\TimeType::class, $option);

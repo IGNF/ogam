@@ -164,7 +164,7 @@ class GenericManager {
 	
 			// Fill the PK values (we hope that the child contain the fields of the parent pk)
 			foreach ($parent->infoFields as $key) {
-				$fieldName = $data->tableFormat->getFormat() . '__' . $key->getData();
+				$fieldName = $data->tableFormat->getFormat() . '__' . $key->getData()->getData();
 				$fields = $data->getFields();
 				if (array_key_exists($fieldName, $fields)) {
 					$keyField = $fields[$fieldName];
@@ -288,7 +288,7 @@ class GenericManager {
 	
 	            $field->value = $row[strtolower($field->getName())];
 	
-	            if ($field->type === "ARRAY") {
+	            if ($field->getData()->getUnit()->getType() === "ARRAY") {
 	                // For array field we transform the value in a array object
 	                $field->value = $this->genericService->stringToArray($field->value);
 	            }
