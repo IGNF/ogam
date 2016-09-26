@@ -3,10 +3,17 @@
 namespace OGAMBundle\Services;
 
 use OGAMBundle\Entity\Generic\DataObject;
-use Doctrine\ORM\EntityManager;
 use OGAMBundle\Entity\Metadata\TableFormat;
 use OGAMBundle\Entity\Metadata\TableField;
 use OGAMBundle\Entity\Metadata\FormField;
+use OGAMBundle\OGAMBundle;
+use OGAMBundle\Entity\Metadata\TableTree;
+use OGAMBundle\Entity\Generic\Query\Field;
+use OGAMBundle\Entity\Generic\FieldMapping;
+use OGAMBundle\Entity\Generic\GenericFieldMapping;
+use OGAMBundle\Entity\Generic\GenericField;
+use OGAMBundle\Entity\Generic\GenericFieldMappingSet;
+use OGAMBundle\Entity\Generic\QueryForm;
 
 /**
  *
@@ -22,6 +29,13 @@ class GenericService {
 	 * @var Logger
 	 */
 	private $logger;
+	
+	/**
+	 * The locale.
+	 *
+	 * @var locale
+	 */
+	private $locale;
 	
 	/**
 	 * The models.
@@ -42,10 +56,13 @@ class GenericService {
 	/**
 	 * 
 	 */
-	function __construct($em, $configuration, $logger)
+	function __construct($em, $configuration, $logger, $locale)
 	{
 		// Initialise the logger
 		$this->logger = $logger;
+		
+		// Initialise the locale
+		$this->locale = $locale;
 		
 		// Initialise the metadata models
 		$this->metadataModel = $em;
@@ -213,12 +230,12 @@ class GenericService {
 	 */
 	public function buildWhereItem($schemaCode, $tableField, $exact = false) {
 		$sql = "";
-	
+
 		$value = $tableField->value;
-		$column = $tableField->getFormat() . "." . $tableField->getColumnName();
+		$column = $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName();
 	
 		// Set the projection for the geometries in this schema
-		$configuration = $this->configation;
+		$configuration = $this->configuration;
 		if ($schemaCode === 'RAW_DATA') {
 			$databaseSRS = $configuration->getConfig('srs_raw_data', '4326');
 		} else if ($schemaCode === 'HARMONIZED_DATA') {
@@ -704,5 +721,167 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    }
 	
 	    return $formField;
+	}
+	
+	/**
+	 * Return the queryForm fields mappings in the provided schema
+	 * 
+	 * @param string $schema
+	 * @param \OGAMBundle\Entity\Generic\QueryForm $queryForm
+	 *        	the list of query form fields
+	 * @return \OGAMBundle\Entity\Generic\GenericFieldMappingSet
+	 */
+	public function getQueryFormFieldsMappings($schema, $queryForm) {
+	    $fieldsMappings = [];
+	    $fieldsMappings = $this->_getFieldsMappings($schema, $queryForm->getCriterias());
+	    $fieldsMappings = array_merge($fieldsMappings, $this->_getFieldsMappings($schema, $queryForm->getColumns()));
+	    return new GenericFieldMappingSet($fieldsMappings, $schema);
+	}
+	
+	/**
+	 * Return the fields mappings in the provided schema
+	 * 
+	 * @param string $schema
+	 * @param [\OGAMBundle\Entity\Generic\GenericField] $formFields
+	 * @return \OGAMBundle\Entity\Generic\GenericFieldMapping[]
+	 */
+	private function _getFieldsMappings($schema, $formFields) {
+	    $fieldsMappings = [];
+	    foreach ($formFields as $formField) {
+	        // Get the description of the corresponding table field
+	        $tableField = $this->metadataModel->getRepository(TableField::class)->getFormToTableMapping($schema, $formField, $this->locale);
+	        $dstField = new GenericField($tableField->getFormat()->getFormat(), $tableField->getData()->getData());
+	        $dstField->setMetadata($tableField, $this->locale);
+	
+	        // Create the field mapping
+	        $fieldMapping = new GenericFieldMapping($formField, $dstField, $schema);
+	        $fieldsMappings[] = $fieldMapping;
+	    }
+	    
+	    return $fieldsMappings;
+	}
+
+	
+	/**
+	 * Get the hierarchy of tables needed for a data object.
+	 *
+	 * @param String $schema
+	 *        	the schema
+	 * @param OgamBundle\Entity\Generic\GenericFieldMapping $fieldsMappings
+	 *        	the fields mappings
+	 * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
+	 */
+	public function getAllFormats($schema, $fieldsMappings) {
+	    $this->logger->info('getAllFormats : ' . $schema);
+	
+	    // Prepare the list of needed tables
+	    $tables = array();
+	    foreach ($fieldsMappings as $fieldMapping) {
+	        $TableFormat = $fieldMapping->getDstField()->getFormat();
+	        if (!array_key_exists($TableFormat, $tables)) {
+	
+	            // Get the ancestors of the table
+	            $ancestors = $this->metadataModel->getRepository(TableTree::class)->getAncestors($TableFormat, $schema);
+	
+	            // Reverse the order of the list and store by indexing with the table name
+	            // The root table (LOCATION) should appear first
+	            $ancestors = array_reverse($ancestors);
+	            foreach ($ancestors as $ancestor) {
+	                $tables[$ancestor->getTableFormat()->getFormat()] = $ancestor;
+	            }
+	        }
+	    }
+	
+	    return $tables;
+	}
+	
+	/**
+	 * Generate the FROM clause of the SQL request corresponding to a list of parameters.
+	 *
+	 * @param String $schema
+	 *        	the schema
+	 * @param OgamBundle\Entity\Generic\GenericFieldMappingSet $mappingSet
+	 *        	the field mapping set
+	 * @return String a SQL request
+	 */
+	public function generateSQLFromRequest($schema, GenericFieldMappingSet $mappingSet) {
+	    $this->logger->debug('generateSQLFromRequest');
+	
+	    //
+	    // Prepare the FROM clause
+	    //
+	
+	    // Prepare the list of needed tables
+	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingSet());
+	
+	    // Add the root table;
+	    $rootTable = array_shift($tables);
+	    $from = " FROM " . $rootTable->getTableFormat()->getTableName() . " " . $rootTable->getTableFormat()->getFormat();
+	
+	    // Add the joined tables
+	    $i = 0;
+	    foreach ($tables as $tableTreeData) {
+	        $i ++;
+	
+	        // Join the table
+	        $from .= " JOIN " . $tableTreeData->getTableFormat()->getTableName() . " " . $tableTreeData->getTableFormat()->getFormat() . " on (";
+	
+	        // Add the join keys
+	        $keys = $tableTreeData->getJoinKeys();
+	        foreach ($keys as $key) {
+	            $from .= $tableTreeData->getTableFormat()->getFormat() . "." . trim($key) . " = " . $tableTreeData->getParentTableFormat()->getFormat() . "." . trim($key) . " AND ";
+	        }
+	        $from = substr($from, 0, -5);
+	        $from .= ") ";
+	    }
+	
+	    return $from;
+	}
+	
+	/**
+	 * Generate the WHERE clause of the SQL request corresponding to a list of parameters.
+	 *
+	 * @param String $schema
+	 *        	the schema
+	 * @param OgamBundle\Entity\Generic\QueryForm $queryForm
+	 *        	the query form
+	 * @param OgamBundle\Entity\Generic\GenericFieldMappingSet $mappingSet
+	 *        	the field mapping set
+	 * @return String a SQL request
+	 */
+	public function generateSQLWhereRequest($schemaCode, QueryForm $queryForm, GenericFieldMappingSet $mappingSet) {
+	    $this->logger->debug('generateSQLWhereRequest');
+	
+	    // Prepare the list of needed tables
+	    $tables = $this->getAllFormats($schemaCode, $mappingSet->getFieldMappingSet());
+	
+	    // Add the root table;
+	    $rootTable = array_shift($tables);
+	
+	    // Get the root table fields
+	    $rootTableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schemaCode, $rootTable->getTableFormat()->getFormat(), null, $this->locale);
+	    $hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
+	
+	    //
+	    // Prepare the WHERE clause
+	    //
+	    $where = " WHERE (1 = 1)";
+	    foreach ($queryForm->getCriterias() as $formField) {
+	        $tableField = $mappingSet->getFieldMapping($formField)->getDstField()->getMetadata();
+	        $where .= $this->buildWhereItem($schemaCode, $tableField, false);
+	    }
+	
+	    // Right management
+	    // Check the provider id of the logged user
+	    /* TODO: $userSession = new Zend_Session_Namespace('user');
+	    if (!empty($userSession->user)) {
+	        $providerId = $userSession->user->provider->id;
+	        if (!$userSession->user->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
+	            $where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
+	        }
+	    }*/
+	
+	    // Return the completed SQL request
+	    return $where;
 	}
 }

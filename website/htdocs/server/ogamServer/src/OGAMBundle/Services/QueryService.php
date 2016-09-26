@@ -7,6 +7,8 @@ use OGAMBundle\Entity\Metadata\FormFormat;
 use OGAMBundle\Entity\Metadata\FormField;
 use OGAMBundle\Entity\Metadata\TableField;
 use OGAMBundle\Entity\Metadata\Unit;
+use OGAMBundle\Entity\Mapping\ResultLocation;
+use OGAMBundle\Entity\Metadata\TableFormat;
 
 /**
  *
@@ -111,6 +113,43 @@ class QueryService {
 			// Otherwise we get all the fields available with their default value
 			 return $this->metadataModel->getRepository(FormFormat::class)->getFormFormats($datasetId, $this->schema, $this->locale);
 		}
+	}
+	
+	/**
+	 * Copy the locations of the result in a temporary table.
+	 *
+	 * @param \OGAMBundle\Entity\Generic\QueryForm $queryForm
+	 *        	the form request object
+	 */
+	public function prepareResultLocations($queryForm) {
+	    $this->logger->debug('prepareResultLocations');
+	
+	    // Transform the form request object into a table data object
+	    //$queryObject = $this->genericService->addMetadataToQueryForm($this->schema, $queryForm, $this->locale);
+	    $mappingSet = $this->genericService->getQueryFormFieldsMappings($this->schema, $queryForm);
+
+        // Configure the projection systems
+        $visualisationSRS = $this->configuration->getConfig('srs_visualisation', '3857');
+        $visualisationSRS = '3857';
+
+        // Generate the SQL Request
+        $from = $this->genericService->generateSQLFromRequest($this->schema, $mappingSet);
+        $where = $this->genericService->generateSQLWhereRequest($this->schema, $queryForm, $mappingSet);
+
+        // Clean previously stored results
+        $sessionId = session_id();
+        $this->logger->debug('SessionId : ' . $sessionId);
+        //TODO: get the right entityManager (mappingModel)
+        $resultLocationModel = $this->metadataModel->getRepository(ResultLocation::class);
+        $resultLocationModel->cleanPreviousResults($sessionId);
+
+        // Identify the field carrying the location information
+        $tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingSet());
+        $locationField = $this->metadataModel->getRepository(TableField::class)->getGeometryField($this->schema, array_keys($tables), $this->locale);
+        $locationTableInfo = $this->metadataModel->getRepository(TableFormat::class)->getTableFormat($this->schema, $locationField->getFormat()->getFormat(), $this->locale);
+
+        // Run the request to store a temporary result table (for the web mapping)
+        $resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
 	}
 	
 	/**
@@ -238,76 +277,4 @@ class QueryService {
 	    
 	    return $field;
 	}
-	
-	/**
-	 * TODO: AJAX function : Get the predefined request.
-	 *
-	 * @param String $requestName
-	 *        	The request name
-	 * @return Forms
-	 *
-	private function _getPredefinedRequest($requestName) {
-		$this->logger->debug('_getPredefinedRequest');
-	
-		// Get the saved values for the forms
-		$savedRequest = $this->predefinedRequestModel->getPredefinedRequest($requestName);
-	
-		// Get the default values for the forms
-		$forms = $this->metadataModel->getForms($savedRequest->datasetID, $savedRequest->schemaCode);
-		foreach ($forms as $form) {
-			// Fill each form with the list of criterias and results
-			$form->criteriaList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'criteria');
-			$form->resultsList = $this->metadataModel->getFormFields($savedRequest->datasetID, $form->format, $this->schema, 'result');
-		}
-	
-		// Update the default values with the saved values.
-		foreach ($forms as $form) {
-			foreach ($form->criteriaList as $criteria) {
-				$criteria->isDefaultCriteria = '0';
-				$criteria->defaultValue = '';
-	
-				if (array_key_exists($criteria->getName(), $savedRequest->criteriaList)) {
-					$criteria->isDefaultCriteria = '1';
-					$criteria->defaultValue = $savedRequest->criteriaList[$criteria->getName()]->value;
-				}
-			}
-	
-			foreach ($form->resultsList as $result) {
-				$result->isDefaultResult = '0';
-	
-				if (array_key_exists($result->getName(), $savedRequest->resultsList)) {
-					$result->isDefaultResult = '1';
-				}
-			}
-		}
-	
-		// return the forms
-		return $forms;
-	}
-	
-	/**
-	 * TODO: Generate the JSON structure corresponding to a list of criteria and columns.
-	 *
-	 * @param Array[FormFormat] $forms
-	 *        	the list of FormFormat elements
-	 *
-	private function _generateQueryFormsJSON($forms) {
-		$json = '{"success":true,"data":[';
-	
-		foreach ($forms as $form) {
-			// Add the criteria
-			$json .= '{' . $form->toJSON() . ',"criteria":[';
-			$json .= $this->_generateQueryFormCriteriaJSON($form->criteriaList);
-			// Add the columns
-			$json .= '],"columns":[';
-			$json .= $this->_generateQueryFormColumnsJSON($form->resultsList);
-			$json .= ']},';
-		}
-		if (count($forms) > 0) {
-			$json = substr($json, 0, -1);
-		}
-		$json = $json . ']}';
-	
-		return $json;
-	}*/
 }

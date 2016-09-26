@@ -26,8 +26,8 @@ class QueryForm {
 	private $columns = array();
 
 	/**
-	 *
-	 * @return the datasetId
+	 * Return the dataset Id
+	 * @return string the dataset Id
 	 */
 	public function getDatasetId()
 	{
@@ -56,8 +56,6 @@ class QueryForm {
 	 */
 	public function addCriteria($format, $data, $value) {
 		$formField = new GenericField($format, $data);
-		$formField->setFormat($format);
-		$formField->setData($data);
 		$formField->setValue($value);
 		$this->criterias[] = $formField;
 	}
@@ -72,8 +70,6 @@ class QueryForm {
 	 */
 	public function addColumn($format, $data) {
 		$formField = new GenericField($format, $data);
-		$formField->setFormat($format);
-		$formField->setData($data);
 		$this->columns[] = $formField;
 	}
 

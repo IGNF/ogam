@@ -79,4 +79,9 @@ class QueryManager
     {
         return $this->queryService->getQueryForms($datasetId, $requestName);
     }
+
+    public function prepareResultLocations($formQuery)
+    {
+        $this->queryService->prepareResultLocations($formQuery);
+    }
 }

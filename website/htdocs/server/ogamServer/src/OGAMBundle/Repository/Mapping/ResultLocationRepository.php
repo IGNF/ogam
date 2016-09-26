@@ -1,8 +1,8 @@
 <?php
-
 namespace OGAMBundle\Repository\Mapping;
 
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\NoResultException;
 
 /**
  * ResultLocationRepository
@@ -12,17 +12,216 @@ use Doctrine\ORM\Query\ResultSetMapping;
  */
 class ResultLocationRepository extends \Doctrine\ORM\EntityRepository
 {
-	/**
-	 * Clean the previous results
-	 * @param String $session_id
-	 *        	the session id
-	 */
-	function cleanPreviousResults($session_id){
-		$qm = $this->getEntityManager();
-		$sql = "DELETE FROM result_location WHERE session_id = ? OR (_creationdt < CURRENT_TIMESTAMP - INTERVAL '2 days')";
-		$query = $qm->createNativeQuery($sql, new ResultSetMapping());
-		$query->execute(array(
-				$session_id
-		));
-	}
+
+    /**
+     * Clean the previous results
+     *
+     * @param String $session_id
+     *            the session id
+     */
+    function cleanPreviousResults($session_id)
+    {
+        $qm = $this->getEntityManager();
+        $sql = "DELETE FROM result_location WHERE session_id = ? OR (_creationdt < CURRENT_TIMESTAMP - INTERVAL '2 days')";
+        $query = $qm->createNativeQuery($sql, new ResultSetMapping());
+        $query->execute(array(
+            $session_id
+        ));
+    }
+
+    /**
+     * Populate the result location table.
+     *
+     * @param String $sqlWhere
+     *            the FROM / WHERE part of the SQL Request
+     * @param String $sessionId
+     *            the user session id.
+     * @param Application_Object_Metadata_TableField $locationField
+     *            the location field.
+     * @param Application_Object_Metadata_TableFormat $locationTable
+     *            the location table
+     * @param String $visualisationSRS
+     *            the projection system used for visualisation.
+     */
+    public function fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS)
+    {
+        // $time_start = microtime(true);
+        if ($this->_isLocalDB()) {
+            // We can use INSERT ... SELECT statement only if we are exactly on the same server
+            $this->_fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
+        } else {
+            // The "remote" method is 2x or 3x more time consuming
+            $this->_fillLocationResultRemote($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
+        }
+        
+        // $time_end = microtime(true);
+        // $this->logger->info('DurÃ©e : ' . ($time_end - $time_start) . " secondes");
+    }
+
+    /**
+     * TODO: Indicate if the raw database is on a remote server.
+     *
+     * @return Boolean true if the raw database is on a local server
+     */
+      private function _isLocalDB()
+      {
+          return true;
+      /*$rawdb = Zend_Registry::get('raw_db');
+     
+      $mappingConfig = $this->db->getConfig();
+      $rawConfig = $rawdb->getConfig();
+     
+      // We consider that the database is remote if any of the main config options is different
+      $isLocal = true;
+      $isLocal = $isLocal && ($mappingConfig['host'] === $rawConfig['host']);
+      $isLocal = $isLocal && ($mappingConfig['port'] === $rawConfig['port']);
+      $isLocal = $isLocal && ($mappingConfig['dbname'] === $rawConfig['dbname']);
+      $isLocal = $isLocal && ($mappingConfig['username'] === $rawConfig['username']);
+     
+      $this->logger->info('isLocal : ' . ($isLocal ? "yes" : "no"));
+     
+      return $isLocal;*/
+      }
+     
+    
+    /**
+     * Populate the result location table.
+     *
+     * @param String $sqlWhere
+     *            the FROM / WHERE part of the SQL Request
+     * @param String $sessionId
+     *            the user session id.
+     * @param Application_Object_Metadata_TableField $locationField
+     *            the location field.
+     * @param Application_Object_Metadata_TableFormat $locationTable
+     *            the location table
+     * @param String $visualisationSRS
+     *            the projection system used for visualisation.
+     */
+    private function _fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS)
+    {
+        // TODO: $this->db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
+        $qm = $this->getEntityManager();
+        
+        if ($sqlWhere != null) {
+            $keys = $locationTable->getPrimaryKeys();
+            
+            $request = " INSERT INTO result_location (session_id, format, pk, the_geom ) ";
+            
+            // L'identifiant de session de l'utilisateur
+            $request .= " SELECT DISTINCT '" . $sessionId . "', ";
+            
+            // Le nom de la table portant l'info géométrique
+            $request .= "'" . $locationTable->getFormat() . "', ";
+            
+            // Ajout des clés primaires de la table
+            $keyColumns = "";
+            foreach ($keys as $key) {
+                $keyColumns .= $locationTable->getFormat() . "." . $key . " || '__' || ";
+            }
+            if ($keyColumns != "") {
+                $keyColumns = substr($keyColumns, 0, - 11);
+            }
+            $request .= $keyColumns . ", ";
+            
+            // Ajout de la colonne portant la géométrie
+            $request .= " st_transform(" . $locationTable->getFormat() . "." . $locationField->getColumnName() . "," . $visualisationSRS . ") as the_geom ";
+            $request .= $sqlWhere;
+            
+            $query = $qm->createNativeQuery($request, new ResultSetMapping());
+            $query->execute();
+        }
+    }
+
+    /**
+     * TODO: Populate the result location table.
+     *
+     * Used when the raw data schema is in another database.
+     *
+     * @param String $sqlWhere
+     *            the FROM / WHERE part of the SQL Request
+     * @param String $sessionId
+     *            the user session id.
+     * @param Application_Object_Metadata_TableField $locationField
+     *            the location field.
+     * @param Application_Object_Metadata_TableFormat $locationTable
+     *            the location table
+     * @param String $visualisationSRS
+     *            the projection system used for visualisation.
+     *            
+     *            private function _fillLocationResultRemote($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS)
+     *            {
+     *            $this->db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
+     *            
+     *            $rawdb = Zend_Registry::get('raw_db');
+     *            $rawdb->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
+     *            
+     *            if ($sqlWhere != null) {
+     *            $keys = $locationTable->primaryKeys;
+     *            
+     *            // L'identifiant de session de l'utilisateur
+     *            $select = " SELECT DISTINCT ";
+     *            
+     *            // Le nom de la table portant l'info gÃ©omÃ©trique
+     *            $select .= "'" . $locationTable->format . "' as format, ";
+     *            
+     *            // Ajout des clÃ©s primaires de la table
+     *            $keyColumns = "";
+     *            foreach ($keys as $key) {
+     *            $keyColumns .= $locationTable->format . "." . $key . " || '__' || ";
+     *            }
+     *            if ($keyColumns != "") {
+     *            $keyColumns = substr($keyColumns, 0, - 11);
+     *            }
+     *            $select .= $keyColumns . " as pk, ";
+     *            
+     *            // Ajout de la colonne portant la gÃ©omÃ©trie
+     *            $select .= " st_transform(" . $locationTable->format . "." . $locationField->columnName . "," . $visualisationSRS . ") as the_geom ";
+     *            $select .= $sqlWhere;
+     *            
+     *            $this->logger->info('fillLocationResultRemote : ' . $select);
+     *            
+     *            $query = $rawdb->prepare($select);
+     *            $query->execute();
+     *            
+     *            $insert = " INSERT INTO result_location (session_id, format, pk, the_geom ) ";
+     *            $insert .= " VALUES (?, ?, ?, ?)";
+     *            
+     *            $queryIns = $this->db->prepare($insert);
+     *            
+     *            foreach ($query->fetchAll() as $row) {
+     *            $queryIns->execute(array(
+     *            $sessionId,
+     *            $row['format'],
+     *            $row['pk'],
+     *            $row['the_geom']
+     *            ));
+     *            }
+     *            }
+     *            }
+     */
+    
+    /**
+     * Returns the bounding box that bounds geometries of results table.
+     *
+     * @param
+     *            String the user session id.
+     * @param
+     *            String the srs_visualisation
+     * @return String the bounging box as WKT (well known text)
+     */
+    public function getResultsBBox($sessionId, $projection)
+    {
+        $conn = $this->_em->getConnection();
+        $sql = "SELECT st_astext(st_extent(st_transform(the_geom," . $projection . "))) as wkt FROM result_location WHERE session_id = :session_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue("session_id", $sessionId);
+        $stmt->execute();
+        $bbox = $stmt->fetchColumn();
+        if($bbox !== FALSE && $bbox !== ""){
+            return $bbox;
+        }else {
+            throw new NoResultException('No result location found for the current session.');
+        }
+    }
 }

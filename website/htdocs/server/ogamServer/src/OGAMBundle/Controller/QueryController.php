@@ -8,8 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use OGAMBundle\Entity\Generic;
-use OGAMBundle\Entity\Generic\Query;
-use OGAMBundle\Entity\Generic\Query\Form;
+use OGAMBundle\Entity\Mapping\ResultLocation;
+use OGAMBundle\Entity\Generic\QueryForm;
 
 /**
  * @Route("/query")
@@ -109,25 +109,25 @@ class QueryController extends Controller {
         try {
     
             // Parse the input parameters and create a request object
-            $formQuery = new Form();
-            $formQuery->datasetId = $datasetId;
+            $queryForm = new QueryForm();
+            $queryForm->setDatasetId($datasetId);
             foreach ($_POST as $inputName => $inputValue) {
                 if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
                     $logger->debug('POST var added');
                     $criteriaName = substr($inputName, strlen("criteria__"));
                     $split = explode("__", $criteriaName);
-                    $formQuery->addCriteria($split[0], $split[1], $inputValue);
+                    $queryForm->addCriteria($split[0], $split[1], $inputValue);
                 }
                 if (strpos($inputName, "column__") === 0) {
                     $columnName = substr($inputName, strlen("column__"));
                     $split = explode("__", $columnName);
-                    $formQuery->addResult($split[0], $split[1]);
+                    $queryForm->addColumn($split[0], $split[1]);
                 }
             }
     
-            if ($formQuery->isValid()) {
+            if ($queryForm->isValid()) {
                 // Store the request parameters in session
-                $request->getSession()->set('formQuery', $formQuery);
+                $request->getSession()->set('queryForm', $queryForm);
     
                 // Activate the result layer
                 // TODO: Check if still mandatory
@@ -141,7 +141,7 @@ class QueryController extends Controller {
     
         } catch (Exception $e) {
             $this->logger->error('Error while getting result : ' . $e);
-            return new JsonResponse(['success' => false, 'errorMessage' => json_encode($e->getMessage())]);
+            return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
         }
 	}
 
@@ -164,6 +164,45 @@ class QueryController extends Controller {
 	    } else {
 	        return ($criteria == "");
 	    }
+	}
+	
+	/**
+	 * @Route("/ajaxgetresultsbbox")
+	 */
+	public function ajaxgetresultsbboxAction(Request $request) {
+	    $logger = $this->get ( 'logger' );
+	    $logger->debug('ajaxgetresultsbboxAction');
+	    
+	    $configuration =  $this->get('ogam.configuration_manager');
+	    ini_set("max_execution_time", $configuration->getConfig('max_execution_time', 480));
+	    
+	    try {
+	    
+	        // Get the request from the session
+	        $queryForm = $request->getSession()->get('queryForm');
+	    
+	        // Call the service to get the definition of the columns
+	        $this->get('ogam.manager.query')->prepareResultLocations($queryForm);
+	    
+	        // Execute the request
+	        $resultLocationModel = $this->get('doctrine')->getRepository(ResultLocation::class);
+	        $resultsbbox = $resultLocationModel->getResultsBBox(session_id(), $configuration->getConfig('srs_visualisation', 3857));
+	    
+	        // Send the result as a JSON String
+	        return new JsonResponse(['success' => true, 'resultsbbox' => $resultsbbox]);
+	    } catch (Exception $e) {
+	        $logger->error('Error while getting result : ' . $e);
+	        return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
+	    }
+	}
+	
+	/**
+	 * @Route("/ajaxgetresultcolumns")
+	 */
+	public function ajaxgetresultcolumnsAction() {
+	    return $this->render ( 'OGAMBundle:Query:ajaxgetresultcolumns.html.twig', array ()
+	        // ...
+	        );
 	}
 	
 	/**
@@ -198,24 +237,6 @@ class QueryController extends Controller {
 	 */
 	public function ajaxgetqueryformfieldsAction() {
 		return $this->render ( 'OGAMBundle:Query:ajaxgetqueryformfields.html.twig', array ()
-		// ...
-		 );
-	}
-	
-	/**
-	 * @Route("/ajaxgetresultsbbox")
-	 */
-	public function ajaxgetresultsbboxAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetresultsbbox.html.twig', array ()
-		// ...
-		 );
-	}
-	
-	/**
-	 * @Route("/ajaxgetresultcolumns")
-	 */
-	public function ajaxgetresultcolumnsAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetresultcolumns.html.twig', array ()
 		// ...
 		 );
 	}
