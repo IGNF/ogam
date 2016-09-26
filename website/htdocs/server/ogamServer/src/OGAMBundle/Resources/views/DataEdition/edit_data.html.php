@@ -16,72 +16,6 @@
  * View for the creation of a new data.
  * @package views
  */
-$generateAddLink = function ($schema, $format, $infoFields) {
-
-	// Build the URL to link to the parent items
-	$urlArray = array(
-//		'controller' => 'dataedition',
-//		'action' => 'show-add-data'
-	);
-
-	// Add the schema
-	$urlArray['SCHEMA'] = $schema;
-
-	// Add the format
-	$urlArray['FORMAT'] = $format;
-
-	// Add the PK elements
-	foreach ($infoFields as $infoField) {
-		$urlArray[$infoField->getData()->getData()] = $infoField->value;
-	}
-	
-	$uri='';
-	foreach(array_filter($urlArray) as $key=>$val){
-		$uri .= "/$key/$val";
-	}
-	// output the result
-	return '#edition-add' .$uri;
-};
-	
-$generateEditLink=function ($data) use ($view) {
-
-	// Build the URL to link to the parent items
-	$urlArray = array(
-		'controller' => 'index',
-		'action' => 'index'
-	);
-
-	// Add the schema
-	$urlArray['SCHEMA'] = $data->tableFormat->getSchemaCode();
-
-	// Add the format
-	$urlArray['FORMAT'] = $data->tableFormat->getFormat();
-
-	// Add the PK elements
-	foreach ($data->infoFields as $infoField) {
-		$urlArray[$infoField->getData()->getData()] = $infoField->value;
-	}
-
-	// Add the fields to generate the tooltip
-	$fields = array();
-	foreach ($data->getFields() as $field) {
-		if (is_array($field->valueLabel)) {
-			$val = "";
-			foreach ($field->valueLabel as $value) {
-				$val .= $view->escape($value) . ", ";
-			}
-			$fields[$field->getLabel()] = substr($val, 0, -2);
-		} else {
-			$fields[$field->getLabel()] = $view->escape($field->valueLabel);
-		}
-	}
-	// output the result
-	return array(
-		'url' => '#edition-edit'.$data->getId(),
-		'text' => $view->escape($data->tableFormat->getLabel()),
-		'fields' => $fields
-	);
-};
 ?>
 [
 <?php
@@ -103,7 +37,7 @@ if (! empty($message)) {
 if (! empty($ancestors)) {
     $parentsLinks = array();
     foreach (array_reverse($ancestors) as $ancestor) {
-        $parentsLinks[] = $generateEditLink($ancestor);
+        $parentsLinks[] = $view['dataEditionEdit']->generateEditLink($ancestor);
     }
     $patch['parentsLinks'] = $parentsLinks;
 }
@@ -130,7 +64,7 @@ foreach ($childrenTableLabels as $childFormat => $childTableLabel) {
     $childrenLinks = array();
     if (! empty($children)) {
         foreach ($children[$childFormat] as $child) {
-            $childrenLinks[] = $generateEditLink($child);
+            $childrenLinks[] = $view['dataEditionEdit']->generateEditLink($child);
         }
         $configOptions['childrenLinks'] = $childrenLinks;
     }
@@ -140,7 +74,7 @@ foreach ($childrenTableLabels as $childFormat => $childTableLabel) {
     }
     
     // Add link to a new child
-    $configOptions['AddChildURL'] = $generateAddLink($data->tableFormat->getSchemaCode(), $childFormat, $data->getInfoFields());
+    $configOptions['AddChildURL'] = $view['dataEditionAdd']->generateAddLink($data->tableFormat->getSchemaCode(), $childFormat, $data->getInfoFields());
     
     array_push($childrenConfigOptions, $configOptions);
 }
