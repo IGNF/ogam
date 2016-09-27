@@ -30,7 +30,7 @@
         
         {% if (app.user and app.user.isAllowed('DATA_EDITION') and app.user.isSchemaAllowed('RAW_DATA')) %}
         <li>
-        <a href="#/SCHEMA/RAW_DATA" class="pagelink" >{% trans %}Add a new localisation{% endtrans %}</a>
+        <a href="odp/index.html#edition-add/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/{{ app.user.provider.id }}" class="pagelink" >{% trans %}Add a new localisation{% endtrans %}</a>
         </li>
         {% endif %}
         
