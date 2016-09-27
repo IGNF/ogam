@@ -105,6 +105,20 @@ doctrine:
                     geometry: string
                     _text: string
                 schema_filter: /harmonized_data\./i
+            result_location:
+                driver:   "%database_driver%"
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%database_name%"
+                user:     "%database_user%"
+                password: "%database_password%"
+                charset:  UTF8
+                mapping_types:
+                    geometry: string
+                    _text: string
+                schema_filter: /mapping\./i
+                options:
+                    "PDO::ATTR_TIMEOUT": 480
 
 
     orm:
@@ -136,7 +150,11 @@ doctrine:
                  mappings:
                      OGAMBundle:
                         dir: Entity/HarmonizedData
-
+            result_location:
+                 connection: result_location
+                 mappings:
+                    OGAMBundle:
+                        dir: Entity/Mapping
 
 
 # Swiftmailer Configuration

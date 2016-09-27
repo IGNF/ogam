@@ -9,8 +9,6 @@ use OGAMBundle\Entity\Metadata\TableField;
 use OGAMBundle\Entity\Metadata\FormField;
 use OGAMBundle\OGAMBundle;
 use OGAMBundle\Entity\Metadata\TableTree;
-use OGAMBundle\Entity\Generic\Query\Field;
-use OGAMBundle\Entity\Generic\FieldMapping;
 use OGAMBundle\Entity\Generic\GenericFieldMapping;
 use OGAMBundle\Entity\Generic\GenericField;
 use OGAMBundle\Entity\Generic\GenericFieldMappingSet;
@@ -899,28 +897,13 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	}
 	
 	/**
-	 * Return the queryForm fields mappings in the provided schema
-	 * 
-	 * @param string $schema
-	 * @param \OGAMBundle\Entity\Generic\QueryForm $queryForm
-	 *        	the list of query form fields
-	 * @return \OGAMBundle\Entity\Generic\GenericFieldMappingSet
-	 */
-	public function getQueryFormFieldsMappings($schema, $queryForm) {
-	    $fieldsMappings = [];
-	    $fieldsMappings = $this->_getFieldsMappings($schema, $queryForm->getCriterias());
-	    $fieldsMappings = array_merge($fieldsMappings, $this->_getFieldsMappings($schema, $queryForm->getColumns()));
-	    return new GenericFieldMappingSet($fieldsMappings, $schema);
-	}
-	
-	/**
 	 * Return the fields mappings in the provided schema
 	 * 
 	 * @param string $schema
 	 * @param [\OGAMBundle\Entity\Generic\GenericField] $formFields
 	 * @return \OGAMBundle\Entity\Generic\GenericFieldMapping[]
 	 */
-	private function _getFieldsMappings($schema, $formFields) {
+	public function getFieldsMappings($schema, $formFields) {
 	    $fieldsMappings = [];
 	    foreach ($formFields as $formField) {
 	        // Get the description of the corresponding table field
@@ -1018,13 +1001,13 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 *
 	 * @param String $schema
 	 *        	the schema
-	 * @param OgamBundle\Entity\Generic\QueryForm $queryForm
-	 *        	the query form
+	 * @param [OgamBundle\Entity\Generic\GenericField] $formFields
+	 *        	a form fields array
 	 * @param OgamBundle\Entity\Generic\GenericFieldMappingSet $mappingSet
 	 *        	the field mapping set
 	 * @return String a SQL request
 	 */
-	public function generateSQLWhereRequest($schemaCode, QueryForm $queryForm, GenericFieldMappingSet $mappingSet) {
+	public function generateSQLWhereRequest($schemaCode, $formFields, GenericFieldMappingSet $mappingSet, $userInfos) {
 	    $this->logger->debug('generateSQLWhereRequest');
 	
 	    // Prepare the list of needed tables
@@ -1041,20 +1024,16 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    // Prepare the WHERE clause
 	    //
 	    $where = " WHERE (1 = 1)";
-	    foreach ($queryForm->getCriterias() as $formField) {
+	    foreach ($formFields as $formField) {
 	        $tableField = $mappingSet->getFieldMapping($formField)->getDstField()->getMetadata();
 	        $where .= $this->buildWhereItem($schemaCode, $tableField, false);
 	    }
 	
 	    // Right management
 	    // Check the provider id of the logged user
-	    /* TODO: $userSession = new Zend_Session_Namespace('user');
-	    if (!empty($userSession->user)) {
-	        $providerId = $userSession->user->provider->id;
-	        if (!$userSession->user->isAllowed('DATA_QUERY_OTHER_PROVIDER') && $hasColumnProvider) {
-	            $where .= " AND " . $rootTable->getLogicalName() . ".provider_id = '" . $providerId . "'";
-	        }
-	    }*/
+        if ($userInfos['userCanQueryOtherProvider'] && $hasColumnProvider) {
+            $where .= " AND " . $rootTable->getTableFormat()->getFormat() . ".provider_id = '" . $userInfos['providerId'] . "'";
+        }
 	
 	    // Return the completed SQL request
 	    return $where;
