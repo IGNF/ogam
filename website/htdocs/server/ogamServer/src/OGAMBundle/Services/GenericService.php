@@ -807,7 +807,7 @@ class GenericService {
 	
 	    $value = $tableField->value;
 	    //$column = $tableField->getColumnName();
-	
+
 	    // Set the projection for the geometries in this schema
 	    $configuration = $this->configuration;
 	    if ($schema === 'RAW_DATA') {
@@ -825,18 +825,25 @@ class GenericService {
 	            $sql = ($value == true ? '1' : '0');
 	            break;
 	        case "DATE":
-	            if ($value === "") {
+	            if ($value == "") {
 	                $sql = "NULL";
 	            } else {
 	                $sql = " to_date('" . $value . "', 'YYYY/MM/DD')";
 	            }
 	            break;
+	        case "TIME":
+	                if ($value == "") {
+	                    $sql = "NULL";
+	                } else {
+	                    $sql = "'" . $value . "'";
+	                }
+	                break;
 	        case "INTEGER":
 	        case "NUMERIC":
 	        case "RANGE":
 	            if ($value === "") {
 	                $sql = "NULL";
-	            } else {
+	            } else {//0 is valid here
 	                $value = str_replace(",", ".", $value);
 	                $sql = $value;
 	            }
@@ -848,7 +855,7 @@ class GenericService {
 	            $sql = "'" . $value . "'";
 	            break;
 	        case "GEOM":
-	            if ($value === "") {
+	            if ($value == "") {
 	                $sql = "NULL";
 	            } else {
 	                $sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . ")";

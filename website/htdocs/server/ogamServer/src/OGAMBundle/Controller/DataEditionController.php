@@ -270,18 +270,21 @@ class DataEditionController extends Controller
                
                 // validate the date format
                 if ($formField !== null && $formField->getMask() !== null) {
-                    $validator = new Assert\DateTime(/*array(//@version 3.1 symfony
-                        'format' => $formField->getMask(),
-                    )*/);
+                    $validator = new Assert\Date();
+                    /*$validator = new Assert\DateTime(array(//@version 3.1 symfony
+                     'format' => $formField->getMask(),
+                     ));*/
                     $option['format'] = $formField->getMask();
+
                 } else {
-                    $validator = $validator = new Assert\Date();
+                    $validator = new Assert\Date();
                 }
-                
+                $option['input']= 'string';
+                $option['widget']='single_text';
                 $option['constraints'] = $validator;
                 
                 $elem = $form->create($tableField->getName(), FType\DateType::class, $option);
-                $elem->setData($tableField->value);
+                $elem->setData( \DateTime::createFromFormat($tableField->value, $elem->getOption('format')));
                 break;
             case 'TIME':
 
@@ -291,10 +294,13 @@ class DataEditionController extends Controller
                 } else {
               //     $option['format']='HH:mm';
                 }
+                
+                $option['input']= 'string';
+                $option['widget']='single_text';
+                $option['data']=$tableField->value;
                 // The field is a date
                 $elem = $form->create($tableField->getName(), FType\TimeType::class, $option);
 
-                $elem->setData($tableField->value);
                 break;
     
             case "CODE":
@@ -410,7 +416,8 @@ class DataEditionController extends Controller
         // Validate the form
         $form = $this->getEditDataForm($data, $mode);
         
-        //$form->handleRequest($request);
+        $form->submit(null,true);
+        //$form->handleRequest($request);//FIXME : don't set isSubmit === true
         //$form->submit($request->request->all(), false);
         foreach($form->all() as $field) {
             $value = $request->request->get($form->getName(),null);
@@ -418,7 +425,7 @@ class DataEditionController extends Controller
                 $field->submit($value);
             }
         }
-        $form->submit(null,true);
+        
         
         if (!$form->isSubmitted()){
             return $this->json(['success' => false, 'errorMessage'=>'not submit']);
