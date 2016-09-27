@@ -14,10 +14,10 @@ class QueryForm {
 	private $datasetId;
 
 	/**
-	 * The asked criterias.
+	 * The asked criteria.
 	 * Array[OGAMBundle\Entity\Generic\Field]
 	 */
-	private $criterias = array();
+	private $criteria = array();
 
 	/**
 	 * The asked columns.
@@ -45,16 +45,16 @@ class QueryForm {
 	}
 
 	/**
-	 * Add a new criteria.
+	 * Add a new criterion.
 	 *
 	 * @param String $format
-	 *        	the criteria form format
+	 *        	the criterion form format
 	 * @param String $data
-	 *        	the criteria form data
+	 *        	the criterion form data
 	 * @param String $value
-	 *        	the criteria value
+	 *        	the criterion value
 	 */
-	public function addCriteria($format, $data, $value) {
+	public function addCriterion($format, $data, $value) {
 		$formField = new GenericField($format, $data);
 		$formField->setValue($value);
 		$this->criterias[] = $formField;
@@ -83,12 +83,12 @@ class QueryForm {
 	}
 
 	/**
-	 * Get the criterias.
+	 * Get the criteria.
 	 *
 	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
 	 */
-	public function getCriterias() {
-		return $this->criterias;
+	public function getCriteria() {
+		return $this->criteria;
 	}
 
 	/**
