@@ -2,6 +2,8 @@
 
 namespace OGAMBundle\Repository\Metadata;
 
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 /**
  * ModeTreeRepository
  *
@@ -10,4 +12,38 @@ namespace OGAMBundle\Repository\Metadata;
  */
 class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    /**
+     * Get the labels and modes for a tree unit.
+     *
+     * @param String $unit The unit
+     * @param String $value the searched value (optional)
+     * @return Array[mode => label]
+     */
+    public function getTreeLabels($unit, $value = null) {
+    
+        $req = "SELECT code, COALESCE(t.label, mt.label) as label ";
+        $req .= " FROM mode_tree mt";
+        $req .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
+        $req .= " WHERE unit = :unit";
+        if ($value != null) {
+            if (is_array($value)) {
+                $req .= " AND code IN ('" . implode("','", $value) . "')";
+            } else {
+                $req .= " AND code = '" . $value . "'";
+            }
+        }
+        $req .= " ORDER BY position, code";
+    
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        
+        $select = $this->_em->createNativeQuery($req, $rsm->addIndexByScalar('code')->addScalarResult('label', 'label')->addScalarResult('code','code'));
+        $select->setParameters(array(
+            'unit' => $unit,
+            'lang' => 'fr'
+            
+        ));
+    
+        return array_column($select->getArrayResult(), 'label', 'code');
+    }
 }

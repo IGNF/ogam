@@ -7,6 +7,9 @@ use OGAMBundle\Entity\Metadata\Mode;
 use OGAMBundle\Entity\Metadata\Dynamode;
 use OGAMBundle\Entity\Metadata\ModeTree;
 use OGAMBundle\Entity\Metadata\ModeTaxref;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Selectable;
 
 /**
  * UnitRepository
@@ -44,5 +47,33 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
                     return null;
             }
         }
+    }
+    /**
+     * @param Unit $unit
+     * @param mixed $value
+     * @return array
+     */
+    public function getModesLabel(Unit $unit, $value){
+        $res = $this->getModes($unit);
+        if ($res === null){
+            return null;
+        }
+        
+        
+        if (is_array($value)) {
+            $criteria = Criteria::create()->where(Criteria::expr()->in("code", $value));
+        }else {
+            $criteria = Criteria::create()->where(Criteria::expr()->eq("code", $value));
+        }
+        if (false ===($res  instanceof  Selectable)){
+            $res= new ArrayCollection($res);
+        }
+        
+        $result = $res->matching($criteria);
+        $array_res = $result->map(function ($element){
+            return ['code'=>$element->getCode(), 'label'=>$element->getLabel()]; 
+        });
+       
+        return  array_column($array_res->toArray(), 'label','code');
     }
 }

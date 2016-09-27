@@ -18,6 +18,8 @@ use OGAMBundle\Entity\Generic\QueryForm;
 use OGAMBundle\Repository\Metadata\DynamodeRepository;
 use OGAMBundle\Entity\Metadata\Mode;
 use OGAMBundle\Entity\Metadata\Dynamode;
+use OGAMBundle\Entity\Metadata\ModeTree;
+use OGAMBundle\Entity\Metadata\Unit;
 
 /**
  *
@@ -157,16 +159,15 @@ class GenericService {
 	
 	        // Get the modes => Label
 	        if ($unit->getSubtype() === "DYNAMIC") {
-	            $modes = $this->metadataModel->getRepository(Dynamode::class)->getModes($unit, $value);
+	            $modes =  $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value);
 	        } else if ($unit->getSubtype() === "TREE") {
-	            $modes = $this->metadataModel->getTreeLabels($tableField->unit, $value);
+	            $modes = $this->metadataModel->getRepository(ModeTree::class)->getTreeLabels($unit->getUnit(), $value);
 	        } else if ($unit->getSubtype() === "TAXREF") {
-	            $modes = $this->metadataModel->getTaxrefLabels($tableField->unit, $value);
+	            $modes =  $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value);
 	        } else {
-	            $modes =  $this->metadataModel->getRepository(Mode::class)->findBy(array('unit'=>$unit, 'mode'=>$value));
+	            $modes =   $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value);;
 	        }
-	        $modes = array_column($modes, 'label','code');
-	
+
 	        // Populate the labels of the currently selected values
 	        if (is_array($value)) {
 	            $labels = array();
