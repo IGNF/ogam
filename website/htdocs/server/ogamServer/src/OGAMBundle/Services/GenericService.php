@@ -951,7 +951,74 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	
 	    return $tables;
 	}
+
+	/**
+	 * Generate the SQL request corresponding the distinct locations of the query result.
+	 *
+	 * @param String $schema
+	 *        	the schema
+	 * @param [OgamBundle\Entity\Generic\GenericField] $formFields
+	 *        	a form fields array
+	 * @param OgamBundle\Entity\Generic\GenericFieldMappingSet $mappingSet
+	 *        	the field mapping set
+	 * @param Array $userInfos
+	 *        	Few user informations
+	 * @param Array $options
+	 *        	formatting options for the returned fields (see buildSelectItem)
+	 * @return String a SQL request
+	 */
+	public function generateSQLSelectRequest($schema, $formFields, GenericFieldMappingSet $mappingSet, $userInfos, $options = array()) {
+	    $this->logger->debug('generateSQLSelectRequest');
 	
+	    //
+	    // Prepare the SELECT clause
+	    //
+	    $select = "SELECT DISTINCT "; // The "distinct" is for the case where we have some criteria but no result columns selected on the last table
+	    foreach ($formFields as $formField) {
+	        $tableField = $mappingSet->getFieldMapping($formField)->getDstField()->getMetadata();
+	        $select .= $this->buildSelectItem($tableField, $options) . ", ";
+	    }
+	    $select = substr($select, 0, -2);
+	
+	    //
+	    // Create a unique identifier for each line
+	    // We use the last column of the leaf table
+	    //
+	    // Get the leaf table
+	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingSet());
+	    $rootTable = reset($tables);
+	    $reversedTable = array_reverse($tables); // Only variables should be passed by reference
+	    $leafTable = array_shift($reversedTable);
+	
+	    // Get the root table fields
+	    $rootTableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $rootTable->getTableFormat()->getFormat(), null, $this->locale);
+	    $hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
+	
+	    $uniqueId = "'SCHEMA/" . $schema . "/FORMAT/" . $leafTable->getTableFormat()->getFormat() . "'";
+	
+	    $keys = $leafTable->getTableFormat()->getPrimaryKeys();
+	    foreach ($keys as $key) {
+	        // Concatenate the column to create a unique Id
+	        $uniqueId .= " || '/' || '" . $key . "/' ||" . $leafTable->getTableFormat()->getFormat() . "." . $key;
+	    }
+	    $select .= ", " . $uniqueId . " as id";
+	
+	    // Detect the column containing the geographical information
+	    $locationField = $this->metadataModel->getRepository(TableField::class)->getGeometryField($schema, array_keys($tables), $this->locale);
+	
+	    // Add the location centroid (for zooming on the map)
+	    $select .= ", st_astext(st_centroid(st_transform(" . $locationField->getFormat()->getFormat() . "." . $locationField->getColumnName() . "," . $this->visualisationSRS . "))) as location_centroid ";
+	
+	    // Right management
+	    // Get back the provider id of the data
+	    if ($userInfos['DATA_EDITION_OTHER_PROVIDER'] && $hasColumnProvider) {
+	        $select .= ", " . $leafTable->getTableFormat()->getFormat() . ".provider_id as _provider_id";
+	    }
+	
+	    // Return the completed SQL request
+	    return $select;
+	}
+
 	/**
 	 * Generate the FROM clause of the SQL request corresponding to a list of parameters.
 	 *
@@ -1030,11 +1097,36 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	
 	    // Right management
 	    // Check the provider id of the logged user
-        if ($userInfos['userCanQueryOtherProvider'] && $hasColumnProvider) {
+        if ($userInfos['DATA_QUERY_OTHER_PROVIDER'] && $hasColumnProvider) {
             $where .= " AND " . $rootTable->getTableFormat()->getFormat() . ".provider_id = '" . $userInfos['providerId'] . "'";
         }
 	
 	    // Return the completed SQL request
 	    return $where;
+	}
+	
+	/**
+	 * Generate the primary key of the left table of the query.
+	 * Fields composing the pkey are prefixed with the table label
+	 *
+	 * @param String $schema
+	 *        	the schema
+	 * @param OgamBundle\Entity\Generic\GenericFieldMappingSet $mappingSet
+	 *        	the field mapping set
+	 * @return String a primary key
+	 */
+	public function generateSQLPrimaryKey($schema, $mappingSet) {
+	    $this->logger->debug('generateSQLPrimaryKey');
+	
+	    // Get the left table;
+	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingSet());
+	    $leafTable = array_pop($tables);
+	
+	    $keys = $leafTable->getTableFormat()->getPrimaryKeys();
+	    foreach ($keys as $index => $key) {
+	        $keys[$index] = $leafTable->getTableFormat()->getFormat() . "." . $key;
+	    }
+	
+	    return implode(',', $keys);
 	}
 }

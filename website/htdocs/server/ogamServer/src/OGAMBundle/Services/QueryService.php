@@ -10,6 +10,10 @@ use OGAMBundle\Entity\Metadata\Unit;
 use OGAMBundle\Entity\Mapping\ResultLocation;
 use OGAMBundle\Entity\Metadata\TableFormat;
 use OGAMBundle\Entity\Generic\GenericFieldMappingSet;
+use OGAMBundle\Entity\Generic\QueryForm;
+use OGAMBundle\Repository\GenericRepository;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Doctrine\ORM\NoResultException;
 
 /**
  *
@@ -129,11 +133,13 @@ class QueryService {
 	 *
 	 * @param \OGAMBundle\Entity\Generic\QueryForm $queryForm
 	 *        	the form request object
+	 * @param Array $userInfos
+	 *        	Few user informations
 	 */
 	public function prepareResultLocations($queryForm, $userInfos) {
 	    $this->logger->debug('prepareResultLocations');
 	
-	    // Transform the form request object into a table data object
+	    // Get the mappings for the query form fields
 	    $mappingSet = $this->getQueryFormFieldsMappings($this->schema, $queryForm);
 
         // Configure the projection systems
@@ -142,7 +148,7 @@ class QueryService {
 
         // Generate the SQL Request
         $from = $this->genericService->generateSQLFromRequest($this->schema, $mappingSet);
-        $where = $this->genericService->generateSQLWhereRequest($this->schema, $queryForm->getCriterias(), $mappingSet, $userInfos);
+        $where = $this->genericService->generateSQLWhereRequest($this->schema, $queryForm->getCriteria(), $mappingSet, $userInfos);
 
         // Clean previously stored results
         $sessionId = session_id();
@@ -159,6 +165,94 @@ class QueryService {
 	}
 
 	/**
+	 * Build the request.
+	 *
+	 * @param QueryForm $queryForm
+	 *        	the request form
+	 * @param Array $userInfos
+	 *        	Few user informations
+	 * @param Session $session
+	 *        	the current session
+	 */
+	public function buildRequest(QueryForm $queryForm, $userInfos, Session $session) {
+	    $this->logger->debug('getResultColumns');
+
+	    // Get the mappings for the query form fields
+	    $mappingSet = $this->getQueryFormFieldsMappings($this->schema, $queryForm);
+	
+        // Generate the SQL Request
+        $select = $this->genericService->generateSQLSelectRequest($this->schema, $queryForm->getColumns(), $mappingSet, $userInfos);
+        $from = $this->genericService->generateSQLFromRequest($this->schema, $mappingSet);
+        $where = $this->genericService->generateSQLWhereRequest($this->schema, $queryForm->getCriteria(), $mappingSet, $userInfos);
+        $sqlPKey = $this->genericService->generateSQLPrimaryKey($this->schema, $mappingSet);
+
+        // Identify the field carrying the location information
+        $tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingSet());
+        $locationField = $this->metadataModel->getRepository(TableField::class)->getGeometryField($this->schema, array_keys($tables), $this->locale);
+
+        $this->logger->debug('$select : ' . $select);
+        $this->logger->debug('$from : ' . $from);
+        $this->logger->debug('$where : ' . $where);
+
+        // Calculate the number of lines of result
+        $countResult = $this->_getQueryResultsCount($from, $where);
+
+        // Store the metadata in session for subsequent requests
+        //$session->set('query_schema', $this->schema); used?
+        //$session->set('query_queryForm', $queryForm); used?
+        $session->set('query_SQLSelect', $select);
+        $session->set('query_SQLFrom', $from);
+        $session->set('query_SQLWhere', $where);
+        $session->set('query_SQLPkey', $sqlPKey);
+        //$session->set('query_locationField', $locationField); used?
+        $session->set('query_count', $countResult); // result count
+        
+        //old
+        //$session->set('queryObject', $queryObject);
+        //$session->set('resultColumns', $queryObject->editableFields);
+        //$session->set('datasetId', $queryForm->getDatasetId());
+	}
+	
+    /**
+     * Return the total count of query result
+     * 
+     * @param string $from The FROM part of the query
+     * @param string $where The WHERE part of the query
+     * @throws NoResultException
+     * @return integer The total count
+     */
+	private function _getQueryResultsCount ($from, $where) {
+	    $conn = $this->doctrine->getManager()->getConnection();
+	    $sql = "SELECT COUNT(*) as count " . $from . $where;
+	    $stmt = $conn->prepare($sql);
+	    $stmt->execute();
+	    $result = $stmt->fetchColumn();
+	    if($result !== FALSE && $result !== ""){
+	        return $result;
+	    }else {
+	        throw new NoResultException('No result found for the request : ' . $sql);
+	    }
+	}
+	
+	/**
+	 * Get the form fields corresponding to the columns
+	 *
+	 * @param QueryForm $queryForm
+	 *        	the request form
+	 * @param Array $userInfos
+	 *        	Few user informations
+	 * @return [FormField] The form fields corresponding to the columns
+	 */
+	public function getColumns($queryForm, $userInfos){
+        $formFields = [];
+        foreach ($queryForm->getColumns() as $formField) {
+            // Get the full description of the form field
+            $formFields[] = $this->metadataModel->getRepository(FormField::class)->getFormField($formField->getFormat(), $formField->getData(), $this->locale);
+        }
+	    return $formFields;
+	}
+	
+	/**
 	 * Return the queryForm fields mappings in the provided schema
 	 *
 	 * @param string $schema
@@ -168,7 +262,7 @@ class QueryService {
 	 */
 	public function getQueryFormFieldsMappings($schema, $queryForm) {
 	    $fieldsMappings = [];
-	    $fieldsMappings = $this->genericService->getFieldsMappings($schema, $queryForm->getCriterias());
+	    $fieldsMappings = $this->genericService->getFieldsMappings($schema, $queryForm->getCriteria());
 	    $fieldsMappings = array_merge($fieldsMappings, $this->genericService->getFieldsMappings($schema, $queryForm->getColumns()));
 	    return new GenericFieldMappingSet($fieldsMappings, $schema);
 	}

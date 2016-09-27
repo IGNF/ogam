@@ -12,6 +12,41 @@ use OGAMBundle\Entity\Metadata\Unit;
  * repository methods below.
  */
 class FormFieldRepository extends \Doctrine\ORM\EntityRepository {
+	
+    /**
+     * Get the description of a form field.
+     *
+     * @param String $format
+     *        	The logical name of the form
+     * @param String $data
+     *        	The logical name of the field
+     * @param String $locale
+	 *        	the locale
+     * @return Application_Object_Metadata_FormField
+     */
+    public function getFormField($format, $data, $locale) {
+
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'ff');
+        
+        $sql = " SELECT form_field.*, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, unit.type, unit.subtype, unit.unit ";
+        $sql .= " FROM form_field ";
+        $sql .= " LEFT JOIN data using (data) ";
+        $sql .= " LEFT JOIN unit using (unit) ";
+        $sql .= " LEFT JOIN translation t ON (lang = ? AND table_format = 'DATA' AND row_pk = data.data) ";
+        $sql .= " WHERE format = ? ";
+        $sql .= " AND   data = ?";
+
+        $query = $this->_em->createNativeQuery ( $sql, $rsm );
+        $query->setParameters ( array(
+            $locale,
+            $format,
+            $data
+        ) );
+        
+        return $query->getResult()[0];
+    }
+	
 	/**
 	 * Get the fields for a given form.
 	 *

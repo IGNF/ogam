@@ -116,7 +116,7 @@ class QueryController extends Controller {
                     $logger->debug('POST var added');
                     $criteriaName = substr($inputName, strlen("criteria__"));
                     $split = explode("__", $criteriaName);
-                    $queryForm->addCriteria($split[0], $split[1], $inputValue);
+                    $queryForm->addCriterion($split[0], $split[1], $inputValue);
                 }
                 if (strpos($inputName, "column__") === 0) {
                     $columnName = substr($inputName, strlen("column__"));
@@ -184,7 +184,7 @@ class QueryController extends Controller {
 	        // Call the service to get the definition of the columns
 	        $userInfos = [
 	            "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
-	            "userCanQueryOtherProvider" => $this->getUser() && $this->isGranted('DATA_QUERY_OTHER_PROVIDER')
+	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isGranted('DATA_QUERY_OTHER_PROVIDER')
 	        ];
 	        $this->get('ogam.manager.query')->prepareResultLocations($queryForm, $userInfos);
 	    
@@ -203,10 +203,33 @@ class QueryController extends Controller {
 	/**
 	 * @Route("/ajaxgetresultcolumns")
 	 */
-	public function ajaxgetresultcolumnsAction() {
-	    return $this->render ( 'OGAMBundle:Query:ajaxgetresultcolumns.html.twig', array ()
-	        // ...
-	        );
+	public function ajaxgetresultcolumnsAction(Request $request) {
+	    $logger = $this->get ( 'logger' );
+		$logger->debug('ajaxgetresultcolumns');
+
+		try {
+			// Get the request from the session
+	        $queryForm = $request->getSession()->get('queryForm');
+
+			// Call the service to get the definition of the columns
+	        $userInfos = [
+	            "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
+	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isGranted('DATA_QUERY_OTHER_PROVIDER'),
+	            "DATA_EDITION_OTHER_PROVIDER" => $this->getUser() && $this->isGranted('DATA_EDITION_OTHER_PROVIDER')
+	        ];
+			$this->get('ogam.query_service')->buildRequest($queryForm, $userInfos, $request->getSession());
+
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/json');
+			return $this->render ( 'OGAMBundle:Query:ajaxgetresultcolumns.json.twig', array (
+			    'columns' => $this->get('ogam.query_service')->getColumns($queryForm, $userInfos),
+			    'userInfos' => $userInfos
+			),$response);
+
+		} catch (Exception $e) {
+			$logger->error('Error while getting result : ' . $e);
+			return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
+		}
 	}
 	
 	/**
