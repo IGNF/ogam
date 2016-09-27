@@ -61,8 +61,14 @@ class QueryService {
 	 * @var EntityManager
 	 */
 	private $metadataModel;
+	
+	/**
+	 * The doctrine service
+	 * @var Service
+	 */
+	private $doctrine;
 
-	function __construct($em, $genericService, $configuration, $logger, $locale, $user, $schema)
+	function __construct($doctrine, $genericService, $configuration, $logger, $locale, $user, $schema)
 	{
 		// Initialise the logger
 		$this->logger = $logger;
@@ -80,8 +86,10 @@ class QueryService {
 
 		$this->configuration = $configuration;
 
+		$this->doctrine = $doctrine;
+
 		// Initialise the metadata models
-		$this->metadataModel = $em;
+		$this->metadataModel = $this->doctrine->getManager('metadata');
 	}
 
 	/**
@@ -139,9 +147,7 @@ class QueryService {
         // Clean previously stored results
         $sessionId = session_id();
         $this->logger->debug('SessionId : ' . $sessionId);
-        //TODO: get the right entityManager (mappingModel)
-        $resultLocationModel = $this->metadataModel->getRepository(ResultLocation::class);
-        $resultLocationModel->cleanPreviousResults($sessionId);
+        $this->doctrine->getRepository(ResultLocation::class, 'mapping')->cleanPreviousResults($sessionId);
 
         // Identify the field carrying the location information
         $tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingSet());
@@ -149,7 +155,7 @@ class QueryService {
         $locationTableInfo = $this->metadataModel->getRepository(TableFormat::class)->getTableFormat($this->schema, $locationField->getFormat()->getFormat(), $this->locale);
 
         // Run the request to store a temporary result table (for the web mapping)
-        $resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
+        $this->doctrine->getRepository(ResultLocation::class, 'result_location')->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
 	}
 
 	/**

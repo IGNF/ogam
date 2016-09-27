@@ -28,7 +28,7 @@ class ResultLocationRepository extends \Doctrine\ORM\EntityRepository
             $session_id
         ));
     }
-
+    
     /**
      * Populate the result location table.
      *
@@ -45,64 +45,8 @@ class ResultLocationRepository extends \Doctrine\ORM\EntityRepository
      */
     public function fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS)
     {
-        // $time_start = microtime(true);
-        if ($this->_isLocalDB()) {
-            // We can use INSERT ... SELECT statement only if we are exactly on the same server
-            $this->_fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
-        } else {
-            // The "remote" method is 2x or 3x more time consuming
-            $this->_fillLocationResultRemote($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS);
-        }
-        
-        // $time_end = microtime(true);
-        // $this->logger->info('DurÃ©e : ' . ($time_end - $time_start) . " secondes");
-    }
-
-    /**
-     * TODO: Indicate if the raw database is on a remote server.
-     *
-     * @return Boolean true if the raw database is on a local server
-     */
-      private function _isLocalDB()
-      {
-          return true;
-      /*$rawdb = Zend_Registry::get('raw_db');
-     
-      $mappingConfig = $this->db->getConfig();
-      $rawConfig = $rawdb->getConfig();
-     
-      // We consider that the database is remote if any of the main config options is different
-      $isLocal = true;
-      $isLocal = $isLocal && ($mappingConfig['host'] === $rawConfig['host']);
-      $isLocal = $isLocal && ($mappingConfig['port'] === $rawConfig['port']);
-      $isLocal = $isLocal && ($mappingConfig['dbname'] === $rawConfig['dbname']);
-      $isLocal = $isLocal && ($mappingConfig['username'] === $rawConfig['username']);
-     
-      $this->logger->info('isLocal : ' . ($isLocal ? "yes" : "no"));
-     
-      return $isLocal;*/
-      }
-     
-    
-    /**
-     * Populate the result location table.
-     *
-     * @param String $sqlWhere
-     *            the FROM / WHERE part of the SQL Request
-     * @param String $sessionId
-     *            the user session id.
-     * @param Application_Object_Metadata_TableField $locationField
-     *            the location field.
-     * @param Application_Object_Metadata_TableFormat $locationTable
-     *            the location table
-     * @param String $visualisationSRS
-     *            the projection system used for visualisation.
-     */
-    private function _fillLocationResult($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS)
-    {
-        // TODO: $this->db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
         $qm = $this->getEntityManager();
-        
+
         if ($sqlWhere != null) {
             $keys = $locationTable->getPrimaryKeys();
             
@@ -133,73 +77,6 @@ class ResultLocationRepository extends \Doctrine\ORM\EntityRepository
         }
     }
 
-    /**
-     * TODO: Populate the result location table.
-     *
-     * Used when the raw data schema is in another database.
-     *
-     * @param String $sqlWhere
-     *            the FROM / WHERE part of the SQL Request
-     * @param String $sessionId
-     *            the user session id.
-     * @param Application_Object_Metadata_TableField $locationField
-     *            the location field.
-     * @param Application_Object_Metadata_TableFormat $locationTable
-     *            the location table
-     * @param String $visualisationSRS
-     *            the projection system used for visualisation.
-     *            
-     *            private function _fillLocationResultRemote($sqlWhere, $sessionId, $locationField, $locationTable, $visualisationSRS)
-     *            {
-     *            $this->db->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
-     *            
-     *            $rawdb = Zend_Registry::get('raw_db');
-     *            $rawdb->getConnection()->setAttribute(PDO::ATTR_TIMEOUT, 480);
-     *            
-     *            if ($sqlWhere != null) {
-     *            $keys = $locationTable->primaryKeys;
-     *            
-     *            // L'identifiant de session de l'utilisateur
-     *            $select = " SELECT DISTINCT ";
-     *            
-     *            // Le nom de la table portant l'info gÃ©omÃ©trique
-     *            $select .= "'" . $locationTable->format . "' as format, ";
-     *            
-     *            // Ajout des clÃ©s primaires de la table
-     *            $keyColumns = "";
-     *            foreach ($keys as $key) {
-     *            $keyColumns .= $locationTable->format . "." . $key . " || '__' || ";
-     *            }
-     *            if ($keyColumns != "") {
-     *            $keyColumns = substr($keyColumns, 0, - 11);
-     *            }
-     *            $select .= $keyColumns . " as pk, ";
-     *            
-     *            // Ajout de la colonne portant la gÃ©omÃ©trie
-     *            $select .= " st_transform(" . $locationTable->format . "." . $locationField->columnName . "," . $visualisationSRS . ") as the_geom ";
-     *            $select .= $sqlWhere;
-     *            
-     *            $this->logger->info('fillLocationResultRemote : ' . $select);
-     *            
-     *            $query = $rawdb->prepare($select);
-     *            $query->execute();
-     *            
-     *            $insert = " INSERT INTO result_location (session_id, format, pk, the_geom ) ";
-     *            $insert .= " VALUES (?, ?, ?, ?)";
-     *            
-     *            $queryIns = $this->db->prepare($insert);
-     *            
-     *            foreach ($query->fetchAll() as $row) {
-     *            $queryIns->execute(array(
-     *            $sessionId,
-     *            $row['format'],
-     *            $row['pk'],
-     *            $row['the_geom']
-     *            ));
-     *            }
-     *            }
-     *            }
-     */
     
     /**
      * Returns the bounding box that bounds geometries of results table.
