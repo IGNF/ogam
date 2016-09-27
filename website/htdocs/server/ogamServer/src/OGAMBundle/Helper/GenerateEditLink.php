@@ -44,7 +44,7 @@ class GenerateEditLink extends Helper {
 	}
 	// output the result
 	return array(
-		'url' => '#edition-edit'.$data->getId(),
+		'url' => '#edition-edit/'.$data->getId(),
 		'text' => htmlspecialchars($data->tableFormat->getLabel(), ENT_QUOTES, $this->getCharset()),
 		'fields' => $fields
 	);
