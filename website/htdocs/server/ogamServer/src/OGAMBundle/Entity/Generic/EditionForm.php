@@ -35,9 +35,9 @@ class EditionForm {
 	/**
 	 * Add a key field.
 	 *
-	 * @param GenericTableField $field a field
+	 * @param GenericField $field a field
 	 */
-	public function addPkField(GenericTableField $field) {
+	public function addPkField(GenericField $field) {
 		$this->pkFields[$field->getId()] = $field;
 	}
 
@@ -45,7 +45,7 @@ class EditionForm {
 	 * Get a field from the primary key.
 	 *
 	 * @param String $key a data
-	 * @return GenericTableField the field
+	 * @return GenericField the field
 	 */
 	public function getPkField($key) {
 		return $this->pkFields[trim($key)];
@@ -54,7 +54,7 @@ class EditionForm {
 	/**
 	 * Return the pkFields array.
 	 *
-	 * @return [GenericTableField] the pkFields array
+	 * @return [GenericField] the pkFields array
 	 */
 	public function getPkFields() {
 		return $this->pkFields;
@@ -63,7 +63,7 @@ class EditionForm {
 	/**
 	 * Return the fields array.
 	 *
-	 * @return [GenericTableField] the fields array
+	 * @return [GenericField] the fields array
 	 */
 	public function getFields() {
 		return $this->fields;
@@ -73,7 +73,7 @@ class EditionForm {
 	 * Return a field.
 	 *
 	 * @param String $key a data
-	 * @return GenericTableField the field
+	 * @return GenericField the field
 	 */
 	public function getField($key) {
 		return $this->fields[trim($key)];
@@ -82,7 +82,7 @@ class EditionForm {
 	/**
 	 * Add a field.
 	 *
-	 * @param [GenericTableField] $field a field
+	 * @param [GenericField] $field a field
 	 */
 	public function addField($field) {
 		$this->fields[$field->getId()] = $field;
@@ -91,7 +91,7 @@ class EditionForm {
 	/**
 	 * Get all table fields.
 	 *
-	 * @return [GenericTableField] the table fields
+	 * @return [GenericField] the table fields
 	 */
 	public function getFields() {
 		return array_merge($this->pksFields, $this->fields);

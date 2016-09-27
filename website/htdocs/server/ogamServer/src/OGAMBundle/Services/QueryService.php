@@ -9,6 +9,7 @@ use OGAMBundle\Entity\Metadata\TableField;
 use OGAMBundle\Entity\Metadata\Unit;
 use OGAMBundle\Entity\Mapping\ResultLocation;
 use OGAMBundle\Entity\Metadata\TableFormat;
+use OGAMBundle\Entity\Generic\GenericFieldMappingSet;
 
 /**
  *
@@ -121,12 +122,11 @@ class QueryService {
 	 * @param \OGAMBundle\Entity\Generic\QueryForm $queryForm
 	 *        	the form request object
 	 */
-	public function prepareResultLocations($queryForm) {
+	public function prepareResultLocations($queryForm, $userInfos) {
 	    $this->logger->debug('prepareResultLocations');
 	
 	    // Transform the form request object into a table data object
-	    //$queryObject = $this->genericService->addMetadataToQueryForm($this->schema, $queryForm, $this->locale);
-	    $mappingSet = $this->genericService->getQueryFormFieldsMappings($this->schema, $queryForm);
+	    $mappingSet = $this->getQueryFormFieldsMappings($this->schema, $queryForm);
 
         // Configure the projection systems
         $visualisationSRS = $this->configuration->getConfig('srs_visualisation', '3857');
@@ -134,7 +134,7 @@ class QueryService {
 
         // Generate the SQL Request
         $from = $this->genericService->generateSQLFromRequest($this->schema, $mappingSet);
-        $where = $this->genericService->generateSQLWhereRequest($this->schema, $queryForm, $mappingSet);
+        $where = $this->genericService->generateSQLWhereRequest($this->schema, $queryForm->getCriterias(), $mappingSet, $userInfos);
 
         // Clean previously stored results
         $sessionId = session_id();
@@ -151,7 +151,22 @@ class QueryService {
         // Run the request to store a temporary result table (for the web mapping)
         $resultLocationModel->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
 	}
-	
+
+	/**
+	 * Return the queryForm fields mappings in the provided schema
+	 *
+	 * @param string $schema
+	 * @param \OGAMBundle\Entity\Generic\QueryForm $queryForm
+	 *        	the list of query form fields
+	 * @return \OGAMBundle\Entity\Generic\GenericFieldMappingSet
+	 */
+	public function getQueryFormFieldsMappings($schema, $queryForm) {
+	    $fieldsMappings = [];
+	    $fieldsMappings = $this->genericService->getFieldsMappings($schema, $queryForm->getCriterias());
+	    $fieldsMappings = array_merge($fieldsMappings, $this->genericService->getFieldsMappings($schema, $queryForm->getColumns()));
+	    return new GenericFieldMappingSet($fieldsMappings, $schema);
+	}
+
 	/**
 	 * Get the form fields for a data to edit.
 	 *

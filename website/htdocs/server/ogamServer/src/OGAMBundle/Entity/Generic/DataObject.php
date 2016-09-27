@@ -17,8 +17,6 @@ use OGAMBundle\Entity\Metadata\TableField;
 
 /**
  * A data object is used to store a values of a line of data (from any table of a database).
- *
- * @SuppressWarnings checkUnusedVariables
  */
 class DataObject {
 

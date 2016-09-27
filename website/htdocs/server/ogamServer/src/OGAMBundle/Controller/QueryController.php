@@ -182,7 +182,11 @@ class QueryController extends Controller {
 	        $queryForm = $request->getSession()->get('queryForm');
 	    
 	        // Call the service to get the definition of the columns
-	        $this->get('ogam.manager.query')->prepareResultLocations($queryForm);
+	        $userInfos = [
+	            "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
+	            "userCanQueryOtherProvider" => $this->getUser() && $this->isGranted('DATA_QUERY_OTHER_PROVIDER')
+	        ];
+	        $this->get('ogam.manager.query')->prepareResultLocations($queryForm, $userInfos);
 	    
 	        // Execute the request
 	        $resultLocationModel = $this->get('doctrine')->getRepository(ResultLocation::class);
