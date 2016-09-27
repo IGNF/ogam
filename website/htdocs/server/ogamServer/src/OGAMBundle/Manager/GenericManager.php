@@ -458,6 +458,56 @@ class GenericManager {
 	}
 	
 	
+	/**
+	 * Delete a line of data from a table.
+	 *
+	 * @param DataObject $data the shell of the data object with the values for the primary key.
+	 * @throws an exception if an error occur during delete
+	 */
+	public function deleteData($data) {
+	
+	    /** @var $data DataObject **/
+	    $tableFormat = $data->tableFormat;
+	    /** @var $tableFormat TableFormat **/
+	
+	    $this->logger->info('deleteData');
+	
+	    $schema = $tableFormat->getSchema();
+	
+	    // Get the values from the data table
+	    $sql = "DELETE FROM " . $schema->getName() . "." . $tableFormat->getTableName();
+	    $sql .= " WHERE (1 = 1) ";
+	
+	    // Build the WHERE clause with the info from the PK.
+	    foreach ($data->infoFields as $primaryKey) {
+	        /* @var $primaryKey Application_Object_Metadata_TableField */
+	
+	        // Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
+	        if (!($tableFormat->getSchemaCode() === "RAW_DATA" && $primaryKey->getData()->getData() === "SUBMISSION_ID")) {
+	
+	            if ($primaryKey->getData()->getUnit()->getType() === "NUMERIC" || $primaryKey->getData()->getUnit()->getType() === "INTEGER") {
+	                $sql .= " AND " . $primaryKey->getColumnName() . " = " . $primaryKey->value;
+	            } else if ($primaryKey->getData()->getUnit()->getType() === "ARRAY") {
+	                // Arrays not handlmed as primary keys
+	                throw new \Exception("A primary key should not be of type ARRAY");
+	            } else {
+	                $sql .= " AND " . $primaryKey->getColumnName() . " = '" . $primaryKey->value . "'";
+	            }
+	        }
+	    }
+	
+	    $this->logger->info('deleteData : ' . $sql);
+	
+	    $request = $this->rawdb->prepare($sql);
+	
+	    try {
+	        $request->execute();
+	    } catch (Exception $e) {
+	        $this->logger->err('Error while deleting data  : ' . $e->getMessage());
+	        throw new \Exception("Error while deleting data  : " . $e->getMessage());
+	    }
+	}
+	
 	public function setLogger($logger){
 		$this->logger = $logger;
 	}

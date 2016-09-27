@@ -94,7 +94,7 @@ class GenericService {
 		$data->tableFormat = $this->metadataModel->getRepository(TableFormat::class)->findOneBy(array('schema'=> $schema,'format'=> $format));
 
 		// Get all the description of the Table Fields corresponding to the format
-		$tableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $format, $datasetId);
+		$tableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $format, $datasetId, $this->locale);
 	
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
