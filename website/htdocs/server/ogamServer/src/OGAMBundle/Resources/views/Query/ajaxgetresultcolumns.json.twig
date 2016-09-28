@@ -1,11 +1,21 @@
 {% extends  "metadata_entity.json.twig" %}
 
-{% block form_field_data %}"{{ data.data }}"{% endblock %}
-
 {% block response_data %}
 [
     {% for field in columns %}
-        {{ block('form_field') }},
+    {
+        "name": "{{ field.id }}",
+        "format": "{{ field.format.format }}",
+        "data": "{{ field.data.data }}",
+        "inputType": "{{ field.inputType }}",
+        "decimals": {{ field.decimals|json_encode }},
+        "label": "{{ field.data.label }}",
+        "definition": "{{ field.data.definition }}",
+        "unit": "{{ field.data.unit.unit }}",
+        "type": "{{ field.data.unit.type }}",
+        "subtype": "{{ field.data.unit.subtype }}",
+        "hidden": false
+    },
     {% endfor %}
     {# Add the identifier of the line #}
     {

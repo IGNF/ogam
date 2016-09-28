@@ -105,14 +105,14 @@ Ext.define('OgamDesktop.ux.form.field.Factory', function () {
             case 'CODE':
             	var radios = [];
             	if(record.codes){
-	            	for(const code of record.codes) {
-	            		radios.push({
-	            				xtype:'radio',
-	            				inputValue: code.code,
-	            				boxLabel:code.label,
-	            				checked:code.code === record.value
-	            		})
-	            	}
+            		record.codes.forEach(function (code, index) {
+            			radios.push({
+            				xtype:'radio',
+            				inputValue: code.code,
+            				boxLabel:code.label,
+            				checked:code.code === record.value
+            			});
+            		});
 	            	field.items=radios;
             	}
                 break;
