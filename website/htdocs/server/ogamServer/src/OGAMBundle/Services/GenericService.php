@@ -304,10 +304,9 @@ class GenericService {
 	 *        	if true, will use an exact equal (no like %% and no IN (xxx) for trees).
 	 * @return String the WHERE part of the SQL query (ex : 'AND BASAL_AREA = 6.05')
 	 */
-	public function buildWhereItem($schemaCode, $tableField, $exact = false) {
+	public function buildWhereItem($schemaCode, $tableField, $value, $exact = false) {
 		$sql = "";
 
-		$value = $tableField->value;
 		$column = $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName();
 	
 		// Set the projection for the geometries in this schema
@@ -908,7 +907,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 * 
 	 * @param string $schema
 	 * @param [\OGAMBundle\Entity\Generic\GenericField] $formFields
-	 * @return \OGAMBundle\Entity\Generic\GenericFieldMapping[]
+	 * @return GenericFieldMappingSet
 	 */
 	public function getFieldsMappings($schema, $formFields) {
 	    $fieldsMappings = [];
@@ -923,7 +922,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	        $fieldsMappings[] = $fieldMapping;
 	    }
 	    
-	    return $fieldsMappings;
+	    return new GenericFieldMappingSet($fieldsMappings, $schema);
 	}
 
 	
@@ -983,7 +982,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    //
 	    $select = "SELECT DISTINCT "; // The "distinct" is for the case where we have some criteria but no result columns selected on the last table
 	    foreach ($formFields as $formField) {
-	        $tableField = $mappingSet->getFieldMapping($formField)->getDstField()->getMetadata();
+	        $tableField = $mappingSet->getDstField($formField)->getMetadata();
 	        $select .= $this->buildSelectItem($tableField, $options) . ", ";
 	    }
 	    $select = substr($select, 0, -2);
@@ -993,7 +992,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    // We use the last column of the leaf table
 	    //
 	    // Get the leaf table
-	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingSet());
+	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingArray());
 	    $rootTable = reset($tables);
 	    $reversedTable = array_reverse($tables); // Only variables should be passed by reference
 	    $leafTable = array_shift($reversedTable);
@@ -1019,7 +1018,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	
 	    // Right management
 	    // Get back the provider id of the data
-	    if ($userInfos['DATA_EDITION_OTHER_PROVIDER'] && $hasColumnProvider) {
+	    if (!$userInfos['DATA_EDITION_OTHER_PROVIDER'] && $hasColumnProvider) {
 	        $select .= ", " . $leafTable->getTableFormat()->getFormat() . ".provider_id as _provider_id";
 	    }
 	
@@ -1044,7 +1043,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    //
 	
 	    // Prepare the list of needed tables
-	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingSet());
+	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingArray());
 	
 	    // Add the root table;
 	    $rootTable = array_shift($tables);
@@ -1085,7 +1084,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    $this->logger->debug('generateSQLWhereRequest');
 	
 	    // Prepare the list of needed tables
-	    $tables = $this->getAllFormats($schemaCode, $mappingSet->getFieldMappingSet());
+	    $tables = $this->getAllFormats($schemaCode, $mappingSet->getFieldMappingArray());
 	
 	    // Add the root table;
 	    $rootTable = array_shift($tables);
@@ -1099,13 +1098,13 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    //
 	    $where = " WHERE (1 = 1)";
 	    foreach ($formFields as $formField) {
-	        $tableField = $mappingSet->getFieldMapping($formField)->getDstField()->getMetadata();
-	        $where .= $this->buildWhereItem($schemaCode, $tableField, false);
+	        $tableField = $mappingSet->getDstField($formField)->getMetadata();
+	        $where .= $this->buildWhereItem($schemaCode, $tableField, $formField->getValue(), false);
 	    }
 	
 	    // Right management
 	    // Check the provider id of the logged user
-        if ($userInfos['DATA_QUERY_OTHER_PROVIDER'] && $hasColumnProvider) {
+        if (!$userInfos['DATA_QUERY_OTHER_PROVIDER'] && $hasColumnProvider) {
             $where .= " AND " . $rootTable->getTableFormat()->getFormat() . ".provider_id = '" . $userInfos['providerId'] . "'";
         }
 	
@@ -1127,7 +1126,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    $this->logger->debug('generateSQLPrimaryKey');
 	
 	    // Get the left table;
-	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingSet());
+	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingArray());
 	    $leafTable = array_pop($tables);
 	
 	    $keys = $leafTable->getTableFormat()->getPrimaryKeys();

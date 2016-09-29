@@ -14,6 +14,8 @@ use OGAMBundle\Entity\Generic\QueryForm;
 use OGAMBundle\Repository\GenericRepository;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Doctrine\ORM\NoResultException;
+use OGAMBundle\OGAMBundle;
+use OGAMBundle\Entity\Generic\GenericField;
 
 /**
  *
@@ -140,7 +142,7 @@ class QueryService {
 	    $this->logger->debug('prepareResultLocations');
 	
 	    // Get the mappings for the query form fields
-	    $mappingSet = $this->getQueryFormFieldsMappings($this->schema, $queryForm);
+	    $mappingSet = $queryForm->getFieldMappingSet();
 
         // Configure the projection systems
         $visualisationSRS = $this->configuration->getConfig('srs_visualisation', '3857');
@@ -156,7 +158,7 @@ class QueryService {
         $this->doctrine->getRepository(ResultLocation::class, 'mapping')->cleanPreviousResults($sessionId);
 
         // Identify the field carrying the location information
-        $tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingSet());
+        $tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingArray());
         $locationField = $this->metadataModel->getRepository(TableField::class)->getGeometryField($this->schema, array_keys($tables), $this->locale);
         $locationTableInfo = $this->metadataModel->getRepository(TableFormat::class)->getTableFormat($this->schema, $locationField->getFormat()->getFormat(), $this->locale);
 
@@ -178,7 +180,7 @@ class QueryService {
 	    $this->logger->debug('getResultColumns');
 
 	    // Get the mappings for the query form fields
-	    $mappingSet = $this->getQueryFormFieldsMappings($this->schema, $queryForm);
+	    $mappingSet = $queryForm->getFieldMappingSet();
 	
         // Generate the SQL Request
         $select = $this->genericService->generateSQLSelectRequest($this->schema, $queryForm->getColumns(), $mappingSet, $userInfos);
@@ -187,7 +189,7 @@ class QueryService {
         $sqlPKey = $this->genericService->generateSQLPrimaryKey($this->schema, $mappingSet);
 
         // Identify the field carrying the location information
-        $tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingSet());
+        $tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingArray());
         $locationField = $this->metadataModel->getRepository(TableField::class)->getGeometryField($this->schema, array_keys($tables), $this->locale);
 
         $this->logger->debug('$select : ' . $select);
@@ -199,28 +201,29 @@ class QueryService {
 
         // Store the metadata in session for subsequent requests
         //$session->set('query_schema', $this->schema); used?
-        //$session->set('query_queryForm', $queryForm); used?
+        //$session->set('query_queryForm', $queryForm); still done into the action ajaxbuildrequest
+        $session->set('query_QueryFormMappingSet', $select);
         $session->set('query_SQLSelect', $select);
         $session->set('query_SQLFrom', $from);
         $session->set('query_SQLWhere', $where);
         $session->set('query_SQLPkey', $sqlPKey);
         //$session->set('query_locationField', $locationField); used?
-        $session->set('query_count', $countResult); // result count
+        $session->set('query_Count', $countResult); // result count
         
         //old
         //$session->set('queryObject', $queryObject);
-        //$session->set('resultColumns', $queryObject->editableFields);
+        //$session->set('resultColumns', $queryObject->editableFields); Not need can be find with $queryForm->getColumns()
         //$session->set('datasetId', $queryForm->getDatasetId());
 	}
 	
-    /**
-     * Return the total count of query result
-     * 
-     * @param string $from The FROM part of the query
-     * @param string $where The WHERE part of the query
-     * @throws NoResultException
-     * @return integer The total count
-     */
+	/**
+	 * Return the total count of query result
+	 *
+	 * @param string $from The FROM part of the query
+	 * @param string $where The WHERE part of the query
+	 * @throws NoResultException
+	 * @return integer The total count
+	 */
 	private function _getQueryResultsCount ($from, $where) {
 	    $conn = $this->doctrine->getManager()->getConnection();
 	    $sql = "SELECT COUNT(*) as count " . $from . $where;
@@ -253,19 +256,148 @@ class QueryService {
 	}
 	
 	/**
-	 * Return the queryForm fields mappings in the provided schema
+	 * Set the fields mappings for the provided schema into the query form.
 	 *
 	 * @param string $schema
 	 * @param \OGAMBundle\Entity\Generic\QueryForm $queryForm
 	 *        	the list of query form fields
-	 * @return \OGAMBundle\Entity\Generic\GenericFieldMappingSet
 	 */
-	public function getQueryFormFieldsMappings($schema, $queryForm) {
-	    $fieldsMappings = [];
-	    $fieldsMappings = $this->genericService->getFieldsMappings($schema, $queryForm->getCriteria());
-	    $fieldsMappings = array_merge($fieldsMappings, $this->genericService->getFieldsMappings($schema, $queryForm->getColumns()));
-	    return new GenericFieldMappingSet($fieldsMappings, $schema);
+	public function setQueryFormFieldsMappings($queryForm) {
+	    $mappingSet = $this->genericService->getFieldsMappings($this->schema, $queryForm->getCriteria());
+	    $mappingSet->addFieldMappingSet($this->genericService->getFieldsMappings($this->schema, $queryForm->getColumns()));
+	    $queryForm->setFieldMappingSet($mappingSet);
 	}
+
+	/**
+	 * Get a page of query result data.
+	 *
+	 * @param Integer $start
+	 *        	the start line number
+	 * @param Integer $length
+	 *        	the size of a page
+	 * @param String $sort
+	 *        	the sort column
+	 * @param String $sortDir
+	 *        	the sort direction (ASC or DESC)
+	 * @param Session $session
+	 *        	the current session
+	 * @param Array $userInfos
+	 *        	Few user informations
+	 * @return JSON
+	 */
+	public function getResultRows($start, $length, $sort, $sortDir, $session, $userInfos) {
+	    $this->logger->debug('getResultRows');
+	
+        // Get the request from the session
+        $queryForm = $session->get('query_QueryForm');
+        // Get the mappings for the query form fields
+        $this->setQueryFormFieldsMappings($queryForm);
+        
+        // Retrieve the SQL request from the session
+        $select = $session->get('query_SQLSelect');
+        // Il ne doit pas y avoir de DISTINCT pour pouvoir faire un Index Scan
+        $select = str_replace(" DISTINCT", "", $select);
+
+        $from = $session->get('query_SQLFrom');
+        $where = $session->get('query_SQLWhere');
+
+        // Subquery (for getting desired rows)
+        $pKey = $session->get('query_SQLPkey');
+        $subquery = "SELECT " . $pKey . $from . $where;
+
+        $order = "";
+        if (!empty($sort)) {
+            // $sort contains the form format and field
+            $split = explode("__", $sort);
+            $formField = new GenericField($split[0], $split[1]);
+            $dstField =  $queryForm->getFieldMappingSet()->getDstField($formField);
+            $key = $dstField->getFormat() . "." . $dstField->getData();
+            $order .= " ORDER BY " . $key . " " . $sortDir;
+        } else {
+            $order .= " ORDER BY " . $pKey;
+        }
+
+        $filter = "";
+        if (!empty($length)) {
+            $filter .= " LIMIT " . $length;
+        }
+        if (!empty($start)) {
+            $filter .= " OFFSET " . $start;
+        }
+
+        // Build complete query
+        $query = $select . $from . " WHERE (" . $pKey . ") IN (" . $subquery . $order . $filter . ")" . $order;
+
+        // Execute the request
+        $result = $this->_getQueryResults($query);
+
+        // Retrive the session-stored info
+        $columnsDstFields = $queryForm->getColumnsDstFields();
+
+        $resultRows = [];
+        foreach ($result as $line) {
+            $resultRow = [];
+            foreach ($columnsDstFields as $columnDstField) {
+
+                $tableField = $columnDstField->getMetadata();
+                $key = strtolower($tableField->getName());
+                $value = $line[$key];
+
+                // Manage code traduction
+                if ($tableField->getData()->getUnit()->getType() === "CODE" && $value != "") {
+                    $label = $this->genericService->getValueLabel($tableField, $value);
+                    $resultRow[] = $label === null ? '' : $label;
+                } else if ($tableField->getData()->getUnit()->getType() === "ARRAY" && $value != "") {
+                    // Split the array items
+                    $arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
+                    $label = '';
+                    foreach ($arrayValues as $arrayValue) {
+                        $label .= $this->genericService->getValueLabel($tableField, $arrayValue);
+                        $label .= ',';
+                    }
+                    if ($label !== '') {
+                        $label = substr($label, 0, -1);
+                    }
+                    $label = '[' . $label . ']';
+
+                    $resultRow[] = $label === null ? '' : $label;
+                } else {
+                    $resultRow[] = $value;
+                }
+            }
+
+            // Add the line id
+            $resultRow[] = $line['id'];
+
+            // Add the plot location in WKT
+            $resultRow[] = $line['location_centroid']; // The last column is the location center
+
+            // Right management : add the provider id of the data
+            if (!$userInfos['DATA_QUERY_OTHER_PROVIDER']) {
+                $resultRow[] = $line['_provider_id'];
+            }
+            
+            $resultRows[] = $resultRow;
+        }
+	
+	    return $resultRows;
+	}
+	
+	/**
+	 * Return the query result(s)
+	 *
+	 * @param string $sql The sql of the query
+	 * @return array The result(s)
+	 */
+	private function _getQueryResults ($sql) {
+	    $conn = $this->doctrine->getManager()->getConnection();
+	    $stmt = $conn->prepare($sql);
+	    $stmt->execute();
+	    $result = $stmt->fetchAll();
+	    return $result;
+	}
+
+	/*********************** EDITION ******************************************************/
 
 	/**
 	 * Get the form fields for a data to edit.

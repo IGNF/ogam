@@ -127,7 +127,7 @@ class QueryController extends Controller {
     
             if ($queryForm->isValid()) {
                 // Store the request parameters in session
-                $request->getSession()->set('queryForm', $queryForm);
+                $request->getSession()->set('query_QueryForm', $queryForm);
     
                 // Activate the result layer
                 // TODO: Check if still mandatory
@@ -179,8 +179,10 @@ class QueryController extends Controller {
 	    try {
 	    
 	        // Get the request from the session
-	        $queryForm = $request->getSession()->get('queryForm');
-	    
+	        $queryForm = $request->getSession()->get('query_QueryForm');
+	        // Get the mappings for the query form fields
+	        $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
+	        
 	        // Call the service to get the definition of the columns
 	        $userInfos = [
 	            "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
@@ -209,8 +211,10 @@ class QueryController extends Controller {
 
 		try {
 			// Get the request from the session
-	        $queryForm = $request->getSession()->get('queryForm');
-
+	        $queryForm = $request->getSession()->get('query_QueryForm');
+	        // Get the mappings for the query form fields
+	        $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
+	        
 			// Call the service to get the definition of the columns
 	        $userInfos = [
 	            "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
@@ -231,7 +235,32 @@ class QueryController extends Controller {
 			return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
 		}
 	}
-	
+
+	/**
+	 * @Route("/ajaxgetresultrows")
+	 */
+	public function ajaxgetresultrowsAction(Request $request) {
+	    $logger = $this->get ( 'logger' );
+		$logger->debug('ajaxgetresultrows');
+
+		// Get the datatable parameters
+		$start = $request->request->getInt('start');
+		$length = $request->request->getInt('limit');
+		$sort = $request->request->get('sort');
+		$sortObj = json_decode($sort, true)[0];
+
+		// Call the service to get the definition of the columns
+		$userInfos = [
+		    "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isGranted('DATA_QUERY_OTHER_PROVIDER')
+		];
+		// Send the result as a JSON String
+		return new JsonResponse([
+		    'success' => true, 
+		    'total' => $request->getSession()->get('query_Count'), 
+		    'data' => $this->get('ogam.query_service')->getResultRows($start, $length, $sortObj["property"], $sortObj["direction"], $request->getSession(), $userInfos)
+		]);
+	}
+
 	/**
 	 * @Route("/ajaxgetpredefinedrequestlist")
 	 */
@@ -264,15 +293,6 @@ class QueryController extends Controller {
 	 */
 	public function ajaxgetqueryformfieldsAction() {
 		return $this->render ( 'OGAMBundle:Query:ajaxgetqueryformfields.html.twig', array ()
-		// ...
-		 );
-	}
-	
-	/**
-	 * @Route("/ajaxgetresultrows")
-	 */
-	public function ajaxgetresultrowsAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetresultrows.html.twig', array ()
 		// ...
 		 );
 	}

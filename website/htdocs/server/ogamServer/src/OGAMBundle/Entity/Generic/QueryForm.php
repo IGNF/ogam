@@ -26,6 +26,12 @@ class QueryForm {
 	private $columns = array();
 
 	/**
+	 * The field mapping set (Form -> Table)
+	 * @var GenericFieldMappingSet
+	 */
+	private $fieldMappingSet;
+	
+	/**
 	 * Return the dataset Id
 	 * @return string the dataset Id
 	 */
@@ -100,6 +106,36 @@ class QueryForm {
 		return $this->columns;
 	}
 
+	/**
+	 * Get the field mapping set (Form -> Table)
+	 *
+	 * @return the GenericFieldMappingSet
+	 */
+	public function getFieldMappingSet()
+	{
+	    return $this->fieldMappingSet;
+	}
+	
+	/**
+	 * Set the field mapping set (Form -> Table)
+	 * 
+	 * @param GenericFieldMappingSet $fieldMappingSet
+	 */
+	public function setFieldMappingSet(GenericFieldMappingSet $fieldMappingSet)
+	{
+	    $this->fieldMappingSet = $fieldMappingSet;
+	    return $this;
+	}
+	
+	/**
+	 * Get the column destination fields
+	 * 
+	 * @return \OGAMBundle\Entity\Generic\GenericField[]
+	 */
+	public function getColumnsDstFields() {
+	    return $this->fieldMappingSet->getDstFields($this->columns);
+	}
+	
 	/**
 	 * Get the request validity.
 	 *

@@ -1,11 +1,11 @@
 <?php
-
 namespace OGAMBundle\Entity\Generic;
 
 /**
  * A data object is used to store a values of a line of data (from any table of a database).
  */
-class GenericFieldMappingSet {
+class GenericFieldMappingSet
+{
 
     /**
      * The schema use to filter the mapping
@@ -15,20 +15,28 @@ class GenericFieldMappingSet {
     private $schema;
 
     /**
-     * The field mapping set
+     * The field mapping array
      *
-     * @var [OGAMBundle\Entity\Generic\GenericFieldMapping]
+     * @var OGAMBundle\Entity\Generic\GenericFieldMapping[]
      */
-    private $fieldMappingSet;
+    private $fieldMappingArray;
 
-    function __construct($fieldMappingSet, $schema) {
-        $this->fieldMappingSet = $fieldMappingSet;
+    /**
+     * Construct a generic field mapping set.
+     *
+     * @param GenericFieldMapping[] $fieldMappingArray
+     * @param string $schema
+     */
+    function __construct(array $fieldMappingArray, $schema)
+    {
+        $this->fieldMappingArray = $fieldMappingArray;
         $this->schema = $schema;
     }
-    
+
     /**
+     * Return the schema.
      *
-     * @return the string
+     * @return string The schema
      */
     public function getSchema()
     {
@@ -36,20 +44,92 @@ class GenericFieldMappingSet {
     }
 
     /**
+     * Return the field mapping array.
      *
-     * @return the field mapping set
+     * @return the field mapping array
      */
-    public function getFieldMappingSet()
+    public function getFieldMappingArray()
     {
-        return $this->fieldMappingSet;
+        return $this->fieldMappingArray;
     }
-    
-    public function getFieldMapping($srcField){
-        for($i = 0; $i < count($this->fieldMappingSet); $i++){
-            if($this->fieldMappingSet[$i]->getSrcField()->getId() === $srcField->getId()) {
-                return $this->fieldMappingSet[$i];
+
+    /**
+     * Return the mapping corresponding to the source field.
+     *
+     * @param GenericField $srcField
+     * @return \OGAMBundle\Entity\Generic\GenericFieldMapping|NULL
+     */
+    private function getFieldMapping(GenericField $srcField)
+    {
+        for ($i = 0; $i < count($this->fieldMappingArray); $i ++) {
+            if ($this->fieldMappingArray[$i]->getSrcField()->getId() === $srcField->getId()) {
+                return $this->fieldMappingArray[$i];
             }
         }
         return null;
+    }
+    
+    /**
+     * Return the destination field corresponding to the source field.
+     *
+     * @param GenericField $srcField
+     * @return \OGAMBundle\Entity\Generic\GenericField|NULL
+     */
+    public function getDstField(GenericField $srcField)
+    {
+        return $this->getFieldMapping($srcField)->getDstField();
+    }
+    
+    /**
+     * Return the sub field mapping set corresponding to the source fields.
+     *
+     * @param GenericField[] $srcFields
+     * @return \OGAMBundle\Entity\Generic\GenericFieldMappingSet
+     */
+    private function getSubFieldMappingSet(array $srcFields)
+    {
+        $srcFieldsIds = [];
+        for ($i = 0; $i < count($srcFields); $i ++) {
+            $srcFieldsIds[] = $srcFields[$i]->getId();
+        }
+        $subFieldMappingSetArray = [];
+        for ($i = 0; $i < count($this->fieldMappingArray); $i ++) {
+            if (in_array($this->fieldMappingArray[$i]->getSrcField()->getId(), $srcFieldsIds, true)) {
+                $subFieldMappingSetArray[] = $this->fieldMappingArray[$i];
+            }
+        }
+        return new GenericFieldMappingSet($subFieldMappingSetArray, $this->schema);
+    }
+    
+    /**
+     * Return the destination fields corresponding to the source fields.
+     *
+     * @param GenericField[] $srcFields
+     * @return GenericField[] the destination fields
+     */
+    public function getDstFields(array $srcFields)
+    {
+        $dstFields = [];
+        $subFieldMappingSetArray = $this->getSubFieldMappingSet($srcFields)->getFieldMappingArray();
+        for ($i = 0; $i < count($subFieldMappingSetArray); $i ++) {
+            $dstFields[] = $subFieldMappingSetArray[$i]->getDstField();
+        }
+        return $dstFields;
+    }
+
+    /**
+     * Add a field mapping set to this mapping set.
+     *
+     * @param GenericFieldMappingSet $fieldMappingSet
+     * @return \OGAMBundle\Entity\Generic\GenericFieldMappingSet
+     */
+    public function addFieldMappingSet(GenericFieldMappingSet $fieldMappingSet)
+    {
+        if ($fieldMappingSet->getSchema() === $this->schema) {
+            $this->fieldMappingArray = array_merge($this->fieldMappingArray, $fieldMappingSet->getFieldMappingArray());
+        } else {
+            throw new \Exception("The schema of the added mapping set is different of the schema of the current mapping set.");
+        }
+        return $this;
     }
 }
