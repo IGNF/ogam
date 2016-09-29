@@ -616,7 +616,7 @@ class GenericService {
 	private function _buildDateWhereItem($tableField, $value) {
 		$sql = "";
 		$value = trim($value);
-		$column = $tableField->format . "." . $tableField->columnName;
+		$column = $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName();
 	
 		if (!empty($value)) {
 			if (strlen($value) === 10) {
@@ -671,7 +671,7 @@ class GenericService {
 		$gtOperator= '>=';
 		$ltOperator = '<=';
 		$value = trim($value);
-		$column = $tableField->format . "." . $tableField->columnName;
+		$column = $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName();
 	
 		if (!empty($value)) {
 			if (strlen($value) === strlen($timeFormat)) {
@@ -713,7 +713,7 @@ class GenericService {
 	/**
 	 * Build a WHERE criteria for a single numeric value.
 	 *
-	 * @param Application_Object_Metadata_TableField $tableField
+	 * @param TableField $tableField
 	 *        	a criteria field.
 	 * @param String $value
 	 *        	a numeric criterium.
@@ -737,30 +737,30 @@ class GenericService {
 			$sql2 = '';
 	
 			if (($minValue !== null) && ($minValue !== '')) {
-				$sql2 .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue;
+				$sql2 .= $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName() . " >= " . $minValue;
 			}
 			if (($maxValue !== null) && ($maxValue !== '')) {
 				if ($sql2 !== '') {
 					$sql2 .= ' AND ';
 				}
-				$sql2 .= $tableField->format . "." . $tableField->columnName . " <= " . $maxValue;
+				$sql2 .= $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName() . " <= " . $maxValue;
 			}
 			$sql .= '(' . $sql2 . ')';
 		} else if ($posInf !== false) {
 			// Cas où on a juste un max
 			$maxValue = trim(substr($value, $posInf + 2));
 			if (($maxValue !== null) && ($maxValue !== '')) {
-				$sql .= $tableField->format . "." . $tableField->columnName . " <= " . $maxValue;
+				$sql .= $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName() . " <= " . $maxValue;
 			}
 		} else if ($posSup !== false) {
 			// Cas où on a juste un min
 			$minValue = trim(substr($value, $posSup + 2));
 			if (($minValue !== null) && ($minValue !== '')) {
-				$sql .= $tableField->format . "." . $tableField->columnName . " >= " . $minValue;
+				$sql .= $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName() . " >= " . $minValue;
 			}
 		} else {
 			// One value, we make an equality comparison
-			$sql .= $tableField->format . "." . $tableField->columnName . " = " . $value;
+			$sql .= $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName() . " = " . $value;
 		}
 	
 		return $sql;

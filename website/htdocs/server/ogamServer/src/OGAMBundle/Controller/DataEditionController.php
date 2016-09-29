@@ -8,7 +8,6 @@ use OGAMBundle\Entity\Generic\DataObject;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use OGAMBundle\Entity\Metadata\TableField;
@@ -17,10 +16,10 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type as FType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Zend\Validator\Date;
-use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use OGAMBundle\Form\AjaxType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  *
@@ -41,9 +40,9 @@ class DataEditionController extends Controller
 
     /**
      * Display the "index" page.
-	 *
-	 * @param String $message
-	 *        	a message to be displayed on the page
+     *
+     * @param String $message
+     *            a message to be displayed on the page
      * @Route("/show-index")
      */
     public function showIndexAction()
@@ -56,91 +55,90 @@ class DataEditionController extends Controller
     /**
      * Parse request parameters and build the corresponding data object.
      *
-     * @param Request $request
-     *        	The request object.
+     * @param Request $request The request object.
      * @return DataObject the data object
      */
     protected function getDataFromRequest($request) {
-		$params = array();
-		$id = $request->attributes->get('id');
-		if (is_string($id)){
-			$list = explode('/', $id);// will be like key1/value1/key2/value2
-			if(count($list) % 2){//is an key+value list  so odd is error
-				$this->createNotFoundException('DataObject not found');
-			}
-			$params = array_column(array_chunk($list, 2), 1, 0);//make array key =>value
-		}
+        $params = array();
+        $id = $request->attributes->get('id');
+        if (is_string($id)){
+            $list = explode('/', $id);// will be like key1/value1/key2/value2
+            if(count($list) % 2){//is an key+value list  so odd is error
+                $this->createNotFoundException('DataObject not found');
+            }
+            $params = array_column(array_chunk($list, 2), 1, 0);//make array key =>value
+        }
 
-		$schema = $params["SCHEMA"];
-		$format = $params["FORMAT"];
+        $schema = $params["SCHEMA"];
+        $format = $params["FORMAT"];
 
-		$data = $this->get('ogam.generic_service')->buildDataObject($schema, $format);
+        $data = $this->get('ogam.generic_service')->buildDataObject($schema, $format);
 
-		// Complete the primary key info with the session values
-		foreach ($data->infoFields as $infoField) {
-			if (!empty($params[$infoField->getData()->getData()])) {
-				$infoField->value = $params[$infoField->getData()->getData()];
-			}
-		}
+        // Complete the primary key info with the session values
+        foreach ($data->infoFields as $infoField) {
+            if (!empty($params[$infoField->getData()->getData()])) {
+                $infoField->value = $params[$infoField->getData()->getData()];
+            }
+        }
 
-		// Complete the other fields with the session values (particulary join_keys)
-		foreach ($data->editableFields as $editableField) {
-			if (!empty($params[$editableField->getData()->getData()])) {
-				$editableField->value = $params[$editableField->getData()->getData()];
-			}
-		}
+        // Complete the other fields with the session values (particulary join_keys)
+        foreach ($data->editableFields as $editableField) {
+            if (!empty($params[$editableField->getData()->getData()])) {
+                $editableField->value = $params[$editableField->getData()->getData()];
+            }
+        }
 
-    	return $data;
+        return $data;
     }
 
     /**
      * Edit a data.
-	 *
-	 * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
-	 *
-	 * @param DataObject $data The data to display (optional)
-	 * @param String $message a confirmation/warning message to display (optional)
-	 * @return the view
+     *
+     * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
+     *
+     * @param DataObject $data The data to display (optional)
+     * @param String $message a confirmation/warning message to display (optional)
+     * @return Response
      * @Route("/show-edit-data/{id}", requirements={"id"= ".*"})
      */
     public function showEditDataAction(Request $request, $data = null, $message = '')
     {
         $genericModel = $this->get('ogam.manager.generic');
         $mode = 'EDIT';
-    	// If data is set then we don't need to read from database
-    	if ($data === null) {
-    		$data = $this->getDataFromRequest($request);
-    		$genericModel->getDatum($data);
-    	}
+        // If data is set then we don't need to read from database
+        if ($data === null) {
+            $data = $this->getDataFromRequest($request);
+            $genericModel->getDatum($data);
+        }
 
-    	// If the objet is not existing then we are in create mode instead of edit mode
+        // If the objet is not existing then we are in create mode instead of edit mode
 
-    	// Get the ancestors of the data objet from the database (to generate a summary)
-    	$ancestors = $genericModel->getAncestors($data);
+        // Get the ancestors of the data objet from the database (to generate a summary)
+        $ancestors = $genericModel->getAncestors($data);
 
-    	// Get the childs of the data objet from the database (to generate links)
-    	$children = $genericModel->getChildren($data);
+        // Get the childs of the data objet from the database (to generate links)
+        $children = $genericModel->getChildren($data);
 
-    	// Get the labels linked to the children table (to display the links)
-    	$childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->tableFormat);
+        // Get the labels linked to the children table (to display the links)
+        $childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->tableFormat);
 
-    	return
-    	$this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
-    		'dataId' => $data->getId(),
-			'tableFormat' => $data->tableFormat,
-			'ancestors' => $ancestors,
-			'data' => $data,
-			'children' => $children,
-			'childrenTableLabels'=> $childrenTableLabels,
-			'mode' => $mode,
-			'message' => $message,
-    	));
+        return
+        $this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
+            'dataId' => $data->getId(),
+            'tableFormat' => $data->tableFormat,
+            'ancestors' => $ancestors,
+            'data' => $data,
+            'children' => $children,
+            'childrenTableLabels'=> $childrenTableLabels,
+            'mode' => $mode,
+            'message' => $message,
+        ));
     }
 
     /**
      * Delete a data.
      *
-     * @return the view.
+     * @return Response
      * @Route("/ajax-delete-data/{id}", requirements={"id"= ".*"})
      */
     public function ajaxDeleteDataAction(Request $request) {
@@ -173,7 +171,7 @@ class DataEditionController extends Controller
                 if ($field->getData()->getUnit()->getType() === "IMAGE" && $field->value !== "") {
                     $uploadDir = $this->get('ogam.configuration_manager')->getConfig('image_upload_dir', '/var/www/html/upload/images');
                     $dir = $uploadDir . "/" . $data->getId() . "/" . $field->getName();
-                    $this->deleteDirectory($dir);
+                    //$this->deleteDirectory($dir);//TODO : delete related files (upload not implemented yet) 
                 }
             }
         
@@ -184,9 +182,10 @@ class DataEditionController extends Controller
             } catch (\Exception $e) {
                 $this->logger->err($e->getMessage());
                 $result = ['success'=>false, 'errorMessage'=> $this->get('translator')->trans('Error while deleting data')];
+                return $this->json($result);
             }
         
-            $result = ['success' =>true];
+            $result = ['success' => true];
         
             // If the data has an ancestor, we redirect to this ancestor
             if (!empty($ancestors)) {
@@ -197,7 +196,7 @@ class DataEditionController extends Controller
         
             $result['message'] = $this->get('translator')->trans('Data deleted');
         }
-    	return $this->json($result);
+        return $this->json($result);
     }
     
     /**
@@ -351,50 +350,50 @@ class DataEditionController extends Controller
      */
     protected function getEditDataForm($data, $mode) {
         $formBuilder = $this
-		->get('form.factory')
-  		->createNamedBuilder('edit_data_form', AjaxType::class);//use in ajax often 
+        ->get('form.factory')
+          ->createNamedBuilder('edit_data_form', AjaxType::class);//use in ajax often 
         
-  		//FIXME : action needed ?
-		$formBuilder->setAction($this->generateUrl('dataedition_validate_edit_data', array('MODE'=>$mode)));
-		
-		$formBuilder->setAttribute('class', 'editform');
-		
+          //FIXME : action needed ?
+        $formBuilder->setAction($this->generateUrl('dataedition_validate_edit_data', array('MODE'=>$mode)));
+        
+        $formBuilder->setAttribute('class', 'editform');
+        
 
-		// Dynamically build the form
-		//
-		// The key elements as labels
-		//
-		foreach ($data->infoFields as $tablefield) {
-		
-		    $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
-		    if (null !== $formField){
-    		    $elem = $this->getFormElement($formBuilder, $tablefield, $formField, true);
-    		    $elem->setAttribute('class', 'dataedit_key');
-    		    $formBuilder->add($elem);
-		    }
-		}
-		
-		//
-		// The editable elements as form fields
-		//
-		foreach ($data->editableFields as $tablefield) {
-		
-		    // Hardcoded value : We don't edit the line number (it's a technical element)
-		    if ($tablefield->getData()->getData() !== "LINE_NUMBER") {
+        // Dynamically build the form
+        //
+        // The key elements as labels
+        //
+        foreach ($data->infoFields as $tablefield) {
+        
+            $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
+            if (null !== $formField){
+                $elem = $this->getFormElement($formBuilder, $tablefield, $formField, true);
+                $elem->setAttribute('class', 'dataedit_key');
+                $formBuilder->add($elem);
+            }
+        }
+        
+        //
+        // The editable elements as form fields
+        //
+        foreach ($data->editableFields as $tablefield) {
+        
+            // Hardcoded value : We don't edit the line number (it's a technical element)
+            if ($tablefield->getData()->getData() !== "LINE_NUMBER") {
 
-		        $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
-		        if (null !== $formField){
-    		        $elem = $this->getFormElement($formBuilder, $tablefield, $formField, false);
-    		        $elem->setAttribute('class', 'dataedit_field');
-    		        $formBuilder->add($elem);
-		        }
-		    }
-		}
-		
-		//
-		// Add the submit element
-		//
-		$formBuilder->add('submit', FType\SubmitType::class, array('label' => 'Submit'));
+                $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
+                if (null !== $formField){
+                    $elem = $this->getFormElement($formBuilder, $tablefield, $formField, false);
+                    $elem->setAttribute('class', 'dataedit_field');
+                    $formBuilder->add($elem);
+                }
+            }
+        }
+        
+        //
+        // Add the submit element
+        //
+        $formBuilder->add('submit', FType\SubmitType::class, array('label' => 'Submit'));
 
         return $formBuilder->getForm();
     }
@@ -415,10 +414,12 @@ class DataEditionController extends Controller
 
         // Validate the form
         $form = $this->getEditDataForm($data, $mode);
-        
-        $form->submit(null,true);
-        //$form->handleRequest($request);//FIXME : don't set isSubmit === true
+
+
+        //$form->handleRequest($request);//FIXME :$form->handleRequest don't set isSubmit === true
         //$form->submit($request->request->all(), false);
+        //HotFIX
+        $form->submit(null,true);
         foreach($form->all() as $field) {
             $value = $request->request->get($form->getName(),null);
             if (null !== $value){
@@ -432,18 +433,10 @@ class DataEditionController extends Controller
         }
         
         if (!$form->isValid()) {
-        /*
-            // On réaffiche le formulaire avec les messages d'erreur
-            $view->form = $form;
-            $view->ancestors = $websiteSession->get('ancestors');
-            $view->tableFormat = $data->tableFormat;
-            $view->data = $data;
-            $view->children = $websiteSession->get('children');
-            $view->message = '';
-            $view->mode = $mode;
-        */
-
-            return $this->json(['success' => false, 'errorMessage'=> $this->get('translator')->trans("Invalid form"), 'errors'=> $form->getErrors(true,true)]);
+            return $this->json([
+                'success' =>     false,
+                'errorMessage'=> $this->get('translator')->trans("Invalid form"),
+                'errors'=>       $form->getErrors(true,true)]);
         } else {
         
             try {
@@ -513,9 +506,6 @@ class DataEditionController extends Controller
                 }
             }
         }
-    	return $this->render('OGAMBundle:DataEdition:ajax_validate_edit_data.json.twig', array(
-    			// ...
-    	));
     }
 
     /**
@@ -524,46 +514,44 @@ class DataEditionController extends Controller
      * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
      *
      * @param DataObject $data
-     *        	The data to display (optional)
+     *            The data to display (optional)
      * @param String $message
-     *        	A confirmation/warning message to display
+     *            A confirmation/warning message to display
      * @return the HTML view
      * @Route("/show-add-data/{id}", requirements={"id"= ".*"})
      * @Template(engine="php")
      */
     public function showAddDataAction(Request $request, DataObject $data = null, $message = '') {
-    	$mode = 'ADD';
+        $mode = 'ADD';
 
-    	// If data is set then we don't need to read from database
-    	if ($data === null) {
-    		$data = $this->getDataFromRequest($request);
-    	}
+        // If data is set then we don't need to read from database
+        if ($data === null) {
+            $data = $this->getDataFromRequest($request);
+        }
 
-    	// If the objet is not existing then we are in create mode instead of edit mode
+        // If the objet is not existing then we are in create mode instead of edit mode
 
-    	// Get the ancestors of the data objet from the database (to generate a summary)
-    	$ancestors = $this->get('ogam.manager.generic')->getAncestors($data);
+        // Get the ancestors of the data objet from the database (to generate a summary)
+        $ancestors = $this->get('ogam.manager.generic')->getAncestors($data);
 
-    	// Get the labels linked to the children table (to display the links)
-    	$childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->tableFormat);
-    	//$bag = new NamespacedAttributeBag('website','/');
-    	//$bag->set('data',)
-    	$bag = $request->getSession();
+        // Get the labels linked to the children table (to display the links)
+        $childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->tableFormat);
+        //$bag = new NamespacedAttributeBag('website','/');
+        //$bag->set('data',)
+        $bag = $request->getSession();
         $response = $this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
-    		'dataId' => $data->getId(),
-			'tableFormat' => $data->tableFormat,
-			'ancestors' => $ancestors,
-			'data' => $data,
-			'children' => array(), // No children in add mode
-			'childrenTableLabels'=> $childrenTableLabels,
-			'mode' => $mode,
-			'message' => $message,
-    	));
-    	$bag->replace(array('data' => $data, 'ancestors' => $ancestors));
+            'dataId' => $data->getId(),
+            'tableFormat' => $data->tableFormat,
+            'ancestors' => $ancestors,
+            'data' => $data,
+            'children' => array(), // No children in add mode
+            'childrenTableLabels'=> $childrenTableLabels,
+            'mode' => $mode,
+            'message' => $message,
+        ));
+        $bag->replace(array('data' => $data, 'ancestors' => $ancestors));
 
-    	return $response;
-    	//$this->render('OGAMBundle:DataEdition:show_add_data.html.twig', array(
-    	
+        return $response;
     }
 
     /**
@@ -606,7 +594,7 @@ class DataEditionController extends Controller
         $ser = new Serializer(array(new ObjectNormalizer()));
         $ser->normalize($data);// FIXME : treewalker force loading proxy element ...
         $bag->set('data', $data);
-    	return $this->json($res);
+        return $this->json($res);
     }
 
     /**
@@ -614,11 +602,11 @@ class DataEditionController extends Controller
      * @Route("/getparameters")
      */
     public function getparametersAction() {
-    	$user = $this->getUser();
-    	return $this->render('OGAMBundle:DataEdition:edit_parameters.js.twig', array(
-    			'checkEditionRights' =>  ($user && $this->isGranted('DATA_EDITION_OTHER_PROVIDER')) ? FALSE : TRUE,
-    			'userProviderId' => $user->getProvider()->getId(),
-    	));
+        $user = $this->getUser();
+        return $this->render('OGAMBundle:DataEdition:edit_parameters.js.twig', array(
+                'checkEditionRights' =>  ($user && $this->isGranted('DATA_EDITION_OTHER_PROVIDER')) ? FALSE : TRUE,
+                'userProviderId' => $user->getProvider()->getId(),
+        ));
     }
 
     /**
@@ -628,7 +616,7 @@ class DataEditionController extends Controller
      * @Route("/ajaximageupload")
      */
     public function ajaximageuploadAction() {
-    	return $this->json(array('succes' => TRUE));
+        return $this->json(array('succes' => TRUE));
     }
     
     protected function getQueryService() {
