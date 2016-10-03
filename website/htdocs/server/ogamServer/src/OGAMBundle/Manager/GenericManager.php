@@ -442,7 +442,7 @@ class GenericManager {
 	    // Build the WHERE clause with the info from the PK.
 	    foreach ($data->infoFields as $primaryKey) {
 	        // Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
-	        $sql .= $this->genericService->buildWhereItem($schema->getCode(), $primaryKey, true);
+	        $sql .= $this->genericService->buildWhereItem($schema->getCode(), $primaryKey, $primaryKey->value, true);
 	    }
 	
 	    $this->logger->info('updateData : ' . $sql);

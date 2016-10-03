@@ -278,7 +278,7 @@ class GenericService {
 	 *
 	 * @param String $schemaCode
 	 *        	the schema.
-	 * @param Array[Application_Object_Metadata_TableField] $criterias
+	 * @param Array[TableField] $criterias
 	 *        	the criterias.
 	 * @return String the WHERE part of the SQL query
 	 */
@@ -287,7 +287,7 @@ class GenericService {
 	
 		// Build the WHERE clause with the info from the PK.
 		foreach ($criterias as $tableField) {
-			$sql .= $this->buildWhereItem($schemaCode, $tableField, true); // exact match
+			$sql .= $this->buildWhereItem($schemaCode, $tableField, $tableField->value, true); // exact match
 		}
 	
 		return $sql;
