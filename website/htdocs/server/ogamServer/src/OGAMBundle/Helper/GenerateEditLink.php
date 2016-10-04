@@ -7,7 +7,7 @@ class GenerateEditLink extends Helper {
     /**
      * Generate a link corresponding to a data object
      *
-     * @param DataObject $data
+     * @param EditionForm $data
      * @return Link the HTML link
      */
     function generateEditLink($data) {
@@ -25,21 +25,21 @@ class GenerateEditLink extends Helper {
 	$urlArray['FORMAT'] = $data->tableFormat->getFormat();
 
 	// Add the PK elements
-	foreach ($data->infoFields as $infoField) {
-		$urlArray[$infoField->getData()->getData()] = $infoField->value;
+	foreach ($data->pkFields as $infoField) {
+		$urlArray[$infoField->getData()] = $infoField->getValue();
 	}
 
 	// Add the fields to generate the tooltip
 	$fields = array();
-	foreach ($data->getFields() as $field) {
-		if (is_array($field->valueLabel)) {
+	foreach ($data->all() as $field) {
+		if (is_array($field->getValueLabel())) {
 			$val = "";
-			foreach ($field->valueLabel as $value) {
+			foreach ($field->getValueLabel() as $value) {
 				$val .= htmlspecialchars($value, ENT_QUOTES, $this->getCharset()). ", ";
 			}
-			$fields[$field->getLabel()] = substr($val, 0, -2);
+			$fields[$field->getMetadata()->getLabel()] = substr($val, 0, -2);
 		} else {
-			$fields[$field->getLabel()] = htmlspecialchars($field->valueLabel, ENT_QUOTES, $this->getCharset());
+			$fields[$field->getMetadata()->getLabel()] = htmlspecialchars($field->getValueLabel(), ENT_QUOTES, $this->getCharset());
 		}
 	}
 	// output the result

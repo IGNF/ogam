@@ -1,6 +1,7 @@
 <?php
 namespace OGAMBundle\Helper;
 use Symfony\Component\Templating\Helper\Helper;
+use OGAMBundle\Entity\Generic\GenericField;
 
 class GenerateAddLink extends Helper {
 	/**
@@ -8,7 +9,7 @@ class GenerateAddLink extends Helper {
 	 *
 	 * @param String $schema The schema
 	 * @param String $format The format
-	 * @param Array[TableField] $infoFields The primary keys
+	 * @param Array[GenericField] $infoFields The primary keys
 	 * @return String the URL for the link
 	 */
 	function generateAddLink ($schema, $format, $infoFields) {
@@ -27,7 +28,7 @@ class GenerateAddLink extends Helper {
     
         // Add the PK elements
         foreach ($infoFields as $infoField) {
-            $urlArray[$infoField->getData()->getData()] = $infoField->value;
+            $urlArray[$infoField->getData()] = $infoField->getValue();
         }
     
         $uri='';

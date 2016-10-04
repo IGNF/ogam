@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Doctrine\ORM\NoResultException;
 use OGAMBundle\OGAMBundle;
 use OGAMBundle\Entity\Generic\GenericField;
+use OGAMBundle\Entity\Generic\EditionForm;
 
 /**
  *
@@ -402,9 +403,9 @@ class QueryService {
 	/**
 	 * Get the form fields for a data to edit.
 	 *
-	 * @param DataObject $data
+	 * @param EditionForm $data
 	 *        	the data object to edit
-	 * @return JSON.
+	 * @return array Serializable.
 	 */
 	public function getEditForm($data) {
 	    $this->logger->debug('getEditForm');
@@ -416,19 +417,19 @@ class QueryService {
 	/**
 	 * Generate the JSON structure corresponding to a list of edit fields.
 	 *
-	 * @param DataObject $data the data object to edit
+	 * @param EditionForm $data the data object to edit
 	 * @return array normalize value
 	 */
 	private function _generateEditForm($data) {
 	    $return = new \ArrayObject();
 	   /// beurk !! stop go view json
-	    foreach ($data->getInfoFields() as $tablefield) {
+	    foreach ($data->getPkFields() as $tablefield) {
 	        $formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 	        if (!empty($formField)) {
 	            $return->append($this->_generateEditField($formField, $tablefield));
 	        }
 	    }
-	    foreach ($data->getEditableFields() as $tablefield) {
+	    foreach ($data->getFields() as $tablefield) {
 	        $formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 	        if (!empty($formField)) {
 	            $return->append($this->_generateEditField($formField, $tablefield));
@@ -468,10 +469,13 @@ class QueryService {
 	
 	/**
 	 * 
-	 * @param FormField $formField
-	 * @param TableField $tableField
+	 * @param GenericField $formEntryField
+	 * @param GenericField $tableRowField
 	 */
-	private function _generateEditField($formField, $tableField) {
+	private function _generateEditField($formEntryField, $tableRowField) {
+	    $tableField = $tableRowField->getMetadata();
+	    $formField = $formEntryField->getMetadata();
+	    
 	    $field = new \stdClass();
 	    $field->inputType = $formField->getInputType();
 	    $field->decimals = $formField->getDecimals();
@@ -481,7 +485,7 @@ class QueryService {
 	    $field->type = $formField->getData()->getUnit()->getType();
 	    $field->subtype = $formField->getData()->getUnit()->getSubType();
 	    
-	    $field->name = $tableField->getName();
+	    $field->name = $tableRowField->getId();
 	    $field->label = $tableField->getLabel();
 	    
 	    $field->isPK = in_array($tableField->getData()->getData(), $tableField->getFormat()->getPrimaryKeys(), true) ? '1' : '0';
@@ -489,8 +493,8 @@ class QueryService {
 	        $this->logger->info('query_service :: table field and form field has not the same unit ?!');
 	    }
 	    
-	    $field->value = $tableField->value;
-	    $field->valueLabel = $tableField->getValueLabel();
+	    $field->value = $tableRowField->getValue();
+	    $field->valueLabel = $tableRowField->getValueLabel();
 	    $field->editable = $tableField->getIsEditable() ? '1':'0';
 	    $field->insertable = $tableField->getIsInsertable() ?'1' : '0';
 	    $field->required = $field->isPK ? !($tableField->getIsCalculated()) : $tableField->getIsMandatory();
