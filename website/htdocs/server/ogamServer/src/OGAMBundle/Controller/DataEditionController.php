@@ -21,11 +21,12 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use OGAMBundle\Form\AjaxType;
 use Symfony\Component\HttpFoundation\Response;
 use OGAMBundle\Entity\Generic\GenericField;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  *
  * @Route ("/dataedition")
- *
+ * @Security("user and user.isAllowed('DATA_EDITION')")
  */
 class DataEditionController extends Controller
 {
@@ -606,7 +607,7 @@ class DataEditionController extends Controller
     public function getparametersAction() {
         $user = $this->getUser();
         return $this->render('OGAMBundle:DataEdition:edit_parameters.js.twig', array(
-                'checkEditionRights' =>  ($user && $this->isGranted('DATA_EDITION_OTHER_PROVIDER')) ? FALSE : TRUE,
+                'checkEditionRights' =>  ($user && $user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) ? FALSE : TRUE,
                 'userProviderId' => $user->getProvider()->getId(),
         ));
     }
