@@ -602,7 +602,7 @@ class DataEditionController extends Controller
 
     /**
      * Get the parameters.
-     * @Route("/getparameters")
+     * @Route("/getParameters")
      */
     public function getparametersAction() {
         $user = $this->getUser();
