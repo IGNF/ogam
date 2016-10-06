@@ -71,10 +71,6 @@ services:
         parent: ogam.generic_repository
         class: OGAMBundle\Repository\Database\PostgresqlRepository
 
-    ogam.repository.mapping.scale:
-        class: OGAMBundle\Repository\Mapping\ScaleRepository
-        arguments: ["@doctrine.dbal.mapping_connection"]
-
     # Managers
     ogam.manager.generic:
         class: OGAMBundle\Manager\GenericManager

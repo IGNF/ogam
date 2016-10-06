@@ -88,7 +88,19 @@ class QueryController extends Controller {
 		    'forms' => $this->get('ogam.manager.query')->getQueryForms($datasetId, $requestName)
 		),$response);
 	}
-	
+
+	/**
+	 * @Route("/ajaxresetresultlocation")
+	 */
+	public function ajaxresetresultlocationAction() {
+	    $this->get ( 'logger' )->debug ( 'ajaxresetresultlocationAction' );
+	    
+		$sessionId = session_id();
+		$this->get('doctrine')->getRepository(ResultLocation::class, 'mapping')->cleanPreviousResults($sessionId);
+		
+		 return new JsonResponse(['success' => true]);
+	}
+
 	/**
 	 * AJAX function : Builds the query.
 	 * 
@@ -432,15 +444,6 @@ class QueryController extends Controller {
 	 */
 	public function ajaxgetlocationinfoAction() {
 		return $this->render ( 'OGAMBundle:Query:ajaxgetlocationinfo.html.twig', array ()
-		// ...
-		 );
-	}
-	
-	/**
-	 * @Route("/ajaxresetresultlocation")
-	 */
-	public function ajaxresetresultlocationAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxresetresultlocation.html.twig', array ()
 		// ...
 		 );
 	}
