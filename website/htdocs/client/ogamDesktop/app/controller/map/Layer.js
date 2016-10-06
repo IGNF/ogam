@@ -6,8 +6,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     extend: 'Ext.app.Controller',
     requires: [
         'OgamDesktop.view.map.LayersPanel',
-        'OgamDesktop.store.map.Layer',
-        'OgamDesktop.store.map.LayerService',
         'OgamDesktop.store.map.LayerTreeNode',
         'Ext.window.MessageBox'
     ],
@@ -144,7 +142,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     	var newNode;
 		if (!node.get('isLayer')) { // Create a group
 			newNode = new ol.layer.Group({
-                name: node.get('label'),
+                // TODO check if necessary (sylvain) name: node.get('label'),
                 text: node.get('label'),
                 grpId: node.get('nodeId'),
                 visible: !node.get('isHidden'),
@@ -266,6 +264,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         var layer = node.getLayer();
         //TODO to remove after check (sylvain) olLayerOpts['session_id'] = layer.get('params').session_id;
         olLayerOpts['source'] = this.buildOlSource(layer, layer.getViewService());
+        olLayerOpts['name'] = layer.get('name');
         olLayerOpts['text'] = layer.get('label');
         olLayerOpts['opacity'] = layer.get('defaultOpacity');
         olLayerOpts['printable'] = true;

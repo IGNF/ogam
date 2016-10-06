@@ -19,8 +19,6 @@ Ext.define('OgamDesktop.Application', {
 	],
 	stores: [
 		'map.LayerTreeNode',
-		'map.Layer',
-		'map.LayerService',
 		'result.Grid'
 	],
 	controllers: [

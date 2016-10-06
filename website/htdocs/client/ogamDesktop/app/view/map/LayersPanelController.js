@@ -36,15 +36,14 @@ Ext.define('OgamDesktop.view.map.LayersPanelController', {
      * @return {GeoExt.data.model.LayerTreeNode/Ext.data.NodeInterface} The layer node
      */
     getLayerNode : function(layer) {
-        var node;
         // Get the tree store of the layers tree panel and scan it.
         var layerStore = this.getView().getStore();
         layerStore.each(function(layerNode){
-            if (!layerNode.data.isLayerGroup && layerNode.data.get('name') === layer.get('name')) {
-                node = layerNode;
+            if (!layerNode.get('isLayerGroup') && layerNode.getOlLayer().get('name') === layer.get('name')) {
+                return layerNode;
             }
         });
-        return node;
+        return null;
     },
 
     /**

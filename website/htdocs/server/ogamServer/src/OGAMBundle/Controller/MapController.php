@@ -67,67 +67,6 @@ class MapController extends Controller
 
         return $this->render('OGAMBundle:Map:get_map_parameters.js.twig', $view->getArrayCopy(), (new Response())->headers->set('Content-type', 'application/javascript'));
     }
-    
-    /**
-     * Calculate the resolution array corresponding to the available scales.
-     *
-     * Not private because can be used by custom controllers.
-     *
-     * @param Array[Integer] $scales
-     *        	The list of scales
-     * @return Array[Integer] the resolutions
-     */
-    protected function getResolutions($scales) {
-    
-    	// Get the parameters from configuration file
-    	$configuration = $this->get("ogam.configuration_manager");
-    	$tilesize = $configuration->getConfig('tilesize', 256); // Tile size in pixels
-    	$dpi = $configuration->getConfig('mapserver_dpi', 72); // Default number of dots per inch in mapserv
-    	$factor = $configuration->getConfig('mapserver_inch_per_kilometer', 39370.1); // Inch to meter conversion factor
-    
-    	// WARNING : Bounding box must match the tilecache configuration and tile size
-    
-    	$resolutions = array();
-    	foreach ($scales as $scale) {
-    		$res = $scale * (2 * $tilesize) / ($dpi * $factor);
-    		$resolutions[$scale] = $res / (2 * $tilesize) * 1000;
-    	}
-    	return $resolutions;
-    }
-
-    /**
-     * Return the list of available layer services as a JSON.
-     * 
-     * @Route("/ajaxgetlayerservices")
-     */
-    public function ajaxgetlayerservicesAction()
-    {
-        $logger = $this->get('logger');
-        $logger->debug('ajaxgetlayerservicesAction');
-
-        // Send the result as a JSON String
-        return new JsonResponse([
-            'success' => true,
-            'data' => $this->get('doctrine')->getRepository(LayerService::class)->findAll()
-        ]);
-    }
-
-    /**
-     * Return the list of available layers as a JSON.
-     * 
-     * @Route("/ajaxgetlayers")
-     */
-    public function ajaxgetlayersAction(Request $request)
-    {
-        $logger = $this->get('logger');
-        $logger->debug('ajaxgetlayersAction');
-
-        // Send the result as a JSON String
-        return new JsonResponse([
-            'success' => true,
-            'data' => $this->get('doctrine')->getRepository(Layer::class)->findAll()
-        ]);
-    }
 
     /**
      * Return the list of available layer tree nodes as a JSON.
@@ -139,16 +78,10 @@ class MapController extends Controller
         $logger = $this->get('logger');
         $logger->debug('ajaxgetlayertreenodes');
 
-        // Get the resolutions corresponding to the scales
-        $layerTreeNodes = $this->get('doctrine')->getRepository(LayerTreeNode::class)->findAll();
-        foreach ($layerTreeNodes as $layerTreeNode) {
-            //$layerTreeNode->getLayer()->
-        }
         $response = new Response();
         $response->headers->set('Content-Type', 'application/json');
         return $this->render ( 'OGAMBundle:Map:ajaxgetlayertreenodes.json.twig', array (
             'layerTreeNodes' => $this->get('doctrine')->getRepository(LayerTreeNode::class)->findAll()
         ),$response);
     }
-
 }
