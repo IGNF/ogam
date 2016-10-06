@@ -32,7 +32,9 @@ class SchemaTest extends KernelTestCase {
 	protected function tearDown() {
 		parent::tearDown();
 
-		$this->em->close();
+		if ($this->em){
+		    $this->em->close();
+		}
 		$this->em = null; // avoid memory leaks
 	}
 

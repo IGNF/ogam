@@ -18,7 +18,7 @@ class BreadcrumbsConfigService {
 	 * Read the configuration.
 	 */
 	private function readConfiguration() {
-		$this->yamlConfig = Yaml::parse(file_get_contents('../src/OGAMBundle/Resources/config/navigation.yml'));
+		$this->yamlConfig = Yaml::parse(file_get_contents(__DIR__.'/../Resources/config/navigation.yml'));
 	}
 
 	public function getConfig() {

@@ -31,6 +31,11 @@ class GenericField
     private $value;
 
     /**
+     * @var string
+     */
+    private $valueLabel;
+    
+    /**
      * The metadata locale
      *
      * @var string
@@ -87,15 +92,26 @@ class GenericField
 
     /**
      *
-     * @param
-     *            $value
+     * @param mixed $value
      */
     public function setValue($value)
     {
         $this->value = $value;
         return $this;
     }
-
+    /**
+     * Return the label corresponding to the value.
+     * For a code, will return the description.
+     *
+     * @return String the label
+     */
+    function getValueLabel() {
+        if ($this->valueLabel != null) {
+            return $this->valueLabel;
+        } else {
+            return $this->value;
+        }
+    }
     /**
      *
      * @return the string
@@ -120,4 +136,15 @@ class GenericField
         $this->locale = $locale;
         $this->metadata = $metadata;
     }
+
+    /**
+     *
+     * @param string $valueLabel
+     */
+    public function setValueLabel($valueLabel)
+    {
+        $this->valueLabel = $valueLabel;
+        return $this;
+    }
+ 
 }

@@ -2,7 +2,7 @@
 
 namespace OGAMBundle\Services;
 
-use OGAMBundle\Entity\Generic\DataObject;
+use OGAMBundle\Entity\Generic\EditionForm;
 use Doctrine\ORM\EntityManager;
 use OGAMBundle\Entity\Metadata\TableFormat;
 use OGAMBundle\Entity\Metadata\TableField;
@@ -83,12 +83,12 @@ class GenericService {
 	 * @param String $schema the name of the schema
 	 * @param String $format the name of the format
 	 * @param String $datasetId the dataset identifier
-	 * @return DataObject the DataObject structure (with no values set)
+	 * @return EditionForm the DataObject structure (with no values set)
 	 */
 	public function buildDataObject($schema, $format, $datasetId = null) {
 	
 		// Prepare a data object to be filled
-		$data = new DataObject();
+		$data = new EditionForm();
 	
 		$data->datasetId = $datasetId;
 	
@@ -100,12 +100,15 @@ class GenericService {
 	
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
-			if (in_array($tableField->getData()->getData(), $data->tableFormat->getPrimaryKeys())) {
+		    $tableRowField = new GenericField($tableField->getFormat()->getFormat(), $tableField->getData()->getData());
+		    $tableRowField->setMetadata($tableField, $this->locale);
+			if (in_array($tableRowField->getData(), $data->tableFormat->getPrimaryKeys())) {
 				// Primary keys are displayed as info fields
-				$data->addInfoField($tableField);
+			    
+				$data->addPkField($tableRowField);
 			} else {
 				// Editable fields are displayed as form fields
-				$data->addEditableField($tableField);
+				$data->addField($tableRowField);
 			}
 		}
 	
@@ -278,7 +281,7 @@ class GenericService {
 	 *
 	 * @param String $schemaCode
 	 *        	the schema.
-	 * @param Array[Application_Object_Metadata_TableField] $criterias
+	 * @param Array[GenericField] $criterias
 	 *        	the criterias.
 	 * @return String the WHERE part of the SQL query
 	 */
@@ -287,7 +290,7 @@ class GenericService {
 	
 		// Build the WHERE clause with the info from the PK.
 		foreach ($criterias as $tableField) {
-			$sql .= $this->buildWhereItem($schemaCode, $tableField, true); // exact match
+			$sql .= $this->buildWhereItem($schemaCode, $tableField->getMetadata(), $tableField->getValue(), true); // exact match
 		}
 	
 		return $sql;
@@ -798,13 +801,13 @@ class GenericService {
 	 * Build the update part of a SQL request corresponding to a table field.
 	 *
 	 * @param string $schema the schema.
-	 * @param TableField $tableField a criteria.
+	 * @param GenericField $tableField a criteria.
 	 * @return String the update part of the SQL query (ex : BASAL_AREA = 6.05)
 	 */
 	public function buildSQLValueItem($schema, $tableField) {
 	    $sql = "";
 	
-	    $value = $tableField->value;
+	    $value = $tableField->getValue();
 	    //$column = $tableField->getColumnName();
 
 	    // Set the projection for the geometries in this schema
@@ -817,7 +820,7 @@ class GenericService {
 	        throw new \InvalidArgumentException('Invalid schema code.');
 	    }
 	
-	    switch ($tableField->getData()->getUnit()->getType()) {
+	    switch ($tableField->getMetadata()->getData()->getUnit()->getType()) {
 	
 	        case "BOOLEAN":
 	            // Value is 1 or 0, stored in database as a char(1)
@@ -873,33 +876,35 @@ class GenericService {
 	/**
 	 * Get the form field corresponding to the table field.
 	 *
-	 * @param TableField $tableField the table field
+	 * @param GenericField $tableRowField the a valuable table row field
 	 * @param Boolean $copyValues is true the values will be copied
-	 * @return FormField
+	 * @return GenericField
 	 */
-	public function getTableToFormMapping($tableField, $copyValues = false) {
+	public function getTableToFormMapping($tableRowField, $copyValues = false) {
 	
+	    $tableField = $tableRowField->getMetadata();
 	    // Get the description of the form field
 	    $req = "SELECT ff 
 FROM OGAMBundle\Entity\Metadata\FormField ff
 JOIN OGAMBundle\Entity\Metadata\FieldMapping fm 
 WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.format and fm.dstFormat = :format and fm.dstData = :data";
 	    $formField = $this->metadataModel->createQuery($req)->setParameters(array('format'=>$tableField->getFormat()->getFormat(), 'data'=>$tableField->getData()->getData()))->getOneOrNullResult();
-	
+	    $valuedField = null;
 	    // Clone the object to avoid modifying existing object
 	    if ($formField !== null) {
-	        $formField = clone $formField;
+	        $valuedField = new GenericField($formField->getFormat()->getFormat(), $formField->getData()->getData());
+	        $valuedField->setMetadata($formField, $this->locale);
 	    }
 	
 	    // Copy the values
-	    if ($copyValues === true && $formField !== null && $tableField->value !== null) {
+	    if ($copyValues === true && $formField !== null && $tableRowField->getValue() !== null) {
 	
 	        // Copy the value and label
-	        $formField->value = $tableField->value;
-	        $formField->valueLabel = $tableField->valueLabel;
+	        $valuedField->setValue($tableRowField->getValue());
+	        $valuedField->setValueLabel($tableRowField->getValueLabel());
 	    }
 	
-	    return $formField;
+	    return $valuedField;
 	}
 	
 	/**

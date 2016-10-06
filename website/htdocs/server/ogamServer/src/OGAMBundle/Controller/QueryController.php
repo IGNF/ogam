@@ -298,12 +298,34 @@ class QueryController extends Controller {
 	}
 	
 	/**
+	 * Get the parameters used to initialise the result grid.
 	 * @Route("/getgridparameters")
 	 */
 	public function getgridparametersAction() {
-		return $this->render ( 'OGAMBundle:Query:getgridparameters.html.twig', array ()
-		// ...
-		 );
+	    $viewParam = array();
+	    $viewParam['hideGridCsvExportMenuItem'] = true; // By default the export is hidden
+	    $viewParam['hideGridDataEditButton'] = true;
+	    $viewParam['checkEditionRights'] = true; // By default, we don't check for rights on the data
+	    
+	    $user = $this->getUser();
+	    $schema = $this->get('ogam.schema_listener')->getSchema();
+	    
+	    if ($schema == 'RAW_DATA' && $user->isAllowed('EXPORT_RAW_DATA')) {
+	        $viewParam['hideGridCsvExportMenuItem'] = false;
+	    }
+	    if ($schema == 'HARMONIZED_DATA' && $user->isAllowed('EXPORT_HARMONIZED_DATA')) {
+	        $viewParam['hideGridCsvExportMenuItem'] = false;
+	    }
+	    if (($schema == 'RAW_DATA' || $schema == 'HARMONIZED_DATA') && $user->isAllowed('DATA_EDITION')) {
+	        $viewParam['hideGridDataEditButton'] = false;
+	    }
+	    if ($user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) {
+	        $viewParam['checkEditionRights'] = false;
+	    }
+	    
+	    $response = new Response();
+	    $response->headers->set('Content-type', 'application/javascript');
+	    return $this->render('OGAMBundle:Query:getgridparameters.html.twig', $viewParam, $response);
 	}
 	
 	/**

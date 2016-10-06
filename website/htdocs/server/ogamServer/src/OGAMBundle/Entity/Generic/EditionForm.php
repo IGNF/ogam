@@ -2,8 +2,6 @@
 
 namespace OGAMBundle\Entity\Generic;
 
-use OGAMBundle\Entity\Metadata\TableField;
-
 /**
  * A data object is used to store a values of a line of data (from any table of a database).
  */
@@ -22,13 +20,13 @@ class EditionForm {
 
 	/**
 	 * The primary key fields
-	 * @var Array[OgamBundle\Entity\Generic\Generic\TableField].
+	 * @var Array[GenericField].
 	 */
 	var $pkFields = array();
 
 	/**
 	 * The fields not included into the primary key
-	 * @var Array[OgamBundle\Entity\Generic\Generic\TableField].
+	 * @var Array[GenericField].
 	 */
 	var $fields = array();
 
@@ -82,7 +80,7 @@ class EditionForm {
 	/**
 	 * Add a field.
 	 *
-	 * @param [GenericField] $field a field
+	 * @param GenericField $field a field
 	 */
 	public function addField($field) {
 		$this->fields[$field->getId()] = $field;
@@ -93,8 +91,8 @@ class EditionForm {
 	 *
 	 * @return [GenericField] the table fields
 	 */
-	public function getFields() {
-		return array_merge($this->pksFields, $this->fields);
+	public function all() {
+		return array_merge($this->pkFields, $this->fields);
 	}
 
 	/**

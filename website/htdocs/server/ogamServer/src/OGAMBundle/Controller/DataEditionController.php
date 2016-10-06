@@ -4,7 +4,7 @@ namespace OGAMBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use OGAMBundle\Entity\Generic\DataObject;
+use OGAMBundle\Entity\Generic\EditionForm;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,11 +20,13 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use OGAMBundle\Form\AjaxType;
 use Symfony\Component\HttpFoundation\Response;
+use OGAMBundle\Entity\Generic\GenericField;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  *
  * @Route ("/dataedition")
- *
+ * @Security("user and user.isAllowed('DATA_EDITION')")
  */
 class DataEditionController extends Controller
 {
@@ -56,7 +58,7 @@ class DataEditionController extends Controller
      * Parse request parameters and build the corresponding data object.
      *
      * @param Request $request The request object.
-     * @return DataObject the data object
+     * @return EditionForm the data object
      */
     protected function getDataFromRequest($request) {
         $params = array();
@@ -75,16 +77,16 @@ class DataEditionController extends Controller
         $data = $this->get('ogam.generic_service')->buildDataObject($schema, $format);
 
         // Complete the primary key info with the session values
-        foreach ($data->infoFields as $infoField) {
-            if (!empty($params[$infoField->getData()->getData()])) {
-                $infoField->value = $params[$infoField->getData()->getData()];
+        foreach ($data->pkFields as $infoField) {
+            if (!empty($params[$infoField->getData()])) {
+                $infoField->setValue($params[$infoField->getData()]);
             }
         }
 
         // Complete the other fields with the session values (particulary join_keys)
-        foreach ($data->editableFields as $editableField) {
-            if (!empty($params[$editableField->getData()->getData()])) {
-                $editableField->value = $params[$editableField->getData()->getData()];
+        foreach ($data->fields as $editableField) {
+            if (!empty($params[$editableField->getData()])) {
+                $editableField->setValue($params[$editableField->getData()]);
             }
         }
 
@@ -96,7 +98,7 @@ class DataEditionController extends Controller
      *
      * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
      *
-     * @param DataObject $data The data to display (optional)
+     * @param EditionForm $data The data to display (optional)
      * @param String $message a confirmation/warning message to display (optional)
      * @return Response
      * @Route("/show-edit-data/{id}", requirements={"id"= ".*"})
@@ -167,10 +169,10 @@ class DataEditionController extends Controller
         } else {
         
             // Delete the images linked to the data if present
-            foreach ($data->getFields() as $field) {
-                if ($field->getData()->getUnit()->getType() === "IMAGE" && $field->value !== "") {
+            foreach ($data->all() as $field) {
+                if ($field->getMetadata()->getData()->getUnit()->getType() === "IMAGE" && $field->getValue() !== "") {
                     $uploadDir = $this->get('ogam.configuration_manager')->getConfig('image_upload_dir', '/var/www/html/upload/images');
-                    $dir = $uploadDir . "/" . $data->getId() . "/" . $field->getName();
+                    $dir = $uploadDir . "/" . $data->getId() . "/" . $field->getId();
                     //$this->deleteDirectory($dir);//TODO : delete related files (upload not implemented yet) 
                 }
             }
@@ -206,13 +208,14 @@ class DataEditionController extends Controller
      * The form is not displayed, the actual form is an ExtJS component.
      *
      * @param FormBuilder $form the form(element) builder
-     * @param TableField $tableField the table descriptor of the data
+     * @param GenericField $tableRowField the table descriptor of the data
      * @param FormField|null $formField the form descriptor of the data
      * @param Boolean $isKey is the field a primary key ?
      * @return FormBuilderInterface the element (builder)
      * @todo make all fields within OGAMBundle:FormTypes\..  
      */
-    protected function getFormElement($form, TableField $tableField,  $formField, $isKey = false) {
+    protected function getFormElement($form, GenericField $tableRowField,  $formField, $isKey = false) {
+        $tableField = $tableRowField->getMetadata(); 
         if (null === $formField){
             throw new \InvalidArgumentException('tableField is required, not null');
         }
@@ -234,18 +237,18 @@ class DataEditionController extends Controller
                 }
                 
                 // The field is a text field
-                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);
+                $elem = $form->create($tableRowField->getId(), FType\TextType::class, $option);
     
-                $elem->setData($tableField->value);
+                $elem->setData($tableRowField->getValue());
                 break;
     
             case "INTEGER":
 
                 $option['constraints'] = new Assert\Type('int');//digit ?
                 // The field is an integer
-                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);
+                $elem = $form->create($tableRowField->getId(), FType\TextType::class, $option);
 
-                $elem->setData($tableField->value);
+                $elem->setData($tableRowField->getValue());
                 break;
     
             case "NUMERIC":
@@ -258,9 +261,9 @@ class DataEditionController extends Controller
                     $option['constraints'][]= new Assert\Range(array('min'=> $range->getMin(), 'max'=>$range->getMax()));
                 }
                 
-                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);
+                $elem = $form->create($tableRowField->getId(), FType\TextType::class, $option);
 
-                $elem->setData($tableField->value);
+                $elem->setData($tableRowField->getValue());
                 break;
     
             case "DATE":
@@ -282,8 +285,8 @@ class DataEditionController extends Controller
                 $option['widget']='single_text';
                 $option['constraints'] = $validator;
                 
-                $elem = $form->create($tableField->getName(), FType\DateType::class, $option);
-                $elem->setData( \DateTime::createFromFormat($tableField->value, $elem->getOption('format')));
+                $elem = $form->create($tableRowField->getId(), FType\DateType::class, $option);
+                $elem->setData( \DateTime::createFromFormat($tableRowField->getValue(), $elem->getOption('format')));
                 break;
             case 'TIME':
 
@@ -294,25 +297,25 @@ class DataEditionController extends Controller
               //     $option['format']='HH:mm';
                 }
                 
-                $option['input']= 'string';
-                $option['widget']='single_text';
-                $option['data']=$tableField->value;
+                $option['input']  = 'string';
+                $option['widget'] = 'single_text';
+                $option['data']   = $tableRowField->getValue();
                 // The field is a date
-                $elem = $form->create($tableField->getName(), FType\TimeType::class, $option);
+                $elem = $form->create($tableRowField->getId(), FType\TimeType::class, $option);
 
                 break;
     
             case "CODE":
                 
-                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);//TODO choicetype depending the subtype, modes ....
-                $elem->setData($tableField->value);
+                $elem = $form->create($tableRowField->getId(), FType\TextType::class, $option);//TODO choicetype depending the subtype, modes ....
+                $elem->setData($tableRowField->getValue());
                 break;
     
             case "BOOLEAN":
     
                 // The field is a boolean
                 $elem = $form->create($tableField->getData()->getName(), FType\CheckboxType::class, $option);
-                $elem->setData($tableField->value);
+                $elem->setData($tableRowField->getValue());
                 break;
     
             case "ARRAY":
@@ -321,16 +324,16 @@ class DataEditionController extends Controller
                 $option['entry_type'] = FType\TextType::class;
                 $option['prototype_name']='';
                 $option['allow_add']=true;
-                $elem = $form->create($tableField->getName(), FType\CollectionType::class, $option);
-                $elem->setData($tableField->value);
+                $elem = $form->create($tableRowField->getId(), FType\CollectionType::class, $option);
+                $elem->setData($tableRowField->getValue());
                 break;
     
             case "GEOM":
             default:
     
                 // Default
-                $elem = $form->create($tableField->getName(), FType\TextType::class, $option);
-                $elem->setData($tableField->value);
+                $elem = $form->create($tableRowField->getId(), FType\TextType::class, $option);
+                $elem->setData($tableRowField->getValue());
         }
     
 
@@ -344,7 +347,7 @@ class DataEditionController extends Controller
     }
     /**
      * Build and return the data form.
-     * @param DataObject $data The descriptor of the expected data.
+     * @param EditionForm $data The descriptor of the expected data.
      * @param String $mode ('ADD' or 'EDIT')
      * @return \Symfony\Component\Form\FormInterface
      */
@@ -363,11 +366,11 @@ class DataEditionController extends Controller
         //
         // The key elements as labels
         //
-        foreach ($data->infoFields as $tablefield) {
+        foreach ($data->pkFields as $tablefield) {
         
             $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
             if (null !== $formField){
-                $elem = $this->getFormElement($formBuilder, $tablefield, $formField, true);
+                $elem = $this->getFormElement($formBuilder, $tablefield, $formField->getMetadata(), true);
                 $elem->setAttribute('class', 'dataedit_key');
                 $formBuilder->add($elem);
             }
@@ -376,14 +379,14 @@ class DataEditionController extends Controller
         //
         // The editable elements as form fields
         //
-        foreach ($data->editableFields as $tablefield) {
+        foreach ($data->fields as $tablefield) {
         
             // Hardcoded value : We don't edit the line number (it's a technical element)
-            if ($tablefield->getData()->getData() !== "LINE_NUMBER") {
+            if ($tablefield->getData() !== "LINE_NUMBER") {
 
                 $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
                 if (null !== $formField){
-                    $elem = $this->getFormElement($formBuilder, $tablefield, $formField, false);
+                    $elem = $this->getFormElement($formBuilder, $tablefield, $formField->getMetadata(), false);
                     $elem->setAttribute('class', 'dataedit_field');
                     $formBuilder->add($elem);
                 }
@@ -447,12 +450,12 @@ class DataEditionController extends Controller
                     // join_keys values must not be erased
                     $joinKeys = $genericModel->getJoinKeys($data);
 
-                    foreach ($data->getFields() as $field) {
-                        $isNotJoinKey = !in_array($field->getColumnName(), $joinKeys);
+                    foreach ($data->all() as $field) {
+                        $isNotJoinKey = !in_array($field->getMetadata()->getColumnName(), $joinKeys);
 
                         if ($isNotJoinKey) {
                             // Update the data descriptor with the values submitted
-                            $field->value = $request->request->get($field->getName(),null);
+                            $field->setValue($request->request->get($field->getId(), null));
                         }
                     }
         
@@ -461,8 +464,8 @@ class DataEditionController extends Controller
                     // Edit the data
                     $values = $form->getData();
                     // Update the data descriptor with the values submitted (for editable fields only)
-                    foreach ($data->getEditableFields() as $field) {
-                        $field->value = $request->request->get($field->getName(),null);
+                    foreach ($data->getFields() as $field) {
+                        $field->setValue($request->request->get($field->getId(), null));
                     }
         
                     $genericModel->updateData($data);
@@ -513,7 +516,7 @@ class DataEditionController extends Controller
      *
      * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
      *
-     * @param DataObject $data
+     * @param EditionForm $data
      *            The data to display (optional)
      * @param String $message
      *            A confirmation/warning message to display
@@ -521,7 +524,7 @@ class DataEditionController extends Controller
      * @Route("/show-add-data/{id}", requirements={"id"= ".*"})
      * @Template(engine="php")
      */
-    public function showAddDataAction(Request $request, DataObject $data = null, $message = '') {
+    public function showAddDataAction(Request $request, EditionForm $data = null, $message = '') {
         $mode = 'ADD';
 
         // If data is set then we don't need to read from database
@@ -599,12 +602,12 @@ class DataEditionController extends Controller
 
     /**
      * Get the parameters.
-     * @Route("/getparameters")
+     * @Route("/getParameters")
      */
     public function getparametersAction() {
         $user = $this->getUser();
         return $this->render('OGAMBundle:DataEdition:edit_parameters.js.twig', array(
-                'checkEditionRights' =>  ($user && $this->isGranted('DATA_EDITION_OTHER_PROVIDER')) ? FALSE : TRUE,
+                'checkEditionRights' =>  ($user && $user->isAllowed('DATA_EDITION_OTHER_PROVIDER')) ? FALSE : TRUE,
                 'userProviderId' => $user->getProvider()->getId(),
         ));
     }
