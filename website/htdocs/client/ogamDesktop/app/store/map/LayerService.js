@@ -12,12 +12,12 @@ Ext.define('OgamDesktop.store.map.LayerService',{
 	proxy: {
 		type: 'ajax',
                 isSynchronous: true,
-		url: Ext.manifest.OgamDesktop.mapServiceUrl +'ajaxgetlayers',
+		url: Ext.manifest.OgamDesktop.mapServiceUrl +'ajaxgetlayerservices',
 		actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
 		reader: {
 			type: 'json',
 			// To get only services into the response
-			rootProperty: 'services'
+			rootProperty: 'data'
 		}
 	}
 });

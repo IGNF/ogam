@@ -10,7 +10,7 @@ Ext.define('OgamDesktop.Application', {
 		'OgamDesktop.ux.window.Toast'
 	],
 	models: [
-		'map.LayerNode',
+		'map.LayerTreeNode',
 		'map.Layer',
 		'map.LayerService',
 		'request.fieldset.Criterion',
@@ -18,7 +18,7 @@ Ext.define('OgamDesktop.Application', {
 		'request.object.field.Code'
 	],
 	stores: [
-		'map.LayerNode',
+		'map.LayerTreeNode',
 		'map.Layer',
 		'map.LayerService',
 		'result.Grid'
@@ -37,6 +37,7 @@ Ext.define('OgamDesktop.Application', {
 		'map.LayersPanel',
 		'map.LegendsPanel',
 		'map.MainWin',
+		'map.MapComponent',
 		'request.AdvancedRequest',
 		'request.AdvancedRequestController',
 		'request.AdvancedRequestModel',

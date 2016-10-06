@@ -2,9 +2,10 @@
  * This class defines the model for the layers services.
  */
 Ext.define('OgamDesktop.model.map.LayerService',{
-	extend: 'Ext.data.Model',
+	extend: 'OgamDesktop.model.map.base',
 	fields: [
+	    {name: 'id', type: 'string'},
 		{name: 'name', type: 'string'},
-		{name: 'config', type: 'auto'} // type: object
+		{name: 'config'} // type: object
 	]
 });

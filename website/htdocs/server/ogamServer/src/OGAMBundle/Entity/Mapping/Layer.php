@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="mapping.layer")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Mapping\LayerRepository")
  */
-class Layer
+class Layer implements \JsonSerializable
 {
 
     /**
@@ -18,17 +18,17 @@ class Layer
      * @var string
      *
      * @ORM\Id
-     * @ORM\Column(name="layer_name", type="string", length=50, unique=true, options={"comment"="Logical name of the layer"})
+     * @ORM\Column(name="name", type="string", length=50, unique=true, options={"comment"="Logical name of the layer"})
      */
-    private $layerName;
+    private $name;
 
     /**
 	 * The label of the layer.
 	 * @var string
      *
-     * @ORM\Column(name="layer_label", type="string", length=100, nullable=true, options={"comment"="Label of the layer"})
+     * @ORM\Column(name="label", type="string", length=100, nullable=true, options={"comment"="Label of the layer"})
      */
-    private $layerLabel;
+    private $label;
 
     /**
      * The name of the service layer composing this logical layer.
@@ -42,7 +42,7 @@ class Layer
      * Indicate if the layer is transparent.
      * @var bool
      *
-     * @ORM\Column(name="istransparent", type="boolean", nullable=true)
+     * @ORM\Column(name="is_transparent", type="boolean", nullable=true)
      */
     private $isTransparent;
 
@@ -58,7 +58,7 @@ class Layer
      * Indicate if the layer is a base layer.
      * @var bool
      *
-     * @ORM\Column(name="isbaselayer", type="boolean", nullable=true)
+     * @ORM\Column(name="is_base_layer", type="boolean", nullable=true)
      */
     private $isBaseLayer;
 
@@ -66,7 +66,7 @@ class Layer
      * Force OpenLayer to request one image each time.
      * @var bool
      *
-     * @ORM\Column(name="isuntiled", type="boolean", nullable=true)
+     * @ORM\Column(name="is_untiled", type="boolean", nullable=true)
      */
     private $isUntiled;
 
@@ -74,17 +74,19 @@ class Layer
      * The max scale of apparition of the layer.
      * @var int
      *
-     * @ORM\Column(name="maxscale", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\ZoomLevel")
+     * @ORM\JoinColumn(name="max_zoom_level", referencedColumnName="zoom_level")
      */
-    private $maxScale;
+    private $maxZoomLevel;
 
     /**
      * The min scale of apparition of the layer.
      * @var int
      *
-     * @ORM\Column(name="minscale", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\ZoomLevel")
+     * @ORM\JoinColumn(name="min_zoom_level", referencedColumnName="zoom_level")
      */
-    private $minScale;
+    private $minZoomLevel;
 
     /**
      * Indicate if the layer has a Legend available.
@@ -114,83 +116,96 @@ class Layer
 
     /**
      * Indicates the service for displaying the layers in the map panel.
-     * @var string
-     *
-     * @ORM\Column(name="view_service_name", type="string", length=50, nullable=true)
+     * 
+     * @var viewService
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
+     * @ORM\JoinColumn(name="view_service_name", referencedColumnName="name")
      */
-    private $viewServiceName;
+    private $viewService;
 
     /**
      * Indicates the service to call for displaying legend.
-     * @var string
-     *
-     * @ORM\Column(name="legend_service_name", type="string", length=50, nullable=true)
+     * 
+     * @var legendService
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
+     * @ORM\JoinColumn(name="legend_service_name", referencedColumnName="name")
      */
-    private $legendServiceName;
+    private $legendService;
 
     /**
      * Indicates the service to call for detail panel.
-     * @var string
-     *
-     * @ORM\Column(name="detail_service_name", type="string", length=50, nullable=true)
+     * 
+     * @var detailService
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
+     * @ORM\JoinColumn(name="detail_service_name", referencedColumnName="name")
      */
-    private $detailServiceName;
+    private $detailService;
 
     /**
      * Indicates the service to call for wfs menu.
-     * @var string
-     *
-     * @ORM\Column(name="feature_service_name", type="string", length=50, nullable=true)
+     * 
+     * @var featureService
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
+     * @ORM\JoinColumn(name="feature_service_name", referencedColumnName="name")
      */
-    private $featureServiceName;
-
+    private $featureService;
 
     /**
-     * Set layerName
+     * Get id
      *
-     * @param string $layerName
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->name;
+    }
+   
+    /**
+     * Set name
+     *
+     * @param string $name
      *
      * @return Layer
      */
-    public function setLayerName($layerName)
+    public function setLayerName($name)
     {
-        $this->layerName = $layerName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get layerName
+     * Get name
      *
      * @return string
      */
-    public function getLayerName()
+    public function getName()
     {
-        return $this->layerName;
+        return $this->name;
     }
 
     /**
-     * Set layerLabel
+     * Set label
      *
-     * @param string $layerLabel
+     * @param string $label
      *
      * @return Layer
      */
-    public function setLayerLabel($layerLabel)
+    public function setLayerLabel($label)
     {
-        $this->layerLabel = $layerLabel;
+        $this->label = $label;
 
         return $this;
     }
 
     /**
-     * Get layerLabel
+     * Get label
      *
      * @return string
      */
-    public function getLayerLabel()
+    public function getLabel()
     {
-        return $this->layerLabel;
+        return $this->label;
     }
 
     /**
@@ -314,51 +329,51 @@ class Layer
     }
 
     /**
-     * Set maxScale
+     * Set maxZoomLevel
      *
-     * @param integer $maxScale
+     * @param integer $maxZoomLevel
      *
      * @return Layer
      */
-    public function setMaxScale($maxScale)
+    public function setMaxScale($maxZoomLevel)
     {
-        $this->maxScale = $maxScale;
+        $this->maxZoomLevel = $maxZoomLevel;
 
         return $this;
     }
 
     /**
-     * Get maxScale
+     * Get maxZoomLevel
      *
      * @return int
      */
-    public function getMaxScale()
+    public function getMaxZoomLevel()
     {
-        return $this->maxScale;
+        return $this->maxZoomLevel;
     }
 
     /**
-     * Set minScale
+     * Set minZoomLevel
      *
-     * @param integer $minScale
+     * @param integer $minZoomLevel
      *
      * @return Layer
      */
-    public function setMinScale($minScale)
+    public function setMinScale($minZoomLevel)
     {
-        $this->minScale = $minScale;
+        $this->minZoomLevel = $minZoomLevel;
 
         return $this;
     }
 
     /**
-     * Get minScale
+     * Get minZoomLevel
      *
      * @return int
      */
-    public function getMinScale()
+    public function getMinZoomLevel()
     {
-        return $this->minScale;
+        return $this->minZoomLevel;
     }
 
     /**
@@ -434,98 +449,125 @@ class Layer
     }
 
     /**
-     * Set viewServiceName
+     * Set viewService
      *
-     * @param string $viewServiceName
+     * @param string $viewService
      *
      * @return Layer
      */
-    public function setViewServiceName($viewServiceName)
+    public function setViewService($viewService)
     {
-        $this->viewServiceName = $viewServiceName;
+        $this->viewService = $viewService;
 
         return $this;
     }
 
     /**
-     * Get viewServiceName
+     * Get viewService
      *
      * @return string
      */
-    public function getViewServiceName()
+    public function getViewService()
     {
-        return $this->viewServiceName;
+        return $this->viewService;
     }
 
     /**
-     * Set legendServiceName
+     * Set legendService
      *
-     * @param string $legendServiceName
+     * @param string $legendService
      *
      * @return Layer
      */
-    public function setLegendServiceName($legendServiceName)
+    public function setLegendService($legendService)
     {
-        $this->legendServiceName = $legendServiceName;
+        $this->legendService = $legendService;
 
         return $this;
     }
 
     /**
-     * Get legendServiceName
+     * Get legendService
      *
      * @return string
      */
-    public function getLegendServiceName()
+    public function getLegendService()
     {
-        return $this->legendServiceName;
+        return $this->legendService;
     }
 
     /**
-     * Set detailServiceName
+     * Set detailService
      *
-     * @param string $detailServiceName
+     * @param string $detailService
      *
      * @return Layer
      */
-    public function setDetailServiceName($detailServiceName)
+    public function setDetailService($detailService)
     {
-        $this->detailServiceName = $detailServiceName;
+        $this->detailService = $detailService;
 
         return $this;
     }
 
     /**
-     * Get detailServiceName
+     * Get detailService
      *
      * @return string
      */
-    public function getDetailServiceName()
+    public function getDetailService()
     {
-        return $this->detailServiceName;
+        return $this->detailService;
     }
 
     /**
-     * Set featureServiceName
+     * Set featureService
      *
-     * @param string $featureServiceName
+     * @param string $featureService
      *
      * @return Layer
      */
-    public function setFeatureServiceName($featureServiceName)
+    public function setFeatureService($featureService)
     {
-        $this->featureServiceName = $featureServiceName;
+        $this->featureService = $featureService;
 
         return $this;
     }
 
     /**
-     * Get featureServiceName
+     * Get featureService
      *
      * @return string
      */
-    public function getFeatureServiceName()
+    public function getFeatureService()
     {
-        return $this->featureServiceName;
+        return $this->featureService;
+    }
+
+    /**
+     * Serialize the object as a JSON string
+     *
+     * @return a JSON string
+     */
+    public function jsonSerialize() {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'label' => $this->label,
+            'serviceLayerName' => $this->serviceLayerName,
+            'isTransparent' => $this->isTransparent,
+            'defaultOpacity' => $this->defaultOpacity,
+            'isBaseLayer' => $this->isBaseLayer,
+            'isUntiled' => $this->isUntiled,
+            'maxZoomLevel' => $this->maxZoomLevel,
+            'minZoomLevel' => $this->minZoomLevel,
+            'hasLegend' => $this->hasLegend,
+            'providerId' => $this->providerId,
+            'activateType' => $this->activateType,
+            'viewServiceName' => $this->viewServiceName,
+            'legendServiceName' => $this->legendServiceName,
+            'detailServiceName' => $this->detailServiceName,
+            'featureServiceName' => $this->featureServiceName
+        ];
     }
 }

@@ -6,17 +6,18 @@ Ext.define('OgamDesktop.view.map.LegendsPanelController', {
     alias: 'controller.legendspanel',
     control: {
         'legends-panel': {
-            onReadyToBuildLegend: 'buildLegend'
+            readyToBuildLegend: 'buildLegend'
         }
     },
 
     /**
-     * Build a Legend Object from a 'Layer' store record.
+     * Build a Legend Object corresponding to a layer node.
+     * @param {OgamDesktop.model.map.LayerTreeNode} node The node of the layer
      * @param {Object} curRes The map current resolution
-     * @param {OgamDesktop.model.map.Layer} layer The 'Layer' store record
-     * @param {Object} service The 'LayerService' store record for the legend corresponding to the layer
      */
-    buildLegend : function(curRes, layer, service) {
+    buildLegend : function(node, curRes) {
+    	var layer = node.getLayer();
+    	var service = layer.getLegendService();
         var legend = this.getView()
             .add(new Ext.Component({
                 // Extjs 5 doesn't accept '.' into ids
@@ -25,26 +26,30 @@ Ext.define('OgamDesktop.view.map.LegendsPanelController', {
                     tag : 'div',
                     children : [{
                         tag : 'span',
-                        html : layer.get('options').label,
+                        html : layer.get('Label'),
                         cls : 'x-form-item x-form-item-label'
                     },{
                         tag : 'img',
                         src : service.get('config').urls.toString()
-                        + 'LAYER='+ layer.get('params').layers
+                        + 'LAYER='+ layer.get('serviceLayerName')
                         + '&SERVICE=' + service.get('config').params.SERVICE+ '&VERSION=' + service.get('config').params.VERSION + '&REQUEST=' + service.get('config').params.REQUEST
-                        + '&Format=image/png&WIDTH=160&HASSLD=' + (layer.get('params').hasSLD ? 'true' : 'false')
+                        + '&Format=image/png&WIDTH=160'//TODO &HASSLD=' + (layer.get('params').hasSLD ? 'true' : 'false')
                     }]
                 }
             }));
-        var outOfRange;
-        var resolutions = layer.get('options').resolutions;
-        if (resolutions) {
-            var minResolution = resolutions[resolutions.length - 1]; maxResolution = resolutions[0];
-            if (curRes < minResolution || curRes >= maxResolution) { 
-                outOfRange = true;
-            }
+        var outOfRange, minResolution = null, maxResolution = null;
+        
+        if(!Ext.isEmpty(layer.getMinZoomLevel())){
+        	minResolution = layer.getMinZoomLevel().get('resolution');
         }
-        if (layer.get('params').isDisabled || layer.get('params').isHidden || !layer.get('params').isChecked || outOfRange) {
+        if(!Ext.isEmpty(layer.getMaxZoomLevel())){
+        	maxResolution = layer.getMaxZoomLevel().get('resolution');
+        }
+        if ((minResolution != null && curRes < minResolution) 
+                || (maxResolution != null && curRes >= maxResolution)) {
+        	 outOfRange = true;
+        }
+        if (node.get('isDisabled') || node.get('isHidden') || !node.get('isChecked') || outOfRange) {
             legend.on('render', function(cmp) {
                 cmp.hide();
             });

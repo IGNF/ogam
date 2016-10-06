@@ -6,6 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use OGAMBundle\Entity\Mapping\Layer;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use OGAMBundle\Entity\Mapping\LayerService;
+use OGAMBundle\Entity\Mapping\LayerTreeNode;
+use OGAMBundle\Entity\Mapping\ZoomLevel;
+use OGAMBundle\Repository\Mapping\ZoomLevelRepository;
 /**
  * 
  * @Route("/map")
@@ -33,11 +39,8 @@ class MapController extends Controller
 		$view->tilesize = $configuration->getConfig('tilesize', 256); // Tile size
 		$view->projection = "EPSG:" . $configuration->getConfig('srs_visualisation'); // Projection
 
-		// Get the available scales
-		$scales = $this->get('ogam.repository.mapping.scale')->getScales();
-
-		// Transform the available scales into resolutions
-		$resolutions = $this->getResolutions($scales);
+		// Get the map resolution
+		$resolutions = $this->get('doctrine')->getRepository(ZoomLevel::class)->getResolutions();
 		$resolString = implode(",", $resolutions);
 		$view->resolutions = $resolString;
 		$view->numZoomLevels = count($resolutions);
@@ -93,42 +96,59 @@ class MapController extends Controller
     }
 
     /**
-     * Return the list of vector layers as a JSON.
-     * @Route("/ajaxgetvectorlayers")
+     * Return the list of available layer services as a JSON.
+     * 
+     * @Route("/ajaxgetlayerservices")
      */
-    public function ajaxgetvectorlayersAction(Request $request)
+    public function ajaxgetlayerservicesAction()
     {
-    	$vectorlayers = $this->layersModel->getVectorLayersList();
-    	// Get the available scales
-    	$scales = $this->get('ogam.repository.mapping.scale')->getScales();
-    	// Transform the available scales into resolutions
-    	$resolutions = $this->getResolutions($scales);
-    	
-        return $this->render('OGAMBundle:Map:ajaxgetvectorlayers.json.twig', array(
-            // ...
-        ));
+        $logger = $this->get('logger');
+        $logger->debug('ajaxgetlayerservicesAction');
+
+        // Send the result as a JSON String
+        return new JsonResponse([
+            'success' => true,
+            'data' => $this->get('doctrine')->getRepository(LayerService::class)->findAll()
+        ]);
     }
 
     /**
      * Return the list of available layers as a JSON.
+     * 
      * @Route("/ajaxgetlayers")
      */
     public function ajaxgetlayersAction(Request $request)
     {
-        return $this->render('OGAMBundle:Map:ajaxgetlayers.json.twig', array(
-            // ...
-        ));
+        $logger = $this->get('logger');
+        $logger->debug('ajaxgetlayersAction');
+
+        // Send the result as a JSON String
+        return new JsonResponse([
+            'success' => true,
+            'data' => $this->get('doctrine')->getRepository(Layer::class)->findAll()
+        ]);
     }
 
     /**
-     * Return the model corresponding to the legend.
-     * @Route("/ajaxgettreelayers")
+     * Return the list of available layer tree nodes as a JSON.
+     * 
+     * @Route("/ajaxgetlayertreenodes")
      */
-    public function ajaxgettreelayersAction(Request $request)
+    public function ajaxgetlayertreenodesAction(Request $request)
     {
-        return $this->render('OGAMBundle:Map:ajaxgettreelayers.json.twig', array(
-            // ...
-        ));
+        $logger = $this->get('logger');
+        $logger->debug('ajaxgetlayertreenodes');
+
+        // Get the resolutions corresponding to the scales
+        $layerTreeNodes = $this->get('doctrine')->getRepository(LayerTreeNode::class)->findAll();
+        foreach ($layerTreeNodes as $layerTreeNode) {
+            //$layerTreeNode->getLayer()->
+        }
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        return $this->render ( 'OGAMBundle:Map:ajaxgetlayertreenodes.json.twig', array (
+            'layerTreeNodes' => $this->get('doctrine')->getRepository(LayerTreeNode::class)->findAll()
+        ),$response);
     }
 
 }

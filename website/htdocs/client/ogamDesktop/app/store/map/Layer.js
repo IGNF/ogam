@@ -11,13 +11,13 @@ Ext.define('OgamDesktop.store.map.Layer',{
 	// Way to access data (ajax) and to read them (json)
 	proxy: {
 		type: 'ajax',
-                isSynchronous: true,
+        isSynchronous: true,
 		url: Ext.manifest.OgamDesktop.mapServiceUrl +'ajaxgetlayers',
 		actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
 		reader: {
 			type: 'json',
 			// To get only layers into the response
-			rootProperty: 'layers'
+			rootProperty: 'data'
 		}
 	}
 });

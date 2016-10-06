@@ -8,7 +8,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         'OgamDesktop.view.map.LayersPanel',
         'OgamDesktop.store.map.Layer',
         'OgamDesktop.store.map.LayerService',
-        'OgamDesktop.store.map.LayerNode',
+        'OgamDesktop.store.map.LayerTreeNode',
         'Ext.window.MessageBox'
     ],
 
@@ -45,12 +45,12 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     eventCounter : 0,
     
     /**
-     * The layer tree store
+     * The layer tree nodes store
      * @private
      * @property
-     * @type Array
+     * @type {object}
      */
-    treeStores : [],
+    layerTreeNodesStore : [],
 
     /**
      * The refs to get the views concerned
@@ -68,7 +68,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
                 afterrender: 'afterMapMainWinRendered'
             },
             'layerspanel': {
-                layersPanelStoresLoaded: 'afterLayersPanelStoresLoaded'
+                storeLoaded: 'afterLayersPanelStoreLoaded'
             }
         }
     },
@@ -88,16 +88,17 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     },
 
     /**
-     * Manages the afterLayersPanelStoresLoaded event :
+     * Manages the afterLayersPanelStoreLoaded event :
      *
-     *  - Sets the treeStores,
+     *  - Sets the treeStore,
      *  - Increments the event counter,
      *  - Calls the setupMapAndTreeLayers function if the counter is equal at two.
      * @private
-     * @param {Array} treeStores The layer tree store
+     * @param {Object} store The layer tree nodes store
+     * @param {Array} records The layer tree nodes records
      */
-    afterLayersPanelStoresLoaded : function(treeStores) {
-        this.treeStores = treeStores;
+    afterLayersPanelStoreLoaded : function(store, records) {
+        this.layerTreeNodesStore = store;
         this.eventCounter += 1;
         if (this.eventCounter === 2) {
             this.setupMapAndTreeLayers();
@@ -134,69 +135,60 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     },
 
    /**
+     * Adds the children to their parent
+     * @param {Array} parentChildrenArray The current node parent children array
+     * @param {OgamDesktop.model.map.LayerTreeNode} node The current node
+     * @private
+     */
+    addChild: function (parentChildrenArray, node) {
+    	var newNode;
+		if (!node.get('isLayer')) { // Create a group
+			newNode = new ol.layer.Group({
+                name: node.get('label'),
+                text: node.get('label'),
+                grpId: node.get('nodeId'),
+                visible: !node.get('isHidden'),
+                displayInLayerSwitcher: !node.get('isHidden'),
+                expanded: node.get('isExpanded'),
+                checked: node.get('isChecked'),
+                disabled: node.get('isDisabled')
+            });
+			// Add the child to its parent
+        	node.getChildren().each(
+    			function(child){
+    				this.addChild(newNode.getLayers(), child);
+    			},
+    			this
+        	);
+            parentChildrenArray.push(newNode);
+		} else { // Create a layer
+	        var mapCmp = this.getMappanel().child('mapcomponent');
+	        var curRes = mapCmp.getMap().getView().getResolution();
+			var layer = node.getLayer();
+            if (!Ext.isEmpty(layer.getLegendService())) {
+                this.getLegendspanel().fireEvent('readyToBuildLegend', node, curRes);
+            };
+            if (!Ext.isEmpty(layer.getViewService())) {
+                newNode = this.buildOlLayer(node, curRes);
+                // Add the child to its parent
+                parentChildrenArray.push(newNode);
+            }
+		}
+	},
+	
+   /**
      * Build a layers collection
      * @private
      * @return {Ext.util.MixedCollection} The layers collection
      */
     buildLayersCollection: function() {
-        var mapCmp = this.getMappanel().child('mapcomponent');
-        var curRes = mapCmp.getMap().getView().getResolution();
-
-        // Creation of the layer group list
-        var layerGrpsList = [];
-        for (var i in this.treeStores['layerNodes']){
-            var lyrNode = this.treeStores['layerNodes'][i];
-            if (!lyrNode.get('leaf')) {
-                olGrp = new ol.layer.Group({
-                    name: lyrNode.get('text'),
-                    text: lyrNode.get('text'),
-                    grpId: lyrNode.get('nodeGroup'),
-                    visible: !lyrNode.get('hidden'),
-                    displayInLayerSwitcher: !lyrNode.get('hidden'),
-                    expanded: lyrNode.get('expanded'),
-                    checked: lyrNode.get('checked'),
-                    disabled: lyrNode.get('disabled')
-                });
-                layerGrpsList.push(olGrp);
-            }
-        };
-
-        // Creation of the layers list
         var layersList = [];
-        for (var i in this.treeStores['layers']){
-            var layer = this.treeStores['layers'][i];
-            for (var j in this.treeStores['services']){
-                var service = this.treeStores['services'][j];
-                if (service.get('name') === layer.get('legendServiceName')) {
-                    this.getLegendspanel().fireEvent('onReadyToBuildLegend', curRes, layer, service);
-                };
-                if (service.get('name') === layer.get('viewServiceName')) {
-
-                    // Creates the layer
-                    var olLayer = this.buildOlLayer(layer, service, curRes);
-
-                    // Adds the layer to the layers list
-                    if (layer.get('options').nodeGroup == -1) {
-                        // Adds the layer to the list
-                        layersList.push(olLayer);
-                    } else {
-                        // Adds the layer to its group
-                        for (var k in layerGrpsList) {
-                            if (layer.get('options').nodeGroup == layerGrpsList[k].get('grpId')) {
-                                var lyrs = layerGrpsList[k].getLayers();
-                                lyrs.push(olLayer);
-                                layerGrpsList[k].setLayers(lyrs);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // Add the groups to the list
-        for (var k in layerGrpsList) {
-            layersList.push(layerGrpsList[k]);
-        }
+        this.layerTreeNodesStore.each(
+    		function(node){
+    			this.addChild(layersList,node);
+    		},
+    		this
+        );
 
         var layersCollection = new Ext.util.MixedCollection();
         layersCollection.addAll(layersList.reverse());
@@ -218,8 +210,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             // Sets the WMS layer source
             var sourceWMSOpts = {};
             sourceWMSOpts['params'] = Ext.apply({
-                'layers': layer.get('params').layers,
-                'session_id': layer.get('params').session_id
+                'layers': layer.get('serviceLayerName')
+                //TODO To remove after check (sylvain) 'session_id': layer.get('params').session_id
             }, service.get('config').params);
             sourceWMSOpts['urls'] = service.get('config').urls;
             sourceWMSOpts['crossOrigin'] = 'anonymous';
@@ -251,7 +243,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             });
             var sourceWMTSOpts = {};
             sourceWMTSOpts['urls'] = service.get('config').urls;
-            sourceWMTSOpts['layer'] = layer.get('params').layers;
+            sourceWMTSOpts['layer'] = layer.get('serviceLayerName');
             sourceWMTSOpts['tileGrid'] = tileGrid;
             sourceWMTSOpts['matrixSet'] = service.get('config').params.matrixSet;
             sourceWMTSOpts['style'] = service.get('config').params.style;
@@ -265,33 +257,33 @@ Ext.define('OgamDesktop.controller.map.Layer',{
    /**
      * Build a OpenLayers layer
      * @private
-     * @param {OgamDesktop.model.map.Layer} layer The layer
-     * @param {OgamDesktop.model.map.LayerService} service The service used per the layer
+     * @param {OgamDesktop.model.map.LayerTreeNode} node The node of the layer
      * @param {number} curRes The map current resolution
      * @return {ol.layer.Tile} The OpenLayers layer
      */
-    buildOlLayer: function(layer, service, curRes) {
+    buildOlLayer: function(node, curRes) {
         var olLayerOpts = {};
-        olLayerOpts['session_id'] = layer.get('params').session_id;
-        olLayerOpts['source'] = this.buildOlSource(layer, service);
-        olLayerOpts['name'] = layer.get('name');
-        olLayerOpts['text'] = layer.get('options').label;
-        olLayerOpts['opacity'] = layer.get('options').opacity;
+        var layer = node.getLayer();
+        //TODO to remove after check (sylvain) olLayerOpts['session_id'] = layer.get('params').session_id;
+        olLayerOpts['source'] = this.buildOlSource(layer, layer.getViewService());
+        olLayerOpts['text'] = layer.get('label');
+        olLayerOpts['opacity'] = layer.get('defaultOpacity');
         olLayerOpts['printable'] = true;
-        olLayerOpts['visible'] = !layer.get('params').isHidden;
-        olLayerOpts['displayInLayerSwitcher'] = !layer.get('params').isHidden;
-        olLayerOpts['checked'] = layer.get('params').isChecked;
-        if (layer.get('options').resolutions) {
-            var resolutions = layer.get('options').resolutions;
-            olLayerOpts['minResolution'] = resolutions[resolutions.length - 1];
-            olLayerOpts['maxResolution'] = resolutions[0];
+        olLayerOpts['visible'] = !node.get('isHidden');
+        olLayerOpts['displayInLayerSwitcher'] = !node.get('isHidden');
+        olLayerOpts['checked'] = node.get('isChecked');
+        if(!Ext.isEmpty(layer.getMinZoomLevel())){
+        	olLayerOpts['minResolution'] = layer.getMinZoomLevel().get('resolution');
         }
-        olLayerOpts['disabled'] = layer.get('params').isDisabled;
-        if (curRes < olLayerOpts['minResolution'] || curRes >= olLayerOpts['maxResolution']) {
+        if(!Ext.isEmpty(layer.getMaxZoomLevel())){
+        	olLayerOpts['maxResolution'] = layer.getMaxZoomLevel().get('resolution');
+        }
+        olLayerOpts['disabled'] = node.get('isDisabled');
+        if ((olLayerOpts['minResolution'] != undefined && curRes < olLayerOpts['minResolution']) 
+                || (olLayerOpts['maxResolution'] != undefined && curRes >= olLayerOpts['maxResolution'])) {
             olLayerOpts['disabled'] = true;
         }
-        olLayerOpts['activateType'] = layer.get('params').activateType.toLowerCase();
-
+        olLayerOpts['activateType'] = layer.get('activateType').toLowerCase();
         return new ol.layer.Tile(olLayerOpts);
     },
 
