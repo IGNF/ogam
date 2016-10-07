@@ -923,6 +923,25 @@ class Application_Model_Metadata_Metadata {
 	public function getGeometryField($schema, $tables) {
 		$this->logger->debug('getGeometryField : ' . $schema);
 
+		$tableFieldArray = $this->getGeometryFields($schema, $tables);
+		return $tableFieldArray[0];
+	}
+
+	/**
+	 * Detect all the columns getting a geographical information in a list of tables.
+	 * If the dataset is specified, we filter on the fields of the dataset.
+	 * The array order is from lowest to highest GEOM in the hierarchy of tables.
+	 *
+	 * @param String $schema
+	 *        	the schema identifier
+	 * @param Array[String] $tables
+	 *        	a list of table formats
+	 * @return Array[Application_Object_Metadata_TableField]
+	 * @throws an exception if the tables contain no geographical information
+	 */
+	public function getGeometryFields($schema, $tables) {
+		$this->logger->debug('getGeometryFields : ' . $schema);
+
 		// Get the fields specified by the format
 		$req = "SELECT DISTINCT table_field.*, COALESCE(t.label, data.label) as label, data.unit, unit.type, unit.subtype, COALESCE(t.definition, data.definition) as definition ";
 		$req .= " FROM table_field ";
@@ -938,9 +957,10 @@ class Application_Model_Metadata_Metadata {
 		$select = $this->db->prepare($req);
 
 		// We do the seach table by table in the inverse order
+		$tableFieldArray = array();
 		foreach (array_reverse($tables) as $tableName) {
 
-			$this->logger->info('getGeometryField table ' . $tableName);
+			$this->logger->info('getGeometryFields table ' . $tableName);
 
 			$select->execute(array(
 				$tableName,
@@ -950,12 +970,16 @@ class Application_Model_Metadata_Metadata {
 			$row = $select->fetch();
 			if ($row) {
 				$tableField = $this->_readTableField($row);
-				return $tableField;
+				$tableFieldArray[] = $tableField;
 			}
 		}
 
-		// No GEOM column found
-		throw new Exception("No geographical information detected");
+		if(!empty($tableFieldArray)) {
+			return $tableFieldArray;
+		} else {
+			// No GEOM column found
+			throw new Exception("No geographical information detected");
+		}
 	}
 
 	/**

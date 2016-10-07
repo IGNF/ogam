@@ -128,12 +128,29 @@ class TableFieldRepository extends \Doctrine\ORM\EntityRepository
      *        	the schema identifier
      * @param Array[String] $tables
      *        	a list of table formats
+     * @return Application_Object_Metadata_TableField
+     * @throws an exception if the tables contain no geographical information
+     */
+    public function getGeometryField($schema, $tables, $lang) {
+        $tableFieldArray = $this->getGeometryFields($schema, $tables, $lang);
+        return $tableFieldArray[0];
+    }
+
+    /**
+     * Detect the column getting the geographical information in a list of tables.
+     * If the dataset is specified, we filter on the fields of the dataset.
+     * We always take the GEOM column the lowest in the hierarchy of tables.
+     *
+     * @param String $schema
+     *        	the schema identifier
+     * @param Array[String] $tables
+     *        	a list of table formats
      * @param String
      *            The locale
      * @return Application_Object_Metadata_TableField
      * @throws an exception if the tables contain no geographical information
      */
-    public function getGeometryField($schema, $tables, $lang) {
+    public function getGeometryFields($schema, $tables, $lang) {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata($this->_entityName, 't');
         
@@ -151,6 +168,7 @@ class TableFieldRepository extends \Doctrine\ORM\EntityRepository
         $query = $this->_em->createNativeQuery($sql, $rsm);
 
         // We do the seach table by table in the inverse order
+        $tableFieldArray = array();
         foreach (array_reverse($tables) as $tableName) {
             $query->setParameters(array(
                 $lang,
@@ -160,11 +178,15 @@ class TableFieldRepository extends \Doctrine\ORM\EntityRepository
     
             $tableField = $query->getResult();
             if ($tableField) {
-                return $tableField[0];
+                $tableFieldArray[] = $tableField;
             }
         }
     
-        // No GEOM column found
-        throw new \Exception("No geographical information detected");
+        if(!empty($tableFieldArray)) {
+            return $tableFieldArray;
+        } else {
+            // No GEOM column found
+            throw new \Exception("No geographical information detected");
+        }
     }
 }

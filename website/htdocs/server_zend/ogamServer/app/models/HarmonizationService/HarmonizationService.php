@@ -59,62 +59,14 @@ class Application_Model_HarmonizationService_HarmonizationService extends Applic
 	 * @return true if the process was OK
 	 * @throws Exception if a problem occured on the server side
 	 */
-	public function harmonizeData($providerId, $datasetId) {
+	public function harmonizeData($providerId, $datasetId, $removeOnly) {
 		$this->logger->debug("harmonizeData : " . $providerId . " " . $datasetId);
 
 		$client = new Zend_Http_Client();
 		$uri = $this->serviceUrl . "HarmonizationServlet?action=HarmonizeData";
-
-		$client->setUri($uri);
-		$client->setConfig(array(
-			'maxredirects' => 0,
-			'timeout' => 30
-		));
-
-		$client->setParameterPost('PROVIDER_ID', $providerId);
-		$client->setParameterPost('DATASET_ID', $datasetId);
-
-		$this->logger->debug("HTTP REQUEST : " . $uri);
-
-		$response = $client->request('POST');
-
-		// Check the result status
-		if ($response->isError()) {
-			$this->logger->debug("Error while harmonizing data : " . $response->getMessage());
-			throw new Exception("Error while harmonizing data : " . $response->getMessage());
+		if ($removeOnly) {
+			$uri = $this->serviceUrl . "HarmonizationServlet?action=RemoveHarmonizeData";
 		}
-
-		// Extract the response body
-		$body = $response->getBody();
-		$this->logger->debug("HTTP RESPONSE : " . $body);
-
-		// Check the response status
-		if (strpos($body, "<Status>OK</Status>") === FALSE) {
-			// Parse an error message
-			$error = $this->parseErrorMessage($body);
-			throw new Exception("Error while harmonizing data : " . $error->errorMessage);
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * Launch the harmonization process.
-	 *
-	 * @param String $providerId
-	 *        	the provider identifier
-	 * @param String $datasetId
-	 *        	the dataset identifier
-	 * @param Boolean $removeOnly
-	 *        	remove the data without adding new one
-	 * @return true if the process was OK
-	 * @throws Exception if a problem occured on the server side
-	 */
-	public function RemoveHarmonizeData($providerId, $datasetId) {
-		$this->logger->debug("harmonizeData : " . $providerId . " " . $datasetId);
-
-		$client = new Zend_Http_Client();
-		$uri = $this->serviceUrl . "HarmonizationServlet?action=RemoveHarmonizeData";
 		$client->setUri($uri);
 		$client->setConfig(array(
 			'maxredirects' => 0,

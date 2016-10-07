@@ -37,6 +37,10 @@ class Application_Object_Metadata_TableTreeData {
 	 */
 	var $keys = array();
 
+	/**
+	 * The primary key (String with the columns separated by a semicolon)
+	 */
+	var $identifiers = array();
 
 	/**
 	 * The physical name of the table
