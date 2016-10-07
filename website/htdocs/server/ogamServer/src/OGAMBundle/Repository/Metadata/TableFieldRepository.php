@@ -178,7 +178,7 @@ class TableFieldRepository extends \Doctrine\ORM\EntityRepository
     
             $tableField = $query->getResult();
             if ($tableField) {
-                $tableFieldArray[] = $tableField;
+                $tableFieldArray[] = $tableField[0];
             }
         }
     
