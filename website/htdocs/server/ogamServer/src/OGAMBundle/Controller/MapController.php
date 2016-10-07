@@ -81,7 +81,7 @@ class MapController extends Controller
         $response = new Response();
         $response->headers->set('Content-Type', 'application/json');
         return $this->render ( 'OGAMBundle:Map:ajaxgetlayertreenodes.json.twig', array (
-            'layerTreeNodes' => $this->get('doctrine')->getRepository(LayerTreeNode::class)->findAll()
+            'layerTreeNodes' => $this->get('doctrine')->getRepository(LayerTreeNode::class)->findBy([], ['position' => 'ASC'])
         ),$response);
     }
 }
