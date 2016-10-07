@@ -15,7 +15,6 @@ $queryParamsAllow = array(//paramNom => requis
     'FORMAT' ,
     'WIDTH' ,
     'HEIGHT' ,
-    'SESSION_ID' ,
     'PLOT_CODE' ,// TODO: use the query parameter
     'TRANSPARENT' ,
     'VERSION' ,
@@ -59,6 +58,11 @@ if (strcasecmp($queriesArg['SERVICE'] , "WFS") !== 0) {
     $geoJSONOFRequired = true;
     header('Content-Type: application/json,subtype=geojson,charset=utf-8');
 }
+
+// force la valeur de SESSION_ID
+session_start();
+$queriesArg['SESSION_ID'] = session_id();
+session_abort();
 
 header('Access-Control-Allow-Origin: *');
 
