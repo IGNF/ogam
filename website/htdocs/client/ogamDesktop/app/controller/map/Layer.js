@@ -48,7 +48,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
      * @property
      * @type {object}
      */
-    layerTreeNodesStore : [],
+    layerTreeNodesStore : null,
 
     /**
      * The refs to get the views concerned
@@ -114,13 +114,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         var layersCollection = this.buildLayersCollection();
 
         // Identifies the request layers
-        var filterOnRequestActivateType = new Ext.util.Filter({
-            filterFn : function(item) {
-                return item.get('activateType') === 'request';
-            }
-        });
-        var requestLayersCollection = layersCollection.filter(filterOnRequestActivateType);
-        mapCmp.getController().requestLayers = requestLayersCollection.getRange();
+        mapCmp.getController().requestLayers = this.getRequestLayers(layersCollection);
 
         // Adds the layers to the map
         var map = mapCmp.getMap();
@@ -130,6 +124,29 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 
         // Adds the store to the layers tree
         this.getLayerspanel().setConfig('store', this.buildGeoExtStore());
+    },
+
+   /**
+     * Return an array containing the request layers
+     * @private
+     * @param {Ext.util.Collection} layersCollection The full map layers collection
+     * @return {Array} The request layers
+     */
+    getRequestLayers: function(layersCollection) {
+        var requestLayers = [];
+        var addRequestLayerFn = function(item, index, len){
+            if(item instanceof ol.layer.Group){
+                item.getLayers().forEach(function(el, index, layers){
+                    addRequestLayerFn(el, index, layers.length);
+                });
+            } else {
+                if (item.get('activateType') === 'request') {
+                    requestLayers.push(item);
+                }
+            }
+        };
+        layersCollection.each(addRequestLayerFn);
+        return requestLayers;
     },
 
    /**
@@ -173,7 +190,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             }
 		}
 	},
-	
+
    /**
      * Build a layers collection
      * @private

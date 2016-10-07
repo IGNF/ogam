@@ -6,7 +6,6 @@
 Ext.define('OgamDesktop.model.map.VectorLayer',{
 	extend: 'Ext.data.Model',
 	fields: [
-        {name: 'id', type: 'string'},
 		{name : 'serviceLayerName',type: 'string'},
         {name : 'layerLabel', type: 'string'},
         {name : 'featureServiceUrl', type: 'string'}
