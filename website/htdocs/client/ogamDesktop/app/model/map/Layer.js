@@ -25,5 +25,26 @@ Ext.define('OgamDesktop.model.map.Layer',{
 	    {name: 'legendService', reference:'LayerService'},
 	    {name: 'detailService', reference:'LayerService'},
 	    {name: 'featureService', reference:'LayerService'}
-	]
+	],
+	
+	/**
+	 * Return true if the current resolution is out of the layer resolutions
+	 * @param {Number} currentResolution The current resolution
+	 * @return {Boolean}
+	 */
+    isOutOfResolution: function(currentResolution){
+        var minResolution = null, maxResolution = null;
+        if (!Ext.isEmpty(this.getMinZoomLevel())) {
+            minResolution = this.getMinZoomLevel().get('resolution');
+        }
+        if (!Ext.isEmpty(this.getMaxZoomLevel())) {
+            maxResolution = this.getMaxZoomLevel().get('resolution');
+        }
+        if ((minResolution != null && currentResolution < minResolution)
+                || (maxResolution != null && currentResolution >= maxResolution)) {
+            return true;
+        } else {
+            return false;
+        }
+	}
 });

@@ -37,19 +37,7 @@ Ext.define('OgamDesktop.view.map.LegendsPanelController', {
                     }]
                 }
             }));
-        var outOfRange, minResolution = null, maxResolution = null;
-        
-        if(!Ext.isEmpty(layer.getMinZoomLevel())){
-        	minResolution = layer.getMinZoomLevel().get('resolution');
-        }
-        if(!Ext.isEmpty(layer.getMaxZoomLevel())){
-        	maxResolution = layer.getMaxZoomLevel().get('resolution');
-        }
-        if ((minResolution != null && curRes < minResolution) 
-                || (maxResolution != null && curRes >= maxResolution)) {
-        	 outOfRange = true;
-        }
-        if (node.get('isDisabled') || node.get('isHidden') || !node.get('isChecked') || outOfRange) {
+        if (node.get('isDisabled') || node.get('isHidden') || !node.get('isChecked') || layer.isOutOfResolution(curRes)) {
             legend.on('render', function(cmp) {
                 cmp.hide();
             });

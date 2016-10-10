@@ -109,12 +109,16 @@ Ext.define('OgamDesktop.controller.map.Layer',{
      */
     setupMapAndTreeLayers : function() {
         var mapCmp = this.getMappanel().child('mapcomponent');
+        var mapTb = this.getMappanel().child('maptoolbar');
 
         // Creation of the layers collection
         var layersCollection = this.buildLayersCollection();
 
         // Identifies the request layers
         mapCmp.getController().requestLayers = this.getRequestLayers(layersCollection);
+
+        // Identifies the vector layers
+        mapTb.getController().setupButtonsMenus(this.buildVectorLayersCollection());
 
         // Adds the layers to the map
         var map = mapCmp.getMap();
@@ -210,6 +214,51 @@ Ext.define('OgamDesktop.controller.map.Layer',{
 
         return layersCollection;
     },
+    
+    /**
+     * Adds the vector layers to the provided list
+     * @param {Array} vectorLayersArray The list
+     * @param {OgamDesktop.model.map.LayerTreeNode} node The current node
+     * @private
+     */
+    addVectorLayer: function (vectorLayersArray, node) {
+    	var newNode;
+		if (!node.get('isLayer')) { // Node is a group
+			// Loop on the group children nodes
+        	node.getChildren().each(
+    			function(child){
+    				this.addVectorLayer(vectorLayersArray, child);
+    			},
+    			this
+        	);
+		} else { // Node is a layer
+			var layer = node.getLayer();
+            if (!Ext.isEmpty(layer.getFeatureService())) {
+                // Add the layer to the list
+                vectorLayersArray.push(layer);
+            }
+		}
+	},
+	
+    /**
+     * Build a vector layers collection
+     * @private
+     * @return {Ext.util.MixedCollection} The vector layers collection
+     */
+    buildVectorLayersCollection: function() {
+        var layersList = [];
+        this.layerTreeNodesStore.each(
+            function(node){
+    			this.addVectorLayer(layersList,node);
+    		},
+    		this
+        );
+
+        var layersCollection = new Ext.util.MixedCollection();
+        layersCollection.addAll(layersList);
+
+        return layersCollection;
+    },
 
    /**
      * Build a OpenLayers source
@@ -289,14 +338,13 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         olLayerOpts['displayInLayerSwitcher'] = !node.get('isHidden');
         olLayerOpts['checked'] = node.get('isChecked');
         if(!Ext.isEmpty(layer.getMinZoomLevel())){
-        	olLayerOpts['minResolution'] = layer.getMinZoomLevel().get('resolution');
+            olLayerOpts['minResolution'] = layer.getMinZoomLevel().get('resolution');
         }
         if(!Ext.isEmpty(layer.getMaxZoomLevel())){
-        	olLayerOpts['maxResolution'] = layer.getMaxZoomLevel().get('resolution');
+            olLayerOpts['maxResolution'] = layer.getMaxZoomLevel().get('resolution');
         }
         olLayerOpts['disabled'] = node.get('isDisabled');
-        if ((olLayerOpts['minResolution'] != undefined && curRes < olLayerOpts['minResolution']) 
-                || (olLayerOpts['maxResolution'] != undefined && curRes >= olLayerOpts['maxResolution'])) {
+        if (layer.isOutOfResolution(curRes)) {
             olLayerOpts['disabled'] = true;
         }
         olLayerOpts['activateType'] = layer.get('activateType').toLowerCase();
