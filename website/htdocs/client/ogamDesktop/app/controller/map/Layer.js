@@ -123,7 +123,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         // Adds the layers to the map
         var map = mapCmp.getMap();
         layersCollection.each(function(item, index, len){
-            map.addLayer(item);
+            var mapLayersCollection = map.getLayers();
+            mapLayersCollection.insertAt(0,item);
         }, this);
 
         // Adds the store to the layers tree
@@ -210,7 +211,7 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         );
 
         var layersCollection = new Ext.util.MixedCollection();
-        layersCollection.addAll(layersList.reverse());
+        layersCollection.addAll(layersList);
 
         return layersCollection;
     },
