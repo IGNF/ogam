@@ -121,9 +121,8 @@ Ext.define('OgamDesktop.controller.map.Layer',{
         mapTb.getController().setupButtonsMenus(this.buildVectorLayersCollection());
 
         // Adds the layers to the map
-        var map = mapCmp.getMap();
+        var mapLayersCollection = mapCmp.getMap().getLayers();
         layersCollection.each(function(item, index, len){
-            var mapLayersCollection = map.getLayers();
             mapLayersCollection.insertAt(0,item);
         }, this);
 
