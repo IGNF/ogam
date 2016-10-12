@@ -1,0 +1,266 @@
+<?php
+
+namespace OGAMBundle\Entity\Website;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * PredefinedRequest
+ *
+ * @ORM\Table(name="website.predefined_request")
+ * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PredefinedRequestRepository")
+ */
+class PredefinedRequest
+{
+    /**
+     * @var string
+     * @ORM\Id
+     * @ORM\Column(name="name", type="string", length=50, unique=true)
+     */
+    private $name;
+
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="schema_code", type="string", length=36)
+     */
+    private $schemaCode;
+
+    /**
+     * @var Dataset
+     *
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Dataset")
+     * @ORM\JoinColumns({@ORM\JoinColumn(name="dataset_id", referencedColumnName="dataset_id")})
+     */
+    private $datasetId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="definition", type="string", length=500, nullable=true)
+     */
+    private $definition;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="label", type="string", length=50, nullable=true)
+     */
+    private $label;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date", type="date")
+     */
+    private $date;
+
+    /**
+     * @ORM\OneToMany(targetEntity="OGAMBundle\Entity\Website\PredefinedRequestGroupAsso", mappedBy="requestName")
+     */
+    private $groups;
+
+    /**
+     * @var Translation
+     *
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Translation")
+     * @ORM\JoinColumns({@ORM\JoinColumn(name="name", referencedColumnName="row_pk")})
+     */
+    private $translation;
+
+    public function __construct()
+    {
+        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return PredefinedRequest
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set schemaCode
+     *
+     * @param string $schemaCode
+     *
+     * @return PredefinedRequest
+     */
+    public function setSchemaCode($schemaCode)
+    {
+        $this->schemaCode = $schemaCode;
+
+        return $this;
+    }
+
+    /**
+     * Get schemaCode
+     *
+     * @return string
+     */
+    public function getSchemaCode()
+    {
+        return $this->schemaCode;
+    }
+
+    /**
+     * Set datasetId
+     *
+     * @param string $datasetId
+     *
+     * @return PredefinedRequest
+     */
+    public function setDatasetId($datasetId)
+    {
+        $this->datasetId = $datasetId;
+
+        return $this;
+    }
+
+    /**
+     * Get datasetId
+     *
+     * @return string
+     */
+    public function getDatasetId()
+    {
+        return $this->datasetId;
+    }
+
+    /**
+     * Set definition
+     *
+     * @param string $definition
+     *
+     * @return PredefinedRequest
+     */
+    public function setDefinition($definition)
+    {
+        $this->definition = $definition;
+
+        return $this;
+    }
+
+    /**
+     * Get definition
+     *
+     * @return string
+     */
+    public function getDefinition()
+    {
+        if ($this->translation != null) {
+            return $this->translation->getDefinition();
+        }
+        return $this->definition;
+    }
+
+    /**
+     * Set label
+     *
+     * @param string $label
+     *
+     * @return PredefinedRequest
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
+    /**
+     * Get label
+     *
+     * @return string
+     */
+    public function getLabel()
+    {
+        if ($this->translation != null) {
+            return $this->translation->getLabel();
+        }
+        return $this->label;
+    }
+
+    /**
+     * Set date
+     *
+     * @param \DateTime $date
+     *
+     * @return PredefinedRequest
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     *
+     * @return the unknown_type
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     *
+     * @param unknown_type $groups            
+     */
+    public function setGroups($groups)
+    {
+        $this->groups = $groups;
+        return $this;
+    }
+
+    /**
+     *
+     * @return the Translation
+     */
+    public function getTranslation()
+    {
+        return $this->translation;
+    }
+
+    /**
+     *
+     * @param Translation $translation            
+     */
+    public function setTranslation(Translation $translation)
+    {
+        $this->translation = $translation;
+        return $this;
+    }
+ 
+ 
+}
+

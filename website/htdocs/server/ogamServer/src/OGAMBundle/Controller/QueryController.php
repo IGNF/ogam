@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use OGAMBundle\Entity\Generic;
 use OGAMBundle\Entity\Mapping\ResultLocation;
 use OGAMBundle\Entity\Generic\QueryForm;
+use OGAMBundle\Entity\Website\PredefinedRequest;
 
 /**
  * @Route("/query")
@@ -276,10 +277,24 @@ class QueryController extends Controller {
 	/**
 	 * @Route("/ajaxgetpredefinedrequestlist")
 	 */
-	public function ajaxgetpredefinedrequestlistAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetpredefinedrequestlist.html.twig', array ()
-		// ...
-		 );
+	public function ajaxgetpredefinedrequestlistAction(Request $request) {
+	    $logger = $this->get ( 'logger' );
+	    $logger->debug('ajaxgetpredefinedrequestlist');
+	    
+	    $sort = $request->query->get('sort');
+	    $dir = $request->query->getAlpha('dir');
+	    
+	    // Get the predefined values for the forms
+	    $schema = $this->get('ogam.schema_listener')->getSchema();
+	    $locale = $this->get('ogam.locale_listener')->getLocale();
+	    $predefinedRequestRepository = $this->get('doctrine')->getRepository(PredefinedRequest::class);
+	    $predefinedRequestList = $predefinedRequestRepository->getPredefinedRequestList($schema, $dir, $sort, $locale);
+
+		$response = new Response();
+		$response->headers->set('Content-Type', 'application/json');
+		return $this->render ( 'OGAMBundle:Query:ajaxgetpredefinedrequestlist.json.twig', array (
+		    'data' => $predefinedRequestList
+		),$response);
 	}
 	
 	/**

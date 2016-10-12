@@ -10,6 +10,6 @@ Ext.define('OgamDesktop.store.request.PredefinedGroup',{
 	proxy:{
 		type:'ajax',
 		url:Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetpredefinedrequestlist',
-		reader:{type:'array', rootProperty:'rows'}
+		reader:{type:'array', rootProperty:'data'}
 	}
 });
