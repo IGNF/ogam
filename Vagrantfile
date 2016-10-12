@@ -14,7 +14,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    end
    config.vm.provider "virtualbox" do |v|
       v.memory = 3072
-      v.cpus = 3
+      v.cpus = 4
       v.name = "ogam_dev"
    end
 
@@ -30,6 +30,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # Sync the vagrant dir
   config.vm.synced_folder ".", "/vagrant/ogam", disabled: false, create:true
+  
   config.vm.synced_folder "website/htdocs",'/vagrant/ogam/website/htdocs', owner:"www-data",group: "www-data"
 
   
@@ -39,7 +40,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
 
   config.vm.provision "bootstrap", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/bootstrap.sh"
-
+ 
   config.vm.provision "install_java_tomcat", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_java_tomcat.sh"
 
   config.vm.provision "install_apache", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_apache.sh"
@@ -58,12 +59,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   config.vm.provision "install_dev_tools", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_dev_tools.sh"
   
- 
+  #for windows and vboxfs (no nfs) sharing, improve perf, TODO: download (rsync-back ?) on host the vendor dir for ide ie
+  config.vm.provision "fix_vendor_perf", run:"always", type: "shell", inline: "localpath='/home/vagrant/ogam/vendor' ; sharedpath='/vagrant/ogam/website/htdocs/server/ogamServer/vendor'; /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath  && mount -o bind $localpath $sharedpath"
+  config.vm.provision "fix_var_perf", run:"always", type: "shell", inline: "localpath='/home/vagrant/ogam/var' && sharedpath='/vagrant/ogam/website/htdocs/server/ogamServer/var' && /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath && mount -o bind $localpath $sharedpath"
+
+  
   #
   # Application deployment
   # The following provisions are executed as "vagrant" 
   #
-    
   config.vm.provision "install_composer_libraries", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_composer_libraries.sh"
   
   config.vm.provision "build_ogam_services", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/build_ogam_services.sh"
