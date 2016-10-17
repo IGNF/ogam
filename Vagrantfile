@@ -31,7 +31,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Sync the vagrant dir
   config.vm.synced_folder ".", "/vagrant/ogam", disabled: false, create:true
   
-  config.vm.synced_folder "website/htdocs",'/vagrant/ogam/website/htdocs', owner:"www-data",group: "www-data"
+  config.vm.synced_folder "website/htdocs",'/vagrant/ogam/website/htdocs', owner:"www-data",group: "www-data",:mount_options => ["dmode=777","fmode=777"]
 
   
   #
@@ -59,9 +59,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   config.vm.provision "install_dev_tools", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_dev_tools.sh"
   
-  #for windows and vboxfs (no nfs) sharing, improve perf, TODO: download (rsync-back ?) on host the vendor dir for ide ie
-  config.vm.provision "fix_vendor_perf", run:"always", type: "shell", inline: "localpath='/home/vagrant/ogam/vendor' ; sharedpath='/vagrant/ogam/website/htdocs/server/ogamServer/vendor'; /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath  && mount -o bind $localpath $sharedpath"
-  config.vm.provision "fix_var_perf", run:"always", type: "shell", inline: "localpath='/home/vagrant/ogam/var' && sharedpath='/vagrant/ogam/website/htdocs/server/ogamServer/var' && /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath && mount -o bind $localpath $sharedpath"
+  config.vm.provision "fix_var_perf", run:"always", type: "shell", inline: "localpath=$1 ; sharedpath=$2 ; /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath && mount -o bind $localpath $sharedpath", args:['/home/vagrant/ogam/var','/vagrant/ogam/website/htdocs/server/ogamServer/var']
 
   
   #
@@ -70,6 +68,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   config.vm.provision "install_composer_libraries", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_composer_libraries.sh"
   
+  #for windows and vboxfs (no nfs) sharing, improve perf, TODO: download (rsync-back ?) on host the vendor dir for ide ie
+  config.vm.provision "move_vendor_dir", privileged:true, type: "shell", inline:"/vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $1 && mv $2/* $1", args:['/home/vagrant/ogam/vendor/', '/vagrant/ogam/website/htdocs/server/ogamServer/vendor']
+  config.vm.provision "fix_vendor_perf", run:"always", type: "shell", inline: "localpath=$1 ; sharedpath=$2; mount -o bind $localpath $sharedpath", args:['/home/vagrant/ogam/vendor', '/vagrant/ogam/website/htdocs/server/ogamServer/vendor']
+
   config.vm.provision "build_ogam_services", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/build_ogam_services.sh"
   
   config.vm.provision "build_ogam_desktop", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/build_ogam_desktop.sh"
