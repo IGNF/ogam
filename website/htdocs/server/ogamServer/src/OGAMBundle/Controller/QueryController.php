@@ -11,6 +11,7 @@ use OGAMBundle\Entity\Generic;
 use OGAMBundle\Entity\Mapping\ResultLocation;
 use OGAMBundle\Entity\Generic\QueryForm;
 use OGAMBundle\Entity\Website\PredefinedRequest;
+use OGAMBundle\Entity\Website\PredefinedRequestCriterion;
 
 /**
  * @Route("/query")
@@ -300,10 +301,19 @@ class QueryController extends Controller {
 	/**
 	 * @Route("/ajaxgetpredefinedrequestcriteria")
 	 */
-	public function ajaxgetpredefinedrequestcriteriaAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetpredefinedrequestcriteria.html.twig', array ()
-		// ...
-		 );
+	public function ajaxgetpredefinedrequestcriteriaAction(Request $request) {
+	    $logger = $this->get ( 'logger' );
+	    $logger->debug('ajaxgetpredefinedrequestcriteria');
+	    
+	    $requestName = $request->query->get('request_name');
+	    $predefinedRequestCriterionRepository = $this->get('doctrine')->getRepository(PredefinedRequestCriterion::class);
+	    $locale = $this->get('ogam.locale_listener')->getLocale();
+
+	    $response = new Response();
+	    $response->headers->set('Content-Type', 'application/json');
+	    return $this->render ( 'OGAMBundle:Query:ajaxgetpredefinedrequestcriteria.html.twig', array (
+	        'data' => $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestName, $locale)
+	    ),$response);
 	}
 	
 	/**

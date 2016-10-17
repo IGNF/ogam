@@ -2,7 +2,7 @@
  * This class defines the model for the zoom level.
  */
 Ext.define('OgamDesktop.model.map.ZoomLevel',{
-	extend: 'OgamDesktop.model.map.base',
+	extend: 'OgamDesktop.model.base',
 	alias: 'data.field.zoomlevel',
 	idProperty: 'id',
 	fields: [

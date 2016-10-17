@@ -37,11 +37,12 @@
 "position": {{ field.position|json_encode }},
 "is_default_criteria": {{ field.isDefaultCriteria|json_encode }},
 "is_default_result": {{ field.isDefaultResult|json_encode }},
-"default_value": {{ field.defaultValue|json_encode }},
+"default_value": {% block form_field_default_value %}{{ field.defaultValue|json_encode }}{% endblock %},
 "decimals": {{ field.decimals|json_encode }},
 "mask": "{{ field.mask }}",
 {% set data = field.data %}
 "data": {% block form_field_data %}{{ block('data') }}{% endblock %}
+{% block form_field_additional_fields %}{% endblock %}
 }
 {% endautoescape %}
 {%- endblock -%}

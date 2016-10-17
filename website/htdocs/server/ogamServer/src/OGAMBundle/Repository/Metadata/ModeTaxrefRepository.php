@@ -2,6 +2,9 @@
 
 namespace OGAMBundle\Repository\Metadata;
 
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use OGAMBundle\Entity\Metadata\Unit;
+
 /**
  * ModeTaxrefRepository
  *
@@ -10,4 +13,39 @@ namespace OGAMBundle\Repository\Metadata;
  */
 class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Returns the mode(s) corresponding to the code(s).
+     *
+     * @param Unit $unit The unit
+     * @param String|Array $code The filter code(s)
+     * @param String $locale The locale
+     * @return Mode|[Mode] The filtered mode(s)
+     */
+    public function getModesFilteredByCode(Unit $unit, $code, $locale){
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
+        $parameters = array(
+            'unit' => $unit->getUnit(),
+            'lang' => $locale
+        );
+        $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf, complete_name, vernacular_name, is_reference";
+        $sql .= " FROM mode_taxref mt";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
+        $sql .= " WHERE unit = :unit";
+        if ($code != null) {
+            if (is_array($code)) {
+                $sql .= " AND code IN ( :codes )";
+                $parameters['codes'] = implode("','", $code);
+            } else {
+                $sql .= " AND code = :code";
+                $parameters['code'] = $code;
+            }
+        }
+        $sql .= " ORDER BY position, code";
+    
+        $query = $this->_em->createNativeQuery ( $sql, $rsm );
+        $query->setParameters ($parameters);
+    
+        return $query->getResult();
+    }
 }

@@ -2,7 +2,7 @@
  * This class defines the model for the layers.
  */
 Ext.define('OgamDesktop.model.map.Layer',{
-	extend: 'OgamDesktop.model.map.base',
+	extend: 'OgamDesktop.model.base',
 	requires:[
 	    'OgamDesktop.model.map.ZoomLevel',
 	    'OgamDesktop.model.map.LayerService'
@@ -16,15 +16,15 @@ Ext.define('OgamDesktop.model.map.Layer',{
 	    {name: 'defaultOpacity', type: 'integer'},
 	    {name: 'isBaseLayer', type: 'boolean'},
 	    {name: 'isUntiled', type: 'boolean'},
-	    {name: 'maxZoomLevel', reference:'ZoomLevel'},
-	    {name: 'minZoomLevel', reference:'ZoomLevel'},
+	    {name: 'maxZoomLevel', reference:'map.ZoomLevel'},
+	    {name: 'minZoomLevel', reference:'map.ZoomLevel'},
 	    {name: 'hasLegend', type: 'boolean'},
 	    {name: 'providerId', type: 'string'},
 	    {name: 'activateType', type: 'string'},
-	    {name: 'viewService', reference:'LayerService'},
-	    {name: 'legendService', reference:'LayerService'},
-	    {name: 'detailService', reference:'LayerService'},
-	    {name: 'featureService', reference:'LayerService'}
+	    {name: 'viewService', reference:'map.LayerService'},
+	    {name: 'legendService', reference:'map.LayerService'},
+	    {name: 'detailService', reference:'map.LayerService'},
+	    {name: 'featureService', reference:'map.LayerService'}
 	],
 	
 	/**

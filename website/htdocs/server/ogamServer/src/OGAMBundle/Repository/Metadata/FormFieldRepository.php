@@ -29,7 +29,7 @@ class FormFieldRepository extends \Doctrine\ORM\EntityRepository {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata($this->_entityName, 'ff');
         
-        $sql = " SELECT form_field.*, COALESCE(t.label, data.label) as label, COALESCE(t.definition, data.definition) as definition, unit.type, unit.subtype, unit.unit ";
+        $sql = " SELECT form_field.*";
         $sql .= " FROM form_field ";
         $sql .= " LEFT JOIN data using (data) ";
         $sql .= " LEFT JOIN unit using (unit) ";
@@ -43,8 +43,23 @@ class FormFieldRepository extends \Doctrine\ORM\EntityRepository {
             $format,
             $data
         ) );
-        
-        return $query->getResult()[0];
+
+        $field = $query->getSingleResult();
+        $inputType = $field->getInputType();
+
+        // Get the mandatory codes to display the field (RADIO)
+        if($inputType === 'RADIO'){
+            $unit = $field->getData()->getUnit();
+            $unit->setModes($this->_em->getRepository(Unit::class)->getModes($unit, $locale));
+        }
+
+        // Get the default value(s) code(s) (TREE and TAXREF)
+        if(($inputType === 'TREE' || $inputType === 'TAXREF') && $field->getDefaultValue() !== null){
+            $unit = $field->getData()->getUnit();
+            $unit->setModes($this->_em->getRepository(Unit::class)->getModesFilteredByCode($unit, $field->getDefaultValue(), $locale));
+        }
+
+        return $field;
     }
 	
 	/**

@@ -3,7 +3,7 @@
  * @deprecated
  */
 Ext.define('OgamDesktop.model.request.fieldset.Column', {
-	extend: 'Ext.data.Model',
+	extend: 'OgamDesktop.model.base',
 	idProperty: 'id',
     fields: [
         { name: 'id', type: 'auto' },

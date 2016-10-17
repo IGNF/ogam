@@ -3,6 +3,7 @@
 namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
+use OGAMBundle\Entity\Metadata\Translation;
 
 /**
  * PredefinedRequest

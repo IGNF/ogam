@@ -3,43 +3,40 @@
 namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
+use OGAMBundle\Entity\Metadata\FormField;
 
 /**
  * PredefinedRequestCriteria
  *
- * @ORM\Table(name="website\predefined_request_criterion")
+ * @ORM\Table(name="website.predefined_request_criterion")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PredefinedRequestCriterionRepository")
  */
 class PredefinedRequestCriterion
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @var string
-     *
+     * @var PredefinedRequest
+     * 
+     * @ORM\Id 
      * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequest")
-     * @ORM\JoinColumn(name="requestName", referencedColumnName="name")
+     * @ORM\JoinColumn(name="request_name", referencedColumnName="name")
      */
     private $requestName;
 
     /**
-     * @var string
+     * @var Format
      *
-     * @ORM\Column(name="format", type="string", length=36)
+     * @ORM\Id
+	 * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Format")
+	 * @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
      */
     private $format;
 
     /**
-     * @var string
+     * @var Data
      *
-     * @ORM\Column(name="data", type="string", length=36)
+     * @ORM\Id 
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
+     * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
      */
     private $data;
 
@@ -57,17 +54,23 @@ class PredefinedRequestCriterion
      */
     private $fixed;
 
+    /**
+     * @var FormField
+     *
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\FormField")
+     * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data"),@ORM\JoinColumn(name="format", referencedColumnName="format")})
+     */
+    private $formField;
 
     /**
      * Get id
      *
-     * @return int
+     * @return string
      */
-    public function getId()
-    {
-        return $this->id;
+    public function getId(){
+        return $this->format->getFormat() . '__' . $this->data->getData();
     }
-
+    
     /**
      * Set requestName
      *
@@ -187,5 +190,25 @@ class PredefinedRequestCriterion
     {
         return $this->fixed;
     }
+
+    /**
+     *
+     * @return the FormField
+     */
+    public function getFormField()
+    {
+        return $this->formField;
+    }
+
+    /**
+     *
+     * @param FormField $formField
+     */
+    public function setFormField(FormField $formField)
+    {
+        $this->formField = $formField;
+        return $this;
+    }
+ 
 }
 

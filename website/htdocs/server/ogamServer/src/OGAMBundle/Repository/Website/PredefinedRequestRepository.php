@@ -2,6 +2,8 @@
 
 namespace OGAMBundle\Repository\Website;
 
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
+
 /**
  * PredefinedRequestRepository
  *

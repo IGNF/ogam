@@ -3,17 +3,18 @@
  * @deprecated
  */
 Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
-	extend: 'Ext.data.Model',
+	extend: 'OgamDesktop.model.base',
 	idProperty: 'id',
     fields: [
         // Form Field
         { name: 'id', type: 'auto' },
         { name: 'name', mapping: 'id', type: 'string' },
-        { name: 'data' },
-        { name: 'format', type: 'string' },
+        { name: 'data' }, // Don't use that param (Must be only used by the calculate fcts)
+        { name: 'format', type: 'string' }, // Don't use that param (Must be only used by the calculate fcts)
         { name: 'is_default', mapping: 'is_default_criteria', type: 'boolean', defaultValue: false },
         { name: 'decimals', type: 'integer' },
         { name: 'default_value', type: 'string' },
+        { name: 'default_label', type: 'string', calculate: function (field) { return (field.inputType === 'TREE' || field.inputType === 'TAXREF') && !Ext.isEmpty(field.default_value) ? field.data.unit.codes[0].label : null; } },
         { name: 'inputType', mapping: 'input_type', type: 'string' },
         // Data
         { name: 'label', type: 'string', calculate: function (field) { return field.data.label; } },
@@ -33,12 +34,5 @@ Ext.define('OgamDesktop.model.request.fieldset.Criterion', {
 			type:'json',
 			rootProperty:'criteria'
 		}
-    },
-    /**
-     * Return the criteria field config
-     * @return {Object} The criteria field config
-     */
-    getCriteriaField: function() {
-        return OgamDesktop.ux.request.RequestFieldSet.getCriteriaConfig(this.getData(), true);
     }
 });

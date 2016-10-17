@@ -221,11 +221,11 @@ COMMENT ON COLUMN PREDEFINED_REQUEST.DATE IS 'Date of creation of the request';
 /* Table : PREDEFINED_REQUEST_CRITERION                          */
 /*==============================================================*/
 create table PREDEFINED_REQUEST_CRITERION (
-REQUEST_NAME           VARCHAR(50)          not null,
-FORMAT         		   VARCHAR(36)          not null,
-DATA                   VARCHAR(36)          not null,
-VALUE        		   VARCHAR(500)          not null,
-FIXED 				   boolean,
+REQUEST_NAME           VARCHAR(50)          NOT NULL,
+FORMAT         		   VARCHAR(36)          NOT NULL,
+DATA                   VARCHAR(36)          NOT NULL,
+VALUE        		   VARCHAR(500)         NOT NULL,
+FIXED 				   boolean              NOT NULL DEFAULT false,
 constraint PK_PREDEFINED_REQUEST_CRITERION primary key (REQUEST_NAME, FORMAT, DATA)
 );
 

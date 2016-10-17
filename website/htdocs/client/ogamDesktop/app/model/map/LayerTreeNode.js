@@ -2,7 +2,7 @@
  * This class defines the model for the layer tree node.
  */
 Ext.define('OgamDesktop.model.map.LayerTreeNode',{
-	extend: 'OgamDesktop.model.map.base',
+	extend: 'OgamDesktop.model.base',
 	requires:['OgamDesktop.model.map.Layer'],
 	fields: [
 	    {name: 'id', type: 'integer'},
@@ -15,7 +15,7 @@ Ext.define('OgamDesktop.model.map.LayerTreeNode',{
 	    {name: 'isHidden', type: 'boolean'},
 	    {name: 'isDisabled', type: 'boolean'},
 	    {name: 'isExpanded', type: 'boolean'},
-	    {name: 'layer', reference: 'Layer'},
+	    {name: 'layer', reference: 'map.Layer'},
 	    {name: 'position', type: 'integer'},
 	    {name: 'checkedGroup', type: 'string'}
 	],

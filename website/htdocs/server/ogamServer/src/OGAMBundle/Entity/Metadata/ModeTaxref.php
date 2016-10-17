@@ -30,13 +30,6 @@ class ModeTaxref extends ModeTree
     /**
      * @var bool
      *
-     * @ORM\Column(name="is_leaf", type="boolean", nullable=true)
-     */
-    private $isLeaf;
-
-    /**
-     * @var bool
-     *
      * @ORM\Column(name="is_reference", type="boolean", nullable=true)
      */
     private $isReference;
@@ -88,30 +81,6 @@ class ModeTaxref extends ModeTree
     public function getVernacularName()
     {
         return $this->vernacularName;
-    }
-
-    /**
-     * Set isLeaf
-     *
-     * @param boolean $isLeaf
-     *
-     * @return ModeTaxref
-     */
-    public function setIsLeaf($isLeaf)
-    {
-        $this->isLeaf = $isLeaf;
-
-        return $this;
-    }
-
-    /**
-     * Get isLeaf
-     *
-     * @return bool
-     */
-    public function getIsLeaf()
-    {
-        return $this->isLeaf;
     }
 
     /**

@@ -335,7 +335,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		}
 		
 		for(var i=0, l=records.length;i<l; i++) {
-			this.criteriaPanel.add(this.self.getCriteriaConfig(records[i].data));
+			this.criteriaPanel.add(this.self.getCriteriaConfig(records[i]));
 		}
 		//this.criteriaPanel.updateLayout();
 	},
@@ -351,7 +351,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 		var record = this.criteriaDS.getById(criteriaId);
 		record.data.default_value = value;
 		// Add the field
-		var criteria = this.criteriaPanel.add(this.self.getCriteriaConfig(record.data));
+		var criteria = this.criteriaPanel.add(this.self.getCriteriaConfig(record));
 		//this.criteriaPanel.updateLayout();
 		return criteria;
 	},

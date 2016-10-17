@@ -36,7 +36,7 @@ class LocaleListener implements EventSubscriberInterface {
 				->get('_locale', $this->defaultLocale));
 		}
 
-		$this->locale = $request->getLocale ();
+		$this->locale = strtoupper($request->getLocale ());
 	}
 
 	public static function getSubscribedEvents() {

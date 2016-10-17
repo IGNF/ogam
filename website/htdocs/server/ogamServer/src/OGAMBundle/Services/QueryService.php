@@ -161,7 +161,7 @@ class QueryService {
         // Identify the field carrying the location information
         $tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingArray());
         $locationFields = $this->metadataModel->getRepository(TableField::class)->getGeometryFields($this->schema, array_keys($tables), $this->locale);
-        foreach ($locationFields as $key => $locationField) {
+        foreach ($locationFields as $locationField) {
             $locationTableInfo = $this->metadataModel->getRepository(TableFormat::class)->getTableFormat($this->schema, $locationField->getFormat()->getFormat(), $this->locale);
             // Run the request to store a temporary result table (for the web mapping)
             $this->doctrine->getRepository(ResultLocation::class, 'result_location')->fillLocationResult($from . $where, $sessionId, $locationField, $locationTableInfo, $visualisationSRS);
@@ -204,7 +204,7 @@ class QueryService {
         // Store the metadata in session for subsequent requests
         //$session->set('query_schema', $this->schema); used?
         //$session->set('query_queryForm', $queryForm); still done into the action ajaxbuildrequest
-        $session->set('query_QueryFormMappingSet', $select);
+        //$session->set('query_QueryFormMappingSet', $select);
         $session->set('query_SQLSelect', $select);
         $session->set('query_SQLFrom', $from);
         $session->set('query_SQLWhere', $where);
