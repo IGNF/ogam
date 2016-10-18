@@ -3,73 +3,74 @@
 namespace OGAMBundle\Entity\Generic;
 
 use OGAMBundle\Entity\Metadata\TableFormat;
-use OGAMBundle\Entity\Metadata\TableField;
+use OGAMBundle\Entity\Metadata\Format;
 
 /**
- * A table format object represents an object stored in a single table of the database.
+ * A generic format is a OGAMBundle\Entity\Metadata\Format with some additional information.
  */
-class TableFormatObject {
+class GenericFormat {
 
 	/**
 	 * The identifier of the dataset.
 	 */
 	private $datasetId;
 
+    /**
+     * The format identifier
+     *
+     * @var string
+     */
+	private $format;
+
 	/**
-	 * The descriptor of the single database table.
-	 * @var OgamBundle\Entity\Metadata\TableFormat
+	 * The format metadata
+	 *
+	 * @var OGAMBundle\Entity\Metadata\Format
 	 */
-	private $tableFormat;
+	private $metadata;
 
 	/**
 	 * The IDs fields
-	 * (Array of GenericField with a metadata field of type TableField)
+	 *
 	 * @var Array[GenericField]
 	 */
 	private $idFields = array();
 
 	/**
 	 * The fields not included into the IDs fields
-	 * (Array of GenericField with a metadata field of type TableField)
+	 *
 	 * @var Array[GenericField].
 	 */
 	private $fields = array();
 
 	/**
-	 * Create a TableFormatObject
+	 * Create a GenericFormat
 	 * 
 	 * @param string $datasetId The identifier of the dataset
-	 * @param TableFormat $tableFormat The descriptor of the single database table
+	 * @param Format $metadata The format metadata
 	 */
-	function __construct($datasetId, TableFormat $tableFormat) {
+	function __construct($datasetId, Format $metadata) {
 	    $this->datasetId = $datasetId;
-	    $this->tableFormat = $tableFormat;
+	    $this->metadata = $metadata;
+	    $this->format = $metadata->getFormat();
 	}
 
 	/**
 	 * Add a identifier field.
-	 * (GenericField with a metadata field of type TableField)
+	 *
 	 * @param GenericField $field a field
 	 */
 	public function addIdField(GenericField $field) {
-	    if(is_a($field->getMetadata(),TableField::class)){
-	        $this->idFields[$field->getId()] = $field;
-	    } else {
-	        throw new \InvalidArgumentException('The GenericField must have a metadata field of type \'TableField\'.');
-	    }
+	    $this->idFields[$field->getId()] = $field;
 	}
 
 	/**
 	 * Add a field.
-	 * (GenericField with a metadata field of type TableField)
+	 *
 	 * @param GenericField $field a field
 	 */
 	public function addField(GenericField $field) {
-	    if(is_a($field->getMetadata(),TableField::class)){
-	        $this->fields[$field->getId()] = $field;
-	    } else {
-	        throw new \InvalidArgumentException('The GenericField must have a metadata field of type \'TableField\'.');
-	    }
+	    $this->fields[$field->getId()] = $field;
 	}
 
 	/**
@@ -78,7 +79,7 @@ class TableFormatObject {
 	 * @return String the datum identifier
 	 */
 	public function getId() {
-	    $datumId = 'SCHEMA/' . $this->tableFormat->getSchemaCode() . '/FORMAT/' . $this->tableFormat->getFormat();
+	    $datumId = 'FORMAT/' . $this->metadata->getFormat();
 	    foreach ($this->getIdFields() as $field) {
 	        $datumId .= '/' . $field->getData() . '/' . $field->getValue();
 	    }
@@ -86,13 +87,13 @@ class TableFormatObject {
 	}
 
 	/**
-	 * Return the table format.
+	 * Return the format metadata.
 	 * 
-	 * @return the TableFormat
+	 * @return the Format
 	 */
-	public function getTableFormat()
+	public function getMetadata()
 	{
-	    return $this->tableFormat;
+	    return $this->metadata;
 	}
 
 	/**

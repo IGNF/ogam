@@ -21,7 +21,7 @@ use OGAMBundle\Form\AjaxType;
 use Symfony\Component\HttpFoundation\Response;
 use OGAMBundle\Entity\Generic\GenericField;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use OGAMBundle\Entity\Generic\TableFormatObject;
+use OGAMBundle\Entity\Generic\GenericTableFormat;
 
 /**
  *
@@ -58,7 +58,7 @@ class DataEditionController extends Controller
      * Parse request parameters and build the corresponding data object.
      *
      * @param Request $request The request object.
-     * @return TableFormatObject the data object
+     * @return GenericTableFormat the data object
      */
     protected function getDataFromRequest($request) {
         $params = array();
@@ -74,7 +74,7 @@ class DataEditionController extends Controller
         $schema = $params["SCHEMA"];
         $format = $params["FORMAT"];
 
-        $data = $this->get('ogam.generic_service')->buildDataObject($schema, $format);
+        $data = $this->get('ogam.generic_service')->buildGenericTableFormat($schema, $format);
 
         // Complete the primary key info with the session values
         foreach ($data->getIdFields() as $infoField) {
@@ -98,7 +98,7 @@ class DataEditionController extends Controller
      *
      * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
      *
-     * @param TableFormatObject $data The data to display (optional)
+     * @param GenericTableFormat $data The data to display (optional)
      * @param String $message a confirmation/warning message to display (optional)
      * @return Response
      * @Route("/show-edit-data/{id}", requirements={"id"= ".*"})
@@ -347,7 +347,7 @@ class DataEditionController extends Controller
     }
     /**
      * Build and return the data form.
-     * @param TableFormatObject $data The descriptor of the expected data.
+     * @param GenericTableFormat $data The descriptor of the expected data.
      * @param String $mode ('ADD' or 'EDIT')
      * @return \Symfony\Component\Form\FormInterface
      */
@@ -516,7 +516,7 @@ class DataEditionController extends Controller
      *
      * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
      *
-     * @param TableFormatObject $data
+     * @param GenericTableFormat $data
      *            The data to display (optional)
      * @param String $message
      *            A confirmation/warning message to display
@@ -524,7 +524,7 @@ class DataEditionController extends Controller
      * @Route("/show-add-data/{id}", requirements={"id"= ".*"})
      * @Template(engine="php")
      */
-    public function showAddDataAction(Request $request, TableFormatObject $data = null, $message = '') {
+    public function showAddDataAction(Request $request, GenericTableFormat $data = null, $message = '') {
         $mode = 'ADD';
 
         // If data is set then we don't need to read from database

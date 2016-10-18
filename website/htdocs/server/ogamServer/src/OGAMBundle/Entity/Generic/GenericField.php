@@ -4,7 +4,7 @@ namespace OGAMBundle\Entity\Generic;
 use OGAMBundle\Entity\Metadata\Field;
 
 /**
- * A query field
+ * A generic field is a OGAMBundle\Entity\Metadata\Field with some additional information
  */
 class GenericField
 {

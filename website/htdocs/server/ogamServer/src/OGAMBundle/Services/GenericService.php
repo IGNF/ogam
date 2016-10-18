@@ -17,7 +17,7 @@ use OGAMBundle\Entity\Metadata\Mode;
 use OGAMBundle\Entity\Metadata\Dynamode;
 use OGAMBundle\Entity\Metadata\ModeTree;
 use OGAMBundle\Entity\Metadata\Unit;
-use OGAMBundle\Entity\Generic\TableFormatObject;
+use OGAMBundle\Entity\Generic\GenericTableFormat;
 
 /**
  *
@@ -83,15 +83,15 @@ class GenericService {
 	 * @param String $schema the name of the schema
 	 * @param String $format the name of the format
 	 * @param String $datasetId the dataset identifier
-	 * @return TableFormatObject the DataObject structure (with no values set)
+	 * @return GenericTableFormat the DataObject structure (with no values set)
 	 */
-	public function buildDataObject($schema, $format, $datasetId = null) {
+	public function buildGenericTableFormat($schema, $format, $datasetId = null) {
 	
 		// Get the description of the table
 		$tableFormat = $this->metadataModel->getRepository(TableFormat::class)->findOneBy(array('schema'=> $schema,'format'=> $format));
 
 		// Prepare a data object to be filled
-		$data = new TableFormatObject($datasetId, $tableFormat);
+		$data = new GenericTableFormat($datasetId, $tableFormat);
 
 		// Get all the description of the Table Fields corresponding to the format
 		$tableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $format, $datasetId, $this->locale);

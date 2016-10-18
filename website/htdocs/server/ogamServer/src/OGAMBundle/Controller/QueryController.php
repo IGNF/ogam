@@ -366,12 +366,35 @@ class QueryController extends Controller {
 	}
 	
 	/**
+	 * Get the details associed with a result line (clic on the "detail button").
+	 * 
 	 * @Route("/ajaxgetdetails")
 	 */
-	public function ajaxgetdetailsAction() {
+	public function ajaxgetdetailsAction(Request $request) {
+	    $logger = $this->get ( 'logger' );
+	    $logger->debug('getDetailsAction');
+	    
+	    // Get the names of the layers to display in the details panel
+	    $configuration =  $this->get('ogam.configuration_manager');
+	    $detailsLayers = [];
+	    $detailsLayers[] = $configuration->getConfig('query_details_layers1');
+	    $detailsLayers[] = $configuration->getConfig('query_details_layers2');
+	    
+	    // Get the current dataset to filter the results
+	    $datasetId = $request->getSession()->get('query_QueryForm')->getDatasetId();
+	    
+	    // Get the id from the request
+	    $id = $request->request->get('id');
+	    
+		// Send the result as a JSON String
+		return new JsonResponse([
+		    'success' => true,
+		    'data' => $this->get('ogam.query_service')->getDetailsData($id, $detailsLayers, $datasetId, true)
+		]);
+	    /*
 		return $this->render ( 'OGAMBundle:Query:ajaxgetdetails.html.twig', array ()
 		// ...
-		 );
+		 );*/
 	}
 	
 	/**

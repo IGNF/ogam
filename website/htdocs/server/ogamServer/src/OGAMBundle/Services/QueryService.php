@@ -403,7 +403,7 @@ class QueryService {
 	/**
 	 * Get the form fields for a data to edit.
 	 *
-	 * @param TableFormatObject $data
+	 * @param GenericTableFormat $data
 	 *        	the data object to edit
 	 * @return array Serializable.
 	 */
@@ -417,7 +417,7 @@ class QueryService {
 	/**
 	 * Generate the JSON structure corresponding to a list of edit fields.
 	 *
-	 * @param TableFormatObject $data the data object to edit
+	 * @param GenericTableFormat $data the data object to edit
 	 * @return array normalize value
 	 */
 	private function _generateEditForm($data) {

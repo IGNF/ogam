@@ -7,7 +7,7 @@ class GenerateEditLink extends Helper {
     /**
      * Generate a link corresponding to a data object
      *
-     * @param TableFormatObject $data
+     * @param GenericTableFormat $data
      * @return Link the HTML link
      */
     function generateEditLink($data) {

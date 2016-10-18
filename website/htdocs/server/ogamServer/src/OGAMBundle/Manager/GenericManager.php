@@ -6,7 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use OGAMBundle\Services\GenericService;
 use OGAMBundle\Entity\Metadata\TableTree;
-use OGAMBundle\Entity\Generic\TableFormatObject;
+use OGAMBundle\Entity\Generic\GenericTableFormat;
 
 /**
  * Class allowing generic access to the RAW_DATA tables.
@@ -80,9 +80,9 @@ class GenericManager {
 	 * Fill a line of data with the values a table, given its primary key.
 	 * Only one object is expected in return.
 	 *
-	 * @param TableFormatObject $data
+	 * @param GenericTableFormat $data
 	 *        	the shell of the data object with the values for the primary key.
-	 * @return TableFormatObject The complete data object.
+	 * @return GenericTableFormat The complete data object.
 	 */
 	public function getDatum($data) {
 		$tableFormat = $data->getTableFormat();
@@ -133,10 +133,10 @@ class GenericManager {
 	 * Get the information about the ancestors of a line of data.
 	 * The key elements in the parent tables must have an existing value in the child.
 	 *
-	 * @param TableFormatObject $data the data object we're looking at.
-	 * @return TableFormatObject[] The line of data in the parent tables.
+	 * @param GenericTableFormat $data the data object we're looking at.
+	 * @return GenericTableFormat[] The line of data in the parent tables.
 	 */
-	public function getAncestors(TableFormatObject $data) {
+	public function getAncestors(GenericTableFormat $data) {
 		$ancestors = array();
 	
 		$tableFormat = $data->getTableFormat();
@@ -160,7 +160,7 @@ class GenericManager {
 		if ($parentTable != "*") {
 	
 			// Build an empty parent object
-			$parent = $this->genericService->buildDataObject($tableFormat->getSchemaCode(), $parentTable, null);
+			$parent = $this->genericService->buildGenericTableFormat($tableFormat->getSchemaCode(), $parentTable, null);
 	
 			// Fill the PK values (we hope that the child contain the fields of the parent pk)
 			foreach ($parent->getIdFields() as $key) {
@@ -188,16 +188,16 @@ class GenericManager {
 	/**
 	 * Get the information about the children of a line of data.
 	 *
-	 * @param TableFormatObject $data
+	 * @param GenericTableFormat $data
 	 *        	the data object we're looking at.
 	 * @param String $datasetId
 	 *        	the dataset id
-	 * @return Array[Format => List[TableFormatObject]] The lines of data in the children tables, indexed by format.
+	 * @return Array[Format => List[GenericTableFormat]] The lines of data in the children tables, indexed by format.
 	 */
 	public function getChildren($data, $datasetId = null) {
 	    $children = array();
 	
-	    /* @var $data TableFormatObject */
+	    /* @var $data GenericTableFormat */
 	    $tableFormat = $data->getTableFormat();
 	    /* @var $tableFormat TableFormat */
 	
@@ -226,7 +226,7 @@ class GenericManager {
 	        $childTable = $row['child_table'];
 	
 	        // Build an empty data object (for the query)
-	        $child = $this->genericService->buildDataObject($tableFormat->getSchemaCode(), $childTable);
+	        $child = $this->genericService->buildGenericTableFormat($tableFormat->getSchemaCode(), $childTable);
 	
 	        // Fill the known primary keys (we hope the child contain the keys of the parent)
 	        foreach ($data->getIdFields() as $dataKey) {
@@ -256,8 +256,8 @@ class GenericManager {
 	 * Get a list of data objects from a table, given an incomplete primary key.
 	 * A list of data objects is expected in return.
 	 *
-	 * @param TableFormatObject $data the shell of the data object with the values for the primary key.
-	 * @return Array[TableFormatObject] The complete data objects.
+	 * @param GenericTableFormat $data the shell of the data object with the values for the primary key.
+	 * @return Array[GenericTableFormat] The complete data objects.
 	 */
 	private function _getDataList($data) {
 	    $this->logger->info('_getDataList');
@@ -281,7 +281,7 @@ class GenericManager {
 	    foreach ($select->fetchAll() as $row) {
 	
 	        // Build an new empty data object
-	        $child = $this->genericService->buildDataObject($schema->getCode(), $data->getTableFormat()->getFormat());
+	        $child = $this->genericService->buildGenericTableFormat($schema->getCode(), $data->getTableFormat()->getFormat());
 	   
 	        // Fill the values with data from the table
 	        foreach ($child->all() as $field) {
@@ -306,7 +306,7 @@ class GenericManager {
 	/**
 	 * Get the join keys
 	 *
-	 * @param TableFormatObject $data the shell of the data object.
+	 * @param GenericTableFormat $data the shell of the data object.
 	 * @return Array[String] The join keys.
 	 */
 	public function getJoinKeys($data) {
@@ -326,8 +326,8 @@ class GenericManager {
 	/**
 	 * Insert a line of data from a table.
 	 *
-	 * @param TableFormatObject $data the shell of the data object to insert.
-	 * @return TableFormatObject $data the eventually edited data object.
+	 * @param GenericTableFormat $data the shell of the data object to insert.
+	 * @return GenericTableFormat $data the eventually edited data object.
 	 * @throws an exception if an error occur during insert
 	 */
 	public function insertData($data) {
@@ -410,12 +410,12 @@ class GenericManager {
 	/**
 	 * Update a line of data from a table.
 	 *
-	 * @param TableFormatObject $data the shell of the data object with the values for the primary key.
+	 * @param GenericTableFormat $data the shell of the data object with the values for the primary key.
 	 * @throws an exception if an error occur during update
 	 */
 	public function updateData($data) {
 	
-	    /* @var $data TableFormatObject */
+	    /* @var $data GenericTableFormat */
 	    $tableFormat = $data->getTableFormat();
 	    /* @var $tableFormat TableFormat */
 	
@@ -462,12 +462,12 @@ class GenericManager {
 	/**
 	 * Delete a line of data from a table.
 	 *
-	 * @param TableFormatObject $data the shell of the data object with the values for the primary key.
+	 * @param GenericTableFormat $data the shell of the data object with the values for the primary key.
 	 * @throws an exception if an error occur during delete
 	 */
 	public function deleteData($data) {
 	
-	    /** @var $data TableFormatObject **/
+	    /** @var $data GenericTableFormat **/
 	    $tableFormat = $data->getTableFormat();
 	    /** @var $tableFormat TableFormat **/
 	
