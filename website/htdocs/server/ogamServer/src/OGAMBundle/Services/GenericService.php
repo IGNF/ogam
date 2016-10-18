@@ -2,7 +2,6 @@
 
 namespace OGAMBundle\Services;
 
-use OGAMBundle\Entity\Generic\EditionForm;
 use Doctrine\ORM\EntityManager;
 use OGAMBundle\Entity\Metadata\TableFormat;
 use OGAMBundle\Entity\Metadata\TableField;
@@ -18,6 +17,7 @@ use OGAMBundle\Entity\Metadata\Mode;
 use OGAMBundle\Entity\Metadata\Dynamode;
 use OGAMBundle\Entity\Metadata\ModeTree;
 use OGAMBundle\Entity\Metadata\Unit;
+use OGAMBundle\Entity\Generic\TableFormatObject;
 
 /**
  *
@@ -83,17 +83,15 @@ class GenericService {
 	 * @param String $schema the name of the schema
 	 * @param String $format the name of the format
 	 * @param String $datasetId the dataset identifier
-	 * @return EditionForm the DataObject structure (with no values set)
+	 * @return TableFormatObject the DataObject structure (with no values set)
 	 */
 	public function buildDataObject($schema, $format, $datasetId = null) {
 	
-		// Prepare a data object to be filled
-		$data = new EditionForm();
-	
-		$data->datasetId = $datasetId;
-	
 		// Get the description of the table
-		$data->tableFormat = $this->metadataModel->getRepository(TableFormat::class)->findOneBy(array('schema'=> $schema,'format'=> $format));
+		$tableFormat = $this->metadataModel->getRepository(TableFormat::class)->findOneBy(array('schema'=> $schema,'format'=> $format));
+
+		// Prepare a data object to be filled
+		$data = new TableFormatObject($datasetId, $tableFormat);
 
 		// Get all the description of the Table Fields corresponding to the format
 		$tableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $format, $datasetId, $this->locale);
@@ -102,10 +100,10 @@ class GenericService {
 		foreach ($tableFields as $tableField) {
 		    $tableRowField = new GenericField($tableField->getFormat()->getFormat(), $tableField->getData()->getData());
 		    $tableRowField->setMetadata($tableField, $this->locale);
-			if (in_array($tableRowField->getData(), $data->tableFormat->getPrimaryKeys())) {
+			if (in_array($tableRowField->getData(), $data->getTableFormat()->getPrimaryKeys())) {
 				// Primary keys are displayed as info fields
 			    
-				$data->addPkField($tableRowField);
+				$data->addIdField($tableRowField);
 			} else {
 				// Editable fields are displayed as form fields
 				$data->addField($tableRowField);
@@ -140,11 +138,11 @@ class GenericService {
 	/**
 	 * Find the labels corresponding to the code value.
 	 *
-	 * @param Field $tableField a table field descriptor
+	 * @param TableField $tableField a table field descriptor
 	 * @param [String|Array] $value a value
 	 * @return String or Array The labels
 	 */
-	public function getValueLabel($tableField, $value) {
+	public function getValueLabel(TableField $tableField, $value) {
 	
 	    // If empty, no label
 	    if ($value === null || $value === '') {
@@ -160,7 +158,7 @@ class GenericService {
 	
 	        // Get the modes => Label
 	        if ($unit->getSubtype() === "DYNAMIC") {
-	            $modes =  $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value);
+	            $modes =  $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value, $this->locale);
 	        } else if ($unit->getSubtype() === "TREE") {
 	            $modes = $this->metadataModel->getRepository(ModeTree::class)->getTreeLabels($unit->getUnit(), $value);
 	        } else if ($unit->getSubtype() === "TAXREF") {

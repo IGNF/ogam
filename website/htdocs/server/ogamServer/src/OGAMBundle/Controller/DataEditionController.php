@@ -4,7 +4,6 @@ namespace OGAMBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use OGAMBundle\Entity\Generic\EditionForm;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,6 +21,7 @@ use OGAMBundle\Form\AjaxType;
 use Symfony\Component\HttpFoundation\Response;
 use OGAMBundle\Entity\Generic\GenericField;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use OGAMBundle\Entity\Generic\TableFormatObject;
 
 /**
  *
@@ -58,7 +58,7 @@ class DataEditionController extends Controller
      * Parse request parameters and build the corresponding data object.
      *
      * @param Request $request The request object.
-     * @return EditionForm the data object
+     * @return TableFormatObject the data object
      */
     protected function getDataFromRequest($request) {
         $params = array();
@@ -77,14 +77,14 @@ class DataEditionController extends Controller
         $data = $this->get('ogam.generic_service')->buildDataObject($schema, $format);
 
         // Complete the primary key info with the session values
-        foreach ($data->pkFields as $infoField) {
+        foreach ($data->getIdFields() as $infoField) {
             if (!empty($params[$infoField->getData()])) {
                 $infoField->setValue($params[$infoField->getData()]);
             }
         }
 
         // Complete the other fields with the session values (particulary join_keys)
-        foreach ($data->fields as $editableField) {
+        foreach ($data->getFields() as $editableField) {
             if (!empty($params[$editableField->getData()])) {
                 $editableField->setValue($params[$editableField->getData()]);
             }
@@ -98,7 +98,7 @@ class DataEditionController extends Controller
      *
      * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
      *
-     * @param EditionForm $data The data to display (optional)
+     * @param TableFormatObject $data The data to display (optional)
      * @param String $message a confirmation/warning message to display (optional)
      * @return Response
      * @Route("/show-edit-data/{id}", requirements={"id"= ".*"})
@@ -122,12 +122,12 @@ class DataEditionController extends Controller
         $children = $genericModel->getChildren($data);
 
         // Get the labels linked to the children table (to display the links)
-        $childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->tableFormat);
+        $childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->getTableFormat());
 
         return
         $this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
             'dataId' => $data->getId(),
-            'tableFormat' => $data->tableFormat,
+            'tableFormat' => $data->getTableFormat(),
             'ancestors' => $ancestors,
             'data' => $data,
             'children' => $children,
@@ -347,7 +347,7 @@ class DataEditionController extends Controller
     }
     /**
      * Build and return the data form.
-     * @param EditionForm $data The descriptor of the expected data.
+     * @param TableFormatObject $data The descriptor of the expected data.
      * @param String $mode ('ADD' or 'EDIT')
      * @return \Symfony\Component\Form\FormInterface
      */
@@ -366,7 +366,7 @@ class DataEditionController extends Controller
         //
         // The key elements as labels
         //
-        foreach ($data->pkFields as $tablefield) {
+        foreach ($data->getIdFields() as $tablefield) {
         
             $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
             if (null !== $formField){
@@ -379,7 +379,7 @@ class DataEditionController extends Controller
         //
         // The editable elements as form fields
         //
-        foreach ($data->fields as $tablefield) {
+        foreach ($data->getFields() as $tablefield) {
         
             // Hardcoded value : We don't edit the line number (it's a technical element)
             if ($tablefield->getData() !== "LINE_NUMBER") {
@@ -516,7 +516,7 @@ class DataEditionController extends Controller
      *
      * A data here is the content of a table, or if a dataset is selected the table filtrered with the dataset elements.
      *
-     * @param EditionForm $data
+     * @param TableFormatObject $data
      *            The data to display (optional)
      * @param String $message
      *            A confirmation/warning message to display
@@ -524,7 +524,7 @@ class DataEditionController extends Controller
      * @Route("/show-add-data/{id}", requirements={"id"= ".*"})
      * @Template(engine="php")
      */
-    public function showAddDataAction(Request $request, EditionForm $data = null, $message = '') {
+    public function showAddDataAction(Request $request, TableFormatObject $data = null, $message = '') {
         $mode = 'ADD';
 
         // If data is set then we don't need to read from database
@@ -538,13 +538,13 @@ class DataEditionController extends Controller
         $ancestors = $this->get('ogam.manager.generic')->getAncestors($data);
 
         // Get the labels linked to the children table (to display the links)
-        $childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->tableFormat);
+        $childrenTableLabels = $this->get('doctrine.orm.metadata_entity_manager')->getRepository('OGAMBundle:Metadata\TableTree')->getChildrenTableLabels($data->getTableFormat());
         //$bag = new NamespacedAttributeBag('website','/');
         //$bag->set('data',)
         $bag = $request->getSession();
         $response = $this->render('OGAMBundle:DataEdition:edit_data.html.php', array(
             'dataId' => $data->getId(),
-            'tableFormat' => $data->tableFormat,
+            'tableFormat' => $data->getTableFormat(),
             'ancestors' => $ancestors,
             'data' => $data,
             'children' => array(), // No children in add mode

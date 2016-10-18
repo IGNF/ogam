@@ -6,7 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use OGAMBundle\Services\GenericService;
 use OGAMBundle\Entity\Metadata\TableTree;
-use OGAMBundle\Entity\Generic\EditionForm;
+use OGAMBundle\Entity\Generic\TableFormatObject;
 
 /**
  * Class allowing generic access to the RAW_DATA tables.
@@ -80,12 +80,12 @@ class GenericManager {
 	 * Fill a line of data with the values a table, given its primary key.
 	 * Only one object is expected in return.
 	 *
-	 * @param EditionForm $data
+	 * @param TableFormatObject $data
 	 *        	the shell of the data object with the values for the primary key.
-	 * @return EditionForm The complete data object.
+	 * @return TableFormatObject The complete data object.
 	 */
 	public function getDatum($data) {
-		$tableFormat = $data->tableFormat;
+		$tableFormat = $data->getTableFormat();
 	
 		$this->logger->info('getDatum : ' . $tableFormat->getFormat());
 	
@@ -94,7 +94,7 @@ class GenericManager {
 		// Get the values from the data table
 		$sql = "SELECT " . $this->genericService->buildSelect(array_map(function ($field){return $field->getMetadata();}, $data->all()));
 		$sql .= " FROM " . $schema->getName() . "." . $tableFormat->getTableName() . " AS " . $tableFormat->getFormat();
-		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->getCode(), $data->getPkFields());
+		$sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->getCode(), $data->getIdFields());
 	
 		$this->logger->info('getDatum : ' . $sql);
 	
@@ -103,7 +103,7 @@ class GenericManager {
 		$row = $select->fetch();
 	
 		// Fill the values with data from the table
-		foreach ($data->fields as $field) {
+		foreach ($data->getFields() as $field) {
 			$key = strtolower($field->getId());
 			$field->setValue( $row[$key]);
 	        $unit =$field->getMetadata()->getData()->getUnit();
@@ -133,13 +133,13 @@ class GenericManager {
 	 * Get the information about the ancestors of a line of data.
 	 * The key elements in the parent tables must have an existing value in the child.
 	 *
-	 * @param EditionForm $data the data object we're looking at.
-	 * @return EditionForm[] The line of data in the parent tables.
+	 * @param TableFormatObject $data the data object we're looking at.
+	 * @return TableFormatObject[] The line of data in the parent tables.
 	 */
-	public function getAncestors(EditionForm $data) {
+	public function getAncestors(TableFormatObject $data) {
 		$ancestors = array();
 	
-		$tableFormat = $data->tableFormat;
+		$tableFormat = $data->getTableFormat();
 		/* @var $tableFormat TableFormat */
 	
 		$this->logger->info('getAncestors');
@@ -163,8 +163,8 @@ class GenericManager {
 			$parent = $this->genericService->buildDataObject($tableFormat->getSchemaCode(), $parentTable, null);
 	
 			// Fill the PK values (we hope that the child contain the fields of the parent pk)
-			foreach ($parent->pkFields as $key) {
-				$fieldName = $data->tableFormat->getFormat() . '__' . $key->getData();
+			foreach ($parent->getIdFields() as $key) {
+				$fieldName = $tableFormat->getFormat() . '__' . $key->getData();
 				$fields = $data->all();
 				if (array_key_exists($fieldName, $fields)) {
 					$keyField = $fields[$fieldName];
@@ -188,17 +188,17 @@ class GenericManager {
 	/**
 	 * Get the information about the children of a line of data.
 	 *
-	 * @param EditionForm $data
+	 * @param TableFormatObject $data
 	 *        	the data object we're looking at.
 	 * @param String $datasetId
 	 *        	the dataset id
-	 * @return Array[Format => List[EditionForm]] The lines of data in the children tables, indexed by format.
+	 * @return Array[Format => List[TableFormatObject]] The lines of data in the children tables, indexed by format.
 	 */
 	public function getChildren($data, $datasetId = null) {
 	    $children = array();
 	
-	    /* @var $data EditionForm */
-	    $tableFormat = $data->tableFormat;
+	    /* @var $data TableFormatObject */
+	    $tableFormat = $data->getTableFormat();
 	    /* @var $tableFormat TableFormat */
 	
 	    $this->logger->info('getChildren dataset : ' . $datasetId);
@@ -229,13 +229,13 @@ class GenericManager {
 	        $child = $this->genericService->buildDataObject($tableFormat->getSchemaCode(), $childTable);
 	
 	        // Fill the known primary keys (we hope the child contain the keys of the parent)
-	        foreach ($data->pkFields as $dataKey) {
-	            foreach ($child->pkFields as $childKey) {
+	        foreach ($data->getIdFields() as $dataKey) {
+	            foreach ($child->getIdFields() as $childKey) {
 	                if ($dataKey->getData() == $childKey->getData()) {
 	                    $childKey->setValue($dataKey->getValue());
 	                }
 	            }
-	            foreach ($child->fields as $childKey) {
+	            foreach ($child->getFields() as $childKey) {
 	                if ($dataKey->getData() == $childKey->getData()) {
 	                    $childKey->setValue($dataKey->getValue());
 	                }
@@ -246,7 +246,7 @@ class GenericManager {
 	        $childs = $this->_getDataList($child);
 	
 	        // Add to the result
-	        $children[$child->tableFormat->getFormat()] = $childs;
+	        $children[$child->getTableFormat()->getFormat()] = $childs;
 	    }
 	
 	    return $children;
@@ -256,8 +256,8 @@ class GenericManager {
 	 * Get a list of data objects from a table, given an incomplete primary key.
 	 * A list of data objects is expected in return.
 	 *
-	 * @param EditionForm $data the shell of the data object with the values for the primary key.
-	 * @return Array[EditionForm] The complete data objects.
+	 * @param TableFormatObject $data the shell of the data object with the values for the primary key.
+	 * @return Array[TableFormatObject] The complete data objects.
 	 */
 	private function _getDataList($data) {
 	    $this->logger->info('_getDataList');
@@ -265,14 +265,14 @@ class GenericManager {
 	    $result = array();
 	
 	    // The table format descriptor
-	    $tableFormat = $data->tableFormat;
+	    $tableFormat = $data->getTableFormat();
 	
 	    $schema = $tableFormat->getSchema();
 	
 	    // Get the values from the data table
 	    $sql = "SELECT " . $this->genericService->buildSelect(array_map(function ($field){return $field->getMetadata();}, $data->all()));
 	    $sql .= " FROM " . $schema->getName() . "." . $tableFormat->getTableName() . " AS " . $tableFormat->getFormat();
-	    $sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->getCode(), array_merge($data->pkFields, $data->fields));
+	    $sql .= " WHERE (1 = 1)" . $this->genericService->buildWhere($schema->getCode(), array_merge($data->getIdFields(), $data->getFields()));
 	
 	    $this->logger->info('_getDataList : ' . $sql);
 	
@@ -281,7 +281,7 @@ class GenericManager {
 	    foreach ($select->fetchAll() as $row) {
 	
 	        // Build an new empty data object
-	        $child = $this->genericService->buildDataObject($schema->getCode(), $data->tableFormat->getFormat());
+	        $child = $this->genericService->buildDataObject($schema->getCode(), $data->getTableFormat()->getFormat());
 	   
 	        // Fill the values with data from the table
 	        foreach ($child->all() as $field) {
@@ -306,11 +306,11 @@ class GenericManager {
 	/**
 	 * Get the join keys
 	 *
-	 * @param EditionForm $data the shell of the data object.
+	 * @param TableFormatObject $data the shell of the data object.
 	 * @return Array[String] The join keys.
 	 */
 	public function getJoinKeys($data) {
-	    $tableFormat = $data->tableFormat;
+	    $tableFormat = $data->getTableFormat();
 /*	
 	    $sql = "SELECT join_key";
 	    $sql .= " FROM TABLE_TREE";
@@ -326,14 +326,14 @@ class GenericManager {
 	/**
 	 * Insert a line of data from a table.
 	 *
-	 * @param EditionForm $data the shell of the data object to insert.
-	 * @return EditionForm $data the eventually edited data object.
+	 * @param TableFormatObject $data the shell of the data object to insert.
+	 * @return TableFormatObject $data the eventually edited data object.
 	 * @throws an exception if an error occur during insert
 	 */
 	public function insertData($data) {
 	    $this->logger->info('insertData');
 	
-	    $tableFormat = $data->tableFormat;
+	    $tableFormat = $data->getTableFormat();
 	
 	    $schema = $tableFormat->getSchema();
 	
@@ -344,7 +344,7 @@ class GenericManager {
 	    $return = "";
 	
 	    // updates of the data.
-	    foreach ($data->getPkFields() as $field) {
+	    foreach ($data->getIdFields() as $field) {
 	        $meta = $field->getMetadata();
 	        if ($field->getValue() !== null) {
 	
@@ -396,7 +396,7 @@ class GenericManager {
 	    if ($return !== "") {
 	
 	        foreach ($request->fetchAll() as $row) {
-	            foreach ($data->getPkFields() as $field) {
+	            foreach ($data->getIdFields() as $field) {
 	                if ($field->getMetadata()->getIsCalculated()) {
 	                    $field->setValue($row[strtolower($field->getMetadata()->getColumnName())]);
 	                }
@@ -410,13 +410,13 @@ class GenericManager {
 	/**
 	 * Update a line of data from a table.
 	 *
-	 * @param EditionForm $data the shell of the data object with the values for the primary key.
+	 * @param TableFormatObject $data the shell of the data object with the values for the primary key.
 	 * @throws an exception if an error occur during update
 	 */
 	public function updateData($data) {
 	
-	    /* @var $data EditionForm */
-	    $tableFormat = $data->tableFormat;
+	    /* @var $data TableFormatObject */
+	    $tableFormat = $data->getTableFormat();
 	    /* @var $tableFormat TableFormat */
 	
 	    $schema = $tableFormat->getSchema();
@@ -426,7 +426,7 @@ class GenericManager {
 	    $sql .= " SET ";
 	
 	    // updates of the data.
-	    foreach ($data->fields as $valuedField) {
+	    foreach ($data->getFields() as $valuedField) {
 	        /* @var $field TableField */
 	        $field = $valuedField->getMetadata();
 	        if ($valuedField->getData() != "LINE_NUMBER" && $field->getIsEditable()) {
@@ -441,7 +441,7 @@ class GenericManager {
 	    $sql .= " WHERE (1 = 1)";
 	
 	    // Build the WHERE clause with the info from the PK.
-	    foreach ($data->pkFields as $primaryKey) {
+	    foreach ($data->getIdFields() as $primaryKey) {
 	        // Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)
 	        $sql .= $this->genericService->buildWhereItem($schema->getCode(), $primaryKey->getMetadata(), $primaryKey->getValue(), true);
 	    }
@@ -462,13 +462,13 @@ class GenericManager {
 	/**
 	 * Delete a line of data from a table.
 	 *
-	 * @param EditionForm $data the shell of the data object with the values for the primary key.
+	 * @param TableFormatObject $data the shell of the data object with the values for the primary key.
 	 * @throws an exception if an error occur during delete
 	 */
 	public function deleteData($data) {
 	
-	    /** @var $data EditionForm **/
-	    $tableFormat = $data->tableFormat;
+	    /** @var $data TableFormatObject **/
+	    $tableFormat = $data->getTableFormat();
 	    /** @var $tableFormat TableFormat **/
 	
 	    $this->logger->info('deleteData');
@@ -480,7 +480,7 @@ class GenericManager {
 	    $sql .= " WHERE (1 = 1) ";
 	
 	    // Build the WHERE clause with the info from the PK.
-	    foreach ($data->pkFields as $valuedField) {
+	    foreach ($data->getIdFields() as $valuedField) {
 	        /* @var $primaryKey TableField */
 	        $primaryKey = $valuedField->getMetadata();
 	        // Hardcoded value : We ignore the submission_id info (we should have an unicity constraint that allow this)

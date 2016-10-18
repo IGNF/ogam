@@ -7,7 +7,7 @@ class GenerateEditLink extends Helper {
     /**
      * Generate a link corresponding to a data object
      *
-     * @param EditionForm $data
+     * @param TableFormatObject $data
      * @return Link the HTML link
      */
     function generateEditLink($data) {
@@ -19,13 +19,13 @@ class GenerateEditLink extends Helper {
 	);
 
 	// Add the schema
-	$urlArray['SCHEMA'] = $data->tableFormat->getSchemaCode();
+	$urlArray['SCHEMA'] = $data->getTableFormat()->getSchemaCode();
 
 	// Add the format
-	$urlArray['FORMAT'] = $data->tableFormat->getFormat();
+	$urlArray['FORMAT'] = $data->getTableFormat()->getFormat();
 
 	// Add the PK elements
-	foreach ($data->pkFields as $infoField) {
+	foreach ($data->getIdFields() as $infoField) {
 		$urlArray[$infoField->getData()] = $infoField->getValue();
 	}
 
@@ -45,7 +45,7 @@ class GenerateEditLink extends Helper {
 	// output the result
 	return array(
 		'url' => '#edition-edit/'.$data->getId(),
-		'text' => htmlspecialchars($data->tableFormat->getLabel(), ENT_QUOTES, $this->getCharset()),
+		'text' => htmlspecialchars($data->getTableFormat()->getLabel(), ENT_QUOTES, $this->getCharset()),
 		'fields' => $fields
 	);
     }

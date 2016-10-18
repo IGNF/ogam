@@ -439,7 +439,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		// Transform the JSON to an array of Form Field objects
 		var formItems = [];
 		for ( var i = 0; i < records.length; i++) {
-			var item = this.getFieldConfig(records[i].data, true);
+			var item = this.getFieldConfig(records[i], true);
 			formItems.push(item);
 
 			if (item.name.indexOf('PROVIDER_ID') !== -1) { // detect the
@@ -484,18 +484,18 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 	 */
 	getFieldConfig : function(record) {
 		var field = {};
-		field.name = record.name;
+		field.name = record.get('name');
 		field.listeners = {};
 
 		// Set the CSS for the field
 		field.itemCls = 'trigger-field o-columnLabelColor';
 
 		// Creates the ext field config
-		switch (record.inputType) {
+		switch (record.get('inputType')) {
 		case 'SELECT':
 			// The input type SELECT correspond to a data type CODE or ARRAY
 
-			if (record.type === 'ARRAY') {
+			if (record.get('type') === 'ARRAY') {
 				field.xtype = 'tagfield';
 				field.stacked = true;
 				field.hiddenName = field.name = field.name + '[]';// OGAM-582 - FIXME : needed name with [] to extjs5.0.1  (hiddenName not used in submit ?)?			
@@ -516,24 +516,24 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 
 			// Fill the list of codes / labels for default values
 			var codes = [];
-			if (record.type === 'ARRAY') {
-				if (record.valueLabel) { // to avoid null pointer
-					for ( var i = 0; i < record.valueLabel.length; i++) {
+			if (record.get('type') === 'ARRAY') {
+				if (record.get('valueLabel')) { // to avoid null pointer
+					for ( var i = 0; i < record.get('valueLabel').length; i++) {
 						codes.push({
-							code : record.value[i],
-							label : record.valueLabel[i]
+							code : record.get('value')[i],
+							label : record.get('valueLabel')[i]
 						});
 					}
 				}
 			} else {
 				// case of CODE (single value)
 				codes.push({
-					code : record.value,
-					label : record.valueLabel
+					code : record.get('value'),
+					label : record.get('valueLabel')
 				});
 			}
 
-			if (record.subtype === 'DYNAMIC') {
+			if (record.get('subtype') === 'DYNAMIC') {
 				// Case of a DYNAMODE unit list of codes
 				field.store = new Ext.data.JsonStore({
 					autoDestroy : true,
@@ -543,7 +543,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 						type: 'ajax',
 						url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetdynamiccodes',
 						extraParams : {
-							'unit' : record.unit
+							'unit' : record.get('unit')
 						},
 						reader: {
 							rootProperty:'codes'
@@ -563,7 +563,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 						type: 'ajax',
 						url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetcodes',
 						extraParams : {
-							'unit' : record.unit
+							'unit' : record.get('unit')
 						},
 						reader: {
 							rootProperty:'codes'
@@ -591,17 +591,17 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			// type NUMERIC or RANGE
 			field.xtype = 'numberfield';
 			// If RANGE we set the min and max values
-			if (record.subtype === 'RANGE') {
-				if(Ext.isNumeric(record.params.min)){
-					field.minValue = record.params.min;
+			if (record.get('subtype') === 'RANGE') {
+				if(Ext.isNumeric(record.get('params').min)){
+					field.minValue = record.get('params').min;
 				}
-				if(Ext.isNumeric(record.params.max)){
-					field.maxValue = record.params.max;
+				if(Ext.isNumeric(record.get('params').max)){
+					field.maxValue = record.get('params').max;
 				}
-				field.decimalPrecision = (record.params.decimals == null) ? 20 : record.params.decimals;
+				field.decimalPrecision = (record.get('params').decimals == null) ? 20 : record.get('params').decimals;
 			}
 			// IF INTEGER we remove the decimals
-			if (record.subtype === 'INTEGER') {
+			if (record.get('subtype') === 'INTEGER') {
 				field.allowDecimals = false;
 				field.decimalPrecision = 0;
 			}
@@ -613,7 +613,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			Ext.applyIf(field, OgamDesktop.ux.form.field.Factory.buildRadioFieldConfig(record));
 			break;
 		case 'TEXT':
-			switch (record.subtype) {
+			switch (record.get('subtype')) {
 			// OGAM-602 - TODO : BOOLEAN, COORDINATE
 			case 'INTEGER':
 				field.xtype = 'numberfield';
@@ -635,7 +635,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			field.zoomToFeatureOnInit = true;
 			field.mapWindowTitle = this.geoMapWindowTitle;
 			field.forceSingleFeature = true;
-			switch (record.subtype) {
+			switch (record.get('subtype')) {
 				case 'POINT':
 					field.hideDrawPointButton = false;
 					field.hideDrawLineButton = true;
@@ -665,22 +665,22 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		case 'TREE':
 			field.xtype = 'treefield';
 			var codes=[];
-			if (record.type === 'ARRAY') {
+			if (record.get('type') === 'ARRAY') {
 				field.multiSelect= field.multiple = true;
 				field.name = field.name + '[]';
-				if (record.valueLabel) { // to avoid null pointer
-					for ( var i = 0; i < record.valueLabel.length; i++) {
+				if (record.get('valueLabel')) { // to avoid null pointer
+					for ( var i = 0; i < record.get('valueLabel').length; i++) {
 						codes.push({
-							code : record.value[i],
-							label : record.valueLabel[i]
+							code : record.get('value')[i],
+							label : record.get('valueLabel')[i]
 						});
 					}
 				}
 			} else {
 				// case of CODE (single value)
 				codes.push({
-					code : record.value,
-					label : record.valueLabel
+					code : record.get('value'),
+					label : record.get('valueLabel')
 				});
 			}
 			
@@ -693,7 +693,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				proxy:{
 					type:'ajax',
 					url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettreecodes',
-					extraParams:{unit:record.unit},
+					extraParams:{unit:record.get('unit')},
 					reader:{
 						idProperty : 'code',
 						totalProperty : 'results',
@@ -709,28 +709,28 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 					id : '*'
 				},
 				proxy:{
-					extraParams:{unit:record.unit}
+					extraParams:{unit:record.get('unit')}
 				}});
 			break;
 		case 'TAXREF':
 			field.xtype = 'treefield';
 			var codes=[];
-			if (record.type === 'ARRAY') {
+			if (record.get('type') === 'ARRAY') {
 				field.multiSelect= field.multiple = true;
 				field.name = field.name + '[]';
-				if (record.valueLabel) { // to avoid null pointer
-					for ( var i = 0; i < record.valueLabel.length; i++) {
+				if (record.get('valueLabel')) { // to avoid null pointer
+					for ( var i = 0; i < record.get('valueLabel').length; i++) {
 						codes.push({
-							code : record.value[i],
-							label : record.valueLabel[i]
+							code : record.get('value')[i],
+							label : record.get('valueLabel')[i]
 						});
 					}
 				}
 			} else {
 				// case of CODE (single value)
 				codes.push({
-					code : record.value,
-					label : record.valueLabel
+					code : record.get('value'),
+					label : record.get('valueLabel')
 				});
 			}
 			
@@ -770,7 +770,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				proxy:{
 					type:'ajax',
 					url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettaxrefcodes',
-					extraParams:{unit:record.unit},
+					extraParams:{unit:record.get('unit')},
 					reader:{
 						idProperty : 'code',
 						totalProperty : 'results',
@@ -788,7 +788,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 				proxy:{
 					type:'ajax',
 					url:Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgettaxrefnodes',
-					extraParams:{unit:record.unit}
+					extraParams:{unit:record.get('unit')}
 				}});
 			break;
 		case 'IMAGE':
@@ -802,22 +802,22 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 
 		// Set the default value
-		if (!Ext.isEmpty(record.value)) {
-			field.value = record.value;
+		if (!Ext.isEmpty(record.get('value'))) {
+			field.value = record.get('value');
 		}
 
 		// Check if the field is mandatory
-		field.allowBlank = !(record.required == true);
+		field.allowBlank = !(record.get('required') == true);
 
 		// Add a tooltip
-		if (!Ext.isEmpty(record.definition)) {
+		if (!Ext.isEmpty(record.get('definition'))) {
 			field.listeners['afterrender'] = {
 				fn: function(cmp) {
 					if (cmp.inputType != 'hidden') {
 						Ext.QuickTips.register({
 							target : cmp.labelEl,
-							title : record.label,
-							text : record.definition,
+							title : record.get('label'),
+							text : record.get('definition'),
 							width : 200
 						});
 					}
@@ -828,8 +828,8 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		}
 
 		// Set the label
-		field.fieldLabel = record.label;
-		if (record.required == true) {
+		field.fieldLabel = record.get('label');
+		if (record.get('required') == true) {
 		 	field.fieldLabel += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">*</span> ';
 			field.cls = ' required';
 		}
@@ -840,9 +840,9 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 		// Set the width
 		field.width = this.fieldWidth;
 
-		if ((this.mode === this.editMode && !Ext.isEmpty(record.editable) && record.editable !== "1")
-				|| (this.mode === this.editMode && !Ext.isEmpty(record.isPK) && record.isPK === "1")
-				|| (this.mode === this.addMode && !Ext.isEmpty(record.insertable) && record.insertable !== "1")) {
+		if ((this.mode === this.editMode && !Ext.isEmpty(record.get('editable')) && record.get('editable') !== "1")
+				|| (this.mode === this.editMode && !Ext.isEmpty(record.get('isPK')) && record.get('isPK') === "1")
+				|| (this.mode === this.addMode && !Ext.isEmpty(record.get('insertable')) && record.get('insertable') !== "1")) {
 			// Note: Disabled Fields will not be submitted.
 			field.readOnly = true;
 			//field.editable = false;

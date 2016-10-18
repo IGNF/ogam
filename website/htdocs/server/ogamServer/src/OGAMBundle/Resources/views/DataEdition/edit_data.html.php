@@ -74,7 +74,7 @@ foreach ($childrenTableLabels as $childFormat => $childTableLabel) {
     }
     
     // Add link to a new child
-    $configOptions['AddChildURL'] = $view['dataEditionAdd']->generateAddLink($data->tableFormat->getSchemaCode(), $childFormat, $data->getPkFields());
+    $configOptions['AddChildURL'] = $view['dataEditionAdd']->generateAddLink($data->getTableFormat()->getSchemaCode(), $childFormat, $data->getIdFields());
     
     array_push($childrenConfigOptions, $configOptions);
 }

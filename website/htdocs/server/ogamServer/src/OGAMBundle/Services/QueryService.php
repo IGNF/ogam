@@ -3,7 +3,6 @@
 namespace OGAMBundle\Services;
 
 use OGAMBundle\Entity\Metadata\Dataset;
-use OGAMBundle\Entity\Metadata\FormFormat;
 use OGAMBundle\Entity\Metadata\FormField;
 use OGAMBundle\Entity\Metadata\TableField;
 use OGAMBundle\Entity\Metadata\Unit;
@@ -16,7 +15,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Doctrine\ORM\NoResultException;
 use OGAMBundle\OGAMBundle;
 use OGAMBundle\Entity\Generic\GenericField;
-use OGAMBundle\Entity\Generic\EditionForm;
+use OGAMBundle\Entity\Metadata\FormFormat;
 
 /**
  *
@@ -399,12 +398,12 @@ class QueryService {
 	    return $result;
 	}
 
-	/*********************** EDITION ******************************************************/
+/*********************** EDITION *************************************************************************************/
 
 	/**
 	 * Get the form fields for a data to edit.
 	 *
-	 * @param EditionForm $data
+	 * @param TableFormatObject $data
 	 *        	the data object to edit
 	 * @return array Serializable.
 	 */
@@ -418,13 +417,13 @@ class QueryService {
 	/**
 	 * Generate the JSON structure corresponding to a list of edit fields.
 	 *
-	 * @param EditionForm $data the data object to edit
+	 * @param TableFormatObject $data the data object to edit
 	 * @return array normalize value
 	 */
 	private function _generateEditForm($data) {
 	    $return = new \ArrayObject();
 	   /// beurk !! stop go view json
-	    foreach ($data->getPkFields() as $tablefield) {
+	    foreach ($data->getIdFields() as $tablefield) {
 	        $formField = $this->genericService->getTableToFormMapping($tablefield); // get some info about the form
 	        if (!empty($formField)) {
 	            $return->append($this->_generateEditField($formField, $tablefield));

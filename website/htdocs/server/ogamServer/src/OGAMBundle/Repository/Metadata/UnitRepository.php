@@ -133,10 +133,11 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param Unit $unit
      * @param mixed $value
+     * @param String $locale The locale
      * @return array
      */
-    public function getModesLabel(Unit $unit, $value){
-        $res = $this->getModes($unit);
+    public function getModesLabel(Unit $unit, $value, $locale){
+        $res = $this->getModes($unit, $locale);
         if ($res === null){
             return null;
         }
