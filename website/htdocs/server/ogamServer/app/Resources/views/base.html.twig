@@ -43,7 +43,7 @@
             				{% if app.user %}
             					<a href="{{ path('user_changepassword') }}">{% trans %}Change Password{% endtrans %}</a>
             					&nbsp;
-            					<a href="{{ path('user_logout') }}">{% trans %}Log out{% endtrans %}</a>
+            					<a id="logoutLink" href="{{ path('user_logout') }}">{% trans %}Log out{% endtrans %}</a>
             			    {% else %}
             			    	<a href="{{ path('user_login') }}">{% trans %}Log in{% endtrans %}</a>            			    
             			    {% endif %}                          			
