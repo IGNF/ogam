@@ -31,7 +31,7 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Mode', 'm');
         $params = [];
-        
+
         $sql = "SELECT '" . $unit->getUnit() ."' as unit, * ";
         $sql .= " FROM ( ". $unit->getDynamode()->getSql() ." ) as foo ";
         $sql .= " WHERE (1 = 1)";
@@ -41,17 +41,28 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository
         }
         if ($code != null) {
             if (is_array($code)) {
-                $sql .= " AND code IN ( ? )";
-                $params[] = implode("','", $code);
+                $sql .= ' AND code IN ( '.implode(',', array_fill(0, count($code), '?')).' )';
+                $params += array_values($code);
             } else {
                 $sql .= " AND code = ? ";
                 $params[] = $code;
             }
         }
-        
+
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $query->setParameters($params);
-        
+
         return $query->getResult();
+    }
+    /**
+     * Returns the mode(s) corresponding to the code(s).
+     *
+     * @param Unit $unit The unit
+     * @param String|Array $code The filter code(s)
+     * @param String $locale The locale
+     * @return [Mode] The filtered mode(s)
+     */
+    public function getModesFilteredByCode(Unit $unit, $code, $locale){
+        return $this->getModes($unit, $code);
     }
 }
