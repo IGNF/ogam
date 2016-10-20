@@ -23,7 +23,7 @@ class ModeRepository extends \Doctrine\ORM\EntityRepository
     public function getModesFilteredByCode(Unit $unit, $code, $locale){
         return $this->findBy(array(
             'unit' => $unit->getUnit(),
-            'mode' => $code
+            'code' => $code
         ));
     }
 
