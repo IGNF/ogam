@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 use OGAMBundle\Entity\Generic\GenericField;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use OGAMBundle\Entity\Generic\GenericTableFormat;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 
 /**
  *
@@ -144,41 +145,41 @@ class DataEditionController extends Controller
      * @Route("/ajax-delete-data/{id}", requirements={"id"= ".*"})
      */
     public function ajaxDeleteDataAction(Request $request) {
-        
+
         $data = $this->getDataFromRequest($request);
         $genericModel = $this->get('ogam.manager.generic');
-        
+
         // Complete the data object with the existing values from the database.
         $data = $genericModel->getDatum($data);
-        
+
         // Check if the data has children
         $children = $genericModel->getChildren($data);
-        
+
         // Count the number of existing children (not only the table definitions)
         $childrenCount = 0;
         foreach ($children as $child) {
             $childrenCount += count($child);
         }
-        
+
         // Get the ancestors
         $ancestors = $genericModel->getAncestors($data);
-        
+
         if ($childrenCount > 0) {
             // Redirect to the index page
             $result = ['success'=>false, 'errorMessage'=> $this->get('translator')->trans('Item cannot be deleted because it has children')];
         } else {
-        
+
             // Delete the images linked to the data if present
             foreach ($data->all() as $field) {
                 if ($field->getMetadata()->getData()->getUnit()->getType() === "IMAGE" && $field->getValue() !== "") {
                     $uploadDir = $this->get('ogam.configuration_manager')->getConfig('image_upload_dir', '/var/www/html/upload/images');
                     $dir = $uploadDir . "/" . $data->getId() . "/" . $field->getId();
-                    //$this->deleteDirectory($dir);//TODO : delete related files (upload not implemented yet) 
+                    //$this->deleteDirectory($dir);//TODO : delete related files (upload not implemented yet)
                 }
             }
-        
+
             // Delete the data
-        
+
             try {
                 $genericModel->deleteData($data);
             } catch (\Exception $e) {
@@ -186,21 +187,21 @@ class DataEditionController extends Controller
                 $result = ['success'=>false, 'errorMessage'=> $this->get('translator')->trans('Error while deleting data')];
                 return $this->json($result);
             }
-        
+
             $result = ['success' => true];
-        
+
             // If the data has an ancestor, we redirect to this ancestor
             if (!empty($ancestors)) {
                 $parent = $ancestors[0];
                 $redirectURL = $this->get('ogam.helper.editlink')->getEditLink($parent)['url'];
                 $result['redirectLink'] = $redirectURL;
             }
-        
+
             $result['message'] = $this->get('translator')->trans('Data deleted');
         }
         return $this->json($result);
     }
-    
+
     /**
      * Generate a Form Element from a TableField description.
      *
@@ -212,21 +213,21 @@ class DataEditionController extends Controller
      * @param FormField|null $formField the form descriptor of the data
      * @param Boolean $isKey is the field a primary key ?
      * @return FormBuilderInterface the element (builder)
-     * @todo make all fields within OGAMBundle:FormTypes\..  
+     * @todo make all fields within OGAMBundle:FormTypes\..
      */
     protected function getFormElement($form, GenericField $tableRowField,  $formField, $isKey = false) {
-        $tableField = $tableRowField->getMetadata(); 
+        $tableField = $tableRowField->getMetadata();
         if (null === $formField){
             throw new \InvalidArgumentException('tableField is required, not null');
         }
-        
+
         $option = array();
         $option['label'] = $tableField->getLabel();
         $unit = $formField->getData()->getUnit();
-        
+
         // Warning : $formField can be null if no mapping is defined with $tableField
         switch ($unit->getType()) {
-    
+
             case "STRING":
                 // Add a regexp validator if a mask is present
                 if ($formField !== null && $formField->getMask() !== null) {
@@ -235,13 +236,13 @@ class DataEditionController extends Controller
                     ));
                     $option['constraints'][] = $validator;
                 }
-                
+
                 // The field is a text field
                 $elem = $form->create($tableRowField->getId(), FType\TextType::class, $option);
-    
+
                 $elem->setData($tableRowField->getValue());
                 break;
-    
+
             case "INTEGER":
 
                 $option['constraints'] = new Assert\Type('int');//digit ?
@@ -250,26 +251,26 @@ class DataEditionController extends Controller
 
                 $elem->setData($tableRowField->getValue());
                 break;
-    
+
             case "NUMERIC":
                 $option['constraints'] = [new Assert\Type('numeric')];
                 // The field is a numeric
                 if ($unit->getSubType() === "RANGE") {
-    
+
                     // Check min and max
                     $range = $unit->getRange();
                     $option['constraints'][]= new Assert\Range(array('min'=> $range->getMin(), 'max'=>$range->getMax()));
                 }
-                
+
                 $elem = $form->create($tableRowField->getId(), FType\TextType::class, $option);
 
                 $elem->setData($tableRowField->getValue());
                 break;
-    
+
             case "DATE":
-    
+
                 // The field is a date
-               
+
                 // validate the date format
                 if ($formField !== null && $formField->getMask() !== null) {
                     $validator = new Assert\Date();
@@ -284,7 +285,7 @@ class DataEditionController extends Controller
                 $option['input']= 'string';
                 $option['widget']='single_text';
                 $option['constraints'] = $validator;
-                
+
                 $elem = $form->create($tableRowField->getId(), FType\DateType::class, $option);
                 $elem->setData( \DateTime::createFromFormat($tableRowField->getValue(), $elem->getOption('format')));
                 break;
@@ -296,7 +297,7 @@ class DataEditionController extends Controller
                 } else {
               //     $option['format']='HH:mm';
                 }
-                
+
                 $option['input']  = 'string';
                 $option['widget'] = 'single_text';
                 $option['data']   = $tableRowField->getValue();
@@ -304,45 +305,45 @@ class DataEditionController extends Controller
                 $elem = $form->create($tableRowField->getId(), FType\TimeType::class, $option);
 
                 break;
-    
+
             case "CODE":
-                
+
                 $elem = $form->create($tableRowField->getId(), FType\TextType::class, $option);//TODO choicetype depending the subtype, modes ....
                 $elem->setData($tableRowField->getValue());
                 break;
-    
+
             case "BOOLEAN":
-    
+
                 // The field is a boolean
                 $elem = $form->create($tableField->getData()->getName(), FType\CheckboxType::class, $option);
                 $elem->setData($tableRowField->getValue());
                 break;
-    
+
             case "ARRAY":
-    
-                // 
+
+                //
                 $option['entry_type'] = FType\TextType::class;
                 $option['prototype_name']='';
                 $option['allow_add']=true;
                 $elem = $form->create($tableRowField->getId(), FType\CollectionType::class, $option);
                 $elem->setData($tableRowField->getValue());
                 break;
-    
+
             case "GEOM":
             default:
-    
+
                 // Default
                 $elem = $form->create($tableRowField->getId(), FType\TextType::class, $option);
                 $elem->setData($tableRowField->getValue());
         }
-    
+
 
        // $elem->setDescription($tableField->definition);
-    
+
         if ($isKey) {
            $elem->setAttribute('readonly', 'readonly');
         }
-    
+
         return $elem;
     }
     /**
@@ -354,20 +355,20 @@ class DataEditionController extends Controller
     protected function getEditDataForm($data, $mode) {
         $formBuilder = $this
         ->get('form.factory')
-          ->createNamedBuilder('edit_data_form', AjaxType::class);//use in ajax often 
-        
+          ->createNamedBuilder('edit_data_form', AjaxType::class);//use in ajax often
+
           //FIXME : action needed ?
         $formBuilder->setAction($this->generateUrl('dataedition_validate_edit_data', array('MODE'=>$mode)));
-        
+
         $formBuilder->setAttribute('class', 'editform');
-        
+
 
         // Dynamically build the form
         //
         // The key elements as labels
         //
         foreach ($data->getIdFields() as $tablefield) {
-        
+
             $formField = $this->get('ogam.generic_service')->getTableToFormMapping($tablefield);
             if (null !== $formField){
                 $elem = $this->getFormElement($formBuilder, $tablefield, $formField->getMetadata(), true);
@@ -375,12 +376,12 @@ class DataEditionController extends Controller
                 $formBuilder->add($elem);
             }
         }
-        
+
         //
         // The editable elements as form fields
         //
         foreach ($data->getFields() as $tablefield) {
-        
+
             // Hardcoded value : We don't edit the line number (it's a technical element)
             if ($tablefield->getData() !== "LINE_NUMBER") {
 
@@ -392,7 +393,7 @@ class DataEditionController extends Controller
                 }
             }
         }
-        
+
         //
         // Add the submit element
         //
@@ -400,7 +401,7 @@ class DataEditionController extends Controller
 
         return $formBuilder->getForm();
     }
-    
+
     /**
      * Save the edited data in database.
      *
@@ -410,7 +411,7 @@ class DataEditionController extends Controller
     public function ajaxValidateEditDataAction(Request $request) {
         // Get the mode
         $mode = $request->request->getAlpha('MODE');
-        
+
         // Get back info from the session
         $websiteSession = $request->getSession()/*->getBag('website')*/;
         $data = $websiteSession->get('data');
@@ -429,19 +430,19 @@ class DataEditionController extends Controller
                 $field->submit($value);
             }
         }
-        
-        
+
+
         if (!$form->isSubmitted()){
             return $this->json(['success' => false, 'errorMessage'=>'not submit']);
         }
-        
+
         if (!$form->isValid()) {
             return $this->json([
                 'success' =>     false,
                 'errorMessage'=> $this->get('translator')->trans("Invalid form"),
                 'errors'=>       $form->getErrors(true,true)]);
         } else {
-        
+
             try {
                 $genericModel =$this->get('ogam.manager.generic');
                 if ($mode === 'ADD') {
@@ -458,7 +459,7 @@ class DataEditionController extends Controller
                             $field->setValue($request->request->get($field->getId(), null));
                         }
                     }
-        
+
                     $data = $genericModel->insertData($data);
                 } else {
                     // Edit the data
@@ -467,10 +468,10 @@ class DataEditionController extends Controller
                     foreach ($data->getFields() as $field) {
                         $field->setValue($request->request->get($field->getId(), null));
                     }
-        
+
                     $genericModel->updateData($data);
                 }
-                
+
                 $view = ['success'=>true];
 
                 // Manage redirections
@@ -499,7 +500,7 @@ class DataEditionController extends Controller
                 return $this->json($view);
             } catch (Exception $e) {
                 $this->logger->err($e->getMessage());
-        
+
                 if (stripos($e->getMessage(), 'SQLSTATE[23505]') !== false) {
                     // Traitement du cas d'un doublon pour PostgreSQL
                     return $this->json(['success'=>false, 'errorMessage'=>$this->get('translator')->trans('Error inserting data duplicate key')]);
@@ -566,17 +567,17 @@ class DataEditionController extends Controller
     public function ajaxGetEditFormAction(Request $request, $id=null) {
 
         $data = $this->getDataFromRequest($request);
-        
+
         // Complete the data object with the existing values from the database.
         $genericModel = $this->get('ogam.manager.generic');
         $data = $genericModel->getDatum($data);
-        
+
         // The service used to manage the query module
         $res = $this->getQueryService()->getEditForm($data);
-        
+
         $bag = $request->getSession();
         json_encode($data);
-        $ser = new Serializer(array(new ObjectNormalizer()));
+        $ser = new Serializer(array(new PropertyNormalizer(),new ObjectNormalizer()));
         $ser->normalize($data);// FIXME : treewalker force loading proxy element ...
         $bag->set('data', $data);
         return $this->json($res);
@@ -590,11 +591,11 @@ class DataEditionController extends Controller
      */
     public function ajaxGetAddFormAction(Request $request, $id=null) {
         $data = $this->getDataFromRequest($request);
-       
+
         $res = $this->getQueryService()->getEditForm($data);
         $bag = $request->getSession();
         json_encode($data);
-        $ser = new Serializer(array(new ObjectNormalizer()));
+        $ser = new Serializer(array(new PropertyNormalizer(),new ObjectNormalizer()));
         $ser->normalize($data);// FIXME : treewalker force loading proxy element ...
         $bag->set('data', $data);
         return $this->json($res);
@@ -621,11 +622,11 @@ class DataEditionController extends Controller
     public function ajaximageuploadAction() {
         return $this->json(array('succes' => TRUE));
     }
-    
+
     protected function getQueryService() {
         return $this->get('ogam.query_service');
     }
-    
+
     /**
      * Returns a JsonResponse that uses the serializer component if enabled, or json_encode.
      *
@@ -639,7 +640,7 @@ class DataEditionController extends Controller
      */
     protected function json($data, $status = 200, $headers = array(), $context = array())
     {
-        
+
         if ($this->has('serializer')) {
             //symfony 3.1 proprerty
             $json = $this->get('serializer')->serialize($data, 'json', array_merge(array(
