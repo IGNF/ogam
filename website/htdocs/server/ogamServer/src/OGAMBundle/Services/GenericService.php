@@ -19,6 +19,7 @@ use OGAMBundle\Entity\Metadata\ModeTree;
 use OGAMBundle\Entity\Metadata\Unit;
 use OGAMBundle\Entity\Generic\GenericTableFormat;
 use OGAMBundle\Entity\Metadata\ModeTaxref;
+use OGAMBundle\Entity\Generic\GenericGeomField;
 /**
  *
  * The Generic Service.
@@ -91,26 +92,32 @@ class GenericService {
 		$tableFormat = $this->metadataModel->getRepository(TableFormat::class)->findOneBy(array('schema'=> $schema,'format'=> $format));
 
 		// Prepare a data object to be filled
-		$data = new GenericTableFormat($datasetId, $tableFormat);
+		$gTable = new GenericTableFormat($datasetId, $tableFormat);
 
 		// Get all the description of the Table Fields corresponding to the format
 		$tableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $format, $datasetId, $this->locale);
 
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
-		    $tableRowField = new GenericField($tableField->getFormat()->getFormat(), $tableField->getData()->getData());
+		    $format = $tableField->getFormat()->getFormat();
+		    $data = $tableField->getData()->getData();
+		    if ($tableField->getData()->getUnit()->getType() !== "GEOM") {
+		        $tableRowField = new GenericField($format, $data);
+		    } else {
+		        $tableRowField = new GenericGeomField($format, $data);
+		    }
 		    $tableRowField->setMetadata($tableField, $this->locale);
-			if (in_array($tableRowField->getData(), $data->getTableFormat()->getPrimaryKeys())) {
+			if (in_array($tableRowField->getData(), $gTable->getTableFormat()->getPrimaryKeys())) {
 				// Primary keys are displayed as info fields
-
-				$data->addIdField($tableRowField);
+			    
+				$gTable->addIdField($tableRowField);
 			} else {
 				// Editable fields are displayed as form fields
-				$data->addField($tableRowField);
+				$gTable->addField($tableRowField);
 			}
 		}
-
-		return $data;
+	
+		return $gTable;
 	}
 
 	/**
@@ -163,7 +170,7 @@ class GenericService {
 	        } else if ($unit->getSubtype() === "TAXREF") {
 	            $modes =  $this->metadataModel->getRepository(ModeTaxref::class)->getModesLabel($unit, $value, $this->locale);
 	        } else {
-	            $modes =   $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value,  $this->locale);;
+	            $modes =   $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value,  $this->locale);
 	        }
 
 	        // Populate the labels of the currently selected values
@@ -1137,5 +1144,117 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    }
 
 	    return implode(',', $keys);
+	}
+	
+	/**
+	 * Serialize a list of data objects as an array for a display into a Ext.GridPanel.
+	 *
+	 * @param String $id
+	 *        	the id for the returned dataset
+	 * @param List[DataObject] $data
+	 *        	the data object we're looking at.
+	 * @return ARRAY
+	 */
+	public function dataToGridDetailArray($id, $data) {
+	    $this->logger->info('dataToDetailArray');
+	
+	    if (!empty($data)) {
+	
+	        // The columns config to setup the grid columnModel
+	        $columns = array(
+	            array(
+	
+	                'header' => 'Informations',
+	                'dataIndex' => 'informations',
+	                'editable' => false,
+	                'tooltip' => 'Informations',
+	                'width' => 150,
+	                'type' => 'STRING'
+	            )
+	        );
+	
+	        // The fields config to setup the store reader
+	        $locationFields = array(
+	            'id',
+	            'informations'
+	        );
+	        // The data to full the store
+	        $locationsData = array();
+	        $firstData = $data[0];
+	
+	        // Dump each row values
+	        foreach ($data as $datum) {
+	            $locationData = array();
+	            // Addition of the row id
+	            $locationData[0] = $datum->getId();
+	            $locationData[1] = "";
+	            foreach ($datum->getIdFields() as $field) {
+	                $locationData[1] .= $field->getValueLabel() . ', ';
+	            }
+	
+	            if ($locationData[1] !== "") {
+	                $locationData[1] = substr($locationData[1], 0, -2);
+	            }
+	            $formFields = $this->getFormFieldsOrdered($datum->getFields());
+	            foreach ($formFields as $formField) {
+	                // We keep only the result fields (The columns availables)
+	                array_push($locationData, $formField->getValueLabel());
+	            }
+	            array_push($locationsData, $locationData);
+	        }
+	
+	        // Add the colums description
+	        foreach ($formFields as $field) {
+	            // Set the column model and the location fields
+	            $dataIndex = $firstData->getTableFormat()->getFormat() . '__' . $field->getData();
+	
+	            $column = array(
+	                'header' => $field->getMetadata()->getData()->getLabel(),
+	                'dataIndex' => $dataIndex,
+	                'editable' => false,
+	                'tooltip' => $field->getMetadata()->getData()->getDefinition(),
+	                'width' => 150,
+	                'type' => $field->getMetadata()->getData()->getUnit()->getType()
+	            );
+	            array_push($columns, $column);
+	            array_push($locationFields, $dataIndex);
+	        }
+	
+	        // Check if the table has a child table
+	        $hasChild = false;
+	        $children = $this->metadataModel->getRepository(TableTree::class)->getChildrenTableLabels($firstData->getTableFormat());
+	        if (!empty($children)) {
+	            $hasChild = true;
+	        }
+	        $out = Array();
+	        $out['id'] = $id;
+	        $out['title'] = $firstData->getTableFormat()->getLabel() . ' (' . count($locationsData) . ')';
+	        $out['hasChild'] = $hasChild;
+	        $out['columns'] = array_values($columns);
+	        $out['fields'] = array_values($locationFields);
+	        $out['data'] = array_values($locationsData);
+	        return $out;
+	    } else {
+	        return null;
+	    }
+	}
+	
+	/**
+	 * Return the form fields mapped to the table fields and ordered by position
+	 *
+	 * @param array $tableFields
+	 *        	The table fields
+	 * @return array The form fields ordered
+	 */
+	public function getFormFieldsOrdered(array $tableFields) {
+	    $fieldsOrdered = array();
+	    foreach ($tableFields as $tableField) {
+	        // Get the form field corresponding to the table field
+	        $formField = $this->getTableToFormMapping($tableField, true);
+	        if ($formField !== null && $formField->getMetadata()->getIsResult()) {
+	            $fieldsOrdered[] = $formField;
+	        }
+	    }
+	    return array_values($fieldsOrdered);
 	}
 }

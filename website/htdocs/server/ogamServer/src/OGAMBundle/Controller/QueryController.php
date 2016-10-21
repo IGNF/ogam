@@ -387,16 +387,17 @@ class QueryController extends Controller {
 
 	    // Get the id from the request
 	    $id = $request->request->get('id');
-
-		// Send the result as a JSON String
-		return new JsonResponse([
-		    'success' => true,
-		    'data' => $this->get('ogam.query_service')->getDetailsData($id, $detailsLayers, $datasetId, true)
-		]);
-	    /*
-		return $this->render ( 'OGAMBundle:Query:ajaxgetdetails.html.twig', array ()
-		// ...
-		 );*/
+	    
+	    $userInfos = [
+	        "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
+	        "DATA_EDITION" => $this->getUser() && $this->getUser()->isAllowed('DATA_EDITION')
+	    ];
+	    
+	    $response = new Response();
+	    $response->headers->set('Content-Type', 'application/json');
+	    return $this->render ( 'OGAMBundle:Query:ajaxgetdetails.json.twig', array (
+	        'data' => $this->get('ogam.query_service')->getDetailsData($id, $detailsLayers, $datasetId, true, $userInfos)
+	    ),$response);
 	}
 
 	/**

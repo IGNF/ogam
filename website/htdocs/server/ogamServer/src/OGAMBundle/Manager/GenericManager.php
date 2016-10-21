@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManager;
 use OGAMBundle\Services\GenericService;
 use OGAMBundle\Entity\Metadata\TableTree;
 use OGAMBundle\Entity\Generic\GenericTableFormat;
+use OGAMBundle\Entity\Generic\BoundingBox;
 
 /**
  * Class allowing generic access to the RAW_DATA tables.
@@ -84,7 +85,7 @@ class GenericManager {
 	 *        	the shell of the data object with the values for the primary key.
 	 * @return GenericTableFormat The complete data object.
 	 */
-	public function getDatum($data) {
+	public function getDatum(GenericTableFormat $data) {
 		$tableFormat = $data->getTableFormat();
 	
 		$this->logger->info('getDatum : ' . $tableFormat->getFormat());
@@ -108,11 +109,12 @@ class GenericManager {
 			$field->setValue( $row[$key]);
 	        $unit =$field->getMetadata()->getData()->getUnit();
 			// Store additional info for geometry type
-			if ($unit->getType() === "GEOM") { //FIXME geom Value ? ???
-				$field->xmin = $row[strtolower($key) . '_x_min'];
-				$field->xmax = $row[strtolower($key) . '_x_max'];
-				$field->ymin = $row[strtolower($key) . '_y_min'];
-				$field->ymax = $row[strtolower($key) . '_y_max'];
+			if ($unit->getType() === "GEOM") {
+				$xmin = $row[strtolower($key) . '_x_min'];
+				$xmax = $row[strtolower($key) . '_x_max'];
+				$ymin = $row[strtolower($key) . '_y_min'];
+				$ymax = $row[strtolower($key) . '_y_max'];
+				$field->setValueBoundingBox(new BoundingBox($xmin, $xmax, $ymin, $ymax));
 			} else if ($unit->getType() === "ARRAY") {
 				// For array field we transform the value in a array object
 				$field->setValue($this->genericService->stringToArray($field->getValue()));
