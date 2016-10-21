@@ -10,4 +10,20 @@ namespace OGAMBundle\Repository\Mapping;
  */
 class LayerServiceRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Get the detail services (proxy).
+     *
+     * @return Service
+     */
+    public function getDetailServices() {
+        $qb = $this->_em->createQueryBuilder();
+        
+        $qb->select('ls')
+        ->from('OGAMBundle:Mapping\LayerService', 'ls')
+        ->from('OGAMBundle:Mapping\Layer', 'l')
+        ->where('l.detailService = ls.name')
+        ->groupBy('ls');
+        
+        return $qb->getQuery()->getResult();
+    }
 }

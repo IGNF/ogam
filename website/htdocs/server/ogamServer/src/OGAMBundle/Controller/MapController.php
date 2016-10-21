@@ -49,7 +49,7 @@ class MapController extends Controller
 
 		if ($userPerProviderCenter) {
 			// Center the map on the provider location
-			$center = $this->getDoctrine()->getManagerForClass('OGAMBundle\Entity\Mapping\BoundingBox')->find('OGAMBundle\Entity\Mapping\BoundingBox', $providerId)->getCenter();
+			$center = $this->getDoctrine()->getManagerForClass('OGAMBundle\Entity\Mapping\ProviderMapParameters')->find('OGAMBundle\Entity\Mapping\ProviderMapParameters', $providerId)->getCenter();
 			$view->zoomLevel = $center->zoomLevel;
 			$view->centerX = $center->x;
 			$view->centerY = $center->y;

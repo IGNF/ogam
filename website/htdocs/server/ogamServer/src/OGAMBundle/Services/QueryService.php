@@ -16,6 +16,10 @@ use Doctrine\ORM\NoResultException;
 use OGAMBundle\OGAMBundle;
 use OGAMBundle\Entity\Generic\GenericField;
 use OGAMBundle\Entity\Metadata\FormFormat;
+use OGAMBundle\Entity\Mapping\LayerService;
+use OGAMBundle\Entity\Mapping\Layer;
+use OGAMBundle\Repository\Mapping\LayerRepository;
+use OGAMBundle\Entity\Generic\BoundingBox;
 
 /**
  *
@@ -56,6 +60,7 @@ class QueryService {
 	 *
 	 */
 	private $configation;
+
 	/**
 	 * 
 	 * @var GenericService
@@ -67,14 +72,20 @@ class QueryService {
 	 * @var EntityManager
 	 */
 	private $metadataModel;
-	
+
 	/**
 	 * The doctrine service
 	 * @var Service
 	 */
 	private $doctrine;
 
-	function __construct($doctrine, $genericService, $configuration, $logger, $locale, $user, $schema)
+	/**
+	 * The generic manager
+	 * @var genericModel
+	 */
+	private $genericModel;
+
+	function __construct($doctrine, $genericService, $configuration, $logger, $locale, $user, $schema, $genericModel)
 	{
 		// Initialise the logger
 		$this->logger = $logger;
@@ -93,6 +104,8 @@ class QueryService {
 		$this->configuration = $configuration;
 
 		$this->doctrine = $doctrine;
+		
+		$this->genericModel = $genericModel;
 
 		// Initialise the metadata models
 		$this->metadataModel = $this->doctrine->getManager('metadata');
@@ -533,5 +546,282 @@ class QueryService {
 	    }
 	    
 	    return $field;
+	}
+
+/*********************** DETAILS *************************************************************************************/
+	
+	/**
+	 * Get the details associed with a result line (clic on the "detail button").
+	 *
+	 * @param String $id
+	 *        	The identifier of the line
+	 * @param String $detailsLayers
+	 *        	The names of the layers used to display the images in the detail panel.
+	 * @param String $datasetId
+	 *        	The identifier of the dataset (to filter data)
+	 * @param boolean $withChildren
+	 *        	If true, get the information about the children of the object
+	 * @param Array $userInfos
+	 *        	Few user informations
+	 * @return array Array that represents the details of the result line.
+	 */
+	public function getDetailsData($id, $detailsLayers, $datasetId = null, $withChildren = false, $userInfos) {
+	    $this->logger->debug('getDetailsData : ' . $id);
+	
+	    // Transform the identifier in an array
+	    $keyMap = $this->_decodeId($id);
+	
+	    // Prepare a GenericTableFormat to be filled
+	    $gTableFormat = $this->genericService->buildGenericTableFormat($keyMap['SCHEMA'], $keyMap['FORMAT'], null);
+	
+	    // Complete the primary key info
+	    foreach ($gTableFormat->getIdFields() as $idField) {
+	        if (!empty($keyMap[$idField->getData()])) {
+	            $idField->setValue($keyMap[$idField->getData()]);
+	        }
+	    }
+	
+	    // Get the detailled data
+	    $this->genericModel->getDatum($gTableFormat);
+	
+	    // The data ancestors
+	    $ancestors = $this->genericModel->getAncestors($gTableFormat);
+	    $ancestors = array_reverse($ancestors);
+	
+	    // Searchs the geometric field and table
+	    $bb = null;
+	    $bb2 = null;
+	    $locationTable = null;
+	    foreach ($gTableFormat->all() as $field) {
+	        if ($field->getMetadata()->getData()->getUnit()->getType() === 'GEOM' && !$field->isEmpty()) {
+	            // define a bbox around the location
+	            $bb = $field->getValueBoundingBox()->getSquareBoundingBox(10000);
+	            // Prepare an overview bbox
+	            $bb2 = $field->getValueBoundingBox()->getSquareBoundingBox(50000);
+	            $locationTable = $gTableFormat;
+	            break;
+	        }
+	    }
+	    if ($bb === null) {
+	        foreach ($ancestors as $ancestor) {
+	            foreach ($ancestor->getFields() as $field) {
+	                if ($field->getMetadata()->getData()->getUnit()->getType() === 'GEOM' && !$field->isEmpty()) {
+        	            // define a bbox around the location
+        	            $bb = $field->getValueBoundingBox()->getSquareBoundingBox(10000);
+        	            // Prepare an overview bbox
+        	            $bb2 = $field->getValueBoundingBox()->getSquareBoundingBox(200000);
+	                    $locationTable = $ancestor;
+	                    break;
+	                }
+	            }
+	        }
+	    }
+	
+	    // Defines the mapsserver parameters.
+	    $mapservParams = '';
+	    foreach ($locationTable->getIdFields() as $idField) {
+	        $mapservParams .= '&' . $idField->getMetadata()->getColumnName() . '=' . $idField->getValue();
+	    }
+
+	    // Defines the formats
+	    $dataDetails = array();
+	    $dataDetails['formats'] = array();
+	    $gTables = array_merge($ancestors, [$gTableFormat]);
+	    foreach ($gTables as $gTable) {dump($userInfos['DATA_EDITION']);
+	        $dataDetails['formats'][] = [
+	            'id' => $gTable->getId(),
+	            'title' => $gTable->getMetadata()->getLabel(),
+	            'fields' => $this->genericService->getFormFieldsOrdered($gTable->all()),
+	            'editURL' => $userInfos['DATA_EDITION'] ? $gTable->getId() : null
+	        ];
+	    }
+
+	    // Defines the panel title
+	    $title = '';
+	    foreach ($gTableFormat->getIdFields() as $idField) {
+	        if ($title !== '') {
+	            $title .= '_';
+	        }
+	        $title .= $idField->getValue();
+	    }
+	    $dataInfo = end($dataDetails['formats']);
+	    $dataDetails['title'] = $dataInfo['title'] . ' (' . $title . ')';
+	
+	    // Add the localisation maps
+	    if (!empty($detailsLayers) && $bb !== null) {
+	        if ($detailsLayers[0] !== '') {
+	            $url = array();
+	            $url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams)));
+	
+	            $dataDetails['maps1'] = array(
+	                'title' => 'image'
+	            );
+	
+	            // complete the array with the urls of maps1
+	            $dataDetails['maps1']['urls'][] = array();
+	            $urlCount = count($url);
+	            for ($i = 0; $i < $urlCount; $i ++) {
+	                $dataDetails['maps1']['urls'][$i]['url'] = $url[$i];
+	            }
+	        }
+	
+	        if ($detailsLayers[1] !== '') {
+	            $url = array();
+	            $url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams)));
+	            $dataDetails['maps2'] = array(
+	                'title' => 'overview'
+	            );
+	
+	            // complete the array with the urls of maps2
+	            $dataDetails['maps2']['urls'][] = array();
+	            $countUrls = count($url);
+	            for ($i = 0; $i < $countUrls; $i ++) {
+	                $dataDetails['maps2']['urls'][$i]['url'] = $url[$i];
+	            }
+	        }
+	    }
+	
+	    // Add the children
+	    if ($withChildren) {
+	
+	        // Prepare a data object to be filled
+	        $data2 = $this->genericService->buildGenericTableFormat($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
+	
+	        // Complete the primary key
+	        foreach ($data2->getIdFields() as $idField) {
+	            if (!empty($keyMap[$idField->getData()])) {
+	                $idField->setValue($keyMap[$idField->getData()]);
+	            }
+	        }
+	        // Get children too
+	        $children = $this->genericModel->getChildren($data2, $datasetId);
+	
+	        // Add the children
+	        foreach ($children as $listChild) {dump($children);
+	            $dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
+	            if ($dataArray !== null) {
+	                $dataDetails['children'][] = $dataArray;
+	            }
+	        }
+	    }
+	
+	    return $dataDetails;
+	}
+
+	/**
+	 * Decode the identifier
+	 *
+	 * @param String $id
+	 * @return Array the decoded id
+	 */
+	private function _decodeId($id) {
+	    // Transform the identifier in an array
+	    $keyMap = array();
+	    $idElems = explode("/", $id);
+	    $i = 0;
+	    $count = count($idElems);
+	    while ($i < $count) {
+	        $keyMap[$idElems[$i]] = $idElems[$i + 1];
+	        $i += 2;
+	    }
+	    return $keyMap;
+	}
+	
+
+	/**
+	 * Generate an URL for the details map.
+	 *
+	 * @param String $detailsLayers
+	 *        	List of layers to display
+	 * @param BoundingBox $bb
+	 *        	bounding box
+	 * @param String $mapservParams
+	 *        	Parameters for mapserver
+	 * @return String
+	 */
+	protected function getDetailsMapUrl($detailsLayers, BoundingBox $bb, $mapservParams) {
+	
+	    // Configure the projection systems
+	    $visualisationSRS = $this->configuration->getConfig('srs_visualisation', '3857');
+	    $baseUrls = '';
+	
+	    // Get the base urls for the services
+	    $detailServices = $this->doctrine->getRepository(LayerService::class)->getDetailServices();
+
+	    // Get the server name for the layers
+	    $layerNames = explode(",", $detailsLayers);
+	    // $serviceLayerNames = "";
+	    $versionWMS = "";
+	
+	    foreach ($layerNames as $layerName) {
+	        $layer = $this->doctrine->getRepository(Layer::class)->find($layerName);
+	        $serviceLayerName = $layer->getServiceLayerName();
+	        
+	        // Get the base Url for detail service
+	        if ($layer->getDetailService() !== '') {
+	            $detailServiceName = $layer->getDetailService()->getName();
+	        }
+	
+	        foreach ($detailServices as $detailService) {
+	
+	            if ($detailService->getName() === $detailServiceName) {
+	
+	                $params = json_decode($detailService->getConfig())->params;
+	                $service = $params->SERVICE;
+	                $baseUrl = json_decode($detailService->getConfig())->urls[0];
+	
+	                if ($service === 'WMS') {
+	
+	                    $baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName;
+	                    $baseUrls .= '&TRANSPARENT=true';
+	                    $baseUrls .= '&FORMAT=image%2Fpng';
+	                    $baseUrls .= '&EXCEPTIONS=BLANK';
+	                    $baseUrls .= '&SERVICE=' . $params->SERVICE;
+	                    $baseUrls .= '&VERSION=' . $params->VERSION;
+	                    $baseUrls .= '&REQUEST=' . $params->REQUEST;
+	                    $baseUrls .= '&STYLES=';
+	                    $baseUrls .= '&BBOX=' . $bb->toString();
+	                    $baseUrls .= '&WIDTH=300';
+	                    $baseUrls .= '&HEIGHT=300';
+	                    $baseUrls .= '&map.scalebar=STATUS+embed';
+	                    $baseUrls .= $mapservParams;
+	                    $versionWMS = $params->VERSION;
+	                    if (substr_compare($versionWMS, '1.3', 0, 3) === 0) {
+	                        $baseUrls .= '&CRS=EPSG%3A' . $visualisationSRS;
+	                    } elseif (substr_compare($versionWMS, '1.0', 0, 3) === 0 || substr_compare($versionWMS, '1.1', 0, 3) === 0) {
+	                        $baseUrls .= '&SRS=EPSG%3A' . $visualisationSRS;
+	                    } else {
+	                        $this->logger->err("WMS version unsupported, please change the WMS version for the '" . $layerName . "' layer.");
+	                    }
+	                    $baseUrls .= ';';
+	                } elseif ($service === 'WMTS') {
+	
+	                    $this->logger->err("WMTS service unsupported, please change the detail service for the '" . $layerName . "' layer.");
+	
+	                    // TODO : Gets the tileMatrix, tileCol, tileRow corresponding to the bb
+	                    /*
+	                    * $baseUrls .= $baseUrl . 'LAYER=' . $serviceLayerName;
+	                    * $baseUrls .= '&SERVICE='.json_decode($detailService->serviceConfig)->{'params'}->{'SERVICE'};
+	                    * $baseUrls .= '&VERSION='.json_decode($detailService->serviceConfig)->{'params'}->{'VERSION'};
+	                    * $baseUrls .= '&REQUEST='.json_decode($detailService->serviceConfig)->{'params'}->{'REQUEST'};
+	                    * $baseUrls .= '&STYLE='.json_decode($detailService->serviceConfig)->{'params'}->{'STYLE'};
+	                    * $baseUrls .= '&FORMAT='.json_decode($detailService->serviceConfig)->{'params'}->{'FORMAT'};
+	                    * $baseUrls .= '&TILEMATRIXSET='.json_decode($detailService->serviceConfig)->{'params'}->{'TILEMATRIXSET'};
+	                    * $baseUrls .= '&TILEMATRIX='.$tileMatrix;
+	                    * $baseUrls .= '&TILECOL='.$tileCol;
+	                    * $baseUrls .= '&TILEROW='.$tileRow;
+	                    * $baseUrls .=';';
+	                    */
+	                } else {
+	                    $this->logger->err("'" . $service . "' service unsupported, please change the detail service for the '" . $layerName . "' layer.");
+	                }
+	            }
+	        }
+	    }
+	    if ($baseUrls !== "") {
+	        $baseUrls = substr($baseUrls, 0, -1); // remove last semicolon
+	    }
+	
+	    return $baseUrls;
 	}
 }

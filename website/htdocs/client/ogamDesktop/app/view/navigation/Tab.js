@@ -124,7 +124,9 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
 					'<div class="o-navigation-fieldset">',
 						'<div class="o-navigation-fieldset-title">',
                             '<tpl if="xindex &lt; xcount">',
-                                '<div class="o-navigation-fieldset-title-link" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{editURL}\');"></div>',
+                                '<tpl if="!Ext.isEmpty(editURL)">',
+                                    '<div class="o-navigation-fieldset-title-link" onclick="Ext.ComponentQuery.query(\'navigation-mainwin\')[0].openDetails(\'{editURL}\');"></div>',
+                                '</tpl>',
                             '</tpl>',
                             '<span>{title}</span>',
                         '</div>',
@@ -190,7 +192,7 @@ Ext.define('OgamDesktop.view.navigation.Tab', {
         	url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetdetails',
 			actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
             success :function(response, options){
-                var data = Ext.decode(response.responseText);
+                var data = Ext.decode(response.responseText).data;
                 var title = data.title;
                 if(data.title.length > this.titleCharsMaxLength){
                     title = data.title.substring(0,this.titleCharsMaxLength) + '...';

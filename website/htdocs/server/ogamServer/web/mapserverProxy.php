@@ -15,6 +15,7 @@ $queryParamsAllow = array(//paramNom => requis
     'FORMAT' ,
     'WIDTH' ,
     'HEIGHT' ,
+    'PROVIDER_ID' ,// TODO: use the query parameter
     'PLOT_CODE' ,// TODO: use the query parameter
     'TRANSPARENT' ,
     'VERSION' ,

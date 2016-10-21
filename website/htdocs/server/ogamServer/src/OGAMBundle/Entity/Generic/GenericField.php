@@ -26,11 +26,13 @@ class GenericField
     /**
      * The value of the field
      *
-     * @var string
+     * @var array|string
      */
     private $value;
 
     /**
+     * The label associed with the value
+     * 
      * @var string
      */
     private $valueLabel;
@@ -83,7 +85,7 @@ class GenericField
 
     /**
      *
-     * @return the string
+     * @return An array|string
      */
     public function getValue()
     {
@@ -146,5 +148,13 @@ class GenericField
         $this->valueLabel = $valueLabel;
         return $this;
     }
- 
+
+    /**
+     * Check if the field has a value
+     *
+     * @return Boolean True is the field is empty.
+     */
+    function isEmpty() {
+        return empty($this->value);
+    }
 }

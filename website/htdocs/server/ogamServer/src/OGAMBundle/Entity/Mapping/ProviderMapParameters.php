@@ -3,6 +3,7 @@
 namespace OGAMBundle\Entity\Mapping;
 
 use Doctrine\ORM\Mapping as ORM;
+use OGAMBundle\Entity\Generic\BoundingBox;
 
 /**
  * BoundingBox
@@ -202,92 +203,22 @@ class ProviderMapParameters
         return $this->zoomLevel;
     }
 
-
-
     /**
-     * Create a new BoundingBox object with default values.
-     *
-     * @return Application_Object_Mapping_BoundingBox the BoundingBox
+     * Returns the bounding box.
+     * 
+     * @return BoundingBox
      */
-    public static function createDefaultBoundingBox() {
-
-    	// TODO : Get the parameters from configuration file
-
-//     	$configuration = Zend_Registry::get("configuration");
-
-//     	$xMin = $configuration->getConfig('bbox_x_min');
-//     	$xMax = $configuration->getConfig('bbox_x_max');
-//     	$yMin = $configuration->getConfig('bbox_y_min');
-//     	$yMax = $configuration->getConfig('bbox_y_max');
-
-//     	return BoundingBox::createBoundingBox($xMin, $xMax, $yMin, $yMax);
-    }
-
-    /**
-     * Create a new BoundingBox object, making sure that the Box is square.
-     *
-     * @param Integer $xmin
-     *        	x min position
-     * @param Integer $xmax
-     *        	x max position
-     * @param Integer $ymin
-     *        	y min position
-     * @param Integer $ymax
-     *        	y max position
-     * @param Integer $minSize
-     *        	min size (default to 10 000)
-     * @return BoundingBox A BoundingBox object
-     */
-    public static function createBoundingBox($xmin, $xmax, $ymin, $ymax, $minSize = 10000) {
-    	$diffX = abs($xmax - $xmin);
-    	$diffY = abs($ymax - $ymin);
-
-    	// Enlarge the bb if it's too small (like for the point)
-    	if ($diffX < $minSize) {
-    		$addX = ($minSize - $diffX) / 2;
-    		$xmin = $xmin - $addX;
-    		$xmax = $xmax + $addX;
-    		$diffX = $minSize;
-    	}
-    	if ($diffY < $minSize) {
-    		$addY = ($minSize - $diffY) / 2;
-    		$ymin = $ymin - $addY;
-    		$ymax = $ymax + $addY;
-    		$diffY = $minSize;
-    	}
-
-    	// Setup the bb like a square
-    	$diffXY = $diffX - $diffY;
-
-    	if ($diffXY < 0) {
-    		// The bb is highter than large
-    		$xmin = $xmin + $diffXY / 2;
-    		$xmax = $xmax - $diffXY / 2;
-    	} else if ($diffXY > 0) {
-    		// The bb is larger than highter
-    		$ymin = $ymin - $diffXY / 2;
-    		$ymax = $ymax + $diffXY / 2;
-    	}
-
-    	$bb = new BoundingBox();
-    	$bb->setXmin($xmin);
-    	$bb->setYmin($ymin);
-    	$bb->setXmax($xmax);
-    	$bb->setYmax($ymax);
-
-    	return $bb;
+    public function getBoundingBox() {
+        return new BoundingBox($this->xmin, $this->xmax, $this->ymin, $this->ymax);
     }
     
     /**
-     * Get the center and defaut zoom level
-     * @return CenterAndZoomLevel A CenterAndZoomLevel Object
+     * Returns the bounding box.
+     *
+     * @return \OGAMBundle\Entity\Mapping\BoundingBox
      */
-    function getCenterAndZoomLevel() {
-    	$cazl= new CenterAndZoomLevel();
-    	$cazl->setX(($this->getXmin() + $this->getXmax()) / 2);
-    	$cazl->setY(($this->getYmin() + $this->getYmax()) / 2);
-    	$cazl->setZoomLevel($this->getZoomLevel());
-    	return $cazl;
+    public function getCenter() {
+        return $this->getBoundingBox()->getCenter();
     }
 }
 
