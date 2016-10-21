@@ -18,8 +18,8 @@ use OGAMBundle\Entity\Metadata\Dynamode;
 use OGAMBundle\Entity\Metadata\ModeTree;
 use OGAMBundle\Entity\Metadata\Unit;
 use OGAMBundle\Entity\Generic\GenericTableFormat;
+use OGAMBundle\Entity\Metadata\ModeTaxref;
 use OGAMBundle\Entity\Generic\GenericGeomField;
-
 /**
  *
  * The Generic Service.
@@ -34,50 +34,50 @@ class GenericService {
 	 * @var Logger
 	 */
 	private $logger;
-	
+
 	/**
 	 * The locale.
 	 *
 	 * @var locale
 	 */
 	private $locale;
-	
+
 	/**
 	 * The models.
 	 * @var EntityManager
 	 */
 	private $metadataModel;
-	
+
 	/**
 	 * The projection systems.
 	 * @var String
 	 */
 	private $visualisationSRS;
-	
+
 	/**
 	 * @var ConfigurationManager
 	 */
 	private $configuration;
 	/**
-	 * 
+	 *
 	 */
 	function __construct($em, $configuration, $logger, $locale)
 	{
 		// Initialise the logger
 		$this->logger = $logger;
-		
+
 		// Initialise the locale
 		$this->locale = $locale;
-		
+
 		// Initialise the metadata models
 		$this->metadataModel = $em;
-		
+
 		$this->configuration = $configuration;
-		
+
 		// Configure the projection systems
 		$this->visualisationSRS = $configuration->getConfig('srs_visualisation', '3857');
 	}
-	
+
 	/**
 	 * Build an empty data object.
 	 *
@@ -87,7 +87,7 @@ class GenericService {
 	 * @return GenericTableFormat the DataObject structure (with no values set)
 	 */
 	public function buildGenericTableFormat($schema, $format, $datasetId = null) {
-	
+
 		// Get the description of the table
 		$tableFormat = $this->metadataModel->getRepository(TableFormat::class)->findOneBy(array('schema'=> $schema,'format'=> $format));
 
@@ -96,7 +96,7 @@ class GenericService {
 
 		// Get all the description of the Table Fields corresponding to the format
 		$tableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $format, $datasetId, $this->locale);
-	
+
 		// Separate the keys from other values
 		foreach ($tableFields as $tableField) {
 		    $format = $tableField->getFormat()->getFormat();
@@ -119,7 +119,7 @@ class GenericService {
 	
 		return $gTable;
 	}
-	
+
 	/**
 	 * Return an Array object corresponding to a SQL string.
 	 *
@@ -135,11 +135,11 @@ class GenericService {
 	    $values = str_replace('"', "", $values);
 	    $values = trim($values);
 	    $valuesArray = explode(",", $values);
-	
+
 	    foreach ($valuesArray as $v) {
 	        $v = trim($v);
 	    }
-	
+
 	    return $valuesArray;
 	}
 	/**
@@ -150,26 +150,25 @@ class GenericService {
 	 * @return String or Array The labels
 	 */
 	public function getValueLabel(TableField $tableField, $value) {
-	
 	    // If empty, no label
 	    if ($value === null || $value === '') {
 	        return "";
 	    }
-	
+
 	    // By default we keep the value as a label
 	    $valueLabel = $value;
-	
+
 	    // For the CODE and ARRAY fields, we get the labels in the metadata
 	    $unit = $tableField->getData()->getUnit();
 	    if ($unit->getType() === "CODE" || $unit->getType() === "ARRAY") {
-	
+
 	        // Get the modes => Label
 	        if ($unit->getSubtype() === "DYNAMIC") {
 	            $modes =  $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value, $this->locale);
 	        } else if ($unit->getSubtype() === "TREE") {
-	            $modes = $this->metadataModel->getRepository(ModeTree::class)->getTreeLabels($unit->getUnit(), $value, $this->locale);
+	            $modes = $this->metadataModel->getRepository(ModeTree::class)->getTreeLabels($unit->getUnit(), $value);
 	        } else if ($unit->getSubtype() === "TAXREF") {
-	            $modes =  $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value, $this->locale);
+	            $modes =  $this->metadataModel->getRepository(ModeTaxref::class)->getModesLabel($unit, $value, $this->locale);
 	        } else {
 	            $modes =   $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value,  $this->locale);
 	        }
@@ -191,10 +190,10 @@ class GenericService {
 	            }
 	        }
 	    }
-	
+
 	    return $valueLabel;
 	}
-	
+
 	/**
 	 * Build the SELECT clause.
 	 *
@@ -204,18 +203,18 @@ class GenericService {
 	 */
 	public function buildSelect($tableFields) {
 		$sql = "";
-	
+
 		// Iterate through the fields
 		foreach ($tableFields as $field) {
 			$sql .= $this->buildSelectItem($field) . ", ";
 		}
-	
+
 		// Remove the last comma
 		$sql = substr($sql, 0, -2);
-	
+
 		return $sql;
 	}
-	
+
 	/**
 	 * Build the SELECT part for one field.
 	 *
@@ -232,7 +231,7 @@ class GenericService {
 	 */
 	public function buildSelectItem($field, $options = array()) {
 		$sql = "";
-	
+
 		// Merge $options with defaults
 		$defaults = array(
 				"geometry_format" => "wkt",
@@ -247,7 +246,7 @@ class GenericService {
 				"time_format"=>'HH24:mi:ss',
 		);
 		$options = array_replace($defaults, $options);
-	
+
 		$fieldName = $field->getFormat()->getFormat() . '.' . $field->getColumnName();
 	    $unit =$field->getData()->getUnit();
 		if ($unit->getType() === "DATE") {
@@ -277,10 +276,10 @@ class GenericService {
 		} else {
 			$sql .= $fieldName . " as " . $field->getName();
 		}
-	
+
 		return $sql;
 	}
-	
+
 	/**
 	 * Build the WHERE clause corresponding to a list of criterias.
 	 *
@@ -292,15 +291,15 @@ class GenericService {
 	 */
 	public function buildWhere($schemaCode, $criterias) {
 		$sql = "";
-	
+
 		// Build the WHERE clause with the info from the PK.
 		foreach ($criterias as $tableField) {
 			$sql .= $this->buildWhereItem($schemaCode, $tableField->getMetadata(), $tableField->getValue(), true); // exact match
 		}
-	
+
 		return $sql;
 	}
-	
+
 	/**
 	 * Build the WHERE clause corresponding to one criteria.
 	 *
@@ -316,7 +315,7 @@ class GenericService {
 		$sql = "";
 
 		$column = $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName();
-	
+
 		// Set the projection for the geometries in this schema
 		$configuration = $this->configuration;
 		if ($schemaCode === 'RAW_DATA') {
@@ -330,9 +329,9 @@ class GenericService {
 		//$builder = $this->metadataModel->getConnection()->getExpressionBuilder();
         $unit = $tableField->getData()->getUnit();
 		if ($value !== null && $value !== '' && $value !== array()) {
-	
+
 			switch ($unit->getType()) {
-	
+
 				case "BOOLEAN":
 					// Value is 1 or 0, stored in database as a char(1)
 					if (is_array($value)) {
@@ -344,7 +343,7 @@ class GenericService {
 						$sql .= " AND " . $column . " = '" . $value . "'";
 					}
 					break;
-	
+
 				case "DATE":
 					// Numeric values
 					if (is_array($value)) {
@@ -391,7 +390,7 @@ class GenericService {
 				case "NUMERIC":
 					// Numeric values
 					if (is_array($value)) {
-	
+
 						// Case of a list of values
 						$sql2 = '';
 						foreach ($value as $val) {
@@ -411,20 +410,20 @@ class GenericService {
 					}
 					break;
 				case "ARRAY":
-	
+
 					// Case of a code in a generic TREE
 					if ($unit->getSubtype() === 'TREE') {
-	
+
 						if (is_array($value)) {
 							$value = $value[0];
 						}
-	
+
 						if ($exact) {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
 							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($unit, $value, 0);
-	
+
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeCodes);
 							$sql .= " AND " . $column . " && " . $stringValue;
@@ -434,19 +433,19 @@ class GenericService {
 						if (is_array($value)) {
 							$value = $value[0];
 						}
-	
+
 						if ($exact) {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected taxon
 							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($unit, $value, 0);
-	
+
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeCodes);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
 					} else {
-	
+
 						$stringValue = $this->_arrayToSQLString($value);
 						if (is_array($value)) {
 							// Case of a list of values
@@ -464,29 +463,29 @@ class GenericService {
 							}
 						}
 					}
-	
+
 					break;
 				case "CODE":
-	
+
 					// Case of a code in a generic TREE
 					if ($unit->getSubtype() === 'TREE') {
-	
+
 						if (is_array($value)) {
 							$value = $value[0];
 						}
-	
+
 						if ($exact) {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
 							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($unit, $value, 0);
-	
+
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
 								$sql2 .= "'" . $nodeCode . "', ";
 							}
 							$sql2 = substr($sql2, 0, -2); // remove last comma
-	
+
 							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
 						}
 					} else if ($unit->getSubtype() === 'TAXREF') {
@@ -494,24 +493,24 @@ class GenericService {
 						if (is_array($value)) {
 							$value = $value[0];
 						}
-	
+
 						if ($exact) {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
-	
+
 							// Get all the children of a selected taxon
 							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($unit, $value, 0);
-	
+
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
 								$sql2 .= "'" . $nodeCode . "', ";
 							}
 							$sql2 = substr($sql2, 0, -2); // remove last comma
-	
+
 							$sql .= " AND " . $column . " IN (" . $sql2 . ")";
 						}
 					} else {
-	
+
 						// String
 						if (is_array($value)) {
 							// Case of a list of values
@@ -599,7 +598,7 @@ class GenericService {
 					break;
 			}
 		}
-	
+
 		return $sql;
 	}
 	private function validateDate($date, $format = 'Y-m-d H:i:s')
@@ -625,7 +624,7 @@ class GenericService {
 		$sql = "";
 		$value = trim($value);
 		$column = $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName();
-	
+
 		if (!empty($value)) {
 			if (strlen($value) === 10) {
 				// Case "YYYY/MM/DD"
@@ -654,11 +653,11 @@ class GenericService {
 				}
 			}
 		}
-	
+
 		if ($sql === "") {
 			throw new \Exception("Invalid data format");
 		}
-	
+
 		return $sql;
 	}
 	/**
@@ -680,7 +679,7 @@ class GenericService {
 		$ltOperator = '<=';
 		$value = trim($value);
 		$column = $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName();
-	
+
 		if (!empty($value)) {
 			if (strlen($value) === strlen($timeFormat)) {
 				// Case "HH:mm:ss"
@@ -709,14 +708,14 @@ class GenericService {
 				}
 			}
 		}
-	
+
 		if ($sql === "") {
 			throw new \Exception("Invalid data format");
 		}
-	
+
 		return $sql;
 	}
-	
+
 
 	/**
 	 * Build a WHERE criteria for a single numeric value.
@@ -736,14 +735,14 @@ class GenericService {
 		$posBetween = strpos($value, " - ");
 		$posInf = strpos($value, "<=");
 		$posSup = strpos($value, ">=");
-	
+
 		// Cas où les 2 valeurs sont présentes
 		if ($posBetween !== false) {
-	
+
 			$minValue = substr($value, 0, $posBetween);
 			$maxValue = substr($value, $posBetween + 3);
 			$sql2 = '';
-	
+
 			if (($minValue !== null) && ($minValue !== '')) {
 				$sql2 .= $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName() . " >= " . $minValue;
 			}
@@ -770,10 +769,10 @@ class GenericService {
 			// One value, we make an equality comparison
 			$sql .= $tableField->getFormat()->getFormat() . "." . $tableField->getColumnName() . " = " . $value;
 		}
-	
+
 		return $sql;
 	}
-	
+
 	/**
 	 * Return the SQL String representation of an array.
 	 *
@@ -785,7 +784,7 @@ class GenericService {
 	 */
 	private function _arrayToSQLString($arrayValues) {
 	    $string = "'{";
-	
+
 	    if (is_array($arrayValues)) {
 	        foreach ($arrayValues as $value) {
 	            $string .= '"' . $value . '",';
@@ -797,10 +796,10 @@ class GenericService {
 	        $string .= $arrayValues;
 	    }
 	    $string .= "}'";
-	
+
 	    return $string;
 	}
-	
+
 
 	/**
 	 * Build the update part of a SQL request corresponding to a table field.
@@ -811,7 +810,7 @@ class GenericService {
 	 */
 	public function buildSQLValueItem($schema, $tableField) {
 	    $sql = "";
-	
+
 	    $value = $tableField->getValue();
 	    //$column = $tableField->getColumnName();
 
@@ -824,9 +823,9 @@ class GenericService {
 	    } else {
 	        throw new \InvalidArgumentException('Invalid schema code.');
 	    }
-	
+
 	    switch ($tableField->getMetadata()->getData()->getUnit()->getType()) {
-	
+
 	        case "BOOLEAN":
 	            // Value is 1 or 0, stored in database as a char(1)
 	            $sql = ($value == true ? '1' : '0');
@@ -874,10 +873,10 @@ class GenericService {
 	            $sql = "'" . $value . "'";
 	            break;
 	    }
-	
+
 	    return $sql;
 	}
-	
+
 	/**
 	 * Get the form field corresponding to the table field.
 	 *
@@ -886,12 +885,12 @@ class GenericService {
 	 * @return GenericField
 	 */
 	public function getTableToFormMapping($tableRowField, $copyValues = false) {
-	
+
 	    $tableField = $tableRowField->getMetadata();
 	    // Get the description of the form field
-	    $req = "SELECT ff 
+	    $req = "SELECT ff
 FROM OGAMBundle\Entity\Metadata\FormField ff
-JOIN OGAMBundle\Entity\Metadata\FieldMapping fm 
+JOIN OGAMBundle\Entity\Metadata\FieldMapping fm
 WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.format and fm.dstFormat = :format and fm.dstData = :data";
 	    $formField = $this->metadataModel->createQuery($req)->setParameters(array('format'=>$tableField->getFormat()->getFormat(), 'data'=>$tableField->getData()->getData()))->getOneOrNullResult();
 	    $valuedField = null;
@@ -900,21 +899,21 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	        $valuedField = new GenericField($formField->getFormat()->getFormat(), $formField->getData()->getData());
 	        $valuedField->setMetadata($formField, $this->locale);
 	    }
-	
+
 	    // Copy the values
 	    if ($copyValues === true && $formField !== null && $tableRowField->getValue() !== null) {
-	
+
 	        // Copy the value and label
 	        $valuedField->setValue($tableRowField->getValue());
 	        $valuedField->setValueLabel($tableRowField->getValueLabel());
 	    }
-	
+
 	    return $valuedField;
 	}
-	
+
 	/**
 	 * Return the fields mappings in the provided schema
-	 * 
+	 *
 	 * @param string $schema
 	 * @param [\OGAMBundle\Entity\Generic\GenericField] $formFields
 	 * @return GenericFieldMappingSet
@@ -926,16 +925,16 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	        $tableField = $this->metadataModel->getRepository(TableField::class)->getFormToTableMapping($schema, $formField, $this->locale);
 	        $dstField = new GenericField($tableField->getFormat()->getFormat(), $tableField->getData()->getData());
 	        $dstField->setMetadata($tableField, $this->locale);
-	
+
 	        // Create the field mapping
 	        $fieldMapping = new GenericFieldMapping($formField, $dstField, $schema);
 	        $fieldsMappings[] = $fieldMapping;
 	    }
-	    
+
 	    return new GenericFieldMappingSet($fieldsMappings, $schema);
 	}
 
-	
+
 	/**
 	 * Get the hierarchy of tables needed for a data object.
 	 *
@@ -947,16 +946,16 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 */
 	public function getAllFormats($schema, $fieldsMappings) {
 	    $this->logger->info('getAllFormats : ' . $schema);
-	
+
 	    // Prepare the list of needed tables
 	    $tables = array();
 	    foreach ($fieldsMappings as $fieldMapping) {
 	        $TableFormat = $fieldMapping->getDstField()->getFormat();
 	        if (!array_key_exists($TableFormat, $tables)) {
-	
+
 	            // Get the ancestors of the table
 	            $ancestors = $this->metadataModel->getRepository(TableTree::class)->getAncestors($TableFormat, $schema);
-	
+
 	            // Reverse the order of the list and store by indexing with the table name
 	            // The root table (LOCATION) should appear first
 	            $ancestors = array_reverse($ancestors);
@@ -965,7 +964,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	            }
 	        }
 	    }
-	
+
 	    return $tables;
 	}
 
@@ -986,7 +985,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 */
 	public function generateSQLSelectRequest($schema, $formFields, GenericFieldMappingSet $mappingSet, $userInfos, $options = array()) {
 	    $this->logger->debug('generateSQLSelectRequest');
-	
+
 	    //
 	    // Prepare the SELECT clause
 	    //
@@ -996,7 +995,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	        $select .= $this->buildSelectItem($tableField, $options) . ", ";
 	    }
 	    $select = substr($select, 0, -2);
-	
+
 	    //
 	    // Create a unique identifier for each line
 	    // We use the last column of the leaf table
@@ -1006,32 +1005,32 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    $rootTable = reset($tables);
 	    $reversedTable = array_reverse($tables); // Only variables should be passed by reference
 	    $leafTable = array_shift($reversedTable);
-	
+
 	    // Get the root table fields
 	    $rootTableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $rootTable->getTableFormat()->getFormat(), null, $this->locale);
 	    $hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
-	
+
 	    $uniqueId = "'SCHEMA/" . $schema . "/FORMAT/" . $leafTable->getTableFormat()->getFormat() . "'";
-	
+
 	    $keys = $leafTable->getTableFormat()->getPrimaryKeys();
 	    foreach ($keys as $key) {
 	        // Concatenate the column to create a unique Id
 	        $uniqueId .= " || '/' || '" . $key . "/' ||" . $leafTable->getTableFormat()->getFormat() . "." . $key;
 	    }
 	    $select .= ", " . $uniqueId . " as id";
-	
+
 	    // Detect the column containing the geographical information
 	    $locationField = $this->metadataModel->getRepository(TableField::class)->getGeometryField($schema, array_keys($tables), $this->locale);
-	
+
 	    // Add the location centroid (for zooming on the map)
 	    $select .= ", st_astext(st_centroid(st_transform(" . $locationField->getFormat()->getFormat() . "." . $locationField->getColumnName() . "," . $this->visualisationSRS . "))) as location_centroid ";
-	
+
 	    // Right management
 	    // Get back the provider id of the data
 	    if (!$userInfos['DATA_EDITION_OTHER_PROVIDER'] && $hasColumnProvider) {
 	        $select .= ", " . $leafTable->getTableFormat()->getFormat() . ".provider_id as _provider_id";
 	    }
-	
+
 	    // Return the completed SQL request
 	    return $select;
 	}
@@ -1047,26 +1046,26 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 */
 	public function generateSQLFromRequest($schema, GenericFieldMappingSet $mappingSet) {
 	    $this->logger->debug('generateSQLFromRequest');
-	
+
 	    //
 	    // Prepare the FROM clause
 	    //
-	
+
 	    // Prepare the list of needed tables
 	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingArray());
-	
+
 	    // Add the root table;
 	    $rootTable = array_shift($tables);
 	    $from = " FROM " . $rootTable->getTableFormat()->getTableName() . " " . $rootTable->getTableFormat()->getFormat();
-	
+
 	    // Add the joined tables
 	    $i = 0;
 	    foreach ($tables as $tableTreeData) {
 	        $i ++;
-	
+
 	        // Join the table
 	        $from .= " JOIN " . $tableTreeData->getTableFormat()->getTableName() . " " . $tableTreeData->getTableFormat()->getFormat() . " on (";
-	
+
 	        // Add the join keys
 	        $keys = $tableTreeData->getJoinKeys();
 	        foreach ($keys as $key) {
@@ -1075,10 +1074,10 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	        $from = substr($from, 0, -5);
 	        $from .= ") ";
 	    }
-	
+
 	    return $from;
 	}
-	
+
 	/**
 	 * Generate the WHERE clause of the SQL request corresponding to a list of parameters.
 	 *
@@ -1092,17 +1091,17 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 */
 	public function generateSQLWhereRequest($schemaCode, $formFields, GenericFieldMappingSet $mappingSet, $userInfos) {
 	    $this->logger->debug('generateSQLWhereRequest');
-	
+
 	    // Prepare the list of needed tables
 	    $tables = $this->getAllFormats($schemaCode, $mappingSet->getFieldMappingArray());
-	
+
 	    // Add the root table;
 	    $rootTable = array_shift($tables);
-	
+
 	    // Get the root table fields
 	    $rootTableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schemaCode, $rootTable->getTableFormat()->getFormat(), null, $this->locale);
 	    $hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
-	
+
 	    //
 	    // Prepare the WHERE clause
 	    //
@@ -1111,17 +1110,17 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	        $tableField = $mappingSet->getDstField($formField)->getMetadata();
 	        $where .= $this->buildWhereItem($schemaCode, $tableField, $formField->getValue(), false);
 	    }
-	
+
 	    // Right management
 	    // Check the provider id of the logged user
         if (!$userInfos['DATA_QUERY_OTHER_PROVIDER'] && $hasColumnProvider) {
             $where .= " AND " . $rootTable->getTableFormat()->getFormat() . ".provider_id = '" . $userInfos['providerId'] . "'";
         }
-	
+
 	    // Return the completed SQL request
 	    return $where;
 	}
-	
+
 	/**
 	 * Generate the primary key of the left table of the query.
 	 * Fields composing the pkey are prefixed with the table label
@@ -1134,16 +1133,16 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 */
 	public function generateSQLPrimaryKey($schema, $mappingSet) {
 	    $this->logger->debug('generateSQLPrimaryKey');
-	
+
 	    // Get the left table;
 	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingArray());
 	    $leafTable = array_pop($tables);
-	
+
 	    $keys = $leafTable->getTableFormat()->getPrimaryKeys();
 	    foreach ($keys as $index => $key) {
 	        $keys[$index] = $leafTable->getTableFormat()->getFormat() . "." . $key;
 	    }
-	
+
 	    return implode(',', $keys);
 	}
 	

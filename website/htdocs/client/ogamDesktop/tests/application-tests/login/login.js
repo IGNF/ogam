@@ -3,7 +3,7 @@ StartTest(function(t) {
 
 	// Cette page ne contient pas ExtJS, on teste uniquement le login en PHP.
 	
-	document.getElementById('login').value = 'admin';
+	document.getElementById('username').value = 'admin';
 	document.getElementById('password').value = 'admin';
 	
 	document.getElementById('submit').click();

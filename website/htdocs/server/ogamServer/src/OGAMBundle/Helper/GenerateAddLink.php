@@ -12,7 +12,7 @@ class GenerateAddLink extends Helper {
 	 * @param Array[GenericField] $infoFields The primary keys
 	 * @return String the URL for the link
 	 */
-	function generateAddLink ($schema, $format, $infoFields) {
+	function getAddLink($schema, $format, $infoFields) {
 
         // Build the URL to link to the parent items
         $urlArray = array(

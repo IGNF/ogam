@@ -192,7 +192,7 @@ class DataEditionController extends Controller
             // If the data has an ancestor, we redirect to this ancestor
             if (!empty($ancestors)) {
                 $parent = $ancestors[0];
-                $redirectURL = $this->get('ogam.helper.editlink')->generateEditLink($parent)['url'];
+                $redirectURL = $this->get('ogam.helper.editlink')->getEditLink($parent)['url'];
                 $result['redirectLink'] = $redirectURL;
             }
         

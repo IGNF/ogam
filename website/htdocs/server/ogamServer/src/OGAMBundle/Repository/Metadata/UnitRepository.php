@@ -47,7 +47,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
                         'unit' => $unit->getUnit()
                     ));
                 case "DYNAMIC":
-                    return $this->_em->getRepository(Dynamode::class)->getModes($unit, $locale);
+                    return $this->_em->getRepository(Dynamode::class)->getModes($unit);
                 case "TREE":
                     return $this->_em->getRepository(ModeTree::class)->getModes($unit, $locale);
                 case "TAXREF":
@@ -57,10 +57,10 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
             }
         }
     }
-    
+
     /**
      * Returns the mode(s) corresponding to the code(s).
-     * 
+     *
      * @param Unit $unit The unit
      * @param String|Array $code The filter code(s)
      * @param String $locale The locale
@@ -93,10 +93,10 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
             }
         }
     }
-    
+
     /**
      * Returns the mode(s) whose label contains a portion of the search text
-     * 
+     *
      * @param Unit $unit The unit
      * @param String $query The filter query string
      * @param String $locale The locale
@@ -129,34 +129,28 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
             }
         }
     }
-    
+
     /**
+     * return array label for a (setof) value(s)
      * @param Unit $unit
      * @param mixed $value
      * @param String $locale The locale
-     * @return array
+     * @return array code=>label
      */
     public function getModesLabel(Unit $unit, $value, $locale){
-        $res = $this->getModes($unit, $locale);
+        $res = $this->getModesFilteredByCode($unit, $value, $locale);
         if ($res === null){
             return null;
         }
-        
-        
-        if (is_array($value)) {
-            $criteria = Criteria::create()->where(Criteria::expr()->in("code", $value));
-        }else {
-            $criteria = Criteria::create()->where(Criteria::expr()->eq("code", $value));
-        }
+
         if (false ===($res  instanceof  Selectable)){
             $res= new ArrayCollection($res);
         }
-        
-        $result = $res->matching($criteria);
-        $array_res = $result->map(function ($element){
-            return ['code'=>$element->getCode(), 'label'=>$element->getLabel()]; 
+
+        $array_res = $res->map(function ($element){
+            return ['code'=>$element->getCode(), 'label'=>$element->getLabel()];
         });
-       
+
         return  array_column($array_res->toArray(), 'label','code');
     }
 }

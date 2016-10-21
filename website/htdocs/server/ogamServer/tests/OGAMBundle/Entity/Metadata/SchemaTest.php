@@ -48,7 +48,7 @@ class SchemaTest extends KernelTestCase {
 		$schemas = $this->em->getRepository('OGAMBundle\Entity\Metadata\TableSchema', 'metadata')->findAll();
 
 		// On vérifie que l'on a ramené la bonne modalité
-		$this->assertEquals(count($schemas), 5);
+		$this->assertEquals(count($schemas), 6);
 
 		$rawSchema = $schemas['RAW_DATA'];
 		$this->assertEquals($rawSchema->getCode(), 'RAW_DATA');

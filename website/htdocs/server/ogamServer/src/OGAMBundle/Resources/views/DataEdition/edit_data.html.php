@@ -37,7 +37,7 @@ if (! empty($message)) {
 if (! empty($ancestors)) {
     $parentsLinks = array();
     foreach (array_reverse($ancestors) as $ancestor) {
-        $parentsLinks[] = $view['dataEditionEdit']->generateEditLink($ancestor);
+        $parentsLinks[] = $view['dataEditionEdit']->getEditLink($ancestor);
     }
     $patch['parentsLinks'] = $parentsLinks;
 }
@@ -64,7 +64,7 @@ foreach ($childrenTableLabels as $childFormat => $childTableLabel) {
     $childrenLinks = array();
     if (! empty($children)) {
         foreach ($children[$childFormat] as $child) {
-            $childrenLinks[] = $view['dataEditionEdit']->generateEditLink($child);
+            $childrenLinks[] = $view['dataEditionEdit']->getEditLink($child);
         }
         $configOptions['childrenLinks'] = $childrenLinks;
     }
@@ -74,7 +74,7 @@ foreach ($childrenTableLabels as $childFormat => $childTableLabel) {
     }
     
     // Add link to a new child
-    $configOptions['AddChildURL'] = $view['dataEditionAdd']->generateAddLink($data->getTableFormat()->getSchemaCode(), $childFormat, $data->getIdFields());
+    $configOptions['AddChildURL'] = $view['dataEditionAdd']->getAddLink($data->getTableFormat()->getSchemaCode(), $childFormat, $data->getIdFields());
     
     array_push($childrenConfigOptions, $configOptions);
 }

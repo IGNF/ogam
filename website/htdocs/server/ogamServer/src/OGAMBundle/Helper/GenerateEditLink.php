@@ -10,7 +10,7 @@ class GenerateEditLink extends Helper {
      * @param GenericTableFormat $data
      * @return Link the HTML link
      */
-    function generateEditLink($data) {
+    function getEditLink($data) {
 
 	// Build the URL to link to the parent items
 	$urlArray = array(
