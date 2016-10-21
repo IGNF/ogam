@@ -3,6 +3,11 @@
 namespace OGAMBundle\Repository\Metadata;
 
 use OGAMBundle\Entity\Metadata\Unit;
+use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
  * ModeRepository
@@ -21,10 +26,46 @@ class ModeRepository extends \Doctrine\ORM\EntityRepository
     * @return [Mode] The filtered mode(s)
     * */
     public function getModesFilteredByCode(Unit $unit, $code, $locale){
-        return $this->findBy(array(
-            'unit' => $unit->getUnit(),
-            'code' => $code
-        ));
+        $qb = $this->createQueryBuilder('m');
+        $qb->select('m','t.label as label')
+        ->leftJoin('OGAMBundle:Metadata\Translation', 't', Join::WITH, 't.lang = :lang  AND t.tableFormat = \'METADATA_MODE\' AND t.rowPk = CONCAT(CONCAT(m.unit , \',\'), m.code)')
+        ->where('m.unit = :unit and m.code IN (:code)')->orderBy('m.position, m.code');
+        $req = $qb->getQuery();
+        $req->setParameters(array('unit'=>$unit, 'code'=>$code, 'lang'=>$locale));
+        if (is_array($code)){
+            $req->setParameter('code', $code, Connection::PARAM_STR_ARRAY);
+        }
+        $res = $req->getResult();
+        foreach($res as $lign){
+            $lign[0]->setLabel($lign['label']);
+        }
+        return array_column($res, 0);
     }
 
+    /**
+     * Returns the mode(s) whose label contains a portion of the search text
+     *
+     * @param Unit $unit The unit
+     * @param String $query The filter query string
+     * @param String $locale The locale
+     * @return [Mode] The filtered mode(s)
+     */
+    public function getModesFilteredByLabel(Unit $unit, $query, $locale){
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
+
+        $sql = "SELECT unit, code, COALESCE(t.label, m.label) as label, position, COALESCE(t.definition, m.definition) ";
+        $sql .= " FROM mode m";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'METADATA_MODE' AND row_pk = m.unit || ',' || m.code)";
+        $sql .= " WHERE unit = :unit ";
+        $sql .= " AND COALESCE(t.label, m.label) ilike :query";
+        $sql .= " ORDER BY position, code";
+
+        $req = $this->_em->createNativeQuery( $sql, $rsm );
+
+        $req->setParameter('unit', $unit)
+        ->setParameter('query', $query.'%')
+        ->setParameter('lang', $locale);
+        return $req->getResult();
+    }
 }
