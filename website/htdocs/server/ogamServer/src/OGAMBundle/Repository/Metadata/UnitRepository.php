@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Selectable;
 use phpDocumentor\Reflection\Types\Mixed;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * UnitRepository
@@ -143,7 +144,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
             return null;
         }
 
-        if (false ===($res  instanceof  Selectable)){
+        if (false ===($res  instanceof  Collection)){
             $res= new ArrayCollection($res);
         }
 

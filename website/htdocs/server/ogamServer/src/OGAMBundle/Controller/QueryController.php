@@ -476,10 +476,25 @@ class QueryController extends Controller {
 	/**
 	 * @Route("/ajaxgetcodes")
 	 */
-	public function ajaxgetcodesAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetcodes.html.twig', array ()
-		// ...
-		 );
+	public function ajaxgetcodesAction(Request $request) {
+	    $unitCode = $request->query->get('unit');
+	    $query = $request->query->get('query', null);
+	    $em = $this->get('doctrine.orm.metadata_entity_manager');
+	    $unit = $em->find(Unit::class, $unitCode);
+
+	    $locale = $this->get('ogam.locale_listener')->getLocale();
+
+	    if ($query === null) {
+	        $modes = $em->getRepository(Unit::class)->getModes($unit, $locale);
+	    } else {
+	        $modes =  $em->getRepository('OGAMBundle:Metadata\Mode')->getModesFilteredByLabel($unit, $query, $locale);
+	    }
+
+	    $response = new JsonResponse();
+
+	    return $this->render('OGAMBundle:Query:ajaxgetcodes.json.twig', array(
+	        'data' => $modes
+	    ), $response);;
 	}
 
 	/**

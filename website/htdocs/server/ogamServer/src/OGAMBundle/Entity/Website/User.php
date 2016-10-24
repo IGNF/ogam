@@ -172,13 +172,13 @@ class User implements UserInterface, \Serializable {
 	 * @return Boolean
 	 */
 	function isAllowed($permissionName) {
-		global $kernel;
+/*		global $kernel;
 		if ('AppCache' == get_class($kernel)) {
 			$kernel = $kernel->getKernel();
 		}
 		$logger = $kernel->getContainer()->get('logger');
 		$logger->info('isAllowed ' . $permissionName);
-
+*/
 		// The user is allowed if one of its role is.
 		foreach ($this->roles as $role) {
 
@@ -198,13 +198,13 @@ class User implements UserInterface, \Serializable {
 	 */
 	function isSchemaAllowed($schemaCode) {
 		// The user is allowed if one of its role is.
-		global $kernel;
+/*		global $kernel;
 		if ('AppCache' == get_class($kernel)) {
 			$kernel = $kernel->getKernel();
 		}
 		$logger = $kernel->getContainer()->get('logger');
 		$logger->info('isSchemaAllowed ' . $schemaCode);
-
+*/
 		// The user is allowed if one of its role is.
 		foreach ($this->roles as $role) {
 

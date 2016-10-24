@@ -1,0 +1,2 @@
+[
+{"xclass":"OgamDesktop.view.edition.Panel","dataId":"SCHEMA\/RAW_DATA\/FORMAT\/LOCATION_DATA\/PROVIDER_ID\/1\/PLOT_CODE\/","mode":"ADD","dataTitle":"Location","disableDeleteButton":false,"childrenConfigOptions":[{"title":"Plot Data","html":"Aucun(e) plot data trouv\u00e9(e).","AddChildURL":"#edition-add\/SCHEMA\/RAW_DATA\/FORMAT\/PLOT_DATA\/PROVIDER_ID\/1"}]} ]

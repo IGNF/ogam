@@ -165,7 +165,7 @@ class Role implements RoleInterface {
 	 * @return Boolean
 	 */
 	function isAllowed($permissionName) {
-
+/*
 		global $kernel;
 		if ('AppCache' == get_class($kernel)) {
 			$kernel = $kernel->getKernel();
@@ -174,7 +174,7 @@ class Role implements RoleInterface {
 		$logger->info('role isAllowed ' . $permissionName);
 
 		$logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
-
+*/
 		foreach ($this->getPermissions() as $permission) {
 
 			if ($permission->getCode() == $permissionName) {
@@ -194,7 +194,7 @@ class Role implements RoleInterface {
 	 * @return Boolean
 	 */
 	function isSchemaAllowed($schemaCode) {
-
+/*
 		global $kernel;
 		if ('AppCache' == get_class($kernel)) {
 			$kernel = $kernel->getKernel();
@@ -203,7 +203,7 @@ class Role implements RoleInterface {
 		$logger->info('role isSchemaAllowed ' . $schemaCode);
 
 		$logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
-
+*/
 		foreach ($this->getSchemas() as $schema) {
 
 			if ($schema->getCode() == $schemaCode) {
