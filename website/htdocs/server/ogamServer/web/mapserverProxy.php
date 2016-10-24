@@ -42,9 +42,9 @@ foreach($queryParamsAllow as $param) {
     }
 }
 // force la valeur de REQUEST
-if (strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
+if (!empty($queriesArg['REQUEST']) && strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
 	$queriesArg['REQUEST']  = 'GetLegendGraphic';
-} else if (strcasecmp($queriesArg['REQUEST'] , "getmap") == 0) {
+} else if (!empty($queriesArg['REQUEST']) && strcasecmp($queriesArg['REQUEST'] , "getmap") == 0) {
 	$queriesArg['REQUEST']  = 'GetMap';
 } else {
     $queriesArg['REQUEST']  = 'GetFeature';
@@ -52,10 +52,10 @@ if (strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
 
 // force la valeur de SERVICE
 $geoJSONOFRequired = false;
-if (strcasecmp($queriesArg['SERVICE'] , "WFS") !== 0) {
+if (!empty($queriesArg['SERVICE']) && strcasecmp($queriesArg['SERVICE'] , "WFS") !== 0) {
     header('Content-Type: image/png');
     $queriesArg['SERVICE']  = 'WMS';
-} elseif (strcasecmp($queriesArg['OUTPUTFORMAT'] , "geojsonogr") === 0 || strcasecmp($queriesArg['OUTPUTFORMAT'] , "geojsontpl") === 0) {
+} elseif (!empty($queriesArg['OUTPUTFORMAT']) && (strcasecmp($queriesArg['OUTPUTFORMAT'] , "geojsonogr") === 0 || strcasecmp($queriesArg['OUTPUTFORMAT'] , "geojsontpl") === 0)) {
     $geoJSONOFRequired = true;
     header('Content-Type: application/json,subtype=geojson,charset=utf-8');
 }

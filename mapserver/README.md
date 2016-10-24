@@ -5,6 +5,17 @@ http://mapserver.org/fr/output/ogr_output.html
 http://geojson.org/geojson-spec.html#feature-objects
 http://www.gdal.org/drv_geojson.html
 
+To see the supported formats list :
+vagrant@ogam:/vagrant/ogam$ ogr2ogr --formats
+You must see a line with : "-> "GeoJSON" (read/write)"
+
+To check that your mapserv executable includes GeoJSON support :
+vagrant@ogam:/vagrant/ogam$ mapserv -v
+The OGR output driver should be enabled in MapServer 6.0 or newer when INPUT=OGR appears in the version string.
+
+To check the driver OGR/GEOJSON :
+https://github.com/mapserver/msautotest_DEPRECATED/blob/master/misc/rfc36.tmpl
+
 To use a metadata parameter of the WEB part :
 [web_WFS_SRS]
 

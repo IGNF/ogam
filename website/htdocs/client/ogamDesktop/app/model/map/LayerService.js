@@ -7,5 +7,29 @@ Ext.define('OgamDesktop.model.map.LayerService',{
 	    {name: 'id', type: 'string'},
 		{name: 'name', type: 'string'},
 		{name: 'config'} // type: object
-	]
+	],
+
+	/**
+	 * Return the urls with the associated parameters
+	 * @return {Array}
+	 */
+	getFullUrls: function() {
+		var params = this.get('config').params;
+		var paramsToString = '';
+		for(var index in params) { 
+		   if (params.hasOwnProperty(index)) {
+			   paramsToString !== '' && (paramsToString += '&');
+			   paramsToString += index + '=' + params[index];
+		   }
+		}
+		var urls = this.get('config').urls;
+		var fullUrls = [];
+		for(var index in urls) {
+			var url = urls[index];
+			url.endsWith("?") && (url += '?');
+			url += paramsToString;
+			fullUrls.push(url);
+		}
+		return fullUrls;
+	}
 });

@@ -48,7 +48,7 @@ Ext.define('OgamDesktop.view.map.MapToolbarController', {
                 text : layer.get('label'),
                 disabled : isDisabled,
                 data : {
-                    featureServiceUrl : layer.getFeatureService().get('config').urls[0],
+                    featureServiceUrl : layer.getFeatureService().getFullUrls()[0],
                     serviceLayerName : layer.get('serviceLayerName')
                 }
             });
