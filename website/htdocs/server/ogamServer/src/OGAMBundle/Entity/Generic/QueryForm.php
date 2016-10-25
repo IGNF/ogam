@@ -3,7 +3,7 @@
 namespace OGAMBundle\Entity\Generic;
 
 /**
- * A Form Query is the list of criterias and columns
+ * A Form Query is the list of criteria and columns
  */
 class QueryForm {
 
@@ -63,7 +63,7 @@ class QueryForm {
 	public function addCriterion($format, $data, $value) {
 		$formField = new GenericField($format, $data);
 		$formField->setValue($value);
-		$this->criterias[] = $formField;
+		$this->criteria[] = $formField;
 	}
 
 	/**
@@ -85,7 +85,7 @@ class QueryForm {
 	 * @return Array[OGAMBundle\Entity\Generic\Field] the form fields
 	 */
 	public function getFields() {
-		return array_merge($this->criterias, $this->columns);
+		return array_merge($this->criteria, $this->columns);
 	}
 
 	/**
