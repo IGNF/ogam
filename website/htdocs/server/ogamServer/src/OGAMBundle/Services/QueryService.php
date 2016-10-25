@@ -20,6 +20,7 @@ use OGAMBundle\Entity\Mapping\LayerService;
 use OGAMBundle\Entity\Mapping\Layer;
 use OGAMBundle\Repository\Mapping\LayerRepository;
 use OGAMBundle\Entity\Generic\BoundingBox;
+use OGAMBundle\Entity\Website\PredefinedRequest;
 
 /**
  *
@@ -127,20 +128,61 @@ class QueryService {
 	 *        	the identifier of the selected dataset
 	 * @param String $requestName
 	 *        	the name of the predefined request if available
-	 * @return ??
+	 * @return FormFormat[]
 	 */
 	public function getQueryForms($datasetId, $requestName) {
 
 		if (!empty($requestName)) {
 			// If request name is filled then we are coming from the predefined request screen
 			// and we build the form corresponding to the request
-			// TODO: Manage that case
-			/*$forms = $this->_getPredefinedRequest($requestName);
-			return $this->_generateQueryFormsJSON($forms);*/
+			return $this->_getPredefinedRequest($requestName);
 		} else {
 			// Otherwise we get all the fields available with their default value
-			 return $this->metadataModel->getRepository(FormFormat::class)->getFormFormats($datasetId, $this->schema, $this->locale);
+			return $this->metadataModel->getRepository(FormFormat::class)->getFormFormats($datasetId, $this->schema, $this->locale);
 		}
+	}
+
+	/**
+	 * Get the predefined request.
+	 *
+	 * @param String $requestName
+	 *        	The request name
+	 * @return Forms
+	 */
+	private function _getPredefinedRequest($requestName) {
+	    $this->logger->debug('_getPredefinedRequest');
+	
+	    // Get the predefined request
+	    $predefinedRequest = $this->doctrine->getRepository(PredefinedRequest::class)->getPredefinedRequest($requestName, $this->locale);
+	
+	    // Get the default values for the forms
+	    $forms = $this->metadataModel->getRepository(FormFormat::class)->getFormFormats($predefinedRequest->getDatasetId()->getId(), $this->schema, $this->locale);
+	
+	    // Update the default values with the saved values.
+	    foreach ($forms as $form) {
+	        foreach ($form->getCriteria() as $criterion) {
+	            $criterion->setIsDefaultCriteria(FALSE);
+	            $criterion->setDefaultValue('');
+	
+	            if ($predefinedRequest->hasCriterion($criterion->getName())) {
+	                $pRCriterion = $predefinedRequest->getCriterion($criterion->getName());
+	                $criterion->setIsDefaultCriteria(TRUE);
+	                $criterion->setDefaultValue($pRCriterion->getValue());
+	                $criterion->getData()->getUnit()->setModes($pRCriterion->getData()->getUnit()->getModes());
+	            }
+	        }
+	
+	        foreach ($form->getColumns() as $column) {
+	            $column->setIsDefaultResult(FALSE);
+	
+	            if ($predefinedRequest->hasColumn($column->getName())) {
+	                $column->setIsDefaultResult(TRUE);
+	            }
+	        }
+	    }
+	
+	    // return the forms
+	    return $forms;
 	}
 	
 	/**

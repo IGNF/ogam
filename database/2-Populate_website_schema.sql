@@ -165,15 +165,13 @@ INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPEC
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'CYCLE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'INV_DATE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'IS_FOREST_PLOT');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'SPECIES_FORM', 'SPECIES_CODE');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'SPECIES_FORM', 'BASAL_AREA');
+INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'TREE_FORM', 'SPECIES_CODE');
 
 INSERT INTO predefined_request_criterion (request_name, format, data, value, fixed) VALUES ('DEP', 'LOCATION_FORM', 'DEPARTEMENT', '45', FALSE);
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'PLOT_CODE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'CYCLE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'INV_DATE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'PLOT_FORM', 'IS_FOREST_PLOT');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'SPECIES_FORM', 'SPECIES_CODE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('DEP', 'SPECIES_FORM', 'BASAL_AREA');
 
 INSERT INTO predefined_request_criterion (request_name, format, data, value, fixed) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON', '196709', FALSE);
@@ -181,7 +179,6 @@ INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXR
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'CYCLE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'INV_DATE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'PLOT_FORM', 'IS_FOREST_PLOT');
-INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'SPECIES_CODE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'ID_TAXON');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('TAXREF', 'SPECIES_FORM', 'BASAL_AREA');
 

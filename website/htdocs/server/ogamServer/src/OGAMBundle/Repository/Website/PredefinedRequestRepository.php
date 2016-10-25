@@ -2,7 +2,8 @@
 
 namespace OGAMBundle\Repository\Website;
 
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use OGAMBundle\Entity\Website\PredefinedRequestCriterion;
+use OGAMBundle\Entity\Website\PredefinedRequestColumn;
 
 /**
  * PredefinedRequestRepository
@@ -67,5 +68,42 @@ class PredefinedRequestRepository extends \Doctrine\ORM\EntityRepository
             ]);
 
         return $qb->getQuery()->getResult();
+    }
+    
+    /**
+     * Get a predefined request.
+     *
+     * @param String $requestName
+     *        	the name of the request
+     * @param String $locale
+     *        	the locale
+     * @return PredefinedRequest the request
+     */
+    public function getPredefinedRequest($requestName, $locale) {
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('pr, ds, t, prga, prg')
+            ->from('OGAMBundle:Website\PredefinedRequest', 'pr')
+            ->join('pr.datasetId', 'ds')
+            ->leftJoin('pr.translation', 't', 'WITH', "t.tableFormat = 'PREDEFINED_REQUEST' AND t.lang = upper(:lang)")
+            ->join('pr.groups', 'prga')
+            ->join('prga.groupName', 'prg')
+            ->where('pr.name = :requestName')
+            ->setParameters([
+                'requestName' => $requestName,
+                'lang' => $locale
+            ]);
+
+        $request = $qb->getQuery()->getSingleResult();
+
+        // Get the request columns
+        $pRColumnRepository = $this->_em->getRepository(PredefinedRequestColumn::class);
+        $request->setColumns($pRColumnRepository->getPredefinedRequestColumns($requestName, $locale));
+
+        // Get the request criteria
+        $pRCriterionRepository = $this->_em->getRepository(PredefinedRequestCriterion::class);
+        $request->setCriteria($pRCriterionRepository->getPredefinedRequestCriteria($requestName, $locale));
+
+        return $request;
     }
 }

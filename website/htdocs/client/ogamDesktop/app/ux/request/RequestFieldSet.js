@@ -230,8 +230,8 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				// For single default values
 				var field = {};
 				field.name = 'criteria__' + record.get('name')+'[]';
+				field.cls = 'x-form-item-default'; // Sets the opacity to 0.3 when the field is disabled
 				
-	
 				// Creates the ext field config
 				switch (record.get('inputType')) {
 				case 'SELECT': // The input type SELECT correspond generally to a data
@@ -478,10 +478,9 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					field.value = defaultValue;
 				}
 				if (!Ext.isEmpty(record.get('fixed'))) {
-					field.disabled = record.get('fixed');
+					record.get('fixed') && (field.cls += ' x-item-disabled');
 					field.readOnly = record.get('fixed');
 				}
-				field.cls = 'x-form-item-default'; // Sets the opacity to 0.3 when the field is disabled
 				field.fieldLabel = record.get('label');
 	
 				if (Ext.isEmpty(field.listeners)) {

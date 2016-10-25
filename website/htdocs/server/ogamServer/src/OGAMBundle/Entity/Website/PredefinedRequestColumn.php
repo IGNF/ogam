@@ -1,48 +1,52 @@
 <?php
 
-namespace OGAMBundle\Entity\Webiste;
+namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
+use OGAMBundle\Entity\Metadata\FormField;
 
 /**
  * PredefinedRequestColumn
  *
- * @ORM\Table(name="webiste\predefined_request_column")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Webiste\PredefinedRequestColumnRepository")
+ * @ORM\Table(name="website.predefined_request_column")
+ * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PredefinedRequestColumnRepository")
  */
 class PredefinedRequestColumn
 {
     /**
-     * @var int
+     * @var PredefinedRequest
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @var string
-     *
      * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequest")
-     * @ORM\JoinColumn(name="requestName", referencedColumnName="name")
+     * @ORM\JoinColumn(name="request_name", referencedColumnName="name")
      */
     private $requestName;
 
     /**
-     * @var string
+     * @var Format
      *
-     * @ORM\Column(name="format", type="string", length=36)
+     * @ORM\Id
+	 * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Format")
+	 * @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
      */
     private $format;
 
     /**
-     * @var string
+     * @var Data
      *
-     * @ORM\Column(name="data", type="string", length=36)
+     * @ORM\Id 
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
+     * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
      */
     private $data;
 
+    /**
+     * @var FormField
+     *
+     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\FormField")
+     * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data"),@ORM\JoinColumn(name="format", referencedColumnName="format")})
+     */
+    private $formField;
 
     /**
      * Get id
@@ -51,7 +55,7 @@ class PredefinedRequestColumn
      */
     public function getId()
     {
-        return $this->id;
+        return $this->format->getFormat() . '__' . $this->data->getData();
     }
 
     /**
@@ -125,5 +129,25 @@ class PredefinedRequestColumn
     {
         return $this->data;
     }
-}
 
+    /**
+     * Return the form fields
+     *
+     * @return the FormField
+     */
+    public function getFormField()
+    {
+        return $this->formField;
+    }
+    
+    /**
+     * Set the form fields
+     *
+     * @param FormField $formField
+     */
+    public function setFormField(FormField $formField)
+    {
+        $this->formField = $formField;
+        return $this;
+    }
+}
