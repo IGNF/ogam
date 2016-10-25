@@ -275,7 +275,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
             var sourceWMSOpts = {};
             sourceWMSOpts['params'] = Ext.apply({
                 'layers': layer.get('serviceLayerName')
-                //TODO To remove after check (sylvain) 'session_id': layer.get('params').session_id
             }, service.get('config').params);
             sourceWMSOpts['urls'] = service.get('config').urls;
             sourceWMSOpts['crossOrigin'] = 'anonymous';
@@ -328,7 +327,6 @@ Ext.define('OgamDesktop.controller.map.Layer',{
     buildOlLayer: function(node, curRes) {
         var olLayerOpts = {};
         var layer = node.getLayer();
-        //TODO to remove after check (sylvain) olLayerOpts['session_id'] = layer.get('params').session_id;
         olLayerOpts['source'] = this.buildOlSource(layer, layer.getViewService());
         olLayerOpts['name'] = layer.get('name');
         olLayerOpts['text'] = layer.get('label');
