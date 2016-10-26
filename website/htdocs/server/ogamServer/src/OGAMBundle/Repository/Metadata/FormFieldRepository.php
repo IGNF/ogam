@@ -135,7 +135,7 @@ class FormFieldRepository extends \Doctrine\ORM\EntityRepository {
 		    // Get the mandatory codes to display the field (RADIO)
 		    if($field->getInputType() === 'RADIO'){
 		        $unit = $field->getData()->getUnit();
-		        $unit->setModes($this->_em->getRepository(Unit::class)->getModes($unit));
+		        $unit->setModes($this->_em->getRepository(Unit::class)->getModes($unit, $locale));
 		    }
 		}
 
