@@ -202,7 +202,7 @@ class QueryController extends Controller {
 	        // Call the service to get the definition of the columns
 	        $userInfos = [
 	            "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
-	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isGranted('DATA_QUERY_OTHER_PROVIDER')
+	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isAllowed('DATA_QUERY_OTHER_PROVIDER')
 	        ];
 	        $this->get('ogam.manager.query')->prepareResultLocations($queryForm, $userInfos);
 
@@ -234,8 +234,8 @@ class QueryController extends Controller {
 			// Call the service to get the definition of the columns
 	        $userInfos = [
 	            "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
-	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isGranted('DATA_QUERY_OTHER_PROVIDER'),
-	            "DATA_EDITION_OTHER_PROVIDER" => $this->getUser() && $this->isGranted('DATA_EDITION_OTHER_PROVIDER')
+	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isAllowed('DATA_QUERY_OTHER_PROVIDER'),
+	            "DATA_EDITION_OTHER_PROVIDER" => $this->getUser() && $this->isAllowed('DATA_EDITION_OTHER_PROVIDER')
 	        ];
 			$this->get('ogam.query_service')->buildRequest($queryForm, $userInfos, $request->getSession());
 
@@ -267,7 +267,7 @@ class QueryController extends Controller {
 
 		// Call the service to get the definition of the columns
 		$userInfos = [
-		    "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isGranted('DATA_QUERY_OTHER_PROVIDER')
+		    "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isAllowed('DATA_QUERY_OTHER_PROVIDER')
 		];
 		// Send the result as a JSON String
 		return new JsonResponse([
