@@ -48,7 +48,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
                         'unit' => $unit->getUnit()
                     ));
                 case "DYNAMIC":
-                    return $this->_em->getRepository(Dynamode::class)->getModes($unit);
+                    return $this->_em->getRepository(Dynamode::class)->getModes($unit, $locale);
                 case "TREE":
                     return $this->_em->getRepository(ModeTree::class)->getModes($unit, $locale);
                 case "TAXREF":

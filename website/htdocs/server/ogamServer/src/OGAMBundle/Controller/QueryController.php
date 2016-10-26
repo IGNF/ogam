@@ -464,7 +464,8 @@ class QueryController extends Controller {
         $query = $request->query->get('query');
         $em = $this->get('doctrine.orm.metadata_entity_manager');
         $unit = $em->find(Unit::class, $unitCode);
-        $modes = $em->getRepository(Dynamode::class)->getModes($unit, null, $query);
+        $locale = $this->get('ogam.locale_listener')->getLocale();
+        $modes = $em->getRepository(Dynamode::class)->getModesFilteredByLabel($unit, $query, $locale);
 
         $response = new JsonResponse();
 

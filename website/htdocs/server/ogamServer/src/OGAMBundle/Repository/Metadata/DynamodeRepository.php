@@ -18,42 +18,29 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository
     /**
      * Get the unit modes for a dynamic list.
      *
-     * @param String $unit
-     *            The unit
-     * @param String $code
-     *            A code
-     * @param String $query
-     *            an optional query filter
+     * @param String $unit The unit
+     * @param String $locale The locale
      * @return [OGAMBundle\Entity\Metadata\Mode]
      */
-    public function getModes(Unit $unit, $code = null, $query = null)
+    public function getModes(Unit $unit, $locale)
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Mode', 'm');
-        $params = [];
+        $params = [
+            'unit' => $unit->getUnit(),
+            'lang' => $locale
+        ];
 
-        $sql = "SELECT '" . $unit->getUnit() ."' as unit, * ";
-        $sql .= " FROM ( ". $unit->getDynamode()->getSql() ." ) as foo ";
-        $sql .= " WHERE (1 = 1)";
-        if (! empty($query)) {
-            $sql .= " AND label ilike ? ";
-            $params[] = $query . '%';
-        }
-        if ($code != null) {
-            if (is_array($code)) {
-                $sql .= ' AND code IN ( '.implode(',', array_fill(0, count($code), '?')).' )';
-                $params += array_values($code);
-            } else {
-                $sql .= " AND code = ? ";
-                $params[] = $code;
-            }
-        }
+        $sql = "SELECT '". $unit->getUnit() ."' as unit, code, COALESCE(t.label, m.label) as label, COALESCE(t.definition, m.definition) as definition, position ";
+        $sql .= " FROM ( ". $unit->getDynamode()->getSql() ." ) as m ";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || m.code) ";
 
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $query->setParameters($params);
 
         return $query->getResult();
     }
+
     /**
      * Returns the mode(s) corresponding to the code(s).
      *
@@ -63,6 +50,55 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository
      * @return [Mode] The filtered mode(s)
      */
     public function getModesFilteredByCode(Unit $unit, $code, $locale){
-        return $this->getModes($unit, $code);
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Mode', 'm');
+        $params = [
+            $locale,
+            $unit->getUnit()
+        ];
+
+        $sql = "SELECT '". $unit->getUnit() ."' as unit, code, COALESCE(t.label, m.label) as label, COALESCE(t.definition, m.definition) as definition, position ";
+        $sql .= " FROM ( ". $unit->getDynamode()->getSql() ." ) as m ";
+        $sql .= " LEFT JOIN translation t ON (lang = ? AND table_format = 'DYNAMODE' AND row_pk = ? || ',' || m.code) ";
+        if (is_array($code)) {
+            $sql .= ' WHERE code IN ( '.implode(',', array_fill(0, count($code), '?')).' )';
+            $params += array_values($code);
+        } else {
+            $sql .= " WHERE code = ? ";
+            $params[] = $code;
+        }
+
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters($params);
+
+        return $query->getResult();
+    }
+
+    /**
+     * Returns the mode(s) whose label contains a portion of the search text
+     *
+     * @param Unit $unit The unit
+     * @param String $query The filter query string
+     * @param String $locale The locale
+     * @return [Mode] The filtered mode(s)
+     */
+    public function getModesFilteredByLabel(Unit $unit, $query, $locale){
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Mode', 'm');
+        $params = [
+            'unit' => $unit->getUnit(),
+            'lang' => $locale,
+            'query' => $query . '%'
+        ];
+
+        $sql = "SELECT '". $unit->getUnit() ."' as unit, code, COALESCE(t.label, m.label) as label, COALESCE(t.definition, m.definition) as definition, position ";
+        $sql .= " FROM ( ". $unit->getDynamode()->getSql() ." ) as m ";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || m.code) ";
+        $sql .= " WHERE COALESCE(t.label, m.label) ilike :query ";
+        
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters($params);
+
+        return $query->getResult();
     }
 }
