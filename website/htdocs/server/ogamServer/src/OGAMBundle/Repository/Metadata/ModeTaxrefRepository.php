@@ -48,4 +48,54 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
     
         return $query->getResult();
     }
+
+    /**
+     * Get all the children codes from the reference taxon of a taxon.
+     * Used when building an SQL WHERE clause for a node of the taxref.
+     *
+     * Return an array of codes.
+     *
+     * @param String $unit
+     *        	The unit
+     * @param String $code
+     *        	The identifier of the start node in the tree (by default the root node is *)
+     * @param Integer $levels
+     *        	The number of levels of depth (if 0 then no limitation)
+     * @param String $locale The locale
+     * @return Array[String]
+     */
+    public function getTaxrefChildrenCodes(Unit $unit, $code = '*', $levels = 1, $locale) {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
+        
+        $sql = "WITH RECURSIVE node_list( code, level) AS ( ";
+        $sql .= "	    SELECT code, 1 "; // we get the reference taxon as a base for the search
+        $sql .= "		FROM mode_taxref mt ";
+        $sql .= "		WHERE unit = :unit ";
+        $sql .= "		AND code = :code ";
+        $sql .= "	UNION ALL ";
+        $sql .= "		SELECT child.code, level + 1 ";
+        $sql .= "		FROM mode_taxref child ";
+        $sql .= "		INNER JOIN node_list on (child.parent_code = node_list.code) ";
+        $sql .= "		WHERE child.unit = unit ";
+        if ($levels != 0) {
+            $sql .= " AND level < :levels ";
+        }
+        $sql .= "	) ";
+        $sql .= "	SELECT mt.unit, mt.code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf, complete_name, vernacular_name, is_reference ";
+        $sql .= "	FROM node_list nl ";
+        $sql .= "   LEFT JOIN mode_taxref mt ON mt.code = nl.code AND mt.unit = :unit ";
+        $sql .= "   LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
+        $sql .= "	ORDER BY level, code "; // level is used to ensure correct construction of the structure
+    
+        $query = $this->_em->createNativeQuery ( $sql, $rsm );
+        $query->setParameters (array(
+            'unit' => $unit,
+            'code' => $code,
+            'lang' => $locale,
+            'levels' => $levels
+        ));
+
+        return $query->getResult();
+    }
 }

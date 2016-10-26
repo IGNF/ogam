@@ -422,10 +422,15 @@ class GenericService {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
-							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($unit, $value, 0);
+							$nodeCodes = $this->metadataModel->getRepository(ModeTree::class)->getTreeChildrenCodes($unit, $value, 0, $this->locale);
 
+							$nodeCodesArray = [];
+							foreach ($nodeCodes as $nodeCode) {
+							    $nodeCodesArray[] .= $nodeCode->getCode();
+							}
+							
 							// Case of a list of values
-							$stringValue = $this->_arrayToSQLString($nodeCodes);
+							$stringValue = $this->_arrayToSQLString($nodeCodesArray);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
 					} else if ($unit->getSubtype() === 'TAXREF') {
@@ -438,10 +443,15 @@ class GenericService {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected taxon
-							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($unit, $value, 0);
+							$nodeCodes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenCodes($unit, $value, 0, $this->locale);
 
+							$nodeCodesArray = [];
+							foreach ($nodeCodes as $nodeCode) {
+							    $nodeCodesArray[] .= $nodeCode->getCode();
+							}
+							
 							// Case of a list of values
-							$stringValue = $this->_arrayToSQLString($nodeCodes);
+							$stringValue = $this->_arrayToSQLString($nodeCodesArray);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
 					} else {
@@ -478,11 +488,11 @@ class GenericService {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
-							$nodeCodes = $this->metadataModel->getTreeChildrenCodes($unit, $value, 0);
+							$nodeCodes = $this->metadataModel->getRepository(ModeTree::class)->getTreeChildrenCodes($unit, $value, 0, $this->locale);
 
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
-								$sql2 .= "'" . $nodeCode . "', ";
+								$sql2 .= "'" . $nodeCode->getCode() . "', ";
 							}
 							$sql2 = substr($sql2, 0, -2); // remove last comma
 
@@ -499,11 +509,11 @@ class GenericService {
 						} else {
 
 							// Get all the children of a selected taxon
-							$nodeCodes = $this->metadataModel->getTaxrefChildrenCodes($unit, $value, 0);
+							$nodeCodes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenCodes($unit, $value, 0, $this->locale);
 
 							$sql2 = '';
 							foreach ($nodeCodes as $nodeCode) {
-								$sql2 .= "'" . $nodeCode . "', ";
+								$sql2 .= "'" . $nodeCode->getCode() . "', ";
 							}
 							$sql2 = substr($sql2, 0, -2); // remove last comma
 
