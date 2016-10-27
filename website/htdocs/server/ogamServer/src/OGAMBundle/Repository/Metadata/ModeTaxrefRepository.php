@@ -4,6 +4,7 @@ namespace OGAMBundle\Repository\Metadata;
 
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use OGAMBundle\Entity\Metadata\Unit;
+use OGAMBundle\Entity\Metadata\ModeTaxref;
 
 /**
  * ModeTaxrefRepository
@@ -13,6 +14,38 @@ use OGAMBundle\Entity\Metadata\Unit;
  */
 class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Returns the mode(s) corresponding to the unit (50 max).
+     *
+     * Note :
+     *   Use that function only with units owning a short list of modes
+     *   For units owning a long list of modes use the filtered functions (by code or query string)
+     *
+     * @param Unit $unit The unit
+     * @param String $locale The locale
+     * return Mode[] The unit mode(s)
+     */
+    public function getModes(Unit $unit, $locale)
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'm');
+        $params = [
+            'unit' => $unit->getUnit(),
+            'lang' => $locale
+        ];
+    
+        $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position ";
+        $sql .= " FROM mode_taxref as mt ";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || mt.code) ";
+        $sql .= " WHERE unit = :unit ";
+        $sql .= " LIMIT 50 ";
+    
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters($params);
+    
+        return $query->getResult();
+    }
+    
     /**
      * Returns the mode(s) corresponding to the code(s).
      *
@@ -26,7 +59,8 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
         $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
         $parameters = array(
             'unit' => $unit->getUnit(),
-            'lang' => $locale
+            'lang' => $locale,
+            'code' => $code
         );
         $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf, complete_name, vernacular_name, is_reference";
         $sql .= " FROM mode_taxref mt";
@@ -34,11 +68,9 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
         $sql .= " WHERE unit = :unit";
         if ($code != null) {
             if (is_array($code)) {
-                $sql .= " AND code IN ( :codes )";
-                $parameters['codes'] = implode("','", $code);
+                $sql .= " AND code IN ( :code )";
             } else {
                 $sql .= " AND code = :code";
-                $parameters['code'] = $code;
             }
         }
         $sql .= " ORDER BY position, code";
@@ -50,7 +82,35 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * Get all the children codes from the reference taxon of a taxon.
+     * Returns the mode(s) whose label contains a portion of the search text
+     *
+     * @param Unit $unit The unit
+     * @param String $query The filter query string
+     * @param String $locale The locale
+     * @return [Mode] The filtered mode(s)
+     */
+    public function getModesFilteredByLabel(Unit $unit, $query, $locale){
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
+        $parameters = array(
+            'unit' => $unit->getUnit(),
+            'lang' => $locale,
+            'query' => $query . '%'
+        );
+        $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf, complete_name, vernacular_name, is_reference";
+        $sql .= " FROM mode_taxref mt";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
+        $sql .= " WHERE unit = :unit AND COALESCE(t.label, mt.label) ilike :query ";
+        $sql .= " ORDER BY position, code";
+    
+        $query = $this->_em->createNativeQuery ( $sql, $rsm );
+        $query->setParameters ($parameters);
+    
+        return $query->getResult();
+    }
+
+    /**
+     * Get all the children Modes from the reference taxon of a taxon.
      * Used when building an SQL WHERE clause for a node of the taxref.
      *
      * Return an array of codes.
@@ -62,9 +122,9 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
      * @param Integer $levels
      *        	The number of levels of depth (if 0 then no limitation)
      * @param String $locale The locale
-     * @return Array[String]
+     * @return Array[ModeTaxref]
      */
-    public function getTaxrefChildrenCodes(Unit $unit, $code = '*', $levels = 1, $locale) {
+    public function getTaxrefChildrenModes(Unit $unit, $code = '*', $levels = 1, $locale) {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
         

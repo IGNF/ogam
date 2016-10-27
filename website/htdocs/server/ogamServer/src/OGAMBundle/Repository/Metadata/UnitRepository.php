@@ -23,10 +23,15 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
 {
 
     /**
-     * Use that function only with units owning a short list of modes
-     * For units owning a long list of modes use the filtered functions (by code or query string)
+     * Returns the mode(s) corresponding to the unit (50 max).
+     * 
+     * Note :
+     *   Use that function only with units owning a short list of modes
+     *   For units owning a long list of modes use the filtered functions (by code or query string)
+     * 
      * @param Unit $unit The unit
      * @param String $locale The locale
+     * return Mode[] The unit mode(s)
      */
     public function getModes(Unit $unit, $locale)
     {
@@ -44,9 +49,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
         if ($unit->getType() === "CODE" or $unit->getType() === "ARRAY") {
             switch ($unit->getSubtype()) {
                 case "MODE":
-                    return $this->_em->getRepository(Mode::class)->findBy(array(
-                        'unit' => $unit->getUnit()
-                    ));
+                    return $this->_em->getRepository(Mode::class)->getModes($unit, $locale);
                 case "DYNAMIC":
                     return $this->_em->getRepository(Dynamode::class)->getModes($unit, $locale);
                 case "TREE":
@@ -65,7 +68,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
      * @param Unit $unit The unit
      * @param String|Array $code The filter code(s)
      * @param String $locale The locale
-     * @return Mode|[Mode] The filtered mode(s)
+     * @return Mode[] The filtered mode(s)
      */
     public function getModesFilteredByCode(Unit $unit, $code, $locale){
         /*
@@ -101,7 +104,7 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
      * @param Unit $unit The unit
      * @param String $query The filter query string
      * @param String $locale The locale
-     * @return [Mode] The filtered mode(s)
+     * @return Mode[] The filtered mode(s)
      */
     public function getModesFilteredByLabel(Unit $unit, $query, $locale){
         /*
@@ -132,14 +135,15 @@ class UnitRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * return array label for a (setof) value(s)
-     * @param Unit $unit
-     * @param mixed $value
+     * Returns an array of labels indexed by their codes (['code'=>'label']).
+     * 
+     * @param Unit $unit The unit
+     * @param String|Array $code The filter code(s)
      * @param String $locale The locale
-     * @return array code=>label
+     * @return array The filtered modes labels
      */
-    public function getModesLabel(Unit $unit, $value, $locale){
-        $res = $this->getModesFilteredByCode($unit, $value, $locale);
+    public function getModesLabelsFilteredByCode(Unit $unit, $code, $locale){
+        $res = $this->getModesFilteredByCode($unit, $code, $locale);
         if ($res === null){
             return null;
         }

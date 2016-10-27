@@ -146,47 +146,39 @@ class GenericService {
 	 * Find the labels corresponding to the code value.
 	 *
 	 * @param TableField $tableField a table field descriptor
-	 * @param [String|Array] $value a value
-	 * @return String or Array The labels
+	 * @param String|Array $code a mode code
+	 * @return String|Array The labels
 	 */
-	public function getValueLabel(TableField $tableField, $value) {
+	public function getValueLabel(TableField $tableField, $code) {
 	    // If empty, no label
-	    if ($value === null || $value === '') {
+	    if ($code === null || $code === '') {
 	        return "";
 	    }
 
-	    // By default we keep the value as a label
-	    $valueLabel = $value;
+	    // By default we keep the code as a label
+	    $valueLabel = $code;
 
 	    // For the CODE and ARRAY fields, we get the labels in the metadata
 	    $unit = $tableField->getData()->getUnit();
 	    if ($unit->getType() === "CODE" || $unit->getType() === "ARRAY") {
 
-	        // Get the modes => Label
-	        if ($unit->getSubtype() === "DYNAMIC") {
-	            $modes =  $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value, $this->locale);
-	        } else if ($unit->getSubtype() === "TREE") {
-	            $modes = $this->metadataModel->getRepository(ModeTree::class)->getTreeLabels($unit->getUnit(), $value);
-	        } else if ($unit->getSubtype() === "TAXREF") {
-	            $modes =  $this->metadataModel->getRepository(ModeTaxref::class)->getModesLabel($unit, $value, $this->locale);
-	        } else {
-	            $modes =   $this->metadataModel->getRepository(Unit::class)->getModesLabel($unit, $value,  $this->locale);
-	        }
+	        // Get the modes labels
+	        $modesLabels =  $this->metadataModel->getRepository(Unit::class)->getModesLabelsFilteredByCode($unit, $code, $this->locale);
 
 	        // Populate the labels of the currently selected values
-	        if (is_array($value)) {
+	        if (is_array($code)) {
 	            $labels = array();
-	            if (isset($value)) {
-	                foreach ($value as $mode) {
-	                    if (isset($modes[$mode])) {
-	                        $labels[] = $modes[$mode];
+	            if (isset($code)) {
+	                foreach ($code as $c) {
+	                    if (isset($modesLabels[$c])) {
+	                        $labels[] = $modesLabels[$c];
 	                    }
 	                }
-	                $valueLabel = $labels;
+	             $valueLabel = $labels;
 	            }
 	        } else {
-	            if (isset($modes[$value])) {
-	                $valueLabel = $modes[$value];
+	            if (isset($modesLabels[$code])) {
+	                $valueLabel = $modesLabels[$code];
 	            }
 	        }
 	    }
@@ -422,15 +414,15 @@ class GenericService {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
-							$nodeCodes = $this->metadataModel->getRepository(ModeTree::class)->getTreeChildrenCodes($unit, $value, 0, $this->locale);
+							$nodeModes = $this->metadataModel->getRepository(ModeTree::class)->getTreeChildrenModes($unit, $value, 0, $this->locale);
 
-							$nodeCodesArray = [];
-							foreach ($nodeCodes as $nodeCode) {
-							    $nodeCodesArray[] .= $nodeCode->getCode();
+							$nodeModesArray = [];
+							foreach ($nodeModes as $nodeMode) {
+							    $nodeModesArray[] .= $nodeMode->getCode();
 							}
 							
 							// Case of a list of values
-							$stringValue = $this->_arrayToSQLString($nodeCodesArray);
+							$stringValue = $this->_arrayToSQLString($nodeModesArray);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
 					} else if ($unit->getSubtype() === 'TAXREF') {
@@ -443,15 +435,15 @@ class GenericService {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected taxon
-							$nodeCodes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenCodes($unit, $value, 0, $this->locale);
+							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenModes($unit, $value, 0, $this->locale);
 
-							$nodeCodesArray = [];
-							foreach ($nodeCodes as $nodeCode) {
-							    $nodeCodesArray[] .= $nodeCode->getCode();
+							$nodeModesArray = [];
+							foreach ($nodeModes as $nodeMode) {
+							    $nodeModesArray[] .= $nodeMode->getCode();
 							}
 							
 							// Case of a list of values
-							$stringValue = $this->_arrayToSQLString($nodeCodesArray);
+							$stringValue = $this->_arrayToSQLString($nodeModesArray);
 							$sql .= " AND " . $column . " && " . $stringValue;
 						}
 					} else {
@@ -488,11 +480,11 @@ class GenericService {
 							$sql .= " AND " . $column . " = '" . $value . "'";
 						} else {
 							// Get all the children of a selected node
-							$nodeCodes = $this->metadataModel->getRepository(ModeTree::class)->getTreeChildrenCodes($unit, $value, 0, $this->locale);
+							$nodeModes = $this->metadataModel->getRepository(ModeTree::class)->getTreeChildrenModes($unit, $value, 0, $this->locale);
 
 							$sql2 = '';
-							foreach ($nodeCodes as $nodeCode) {
-								$sql2 .= "'" . $nodeCode->getCode() . "', ";
+							foreach ($nodeModes as $nodeMode) {
+								$sql2 .= "'" . $nodeMode->getCode() . "', ";
 							}
 							$sql2 = substr($sql2, 0, -2); // remove last comma
 
@@ -509,11 +501,11 @@ class GenericService {
 						} else {
 
 							// Get all the children of a selected taxon
-							$nodeCodes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenCodes($unit, $value, 0, $this->locale);
+							$nodeModes = $this->metadataModel->getRepository(ModeTaxref::class)->getTaxrefChildrenModes($unit, $value, 0, $this->locale);
 
 							$sql2 = '';
-							foreach ($nodeCodes as $nodeCode) {
-								$sql2 .= "'" . $nodeCode->getCode() . "', ";
+							foreach ($nodeModes as $nodeMode) {
+								$sql2 .= "'" . $nodeMode->getCode() . "', ";
 							}
 							$sql2 = substr($sql2, 0, -2); // remove last comma
 

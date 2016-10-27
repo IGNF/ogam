@@ -16,11 +16,15 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository
 {
 
     /**
-     * Get the unit modes for a dynamic list.
-     *
-     * @param String $unit The unit
+     * Returns the mode(s) corresponding to the unit (50 max).
+     * 
+     * Note :
+     *   Use that function only with units owning a short list of modes
+     *   For units owning a long list of modes use the filtered functions (by code or query string)
+     * 
+     * @param Unit $unit The unit
      * @param String $locale The locale
-     * @return [OGAMBundle\Entity\Metadata\Mode]
+     * return Mode[] The unit mode(s)
      */
     public function getModes(Unit $unit, $locale)
     {
@@ -34,6 +38,7 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository
         $sql = "SELECT '". $unit->getUnit() ."' as unit, code, COALESCE(t.label, m.label) as label, COALESCE(t.definition, m.definition) as definition, position ";
         $sql .= " FROM ( ". $unit->getDynamode()->getSql() ." ) as m ";
         $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || m.code) ";
+        $sql .= " LIMIT 50 ";
 
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $query->setParameters($params);
@@ -53,21 +58,20 @@ class DynamodeRepository extends \Doctrine\ORM\EntityRepository
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Mode', 'm');
         $params = [
-            $locale,
-            $unit->getUnit()
+            'lang' => $locale,
+            'unit' => $unit->getUnit(),
+            'code' => $code
         ];
 
         $sql = "SELECT '". $unit->getUnit() ."' as unit, code, COALESCE(t.label, m.label) as label, COALESCE(t.definition, m.definition) as definition, position ";
         $sql .= " FROM ( ". $unit->getDynamode()->getSql() ." ) as m ";
-        $sql .= " LEFT JOIN translation t ON (lang = ? AND table_format = 'DYNAMODE' AND row_pk = ? || ',' || m.code) ";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || m.code) ";
         if (is_array($code)) {
-            $sql .= ' WHERE code IN ( '.implode(',', array_fill(0, count($code), '?')).' )';
-            $params += array_values($code);
+            $sql .= " WHERE code IN ( :code )";
         } else {
-            $sql .= " WHERE code = ? ";
-            $params[] = $code;
+            $sql .= " WHERE code = :code";
         }
-
+        
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $query->setParameters($params);
 

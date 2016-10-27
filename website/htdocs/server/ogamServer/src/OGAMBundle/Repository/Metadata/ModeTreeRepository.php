@@ -4,6 +4,7 @@ namespace OGAMBundle\Repository\Metadata;
 
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use OGAMBundle\Entity\Metadata\Unit;
+use OGAMBundle\Entity\Metadata\ModeTree;
 /**
  * ModeTreeRepository
  *
@@ -12,6 +13,37 @@ use OGAMBundle\Entity\Metadata\Unit;
  */
 class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Returns the mode(s) corresponding to the unit (50 max).
+     *
+     * Note :
+     *   Use that function only with units owning a short list of modes
+     *   For units owning a long list of modes use the filtered functions (by code or query string)
+     *
+     * @param Unit $unit The unit
+     * @param String $locale The locale
+     * return Mode[] The unit mode(s)
+     */
+    public function getModes(Unit $unit, $locale)
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'm');
+        $params = [
+            'unit' => $unit->getUnit(),
+            'lang' => $locale
+        ];
+    
+        $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position ";
+        $sql .= " FROM mode_tree as mt ";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || mt.code) ";
+        $sql .= " WHERE unit = :unit ";
+        $sql .= " LIMIT 50 ";
+    
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters($params);
+    
+        return $query->getResult();
+    }
 
     /**
      * Returns the mode(s) corresponding to the code(s).
@@ -26,7 +58,8 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
         $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
         $parameters = array(
             'unit' => $unit->getUnit(),
-            'lang' => $locale
+            'lang' => $locale,
+            'code' => $code
         );
         $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf";
         $sql .= " FROM mode_tree mt";
@@ -34,11 +67,9 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
         $sql .= " WHERE unit = :unit";
         if ($code != null) {
             if (is_array($code)) {
-                $sql .= " AND code IN ( :codes )";
-                $parameters['codes'] = implode("','", $code);
+                $sql .= " AND code IN ( :code )";
             } else {
                 $sql .= " AND code = :code";
-                $parameters['code'] = $code;
             }
         }
         $sql .= " ORDER BY position, code";
@@ -50,7 +81,35 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * Get all the children codes from a node of a tree.
+     * Returns the mode(s) whose label contains a portion of the search text
+     *
+     * @param Unit $unit The unit
+     * @param String $query The filter query string
+     * @param String $locale The locale
+     * @return [Mode] The filtered mode(s)
+     */
+    public function getModesFilteredByLabel(Unit $unit, $query, $locale){
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
+        $parameters = array(
+            'unit' => $unit->getUnit(),
+            'lang' => $locale,
+            'query' => $query . '%'
+        );
+        $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf";
+        $sql .= " FROM mode_tree mt";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
+        $sql .= " WHERE unit = :unit AND COALESCE(t.label, mt.label) ilike :query ";
+        $sql .= " ORDER BY position, code";
+        
+        $query = $this->_em->createNativeQuery ( $sql, $rsm );
+        $query->setParameters ($parameters);
+        
+        return $query->getResult();
+    }
+
+    /**
+     * Get all the children Modes from a node of a tree.
      *
      * Return an array of codes.
      *
@@ -61,9 +120,9 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
      * @param Integer $levels
      *        	The number of levels of depth (if 0 then no limitation)
      * @param String $locale The locale
-     * @return Array[String]
+     * @return Array[ModeTree]
      */
-    public function getTreeChildrenCodes($unit, $code = '*', $levels = 1, $locale) {
+    public function getTreeChildrenModes($unit, $code = '*', $levels = 1, $locale) {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
         
@@ -96,41 +155,5 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
         ));
 
         return $query->getResult();
-    }
-    
-    /**
-     * Get the labels and modes for a tree unit.
-     *
-     * @param String $unit The unit
-     * @param String $value the searched value (optional)
-     * @return Array[mode => label]
-     */
-    public function getTreeLabels($unit, $value = null) {
-    
-        $req = "SELECT code, COALESCE(t.label, mt.label) as label ";
-        $req .= " FROM mode_tree mt";
-        $req .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
-        $req .= " WHERE unit = :unit";
-        if ($value != null) {
-            if (is_array($value)) {
-                $req .= " AND code IN ('" . implode("','", $value) . "')";
-            } else {
-                $req .= " AND code = '" . $value . "'";
-            }
-        }
-        $req .= " ORDER BY position, code";
-    
-        $rsm = new ResultSetMappingBuilder($this->_em);
-        $rsm->addIndexByScalar('code')
-            ->addScalarResult('label', 'label')
-            ->addScalarResult('code','code');
-        
-        $select = $this->_em->createNativeQuery($req, $rsm);
-        $select->setParameters(array(
-            'unit' => $unit,
-            'lang' => 'fr'
-        ));
-    
-        return array_column($select->getArrayResult(), 'label', 'code');
     }
 }
