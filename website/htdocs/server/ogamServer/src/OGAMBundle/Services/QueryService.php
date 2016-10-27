@@ -298,11 +298,9 @@ class QueryService {
 	 *
 	 * @param QueryForm $queryForm
 	 *        	the request form
-	 * @param Array $userInfos
-	 *        	Few user informations
 	 * @return [FormField] The form fields corresponding to the columns
 	 */
-	public function getColumns($queryForm, $userInfos){
+	public function getColumns($queryForm){
         $formFields = [];
         foreach ($queryForm->getColumns() as $formField) {
             // Get the full description of the form field
@@ -425,10 +423,10 @@ class QueryService {
             // Add the line id
             $resultRow[] = $line['id'];
 
-            // Add the plot location in WKT
+            // Add the location centroid in WKT
             $resultRow[] = $line['location_centroid']; // The last column is the location center
 
-            // Right management : add the provider id of the data
+            // Add the provider id of the data
             if (!$userInfos['DATA_QUERY_OTHER_PROVIDER']) {
                 $resultRow[] = $line['_provider_id'];
             }

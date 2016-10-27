@@ -144,39 +144,4 @@ class QueryForm {
 	public function isValid() {
 		return !empty($this->getColumns());
 	}
-	
-	/**
-	 * TODO: Get all table formats.
-	 *
-	 * @return Array[String] the table formats
-	 *
-	public function getFormats() {
-	    $formats = array();
-	
-	    foreach ($this->getFields() as $formField) {
-	        if (!in_array($formField->format, $formats)) {
-	            $formats[] = $formField->format;
-	        }
-	    }
-	
-	    return $formats;
-	}*/
-	
-	/**
-	 * TODO: Tell if the data object contains at least one geometry field.
-	 *
-	 * @return Boolean true is one geomtry field is present
-	 *
-	public function hasGeometry() {
-	    $hasGeom = false;
-	
-	    foreach ($this->getFields() as $field) {
-	        if ($field->type === 'GEOM') {
-	            $hasGeom = true;
-	            break;
-	        }
-	    }
-	
-	    return $hasGeom;
-	}*/
 }

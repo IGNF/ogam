@@ -70,6 +70,20 @@ class GenericFieldMappingSet
     }
     
     /**
+     * Checks if a field mapping is already set
+     *
+     * @param GenericField $srcField
+     * @return boolean
+     */
+    private function hasFieldMapping(GenericField $srcField)
+    {
+        if($this->getFieldMapping($srcField) !== null){
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * Return the destination field corresponding to the source field.
      *
      * @param GenericField $srcField
@@ -88,15 +102,9 @@ class GenericFieldMappingSet
      */
     private function getSubFieldMappingSet(array $srcFields)
     {
-        $srcFieldsIds = [];
-        for ($i = 0; $i < count($srcFields); $i ++) {
-            $srcFieldsIds[] = $srcFields[$i]->getId();
-        }
         $subFieldMappingSetArray = [];
-        for ($i = 0; $i < count($this->fieldMappingArray); $i ++) {
-            if (in_array($this->fieldMappingArray[$i]->getSrcField()->getId(), $srcFieldsIds, true)) {
-                $subFieldMappingSetArray[] = $this->fieldMappingArray[$i];
-            }
+        for ($i = 0; $i < count($srcFields); $i ++) {
+            $subFieldMappingSetArray[] = $this->getFieldMapping($srcFields[$i]);
         }
         return new GenericFieldMappingSet($subFieldMappingSetArray, $this->schema);
     }
@@ -126,7 +134,13 @@ class GenericFieldMappingSet
     public function addFieldMappingSet(GenericFieldMappingSet $fieldMappingSet)
     {
         if ($fieldMappingSet->getSchema() === $this->schema) {
-            $this->fieldMappingArray = array_merge($this->fieldMappingArray, $fieldMappingSet->getFieldMappingArray());
+            $fieldMappingArray = $fieldMappingSet->getFieldMappingArray();
+            for($i = 0; $i < count($fieldMappingArray); $i++){
+                $fieldMapping = $fieldMappingArray[$i];
+                if(!$this->hasFieldMapping($fieldMapping->getSrcField())){
+                    $this->fieldMappingArray[] = $fieldMapping;
+                }
+            }
         } else {
             throw new \Exception("The schema of the added mapping set is different of the schema of the current mapping set.");
         }

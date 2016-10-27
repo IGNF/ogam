@@ -988,9 +988,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	public function generateSQLSelectRequest($schema, $formFields, GenericFieldMappingSet $mappingSet, $userInfos, $options = array()) {
 	    $this->logger->debug('generateSQLSelectRequest');
 
-	    //
-	    // Prepare the SELECT clause
-	    //
+	    // Add the requested columns
 	    $select = "SELECT DISTINCT "; // The "distinct" is for the case where we have some criteria but no result columns selected on the last table
 	    foreach ($formFields as $formField) {
 	        $tableField = $mappingSet->getDstField($formField)->getMetadata();
@@ -998,10 +996,6 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    }
 	    $select = substr($select, 0, -2);
 
-	    //
-	    // Create a unique identifier for each line
-	    // We use the last column of the leaf table
-	    //
 	    // Get the leaf table
 	    $tables = $this->getAllFormats($schema, $mappingSet->getFieldMappingArray());
 	    $rootTable = reset($tables);
@@ -1012,8 +1006,8 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    $rootTableFields = $this->metadataModel->getRepository(TableField::class)->getTableFields($schema, $rootTable->getTableFormat()->getFormat(), null, $this->locale);
 	    $hasColumnProvider = array_key_exists('PROVIDER_ID', $rootTableFields);
 
+	    // Add the id column
 	    $uniqueId = "'SCHEMA/" . $schema . "/FORMAT/" . $leafTable->getTableFormat()->getFormat() . "'";
-
 	    $keys = $leafTable->getTableFormat()->getPrimaryKeys();
 	    foreach ($keys as $key) {
 	        // Concatenate the column to create a unique Id
@@ -1021,14 +1015,11 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	    }
 	    $select .= ", " . $uniqueId . " as id";
 
-	    // Detect the column containing the geographical information
+	    // Add the location centroid column (for zooming on the map)
 	    $locationField = $this->metadataModel->getRepository(TableField::class)->getGeometryField($schema, array_keys($tables), $this->locale);
-
-	    // Add the location centroid (for zooming on the map)
 	    $select .= ", st_astext(st_centroid(st_transform(" . $locationField->getFormat()->getFormat() . "." . $locationField->getColumnName() . "," . $this->visualisationSRS . "))) as location_centroid ";
 
-	    // Right management
-	    // Get back the provider id of the data
+	    // Add the provider id column
 	    if (!$userInfos['DATA_EDITION_OTHER_PROVIDER'] && $hasColumnProvider) {
 	        $select .= ", " . $leafTable->getTableFormat()->getFormat() . ".provider_id as _provider_id";
 	    }

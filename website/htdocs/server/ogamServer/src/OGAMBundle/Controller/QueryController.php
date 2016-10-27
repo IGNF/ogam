@@ -202,7 +202,7 @@ class QueryController extends Controller {
 	        // Call the service to get the definition of the columns
 	        $userInfos = [
 	            "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
-	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isAllowed('DATA_QUERY_OTHER_PROVIDER')
+	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->getUser()->isAllowed('DATA_QUERY_OTHER_PROVIDER')
 	        ];
 	        $this->get('ogam.manager.query')->prepareResultLocations($queryForm, $userInfos);
 
@@ -234,15 +234,15 @@ class QueryController extends Controller {
 			// Call the service to get the definition of the columns
 	        $userInfos = [
 	            "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
-	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isAllowed('DATA_QUERY_OTHER_PROVIDER'),
-	            "DATA_EDITION_OTHER_PROVIDER" => $this->getUser() && $this->isAllowed('DATA_EDITION_OTHER_PROVIDER')
+	            "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->getUser()->isAllowed('DATA_QUERY_OTHER_PROVIDER'),
+	            "DATA_EDITION_OTHER_PROVIDER" => $this->getUser() && $this->getUser()->isAllowed('DATA_EDITION_OTHER_PROVIDER')
 	        ];
 			$this->get('ogam.query_service')->buildRequest($queryForm, $userInfos, $request->getSession());
 
 			$response = new Response();
 			$response->headers->set('Content-Type', 'application/json');
 			return $this->render ( 'OGAMBundle:Query:ajaxgetresultcolumns.json.twig', array (
-			    'columns' => $this->get('ogam.query_service')->getColumns($queryForm, $userInfos),
+			    'columns' => $this->get('ogam.query_service')->getColumns($queryForm),
 			    'userInfos' => $userInfos
 			),$response);
 
@@ -267,7 +267,7 @@ class QueryController extends Controller {
 
 		// Call the service to get the definition of the columns
 		$userInfos = [
-		    "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->isAllowed('DATA_QUERY_OTHER_PROVIDER')
+		    "DATA_QUERY_OTHER_PROVIDER" => $this->getUser() && $this->getUser()->isAllowed('DATA_QUERY_OTHER_PROVIDER')
 		];
 		// Send the result as a JSON String
 		return new JsonResponse([
