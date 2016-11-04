@@ -4,6 +4,7 @@
 Ext.define('OgamDesktop.store.Tree',{
 	extend:'Ext.data.TreeStore',
 	model:'OgamDesktop.model.Node',
+	parentIdProperty: 'parentId',
 	proxy : {
 		actionMethods : {
 			create : 'POST',
