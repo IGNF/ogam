@@ -32,16 +32,16 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
             'unit' => $unit->getUnit(),
             'lang' => $locale
         ];
-    
+
         $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position ";
         $sql .= " FROM mode_tree as mt ";
         $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || mt.code) ";
         $sql .= " WHERE unit = :unit ";
         $sql .= " LIMIT 50 ";
-    
+
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $query->setParameters($params);
-    
+
         return $query->getResult();
     }
 
@@ -73,10 +73,10 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
             }
         }
         $sql .= " ORDER BY position, code";
-        
+
         $query = $this->_em->createNativeQuery ( $sql, $rsm );
         $query->setParameters ($parameters);
-        
+
         return $query->getResult();
     }
 
@@ -101,11 +101,72 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
         $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
         $sql .= " WHERE unit = :unit AND COALESCE(t.label, mt.label) ilike :query ";
         $sql .= " ORDER BY position, code";
-        
-        $query = $this->_em->createNativeQuery ( $sql, $rsm );
-        $query->setParameters ($parameters);
-        
+
+        $query = $this->_em->createNativeQuery( $sql, $rsm );
+        $query->setParameters($parameters);
+
         return $query->getResult();
+    }
+    /**
+     * Returns the mode(s) whose label contains the searched text
+     *
+     * @param Unit $unit The unit
+     * @param String $query The filter query string
+     * @param String $locale The locale
+     * @param int|null $start the offset (works with $limit)
+     * @param int|null $limit max # mode to return
+     * @return [Mode] The filtered mode(s)
+     */
+    public function getTreeModesSimilareTo(Unit $unit, $query, $locale, $start=null, $limit=null){
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
+        $parameters = array(
+            'unit' => $unit->getUnit(),
+            'lang' => $locale,
+            'query' =>'%'. $query . '%'
+        );
+        $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf";
+        $sql .= " FROM mode_tree mt";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
+        $sql .= " WHERE unit = :unit AND COALESCE(t.label, mt.label) ilike :query ";
+        $sql .= " ORDER BY position, code";
+
+        if ($start !== null && $limit !== null) {
+            $sql .= ' LIMIT :limit OFFSET :offset';
+            $parameters['limit'] = $limit;
+            $parameters['offset'] = $start;
+        }
+
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters($parameters);
+
+        return $query->getResult();
+    }
+    /**
+     * Get the count of modes for a tree unit filtered by query.
+     *
+     * @param Unit $unit The unit
+     * @param String $query the searched text (optional)
+     * @param String $locale the locale
+     * @return Integer
+     */
+    public function getTreeModesSimilareToCount(Unit $unit, $query, $locale){
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addScalarResult('count', 'count', 'integer');
+        $parameters = array(
+            'unit' => $unit->getUnit(),
+            'lang' => $locale,
+            'query' =>'%'. $query . '%'
+        );
+        $sql = "SELECT count(*)";
+        $sql .= " FROM mode_tree mt";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
+        $sql .= " WHERE unit = :unit AND COALESCE(t.label, mt.label) ilike :query ";
+
+        $query = $this->_em->createNativeQuery( $sql, $rsm );
+        $query->setParameters($parameters);
+
+        return $query->getSingleScalarResult();
     }
 
     /**
@@ -125,7 +186,7 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
     public function getTreeChildrenModes($unit, $code = '*', $levels = 1, $locale) {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
-        
+
         $sql = "WITH RECURSIVE node_list( code, level) AS ( ";
         $sql .= "	    SELECT code, 1 "; // we get the reference taxon as a base for the search
         $sql .= "		FROM mode_tree mt ";
@@ -145,7 +206,7 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
         $sql .= "   LEFT JOIN mode_tree mt ON mt.code = nl.code AND mt.unit = :unit ";
         $sql .= "   LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
         $sql .= "	ORDER BY level, code "; // level is used to ensure correct construction of the structure
-    
+
         $query = $this->_em->createNativeQuery ( $sql, $rsm );
         $query->setParameters (array(
             'unit' => $unit,

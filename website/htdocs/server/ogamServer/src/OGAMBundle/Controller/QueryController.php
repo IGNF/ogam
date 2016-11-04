@@ -387,12 +387,12 @@ class QueryController extends Controller {
 
 	    // Get the id from the request
 	    $id = $request->request->get('id');
-	    
+
 	    $userInfos = [
 	        "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
 	        "DATA_EDITION" => $this->getUser() && $this->getUser()->isAllowed('DATA_EDITION')
 	    ];
-	    
+
 	    $response = new Response();
 	    $response->headers->set('Content-Type', 'application/json');
 	    return $this->render ( 'OGAMBundle:Query:ajaxgetdetails.json.twig', array (
@@ -455,7 +455,7 @@ class QueryController extends Controller {
 	}
 
     /**
-     *
+     * AJAX function : Return the list of available codes for a dynamic list.
      * @Route("/ajaxgetdynamiccodes")
      */
     public function ajaxgetdynamiccodesAction(Request $request)
@@ -475,6 +475,7 @@ class QueryController extends Controller {
     }
 
 	/**
+	 * AJAX function : Return the list of available codes for a MODE unit.
 	 * @Route("/ajaxgetcodes")
 	 */
 	public function ajaxgetcodesAction(Request $request) {
@@ -499,22 +500,61 @@ class QueryController extends Controller {
 	}
 
 	/**
+	 * AJAX function : Return the list of available codes for a MODE unit and a filter text.
 	 * @Route("/ajaxgettreecodes")
 	 */
-	public function ajaxgettreecodesAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgettreecodes.html.twig', array ()
-		// ...
-		 );
-	}
+	public function ajaxgettreecodesAction(Request $request) {
+	    $unitCode = $request->query->get('unit');
+	    $query = $request->query->get('query', null);
+	    $start = $request->query->getInt('start', 0);
+	    $limit = $request->query->getInt('limit', null);
+	    $em = $this->get('doctrine.orm.metadata_entity_manager');
+	    $unit = $em->find(Unit::class, $unitCode);
 
-	/**
-	 * @Route("/ajaxgettaxrefcodes")
-	 */
-	public function ajaxgettaxrefcodesAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgettaxrefcodes.html.twig', array ()
-		// ...
-		 );
-	}
+	    $locale = $this->get('ogam.locale_listener')->getLocale();
+
+            // $em->getRepository(Unit::class)->getModesFilteredByLabel($unit, $query, $locale);
+        $rows = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareTo($unit, $query, $locale, $start, $limit);
+        if (count($rows) < $limit) {
+            // optimisation
+            $count = count($rows);
+        } else {
+            //TODO use a paginator ?
+            $count = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareToCount($unit, $query, $locale);
+        }
+        return $this->render('OGAMBundle:Query:ajaxgettreecodes.json.twig', array(
+            'data' => $rows,
+            'total' => $count
+        ), new JsonResponse());
+    }
+
+    /**
+     * AJAX function : Return the list of available codes for a taxref and a filter text.
+     * @Route("/ajaxgettaxrefcodes")
+     */
+    public function ajaxgettaxrefcodesAction(Request $request)
+    {
+        $unitCode = $request->query->get('unit');
+        $query = $request->query->get('query', null);
+        $start = $request->query->getInt('start', 0);
+        $limit = $request->query->getInt('limit', null);
+        $em = $this->get('doctrine.orm.metadata_entity_manager');
+        $unit = $em->find(Unit::class, $unitCode);
+
+        $locale = $this->get('ogam.locale_listener')->getLocale();
+
+        $rows = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesSimilarTo($unit, $query, $locale, $start, $limit);
+        if (count($rows) < $limit) {
+            // optimisation
+            $count = count($rows);
+        } else {
+            $count = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesCount($unit, $query, $locale);
+        }
+        return $this->render('OGAMBundle:Query:ajaxgettaxrefcodes.json.twig', array(
+            'data' => $rows,
+            'total' => $count
+        ), new JsonResponse());
+    }
 
 	/**
 	 * @Route("/ajaxgetlocationinfo")

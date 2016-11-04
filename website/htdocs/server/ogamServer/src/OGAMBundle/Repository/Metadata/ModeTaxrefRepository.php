@@ -33,19 +33,19 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
             'unit' => $unit->getUnit(),
             'lang' => $locale
         ];
-    
+
         $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position ";
         $sql .= " FROM mode_taxref as mt ";
         $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || mt.code) ";
         $sql .= " WHERE unit = :unit ";
         $sql .= " LIMIT 50 ";
-    
+
         $query = $this->_em->createNativeQuery($sql, $rsm);
         $query->setParameters($params);
-    
+
         return $query->getResult();
     }
-    
+
     /**
      * Returns the mode(s) corresponding to the code(s).
      *
@@ -74,10 +74,10 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
             }
         }
         $sql .= " ORDER BY position, code";
-    
+
         $query = $this->_em->createNativeQuery ( $sql, $rsm );
         $query->setParameters ($parameters);
-    
+
         return $query->getResult();
     }
 
@@ -102,13 +102,84 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
         $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
         $sql .= " WHERE unit = :unit AND COALESCE(t.label, mt.label) ilike :query ";
         $sql .= " ORDER BY position, code";
-    
-        $query = $this->_em->createNativeQuery ( $sql, $rsm );
-        $query->setParameters ($parameters);
-    
+
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters($parameters);
+
         return $query->getResult();
     }
+    /**
+     * Returns the mode(s) whose an part of thme is similare to the searched text.
+     *  parts explored : label, vernacular_name,complete_name
+     * @param Unit $unit The unit
+     * @param string $query The filter query string
+     * @param string $locale The locale
+     * @param int $start the offset (works with $limit)
+     * @param int $limit max mode return
+     * @return [Mode] filtered mode (eventually partial =>bound [$start .. $start+$limit])
+     */
+    public function getTaxrefModesSimilarTo(Unit $unit, $query, $locale, $start=null, $limit=null){
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
+        $parameters = array(
+            'unit' => $unit->getUnit(),
+            'lang' => $locale,
+            'query' => '%'.$query . '%'
+        );
+        $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf, complete_name, vernacular_name, is_reference";
+        $sql .= " FROM mode_taxref mt";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
+        $sql .= " WHERE unit = :unit AND (
+            unaccent(COALESCE(t.label, mt.label)) ilike unaccent(:query)
+            OR unaccent(vernacular_name) ilike unaccent(:query)
+            OR unaccent(complete_name) ilike unaccent(:query)
+            )";
+        $sql .= " ORDER BY position, code"; //TODO order by similarity ?
 
+        if ($start !== null && $limit !== null) {
+            $sql .= ' LIMIT :limit OFFSET :offset';
+            $parameters['limit'] = $limit;
+            $parameters['offset'] = $start;
+        }
+
+        $query = $this->_em->createNativeQuery($sql, $rsm);
+        $query->setParameters($parameters);
+
+        return $query->getResult();
+    }
+    /**
+     * Return the count of code for a taxref filtered by query.
+     *
+     * @param String $unit
+     *        	The unit
+     * @param String $query
+     *        	the searched text (optional)
+     * @param String $locale The locale
+     * @return Integer
+     */
+    public function getTaxrefModesCount($unit, $query = null, $locale) {
+        $sql = "SELECT count(*) as count";
+        $sql .= " FROM mode_taxref mt";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
+        $sql .= " WHERE unit = :unit AND (
+            unaccent(COALESCE(t.label, mt.label)) ilike unaccent(:query)
+            OR unaccent(vernacular_name) ilike unaccent(:query)
+            OR unaccent(complete_name) ilike unaccent(:query)
+            )";
+        $parameters = array(
+            'unit' => $unit->getUnit(),
+            'lang' => $locale,
+            'query' =>'%'. $query . '%'
+        );
+
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addScalarResult('count','count','integer');
+
+        $query = $this->_em->createNativeQuery($sql, $rsm );
+        $query->setParameters($parameters);
+
+        return $query->getSingleScalarResult();
+    }
     /**
      * Get all the children Modes from the reference taxon of a taxon.
      * Used when building an SQL WHERE clause for a node of the taxref.
@@ -127,7 +198,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
     public function getTaxrefChildrenModes(Unit $unit, $code = '*', $levels = 1, $locale) {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
-        
+
         $sql = "WITH RECURSIVE node_list( code, level) AS ( ";
         $sql .= "	    SELECT code, 1 "; // we get the reference taxon as a base for the search
         $sql .= "		FROM mode_taxref mt ";
@@ -147,7 +218,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
         $sql .= "   LEFT JOIN mode_taxref mt ON mt.code = nl.code AND mt.unit = :unit ";
         $sql .= "   LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
         $sql .= "	ORDER BY level, code "; // level is used to ensure correct construction of the structure
-    
+
         $query = $this->_em->createNativeQuery ( $sql, $rsm );
         $query->setParameters (array(
             'unit' => $unit,
