@@ -595,7 +595,7 @@ class DataEditionController extends Controller
         $res = $this->getQueryService()->getEditForm($data);
         $bag = $request->getSession();
         json_encode($data);
-        $ser = new Serializer(array(new PropertyNormalizer(),new ObjectNormalizer()));
+        $ser = new Serializer(array(new ObjectNormalizer(),new PropertyNormalizer()));
         $ser->normalize($data);// FIXME : treewalker force loading proxy element ...
         $bag->set('data', $data);
         return $this->json($res);
