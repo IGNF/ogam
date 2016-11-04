@@ -436,22 +436,43 @@ class QueryController extends Controller {
 		 );
 	}
 
+    /**
+     * AJAX function : Nodes of a tree under a given node and for a given unit.
+     *
+     * @Route("/ajaxgettreenodes")
+     */
+    public function ajaxgettreenodesAction(Request $request)
+    {
+        $unitCode = $request->get('unit');
+        $code = $request->request->get('node');
+        $depth = $request->get('depth');
+        $em = $this->get('doctrine.orm.metadata_entity_manager');
+        $locale = $this->get('ogam.locale_listener')->getLocale();
+        $unit = $em->find(Unit::class, $unitCode);
+        $tree = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeChildrenModes($unit, $code, $depth ? $depth+1 : 0, $locale);
+        array_shift($tree);
+        return $this->render('OGAMBundle:Query:ajaxgettreenodes.json.twig', array(
+            'data' => $tree
+        ));
+    }
 	/**
-	 * @Route("/ajaxgettreenodes")
-	 */
-	public function ajaxgettreenodesAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgettreenodes.html.twig', array ()
-		// ...
-		 );
-	}
-
-	/**
+	 * AJAX function : Nodes of a taxonomic referential under a given node.
+	 *
 	 * @Route("/ajaxgettaxrefnodes")
 	 */
-	public function ajaxgettaxrefnodesAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgettaxrefnodes.html.twig', array ()
-		// ...
-		 );
+	public function ajaxgettaxrefnodesAction(Request $request) {
+	    $unitCode = $request->get('unit');
+	    $code = $request->request->get('node');
+	    $depth = $request->get('depth');
+	    $em = $this->get('doctrine.orm.metadata_entity_manager');
+	    $locale = $this->get('ogam.locale_listener')->getLocale();
+	    $unit = $em->find(Unit::class, $unitCode);
+	    $tree = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefChildrenModes($unit, $code, $depth ? $depth+1 : 0, $locale);
+	    array_shift($tree);
+	    return $this->render('OGAMBundle:Query:ajaxgettaxrefnodes.json.twig', array(
+	        'data' => $tree
+	    ));
+
 	}
 
     /**

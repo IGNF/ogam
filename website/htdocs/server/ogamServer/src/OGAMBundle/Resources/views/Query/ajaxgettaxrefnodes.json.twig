@@ -1,7 +1,7 @@
-{% extends 'OGAMBundle:Query:ajaxgettreecodes.json.twig' %}
-{% block mode %}
+{% extends 'OGAMBundle:Query:ajaxgettreenodes.json.twig' %}
+{%  block node %}
 {% autoescape false %}
-	{{ parent() }},
+    {{ parent() }},
 	"isReference":{{ mode.isReference|json_encode }},
 	"vernacularName":{{ mode.vernacularName|json_encode }}
 {% endautoescape %}
