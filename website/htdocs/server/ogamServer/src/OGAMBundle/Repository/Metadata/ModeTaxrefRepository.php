@@ -124,17 +124,18 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
         $parameters = array(
             'unit' => $unit->getUnit(),
             'lang' => $locale,
-            'query' => '%'.$query . '%'
-        );
-        $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf, complete_name, vernacular_name, is_reference";
-        $sql .= " FROM mode_taxref mt";
-        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
-        $sql .= " WHERE unit = :unit AND (
-            unaccent(COALESCE(t.label, mt.label)) ilike unaccent(:query)
-            OR unaccent(vernacular_name) ilike unaccent(:query)
-            OR unaccent(complete_name) ilike unaccent(:query)
+            'query'=>$query,
+            'query_parttern'=>'%'.$query.'%'
+            );
+            $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf, complete_name, vernacular_name, is_reference";
+            $sql .= " FROM mode_taxref mt";
+            $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TAXREF' AND row_pk = mt.unit || ',' || mt.code) ";
+            $sql .= " WHERE unit = :unit AND (
+            unaccent(COALESCE(t.label, mt.label)) ilike unaccent(:query_parttern)
+            OR unaccent(vernacular_name) ilike unaccent(:query_parttern)
+            OR unaccent(complete_name) ilike unaccent(:query_parttern)
             )";
-        $sql .= " ORDER BY position, code"; //TODO order by similarity ?
+            $sql .= " ORDER BY GREATEST(similarity(COALESCE(t.label, mt.label), :query), similarity(vernacular_name,:query) , similarity(complete_name, :query)) DESC, position, code";
 
         if ($start !== null && $limit !== null) {
             $sql .= ' LIMIT :limit OFFSET :offset';
