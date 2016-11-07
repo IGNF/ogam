@@ -39,7 +39,7 @@
             "inputType": "{{ field.metadata.inputType }}",
             "type": "{{ field.metadata.data.unit.type }}",
             "subtype": "{{ field.metadata.data.unit.subtype }}",
-            "value": {{ field.value|json_encode }}
+            "value": {{ field.valueLabel|json_encode }}
         }
         {%- if not loop.last -%}
             ,
