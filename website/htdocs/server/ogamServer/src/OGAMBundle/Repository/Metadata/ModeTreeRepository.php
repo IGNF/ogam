@@ -187,16 +187,22 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata($this->_entityName, 'mt');
 
+        if($code === '*') {//fakeroot
+            $firstNode = " SELECT '*'::character varying, 1 ";
+        } else {
+            $firstNode = " SELECT code, 1 ";
+            $firstNode .= "	FROM mode_tree mt ";
+            $firstNode .= "	WHERE unit = :unit ";
+            $firstNode .= "	AND code = :code ";
+        }
+
         $sql = "WITH RECURSIVE node_list( code, level) AS ( ";
-        $sql .= "	    SELECT code, 1 "; // we get the reference taxon as a base for the search
-        $sql .= "		FROM mode_tree mt ";
-        $sql .= "		WHERE unit = :unit ";
-        $sql .= "		AND code = :code ";
+        $sql .= $firstNode;
         $sql .= "	UNION ALL ";
         $sql .= "		SELECT child.code, level + 1 ";
         $sql .= "		FROM mode_tree child ";
         $sql .= "		INNER JOIN node_list on (child.parent_code = node_list.code) ";
-        $sql .= "		WHERE child.unit = unit ";
+        $sql .= "		WHERE child.unit = :unit ";
         if ($levels != 0) {
             $sql .= " AND level < :levels ";
         }
