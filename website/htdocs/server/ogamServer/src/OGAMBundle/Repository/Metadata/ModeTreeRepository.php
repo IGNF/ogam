@@ -123,13 +123,14 @@ class ModeTreeRepository extends \Doctrine\ORM\EntityRepository
         $parameters = array(
             'unit' => $unit->getUnit(),
             'lang' => $locale,
-            'query' =>'%'. $query . '%'
+            'query' =>$query ,
+            'querypattern'=>'%'.$query . '%'
         );
         $sql = "SELECT unit, code, COALESCE(t.label, mt.label) as label, COALESCE(t.definition, mt.definition) as definition, position, parent_code, is_leaf";
         $sql .= " FROM mode_tree mt";
         $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'MODE_TREE' AND row_pk = mt.unit || ',' || mt.code) ";
-        $sql .= " WHERE unit = :unit AND COALESCE(t.label, mt.label) ilike :query ";
-        $sql .= " ORDER BY position, code";
+        $sql .= " WHERE unit = :unit AND COALESCE(t.label, mt.label) ilike :querypattern ";
+        $sql .= " ORDER BY similarity(COALESCE(t.label, mt.label), :query) DESC, position, code";
 
         if ($start !== null && $limit !== null) {
             $sql .= ' LIMIT :limit OFFSET :offset';

@@ -23,6 +23,10 @@ $$
 $$
 LANGUAGE 'sql' IMMUTABLE;
 
+/**
+ * PG 9.3
+ */
+CREATE EXTENSION pg_trgm;
 
 /**
  * This function is used to do accent-insensitive search.
@@ -191,13 +195,13 @@ CREATE INDEX mode_taxref_parent_code_idx
   ON metadata.mode_taxref USING btree (parent_code);
   
 CREATE INDEX mode_taxref_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent(LABEL));
+  ON metadata.mode_taxref USING gist (unaccent(LABEL) gist_trgm_ops);
   
 CREATE INDEX mode_taxref_COMPLETE_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent(COMPLETE_NAME));
+  ON metadata.mode_taxref USING gist (unaccent(COMPLETE_NAME) gist_trgm_ops);
   
 CREATE INDEX mode_taxref_VERNACULAR_NAME_idx
-  ON metadata.mode_taxref USING btree (unaccent(VERNACULAR_NAME));
+  ON metadata.mode_taxref USING gist (unaccent(VERNACULAR_NAME) gist_trgm_ops);
 
 
 /*==============================================================*/
