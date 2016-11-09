@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use OGAMBundle\Entity\Metadata\FileFormat;
 
 /**
  * @Route("/integration")
@@ -108,10 +109,19 @@ class IntegrationController extends Controller
 
     	$this->get('logger')->debug('$showDetail : ' . $showDetail);
     	$this->get('logger')->debug('$showModel : ' . $showModel);
+    	
+    	$locale = $this->get('ogam.locale_listener')->getLocale();
+    	$submissionFiles = $this->getDoctrine()->getRepository(FileFormat::class)->getFileFormats($dataset->getId(), $locale);
+
+    	$files = [];
+    	foreach ($submissionFiles as $file) {
+    	    $files[strtolower($file->getFormat())] = $file;
+    	}
 
         return $this->render('OGAMBundle:Integration:show_upload_data.html.twig', array(
             'dataset' => $dataset,
         	'form'    => $this->getDataUploadForm($submission, $showDetail, $showModel)->createView(),
+            'files' => $files,
         	'showModel' => $showModel,
         	'showDetail' => $showDetail
         ));
@@ -166,7 +176,7 @@ class IntegrationController extends Controller
 
     	$formBuilder = $this
 		->get('form.factory')
-  		->createNamedBuilder('data_upload_form', FormType::class)
+  		->createNamedBuilder('datauploadform', FormType::class)
 		->setAction($this->generateUrl('integration_validate_upload',array('id'=>$submission->getId())));
 
     	// Get the submission object from the database
@@ -177,11 +187,11 @@ class IntegrationController extends Controller
     	//
     	foreach ($requestedFiles as $requestedFile) {
     		$fileelement = $formBuilder->create(
-    				$requestedFile->getFormat(),
+    				strtolower($requestedFile->getFormat()),
     				FileType::class,
     				array(
     						'label'       => $this->get('translator')->trans($requestedFile->getLabel() . ': '),
-    						'block_name'  => 'file_format',//TODO ?not work form name (with dash) invalid for twig block ...
+    						'block_name'  => 'fileformat',
     						'constraints' => array(new File(array('maxSize'=> "${fileMaxSize}Mi")))
     				)
     		);
