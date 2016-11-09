@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use OGAMBundle\Entity\Metadata\FileFormat;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/integration")
@@ -53,7 +54,6 @@ class IntegrationController extends Controller
     	$submissions = $this->getEntityManger()->getRepository('OGAMBundle:RawData\Submission')->getActiveSubmissions();
 
         return $this->render('OGAMBundle:Integration:show_data_submission_page.html.twig', array(
-            // ...
             'submissions' => $submissions
         ));
     }
@@ -430,11 +430,48 @@ class IntegrationController extends Controller
 	 *
      * @Route("/export-file-model", name="integration_exportfilemodel")
      */
-    public function exportFileModelAction()
+    public function exportFileModelAction(Request $request)
     {
-        return $this->render('OGAMBundle:Integration:export_file_model.html.twig', array(
-            // ...
-        ));
+        // TODO : add a permission for this action ?
+        
+        // -- Get the file
+        $fileFormatName = $request->query->get("fileFormat");
+        $locale = $this->get('ogam.locale_listener')->getLocale();
+        $fileFormat = $this->getDoctrine()->getRepository(FileFormat::class)->getFileFormat($fileFormatName, $locale);
+        
+        // -- Get file infos and fields - ordered by position
+        $fieldNames = array();
+        
+        $fields = $fileFormat->getFields();
+        foreach ($fields as $field) {
+            $fieldNames[] = $field->getLabel() . ((!empty($field->getMask())) ? ' (' . $field->getMask() . ') ' : '') . (($field->getIsMandatory() == 1) ? ' *' : '');
+        }
+        
+        // -- Comment this line
+        $fieldNames[0] = '// ' . $fieldNames[0];
+        
+        // -- Export results to a CSV file
+        
+        $configuration = $this->get('ogam.configuration_manager');
+        $charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
+        
+        // Define the header of the response
+        header('Content-Type: text/csv;charset=' . $charset . ';application/force-download;');
+        header('Content-disposition: attachment; filename=CSV_Model_' . $fileFormat->getLabel() . '_' . date('dmy_Hi') . '.csv');
+        
+        // Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
+        if ($charset == 'UTF-8') {
+            echo (chr(0xEF));
+            echo (chr(0xBB));
+            echo (chr(0xBF));
+        }
+        
+        // Opens the standard output as a file flux
+        $out = fopen('php://output', 'w');
+        fputcsv($out, $fieldNames, ';');
+        fclose($out);
+        
+        return new Response(); // No render
     }
     /**
      * Returns a JsonResponse that uses the serializer component if enabled, or json_encode.
