@@ -401,15 +401,6 @@ class QueryController extends Controller {
 	}
 
 	/**
-	 * @Route("/ajaxgetchildren")
-	 */
-	public function ajaxgetchildrenAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetchildren.html.twig', array ()
-		// ...
-		 );
-	}
-
-	/**
 	 * @Route("/csv-export")
 	 */
 	public function csvExportAction() {
