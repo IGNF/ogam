@@ -20,6 +20,11 @@ home:
                     controller: integration
                     action: showCreateDataSubmission
                     module: default
+                integrationupload:
+                    label: Breadcrumb_Integration_New
+                    controller: integration
+                    action: validateCreateDataSubmission
+                    module: default
             
         harmonization:
             label: Breadcrumb_Harmonization

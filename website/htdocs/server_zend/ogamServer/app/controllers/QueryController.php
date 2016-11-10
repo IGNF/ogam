@@ -686,7 +686,7 @@ class QueryController extends AbstractOGAMController {
 	 * Returns a csv file corresponding to the requested data.
 	 */
 	public function csvExportAction() {
-		$this->logger->debug('gridCsvExportAction');
+		$this->logger->debug('csvExportAction');
 
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;
@@ -860,7 +860,7 @@ class QueryController extends AbstractOGAMController {
 	 * Returns a kml file corresponding to the requested data.
 	 */
 	public function kmlExportAction() {
-		$this->logger->debug('gridCsvExportAction');
+		$this->logger->debug('kmlExportAction');
 
 		$userSession = new Zend_Session_Namespace('user');
 		$user = $userSession->user;

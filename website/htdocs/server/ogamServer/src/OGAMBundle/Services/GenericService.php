@@ -109,14 +109,14 @@ class GenericService {
 		    $tableRowField->setMetadata($tableField, $this->locale);
 			if (in_array($tableRowField->getData(), $gTable->getTableFormat()->getPrimaryKeys())) {
 				// Primary keys are displayed as info fields
-			    
+
 				$gTable->addIdField($tableRowField);
 			} else {
 				// Editable fields are displayed as form fields
 				$gTable->addField($tableRowField);
 			}
 		}
-	
+
 		return $gTable;
 	}
 
@@ -420,7 +420,7 @@ class GenericService {
 							foreach ($nodeModes as $nodeMode) {
 							    $nodeModesArray[] .= $nodeMode->getCode();
 							}
-							
+
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeModesArray);
 							$sql .= " AND " . $column . " && " . $stringValue;
@@ -441,7 +441,7 @@ class GenericService {
 							foreach ($nodeModes as $nodeMode) {
 							    $nodeModesArray[] .= $nodeMode->getCode();
 							}
-							
+
 							// Case of a list of values
 							$stringValue = $this->_arrayToSQLString($nodeModesArray);
 							$sql .= " AND " . $column . " && " . $stringValue;
@@ -886,7 +886,7 @@ class GenericService {
 	 * @param Boolean $copyValues is true the values will be copied
 	 * @return GenericField
 	 */
-	public function getTableToFormMapping($tableRowField, $copyValues = false) {
+	public function getTableToFormMapping(GenericField $tableRowField, $copyValues = false) {
 
 	    $tableField = $tableRowField->getMetadata();
 	    // Get the description of the form field
@@ -920,7 +920,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 * @param [\OGAMBundle\Entity\Generic\GenericField] $formFields
 	 * @return GenericFieldMappingSet
 	 */
-	public function getFieldsMappings($schema, $formFields) {
+	public function getFieldsFormToTableMappings($schema, $formFields) {
 	    $fieldsMappings = [];
 	    foreach ($formFields as $formField) {
 	        // Get the description of the corresponding table field
@@ -1138,7 +1138,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 
 	    return implode(',', $keys);
 	}
-	
+
 	/**
 	 * Serialize a list of data objects as an array for a display into a Ext.GridPanel.
 	 *
@@ -1150,13 +1150,13 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 */
 	public function dataToGridDetailArray($id, $data) {
 	    $this->logger->info('dataToDetailArray');
-	
+
 	    if (!empty($data)) {
-	
+
 	        // The columns config to setup the grid columnModel
 	        $columns = array(
 	            array(
-	
+
 	                'header' => 'Informations',
 	                'dataIndex' => 'informations',
 	                'editable' => false,
@@ -1165,7 +1165,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	                'type' => 'STRING'
 	            )
 	        );
-	
+
 	        // The fields config to setup the store reader
 	        $locationFields = array(
 	            'id',
@@ -1174,7 +1174,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	        // The data to full the store
 	        $locationsData = array();
 	        $firstData = $data[0];
-	
+
 	        // Dump each row values
 	        foreach ($data as $datum) {
 	            $locationData = array();
@@ -1184,7 +1184,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	            foreach ($datum->getIdFields() as $field) {
 	                $locationData[1] .= $field->getValueLabel() . ', ';
 	            }
-	
+
 	            if ($locationData[1] !== "") {
 	                $locationData[1] = substr($locationData[1], 0, -2);
 	            }
@@ -1195,12 +1195,12 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	            }
 	            array_push($locationsData, $locationData);
 	        }
-	
+
 	        // Add the colums description
 	        foreach ($formFields as $field) {
 	            // Set the column model and the location fields
 	            $dataIndex = $firstData->getTableFormat()->getFormat() . '__' . $field->getData();
-	
+
 	            $column = array(
 	                'header' => $field->getMetadata()->getData()->getLabel(),
 	                'dataIndex' => $dataIndex,
@@ -1212,7 +1212,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	            array_push($columns, $column);
 	            array_push($locationFields, $dataIndex);
 	        }
-	
+
 	        // Check if the table has a child table
 	        $hasChild = false;
 	        $children = $this->metadataModel->getRepository(TableTree::class)->getChildrenTableLabels($firstData->getTableFormat());
@@ -1231,7 +1231,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	        return null;
 	    }
 	}
-	
+
 	/**
 	 * Return the form fields mapped to the table fields and ordered by position
 	 *

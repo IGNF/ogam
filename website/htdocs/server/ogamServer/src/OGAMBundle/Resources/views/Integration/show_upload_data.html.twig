@@ -1,5 +1,5 @@
 {% extends "::base.html.twig" %}
-{% form_theme form 'form.html.twig' %}
+{% form_theme form with ['form.html.twig', _self] %}
 
 {% block body %}
 <h1>
@@ -7,7 +7,7 @@
 </h1>
 
 <h2>
-  {{ 'Dataset'|trans }} :{{ dataset.label }}
+  {{ 'Dataset'|trans }} : {{ dataset.label }}
 </h2>
 
 <div class="fileformatdescription">
@@ -15,48 +15,56 @@
     {{ 'File format description'|trans }}
 </a>
 </div>
-
-{{ form(form) }}
+<div class="{{ form.vars.name }}">
+    <div class="form-super-ct">
+        <div class="form-ct">
+        {{ form_start(form) }}
+            {{ form_errors(form) }}
+            {% for child in form.children %}
+                {{ form_row(child, {'showModel': showModel, 'showDetail': showDetail, 'files': files}) }}
+            {% endfor %}
+        {{ form_end(form) }}
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
-{% block _file_format_widget %}
+{% block _datauploadform_fileformat_widget %}
+    {% set file = files[name] %}
+    {{ form_widget(form) }}
     {{ showModel ? block('filemodel') }}
     {{ showDetail ? block('showdetail') }}
-    {{ form_widget(form) }}
 {% endblock %}
 
 {% block filemodel %}
     <div class='model'>
-        <span class="show-model-text">{{ 'Download a file model for'|trans ~ file.label}}</span>
+        <span class="show-model-text">{{ 'Download a file model for'|trans ~ ' "' ~ file.label ~ '":'}}</span>
         <div class="show-model-tool" onclick="window.location='{{ path('integration_exportfilemodel') ~ '?fileFormat=' ~ file.format }}';"></div>
     </div>
 {% endblock %}
 
-{% block showdetail %}
-{#
-                // Get some more informations in the metadata base
-                $fields = $this->metadataModel->getFileFields($requestedFile.format);
-    <div id="{{ requestedFile.format }}_FIELDS">
+{%- block showdetail -%}
+    <div id="{{ name }}_FIELDS">
         <div class="hint-title">
-            <span>{{ 'The expected fields are:'|trans }}</span>;
-            <div onclick="document.getElementById('{{ requestedFile.format }}_FIELDS').className='expanded';" class="expand_tool"></div>';
-            <div onclick="document.getElementById('{{ requestedFile.format }}_FIELDS').className='';" class="collapse_tool"></div>';
+            <span>{{ 'The expected fields are:'|trans }}</span>
+            <div onclick="document.getElementById('{{ name }}_FIELDS').className='expanded';" class="expand_tool"></div>
+            <div onclick="document.getElementById('{{ name }}_FIELDS').className='';" class="collapse_tool"></div>
         </div>
         <div class="fields">
-        {% for field in requestedFile.form.fields %}
+        {%- for field in file.fields -%}
             <div class="field-row">
-                <div class="field-label {{ field.isMandatory ? 'mandatory_field' }}" title="{{ field.label }}">
-                 {{ $field.label ~ ( field.isMandatory ? '*') }} :
+                <div class="field-label {{ field.isMandatory ? 'mandatory_field' }}" title="{{ field.data.label }}">
+                    {{ field.data.label ~ ( field.isMandatory ? '*') }}:
                 </div>
-                <div class="field-definition" title="'{{ field.definition }}'">
-                {{ field.definition }}
-                    <br/><b>Format:</b> {{ field.mask }}
-                {{ endif }}
+                <div class="field-definition" title="{{ field.data.definition }}">{{ field.data.definition }}
+                    {%- if field.mask -%}
+                        <br/><b>Format:</b> {{ field.mask }}
+                    {%- endif -%}
                 </div>
             </div>
-        {% endfor %}
+        {%- endfor -%}
         </div>
     </div>
- #}
-{% endblock %}
+ 
+{%- endblock -%}
