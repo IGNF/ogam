@@ -7,7 +7,7 @@
 </h1>
 
 <h2>
-  {{ 'Dataset'|trans }} :{{ dataset.label }}
+  {{ 'Dataset'|trans }} : {{ dataset.label }}
 </h2>
 
 <div class="fileformatdescription">
@@ -32,9 +32,9 @@
 
 {% block _datauploadform_fileformat_widget %}
     {% set file = files[name] %}
+    {{ form_widget(form) }}
     {{ showModel ? block('filemodel') }}
     {{ showDetail ? block('showdetail') }}
-    {{ form_widget(form) }}
 {% endblock %}
 
 {% block filemodel %}
@@ -44,7 +44,7 @@
     </div>
 {% endblock %}
 
-{% block showdetail %}
+{%- block showdetail -%}
     <div id="{{ name }}_FIELDS">
         <div class="hint-title">
             <span>{{ 'The expected fields are:'|trans }}</span>
@@ -52,20 +52,19 @@
             <div onclick="document.getElementById('{{ name }}_FIELDS').className='';" class="collapse_tool"></div>
         </div>
         <div class="fields">
-        {% for field in file.fields %}
+        {%- for field in file.fields -%}
             <div class="field-row">
                 <div class="field-label {{ field.isMandatory ? 'mandatory_field' }}" title="{{ field.data.label }}">
-                 {{ field.data.label ~ ( field.isMandatory ? '*') }} :
+                    {{ field.data.label ~ ( field.isMandatory ? '*') }}:
                 </div>
-                <div class="field-definition" title="{{ field.data.definition }}">
-                {{ field.data.definition }}
-                {% if field.mask %}
-                    <br/><b>Format:</b> {{ field.mask }}
-                {% endif %}
+                <div class="field-definition" title="{{ field.data.definition }}">{{ field.data.definition }}
+                    {%- if field.mask -%}
+                        <br/><b>Format:</b> {{ field.mask }}
+                    {%- endif -%}
                 </div>
             </div>
-        {% endfor %}
+        {%- endfor -%}
         </div>
     </div>
  
-{% endblock %}
+{%- endblock -%}

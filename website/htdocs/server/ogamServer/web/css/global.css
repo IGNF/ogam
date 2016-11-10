@@ -562,7 +562,7 @@ td.delete-cell {
 	height:100px;
     width:350px;
 }
-.zend_form input {
+.zend_form input{
 	width: 200px;
 	position: absolute;
 	right: 0;
@@ -585,7 +585,7 @@ td.delete-cell {
 	height: 25px;
 }
 
-button#form_submit {
+button#form_submit, .zend_form .button button{
 	width: 100px;
     position: absolute;
     right: 0;
@@ -669,7 +669,7 @@ button#form_submit {
     overflow: hidden;
     text-overflow: ellipsis;
     padding-left: 10px;
-    width: 598px;
+    width: 595px;
 }
 /**************************************/
 /**      Zend Form CSS               **/
@@ -688,16 +688,16 @@ button#form_submit {
 	width: 400px;
 }
 
-/** data-upload-form **/
-.data-upload-form .form-ct {
+/** datauploadform **/
+.datauploadform .form-ct {
 	width: 800px;
 }
 
-.data-upload-form .zend_form .file .hint {
+.datauploadform .zend_form .file .hint {
 	width: 100%;
 }
 
-.data-upload-form .zend_form label {
+.datauploadform .zend_form label {
 	font-weight: bold;
 }
 

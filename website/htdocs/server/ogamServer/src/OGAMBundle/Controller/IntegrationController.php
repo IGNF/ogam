@@ -190,7 +190,7 @@ class IntegrationController extends Controller
     				strtolower($requestedFile->getFormat()),
     				FileType::class,
     				array(
-    						'label'       => $this->get('translator')->trans($requestedFile->getLabel() . ': '),
+    						'label'       => $this->get('translator')->trans($requestedFile->getLabel()),
     						'block_name'  => 'fileformat',
     						'constraints' => array(new File(array('maxSize'=> "${fileMaxSize}Mi")))
     				)
