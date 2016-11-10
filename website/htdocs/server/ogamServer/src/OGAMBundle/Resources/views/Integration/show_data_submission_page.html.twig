@@ -126,7 +126,7 @@ set user = app.user
     {% endif %}
     {% if submission.step is not constant('STEP_INIT', submission) and submission.status is not constant('STATUS_RUNNING', submission) %}
 
-    <p><a href="{{ absolute_url("proxy/showreport?submissionId=#{submission.id}") }}" >{{ 'Show report'|trans }}</a></p>
+    <p><a href="{{ absolute_url("../proxy/show-report?submissionId=#{submission.id}") }}" >{{ 'Show report'|trans }}</a></p>
     {% endif %}
     {%  if (submission.step is same as('CHECKED') and (submission.status is same as("OK") or submission.status is same as('WARNING'))) %}
 

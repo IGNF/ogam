@@ -413,16 +413,6 @@ class QueryController extends Controller {
 	}
 
 	/**
-	 * @Route("/ajaxgetchildren")
-	 */
-	public function ajaxgetchildrenAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetchildren.html.twig', array ()
-		// ...
-		 );
-	}
-
-
-	/**
 	 * Get a label from a code, use a local cache mechanism.
 	 *
 	 * @param Application_Object_Metadata_TableField $tableField
