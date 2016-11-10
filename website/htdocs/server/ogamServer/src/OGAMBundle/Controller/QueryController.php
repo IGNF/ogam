@@ -509,8 +509,9 @@ class QueryController extends Controller {
 				// Export the column names
 				$content .= iconv("UTF-8", $charset, '// ');
 				foreach ($queryForm->getColumns() as $genericFormField) {
-					// TODO : Get label instead of data
-					$content .= iconv("UTF-8", $charset, $genericFormField->getData() . ';');
+					$genericTableField = $queryForm->getFieldMappingSet()->getDstField($genericFormField);
+					$tableField = $genericTableField->getMetadata();
+					$content .= iconv("UTF-8", $charset, $tableField->getLabel() . ';');
 				}
 				$content .= iconv("UTF-8", $charset, "\n");
 
@@ -659,16 +660,18 @@ class QueryController extends Controller {
 
 
 		// List all the criterias
-		foreach ($queryForm->getCriteria() as $criteria) {
+		foreach ($queryForm->getCriteria() as $genericFormField) {
 
+			$genericTableField = $queryForm->getFieldMappingSet()->getDstField($genericFormField);
+			$tableField = $genericTableField->getMetadata();
 
 			// Get the descriptor of the form field
-			$criteriasLine .= '// ' . $criteria->getData() . ';';
+			$criteriasLine .= '// ' . $tableField->getLabel() . ';';
 
-			if (is_array($criteria->getValueLabel())) {
-				$criteriasLine .= implode(', ', $criteria->getValueLabel());
+			if (is_array($genericFormField->getValueLabel())) {
+				$criteriasLine .= implode(', ', $genericFormField->getValueLabel());
 			} else {
-				$criteriasLine .= $criteria->getValueLabel();
+				$criteriasLine .= $genericFormField->getValueLabel();
 			}
 
 			$criteriasLine .= "\n";
