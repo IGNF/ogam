@@ -234,7 +234,7 @@ class QueryService {
 	 *        	the current session
 	 */
 	public function buildRequest(QueryForm $queryForm, $userInfos, Session $session) {
-	    $this->logger->debug('getResultColumns');
+	    $this->logger->debug('buildRequest');
 
 	    // Get the mappings for the query form fields
 	    $mappingSet = $queryForm->getFieldMappingSet();
@@ -246,8 +246,8 @@ class QueryService {
         $sqlPKey = $this->genericService->generateSQLPrimaryKey($this->schema, $mappingSet);
 
         // Identify the field carrying the location information
-        //$tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingArray());
-        //$locationField = $this->metadataModel->getRepository(TableField::class)->getGeometryField($this->schema, array_keys($tables), $this->locale);
+        $tables = $this->genericService->getAllFormats($this->schema, $mappingSet->getFieldMappingArray());
+        $locationField = $this->metadataModel->getRepository(TableField::class)->getGeometryField($this->schema, array_keys($tables), $this->locale);
 
         $this->logger->debug('$select : ' . $select);
         $this->logger->debug('$from : ' . $from);
@@ -264,7 +264,7 @@ class QueryService {
         $session->set('query_SQLFrom', $from);
         $session->set('query_SQLWhere', $where);
         $session->set('query_SQLPkey', $sqlPKey);
-        //$session->set('query_locationField', $locationField); used?
+        $session->set('query_locationField', $locationField); // used in the KML export
         $session->set('query_Count', $countResult); // result count
 
         //old
