@@ -27,7 +27,6 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 /**
  *
  * @Route ("/dataedition")
- * @Security("user and user.isAllowed('DATA_EDITION')")
  */
 class DataEditionController extends Controller
 {

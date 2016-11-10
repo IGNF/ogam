@@ -100,8 +100,22 @@ services:
         # the tag alias is later used in the view to access your service
         tags:
             - { name: templating.helper, alias: dataEditionAdd }
+    
     ogam.helper.EditLink:
         class: OGAMBundle\Helper\GenerateEditLink
         # the tag alias is later used in the view to access your service
         tags:
             - { name: templating.helper, alias: dataEditionEdit }
+    
+    OGAMBundle.login_entry_point:
+        class: OGAMBundle\EventListener\LoginEntryPoint
+        arguments: [ "@router" ]
+   
+    app.exception_controller:
+        class: OGAMBundle\Controller\ExceptionController
+        arguments: ['@twig', '%kernel.debug%']
+    
+#    ogam.ajaxError:
+#        class: OGAMBundle\EventListener\AjaxErrorListener
+#        tags:
+#            - { name: kernel.event_listener, event: kernel.exception, priority: 1000 }
