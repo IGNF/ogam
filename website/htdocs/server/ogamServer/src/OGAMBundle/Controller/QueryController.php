@@ -14,11 +14,23 @@ use OGAMBundle\Entity\Website\PredefinedRequest;
 use OGAMBundle\Entity\Website\PredefinedRequestCriterion;
 use OGAMBundle\Entity\Metadata\Dynamode;
 use OGAMBundle\Entity\Metadata\Unit;
+use OGAMBundle\Entity\Metadata\FormField;
+use OGAMBundle\Entity\Generic\GenericField;
 
 /**
  * @Route("/query")
  */
 class QueryController extends Controller {
+
+
+	/**
+	 * Local cache for trads.
+	 *
+	 * @var Array
+	 */
+	private $traductions = array();
+
+
 	/**
 	 * @Route("/", name = "query_home")
 	 */
@@ -197,7 +209,7 @@ class QueryController extends Controller {
 	        // Get the request from the session
 	        $queryForm = $request->getSession()->get('query_QueryForm');
 	        // Get the mappings for the query form fields
-	        $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
+	        $queryForm = $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
 
 	        // Call the service to get the definition of the columns
 	        $userInfos = [
@@ -229,7 +241,7 @@ class QueryController extends Controller {
 			// Get the request from the session
 	        $queryForm = $request->getSession()->get('query_QueryForm');
 	        // Get the mappings for the query form fields
-	        $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
+	        $queryForm = $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
 
 			// Call the service to get the definition of the columns
 	        $userInfos = [
@@ -409,13 +421,270 @@ class QueryController extends Controller {
 		 );
 	}
 
+
+	/**
+	 * Get a label from a code, use a local cache mechanism.
+	 *
+	 * @param Application_Object_Metadata_TableField $tableField
+	 *        	the field descriptor
+	 * @param String $value
+	 *        	the code to translate
+	 */
+	protected function getLabelCache($tableField, $value) {
+		$label = '';
+		$key = strtolower($tableField->getName());
+
+		// Check in local cache
+		if (isset($this->traductions[$key][$value])) {
+			$label = $this->traductions[$key][$value];
+		} else {
+			// Check in database
+			$trad = $this->get('ogam.generic_service')->getValueLabel($tableField, $value);
+
+			// Put in cache
+			if (!empty($trad)) {
+				$label = $trad;
+				$this->traductions[$key][$value] = $trad;
+			}
+		}
+
+		return $label;
+	}
+
 	/**
 	 * @Route("/csv-export")
 	 */
-	public function csvExportAction() {
-		return $this->render ( 'OGAMBundle:Query:csv_export.html.twig', array ()
-		// ...
-		 );
+	public function csvExportAction(Request $request) {
+
+		$logger = $this->get('logger');
+		$logger->debug('csvExportAction');
+
+		$user = $this->getUser();
+		$schema = $this->get('ogam.schema_listener')->getSchema();
+
+		// Configure memory and time limit because the program ask a lot of resources
+		$configuration =  $this->get('ogam.configuration_manager');
+		ini_set("memory_limit", $configuration->getConfig('memory_limit', '1024M'));
+		ini_set("max_execution_time", $configuration->getConfig('max_execution_time', '480'));
+		$maxLines = 5000;
+
+		// Define the header of the response
+		$charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
+
+		$content = "";
+
+
+		if ($user->isAllowed('EXPORT_RAW_DATA')) {
+
+			$websiteSession = $request->getSession();
+			$select = $websiteSession->get('query_SQLSelect');
+			$from = $websiteSession->get('query_SQLFrom');
+			$where = $websiteSession->get('query_SQLWhere');
+			$sql = $select . $from . $where;
+
+			// Count the number of lines
+			$total = $websiteSession->get('query_Count');
+			$logger->debug('Expected lines : ' . $total);
+
+			if ($sql == null) {
+				$content .= iconv("UTF-8", $charset, '// No Data');
+			} else if ($total > 65535) {
+				$content .= iconv("UTF-8", $charset, '// Too many result lines');
+			} else {
+
+				// Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
+				if ($charset === 'UTF-8') {
+					echo (chr(0xEF));
+					echo (chr(0xBB));
+					echo (chr(0xBF));
+				}
+
+				// Get the request from the session
+				$queryForm = $request->getSession()->get('query_QueryForm');
+
+				// Get the mappings for the query form fields
+				$queryForm = $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
+
+
+				// Display the default message
+				$content .= iconv("UTF-8", $charset, '// *************************************************');
+				$content .= iconv("UTF-8", $charset, '// ' . $this->get('translator')->trans('Data Export') . "\n");
+				$content .= iconv("UTF-8", $charset, '// *************************************************' . "\n\n");
+
+
+				// Request criterias
+				$content .= iconv("UTF-8", $charset, $this->csvExportCriterias($request));
+				$content .= iconv("UTF-8", $charset, "\n");
+
+				// Export the column names
+				$content .= iconv("UTF-8", $charset, '// ');
+				foreach ($queryForm->getColumns() as $genericFormField) {
+					// TODO : Get label instead of data
+					$content .= iconv("UTF-8", $charset, $genericFormField->getData() . ';');
+				}
+				$content .= iconv("UTF-8", $charset, "\n");
+
+
+				// Prepare the columns information
+				$formFields = array();
+				$tableFields = array();
+				foreach ($queryForm->getColumns() as $genericFormField) {
+
+					// Prepare some information for a later use
+					// To avoid Doctrine request for each data line
+					$formField = $this->get('ogam.query_service')->getFormField($genericFormField->getFormat(), $genericFormField->getData());
+					$genericTableField = $queryForm->getFieldMappingSet()->getDstField($genericFormField);
+					$tableField = $genericTableField->getMetadata();
+					$formFields[$genericFormField->getId()] = $formField;
+					$tableFields[$genericFormField->getId()] = $tableField;
+
+				}
+
+
+				// Get the order parameters
+				$sort = $request->request->get('sort');
+				$sortDir = $request->request->get('dir');
+
+				$filter = "";
+
+				if ($sort != "") {
+					// $sort contains the form format and field
+					$split = explode("__", $sort);
+					$formField = new GenericField($split[0], $split[1]);
+					$dstField =  $queryForm->getFieldMappingSet()->getDstField($formField);
+					$key = $dstField->getFormat() . "." . $dstField->getData();
+					$filter .= " ORDER BY " . $key . " " . $sortDir . ", id";
+				} else {
+					$filter .= " ORDER BY id";
+				}
+
+				// Define the max number of lines returned
+				$limit = " LIMIT " . $maxLines . " ";
+
+				$count = 0;
+				$page = 0;
+				$finished = false;
+				while (!$finished) {
+
+					// Define the position of the cursor in the dataset
+					$offset = " OFFSET " . ($page * $maxLines) . " ";
+
+					// Execute the request
+					$logger->debug('reading data ... page ' . $page);
+
+					// Build complete query
+					$query = $sql . $filter . $limit . $offset;
+
+					// Execute the request
+					$result = $this->get('ogam.query_service')->getQueryResults($query);
+
+
+					// Export the lines of data
+					foreach ($result as $line) {
+
+						//$columns = $this->get('ogam.query_service')->getColumns($queryForm);
+
+						foreach ($queryForm->getColumns() as $genericFormField) {
+
+							$formField = $formFields[$genericFormField->getId()];
+							$tableField = $tableFields[$genericFormField->getId()];
+
+							$value = $line[strtolower($tableField->getName())];
+
+
+							if ($value == null) {
+								$content .= iconv("UTF-8", $charset, ';');
+							} else {
+								if ($tableField->getData()->getUnit()->getType() === "CODE") {
+
+									$label = $this->getLabelCache($tableField, $value);
+
+									$content .= iconv("UTF-8", $charset, '"' . $label . '";');
+								} else if ($tableField->getData()->getUnit()->getType() === "ARRAY") {
+									// Split the array items
+									$arrayValues = explode(",", preg_replace("@[{-}]@", "", $value));
+									$label = '';
+									foreach ($arrayValues as $arrayValue) {
+
+										$label .= $this->getLabelCache($tableField, $arrayValue);
+										$label .= ',';
+									}
+									if ($label != '') {
+										$label = substr($label, 0, -1);
+									}
+									$label = '[' . $label . ']';
+
+									$content .= iconv("UTF-8", $charset, '"' . $label . '";');
+
+								} else if ($formField->getInputType() === "NUMERIC") {
+									// Numeric value
+									if ($formField->decimals !== null && $formField->decimals !== "") {
+										$value = number_format($value, $formField->decimals, ',', '');
+									}
+
+									$content .= iconv("UTF-8", $charset, $value . ';');
+								} else {
+									// Default case : String value
+									$content .= iconv("UTF-8", $charset, '"' . $value . '";');
+								}
+							}
+						}
+						$content .= iconv("UTF-8", $charset, "\n");
+						$count ++;
+					}
+
+					// Check we have read everything
+					if ($count == $total) {
+						$finished = true;
+					}
+
+					$page ++;
+				}
+			}
+		} else {
+			$content .= iconv("UTF-8", $charset, '// No Permissions');
+		}
+
+
+		$response = new Response($content, 200);
+		$response->headers->set('Content-Type', 'text/csv;charset=' . $charset . ';application/force-download;');
+		$response->headers->set('Content-disposition', 'attachment; filename=DataExport_' . date('dmy_Hi') . '.csv');
+
+		return $response;
+
+	}
+
+	/**
+	 * Export the request criterias in the CSV file.
+	 *
+	 * @return String the criterias
+	 */
+	protected function csvExportCriterias(Request $request) {
+		$criteriasLine = "";
+
+		$criteriasLine .= '// ' . $this->get('translator')->trans('Request Criterias') . "\n";
+
+		// Get the request from the session
+		$queryForm = $request->getSession()->get('query_QueryForm');
+
+
+		// List all the criterias
+		foreach ($queryForm->getCriteria() as $criteria) {
+
+
+			// Get the descriptor of the form field
+			$criteriasLine .= '// ' . $criteria->getData() . ';';
+
+			if (is_array($criteria->getValueLabel())) {
+				$criteriasLine .= implode(', ', $criteria->getValueLabel());
+			} else {
+				$criteriasLine .= $criteria->getValueLabel();
+			}
+
+			$criteriasLine .= "\n";
+		}
+
+		return $criteriasLine;
 	}
 
 	/**
@@ -517,7 +786,7 @@ class QueryController extends Controller {
 
 	    return $this->render('OGAMBundle:Query:ajaxgetcodes.json.twig', array(
 	        'data' => $modes
-	    ), $response);;
+	    ), $response);
 	}
 
 	/**

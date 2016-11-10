@@ -21,6 +21,7 @@ use OGAMBundle\Entity\Mapping\Layer;
 use OGAMBundle\Repository\Mapping\LayerRepository;
 use OGAMBundle\Entity\Generic\BoundingBox;
 use OGAMBundle\Entity\Website\PredefinedRequest;
+use OGAMBundle\Entity\Metadata\Format;
 
 /**
  *
@@ -63,7 +64,7 @@ class QueryService {
 	private $configation;
 
 	/**
-	 * 
+	 *
 	 * @var GenericService
 	 */
 	private $genericService;
@@ -99,13 +100,13 @@ class QueryService {
 
 		// Initialise the schema
 		$this->schema = $schema;
-		
+
 		$this->genericService =$genericService;
 
 		$this->configuration = $configuration;
 
 		$this->doctrine = $doctrine;
-		
+
 		$this->genericModel = $genericModel;
 
 		// Initialise the metadata models
@@ -120,7 +121,7 @@ class QueryService {
 	public function getDatasets() {
 		return $this->metadataModel->getRepository(Dataset::class)->getDatasetsForDisplay($this->locale, $this->user);
 	}
-	
+
 	/**
 	 * TODO: Get the list of available forms and criterias for the dataset.
 	 *
@@ -151,19 +152,19 @@ class QueryService {
 	 */
 	private function _getPredefinedRequest($requestName) {
 	    $this->logger->debug('_getPredefinedRequest');
-	
+
 	    // Get the predefined request
 	    $predefinedRequest = $this->doctrine->getRepository(PredefinedRequest::class)->getPredefinedRequest($requestName, $this->locale);
-	
+
 	    // Get the default values for the forms
 	    $forms = $this->metadataModel->getRepository(FormFormat::class)->getFormFormats($predefinedRequest->getDatasetId()->getId(), $this->schema, $this->locale);
-	
+
 	    // Update the default values with the saved values.
 	    foreach ($forms as $form) {
 	        foreach ($form->getCriteria() as $criterion) {
 	            $criterion->setIsDefaultCriteria(FALSE);
 	            $criterion->setDefaultValue('');
-	
+
 	            if ($predefinedRequest->hasCriterion($criterion->getName())) {
 	                $pRCriterion = $predefinedRequest->getCriterion($criterion->getName());
 	                $criterion->setIsDefaultCriteria(TRUE);
@@ -171,20 +172,20 @@ class QueryService {
 	                $criterion->getData()->getUnit()->setModes($pRCriterion->getData()->getUnit()->getModes());
 	            }
 	        }
-	
+
 	        foreach ($form->getColumns() as $column) {
 	            $column->setIsDefaultResult(FALSE);
-	
+
 	            if ($predefinedRequest->hasColumn($column->getName())) {
 	                $column->setIsDefaultResult(TRUE);
 	            }
 	        }
 	    }
-	
+
 	    // return the forms
 	    return $forms;
 	}
-	
+
 	/**
 	 * Copy the locations of the result in a temporary table.
 	 *
@@ -195,7 +196,7 @@ class QueryService {
 	 */
 	public function prepareResultLocations($queryForm, $userInfos) {
 	    $this->logger->debug('prepareResultLocations');
-	
+
 	    // Get the mappings for the query form fields
 	    $mappingSet = $queryForm->getFieldMappingSet();
 
@@ -237,7 +238,7 @@ class QueryService {
 
 	    // Get the mappings for the query form fields
 	    $mappingSet = $queryForm->getFieldMappingSet();
-	
+
         // Generate the SQL Request
         $select = $this->genericService->generateSQLSelectRequest($this->schema, $queryForm->getColumns(), $mappingSet, $userInfos);
         $from = $this->genericService->generateSQLFromRequest($this->schema, $mappingSet);
@@ -265,13 +266,13 @@ class QueryService {
         $session->set('query_SQLPkey', $sqlPKey);
         //$session->set('query_locationField', $locationField); used?
         $session->set('query_Count', $countResult); // result count
-        
+
         //old
         //$session->set('queryObject', $queryObject);
         //$session->set('resultColumns', $queryObject->editableFields); Not need can be find with $queryForm->getColumns()
         //$session->set('datasetId', $queryForm->getDatasetId());
 	}
-	
+
 	/**
 	 * Return the total count of query result
 	 *
@@ -292,9 +293,9 @@ class QueryService {
 	        throw new NoResultException('No result found for the request : ' . $sql);
 	    }
 	}
-	
+
 	/**
-	 * Get the form fields corresponding to the columns
+	 * Get the form fields corresponding to the columns.
 	 *
 	 * @param QueryForm $queryForm
 	 *        	the request form
@@ -304,22 +305,36 @@ class QueryService {
         $formFields = [];
         foreach ($queryForm->getColumns() as $formField) {
             // Get the full description of the form field
-            $formFields[] = $this->metadataModel->getRepository(FormField::class)->getFormField($formField->getFormat(), $formField->getData(), $this->locale);
+            $formFields[] = $this->getFormField($formField->getFormat(), $formField->getData());
         }
 	    return $formFields;
 	}
-	
+
+	/**
+	 * Get a form field.
+	 *
+	 * @param String $format the format
+	 * @param String $data the data
+	 * @return FormField The form fields corresponding to the columns
+	 */
+	public function getFormField($format, $data){
+		return  $this->metadataModel->getRepository(FormField::class)->getFormField($format, $data, $this->locale);
+	}
+
 	/**
 	 * Set the fields mappings for the provided schema into the query form.
 	 *
 	 * @param string $schema
 	 * @param \OGAMBundle\Entity\Generic\QueryForm $queryForm
 	 *        	the list of query form fields
+	 * @return the updated form
 	 */
 	public function setQueryFormFieldsMappings($queryForm) {
-	    $mappingSet = $this->genericService->getFieldsMappings($this->schema, $queryForm->getCriteria());
-	    $mappingSet->addFieldMappingSet($this->genericService->getFieldsMappings($this->schema, $queryForm->getColumns()));
+	    $mappingSet = $this->genericService->getFieldsFormToTableMappings($this->schema, $queryForm->getCriteria());
+	    $mappingSet->addFieldMappingSet($this->genericService->getFieldsFormToTableMappings($this->schema, $queryForm->getColumns()));
 	    $queryForm->setFieldMappingSet($mappingSet);
+
+	    return $queryForm;
 	}
 
 	/**
@@ -341,12 +356,13 @@ class QueryService {
 	 */
 	public function getResultRows($start, $length, $sort, $sortDir, $session, $userInfos) {
 	    $this->logger->debug('getResultRows');
-	
+
         // Get the request from the session
         $queryForm = $session->get('query_QueryForm');
+
         // Get the mappings for the query form fields
-        $this->setQueryFormFieldsMappings($queryForm);
-        
+        $queryForm = $this->setQueryFormFieldsMappings($queryForm);
+
         // Retrieve the SQL request from the session
         $select = $session->get('query_SQLSelect');
         // Il ne doit pas y avoir de DISTINCT pour pouvoir faire un Index Scan
@@ -383,7 +399,7 @@ class QueryService {
         $query = $select . $from . " WHERE (" . $pKey . ") IN (" . $subquery . $order . $filter . ")" . $order;
 
         // Execute the request
-        $result = $this->_getQueryResults($query);
+        $result = $this->getQueryResults($query);
 
         // Retrive the session-stored info
         $columnsDstFields = $queryForm->getColumnsDstFields();
@@ -430,20 +446,20 @@ class QueryService {
             if (!$userInfos['DATA_QUERY_OTHER_PROVIDER']) {
                 $resultRow[] = $line['_provider_id'];
             }
-            
+
             $resultRows[] = $resultRow;
         }
-	
+
 	    return $resultRows;
 	}
-	
+
 	/**
 	 * Return the query result(s)
 	 *
 	 * @param string $sql The sql of the query
 	 * @return array The result(s)
 	 */
-	private function _getQueryResults ($sql) {
+	public function getQueryResults($sql) {
 	    $conn = $this->doctrine->getManager()->getConnection();
 	    $stmt = $conn->prepare($sql);
 	    $stmt->execute();
@@ -462,11 +478,11 @@ class QueryService {
 	 */
 	public function getEditForm($data) {
 	    $this->logger->debug('getEditForm');
-	
-	    
+
+
 	    return $this->_generateEditForm($data);
 	}
-	
+
 	/**
 	 * Generate the JSON structure corresponding to a list of edit fields.
 	 *
@@ -490,7 +506,7 @@ class QueryService {
 	   }
 	   return array ('success' => true, 'data' => $return->getArrayCopy());
 	}
-	
+
 	/**
 	 * Convert a java/javascript-style date format to a PHP date format.
 	 *
@@ -516,19 +532,19 @@ class QueryService {
 	    $format = str_replace("ss", "s", $format);
 	    $format = str_replace("A", "a", $format);
 	    $format = str_replace("S", "u", $format);
-	
+
 	    return $format;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param GenericField $formEntryField
 	 * @param GenericField $tableRowField
 	 */
 	private function _generateEditField($formEntryField, $tableRowField) {
 	    $tableField = $tableRowField->getMetadata();
 	    $formField = $formEntryField->getMetadata();
-	    
+
 	    $field = new \stdClass();
 	    $field->inputType = $formField->getInputType();
 	    $field->decimals = $formField->getDecimals();
@@ -537,15 +553,15 @@ class QueryService {
 	    $field->unit = $formField->getData()->getUnit()->getUnit();
 	    $field->type = $formField->getData()->getUnit()->getType();
 	    $field->subtype = $formField->getData()->getUnit()->getSubType();
-	    
+
 	    $field->name = $tableRowField->getId();
 	    $field->label = $tableField->getLabel();
-	    
+
 	    $field->isPK = in_array($tableField->getData()->getData(), $tableField->getFormat()->getPrimaryKeys(), true) ? '1' : '0';
 	    if($tableField->getData()->getUnit() === $formField->getData()->getUnit()) {
 	        $this->logger->info('query_service :: table field and form field has not the same unit ?!');
 	    }
-	    
+
 	    $field->value = $tableRowField->getValue();
 	    $field->valueLabel = $tableRowField->getValueLabel();
 	    $field->editable = $tableField->getIsEditable() ? '1':'0';
@@ -554,13 +570,13 @@ class QueryService {
 	    $field->data = $tableField->getData()->getData(); // The name of the data is the table one
 	    $field->format = $tableField->getFormat()->getFormat();
 
-	    
+
 	    if ($field->value === null) {
 	        if ($field->defaultValue === '%LOGIN%') {
 	            $user = $this->user;
 	            $field->value = $user->login;
 	        } else if ($field->defaultValue === '%TODAY%') {
-	    
+
 	            // Set the current date
 	            if ($formField->mask !== null) {
 	                $field->value = date($this->_convertDateFormat($formField->mask));
@@ -571,25 +587,25 @@ class QueryService {
 	            $field->value = $field->defaultValue;
 	        }
 	    }
-	    
+
 	    // For the RANGE field, get the min and max values
 	    if ($field->type === "NUMERIC" && $field->subtype === "RANGE") {
 	        $range = $tableField->getData()->getUnit()->getRange();
 	        $field->params = ["min"=>$range->getMin(), "max"=>  $range->getMax()];
 	    }
-	    
+
 	    if ($field->inputType === 'RADIO' && $field->type === 'CODE') {
-	        
+
 	       $opts = $this->metadataModel->getRepository(Unit::class)->getModes($formField->getUnit());
 
 	       $field->options = array_column($opts, 'label', 'code');
 	    }
-	    
+
 	    return $field;
 	}
 
 /*********************** DETAILS *************************************************************************************/
-	
+
 	/**
 	 * Get the details associed with a result line (clic on the "detail button").
 	 *
@@ -607,27 +623,27 @@ class QueryService {
 	 */
 	public function getDetailsData($id, $detailsLayers, $datasetId = null, $withChildren = false, $userInfos) {
 	    $this->logger->debug('getDetailsData : ' . $id);
-	
+
 	    // Transform the identifier in an array
 	    $keyMap = $this->_decodeId($id);
-	
+
 	    // Prepare a GenericTableFormat to be filled
 	    $gTableFormat = $this->genericService->buildGenericTableFormat($keyMap['SCHEMA'], $keyMap['FORMAT'], null);
-	
+
 	    // Complete the primary key info
 	    foreach ($gTableFormat->getIdFields() as $idField) {
 	        if (!empty($keyMap[$idField->getData()])) {
 	            $idField->setValue($keyMap[$idField->getData()]);
 	        }
 	    }
-	
+
 	    // Get the detailled data
 	    $this->genericModel->getDatum($gTableFormat);
-	
+
 	    // The data ancestors
 	    $ancestors = $this->genericModel->getAncestors($gTableFormat);
 	    $ancestors = array_reverse($ancestors);
-	
+
 	    // Searchs the geometric field and table
 	    $bb = null;
 	    $bb2 = null;
@@ -656,7 +672,7 @@ class QueryService {
 	            }
 	        }
 	    }
-	
+
 	    // Defines the mapsserver parameters.
 	    $mapservParams = '';
 	    foreach ($locationTable->getIdFields() as $idField) {
@@ -686,17 +702,17 @@ class QueryService {
 	    }
 	    $dataInfo = end($dataDetails['formats']);
 	    $dataDetails['title'] = $dataInfo['title'] . ' (' . $title . ')';
-	
+
 	    // Add the localisation maps
 	    if (!empty($detailsLayers) && $bb !== null) {
 	        if ($detailsLayers[0] !== '') {
 	            $url = array();
 	            $url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[0], $bb, $mapservParams)));
-	
+
 	            $dataDetails['maps1'] = array(
 	                'title' => 'image'
 	            );
-	
+
 	            // complete the array with the urls of maps1
 	            $dataDetails['maps1']['urls'][] = array();
 	            $urlCount = count($url);
@@ -704,14 +720,14 @@ class QueryService {
 	                $dataDetails['maps1']['urls'][$i]['url'] = $url[$i];
 	            }
 	        }
-	
+
 	        if ($detailsLayers[1] !== '') {
 	            $url = array();
 	            $url = explode(";", ($this->getDetailsMapUrl(empty($detailsLayers) ? '' : $detailsLayers[1], $bb2, $mapservParams)));
 	            $dataDetails['maps2'] = array(
 	                'title' => 'overview'
 	            );
-	
+
 	            // complete the array with the urls of maps2
 	            $dataDetails['maps2']['urls'][] = array();
 	            $countUrls = count($url);
@@ -720,13 +736,13 @@ class QueryService {
 	            }
 	        }
 	    }
-	
+
 	    // Add the children
 	    if ($withChildren) {
-	
+
 	        // Prepare a data object to be filled
 	        $data2 = $this->genericService->buildGenericTableFormat($keyMap["SCHEMA"], $keyMap["FORMAT"], null);
-	
+
 	        // Complete the primary key
 	        foreach ($data2->getIdFields() as $idField) {
 	            if (!empty($keyMap[$idField->getData()])) {
@@ -735,7 +751,7 @@ class QueryService {
 	        }
 	        // Get children too
 	        $children = $this->genericModel->getChildren($data2, $datasetId);
-	
+
 	        // Add the children
 	        foreach ($children as $listChild) {dump($children);
 	            $dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
@@ -744,7 +760,7 @@ class QueryService {
 	            }
 	        }
 	    }
-	
+
 	    return $dataDetails;
 	}
 
@@ -766,7 +782,7 @@ class QueryService {
 	    }
 	    return $keyMap;
 	}
-	
+
 
 	/**
 	 * Generate an URL for the details map.
@@ -780,11 +796,11 @@ class QueryService {
 	 * @return String
 	 */
 	protected function getDetailsMapUrl($detailsLayers, BoundingBox $bb, $mapservParams) {
-	
+
 	    // Configure the projection systems
 	    $visualisationSRS = $this->configuration->getConfig('srs_visualisation', '3857');
 	    $baseUrls = '';
-	
+
 	    // Get the base urls for the services
 	    $detailServices = $this->doctrine->getRepository(LayerService::class)->getDetailServices();
 
@@ -792,26 +808,26 @@ class QueryService {
 	    $layerNames = explode(",", $detailsLayers);
 	    // $serviceLayerNames = "";
 	    $versionWMS = "";
-	
+
 	    foreach ($layerNames as $layerName) {
 	        $layer = $this->doctrine->getRepository(Layer::class)->find($layerName);
 	        $serviceLayerName = $layer->getServiceLayerName();
-	        
+
 	        // Get the base Url for detail service
 	        if ($layer->getDetailService() !== '') {
 	            $detailServiceName = $layer->getDetailService()->getName();
 	        }
-	
+
 	        foreach ($detailServices as $detailService) {
-	
+
 	            if ($detailService->getName() === $detailServiceName) {
-	
+
 	                $params = json_decode($detailService->getConfig())->params;
 	                $service = $params->SERVICE;
 	                $baseUrl = json_decode($detailService->getConfig())->urls[0];
-	
+
 	                if ($service === 'WMS') {
-	
+
 	                    $baseUrls .= $baseUrl . 'LAYERS=' . $serviceLayerName;
 	                    $baseUrls .= '&TRANSPARENT=true';
 	                    $baseUrls .= '&FORMAT=image%2Fpng';
@@ -835,9 +851,9 @@ class QueryService {
 	                    }
 	                    $baseUrls .= ';';
 	                } elseif ($service === 'WMTS') {
-	
+
 	                    $this->logger->err("WMTS service unsupported, please change the detail service for the '" . $layerName . "' layer.");
-	
+
 	                    // TODO : Gets the tileMatrix, tileCol, tileRow corresponding to the bb
 	                    /*
 	                    * $baseUrls .= $baseUrl . 'LAYER=' . $serviceLayerName;
@@ -861,7 +877,7 @@ class QueryService {
 	    if ($baseUrls !== "") {
 	        $baseUrls = substr($baseUrls, 0, -1); // remove last semicolon
 	    }
-	
+
 	    return $baseUrls;
 	}
 }
