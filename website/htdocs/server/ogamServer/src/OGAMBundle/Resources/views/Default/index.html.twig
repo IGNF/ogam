@@ -23,7 +23,7 @@
         
         {% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('RAW_DATA')) %}
         <li>
-        <a href="{{ path('query_home') }}#/SCHEMA/RAW_DATA" class="pagelink" >{% trans %}Visualize Raw Data{% endtrans %}</a>
+        <a href="{{ path('query_home') }}?SCHEMA=RAW_DATA" class="pagelink" >{% trans %}Visualize Raw Data{% endtrans %}</a>
         </li>
         {% endif %}
         
