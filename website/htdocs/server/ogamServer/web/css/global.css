@@ -27,8 +27,10 @@ h3 {
 	text-transform: uppercase;
 }
 
-ul.errors {
+.errors {
 	color: #FF0000;
+	text-align:center;
+	font-size: 1.7em;
 }
 
 img {
