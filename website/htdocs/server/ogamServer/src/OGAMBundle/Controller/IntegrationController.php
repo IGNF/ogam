@@ -115,7 +115,7 @@ class IntegrationController extends Controller
 
     	$files = [];
     	foreach ($submissionFiles as $file) {
-    	    $files[strtolower($file->getFormat())] = $file;
+    	    $files[$file->getFormat()] = $file;
     	}
 
         return $this->render('OGAMBundle:Integration:show_upload_data.html.twig', array(
@@ -187,7 +187,7 @@ class IntegrationController extends Controller
     	//
     	foreach ($requestedFiles as $requestedFile) {
     		$fileelement = $formBuilder->create(
-    				strtolower($requestedFile->getFormat()),
+    				$requestedFile->getFormat(),
     				FileType::class,
     				array(
     						'label'       => $this->get('translator')->trans($requestedFile->getLabel()),
