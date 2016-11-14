@@ -11,7 +11,7 @@ parameters:
 
 framework:
     #esi:             ~
-    translator:      { fallbacks: ["%locale%", en] }
+    translator:      { fallbacks: ["%locale%", 'en'] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -37,6 +37,7 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+    exception_controller: app.exception_controller:showAction
     globals: 
       configurationManager : '@ogam.configuration_manager'
 

@@ -28,10 +28,17 @@ security:
             logout:
                 path:   user_logout
                 target: /
-            
+            entry_point: OGAMBundle.login_entry_point
     access_control:
         - { path: ^/user/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/, roles: ROLE_ADMIN }
+        - { path: ^/dataedition/, allow_if: "user and is_authenticated() and user.isAllowed('DATA_EDITION')"}
+        - { path: ^/query/, allow_if: "user and is_authenticated() and user.isAllowed('DATA_QUERY')"}
+        - { path: ^/proxy/, roles: "IS_AUTHENTICATED_FULLY"}
+        - { path: ^/map/, allow_if: "user and is_authenticated() and (user.isAllowed('DATA_QUERY') or user.isAllowed('DATA_QUERY_HARMONIZE'))"}
+        - { path: ^/integration/, allow_if: "user and is_authenticated() and user.isAllowed('DATA_INTEGRATION')"}
+        - { path: ^/harmonization/, allow_if: "user and is_authenticated() and user.isAllowed('DATA_INTEGRATION')"}
+        - { path: ^/checkconf/, allow_if: "user and is_authenticated() and user.isAllowed('CHECK_CONF')"}
             
             # activate different ways to authenticate
 
