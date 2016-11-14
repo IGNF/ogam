@@ -44,7 +44,7 @@
         
         {% if (app.user and app.user.isAllowed('DATA_QUERY') and app.user.isSchemaAllowed('HARMONIZED_DATA')) %}
         <li>
-        <a href="#/SCHEMA/HARMONIZED_DATA" class="pagelink" >{% trans %}Visualize Harmonized Data{% endtrans %}</a>
+        <a href="{{ path('query_home') }}?SCHEMA=HARMONIZED_DATA" class="pagelink" >{% trans %}Visualize Harmonized Data{% endtrans %}</a>
         </li>
         {% endif %}
         
