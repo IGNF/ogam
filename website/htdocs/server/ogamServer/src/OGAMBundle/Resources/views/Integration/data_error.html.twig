@@ -2,12 +2,12 @@
 
 {% block body %}
 <h1>
-  {{ 'Data integration module'|trans }}) - {{ 'Error'|trans }}
+  {{ 'Data integration module'|trans }} - {{ 'Error'|trans }}
 </h1>
 <div class="error-msg">
-    <img class="status-img" src="{{ asset('img/Red_x.png') }}>" />{{ error }}
+    <img class="status-img" src="{{ asset('img/Red_x.png') }}" />{{ error }}
 </div>
 <div class="bottom-menu">
-    <a href="{{ path('integration_list')) }}"><b>{{ 'Submit Data'|trans }}</b></a>
+    <a href="{{ path('integration_list') }}"><b>{{ 'Submit Data'|trans }}</b></a>
 </div>
 {% endblock %}

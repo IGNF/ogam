@@ -373,7 +373,6 @@ class IntegrationController extends Controller
 
     	// Send the cancel request to the integration server
     	try {
-
     		$submissionId = $this->get('request_stack')->getCurrentRequest()->get("submissionId");
 
     		$status = $this->get('ogam.integration_service')->getStatus($submissionId, $servletName);
@@ -395,7 +394,7 @@ class IntegrationController extends Controller
     			return $this->json($data);
     		}
     	} catch (\Exception $e) {
-    		$this->getLogger()->errr('Error during get: ' . $e);
+    		$this->getLogger()->error('Error during get: ' . $e);
 
     		return $this->json(array(
     				'success'=> FALSE,
