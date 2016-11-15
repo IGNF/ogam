@@ -155,7 +155,7 @@ class QueryController extends Controller {
                     $queryForm->addColumn($split[0], $split[1]);
                 }
             }
-toot('r');
+
             if ($queryForm->isValid()) {
                 // Store the request parameters in session
                 $request->getSession()->set('query_QueryForm', $queryForm);
