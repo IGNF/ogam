@@ -117,7 +117,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 					url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformfields',
 					reader: {
 					    type : 'json',
-					    rootProperty : 'root',
+					    rootProperty : 'data',
 					    totalProperty  : 'total',
 					    successProperty: 'success',
 					    messageProperty: 'errorMessage'
@@ -220,7 +220,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestFieldSet', {
 					url: Ext.manifest.OgamDesktop.requestServiceUrl +'ajaxgetqueryformfields',
 					reader: {
 					    type : 'json',
-					    rootProperty : 'root',
+					    rootProperty : 'data',
 					    totalProperty  : 'total',
 					    successProperty: 'success',
 					    messageProperty: 'errorMessage'

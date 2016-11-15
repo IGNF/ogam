@@ -109,6 +109,53 @@ class QueryController extends Controller {
 	}
 
 	/**
+	 * AJAX function : Get the list of criteria or columns available for a process form.
+	 *
+	 * @Route("/ajaxgetqueryformfields")
+	 */
+	public function ajaxgetqueryformfieldsAction(Request $request) {
+	    $logger = $this->get ( 'logger' );
+	    $logger->debug('ajaxgetqueryformfieldsAction');
+	
+	    $filters = json_decode($request->query->get('filter'));
+	
+	    $datasetId = null;
+	
+	    if (is_array($filters)) {
+	        foreach ($filters as $aFilter) {
+	            switch ($aFilter->property) {
+	                case 'processId':
+	                    $datasetId = $aFilter->value;
+	                    break;
+	                case 'form':
+	                    $formFormat = $aFilter->value;
+	                    break;
+	                case 'fieldsType':
+	                    $fieldsType = $aFilter->value;
+	                    break;
+	                default:
+	                    $logger->debug('filter unattended : ' . $aFilter->property);
+	            }
+	        }
+	    }
+	
+	    $query = $request->query->get('query');
+	    $start = $request->query->get('start');
+	    $limit = $request->query->get('limit');
+	
+	    $schema = $this->get('ogam.schema_listener')->getSchema();
+	    $locale = $this->get('ogam.locale_listener')->getLocale();
+	    
+	    $response = new Response();
+	    $response->headers->set('Content-Type', 'application/json');
+	    return $this->render ( 'OGAMBundle:Query:ajaxgetqueryformfields.json.twig', array (
+	        'fieldsType' => $fieldsType,
+	        'list' => $this->getDoctrine()->getRepository(FormField::class)->getFormFields($datasetId, $formFormat, $schema, $locale, $query, $start, $limit, $fieldsType),
+	        'count' => $this->getDoctrine()->getRepository(FormField::class)->getFormFieldsCount($datasetId, $formFormat, $schema, $locale, $query, $fieldsType)
+	    ),$response);
+	}
+
+	/**
 	 * @Route("/ajaxresetresultlocation")
 	 */
 	public function ajaxresetresultlocationAction() {
@@ -331,15 +378,6 @@ class QueryController extends Controller {
 	    return $this->render ( 'OGAMBundle:Query:ajaxgetpredefinedrequestcriteria.html.twig', array (
 	        'data' => $predefinedRequestCriterionRepository->getPredefinedRequestCriteria($requestName, $locale)
 	    ),$response);
-	}
-
-	/**
-	 * @Route("/ajaxgetqueryformfields")
-	 */
-	public function ajaxgetqueryformfieldsAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetqueryformfields.html.twig', array ()
-		// ...
-		 );
 	}
 
 	/**
