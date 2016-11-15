@@ -58,7 +58,6 @@ class HarmonizationController extends Controller
     	$service = $this->get('ogam.harmonization_service');
     	// Send the cancel request to the integration server
     	try {
-    	    throw new \Exception('bou');
     		$service->harmonizeData($providerId, $datasetId, FALSE);
     	} catch (\Exception $e) {
     		$this->get('logger')->error('Error during harmonization: '.$e, array('exception' => $e,'provider'=>$providerId, 'dataset'=>$datasetId));
