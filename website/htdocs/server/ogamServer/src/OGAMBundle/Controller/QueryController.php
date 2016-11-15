@@ -152,7 +152,7 @@ class QueryController extends Controller {
                     $queryForm->addColumn($split[0], $split[1]);
                 }
             }
-
+toot('r');
             if ($queryForm->isValid()) {
                 // Store the request parameters in session
                 $request->getSession()->set('query_QueryForm', $queryForm);
@@ -167,8 +167,8 @@ class QueryController extends Controller {
                 return new JsonResponse(['success' => false, 'errorMessage' => 'Invalid request.']);
             }
 
-        } catch (Exception $e) {
-            $this->logger->error('Error while getting result : ' . $e);
+        } catch (\Exception $e) {
+            $logger->error('Error while getting result : ' . $e);
             return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
         }
 	}
@@ -224,7 +224,7 @@ class QueryController extends Controller {
 
 	        // Send the result as a JSON String
 	        return new JsonResponse(['success' => true, 'resultsbbox' => $resultsbbox]);
-	    } catch (Exception $e) {
+	    } catch (\Exception $e) {
 	        $logger->error('Error while getting result : ' . $e);
 	        return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
 	    }
@@ -258,7 +258,7 @@ class QueryController extends Controller {
 			    'userInfos' => $userInfos
 			),$response);
 
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$logger->error('Error while getting result : ' . $e);
 			return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
 		}

@@ -5,9 +5,9 @@
   {{ 'Data integration module'|trans }}) - {{ 'Error'|trans }}
 </h1>
 <div class="error-msg">
-    <img class="status-img" src="<?php echo  $this->baseUrl('img/Red_x.png') ?>" />{{ error }}
+    <img class="status-img" src="{{ asset('img/Red_x.png') }}>" />{{ error }}
 </div>
 <div class="bottom-menu">
-    <a href="<?php echo $this->baseUrl('integration/show-data-submission-page') ?>"><b>{{ 'Submit Data'|trans }}</b></a>
+    <a href="{{ path('integration_list')) }}"><b>{{ 'Submit Data'|trans }}</b></a>
 </div>
 {% endblock %}

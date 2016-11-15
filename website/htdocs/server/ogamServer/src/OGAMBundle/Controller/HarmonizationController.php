@@ -46,7 +46,7 @@ class HarmonizationController extends Controller
 
     /**
      * Launch the harmonization process.
-     * 
+     *
      * @Route("/launch-harmonization", name="harmonization_launch")
      */
     public function launchHarmonizationAction(Request $request)
@@ -54,24 +54,25 @@ class HarmonizationController extends Controller
     	// Get the submission Id
     	$providerId = $request->query->get("PROVIDER_ID");
     	$datasetId = $request->query->get("DATASET_ID");
-    	
+
     	$service = $this->get('ogam.harmonization_service');
     	// Send the cancel request to the integration server
     	try {
+    	    throw new \Exception('bou');
     		$service->harmonizeData($providerId, $datasetId, FALSE);
-    	} catch (Exception $e) {
-    		$this->logger->err('Error during harmonization: ' . $e);
-    		$this->view->errorMessage = $e->getMessage();
-    		return $this->render('show-harmonization-process-error');
+    	} catch (\Exception $e) {
+    		$this->get('logger')->error('Error during harmonization: '.$e, array('exception' => $e,'provider'=>$providerId, 'dataset'=>$datasetId));
+
+    		return $this->render('OGAMBundle:Harmonization:show_harmonization_process_error.html.twig', array('errorMessage' => $e->getMessage()));
     	}
-    	
+
     	// Forward the user to the next step
     	return $this->redirectToRoute('harmonization_dashboard');
     }
 
     /**
      * Remove the generated data.
-     * 
+     *
      * @Route("/remove-harmonization-data", name="harmonization_removeharmonizationdata")
      */
     public function removeHarmonizationDataAction(Request $request)
@@ -79,24 +80,24 @@ class HarmonizationController extends Controller
     	// Get the submission Id
     	$providerId = $request->query->get("PROVIDER_ID");
     	$datasetId = $request->query->get("DATASET_ID");
-    	
+
     	$service = $this->get('ogam.harmonization_service');
     	// Send the cancel request to the integration server
     	try {
     		$service->harmonizeData($providerId, $datasetId, TRUE);
-    	} catch (Exception $e) {
-    		$this->getLogger()->err('Error during harmonization: ' . $e);
-    		$this->view->errorMessage = $e->getMessage();
-    		return $this->render('show-harmonization-process-error');
+    	} catch (\Exception $e) {
+    		$this->get('logger')->error('Error during harmonization: '.$e, array('exception' => $e, 'provider'=>$providerId, 'dataset'=>$datasetId));
+
+    		return $this->render('OGAMBundle:Harmonization:show_harmonization_process_error.html.twig', array('errorMessage' => $e->getMessage()));
     	}
-    	
+
     	// Forward the user to the next step
     	return $this->redirectToRoute('harmonization_dashboard');
     }
 
     /**
      * Gets the integration status.
-     * 
+     *
      * @Route("/get-status", name="harmonization_getstatus")
      */
     public function getStatusAction(Request $request)
@@ -104,12 +105,12 @@ class HarmonizationController extends Controller
     	// Get the submission Id
     	$providerId = $request->request->get("PROVIDER_ID");
     	$datasetId  = $request->request->get("DATASET_ID");
-    	
+
     	$service = $this->get('ogam.harmonization_service');
     	// Send the cancel request to the integration server
     	try {
     		$status = $service->getStatus($datasetId, $providerId);
-    	
+
     		$data = array(
     					'success'=> TRUE,
     					'status'=>$status->status
@@ -127,9 +128,9 @@ class HarmonizationController extends Controller
     			}
     			return $this->json($data);
     		}
-    	
-    	} catch (Exception $e) {
-    		$this->getLogger()->err('Error during get: ' . $e);
+
+    	} catch (\Exception $e) {
+    		$this->get('logger')->error('Error during get: '.$e, array('exception' => $e, 'provider'=>$providerId, 'dataset'=>$datasetId));
 
     		return $this->json(array(
     				'success'=> FALSE,

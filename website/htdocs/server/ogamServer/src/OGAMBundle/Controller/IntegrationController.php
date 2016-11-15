@@ -47,7 +47,7 @@ class IntegrationController extends Controller
     /**
      * Show the data submission page.
      *
-     * @Route("/show-data-submission-page")
+     * @Route("/show-data-submission-page", name="integration_list")
      */
     public function showDataSubmissionPageAction()
     {
@@ -109,7 +109,7 @@ class IntegrationController extends Controller
 
     	$this->get('logger')->debug('$showDetail : ' . $showDetail);
     	$this->get('logger')->debug('$showModel : ' . $showModel);
-    	
+
     	$locale = $this->get('ogam.locale_listener')->getLocale();
     	$submissionFiles = $this->getDoctrine()->getRepository(FileFormat::class)->getFileFormats($dataset->getId(), $locale);
 
@@ -269,9 +269,9 @@ class IntegrationController extends Controller
     	try {
     		$providerId = $this->getUser()->getProvider()->getId();
     		$this->get('ogam.integration_service')->uploadData($submission->getId(), $providerId , $requestedFiles);
-    	} catch (Exception $e) {
-    		$this->get('logger')->err('Error during upload: ' . $e);
-    		return $this->render('OGAMBundle:Integration:show-data-error.html.twig', array(
+    	} catch (\Exception $e) {
+    		$this->get('logger')->error('Error during upload:'. $e, array('exception' => $e));
+    		return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
     				'error' => $e->getMessage()
     		));
     	}
@@ -297,8 +297,8 @@ class IntegrationController extends Controller
 		// Send the cancel request to the integration server
 		try {
 			$this->get('ogam.integration_service')->cancelDataSubmission($submissionId);
-		} catch (Exception $e) {
-			$this->get('logger')->err('Error during upload: ' . $e);
+		} catch (\Exception $e) {
+			$this->get('logger')->error('Error during upload: ' . $e);
 
 			return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
 					'error' => $e->getMessage()
@@ -322,10 +322,10 @@ class IntegrationController extends Controller
     	// Send the cancel request to the integration server
     	try {
     		$this->get('ogam.integration_service')->checkDataSubmission($submissionId);
-    	} catch (Exception $e) {
-    		$this->getLogger()->err('Error during upload: ' . $e);
+    	} catch (\Exception $e) {
+    		$this->getLogger()->error('Error during upload: ' . $e);
 
-    		return $this->render('OGAMBundle:Integration:show-data-error', array(
+    		return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
     				'error' => $e->getMessage()
     		));
     	}
@@ -349,10 +349,10 @@ class IntegrationController extends Controller
     	// Send the cancel request to the integration server
     	try {
     		$this->get('ogam.integration_service')->validateDataSubmission($submissionId);
-    	} catch (Exception $e) {
-    		$this->getLogger()->err('Error during upload: ' . $e);
+    	} catch (\Exception $e) {
+    		$this->getLogger()->error('Error during upload: ' . $e);
 
-    		return $this->render('OGAMBundle:Integration:show_data_error.html.twig', array(
+    		return $this->render('OGAMBundle:Integration:data_error.html.twig', array(
     				'error' => $e->getMessage()
     		));
     	}
@@ -394,8 +394,8 @@ class IntegrationController extends Controller
     			}
     			return $this->json($data);
     		}
-    	} catch (Exception $e) {
-    		$this->getLogger()->err('Error during get: ' . $e);
+    	} catch (\Exception $e) {
+    		$this->getLogger()->errr('Error during get: ' . $e);
 
     		return $this->json(array(
     				'success'=> FALSE,
@@ -433,44 +433,44 @@ class IntegrationController extends Controller
     public function exportFileModelAction(Request $request)
     {
         // TODO : add a permission for this action ?
-        
+
         // -- Get the file
         $fileFormatName = $request->query->get("fileFormat");
         $locale = $this->get('ogam.locale_listener')->getLocale();
         $fileFormat = $this->getDoctrine()->getRepository(FileFormat::class)->getFileFormat($fileFormatName, $locale);
-        
+
         // -- Get file infos and fields - ordered by position
         $fieldNames = array();
-        
+
         $fields = $fileFormat->getFields();
         foreach ($fields as $field) {
             $fieldNames[] = $field->getLabel() . ((!empty($field->getMask())) ? ' (' . $field->getMask() . ') ' : '') . (($field->getIsMandatory() == 1) ? ' *' : '');
         }
-        
+
         // -- Comment this line
         $fieldNames[0] = '// ' . $fieldNames[0];
-        
+
         // -- Export results to a CSV file
-        
+
         $configuration = $this->get('ogam.configuration_manager');
         $charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
-        
+
         // Define the header of the response
         header('Content-Type: text/csv;charset=' . $charset . ';application/force-download;');
         header('Content-disposition: attachment; filename=CSV_Model_' . $fileFormat->getLabel() . '_' . date('dmy_Hi') . '.csv');
-        
+
         // Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
         if ($charset == 'UTF-8') {
             echo (chr(0xEF));
             echo (chr(0xBB));
             echo (chr(0xBF));
         }
-        
+
         // Opens the standard output as a file flux
         $out = fopen('php://output', 'w');
         fputcsv($out, $fieldNames, ';');
         fclose($out);
-        
+
         return new Response(); // No render
     }
     /**
