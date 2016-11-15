@@ -942,7 +942,7 @@ WHERE fm.mappingType = 'FORM' AND fm.srcData = ff.data and fm.srcFormat = ff.for
 	 *
 	 * @param String $schema
 	 *        	the schema
-	 * @param OgamBundle\Entity\Generic\GenericFieldMapping $fieldsMappings
+	 * @param GenericFieldMapping[] $fieldsMappings
 	 *        	the fields mappings
 	 * @return Array[String => TableTreeData] The list of formats (including ancestors) potentially used
 	 */

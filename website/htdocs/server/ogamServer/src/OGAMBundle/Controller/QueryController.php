@@ -16,6 +16,9 @@ use OGAMBundle\Entity\Metadata\Dynamode;
 use OGAMBundle\Entity\Metadata\Unit;
 use OGAMBundle\Entity\Metadata\FormField;
 use OGAMBundle\Entity\Generic\GenericField;
+use OGAMBundle\Entity\Metadata\TableField;
+use OGAMBundle\Entity\Metadata\TableFormat;
+use OGAMBundle\Entity\Metadata\TableTree;
 
 /**
  * @Route("/query")
@@ -331,15 +334,6 @@ toot('r');
 	}
 
 	/**
-	 * @Route("/ajaxsavepredefinedrequest")
-	 */
-	public function ajaxsavepredefinedrequestAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxsavepredefinedrequest.html.twig', array ()
-		// ...
-		 );
-	}
-
-	/**
 	 * @Route("/ajaxgetqueryformfields")
 	 */
 	public function ajaxgetqueryformfieldsAction() {
@@ -450,7 +444,6 @@ toot('r');
 		$logger->debug('csvExportAction');
 
 		$user = $this->getUser();
-		$schema = $this->get('ogam.schema_listener')->getSchema();
 
 		// Configure memory and time limit because the program ask a lot of resources
 		$configuration =  $this->get('ogam.configuration_manager');
@@ -609,8 +602,8 @@ toot('r');
 
 								} else if ($formField->getInputType() === "NUMERIC") {
 									// Numeric value
-									if ($formField->decimals !== null && $formField->decimals !== "") {
-										$value = number_format($value, $formField->decimals, ',', '');
+									if ($formField->getDecimals() !== null && $formField->getDecimals() !== "") {
+										$value = number_format($value, $formField->getDecimals(), ',', '');
 									}
 
 									$content .= iconv("UTF-8", $charset, $value . ';');
@@ -820,8 +813,8 @@ toot('r');
 									$label = '[' . $label . ']';
 								} else if ($formField->getInputType() === "NUMERIC") {
 									// Numeric value
-									if ($formField->decimals !== null && $formField->decimals !== "") {
-										$label = number_format($value, $formField->decimals);
+									if ($formField->getDecimals() !== null && $formField->getDecimals() !== "") {
+										$label = number_format($value, $formField->getDecimals());
 									}
 								}
 							}
@@ -1003,8 +996,8 @@ toot('r');
 									$label = '[' . $label . ']';
 								} else if ($formField->getInputType() === "NUMERIC") {
 									// Numeric value
-									if ($formField->decimals !== null && $formField->decimals !== "") {
-										$label = number_format($value, $formField->decimals);
+									if ($formField->getDecimals() !== null && $formField->getDecimals() !== "") {
+										$label = number_format($value, $formField->getDecimals());
 									}
 								}
 							}
@@ -1187,11 +1180,139 @@ toot('r');
     }
 
 	/**
+	 * AJAX function : Return the list of a location information.
+	 *
 	 * @Route("/ajaxgetlocationinfo")
 	 */
-	public function ajaxgetlocationinfoAction() {
-		return $this->render ( 'OGAMBundle:Query:ajaxgetlocationinfo.html.twig', array ()
-		// ...
-		 );
+	public function ajaxgetlocationinfoAction(Request $request) {
+	    $logger = $this->get('logger');
+	    $logger->debug('ajaxgetlocationinfoAction');
+
+	    $lon = $request->query->get('LON');
+	    $lat = $request->query->get('LAT');
+	    $sessionId = session_id();
+
+	    $defaultResponseArray = [
+            'success' => true,
+            'id' => null,
+            "title" => null,
+            "hasChild" => false,
+            "columns" => [],
+            "fields" => [],
+            "data" => []
+        ];
+	    $resultLocationRepository = $this->getDoctrine()->getRepository(ResultLocation::class);
+
+	    if ($request->getSession()->get('query_Count', 0) == 0 && $resultLocationRepository->getResultsCount($sessionId)) {
+	        return new JsonResponse($defaultResponseArray);
+	    } else {
+	        $schema = $this->get('ogam.schema_listener')->getSchema();
+	        $locale = $this->get('ogam.locale_listener')->getLocale();
+	        $queryForm = $request->getSession()->get('query_QueryForm');
+	        // Get the mappings for the query form fields
+	        $queryForm = $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
+
+	        // Get the location table information
+	        $tables = $this->get('ogam.generic_service')->getAllFormats($schema, $queryForm->getFieldMappingSet()->getFieldMappingArray()); // Extract the location table from the last query
+	        $locationField = $this->getDoctrine()->getRepository(TableField::class)->getGeometryField($schema, array_keys($tables), $locale); // Extract the location field from the available tables
+	        $locationTableInfo = $this->getDoctrine()->getRepository(TableFormat::class)->getTableFormat($schema, $locationField->getFormat()->getFormat(), $locale); // Get info about the location table
+
+	        // Get the intersected locations
+	        $locations = $resultLocationRepository->getLocationInfo($sessionId, $lon, $lat, $locationField, $schema, $this->get('ogam.configuration_manager'), $locale);
+
+	        if (!empty($locations)) {
+	            // we have at least one plot found
+
+	            // The id is used to avoid to display two time the same result (it's a id for the result dataset)
+	            $id = array(
+	                'Results'
+	            ); // A small prefix is required here to avoid a conflict between the id when the result contain only one result
+	            // The columns config to setup the grid columnModel
+	            $columns = array();
+	            // The columns max length to setup the column width
+	            $columnsMaxLength = array();
+	            // The fields config to setup the store reader
+	            $locationFields = array(
+	                'id'
+	            ); // The id must stay the first field
+	            // The data to full the store
+	            $locationsData = array();
+
+	            foreach ($locations as $locationsIndex => $location) {
+	                $locationData = array();
+
+	                // Get the locations identifiers
+	                $key = 'SCHEMA/' . $schema . '/FORMAT/' . $locationTableInfo->getFormat();
+	                $key .= '/' . $location['pk'];
+	                $id[] = $key;
+	                $locationData[] = $key;
+
+	                $logger->debug('$key : ' . $key);
+
+	                // Remove the pk of the available columns
+	                unset($location['pk']);
+
+	                // Get the other fields
+	                // Setup the location data and the column max length
+	                foreach ($location as $columnName => $value) {
+	                    $locationData[] = $value;
+	                    if (empty($columnsMaxLength[$columnName])) {
+	                        $columnsMaxLength[$columnName] = array();
+	                    }
+	                    $columnsMaxLength[$columnName][] = strlen($value);
+	                }
+	                // Setup the fields and columns config
+	                if ($locationsIndex === (count($locations) - 1)) {
+
+	                    // Get the table fields
+	                    $tableFields = $this->getDoctrine()->getRepository(TableField::class)->getTableFields($schema, $locationField->getFormat()->getFormat(), null, $locale);
+	                    $tFOrdered = array();
+	                    foreach ($tableFields as $tableField) {
+	                        $tFOrdered[strtoupper($tableField->getColumnName())] = $tableField;
+	                    }
+	                    foreach ($location as $columnName => $value) {
+	                        $tableField = $tFOrdered[strtoupper($columnName)];
+	                        // Set the column model and the location fields
+	                        $dataIndex = $tableField->getName();
+	                        // Adds the column header to prevent it from being truncated too and 2 for the header margins
+	                        $columnsMaxLength[$columnName][] = strlen($tableField->getLabel()) + 2;
+	                        $column = array(
+	                            'header' => $tableField->getData()->getLabel(),
+	                            'dataIndex' => $dataIndex,
+	                            'editable' => false,
+	                            'tooltip' => $tableField->getData()->getDefinition(),
+	                            'width' => max($columnsMaxLength[$columnName]) * 7,
+	                            'type' => $tableField->getData()->getUnit()->getType()
+	                        );
+	                        $columns[] = $column;
+	                        $locationFields[] = $dataIndex;
+	                    }
+	                }
+	                $locationsData[] = $locationData;
+	            }
+
+	            // We must sort the array here because it can't be done
+	            // into the mapfile sql request to avoid a lower performance
+	            sort($id);
+
+	            // Check if the location table has a child table
+	            $hasChild = false;
+	            $children = $this->getDoctrine()->getRepository(TableTree::class)->getChildrenTableLabels($locationTableInfo);
+	            if (!empty($children)) {
+	                $hasChild = true;
+	            }
+	            return new JsonResponse([
+	                'success' => true,
+	                'id' => implode('', $id),
+	                "title" => $locationTableInfo->getLabel() . ' (' . count($locationsData) . ')',
+	                "hasChild" => $hasChild,
+	                "columns" => $columns,
+	                "fields" => $locationFields,
+	                "data" => $locationsData
+	            ]);
+	        } else {
+	            return new JsonResponse($defaultResponseArray);
+	        }
+	    }
 	}
 }
