@@ -160,7 +160,7 @@ INSERT INTO predefined_request (name, schema_code, dataset_id, label, definition
 
 
 -- Configuration des requêtes prédéfinies
-INSERT INTO predefined_request_criterion (request_name, format, data, value, fixed) VALUES ('SPECIES', 'TREE_FORM', 'SPECIES_CODE', '026.001.006', TRUE);
+INSERT INTO predefined_request_criterion (request_name, format, data, value, fixed) VALUES ('SPECIES', 'TREE_FORM', 'SPECIES_CODE', '026.001.006', FALSE);
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'PLOT_CODE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'CYCLE');
 INSERT INTO predefined_request_column (request_name, format, data) VALUES ('SPECIES', 'PLOT_FORM', 'INV_DATE');

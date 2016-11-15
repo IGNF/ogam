@@ -33,12 +33,12 @@ class AbstractService {
 	public function getLogger() {
 		return $this->logger;
 	}
-	
+
 	public function setLogger(LoggerInterface $logger) {
 		$this->logger = $logger;
 		return $this;
 	}
-	
+
 	/**
 	 * Parse an error response.
 	 *
@@ -51,7 +51,7 @@ class AbstractService {
 		try {
 			// Parse la chaîne en un arbre DOM
 			$dom = new \SimpleXMLElement($body, LIBXML_NOERROR); // Suppress warnings
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->logger->debug("Error during parsing: " . $e->getMessage());
 			throw new \Exception("Error during parsing: " . $e->getMessage());
 		}
@@ -75,7 +75,7 @@ class AbstractService {
 		try {
 			// Parse la chaîne en un arbre DOM
 			$dom = new \SimpleXMLElement($body); // Suppress warnings
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->logger->debug("Error during parsing: " . $e->getMessage());
 			throw new \Exception("Error during parsing: " . $e->getMessage());
 		}
@@ -95,7 +95,7 @@ class AbstractService {
 		try {
 			// Parse la chaîne en un arbre DOM
 			$dom = new \SimpleXMLElement($body);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->logger->debug("Error during parsing: " . $e->getMessage());
 			throw new \Exception("Error during parsing: " . $e->getMessage());
 		}
