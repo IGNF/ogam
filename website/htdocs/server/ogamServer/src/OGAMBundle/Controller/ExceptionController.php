@@ -29,9 +29,10 @@ class ExceptionController extends \Symfony\Bundle\TwigBundle\Controller\Exceptio
         $showException = $request->attributes->get('showException', $this->debug); // As opposed to an additional parameter, this maintains BC
 
         $code = $exception->getStatusCode();
+        $request->setRequestFormat($this->getDefaultFormat($request));
 
         return new Response($this->twig->render(
-            (string) $this->findTemplate($request, $request->getRequestFormat($this->getDefaultFormat($request)), $code, $showException),
+            (string) $this->findTemplate($request, $request->getRequestFormat(), $code, $showException),
             array(
                 'status_code' => $code,
                 'status_text' => isset(Response::$statusTexts[$code]) ? Response::$statusTexts[$code] : '',

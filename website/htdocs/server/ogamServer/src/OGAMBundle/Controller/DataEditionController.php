@@ -182,7 +182,9 @@ class DataEditionController extends Controller
             try {
                 $genericModel->deleteData($data);
             } catch (\Exception $e) {
-                $this->logger->err($e->getMessage());
+                if ($this->has('logger')){
+                    $this->get('logger')->error($e->getMessage());
+                }
                 $result = ['success'=>false, 'errorMessage'=> $this->get('translator')->trans('Error while deleting data')];
                 return $this->json($result);
             }
@@ -497,8 +499,10 @@ class DataEditionController extends Controller
                 // Add a message
                 $view['message'] = $this->get('translator')->trans("Data saved");
                 return $this->json($view);
-            } catch (Exception $e) {
-                $this->logger->err($e->getMessage());
+            } catch (\Exception $e) {
+                if ($this->has('logger')){
+                    $this->get('logger')->error($e->getMessage());
+                }
 
                 if (stripos($e->getMessage(), 'SQLSTATE[23505]') !== false) {
                     // Traitement du cas d'un doublon pour PostgreSQL
