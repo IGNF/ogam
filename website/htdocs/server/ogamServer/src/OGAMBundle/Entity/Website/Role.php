@@ -71,6 +71,13 @@ class Role implements RoleInterface {
 	private $schemas = array();
 
 	/**
+	 * Constructor
+	 */
+	public function __construct() {
+	    $this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
+	    $this->schemas= new \Doctrine\Common\Collections\ArrayCollection();
+	}
+	/**
 	 * Set code
 	 *
 	 * @param string $code
@@ -223,5 +230,15 @@ class Role implements RoleInterface {
 	public function getRole()
 	{
 		return $this->getCode();
+	}
+
+    /**
+     * add a permission
+     * @param Permission $perm
+     * @return Role
+     */
+	public function addPermission(Permission $perm){
+	    $this->permissions->add($perm);
+	    return $this;
 	}
 }
