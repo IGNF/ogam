@@ -5,6 +5,7 @@ namespace OGAMBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use OGAMBundle\Entity\HarmonizedData\HarmonizationProcess;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 /**
  * @Route("/harmonization")
@@ -131,12 +132,28 @@ class HarmonizationController extends Controller
     	} catch (\Exception $e) {
     		$this->get('logger')->error('Error during get: '.$e, array('exception' => $e, 'provider'=>$providerId, 'dataset'=>$datasetId));
 
-    		return $this->json(array(
+    		return new $this->json(array(
     				'success'=> FALSE,
     				'errorMsg'=>  $e->getMessage()
 
     		));
     	}
+    }
+
+    /**
+     * Returns a JsonResponse that uses the serializer component if enabled, or json_encode.
+     *
+     * @param mixed $data    The response data
+     * @param int   $status  The status code to use for the Response
+     * @param array $headers Array of extra headers to add
+     * @param array $context Context to pass to serializer when using serializer component
+     *
+     * @return JsonResponse
+     * //import from symfony 3.1
+     */
+    protected function json($data, $status = 200, $headers = array(), $context = array())
+    {
+        return new JsonResponse($data, $status, $headers);
     }
 
 }
