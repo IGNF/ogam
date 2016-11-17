@@ -510,6 +510,7 @@ td.delete-cell {
 
 .header-beadcrumb ol {
 	list-style-type: none;
+	margin-left: 0;
 }
 
 .header-beadcrumb li {
@@ -517,8 +518,10 @@ td.delete-cell {
 }
 
 .header-beadcrumb .separator {
-	margin-left : 5px;
-	margin-right : 5px;
+	background-image: url("../img/arrow.png");
+	width: 16px;
+	height: 16px;
+	display: inline-block;
 }
 
 /**************************************/
