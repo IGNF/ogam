@@ -168,4 +168,5 @@ swiftmailer:
 
     
 # breadcrumb configuration
-white_october_breadcrumbs: ~
+white_october_breadcrumbs:
+    separator: ''

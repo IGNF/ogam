@@ -98,7 +98,7 @@
                 OgamDesktopIntegration.request.send("DATASET_ID={{- harmonizationProcess.dataset.id -}}&PROVIDER_ID={{- harmonizationProcess.providerId -}}&action=status");
 
             }
-            OgamDesktopIntegration.getStatusTask_{{- harmonizationProcess.harmonizationId -}} = later.setInterval(OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}}, later.parse.text('every 2 sec'));
+            OgamDesktopIntegration.getStatusTask_{{- harmonizationProcess.harmonizationId -}} = later.setInterval(OgamDesktopIntegration.getStatus_{{- harmonizationProcess.harmonizationId -}}, later.parse.text('every 4 sec'));
             </script>
             </div>
         {% elseif harmonizationProcess.status == '' %}

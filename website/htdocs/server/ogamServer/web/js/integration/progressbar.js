@@ -35,7 +35,7 @@ function setText(id, percent) {
 function display(id, label, percentage, imgpath) {
 	var percentageWidth = eachPercent * percentage;
 	var actualWidth = initial + percentageWidth;
-	document.write('<span id="' + id + 'percentLabel">' + label + '</span><br/> ' +
+	document.write('<span style="display:block;" id="' + id + 'percentLabel">' + label + '</span> ' +
 			' <img id="' + id + 
 			'"src= "'+imgpath+ 'percentImage.png"' + 
 			' alt= "' + percentage + '%" '+ 

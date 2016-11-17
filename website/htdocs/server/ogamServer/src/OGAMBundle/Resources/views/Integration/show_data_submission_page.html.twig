@@ -95,7 +95,7 @@ set user = app.user
                     OgamDesktopIntegration.request.open("GET", url+'?action=status&submissionId='+{{ submission.id }}, true);
                     OgamDesktopIntegration.request.send();
                 }
-                OgamDesktopIntegration.getStatusTask_{{ submission.id }} = later.setInterval(OgamDesktopIntegration.getStatus_{{- submission.id -}}, later.parse.text('every 2 sec'));
+                OgamDesktopIntegration.getStatusTask_{{ submission.id }} = later.setInterval(OgamDesktopIntegration.getStatus_{{- submission.id -}}, later.parse.text('every 4 sec'));
                 </script>
                 </div>
             {% else %}
