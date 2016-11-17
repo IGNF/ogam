@@ -25,11 +25,17 @@ home:
                     controller: integration
                     action: validateCreateDataSubmission
                     module: default
-            
+
         harmonization:
             label: Breadcrumb_Harmonization
             controller: harmonization
             action: index
+            module: default
+
+        showharmonization:
+            label: Breadcrumb_Harmonization
+            controller: harmonization
+            action: showHarmonizationPage
             module: default
 
         visualisation:
