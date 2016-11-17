@@ -133,6 +133,10 @@ Ext.define('OgamDesktop.Application', {
 		        	toastHtml = application.toastHtml_500;
 					break;
 				default:
+		    		if (response.aborted) {//may be a userchoice don't alert him
+		    			Ext.log({'level':"info"}, 'an connection is aborted');
+		    			return;
+		    		}
 					toastTitle = application.toastTitle_default + ' ' + statusCode + ' : ' + response.statusText + '.';
 		        	toastHtml = application.toastHtml_default;
 					break;
