@@ -81,9 +81,7 @@ Ext.define('OgamDesktop.view.request.PredefinedRequest', {
 			itemId:'launchRequest',
 			margin: '5 5 5 5',
 			text: this.launchRequestButtonText,
-			tooltip:this.launchRequestButtonTooltip,
-			handler:'onLaunchRequest'
-				
+			tooltip:this.launchRequestButtonTooltip
 		}]
 		
 		this.callParent();
