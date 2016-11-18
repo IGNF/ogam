@@ -157,6 +157,8 @@ constraint PK_HARMONIZED_TREE_DATA primary key (PROVIDER_ID, PLOT_CODE, CYCLE, T
 constraint FK_HARMONIZED_TREE_ASSOCIATE_PLOT_DAT foreign key (PROVIDER_ID, PLOT_CODE, CYCLE) references HARMONIZED_PLOT_DATA (PROVIDER_ID, PLOT_CODE, CYCLE) on delete restrict on update restrict,
 unique (PROVIDER_ID, PLOT_CODE, CYCLE, TREE_ID)   
 );
+-- Ajout de la colonne point PostGIS
+SELECT AddGeometryColumn('harmonized_data','harmonized_tree_data','the_geom',4326,'POINT',2);
 
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.PROVIDER_ID IS 'The identifier of the data provider';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.PLOT_CODE IS 'The identifier of the plot';
@@ -167,5 +169,4 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.DBH IS 'The diameter at breast height (in
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.HEIGHT IS 'The tree height (in m)';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.PHOTO IS 'A picture of the tree';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
-
-
+COMMENT ON COLUMN HARMONIZED_TREE_DATA.the_geom IS 'geometry of the tree location';
