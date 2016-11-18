@@ -60,7 +60,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "install_dev_tools", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/install_dev_tools.sh"
   
   config.vm.provision "fix_var_perf", run:"always", type: "shell", inline: "localpath=$1 ; sharedpath=$2 ; /vagrant/ogam/vagrant_config/scripts/build_locale_dir.sh $localpath && mount -o bind $localpath $sharedpath", args:['/home/vagrant/ogam/var','/vagrant/ogam/website/htdocs/server/ogamServer/var']
-
   
   #
   # Application deployment
@@ -79,7 +78,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "build_ogam_server", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/build_ogam_server.sh"
    
   #
-  # Documentation & Code quality
+  # Documentation & Code quality & Developers provisions
   # The following provisions are executed as "vagrant" and are only run when called explicitly 
   #
     
@@ -99,6 +98,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provision "run_phpcheckstyle", privileged: false, type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/run_phpcheckstyle.sh"
   end
   
+  if ARGV.include? '--provision-with'
+    config.vm.provision "update_metadata", type: "shell", inline: "/vagrant/ogam/vagrant_config/scripts/update_metadata.sh"
+  end
+  
   #
   # Always restart Apache
   #
@@ -106,5 +109,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", inline: "service apache2 restart", run: "always"
   
   config.vm.provision "shell", inline: "echo 'Le site est pret a etre utilise sur http://192.168.50.4'", run: "always"
-    
+  
 end
