@@ -241,4 +241,13 @@ class Role implements RoleInterface {
 	    $this->permissions->add($perm);
 	    return $this;
 	}
+	/**
+	 * remove a permission
+	 * @param Permission $perm
+	 * @return Role
+	 */
+	public function removePermission(Permission $perm){
+	    $this->permissions->removeElement($perm);
+	    return $this;
+	}
 }
