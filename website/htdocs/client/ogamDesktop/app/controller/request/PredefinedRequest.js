@@ -64,5 +64,6 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     	});
     	
     	this.getMainView().getLayout().setActiveItem('consultationTab');
+    	this.getAdvReqView().collapse();
     }
 });
