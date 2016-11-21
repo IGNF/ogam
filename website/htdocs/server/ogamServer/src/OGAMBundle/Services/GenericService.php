@@ -833,14 +833,14 @@ class GenericService {
 	            $sql = ($value == true ? '1' : '0');
 	            break;
 	        case "DATE":
-	            if ($value == "") {
+	            if ($value === "" || $value === null) {
 	                $sql = "NULL";
 	            } else {
 	                $sql = " to_date('" . $value . "', 'YYYY/MM/DD')";
 	            }
 	            break;
 	        case "TIME":
-	                if ($value == "") {
+	                if ($value === "" || $value === null) {
 	                    $sql = "NULL";
 	                } else {
 	                    $sql = "'" . $value . "'";
@@ -849,7 +849,7 @@ class GenericService {
 	        case "INTEGER":
 	        case "NUMERIC":
 	        case "RANGE":
-	            if ($value === "") {
+	            if ($value === "" || $value === null) {
 	                $sql = "NULL";
 	            } else {//0 is valid here
 	                $value = str_replace(",", ".", $value);
@@ -863,7 +863,7 @@ class GenericService {
 	            $sql = "'" . $value . "'";
 	            break;
 	        case "GEOM":
-	            if ($value == "") {
+	            if ($value === "" || $value === null) {
 	                $sql = "NULL";
 	            } else {
 	                $sql = " ST_transform(ST_GeomFromText('" . $value . "', " . $this->visualisationSRS . "), " . $databaseSRS . ")";
