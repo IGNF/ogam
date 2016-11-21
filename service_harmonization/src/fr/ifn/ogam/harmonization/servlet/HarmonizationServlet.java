@@ -119,7 +119,7 @@ public class HarmonizationServlet extends AbstractServlet {
 			/*
 			 * Launch the harmonization of data
 			 */
-			if (action.equals(ACTION_HARMONIZE) || action.equals(ACTION_REMOVE_HARMONIZE_DATA)) {
+			if (action.equals(ACTION_HARMONIZE)) {
 
 				// Check if a thread is already running
 				HarmonizationServiceThread process = (HarmonizationServiceThread) ThreadLock.getInstance().getProcess(key);
@@ -127,12 +127,28 @@ public class HarmonizationServlet extends AbstractServlet {
 					throw new Exception("A process is already running for this country and dataset");
 				}
 
-				// Launch the harmonization thread
-				boolean removeOnly = false;
-				if(action.equals(ACTION_REMOVE_HARMONIZE_DATA)){
-					removeOnly = true;
+				process = new HarmonizationServiceThread(datasetId, providerId, false);
+				process.start();
+
+				// Register the running thread
+				ThreadLock.getInstance().lockProcess(key, process);
+
+				// Output the current status of the check service
+				out.print(generateResult(HarmonizationStatus.RUNNING, process));
+			} else
+
+			/*
+			 * Launch the removal of data
+			 */
+			if (action.equals(ACTION_REMOVE_HARMONIZE_DATA)) {
+
+				// Check if a thread is already running
+				HarmonizationServiceThread process = (HarmonizationServiceThread) ThreadLock.getInstance().getProcess(key);
+				if (process != null) {
+					throw new Exception("A process is already running for this country and dataset");
 				}
-				process = new HarmonizationServiceThread(datasetId, providerId, removeOnly);
+
+				process = new HarmonizationServiceThread(datasetId, providerId, true);
 				process.start();
 
 				// Register the running thread

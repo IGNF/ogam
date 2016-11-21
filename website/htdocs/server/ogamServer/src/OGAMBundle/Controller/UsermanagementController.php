@@ -66,7 +66,8 @@ class UsermanagementController extends Controller {
 		));
 
 		$formBuilder->add('login', TextType::class, array(
-			'label' => 'Login'
+			'label' => 'Login',
+			'read_only' => $user ? $user->getLogin() != null : false
 		));
 
 		// add the password fields in creation mode only
@@ -155,7 +156,8 @@ class UsermanagementController extends Controller {
 		$formBuilder = $this->createFormBuilder($role);
 
 		$formBuilder->add('code', TextType::class, array(
-			'label' => 'Code'
+			'label' => 'Code',
+			'read_only' => $role ? !empty($role->getCode()) : false
 		));
 
 		$formBuilder->add('label', TextType::class, array(

@@ -64,9 +64,19 @@ public class HarmonizationServiceThread extends AbstractThread {
 			Date startDate = new Date();
 			logger.debug("Start of the harmonization process " + startDate + ".");
 
-			// Harmonize data
 			HarmonizationService harmonizationService = new HarmonizationService(this);
-			harmonizationService.harmonizeData(datasetId, providerId, removeOnly);
+
+			if (removeOnly) {
+
+				// Remove harmonized data
+				harmonizationService.removeHarmonizedData(datasetId, providerId);
+
+			} else {
+
+				// Harmonize data
+				harmonizationService.harmonizeData(datasetId, providerId);
+
+			}
 
 			// Log the end the the request
 			Date endDate = new Date();

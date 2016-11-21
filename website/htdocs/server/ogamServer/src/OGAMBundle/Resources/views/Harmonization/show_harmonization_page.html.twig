@@ -108,10 +108,8 @@
         {% endif %}</td>
     <td>
     {% if harmonizationProcess.submissionStatus is not same as("NOT_VALID") and harmonizationProcess.status is not same as("RUNNING") %}
-        {% if harmonizationProcess.status is not same as("OK") %}
         <a onclick="return confirmLauch();" href="{{ path('harmonization_launch',{'DATASET_ID':harmonizationProcess.dataset.id, 'PROVIDER_ID':harmonizationProcess.providerId}) }}" >{{ 'Launch Harmonization'|trans }}</a>
         <br/>
-        {% endif %}
         {% if harmonizationProcess.status is not same as("UNDONE") and harmonizationProcess.status is not same as("INIT") %}
         <a onclick="return confirmDeletion();" href="{{ path('harmonization_removeharmonizationdata',{'DATASET_ID':harmonizationProcess.dataset.id, 'PROVIDER_ID':harmonizationProcess.providerId}) }}" >{{ 'Remove Harmonization Data'|trans }}</a>
         {% endif %}
