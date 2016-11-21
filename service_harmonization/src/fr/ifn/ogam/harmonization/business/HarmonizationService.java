@@ -107,7 +107,7 @@ public class HarmonizationService extends AbstractService {
 	 *            The country code
 	 * @return the process identifier
 	 */
-	public Integer harmonizeData(String datasetId, String providerId, boolean removeOnly) {
+	public Integer harmonizeData(String datasetId, String providerId) {
 
 		Integer processId = null;
 
@@ -117,6 +117,9 @@ public class HarmonizationService extends AbstractService {
 
 			// Initialize the process
 			processId = harmonisationProcessDAO.newHarmonizationProcess(datasetId, providerId, HarmonizationStatus.RUNNING);
+
+			// Delete old data
+			removeHarmonizedData(datasetId, providerId);
 
 			// Prepare some static data
 			GenericData datasetIdData = new GenericData();
@@ -156,6 +159,128 @@ public class HarmonizationService extends AbstractService {
 			LinkedList<String> harmonizedTablesFormatSortedList = genericMapper.getSortedTables(Schemas.HARMONIZED_DATA, harmonizedTables);
 			logger.debug("harmonizedTablesFormatSortedList : " + harmonizedTablesFormatSortedList);
 
+			// For each destination table (starting from the root in the hierarchy to the leaf tables)
+			Iterator<String> destTableIter = harmonizedTablesFormatSortedList.descendingIterator();
+			while (destTableIter.hasNext()) {
+				String destTableFormat = destTableIter.next();
+
+				logger.debug("Preparing to insert data in table : " + destTableFormat);
+
+				// Get the physical name of the destination table
+				TableFormatData destTableFormatData = metadataDAO.getTableFormat(destTableFormat);
+
+				// Get the list of destination fields for this table and this dataset
+				Map<String, TableFieldData> destFields = metadataDAO.getDatasetHarmonizedFields(destTableFormat);
+
+				// Prepare some static criteria values
+				TreeMap<String, GenericData> criteriaFields = new TreeMap<String, GenericData>();
+				criteriaFields.put(Data.DATASET_ID, datasetIdData);
+				criteriaFields.put(Data.PROVIDER_ID, providerIdData);
+
+				boolean finished = false;
+				int count = 0;
+				int page = 0;
+				int total = countData(destTableFormat, criteriaFields);
+				while (!finished) {
+
+					//
+					// Build a giant SELECT from the raw tables
+					//
+					List<Map<String, GenericData>> sourceData = readSourceData(destTableFormat, criteriaFields, page, MAX_LINES);
+
+					Iterator<Map<String, GenericData>> sourceIter = sourceData.iterator();
+					while (sourceIter.hasNext()) {
+
+						// Get the source data from the source table(s)
+						Map<String, GenericData> sourceFields = sourceIter.next();
+						if (thread != null) {
+							thread.updateInfo("Inserting " + destTableFormatData.getTableName() + " data", count, total);
+						}
+
+						// Add the static data for the destination table
+						sourceFields.put(Data.DATASET_ID, datasetIdData);
+						sourceFields.put(Data.PROVIDER_ID, providerIdData);
+
+						// Insert the record data in the destination table
+						genericDAO.insertData(Schemas.HARMONIZED_DATA, destTableFormatData.getTableName(), destFields, sourceFields);
+						count++;
+					}
+
+					// Check we have read everything
+					if (count == total) {
+						finished = true;
+					}
+
+					page++;
+
+				}
+
+			}
+
+			// Launch post-processing
+			SubmissionData submission = new SubmissionData();
+			submission.setDatasetId(datasetId);
+			submission.setProviderId(providerId);
+			processingService.processData(ProcessingStep.HARMONIZATION, submission, this.thread);
+
+			// Log the process in the log table
+			harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);
+			harmonisationProcessDAO.updateHarmonizationProcessSubmissions(processId, listSubmissions);
+
+			logger.debug("harmonization done");
+
+		} catch (Exception e) {
+			logger.error("Error during harmonization process", e);
+			if (processId != null) {
+				try {
+					harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.ERROR);
+				} catch (Exception ignored) {
+					logger.error("Error while updating process status", e);
+				}
+			}
+		}
+
+		return processId;
+
+	}
+
+	/**
+	 * Harmonize Data.
+	 * 
+	 * @param datasetId
+	 *            The dataset identifier
+	 * @param providerId
+	 *            The country code
+	 * @return the process identifier
+	 */
+	public void removeHarmonizedData(String datasetId, String providerId) {
+
+		try {
+
+			logger.debug("harmonize data for " + datasetId + " and provider " + providerId);
+
+			//
+			// Prepare the metadata that we will use
+			//
+			List<TableFormatData> harmonizedTables = new ArrayList<TableFormatData>(); // The list of destination harmonized tables concerned by the dataset
+
+			// The list of source raw tables concerned by the dataset
+			List<String> rawTables = metadataDAO.getDatasetRawTables(datasetId);
+
+			// Get the harmonized tables corresponding to the raw_data tables
+			Iterator<String> rawTablesIter = rawTables.iterator();
+			while (rawTablesIter.hasNext()) {
+				String rawTable = rawTablesIter.next();
+
+				// Get the list of harmonized tables for each raw table
+				harmonizedTables.addAll(metadataDAO.getFormatMapping(rawTable, MappingTypes.HARMONIZATION_MAPPING).values());
+
+			}
+
+			// Sort the tables in the right order (leaf first)
+			LinkedList<String> harmonizedTablesFormatSortedList = genericMapper.getSortedTables(Schemas.HARMONIZED_DATA, harmonizedTables);
+			logger.debug("harmonizedTablesFormatSortedList : " + harmonizedTablesFormatSortedList);
+
 			//
 			// Delete old data
 			// from the harmonized tables (starting from the leaf tables)
@@ -171,94 +296,9 @@ public class HarmonizationService extends AbstractService {
 				harmonizedDataDAO.deleteHarmonizedData(tableFormatData.getTableName(), providerId);
 			}
 
-			if (removeOnly == false) {
-				// For each destination table (starting from the root in the hierarchy to the leaf tables)
-				Iterator<String> destTableIter = harmonizedTablesFormatSortedList.descendingIterator();
-				while (destTableIter.hasNext()) {
-					String destTableFormat = destTableIter.next();
-
-					logger.debug("Preparing to insert data in table : " + destTableFormat);
-
-					// Get the physical name of the destination table
-					TableFormatData destTableFormatData = metadataDAO.getTableFormat(destTableFormat);
-
-					// Get the list of destination fields for this table and this dataset
-					Map<String, TableFieldData> destFields = metadataDAO.getDatasetHarmonizedFields(destTableFormat);
-
-					// Prepare some static criteria values
-					TreeMap<String, GenericData> criteriaFields = new TreeMap<String, GenericData>();
-					criteriaFields.put(Data.DATASET_ID, datasetIdData);
-					criteriaFields.put(Data.PROVIDER_ID, providerIdData);
-
-					boolean finished = false;
-					int count = 0;
-					int page = 0;
-					int total = countData(destTableFormat, criteriaFields);
-					while (!finished) {
-
-						//
-						// Build a giant SELECT from the raw tables
-						//
-						List<Map<String, GenericData>> sourceData = readSourceData(destTableFormat, criteriaFields, page, MAX_LINES);
-
-						Iterator<Map<String, GenericData>> sourceIter = sourceData.iterator();
-						while (sourceIter.hasNext()) {
-
-							// Get the source data from the source table(s)
-							Map<String, GenericData> sourceFields = sourceIter.next();
-							if (thread != null) {
-								thread.updateInfo("Inserting " + destTableFormatData.getTableName() + " data", count, total);
-							}
-
-							// Add the static data for the destination table
-							sourceFields.put(Data.DATASET_ID, datasetIdData);
-							sourceFields.put(Data.PROVIDER_ID, providerIdData);
-
-							// Insert the record data in the destination table
-							genericDAO.insertData(Schemas.HARMONIZED_DATA, destTableFormatData.getTableName(), destFields, sourceFields);
-							count++;
-						}
-
-						// Check we have read everything
-						if (count == total) {
-							finished = true;
-						}
-
-						page++;
-
-					}
-
-				}
-
-				// Launch post-processing
-				SubmissionData submission = new SubmissionData();
-				submission.setDatasetId(datasetId);
-				submission.setProviderId(providerId);
-				processingService.processData(ProcessingStep.HARMONIZATION, submission, this.thread);
-
-				// Log the process in the log table
-				harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.OK);
-				harmonisationProcessDAO.updateHarmonizationProcessSubmissions(processId, listSubmissions);
-
-				logger.debug("harmonization done");
-
-			} else {
-				harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.INIT);
-				harmonisationProcessDAO.updateHarmonizationProcessSubmissions(processId, listSubmissions);
-			}
-
 		} catch (Exception e) {
-			logger.error("Error during harmonization process", e);
-			if (processId != null) {
-				try {
-					harmonisationProcessDAO.updateHarmonizationProcessStatus(processId, HarmonizationStatus.ERROR);
-				} catch (Exception ignored) {
-					logger.error("Error while updating process status", e);
-				}
-			}
+			logger.error("Error during deletion process", e);
 		}
-
-		return processId;
 
 	}
 
