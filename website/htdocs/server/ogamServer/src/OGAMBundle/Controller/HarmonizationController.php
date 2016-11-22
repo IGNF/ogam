@@ -32,7 +32,13 @@ class HarmonizationController extends Controller
     	$harmonisationProcesses = array();
 
     	foreach ($activeSubmissions as $activeSubmission) {
-    		$harmonisationProcess = $HarmoRepo->findOneBy(array('providerId'=>$activeSubmission->getProvider()->getId(), 'dataset'=>$activeSubmission->getDataset()), array('harmonizationId'=> 'DESC'));
+    	    $criteria = new \Doctrine\Common\Collections\Criteria();
+    	    $criteria->where($criteria->expr()->eq('providerId', $activeSubmission->getProvider()->getId()));
+    	    $criteria->andWhere($criteria->expr()->eq('dataset', $activeSubmission->getDataset()));
+    	    $criteria->andWhere($criteria->expr()->notIn('status', array('ERROR','REMOVED')));
+    	    $criteria->orderBy(array('harmonizationId'=> 'DESC'));
+    		$harmonisationProcess = $HarmoRepo->matching($criteria)->first();
+
     		if (empty($harmonisationProcess)) {
     			$harmonisationProcess = new HarmonizationProcess();
     			$harmonisationProcess->setProviderId($activeSubmission->getProvider()->getId())->setDataset($activeSubmission->getDataset())->addSubmission($activeSubmission);
