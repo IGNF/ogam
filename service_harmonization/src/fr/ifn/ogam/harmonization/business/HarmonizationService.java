@@ -296,6 +296,9 @@ public class HarmonizationService extends AbstractService {
 				harmonizedDataDAO.deleteHarmonizedData(tableFormatData.getTableName(), providerId);
 			}
 
+			// Mark previous harmonization processes as removed.
+			harmonisationProcessDAO.updateHarmonizationProcessStatusByProvider(datasetId, providerId, HarmonizationStatus.REMOVED);
+
 		} catch (Exception e) {
 			logger.error("Error during deletion process", e);
 		}
