@@ -35,5 +35,11 @@ public interface HarmonizationStatus {
 	 * Error status.
 	 */
 	String ERROR = "ERROR";
+	
+
+	/**
+	 * Removed status (data has been deleted).
+	 */
+	String REMOVED = "REMOVED";
 
 }
