@@ -1,6 +1,6 @@
 <?php
 
-// TODO include_once('includes/authentication.php');
+include_once('includes/authentication.php');
 
 // TODO $configurationSession = new Zend_Session_Namespace('configuration');
 
@@ -61,9 +61,7 @@ if (!empty($queriesArg['SERVICE']) && strcasecmp($queriesArg['SERVICE'] , "WFS")
 }
 
 // force la valeur de SESSION_ID
-session_start();
-$queriesArg['SESSION_ID'] = session_id();
-session_abort();
+$queriesArg['SESSION_ID'] = $sessionId;
 
 header('Access-Control-Allow-Origin: *');
 

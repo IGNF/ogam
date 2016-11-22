@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="website.role")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\RoleRepository")
  */
-class Role implements RoleInterface {
+class Role implements RoleInterface, \Serializable {
 
 	/**
 	 * The code.
@@ -48,7 +48,7 @@ class Role implements RoleInterface {
 	 * A list of codes corresponding to authorised actions.
 	 *
 	 * @var Array[String]
-	 * @ORM\ManyToMany(targetEntity="Permission")
+	 * @ORM\ManyToMany(targetEntity="Permission", fetch="EAGER")
      * @ORM\JoinTable(name="permission_per_role",
      *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="permission_code", referencedColumnName="permission_code")}
@@ -241,6 +241,7 @@ class Role implements RoleInterface {
 	    $this->permissions->add($perm);
 	    return $this;
 	}
+
 	/**
 	 * remove a permission
 	 * @param Permission $perm
@@ -249,5 +250,26 @@ class Role implements RoleInterface {
 	public function removePermission(Permission $perm){
 	    $this->permissions->removeElement($perm);
 	    return $this;
+	}
+
+	/**
+	 *
+	 * @see \Serializable::serialize()
+	 */
+	public function serialize() {
+	    return serialize(array(
+	        $this->code,
+	        $this->label,
+	        $this->definition,
+	        $this->permissions
+	    ));
+	}
+
+	/**
+	 *
+	 * @see \Serializable::unserialize()
+	 */
+	public function unserialize($serialized) {
+	    list ($this->code, $this->label, $this->definition, $this->permissions) = unserialize($serialized);
 	}
 }

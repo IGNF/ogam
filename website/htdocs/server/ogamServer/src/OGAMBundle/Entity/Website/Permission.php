@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="website.permission")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PermissionRepository")
  */
-class Permission {
+class Permission implements \Serializable{
 
 	/**
 	 *
@@ -66,6 +66,25 @@ class Permission {
 	 */
 	public function getLabel() {
 		return $this->label;
+	}
+
+	/**
+	 *
+	 * @see \Serializable::serialize()
+	 */
+	public function serialize() {
+	    return serialize(array(
+	        $this->code,
+	        $this->label
+	    ));
+	}
+
+	/**
+	 *
+	 * @see \Serializable::unserialize()
+	 */
+	public function unserialize($serialized) {
+	    list ($this->code, $this->label) = unserialize($serialized);
 	}
 }
 
