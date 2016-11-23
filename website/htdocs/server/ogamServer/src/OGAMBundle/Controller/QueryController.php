@@ -54,9 +54,9 @@ class QueryController extends Controller {
 		$this->getDoctrine ()->getRepository ( 'OGAMBundle\Entity\Mapping\ResultLocation', 'mapping' )->cleanPreviousResults ( session_id () );
 
 		// Check if the parameter of the default page is set
-		if ($request->query->get ( 'default' ) === "predefined") {
+		if ($request->query->get ('default') === "predefined") {
 			$logger->debug ( 'defaultTab predefined' );
-			// $this->view->defaultTab = 'predefined'; //TODO: Regarder avec flo le fonctionnement avec zend...
+			$defaultTab = 'predefined_request';
 		}
 
 		// Add the configuration parameters to the session for the map proxies (mapserverProxy and tilecacheProxy)
@@ -66,7 +66,7 @@ class QueryController extends Controller {
 		}
 
 		// Forward the user to the next step
-		return $this->redirect ( '/odp/index.html?locale=' . $request->getLocale () );
+		return $this->redirect ('/odp/index.html?locale=' . $request->getLocale () . (isset($defaultTab) ?'#'.$defaultTab:'') );
 	}
 
 	/**
