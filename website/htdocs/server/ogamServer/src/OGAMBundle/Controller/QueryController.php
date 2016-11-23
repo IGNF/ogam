@@ -59,6 +59,12 @@ class QueryController extends Controller {
 			// $this->view->defaultTab = 'predefined'; //TODO: Regarder avec flo le fonctionnement avec zend...
 		}
 
+		// Add the configuration parameters to the session for the map proxies (mapserverProxy and tilecacheProxy)
+		if (!$request->getSession()->has('proxy_ConfigurationParameters')) {
+    		$configuration =  $this->get('ogam.configuration_manager');
+    		$request->getSession()->set('proxy_ConfigurationParameters', $configuration->getParameters());
+		}
+
 		// Forward the user to the next step
 		return $this->redirect ( '/odp/index.html?locale=' . $request->getLocale () );
 	}

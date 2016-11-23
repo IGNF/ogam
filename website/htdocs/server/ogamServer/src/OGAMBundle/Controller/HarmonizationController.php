@@ -25,7 +25,7 @@ class HarmonizationController extends Controller
     /**
      * @Route("/show-harmonization-page", name="harmonization_dashboard")
      */
-    public function showHarmonizationPageAction()
+    public function showHarmonizationPageAction(Request $request)
     {
     	$activeSubmissions = $this->getDoctrine()->getRepository('OGAMBundle:RawData\Submission','raw_data')->getSubmissionsForHarmonization();
     	$HarmoRepo = $this->getDoctrine()->getRepository('OGAMBundle:HarmonizedData\HarmonizationProcess','harmonized_data');
@@ -45,6 +45,12 @@ class HarmonizationController extends Controller
     		}
     		$harmonisationProcesses[] = $harmonisationProcess;
     	}
+    	
+    	// Add the configuration parameters to the session for the map proxies (mapserverProxy and tilecacheProxy)
+		if (!$request->getSession()->has('proxy_ConfigurationParameters')) {
+    		$configuration =  $this->get('ogam.configuration_manager');
+    		$request->getSession()->set('proxy_ConfigurationParameters', $configuration->getParameters());
+		}
 
         return $this->render('OGAMBundle:Harmonization:show_harmonization_page.html.twig', array(
             'harmonizations' => $harmonisationProcesses

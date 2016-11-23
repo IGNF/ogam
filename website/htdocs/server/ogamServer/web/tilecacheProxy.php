@@ -1,8 +1,6 @@
 <?php
 
-// TODO include_once('includes/authentication.php');
-
-//TODO $configurationSession = new Zend_Session_Namespace('configuration');
+include_once('includes/authentication.php');
 
 // Gets the query parameters
 parse_str(ltrim($_SERVER["QUERY_STRING"],'?'), $query);
@@ -33,6 +31,7 @@ foreach($queryParamsAllow as $param) {
         $queriesArg[$param] = $query[$param];
     }
 }
+
 // Forces the 'REQUEST' parameter
 $queriesArg['REQUEST']  = 'GetMap';
 
@@ -43,13 +42,16 @@ $queriesArg['SERVICE']  = 'WMS';
 header('Content-Type: image/png');
 header('Access-Control-Allow-Origin: *');
 
-// TODO Sets the url
-//$url = $configurationSession->configuration['tilecache_private_url'];
-$url = 'http://localhost/tilecache-ogam?';
+// Set the url
+$url = $configurationParameters['tilecache_private_url']->getValue();
+if(empty($url)){
+    error_log("Tilecache private url not set, use of the default 'http://localhost/tilecache-ogam?' url.");
+    error_log("Please, check the configuration of the 'tilecache_private_url' parameter into the 'website.application_parameters' database table.");
+    $url = "http://localhost/tilecache-ogam?";
+}
 
 // Sets the uri (url + urn)
 $uri = rtrim($url,'?').'?'.http_build_query($queriesArg);
-
 
 //echo $uri;exit;
 //error_log($uri);

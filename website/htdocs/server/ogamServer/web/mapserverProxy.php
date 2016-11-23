@@ -2,8 +2,6 @@
 
 include_once('includes/authentication.php');
 
-// TODO $configurationSession = new Zend_Session_Namespace('configuration');
-
 parse_str(ltrim($_SERVER["QUERY_STRING"],'?'), $query); //recupere la requete envoyée partie (GET params)...
 $query = array_change_key_case($query, CASE_UPPER); // force les clés en majuscule
 $queryParamsAllow = array(//paramNom => requis
@@ -41,6 +39,7 @@ foreach($queryParamsAllow as $param) {
         $queriesArg[$param] = $query[$param];
     }
 }
+
 // force la valeur de REQUEST
 if (!empty($queriesArg['REQUEST']) && strcasecmp($queriesArg['REQUEST'] , "getlegendgraphic") == 0) {
 	$queriesArg['REQUEST']  = 'GetLegendGraphic';
@@ -65,14 +64,12 @@ $queriesArg['SESSION_ID'] = $sessionId;
 
 header('Access-Control-Allow-Origin: *');
 
-// TODO Set the url
-//$url = $configurationSession->configuration['mapserver_private_url'];
-$url = 'http://localhost/mapserv-ogam?';
-
-if (empty($url)) {
-	error_log("URL not set, check the configuration of the mapserver_private_url parameter and the bootstrap");
-	echo "URL not set, check the configuration of the mapserver_private_url parameter and the bootstrap";
-	exit;
+// Set the url
+$url = $configurationParameters['mapserver_private_url']->getValue();
+if(empty($url)){
+    error_log("Mapserver private url not set, use of the default 'http://localhost/mapserv-ogam?' url.");
+    error_log("Please, check the configuration of the 'mapserver_private_url' parameter into the 'website.application_parameters' database table.");
+    $url = "http://localhost/mapserv-ogam?";
 }
 
 // Set the uri (url + urn)

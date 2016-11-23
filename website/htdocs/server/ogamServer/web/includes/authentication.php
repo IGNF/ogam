@@ -1,7 +1,4 @@
 <?php
-
-//include_once('setup.php');
-
 include_once('../vendor/symfony/symfony/src/Symfony/Component/HttpFoundation/Session/Storage/Handler/NativeSessionHandler.php');
 include_once('../vendor/symfony/symfony/src/Symfony/Component/HttpFoundation/Session/Storage/Handler/NativeFileSessionHandler.php');
 
@@ -27,6 +24,7 @@ include_once('../vendor/symfony/symfony/src/Symfony/Component/Security/Core/User
 include_once('../src/OGAMBundle/Entity/Website/User.php');
 include_once('../src/OGAMBundle/Entity/Website/Role.php');
 include_once('../src/OGAMBundle/Entity/Website/Permission.php');
+include_once('../src/OGAMBundle/Entity/Website/ApplicationParameter.php');
 
 include_once('../vendor/doctrine/collections/lib/Doctrine/Common/Collections/Selectable.php');
 include_once('../vendor/doctrine/collections/lib/Doctrine/Common/Collections/Collection.php');
@@ -71,6 +69,8 @@ if (!$isAllowed) {
     header('Location: /');
 }
 
+// Set few script parameters
 $sessionId = $session->getId();
+$configurationParameters = $session->get('proxy_ConfigurationParameters');
 
 session_write_close(); // Releases the session cookie

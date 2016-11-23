@@ -35,6 +35,15 @@ class ConfigurationManager {
 	}
 
 	/**
+	 *
+	 * @return the Array[ApplicationParameter]
+	 */
+	public function getParameters()
+	{
+	    return $this->parameters;
+	}
+
+	/**
 	 * Read the configuration.
 	 */
 	private function readConfiguration() {
