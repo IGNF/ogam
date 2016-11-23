@@ -534,6 +534,7 @@ Ext.define('OgamDesktop.view.edition.Panel', {
 			}
 
 			if (record.get('subtype') === 'DYNAMIC') {
+				field.pageSize = 25;
 				// Case of a DYNAMODE unit list of codes
 				field.store = new Ext.data.JsonStore({
 					autoDestroy : true,

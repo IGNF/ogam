@@ -245,6 +245,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					field.emptyText = cls.prototype.criteriaComboEmptyText;
 					if (record.get('subtype') === 'DYNAMIC') {
 						field.queryMode = 'remote';
+						field.pageSize = 25;
 						field.store = new Ext.data.JsonStore({
 							autoDestroy : true,
 							autoLoad : true,
