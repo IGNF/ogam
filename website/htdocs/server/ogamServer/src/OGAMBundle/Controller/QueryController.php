@@ -54,9 +54,9 @@ class QueryController extends Controller {
 		$this->getDoctrine ()->getRepository ( 'OGAMBundle\Entity\Mapping\ResultLocation', 'mapping' )->cleanPreviousResults ( session_id () );
 
 		// Check if the parameter of the default page is set
-		if ($request->query->get ( 'default' ) === "predefined") {
+		if ($request->query->get ('default') === "predefined") {
 			$logger->debug ( 'defaultTab predefined' );
-			// $this->view->defaultTab = 'predefined'; //TODO: Regarder avec flo le fonctionnement avec zend...
+			$defaultTab = 'predefined_request';
 		}
 
 		// Add the configuration parameters to the session for the map proxies (mapserverProxy and tilecacheProxy)
@@ -66,7 +66,7 @@ class QueryController extends Controller {
 		}
 
 		// Forward the user to the next step
-		return $this->redirect ( '/odp/index.html?locale=' . $request->getLocale () );
+		return $this->redirect ('/odp/index.html?locale=' . $request->getLocale () . (isset($defaultTab) ?'#'.$defaultTab:'') );
 	}
 
 	/**
@@ -122,11 +122,11 @@ class QueryController extends Controller {
 	public function ajaxgetqueryformfieldsAction(Request $request) {
 	    $logger = $this->get ( 'logger' );
 	    $logger->debug('ajaxgetqueryformfieldsAction');
-	
+
 	    $filters = json_decode($request->query->get('filter'));
-	
+
 	    $datasetId = null;
-	
+
 	    if (is_array($filters)) {
 	        foreach ($filters as $aFilter) {
 	            switch ($aFilter->property) {
@@ -144,14 +144,14 @@ class QueryController extends Controller {
 	            }
 	        }
 	    }
-	
+
 	    $query = $request->query->get('query');
 	    $start = $request->query->get('start');
 	    $limit = $request->query->get('limit');
-	
+
 	    $schema = $this->get('ogam.schema_listener')->getSchema();
 	    $locale = $this->get('ogam.locale_listener')->getLocale();
-	    
+
 	    $response = new Response();
 	    $response->headers->set('Content-Type', 'application/json');
 	    return $this->render ( 'OGAMBundle:Query:ajaxgetqueryformfields.json.twig', array (
@@ -1123,12 +1123,18 @@ class QueryController extends Controller {
 
     /**
      * AJAX function : Return the list of available codes for a dynamic list.
+     * (limit 1000)
      * @Route("/ajaxgetdynamiccodes")
      */
     public function ajaxgetdynamiccodesAction(Request $request)
     {
         $unitCode = $request->query->get('unit');
         $query = $request->query->get('query');
+        $max = 1000;
+        $start = $request->query->getInt('start', 0);
+        $limit = $request->query->getInt('limit', $max);
+        $limit = min($max, $limit);
+
         $em = $this->get('doctrine.orm.metadata_entity_manager');
         $unit = $em->find(Unit::class, $unitCode);
         $locale = $this->get('ogam.locale_listener')->getLocale();
@@ -1137,7 +1143,8 @@ class QueryController extends Controller {
         $response = new JsonResponse();
 
         return $this->render('OGAMBundle:Query:ajaxgetcodes.json.twig', array(
-            'data' => $modes
+        	'total'=> count($modes),
+            'data' => array_slice($modes, $start, $limit)
         ), $response);
     }
 
