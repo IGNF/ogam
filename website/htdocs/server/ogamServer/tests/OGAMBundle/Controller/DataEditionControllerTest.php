@@ -40,7 +40,7 @@ class DataEditionControllerTest extends WebTestCase
 
         $this->assertTrue($client->getResponse()->isSuccessful());
 
-        $this->assertStringEqualsFile(__DIR__.'/getParameters.js', $client->getResponse()->getContent());
+        $this->assertStringEqualsFile(__DIR__.'/Mock/DataEditionController/getParameters.js', $client->getResponse()->getContent());
     }
 
     /**
@@ -62,11 +62,11 @@ class DataEditionControllerTest extends WebTestCase
     public function providerJsonUrl(){
         return [
            //'getParameters' => ['/dataedition/getParameters', __DIR__.'/getParameters.js'],
-           'showEditData'  => ['/dataedition/show-edit-data/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1/PLOT_CODE/987321',  __DIR__.'/show-edit-data-987321.json'],
-           'showAddData' => ['/dataedition/show-add-data/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1', __DIR__.'/show-add-data.json'],
-           'ajax-get-edit-form location'=>['/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T', __DIR__.'/ajax-get-edit-form-95552-P6040-2-4T.json'],
-           'ajax-get-edit-form plot'=>['/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5', __DIR__.'/ajax-get-edit-form-cyle-5.json'],
-           'ajax-get-add-form'=> ['/dataedition/ajax-get-add-form/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1', __DIR__.'/ajax-get-add-form.json']
-            ];
+           'showEditData'  => ['/dataedition/show-edit-data/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1/PLOT_CODE/987321',  __DIR__.'/Mock/DataEditionController/show-edit-data-987321.json'],
+           'showAddData' => ['/dataedition/show-add-data/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1', __DIR__.'/Mock/DataEditionController/show-add-data.json'],
+           'ajax-get-edit-form location'=>['/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T', __DIR__.'/Mock/DataEditionController/ajax-get-edit-form-95552-P6040-2-4T.json'],
+           'ajax-get-edit-form plot'=>['/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5', __DIR__.'/Mock/DataEditionController/ajax-get-edit-form-cyle-5.json'],
+           'ajax-get-add-form'=> ['/dataedition/ajax-get-add-form/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1', __DIR__.'/Mock/DataEditionController/ajax-get-add-form.json']
+        ];
     }
 }
