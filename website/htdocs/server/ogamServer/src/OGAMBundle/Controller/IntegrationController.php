@@ -16,6 +16,8 @@ use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use OGAMBundle\Entity\Metadata\FileFormat;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * @Route("/integration")
@@ -454,10 +456,17 @@ class IntegrationController extends Controller
         $configuration = $this->get('ogam.configuration_manager');
         $charset = $configuration->getConfig('csvExportCharset', 'UTF-8');
 
+        $response = new StreamedResponse();
         // Define the header of the response
-        header('Content-Type: text/csv;charset=' . $charset . ';application/force-download;');
-        header('Content-disposition: attachment; filename=CSV_Model_' . $fileFormat->getLabel() . '_' . date('dmy_Hi') . '.csv');
 
+        $disposition = $response->headers->makeDisposition(
+        	ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+        	'CSV_Model_' . $fileFormat->getLabel() . '_' . date('dmy_Hi') . '.csv'
+       );
+        $response->headers->set('Content-Disposition', $disposition);
+        $response->headers->set('Content-Type', 'text/csv;charset=' . $charset . ';application/force-download;');
+
+        $response->setCallback(function ()use ($charset,$fieldNames) {
         // Prepend the Byte Order Mask to inform Excel that the file is in UTF-8
         if ($charset == 'UTF-8') {
             echo (chr(0xEF));
@@ -469,8 +478,9 @@ class IntegrationController extends Controller
         $out = fopen('php://output', 'w');
         fputcsv($out, $fieldNames, ';');
         fclose($out);
+        });
 
-        return new Response(); // No render
+        return $response->send();
     }
     /**
      * Returns a JsonResponse that uses the serializer component if enabled, or json_encode.

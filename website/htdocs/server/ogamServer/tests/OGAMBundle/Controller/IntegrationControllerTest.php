@@ -35,7 +35,7 @@ class IntegrationControllerTest extends WebTestCase
     // *************************************************** //
     //                 Access Right Tests                  //
     // *************************************************** //
-    
+
     /**
      * Test access with a visitor login
      * @dataProvider visitorUrls
@@ -52,7 +52,7 @@ class IntegrationControllerTest extends WebTestCase
             $client->getResponse()->getStatusCode()
         );
     }
-    
+
     /**
      * Provision list url
      */
@@ -72,7 +72,7 @@ class IntegrationControllerTest extends WebTestCase
             'export-file-model' => ['/integration/export-file-model']
         ];
     }
-    
+
     /**
      * Test access with a admin login
      * @dataProvider adminUrls
@@ -81,15 +81,15 @@ class IntegrationControllerTest extends WebTestCase
     {
         $this->logIn('admin', array('ROLE_ADMIN'));
         $client = $this->client;
-    
+
         $client->request('GET', $url);
-    
+
         $this->assertEquals(
             $statusCode,
             $client->getResponse()->getStatusCode()
         );
     }
-    
+
     /**
      * Provision list url
      */
@@ -106,8 +106,7 @@ class IntegrationControllerTest extends WebTestCase
             'validate-data' => ['/integration/validate-data'],
             'get-data-status' => ['/integration/get-data-status'],
             'check-data-status' => ['/integration/check-data-status'],
-            // TODO OGAM-818 - Revoir la fonction IntegrationController/exportFileModelAction pour ne pas faire planter le test unitaire
-            'export-file-model' => ['/integration/export-file-model?fileFormat=LOCATION_FILE', Response::HTTP_INTERNAL_SERVER_ERROR]
+            'export-file-model' => ['/integration/export-file-model?fileFormat=LOCATION_FILE']
         ];
     }
 }
