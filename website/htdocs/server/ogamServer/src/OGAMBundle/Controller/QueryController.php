@@ -195,7 +195,7 @@ class QueryController extends Controller {
             // Parse the input parameters and create a request object
             $queryForm = new QueryForm();
             $queryForm->setDatasetId($datasetId);
-            foreach ($_POST as $inputName => $inputValue) {
+            foreach ($request->request->all() as $inputName => $inputValue) {
                 if (strpos($inputName, "criteria__") === 0 && !$this->isEmptyCriteria($inputValue)) {
                     $logger->debug('POST var added');
                     $criteriaName = substr($inputName, strlen("criteria__"));
@@ -426,28 +426,36 @@ class QueryController extends Controller {
 	    $logger = $this->get ( 'logger' );
 	    $logger->debug('getDetailsAction');
 
-	    // Get the names of the layers to display in the details panel
-	    $configuration =  $this->get('ogam.configuration_manager');
-	    $detailsLayers = [];
-	    $detailsLayers[] = $configuration->getConfig('query_details_layers1');
-	    $detailsLayers[] = $configuration->getConfig('query_details_layers2');
-
-	    // Get the current dataset to filter the results
-	    $datasetId = $request->getSession()->get('query_QueryForm')->getDatasetId();
-
-	    // Get the id from the request
-	    $id = $request->request->get('id');
-
-	    $userInfos = [
-	        "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
-	        "DATA_EDITION" => $this->getUser() && $this->getUser()->isAllowed('DATA_EDITION')
-	    ];
-
-	    $response = new Response();
-	    $response->headers->set('Content-Type', 'application/json');
-	    return $this->render ( 'OGAMBundle:Query:ajaxgetdetails.json.twig', array (
-	        'data' => $this->get('ogam.query_service')->getDetailsData($id, $detailsLayers, $datasetId, true, $userInfos)
-	    ),$response);
+	    try {
+    	    // Get the names of the layers to display in the details panel
+    	    $configuration =  $this->get('ogam.configuration_manager');
+    	    $detailsLayers = [];
+    	    $detailsLayers[] = $configuration->getConfig('query_details_layers1');
+    	    $detailsLayers[] = $configuration->getConfig('query_details_layers2');
+    
+    	    // Get the current dataset to filter the results
+    	    $datasetId = $request->getSession()->get('query_QueryForm')->getDatasetId();
+    
+    	    // Get the id from the request
+    	    $id = $request->request->get('id');
+    	    if(empty($id)){
+    	        throw new \InvalidArgumentException('The id parameter is required.');
+    	    }
+    	    
+    	    $userInfos = [
+    	        "providerId" => $this->getUser() ? $this->getUser()->getProvider()->getId() : NULL,
+    	        "DATA_EDITION" => $this->getUser() && $this->getUser()->isAllowed('DATA_EDITION')
+    	    ];
+    
+    	    $response = new Response();
+    	    $response->headers->set('Content-Type', 'application/json');
+    	    return $this->render ( 'OGAMBundle:Query:ajaxgetdetails.json.twig', array (
+    	        'data' => $this->get('ogam.query_service')->getDetailsData($id, $detailsLayers, $datasetId, true, $userInfos)
+    	    ),$response);
+	    } catch (\Exception $e) {
+	        $logger->error('Error while getting details : ' . $e);
+	        return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
+	    }
 	}
 
 	/**
@@ -1089,17 +1097,27 @@ class QueryController extends Controller {
      */
     public function ajaxgettreenodesAction(Request $request)
     {
-        $unitCode = $request->get('unit');
-        $code = $request->request->get('node');
-        $depth = $request->get('depth');
-        $em = $this->get('doctrine.orm.metadata_entity_manager');
-        $locale = $this->get('ogam.locale_listener')->getLocale();
-        $unit = $em->find(Unit::class, $unitCode);
-        $tree = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeChildrenModes($unit, $code, $depth ? $depth+1 : 0, $locale);
-        array_shift($tree);
-        return $this->render('OGAMBundle:Query:ajaxgettreenodes.json.twig', array(
-            'data' => $tree
-        ));
+        $logger = $this->get ( 'logger' );
+        $logger->debug('ajaxgettreenodesAction');
+        try {
+            $unitCode = $request->get('unit');
+            $code = $request->request->get('node');
+            $depth = $request->get('depth');
+            if(empty($unitCode) || empty($code) || empty($depth)){
+                throw new \InvalidArgumentException("The 'unit', 'node' and 'depth' parameters are required.");
+            }
+            $em = $this->get('doctrine.orm.metadata_entity_manager');
+            $locale = $this->get('ogam.locale_listener')->getLocale();
+            $unit = $em->find(Unit::class, $unitCode);
+            $tree = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeChildrenModes($unit, $code, $depth ? $depth+1 : 0, $locale);
+            array_shift($tree);
+            return $this->render('OGAMBundle:Query:ajaxgettreenodes.json.twig', array(
+                'data' => $tree
+            ));
+        } catch (\Exception $e) {
+            $logger->error('Error while getting details : ' . $e);
+            return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
+        }
     }
 	/**
 	 * AJAX function : Nodes of a taxonomic referential under a given node.
@@ -1107,18 +1125,27 @@ class QueryController extends Controller {
 	 * @Route("/ajaxgettaxrefnodes")
 	 */
 	public function ajaxgettaxrefnodesAction(Request $request) {
-	    $unitCode = $request->get('unit');
-	    $code = $request->request->get('node');
-	    $depth = $request->get('depth');
-	    $em = $this->get('doctrine.orm.metadata_entity_manager');
-	    $locale = $this->get('ogam.locale_listener')->getLocale();
-	    $unit = $em->find(Unit::class, $unitCode);
-	    $tree = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefChildrenModes($unit, $code, $depth ? $depth+1 : 0, $locale);
-	    array_shift($tree);
-	    return $this->render('OGAMBundle:Query:ajaxgettaxrefnodes.json.twig', array(
-	        'data' => $tree
-	    ));
-
+	    $logger = $this->get ( 'logger' );
+	    $logger->debug('ajaxgettaxrefnodesAction');
+	    try {
+    	    $unitCode = $request->get('unit');
+    	    $code = $request->request->get('node');
+    	    $depth = $request->get('depth');
+    	    if(empty($unitCode) || empty($code) || empty($depth)){
+    	        throw new \InvalidArgumentException("The 'unit', 'node' and 'depth' parameters are required.");
+    	    }
+    	    $em = $this->get('doctrine.orm.metadata_entity_manager');
+    	    $locale = $this->get('ogam.locale_listener')->getLocale();
+    	    $unit = $em->find(Unit::class, $unitCode);
+    	    $tree = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefChildrenModes($unit, $code, $depth ? $depth+1 : 0, $locale);
+    	    array_shift($tree);
+    	    return $this->render('OGAMBundle:Query:ajaxgettaxrefnodes.json.twig', array(
+    	        'data' => $tree
+    	    ));
+	    } catch (\Exception $e) {
+	        $logger->error('Error while getting details : ' . $e);
+	        return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
+	    }
 	}
 
     /**
@@ -1126,26 +1153,35 @@ class QueryController extends Controller {
      * (limit 1000)
      * @Route("/ajaxgetdynamiccodes")
      */
-    public function ajaxgetdynamiccodesAction(Request $request)
-    {
-        $unitCode = $request->query->get('unit');
-        $query = $request->query->get('query');
-        $max = 1000;
-        $start = $request->query->getInt('start', 0);
-        $limit = $request->query->getInt('limit', $max);
-        $limit = min($max, $limit);
-
-        $em = $this->get('doctrine.orm.metadata_entity_manager');
-        $unit = $em->find(Unit::class, $unitCode);
-        $locale = $this->get('ogam.locale_listener')->getLocale();
-        $modes = $em->getRepository(Dynamode::class)->getModesFilteredByLabel($unit, $query, $locale);
-
-        $response = new JsonResponse();
-
-        return $this->render('OGAMBundle:Query:ajaxgetcodes.json.twig', array(
-        	'total'=> count($modes),
-            'data' => array_slice($modes, $start, $limit)
-        ), $response);
+    public function ajaxgetdynamiccodesAction(Request $request) {
+        $logger = $this->get ( 'logger' );
+	    $logger->debug('ajaxgetdynamiccodesAction');
+	    try {
+            $unitCode = $request->query->get('unit');
+            $query = $request->query->get('query', null);
+            $max = 1000;
+            $start = $request->query->getInt('start', 0);
+            $limit = $request->query->getInt('limit', $max);
+            $limit = min($max, $limit);
+            if(empty($unitCode)){
+                throw new \InvalidArgumentException("The 'unit' parameters is required.");
+            }
+    
+            $em = $this->get('doctrine.orm.metadata_entity_manager');
+            $unit = $em->find(Unit::class, $unitCode);
+            $locale = $this->get('ogam.locale_listener')->getLocale();
+            $modes = $em->getRepository(Dynamode::class)->getModesFilteredByLabel($unit, $query, $locale);
+    
+            $response = new JsonResponse();
+    
+            return $this->render('OGAMBundle:Query:ajaxgetcodes.json.twig', array(
+            	'total'=> count($modes),
+                'data' => array_slice($modes, $start, $limit)
+            ), $response);
+        } catch (\Exception $e) {
+            $logger->error('Error while getting details : ' . $e);
+            return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
+        }
     }
 
 	/**
@@ -1153,24 +1189,35 @@ class QueryController extends Controller {
 	 * @Route("/ajaxgetcodes")
 	 */
 	public function ajaxgetcodesAction(Request $request) {
-	    $unitCode = $request->query->get('unit');
-	    $query = $request->query->get('query', null);
-	    $em = $this->get('doctrine.orm.metadata_entity_manager');
-	    $unit = $em->find(Unit::class, $unitCode);
-
-	    $locale = $this->get('ogam.locale_listener')->getLocale();
-
-	    if ($query === null) {
-	        $modes = $em->getRepository(Unit::class)->getModes($unit, $locale);
-	    } else {
-	        $modes =  $em->getRepository('OGAMBundle:Metadata\Mode')->getModesFilteredByLabel($unit, $query, $locale);
+	    $logger = $this->get ( 'logger' );
+	    $logger->debug('ajaxgetcodesAction');
+	    try {
+    	    $unitCode = $request->query->get('unit');
+    	    $query = $request->query->get('query', null);
+    	    if(empty($unitCode)){
+    	        throw new \InvalidArgumentException("The 'unit' parameter is required.");
+    	    }
+    	    
+    	    $em = $this->get('doctrine.orm.metadata_entity_manager');
+    	    $unit = $em->find(Unit::class, $unitCode);
+    
+    	    $locale = $this->get('ogam.locale_listener')->getLocale();
+    
+    	    if ($query === null) {
+    	        $modes = $em->getRepository(Unit::class)->getModes($unit, $locale);
+    	    } else {
+    	        $modes =  $em->getRepository('OGAMBundle:Metadata\Mode')->getModesFilteredByLabel($unit, $query, $locale);
+    	    }
+    
+    	    $response = new JsonResponse();
+    
+    	    return $this->render('OGAMBundle:Query:ajaxgetcodes.json.twig', array(
+    	        'data' => $modes
+    	    ), $response);
+	    } catch (\Exception $e) {
+	        $logger->error('Error while getting details : ' . $e);
+	        return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
 	    }
-
-	    $response = new JsonResponse();
-
-	    return $this->render('OGAMBundle:Query:ajaxgetcodes.json.twig', array(
-	        'data' => $modes
-	    ), $response);
 	}
 
 	/**
@@ -1178,28 +1225,39 @@ class QueryController extends Controller {
 	 * @Route("/ajaxgettreecodes")
 	 */
 	public function ajaxgettreecodesAction(Request $request) {
-	    $unitCode = $request->query->get('unit');
-	    $query = $request->query->get('query', null);
-	    $start = $request->query->getInt('start', 0);
-	    $limit = $request->query->getInt('limit', null);
-	    $em = $this->get('doctrine.orm.metadata_entity_manager');
-	    $unit = $em->find(Unit::class, $unitCode);
-
-	    $locale = $this->get('ogam.locale_listener')->getLocale();
-
-            // $em->getRepository(Unit::class)->getModesFilteredByLabel($unit, $query, $locale);
-        $rows = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareTo($unit, $query, $locale, $start, $limit);
-        if (count($rows) < $limit) {
-            // optimisation
-            $count = count($rows);
-        } else {
-            //TODO use a paginator ?
-            $count = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareToCount($unit, $query, $locale);
+	    $logger = $this->get ( 'logger' );
+	    $logger->debug('ajaxgettreecodesAction');
+	    try {
+    	    $unitCode = $request->query->get('unit');
+    	    $query = $request->query->get('query', null);
+    	    $start = $request->query->getInt('start', 0);
+    	    $limit = $request->query->getInt('limit', null);
+    	    if(empty($unitCode)){
+    	        throw new \InvalidArgumentException("The 'unit' parameter is required.");
+    	    }
+    	    
+    	    $em = $this->get('doctrine.orm.metadata_entity_manager');
+    	    $unit = $em->find(Unit::class, $unitCode);
+    
+    	    $locale = $this->get('ogam.locale_listener')->getLocale();
+    
+                // $em->getRepository(Unit::class)->getModesFilteredByLabel($unit, $query, $locale);
+            $rows = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareTo($unit, $query, $locale, $start, $limit);
+            if (count($rows) < $limit) {
+                // optimisation
+                $count = count($rows);
+            } else {
+                //TODO use a paginator ?
+                $count = $em->getRepository('OGAMBundle:Metadata\ModeTree')->getTreeModesSimilareToCount($unit, $query, $locale);
+            }
+            return $this->render('OGAMBundle:Query:ajaxgettreecodes.json.twig', array(
+                'data' => $rows,
+                'total' => $count
+            ), new JsonResponse());
+        } catch (\Exception $e) {
+            $logger->error('Error while getting details : ' . $e);
+            return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
         }
-        return $this->render('OGAMBundle:Query:ajaxgettreecodes.json.twig', array(
-            'data' => $rows,
-            'total' => $count
-        ), new JsonResponse());
     }
 
     /**
@@ -1208,26 +1266,36 @@ class QueryController extends Controller {
      */
     public function ajaxgettaxrefcodesAction(Request $request)
     {
-        $unitCode = $request->query->get('unit');
-        $query = $request->query->get('query', null);
-        $start = $request->query->getInt('start', 0);
-        $limit = $request->query->getInt('limit', null);
-        $em = $this->get('doctrine.orm.metadata_entity_manager');
-        $unit = $em->find(Unit::class, $unitCode);
-
-        $locale = $this->get('ogam.locale_listener')->getLocale();
-
-        $rows = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesSimilarTo($unit, $query, $locale, $start, $limit);
-        if (count($rows) < $limit) {
-            // optimisation
-            $count = count($rows);
-        } else {
-            $count = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesCount($unit, $query, $locale);
+        $logger = $this->get ( 'logger' );
+        $logger->debug('ajaxgettaxrefcodesAction');
+        try {
+            $unitCode = $request->query->get('unit');
+            $query = $request->query->get('query', null);
+            $start = $request->query->getInt('start', 0);
+            $limit = $request->query->getInt('limit', null);
+            if(empty($unitCode)){
+                throw new \InvalidArgumentException("The 'unit' parameter is required.");
+            }
+            $em = $this->get('doctrine.orm.metadata_entity_manager');
+            $unit = $em->find(Unit::class, $unitCode);
+    
+            $locale = $this->get('ogam.locale_listener')->getLocale();
+    
+            $rows = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesSimilarTo($unit, $query, $locale, $start, $limit);
+            if (count($rows) < $limit) {
+                // optimisation
+                $count = count($rows);
+            } else {
+                $count = $em->getRepository('OGAMBundle:Metadata\ModeTaxref')->getTaxrefModesCount($unit, $query, $locale);
+            }
+            return $this->render('OGAMBundle:Query:ajaxgettaxrefcodes.json.twig', array(
+                'data' => $rows,
+                'total' => $count
+            ), new JsonResponse());
+        } catch (\Exception $e) {
+            $logger->error('Error while getting details : ' . $e);
+            return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
         }
-        return $this->render('OGAMBundle:Query:ajaxgettaxrefcodes.json.twig', array(
-            'data' => $rows,
-            'total' => $count
-        ), new JsonResponse());
     }
 
 	/**
@@ -1238,132 +1306,139 @@ class QueryController extends Controller {
 	public function ajaxgetlocationinfoAction(Request $request) {
 	    $logger = $this->get('logger');
 	    $logger->debug('ajaxgetlocationinfoAction');
-
-	    $lon = $request->query->get('LON');
-	    $lat = $request->query->get('LAT');
-	    $sessionId = session_id();
-
-	    $defaultResponseArray = [
-            'success' => true,
-            'id' => null,
-            "title" => null,
-            "hasChild" => false,
-            "columns" => [],
-            "fields" => [],
-            "data" => []
-        ];
-	    $resultLocationRepository = $this->getDoctrine()->getRepository(ResultLocation::class);
-
-	    if ($request->getSession()->get('query_Count', 0) == 0 && $resultLocationRepository->getResultsCount($sessionId)) {
-	        return new JsonResponse($defaultResponseArray);
-	    } else {
-	        $schema = $this->get('ogam.schema_listener')->getSchema();
-	        $locale = $this->get('ogam.locale_listener')->getLocale();
-	        $queryForm = $request->getSession()->get('query_QueryForm');
-	        // Get the mappings for the query form fields
-	        $queryForm = $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
-
-	        // Get the location table information
-	        $tables = $this->get('ogam.generic_service')->getAllFormats($schema, $queryForm->getFieldMappingSet()->getFieldMappingArray()); // Extract the location table from the last query
-	        $locationField = $this->getDoctrine()->getRepository(TableField::class)->getGeometryField($schema, array_keys($tables), $locale); // Extract the location field from the available tables
-	        $locationTableInfo = $this->getDoctrine()->getRepository(TableFormat::class)->getTableFormat($schema, $locationField->getFormat()->getFormat(), $locale); // Get info about the location table
-
-	        // Get the intersected locations
-	        $locations = $resultLocationRepository->getLocationInfo($sessionId, $lon, $lat, $locationField, $schema, $this->get('ogam.configuration_manager'), $locale);
-
-	        if (!empty($locations)) {
-	            // we have at least one plot found
-
-	            // The id is used to avoid to display two time the same result (it's a id for the result dataset)
-	            $id = array(
-	                'Results'
-	            ); // A small prefix is required here to avoid a conflict between the id when the result contain only one result
-	            // The columns config to setup the grid columnModel
-	            $columns = array();
-	            // The columns max length to setup the column width
-	            $columnsMaxLength = array();
-	            // The fields config to setup the store reader
-	            $locationFields = array(
-	                'id'
-	            ); // The id must stay the first field
-	            // The data to full the store
-	            $locationsData = array();
-
-	            foreach ($locations as $locationsIndex => $location) {
-	                $locationData = array();
-
-	                // Get the locations identifiers
-	                $key = 'SCHEMA/' . $schema . '/FORMAT/' . $locationTableInfo->getFormat();
-	                $key .= '/' . $location['pk'];
-	                $id[] = $key;
-	                $locationData[] = $key;
-
-	                $logger->debug('$key : ' . $key);
-
-	                // Remove the pk of the available columns
-	                unset($location['pk']);
-
-	                // Get the other fields
-	                // Setup the location data and the column max length
-	                foreach ($location as $columnName => $value) {
-	                    $locationData[] = $value;
-	                    if (empty($columnsMaxLength[$columnName])) {
-	                        $columnsMaxLength[$columnName] = array();
-	                    }
-	                    $columnsMaxLength[$columnName][] = strlen($value);
-	                }
-	                // Setup the fields and columns config
-	                if ($locationsIndex === (count($locations) - 1)) {
-
-	                    // Get the table fields
-	                    $tableFields = $this->getDoctrine()->getRepository(TableField::class)->getTableFields($schema, $locationField->getFormat()->getFormat(), null, $locale);
-	                    $tFOrdered = array();
-	                    foreach ($tableFields as $tableField) {
-	                        $tFOrdered[strtoupper($tableField->getColumnName())] = $tableField;
-	                    }
-	                    foreach ($location as $columnName => $value) {
-	                        $tableField = $tFOrdered[strtoupper($columnName)];
-	                        // Set the column model and the location fields
-	                        $dataIndex = $tableField->getName();
-	                        // Adds the column header to prevent it from being truncated too and 2 for the header margins
-	                        $columnsMaxLength[$columnName][] = strlen($tableField->getLabel()) + 2;
-	                        $column = array(
-	                            'header' => $tableField->getData()->getLabel(),
-	                            'dataIndex' => $dataIndex,
-	                            'editable' => false,
-	                            'tooltip' => $tableField->getData()->getDefinition(),
-	                            'width' => max($columnsMaxLength[$columnName]) * 7,
-	                            'type' => $tableField->getData()->getUnit()->getType()
-	                        );
-	                        $columns[] = $column;
-	                        $locationFields[] = $dataIndex;
-	                    }
-	                }
-	                $locationsData[] = $locationData;
-	            }
-
-	            // We must sort the array here because it can't be done
-	            // into the mapfile sql request to avoid a lower performance
-	            sort($id);
-
-	            // Check if the location table has a child table
-	            $hasChild = false;
-	            $children = $this->getDoctrine()->getRepository(TableTree::class)->getChildrenTableLabels($locationTableInfo);
-	            if (!empty($children)) {
-	                $hasChild = true;
-	            }
-	            return new JsonResponse([
-	                'success' => true,
-	                'id' => implode('', $id),
-	                "title" => $locationTableInfo->getLabel() . ' (' . count($locationsData) . ')',
-	                "hasChild" => $hasChild,
-	                "columns" => $columns,
-	                "fields" => $locationFields,
-	                "data" => $locationsData
-	            ]);
-	        } else {
-	            return new JsonResponse($defaultResponseArray);
-	        }
+	    try {
+    	    $lon = $request->query->get('LON');
+    	    $lat = $request->query->get('LAT');
+    	    if(empty($lon) || empty($lat)){
+    	        throw new \InvalidArgumentException("The 'LON' and 'LAT' parameters are required.");
+    	    }
+    	    $sessionId = session_id();
+    
+    	    $defaultResponseArray = [
+                'success' => true,
+                'id' => null,
+                "title" => null,
+                "hasChild" => false,
+                "columns" => [],
+                "fields" => [],
+                "data" => []
+            ];
+    	    $resultLocationRepository = $this->getDoctrine()->getRepository(ResultLocation::class);
+    
+    	    if ($request->getSession()->get('query_Count', 0) == 0 && $resultLocationRepository->getResultsCount($sessionId)) {
+    	        return new JsonResponse($defaultResponseArray);
+    	    } else {
+    	        $schema = $this->get('ogam.schema_listener')->getSchema();
+    	        $locale = $this->get('ogam.locale_listener')->getLocale();
+    	        $queryForm = $request->getSession()->get('query_QueryForm');
+    	        // Get the mappings for the query form fields
+    	        $queryForm = $this->get('ogam.query_service')->setQueryFormFieldsMappings($queryForm);
+    
+    	        // Get the location table information
+    	        $tables = $this->get('ogam.generic_service')->getAllFormats($schema, $queryForm->getFieldMappingSet()->getFieldMappingArray()); // Extract the location table from the last query
+    	        $locationField = $this->getDoctrine()->getRepository(TableField::class)->getGeometryField($schema, array_keys($tables), $locale); // Extract the location field from the available tables
+    	        $locationTableInfo = $this->getDoctrine()->getRepository(TableFormat::class)->getTableFormat($schema, $locationField->getFormat()->getFormat(), $locale); // Get info about the location table
+    
+    	        // Get the intersected locations
+    	        $locations = $resultLocationRepository->getLocationInfo($sessionId, $lon, $lat, $locationField, $schema, $this->get('ogam.configuration_manager'), $locale);
+    
+    	        if (!empty($locations)) {
+    	            // we have at least one plot found
+    
+    	            // The id is used to avoid to display two time the same result (it's a id for the result dataset)
+    	            $id = array(
+    	                'Results'
+    	            ); // A small prefix is required here to avoid a conflict between the id when the result contain only one result
+    	            // The columns config to setup the grid columnModel
+    	            $columns = array();
+    	            // The columns max length to setup the column width
+    	            $columnsMaxLength = array();
+    	            // The fields config to setup the store reader
+    	            $locationFields = array(
+    	                'id'
+    	            ); // The id must stay the first field
+    	            // The data to full the store
+    	            $locationsData = array();
+    
+    	            foreach ($locations as $locationsIndex => $location) {
+    	                $locationData = array();
+    
+    	                // Get the locations identifiers
+    	                $key = 'SCHEMA/' . $schema . '/FORMAT/' . $locationTableInfo->getFormat();
+    	                $key .= '/' . $location['pk'];
+    	                $id[] = $key;
+    	                $locationData[] = $key;
+    
+    	                $logger->debug('$key : ' . $key);
+    
+    	                // Remove the pk of the available columns
+    	                unset($location['pk']);
+    
+    	                // Get the other fields
+    	                // Setup the location data and the column max length
+    	                foreach ($location as $columnName => $value) {
+    	                    $locationData[] = $value;
+    	                    if (empty($columnsMaxLength[$columnName])) {
+    	                        $columnsMaxLength[$columnName] = array();
+    	                    }
+    	                    $columnsMaxLength[$columnName][] = strlen($value);
+    	                }
+    	                // Setup the fields and columns config
+    	                if ($locationsIndex === (count($locations) - 1)) {
+    
+    	                    // Get the table fields
+    	                    $tableFields = $this->getDoctrine()->getRepository(TableField::class)->getTableFields($schema, $locationField->getFormat()->getFormat(), null, $locale);
+    	                    $tFOrdered = array();
+    	                    foreach ($tableFields as $tableField) {
+    	                        $tFOrdered[strtoupper($tableField->getColumnName())] = $tableField;
+    	                    }
+    	                    foreach ($location as $columnName => $value) {
+    	                        $tableField = $tFOrdered[strtoupper($columnName)];
+    	                        // Set the column model and the location fields
+    	                        $dataIndex = $tableField->getName();
+    	                        // Adds the column header to prevent it from being truncated too and 2 for the header margins
+    	                        $columnsMaxLength[$columnName][] = strlen($tableField->getLabel()) + 2;
+    	                        $column = array(
+    	                            'header' => $tableField->getData()->getLabel(),
+    	                            'dataIndex' => $dataIndex,
+    	                            'editable' => false,
+    	                            'tooltip' => $tableField->getData()->getDefinition(),
+    	                            'width' => max($columnsMaxLength[$columnName]) * 7,
+    	                            'type' => $tableField->getData()->getUnit()->getType()
+    	                        );
+    	                        $columns[] = $column;
+    	                        $locationFields[] = $dataIndex;
+    	                    }
+    	                }
+    	                $locationsData[] = $locationData;
+    	            }
+    
+    	            // We must sort the array here because it can't be done
+    	            // into the mapfile sql request to avoid a lower performance
+    	            sort($id);
+    
+    	            // Check if the location table has a child table
+    	            $hasChild = false;
+    	            $children = $this->getDoctrine()->getRepository(TableTree::class)->getChildrenTableLabels($locationTableInfo);
+    	            if (!empty($children)) {
+    	                $hasChild = true;
+    	            }
+    	            return new JsonResponse([
+    	                'success' => true,
+    	                'id' => implode('', $id),
+    	                "title" => $locationTableInfo->getLabel() . ' (' . count($locationsData) . ')',
+    	                "hasChild" => $hasChild,
+    	                "columns" => $columns,
+    	                "fields" => $locationFields,
+    	                "data" => $locationsData
+    	            ]);
+    	        } else {
+    	            return new JsonResponse($defaultResponseArray);
+    	        }
+    	    }
+	    } catch (\Exception $e) {
+	        $logger->error('Error while getting details : ' . $e);
+	        return new JsonResponse(['success' => false, 'errorMessage' => $e->getMessage()]);
 	    }
 	}
 }

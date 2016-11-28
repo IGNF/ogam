@@ -116,7 +116,7 @@ class TableFieldRepository extends \Doctrine\ORM\EntityRepository
             $schema
         ));
         
-        return $query->getResult()[0];
+        return $query->getSingleResult();
     }
     
     /**

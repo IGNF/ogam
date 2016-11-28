@@ -683,7 +683,7 @@ class QueryService {
 	    $dataDetails = array();
 	    $dataDetails['formats'] = array();
 	    $gTables = array_merge($ancestors, [$gTableFormat]);
-	    foreach ($gTables as $gTable) {dump($userInfos['DATA_EDITION']);
+	    foreach ($gTables as $gTable) {
 	        $dataDetails['formats'][] = [
 	            'id' => $gTable->getId(),
 	            'title' => $gTable->getMetadata()->getLabel(),
@@ -753,7 +753,7 @@ class QueryService {
 	        $children = $this->genericModel->getChildren($data2, $datasetId);
 
 	        // Add the children
-	        foreach ($children as $listChild) {dump($children);
+	        foreach ($children as $listChild) {
 	            $dataArray = $this->genericService->dataToGridDetailArray($id, $listChild);
 	            if ($dataArray !== null) {
 	                $dataDetails['children'][] = $dataArray;
