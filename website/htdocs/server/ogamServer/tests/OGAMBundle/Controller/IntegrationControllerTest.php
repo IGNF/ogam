@@ -1,112 +1,55 @@
 <?php
 
-namespace OGAMBundle\Tests\Controller;
+namespace Tests\OGAMBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use OGAMBundle\Entity\Website\User;
-use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\HttpFoundation\Response;
 
-class IntegrationControllerTest extends WebTestCase
+class IntegrationControllerTest extends AbstractControllerTest
 {
-    private $client = null;
-
-    public function setUp()
-    {
-        $this->client = static::createClient();
-    }
-
-    private function logIn($login = 'admin', $roles = array('ROLE_ADMIN'))
-    {
-        $session = $this->client->getContainer()->get('session');
-
-        // the firewall context (defaults to the firewall name)
-        $firewall = 'main';
-
-        $token = new UsernamePasswordToken((new User())->setLogin($login), null, $firewall, $roles);
-        $session->set('_security_'.$firewall, serialize($token));
-        $session->save();
-
-        $cookie = new Cookie($session->getName(), $session->getId());
-        $this->client->getCookieJar()->set($cookie);
-    }
-
     // *************************************************** //
     //                 Access Right Tests                  //
     // *************************************************** //
 
-    /**
-     * Test access with a visitor login
-     * @dataProvider visitorUrls
-     */
-    public function testIntegrationPageVisitorAccess($url, $statusCode = Response::HTTP_FORBIDDEN)
-    {
-        $this->logIn('visitor', array('ROLE_VISITOR'));
-        $client = $this->client;
-
-        $client->request('GET', $url);
-
-        $this->assertEquals(
-            $statusCode,
-            $client->getResponse()->getStatusCode()
-        );
-    }
-
-    /**
-     * Provision list url
-     */
-    public function visitorUrls(){
+    public function getNotLoggedUrls(){
         return [
-            'integration' => ['/integration/'],
-            'show-data-submission-page' => ['/integration/show-data-submission-page'],
-            'show-create-data-submission' => ['/integration/show-create-data-submission'],
-            'show-upload-data' => ['/integration/show-upload-data/1'],
-            'validate-create-data-submission' => ['/integration/validate-create-data-submission'],
-            'validate-upload-data' => ['/integration/validate-upload-data/1'],
-            'cancel-data-submission' => ['/integration/cancel-data-submission'],
-            'check-submission' => ['/integration/check-submission'],
-            'validate-data' => ['/integration/validate-data'],
-            'get-data-status' => ['/integration/get-data-status'],
-            'check-data-status' => ['/integration/check-data-status'],
-            'export-file-model' => ['/integration/export-file-model']
+            'integration' => [['uri' => '/integration/']],
+            'show-data-submission-page' => [['uri' => '/integration/show-data-submission-page']],
+            'show-create-data-submission' => [['uri' => '/integration/show-create-data-submission']],
+            'show-upload-data' => [['uri' => '/integration/show-upload-data/1']],
+            'validate-create-data-submission' => [['uri' => '/integration/validate-create-data-submission']],
+            'validate-upload-data' => [['uri' => '/integration/validate-upload-data/1']],
+            'cancel-data-submission' => [['uri' => '/integration/cancel-data-submission']],
+            'check-submission' => [['uri' => '/integration/check-submission']],
+            'validate-data' => [['uri' => '/integration/validate-data']],
+            'get-data-status' => [['uri' => '/integration/get-data-status']],
+            'check-data-status' => [['uri' => '/integration/check-data-status']],
+            'export-file-model' => [['uri' => '/integration/export-file-model']]
         ];
     }
-
-    /**
-     * Test access with a admin login
-     * @dataProvider adminUrls
-     */
-    public function testIntegrationPageAdminAccess($url, $statusCode = Response::HTTP_OK)
-    {
-        $this->logIn('admin', array('ROLE_ADMIN'));
-        $client = $this->client;
-
-        $client->request('GET', $url);
-
-        $this->assertEquals(
-            $statusCode,
-            $client->getResponse()->getStatusCode()
-        );
+    
+    public function getVisitorUrls(){
+        return $this->getNotLoggedUrls();
     }
-
-    /**
-     * Provision list url
-     */
-    public function adminUrls(){
+    
+    public function getAdminUrls(){
         return [
-            'integration' => ['/integration/'],
-            'show-data-submission-page' => ['/integration/show-data-submission-page'],
-            'show-create-data-submission' => ['/integration/show-create-data-submission'],
-            'show-upload-data' => ['/integration/show-upload-data/1'],
-            'validate-create-data-submission' => ['/integration/validate-create-data-submission'],
-            'validate-upload-data' => ['/integration/validate-upload-data/1', Response::HTTP_FOUND],
-            'cancel-data-submission' => ['/integration/cancel-data-submission'],
-            'check-submission' => ['/integration/check-submission'],
-            'validate-data' => ['/integration/validate-data'],
-            'get-data-status' => ['/integration/get-data-status'],
-            'check-data-status' => ['/integration/check-data-status'],
-            'export-file-model' => ['/integration/export-file-model?fileFormat=LOCATION_FILE']
+            'integration' => [['uri' => '/integration/']],
+            'show-data-submission-page' => [['uri' => '/integration/show-data-submission-page']],
+            'show-create-data-submission' => [['uri' => '/integration/show-create-data-submission']],
+            'show-upload-data' => [['uri' => '/integration/show-upload-data/1']],
+            'validate-create-data-submission' => [['uri' => '/integration/validate-create-data-submission']],
+            'validate-upload-data' => [[
+                'uri' => '/integration/validate-upload-data/1'
+            ],[
+                'statusCode' => Response::HTTP_FOUND,
+                'redirectionLocation' => '/integration/'
+            ]],
+            'cancel-data-submission' => [['uri' => '/integration/cancel-data-submission']],
+            'check-submission' => [['uri' => '/integration/check-submission']],
+            'validate-data' => [['uri' => '/integration/validate-data']],
+            'get-data-status' => [['uri' => '/integration/get-data-status']],
+            'check-data-status' => [['uri' => '/integration/check-data-status']],
+            'export-file-model' => [['uri' => '/integration/export-file-model?fileFormat=LOCATION_FILE']]
         ];
     }
 }
