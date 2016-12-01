@@ -31,30 +31,6 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 class DataEditionController extends Controller
 {
     /**
-     * @Route("/", name="dataedition_home")
-     */
-    public function indexAction()
-    {
-        return $this->render('OGAMBundle:DataEdition:index.html.twig', array(
-            // ...
-        ));
-    }
-
-    /**
-     * Display the "index" page.
-     *
-     * @param String $message
-     *            a message to be displayed on the page
-     * @Route("/show-index")
-     */
-    public function showIndexAction()
-    {
-        return $this->render('OGAMBundle:DataEdition:index.html.twig', array(
-            // ...
-        ));
-    }
-
-    /**
      * Parse request parameters and build the corresponding data object.
      *
      * @param Request $request The request object.
@@ -623,7 +599,7 @@ class DataEditionController extends Controller
      * @Route("/ajaximageupload")
      */
     public function ajaximageuploadAction() {
-        return $this->json(array('succes' => TRUE));
+        return $this->json(array('success' => TRUE));
     }
 
     protected function getQueryService() {

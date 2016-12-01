@@ -83,7 +83,9 @@ class AbstractControllerTest extends WebTestCase
             $requestParameters = $url[0];
             $responseParameters = empty($url[1]) ? []: $url[1];
             $statusCode = empty($responseParameters['statusCode']) ? $defaultStatusCode: $responseParameters['statusCode'];
+            $contentFile = empty($responseParameters['contentFile']) ? null: $responseParameters['contentFile'];
             $isJson = empty($responseParameters['isJson']) ? false: $responseParameters['isJson'];
+            $jsonFile = empty($responseParameters['jsonFile']) ? null: $responseParameters['jsonFile'];
             $redirectionLocation = empty($responseParameters['redirectionLocation']) ? '/user/login': $responseParameters['redirectionLocation'];
             $alertMessage = empty($responseParameters['alertMessage']) ? null: $responseParameters['alertMessage'];
 
@@ -117,6 +119,13 @@ class AbstractControllerTest extends WebTestCase
                 $statusCode,
                 $responseStatusCode
             );
+            // Check the content
+            if($contentFile !== null && $responseStatusCode === Response::HTTP_OK){
+                $this->assertStringEqualsFile(
+                    $contentFile,
+                    $client->getResponse()->getContent()
+                );
+            }
             // Check the redirection location
             if($responseStatusCode === Response::HTTP_FOUND) {
                 $this->assertTrue(
@@ -132,12 +141,18 @@ class AbstractControllerTest extends WebTestCase
                     trim($crawler->filter('div[role=alert]')->text())
                 );
             }
-            // Check the json success parameter
+            // Check the json success parameter and json content
             if($isJson && $responseStatusCode === Response::HTTP_OK) {
                 $this->assertEquals(
                     true,
                     $response->success
                 );
+                if($jsonFile !== null){
+                    $this->assertJsonStringEqualsJsonFile(
+                        $jsonFile,
+                        $client->getResponse()->getContent()
+                    );
+                }
             }
         }
     }
@@ -154,8 +169,10 @@ class AbstractControllerTest extends WebTestCase
      *     ]
      * ],[ // ResponseParameters
      *     'statusCode' => Response::HTTP_OK|Response::HTTP_FOUND|..., // Default : Response::HTTP_OK
-     *     'isJson' => true|false // Default : false,
-     *     'redirectionLocation' => '/ControllerRoute/ActionRoute' // Default : '/user/login',
+     *     'contentFile' =>  __DIR__.'/Mock/MyController/myContentFile.json', // Default : null
+     *     'isJson' => true|false // Default : false
+     *     'jsonFile' =>  __DIR__.'/Mock/MyController/myJsonFile.json', // Default : null
+     *     'redirectionLocation' => '/ControllerRoute/ActionRoute', // Default : '/user/login'
      *     'alertMessage' => 'The alert message.' // Default : null
      * ]]
      */

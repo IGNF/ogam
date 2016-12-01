@@ -2,71 +2,110 @@
 
 namespace Tests\OGAMBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use OGAMBundle\Entity\Website\User;
-use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\HttpFoundation\Response;
 
-class DataEditionControllerTest extends WebTestCase
+class DataEditionControllerTest extends AbstractControllerTest
 {
-    private $client = null;
 
-    public function setUp()
+    public function testGetEditFormAction()
     {
-        $this->client = static::createClient();
+        $this->logIn('admin', array('ROLE_ADMIN'));
+        $this->checkControllerActionAccess([
+            'ajaxGetEditFormAction_Location' => [[
+                'uri' => '/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T'
+            ],[
+                'isJson' => true,
+                'jsonFile' =>  __DIR__.'/Mock/DataEditionController/ajax-get-edit-form-95552-P6040-2-4T.json'
+            ]],
+            'ajaxGetEditFormAction_Plot' => [[
+                'uri' => '/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5'
+            ],[
+                'isJson' => true,
+                'jsonFile' =>  __DIR__.'/Mock/DataEditionController/ajax-get-edit-form-cyle-5.json'
+            ]]
+        ], Response::HTTP_OK);
     }
-
-    private function logIn()
-    {
-        $session = $this->client->getContainer()->get('session');
-
-        // the firewall context (defaults to the firewall name)
-        $firewall = 'main';
-
-        $token = new UsernamePasswordToken((new User())->setLogin('admin'), null, $firewall, array('ROLE_ADMIN'));
-        $session->set('_security_'.$firewall, serialize($token));
-        $session->save();
-
-        $cookie = new Cookie($session->getName(), $session->getId());
-        $this->client->getCookieJar()->set($cookie);
+    
+    // *************************************************** //
+    //                 Access Right Tests                  //
+    // *************************************************** //
+    
+    public function getNotLoggedUrls(){
+        return $this->getAdminUrls();
     }
-
-    public function testGetParameters()
-    {
-        $this->logIn();
-        $client = $this->client;
-
-        $crawler = $client->request('GET', '/dataedition/getParameters');
-
-        $this->assertTrue($client->getResponse()->isSuccessful());
-
-        $this->assertStringEqualsFile(__DIR__.'/Mock/DataEditionController/getParameters.js', $client->getResponse()->getContent());
+    
+    public function getVisitorUrls(){
+        return $this->getAdminUrls();
     }
-
-    /**
-     * functionnal test on global content
-     * @dataProvider providerJsonUrl
-     */
-    public function testGettablePages($url, $contentFile)
-    {
-        $this->logIn();//require login
-        $client = $this->client;
-        $crawler = $client->request('GET',$url);
-        $this->assertTrue($client->getResponse()->isSuccessful());
-        $this->assertJsonStringEqualsJsonFile($contentFile, $client->getResponse()->getContent());
-    }
-
-    /**
-     *provision list url & file
-     */
-    public function providerJsonUrl(){
+    
+    public function getAdminUrls(){
         return [
-           //'getParameters' => ['/dataedition/getParameters', __DIR__.'/getParameters.js'],
-           'showEditData'  => ['/dataedition/show-edit-data/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1/PLOT_CODE/987321',  __DIR__.'/Mock/DataEditionController/show-edit-data-987321.json'],
-           'showAddData' => ['/dataedition/show-add-data/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1', __DIR__.'/Mock/DataEditionController/show-add-data.json'],
-           'ajax-get-edit-form location'=>['/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T', __DIR__.'/Mock/DataEditionController/ajax-get-edit-form-95552-P6040-2-4T.json'],
-           'ajax-get-edit-form plot'=>['/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5', __DIR__.'/Mock/DataEditionController/ajax-get-edit-form-cyle-5.json'],
-           'ajax-get-add-form'=> ['/dataedition/ajax-get-add-form/SCHEMA/RAW_DATA/FORMAT/LOCATION_DATA/PROVIDER_ID/1', __DIR__.'/Mock/DataEditionController/ajax-get-add-form.json']
+            'showEditDataAction' => [[
+                'uri' => '/dataedition/show-edit-data/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5'
+            ],[
+                'isJson' => false,
+                'contentFile' =>  __DIR__.'/Mock/DataEditionController/show-edit-data.json'
+            ]],
+            'showAddDataAction' => [[
+                'uri' => '/dataedition/show-add-data/SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5'
+            ],[
+                'isJson' => false,
+                'contentFile' =>  __DIR__.'/Mock/DataEditionController/show-add-data.json'
+            ]],
+            'ajaxGetAddFormAction' => [[
+                'uri' => '/dataedition/ajax-get-add-form/SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5/ID_TAXON/',
+                'parameters' => [
+                    'page' => 1,
+                    'start' => 0,
+                    'limit' => 25
+                ]
+            ],[
+                'isJson' => true,
+                'jsonFile' =>  __DIR__.'/Mock/DataEditionController/ajax-get-add-form.json'
+            ]],
+            'ajaxValidateEditDataAction' => [[ // Chained to the ajaxGetAddForm action
+                'uri' => '/dataedition/ajax-validate-edit-data',
+                'method' => 'POST',
+                'parameters' => [
+                    'SPECIES_DATA__PROVIDER_ID' => 1,
+                    'SPECIES_DATA__PLOT_CODE' => '95552-P6040-2-4T',
+                    'SPECIES_DATA__CYCLE' => 5,
+                    'SPECIES_DATA__ID_TAXON' => 349525,
+                    'SPECIES_DATA__BASAL_AREA' => null,
+                    'SPECIES_DATA__COMMENT' => null,
+                    'MODE' => 'ADD'
+                ]
+            ],[
+                'isJson' => true,
+                'jsonFile' =>  __DIR__.'/Mock/DataEditionController/ajax-validate-edit-data.json'
+            ]],
+            'ajaxGetEditFormAction' => [[
+                'uri' => '/dataedition/ajax-get-edit-form/SCHEMA/RAW_DATA/FORMAT/PLOT_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5',
+                'parameters' => [
+                    'page' => 1,
+                    'start' => 0,
+                    'limit' => 25
+                ]
+            ],[
+                'isJson' => true,
+                'jsonFile' =>  __DIR__.'/Mock/DataEditionController/ajax-get-edit-form.json'
+            ]],
+            'ajaxDeleteDataAction' => [[
+                'uri' => '/dataedition/ajax-delete-data/SCHEMA/RAW_DATA/FORMAT/SPECIES_DATA/PROVIDER_ID/1/PLOT_CODE/95552-P6040-2-4T/CYCLE/5/ID_TAXON/349525'
+            ],[
+                'isJson' => true,
+                'jsonFile' =>  __DIR__.'/Mock/DataEditionController/ajax-delete-data.json'
+            ]],
+            'getparametersAction' => [[
+                'uri' => '/dataedition/getParameters'
+            ],[
+                'contentFile' => __DIR__.'/Mock/DataEditionController/getParameters.js'
+            ]],
+            'ajaximageuploadAction' => [[
+                'uri' => '/dataedition/ajaximageupload'
+            ],[
+                'isJson' => true
+            ]]
         ];
     }
 }
