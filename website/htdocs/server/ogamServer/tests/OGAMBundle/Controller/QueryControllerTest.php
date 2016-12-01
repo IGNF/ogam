@@ -4,7 +4,7 @@ namespace Tests\OGAMBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 
-class UserManagementControllerTest extends AbstractControllerTest
+class QueryControllerTest extends AbstractControllerTest
 {
     
     // *************************************************** //

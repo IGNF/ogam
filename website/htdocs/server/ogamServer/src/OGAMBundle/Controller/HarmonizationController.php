@@ -17,9 +17,9 @@ class HarmonizationController extends Controller
     /**
      * @Route("/", name="harmonization_home")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        return $this->showHarmonizationPageAction();
+        return $this->showHarmonizationPageAction($request);
     }
 
     /**
