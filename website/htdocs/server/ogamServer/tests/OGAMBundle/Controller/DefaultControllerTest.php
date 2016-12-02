@@ -2,9 +2,9 @@
 
 namespace Tests\OGAMBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
-class DefaultControllerTest extends WebTestCase
+class DefaultControllerTest extends AbstractControllerTest
 {
     public function testIndex()
     {
@@ -13,5 +13,27 @@ class DefaultControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/');
 
         $this->assertContains('OGAM', $client->getResponse()->getContent());
+    }
+    
+    // *************************************************** //
+    //                 Access Right Tests                  //
+    // *************************************************** //
+    
+    public function getNotLoggedUrls(){
+        return $this->getAdminUrls();
+    }
+    
+    public function getVisitorUrls(){
+        return $this->getAdminUrls();
+    }
+    
+    public function getAdminUrls(){
+        return [
+            'index' => [[
+                'uri' => '/'
+            ],[
+                'statusCode' => Response::HTTP_OK
+            ]]
+        ];
     }
 }
