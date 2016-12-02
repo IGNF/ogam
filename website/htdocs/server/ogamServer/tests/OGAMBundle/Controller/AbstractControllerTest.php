@@ -128,9 +128,10 @@ class AbstractControllerTest extends WebTestCase
             }
             // Check the redirection location
             if($responseStatusCode === Response::HTTP_FOUND) {
+                $location = $client->getResponse()->headers->get('Location');
                 $this->assertTrue(
                     $client->getResponse()->isRedirect($redirectionLocation),
-                    "Response is a not redirect to '$redirectionLocation'"
+                    "Response location '$location' doesn't match the requested location '$redirectionLocation'"
                 );
             }
             // Check the alert message
