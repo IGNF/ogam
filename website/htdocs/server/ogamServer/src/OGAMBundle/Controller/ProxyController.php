@@ -48,7 +48,7 @@ class ProxyController extends Controller {
         $response->headers->set('Content-transfer-encoding', 'binary');
         $response->headers->set('Content-disposition', 'attachment; filename=Error_Report_' . $submissionId . '.pdf');
 
-        $method = $_SERVER['REQUEST_METHOD']; // GET or POST
+        $method = $request->getRealMethod(); // GET or POST
         
         if ($method == 'GET') {
             $result = $this->sendGET($reportURL);
