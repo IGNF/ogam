@@ -17,7 +17,18 @@ class QueryControllerTest extends AbstractControllerTest
     public function testControllerActionVisitorAccess()
     {
         $this->logIn('visitor', array('ROLE_VISITOR')); // The session must be keeped for the chained requests
-        $this->checkControllerActionAccess($this->getVisitorUrls(), Response::HTTP_OK);
+        $this->checkControllerActionAccess($this->getRawDataUrls(Response::HTTP_FORBIDDEN), Response::HTTP_FORBIDDEN);
+        $this->checkControllerActionAccess($this->getHarmonizedDataUrls(), Response::HTTP_OK);
+    }
+    
+    /**
+     * Test access with a admin login
+     */
+    public function testControllerActionAdminAccess()
+    {
+        $this->logIn('admin', array('ROLE_ADMIN')); // The session must be keeped for the chained requests
+        $this->checkControllerActionAccess($this->getRawDataUrls(), Response::HTTP_OK);
+        $this->checkControllerActionAccess($this->getHarmonizedDataUrls(), Response::HTTP_OK);
     }
     
     public function getNotLoggedUrls(){
@@ -50,26 +61,42 @@ class QueryControllerTest extends AbstractControllerTest
         ];
     }
     
-    public function getVisitorUrls(){
-        return $this->getAdminUrls();
-    }
-    
-    public function getAdminUrls(){
-        return [
-            'query' => [[
+    public function getRawDataUrls($defaultStatusCode = Response::HTTP_FOUND){
+        return array_merge([
+            'query_RAW_DATA' => [[
                 'uri' => '/query/',
                 'method' => 'GET',
                 'parameters' => [
                     'SCHEMA' => 'RAW_DATA'
                 ]
             ],[
+                'statusCode' => $defaultStatusCode,
+                'redirectionLocation' => '/query/show-query-form'
+            ]]
+        ], $this->getOthersUrls($defaultStatusCode));
+    }
+    
+    public function getHarmonizedDataUrls(){
+        return array_merge([
+            'query_HARMONIZED_DATA' => [[
+                'uri' => '/query/',
+                'method' => 'GET',
+                'parameters' => [
+                    'SCHEMA' => 'HARMONIZED_DATA'
+                ]
+            ],[
                 'statusCode' => Response::HTTP_FOUND,
                 'redirectionLocation' => '/query/show-query-form'
-            ]],
+            ]]
+        ], $this->getOthersUrls());
+    }
+    
+    public function getOthersUrls($defaultStatusCode = Response::HTTP_FOUND){
+        return [
             'show-query-form' => [[
                 'uri' => '/query/show-query-form'
             ],[
-                'statusCode' => Response::HTTP_FOUND,
+                'statusCode' => $defaultStatusCode,
                 'redirectionLocation' => '/odp/index.html?locale=fr'
             ]],
             //'odp-index' => [['uri' => '/odp/index.html?locale=fr']], // TODO: Not found. Why?
@@ -113,8 +140,8 @@ class QueryControllerTest extends AbstractControllerTest
                     'column__PLOT_FORM__CYCLE'=>'1',
                     'column__PLOT_FORM__INV_DATE'=>'1',
                     'column__PLOT_FORM__IS_FOREST_PLOT'=>'1',
-                    'column__PLOT_FORM__CORINE_BIOTOPE'=>'1',
-                    'column__PLOT_FORM__FICHE_PLACETTE'=>'1',
+                    //'column__PLOT_FORM__CORINE_BIOTOPE'=>'1',// Data not declared into the harmonized data.
+                    //'column__PLOT_FORM__FICHE_PLACETTE'=>'1',// Data not declared into the harmonized data.
                     'column__PLOT_FORM__COMMENT'=>'1'
                 ]
             ], ['isJson' => true]],

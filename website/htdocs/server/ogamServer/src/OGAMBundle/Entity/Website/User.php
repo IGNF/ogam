@@ -163,15 +163,17 @@ class User implements UserInterface, \Serializable {
 	public function getEmail() {
 		return $this->email;
 	}
-
+	
 	/**
 	 * Indicate if the user is allowed for a permission.
 	 *
 	 * @param String $permissionName
 	 *        	The permission
+	 * @param String $schemaCode
+	 *        	The schema
 	 * @return Boolean
 	 */
-	function isAllowed($permissionName) {
+	function isAllowed($permissionName, $schemaCode = null) {
 /*		global $kernel;
 		if ('AppCache' == get_class($kernel)) {
 			$kernel = $kernel->getKernel();
@@ -183,7 +185,11 @@ class User implements UserInterface, \Serializable {
 		foreach ($this->roles as $role) {
 
 			if ($role->isAllowed($permissionName)) {
-				return true;
+			    if($schemaCode === null){
+			        return true;
+			    } elseif ($role->isSchemaAllowed($schemaCode)){
+			        return true;
+			    }
 			}
 		}
 		return false;

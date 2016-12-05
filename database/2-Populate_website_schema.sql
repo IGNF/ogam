@@ -98,7 +98,7 @@ INSERT INTO role_to_user(user_login, role_code) VALUES ('visitor', 'VISITOR');
 -- Link the schemas to their roles
 INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'RAW_DATA');
 INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('ADMIN', 'HARMONIZED_DATA');
-INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('VISITOR', 'RAW_DATA');
+INSERT INTO role_to_schema(ROLE_CODE, SCHEMA_CODE) VALUES ('VISITOR', 'HARMONIZED_DATA');
 
 -- List the permissions of the web site
 INSERT INTO permission(permission_code, permission_label) VALUES ('MANAGE_USERS', 'Manage users');
