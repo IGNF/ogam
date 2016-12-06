@@ -27,7 +27,7 @@
     <th>{{ 'Dataset'|trans }}</th>
     <th>{{ 'Harmonization Date'|trans }}</th>
     <th>{{ 'Status'|trans }}</th>
-    <th>{{ 'Action'|trans }}</th>
+    <th>{{ 'Actions'|trans }}</th>
 </tr>
 
 {% for harmonizationProcess in harmonizations %}
@@ -37,7 +37,7 @@
     <td>{{ harmonizationProcess.date|date("Y-m-d") }}</td>
     <td>
         {% if harmonizationProcess.submissionStatus is same as("NOT_VALID") %}
-            {{ (harmonizationProcess.status)|trans }}
+            {{ harmonizationProcess.status|trans }}
             <img src="{{ asset('img/warning_orange.png') }}" title="{{ 'The submission has not been validated'|trans }}" />
         {% elseif harmonizationProcess.status == "OK" %} 
             {{ harmonizationProcess.status|trans }}
