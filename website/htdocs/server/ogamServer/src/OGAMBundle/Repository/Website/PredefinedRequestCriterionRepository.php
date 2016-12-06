@@ -37,9 +37,10 @@ class PredefinedRequestCriterionRepository extends \Doctrine\ORM\EntityRepositor
         foreach($criteria as $criterion){
             $formField = $formFieldRepository->getFormField($criterion->getFormat(), $criterion->getData(), $locale);
             
-            // Get the default value(s) Mode(s) (TREE and TAXREF)
+            // Get the default value(s) Mode(s)
             $inputType = $formField->getInputType();
-            if(($inputType === 'TREE' || $inputType === 'TAXREF') && $criterion->getValue() !== null){
+            $inputTypes = ['SELECT', 'PAGINED_SELECT', 'TREE', 'TAXREF'];
+            if(in_array($inputType, $inputTypes) && $criterion->getValue() !== null){
                 $unit = $formField->getData()->getUnit();
                 $valuesModes = $this->_em->getRepository(Unit::class)->getModesFilteredByCode($unit, $criterion->getValue(), $locale);
                 $unit->setModes($valuesModes);

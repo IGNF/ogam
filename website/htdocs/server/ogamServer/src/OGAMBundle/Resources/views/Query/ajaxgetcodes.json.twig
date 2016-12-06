@@ -2,7 +2,7 @@
 {
     "success": true,
     "total": {% block response_total %}{{ total|default(data|length) }}{% endblock %},
-    "codes": {% block response_data %} 
+    "data": {% block response_data %} 
     [
     {%- for mode in data -%}
     {

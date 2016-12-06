@@ -59,6 +59,12 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 	 *      <tt>120</tt>)
 	 */
 	criteriaLabelWidth : 120,
+	
+	/**
+	 * @cfg {Integer} comboPageSize The criteria and column combobox page size (defaults to
+	 *      <tt>10</tt>)
+	 */
+	comboPageSize : 10,
 
 	/**
 	 * Initializes the component.
@@ -235,6 +241,7 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				// Creates the ext field config
 				switch (record.get('inputType')) {
 				case 'SELECT': // The input type SELECT correspond generally to a data
+				case 'PAGINED_SELECT':
 					// type CODE
 					field.xtype = 'combo';
 					field.hiddenName = field.name;
@@ -243,44 +250,41 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 					field.displayField = 'label';
 					field.valueField = 'code';
 					field.emptyText = cls.prototype.criteriaComboEmptyText;
+					field.queryMode = 'remote';
+					var storeActionUrl;
 					if (record.get('subtype') === 'DYNAMIC') {
-						field.queryMode = 'remote';
-						field.pageSize = 25;
-						field.store = new Ext.data.JsonStore({
-							autoDestroy : true,
-							autoLoad : true,
-							model:'OgamDesktop.model.request.object.field.Code',
-							proxy:{
-								type: 'ajax',
-								url : Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetdynamiccodes',
-								extraParams : {
-									'unit' : record.get('unit')
-								},
-								reader: {
-									rootProperty:'codes'
-								}
-							}
-							
-						});
+						storeActionUrl = 'ajaxgetdynamiccodes';
 					} else {
-						// Subtype == CODE (other possibilities are not available)
-						field.queryMode = 'remote';
-						field.store = new Ext.data.JsonStore({
-							autoDestroy : true,
-							autoLoad : true,
-							model:'OgamDesktop.model.request.object.field.Code',
-							proxy:{
-								type: 'ajax',
-								url: Ext.manifest.OgamDesktop.requestServiceUrl + 'ajaxgetcodes',
-								extraParams : {
-									'unit' : record.get('unit')
-								},
-								reader: {
-									rootProperty:'codes'
-								}
-							}
-						});
+						storeActionUrl = 'ajaxgetcodes';
 					}
+					var storeConfig = {
+						autoDestroy : true,
+						model:'OgamDesktop.model.request.object.field.Code',
+						remoteFilter: true,
+						proxy:{
+							type: 'ajax',
+							url : Ext.manifest.OgamDesktop.requestServiceUrl + storeActionUrl,
+							extraParams : {
+								'unit' : record.get('unit')
+							},
+							reader: {
+							    type : 'json',
+							    rootProperty : 'data',
+							    totalProperty  : 'total',
+							    successProperty: 'success',
+							    messageProperty: 'errorMessage'
+							}
+						},
+						data : record.get('data').unit.codes
+					};
+					if (record.get('inputType') === 'PAGINED_SELECT') {
+						field.pageSize = cls.prototype.comboPageSize;
+						storeConfig.pageSize = cls.prototype.comboPageSize;
+					} else {
+						field.pageSize = 0;
+						storeConfig.pageSize = 0;
+					}
+					field.store = new Ext.data.JsonStore(storeConfig);
 					break;
 				case 'DATE': // The input type DATE correspond generally to a data
 					// type DATE
