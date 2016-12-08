@@ -16,6 +16,26 @@ echo " Bootstrap "
 echo "--------------------------------------------------"
 
 
+# configuration du proxy IGN / dépots apt
+
+cp /vagrant/ogam/vagrant_config/conf/sources.list /etc/apt/sources.list
+cp /vagrant/ogam/vagrant_config/conf/apt-proxy.conf /etc/apt/apt.conf.d/proxy
+
+echo "
+http_proxy=http://proxy.ign.fr:3128
+https_proxy=http://proxy.ign.fr:3128
+HTTP_PROXY=http://proxy.ign.fr:3128
+HTTPS_PROXY=http://proxy.ign.fr:3128
+no_proxy=localhost,127.0.0.0/8,ogam.fr
+" >> /etc/environment
+
+source /etc/environment
+
+export https_proxy=proxy.ign.fr:3128 
+export http_proxy=proxy.ign.fr:3128
+
+
+
 # Suppression d'un warning "dpkg-preconfigure: unable to re-open stdin"
 export DEBIAN_FRONTEND=noninteractive
 
