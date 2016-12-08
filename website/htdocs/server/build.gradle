@@ -63,24 +63,8 @@ task cleanDeploy(type: Delete, description: 'Clean the deploy directory.') {
 import org.apache.tools.ant.filters.ReplaceTokens
 
 
-// Copy the PHP libraries to the deploy directory
-task deployLibraries(type: Copy, description: 'Copy the PHP libraries files to the deploy directory.') {
-
-    // On CI server, $deployDir = /var/www/html
-	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
-
-	// recopie des librairies
-    from 'ogamServer/lib'
-	into "${deployDir}/server/ogamServer/vendor"
-	
-	doLast {
-    	println "The libraries have been deployed to ${deployDir}/server/ogamServer/vendor"
-    }
-
-}
-
 // Copy the PHP application files to the deploy directory
-task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.', dependsOn: 'deployLibraries') {
+task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.') {
 
 	// On CI server, $deployDir = /var/www/html
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
