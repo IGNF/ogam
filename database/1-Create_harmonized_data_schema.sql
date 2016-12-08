@@ -170,3 +170,6 @@ COMMENT ON COLUMN HARMONIZED_TREE_DATA.HEIGHT IS 'The tree height (in m)';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.PHOTO IS 'A picture of the tree';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.COMMENT IS 'A comment about the species';
 COMMENT ON COLUMN HARMONIZED_TREE_DATA.the_geom IS 'geometry of the tree location';
+
+-- Spatial Index on the_geom 
+CREATE INDEX IX_HARMONIZED_TREE_DATA_SPATIAL_INDEX ON harmonized_data.harmonized_tree_data USING GIST ( the_geom );
