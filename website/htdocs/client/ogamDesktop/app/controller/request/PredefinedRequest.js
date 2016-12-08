@@ -52,10 +52,21 @@ Ext.define('OgamDesktop.controller.request.PredefinedRequest', {
     	
     	prModel.selection.reqfieldsets({
     		success:function(records){
+    			var selectedCodes = {};
+    			this.getPredefReqView().child('predefined-request-selector').items.each(function(item){
+    				if(item instanceof Ext.form.field.Tag) {
+    					selectedCodes[item.getName()] = item.getValueRecords();
+    				} else {
+	    				selectedCodes[item.getName()] = new OgamDesktop.model.request.object.field.Code({
+	    					code: item.getValue(),
+	    					label: item.getRawValue()
+	    				});
+    				}
+    			});
     			this.getAdvReqView().getViewModel().set({
-    	    			'userchoices' : this.getPredefReqView().getForm().getValues(),
-    					'fieldsets':records
-    	    		});
+					'userchoices' : selectedCodes,
+					'fieldsets':records
+	    		});
     			this.getAdvReqView().getViewModel().notify();
     			this.getAdvReqView().lookupReference('advancedRequestSelector').reloadForm();
     			this.getAdvReqView().down('#SubmitButton').click(e);

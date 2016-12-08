@@ -47,7 +47,7 @@ Ext.define('OgamDesktop.ux.request.AdvancedRequestSelector', {
 	 */
     reloadForm: function(){
 		this.removeAll();
-		this.store.getData().each(function(item, idex, length){
+		this.store.getData().each(function(item, index, length){
 
 			var criteria = item.criteria(); 
 			var columns =  item.columns();

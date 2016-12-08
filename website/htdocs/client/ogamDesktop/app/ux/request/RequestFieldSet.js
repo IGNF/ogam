@@ -138,15 +138,21 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 				fieldValues = this.form.criteriaValues['criteria__' + record.data.name+'[]'];
 				// Check if there are some criteriaValues for this criteria
 				if (!Ext.isEmpty(fieldValues)) {
-					// Transform fieldValues in array if needed
-					if (!Ext.isArray(fieldValues)) {
-						fieldValues = [ fieldValues ];
-					}
-					// Duplicate the criteria if the field have multiple values
-					for (i = 0; i < fieldValues.length; i++) {
+					if(record.get('data').unit.type === 'ARRAY') {
 						newRecord = record.copy();
-						newRecord.data.default_value = fieldValues[i];
+						newRecord.data.default_value = fieldValues;
 						this.items.push(this.form.self.getCriteriaConfig(newRecord));
+					} else {
+						// Transform fieldValues in array if needed
+						if (!Ext.isArray(fieldValues)) {
+							fieldValues = [ fieldValues ];
+						}
+						// Duplicate the criteria if the field have multiple values
+						for (i = 0; i < fieldValues.length; i++) {
+							newRecord = record.copy();
+							newRecord.data.default_value = fieldValues[i];
+							this.items.push(this.form.self.getCriteriaConfig(newRecord));
+						}
 					}
 				}
 			}
@@ -180,24 +186,6 @@ Ext.define('OgamDesktop.ux.request.RequestFieldSet', {
 			items : items
 		});
 		return items;
-	},
-
-	/**
-	 * Sets the criteria data store.
-	 * @param {Ext.data.Store} store The new store
-	 */
-	setCriteriaDS : function(store) {
-		this.criteriaPanel.removeAll();
-		this.criteriaDS = store;
-		this.criteriaPanel.add(Ext.isEmpty(this.criteriaValues) ? this.getDefaultCriteriaConfig() : this.getFilledCriteriaConfig());
-	},
-
-	/**
-	 * Returns the criteria data store.
-	 * @return {Ext.data.Store} The criteria data store
-	 */
-	getCriteriaDS: function() {
-		return this.criteriaDS;
 	},
 
 	inheritableStatics : {
