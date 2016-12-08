@@ -10,7 +10,7 @@ subprojects {
 	apply plugin: 'findbugs'  // checks
 	apply plugin: "jacoco"  // coverage
 	  
-	version = '3.0.0'
+	version = '4.0.0'
 	  
 	targetCompatibility  = 1.7
 	sourceCompatibility  = 1.7
