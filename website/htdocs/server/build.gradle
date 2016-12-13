@@ -60,7 +60,7 @@ task cleanDeploy(type: Delete, description: 'Clean the deploy directory.') {
 
 
 // Copy the PHP application files to the deploy directory
-task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.', dependsOn: 'cleanDeploy') {
+task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.') {
 
 	// On CI server, $deployDir = /var/www/html
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
