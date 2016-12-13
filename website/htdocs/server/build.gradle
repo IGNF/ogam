@@ -59,12 +59,33 @@ task cleanDeploy(type: Delete, description: 'Clean the deploy directory.') {
 }
 
 
+// Copy the PHP application files to the deploy directory
+task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.', dependsOn: 'cleanDeploy') {
+
+	// On CI server, $deployDir = /var/www/html
+	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
+
+	// recopie de l'application
+    from 'ogamServer'     
+    into "${deployDir}/server/ogamServer"    
+    exclude "**/var/cache/**"
+    exclude "**/var/logs/**"
+    exclude "**/var/sessions/**"
+    exclude "**/var/upload/**"
+            
+    doLast {
+    	println "The server file have been deployed to ${deployDir}/server/ogamServer"
+    }
+}
+
+
+
 //for Ant filter
 import org.apache.tools.ant.filters.ReplaceTokens
 
 
 // Copy the PHP application files to the deploy directory
-task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory.') {
+task setBuildNumber(type: Copy, description: 'Update the build number.', dependsOn: 'deploy') {
 
 	// On CI server, $deployDir = /var/www/html
 	def deployDir = project.hasProperty('deployDir') ? project.getProperty('deployDir') : 'build/deploy'
@@ -75,10 +96,7 @@ task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory
 	// recopie de l'application
     from 'ogamServer'     
     into "${deployDir}/server/ogamServer"    
-    exclude "**/var/cache/**"
-    exclude "**/var/logs/**"
-    exclude "**/var/sessions/**"
-    exclude "**/var/upload/**"
+    include "**/base.html.twig"
     
     
     eachFile {
@@ -86,6 +104,13 @@ task deploy(type: Copy, description: 'Copy the PHP files to the deploy directory
 	}	
         
     doLast {
-    	println "The server file have been deployed to ${deployDir}/server/ogamServer"
+    	println "Base template updated with build number"
     }
+}
+
+
+
+// Deploy the application
+task deployAll(description: 'Copy the PHP files to the deploy directory.', dependsOn: 'setBuildNumber') {
+
 }
