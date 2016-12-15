@@ -38,6 +38,7 @@ class ModeTaxrefRepository extends \Doctrine\ORM\EntityRepository
         $sql .= " FROM mode_taxref as mt ";
         $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || mt.code) ";
         $sql .= " WHERE unit = :unit ";
+        $sql .= " ORDER BY position ";
         $sql .= " LIMIT 50 ";
 
         $query = $this->_em->createNativeQuery($sql, $rsm);

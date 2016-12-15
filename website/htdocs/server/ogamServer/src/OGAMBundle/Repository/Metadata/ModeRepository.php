@@ -37,8 +37,9 @@ class ModeRepository extends \Doctrine\ORM\EntityRepository
 
         $sql = "SELECT unit, code, COALESCE(t.label, m.label) as label, COALESCE(t.definition, m.definition) as definition, position ";
         $sql .= " FROM mode as m ";
-        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'DYNAMODE' AND row_pk = :unit || ',' || m.code) ";
+        $sql .= " LEFT JOIN translation t ON (lang = :lang AND table_format = 'METADATA_MODE_TABLE' AND row_pk = :unit || ',' || m.code) ";
         $sql .= " WHERE unit = :unit ";
+        $sql .= " ORDER BY position ";
         $sql .= " LIMIT 50 ";
 
         $query = $this->_em->createNativeQuery($sql, $rsm);

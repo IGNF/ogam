@@ -114,46 +114,51 @@ class AbstractControllerTest extends WebTestCase
             }
 
             // Asserts
-            // Check the status code
-            $this->assertEquals(
-                $statusCode,
-                $responseStatusCode
-            );
-            // Check the content
-            if($contentFile !== null && $responseStatusCode === Response::HTTP_OK){
-                $this->assertStringEqualsFile(
-                    $contentFile,
-                    $client->getResponse()->getContent()
-                );
-            }
-            // Check the redirection location
-            if($responseStatusCode === Response::HTTP_FOUND) {
-                $location = $client->getResponse()->headers->get('Location');
-                $this->assertTrue(
-                    $client->getResponse()->isRedirect($redirectionLocation),
-                    "Response location '$location' doesn't match the requested location '$redirectionLocation'"
-                );
-            }
-            // Check the alert message
-            if($alertMessage !== null) {
-                $crawler = $client->followRedirect();
+            try {
+                // Check the status code
                 $this->assertEquals(
-                    $alertMessage,
-                    trim($crawler->filter('div[role=alert]')->text())
+                    $statusCode,
+                    $responseStatusCode
                 );
-            }
-            // Check the json success parameter and json content
-            if($isJson && $responseStatusCode === Response::HTTP_OK) {
-                $this->assertEquals(
-                    true,
-                    $response->success
-                );
-                if($jsonFile !== null){
-                    $this->assertJsonStringEqualsJsonFile(
-                        $jsonFile,
+                // Check the content
+                if($contentFile !== null && $responseStatusCode === Response::HTTP_OK){
+                    $this->assertStringEqualsFile(
+                        $contentFile,
                         $client->getResponse()->getContent()
                     );
                 }
+                // Check the redirection location
+                if($responseStatusCode === Response::HTTP_FOUND) {
+                    $location = $client->getResponse()->headers->get('Location');
+                    $this->assertTrue(
+                        $client->getResponse()->isRedirect($redirectionLocation),
+                        "Response location '$location' doesn't match the requested location '$redirectionLocation'"
+                    );
+                }
+                // Check the alert message
+                if($alertMessage !== null) {
+                    $crawler = $client->followRedirect();
+                    $this->assertEquals(
+                        $alertMessage,
+                        trim($crawler->filter('div[role=alert]')->text())
+                    );
+                }
+                // Check the json success parameter and json content
+                if($isJson && $responseStatusCode === Response::HTTP_OK) {
+                    $this->assertEquals(
+                        true,
+                        $response->success
+                    );
+                    if($jsonFile !== null){
+                        $this->assertJsonStringEqualsJsonFile(
+                            $jsonFile,
+                            $client->getResponse()->getContent()
+                        );
+                    }
+                }
+            } catch(\Exception $e) {
+                echo ", Assert error message : ", $e->getMessage();
+                throw $e;
             }
         }
     }
