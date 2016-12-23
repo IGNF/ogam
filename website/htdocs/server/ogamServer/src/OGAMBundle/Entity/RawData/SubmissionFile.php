@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * SubmissionFile.
  *
  * @ORM\Table(name="raw_data.submission_file")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\RawData\SubmissionFileRepository")
+ * @ORM\Entity
  */
 class SubmissionFile
 {

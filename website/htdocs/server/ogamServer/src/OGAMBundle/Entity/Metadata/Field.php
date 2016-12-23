@@ -7,15 +7,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Field
- *
- * @ORM\MappedSuperclass(repositoryClass="OGAMBundle\Repository\Metadata\FieldRepository")
+ * @ORM\Entity
  */
 class Field
 {
     /**
      * @var Data
      *
-     * @ORM\Id 
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
      * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
      */
@@ -30,7 +29,7 @@ class Field
      */
     protected $format;
 
-    
+
     /**
      * Set data
      *

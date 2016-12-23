@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Provider
  *
  * @ORM\Table(name="website.providers")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\ProviderRepository")
+ * @ORM\Entity
  */
 class Provider {
 

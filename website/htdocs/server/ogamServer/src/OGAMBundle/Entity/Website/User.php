@@ -12,7 +12,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * User.
  *
  * @ORM\Table(name="users", schema="website")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\UserRepository")
+ * @ORM\Entity
  * @UniqueEntity(fields="login", message="Login already taken")
  * @UniqueEntity(fields="email", message="Email already taken")
  */
@@ -163,7 +163,7 @@ class User implements UserInterface, \Serializable {
 	public function getEmail() {
 		return $this->email;
 	}
-	
+
 	/**
 	 * Indicate if the user is allowed for a permission.
 	 *

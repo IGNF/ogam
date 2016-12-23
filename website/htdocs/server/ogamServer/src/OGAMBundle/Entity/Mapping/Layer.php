@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Layer
  *
  * @ORM\Table(name="mapping.layer")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Mapping\LayerRepository")
+ * @ORM\Entity
  */
 class Layer implements \JsonSerializable
 {
@@ -116,7 +116,7 @@ class Layer implements \JsonSerializable
 
     /**
      * Indicates the service for displaying the layers in the map panel.
-     * 
+     *
      * @var viewService
      * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
      * @ORM\JoinColumn(name="view_service_name", referencedColumnName="name")
@@ -125,7 +125,7 @@ class Layer implements \JsonSerializable
 
     /**
      * Indicates the service to call for displaying legend.
-     * 
+     *
      * @var legendService
      * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
      * @ORM\JoinColumn(name="legend_service_name", referencedColumnName="name")
@@ -134,7 +134,7 @@ class Layer implements \JsonSerializable
 
     /**
      * Indicates the service to call for detail panel.
-     * 
+     *
      * @var detailService
      * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
      * @ORM\JoinColumn(name="detail_service_name", referencedColumnName="name")
@@ -143,7 +143,7 @@ class Layer implements \JsonSerializable
 
     /**
      * Indicates the service to call for wfs menu.
-     * 
+     *
      * @var featureService
      * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\LayerService")
      * @ORM\JoinColumn(name="feature_service_name", referencedColumnName="name")
@@ -159,7 +159,7 @@ class Layer implements \JsonSerializable
     {
         return $this->name;
     }
-   
+
     /**
      * Set name
      *

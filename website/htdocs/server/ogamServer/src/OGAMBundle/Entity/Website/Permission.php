@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Permission
  *
  * @ORM\Table(name="website.permission")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PermissionRepository")
+ * @ORM\Entity
  */
 class Permission implements \Serializable{
 

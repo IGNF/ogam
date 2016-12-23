@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Translation
  *
  * @ORM\Table(name="metadata.translation")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TranslationRepository")
+ * @ORM\Entity
  */
 class Translation
 {

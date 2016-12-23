@@ -8,13 +8,13 @@ use Doctrine\ORM\Mapping as ORM;
  * LayerTreeNode
  *
  * @ORM\Table(name="mapping.layer_tree_node")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Mapping\LayerTreeNodeRepository")
+ * @ORM\Entity
  */
 class LayerTreeNode implements \JsonSerializable
 {
     /**
      * @var int
-     * 
+     *
      * @ORM\Id
      * @ORM\Column(name="node_id", type="integer", unique=true)
      */
@@ -156,7 +156,7 @@ class LayerTreeNode implements \JsonSerializable
     {
         return $this->parentNodeId;
     }
-    
+
     /**
      * Set label
      *
@@ -167,10 +167,10 @@ class LayerTreeNode implements \JsonSerializable
     public function setLabel($label)
     {
         $this->label = $label;
-    
+
         return $this;
     }
-    
+
     /**
      * Get label
      *
@@ -180,7 +180,7 @@ class LayerTreeNode implements \JsonSerializable
     {
         return $this->label;
     }
-    
+
     /**
      * Set definition
      *
@@ -191,10 +191,10 @@ class LayerTreeNode implements \JsonSerializable
     public function setDefinition($definition)
     {
         $this->definition = $definition;
-    
+
         return $this;
     }
-    
+
     /**
      * Get definition
      *
@@ -396,7 +396,7 @@ class LayerTreeNode implements \JsonSerializable
     {
         return $this->checkedGroup;
     }
-    
+
     /**
      * Serialize the object as a JSON string
      *

@@ -8,9 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Range
  *
  * @ORM\Table(name="metadata.range")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\RangeRepository")
+ * @ORM\Entity
  */
-class Range implements \JsonSerializable 
+class Range implements \JsonSerializable
 {
 
     /**

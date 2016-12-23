@@ -10,7 +10,7 @@ use OGAMBundle\Entity\RawData\Submission;
  * HarmonizationProcess
  *
  * @ORM\Table(name="harmonized_data.harmonization_process")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\HarmonizedData\HarmonizationProcessRepository")
+ * @ORM\Entity
  */
 class HarmonizationProcess
 {
@@ -53,9 +53,9 @@ class HarmonizationProcess
     private $date;
 
 	/**
-	 * 
+	 *
 	 * @var Collection
-	 * 
+	 *
 	 * @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\RawData\Submission")
      * @ORM\JoinTable(name="harmonized_data.harmonization_process_submissions",
      *  joinColumns={@ORM\JoinColumn(name="harmonization_process_id", referencedColumnName="harmonization_process_id")},
@@ -219,12 +219,12 @@ class HarmonizationProcess
     	$submissionValid = function($key, $object){
     		return $object->getStep() === Submission::STEP_VALIDATED;
     	};
-    	
+
     	if ($this->getSubmissions()->forAll($submissionValid)) {
     		return 'VALIDATED';
     	}
     	return 'NOT_VALID';
-    	
+
     }
 
     /**

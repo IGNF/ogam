@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * PredefinedRequestGroup
  *
  * @ORM\Table(name="website.predefined_request_group")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PredefinedRequestGroupRepository")
+ * @ORM\Entity
  */
 class PredefinedRequestGroup
 {
@@ -44,12 +44,12 @@ class PredefinedRequestGroup
      * @ORM\OneToMany(targetEntity="OGAMBundle\Entity\Website\PredefinedRequestGroupAsso", mappedBy="groupName")
      */
     private $requests;
-    
+
     public function __construct()
     {
         $this->requests = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Set name
      *

@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * FormFormat
  *
  * @ORM\Table(name="metadata.form_format")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\FormFormatRepository")
+ * @ORM\Entity
  */
 class FormFormat extends Format implements \JsonSerializable
 {
@@ -18,7 +18,7 @@ class FormFormat extends Format implements \JsonSerializable
      * @ORM\OneToMany(targetEntity="FormField", mappedBy="format")
      */
     //protected $fields;
-    
+
     /**
      * Constructor
      */
@@ -29,14 +29,14 @@ class FormFormat extends Format implements \JsonSerializable
 
     /**
      * The label of the form.
-     * 
+     *
      * @var string @ORM\Column(name="label", type="string", length=60, nullable=true)
      */
     private $label;
 
     /**
      * The definition of the form.
-     * 
+     *
      * @var string @ORM\Column(name="definition", type="string", length=255, nullable=true)
      */
     private $definition;
@@ -63,7 +63,7 @@ class FormFormat extends Format implements \JsonSerializable
     public function setLabel($label)
     {
         $this->label = $label;
-        
+
         return $this;
     }
 
@@ -87,7 +87,7 @@ class FormFormat extends Format implements \JsonSerializable
     public function setDefinition($definition)
     {
         $this->definition = $definition;
-        
+
         return $this;
     }
 
@@ -111,7 +111,7 @@ class FormFormat extends Format implements \JsonSerializable
     public function setPosition($position)
     {
         $this->position = $position;
-        
+
         return $this;
     }
 
@@ -135,7 +135,7 @@ class FormFormat extends Format implements \JsonSerializable
     public function setIsOpened($isOpened)
     {
         $this->isOpened = $isOpened;
-        
+
         return $this;
     }
 

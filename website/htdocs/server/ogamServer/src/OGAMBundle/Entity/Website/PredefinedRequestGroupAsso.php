@@ -8,13 +8,13 @@ use Doctrine\ORM\Mapping as ORM;
  * PredefinedRequestGroupAsso
  *
  * @ORM\Table(name="website.predefined_request_group_asso")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PredefinedRequestGroupAssoRepository")
+ * @ORM\Entity
  */
 class PredefinedRequestGroupAsso
 {
     /**
      * @var string
-     * @ORM\Id 
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequestGroup", inversedBy="requests")
      * @ORM\JoinColumn(name="group_name", referencedColumnName="name")
      */
@@ -22,7 +22,7 @@ class PredefinedRequestGroupAsso
 
     /**
      * @var string
-     * @ORM\Id 
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequest", inversedBy="groups")
      * @ORM\JoinColumn(name="request_name", referencedColumnName="name")
      */
