@@ -2,19 +2,16 @@
 namespace OGAMBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use OGAMBundle\Entity\Website\User;
 use OGAMBundle\Entity\Website\Role;
 use OGAMBundle\Entity\Website\Provider;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use OGAMBundle\Form\RawData\UserType;
+use OGAMBundle\Form\RawData\ChangePasswordType;
+use OGAMBundle\Form\RawData\ProviderType;
+use OGAMBundle\Form\RawData\RoleType;
 
 /**
  * @Route("/usermanagement")
@@ -26,161 +23,6 @@ class UsermanagementController extends Controller {
 	 */
 	public function indexAction() {
 		return $this->render('OGAMBundle:UsermanagementController:index.html.twig', array());
-	}
-
-	/**
-	 * Build and return the provider form.
-	 *
-	 * @param Provider $provider
-	 *        	a provider
-	 * @return a Form
-	 */
-	protected function getProviderForm($provider = null) {
-		$formBuilder = $this->createFormBuilder($provider);
-
-		$formBuilder->add('id', HiddenType::class);
-		$formBuilder->add('label', TextType::class, array(
-			'label' => 'Label'
-		));
-		$formBuilder->add('definition', TextareaType::class, array(
-			'label' => 'Definition',
-			'required' => false
-		));
-		$formBuilder->add('submit', SubmitType::class, array(
-			'label' => 'Submit'
-		));
-
-		return $formBuilder->getForm();
-	}
-
-	/**
-	 * Build and return the user form.
-	 *
-	 * @param User $user
-	 *        	a provider
-	 * @return a Form
-	 */
-	protected function getUserForm($user = null) {
-		$formBuilder = $this->createFormBuilder($user, array(
-			'data_class' => 'OGAMBundle\Entity\Website\User'
-		));
-
-		$formBuilder->add('login', TextType::class, array(
-			'label' => 'Login',
-			'read_only' => $user ? $user->getLogin() != null : false
-		));
-
-		// add the password fields in creation mode only
-		if ($user == null || $user->getLogin() == null) {
-			$formBuilder->add('plainPassword', RepeatedType::class, array(
-				'type' => PasswordType::class,
-				'first_options' => array(
-					'label' => 'Password'
-				),
-				'second_options' => array(
-					'label' => 'Confirm Password'
-				)
-			));
-		}
-
-		$formBuilder->add('username', TextType::class, array(
-			'label' => 'User Name'
-		));
-
-		// Provider
-		$formBuilder->add('provider', EntityType::class, array(
-			'label' => 'Provider',
-			'class' => 'OGAMBundle\Entity\Website\Provider',
-			'choice_label' => 'label',
-			'multiple' => false
-		));
-
-		$formBuilder->add('email', EmailType::class, array(
-			'label' => 'Email'
-		));
-
-		// Roles
-		$formBuilder->add('roles', EntityType::class, array(
-			'label' => 'Roles',
-			'class' => 'OGAMBundle\Entity\Website\Role',
-			'choice_label' => 'label',
-			'multiple' => true,
-			'expanded' => true
-		));
-
-		$formBuilder->add('submit', SubmitType::class, array(
-			'label' => 'Submit'
-		));
-
-		return $formBuilder->getForm();
-	}
-
-	/**
-	 * Build and return the user change password form.
-	 *
-	 * @param User $user
-	 *        	a provider
-	 * @return a Form
-	 */
-	protected function getChangeUserPasswordForm($user = null) {
-		$formBuilder = $this->createFormBuilder($user, array(
-			'data_class' => 'OGAMBundle\Entity\Website\User'
-		));
-
-		// add the password fields
-		$formBuilder->add('plainPassword', RepeatedType::class, array(
-			'type' => PasswordType::class,
-			'first_options' => array(
-				'label' => 'Password'
-			),
-			'second_options' => array(
-				'label' => 'Confirm Password'
-			)
-		));
-
-		$formBuilder->add('submit', SubmitType::class, array(
-			'label' => 'Submit'
-		));
-
-		return $formBuilder->getForm();
-	}
-
-	/**
-	 * Build and return the role form.
-	 *
-	 * @param Role $role
-	 *        	a role
-	 * @return a Form
-	 */
-	protected function getRoleForm($role = null) {
-		$formBuilder = $this->createFormBuilder($role);
-
-		$formBuilder->add('code', TextType::class, array(
-			'label' => 'Code',
-			'read_only' => $role ? !empty($role->getCode()) : false
-		));
-
-		$formBuilder->add('label', TextType::class, array(
-			'label' => 'Label'
-		));
-		$formBuilder->add('definition', TextType::class, array(
-			'label' => 'Definition',
-			'required' => false
-		));
-
-		$formBuilder->add('permissions', EntityType::class, array(
-			'label' => 'Permissions',
-			'class' => 'OGAMBundle\Entity\Website\Permission',
-			'choice_label' => 'label',
-			'multiple' => true,
-			'expanded' => true
-		));
-
-		$formBuilder->add('submit', SubmitType::class, array(
-			'label' => 'Submit'
-		));
-
-		return $formBuilder->getForm();
 	}
 
 	/**
@@ -262,7 +104,7 @@ class UsermanagementController extends Controller {
 		$user = $userRepo->find($login);
 
 		// Get the change password form
-		$form = $this->getChangeUserPasswordForm($user);
+		$form = $this->createForm(ChangePasswordType::class, $user);
 
 		$form->handleRequest($request);
 
@@ -311,7 +153,7 @@ class UsermanagementController extends Controller {
 		}
 
 		// Get the provider form
-		$form = $this->getProviderForm($provider);
+		$form = $this->createForm(ProviderType::class, $provider);
 
 		$form->handleRequest($request);
 
@@ -354,7 +196,7 @@ class UsermanagementController extends Controller {
 		}
 
 		// Get the role form
-		$form = $this->getRoleForm($role);
+		$form = $this->createForm(RoleType::class, $role);
 
 		$form->handleRequest($request);
 
@@ -397,7 +239,9 @@ class UsermanagementController extends Controller {
 		}
 
 		// Get the provider form
-		$form = $this->getUserForm($user);
+		$form = $this->createForm(UserType::class, $user, array(
+			'user' => $user
+		));
 
 		$form->handleRequest($request);
 

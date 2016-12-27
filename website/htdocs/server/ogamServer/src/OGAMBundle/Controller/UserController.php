@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use OGAMBundle\Form\RawData\ChangeUserPasswordType;
 
 /**
  * @Route("/user")
@@ -25,43 +26,6 @@ class UserController extends Controller {
 	}
 
 	/**
-	 * Build and return the user change password form.
-	 *
-	 * @param User $user
-	 *        	a provider
-	 * @return a Form
-	 */
-	protected function getChangePasswordForm($user = null) {
-		$formBuilder = $this->createFormBuilder($user, array(
-			'data_class' => 'OGAMBundle\Entity\Website\User'
-		));
-
-		// non-mapped field for the old password
-		$formBuilder->add('oldpassword', PasswordType::class, array(
-			'label' => 'Old Password',
-			'mapped' => false
-		));
-
-		// the password fields
-		$formBuilder->add('plainPassword', RepeatedType::class, array(
-			'type' => PasswordType::class,
-			'first_options' => array(
-				'label' => 'New Password'
-			),
-			'second_options' => array(
-				'label' => 'Confirm Password'
-			)
-		));
-
-		// submit button
-		$formBuilder->add('submit', SubmitType::class, array(
-			'label' => 'Submit'
-		));
-
-		return $formBuilder->getForm();
-	}
-
-	/**
 	 * Show the change password form.
 	 *
 	 * @Route("/changePassword", name = "user_changepassword")
@@ -74,7 +38,7 @@ class UserController extends Controller {
 		$user = $this->getUser();
 
 		// Get the change password form
-		$form = $this->getChangePasswordForm($user);
+		$form = $this->createForm(ChangeUserPasswordType::class, $user);
 
 		$form->handleRequest($request);
 

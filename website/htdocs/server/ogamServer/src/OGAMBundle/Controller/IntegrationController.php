@@ -17,6 +17,7 @@ use OGAMBundle\Entity\Metadata\FileFormat;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use OGAMBundle\Form\RawData\DataSubmissionType;
 
 /**
  * @Route("/integration")
@@ -71,34 +72,12 @@ class IntegrationController extends Controller {
 			->getRepository('OGAMBundle:Metadata\Dataset', 'metadata')
 			->getDatasetsForUpload();
 
+		$form = $this->createForm(DataSubmissionType::class);
+
 		return $this->render('OGAMBundle:Integration:show_create_data_submission.html.twig', array(
 			'datasets' => $availaibledData,
-			'form' => $this->getDataSubmissionForm()
-				->createView()
+			'form' => $form
 		));
-	}
-
-	/**
-	 * Build and return the data submission form.
-	 */
-	protected function getDataSubmissionForm() {
-		return $this->get('form.factory')
-			->createNamedBuilder('data-submission-form')
-			->setAction($this->generateUrl('integration_validate_creation'))
-			->
-		// ->setAttribute('name', 'data-submission-form')
-		add('DATASET_ID', ChoiceType::class, array(
-			'label' => 'Dataset',
-			'required' => true,
-			'choice_value' => 'id',
-			'choice_label' => 'label',
-			'choices' => $this->getDoctrine()
-				->getRepository('OGAMBundle:Metadata\Dataset', 'metadata')
-				->getDatasetsForUpload(),
-			'choices_as_values' => true
-		))
-			->add('submit', SubmitType::class)
-			->getForm();
 	}
 
 	/**
@@ -141,7 +120,7 @@ class IntegrationController extends Controller {
 	 * @Route("/validate-create-data-submission", name="integration_validate_creation")
 	 */
 	public function validateCreateDataSubmissionAction(Request $request) {
-		$form = $this->getDataSubmissionForm();
+		$form = $this->createForm(DataSubmissionType::class);
 		$form->handleRequest($request);
 
 		// Check the validity of the POST
