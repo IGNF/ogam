@@ -14,26 +14,23 @@ class Provider {
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\Column(name="id", type="string")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 * @ORM\SequenceGenerator(sequenceName="website.provider_id_seq")
+	 * @var string @ORM\Column(name="id", type="string")
+	 *      @ORM\Id
+	 *      @ORM\GeneratedValue(strategy="AUTO")
+	 *      @ORM\SequenceGenerator(sequenceName="website.provider_id_seq")
 	 */
 	private $id;
 
 	/**
 	 *
-	 * @var string
-	 * @Assert\NotBlank()
-	 * @ORM\Column(name="label", type="string", nullable=true)
+	 * @var string @Assert\NotBlank()
+	 *      @ORM\Column(name="label", type="string", nullable=true)
 	 */
 	private $label;
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\Column(name="definition", type="string", nullable=true)
+	 * @var string @ORM\Column(name="definition", type="string", nullable=true)
 	 */
 	private $definition;
 
@@ -49,13 +46,13 @@ class Provider {
 	/**
 	 * Set label
 	 *
-	 * @param string $label
+	 * @param string $label        	
 	 *
 	 * @return Provider
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
-
+		
 		return $this;
 	}
 
@@ -71,13 +68,13 @@ class Provider {
 	/**
 	 * Set definition
 	 *
-	 * @param string $definition
+	 * @param string $definition        	
 	 *
 	 * @return Provider
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
-
+		
 		return $this;
 	}
 

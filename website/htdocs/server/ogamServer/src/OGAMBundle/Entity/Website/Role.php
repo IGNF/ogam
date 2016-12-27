@@ -16,29 +16,26 @@ class Role implements RoleInterface, \Serializable {
 	/**
 	 * The code.
 	 *
-	 * @var string
-	 * @Assert\Length(max=36)
-	 * @Assert\NotBlank()
-	 * @ORM\Column(name="role_code", type="string", length=36, nullable=false, unique=true)
-	 * @ORM\Id
+	 * @var string @Assert\Length(max=36)
+	 *      @Assert\NotBlank()
+	 *      @ORM\Column(name="role_code", type="string", length=36, nullable=false, unique=true)
+	 *      @ORM\Id
 	 */
 	private $code;
 
 	/**
 	 * The label.
 	 *
-	 * @var string
-	 * @Assert\Length(max=100)
-	 * @ORM\Column(name="role_label", type="string", length=100, nullable=true)
+	 * @var string @Assert\Length(max=100)
+	 *      @ORM\Column(name="role_label", type="string", length=100, nullable=true)
 	 */
 	private $label;
 
 	/**
 	 * The definition.
 	 *
-	 * @var string
-	 * @Assert\Length(max=255)
-	 * @ORM\Column(name="role_definition", type="string", length=255, nullable=true)
+	 * @var string @Assert\Length(max=255)
+	 *      @ORM\Column(name="role_definition", type="string", length=255, nullable=true)
 	 */
 	private $definition;
 
@@ -47,13 +44,12 @@ class Role implements RoleInterface, \Serializable {
 	 *
 	 * A list of codes corresponding to authorised actions.
 	 *
-	 * @var Array[String]
-	 * @ORM\ManyToMany(targetEntity="Permission", fetch="EAGER")
-     * @ORM\JoinTable(name="permission_per_role",
-     *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="permission_code", referencedColumnName="permission_code")}
-     *      )
-     */
+	 * @var Array[String] @ORM\ManyToMany(targetEntity="Permission", fetch="EAGER")
+	 *      @ORM\JoinTable(name="permission_per_role",
+	 *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
+	 *      inverseJoinColumns={@ORM\JoinColumn(name="permission_code", referencedColumnName="permission_code")}
+	 *      )
+	 */
 	private $permissions = array();
 
 	/**
@@ -61,12 +57,11 @@ class Role implements RoleInterface, \Serializable {
 	 *
 	 * A list of schemas names.
 	 *
-	 * @var Array[String]
-	 * @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\Metadata\TableSchema")
-     * @ORM\JoinTable(name="role_to_schema",
-     *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")}
-     *      )
+	 * @var Array[String] @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\Metadata\TableSchema")
+	 *      @ORM\JoinTable(name="role_to_schema",
+	 *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
+	 *      inverseJoinColumns={@ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")}
+	 *      )
 	 */
 	private $schemas = array();
 
@@ -74,19 +69,20 @@ class Role implements RoleInterface, \Serializable {
 	 * Constructor
 	 */
 	public function __construct() {
-	    $this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
-	    $this->schemas= new \Doctrine\Common\Collections\ArrayCollection();
+		$this->permissions = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->schemas = new \Doctrine\Common\Collections\ArrayCollection();
 	}
+
 	/**
 	 * Set code
 	 *
-	 * @param string $code
+	 * @param string $code        	
 	 *
 	 * @return Role
 	 */
 	public function setCode($code) {
 		$this->code = $code;
-
+		
 		return $this;
 	}
 
@@ -102,13 +98,13 @@ class Role implements RoleInterface, \Serializable {
 	/**
 	 * Set label
 	 *
-	 * @param string $label
+	 * @param string $label        	
 	 *
 	 * @return Role
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
-
+		
 		return $this;
 	}
 
@@ -124,13 +120,13 @@ class Role implements RoleInterface, \Serializable {
 	/**
 	 * Set definition
 	 *
-	 * @param string $definition
+	 * @param string $definition        	
 	 *
 	 * @return Role
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
-
+		
 		return $this;
 	}
 
@@ -149,7 +145,6 @@ class Role implements RoleInterface, \Serializable {
 	 * @return \Doctrine\Common\Collections\Collection
 	 */
 	public function getPermissions() {
-
 		return $this->permissions;
 	}
 
@@ -159,10 +154,8 @@ class Role implements RoleInterface, \Serializable {
 	 * @return \Doctrine\Common\Collections\Collection
 	 */
 	public function getSchemas() {
-
 		return $this->schemas;
 	}
-
 
 	/**
 	 * Indicate if the role is allowed for a permission.
@@ -172,25 +165,24 @@ class Role implements RoleInterface, \Serializable {
 	 * @return Boolean
 	 */
 	function isAllowed($permissionName) {
-/*
-		global $kernel;
-		if ('AppCache' == get_class($kernel)) {
-			$kernel = $kernel->getKernel();
-		}
-		$logger = $kernel->getContainer()->get('logger');
-		$logger->info('role isAllowed ' . $permissionName);
-
-		$logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
-*/
+		/*
+		 * global $kernel;
+		 * if ('AppCache' == get_class($kernel)) {
+		 * $kernel = $kernel->getKernel();
+		 * }
+		 * $logger = $kernel->getContainer()->get('logger');
+		 * $logger->info('role isAllowed ' . $permissionName);
+		 *
+		 * $logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
+		 */
 		foreach ($this->getPermissions() as $permission) {
-
+			
 			if ($permission->getCode() == $permissionName) {
 				return true;
 			}
 		}
-
+		
 		return false;
-
 	}
 
 	/**
@@ -201,55 +193,57 @@ class Role implements RoleInterface, \Serializable {
 	 * @return Boolean
 	 */
 	function isSchemaAllowed($schemaCode) {
-/*
-		global $kernel;
-		if ('AppCache' == get_class($kernel)) {
-			$kernel = $kernel->getKernel();
-		}
-		$logger = $kernel->getContainer()->get('logger');
-		$logger->info('role isSchemaAllowed ' . $schemaCode);
-
-		$logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
-*/
+		/*
+		 * global $kernel;
+		 * if ('AppCache' == get_class($kernel)) {
+		 * $kernel = $kernel->getKernel();
+		 * }
+		 * $logger = $kernel->getContainer()->get('logger');
+		 * $logger->info('role isSchemaAllowed ' . $schemaCode);
+		 *
+		 * $logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
+		 */
 		foreach ($this->getSchemas() as $schema) {
-
+			
 			if ($schema->getCode() == $schemaCode) {
 				return true;
 			}
 		}
-
+		
 		return false;
-
 	}
 
 	/**
 	 * Required to implement RoleInterface.
-	 * {@inheritDoc}
+	 * 
+	 * {@inheritdoc}
+	 *
 	 * @see \Symfony\Component\Security\Core\Role\RoleInterface::getRole()
 	 */
-	public function getRole()
-	{
+	public function getRole() {
 		return $this->getCode();
 	}
 
-    /**
-     * add a permission
-     * @param Permission $perm
-     * @return Role
-     */
-	public function addPermission(Permission $perm){
-	    $this->permissions->add($perm);
-	    return $this;
+	/**
+	 * add a permission
+	 * 
+	 * @param Permission $perm        	
+	 * @return Role
+	 */
+	public function addPermission(Permission $perm) {
+		$this->permissions->add($perm);
+		return $this;
 	}
 
 	/**
 	 * remove a permission
-	 * @param Permission $perm
+	 * 
+	 * @param Permission $perm        	
 	 * @return Role
 	 */
-	public function removePermission(Permission $perm){
-	    $this->permissions->removeElement($perm);
-	    return $this;
+	public function removePermission(Permission $perm) {
+		$this->permissions->removeElement($perm);
+		return $this;
 	}
 
 	/**
@@ -257,12 +251,12 @@ class Role implements RoleInterface, \Serializable {
 	 * @see \Serializable::serialize()
 	 */
 	public function serialize() {
-	    return serialize(array(
-	        $this->code,
-	        $this->label,
-	        $this->definition,
-	        $this->permissions
-	    ));
+		return serialize(array(
+			$this->code,
+			$this->label,
+			$this->definition,
+			$this->permissions
+		));
 	}
 
 	/**
@@ -270,6 +264,6 @@ class Role implements RoleInterface, \Serializable {
 	 * @see \Serializable::unserialize()
 	 */
 	public function unserialize($serialized) {
-	    list ($this->code, $this->label, $this->definition, $this->permissions) = unserialize($serialized);
+		list ($this->code, $this->label, $this->definition, $this->permissions) = unserialize($serialized);
 	}
 }

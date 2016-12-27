@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Entity\Metadata;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -10,223 +9,200 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="metadata.table_field")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableFieldRepository")
  */
-class TableField extends Field { 
+class TableField extends Field {
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="column_name", type="string", length=36, nullable=true)
-     */
-    private $columnName;
+	/**
+	 *
+	 * @var string @ORM\Column(name="column_name", type="string", length=36, nullable=true)
+	 */
+	private $columnName;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="is_calculated", type="boolean", nullable=true)
-     */
-    private $isCalculated;
+	/**
+	 *
+	 * @var bool @ORM\Column(name="is_calculated", type="boolean", nullable=true)
+	 */
+	private $isCalculated;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="is_editable", type="boolean", nullable=true)
-     */
-    private $isEditable;
+	/**
+	 *
+	 * @var bool @ORM\Column(name="is_editable", type="boolean", nullable=true)
+	 */
+	private $isEditable;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="is_insertable", type="boolean", nullable=true)
-     */
-    private $isInsertable;
+	/**
+	 *
+	 * @var bool @ORM\Column(name="is_insertable", type="boolean", nullable=true)
+	 */
+	private $isInsertable;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="is_mandatory", type="boolean", nullable=true)
-     */
-    private $isMandatory;
+	/**
+	 *
+	 * @var bool @ORM\Column(name="is_mandatory", type="boolean", nullable=true)
+	 */
+	private $isMandatory;
 
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="position", type="integer", nullable=true)
-     */
-    private $position;
-    
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="comment", type="text", nullable=true)
-     */
-    private $comment;
-    
-    /**
-     * @var Format
-     *
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="TableFormat")
-     * @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
-     */
-    protected $format;
-    
-    /**
-     * Set columnName
-     *
-     * @param string $columnName
-     *
-     * @return TableField
-     */
-    public function setColumnName($columnName)
-    {
-        $this->columnName = $columnName;
+	/**
+	 *
+	 * @var integer @ORM\Column(name="position", type="integer", nullable=true)
+	 */
+	private $position;
 
-        return $this;
-    }
+	/**
+	 *
+	 * @var integer @ORM\Column(name="comment", type="text", nullable=true)
+	 */
+	private $comment;
 
-    /**
-     * Get columnName
-     *
-     * @return string
-     */
-    public function getColumnName()
-    {
-        return $this->columnName;
-    }
+	/**
+	 *
+	 * @var Format @ORM\Id
+	 *      @ORM\ManyToOne(targetEntity="TableFormat")
+	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
+	 */
+	protected $format;
 
-    /**
-     * Set isCalculated
-     *
-     * @param boolean $isCalculated
-     *
-     * @return TableField
-     */
-    public function setIsCalculated($isCalculated)
-    {
-        $this->isCalculated = $isCalculated;
+	/**
+	 * Set columnName
+	 *
+	 * @param string $columnName        	
+	 *
+	 * @return TableField
+	 */
+	public function setColumnName($columnName) {
+		$this->columnName = $columnName;
+		
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get columnName
+	 *
+	 * @return string
+	 */
+	public function getColumnName() {
+		return $this->columnName;
+	}
 
-    /**
-     * Get isCalculated
-     *
-     * @return bool
-     */
-    public function getIsCalculated()
-    {
-        return $this->isCalculated;
-    }
+	/**
+	 * Set isCalculated
+	 *
+	 * @param boolean $isCalculated        	
+	 *
+	 * @return TableField
+	 */
+	public function setIsCalculated($isCalculated) {
+		$this->isCalculated = $isCalculated;
+		
+		return $this;
+	}
 
-    /**
-     * Set isEditable
-     *
-     * @param boolean $isEditable
-     *
-     * @return TableField
-     */
-    public function setIsEditable($isEditable)
-    {
-        $this->isEditable = $isEditable;
+	/**
+	 * Get isCalculated
+	 *
+	 * @return bool
+	 */
+	public function getIsCalculated() {
+		return $this->isCalculated;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set isEditable
+	 *
+	 * @param boolean $isEditable        	
+	 *
+	 * @return TableField
+	 */
+	public function setIsEditable($isEditable) {
+		$this->isEditable = $isEditable;
+		
+		return $this;
+	}
 
-    /**
-     * Get isEditable
-     *
-     * @return bool
-     */
-    public function getIsEditable()
-    {
-        return $this->isEditable;
-    }
+	/**
+	 * Get isEditable
+	 *
+	 * @return bool
+	 */
+	public function getIsEditable() {
+		return $this->isEditable;
+	}
 
-    /**
-     * Set isInsertable
-     *
-     * @param boolean $isInsertable
-     *
-     * @return TableField
-     */
-    public function setIsInsertable($isInsertable)
-    {
-        $this->isInsertable = $isInsertable;
+	/**
+	 * Set isInsertable
+	 *
+	 * @param boolean $isInsertable        	
+	 *
+	 * @return TableField
+	 */
+	public function setIsInsertable($isInsertable) {
+		$this->isInsertable = $isInsertable;
+		
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get isInsertable
+	 *
+	 * @return bool
+	 */
+	public function getIsInsertable() {
+		return $this->isInsertable;
+	}
 
-    /**
-     * Get isInsertable
-     *
-     * @return bool
-     */
-    public function getIsInsertable()
-    {
-        return $this->isInsertable;
-    }
+	/**
+	 * Set isMandatory
+	 *
+	 * @param boolean $isMandatory        	
+	 *
+	 * @return TableField
+	 */
+	public function setIsMandatory($isMandatory) {
+		$this->isMandatory = $isMandatory;
+		
+		return $this;
+	}
 
-    /**
-     * Set isMandatory
-     *
-     * @param boolean $isMandatory
-     *
-     * @return TableField
-     */
-    public function setIsMandatory($isMandatory)
-    {
-        $this->isMandatory = $isMandatory;
+	/**
+	 * Get isMandatory
+	 *
+	 * @return bool
+	 */
+	public function getIsMandatory() {
+		return $this->isMandatory;
+	}
 
-        return $this;
-    }
+	/**
+	 *
+	 * @return the integer
+	 */
+	public function getPosition() {
+		return $this->position;
+	}
 
-    /**
-     * Get isMandatory
-     *
-     * @return bool
-     */
-    public function getIsMandatory()
-    {
-        return $this->isMandatory;
-    }
+	/**
+	 *
+	 * @param integer $position        	
+	 */
+	public function setPosition($position) {
+		$this->position = $position;
+		return $this;
+	}
 
-    /**
-     *
-     * @return the integer
-     */
-    public function getPosition()
-    {
-        return $this->position;
-    }
+	/**
+	 *
+	 * @return the integer
+	 */
+	public function getComment() {
+		return $this->comment;
+	}
 
-    /**
-     *
-     * @param integer $position
-     */
-    public function setPosition($position)
-    {
-        $this->position = $position;
-        return $this;
-    }
-
-    /**
-     *
-     * @return the integer
-     */
-    public function getComment()
-    {
-        return $this->comment;
-    }
-
-    /**
-     *
-     * @param string $comment
-     */
-    public function setComment($comment)
-    {
-        $this->comment = $comment;
-        return $this;
-    }
- 
+	/**
+	 *
+	 * @param string $comment        	
+	 */
+	public function setComment($comment) {
+		$this->comment = $comment;
+		return $this;
+	}
 }
 

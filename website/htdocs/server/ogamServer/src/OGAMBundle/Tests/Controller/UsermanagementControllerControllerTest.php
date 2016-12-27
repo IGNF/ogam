@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Tests\Controller;
 
 class UserManagementControllerTest extends AbstractControllerTest
@@ -64,12 +63,12 @@ class UserManagementControllerTest extends AbstractControllerTest
         ];
     }
 {
-    public function testIndex()
-    {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/index');
-    }
+    public 
+function testIndex() {
+	$client = static::createClient();
+	
+	$crawler = $client->request('GET', '/index');
+}
 
     public function testDeleteprovider()
     {

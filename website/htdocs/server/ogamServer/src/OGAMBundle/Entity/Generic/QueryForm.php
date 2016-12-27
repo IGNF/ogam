@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Entity\Generic;
 
 /**
@@ -27,27 +26,28 @@ class QueryForm {
 
 	/**
 	 * The field mapping set (Form -> Table)
+	 * 
 	 * @var GenericFieldMappingSet
 	 */
 	private $fieldMappingSet;
-	
+
 	/**
 	 * Return the dataset Id
+	 * 
 	 * @return string the dataset Id
 	 */
-	public function getDatasetId()
-	{
-	    return $this->datasetId;
+	public function getDatasetId() {
+		return $this->datasetId;
 	}
-	
+
 	/**
 	 * Set the datasetId
-	 * @param string $datasetId
+	 * 
+	 * @param string $datasetId        	
 	 */
-	public function setDatasetId($datasetId)
-	{
-	    $this->datasetId = $datasetId;
-	    return $this;
+	public function setDatasetId($datasetId) {
+		$this->datasetId = $datasetId;
+		return $this;
 	}
 
 	/**
@@ -111,31 +111,29 @@ class QueryForm {
 	 *
 	 * @return the GenericFieldMappingSet
 	 */
-	public function getFieldMappingSet()
-	{
-	    return $this->fieldMappingSet;
+	public function getFieldMappingSet() {
+		return $this->fieldMappingSet;
 	}
-	
+
 	/**
 	 * Set the field mapping set (Form -> Table)
-	 * 
-	 * @param GenericFieldMappingSet $fieldMappingSet
+	 *
+	 * @param GenericFieldMappingSet $fieldMappingSet        	
 	 */
-	public function setFieldMappingSet(GenericFieldMappingSet $fieldMappingSet)
-	{
-	    $this->fieldMappingSet = $fieldMappingSet;
-	    return $this;
+	public function setFieldMappingSet(GenericFieldMappingSet $fieldMappingSet) {
+		$this->fieldMappingSet = $fieldMappingSet;
+		return $this;
 	}
-	
+
 	/**
 	 * Get the column destination fields
-	 * 
+	 *
 	 * @return \OGAMBundle\Entity\Generic\GenericField[]
 	 */
 	public function getColumnsDstFields() {
-	    return $this->fieldMappingSet->getDstFields($this->columns);
+		return $this->fieldMappingSet->getDstFields($this->columns);
 	}
-	
+
 	/**
 	 * Get the request validity.
 	 *

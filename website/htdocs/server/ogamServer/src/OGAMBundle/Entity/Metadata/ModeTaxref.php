@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Entity\Metadata;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -10,101 +9,90 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="metadata.mode_taxref")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\ModeTaxrefRepository")
  */
-class ModeTaxref extends ModeTree
-{
+class ModeTaxref extends ModeTree {
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="complete_name", type="string", length=255, nullable=true)
-     */
-    private $completeName;
+	/**
+	 *
+	 * @var string @ORM\Column(name="complete_name", type="string", length=255, nullable=true)
+	 */
+	private $completeName;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="vernacular_name", type="string", length=255, nullable=true)
-     */
-    private $vernacularName;
+	/**
+	 *
+	 * @var string @ORM\Column(name="vernacular_name", type="string", length=255, nullable=true)
+	 */
+	private $vernacularName;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="is_reference", type="boolean", nullable=true)
-     */
-    private $isReference;
+	/**
+	 *
+	 * @var bool @ORM\Column(name="is_reference", type="boolean", nullable=true)
+	 */
+	private $isReference;
 
+	/**
+	 * Set completeName
+	 *
+	 * @param string $completeName        	
+	 *
+	 * @return ModeTaxref
+	 */
+	public function setCompleteName($completeName) {
+		$this->completeName = $completeName;
+		
+		return $this;
+	}
 
-    /**
-     * Set completeName
-     *
-     * @param string $completeName
-     *
-     * @return ModeTaxref
-     */
-    public function setCompleteName($completeName)
-    {
-        $this->completeName = $completeName;
+	/**
+	 * Get completeName
+	 *
+	 * @return string
+	 */
+	public function getCompleteName() {
+		return $this->completeName;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set vernacularName
+	 *
+	 * @param string $vernacularName        	
+	 *
+	 * @return ModeTaxref
+	 */
+	public function setVernacularName($vernacularName) {
+		$this->vernacularName = $vernacularName;
+		
+		return $this;
+	}
 
-    /**
-     * Get completeName
-     *
-     * @return string
-     */
-    public function getCompleteName()
-    {
-        return $this->completeName;
-    }
+	/**
+	 * Get vernacularName
+	 *
+	 * @return string
+	 */
+	public function getVernacularName() {
+		return $this->vernacularName;
+	}
 
-    /**
-     * Set vernacularName
-     *
-     * @param string $vernacularName
-     *
-     * @return ModeTaxref
-     */
-    public function setVernacularName($vernacularName)
-    {
-        $this->vernacularName = $vernacularName;
+	/**
+	 * Set isReference
+	 *
+	 * @param boolean $isReference        	
+	 *
+	 * @return ModeTaxref
+	 */
+	public function setIsReference($isReference) {
+		$this->isReference = $isReference;
+		
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get vernacularName
-     *
-     * @return string
-     */
-    public function getVernacularName()
-    {
-        return $this->vernacularName;
-    }
-
-    /**
-     * Set isReference
-     *
-     * @param boolean $isReference
-     *
-     * @return ModeTaxref
-     */
-    public function setIsReference($isReference)
-    {
-        $this->isReference = $isReference;
-
-        return $this;
-    }
-
-    /**
-     * Get isReference
-     *
-     * @return bool
-     */
-    public function getIsReference()
-    {
-        return $this->isReference;
-    }
+	/**
+	 * Get isReference
+	 *
+	 * @return bool
+	 */
+	public function getIsReference() {
+		return $this->isReference;
+	}
 }
 

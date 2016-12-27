@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Entity\Metadata;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -9,74 +8,67 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Field
  * @ORM\Entity
  */
-class Field
-{
-    /**
-     * @var Data
-     *
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
-     * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
-     */
-    protected $data;
+class Field {
 
-    /**
-     * @var Format
-     *
-     * @ORM\Id
-	 * @ORM\ManyToOne(targetEntity="Format")
-	 * @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
-     */
-    protected $format;
+	/**
+	 *
+	 * @var Data @ORM\Id
+	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
+	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
+	 */
+	protected $data;
 
+	/**
+	 *
+	 * @var Format @ORM\Id
+	 *      @ORM\ManyToOne(targetEntity="Format")
+	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
+	 */
+	protected $format;
 
-    /**
-     * Set data
-     *
-     * @param Data $data
-     *
-     * @return field
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
+	/**
+	 * Set data
+	 *
+	 * @param Data $data        	
+	 *
+	 * @return field
+	 */
+	public function setData($data) {
+		$this->data = $data;
+		
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get data
+	 *
+	 * @return Data
+	 */
+	public function getData() {
+		return $this->data;
+	}
 
-    /**
-     * Get data
-     *
-     * @return Data
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
+	/**
+	 * Set format
+	 *
+	 * @param Format $format        	
+	 *
+	 * @return field
+	 */
+	public function setFormat($format) {
+		$this->format = $format;
+		
+		return $this;
+	}
 
-    /**
-     * Set format
-     *
-     * @param Format $format
-     *
-     * @return field
-     */
-    public function setFormat($format)
-    {
-        $this->format = $format;
-
-        return $this;
-    }
-
-    /**
-     * Get format
-     *
-     * @return Format
-     */
-    public function getFormat()
-    {
-        return $this->format;
-    }
+	/**
+	 * Get format
+	 *
+	 * @return Format
+	 */
+	public function getFormat() {
+		return $this->format;
+	}
 
 	/**
 	 * Return the unique identifier of the field.
@@ -93,12 +85,10 @@ class Field
 	 * @return String the label
 	 */
 	function getLabel() {
-		if (isset($this->label) ) {
+		if (isset($this->label)) {
 			return $this->label;
 		} else {
 			return $this->getData()->getLabel();
 		}
 	}
-
-
 }

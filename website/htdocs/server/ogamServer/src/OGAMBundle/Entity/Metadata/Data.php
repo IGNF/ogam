@@ -15,8 +15,7 @@ class Data implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var string 
-	 * @ORM\Column(name="data", type="string", length=174, nullable=false)
+	 * @var string @ORM\Column(name="data", type="string", length=174, nullable=false)
 	 *      @ORM\Id
 	 *      @Assert\NotBlank(message="data.name.notBlank")
 	 *      @Assert\Length(max="174", maxMessage="data.name.maxLength")
@@ -26,8 +25,7 @@ class Data implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=false)
+	 * @var string @ORM\JoinColumn(name="unit", referencedColumnName="unit", nullable=false)
 	 *      @ORM\ManyToOne(targetEntity="Unit")
 	 *      @Assert\NotNull(message="data.unit.notNull")
 	 */
@@ -35,8 +33,7 @@ class Data implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\Column(name="label", type="string", length=60, nullable=true)
+	 * @var string @ORM\Column(name="label", type="string", length=60, nullable=true)
 	 *      @Assert\NotBlank(message="data.label.notBlank")
 	 *      @Assert\Length(max="60", maxMessage="data.label.maxLength")
 	 */
@@ -44,20 +41,17 @@ class Data implements \JsonSerializable {
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\Column(name="definition", type="string", length=255, nullable=true)
+	 * @var string @ORM\Column(name="definition", type="string", length=255, nullable=true)
 	 *      @Assert\Length(max="255", maxMessage="data.definition.maxLength")
 	 */
 	private $definition;
 
 	/**
 	 *
-	 * @var string
-	 * @ORM\Column(name="comment", type="string", length=255, nullable=true)
+	 * @var string @ORM\Column(name="comment", type="string", length=255, nullable=true)
 	 *      @Assert\Length(max="255", maxMessage="data.definition.maxLength")
 	 */
 	private $comment;
-
 
 	private $fields;
 
@@ -71,12 +65,12 @@ class Data implements \JsonSerializable {
 	/**
 	 * Set data
 	 *
-	 * @param string $data
+	 * @param string $data        	
 	 * @return Data
 	 */
 	public function setData($data) {
 		$this->data = $data;
-
+		
 		return $this;
 	}
 
@@ -92,12 +86,12 @@ class Data implements \JsonSerializable {
 	/**
 	 * Set label
 	 *
-	 * @param string $label
+	 * @param string $label        	
 	 * @return Data
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
-
+		
 		return $this;
 	}
 
@@ -113,12 +107,12 @@ class Data implements \JsonSerializable {
 	/**
 	 * Set definition
 	 *
-	 * @param string $definition
+	 * @param string $definition        	
 	 * @return Data
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
-
+		
 		return $this;
 	}
 
@@ -134,12 +128,12 @@ class Data implements \JsonSerializable {
 	/**
 	 * Set comment
 	 *
-	 * @param string $comment
+	 * @param string $comment        	
 	 * @return Data
 	 */
 	public function setComment($comment) {
 		$this->comment = $comment;
-
+		
 		return $this;
 	}
 
@@ -155,12 +149,12 @@ class Data implements \JsonSerializable {
 	/**
 	 * Set unit
 	 *
-	 * @param Unit $unit
+	 * @param Unit $unit        	
 	 * @return Data
 	 */
 	public function setUnit(Unit $unit = null) {
 		$this->unit = $unit;
-
+		
 		return $this;
 	}
 
@@ -179,12 +173,12 @@ class Data implements \JsonSerializable {
 	 * @return a JSON string
 	 */
 	public function jsonSerialize() {
-	    return [
-	        'id' => $this->data,
-	        'data' => $this->data,
-	        'unit' => $this->unit,
-	        'label' => $this->label,
-	        'definition' => $this->definition
-	    ];
+		return [
+			'id' => $this->data,
+			'data' => $this->data,
+			'unit' => $this->unit,
+			'label' => $this->label,
+			'definition' => $this->definition
+		];
 	}
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Entity\Generic;
 
 /**
@@ -7,57 +6,54 @@ namespace OGAMBundle\Entity\Generic;
  */
 class GenericFieldMapping {
 
-    /**
-     * The schema use to filter the mapping
-     *
-     * @var string
-     */
-    private $schema;
+	/**
+	 * The schema use to filter the mapping
+	 *
+	 * @var string
+	 */
+	private $schema;
 
-    /**
-     * The source field
-     *
-     * @var OGAMBundle\Entity\Generic\GenericField
-     */
-    private $srcField;
+	/**
+	 * The source field
+	 *
+	 * @var OGAMBundle\Entity\Generic\GenericField
+	 */
+	private $srcField;
 
-    /**
-     * The destination field
-     *
-     * @var OGAMBundle\Entity\Generic\GenericField
-     */
-    private $dstField;
+	/**
+	 * The destination field
+	 *
+	 * @var OGAMBundle\Entity\Generic\GenericField
+	 */
+	private $dstField;
 
-    function __construct($srcField, $dstField, $schema) {
-        $this->srcField = $srcField;
-        $this->dstField = $dstField;
-        $this->schema = $schema;
-    }
-    
-    /**
-     *
-     * @return the GenericField
-     */
-    public function getSrcField()
-    {
-        return $this->srcField;
-    }
+	function __construct($srcField, $dstField, $schema) {
+		$this->srcField = $srcField;
+		$this->dstField = $dstField;
+		$this->schema = $schema;
+	}
 
-    /**
-     *
-     * @return the GenericField
-     */
-    public function getDstField()
-    {
-        return $this->dstField;
-    }
+	/**
+	 *
+	 * @return the GenericField
+	 */
+	public function getSrcField() {
+		return $this->srcField;
+	}
 
-    /**
-     *
-     * @return the GenericField
-     */
-    public function getSchema()
-    {
-        return $this->schema;
-    }
+	/**
+	 *
+	 * @return the GenericField
+	 */
+	public function getDstField() {
+		return $this->dstField;
+	}
+
+	/**
+	 *
+	 * @return the GenericField
+	 */
+	public function getSchema() {
+		return $this->schema;
+	}
 }

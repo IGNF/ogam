@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -12,21 +11,21 @@ use OGAMBundle\Entity\Mapping\LayerService;
 use OGAMBundle\Entity\Mapping\LayerTreeNode;
 use OGAMBundle\Entity\Mapping\ZoomLevel;
 use OGAMBundle\Repository\Mapping\ZoomLevelRepository;
+
 /**
- * 
  * @Route("/map")
- *
  */
-class MapController extends Controller
-{
-    /**
+class MapController extends Controller {
+
+	/**
 	 * Get the parameters used to initialise a map.
 	 * @Route("/get-map-parameters")
-     */
-    public function getMapParametersAction()
-    {
-    	//TODO :getMapParametersAction
-		$providerId = $this->getUser()->getProvider()->getId();
+	 */
+	public function getMapParametersAction() {
+		// TODO :getMapParametersAction
+		$providerId = $this->getUser()
+			->getProvider()
+			->getId();
 
 		// Get the parameters from configuration file
 		$configuration = $this->get("ogam.configuration_manager");
@@ -40,7 +39,9 @@ class MapController extends Controller
 		$view->projection = "EPSG:" . $configuration->getConfig('srs_visualisation'); // Projection
 
 		// Get the map resolution
-		$resolutions = $this->get('doctrine')->getRepository(ZoomLevel::class)->getResolutions();
+		$resolutions = $this->get('doctrine')
+			->getRepository(ZoomLevel::class)
+			->getResolutions();
 		$resolString = implode(",", $resolutions);
 		$view->resolutions = $resolString;
 		$view->numZoomLevels = count($resolutions);
@@ -49,7 +50,10 @@ class MapController extends Controller
 
 		if ($userPerProviderCenter) {
 			// Center the map on the provider location
-			$center = $this->getDoctrine()->getManagerForClass('OGAMBundle\Entity\Mapping\ProviderMapParameters')->find('OGAMBundle\Entity\Mapping\ProviderMapParameters', $providerId)->getCenter();
+			$center = $this->getDoctrine()
+				->getManagerForClass('OGAMBundle\Entity\Mapping\ProviderMapParameters')
+				->find('OGAMBundle\Entity\Mapping\ProviderMapParameters', $providerId)
+				->getCenter();
 			$view->zoomLevel = $center->zoomLevel;
 			$view->centerX = $center->x;
 			$view->centerY = $center->y;
@@ -65,23 +69,26 @@ class MapController extends Controller
 		$view->featureinfo_typename = $configuration->getConfig('featureinfo_typename', "result_locations");
 		$view->featureinfo_maxfeatures = $configuration->getConfig('featureinfo_maxfeatures', 20);
 
-        return $this->render('OGAMBundle:Map:get_map_parameters.js.twig', $view->getArrayCopy(), (new Response())->headers->set('Content-type', 'application/javascript'));
-    }
+		return $this->render('OGAMBundle:Map:get_map_parameters.js.twig', $view->getArrayCopy(), (new Response())->headers->set('Content-type', 'application/javascript'));
+	}
 
-    /**
-     * Return the list of available layer tree nodes as a JSON.
-     * 
-     * @Route("/ajaxgetlayertreenodes")
-     */
-    public function ajaxgetlayertreenodesAction(Request $request)
-    {
-        $logger = $this->get('logger');
-        $logger->debug('ajaxgetlayertreenodes');
+	/**
+	 * Return the list of available layer tree nodes as a JSON.
+	 *
+	 * @Route("/ajaxgetlayertreenodes")
+	 */
+	public function ajaxgetlayertreenodesAction(Request $request) {
+		$logger = $this->get('logger');
+		$logger->debug('ajaxgetlayertreenodes');
 
-        $response = new Response();
-        $response->headers->set('Content-Type', 'application/json');
-        return $this->render ( 'OGAMBundle:Map:ajaxgetlayertreenodes.json.twig', array (
-            'layerTreeNodes' => $this->get('doctrine')->getRepository(LayerTreeNode::class)->findBy([], ['position' => 'ASC'])
-        ),$response);
-    }
+		$response = new Response();
+		$response->headers->set('Content-Type', 'application/json');
+		return $this->render('OGAMBundle:Map:ajaxgetlayertreenodes.json.twig', array(
+			'layerTreeNodes' => $this->get('doctrine')
+				->getRepository(LayerTreeNode::class)
+				->findBy([], [
+				'position' => 'ASC'
+			])
+		), $response);
+	}
 }

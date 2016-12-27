@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Entity\Generic;
 
 use OGAMBundle\Entity\Metadata\TableFormat;
@@ -15,11 +14,11 @@ class GenericFormat {
 	 */
 	private $datasetId;
 
-    /**
-     * The format identifier
-     *
-     * @var string
-     */
+	/**
+	 * The format identifier
+	 *
+	 * @var string
+	 */
 	private $format;
 
 	/**
@@ -45,32 +44,36 @@ class GenericFormat {
 
 	/**
 	 * Create a GenericFormat
-	 * 
-	 * @param string $datasetId The identifier of the dataset
-	 * @param Format $metadata The format metadata
+	 *
+	 * @param string $datasetId
+	 *        	The identifier of the dataset
+	 * @param Format $metadata
+	 *        	The format metadata
 	 */
 	function __construct($datasetId, Format $metadata) {
-	    $this->datasetId = $datasetId;
-	    $this->metadata = $metadata;
-	    $this->format = $metadata->getFormat();
+		$this->datasetId = $datasetId;
+		$this->metadata = $metadata;
+		$this->format = $metadata->getFormat();
 	}
 
 	/**
 	 * Add a identifier field.
 	 *
-	 * @param GenericField $field a field
+	 * @param GenericField $field
+	 *        	a field
 	 */
 	public function addIdField(GenericField $field) {
-	    $this->idFields[$field->getId()] = $field;
+		$this->idFields[$field->getId()] = $field;
 	}
 
 	/**
 	 * Add a field.
 	 *
-	 * @param GenericField $field a field
+	 * @param GenericField $field
+	 *        	a field
 	 */
 	public function addField(GenericField $field) {
-	    $this->fields[$field->getId()] = $field;
+		$this->fields[$field->getId()] = $field;
 	}
 
 	/**
@@ -79,31 +82,30 @@ class GenericFormat {
 	 * @return String the datum identifier
 	 */
 	public function getId() {
-	    $datumId = 'FORMAT/' . $this->metadata->getFormat();
-	    foreach ($this->getIdFields() as $field) {
-	        $datumId .= '/' . $field->getData() . '/' . $field->getValue();
-	    }
-	    return $datumId;
+		$datumId = 'FORMAT/' . $this->metadata->getFormat();
+		foreach ($this->getIdFields() as $field) {
+			$datumId .= '/' . $field->getData() . '/' . $field->getValue();
+		}
+		return $datumId;
 	}
 
 	/**
 	 * Return the format metadata.
-	 * 
+	 *
 	 * @return the Format
 	 */
-	public function getMetadata()
-	{
-	    return $this->metadata;
+	public function getMetadata() {
+		return $this->metadata;
 	}
 
 	/**
 	 * Get a identifier field.
 	 *
-	 * @param string $id
+	 * @param string $id        	
 	 * @return Array[GenericField]
 	 */
 	public function getIdField($id) {
-	    return $this->idFields[trim($id)];
+		return $this->idFields[trim($id)];
 	}
 
 	/**
@@ -118,11 +120,12 @@ class GenericFormat {
 	/**
 	 * Return a field.
 	 *
-	 * @param String $id a field identifier
+	 * @param String $id
+	 *        	a field identifier
 	 * @return GenericField the field
 	 */
 	public function getField($id) {
-	    return $this->fields[trim($id)];
+		return $this->fields[trim($id)];
 	}
 
 	/**
@@ -140,6 +143,6 @@ class GenericFormat {
 	 * @return [GenericField] the table fields
 	 */
 	public function all() {
-	    return array_merge($this->idFields, $this->fields);
+		return array_merge($this->idFields, $this->fields);
 	}
 }

@@ -12,18 +12,15 @@ use Doctrine\ORM\Mapping as ORM;
 class Dynamode {
 
 	/**
-	 * @var string
 	 *
-	 * @ORM\Id
-	 * @ORM\Column(name="unit", type="string", length=36, unique=false)
+	 * @var string @ORM\Id
+	 *      @ORM\Column(name="unit", type="string", length=36, unique=false)
 	 */
 	private $unit;
 
 	/**
 	 *
-	 * @var string 
-	 * 
-	 * @ORM\Column(name="sql", type="text", nullable=false)
+	 * @var string @ORM\Column(name="sql", type="text", nullable=false)
 	 */
 	private $sql;
 
@@ -39,12 +36,12 @@ class Dynamode {
 	/**
 	 * Set sql
 	 *
-	 * @param string $sql
+	 * @param string $sql        	
 	 * @return Dynamode
 	 */
 	public function setSql($sql) {
 		$this->sql = $sql;
-
+		
 		return $this;
 	}
 

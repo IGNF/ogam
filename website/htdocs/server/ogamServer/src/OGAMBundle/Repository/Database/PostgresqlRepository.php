@@ -34,9 +34,9 @@ class PostgresqlRepository extends GenericRepository {
 	 */
 	public function getTables() {
 		$tables = array();
-
+		
 		$conn = $this->getConnection();
-
+		
 		// Get the request
 		$req = " SELECT     UPPER(table_name) AS table, ";
 		$req .= "           UPPER(table_schema) AS schema, ";
@@ -49,22 +49,22 @@ class PostgresqlRepository extends GenericRepository {
 		$req .= " AND table_schema NOT IN ('pg_catalog', 'information_schema') ";
 		$req .= " AND constraint_type = 'PRIMARY KEY' ";
 		$req .= " GROUP BY table_name, table_schema, constraint_name ";
-
+		
 		$query = $conn->prepare($req);
 		$query->execute(array());
-
+		
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
-
+			
 			$table = new Table();
-
+			
 			$table->tableName = $result['table'];
 			$table->schemaName = $result['schema'];
 			$table->setPrimaryKeys($result['pk_columns']);
-
+			
 			$tables[$table->schemaName . '_' . $table->tableName] = $table;
 		}
-
+		
 		return $tables;
 	}
 
@@ -76,9 +76,9 @@ class PostgresqlRepository extends GenericRepository {
 	 */
 	public function getFields() {
 		$fields = array();
-
+		
 		$conn = $this->getConnection();
-
+		
 		// Get the request
 		$req = " SELECT 	UPPER(column_name) AS column, ";
 		$req .= "           UPPER(table_schema) AS schema, ";
@@ -88,23 +88,23 @@ class PostgresqlRepository extends GenericRepository {
 		$req .= " INNER JOIN information_schema.tables USING (table_catalog, table_schema, table_name) ";
 		$req .= " WHERE table_type = 'BASE TABLE' ";
 		$req .= " AND table_schema NOT IN ('pg_catalog', 'information_schema') ";
-
+		
 		$query = $conn->prepare($req);
 		$query->execute(array());
-
+		
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
-
+			
 			$field = new Field();
-
+			
 			$field->columnName = $result['column'];
 			$field->tableName = $result['table'];
 			$field->schemaName = $result['schema'];
 			$field->type = $result['type'];
-
+			
 			$fields[$field->schemaName . '_' . $field->tableName . '_' . $field->columnName] = $field;
 		}
-
+		
 		return $fields;
 	}
 
@@ -116,9 +116,9 @@ class PostgresqlRepository extends GenericRepository {
 	 */
 	public function getForeignKeys() {
 		$keys = array();
-
+		
 		$conn = $this->getConnection();
-
+		
 		// Get the request
 		$req = " SELECT UPPER(tc.table_name) as table, UPPER(ccu.table_name) as source_table, array_to_string(array_agg(UPPER(kcu.column_name)),',') as keys ";
 		$req .= " FROM information_schema.table_constraints tc ";
@@ -128,22 +128,22 @@ class PostgresqlRepository extends GenericRepository {
 		$req .= " WHERE constraint_type = 'FOREIGN KEY' ";
 		$req .= " AND tc.table_schema NOT IN ('pg_catalog', 'information_schema') ";
 		$req .= " GROUP BY tc.table_name, ccu.table_name ";
-
+		
 		$query = $conn->prepare($req);
 		$query->execute(array());
-
+		
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
-
+			
 			$key = new ForeignKey();
-
+			
 			$key->table = $result['table'];
 			$key->sourceTable = $result['source_table'];
 			$key->setForeignKeys($result['keys']);
-
+			
 			$keys[$key->table . '__' . $key->sourceTable] = $key;
 		}
-
+		
 		return $keys;
 	}
 
@@ -155,22 +155,22 @@ class PostgresqlRepository extends GenericRepository {
 	 */
 	public function getSchemas() {
 		$schemas = array();
-
+		
 		$conn = $this->getConnection();
-
+		
 		// Get the request
 		$req = " SELECT DISTINCT UPPER(table_schema) as table_schema ";
 		$req .= " FROM  information_schema.tables ";
 		$req .= " WHERE table_schema NOT IN ('pg_catalog', 'information_schema') ";
-
+		
 		$query = $conn->prepare($req);
 		$query->execute(array());
-
+		
 		$results = $query->fetchAll();
 		foreach ($results as $result) {
 			$schemas[] = $result['table_schema'];
 		}
-
+		
 		return $schemas;
 	}
 }

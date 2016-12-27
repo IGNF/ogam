@@ -273,7 +273,7 @@ class UsermanagementController extends Controller {
 
 			// Encrypt the password if in creation mode
 			if (!empty($user->getPlainPassword())) {
-				$encoder =  $this->get('ogam.challenge_response_encoder');
+				$encoder = $this->get('ogam.challenge_response_encoder');
 				$password = $encoder->encodePassword($user->getPlainPassword(), '');
 				$user->setPassword($password);
 			}

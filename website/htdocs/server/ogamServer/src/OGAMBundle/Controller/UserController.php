@@ -67,7 +67,6 @@ class UserController extends Controller {
 	 * @Route("/changePassword", name = "user_changepassword")
 	 */
 	public function changePasswordAction(Request $request) {
-
 		$logger = $this->get('logger');
 		$logger->debug('changePasswordAction');
 
@@ -90,10 +89,9 @@ class UserController extends Controller {
 			$cryptedOldPassword = $encoder->encodePassword($oldPassword, '');
 
 			if ($user->getPassword() !== $cryptedOldPassword) {
-				$this->addFlash('error',"Old password is not correct");
+				$this->addFlash('error', "Old password is not correct");
 				return $this->redirectToRoute('homepage');
 			}
-
 
 			// Encrypt the password if in creation mode
 			if (!empty($user->getPlainPassword())) {

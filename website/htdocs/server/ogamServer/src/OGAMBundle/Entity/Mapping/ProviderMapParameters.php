@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Entity\Mapping;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -11,214 +10,195 @@ use OGAMBundle\Entity\Generic\BoundingBox;
  * @ORM\Table(name="mapping.provider_map_params")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Mapping\ProviderMapParametersRepository")
  */
-class ProviderMapParameters
-{
-    /**
-     * @var string
-     *
-     * @ORM\Id
-     * @ORM\Column(name="provider_id", type="string", length=255, unique=true)
-     */
-    private $providerId;
+class ProviderMapParameters {
 
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="bb_xmin", type="float", nullable=true)
-     */
-    private $xmin = 0;
+	/**
+	 *
+	 * @var string @ORM\Id
+	 *      @ORM\Column(name="provider_id", type="string", length=255, unique=true)
+	 */
+	private $providerId;
 
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="bb_ymin", type="float", nullable=true)
-     */
-    private $ymin = 0;
+	/**
+	 *
+	 * @var float @ORM\Column(name="bb_xmin", type="float", nullable=true)
+	 */
+	private $xmin = 0;
 
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="bb_xmax", type="float", nullable=true)
-     */
-    private $xmax = 0;
+	/**
+	 *
+	 * @var float @ORM\Column(name="bb_ymin", type="float", nullable=true)
+	 */
+	private $ymin = 0;
 
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="bb_ymax", type="float", nullable=true)
-     */
-    private $ymax = 0;
+	/**
+	 *
+	 * @var float @ORM\Column(name="bb_xmax", type="float", nullable=true)
+	 */
+	private $xmax = 0;
 
-    /**
-     * Zoom Level (optional).
-     * @var int
-     *
-     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\ZoomLevel")
-     * @ORM\JoinColumn(name="zoom_level", referencedColumnName="zoom_level")
-     */
-    private $zoomLevel = 1;
+	/**
+	 *
+	 * @var float @ORM\Column(name="bb_ymax", type="float", nullable=true)
+	 */
+	private $ymax = 0;
 
+	/**
+	 * Zoom Level (optional).
+	 * 
+	 * @var int @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Mapping\ZoomLevel")
+	 *      @ORM\JoinColumn(name="zoom_level", referencedColumnName="zoom_level")
+	 */
+	private $zoomLevel = 1;
 
-    /**
-     * Set providerId
-     *
-     * @param string $providerId
-     *
-     * @return BoundingBox
-     */
-    public function setProviderId($providerId)
-    {
-        $this->providerId = $providerId;
+	/**
+	 * Set providerId
+	 *
+	 * @param string $providerId        	
+	 *
+	 * @return BoundingBox
+	 */
+	public function setProviderId($providerId) {
+		$this->providerId = $providerId;
+		
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get providerId
+	 *
+	 * @return string
+	 */
+	public function getProviderId() {
+		return $this->providerId;
+	}
 
-    /**
-     * Get providerId
-     *
-     * @return string
-     */
-    public function getProviderId()
-    {
-        return $this->providerId;
-    }
+	/**
+	 * Set xmin
+	 *
+	 * @param string $xmin        	
+	 *
+	 * @return BoundingBox
+	 */
+	public function setXmin($xmin) {
+		$this->xmin = $xmin;
+		
+		return $this;
+	}
 
-    /**
-     * Set xmin
-     *
-     * @param string $xmin
-     *
-     * @return BoundingBox
-     */
-    public function setXmin($xmin)
-    {
-        $this->xmin = $xmin;
+	/**
+	 * Get xmin
+	 *
+	 * @return string
+	 */
+	public function getXmin() {
+		return $this->xmin;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set ymin
+	 *
+	 * @param string $ymin        	
+	 *
+	 * @return BoundingBox
+	 */
+	public function setYmin($ymin) {
+		$this->ymin = $ymin;
+		
+		return $this;
+	}
 
-    /**
-     * Get xmin
-     *
-     * @return string
-     */
-    public function getXmin()
-    {
-        return $this->xmin;
-    }
+	/**
+	 * Get ymin
+	 *
+	 * @return string
+	 */
+	public function getYmin() {
+		return $this->ymin;
+	}
 
-    /**
-     * Set ymin
-     *
-     * @param string $ymin
-     *
-     * @return BoundingBox
-     */
-    public function setYmin($ymin)
-    {
-        $this->ymin = $ymin;
+	/**
+	 * Set xmax
+	 *
+	 * @param string $xmax        	
+	 *
+	 * @return BoundingBox
+	 */
+	public function setXmax($xmax) {
+		$this->xmax = $xmax;
+		
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get xmax
+	 *
+	 * @return string
+	 */
+	public function getXmax() {
+		return $this->xmax;
+	}
 
-    /**
-     * Get ymin
-     *
-     * @return string
-     */
-    public function getYmin()
-    {
-        return $this->ymin;
-    }
+	/**
+	 * Set ymax
+	 *
+	 * @param string $ymax        	
+	 *
+	 * @return BoundingBox
+	 */
+	public function setYmax($ymax) {
+		$this->ymax = $ymax;
+		
+		return $this;
+	}
 
-    /**
-     * Set xmax
-     *
-     * @param string $xmax
-     *
-     * @return BoundingBox
-     */
-    public function setXmax($xmax)
-    {
-        $this->xmax = $xmax;
+	/**
+	 * Get ymax
+	 *
+	 * @return string
+	 */
+	public function getYmax() {
+		return $this->ymax;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set zoomLevel
+	 *
+	 * @param integer $zoomLevel        	
+	 *
+	 * @return BoundingBox
+	 */
+	public function setZoomLevel($zoomLevel) {
+		$this->zoomLevel = $zoomLevel;
+		
+		return $this;
+	}
 
-    /**
-     * Get xmax
-     *
-     * @return string
-     */
-    public function getXmax()
-    {
-        return $this->xmax;
-    }
+	/**
+	 * Get zoomLevel
+	 *
+	 * @return int
+	 */
+	public function getZoomLevel() {
+		return $this->zoomLevel;
+	}
 
-    /**
-     * Set ymax
-     *
-     * @param string $ymax
-     *
-     * @return BoundingBox
-     */
-    public function setYmax($ymax)
-    {
-        $this->ymax = $ymax;
+	/**
+	 * Returns the bounding box.
+	 *
+	 * @return BoundingBox
+	 */
+	public function getBoundingBox() {
+		return new BoundingBox($this->xmin, $this->xmax, $this->ymin, $this->ymax);
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get ymax
-     *
-     * @return string
-     */
-    public function getYmax()
-    {
-        return $this->ymax;
-    }
-
-    /**
-     * Set zoomLevel
-     *
-     * @param integer $zoomLevel
-     *
-     * @return BoundingBox
-     */
-    public function setZoomLevel($zoomLevel)
-    {
-        $this->zoomLevel = $zoomLevel;
-
-        return $this;
-    }
-
-    /**
-     * Get zoomLevel
-     *
-     * @return int
-     */
-    public function getZoomLevel()
-    {
-        return $this->zoomLevel;
-    }
-
-    /**
-     * Returns the bounding box.
-     * 
-     * @return BoundingBox
-     */
-    public function getBoundingBox() {
-        return new BoundingBox($this->xmin, $this->xmax, $this->ymin, $this->ymax);
-    }
-    
-    /**
-     * Returns the bounding box.
-     *
-     * @return \OGAMBundle\Entity\Mapping\BoundingBox
-     */
-    public function getCenter() {
-        return $this->getBoundingBox()->getCenter();
-    }
+	/**
+	 * Returns the bounding box.
+	 *
+	 * @return \OGAMBundle\Entity\Mapping\BoundingBox
+	 */
+	public function getCenter() {
+		return $this->getBoundingBox()->getCenter();
+	}
 }
 

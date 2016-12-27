@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Repository\Metadata;
 
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
@@ -12,6 +11,7 @@ use OGAMBundle\Entity\Website\User;
  * repository methods below.
  */
 class DatasetRepository extends \Doctrine\ORM\EntityRepository {
+
 	public function getDatasetsForUpload() {
 		/*
 		 * $req = "SELECT DISTINCT dataset_id as id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default ";
@@ -31,19 +31,19 @@ class DatasetRepository extends \Doctrine\ORM\EntityRepository {
 		 */
 		$dql = "SELECT d " . "FROM OGAMBundle\Entity\Metadata\Dataset d " . "WHERE SIZE(d.files) > 0 ORDER BY d.id";
 		
-		$query = $this->getEntityManager ()->createQuery ( $dql );
+		$query = $this->getEntityManager()->createQuery($dql);
 		
-		return $query->getResult ();
+		return $query->getResult();
 	}
-	
+
 	/**
 	 * Get the available datasets for display.
 	 *
 	 * @return Array[Application_Object_Metadata_Dataset]
 	 */
 	public function getDatasetsForDisplay($locale, User $user) {
-		$rsm = new ResultSetMappingBuilder ( $this->_em );
-		$rsm->addRootEntityFromClassMetadata ( 'OGAMBundle\Entity\Metadata\Dataset', 'd' );
+		$rsm = new ResultSetMappingBuilder($this->_em);
+		$rsm->addRootEntityFromClassMetadata('OGAMBundle\Entity\Metadata\Dataset', 'd');
 		
 		$sql = "SELECT DISTINCT dataset_id, COALESCE(t.label, d.label) as label, COALESCE(t.definition, d.definition) as definition, is_default";
 		$sql .= " FROM dataset d";
@@ -52,10 +52,10 @@ class DatasetRepository extends \Doctrine\ORM\EntityRepository {
 		$sql .= " WHERE (dataset_id NOT IN (SELECT dataset_id FROM dataset_role_restriction JOIN role_to_user USING (role_code) WHERE user_login = ?))";
 		$sql .= " ORDER BY dataset_id";
 		
-		$query = $this->_em->createNativeQuery ( $sql, $rsm );
-		$query->setParameter ( 1, $locale );
-		$query->setParameter ( 2, $user->getLogin () );
+		$query = $this->_em->createNativeQuery($sql, $rsm);
+		$query->setParameter(1, $locale);
+		$query->setParameter(2, $user->getLogin());
 		
-		return $query->getResult ();
+		return $query->getResult();
 	}
 }

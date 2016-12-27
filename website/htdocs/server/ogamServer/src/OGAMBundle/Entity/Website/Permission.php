@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="website.permission")
  * @ORM\Entity
  */
-class Permission implements \Serializable{
+class Permission implements \Serializable {
 
 	/**
 	 *
@@ -27,13 +27,13 @@ class Permission implements \Serializable{
 	/**
 	 * Set code
 	 *
-	 * @param string $code
+	 * @param string $code        	
 	 *
 	 * @return Permission
 	 */
 	public function setCode($code) {
 		$this->code = $code;
-
+		
 		return $this;
 	}
 
@@ -49,13 +49,13 @@ class Permission implements \Serializable{
 	/**
 	 * Set label
 	 *
-	 * @param string $label
+	 * @param string $label        	
 	 *
 	 * @return Permission
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
-
+		
 		return $this;
 	}
 
@@ -73,10 +73,10 @@ class Permission implements \Serializable{
 	 * @see \Serializable::serialize()
 	 */
 	public function serialize() {
-	    return serialize(array(
-	        $this->code,
-	        $this->label
-	    ));
+		return serialize(array(
+			$this->code,
+			$this->label
+		));
 	}
 
 	/**
@@ -84,7 +84,7 @@ class Permission implements \Serializable{
 	 * @see \Serializable::unserialize()
 	 */
 	public function unserialize($serialized) {
-	    list ($this->code, $this->label) = unserialize($serialized);
+		list ($this->code, $this->label) = unserialize($serialized);
 	}
 }
 

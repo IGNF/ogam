@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Entity\RawData;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -10,8 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="raw_data.submission_file")
  * @ORM\Entity
  */
-class SubmissionFile
-{
+class SubmissionFile {
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="Submission", inversedBy="files")
@@ -20,126 +18,113 @@ class SubmissionFile
 	 */
 	private $submission;
 
-    /**
-     * The type of the file (reference a DATASET_FILES.FORMAT).
-     * @var string
-     *
-     * @ORM\Column(name="file_type", type="string", length=36)
-     * @ORM\Id
-     */
-    private $fileType;
+	/**
+	 * The type of the file (reference a DATASET_FILES.FORMAT).
+	 * 
+	 * @var string @ORM\Column(name="file_type", type="string", length=36)
+	 *      @ORM\Id
+	 */
+	private $fileType;
 
-    /**
-     * The name of the file.
-     * @var string
-     *
-     * @ORM\Column(name="file_name", type="string", length=4000)
-     */
-    private $fileName;
+	/**
+	 * The name of the file.
+	 * 
+	 * @var string @ORM\Column(name="file_name", type="string", length=4000)
+	 */
+	private $fileName;
 
-    /**
-     * The number of lines in the file.
-     * @var int
-     *
-     * @ORM\Column(name="nb_line", type="integer", nullable=true)
-     */
-    private $nbLines;
+	/**
+	 * The number of lines in the file.
+	 * 
+	 * @var int @ORM\Column(name="nb_line", type="integer", nullable=true)
+	 */
+	private $nbLines;
 
+	/**
+	 * Set fileType
+	 *
+	 * @param string $fileType        	
+	 *
+	 * @return SubmissionFile
+	 */
+	public function setFileType($fileType) {
+		$this->fileType = $fileType;
+		
+		return $this;
+	}
 
+	/**
+	 * Get fileType
+	 *
+	 * @return string
+	 */
+	public function getFileType() {
+		return $this->fileType;
+	}
 
-    /**
-     * Set fileType
-     *
-     * @param string $fileType
-     *
-     * @return SubmissionFile
-     */
-    public function setFileType($fileType)
-    {
-        $this->fileType = $fileType;
+	/**
+	 * Set fileName
+	 *
+	 * @param string $fileName        	
+	 *
+	 * @return SubmissionFile
+	 */
+	public function setFileName($fileName) {
+		$this->fileName = $fileName;
+		
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get fileName
+	 *
+	 * @return string
+	 */
+	public function getFileName() {
+		return $this->fileName;
+	}
 
-    /**
-     * Get fileType
-     *
-     * @return string
-     */
-    public function getFileType()
-    {
-        return $this->fileType;
-    }
+	/**
+	 * Set nbLines
+	 *
+	 * @param integer $nbLines        	
+	 *
+	 * @return SubmissionFile
+	 */
+	public function setNbLines($nbLines) {
+		$this->nbLines = $nbLines;
+		
+		return $this;
+	}
 
-    /**
-     * Set fileName
-     *
-     * @param string $fileName
-     *
-     * @return SubmissionFile
-     */
-    public function setFileName($fileName)
-    {
-        $this->fileName = $fileName;
+	/**
+	 * Get nbLines
+	 *
+	 * @return int
+	 */
+	public function getNbLines() {
+		return $this->nbLines;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set submission
+	 *
+	 * @param \OGAMBundle\Entity\RawData\Submission $submission        	
+	 *
+	 * @return SubmissionFile
+	 */
+	public function setSubmission(\OGAMBundle\Entity\RawData\Submission $submission) {
+		$this->submission = $submission;
+		
+		return $this;
+	}
 
-    /**
-     * Get fileName
-     *
-     * @return string
-     */
-    public function getFileName()
-    {
-        return $this->fileName;
-    }
-
-    /**
-     * Set nbLines
-     *
-     * @param integer $nbLines
-     *
-     * @return SubmissionFile
-     */
-    public function setNbLines($nbLines)
-    {
-        $this->nbLines = $nbLines;
-
-        return $this;
-    }
-
-    /**
-     * Get nbLines
-     *
-     * @return int
-     */
-    public function getNbLines()
-    {
-        return $this->nbLines;
-    }
-
-    /**
-     * Set submission
-     *
-     * @param \OGAMBundle\Entity\RawData\Submission $submission
-     *
-     * @return SubmissionFile
-     */
-    public function setSubmission(\OGAMBundle\Entity\RawData\Submission $submission)
-    {
-        $this->submission = $submission;
-
-        return $this;
-    }
-
-    /**
-     * Get submission
-     *
-     * @return \OGAMBundle\Entity\RawData\Submission
-     */
-    public function getSubmission()
-    {
-        return $this->submission;
-    }
+	/**
+	 * Get submission
+	 *
+	 * @return \OGAMBundle\Entity\RawData\Submission
+	 */
+	public function getSubmission() {
+		return $this->submission;
+	}
 }

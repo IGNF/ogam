@@ -32,29 +32,27 @@ class TableTree {
 	private $parentTableFormat;
 
 	/**
-	 * @var string
 	 *
-	 * @ORM\Column(name="join_key", type="string", length=255)
+	 * @var string @ORM\Column(name="join_key", type="string", length=255)
 	 */
 	private $joinKeys;
 
 	/**
-	 * @var string
 	 *
-	 * @ORM\Column(name="comment", type="string", length=255)
+	 * @var string @ORM\Column(name="comment", type="string", length=255)
 	 */
 	private $comment;
 
 	/**
 	 * Set tableFormat
 	 *
-	 * @param string $tableFormat
+	 * @param string $tableFormat        	
 	 *
 	 * @return tableTreeData
 	 */
 	public function setTableFormat($tableFormat) {
 		$this->tableFormat = $tableFormat;
-
+		
 		return $this;
 	}
 
@@ -70,13 +68,13 @@ class TableTree {
 	/**
 	 * Set parentTableFormat
 	 *
-	 * @param string $parentTableFormat
+	 * @param string $parentTableFormat        	
 	 *
 	 * @return tableTreeData
 	 */
 	public function setParentTableFormat($parentTableFormat) {
 		$this->parentTableFormat = $parentTableFormat;
-
+		
 		return $this;
 	}
 
@@ -92,13 +90,13 @@ class TableTree {
 	/**
 	 * Set joinKeys
 	 *
-	 * @param string $joinKeys
+	 * @param string $joinKeys        	
 	 *
 	 * @return tableTreeData
 	 */
 	public function setJoinKeys($joinKeys) {
 		$this->joinKeys = implode(",", $joinKeys);
-
+		
 		return $this;
 	}
 
@@ -113,20 +111,20 @@ class TableTree {
 		foreach ($pks as $pk) {
 			$joinKeys[] = trim($pk); // we need to trim all the values
 		}
-
+		
 		return $joinKeys;
 	}
 
 	/**
 	 * Set comment
 	 *
-	 * @param string $comment
+	 * @param string $comment        	
 	 *
 	 * @return tableTreeData
 	 */
 	public function setComment($comment) {
 		$this->comment = $comment;
-
+		
 		return $this;
 	}
 

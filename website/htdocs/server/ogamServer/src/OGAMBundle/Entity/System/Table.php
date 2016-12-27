@@ -41,7 +41,7 @@ class Table {
 	/**
 	 * Set the primary keys
 	 *
-	 * @param String $keys
+	 * @param String $keys        	
 	 */
 	public function setPrimaryKeys($keys) {
 		$this->primaryKeys = array();

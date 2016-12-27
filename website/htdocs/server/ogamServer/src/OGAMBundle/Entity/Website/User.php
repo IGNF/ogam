@@ -87,13 +87,13 @@ class User implements UserInterface, \Serializable {
 	/**
 	 * Set login
 	 *
-	 * @param string $login
+	 * @param string $login        	
 	 *
 	 * @return User
 	 */
 	public function setLogin($login) {
 		$this->login = $login;
-
+		
 		return $this;
 	}
 
@@ -109,26 +109,26 @@ class User implements UserInterface, \Serializable {
 	/**
 	 * Set username
 	 *
-	 * @param string $username
+	 * @param string $username        	
 	 *
 	 * @return User
 	 */
 	public function setUsername($username) {
 		$this->username = $username;
-
+		
 		return $this;
 	}
 
 	/**
 	 * Set password
 	 *
-	 * @param string $password
+	 * @param string $password        	
 	 *
 	 * @return User
 	 */
 	public function setPassword($password) {
 		$this->password = $password;
-
+		
 		return $this;
 	}
 
@@ -138,20 +138,20 @@ class User implements UserInterface, \Serializable {
 
 	public function setPlainPassword($password) {
 		$this->plainPassword = $password;
-
+		
 		return $this;
 	}
 
 	/**
 	 * Set email
 	 *
-	 * @param string $email
+	 * @param string $email        	
 	 *
 	 * @return User
 	 */
 	public function setEmail($email) {
 		$this->email = $email;
-
+		
 		return $this;
 	}
 
@@ -174,22 +174,23 @@ class User implements UserInterface, \Serializable {
 	 * @return Boolean
 	 */
 	function isAllowed($permissionName, $schemaCode = null) {
-/*		global $kernel;
-		if ('AppCache' == get_class($kernel)) {
-			$kernel = $kernel->getKernel();
-		}
-		$logger = $kernel->getContainer()->get('logger');
-		$logger->info('isAllowed ' . $permissionName);
-*/
+		/*
+		 * global $kernel;
+		 * if ('AppCache' == get_class($kernel)) {
+		 * $kernel = $kernel->getKernel();
+		 * }
+		 * $logger = $kernel->getContainer()->get('logger');
+		 * $logger->info('isAllowed ' . $permissionName);
+		 */
 		// The user is allowed if one of its role is.
 		foreach ($this->roles as $role) {
-
+			
 			if ($role->isAllowed($permissionName)) {
-			    if($schemaCode === null){
-			        return true;
-			    } elseif ($role->isSchemaAllowed($schemaCode)){
-			        return true;
-			    }
+				if ($schemaCode === null) {
+					return true;
+				} elseif ($role->isSchemaAllowed($schemaCode)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -204,16 +205,17 @@ class User implements UserInterface, \Serializable {
 	 */
 	function isSchemaAllowed($schemaCode) {
 		// The user is allowed if one of its role is.
-/*		global $kernel;
-		if ('AppCache' == get_class($kernel)) {
-			$kernel = $kernel->getKernel();
-		}
-		$logger = $kernel->getContainer()->get('logger');
-		$logger->info('isSchemaAllowed ' . $schemaCode);
-*/
+		/*
+		 * global $kernel;
+		 * if ('AppCache' == get_class($kernel)) {
+		 * $kernel = $kernel->getKernel();
+		 * }
+		 * $logger = $kernel->getContainer()->get('logger');
+		 * $logger->info('isSchemaAllowed ' . $schemaCode);
+		 */
 		// The user is allowed if one of its role is.
 		foreach ($this->roles as $role) {
-
+			
 			if ($role->isSchemaAllowed($schemaCode)) {
 				return true;
 			}
@@ -224,20 +226,20 @@ class User implements UserInterface, \Serializable {
 	/**
 	 * Add role
 	 *
-	 * @param \OGAMBundle\Entity\Website\Role $role
+	 * @param \OGAMBundle\Entity\Website\Role $role        	
 	 *
 	 * @return User
 	 */
 	public function addRole(\OGAMBundle\Entity\Website\Role $role) {
 		$this->roles[] = $role;
-
+		
 		return $this;
 	}
 
 	/**
 	 * Remove role
 	 *
-	 * @param \OGAMBundle\Entity\Website\Role $role
+	 * @param \OGAMBundle\Entity\Website\Role $role        	
 	 */
 	public function removeRole(\OGAMBundle\Entity\Website\Role $role) {
 		$this->roles->removeElement($role);
@@ -246,13 +248,13 @@ class User implements UserInterface, \Serializable {
 	/**
 	 * Set provider
 	 *
-	 * @param \OGAMBundle\Entity\Website\Provider $provider
+	 * @param \OGAMBundle\Entity\Website\Provider $provider        	
 	 *
 	 * @return User
 	 */
 	public function setProvider(\OGAMBundle\Entity\Website\Provider $provider = null) {
 		$this->provider = $provider;
-
+		
 		return $this;
 	}
 

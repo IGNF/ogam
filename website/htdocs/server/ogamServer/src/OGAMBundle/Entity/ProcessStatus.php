@@ -12,6 +12,7 @@
  * Reuse is not applicable to documents subject to intellectual property rights of third parties.
  */
 namespace OGAMBundle\Entity;
+
 /**
  * Represent the status of a process (integration or harmonization service).
  *

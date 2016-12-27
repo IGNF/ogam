@@ -1,5 +1,4 @@
 <?php
-
 namespace OGAMBundle\Entity\Website;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -11,143 +10,130 @@ use OGAMBundle\Entity\Metadata\FormField;
  * @ORM\Table(name="website.predefined_request_column")
  * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PredefinedRequestColumnRepository")
  */
-class PredefinedRequestColumn
-{
-    /**
-     * @var PredefinedRequest
-     *
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequest")
-     * @ORM\JoinColumn(name="request_name", referencedColumnName="name")
-     */
-    private $requestName;
+class PredefinedRequestColumn {
 
-    /**
-     * @var Format
-     *
-     * @ORM\Id
-	 * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Format")
-	 * @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
-     */
-    private $format;
+	/**
+	 *
+	 * @var PredefinedRequest @ORM\Id
+	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequest")
+	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
+	 */
+	private $requestName;
 
-    /**
-     * @var Data
-     *
-     * @ORM\Id 
-     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
-     * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
-     */
-    private $data;
+	/**
+	 *
+	 * @var Format @ORM\Id
+	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Format")
+	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
+	 */
+	private $format;
 
-    /**
-     * @var FormField
-     *
-     * @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\FormField")
-     * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data"),@ORM\JoinColumn(name="format", referencedColumnName="format")})
-     */
-    private $formField;
+	/**
+	 *
+	 * @var Data @ORM\Id
+	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
+	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
+	 */
+	private $data;
 
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->format->getFormat() . '__' . $this->data->getData();
-    }
+	/**
+	 *
+	 * @var FormField @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\FormField")
+	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data"),@ORM\JoinColumn(name="format", referencedColumnName="format")})
+	 */
+	private $formField;
 
-    /**
-     * Set requestName
-     *
-     * @param string $requestName
-     *
-     * @return PredefinedRequestColumn
-     */
-    public function setRequestName($requestName)
-    {
-        $this->requestName = $requestName;
+	/**
+	 * Get id
+	 *
+	 * @return int
+	 */
+	public function getId() {
+		return $this->format->getFormat() . '__' . $this->data->getData();
+	}
 
-        return $this;
-    }
+	/**
+	 * Set requestName
+	 *
+	 * @param string $requestName        	
+	 *
+	 * @return PredefinedRequestColumn
+	 */
+	public function setRequestName($requestName) {
+		$this->requestName = $requestName;
+		
+		return $this;
+	}
 
-    /**
-     * Get requestName
-     *
-     * @return string
-     */
-    public function getRequestName()
-    {
-        return $this->requestName;
-    }
+	/**
+	 * Get requestName
+	 *
+	 * @return string
+	 */
+	public function getRequestName() {
+		return $this->requestName;
+	}
 
-    /**
-     * Set format
-     *
-     * @param string $format
-     *
-     * @return PredefinedRequestColumn
-     */
-    public function setFormat($format)
-    {
-        $this->format = $format;
+	/**
+	 * Set format
+	 *
+	 * @param string $format        	
+	 *
+	 * @return PredefinedRequestColumn
+	 */
+	public function setFormat($format) {
+		$this->format = $format;
+		
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get format
+	 *
+	 * @return string
+	 */
+	public function getFormat() {
+		return $this->format;
+	}
 
-    /**
-     * Get format
-     *
-     * @return string
-     */
-    public function getFormat()
-    {
-        return $this->format;
-    }
+	/**
+	 * Set data
+	 *
+	 * @param string $data        	
+	 *
+	 * @return PredefinedRequestColumn
+	 */
+	public function setData($data) {
+		$this->data = $data;
+		
+		return $this;
+	}
 
-    /**
-     * Set data
-     *
-     * @param string $data
-     *
-     * @return PredefinedRequestColumn
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
+	/**
+	 * Get data
+	 *
+	 * @return string
+	 */
+	public function getData() {
+		return $this->data;
+	}
 
-        return $this;
-    }
+	/**
+	 * Return the form fields
+	 *
+	 * @return the FormField
+	 */
+	public function getFormField() {
+		return $this->formField;
+	}
 
-    /**
-     * Get data
-     *
-     * @return string
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * Return the form fields
-     *
-     * @return the FormField
-     */
-    public function getFormField()
-    {
-        return $this->formField;
-    }
-    
-    /**
-     * Set the form fields
-     *
-     * @param FormField $formField
-     */
-    public function setFormField(FormField $formField)
-    {
-        $this->formField = $formField;
-        return $this;
-    }
+	/**
+	 * Set the form fields
+	 *
+	 * @param FormField $formField        	
+	 */
+	public function setFormField(FormField $formField) {
+		$this->formField = $formField;
+		return $this;
+	}
 }

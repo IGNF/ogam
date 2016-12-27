@@ -14,19 +14,18 @@ class RoleRepository extends \Doctrine\ORM\EntityRepository {
 	/**
 	 * Count the number of users of a role.
 	 *
-	 * @param String $roleCode
+	 * @param String $roleCode        	
 	 * @return Integer
 	 */
 	public function userCount($roleCode) {
-
 		$qm = $this->getEntityManager();
-
+		
 		$rsm = new ResultSetMapping();
 		$rsm->addScalarResult('count', 'count');
-
+		
 		$query = $qm->createNativeQuery('SELECT count(*) FROM website.role_to_user WHERE role_code = ?', $rsm);
 		$query->setParameter(1, $roleCode);
-
+		
 		return $query->getSingleScalarResult();
 	}
 }

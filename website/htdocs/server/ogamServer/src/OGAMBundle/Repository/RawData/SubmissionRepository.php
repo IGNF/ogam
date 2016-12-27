@@ -19,28 +19,27 @@ class SubmissionRepository extends \Doctrine\ORM\EntityRepository {
 	 * @return Array[Submission]
 	 */
 	public function getActiveSubmissions($providerId = null) {
-		$dql = "SELECT s "
-			. "FROM OGAMBundle\Entity\RawData\Submission s "
-			. "WHERE s.step NOT IN ('CANCELLED', 'INIT') ";
-
+		$dql = "SELECT s " . "FROM OGAMBundle\Entity\RawData\Submission s " . "WHERE s.step NOT IN ('CANCELLED', 'INIT') ";
+		
 		if ($providerId !== null) {
 			$dql .= " AND s.provider = :provider ";
 		}
-
+		
 		$dql .= "ORDER BY s.id DESC";
-
+		
 		$query = $this->getEntityManager()->createQuery($dql);
-
+		
 		if ($providerId !== null) {
 			$query->setParameter('provider', $providerId);
 		}
-
+		
 		return $query->getResult();
 	}
-	
+
 	/**
 	 * Get submissions for Harmonization.
 	 * (lastest submissions per Providerdataset)
+	 * 
 	 * @return Collection<Submission>
 	 */
 	public function getSubmissionsForHarmonization() {
@@ -56,7 +55,6 @@ ORDER BY s.id";
 		
 		$query = $this->getEntityManager()->createQuery($dql);
 		
-		return  $query->getResult();
-	
+		return $query->getResult();
 	}
 }

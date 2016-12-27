@@ -5,12 +5,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-
 /**
  * @Route("/checkconf")
  */
 class CheckconfController extends Controller {
-
 
 	/**
 	 * Default action.
@@ -26,7 +24,7 @@ class CheckconfController extends Controller {
 	 * Show the config.
 	 *
 	 * @Route("/showCheckConf", name="checkconf_showconfig")
- 	 */
+	 */
 	public function showCheckConfAction(Request $request) {
 
 		// Check the PHP config
@@ -127,7 +125,6 @@ class CheckconfController extends Controller {
 
 		$postgreSQLRepo = $this->get('ogam.repository.database.postgresql');
 
-
 		// Get the list of expected schema objects
 
 		$expectedSchemas = $schemaRepo->findAll();
@@ -160,7 +157,6 @@ class CheckconfController extends Controller {
 		$postgreSQLRepo = $this->get('ogam.repository.database.postgresql');
 
 		$expectedTables = $metadataRepo->getTables();
-
 
 		$logger->info('expectedTables : ' . print_r($expectedTables, true));
 

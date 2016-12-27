@@ -16,8 +16,7 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * The identifier of the dataset.
 	 *
-	 * @var string
-	 * @ORM\Column(name="dataset_id", type="string", length=36, nullable=false)
+	 * @var string @ORM\Column(name="dataset_id", type="string", length=36, nullable=false)
 	 *      @ORM\Id
 	 *      @ORM\GeneratedValue(strategy="AUTO")
 	 */
@@ -26,26 +25,23 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * The label.
 	 *
-	 * @var string
-	 * @ORM\Column(name="label", type="string", length=255, nullable=true)
-	 * @Assert\NotBlank(message="dataset.label.notBlank")
-	 * @Assert\Length(max="255", maxMessage="dataset.label.maxLength")
+	 * @var string @ORM\Column(name="label", type="string", length=255, nullable=true)
+	 *      @Assert\NotBlank(message="dataset.label.notBlank")
+	 *      @Assert\Length(max="255", maxMessage="dataset.label.maxLength")
 	 */
 	private $label;
 
 	/**
 	 * Indicate if the dataset is displayed by default.
 	 *
-	 * @var bool
-	 * @ORM\Column(name="is_default", type="boolean", nullable=true)
+	 * @var bool @ORM\Column(name="is_default", type="boolean", nullable=true)
 	 */
 	private $isDefault;
 
 	/**
 	 * The definition.
 	 *
-	 * @var string
-	 * @ORM\Column(name="definition", type="string", length=512, nullable=true)
+	 * @var string @ORM\Column(name="definition", type="string", length=512, nullable=true)
 	 */
 	private $definition;
 
@@ -60,9 +56,9 @@ class Dataset implements \JsonSerializable {
 	 * )
 	 */
 	private $files;
-
-	//privates $fields; //DatasetFields
-
+	
+	// privates $fields; //DatasetFields
+	
 	/**
 	 * Get id
 	 *
@@ -75,13 +71,13 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * Set label
 	 *
-	 * @param string $label
+	 * @param string $label        	
 	 *
 	 * @return Dataset
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
-
+		
 		return $this;
 	}
 
@@ -97,13 +93,13 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * Set isDefault
 	 *
-	 * @param boolean $isDefault
+	 * @param boolean $isDefault        	
 	 *
 	 * @return Dataset
 	 */
 	public function setIsDefault($isDefault) {
 		$this->isDefault = $isDefault;
-
+		
 		return $this;
 	}
 
@@ -119,13 +115,13 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * Set definition
 	 *
-	 * @param string $definition
+	 * @param string $definition        	
 	 *
 	 * @return Dataset
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
-
+		
 		return $this;
 	}
 
@@ -162,20 +158,20 @@ class Dataset implements \JsonSerializable {
 	/**
 	 * Add file
 	 *
-	 * @param \OGAMBundle\Entity\Metadata\FileFormat $file
+	 * @param \OGAMBundle\Entity\Metadata\FileFormat $file        	
 	 *
 	 * @return Dataset
 	 */
 	public function addFile(\OGAMBundle\Entity\Metadata\FileFormat $file) {
 		$this->files[] = $file;
-
+		
 		return $this;
 	}
 
 	/**
 	 * Remove file
 	 *
-	 * @param \OGAMBundle\Entity\Metadata\FileFormat $file
+	 * @param \OGAMBundle\Entity\Metadata\FileFormat $file        	
 	 */
 	public function removeFile(\OGAMBundle\Entity\Metadata\FileFormat $file) {
 		$this->files->removeElement($file);

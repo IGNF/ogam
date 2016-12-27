@@ -41,7 +41,7 @@ class ForeignKey {
 	/**
 	 * Set the primary keys
 	 *
-	 * @param String $keys
+	 * @param String $keys        	
 	 */
 	public function setForeignKeys($keys) {
 		$this->foreignKeys = array();

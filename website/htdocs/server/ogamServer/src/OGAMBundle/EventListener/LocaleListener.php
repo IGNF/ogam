@@ -20,13 +20,13 @@ class LocaleListener implements EventSubscriberInterface {
 		if (!$request->hasPreviousSession()) {
 			return;
 		}
-
+		
 		// Detect the "lang" parameter in URL
 		$lang = $request->query->get('lang');
 		if (!empty($lang)) {
 			$request->getSession()->set('_locale', $lang);
 		}
-
+		
 		// try to see if the locale has been set as a _locale routing parameter
 		if ($locale = $request->attributes->get('_locale')) {
 			$request->getSession()->set('_locale', $locale);
@@ -35,8 +35,8 @@ class LocaleListener implements EventSubscriberInterface {
 			$request->setLocale($request->getSession()
 				->get('_locale', $this->defaultLocale));
 		}
-
-		$this->locale = strtoupper($request->getLocale ());
+		
+		$this->locale = strtoupper($request->getLocale());
 	}
 
 	public static function getSubscribedEvents() {
@@ -50,9 +50,8 @@ class LocaleListener implements EventSubscriberInterface {
 			)
 		);
 	}
-	
-	public function getLocale()
-	{
+
+	public function getLocale() {
 		return $this->locale;
 	}
 }

@@ -7,18 +7,18 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpFoundation\Request;
 
 class BreadcrumbListener implements EventSubscriberInterface {
-
+	
 	// The white october breadcrumbs service
 	private $breadcrumbs;
-
+	
 	// The breadcrumbs config service
 	private $breadcrumbsConfig;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param unknown $breadcrumbs
-	 * @param unknown $breadcrumbsConfig
+	 * @param unknown $breadcrumbs        	
+	 * @param unknown $breadcrumbsConfig        	
 	 */
 	public function __construct($breadcrumbs, $breadcrumbsConfig) {
 		$this->breadcrumbs = $breadcrumbs;
@@ -27,19 +27,19 @@ class BreadcrumbListener implements EventSubscriberInterface {
 
 	public function onKernelRequest(GetResponseEvent $event) {
 		$request = $event->getRequest();
-
+		
 		$controllerName = $this->getControllerName($request);
 		$actionName = $this->getActionName($request);
-
-		//var_dump("controllerName : " . $controllerName);
+		
+		// var_dump("controllerName : " . $controllerName);
 		// var_dump("actionName : " . $actionName);
-
+		
 		$pathItems = $this->breadcrumbsConfig->getPath($controllerName, $actionName);
-
+		
 		if ($pathItems) {
-
+			
 			foreach ($pathItems as $path) {
-
+				
 				$this->breadcrumbs->addItem($path['label'], $this->breadcrumbsConfig->getURL($path));
 			}
 		}
@@ -54,10 +54,10 @@ class BreadcrumbListener implements EventSubscriberInterface {
 	public function getActionName(Request $request) {
 		$action = $request->get('_controller');
 		$action = explode('::', $action);
-
+		
 		// use this line if you want to remove the trailing "Action" string
 		return isset($action[1]) ? preg_replace('/Action$/', '', $action[1]) : false;
-
+		
 		// return $action[1];
 	}
 
@@ -70,10 +70,10 @@ class BreadcrumbListener implements EventSubscriberInterface {
 		$controller = $request->get('_controller');
 		$controller = explode('::', $controller);
 		$controller = explode('\\', $controller[0]);
-
+		
 		// use this line if you want to remove the trailing "Controller" string
 		return isset($controller[2]) ? preg_replace('/Controller$/', '', $controller[2]) : false;
-
+		
 		// return isset($controller[2]) ? $controller[2] : false;
 	}
 
