@@ -1,5 +1,5 @@
 <?php
-namespace Tests\OGAMBundle\Repository\Metadata;
+namespace OGAMBundle\Tests\Repository\Metadata;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use OGAMBundle\Entity\Metadata\Unit;

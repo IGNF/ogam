@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\OGAMBundle\Controller;
+namespace OGAMBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use OGAMBundle\Entity\Website\User;

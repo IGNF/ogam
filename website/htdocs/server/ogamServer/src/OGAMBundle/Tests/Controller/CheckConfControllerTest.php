@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\OGAMBundle\Controller;
+namespace OGAMBundle\Tests\Controller;
 
 class CheckConfControllerTest extends AbstractControllerTest
 {

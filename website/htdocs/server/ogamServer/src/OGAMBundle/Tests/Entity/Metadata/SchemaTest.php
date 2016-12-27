@@ -1,5 +1,5 @@
 <?php
-namespace Tests\OGAMBundle\Entity;
+namespace OGAMBundle\Tests\Entity;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
