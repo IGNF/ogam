@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Metadata.dynamode
  *
  * @ORM\Table(name="metadata.dynamode")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\DynamodeRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\DynamodeRepository")
  */
 class Dynamode {
 

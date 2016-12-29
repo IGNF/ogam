@@ -8,7 +8,7 @@ use Ign\Bundle\OGAMBundle\OGAMBundle;
  * Metadata.unit
  *
  * @ORM\Table(name="metadata.unit")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\UnitRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\UnitRepository")
  */
 class Unit implements \JsonSerializable {
 

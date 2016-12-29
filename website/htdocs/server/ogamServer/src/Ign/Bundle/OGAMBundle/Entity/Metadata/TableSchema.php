@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Schema
  *
  * @ORM\Table(name="metadata.table_schema")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableSchemaRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\TableSchemaRepository")
  */
 class TableSchema {
 

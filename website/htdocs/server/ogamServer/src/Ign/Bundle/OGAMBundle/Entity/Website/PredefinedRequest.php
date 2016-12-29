@@ -9,7 +9,7 @@ use Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestColumn;
  * PredefinedRequest
  *
  * @ORM\Table(name="website.predefined_request")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PredefinedRequestRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Website\PredefinedRequestRepository")
  */
 class PredefinedRequest {
 

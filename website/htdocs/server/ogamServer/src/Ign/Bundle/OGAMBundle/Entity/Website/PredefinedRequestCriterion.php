@@ -8,7 +8,7 @@ use Ign\Bundle\OGAMBundle\Entity\Metadata\FormField;
  * PredefinedRequestCriteria
  *
  * @ORM\Table(name="website.predefined_request_criterion")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PredefinedRequestCriterionRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Website\PredefinedRequestCriterionRepository")
  */
 class PredefinedRequestCriterion {
 

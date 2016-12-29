@@ -8,7 +8,7 @@ use Ign\Bundle\OGAMBundle\Entity\Generic\BoundingBox;
  * BoundingBox
  *
  * @ORM\Table(name="mapping.provider_map_params")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Mapping\ProviderMapParametersRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Mapping\ProviderMapParametersRepository")
  */
 class ProviderMapParameters {
 

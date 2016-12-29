@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TableField
  *
  * @ORM\Table(name="metadata.table_field")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableFieldRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\TableFieldRepository")
  */
 class TableField extends Field {
 

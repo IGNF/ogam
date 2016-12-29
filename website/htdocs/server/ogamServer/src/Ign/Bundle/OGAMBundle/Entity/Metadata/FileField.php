@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * FileField
  *
  * @ORM\Table(name="metadata.file_field")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\FileFieldRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\FileFieldRepository")
  */
 class FileField extends Field {
 

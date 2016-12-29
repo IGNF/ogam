@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ModeTaxref
  *
  * @ORM\Table(name="metadata.mode_taxref")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\ModeTaxrefRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\ModeTaxrefRepository")
  */
 class ModeTaxref extends ModeTree {
 

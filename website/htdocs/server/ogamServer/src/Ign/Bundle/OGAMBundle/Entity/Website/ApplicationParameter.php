@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ApplicationParameter
  *
  * @ORM\Table(name="website.application_parameters")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\ApplicationParameterRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Website\ApplicationParameterRepository")
  */
 class ApplicationParameter {
 

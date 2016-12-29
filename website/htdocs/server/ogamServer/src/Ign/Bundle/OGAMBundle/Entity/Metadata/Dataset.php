@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Dataset.
  *
  * @ORM\Table(name="metadata.dataset")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\DatasetRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\DatasetRepository")
  */
 class Dataset implements \JsonSerializable {
 

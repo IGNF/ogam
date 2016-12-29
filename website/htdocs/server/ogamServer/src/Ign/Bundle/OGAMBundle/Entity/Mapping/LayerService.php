@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Service
  *
  * @ORM\Table(name="mapping.layer_service")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Mapping\LayerServiceRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Mapping\LayerServiceRepository")
  */
 class LayerService implements \JsonSerializable {
 

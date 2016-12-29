@@ -8,7 +8,7 @@ use Ign\Bundle\OGAMBundle\Entity\Metadata\FormField;
  * PredefinedRequestColumn
  *
  * @ORM\Table(name="website.predefined_request_column")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\PredefinedRequestColumnRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Website\PredefinedRequestColumnRepository")
  */
 class PredefinedRequestColumn {
 

@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Mode.
  *
  * @ORM\Table(name="metadata.mode")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\ModeRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\ModeRepository")
  */
 class Mode {
 

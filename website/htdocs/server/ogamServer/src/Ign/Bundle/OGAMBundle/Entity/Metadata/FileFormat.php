@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * FileFormat.
  *
  * @ORM\Table(name="metadata.file_format")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\FileFormatRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\FileFormatRepository")
  */
 class FileFormat extends Format {
 

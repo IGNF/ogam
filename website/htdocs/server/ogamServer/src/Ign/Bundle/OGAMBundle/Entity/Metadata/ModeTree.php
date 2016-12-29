@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ModeTree
  *
  * @ORM\Table(name="metadata.mode_tree")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\ModeTreeRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\ModeTreeRepository")
  */
 class ModeTree extends Mode {
 

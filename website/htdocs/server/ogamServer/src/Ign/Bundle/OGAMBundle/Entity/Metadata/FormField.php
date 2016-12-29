@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * FormField
  *
  * @ORM\Table(name="metadata.form_field")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\FormFieldRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\FormFieldRepository")
  */
 class FormField extends Field implements \JsonSerializable {
 

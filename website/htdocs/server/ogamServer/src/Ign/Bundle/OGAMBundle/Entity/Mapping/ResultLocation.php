@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ResultLocation
  *
  * @ORM\Table(name="mapping.result_location")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Mapping\ResultLocationRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Mapping\ResultLocationRepository")
  */
 class ResultLocation {
 

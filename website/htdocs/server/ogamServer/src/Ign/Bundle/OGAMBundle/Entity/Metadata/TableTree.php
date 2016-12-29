@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TableTreeData
  *
  * @ORM\Table(name="metadata.table_tree")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Metadata\TableTreeRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Metadata\TableTreeRepository")
  */
 class TableTree {
 

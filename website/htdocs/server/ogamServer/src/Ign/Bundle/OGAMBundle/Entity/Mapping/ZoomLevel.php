@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Layer
  *
  * @ORM\Table(name="mapping.zoom_level")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Mapping\ZoomLevelRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Mapping\ZoomLevelRepository")
  */
 class ZoomLevel implements \JsonSerializable {
 

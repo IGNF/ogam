@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Role
  *
  * @ORM\Table(name="website.role")
- * @ORM\Entity(repositoryClass="OGAMBundle\Repository\Website\RoleRepository")
+ * @ORM\Entity(repositoryClass="Ign\Bundle\OGAMBundle\Repository\Website\RoleRepository")
  */
 class Role implements RoleInterface, \Serializable {
 
