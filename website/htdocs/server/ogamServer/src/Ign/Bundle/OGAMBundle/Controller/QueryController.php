@@ -49,7 +49,7 @@ class QueryController extends Controller {
 
 		// Clean previous results
 		$this->getDoctrine()
-			->getRepository('OGAMBundle\Entity\Mapping\ResultLocation', 'mapping')
+			->getRepository('Ign\Bundle\OGAMBundle\Entity\Mapping\ResultLocation', 'mapping')
 			->cleanPreviousResults(session_id());
 
 		// Check if the parameter of the default page is set

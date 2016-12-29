@@ -31,7 +31,7 @@ class UsermanagementController extends Controller {
 	 * @Route("/deleteProvider/{id}", name="usermanagement_deleteProvider", requirements={"id": "[1-9][0-9]*"})
 	 */
 	public function deleteProviderAction($id) {
-		$providerRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Provider', 'website');
+		$providerRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\Provider', 'website');
 		$provider = $providerRepo->find($id);
 
 		if ($provider == null) {
@@ -54,7 +54,7 @@ class UsermanagementController extends Controller {
 	 * @Route("/deleteRole/{code}", name="usermanagement_deleteRole")
 	 */
 	public function deleteRoleAction($code) {
-		$roleRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Role', 'website');
+		$roleRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\Role', 'website');
 		$role = $roleRepo->find($code);
 
 		if ($role == null) {
@@ -75,7 +75,7 @@ class UsermanagementController extends Controller {
 	 * @Route("/deleteUser/{login}", name="usermanagement_deleteUser")
 	 */
 	public function deleteUserAction($login) {
-		$userRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+		$userRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
 		$user = $userRepo->find($login);
 
 		if ($user == null) {
@@ -100,7 +100,7 @@ class UsermanagementController extends Controller {
 		$logger->debug('changePasswordAction');
 
 		// Load the user
-		$userRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+		$userRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
 		$user = $userRepo->find($login);
 
 		// Get the change password form
@@ -148,7 +148,7 @@ class UsermanagementController extends Controller {
 		$logger->debug('editProviderAction');
 
 		if ($id != null) {
-			$providerRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Provider', 'website');
+			$providerRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\Provider', 'website');
 			$provider = $providerRepo->find($id);
 		}
 
@@ -191,7 +191,7 @@ class UsermanagementController extends Controller {
 		$logger->debug('editRoleAction');
 
 		if ($code != null) {
-			$roleRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Role', 'website');
+			$roleRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\Role', 'website');
 			$role = $roleRepo->find($code);
 		}
 
@@ -234,7 +234,7 @@ class UsermanagementController extends Controller {
 		$logger->debug('editUserAction');
 
 		if ($login != null) {
-			$userRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+			$userRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
 			$user = $userRepo->find($login);
 		}
 
@@ -283,7 +283,7 @@ class UsermanagementController extends Controller {
 		$logger->info('showProvidersAction');
 
 		// Get the list of providers
-		$providersRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Provider', 'website');
+		$providersRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\Provider', 'website');
 		$providers = $providersRepo->findAll();
 
 		// Calculate if each provider can be deleted or not
@@ -293,7 +293,7 @@ class UsermanagementController extends Controller {
 			$isDeletable = true;
 
 			// If a user is using this provider then we cannot delete
-			$usersRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+			$usersRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
 			$users = $usersRepo->findByProvider($provider->getId());
 			if (count($users) > 0) {
 				$isDeletable = false;
@@ -327,17 +327,17 @@ class UsermanagementController extends Controller {
 		$logger->info('id : ' . $id);
 
 		// Get the provider detail
-		$providersRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Provider', 'website');
+		$providersRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\Provider', 'website');
 		$provider = $providersRepo->find($id);
 
 		$logger->info('provider : ' . \Doctrine\Common\Util\Debug::dump($provider, 3, true, false));
 
 		// Get the users linked to this provider
-		$usersRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+		$usersRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
 		$users = $usersRepo->findByProvider($provider->getId());
 
 		// Get the submissions linked to this provider
-		$submissionsRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\RawData\Submission', 'raw_data');
+		$submissionsRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\RawData\Submission', 'raw_data');
 		$submissions = $submissionsRepo->findByProvider($provider->getId());
 
 		$logger->info('submissions : ' . \Doctrine\Common\Util\Debug::dump($submissions, 3, true, false));
@@ -361,7 +361,7 @@ class UsermanagementController extends Controller {
 		$logger->info('showRolesAction');
 
 		// Get the list of roles
-		$rolesRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Role', 'website');
+		$rolesRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\Role', 'website');
 		$roles = $rolesRepo->findAll();
 
 		// Calculate if each role can be deleted or not
@@ -371,7 +371,7 @@ class UsermanagementController extends Controller {
 			$isDeletable = true;
 
 			// If a user is using this role then we cannot delete
-			$roleRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\Role', 'website');
+			$roleRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\Role', 'website');
 			$nbUsers = $roleRepo->userCount($role->getCode());
 			if ($nbUsers > 0) {
 				$isDeletable = false;
@@ -396,7 +396,7 @@ class UsermanagementController extends Controller {
 		$logger->info('showUsersAction');
 
 		// Get the list of roles
-		$usersRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Website\User', 'website');
+		$usersRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Website\User', 'website');
 		$users = $usersRepo->findAll();
 
 		return $this->render('OGAMBundle:UsermanagementController:show_users.html.twig', array(

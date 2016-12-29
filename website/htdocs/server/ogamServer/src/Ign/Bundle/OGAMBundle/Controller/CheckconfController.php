@@ -121,7 +121,7 @@ class CheckconfController extends Controller {
 		// Get the translator service
 		$translator = $this->get('translator');
 
-		$schemaRepo = $this->getDoctrine()->getRepository('OGAMBundle\Entity\Metadata\TableSchema', 'metadata');
+		$schemaRepo = $this->getDoctrine()->getRepository('Ign\Bundle\OGAMBundle\Entity\Metadata\TableSchema', 'metadata');
 
 		$postgreSQLRepo = $this->get('ogam.repository.database.postgresql');
 

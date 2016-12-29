@@ -18,7 +18,7 @@ class SchemaTest extends KernelTestCase {
 	 */
 	protected function setUp() {
 		self::bootKernel();
-		
+
 		$this->em = static::$kernel->getContainer()
 			->get('doctrine')
 			->getManager();
@@ -31,7 +31,7 @@ class SchemaTest extends KernelTestCase {
 	 */
 	protected function tearDown() {
 		parent::tearDown();
-		
+
 		if ($this->em) {
 			$this->em->close();
 		}
@@ -42,13 +42,13 @@ class SchemaTest extends KernelTestCase {
 	 * Test la récupération des schémas.
 	 */
 	public function testGetSchemas() {
-		
+
 		// Récupère la liste des schémas
-		$schemas = $this->em->getRepository('OGAMBundle\Entity\Metadata\TableSchema', 'metadata')->findAll();
-		
+		$schemas = $this->em->getRepository('Ign\Bundle\OGAMBundle\Entity\Metadata\TableSchema', 'metadata')->findAll();
+
 		// On vérifie que l'on a ramené la bonne modalité
 		$this->assertEquals(count($schemas), 6);
-		
+
 		$rawSchema = $schemas['RAW_DATA'];
 		$this->assertEquals($rawSchema->getCode(), 'RAW_DATA');
 		$this->assertEquals($rawSchema->getName(), 'RAW_DATA');
