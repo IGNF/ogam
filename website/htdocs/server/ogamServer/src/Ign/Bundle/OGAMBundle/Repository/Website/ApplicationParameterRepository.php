@@ -14,7 +14,7 @@ class ApplicationParameterRepository extends \Doctrine\ORM\EntityRepository {
 	 */
 	public function findAll() {
 		return $this->getEntityManager()
-			->createQuery('SELECT a FROM OGAMBundle\Entity\Website\ApplicationParameter a INDEX BY a.name ORDER BY a.name ASC')
+			->createQuery('SELECT a FROM Ign\Bundle\OGAMBundle\Entity\Website\ApplicationParameter a INDEX BY a.name ORDER BY a.name ASC')
 			->getResult();
 	}
 }
