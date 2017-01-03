@@ -113,7 +113,7 @@ task setBuildNumber(type: Copy, description: 'Update the build number.', depends
 task clearCache(type:Exec, description: 'Clear symfony cache.') {
   workingDir './ogamServer'
   commandLine "php" 
-  args "bin/console", "cache:clear", "--env=prod"
+  args "app/console", "cache:clear", "--env=prod"
 } 
 
 
@@ -121,13 +121,13 @@ task clearCache(type:Exec, description: 'Clear symfony cache.') {
 task installAssets(type:Exec, description: 'Install assets.') {
   workingDir './ogamServer'
   commandLine "php" 
-  args "bin/console", "assets:install", "--env=prod", "--no-debug"
+  args "app/console", "assets:install", "--env=prod", "--no-debug"
 } 
 
 
 
 
 // Deploy the application
-task deployAll(description: 'Copy the PHP files to the deploy directory.', dependsOn: 'setBuildNumber') {
+task deployAll(description: 'Copy the PHP files to the deploy directory.', dependsOn: [deploy, setBuildNumber, installAssets]) {
 
 }
