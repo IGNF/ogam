@@ -15,7 +15,7 @@ class PredefinedRequestColumn {
 	/**
 	 *
 	 * @var PredefinedRequest @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequest")
+	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest")
 	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
 	 */
 	private $requestName;
@@ -23,7 +23,7 @@ class PredefinedRequestColumn {
 	/**
 	 *
 	 * @var Format @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Format")
+	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Format")
 	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
 	 */
 	private $format;
@@ -31,15 +31,16 @@ class PredefinedRequestColumn {
 	/**
 	 *
 	 * @var Data @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
+	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Data")
 	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
 	 */
 	private $data;
 
 	/**
 	 *
-	 * @var FormField @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\FormField")
-	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data"),@ORM\JoinColumn(name="format", referencedColumnName="format")})
+	 * @var FormField
+	 * @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\FormField")
+	 * @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data"),@ORM\JoinColumn(name="format", referencedColumnName="format")})
 	 */
 	private $formField;
 
@@ -55,13 +56,13 @@ class PredefinedRequestColumn {
 	/**
 	 * Set requestName
 	 *
-	 * @param string $requestName        	
+	 * @param string $requestName
 	 *
 	 * @return PredefinedRequestColumn
 	 */
 	public function setRequestName($requestName) {
 		$this->requestName = $requestName;
-		
+
 		return $this;
 	}
 
@@ -77,13 +78,13 @@ class PredefinedRequestColumn {
 	/**
 	 * Set format
 	 *
-	 * @param string $format        	
+	 * @param string $format
 	 *
 	 * @return PredefinedRequestColumn
 	 */
 	public function setFormat($format) {
 		$this->format = $format;
-		
+
 		return $this;
 	}
 
@@ -99,13 +100,13 @@ class PredefinedRequestColumn {
 	/**
 	 * Set data
 	 *
-	 * @param string $data        	
+	 * @param string $data
 	 *
 	 * @return PredefinedRequestColumn
 	 */
 	public function setData($data) {
 		$this->data = $data;
-		
+
 		return $this;
 	}
 
@@ -130,7 +131,7 @@ class PredefinedRequestColumn {
 	/**
 	 * Set the form fields
 	 *
-	 * @param FormField $formField        	
+	 * @param FormField $formField
 	 */
 	public function setFormField(FormField $formField) {
 		$this->formField = $formField;

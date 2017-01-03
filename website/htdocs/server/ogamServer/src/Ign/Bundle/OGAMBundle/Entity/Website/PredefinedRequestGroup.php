@@ -37,7 +37,7 @@ class PredefinedRequestGroup {
 	private $position;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="OGAMBundle\Entity\Website\PredefinedRequestGroupAsso", mappedBy="groupName")
+	 * @ORM\OneToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroupAsso", mappedBy="groupName")
 	 */
 	private $requests;
 
@@ -48,13 +48,13 @@ class PredefinedRequestGroup {
 	/**
 	 * Set name
 	 *
-	 * @param string $name        	
+	 * @param string $name
 	 *
 	 * @return PredefinedRequestGroup
 	 */
 	public function setName($name) {
 		$this->name = $name;
-		
+
 		return $this;
 	}
 
@@ -70,13 +70,13 @@ class PredefinedRequestGroup {
 	/**
 	 * Set label
 	 *
-	 * @param string $label        	
+	 * @param string $label
 	 *
 	 * @return PredefinedRequestGroup
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
-		
+
 		return $this;
 	}
 
@@ -92,13 +92,13 @@ class PredefinedRequestGroup {
 	/**
 	 * Set definition
 	 *
-	 * @param string $definition        	
+	 * @param string $definition
 	 *
 	 * @return PredefinedRequestGroup
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
-		
+
 		return $this;
 	}
 
@@ -114,13 +114,13 @@ class PredefinedRequestGroup {
 	/**
 	 * Set position
 	 *
-	 * @param integer $position        	
+	 * @param integer $position
 	 *
 	 * @return PredefinedRequestGroup
 	 */
 	public function setPosition($position) {
 		$this->position = $position;
-		
+
 		return $this;
 	}
 

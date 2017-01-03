@@ -15,7 +15,7 @@ class PredefinedRequestCriterion {
 	/**
 	 *
 	 * @var PredefinedRequest @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequest")
+	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest")
 	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
 	 */
 	private $requestName;
@@ -23,7 +23,7 @@ class PredefinedRequestCriterion {
 	/**
 	 *
 	 * @var Format @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Format")
+	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Format")
 	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="format", referencedColumnName="format")})
 	 */
 	private $format;
@@ -31,7 +31,7 @@ class PredefinedRequestCriterion {
 	/**
 	 *
 	 * @var Data @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
+	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Data")
 	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
 	 */
 	private $data;
@@ -67,13 +67,13 @@ class PredefinedRequestCriterion {
 	/**
 	 * Set requestName
 	 *
-	 * @param string $requestName        	
+	 * @param string $requestName
 	 *
 	 * @return PredefinedRequestCriteria
 	 */
 	public function setRequestName($requestName) {
 		$this->requestName = $requestName;
-		
+
 		return $this;
 	}
 
@@ -89,13 +89,13 @@ class PredefinedRequestCriterion {
 	/**
 	 * Set format
 	 *
-	 * @param string $format        	
+	 * @param string $format
 	 *
 	 * @return PredefinedRequestCriteria
 	 */
 	public function setFormat($format) {
 		$this->format = $format;
-		
+
 		return $this;
 	}
 
@@ -111,13 +111,13 @@ class PredefinedRequestCriterion {
 	/**
 	 * Set data
 	 *
-	 * @param string $data        	
+	 * @param string $data
 	 *
 	 * @return PredefinedRequestCriteria
 	 */
 	public function setData($data) {
 		$this->data = $data;
-		
+
 		return $this;
 	}
 
@@ -133,13 +133,13 @@ class PredefinedRequestCriterion {
 	/**
 	 * Set value
 	 *
-	 * @param string $value        	
+	 * @param string $value
 	 *
 	 * @return PredefinedRequestCriteria
 	 */
 	public function setValue($value) {
 		$this->value = $value;
-		
+
 		return $this;
 	}
 
@@ -155,13 +155,13 @@ class PredefinedRequestCriterion {
 	/**
 	 * Set fixed
 	 *
-	 * @param boolean $fixed        	
+	 * @param boolean $fixed
 	 *
 	 * @return PredefinedRequestCriteria
 	 */
 	public function setFixed($fixed) {
 		$this->fixed = $fixed;
-		
+
 		return $this;
 	}
 
@@ -184,7 +184,7 @@ class PredefinedRequestCriterion {
 
 	/**
 	 *
-	 * @param FormField $formField        	
+	 * @param FormField $formField
 	 */
 	public function setFormField(FormField $formField) {
 		$this->formField = $formField;

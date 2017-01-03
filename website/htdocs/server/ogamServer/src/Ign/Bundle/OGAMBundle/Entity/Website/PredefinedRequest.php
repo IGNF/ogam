@@ -15,64 +15,71 @@ class PredefinedRequest {
 
 	/**
 	 *
-	 * @var string @ORM\Id
-	 *      @ORM\Column(name="name", type="string", length=50, unique=true)
+	 * @var string
+	 * @ORM\Id
+	 * @ORM\Column(name="name", type="string", length=50, unique=true)
 	 */
 	private $name;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="schema_code", type="string", length=36)
+	 * @var string
+	 * @ORM\Column(name="schema_code", type="string", length=36)
 	 */
 	private $schemaCode;
 
 	/**
 	 *
-	 * @var Dataset @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Dataset")
-	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="dataset_id", referencedColumnName="dataset_id")})
+	 * @var Dataset
+	 * @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Dataset")
+	 * @ORM\JoinColumns({@ORM\JoinColumn(name="dataset_id", referencedColumnName="dataset_id")})
 	 */
 	private $datasetId;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="definition", type="string", length=500, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="definition", type="string", length=500, nullable=true)
 	 */
 	private $definition;
 
 	/**
 	 *
-	 * @var string @ORM\Column(name="label", type="string", length=50, nullable=true)
+	 * @var string
+	 * @ORM\Column(name="label", type="string", length=50, nullable=true)
 	 */
 	private $label;
 
 	/**
 	 *
-	 * @var \DateTime @ORM\Column(name="date", type="date")
+	 * @var \DateTime
+	 * @ORM\Column(name="date", type="date")
 	 */
 	private $date;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="OGAMBundle\Entity\Website\PredefinedRequestGroupAsso", mappedBy="requestName")
+	 * @ORM\OneToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroupAsso", mappedBy="requestName")
 	 */
 	private $groups;
 
 	/**
 	 *
-	 * @var Translation @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Translation")
-	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="name", referencedColumnName="row_pk")})
+	 * @var Translation
+	 * @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Translation")
+	 * @ORM\JoinColumns({@ORM\JoinColumn(name="name", referencedColumnName="row_pk")})
 	 */
 	private $translation;
 
 	/**
 	 * The columns of the request
-	 * 
+	 *
 	 * @var PredefinedRequestColumn[]
 	 */
 	private $columns;
 
 	/**
 	 * The criteria of the request
-	 * 
+	 *
 	 * @var PredefinedRequestCriterion[]
 	 */
 	private $criteria;
@@ -84,13 +91,13 @@ class PredefinedRequest {
 	/**
 	 * Set name
 	 *
-	 * @param string $name        	
+	 * @param string $name
 	 *
 	 * @return PredefinedRequest
 	 */
 	public function setName($name) {
 		$this->name = $name;
-		
+
 		return $this;
 	}
 
@@ -106,13 +113,13 @@ class PredefinedRequest {
 	/**
 	 * Set schemaCode
 	 *
-	 * @param string $schemaCode        	
+	 * @param string $schemaCode
 	 *
 	 * @return PredefinedRequest
 	 */
 	public function setSchemaCode($schemaCode) {
 		$this->schemaCode = $schemaCode;
-		
+
 		return $this;
 	}
 
@@ -128,13 +135,13 @@ class PredefinedRequest {
 	/**
 	 * Set datasetId
 	 *
-	 * @param string $datasetId        	
+	 * @param string $datasetId
 	 *
 	 * @return PredefinedRequest
 	 */
 	public function setDatasetId($datasetId) {
 		$this->datasetId = $datasetId;
-		
+
 		return $this;
 	}
 
@@ -150,13 +157,13 @@ class PredefinedRequest {
 	/**
 	 * Set definition
 	 *
-	 * @param string $definition        	
+	 * @param string $definition
 	 *
 	 * @return PredefinedRequest
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
-		
+
 		return $this;
 	}
 
@@ -175,13 +182,13 @@ class PredefinedRequest {
 	/**
 	 * Set label
 	 *
-	 * @param string $label        	
+	 * @param string $label
 	 *
 	 * @return PredefinedRequest
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
-		
+
 		return $this;
 	}
 
@@ -200,13 +207,13 @@ class PredefinedRequest {
 	/**
 	 * Set date
 	 *
-	 * @param \DateTime $date        	
+	 * @param \DateTime $date
 	 *
 	 * @return PredefinedRequest
 	 */
 	public function setDate($date) {
 		$this->date = $date;
-		
+
 		return $this;
 	}
 
@@ -231,7 +238,7 @@ class PredefinedRequest {
 	/**
 	 * Set the groups
 	 *
-	 * @param PredefinedRequestGroup[] $groups        	
+	 * @param PredefinedRequestGroup[] $groups
 	 */
 	public function setGroups($groups) {
 		$this->groups = $groups;
@@ -250,7 +257,7 @@ class PredefinedRequest {
 	/**
 	 * Set the translation
 	 *
-	 * @param Translation $translation        	
+	 * @param Translation $translation
 	 */
 	public function setTranslation(Translation $translation) {
 		$this->translation = $translation;
@@ -269,7 +276,7 @@ class PredefinedRequest {
 	/**
 	 * Set the columns
 	 *
-	 * @param PredefinedRequestColumn[] $columns        	
+	 * @param PredefinedRequestColumn[] $columns
 	 */
 	public function setColumns($columns) {
 		$this->columns = $columns;
@@ -288,7 +295,7 @@ class PredefinedRequest {
 	/**
 	 * Set the criteria
 	 *
-	 * @param PredefinedRequestCriterion[] $criteria        	
+	 * @param PredefinedRequestCriterion[] $criteria
 	 */
 	public function setCriteria($criteria) {
 		$this->criteria = $criteria;
@@ -298,7 +305,7 @@ class PredefinedRequest {
 	/**
 	 * Check if a criterion is present
 	 *
-	 * @param string $criterionId        	
+	 * @param string $criterionId
 	 * @return boolean
 	 */
 	public function hasCriterion($criterionId) {
@@ -312,7 +319,7 @@ class PredefinedRequest {
 	/**
 	 * Check if a column is present
 	 *
-	 * @param string $columnId        	
+	 * @param string $columnId
 	 * @return boolean
 	 */
 	public function hasColumn($columnId) {
@@ -326,7 +333,7 @@ class PredefinedRequest {
 	/**
 	 * Return a column
 	 *
-	 * @param string $columnId        	
+	 * @param string $columnId
 	 * @return PredefinedRequestColumn|NULL
 	 */
 	public function getColumn($columnId) {
@@ -341,7 +348,7 @@ class PredefinedRequest {
 	/**
 	 * Return a criterion
 	 *
-	 * @param string $criterionId        	
+	 * @param string $criterionId
 	 * @return PredefinedRequestCriterion|NULL
 	 */
 	public function getCriterion($criterionId) {

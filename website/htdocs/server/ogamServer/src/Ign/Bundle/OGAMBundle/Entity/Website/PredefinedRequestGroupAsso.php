@@ -14,7 +14,7 @@ class PredefinedRequestGroupAsso {
 	/**
 	 *
 	 * @var string @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequestGroup", inversedBy="requests")
+	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequestGroup", inversedBy="requests")
 	 *      @ORM\JoinColumn(name="group_name", referencedColumnName="name")
 	 */
 	private $groupName;
@@ -22,7 +22,7 @@ class PredefinedRequestGroupAsso {
 	/**
 	 *
 	 * @var string @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Website\PredefinedRequest", inversedBy="groups")
+	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Website\PredefinedRequest", inversedBy="groups")
 	 *      @ORM\JoinColumn(name="request_name", referencedColumnName="name")
 	 */
 	private $requestName;
@@ -36,13 +36,13 @@ class PredefinedRequestGroupAsso {
 	/**
 	 * Set groupName
 	 *
-	 * @param string $groupName        	
+	 * @param string $groupName
 	 *
 	 * @return PredefinedRequestGroupAsso
 	 */
 	public function setGroupName($groupName) {
 		$this->groupName = $groupName;
-		
+
 		return $this;
 	}
 
@@ -58,13 +58,13 @@ class PredefinedRequestGroupAsso {
 	/**
 	 * Set requestName
 	 *
-	 * @param string $requestName        	
+	 * @param string $requestName
 	 *
 	 * @return PredefinedRequestGroupAsso
 	 */
 	public function setRequestName($requestName) {
 		$this->requestName = $requestName;
-		
+
 		return $this;
 	}
 
@@ -80,13 +80,13 @@ class PredefinedRequestGroupAsso {
 	/**
 	 * Set position
 	 *
-	 * @param integer $position        	
+	 * @param integer $position
 	 *
 	 * @return PredefinedRequestGroupAsso
 	 */
 	public function setPosition($position) {
 		$this->position = $position;
-		
+
 		return $this;
 	}
 
