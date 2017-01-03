@@ -33,7 +33,7 @@ class QueryControllerTest extends AbstractControllerTest
     
     public function getNotLoggedUrls(){
         return [
-            'query' => [['uri' => '/query/']],
+            'query' => [['uri' => '/query/index']],
             'show-query-form' => [['uri' => '/query/show-query-form']],
             //'odp-index' => [['uri' => '/odp/index.html?locale=fr']], // TODO: Not found. Why?
             'getgridparameters' => [['uri' => '/query/getgridparameters']],
@@ -64,10 +64,15 @@ class QueryControllerTest extends AbstractControllerTest
     public function getRawDataUrls($defaultStatusCode = Response::HTTP_FOUND){
         return array_merge([
             'query_RAW_DATA' => [[
-                'uri' => '/query/',
+                'uri' => '/query/index',
                 'method' => 'GET',
                 'parameters' => [
                     'SCHEMA' => 'RAW_DATA'
+                ],
+                'sessionParameters' => [
+                    'SCHEMA' => [
+                        'value' => 'HARMONIZED_DATA'
+                    ]
                 ]
             ],[
                 'statusCode' => $defaultStatusCode,
@@ -79,7 +84,7 @@ class QueryControllerTest extends AbstractControllerTest
     public function getHarmonizedDataUrls(){
         return array_merge([
             'query_HARMONIZED_DATA' => [[
-                'uri' => '/query/',
+                'uri' => '/query/index',
                 'method' => 'GET',
                 'parameters' => [
                     'SCHEMA' => 'HARMONIZED_DATA'
