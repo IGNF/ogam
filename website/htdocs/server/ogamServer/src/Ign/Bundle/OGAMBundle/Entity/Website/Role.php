@@ -57,7 +57,7 @@ class Role implements RoleInterface, \Serializable {
 	 *
 	 * A list of schemas names.
 	 *
-	 * @var Array[String] @ORM\ManyToMany(targetEntity="OGAMBundle\Entity\Metadata\TableSchema")
+	 * @var Array[String] @ORM\ManyToMany(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\TableSchema")
 	 *      @ORM\JoinTable(name="role_to_schema",
 	 *      joinColumns={@ORM\JoinColumn(name="role_code", referencedColumnName="role_code")},
 	 *      inverseJoinColumns={@ORM\JoinColumn(name="schema_code", referencedColumnName="schema_code")}
@@ -76,13 +76,13 @@ class Role implements RoleInterface, \Serializable {
 	/**
 	 * Set code
 	 *
-	 * @param string $code        	
+	 * @param string $code
 	 *
 	 * @return Role
 	 */
 	public function setCode($code) {
 		$this->code = $code;
-		
+
 		return $this;
 	}
 
@@ -98,13 +98,13 @@ class Role implements RoleInterface, \Serializable {
 	/**
 	 * Set label
 	 *
-	 * @param string $label        	
+	 * @param string $label
 	 *
 	 * @return Role
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
-		
+
 		return $this;
 	}
 
@@ -120,13 +120,13 @@ class Role implements RoleInterface, \Serializable {
 	/**
 	 * Set definition
 	 *
-	 * @param string $definition        	
+	 * @param string $definition
 	 *
 	 * @return Role
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
-		
+
 		return $this;
 	}
 
@@ -176,12 +176,12 @@ class Role implements RoleInterface, \Serializable {
 		 * $logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
 		 */
 		foreach ($this->getPermissions() as $permission) {
-			
+
 			if ($permission->getCode() == $permissionName) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -204,18 +204,18 @@ class Role implements RoleInterface, \Serializable {
 		 * $logger->info('role ' . \Doctrine\Common\Util\Debug::dump($this,3, true, false));
 		 */
 		foreach ($this->getSchemas() as $schema) {
-			
+
 			if ($schema->getCode() == $schemaCode) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
 	/**
 	 * Required to implement RoleInterface.
-	 * 
+	 *
 	 * {@inheritdoc}
 	 *
 	 * @see \Symfony\Component\Security\Core\Role\RoleInterface::getRole()
@@ -226,8 +226,8 @@ class Role implements RoleInterface, \Serializable {
 
 	/**
 	 * add a permission
-	 * 
-	 * @param Permission $perm        	
+	 *
+	 * @param Permission $perm
 	 * @return Role
 	 */
 	public function addPermission(Permission $perm) {
@@ -237,8 +237,8 @@ class Role implements RoleInterface, \Serializable {
 
 	/**
 	 * remove a permission
-	 * 
-	 * @param Permission $perm        	
+	 *
+	 * @param Permission $perm
 	 * @return Role
 	 */
 	public function removePermission(Permission $perm) {

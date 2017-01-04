@@ -50,7 +50,7 @@ class PredefinedRequestCriterion {
 
 	/**
 	 *
-	 * @var FormField @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\FormField")
+	 * @var FormField @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\FormField")
 	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data"),@ORM\JoinColumn(name="format", referencedColumnName="format")})
 	 */
 	private $formField;

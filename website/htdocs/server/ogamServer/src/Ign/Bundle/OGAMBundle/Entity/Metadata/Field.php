@@ -13,7 +13,7 @@ class Field {
 	/**
 	 *
 	 * @var Data @ORM\Id
-	 *      @ORM\ManyToOne(targetEntity="OGAMBundle\Entity\Metadata\Data")
+	 *      @ORM\ManyToOne(targetEntity="Ign\Bundle\OGAMBundle\Entity\Metadata\Data")
 	 *      @ORM\JoinColumns({@ORM\JoinColumn(name="data", referencedColumnName="data")})
 	 */
 	protected $data;
@@ -29,13 +29,13 @@ class Field {
 	/**
 	 * Set data
 	 *
-	 * @param Data $data        	
+	 * @param Data $data
 	 *
 	 * @return field
 	 */
 	public function setData($data) {
 		$this->data = $data;
-		
+
 		return $this;
 	}
 
@@ -51,13 +51,13 @@ class Field {
 	/**
 	 * Set format
 	 *
-	 * @param Format $format        	
+	 * @param Format $format
 	 *
 	 * @return field
 	 */
 	public function setFormat($format) {
 		$this->format = $format;
-		
+
 		return $this;
 	}
 
