@@ -6,12 +6,12 @@ security:
     providers:
         website_base:
             entity:
-                class: OGAMBundle\Entity\Website\User
+                class: Ign\Bundle\OGAMBundle\Entity\Website\User
                 property: login
                 manager_name: website
                 
     encoders:
-        OGAMBundle\Entity\Website\User: 
+        Ign\Bundle\OGAMBundle\Entity\Website\User:
             id: ogam.challenge_response_encoder
 
     firewalls:
