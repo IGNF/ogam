@@ -1,0 +1,4 @@
+ogam:
+    resource: "@OGAMBundle/Controller/"
+    type:     annotation
+    prefix:   /

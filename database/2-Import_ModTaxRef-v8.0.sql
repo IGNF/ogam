@@ -222,7 +222,7 @@ ORDER BY level, cd_taxsup, cd_nom, lb_nom
 --
 -- Recopie de la table referentiels.taxref vers la table metadata.mode_taxref 
 --
-INSERT INTO metadata.mode_taxref (unit, code, parent_code, "name", complete_name, vernacular_name, is_leaf, is_reference)
+INSERT INTO metadata.mode_taxref (unit, code, parent_code, label, complete_name, vernacular_name, is_leaf, is_reference)
 SELECT 'ID_TAXON', cd_nom,  cd_taxsup, lb_nom, nom_complet, nom_vern, '0', case when (cd_nom = cd_ref) then 1 else 0 end
 FROM referentiels.taxref;
 

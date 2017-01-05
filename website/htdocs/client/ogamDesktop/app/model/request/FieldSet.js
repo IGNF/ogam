@@ -3,17 +3,17 @@
  * @deprecated
  */
 Ext.define('OgamDesktop.model.request.FieldSet', {
-	extend: 'Ext.data.Model',
+	extend: 'OgamDesktop.model.base',
 	requires:['OgamDesktop.model.request.fieldset.Criterion',
 	          'OgamDesktop.model.request.fieldset.Column'],
-	uses:['OgamDesktop.model.request.PredefinedGroup'],
+	uses:['OgamDesktop.model.request.predefined.Group'],
 	idProperty: 'id',
     fields: [
         { name: 'id', type: 'auto' },
         { name: 'label', type: 'string' },
         // See Ext.data.field.Field at config reference documentation for example
-        { name: 'processId', reference: {type:'OgamDesktop.model.Process', inverse:'fieldsets'}},
-        { name: 'requestName', reference: {type:'OgamDesktop.model.request.PredefinedGroup', inverse:'reqfieldsets'}}
+        { name: 'processId', reference: {type:'Process', inverse:'fieldsets'}},
+        { name: 'requestName', reference: {type:'request.predefined.Group', inverse:'reqfieldsets'}}
         
     ],
     hasMany: [{// See Ext.data.reader.Reader documentation for example

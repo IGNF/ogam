@@ -1,0 +1,1 @@
+php /vagrant/ogam/website/htdocs/server/ogamServer/vendor/phpunit/phpunit/phpunit --configuration /vagrant/ogam/website/htdocs/server/ogamServer/phpunit.xml

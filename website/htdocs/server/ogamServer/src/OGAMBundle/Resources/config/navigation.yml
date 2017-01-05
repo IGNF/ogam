@@ -1,0 +1,137 @@
+# Fichier de conf de la navigation : breadcrumb, menus, aide...
+# Définit les labels affichés dans les menus.
+# On pourrait ajouter des titres de page.
+home:
+    label: Breadcrumb_Home
+    controller: default
+    action: index
+    module: default
+    pages:
+    
+        integration:
+            label: Breadcrumb_Integration
+            controller: integration
+            action: index
+            module: default
+            pages:
+            
+                newintegration:
+                    label: Breadcrumb_Integration_New
+                    controller: integration
+                    action: showCreateDataSubmission
+                    module: default
+                integrationupload:
+                    label: Breadcrumb_Integration_New
+                    controller: integration
+                    action: validateCreateDataSubmission
+                    module: default
+
+        harmonization:
+            label: Breadcrumb_Harmonization
+            controller: harmonization
+            action: index
+            module: default
+
+        showharmonization:
+            label: Breadcrumb_Harmonization
+            controller: harmonization
+            action: showHarmonizationPage
+            module: default
+
+        visualisation:
+            label: Breadcrumb_Visualization
+            controller: query
+            action: index
+            module: default
+
+        edition:
+            label: Breadcrumb_Edition
+            controller: dataedition
+            action: index
+            module: default
+            pages:
+            
+                editionedit:
+                    label: Breadcrumb_Edit_Data
+                    controller: dataedition
+                    action: show-edit-data
+                    module: default
+                editionadd:
+                    label: Breadcrumb_Add_Data
+                    controller: dataedition
+                    action: show-add-data
+                    module: default
+
+        checkconf:
+            label: Breadcrumb_Check_Configuration
+            controller: checkconf
+            action: index
+            module: default
+
+        user:
+            label: User
+            controller: user
+            action: index
+            module: default
+
+        usermanagement:
+            label: Breadcrumb_Users_Administration
+            controller: usermanagement
+            action: index
+            module: default
+            pages:
+
+              users:
+                label: Breadcrumb_Users
+                controller: usermanagement
+                action: showUsers
+                module: default
+                pages:
+
+                  edituser:
+                    label: Breadcrumb_Edit_User
+                    controller: usermanagement
+                    action: editUser
+                    module: default
+
+                  passworduser:
+                    label: Breadcrumb_Change_Password
+                    controller: usermanagement
+                    action: changePassword
+                    module: default
+
+
+              roles:
+                label: Breadcrumb_Roles
+                controller: usermanagement
+                action: showRoles
+                module: default
+                pages:
+
+                  editrole:
+                    label: Breadcrumb_Edit_Role
+                    controller: usermanagement
+                    action: editRole
+                    module: default
+
+
+
+              providers:
+                label: Breadcrumb_Providers
+                controller: usermanagement
+                action: showProviders
+                module: default
+                pages:
+
+                  providerdetails:
+                    label: Breadcrumb_Providers_Details
+                    controller: usermanagement
+                    action: showprovidercontent
+                    module: default
+
+                  editprovider:
+                    label: Breadcrumb_Edit_Provider
+                    controller: usermanagement
+                    action: editprovider
+                    module: default
+

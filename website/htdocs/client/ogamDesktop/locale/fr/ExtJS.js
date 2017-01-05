@@ -7,3 +7,13 @@ Ext.define("Ext.locale.fr.panel.Panel", {
 	expandToolText:'Agrandir',
 	closeToolText: 'Fermer l\'onglet'
 });
+
+Ext.Date.patterns = {
+    ShortTime: "G:i",
+    LongTime: "G:i:s"
+};
+Ext.define("Ext.locale.fr.form.field.Time", {
+		override:'Ext.form.field.Time'
+}, function (){
+		Ext.form.field.Time.prototype.altFormats +="|H:i:s|"+Ext.Date.patterns.LongTime;
+});;

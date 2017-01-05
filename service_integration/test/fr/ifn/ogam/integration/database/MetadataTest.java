@@ -81,7 +81,7 @@ public class MetadataTest extends AbstractEFDACTest {
 
 		List<DatasetData> datasets = metadataDAO.getDatasets();
 
-		assertEquals("There should be 2 datasets configured in database", 2, datasets.size());
+		assertEquals("There should be 3 datasets configured in database", 3, datasets.size());
 
 	}
 

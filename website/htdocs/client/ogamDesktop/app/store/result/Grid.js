@@ -14,7 +14,7 @@ Ext.define('OgamDesktop.store.result.Grid',{
 		actionMethods: {create: 'POST', read: 'POST', update: 'POST', destroy: 'POST'},
 		reader: {
 			type: 'json',
-			rootProperty: 'rows',
+			rootProperty: 'data',
 			totalProperty: 'total'
 		}
 	}

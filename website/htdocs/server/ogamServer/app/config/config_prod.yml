@@ -1,0 +1,44 @@
+imports:
+    - { resource: config.yml }
+
+doctrine:
+    orm:
+      auto_generate_proxy_classes: "FILE_NOT_EXISTS" # TODO: Find a way to pass that parameter to false (see https://github.com/doctrine/doctrine2/issues/3337)
+      entity_managers:
+        website:
+             metadata_cache_driver: apc
+             result_cache_driver: apc
+             query_cache_driver: apc
+        mapping:
+             metadata_cache_driver: apc
+             result_cache_driver: apc
+             query_cache_driver: apc
+        metadata:
+             metadata_cache_driver: apc
+             result_cache_driver: apc
+             query_cache_driver: apc
+        raw_data:
+             metadata_cache_driver: apc
+             result_cache_driver: apc
+             query_cache_driver: apc
+        harmonized_data:
+             metadata_cache_driver: apc
+             result_cache_driver: apc
+             query_cache_driver: apc
+        result_location:
+             metadata_cache_driver: apc
+             result_cache_driver: apc
+             query_cache_driver: apc
+
+monolog:
+    handlers:
+        main:
+            type:         fingers_crossed
+            action_level: error
+            handler:      nested
+        nested:
+            type:  stream
+            path:  "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
+        console:
+            type:  console

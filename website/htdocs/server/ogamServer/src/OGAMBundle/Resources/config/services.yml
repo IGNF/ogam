@@ -1,0 +1,4 @@
+services:
+#    ogam.example:
+#        class: OGAMBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]

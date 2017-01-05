@@ -8,13 +8,9 @@
 Ext.define('OgamDesktop.view.map.MapToolbar', {
     extend: 'Ext.toolbar.Toolbar',
     controller: 'maptoolbar',
-    viewModel: {
-        type: 'maptoolbar'
-    },
     requires: [
         'Ext.Img',
         'OgamDesktop.view.map.MapToolbarController',
-        'OgamDesktop.view.map.MapToolbarModel',
         'OgamDesktop.view.map.toolbar.SnappingButton',
         'OgamDesktop.view.map.toolbar.SelectWFSFeatureButton',
         'OgamDesktop.view.map.toolbar.LayerFeatureInfoButton'

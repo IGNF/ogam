@@ -1,0 +1,27 @@
+{% extends 'base.json.twig' %}
+{% use  "metadata_entity.json.twig" %}
+
+{%- block form_field_default_value -%}
+{% autoescape false %}
+{{ criteria.value|json_encode }}
+{% endautoescape %}
+{%- endblock -%}
+
+{%- block form_field_additional_fields -%}
+{% autoescape false %}
+    ,"requestName": {{ criteria.requestName.name|json_encode }}
+    ,"fixed": {{ criteria.fixed|json_encode }}
+{% endautoescape %}
+{%- endblock -%}
+
+{% block response_data %}
+[
+    {% for criteria in data %}
+        {% set field = criteria.formField %}
+        {{ block('form_field') }}
+        {%- if not loop.last -%}
+            ,
+        {% endif %}
+    {% endfor %}
+]
+{% endblock %}

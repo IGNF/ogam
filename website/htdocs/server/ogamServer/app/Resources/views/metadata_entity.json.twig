@@ -1,0 +1,104 @@
+{# ****************************************** FORMAT ************************************************ #}
+{%- block form_format -%}
+{% autoescape false %}
+{
+"id": "{{ form.format }}",
+"format": "{{ form.format }}",
+"label": "{{ form.label }}",
+"definition": "{{ form.definition }}",
+"position": {{ form.position|json_encode }},
+"is_opened": {{ form.isOpened|json_encode }}
+{% set field = form.fields %}
+{% block form_format_fields %}
+,"fields": [
+{% for field in form.fields %}
+    {{ block('form_field') }}
+    {%- if not loop.last -%}
+        ,
+    {% endif %}
+{% endfor %}
+]
+{% endblock %}
+}
+{% endautoescape %}
+{%- endblock -%}
+
+{# ****************************************** FIELD ************************************************ #}
+{%- block form_field -%}
+{% autoescape false %}
+{
+"id" : "{{ field.id }}",
+"format": "{{ field.format.format }}",
+"is_criteria": {{ field.isCriteria|json_encode }},
+"is_result": {{ field.isResult|json_encode }},
+"input_type": "{{ field.inputType }}",
+"position": {{ field.position|json_encode }},
+"is_default_criteria": {{ field.isDefaultCriteria|json_encode }},
+"is_default_result": {{ field.isDefaultResult|json_encode }},
+"default_value": {% block form_field_default_value %}{{ field.defaultValue|json_encode }}{% endblock %},
+"decimals": {{ field.decimals|json_encode }},
+"mask": "{{ field.mask }}",
+{% set data = field.data %}
+"data": {% block form_field_data %}{{ block('data') }}{% endblock %}
+{% block form_field_additional_fields %}{% endblock %}
+}
+{% endautoescape %}
+{%- endblock -%}
+
+{# ****************************************** DATA ************************************************ #}
+{%- block data -%}
+{% autoescape false %}
+{
+"id" : "{{ data.data }}",
+"data": "{{ data.data }}",
+"label": "{{ data.label }}",
+"definition": "{{ data.definition }}",
+{% set unit = data.unit %}
+"unit": {% block data_unit %}{{ block('unit') }}{% endblock %}
+}
+{% endautoescape %}
+{%- endblock -%}
+
+{# ****************************************** UNIT ************************************************ #}
+{%- block unit -%}
+{% autoescape false %}
+{
+"id" : "{{ unit.unit }}",
+"unit": "{{ unit.unit }}",
+"type": "{{ unit.type }}",
+"subtype": "{{ unit.subtype }}",
+"label": "{{ unit.label }}",
+"definition": "{{ unit.definition }}"
+{% if unit.range %}
+,"range": {
+    "min": {{ unit.range.min|json_encode }},
+    "max": {{ unit.range.max|json_encode }}
+}
+{% endif %}
+{% if unit.modes %}
+,"codes": [
+{% for code in unit.modes %}
+    {{ block('code') }}
+    {%- if not loop.last -%}
+        ,
+    {% endif %}
+{% endfor %}
+]
+{% endif %}
+}
+{% endautoescape %}
+{%- endblock -%}
+
+{# ****************************************** CODE ************************************************ #}
+{%- block code -%}
+{% autoescape false %}
+{
+"id" : "{{ code.id }}",
+"unit": "{{ code.unit }}",
+"code": "{{ code.code }}",
+"position": {{ code.position|json_encode }},
+"label": "{{ code.label }}",
+"definition": "{{ code.definition }}"
+}
+{% endautoescape %}
+{%- endblock -%}

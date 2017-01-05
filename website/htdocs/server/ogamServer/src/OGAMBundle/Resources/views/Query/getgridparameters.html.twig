@@ -1,0 +1,15 @@
+{% autoescape 'js' %}
+//Ext.define("instance.ogam.view.result.GridTab", {
+//    override: "OgamDesktop.vew.result.GridTab",
+OgamDesktop.view.result.GridTab.override({
+        hideGridDataEditButton : {{ hideGridDataEditButton|json_encode}},
+        checkEditionRights : {{ checkEditionRights|json_encode}}
+    });    
+//Ext.define("instance.ogam.view.result.MainView", {
+//		override:"OgamDesktop.view.result.MainWin",
+OgamDesktop.view.result.MainWin.override({
+		hideGridCsvExportMenuItem : {{ hideGridCsvExportMenuItem|json_encode}}
+});
+// User info
+OgamDesktop.userProviderId = '{{ app.user.provider.id }}';
+{% endautoescape %}
